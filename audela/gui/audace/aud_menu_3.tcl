@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.16 2007-03-26 15:24:34 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.17 2007-04-03 20:36:04 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -46,6 +46,10 @@ namespace eval ::pretraitement {
 
       if { ! [ info exists conf(multx) ] }                  { set conf(multx)                  "2.0" }
       if { ! [ info exists conf(multy) ] }                  { set conf(multy)                  "2.0" }
+      if { ! [ info exists conf(clip_maxi) ] }              { set conf(clip_maxi)              "32767" }
+      if { ! [ info exists conf(clip_mini) ] }              { set conf(clip_mini)              "0" }
+      if { ! [ info exists conf(back_kernel) ] }            { set conf(back_kernel)            "15" }
+      if { ! [ info exists conf(back_threshold) ] }         { set conf(back_threshold)         "0.2" }
       if { ! [ info exists conf(pretraitement,position) ] } { set conf(pretraitement,position) "+350+75" }
 
       return
@@ -114,6 +118,14 @@ namespace eval ::pretraitement {
       set pretraitement(scaleWindow_multx) $conf(multx)
       set pretraitement(scaleWindow_multy) $conf(multy)
 
+      #--- Initialisation des variables de la fonction écrêtage
+      set pretraitement(clipWindow_mini) $conf(clip_mini)
+      set pretraitement(clipWindow_maxi) $conf(clip_maxi)
+
+      #--- Initialisation des variables de la fonction soustraction du fond de ciel
+      set pretraitement(subskyWindow_back_kernel)    $conf(back_kernel)
+      set pretraitement(subskyWindow_back_threshold) $conf(back_threshold)
+
       #---
       toplevel $This
       wm resizable $This 0 0
@@ -174,6 +186,50 @@ namespace eval ::pretraitement {
                pack $This.usr.6.3.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
             pack $This.usr.6.3 -side top -fill both
         # pack $This.usr.6 -in $This.usr -side top -fill both
+
+         frame $This.usr.11 -borderwidth 1 -relief raised
+            frame $This.usr.11.1 -borderwidth 0 -relief flat
+               label $This.usr.11.1.lab1 -text "$caption(pretraitement,grille_subsky)"
+               pack $This.usr.11.1.lab1 -side left -padx 10 -pady 10
+               entry $This.usr.11.1.ent1 -textvariable pretraitement(subskyWindow_back_kernel) -width 7 \
+                  -justify center -font $audace(font,arial_8_b)
+               pack $This.usr.11.1.ent1 -side right -padx 10 -pady 10
+            pack $This.usr.11.1 -side top -fill x
+            frame $This.usr.11.2 -borderwidth 0 -relief flat
+               label $This.usr.11.2.lab2 -text "$caption(pretraitement,seuil_subsky)"
+               pack $This.usr.11.2.lab2 -side left -padx 10 -pady 5
+               entry $This.usr.11.2.ent2 -textvariable pretraitement(subskyWindow_back_threshold) -width 7 \
+                  -justify center -font $audace(font,arial_8_b)
+               pack $This.usr.11.2.ent2 -side right -padx 10 -pady 5
+            pack $This.usr.11.2 -side top -fill x
+            frame $This.usr.11.3 -borderwidth 0 -relief flat
+               button $This.usr.11.3.but_defaut -text "$caption(pretraitement,valeur_par_defaut)" \
+                  -command { ::pretraitement::val_defaut }
+               pack $This.usr.11.3.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            pack $This.usr.11.3 -side top -fill both
+        # pack $This.usr.11 -in $This.usr -side top -fill both
+
+         frame $This.usr.12 -borderwidth 1 -relief raised
+            frame $This.usr.12.15 -borderwidth 0 -relief flat
+               label $This.usr.12.15.lab1 -text "$caption(pretraitement,clip_min)"
+               pack $This.usr.12.15.lab1 -side left -padx 10 -pady 10
+               entry $This.usr.12.15.ent1 -textvariable pretraitement(clipWindow_mini) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
+               pack $This.usr.12.15.ent1 -side right -padx 10 -pady 10
+            pack $This.usr.12.15 -side top -fill x
+            frame $This.usr.12.16 -borderwidth 0 -relief flat
+               label $This.usr.12.16.lab2 -text "$caption(pretraitement,clip_max)"
+               pack $This.usr.12.16.lab2 -side left -padx 10 -pady 5
+               entry $This.usr.12.16.ent2 -textvariable pretraitement(clipWindow_maxi) -width 7 -justify center \
+                  -font $audace(font,arial_8_b)
+               pack $This.usr.12.16.ent2 -side right -padx 10 -pady 5
+            pack $This.usr.12.16 -side top -fill both
+            frame $This.usr.12.17 -borderwidth 0 -relief flat
+               button $This.usr.12.17.but_defaut -text "$caption(pretraitement,valeur_par_defaut)" \
+                  -command { ::pretraitement::val_defaut }
+               pack $This.usr.12.17.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
+            pack $This.usr.12.17 -side top -fill both
+        # pack $This.usr.12 -in $This.usr -side top -fill both
 
          frame $This.usr.5 -borderwidth 1 -relief raised
             frame $This.usr.5.1 -borderwidth 0 -relief flat
@@ -298,9 +354,9 @@ namespace eval ::pretraitement {
             pack $This.usr.1.radiobutton -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
             set list_pretraitement [ list $caption(audace,menu,scale) $caption(audace,menu,offset) \
-               $caption(audace,menu,mult_cte) $caption(audace,menu,noffset) $caption(audace,menu,ngain) \
-               $caption(audace,menu,addition) $caption(audace,menu,soust) $caption(audace,menu,division) \
-               $caption(audace,menu,opt_noir) ]
+               $caption(audace,menu,mult_cte) $caption(audace,menu,clip) $caption(audace,menu,subsky) \
+               $caption(audace,menu,noffset) $caption(audace,menu,ngain) $caption(audace,menu,addition) \
+               $caption(audace,menu,soust) $caption(audace,menu,division) $caption(audace,menu,opt_noir) ]
             #---
             menubutton $This.usr.1.but1 -textvariable pretraitement(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -638,6 +694,189 @@ namespace eval ::pretraitement {
                set const $pretraitement(const)
                ::console::affiche_resultat "Usage: mult2 in out const number ?first_index?\n\n"
                catch { mult2 $in $out $const $nb $first } m
+               if { $m == "" } {
+                  if { $pretraitement(disp_2) == 1 } {
+                     loadima $out$nb
+                  }
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } else {
+                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  set pretraitement(avancement) ""
+               }
+            }
+         } \
+         "$caption(audace,menu,clip)" {
+            #---
+            set conf(clip_mini) $pretraitement(clipWindow_mini)
+            set conf(clip_maxi) $pretraitement(clipWindow_maxi)
+            #--- Tests sur les constantes
+            if { $pretraitement(clipWindow_mini) == "" && $pretraitement(clipWindow_maxi) == "" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message $caption(pretraitement,choix_coefficients)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { $pretraitement(clipWindow_mini) == "" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message $caption(pretraitement,coef_manquant)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { $pretraitement(clipWindow_maxi) == "" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message $caption(pretraitement,coef_manquant)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { [ string is double -strict $pretraitement(clipWindow_mini) ] == "0" } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error \
+                  -message $caption(pretraitement,cte_invalide)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { [ string is double -strict $pretraitement(clipWindow_maxi) ] == "0" } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error \
+                  -message $caption(pretraitement,cte_invalide)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { $pretraitement(choix_mode) == "0" } {
+               #---
+               catch {
+                  if { $pretraitement(clipWindow_mini) != "" } {
+                     buf$audace(bufNo) clipmin $pretraitement(clipWindow_mini)
+                  }
+                  if { $pretraitement(clipWindow_maxi) != "" } {
+                     buf$audace(bufNo) clipmax $pretraitement(clipWindow_maxi)
+                  }
+                  ::audace::autovisu $audace(visuNo)
+               } m
+               if { $m == "" } {
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } else {
+                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  set pretraitement(avancement) ""
+               }
+            } elseif { $pretraitement(choix_mode) == "1" } {
+               #---
+              ### ::console::affiche_resultat "Usage: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n"
+               catch {
+                  ### A developper
+               } m
+               if { $m == "" } {
+                  if { $pretraitement(disp_2) == 1 } {
+                    ### loadima $out
+                  }
+                 ### set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+                  set pretraitement(avancement) "A développer"
+               } else {
+                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  set pretraitement(avancement) ""
+               }
+            } elseif { $pretraitement(choix_mode) == "2" } {
+               #---
+              ### ::console::affiche_resultat "Usage: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n"
+               catch {
+                  ### A developper
+               } m
+               if { $m == "" } {
+                  if { $pretraitement(disp_2) == 1 } {
+                    ### loadima $out$nb
+                  }
+                 ### set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+                  set pretraitement(avancement) "A développer"
+               } else {
+                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  set pretraitement(avancement) ""
+               }
+            }
+         } \
+         "$caption(audace,menu,subsky)" {
+            #---
+            set conf(back_kernel)    $pretraitement(subskyWindow_back_kernel)
+            set conf(back_threshold) $pretraitement(subskyWindow_back_threshold)
+            #--- Tests sur les constantes
+            if { $pretraitement(subskyWindow_back_kernel) == "" && $pretraitement(subskyWindow_back_threshold) == "" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message $caption(pretraitement,choix_coefficients)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { $pretraitement(subskyWindow_back_kernel) == "" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message $caption(pretraitement,coef_manquant)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { $pretraitement(subskyWindow_back_threshold) == "" } {
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message $caption(pretraitement,coef_manquant)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { [ string is double -strict $pretraitement(subskyWindow_back_kernel) ] == "0" } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error \
+                  -message $caption(pretraitement,cte_invalide)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { [ string is double -strict $pretraitement(subskyWindow_back_threshold) ] == "0" } {
+               tk_messageBox -title $caption(pretraitement,attention) -icon error \
+                  -message $caption(pretraitement,cte_invalide)
+               set pretraitement(avancement) ""
+               return
+            }
+            if { $pretraitement(choix_mode) == "0" } {
+               #---
+               catch {
+                  set k $pretraitement(subskyWindow_back_kernel)
+                  set t $pretraitement(subskyWindow_back_threshold)
+                  if { [ expr $k ] < "4" } { set k "3" }
+                  if { [ expr $k ] > "50" } { set k "50" }
+                  if { [ expr $t ] < "0" } { set t "0" }
+                  if { [ expr $t ] > "1" } { set t "1" }
+                  subsky $k $t
+                  ::audace::autovisu $audace(visuNo)
+               } m
+               if { $m == "" } {
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } else {
+                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  set pretraitement(avancement) ""
+               }
+            } elseif { $pretraitement(choix_mode) == "1" } {
+               #---
+               ::console::affiche_resultat "Usage: subsky1 in out back_kernel back_threshold\n\n"
+               catch {
+                  set k $pretraitement(subskyWindow_back_kernel)
+                  set t $pretraitement(subskyWindow_back_threshold)
+                  if { [ expr $k ] < "4" } { set k "3" }
+                  if { [ expr $k ] > "50" } { set k "50" }
+                  if { [ expr $t ] < "0" } { set t "0" }
+                  if { [ expr $t ] > "1" } { set t "1" }
+                  subsky1 $in $out $k $t
+               } m
+               if { $m == "" } {
+                  if { $pretraitement(disp_2) == 1 } {
+                     loadima $out
+                  }
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } else {
+                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  set pretraitement(avancement) ""
+               }
+            } elseif { $pretraitement(choix_mode) == "2" } {
+               #---
+               ::console::affiche_resultat "Usage: subsky2 in out number back_kernel back_threshold ?first_index?\n\n"
+               catch {
+                  set k $pretraitement(subskyWindow_back_kernel)
+                  set t $pretraitement(subskyWindow_back_threshold)
+                  if { [ expr $k ] < "4" } { set k "3" }
+                  if { [ expr $k ] > "50" } { set k "50" }
+                  if { [ expr $t ] < "0" } { set t "0" }
+                  if { [ expr $t ] > "1" } { set t "1" }
+                  subsky2 $in $out $nb $k $t $first
+               } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$nb
@@ -1041,6 +1280,10 @@ namespace eval ::pretraitement {
          set pretraitement(page_web) "1030ajouter_cte"
       } elseif { $pretraitement(operation) == $caption(audace,menu,mult_cte) } {
          set pretraitement(page_web) "1040multiplier_cte"
+      } elseif { $pretraitement(operation) == $caption(audace,menu,clip) } {
+         set pretraitement(page_web) "1044ecreter"
+      } elseif { $pretraitement(operation) == $caption(audace,menu,subsky) } {
+         set pretraitement(page_web) "1046soust_fond_ciel"
       } elseif { $pretraitement(operation) == $caption(audace,menu,noffset) } {
          set pretraitement(page_web) "1050norm_fond"
       } elseif { $pretraitement(operation) == $caption(audace,menu,ngain) } {
@@ -1097,6 +1340,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack $This.usr.6 -in $This.usr -side top -fill both
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1109,6 +1354,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack $This.usr.6 -in $This.usr -side top -fill both
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1121,6 +1368,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack $This.usr.6 -in $This.usr -side top -fill both
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1137,6 +1386,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1149,6 +1400,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1161,6 +1414,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1177,6 +1432,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1189,6 +1446,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1201,6 +1460,100 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
+               pack $This.usr.7 -in $This.usr -side top -fill both
+               pack forget $This.usr.10
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
+         } \
+         "$caption(audace,menu,clip)" {
+            set pretraitement(const) ""
+            if { $pretraitement(choix_mode) == "0" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.2
+               pack forget $This.usr.8
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack $This.usr.12 -in $This.usr -side top -fill both
+               pack forget $This.usr.7
+               pack $This.usr.10 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $pretraitement(choix_mode) == "1" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.2
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack $This.usr.12 -in $This.usr -side top -fill both
+               pack $This.usr.7 -in $This.usr -side top -fill both
+               pack forget $This.usr.10
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $pretraitement(choix_mode) == "2" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.8
+               pack $This.usr.2 -in $This.usr -side top -fill both
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack $This.usr.12 -in $This.usr -side top -fill both
+               pack $This.usr.7 -in $This.usr -side top -fill both
+               pack forget $This.usr.10
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
+         } \
+         "$caption(audace,menu,subsky)" {
+            set pretraitement(const) ""
+            if { $pretraitement(choix_mode) == "0" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.2
+               pack forget $This.usr.8
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack $This.usr.11 -in $This.usr -side top -fill both
+               pack forget $This.usr.12
+               pack forget $This.usr.7
+               pack $This.usr.10 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $pretraitement(choix_mode) == "1" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.2
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack $This.usr.11 -in $This.usr -side top -fill both
+               pack forget $This.usr.12
+               pack $This.usr.7 -in $This.usr -side top -fill both
+               pack forget $This.usr.10
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $pretraitement(choix_mode) == "2" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.8
+               pack $This.usr.2 -in $This.usr -side top -fill both
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack $This.usr.11 -in $This.usr -side top -fill both
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1217,6 +1570,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1229,6 +1584,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1241,6 +1598,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1257,6 +1616,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1269,6 +1630,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1281,6 +1644,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1297,6 +1662,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1309,6 +1676,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1321,6 +1690,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1337,6 +1708,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1349,6 +1722,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1361,6 +1736,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1377,6 +1754,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1389,6 +1768,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1401,6 +1782,8 @@ namespace eval ::pretraitement {
                pack $This.usr.4 -in $This.usr -side top -fill both
                pack forget $This.usr.5
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1417,6 +1800,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack $This.usr.5 -in $This.usr -side top -fill both
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack forget $This.usr.7
                pack $This.usr.10 -in $This.usr -side top -fill both
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1429,6 +1814,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack $This.usr.5 -in $This.usr -side top -fill both
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1441,6 +1828,8 @@ namespace eval ::pretraitement {
                pack forget $This.usr.4
                pack $This.usr.5 -in $This.usr -side top -fill both
                pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
                pack $This.usr.7 -in $This.usr -side top -fill both
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
@@ -1484,6 +1873,12 @@ namespace eval ::pretraitement {
       if { $pretraitement(operation) == "$caption(audace,menu,scale)" } {
          set pretraitement(scaleWindow_multx) "2.0"
          set pretraitement(scaleWindow_multy) "2.0"
+      } elseif { $pretraitement(operation) == "$caption(audace,menu,clip)" } {
+         set pretraitement(clipWindow_mini) "0"
+         set pretraitement(clipWindow_maxi) "32767"
+      } elseif { $pretraitement(operation) == "$caption(audace,menu,subsky)" } {
+         set pretraitement(subskyWindow_back_kernel) "15"
+         set pretraitement(subskyWindow_back_threshold) "0.2"
       }
    }
 
@@ -1647,6 +2042,126 @@ namespace eval ::pretraitement {
       }
    }
 
+   #
+   # ::pretraitement::nom_generique
+   # Affiche le nom generique des fichiers d'une serie si c'en est une, le nombre
+   # d'elements de la serie et le premier indice de la serie s'il est different de 1
+   # Renumerote la serie s'il y a des trous ou si elle debute par un 0
+   #
+   proc nom_generique { filename } {
+      global audace caption
+
+      #--- Est-ce un nom générique de fichiers ?
+      set nom_generique  [ lindex [ decomp $filename ] 1 ]
+      set index_serie    [ lindex [ decomp $filename ] 2 ]
+      set ext_serie      [ lindex [ decomp $filename ] 3 ]
+      #--- J'extrais la liste des index de la serie
+      set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+      if { $error == "0" } {
+         #--- Pour une serie du type 1 - 2 - 3 - etc.
+         set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+      } else {
+         #--- Pour une serie du type 01 - 02 - 03 - etc.
+         set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+      }
+      #--- Longueur de la liste des index
+      set longueur_serie [ llength $liste_serie ]
+      if { $index_serie != "" && $longueur_serie > "1" } {
+         tk_messageBox -title $caption(pretraitement,attention) -type ok \
+            -message "$caption(pretraitement,nom_generique_ok)"
+      } else {
+         tk_messageBox -title $caption(pretraitement,attention) -type ok \
+            -message "$caption(pretraitement,nom_generique_ko)"
+         #--- Ce n'est pas un nom generique, sortie anticipee
+         set nom_generique  ""
+         set longueur_serie ""
+         set indice_min     "1"
+         ::console::disp "\n"
+         ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
+         ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
+         ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
+         return [ list $nom_generique $longueur_serie $indice_min ]
+      }
+      #--- Identification du type de numerotation
+      set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+      if { $error == "0" } {
+         #--- Pour une serie du type 1 - 2 - 3 - etc.
+         set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+      } else {
+         #--- Pour une serie du type 01 - 02 - 03 - etc.
+         set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+      }
+      #--- Longueur de la serie
+      set longueur_serie [ llength $liste_serie ]
+      #--- Premier indice de la serie
+      set indice_min [ lindex $liste_serie 0 ]
+      #--- La serie ne commence pas par 0
+      if { $indice_min != "0" } {
+         set new_indice_min [ string trimleft $indice_min 0 ]
+         #--- La serie commence par 1
+         if { $new_indice_min == "1" } {
+            #--- Est-ce une serie avec des fichiers manquants ?
+            set etat_serie [ numerotation_usuelle $nom_generique ]
+            if { $etat_serie == "0" } {
+               #--- Il manque des fichiers dans la serie, je renumerote la serie
+               renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message "$caption(pretraitement,renumerote_termine)"
+            } else {
+               #--- Il ne manque pas de fichiers dans la serie
+               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+                  -message "$caption(pretraitement,numerotation_ok)\n$caption(pretraitement,pas_fichier_manquant)"
+            }
+         } else {
+            #--- La serie ne commence pas par 1
+            tk_messageBox -title $caption(pretraitement,attention) -type ok \
+               -message "$caption(pretraitement,renumerote_manuel)"
+         }
+      } else {
+         #--- La serie commence par 0
+         tk_messageBox -title $caption(pretraitement,attention) -type ok \
+            -message "$caption(pretraitement,indice_pas_1)"
+         #--- Je recherche le dernier indice de la liste
+         set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
+         #--- Je renumerote le fichier portant l'indice 0
+         set buf_pretrait [::buf::create]
+         buf$buf_pretrait load "$audace(rep_images)/$nom_generique$indice_min$ext_serie"
+         buf$buf_pretrait save "$audace(rep_images)/$nom_generique$dernier_indice$ext_serie"
+         ::buf::delete $buf_pretrait
+         file delete [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
+         #--- Est-ce une serie avec des fichiers manquants ?
+         set etat_serie [ numerotation_usuelle $nom_generique ]
+         if { $etat_serie == "0" } {
+            #--- Il manque des fichiers dans la serie, je renumerote la serie
+            renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
+            tk_messageBox -title $caption(pretraitement,attention) -type ok \
+               -message "$caption(pretraitement,renumerote_termine)\n$caption(pretraitement,fichier_indice_0)"
+         } else {
+            #--- Il ne manque pas de fichiers dans la serie
+            tk_messageBox -title $caption(pretraitement,attention) -type ok \
+               -message "$caption(pretraitement,pas_fichier_manquant)\n$caption(pretraitement,fichier_indice_0)"
+         }
+      }
+      #--- J'extrais la liste des index de la serie
+      set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+      if { $error == "0" } {
+         #--- Pour une serie du type 1 - 2 - 3 - etc.
+         set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+      } else {
+         #--- Pour une serie du type 01 - 02 - 03 - etc.
+         set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+      }
+      #--- J'extrais le dernier indice de la serie
+      set longueur_serie [ llength $liste_serie ]
+      set indice_max [ lindex $liste_serie [ expr $longueur_serie - 1 ] ]
+      ::console::disp "\n"
+      ::console::disp "$caption(pretraitement,liste_serie) $liste_serie \n\n"
+      ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
+      ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
+      ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
+      return [ list $nom_generique $longueur_serie $indice_min ]
+   }
+
 }
 
 ########################## Fin du namespace pretraitement ##########################
@@ -1691,10 +2206,6 @@ namespace eval ::traiteImage {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(back_kernel) ] }          { set conf(back_kernel)          "15" }
-      if { ! [ info exists conf(back_threshold) ] }       { set conf(back_threshold)       "0.2" }
-      if { ! [ info exists conf(clip_maxi) ] }            { set conf(clip_maxi)            "32767" }
-      if { ! [ info exists conf(clip_mini) ] }            { set conf(clip_mini)            "0" }
       if { ! [ info exists conf(traiteImage,position) ] } { set conf(traiteImage,position) "+350+75" }
 
       return
@@ -1751,14 +2262,6 @@ namespace eval ::traiteImage {
       #--- Initialisation de la variable principale
       set traiteImage(avancement) ""
 
-      #--- Initialisation des variables de la fonction soustraction du fond de ciel
-      set traiteImage(subskyWindow_back_kernel)    $conf(back_kernel)
-      set traiteImage(subskyWindow_back_threshold) $conf(back_threshold)
-
-      #--- Initialisation des variables de la fonction écrêtage
-      set traiteImage(clipWindow_mini) $conf(clip_mini)
-      set traiteImage(clipWindow_maxi) $conf(clip_maxi)
-
       #---
       toplevel $This
       wm resizable $This 0 0
@@ -1784,39 +2287,6 @@ namespace eval ::traiteImage {
         # pack $This.usr.3 -in $This.usr -side top -fill both
 
          frame $This.usr.2 -borderwidth 1 -relief raised
-            frame $This.usr.2.13 -borderwidth 0 -relief flat
-               label $This.usr.2.13.lab13 -text "$caption(pretraitement,grille_subsky)"
-               pack $This.usr.2.13.lab13 -side left -padx 10 -pady 10
-               entry $This.usr.2.13.ent13 -textvariable traiteImage(subskyWindow_back_kernel) -width 7 -justify center \
-                  -font $audace(font,arial_8_b)
-               pack $This.usr.2.13.ent13 -side right -padx 10 -pady 10
-           # pack $This.usr.2.13 -side top -fill x
-            frame $This.usr.2.14 -borderwidth 0 -relief flat
-               label $This.usr.2.14.lab14 -text "$caption(pretraitement,seuil_subsky)"
-               pack $This.usr.2.14.lab14 -side left -padx 10 -pady 5
-               entry $This.usr.2.14.ent14 -textvariable traiteImage(subskyWindow_back_threshold) -width 7 -justify center \
-                  -font $audace(font,arial_8_b)
-               pack $This.usr.2.14.ent14 -side right -padx 10 -pady 5
-           # pack $This.usr.2.14 -side top -fill x
-            frame $This.usr.2.15 -borderwidth 0 -relief flat
-               label $This.usr.2.15.lab15 -text "$caption(pretraitement,clip_min)"
-               pack $This.usr.2.15.lab15 -side left -padx 10 -pady 10
-               entry $This.usr.2.15.ent15 -textvariable traiteImage(clipWindow_mini) -width 7 -justify center \
-                  -font $audace(font,arial_8_b)
-               pack $This.usr.2.15.ent15 -side right -padx 10 -pady 10
-           # pack $This.usr.2.15 -side top -fill x
-            frame $This.usr.2.16 -borderwidth 0 -relief flat
-               label $This.usr.2.16.lab16 -text "$caption(pretraitement,clip_max)"
-               pack $This.usr.2.16.lab16 -side left -padx 10 -pady 5
-               entry $This.usr.2.16.ent16 -textvariable traiteImage(clipWindow_maxi) -width 7 -justify center \
-                  -font $audace(font,arial_8_b)
-               pack $This.usr.2.16.ent16 -side right -padx 10 -pady 5
-           # pack $This.usr.2.16 -side top -fill both
-            frame $This.usr.2.17 -borderwidth 0 -relief flat
-               button $This.usr.2.17.but_defaut -text "$caption(pretraitement,valeur_par_defaut)" \
-                  -command { ::traiteImage::val_defaut }
-               pack $This.usr.2.17.but_defaut -side left -padx 10 -pady 5 -ipadx 10 -ipady 5 -fill x
-           # pack $This.usr.2.17 -side top -fill both
             frame $This.usr.2.20 -borderwidth 0 -relief flat
                button $This.usr.2.20.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 1 }
                pack $This.usr.2.20.btn1 -side left -padx 10 -pady 5 -ipady 5
@@ -1860,7 +2330,7 @@ namespace eval ::traiteImage {
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
             set list_traiteImage [ list $caption(audace,menu,r+v+b2rvb) $caption(audace,menu,rvb2r+v+b) \
-               $caption(audace,menu,cfa2rgb) $caption(audace,menu,subsky) $caption(audace,menu,clip) ]
+               $caption(audace,menu,cfa2rgb) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteImage(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -2016,111 +2486,6 @@ namespace eval ::traiteImage {
                tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
                set traiteImage(avancement) ""
             }
-         } \
-         "$caption(audace,menu,subsky)" {
-            #---
-            set conf(back_kernel)    $traiteImage(subskyWindow_back_kernel)
-            set conf(back_threshold) $traiteImage(subskyWindow_back_threshold)
-            #--- Tests sur les constantes
-            if { $traiteImage(subskyWindow_back_kernel) == "" && $traiteImage(subskyWindow_back_threshold) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,choix_coefficients)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { $traiteImage(subskyWindow_back_kernel) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { $traiteImage(subskyWindow_back_threshold) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { [ string is double -strict $traiteImage(subskyWindow_back_kernel) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { [ string is double -strict $traiteImage(subskyWindow_back_threshold) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
-               set traiteImage(avancement) ""
-               return
-            }
-            #---
-            catch {
-               set k $traiteImage(subskyWindow_back_kernel)
-               set t $traiteImage(subskyWindow_back_threshold)
-               if { [ expr $t ] < "0" } { set t "0" }
-               if { [ expr $t ] > "1" } { set t "1" }
-               if { [ expr $k ] < "4" } { set k "3" }
-               if { [ expr $k ] > "50" } { set k "50" }
-               buf$audace(bufNo) imaseries "back back_kernel=$k back_threshold=$t sub"
-               ::audace::autovisu $audace(visuNo)
-            } m
-            if { $m == "" } {
-               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
-               set traiteImage(avancement) ""
-            }
-         } \
-         "$caption(audace,menu,clip)" {
-            #---
-            set conf(clip_mini) $traiteImage(clipWindow_mini)
-            set conf(clip_maxi) $traiteImage(clipWindow_maxi)
-            #--- Tests sur les constantes
-            if { $traiteImage(clipWindow_mini) == "" && $traiteImage(clipWindow_maxi) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,choix_coefficients)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { $traiteImage(clipWindow_mini) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { $traiteImage(clipWindow_maxi) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { [ string is double -strict $traiteImage(clipWindow_mini) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
-               set traiteImage(avancement) ""
-               return
-            }
-            if { [ string is double -strict $traiteImage(clipWindow_maxi) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
-               set traiteImage(avancement) ""
-               return
-            }
-            #---
-            catch {
-               if { $traiteImage(clipWindow_mini) != "" } {
-                  buf$audace(bufNo) clipmin $traiteImage(clipWindow_mini)
-               }
-               if { $traiteImage(clipWindow_maxi) != "" } {
-                  buf$audace(bufNo) clipmax $traiteImage(clipWindow_maxi)
-               }
-               ::audace::autovisu $audace(visuNo)
-            } m
-            if { $m == "" } {
-               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
-               set traiteImage(avancement) ""
-            }
          }
       ::traiteImage::recup_position
    }
@@ -2151,10 +2516,6 @@ namespace eval ::traiteImage {
          set traiteImage(page_web) "1016rvb2r+v+b"
       } elseif { $traiteImage(operation) == $caption(audace,menu,cfa2rgb) } {
          set traiteImage(page_web) "1117cfa2rvb"
-      } elseif { $traiteImage(operation) == $caption(audace,menu,subsky) } {
-         set traiteImage(page_web) "1100soust_fond_ciel"
-      } elseif { $traiteImage(operation) == $caption(audace,menu,clip) } {
-         set traiteImage(page_web) "1110ecreter"
       }
 
       #---
@@ -2182,11 +2543,6 @@ namespace eval ::traiteImage {
             pack forget $This.usr.0
             pack $This.usr.3 -side bottom -fill both
             pack $This.usr.2 -side bottom -fill both
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
             pack $This.usr.2.20 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.21 -in $This.usr.2 -side top -fill both
             pack forget $This.usr.2.22
@@ -2197,11 +2553,6 @@ namespace eval ::traiteImage {
             pack forget $This.usr.0
             pack $This.usr.3 -side bottom -fill both
             pack $This.usr.2 -side bottom -fill both
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
             pack forget $This.usr.2.20
             pack forget $This.usr.2.21
             pack $This.usr.2.22 -in $This.usr.2 -side top -fill both
@@ -2212,41 +2563,6 @@ namespace eval ::traiteImage {
             pack forget $This.usr.0
             pack $This.usr.3 -side bottom -fill both
             pack forget $This.usr.2
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack forget $This.usr.2.17
-            pack forget $This.usr.2.20
-            pack forget $This.usr.2.21
-            pack forget $This.usr.2.22
-            pack forget $This.usr.2.23
-            pack $This.usr.1 -side top -fill both
-         } \
-         "$caption(audace,menu,subsky)" {
-            pack forget $This.usr.0
-            pack $This.usr.3 -side bottom -fill both
-            pack $This.usr.2 -side bottom -fill both
-            pack $This.usr.2.13 -in $This.usr.2 -side top -fill both
-            pack $This.usr.2.14 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.15
-            pack forget $This.usr.2.16
-            pack $This.usr.2.17 -in $This.usr.2 -side top -fill both
-            pack forget $This.usr.2.20
-            pack forget $This.usr.2.21
-            pack forget $This.usr.2.22
-            pack forget $This.usr.2.23
-            pack $This.usr.1 -side top -fill both
-         } \
-         "$caption(audace,menu,clip)" {
-            pack forget $This.usr.0
-            pack $This.usr.3 -side bottom -fill both
-            pack $This.usr.2 -side bottom -fill both
-            pack forget $This.usr.2.13
-            pack forget $This.usr.2.14
-            pack $This.usr.2.15 -in $This.usr.2 -side top -fill both
-            pack $This.usr.2.16 -in $This.usr.2 -side top -fill both
-            pack $This.usr.2.17 -in $This.usr.2 -side top -fill both
             pack forget $This.usr.2.20
             pack forget $This.usr.2.21
             pack forget $This.usr.2.22
@@ -2275,23 +2591,6 @@ namespace eval ::traiteImage {
          set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "$caption(audace,menu,rvb2r+v+b)" && $option == "2" } {
          set traiteImage(rvbWindow_r+v+b_filename) [ file rootname [ file tail $filename ] ]
-      }
-   }
-
-   #
-   # ::traiteImage::val_defaut
-   # Affiche les valeurs par defaut des constantes
-   #
-   proc val_defaut { } {
-      global caption traiteImage
-
-      #--- Re-initialise les coefficients conf()
-      if { $traiteImage(operation) == "$caption(audace,menu,subsky)" } {
-         set traiteImage(subskyWindow_back_kernel) "15"
-         set traiteImage(subskyWindow_back_threshold) "0.2"
-      } elseif { $traiteImage(operation) == "$caption(audace,menu,clip)" } {
-         set traiteImage(clipWindow_mini) "0"
-         set traiteImage(clipWindow_maxi) "32767"
       }
    }
 
@@ -3589,10 +3888,10 @@ namespace eval ::faireImageRef {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set faireImageRef(in)  [ lindex [ decomp [ file rootname [ file tail $filename ] ] ] 1 ]
+         set faireImageRef(in)  [ file rootname [ file tail $filename ] ]
          set faireImageRef(ext) [ file extension $filename ]
       } elseif { $In_Out == "2" } {
-         set faireImageRef(out) [ lindex [ decomp [ file rootname [ file tail $filename ] ] ] 1 ]
+         set faireImageRef(out) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "3" } {
          set faireImageRef(offset) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
