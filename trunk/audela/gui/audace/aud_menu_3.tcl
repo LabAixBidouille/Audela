@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.17 2007-04-03 20:36:04 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.18 2007-04-04 17:32:37 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -434,6 +434,7 @@ namespace eval ::pretraitement {
       set nb    $pretraitement(nb)
       set first $pretraitement(valeur_indice)
       set out   $pretraitement(out)
+      set end   [ expr $nb + ( $first - 1 ) ]
 
       #--- Tests sur les images
       if { $pretraitement(choix_mode) == "0" } {
@@ -588,7 +589,7 @@ namespace eval ::pretraitement {
                } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -642,7 +643,7 @@ namespace eval ::pretraitement {
                catch { offset2 $in $out $const $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -696,7 +697,7 @@ namespace eval ::pretraitement {
                catch { mult2 $in $out $const $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -749,7 +750,6 @@ namespace eval ::pretraitement {
                   if { $pretraitement(clipWindow_maxi) != "" } {
                      buf$audace(bufNo) clipmax $pretraitement(clipWindow_maxi)
                   }
-                  ::audace::autovisu $audace(visuNo)
                } m
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
@@ -759,32 +759,50 @@ namespace eval ::pretraitement {
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
                #---
-              ### ::console::affiche_resultat "Usage: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n"
                catch {
-                  ### A developper
+                  set buf_clip [ ::buf::create ]
+                  buf$buf_clip load $audace(rep_images)/$in
+                  if { $pretraitement(clipWindow_mini) != "" } {
+                     buf$buf_clip clipmin $pretraitement(clipWindow_mini)
+                  }
+                  if { $pretraitement(clipWindow_maxi) != "" } {
+                     buf$buf_clip clipmax $pretraitement(clipWindow_maxi)
+                  }
+                  buf$buf_clip save $audace(rep_images)/$out
+                  ::buf::delete $buf_clip
                } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                    ### loadima $out
+                     loadima $out
                   }
-                 ### set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-                  set pretraitement(avancement) "A développer"
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
                   tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
                #---
-              ### ::console::affiche_resultat "Usage: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n"
                catch {
-                  ### A developper
+                  for { set index "$first" } { $index <= $end } { incr index } {
+                     set buf_clip($index) [ ::buf::create ]
+                     buf$buf_clip($index) load $audace(rep_images)/$in$index
+                     if { $pretraitement(clipWindow_mini) != "" } {
+                        buf$buf_clip($index) clipmin $pretraitement(clipWindow_mini)
+                     }
+                     if { $pretraitement(clipWindow_maxi) != "" } {
+                        buf$buf_clip($index) clipmax $pretraitement(clipWindow_maxi)
+                     }
+                     buf$buf_clip($index) save $audace(rep_images)/$out$index
+                  }
+                  for { set index "$first" } { $index <= $end } { incr index } {
+                     ::buf::delete $buf_clip($index)
+                  }
                } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                    ### loadima $out$nb
+                     loadima $out$end
                   }
-                 ### set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-                  set pretraitement(avancement) "A développer"
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
                   tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
                   set pretraitement(avancement) ""
@@ -879,7 +897,7 @@ namespace eval ::pretraitement {
                } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -932,7 +950,7 @@ namespace eval ::pretraitement {
                catch { noffset2 $in $out $const $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -985,7 +1003,7 @@ namespace eval ::pretraitement {
                catch { ngain2 $in $out $const $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -1052,7 +1070,7 @@ namespace eval ::pretraitement {
                catch { add2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -1119,7 +1137,7 @@ namespace eval ::pretraitement {
                catch { sub2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -1186,7 +1204,7 @@ namespace eval ::pretraitement {
                catch { div2 $in $operand $out $const $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -1242,7 +1260,7 @@ namespace eval ::pretraitement {
                catch { opt2 $in $dark $offset $out $nb $first } m
                if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
-                     loadima $out$nb
+                     loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
@@ -1320,7 +1338,11 @@ namespace eval ::pretraitement {
       }
       $This.usr.7.1.che1 configure -text "$pretraitement(afficher_image)"
       #---
-      set pretraitement(avancement) ""
+      set pretraitement(avancement)     ""
+      set pretraitement(in)             ""
+      set pretraitement(nb)             ""
+      set pretraitement(valeur_indice)  "1"
+      set pretraitement(out)            ""
       #---
       ::pretraitement::formule
       #---
@@ -1834,7 +1856,7 @@ namespace eval ::pretraitement {
                pack forget $This.usr.10
                pack $This.usr.9 -in $This.usr -side top -fill both
             }
-         } \
+         }
    }
 
    #
@@ -1850,9 +1872,21 @@ namespace eval ::pretraitement {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set pretraitement(in) [ file rootname [ file tail $filename ] ]
+         if { $pretraitement(choix_mode) == "2" } {
+            set pretraitement(info_filename_in)  [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+            set pretraitement(in)                [ lindex $pretraitement(info_filename_in) 0 ]
+            set pretraitement(nb)                [ lindex $pretraitement(info_filename_in) 1 ]
+            set pretraitement(valeur_indice)     [ lindex $pretraitement(info_filename_in) 2 ]
+         } else {
+            set pretraitement(in)                [ file rootname [ file tail $filename ] ]
+         }
       } elseif { $In_Out == "2" } {
-         set pretraitement(out) [ file rootname [ file tail $filename ] ]
+         if { $pretraitement(choix_mode) == "2" } {
+            set pretraitement(info_filename_out) [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+            set pretraitement(out)               [ lindex $pretraitement(info_filename_out) 0 ]
+         } else {
+            set pretraitement(out)               [ file rootname [ file tail $filename ] ]
+         }
       } elseif { $In_Out == "3" } {
          set pretraitement(2,operand) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
@@ -2076,7 +2110,6 @@ namespace eval ::pretraitement {
          set nom_generique  ""
          set longueur_serie ""
          set indice_min     "1"
-         ::console::disp "\n"
          ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
          ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
          ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
@@ -2124,7 +2157,7 @@ namespace eval ::pretraitement {
          #--- Je recherche le dernier indice de la liste
          set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
          #--- Je renumerote le fichier portant l'indice 0
-         set buf_pretrait [::buf::create]
+         set buf_pretrait [ ::buf::create ]
          buf$buf_pretrait load "$audace(rep_images)/$nom_generique$indice_min$ext_serie"
          buf$buf_pretrait save "$audace(rep_images)/$nom_generique$dernier_indice$ext_serie"
          ::buf::delete $buf_pretrait
@@ -2154,7 +2187,6 @@ namespace eval ::pretraitement {
       #--- J'extrais le dernier indice de la serie
       set longueur_serie [ llength $liste_serie ]
       set indice_max [ lindex $liste_serie [ expr $longueur_serie - 1 ] ]
-      ::console::disp "\n"
       ::console::disp "$caption(pretraitement,liste_serie) $liste_serie \n\n"
       ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
       ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
@@ -2532,6 +2564,7 @@ namespace eval ::traiteImage {
 
       #---
       set traiteImage(avancement) ""
+      #---
       ::traiteImage::formule
       #---
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -3004,7 +3037,12 @@ namespace eval ::traiteWindow {
       global caption traiteWindow
 
       #---
-      set traiteWindow(avancement) ""
+      set traiteWindow(avancement)    ""
+      set traiteWindow(in)            ""
+      set traiteWindow(nb)            ""
+      set traiteWindow(valeur_indice) "1"
+      set traiteWindow(out)           ""
+      #---
       ::traiteWindow::formule
       #---
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -3055,9 +3093,12 @@ namespace eval ::traiteWindow {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set traiteWindow(in) [ file rootname [ file tail $filename ] ]
+         set traiteWindow(info_filename_in) [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+         set traiteWindow(in)               [ lindex $traiteWindow(info_filename_in) 0 ]
+         set traiteWindow(nb)               [ lindex $traiteWindow(info_filename_in) 1 ]
+         set traiteWindow(valeur_indice)    [ lindex $traiteWindow(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
-         set traiteWindow(out) [ file rootname [ file tail $filename ] ]
+         set traiteWindow(out)              [ file rootname [ file tail $filename ] ]
       }
    }
 
@@ -3458,6 +3499,7 @@ namespace eval ::faireImageRef {
       set nb    $faireImageRef(nb)
       set first $faireImageRef(valeur_indice)
       set out   $faireImageRef(out)
+      set end   [ expr $nb + ( $first - 1 ) ]
 
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $faireImageRef(in) == "" } {
@@ -3511,7 +3553,6 @@ namespace eval ::faireImageRef {
             if { $m == "" } {
                if { $faireImageRef(disp) == 1 } {
                   loadima $out
-                  ::audace::autovisu $audace(visuNo)
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
@@ -3561,7 +3602,6 @@ namespace eval ::faireImageRef {
             if { $m == "" } {
                if { $faireImageRef(disp) == 1 } {
                   loadima $out
-                  ::audace::autovisu $audace(visuNo)
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
@@ -3611,7 +3651,7 @@ namespace eval ::faireImageRef {
             if { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "0" } {
                #--- Realisation de l'image ( Offset + Dark )
                catch {
-                  set buf_pretrait [::buf::create]
+                  set buf_pretrait [ ::buf::create ]
                   buf$buf_pretrait load $audace(rep_images)/$offset
                   buf$buf_pretrait add $audace(rep_images)/$dark $const
                   buf$buf_pretrait save $audace(rep_images)/offset+dark
@@ -3645,7 +3685,6 @@ namespace eval ::faireImageRef {
             if { $m == "" } {
                if { $faireImageRef(disp) == 1 } {
                   loadima $out
-                  ::audace::autovisu $audace(visuNo)
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
@@ -3691,7 +3730,7 @@ namespace eval ::faireImageRef {
                #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
                #--- Realisation de X = ( Offset + Dark )
                catch {
-                  set buf_pretrait [::buf::create]
+                  set buf_pretrait [ ::buf::create ]
                   buf$buf_pretrait load $audace(rep_images)/$offset
                   buf$buf_pretrait add $audace(rep_images)/$dark $const
                   buf$buf_pretrait save $audace(rep_images)/offset+dark
@@ -3726,8 +3765,7 @@ namespace eval ::faireImageRef {
             #---
             if { $m == "" } {
                if { $faireImageRef(disp) == 1 } {
-                  loadima $out$nb
-                  ::audace::autovisu $audace(visuNo)
+                  loadima $out$end
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
@@ -3788,9 +3826,13 @@ namespace eval ::faireImageRef {
       } else {
          set faireImageRef(afficher_image) "$caption(pretraitement,afficher_image_fin)"
       }
-      #---
       $This.usr.6.1.che1 configure -text "$faireImageRef(afficher_image)"
-      set faireImageRef(avancement) ""
+      #---
+      set faireImageRef(avancement)    ""
+      set faireImageRef(in)            ""
+      set faireImageRef(nb)            ""
+      set faireImageRef(valeur_indice) "1"
+      #---
       ::faireImageRef::formule
       #---
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -3799,11 +3841,10 @@ namespace eval ::faireImageRef {
       #--- que la commande switch continue sur la ligne suivante
       switch $faireImageRef(operation) \
          "$caption(audace,menu,raw2cfa)" {
-            set faireImageRef(in)         ""
-            set faireImageRef(out)        ""
-            set faireImageRef(offset)     ""
-            set faireImageRef(dark)       ""
-            set faireImageRef(flat-field) ""
+            set faireImageRef(out)           ""
+            set faireImageRef(offset)        ""
+            set faireImageRef(dark)          ""
+            set faireImageRef(flat-field)    ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3814,11 +3855,10 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_offset)" {
-            set faireImageRef(in)         ""
-            set faireImageRef(out)        "offset"
-            set faireImageRef(offset)     ""
-            set faireImageRef(dark)       ""
-            set faireImageRef(flat-field) ""
+            set faireImageRef(out)           "offset"
+            set faireImageRef(offset)        ""
+            set faireImageRef(dark)          ""
+            set faireImageRef(flat-field)    ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3829,11 +3869,10 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_dark)" {
-            set faireImageRef(in)         ""
-            set faireImageRef(out)        "dark"
-            set faireImageRef(offset)     "offset"
-            set faireImageRef(dark)       ""
-            set faireImageRef(flat-field) ""
+            set faireImageRef(out)           "dark"
+            set faireImageRef(offset)        "offset"
+            set faireImageRef(dark)          ""
+            set faireImageRef(flat-field)    ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.3 -in $This.usr -side top -fill both
@@ -3844,11 +3883,10 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,faire_flat_field)" {
-            set faireImageRef(in)         ""
-            set faireImageRef(out)        "flat"
-            set faireImageRef(offset)     "offset"
-            set faireImageRef(dark)       "dark-flat"
-            set faireImageRef(flat-field) ""
+            set faireImageRef(out)           "flat"
+            set faireImageRef(offset)        "offset"
+            set faireImageRef(dark)          "dark-flat"
+            set faireImageRef(flat-field)    ""
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3859,11 +3897,10 @@ namespace eval ::faireImageRef {
             pack $This.usr.8 -in $This.usr -side bottom -fill both
          } \
          "$caption(audace,menu,pretraite)" {
-            set faireImageRef(in)         ""
-            set faireImageRef(out)        ""
-            set faireImageRef(offset)     "offset"
-            set faireImageRef(dark)       "dark"
-            set faireImageRef(flat-field) "flat"
+            set faireImageRef(out)           ""
+            set faireImageRef(offset)        "offset"
+            set faireImageRef(dark)          "dark"
+            set faireImageRef(flat-field)    "flat"
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack forget $This.usr.3
@@ -3888,10 +3925,13 @@ namespace eval ::faireImageRef {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set faireImageRef(in)  [ file rootname [ file tail $filename ] ]
-         set faireImageRef(ext) [ file extension $filename ]
+         set faireImageRef(info_filename_in)  [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+         set faireImageRef(in)                [ lindex $faireImageRef(info_filename_in) 0 ]
+         set faireImageRef(nb)                [ lindex $faireImageRef(info_filename_in) 1 ]
+         set faireImageRef(valeur_indice)     [ lindex $faireImageRef(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
-         set faireImageRef(out) [ file rootname [ file tail $filename ] ]
+         set faireImageRef(info_filename_out) [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+         set faireImageRef(out)               [ lindex $faireImageRef(info_filename_out) 0 ]
       } elseif { $In_Out == "3" } {
          set faireImageRef(offset) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
