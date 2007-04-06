@@ -2,7 +2,7 @@
 # Fichier : apncode.tcl
 # Description : Transcodage des variables de commande des APN
 # Auteurs : Raymond ZACHANTKE
-# Mise a jour $Id: apncode.tcl,v 1.3 2006-06-20 20:33:12 robertdelmas Exp $
+# Mise a jour $Id: apncode.tcl,v 1.4 2007-04-06 16:08:21 robertdelmas Exp $
 #
 
    #::AcqAPN::VerifData
@@ -104,7 +104,7 @@
    proc ReverseResolution { } {
       global confCam
 
-      switch -exact $confCam(apn_init,resolution) {   
+      switch -exact $confCam(apn_init,resolution) {
          1       { set confCam(apn_init,format) "VGA" ; set confCam(apn_init,compression) "Basic" }
          2       { set confCam(apn_init,format) "VGA" ; set confCam(apn_init,compression) "Normal" }
          3       { set confCam(apn_init,format) "VGA" ; set confCam(apn_init,compression) "Fine" }
@@ -137,7 +137,7 @@
    proc Exposure { var exposure } {
       global confCam panneau
 
-      set valeur [expr int($exposure*10)] 
+      set valeur [expr int($exposure*10)]
       set code_exposure [expr abs($valeur)]
       set exposurecmd  "exposure+"
       if { $valeur < "0" } { set exposurecmd "exposure-" }

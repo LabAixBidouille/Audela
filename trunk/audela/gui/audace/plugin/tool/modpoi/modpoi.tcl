@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.8 2006-11-19 23:14:16 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.9 2007-04-06 16:09:12 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -114,8 +114,8 @@ proc Enregistrement_Var { } {
       if [ catch { open $nom_fichier w } fichier ] {
          #---
       } else {
-         foreach { a b } [ array get parametres ] { 
-         puts $fichier "set parametres($a) \"$b\"" 
+         foreach { a b } [ array get parametres ] {
+         puts $fichier "set parametres($a) \"$b\""
       }
       close $fichier
       }
@@ -449,7 +449,7 @@ proc modpoi_wiz1b { } {
          if { $modpoi(centering,check) == "1" } {
             if { [ ::cam::list ] == "" } {
                #--- Ouverture de la fenetre de selection des cameras
-               ::confCam::run 
+               ::confCam::run
                tkwait window $audace(base).confCam
             }
             #---
@@ -1496,7 +1496,7 @@ proc modpoi_stop { { direction "" } } {
 }
 
 proc modpoi_speed { } {
-   ::telescope::incrementSpeed 
+   ::telescope::incrementSpeed
 }
 
 proc modpoi_coord { } {
@@ -2453,7 +2453,7 @@ proc createDialog_name_modpoi { } {
    wm resizable $This 0 0
    wm deiconify $This
    wm title $This "$caption(modpoi,define_mame_modpoi)"
-   wm geometry $This +180+50 
+   wm geometry $This +180+50
    wm transient $This $audace(base).modpoi
    wm protocol $This WM_DELETE_WINDOW cmdClose_name_modpoi
 

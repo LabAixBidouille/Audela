@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.6 2007-03-18 11:00:36 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.7 2007-04-06 16:10:15 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -935,7 +935,7 @@ proc snacq_go { {sndebug 0} } {
 
             #--- Si une raquette existe, rafraichissement de l'affichage des coordonnees
             ::telescope::afficheCoord
-            
+
             #--- Acquisition
             set camera "cam$audace(camNo)"
             set buffer buf[cam$audace(camNo) buf]
