@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisuzoom.tcl,v 1.4 2006-09-01 22:41:30 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.tcl,v 1.5 2007-04-06 16:10:31 robertdelmas Exp $
 #
 
 #--- Chargement des captions
@@ -35,7 +35,7 @@ proc sn_visuzoom_g { { zoom 3 } } {
    wm geometry $audace(base).snvisuzoom_g 200x200$conf(snvisuzoom_g,position)
    wm resizable $audace(base).snvisuzoom_g 0 0
    wm title $audace(base).snvisuzoom_g $caption(snvisuzoom,zoom_main_title)
-   wm protocol $audace(base).snvisuzoom_g WM_DELETE_WINDOW { 
+   wm protocol $audace(base).snvisuzoom_g WM_DELETE_WINDOW {
       ::recup_position_snvisuzoom_g ; destroy $audace(base).snvisuzoom_g
    }
 
@@ -131,7 +131,7 @@ proc sn_visuzoom_d { { zoom 3 } } {
    wm geometry $audace(base).snvisuzoom_d 200x200$conf(snvisuzoom_d,position)
    wm resizable $audace(base).snvisuzoom_d 0 0
    wm title $audace(base).snvisuzoom_d $caption(snvisuzoom,zoom_main_title_d)
-   wm protocol $audace(base).snvisuzoom_d WM_DELETE_WINDOW { 
+   wm protocol $audace(base).snvisuzoom_d WM_DELETE_WINDOW {
       ::recup_position_snvisuzoom_d ; destroy $audace(base).snvisuzoom_d
    }
 

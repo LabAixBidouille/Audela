@@ -1,8 +1,8 @@
 #
 # Fichier : obj_lune_2.tcl
-# Description : Programme pour la partie graphique de l'outil Objectif Lune 
+# Description : Programme pour la partie graphique de l'outil Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_2.tcl,v 1.5 2007-01-20 10:10:09 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_2.tcl,v 1.6 2007-04-06 16:09:36 robertdelmas Exp $
 #
 
 namespace eval obj_Lune {
@@ -1755,7 +1755,7 @@ namespace eval obj_Lune {
       bind $audace(base).manque_cartes.labURL2 <Enter> {
          set fg2 $color(purple)
          $audace(base).manque_cartes.labURL2 configure -fg $fg2
-      } 
+      }
       bind $audace(base).manque_cartes.labURL2 <Leave> {
          set fg3  $color(blue)
          $audace(base).manque_cartes.labURL2 configure -fg $fg3

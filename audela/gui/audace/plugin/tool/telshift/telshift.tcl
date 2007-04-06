@@ -4,7 +4,7 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Mise a jour $Id: telshift.tcl,v 1.4 2007-03-28 18:13:55 robertdelmas Exp $
+# Mise a jour $Id: telshift.tcl,v 1.5 2007-04-06 16:10:55 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
@@ -24,7 +24,7 @@ set base $audace(base).telima
 if { [winfo exists $base] } {
    wm withdraw $base
    wm deiconify $base
-   focus $base.btn.annuler 
+   focus $base.btn.annuler
    return
 }
 
@@ -38,13 +38,13 @@ wm title $base "$caption(telshift,titre)"
 wm geometry $base +150+100
 
 #--- create frames
-frame $base.filename -borderwidth 2 -relief raised 
+frame $base.filename -borderwidth 2 -relief raised
 frame $base.focale -borderwidth 2 -relief raised
 frame $base.binning -borderwidth 2 -relief raised
 frame $base.para -borderwidth 2 -relief raised
 frame $base.image -borderwidth 2 -relief raised
-frame $base.btn -borderwidth 2 -relief raised 
-pack $base.btn -side bottom -fill x 
+frame $base.btn -borderwidth 2 -relief raised
+pack $base.btn -side bottom -fill x
 pack $base.filename $base.focale $base.binning $base.image -side top -padx 10 -pady 10
 pack $base.para -ipady 5 -padx 10 -pady 10
 
@@ -60,7 +60,7 @@ pack $base.btn.help1 -side right -ipadx 20 -ipady 5
 global filename
 label $base.filename.labname -text "$caption(telshift,nomfichier)"
 entry $base.filename.name -width 15 -relief sunken -textvariable filename
-pack $base.filename.labname -side top -anchor center 
+pack $base.filename.labname -side top -anchor center
 pack $base.filename.name -side bottom -pady 5
 bind $base.filename.name <Leave> {
   $base.btn.ok configure -relief raised -state normal
@@ -99,14 +99,14 @@ pack $base.binning.labbin -side top -anchor w
   radiobutton $base.binning.$y -text $x -variable choice_binning -value $z
   pack $base.binning.$y -side left -padx 5
  }
-$base.binning.b2 select 
+$base.binning.b2 select
 
 #--- create text field in focal length frame
 global foc
 label $base.focale.labfoc -text "$caption(telshift,focale)"
 entry $base.focale.length -width 15 -relief sunken -textvariable foc
 label $base.focale.mm -text "$caption(telshift,mm)"
-pack $base.focale.labfoc -side top -anchor w 
+pack $base.focale.labfoc -side top -anchor w
 pack $base.focale.length -side left -anchor w -pady 5
 pack $base.focale.mm -side left -padx 5
 bind $base.focale.length <Leave> {
@@ -118,12 +118,12 @@ bind $base.focale.length <Leave> {
 #--- create radiobuttons and label in image frame
 global choice_proc
 label $base.image.labima -text "$caption(telshift,imagerie)"
-pack $base.image.labima -side top -anchor w 
+pack $base.image.labima -side top -anchor w
  foreach {x y z} [ list "$caption(telshift,imagenormale)" r1 ima "$caption(telshift,superflat)" r2 super "$caption(telshift,mosaique4)" r3 4mosa "$caption(telshift,mosaique9)" r4 9mosa ] {
  radiobutton $base.image.$y -text $x -variable choice_proc -value $z
  pack $base.image.$y -side top -anchor w -padx 5
 }
-$base.image.r1 select 
+$base.image.r1 select
  bind $base.image.r3 <Button-1> {$base.para.nest1.labnbr config -text "$caption(telshift,nbposesmosa)"}
  bind $base.image.r4 <Button-1> {$base.para.nest1.labnbr config -text "$caption(telshift,nbposesmosa)"}
  bind $base.image.r1 <Button-1> {$base.para.nest1.labnbr config -text "$caption(telshift,nbposes)"}
@@ -173,7 +173,7 @@ focus $base.para.nest1.nbr
          return
       } else {
          set content [read $fileId]
-         $aide.text insert 1.0 $content 
+         $aide.text insert 1.0 $content
          close $fileId
       }
    } elseif {[string compare $langage "italian"] ==0 } {
@@ -183,7 +183,7 @@ focus $base.para.nest1.nbr
          return
       } else {
          set content [read $fileId]
-         $aide.text insert 1.0 $content 
+         $aide.text insert 1.0 $content
          close $fileId
       }
    } elseif {[string compare $langage "spanish"] ==0 } {
@@ -193,7 +193,7 @@ focus $base.para.nest1.nbr
          return
       } else {
          set content [read $fileId]
-         $aide.text insert 1.0 $content 
+         $aide.text insert 1.0 $content
          close $fileId
       }
    } elseif {[string compare $langage "german"] ==0 } {
@@ -203,7 +203,7 @@ focus $base.para.nest1.nbr
          return
       } else {
          set content [read $fileId]
-         $aide.text insert 1.0 $content 
+         $aide.text insert 1.0 $content
          close $fileId
       }
    } elseif {[string compare $langage "danish"] ==0 } {
@@ -213,7 +213,7 @@ focus $base.para.nest1.nbr
          return
       } else {
          set content [read $fileId]
-         $aide.text insert 1.0 $content 
+         $aide.text insert 1.0 $content
          close $fileId
       }
    } else {
@@ -223,7 +223,7 @@ focus $base.para.nest1.nbr
          return
       } else {
          set content [read $fileId]
-         $aide.text insert 1.0 $content 
+         $aide.text insert 1.0 $content
          close $fileId
       }
    }
@@ -320,8 +320,8 @@ if { $num=="1"} {
 } else {
 
 #--- make the target list
-set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0] 
-set method [list RANDOM $nbr] 
+set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0]
+set method [list RANDOM $nbr]
 set compix 30
 set radecall [mc_listradec $optic $method $compix]
 
@@ -476,8 +476,8 @@ if { $num=="1"} {
 } else {
 
 #--- make the target list
-set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0] 
-set method [list RANDOM $nbr] 
+set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0]
+set method [list RANDOM $nbr]
 set compix 3000
 set radecall [mc_listradec $optic $method $compix]
 
@@ -489,7 +489,7 @@ for {set k 0} {$k<$nbr} {incr k 1} {
       set panneau(telshift,stop) "0"
       break
    }
- 
+
    set kk [expr 1+$k]
    #--- get nth list of aiming coordinates
    set radec [lindex $radecall $k]
@@ -636,19 +636,19 @@ if { $num=="1"} {
 } else {
 
 #--- parameters for the target list
-set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0] 
-set method [list ROLL 4] 
+set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0]
+set method [list ROLL 4]
 set compix 30
 
 #--- shift the origine because the center of the first image is not the center coordinates of the mosaic.
 set shiftx [expr $compix*0.5]
 set shifty [expr $compix*0.5]
-set radec0 [mc_xy2radec $shiftx $shifty $optic] 
+set radec0 [mc_xy2radec $shiftx $shifty $optic]
 set ra0 [lindex $radec0 0]
 set dec0 [lindex $radec0 1]
 set ra0 [mc_angle2deg $ra0]
 set dec0 [mc_angle2deg $dec0]
-set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0] 
+set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0]
 
 #--- make the target list
 set radecall [mc_listradec $optic $method $compix]
@@ -664,13 +664,13 @@ for {set k 0} {$k<$mosa} {incr k 1} {
       set panneau(telshift,stop) "0"
       break
    }
-  
+
    set kk [expr 1+$k]
    #--- get nth list of aiming coordinates
    set radec [lindex $radecall $kkk]
    incr kkk 1
    set kkkk $kkk
-   
+
    #--- get ra coodinate in degrees
    set ra [lindex $radec 0]
    #--- get dec coordinate in degrees
@@ -697,7 +697,7 @@ for {set k 0} {$k<$mosa} {incr k 1} {
       ::telescope::goto [list $ra $dec] "1"
       ::console::affiche_resultat "$caption(telshift,pointesur) $ra $dec\n"
    }
-   
+
 for {set s 0} {$s<$nbr} {incr s 1} {
 
    #--- shoot an image
@@ -720,8 +720,8 @@ for {set s 0} {$s<$nbr} {incr s 1} {
    #--- save image
    set loop [expr {$k + 1}]
    set image [expr {$s + 1}]
-   saveima "$filename-$loop-$image"   
-   
+   saveima "$filename-$loop-$image"
+
 }
 }
 
@@ -816,8 +816,8 @@ if { $num=="1"} {
 } else {
 
 #--- make the target list
-set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0] 
-set method [list ROLL 9] 
+set optic [list OPTIC NAXIS1 $naxis1 NAXIS2 $naxis2 FOCLEN $foclen PIXSIZE1 $pixsize1 PIXSIZE2 $pixsize2 CROTA2 0 RA $ra0 DEC $dec0]
+set method [list ROLL 9]
 set compix 30
 set radecall [mc_listradec $optic $method $compix]
 
@@ -867,7 +867,7 @@ for {set k 0} {$k<$mosa} {incr k 1} {
       ::telescope::goto [list $ra $dec] "1"
       ::console::affiche_resultat "$caption(telshift,pointesur) $ra $dec\n"
    }
-   
+
 for {set s 0} {$s<$nbr} {incr s 1} {
 
    #--- shoot an image
@@ -890,7 +890,7 @@ for {set s 0} {$s<$nbr} {incr s 1} {
    #--- save image
    set loop [expr {$k + 1}]
    set image [expr {$s + 1}]
-   saveima "$filename-$loop-$image"   
+   saveima "$filename-$loop-$image"
 
 }
 }
@@ -1000,7 +1000,7 @@ proc acq {exptime binning {k ""} {nbr ""} } {
 
    #--- waiting for exposure end
    vwait status_$camera
- 
+
    #--- image viewing
    ::audace::autovisu $audace(visuNo)
 }
@@ -1038,7 +1038,7 @@ proc acqmosa {exptime binning {kkkk ""} {s ""} {mosa ""} } {
       set n1n2 [$camera nbcells]
       $camera window [list 1 1 [lindex $n1n2 0] [lindex $n1n2 1] ]
    }
-  
+
    #--- the exptime control is used to determine the exposure time for the image
    $camera exptime $exptime
 
@@ -1065,7 +1065,7 @@ proc acqmosa {exptime binning {kkkk ""} {s ""} {mosa ""} } {
 
    #--- waiting for exposure end
    vwait status_$camera
- 
+
    #--- image viewing
    ::audace::autovisu $audace(visuNo)
 }
