@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.20 2007-04-03 16:34:55 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.21 2007-04-06 05:45:41 alainklotz Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -27,6 +27,7 @@
 # register  in out number ?-box {x1 y1 x2 y2}? ?tt_options?
 # register2  in out number ?first_index? ?tt_options?
 # registerwcs  in out number ?first_index? ?tt_options?
+# registerbox  in out number ?first_index? ?tt_options?
 # subsky  back_kernel back_threshold  ?tt_options?
 # subsky1  in out back_kernel back_threshold ?tt_options?
 # subsky2  in out number back_kernel back_threshold ?first_index? ?tt_options?
@@ -712,18 +713,19 @@ proc register {args} {
       }
    }
    set first 1
+   set number [expr $number+$first-1]
    set ext "[buf$audace(bufNo) extension]"
    set path "$audace(rep_images)"
    if {$method=="tt"} {
       set objefile "__dummy__$ext"
-      ttscript2 "IMA/SERIES \"$path\" \"$in\" $first $number \"$ext\" \"$path\" \"$objefile\" 1 \"$ext\" STAT objefile"
-      ttscript2 "IMA/SERIES \"$path\" \"$objefile\" 1 $number \"$ext\" \"$path\" \"$out\" 1 \"$ext\" REGISTER translate=only $options"
-      ttscript2 "IMA/SERIES \"$path\" \"$objefile\" 1 $number \"$ext\" \"$path\" \"$objefile\" 1 \"$ext\" DELETE"
+      ttscript2 "IMA/SERIES \"$path\" \"$in\" $first $number \"$ext\" \"$path\" \"$objefile\" $first \"$ext\" STAT objefile"
+      ttscript2 "IMA/SERIES \"$path\" \"$objefile\" $first $number \"$ext\" \"$path\" \"$out\" $first \"$ext\" REGISTER translate=only $options"
+      ttscript2 "IMA/SERIES \"$path\" \"$objefile\" $first $number \"$ext\" \"$path\" \"$objefile\" $first \"$ext\" DELETE"
    } else {
       set naxis1 [lindex [buf$audace(bufNo) getkwd NAXIS1] 1]
       set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
       catch {unset x ; unset y }
-      for {set k 1} {$k<=$number} {incr k} {
+      for {set k $first} {$k<=$number} {incr k} {
          buf$audace(bufNo) load ${path}/${in}${k}${ext}
          set res [buf$audace(bufNo) centro $box]
          set xx [expr round([lindex $res 0])]
@@ -740,7 +742,7 @@ proc register {args} {
       }
       set tx0 [lindex $x 0]
       set ty0 [lindex $y 0]
-      for {set k 1} {$k<=$number} {incr k} {
+      for {set k $first} {$k<=$number} {incr k} {
          set kk [expr $k-1]
          buf$audace(bufNo) load ${path}/${in}${k}${ext}
          set tx [expr round($tx0-[lindex $x $kk])]
@@ -774,6 +776,66 @@ proc register2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"$objefile\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"$objefile\" 1 \"$ext\" DELETE $options"
    } else {
       error "Usage: register2 in out number ?first_index? ?tt_options?"
+   }
+}
+
+proc registerbox {args} {
+   # in out number ?visuNo? ?first_index? ?tt_options?
+   global audace
+   global caption
+   #--- decode la ligne de commande
+   set in [lindex $args 0]
+   set out [lindex $args 1]
+   set n [llength $args]
+   if {$n>=3} {
+      set visuno 1
+      if {$n>=4} {
+         set visuno "[lindex $args 3]"
+      }
+      set box [::confVisu::getBox $visuno]
+      set first 1
+      if {$n>=5} {
+         set first "[lindex $args 4]"
+      }
+      set number [lindex $args 2]
+      set options ""
+      if {$n>=6} {
+         set options "[lrange $args 5 end]"
+      }
+      set ni [expr $number+$first-1]
+      set ext [buf$audace(bufNo) extension]
+      set path "$audace(rep_images)"
+      set naxis1 [lindex [buf$audace(bufNo) getkwd NAXIS1] 1]
+      set naxis2 [lindex [buf$audace(bufNo) getkwd NAXIS2] 1]
+      catch {unset x ; unset y }
+      for {set k $first} {$k<=$ni} {incr k} {
+         buf$audace(bufNo) load ${path}/${in}${k}${ext}
+         set res [buf$audace(bufNo) centro $box]
+         set xx [expr round([lindex $res 0])]
+         set yy [expr round([lindex $res 1])]
+         set x1 [expr $xx-7] ; if {$x1<1} { set x1 1 }
+         set x2 [expr $xx+7] ; if {$x1>$naxis1} { set x2 $naxis1 }
+         set y1 [expr $yy-7] ; if {$y1<1} { set y1 1 }
+         set y2 [expr $yy+7] ; if {$y1>$naxis2} { set y2 $naxis2 }
+         set boxx [list $x1 $y1 $x2 $y2]
+         set res [buf$audace(bufNo) centro $boxx]
+         lappend x [lindex $res 0]
+         lappend y [lindex $res 1]
+         ::console::affiche_resultat "$k : $res\n"
+      }
+      set tx0 [lindex $x 0]
+      set ty0 [lindex $y 0]
+      for {set k 1} {$k<=$number} {incr k} {
+         set kk [expr $k-1]
+         buf$audace(bufNo) load ${path}/${in}${k}${ext}
+         set tx [expr round($tx0-[lindex $x $kk])]
+         set ty [expr round($ty0-[lindex $y $kk])]
+         buf$audace(bufNo) imaseries "TRANS trans_x=$tx trans_y=$ty nullpixel=0 "
+         buf$audace(bufNo) save ${path}/${out}${k}${ext}
+      }
+   } else {
+      error "Usage: register in out number ?visuNo? ?first_index? ?tt_options?"
+      return $error;
    }
 }
 
