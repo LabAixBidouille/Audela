@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tel.tcl,v 1.11 2007-04-07 00:38:36 robertdelmas Exp $
+# Mise a jour $Id: tel.tcl,v 1.12 2007-04-07 19:35:08 robertdelmas Exp $
 #
 
 #============================================================
@@ -103,7 +103,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- Label de l'objet choisi
          label $private($visuNo,This).fra2.lab1 -textvariable ::tlscp::private($visuNo,nomObjet) -relief flat
-         pack $private($visuNo,This).fra2.lab1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
+         pack $private($visuNo,This).fra2.lab1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 1
 
          #--- Entry pour les coordonnes de l'objet
          entry $private($visuNo,This).fra2.ent1 -font $audace(font,arial_8_b) \
