@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.13 2007-04-02 16:03:06 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.14 2007-04-07 00:32:38 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -118,7 +118,7 @@ namespace eval cataGoto {
    #    variablePositionObjet : Position AD et Dec. d'un objet
    #    visuNo : Numero de la visu
    #
-   proc createFrameCatalogue { frm variablePositionObjet visuNo } {
+   proc createFrameCatalogue { frm variablePositionObjet visuNo nameSpaceCaller } {
       global caption
       global catalogue
 
@@ -127,6 +127,9 @@ namespace eval cataGoto {
 
       #--- Initialisation des coordonnees pour le premier affichage
       set catalogue($visuNo,list_radec) $variablePositionObjet
+
+      #--- Initialisation du nom du namespace appelant
+      set catalogue($visuNo,nameSpaceCaller) $nameSpaceCaller
 
       #--- je cree la frame si elle n'existe pas deja
       if { [winfo exists $frm ] == 0 } {
@@ -166,42 +169,49 @@ namespace eval cataGoto {
       #--- Gestion des catalogues
       if { $catalogue(choisi,$visuNo) == "$caption(catagoto,coord)" } {
          ::cataGoto::Nettoyage
+         set catalogue($visuNo,nom_objet) ""
          set catalogue(validation) "0"
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,planete)" } {
          ::cataGoto::GotoPlanete
          vwait catalogue(validation)
          if { $catalogue(validation) == "1" } {
             set catalogue($visuNo,list_radec) "$catalogue(planete_ad) $catalogue(planete_dec)"
+            set catalogue($visuNo,nom_objet) "$catalogue(planete_choisie)"
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,asteroide)" } {
          ::cataGoto::CataAsteroide
          vwait catalogue(validation)
          if { $catalogue(validation) == "1" } {
             set catalogue($visuNo,list_radec) "$catalogue(asteroide_ad) $catalogue(asteroide_dec)"
+            set catalogue($visuNo,nom_objet) "$catalogue(asteroide_choisie)"
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,etoile)" } {
          ::cataGoto::CataEtoiles
          vwait catalogue(validation)
          if { $catalogue(validation) == "1" } {
             set catalogue($visuNo,list_radec) "$catalogue(etoile_ad) $catalogue(etoile_dec)"
+            set catalogue($visuNo,nom_objet) "$catalogue(etoile_choisie)"
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,messier)" } {
          ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
          vwait catalogue(validation)
          if { $catalogue(validation) == "1" } {
             set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
+            set catalogue($visuNo,nom_objet) "$catalogue(M-NGC-IC_choisie)"
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,ngc)" } {
          ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
          vwait catalogue(validation)
          if { $catalogue(validation) == "1" } {
             set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
+            set catalogue($visuNo,nom_objet) "$catalogue(M-NGC-IC_choisie)"
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,ic)" } {
          ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
          vwait catalogue(validation)
          if { $catalogue(validation) == "1" } {
             set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
+            set catalogue($visuNo,nom_objet) "$catalogue(M-NGC-IC_choisie)"
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,utilisateur)" } {
          if { $catalogue(autre_catalogue) == "2" } {
@@ -213,6 +223,7 @@ namespace eval cataGoto {
             vwait catalogue(validation)
             if { $catalogue(validation) == "1" } {
                set catalogue($visuNo,list_radec) "$catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec)"
+               set catalogue($visuNo,nom_objet) "$catalogue(utilisateur_choisie)"
             }
          } else {
             set catalogue(validation) "0"
@@ -222,10 +233,11 @@ namespace eval cataGoto {
          set catalogue(validation) "0"
          set lat_zenith [ mc_angle2dms [ lindex $conf(posobs,observateur,gps) 3 ] 90 nozero 0 auto string ]
          set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
+         set catalogue($visuNo,nom_objet) "$caption(catagoto,zenith)"
       }
 
       #--- Mise a jour des coordonnees pour l'outil Telescope
-      set ::tlscp::private($visuNo,getobj) $catalogue($visuNo,list_radec)
+      $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet)
 
       #--- Mise a jour des coordonnees pour l'outil Controle a distance
       global panneau
