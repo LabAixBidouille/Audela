@@ -2,22 +2,80 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.8 2007-04-02 16:00:16 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.9 2007-04-07 00:38:35 robertdelmas Exp $
 #
 
-package provide remotectrl 1.0
-
+#============================================================
+# Declaration du namespace Rmctrl
+#    initialise le namespace
+#============================================================
 namespace eval ::Rmctrl {
-   variable This
-   global audace
+   package provide remotectrl 1.0
 
-   #--- Chargement des legendes et textes pour differentes langues
-   source [ file join $audace(rep_plugin) tool remotectrl remotectrl.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] remotectrl.cap ]
 
-   proc init { { in "" } } {
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(rmctrl,title)"
+   }
+
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "aiming" }
+         subfunction1 { return "acquisition" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.rmctrl
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       variable parametres
@@ -31,7 +89,7 @@ namespace eval ::Rmctrl {
       set audace(focus,speed)           "1"
       #---
       set This $this
-      set panneau(menu_name,Rmctrl)     "$caption(rmctrl,title)"
+      set panneau(Rmctrl,titre)         "$caption(rmctrl,title)"
       set panneau(Rmctrl,aide)          "$caption(rmctrl,help_titre)"
       set panneau(Rmctrl,configuration) "$caption(rmctrl,configuration)"
       set panneau(Rmctrl,none)          "$caption(rmctrl,none)"
@@ -70,6 +128,8 @@ namespace eval ::Rmctrl {
 
       #--- Coordonnees J2000.0 de M104
       set panneau(Rmctrl,getobj)    "12h40m0 -11d37m22"
+
+      #---
       set panneau(Rmctrl,goto)      "$caption(rmctrl,goto)"
       set panneau(Rmctrl,match)     "$caption(rmctrl,match)"
       set panneau(Rmctrl,exptime)   "2"
@@ -139,12 +199,20 @@ namespace eval ::Rmctrl {
       }
    }
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
 
       pack $This -side left -fill y
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
 
@@ -734,7 +802,7 @@ namespace eval ::Rmctrl {
          }
 
          #--- Graphisme panneau
-         $This.fra1.but configure -text $panneau(menu_name,Rmctrl)
+         $This.fra1.but configure -text $panneau(Rmctrl,titre)
          $This.fra6.but1 configure -relief raised -state normal
          update
 
@@ -766,6 +834,10 @@ namespace eval ::Rmctrl {
    }
 }
 
+#------------------------------------------------------------
+# RmctrlBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
 proc RmctrlBuildIF { This } {
    global audace
    global caption
@@ -779,10 +851,8 @@ proc RmctrlBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,Rmctrl) \
-            -command {
-               ::audace::showHelpPlugin tool remotectrl remotectrl.htm
-            }
+         Button $This.fra1.but -borderwidth 1 -text $panneau(Rmctrl,titre) \
+            -command "::audace::showHelpPlugin tool remotectrl remotectrl.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Rmctrl,aide)
 
@@ -1025,9 +1095,6 @@ proc RmctrlBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
-
-global audace
-::Rmctrl::init $audace(base)
 
 # ==============================================================================================
 # ==============================================================================================

@@ -3,10 +3,8 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.21 2007-03-19 18:53:56 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.22 2007-04-07 00:38:35 robertdelmas Exp $
 #
-
-package provide scanfast 1.0
 
 global panneau
 
@@ -82,16 +80,77 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
    return [ list $dt0 $speed ]
 }
 
+#============================================================
+# Declaration du namespace Scanfast
+#    initialise le namespace
+#============================================================
 namespace eval ::Scanfast {
-   global audace
+   package provide scanfast 1.0
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool scanfast scanfast.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] scanfast.cap ]
 
-   proc init { { in "" } } {
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(scanfast,scanfast)"
+   }
+
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "acquisition" }
+         subfunction1 { return "scan" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.scanfast
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       global caption conf panneau
@@ -100,7 +159,7 @@ namespace eval ::Scanfast {
       set This $this
 
       #--- Initialisation des captions
-      set panneau(menu_name,Scanfast)       "$caption(scanfast,scanfast)"
+      set panneau(Scanfast,titre)           "$caption(scanfast,scanfast)"
       set panneau(Scanfast,aide)            "$caption(scanfast,help_titre)"
       set panneau(Scanfast,col)             "$caption(scanfast,colonnes)"
       set panneau(Scanfast,lig)             "$caption(scanfast,lignes)"
@@ -183,8 +242,8 @@ namespace eval ::Scanfast {
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
-            foreach { a b } [ array get parametres ] { 
-               puts $fichier "set parametres($a) \"$b\"" 
+            foreach { a b } [ array get parametres ] {
+               puts $fichier "set parametres($a) \"$b\""
             }
             close $fichier
          }
@@ -217,7 +276,7 @@ namespace eval ::Scanfast {
             if { $panneau(Scanfast,binning) == "4x4" } {
                set panneau(Scanfast,binning) "2x2"
             }
-         } 
+         }
          audinet {
             pack forget $This.fra33
             pack $This.fra4 -side top -fill x
@@ -225,7 +284,7 @@ namespace eval ::Scanfast {
             pack $This.fra4.but2 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
             pack $This.fra5 -side top -fill x
             #--- C'est bon, on ne fait rien pour le binning
-         } 
+         }
          parallelport {
             pack $This.fra33 -side top -fill x
             pack forget $This.fra4
@@ -241,6 +300,10 @@ namespace eval ::Scanfast {
       }
    }
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
       variable parametres
@@ -267,6 +330,10 @@ namespace eval ::Scanfast {
       pack $This -side left -fill y
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
 
@@ -669,8 +736,13 @@ namespace eval ::Scanfast {
       #--- Sauvegarder l'image
       saveima $nom
    }
+
 }
 
+#------------------------------------------------------------
+# ScanfastBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
 proc ScanfastBuildIF { This } {
    global audace panneau
 
@@ -681,7 +753,7 @@ proc ScanfastBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,Scanfast) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(Scanfast,titre) \
             -command "::audace::showHelpPlugin tool scanfast scanfast.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Scanfast,aide)
@@ -836,61 +908,57 @@ proc ScanfastBuildIF { This } {
       #--- Frame de la sauvegarde de l'image
       frame $This.fra5 -borderwidth 1 -relief groove
 
-        #--- Frame du nom de l'image
-        frame $This.fra5.nom -relief ridge -borderwidth 2
+         #--- Frame du nom de l'image
+         frame $This.fra5.nom -relief ridge -borderwidth 2
 
-           #--- Label du nom de l'image
-           label $This.fra5.nom.lab1 -text $panneau(Scanfast,nom) -pady 0
-           pack $This.fra5.nom.lab1 -fill x -side top
+            #--- Label du nom de l'image
+            label $This.fra5.nom.lab1 -text $panneau(Scanfast,nom) -pady 0
+            pack $This.fra5.nom.lab1 -fill x -side top
 
-           #--- Entry du nom de l'image
-           entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(Scanfast,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
-           pack $This.fra5.nom.ent1 -fill x -side top
+            #--- Entry du nom de l'image
+            entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(Scanfast,nom_image) \
+               -font $audace(font,arial_10_b) -relief groove
+            pack $This.fra5.nom.ent1 -fill x -side top
 
-           #--- Label de l'extension
-           label $This.fra5.nom.lab_extension -text $panneau(Scanfast,extension) -pady 0
-           pack $This.fra5.nom.lab_extension -fill x -side left
+            #--- Label de l'extension
+            label $This.fra5.nom.lab_extension -text $panneau(Scanfast,extension) -pady 0
+            pack $This.fra5.nom.lab_extension -fill x -side left
 
-           #--- Button pour le choix de l'extension
-           button $This.fra5.nom.extension -textvariable panneau(Scanfast,extension_image) \
-              -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
-           pack $This.fra5.nom.extension -side right -fill x
+            #--- Button pour le choix de l'extension
+            button $This.fra5.nom.extension -textvariable panneau(Scanfast,extension_image) \
+               -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
+            pack $This.fra5.nom.extension -side right -fill x
 
-        pack $This.fra5.nom -side top -fill x
+         pack $This.fra5.nom -side top -fill x
 
-        #--- Frame de l'index
-        frame $This.fra5.index -relief ridge -borderwidth 2
+         #--- Frame de l'index
+         frame $This.fra5.index -relief ridge -borderwidth 2
 
-           #--- Checkbutton pour le choix de l'indexation
-           checkbutton $This.fra5.index.case -pady 0 -text $panneau(Scanfast,index) -variable panneau(Scanfast,indexer)
-           pack $This.fra5.index.case -side top -fill x
+            #--- Checkbutton pour le choix de l'indexation
+            checkbutton $This.fra5.index.case -pady 0 -text $panneau(Scanfast,index) -variable panneau(Scanfast,indexer)
+            pack $This.fra5.index.case -side top -fill x
 
-           #--- Entry de l'index
-           entry $This.fra5.index.ent2 -width 3 -textvariable panneau(Scanfast,indice) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
-           pack $This.fra5.index.ent2 -side left -fill x -expand true
+            #--- Entry de l'index
+            entry $This.fra5.index.ent2 -width 3 -textvariable panneau(Scanfast,indice) \
+               -font $audace(font,arial_10_b) -relief groove -justify center
+            pack $This.fra5.index.ent2 -side left -fill x -expand true
 
-           #--- Bouton de mise a 1 de l'index
-           button $This.fra5.index.but1 -text "1" -width 3 \
-              -command "set panneau(Scanfast,indice) 1"
-           pack $This.fra5.index.but1 -side right -fill x
+            #--- Bouton de mise a 1 de l'index
+            button $This.fra5.index.but1 -text "1" -width 3 \
+               -command "set panneau(Scanfast,indice) 1"
+            pack $This.fra5.index.but1 -side right -fill x
 
-        pack $This.fra5.index -side top -fill x
+         pack $This.fra5.index -side top -fill x
 
-        #--- Bouton pour sauvegarder l'image
-        button $This.fra5.but_sauve -text $panneau(Scanfast,sauvegarde) -command "::Scanfast::SauveUneImage"
-        pack $This.fra5.but_sauve -side top -fill x
+         #--- Bouton pour sauvegarder l'image
+         button $This.fra5.but_sauve -text $panneau(Scanfast,sauvegarde) -command "::Scanfast::SauveUneImage"
+         pack $This.fra5.but_sauve -side top -fill x
 
-     pack $This.fra5 -side top -fill x
+      pack $This.fra5 -side top -fill x
 
-   bind $This.fra4.but1 <ButtonPress-3> { ::Scanfast::cmdGo motoron }
+      bind $This.fra4.but1 <ButtonPress-3> { ::Scanfast::cmdGo motoron }
 
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $This
 }
-
-global audace
-
-::Scanfast::init $audace(base)
 

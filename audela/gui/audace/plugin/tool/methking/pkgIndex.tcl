@@ -1,8 +1,8 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.2 2006-06-20 21:03:31 robertdelmas Exp $
+# Mise a jour $Id: pkgIndex.tcl,v 1.3 2007-04-07 00:38:34 robertdelmas Exp $
 #
 
-package ifneeded methking 1.14 [ list source [ file join $::audace(rep_plugin) tool methking methking.tcl ] ]
+package ifneeded methking 1.14 [ list source [ file join $dir methking.tcl ] ]
 

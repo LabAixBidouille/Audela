@@ -2,78 +2,63 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.15 2007-01-20 10:12:53 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.16 2007-04-07 00:38:36 robertdelmas Exp $
 #
 
-package provide visio2 1.0
-
 namespace eval ::Visio2 {
-   global audace
+   package provide visio2 1.0
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool visio2 visio2.cap ]
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
+   source [ file join [file dirname [info script]] visio2.cap ]
 
-   #--- Chargement des autres sources (en attendant de les charger depuis aud.tcl)
-   source [ file join $audace(rep_audela) audace movie.tcl ]
-   source [ file join $audace(rep_audela) audace ftpclient.tcl ]
-   source [ file join $audace(rep_audela) audace image.tcl ]
-   source [ file join $audace(rep_audela) audace fullscreen.tcl ]
-
-   array set private {
-      This          ""
-      ftptbl        ""
-      parentFolder  ""
-      folder        ""
-      fileImage     ""
-      fileMovie     ""
-      file          ""
-      ftpconnection "0"
-      animation     "0"
-   }
-
-   proc init { { in "" } } {
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       variable private
       global audace
       global caption
 
-      #--- je verifie que le package Tablelist est present
-      set result [catch { package require Tablelist } msg]
-      if { $result == 1} {
-         console::affiche_erreur "[file join $audace(rep_plugin) tool visio2.tcl] - Error : Package Tablelist not found.\n"
-         return
+      array set private {
+         This          ""
+         ftptbl        ""
+         parentFolder  ""
+         folder        ""
+         fileImage     ""
+         fileMovie     ""
+         file          ""
+         ftpconnection "0"
+         animation     "0"
       }
 
-     ### #--- je verifie que le package Img est present
-     ### set result [ catch { package require Img } msg ]
-     ### if { $result == 1} {
-     ###    console::affiche_erreur "[file join $audace(rep_plugin) tool visio2.tcl] - Error : Package Img not found.\n"
-     ###    return
-     ### }
+      #--- icone directory
+      set private(folderIcon) [image create photo folderopen16 -data {
+          R0lGODlhEAAQAIYAAPwCBAQCBExKTBQWFOzi1Ozq7ERCRCwqLPz+/PT29Ozu
+          7OTm5FRSVHRydIR+fISCfMTCvAQ6XARqnJSKfIx6XPz6/MzKxJTa9Mzq9JzO
+          5PTy7OzizJSOhIyCdOTi5Dy65FTC7HS2zMzm7OTSvNTCnIRyVNza3Dw+PASq
+          5BSGrFyqzMyyjMzOzAR+zBRejBxqnBx+rHRmTPTy9IyqvDRylFxaXNze3DRu
+          jAQ2VLSyrDQ2NNTW1NTS1AQ6VJyenGxqbMTGxLy6vGRiZKyurKyqrKSmpDw6
+          PDw6NAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+          AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+          AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+          AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAA
+          LAAAAAAQABAAAAfCgACCAAECg4eIAAMEBQYCB4mHAQgJCgsLDAEGDQGIkw4P
+          BQkJBYwQnRESEREIoRMUE6IVChYGERcYGaoRGhsbHBQdHgu2HyAhGSK6qxsj
+          JCUmJwARKCkpKsjKqislLNIRLS4vLykw2MkRMRAGhDIJMzTiLzDXETUQ0gAG
+          CgU2HjM35N3AkYMdAB0EbCjcwcPCDBguevjIR0jHDwgWLACBECRIBB8GJekQ
+          MiRIjhxEIlBMFOBADR9FIhiJ5OnAEQB+AgEAIf5oQ3JlYXRlZCBieSBCTVBU
+          b0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5NywxOTk4LiBB
+          bGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNvci5jb20A
+          Ow==
+       }]
+
+      #--- Chargement des autres sources (en attendant de les charger depuis aud.tcl)
+      source [ file join $audace(rep_audela) audace movie.tcl ]
+      source [ file join $audace(rep_audela) audace ftpclient.tcl ]
+      source [ file join $audace(rep_audela) audace image.tcl ]
+      source [ file join $audace(rep_audela) audace fullscreen.tcl ]
+
+      #--- je charge le package Tablelist
+      package require Tablelist
 
       #--- je verifie que les variables de cet outil existent dans $conf(...)
-      initConf
-
-      #--- Types des objets affiches
-      #---   bidouille !!! je met un espace au debut de private(parentFolder) et private(folder)
-      #---   pour que les repertoires apparaissent en premier par ordre alphabetique
-      set private(parentFolder) " $caption(visio2,parent_folder)"
-      set private(folder)       " $caption(visio2,folder)"
-      set private(fileImage)    "$caption(visio2,image)"
-      set private(fileMovie)    "$caption(visio2,movie)"
-      set private(file)         "$caption(visio2,file)"
-      set private(volume)       "disque"
-
-      #--- j'affiche l'outil
-      createPanel $in.visio2
-   }
-
-   #------------------------------------------------------------
-   # initConf{ }
-   #   initialise les parametres dans le tableau conf()
-   #------------------------------------------------------------
-   proc initConf { } {
-      global conf
-
       #--- indicateurs d'affichage des colonnes
       if {![info exists conf(Visio2,show_column_type)]}    { set conf(Visio2,show_column_type)    "1" }
       if {![info exists conf(Visio2,show_column_series)]}  { set conf(Visio2,show_column_series)  "0" }
@@ -103,26 +88,77 @@ namespace eval ::Visio2 {
 
       if {![info exists conf(Visio2,show_all_files)]} { set conf(Visio2,show_all_files) "0" }
 
+      #--- Types des objets affiches
+      #---   bidouille !!! je met un espace au debut de private(parentFolder) et private(folder)
+      #---   pour que les repertoires apparaissent en premier par ordre alphabetique
+      set private(parentFolder) " $caption(visio2,parent_folder)"
+      set private(folder)       " $caption(visio2,folder)"
+      set private(fileImage)    "$caption(visio2,image)"
+      set private(fileMovie)    "$caption(visio2,movie)"
+      set private(file)         "$caption(visio2,file)"
+      set private(volume)       "disque"
+
+      #--- j'affiche l'outil
+      createPanel $in.visio2
    }
 
-   #==============================================================
-   # Fonctions generiques de gestion des outils
-   #   createPanel
-   #   startTool
-   #   stopTool
-   #==============================================================
+   #------------------------------------------------------------
+   #  deletePluginInstance
+   #     suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   #  getPluginProperty
+   #     retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "display" }
+      }
+   }
+
+   #------------------------------------------------------------
+   #  getPluginTitle
+   #     retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(visio2,title)"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   #  initPlugin
+   #     initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
 
    proc createPanel { this } {
       variable private
       global caption
-      global panneau
       global audace
 
       #--- j'initialise la variable private
       set private(This) $this
 
       #--- j'affiche l'outil
-      set panneau(menu_name,Visio2) $caption(visio2,title)
       Visio2BuildIF $private(This)
    }
 
@@ -249,7 +285,7 @@ namespace eval ::Visio2 {
             #--- j'ajoute l'icone
             $tbl cellconfigure end,0 -image $private(folderIcon)
 
-         } elseif {  [regexp ($conf(extension,defaut)|$conf(extension,defaut).gz)$  [string tolower $name]] && $enableExtension(fit)==1 
+         } elseif {  [regexp ($conf(extension,defaut)|$conf(extension,defaut).gz)$ [string tolower $name]] && $enableExtension(fit)==1 
                   || [regexp (.fit)$                [string tolower $name]] && $enableExtension(fit)==1
                   || [regexp (.fit.gz)$             [string tolower $name]] && $enableExtension(fit)==1
                   || [regexp (.fits)$               [string tolower $name]] && $enableExtension(fit)==1
@@ -308,7 +344,7 @@ namespace eval ::Visio2 {
                set serie " "
             }
             #--- colonne size
-            if { [string is integer $size ] } { 
+            if { [string is integer $size ] } {
                set size [format "%12d" $size]
             }
 
@@ -473,7 +509,7 @@ namespace eval ::Visio2 {
              #--- si la connexion est annulee, je decoche le checkbutton
              set private(ftpconnection) 0
          }
-      } else { 
+      } else {
          #--- je ferme la connexion FTP et supprime la liste FTP
          set result [ftpTable::close]
          if { $result == "0" } {
@@ -483,27 +519,6 @@ namespace eval ::Visio2 {
       }
    }
 
-   #--- icone directory
-   set private(folderIcon) [image create photo folderopen16 -data {
-       R0lGODlhEAAQAIYAAPwCBAQCBExKTBQWFOzi1Ozq7ERCRCwqLPz+/PT29Ozu
-       7OTm5FRSVHRydIR+fISCfMTCvAQ6XARqnJSKfIx6XPz6/MzKxJTa9Mzq9JzO
-       5PTy7OzizJSOhIyCdOTi5Dy65FTC7HS2zMzm7OTSvNTCnIRyVNza3Dw+PASq
-       5BSGrFyqzMyyjMzOzAR+zBRejBxqnBx+rHRmTPTy9IyqvDRylFxaXNze3DRu
-       jAQ2VLSyrDQ2NNTW1NTS1AQ6VJyenGxqbMTGxLy6vGRiZKyurKyqrKSmpDw6
-       PDw6NAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-       AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-       AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-       AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAA
-       LAAAAAAQABAAAAfCgACCAAECg4eIAAMEBQYCB4mHAQgJCgsLDAEGDQGIkw4P
-       BQkJBYwQnRESEREIoRMUE6IVChYGERcYGaoRGhsbHBQdHgu2HyAhGSK6qxsj
-       JCUmJwARKCkpKsjKqislLNIRLS4vLykw2MkRMRAGhDIJMzTiLzDXETUQ0gAG
-       CgU2HjM35N3AkYMdAB0EbCjcwcPCDBguevjIR0jHDwgWLACBECRIBB8GJekQ
-       MiRIjhxEIlBMFOBADR9FIhiJ5OnAEQB+AgEAIf5oQ3JlYXRlZCBieSBCTVBU
-       b0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5NywxOTk4LiBB
-       bGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNvci5jb20A
-       Ow==
-    }]
-   
 }
 
 #------------------------------------------------------------------------------
@@ -522,7 +537,7 @@ proc Visio2BuildIF { This } {
 
       #--- Label du titre
       Button $This.titre.but -borderwidth 1 -text $caption(visio2,title) \
-         -command { 
+         -command {
             ::audace::showHelpPlugin "tool" "visio2" "visio2.htm"
          }
       DynamicHelp::add $This.titre.but -text $caption(visio2,help,titre)
@@ -573,11 +588,11 @@ proc Visio2BuildIF { This } {
                -variable ::Visio2::private(ftpconnection) \
                -command "::Visio2::cmdFtpConnection"
       pack $This.ftp.check -in $This.ftp -anchor center -expand 0 -fill none -side left
-      pack $This.ftp -in $This -fill x -anchor n 
+      pack $This.ftp -in $This -fill x -anchor n
 
       #--- Frame de la liste ftp
       frame $This.ftplist -borderwidth 1 -relief groove
-      ::Visio2::ftpTable::createTbl $This.ftplist 
+      ::Visio2::ftpTable::createTbl $This.ftplist
 
       #--- la table sera "packe" plus tard quand on demandera a l'afficher
       #pack $This.ftplist -after $This.ftp -fill both -expand 1 -anchor n -side bottom
@@ -591,8 +606,6 @@ proc Visio2BuildIF { This } {
 ################################################################
 
 namespace eval ::Visio2::config {
-
-    array set fileExtension [array get ::Visio2::fileExtension]
 
    #==============================================================
    # Fonctions de configuration generiques appelees par ::confGenerique::run
@@ -621,7 +634,7 @@ namespace eval ::Visio2::config {
    proc showHelp { } {
       ::audace::showHelpPlugin "tool" "visio2" "visio2.htm" "config"
    }
-   
+
    #------------------------------------------------------------
    # ::Visio2::config::confToWidget { }
    #   copie les parametres du tableau conf() dans les variables des widgets
@@ -664,7 +677,9 @@ namespace eval ::Visio2::config {
       global caption
       global conf
 
-      #--- je memorise la reference de la frame
+     array set fileExtension [array get ::Visio2::fileExtension]
+
+     #--- je memorise la reference de la frame
       set widget(frm) $frm
 
       #--- j'initialise les variables des widgets
@@ -689,7 +704,7 @@ namespace eval ::Visio2::config {
         ### ( $conf(extension,defaut) == ".tiff" ) || ( $conf(extension,defaut) == ".xbm" ) || \
         ### ( $conf(extension,defaut) == ".xpm" ) || ( $conf(extension,defaut) == ".avi" ) || \
         ### ( $conf(extension,defaut) == ".mpeg" )
- 
+
          checkbutton $frm.extension.extdefaut -text "$conf(extension,defaut)" \
              -highlightthickness 0 -variable ::Visio2::config::widgetEnableExtension(defautext)
          pack $frm.extension.extdefaut -anchor w -side top -padx 5 -pady 0
@@ -838,7 +853,7 @@ namespace eval ::Visio2::config {
          pack $frm.extension.avi -anchor w -side top -padx 5 -pady 0
       }
 
-     ### if { [package versions Img ]== "" } { 
+     ### if { [package versions Img ]== "" } {
      ###    #--- je decoche les checkbox
      ###    set ::Visio2::config::widgetEnableExtension(bmp) 0
      ###    set ::Visio2::config::widgetEnableExtension(jpg) 0
@@ -848,34 +863,34 @@ namespace eval ::Visio2::config {
      ###    set ::Visio2::config::widgetEnableExtension(xbm) 0
      ###    #--- je desactive les checkbox pour qu'on ne puisse pas les cocher
      ###    $frm.extension.bmp configure -state disabled
-     ###    $frm.extension.jpg configure -state disabled 
-     ###    $frm.extension.png configure -state disabled 
-     ###    $frm.extension.ps  configure -state disabled 
-     ###    $frm.extension.tif configure -state disabled 
+     ###    $frm.extension.jpg configure -state disabled
+     ###    $frm.extension.png configure -state disabled
+     ###    $frm.extension.ps  configure -state disabled
+     ###    $frm.extension.tif configure -state disabled
      ###    $frm.extension.xbm configure -state disabled
      ### }
 
       #--- pas de film si on est sous Linux ou si le package tmci n'est pas present
-      if { $::tcl_platform(os) == "Linux" && [package versions tmci ]== "" } { 
+      if { $::tcl_platform(os) == "Linux" && [package versions tmci ]== "" } {
          #--- je decoche la checkbox
          set ::Visio2::config::widgetEnableExtension(avi) 0
          #--- je desactive la checkbox pour qu'on ne puisse pas la cocher
          $frm.extension.avi configure -state disabled
       }
 
-     ### #--- remarque 
+     ### #--- remarque
      ### label $frm.extension.remark -text "$caption(visio2,remark)" \
      ###    -justify left
      ### pack $frm.extension.remark -anchor w -side top -padx 5 -pady 0
 
-      #--- remarque 
+      #--- remarque
       label $frm.extension.remark -text "$caption(visio2,remark1)" \
          -justify left
       pack $frm.extension.remark -anchor w -side top -padx 5 -pady 0
 
       #--- frame des options
       frame $frm.display -borderwidth 1 -relief ridge
-      pack $frm.display -side top -fill both -expand 1 
+      pack $frm.display -side top -fill both -expand 1
 
       #--- afficher tous les fichiers
       checkbutton $frm.display.show_all_afiles -text $caption(visio2,show_all_files) \
@@ -890,24 +905,24 @@ namespace eval ::Visio2::config {
 ################################################################
 namespace eval ::Visio2::localTable {
 
-   array set private {
-      localtbl             ""
-      directory            ""
-      previousType         ""
-      previousFileNameType ""
-      currentItemIndex     0
-      slideShowState       "0"
-      slideShowAfterId     ""
-      slideShowDelay       "1"
-      animation            0
-   }
-
    #------------------------------------------------------------------------------
    # localTable::init
    #   affiche les fichiers dans la table
    #------------------------------------------------------------------------------
    proc init { mainframe directory } {
       variable private
+
+      array set private {
+         localtbl             ""
+         directory            ""
+         previousType         ""
+         previousFileNameType ""
+         currentItemIndex     0
+         slideShowState       "0"
+         slideShowAfterId     ""
+         slideShowDelay       "1"
+         animation            0
+      }
 
       set private(parentFolder) $::Visio2::private(parentFolder)
       set private(folder)       $::Visio2::private(folder)
@@ -966,7 +981,7 @@ namespace eval ::Visio2::localTable {
 
       #--- je charge l'item selectionne
       loadItem [lindex $selection 0 ]
-      
+
    }
 
    #------------------------------------------------------------------------------
@@ -1015,7 +1030,7 @@ namespace eval ::Visio2::localTable {
       }
 
       set name [string trimleft [$tbl cellcget $index,0 -text]]
-      set type [$tbl cellcget $index,1 -text] 
+      set type [$tbl cellcget $index,1 -text]
       set filename [file join "$private(directory)" "$name"]
 
       if { [string first "$private(fileImage)" "$type" ] != -1 } {
@@ -1159,7 +1174,7 @@ namespace eval ::Visio2::localTable {
 
          if { $type == "$private(folder)" } {
             set dir [ file join "$private(directory)" "$name" ]
-            set message "$caption(visio2,delete_dir_confirm) \n $dir" 
+            set message "$caption(visio2,delete_dir_confirm) \n $dir"
             set choice [tk_messageBox -title "$caption(visio2,dialog_title)" -type okcancel -message "$message" -icon question]
 
             if { $choice == "ok" } {
@@ -1250,7 +1265,7 @@ namespace eval ::Visio2::localTable {
          set files ""
          foreach index $selection {
             set name [string trimleft [$tbl cellcget $index,0 -text]]
-            set type [$tbl cellcget $index,1 -text] 
+            set type [$tbl cellcget $index,1 -text]
             if { $type == $private(fileImage) || $type =="$private(fileMovie)" } {
                lappend files [list "$name" "$type"]
             }
@@ -1285,7 +1300,7 @@ namespace eval ::Visio2::localTable {
 
    #------------------------------------------------------------------------------
    # localTable::toggleAnimation
-   # 
+   #
    #------------------------------------------------------------------------------
    proc toggleAnimation { } {
       variable private
@@ -1624,16 +1639,6 @@ namespace eval ::Visio2::localTable {
 ################################################################
 namespace eval ::Visio2::ftpTable {
 
-   variable private
-      set private(parentFolder) $::Visio2::private(parentFolder)
-      set private(folder)       $::Visio2::private(folder)
-      set private(fileImage)    $::Visio2::private(fileImage)
-      set private(fileMovie)    $::Visio2::private(fileMovie)
-      set private(file)         $::Visio2::private(file) 
-      set private(tbl)          ""
-      set private(directory)    "/"
-      set private(frame)        ""
-
    #------------------------------------------------------------------------------
    # ftpTable::init
    #   affiche les fichiers dans la table
@@ -1757,7 +1762,7 @@ namespace eval ::Visio2::ftpTable {
       #--- je refraichis la liste des fichiers dans la table
       fillTable "$private(directory)"
 
-      #--- j'affiche l'image 
+      #--- j'affiche l'image
       if { "$fileName" != "" } {
          #--- je recupere les noms des fichiers presents
          set files [$tbl getcolumns 0]
@@ -1840,7 +1845,7 @@ namespace eval ::Visio2::ftpTable {
             }
          }
 
-         #--- je copie le fichier 
+         #--- je copie le fichier
          set filename [file join "$private(directory)" "$name"]
          ::ftpclient::get "$filename" "$targetDir" "$size"
 
@@ -1860,6 +1865,15 @@ namespace eval ::Visio2::ftpTable {
       global audace
       variable private
 
+      set private(parentFolder) $::Visio2::private(parentFolder)
+      set private(folder)       $::Visio2::private(folder)
+      set private(fileImage)    $::Visio2::private(fileImage)
+      set private(fileMovie)    $::Visio2::private(fileMovie)
+      set private(file)         $::Visio2::private(file)
+      set private(tbl)          ""
+      set private(directory)    "/"
+      set private(frame)        ""
+
       #--- quelques raccourcis utiles
       set tbl $frame.tbl
       set private(tbl) "$tbl"
@@ -1868,7 +1882,7 @@ namespace eval ::Visio2::ftpTable {
       #--- repertoire
       label $frame.directory -anchor w -relief raised -bd 1
       #--- pour intercepter les mises a jour du label (equivalent a l'option -textvariable)
-      bind $frame.directory <Configure> "::Visio2::ftpTable::configureLabelDirectory $private(labelDirectory) $private(directory) "
+      bind $frame.directory <Configure> "::Visio2::ftpTable::configureLabelDirectory $::Visio2::ftpTable::private(labelDirectory) $::Visio2::ftpTable::private(directory) "
 
       #--- table des fichiers
       tablelist::tablelist $tbl \
@@ -1962,9 +1976,6 @@ namespace eval ::Visio2::ftpTable {
    }
 
 }
-
-::Visio2::init $audace(base)
-
 
 #ftpserver::start
 

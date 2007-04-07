@@ -2,19 +2,18 @@
 # Fichier : gps.tcl
 # Description : Panneau de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.3 2006-06-20 21:00:55 robertdelmas Exp $
+# Mise a jour $Id: gps.tcl,v 1.4 2007-04-07 00:38:34 robertdelmas Exp $
 #
 
-package provide gps 3.3
-
 namespace eval ::Gps {
-    global audace
     variable This
     variable parametres
     variable numero_version
     variable base
 
-    source [file join $audace(rep_plugin) tool gps gps.cap]
+    package provide gps 3.3
+
+    source [file join [file dirname [info script]] gps.cap]
     set numero_version v3.3
 
     ##############################################################
@@ -317,14 +316,22 @@ namespace eval ::Gps {
     ### Calibration ##############################################
     ##############################################################
     proc Calibration {} {
-        set temps [time {jm_reglageheurepc 0} 10]
-        set micro [string first "micro" $temps]
-        set milli [expr [string range $temps 0 [expr $micro - 2]] / 1000]
-        if {$milli < 0} {
-            return [expr -$milli]
-        } else {
-            return $milli
-        }
+       global caption
+
+       set catchResult [ catch {
+          set temps [time {jm_reglageheurepc 0} 10]
+          set micro [string first "micro" $temps]
+          set milli [expr [string range $temps 0 [expr $micro - 2]] / 1000]
+          if {$milli < 0} {
+             return [expr -$milli]
+          } else {
+             return $milli
+          }
+       } ]
+       if { $catchResult == "1" } {
+          tk_messageBox -title $caption(gps,ecoute_horloge) -type error -message "$::errorInfo"
+          return "55"
+       }
     }
 
     ##############################################################
@@ -353,7 +360,6 @@ namespace eval ::Gps {
         }
 
         set This $this
-        set panneau(menu_name,Gps) "$caption(gps,titre)"
 
         set couleur(donnee,invalide) $color(red)
         set couleur(donnee,valide) $color(green)
@@ -689,13 +695,53 @@ namespace eval ::Gps {
     }
 
     ##############################################################
-    ### init #####################################################
+    ### getPluginTitle ###########################################
     ##############################################################
-    proc init {{in ""}} {
+    proc getPluginTitle { } {
+        global caption
+
+        return "$caption(gps,titre)"
+    }
+
+    ##############################################################
+    ### getPluginType ############################################
+    ##############################################################
+    proc getPluginType { } {
+        return "tool"
+    }
+
+    ##############################################################
+    ### getPluginProperty ########################################
+    ##############################################################
+    proc getPluginProperty { propertyName } {
+        switch $propertyName {
+            function     { return "utility" }
+            subfunction1 { return "gps" }
+        }
+    }
+
+    ##############################################################
+    ### initPlugin ###############################################
+    ##############################################################
+    proc initPlugin{ } {
+
+    }
+
+    ##############################################################
+    ### createPluginInstance #####################################
+    ##############################################################
+    proc createPluginInstance { { in "" } { visuNo 1 } } {
         variable base
 
         set base $in
         createPanel $in.gps
+    }
+
+    ##############################################################
+    ### deletePluginInstance #####################################
+    ##############################################################
+    proc deletePluginInstance { visuNo } {
+
     }
 
     ##############################################################
@@ -905,7 +951,6 @@ namespace eval ::Gps {
         }
     }
 
-#--- Debut modif Robert
     ##############################################################
     ### startTool ################################################
     ##############################################################
@@ -914,7 +959,6 @@ namespace eval ::Gps {
 
         Initialisation $This
         pack $This -anchor center -expand 0 -fill y -side left
-#--- Fin modif Robert
     }
 
     ##############################################################
@@ -1328,7 +1372,6 @@ namespace eval ::Gps {
         }
     }
 
-#--- Debut modif Robert
     ##############################################################
     ### stopTool #################################################
     ##############################################################
@@ -1337,7 +1380,6 @@ namespace eval ::Gps {
 
         Terminaison $This
         pack forget $This
-#--- Fin modif Robert
     }
 
     ##############################################################
@@ -1360,14 +1402,5 @@ namespace eval ::Gps {
         }
     }
     # fin du namespace
-}
-
-global audace
-
-if { [string range $::tcl_platform(os) 0 6] == "Windows" } {
-    ::Gps::init $audace(base)
-}
-if { [string range $::tcl_platform(os) 0 4] == "Linux" } {
-    ::Gps::init $audace(base)
 }
 

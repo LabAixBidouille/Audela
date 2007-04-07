@@ -2,32 +2,84 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.6 2007-03-24 15:54:02 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.7 2007-04-07 00:38:33 robertdelmas Exp $
 #
-
-package provide acqfen 1.2.1
 
 # =========================================================
 # === definition du namespace acqfen pour creer l'outil ===
 # =========================================================
 
 namespace eval ::acqfen {
+   package provide acqfen 1.2.1
 
    # =======================================================================
    # === definition des fonctions de construction automatique de l'outil ===
    # =======================================================================
 
-   global audace
-   variable This
-   variable parametres
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] acqfen.cap ]
 
-   #--- chargement du fichier d'internationalisation
-   source [ file join $audace(rep_plugin) tool acqfen acqfen.cap ]
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
 
-   proc init { {in ""} } {
+      return "$caption(acqfen,titre)"
+   }
+
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "acquisition" }
+         subfunction1 { return "windowed" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.acqfen
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       variable parametres
@@ -36,10 +88,10 @@ namespace eval ::acqfen {
       set This $this
       #--- Recuperation de la derniere configuration de prise de vue
       ::acqfen::Chargement_Var
-      set panneau(menu_name,acqfen)       $caption(acqfen,titre)
-      set panneau(acqfen,ht_onglet)       280
-      set panneau(acqfen,go_stop_cent)    "go"
-      set panneau(acqfen,go_stop)         "go"
+      set panneau(acqfen,titre)        $caption(acqfen,titre)
+      set panneau(acqfen,ht_onglet)    280
+      set panneau(acqfen,go_stop_cent) "go"
+      set panneau(acqfen,go_stop)      "go"
 
       #--- Valeurs par defaut d'acquisition (centrage)
       #--- Liste de valeurs du temps de pose disponibles par defaut
@@ -165,12 +217,20 @@ namespace eval ::acqfen {
    }
 #***** Fin de la procedure Enregistrement_Var ******************
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
 
       pack $This -side left -fill y
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
       global audace
@@ -1379,12 +1439,11 @@ namespace eval ::acqfen {
 # === fin du namespace acqfen ===
 # ===============================
 
+#------------------------------------------------------------
+# acqfenBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
 proc acqfenBuildIF { This } {
-
-# ============================
-# === graphisme de l'outil ===
-# ============================
-
 global audace caption color panneau
 
 #--- Trame du panneau
@@ -1396,9 +1455,7 @@ frame $This -borderwidth 2 -relief groove
    pack $This.titre -side top -fill x
 
       Button $This.titre.but -borderwidth 1 -text $caption(acqfen,titre_fenetrees) \
-         -command {
-            ::audace::showHelpPlugin tool acqfen acqfen.htm
-         }
+         -command "::audace::showHelpPlugin tool acqfen acqfen.htm"
       pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
       DynamicHelp::add $This.titre.but -text $caption(acqfen,help_titre)
 
@@ -1754,10 +1811,6 @@ proc Creefenreglfen { } {
 # =================================
 # === initialisation de l'outil ===
 # =================================
-
-global audace
-
-::acqfen::init $audace(base)
 
 ########## The end ##########
 

@@ -2,58 +2,132 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.5 2007-01-27 15:17:49 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.6 2007-04-07 00:38:36 robertdelmas Exp $
 #
 
-package provide vo_tools 1.0
-
+#============================================================
+# Declaration du namespace VO_Tools
+#    initialise le namespace
+#============================================================
 namespace eval ::VO_Tools {
-   variable This
-   global audace
+   package provide vo_tools 1.0
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool vo_tools vo_tools_go.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] vo_tools_go.cap ]
+}
 
-   #--- Charge un fichier auxiliaire
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_resolver.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_search.tcl ]\""
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_statut.tcl ]\""
+#------------------------------------------------------------
+# ::VO_Tools::getPluginTitle
+#    retourne le titre du plugin dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::VO_Tools::getPluginTitle { } {
+   global caption
 
-   proc init { { in "" } } {
-      createPanel $in.vo_tools
+   return "$caption(vo_tools_go,titre)"
+}
+
+#------------------------------------------------------------
+# ::VO_Tools::getPluginType
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::VO_Tools::getPluginType { } {
+   return "tool"
+}
+
+#------------------------------------------------------------
+# ::VO_Tools::getPluginProperty
+#    retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::VO_Tools::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function     { return "analisys" }
+      subfunction1 { return "solar system" }
    }
+}
 
-   proc createPanel { this } {
-      variable This
-      global caption panneau
-
-      set This $this
-      #---
-      set panneau(menu_name,VO_Tools) "$caption(vo_tools_go,titre)"
-      set panneau(VO_Tools,titre)     "$caption(vo_tools_go,vo_tools)"
-      set panneau(VO_Tools,aide)      "$caption(vo_tools_go,help_titre)"
-      set panneau(VO_Tools,titre1)    "$caption(vo_tools_go,aladin)"
-      set panneau(VO_Tools,titre2)    "$caption(vo_tools_go,cone-search)"
-      set panneau(VO_Tools,titre3)    "$caption(vo_tools_go,resolver)"
-      set panneau(VO_Tools,titre4)    "$caption(vo_tools_go,statut)"
-      VO_ToolsBuildIF $This
-   }
-
-   proc startTool { visuNo } {
-      variable This
-
-      pack $This -side left -fill y
-   }
-
-   proc stopTool { visuNo } {
-      variable This
-
-      pack forget $This
-   }
+#------------------------------------------------------------
+# ::VO_Tools::initPlugin
+#    initialise le plugin
+#------------------------------------------------------------
+proc ::VO_Tools::initPlugin{ } {
 
 }
 
-proc VO_ToolsBuildIF { This } {
+#------------------------------------------------------------
+# ::VO_Tools::createPluginInstance
+#    cree une nouvelle instance de l'outil
+#------------------------------------------------------------
+proc ::VO_Tools::createPluginInstance { { in "" } { visuNo 1 } } {
+   global audace
+
+   #--- Chargement du package Tablelist
+   package require Tablelist
+   #--- Chargement des fichiers auxiliaires
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_resolver.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_search.tcl ]\""
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool vo_tools skybot_statut.tcl ]\""
+   #--- Mise en place de l'interface graphique
+   ::VO_Tools::createPanel $in.vo_tools
+}
+
+#------------------------------------------------------------
+# ::VO_Tools::deletePluginInstance
+#    suppprime l'instance du plugin
+#------------------------------------------------------------
+proc ::VO_Tools::deletePluginInstance { visuNo } {
+
+}
+
+#------------------------------------------------------------
+# ::VO_Tools::createPanel
+#    prepare la creation de la fenetre de l'outil
+#------------------------------------------------------------
+proc ::VO_Tools::createPanel { this } {
+   variable This
+   global caption panneau
+
+   #--- Initialisation du nom de la fenetre
+   set This $this
+   #--- Initialisation des captions
+   set panneau(VO_Tools,titre)  "$caption(vo_tools_go,vo_tools)"
+   set panneau(VO_Tools,aide)   "$caption(vo_tools_go,help_titre)"
+   set panneau(VO_Tools,titre1) "$caption(vo_tools_go,aladin)"
+   set panneau(VO_Tools,titre2) "$caption(vo_tools_go,cone-search)"
+   set panneau(VO_Tools,titre3) "$caption(vo_tools_go,resolver)"
+   set panneau(VO_Tools,titre4) "$caption(vo_tools_go,statut)"
+   #--- Construction de l'interface
+   ::VO_Tools::VO_ToolsBuildIF $This
+}
+
+#------------------------------------------------------------
+# ::VO_Tools::startTool
+#    affiche la fenetre de l'outil
+#------------------------------------------------------------
+proc ::VO_Tools::startTool { visuNo } {
+   variable This
+
+   pack $This -side left -fill y
+}
+
+#------------------------------------------------------------
+# ::VO_Tools::stopTool
+#    masque la fenetre de l'outil
+#------------------------------------------------------------
+proc ::VO_Tools::stopTool { visuNo } {
+   variable This
+
+   pack forget $This
+}
+
+#------------------------------------------------------------
+# ::VO_Tools::VO_ToolsBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
+proc ::VO_Tools::VO_ToolsBuildIF { This } {
    global audace panneau
 
    #--- Frame
@@ -118,8 +192,4 @@ proc VO_ToolsBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
-
-global audace
-
-::VO_Tools::init $audace(base)
 

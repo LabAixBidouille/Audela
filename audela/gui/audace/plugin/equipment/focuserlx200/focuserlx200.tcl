@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.6 2007-02-12 12:37:58 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.7 2007-04-07 00:35:08 robertdelmas Exp $
 #
 
 #
@@ -20,7 +20,10 @@
 #
 
 namespace eval ::focuserlx200 {
+   package provide focuserlx200 1.0
 
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
+   source [ file join [file dirname [info script]] focuserlx200.cap ]
 }
 
 #==============================================================
@@ -33,18 +36,24 @@ namespace eval ::focuserlx200 {
 #
 #  return namespace name
 #------------------------------------------------------------
-proc ::focuserlx200::init { } {
+proc ::focuserlx200::initPlugin { } {
    global audace
-
-   package provide focuserlx200 1.0
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) equipment focuserlx200 focuserlx200.cap ]
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
    #--- pas de variable conf() pour ce focuser
 
-   return [namespace current]
+}
+
+#------------------------------------------------------------
+#  ::focuserlx200::getPluginTitle
+#     retourne le titre du plugin dans la langue de l'utilisateur
+#
+#  return "Titre du plugin"
+#------------------------------------------------------------
+proc ::focuserlx200::getPluginTitle { } {
+   global caption
+
+   return "$caption(focuserlx200,label)"
 }
 
 #------------------------------------------------------------
@@ -55,18 +64,6 @@ proc ::focuserlx200::init { } {
 #------------------------------------------------------------
 proc ::focuserlx200::getPluginType { } {
    return "focuser"
-}
-
-#------------------------------------------------------------
-#  ::focuserlx200::getLabel
-#     retourne le label du plugin
-#
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
-#------------------------------------------------------------
-proc ::focuserlx200::getLabel { } {
-   global caption
-
-   return "$caption(focuserlx200,label)"
 }
 
 #------------------------------------------------------------
@@ -290,6 +287,4 @@ proc ::focuserlx200::possedeControleEtendu { } {
       set result "0"
    }
 }
-
-::focuserlx200::init
 

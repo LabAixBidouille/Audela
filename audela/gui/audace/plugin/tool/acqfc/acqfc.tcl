@@ -2,163 +2,27 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.38 2007-03-24 01:39:54 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.39 2007-04-07 00:38:29 robertdelmas Exp $
 #
-
-package provide acqfc 2.1
 
 #==============================================================
 #   Declaration du namespace AcqFC
 #==============================================================
 
 namespace eval ::AcqFC {
-   variable parametres
-   global audace
+   package provide acqfc 2.1
 
-   source [ file join $audace(rep_plugin) tool acqfc acqfc.cap ]
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] acqfc.cap ]
 
-   #--- Numero de la version du logiciel
-   set ::AcqFC::numero_version "2.5"
-
-#***** Procedure DemarrageAcqFC ********************************
-   proc DemarrageAcqFC { visuNo } {
-      global audace caption panneau
-
-      #--- Gestion du fichier de log
-      #--- Creation du nom de fichier log
-      set nom_generique "acqfc-visu$visuNo-"
-      #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
-      set heure_nouveau_fichier "12"
-      set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
-      if { $heure_courante < $heure_nouveau_fichier } {
-         #--- Si avant l'heure de changement, je prends la date de la veille
-         set formatdate [clock format [expr {[clock seconds] - 86400}] -format "%Y-%m-%d"]
-      } else {
-         #--- Sinon, je prends la date du jour
-         set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
-      }
-      set file_log ""
-      set ::AcqFC::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
-
-      #--- Ouverture
-      if { [ catch { open $::AcqFC::fichier_log a } ::AcqFC::log_id ] } {
-         Message $visuNo console $caption(acqfc,pbouvfichcons)
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,pbouvfich)
-         #--- Note importante : Je detecte si j'ai un pb a l'ouverture du fichier, mais je ne sais pas traiter ce cas :
-         #--- Il faudrait interdire l'ouverture du panneau, mais le processus est deja lance a ce stade...
-         #--- Tout ce que je fais, c'est inviter l'utilisateur a changer d'outil !
-      } else {
-         #--- En-tete du fichier
-         Message $visuNo log $caption(acqfc,ouvsess) $::AcqFC::numero_version
-         set date [clock format [clock seconds] -format "%A %d %B %Y"]
-         set heure $audace(tu,format,hmsint)
-         Message $visuNo console $caption(acqfc,affheure) $date $heure
-         #--- Definition du binding pour declencher l'acquisition (ou l'arret) par Echap.
-         bind all <Key-Escape> "::AcqFC::GoStop $visuNo"
-      }
-   }
-#***** Fin de la procedure DemarrageAcqFC **********************
-
-#***** Procedure ArretAcqFC ************************************
-   proc ArretAcqFC { visuNo } {
-      global audace caption panneau
-
-      #--- Fermeture du fichier de log
-      if { [ info exists ::AcqFC::log_id ] } {
-         set heure $audace(tu,format,hmsint)
-         #--- Je m'assure que le fichier se termine correctement, en particulier pour le cas ou il y
-         #--- a eu un probleme a l'ouverture (c'est un peu une rustine...)
-         if { [ catch { Message $visuNo log $caption(acqfc,finsess) $heure } bug ] } {
-            Message $visuNo console $caption(acqfc,pbfermfichcons)
-         } else {
-            close $::AcqFC::log_id
-            unset ::AcqFC::log_id
-         }
-      }
-      #--- Re-initialisation de la session
-      set panneau(AcqFC,$visuNo,session_ouverture) "1"
-      #--- Desactivation du binding pour declencher l'acquisition (ou l'arret) par Echap.
-      bind all <Key-Escape> { }
-   }
-#***** Fin de la procedure ArretAcqFC **************************
-
-#***** Procedure Init ******************************************
-   proc Init { { in "" } { visuNo 1 } } {
-      global conf panneau
-
-      set panneau(AcqFC,$visuNo,base) $in
-      createPanel $visuNo "$in.acqFC"
-
-      #--- Surveillance de la connexion d'une camera
-      ::confVisu::addCameraListener $visuNo "::AcqFC::Adapt_Panneau_AcqFC $visuNo"
-      #--- Surveillance de l'ajout ou de la suppression d'une extension
-      trace add variable ::conf(list_extension) write ::AcqFC::Init_list_extension
-
-   }
-#***** Fin de la procedure Init ********************************
-
-#***** Procedure Init_list_extension ***************************
-   proc Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
-      variable This
-      global conf panneau
-
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
-      $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(AcqFC,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Serie d'images"
-      $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(AcqFC,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu"
-      $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(AcqFC,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Series d'images en continu avec intervalle entre chaque serie"
-      $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(AcqFC,$visuNo,extension) \
-            -command " "
-      }
-      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu avec intervalle entre chaque image"
-      $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu delete 0 20
-      foreach extension $conf(list_extension) {
-         $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu add radiobutton -label "$extension" \
-            -indicatoron "1" \
-            -value "$extension" \
-            -variable panneau(AcqFC,$visuNo,extension) \
-            -command " "
-      }
-   }
-#***** Fin de la procedure Init_list_extension *****************
-
-#***** Procedure createPanel ***********************************
-   proc createPanel { visuNo this } {
+#***** Procedure createPluginInstance***************************
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       variable parametres
       global audace caption conf panneau
 
       #---
-      set panneau(AcqFC,$visuNo,This) $this
-      set panneau(menu_name,AcqFC) "$caption(acqfc,menu)"
+      set panneau(AcqFC,$visuNo,base) "$in"
+      set panneau(AcqFC,$visuNo,This) "$in.acqFC"
 
       #--- Recuperation de la derniere configuration de prise de vue
       ::AcqFC::Chargement_Var $visuNo
@@ -259,11 +123,19 @@ namespace eval ::AcqFC {
 
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
 
-   }
-#***** Fin de la procedure createPanel *************************
+      #--- Surveillance de la connexion d'une camera
+      ::confVisu::addCameraListener $visuNo "::AcqFC::Adapt_Panneau_AcqFC $visuNo"
+      #--- Surveillance de l'ajout ou de la suppression d'une extension
+      trace add variable ::conf(list_extension) write ::AcqFC::Init_list_extension
 
-#***** Procedure deletePanel ***********************************
-   proc deletePanel { visuNo } {
+   }
+#***** Fin de la procedure createPluginInstance*****************
+
+   #------------------------------------------------------------
+   #  deletePluginInstance
+   #     suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
       global conf panneau
 
       #--- Je desactive la surveillance de la connexion d'une camera
@@ -284,7 +156,163 @@ namespace eval ::AcqFC {
       #---
       ArretAcqFC $visuNo
    }
-#***** Fin de la procedure deletePanel *************************
+
+   #------------------------------------------------------------
+   #  getPluginProperty
+   #     retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "acquisition" }
+         multivisu    { return 1 }
+      }
+   }
+
+   #------------------------------------------------------------
+   #  getPluginTitle
+   #     retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(acqfc,titre)"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   #  initPlugin
+   #     initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+#***** Procedure DemarrageAcqFC ********************************
+   proc DemarrageAcqFC { visuNo } {
+      global audace caption panneau
+
+      #--- Gestion du fichier de log
+      #--- Creation du nom de fichier log
+      set nom_generique "acqfc-visu$visuNo-"
+      #--- Heure a partir de laquelle on passe sur un nouveau fichier de log
+      set heure_nouveau_fichier "12"
+      set heure_courante [lindex [split $audace(tu,format,hmsint) h] 0]
+      if { $heure_courante < $heure_nouveau_fichier } {
+         #--- Si avant l'heure de changement, je prends la date de la veille
+         set formatdate [clock format [expr {[clock seconds] - 86400}] -format "%Y-%m-%d"]
+      } else {
+         #--- Sinon, je prends la date du jour
+         set formatdate [clock format [clock seconds] -format "%Y-%m-%d"]
+      }
+      set file_log ""
+      set ::AcqFC::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
+
+      #--- Ouverture
+      if { [ catch { open $::AcqFC::fichier_log a } ::AcqFC::log_id ] } {
+         Message $visuNo console $caption(acqfc,pbouvfichcons)
+         tk_messageBox -title $caption(acqfc,pb) -type ok \
+            -message $caption(acqfc,pbouvfich)
+         #--- Note importante : Je detecte si j'ai un pb a l'ouverture du fichier, mais je ne sais pas traiter ce cas :
+         #--- Il faudrait interdire l'ouverture du panneau, mais le processus est deja lance a ce stade...
+         #--- Tout ce que je fais, c'est inviter l'utilisateur a changer d'outil !
+      } else {
+         #--- En-tete du fichier
+         Message $visuNo log $caption(acqfc,ouvsess)
+         set date [clock format [clock seconds] -format "%A %d %B %Y"]
+         set heure $audace(tu,format,hmsint)
+         Message $visuNo console $caption(acqfc,affheure) $date $heure
+         #--- Definition du binding pour declencher l'acquisition (ou l'arret) par Echap.
+         bind all <Key-Escape> "::AcqFC::GoStop $visuNo"
+      }
+   }
+#***** Fin de la procedure DemarrageAcqFC **********************
+
+#***** Procedure ArretAcqFC ************************************
+   proc ArretAcqFC { visuNo } {
+      global audace caption panneau
+
+      #--- Fermeture du fichier de log
+      if { [ info exists ::AcqFC::log_id ] } {
+         set heure $audace(tu,format,hmsint)
+         #--- Je m'assure que le fichier se termine correctement, en particulier pour le cas ou il y
+         #--- a eu un probleme a l'ouverture (c'est un peu une rustine...)
+         if { [ catch { Message $visuNo log $caption(acqfc,finsess) $heure } bug ] } {
+            Message $visuNo console $caption(acqfc,pbfermfichcons)
+         } else {
+            close $::AcqFC::log_id
+            unset ::AcqFC::log_id
+         }
+      }
+      #--- Re-initialisation de la session
+      set panneau(AcqFC,$visuNo,session_ouverture) "1"
+      #--- Desactivation du binding pour declencher l'acquisition (ou l'arret) par Echap.
+      bind all <Key-Escape> { }
+   }
+#***** Fin de la procedure ArretAcqFC **************************
+
+#***** Procedure Init_list_extension ***************************
+   proc Init_list_extension { { a "" } { b "" } { c "" } { visuNo 1 } } {
+      variable This
+      global conf panneau
+
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Une seule image"
+      $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.une.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Serie d'images"
+      $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.serie.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu"
+      $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.continu.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Series d'images en continu avec intervalle entre chaque serie"
+      $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.serie_1.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+      #--- Mise a jour de la liste des extensions disponibles pour le mode "Continu avec intervalle entre chaque image"
+      $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu delete 0 20
+      foreach extension $conf(list_extension) {
+         $panneau(AcqFC,$visuNo,This).mode.continu_1.nom.extension.menu add radiobutton -label "$extension" \
+            -indicatoron "1" \
+            -value "$extension" \
+            -variable panneau(AcqFC,$visuNo,extension) \
+            -command " "
+      }
+   }
+#***** Fin de la procedure Init_list_extension *****************
 
 #***** Procedure Adapt_Panneau_AcqFC ***************************
    proc Adapt_Panneau_AcqFC { visuNo { a "" } { b "" } { c "" } } {
@@ -3591,6 +3619,4 @@ proc AcqFCBuildIF { visuNo } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $panneau(AcqFC,$visuNo,This)
 }
-
-::AcqFC::Init $audace(base)
 

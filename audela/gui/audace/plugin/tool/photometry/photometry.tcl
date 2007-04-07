@@ -2,56 +2,121 @@
 # Fichier : photometry.tcl
 # Description : Outil de traitement d'images de photometrie
 # Auteur : Alain Klotz
-# Mise a jour $Id: photometry.tcl,v 1.2 2006-08-24 21:55:08 robertdelmas Exp $
+# Mise a jour $Id: photometry.tcl,v 1.3 2007-04-07 00:38:34 robertdelmas Exp $
 #
 
-package provide photometry 1.0
-
 namespace eval ::photometry {
-   global audace
+   package provide photometry 1.0
 
-   source [ file join $audace(rep_plugin) tool photometry photometry.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] photometry.cap ]
+}
 
-   proc init { { in "" } } {
-      createPanel $in.photometry
+#------------------------------------------------------------
+# ::photometry::getPluginTitle
+#    retourne le titre du plugin dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::photometry::getPluginTitle { } {
+   global caption
+
+   return "$caption(photometry,titre,panneau)"
+}
+
+#------------------------------------------------------------
+# ::photometry::getPluginType
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::photometry::getPluginType { } {
+   return "tool"
+}
+
+#------------------------------------------------------------
+# ::photometry::getPluginProperty
+#    retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::photometry::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function     { return "analysis" }
+      subfunction1 { return "photometry" }
    }
+}
 
-   proc createPanel { this } {
-      variable This
-      global caption
-      global panneau
-
-      #--- Initialisation du nom de la fenetre
-      set This $this
-      #--- Initialisation des captions
-      set panneau(menu_name,photometry) "$caption(photometry,titre,panneau)"
-      set panneau(photometry,aide)      "$caption(photometry,help,titre)"
-      set panneau(photometry,recherche) "$caption(photometry,2_3_couleur)"
-      set panneau(photometry,configure) "$caption(photometry,configure)"
-      set panneau(photometry,prepare)   "$caption(photometry,prepare)"
-      set panneau(photometry,calibre)   "$caption(photometry,calibre)"
-      set panneau(photometry,mesure)    "$caption(photometry,mesure)"
-      #--- Construction de l'interface
-      photometryBuildIF $This
-   }
-
-   proc startTool { visuNo } {
-      variable This
-
-      pack $This -side left -fill y
-   }
-
-   proc stopTool { visuNo } {
-      variable This
-
-      pack forget $This
-   }
+#------------------------------------------------------------
+# ::photometry::initPlugin
+#    initialise le plugin
+#------------------------------------------------------------
+proc ::photometry::initPlugin{ } {
 
 }
 
-proc photometryBuildIF { This } {
-   global audace
-   global panneau
+#------------------------------------------------------------
+# ::photometry::createPluginInstance
+#    cree une nouvelle instance de l'outil
+#------------------------------------------------------------
+proc ::photometry::createPluginInstance { { in "" } { visuNo 1 } } {
+   ::photometry::createPanel $in.photometry
+}
+
+#------------------------------------------------------------
+# ::photometry::deletePluginInstance
+#    suppprime l'instance du plugin
+#------------------------------------------------------------
+proc ::photometry::deletePluginInstance { visuNo } {
+
+}
+
+#------------------------------------------------------------
+# ::photometry::createPanel
+#    prepare la creation de la fenetre de l'outil
+#------------------------------------------------------------
+proc ::photometry::createPanel { this } {
+   variable This
+   global caption panneau
+
+   #--- Initialisation du nom de la fenetre
+   set This $this
+   #--- Initialisation des captions
+   set panneau(photometry,titre)     "$caption(photometry,titre,panneau)"
+   set panneau(photometry,aide)      "$caption(photometry,help,titre)"
+   set panneau(photometry,recherche) "$caption(photometry,2_3_couleur)"
+   set panneau(photometry,configure) "$caption(photometry,configure)"
+   set panneau(photometry,prepare)   "$caption(photometry,prepare)"
+   set panneau(photometry,calibre)   "$caption(photometry,calibre)"
+   set panneau(photometry,mesure)    "$caption(photometry,mesure)"
+   #--- Construction de l'interface
+   ::photometry::photometryBuildIF $This
+}
+
+#------------------------------------------------------------
+# ::photometry::startTool
+#    affiche la fenetre de l'outil
+#------------------------------------------------------------
+proc ::photometry::startTool { visuNo } {
+   variable This
+
+   pack $This -side left -fill y
+}
+
+#------------------------------------------------------------
+# ::photometry::stopTool
+#    masque la fenetre de l'outil
+#------------------------------------------------------------
+proc ::photometry::stopTool { visuNo } {
+   variable This
+
+   pack forget $This
+}
+
+#------------------------------------------------------------
+# ::photometry::photometryBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
+proc ::photometry::photometryBuildIF { This } {
+   global audace panneau
 
    #--- Frame de l'outil
    frame $This -borderwidth 2 -relief groove
@@ -60,7 +125,7 @@ proc photometryBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,photometry) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(photometry,titre) \
             -command "::audace::showHelpPlugin tool photometry photometry.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(photometry,aide)
@@ -98,8 +163,4 @@ proc photometryBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
-
-global audace
-
-::photometry::init $audace(base)
 

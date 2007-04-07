@@ -2,24 +2,23 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.5 2007-01-20 11:03:01 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.6 2007-04-07 00:38:34 robertdelmas Exp $
 #
 
-#=====================================================================
-#   Declaration du Namespace pretraitFC
-#=====================================================================
-
-package provide pretrfc 1.40
-
+#============================================================
+# Declaration du namespace pretraitFC
+#    initialise le namespace
+#============================================================
 namespace eval ::pretraitFC {
-   variable This
-   variable fichier_log
    variable numero_version
-   global audace
 
-   source [ file join $audace(rep_plugin) tool pretrfc pretrfc.cap ]
+   #--- Chargement du package
+   package provide pretrfc 1.40
 
-   # Numero de la version du logiciel
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] pretrfc.cap ]
+
+   #--- Numero de la version du logiciel
    set numero_version "1.40"
 
 #***** Procedure DemarragePretraitFC *********************************
@@ -95,21 +94,55 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure ArretPretraitFC ***************************
 
-#***** Procedure Init ************************************************
-   proc Init { { in "" } } {
+#***** Procedure getPluginTitle***************************************
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(pretrfc,menu)"
+   }
+#***** Fin de la procedure getPluginTitle ****************************
+
+#***** Procedure getPluginType****************************************
+   proc getPluginType { } {
+      return "tool"
+   }
+#***** Fin de la procedure getPluginType******************************
+
+#***** Procedure getPluginProperty************************************
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "utility" }
+         subfunction1 { return "preprocessing" }
+      }
+   }
+#***** Fin de la procedure getPluginProperty**************************
+
+#***** Procedure initPlugin ******************************************
+   proc initPlugin{ } {
+
+   }
+#***** Fin de la procedure initPlugin ********************************
+
+#***** Procedure createPluginInstance ********************************
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.pretraitFC
    }
-#***** Fin de la procedure Init **************************************
+#***** Fin de la procedure createPluginInstance **********************
+
+#***** Procedure deletePluginInstance ********************************
+   proc deletePluginInstance { visuNo } {
+
+   }
+#***** Fin de la procedure deletePluginInstance **********************
 
 #***** Procedure createPanel *****************************************
    proc createPanel { this } {
       variable This
       global caption panneau
 
+      #--- Initialisation du nom de la fenetre
       set This $this
-      #---
-      set panneau(menu_name,pretraitFC) $caption(pretrfc,menu)
-
+      #--- Construction de l'interface
       pretraitFCBuildIF $This
    }
 #***** Fin de la procedure createPanel *******************************
@@ -137,7 +170,7 @@ namespace eval ::pretraitFC {
       set panneau(pretraitFC,geometry) [ wm geometry $audace(base).fenetrePretr ]
       set deb [ expr 1 + [ string first + $panneau(pretraitFC,geometry) ] ]
       set fin [ string length $panneau(pretraitFC,geometry) ]
-      set panneau(pretraitFC,position) "+[string range $panneau(pretraitFC,geometry) $deb $fin]"     
+      set panneau(pretraitFC,position) "+[string range $panneau(pretraitFC,geometry) $deb $fin]"
    }
 #***** Fin de la procedure recup_position ****************************
 
@@ -156,7 +189,7 @@ namespace eval ::pretraitFC {
          if { [ info exists panneau(pretraitFC,geometry) ] } {
             set deb [ expr 1 + [ string first + $panneau(pretraitFC,geometry) ] ]
             set fin [ string length $panneau(pretraitFC,geometry) ]
-            set panneau(pretraitFC,position) "+[string range $panneau(pretraitFC,geometry) $deb $fin]"     
+            set panneau(pretraitFC,position) "+[string range $panneau(pretraitFC,geometry) $deb $fin]"
          }
 
          #---
@@ -2187,10 +2220,6 @@ proc creeFenetrePrFC { } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).fenetrePretr
 }
-
-#---------------------------------------------------------------------------------------------
-
-::pretraitFC::Init $audace(base)
 
 #---------------------------------------------------------------------------------------------
 # Fin du fichier pretraitFC.tcl

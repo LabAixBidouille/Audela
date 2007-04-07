@@ -2,37 +2,89 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.7 2007-03-24 15:07:59 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.8 2007-04-07 00:38:36 robertdelmas Exp $
 #
-
-package provide visio 2.6.2
 
 # ========================================================
 # === definition du namespace visio pour creer l'outil ===
 # ========================================================
 
 namespace eval ::visio {
+   package provide visio 2.6.2
+
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [file join [file dirname [info script]] visio.cap]
 
    # =======================================================================
    # === definition des fonctions de construction automatique de l'outil ===
    # =======================================================================
 
-   global audace conf panneau
-   variable This
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
 
-   #--- chargement du fichier d'internationalisation
-   source [file join $audace(rep_plugin) tool visio visio.cap]
+      return "$caption(visio,titre)"
+   }
 
-   proc init { { in "" } } {
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "display" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.visio
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       global audace caption panneau
 
+      #--- Initialisation du nom de la fenetre
       set This $this
-      set panneau(menu_name,visio) $caption(visio,titre)
 
       #--- Modifier ici l'adresse du lecteur amovible par defaut
       #--- (pour un lecteur disquette, la variable vaut A:)
@@ -72,16 +124,21 @@ namespace eval ::visio {
             set panneau(visio,ext,nofits) [list ".gif" ".bmp" ".jpg" ".jpeg" ".png" ".ps" ".eps" ".tif" ".tiff" ".xbm" ".xpm"]
          }
       }
+      #--- Construction de l'interface
       visioBuildIF $This
 
       #--- Affichage de l'onglet par defaut (serie)
       set panneau(visio,onglet) serie
 
       pack $This.onglet.serie -side top -fill x -pady 3 -ipady 3
-  
+
       $This.onglet.chg config -text $caption(visio,modeserie)
    }
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
 
@@ -91,6 +148,10 @@ namespace eval ::visio {
 
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
 
@@ -735,7 +796,7 @@ proc visioBuildIF { This } {
       #--- Sous-trame de deplacement dans une serie
       frame $This.panneau.depl_serie
       pack $This.panneau.depl_serie -fill x -expand true
-   
+
          frame $This.panneau.depl_serie.1
          pack $This.panneau.depl_serie.1 -side left -fill x -expand true
          button $This.panneau.depl_serie.1.1 -text $caption(visio,arr1) -width 2 \
@@ -1008,10 +1069,6 @@ proc CreeFenConfirmRenom { } {
 # =================================
 # === initialisation de l'outil ===
 # =================================
-
-global audace
-
-::visio::init $audace(base)
 
 ########## The end ##########
 
