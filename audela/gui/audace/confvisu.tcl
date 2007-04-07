@@ -2,15 +2,10 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.52 2007-03-17 09:16:03 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.53 2007-04-07 00:39:00 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
-
-   #--- variables locales de ce namespace
-   array set private {
-      driverlist     ""
-   }
 
    #------------------------------------------------------------
    # confVisu::init
@@ -20,7 +15,7 @@ namespace eval ::confVisu {
    proc init { } {
       variable private
       global conf
-
+      
    }
 
    #------------------------------------------------------------
@@ -96,7 +91,8 @@ namespace eval ::confVisu {
       set private($visuNo,window)          "0"
       set private($visuNo,fullscreen)      "0"
       set private($visuNo,zoom)            "1"
-      set private($visuNo,toolNameSpace)   ""
+      set private($visuNo,currentTool)     ""
+      set private($visuNo,pluginInstanceList) [list ]
 
       #--- Initialisation de variables pour le trace de repere
       set private($visuNo,boxSize)         ""
@@ -142,14 +138,6 @@ namespace eval ::confVisu {
 
       #--- je cree la visu associee au buffer bufNo et a l'image image$visuNo
       set visuNo [::visu::create $bufNo $visuNo]
-
-      #--- je cree les instances d'outil pour cette visu
-      if { $base == "" } {
-         #--- je charge seulement les outils qui gerent les visu multiples
-         ::AcqFC::Init $private($visuNo,This) $visuNo
-         ::autoguider::Init $private($visuNo,This) $visuNo
-         ::tlscp::Init $private($visuNo,This) $visuNo
-      }
 
       #--- je cree le menu
       if { $base == "" } {
@@ -198,11 +186,11 @@ namespace eval ::confVisu {
             ::[getTool $visuNo]::deletePanel $visuNo
          }
       } else {
-         #--- je ferme les outils Acquisition et Autoguidage dedies aux autres visu
+         #--- je ferme les outils 
          if { "$private($visuNo,This)" != "$audace(base).select" } {
-            ::AcqFC::deletePanel $visuNo
-            ::autoguider::deletePanel $visuNo
-            ::tlscp::deletePanel $visuNo
+            foreach pluginInstance $private($visuNo,pluginInstanceList) {
+               $pluginInstance\::deletePluginInstance $visuNo
+             }
          }
       }
 
@@ -930,8 +918,8 @@ namespace eval ::confVisu {
    proc stopTool { visuNo } {
       variable private
 
-      if { $private($visuNo,toolNameSpace) != "" } {
-         $private($visuNo,toolNameSpace)::stopTool $visuNo
+      if { $private($visuNo,currentTool) != "" } {
+         $private($visuNo,currentTool)::stopTool $visuNo
       }
    }
 
@@ -946,17 +934,33 @@ namespace eval ::confVisu {
    proc selectTool { visuNo toolName } {
       variable private
 
-      if { "private($visuNo,toolNameSpace)" != "" } {
+      if { "private($visuNo,currentTool)" != "" } {
          #--- Cela veut dire qu'il y a deja un outil selectionne
-         if { "private($visuNo,toolNameSpace)" != "$toolName" } {
+         if { "private($visuNo,currentTool)" != "$toolName" } {
             #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
             stopTool $visuNo
          }
-         namespace inscope $toolName startTool $visuNo
-         set private($visuNo,toolNameSpace) $toolName
+         if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
+            #--- je cree une instance de l'outil
+            set catchResult [catch { 
+               namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo 
+            }]
+            if { $catchResult == 1  } {
+               ::console::affiche_erreur "$::errorInfo\n"
+               tk_messageBox -message "$::errorInfo. See console" -icon error
+               return
+            } 
+
+            #--- j'ajoute cette intance dans la liste
+           lappend private($visuNo,pluginInstanceList) $toolName 
+         }          
+         #--- je demarre l'outil
+         namespace inscope $toolName startTool $visuNo  
+         #--- je memorise le nom de l'outil en cours d'execution
+         set private($visuNo,currentTool) $toolName
       } else {
          #--- Dans ce cas, aucun outil n'est selectionne
-         namespace inscope $toolName startTool $visuNo
+         namespace inscope $toolName createPluginInstance $visuNo
       }
    }
 
@@ -969,7 +973,7 @@ namespace eval ::confVisu {
    proc getTool { visuNo } {
       variable private
 
-      return [ string trimleft $private($visuNo,toolNameSpace) "::" ]
+      return [ string trimleft $private($visuNo,currentTool) "::" ]
    }
 
    #------------------------------------------------------------
@@ -1387,21 +1391,26 @@ namespace eval ::confVisu {
       Menu           $visuNo "$caption(audace,menu,outils)"
       Menu_Command   $visuNo "$caption(audace,menu,outils)" "$caption(audace,menu,pas_outil)" "::confVisu::stopTool $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,outils)"
-      #--- Affichage de l'outil Acquisition
+      #--- Remplissage du menu deroulant outils
       set liste ""
       foreach m [array names panneau menu_name,*] {
          lappend liste [list "$panneau($m) " $m]
       }
-      foreach m [lsort $liste] {
+      set firstTool ""
+      set liste [lsort $liste]
+      foreach m $liste {
          set m [lindex $m 1]
-         if { ( $m == "menu_name,AcqFC" ) || ( $m == "menu_name,autoguider" ) || ( $m == "menu_name,tlscp") } {
-            if { [scan "$m" "menu_name,%s" ns] == "1" } {
-               Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$ns"
-               #--- Lancement automatique de l'outil Acquisition
-               ::confVisu::selectTool $visuNo ::AcqFC
+         scan "$m" "menu_name,%s" pluginName
+         if { [ ::$pluginName\::getPluginProperty "multivisu" ] == "1" } {
+            if { $firstTool == "" } {
+               set firstTool $pluginName
+               #--- Lancement automatique du premier outil de la liste
+               ::confVisu::selectTool $visuNo ::$firstTool
             }
+            Menu_Command $visuNo "$caption(audace,menu,outils)" "$panneau($m)" "::confVisu::selectTool $visuNo ::$pluginName"
          }
       }
+
    }
 
    proc cursor { visuNo curs } {

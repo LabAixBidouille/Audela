@@ -2,36 +2,14 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.12 2007-01-27 15:15:42 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.13 2007-04-07 00:35:17 michelpujol Exp $
 #
-
-package provide ethernaude 1.0
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : Initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : Retourne le nom affichable du driver
-#     getHelp           : Retourne la documentation htm associee
-#     getDriverType     : Retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : Initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : Affiche la fenetre de configuration de ce driver
-#     confToWidget      : Copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : Copie les variables des widgets dans le tableau conf()
-#     configureDriver   : Configure le driver
-#     isReady           : Informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
-#     create               : Demarre la liaison
-#     delete               : Arrete la liaison et libere les ressources occupees
-#     testping             : Teste la connexion d'un appareil
-#     ConfEthernAude       : Gestion des boutons
-#     selectConfigItem     : Selectionne un link dans la fenetre de configuration
-#     getSelectedLinkLabel : Retourne le link choisi
-#     getLinkLabels        : Retourne la seule instance ethernaude
-#     getLinkIndex         : Retourne l'index du link
-#.....
 
 namespace eval ethernaude {
+   package provide ethernaude 1.0
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] ethernaude.cap ]
+
 }
 
 #------------------------------------------------------------
@@ -89,12 +67,12 @@ proc ::ethernaude::confToWidget { } {
 }
 
 #------------------------------------------------------------
-#  create
+#  createPluginInstance
 #     demarre la liaison
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::ethernaude::create { linkLabel deviceId usage comment } {
+proc ::ethernaude::createPluginInstance { linkLabel deviceId usage comment } {
    #--- pour l'instant, la liaison ethernaude est demarree par le pilote de la camera
    variable private
 
@@ -104,12 +82,12 @@ proc ::ethernaude::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-#  delete
+#  deletePluginInstance
 #     arrete la liaison et libere les ressources occupees
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::ethernaude::delete { linkLabel deviceId usage } {
+proc ::ethernaude::deletePluginInstance { linkLabel deviceId usage } {
    #--- pour l'instant, la liaison ethernaude est arretee par le pilote de la camera
    variable private
 
@@ -225,12 +203,10 @@ proc ::ethernaude::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType
-#     retourne le type de driver
-#
-#  return "link"
+#  getPluginType 
+#     retourne le type de plugin
 #------------------------------------------------------------
-proc ::ethernaude::getDriverType { } {
+proc ::ethernaude::getPluginType { } {
    return "link"
 }
 
@@ -245,12 +221,24 @@ proc ::ethernaude::getHelp { } {
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
+#  getPluginProperty
+#     retourne la valeur de la propriete
 #
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::ethernaude::getLabel { } {
+proc ::ethernaude::getPluginProperty { propertyName } {
+   switch $propertyName {
+   }
+}
+
+
+#------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::ethernaude::getPluginTitle { } {
    global caption
 
    return "$caption(ethernaude,titre)"
@@ -297,17 +285,12 @@ proc ::ethernaude::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-#  init (est lance automatiquement au chargement de ce fichier tcl)
+#  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#
-#  return namespace name
 #------------------------------------------------------------
-proc ::ethernaude::init { } {
+proc ::ethernaude::initPlugin  { } {
    global audace
    variable private
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) link ethernaude ethernaude.cap ]
 
    #--- Je fixe le nom generique de la liaison identique au namespace
    set private(genericName) "ethernaude"
@@ -322,8 +305,6 @@ proc ::ethernaude::init { } {
 
    #--- J'initialise les variables widget(..)
    confToWidget
-
-   return [namespace current]
 }
 
 #------------------------------------------------------------
@@ -399,6 +380,4 @@ proc ::ethernaude::widgetToConf { } {
    set conf(ethernaude,debug)     $widget(ethernaude,debug)
    set conf(ethernaude,canspeed)  $widget(ethernaude,canspeed)
 }
-
-::ethernaude::init
 

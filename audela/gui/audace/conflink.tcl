@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.15 2007-03-16 22:59:44 michelpujol Exp $
+# Mise a jour $Id: conflink.tcl,v 1.16 2007-04-07 00:39:00 michelpujol Exp $
 #
 
 namespace eval ::confLink {
@@ -23,15 +23,19 @@ proc ::confLink::init { } {
    set private(frm)           "$audace(base).confLink"
    set private(driverType)    "link"
    set private(driverPattern) ""
-   set private(namespacelist) ""
-   set private(driverlist)    ""
+   set private(namespaceList) ""
+   set private(pluginTitleList)    ""
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confLink,start) ] }    { set conf(confLink,start)    "0" }
    if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+155+100" }
 
    #--- charge le fichier caption
    source [ file join $audace(rep_caption) conflink.cap ]
-   findDriver
+   #--- j'ajoute le repetoire des equipements dans la liste des 
+   #--- repertoire pouvant contenir des plugins
+   lappend ::auto_path [file join "$::audace(rep_plugin)" link]
+   #--- je charge la liste des plugins
+   findPlugin
 
    #--- configure le driver selectionne par defaut
    #if { $conf(confLink,start) == "1" } {
@@ -57,14 +61,14 @@ proc ::confLink::afficheAide { } {
    set private(conf_confLink) [Rnotebook:currentName $private(frm).usr.book ]
    #--- je recupere le namespace correspondant au label
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
-   set index [lsearch -exact $private(driverlist) $label ]
+   set index [lsearch -exact $private(pluginTitleList) $label ]
    if { $index != -1 } {
-      set private(conf_confLink) [lindex $private(namespacelist) $index]
+      set private(conf_confLink) [lindex $private(namespaceList) $index]
    } else {
       set private(conf_confLink) ""
    }
    #--- j'affiche la documentation
-   set driver_doc [ $private(conf_confLink)\:\:getHelp ]
+   set driver_doc [ $private(conf_confLink)::getHelp ]
    ::audace::showHelpPlugin link $private(conf_confLink) "$driver_doc"
 
    $private(frm).cmd.ok configure -state normal
@@ -91,8 +95,8 @@ proc ::confLink::appliquer { } {
    #--- je recupere le label de l'onglet choisi
    set namespaceLabel "[Rnotebook:currentName $private(frm).usr.book ]"
    #--- je recherche le namespace ayant ce label
-   foreach namespace $private(namespacelist) {
-      if { [$namespace\:\:getLabel] == $namespaceLabel } {
+   foreach namespace $private(namespaceList) {
+      if { [$namespace\:\:getPluginTitle] == $namespaceLabel } {
          set linkNamespace $namespace
          break
       }
@@ -106,7 +110,7 @@ proc ::confLink::appliquer { } {
    #stopDriver
 
    #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
-   foreach name $private(namespacelist) {
+   foreach name $private(namespaceList) {
       set drivername [ $name\:\:widgetToConf ]
    }
 
@@ -203,10 +207,12 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
       destroy $private(frm)
    }
 
-   #--- je mets a jour la liste des drivers
-   if { [findDriver] == 1 } {
-      return 1
+   if { [llength $private(namespaceList)] <1 } { 
+      tk_messageBox -message "No plugin available" \
+            -title "$caption(conflink,config) $configurationTitle              " -icon error
+       return 1
    }
+
 
    #---
    set private(position) $conf(confLink,position)
@@ -237,7 +243,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    set mainFrame $private(frm).usr.book
 
    if { $authorizedNamespaces == "" } {
-      set  authorizedNamespaces $private(namespacelist)
+      set  authorizedNamespaces $private(namespaceList)
    }
 
    set linkTypes [list]
@@ -316,7 +322,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 proc ::confLink::create { linkLabel deviceId usage comment } {
    set linkNamespace [getLinkNamespace $linkLabel]
    if { $linkNamespace != "" } {
-      set linkno [$linkNamespace\:\:create $linkLabel $deviceId $usage $comment]
+      set linkno [$linkNamespace\::createPluginInstance $linkLabel $deviceId $usage $comment]
    } else {
       set linkno ""
    }
@@ -325,7 +331,7 @@ proc ::confLink::create { linkLabel deviceId usage comment } {
 
 #------------------------------------------------------------
 # ::confLink::delete
-#    Supprime une utilisation d'une liaisonet supprime la
+#    Supprime une utilisation d'une liaison et supprime la
 #    liaison si elle n'est plus utilisee par aucun autre peripherique
 #
 #    Retourne rien
@@ -336,7 +342,7 @@ proc ::confLink::create { linkLabel deviceId usage comment } {
 proc ::confLink::delete { linkLabel deviceId usage } {
    set linkNamespace [getLinkNamespace $linkLabel]
    if { $linkNamespace != "" } {
-      $linkNamespace\:\:delete $linkLabel $deviceId $usage
+      $linkNamespace\:\:deletePluginInstance $linkLabel $deviceId $usage
    }
 }
 
@@ -352,9 +358,9 @@ proc ::confLink::select { { linkNamespace "" } } {
       #--- je recupere le label correspondant au namespace
       set namespaceLabel [getNamespaceLabel $linkNamespace]
       #--- je recupere l'index correspondant à l'onglet
-      set index [ lsearch -exact $private(driverlist) "$namespaceLabel" ]
+      set index [ lsearch -exact $private(pluginTitleList) "$namespaceLabel" ]
       if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [ lindex $private(driverlist) $index ]
+         Rnotebook:select $private(frm).usr.book [ lindex $private(pluginTitleList) $index ]
       }
    }
 }
@@ -366,22 +372,13 @@ proc ::confLink::select { { linkNamespace "" } } {
 proc ::confLink::configureDriver { } {
    variable private
 
-   #--- rien a faire
-   #--- car pourl'instnant le link est configure par le peripherique qui l'utilise
-
    if { $private(linkLabel) == "" } {
       #--- pas de driver selectionne par defaut
       return
    }
 
-   #--- je charge les drivers si ce n'etait pas deja fait
-   #--- (cas de l'ouverture automatique au demerrage de Audela)
-   #if { [llength $private(namespacelist)] <1 } {
-   #   findDriver
-   #}
-
    #--- je configure le driver
-   [getLinkNamespace $private(linkLabel)]\:\:configureDriver
+   [getLinkNamespace $private(linkLabel)]\::configureDriver
 }
 
 #------------------------------------------------------------
@@ -400,62 +397,58 @@ proc ::confLink::stopDriver { { linkLabel "" } } {
 }
 
 #------------------------------------------------------------
-# ::confLink::findDriver
+# ::confLink::findPlugin
 #    Recherche les fichiers .tcl presents dans driverPattern
 #
 #    Conditions :
 #      - Le driver doit retourner un namespace non nul quand on charge son source .tcl
 #      - Le driver doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
-#      - Le driver doit avoir une procedure getlabel
+#      - Le driver doit avoir une procedure getPluginTitle
 #
 #    Si le driver remplit les conditions :
-#      Son label est ajoute dans la liste driverlist, et son namespace est ajoute dans namespacelist
+#      Son label est ajoute dans la liste pluginTitleList, et son namespace est ajoute dans namespaceList
 #      Sinon le fichier tcl est ignore car ce n'est pas un driver du type souhaite
 #
 # retrun 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
-proc ::confLink::findDriver { } {
+proc ::confLink::findPlugin { } {
    variable private
-   global caption
+   global caption audace
 
    #--- j'initialise les listes vides
-   set private(namespacelist)  ""
-   set private(driverlist)     ""
+   set private(namespaceList)  ""
+   set private(pluginTitleList)     ""
 
    #--- je recherche les fichiers link/*/pkgIndex.tcl
-   set private(driverPattern) [ file join audace plugin link * pkgIndex.tcl ]
-   set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
-
-   if { "$filelist" == "" } {
-      #--- aucun fichier correct
-      return 1
-   }
-
+   set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" link * pkgIndex.tcl ]
    #--- je recherche les drivers repondant au filtre driverPattern
-   foreach fichierPkgIndex [glob $private(driverPattern)] {
-      #--- je charge le fichier pkgIndex.tcl
-      uplevel #0 "source $fichierPkgIndex"
-
-      set linkname [ file tail [ file dirname "$fichierPkgIndex" ] ]
-      package require $linkname
-      #--- je verifie que le namespace possede les procedure getDriverType et getLabel
-      if { [namespace which -command $linkname\:\:getDriverType] != ""
-           && [namespace which -command $linkname\:\:getLabel] != "" } {
-         #--- verifie que driver est du type attendu
-         set driverType [$linkname\:\:getDriverType]
-         if { $driverType == $private(driverType) } {
-            #--- je recupere le label du driver
-            set driverlabel "[$linkname\:\:getLabel]"
-            #--- c'est un driver valide, je l'ajoute dans la liste
-            lappend private(namespacelist) $linkname
-            lappend private(driverlist) $driverlabel
-            ::console::affiche_prompt "#$caption(conflink,liaison) $driverlabel v[package present $linkname]\n"
+   foreach pkgIndexFileName $filelist {
+      set catchResult [catch {
+         #--- je recupere le nom du package
+         if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
+            if { $pluginInfo(type)== "link"} {
+               #--- je charge le package
+               package require $pluginInfo(name)
+               #--- j'initalise le plugin
+               $pluginInfo(namespace)::initPlugin
+               set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+               #--- je l'ajoute dans la liste des plugins
+               lappend private(namespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+               lappend private(pluginTitleList) $pluginlabel
+               ::console::affiche_prompt "#$caption(conflink,liaison) $pluginlabel v$pluginInfo(version)\n"
+            }
+         } else {
+            ::console::affiche_erreur "Error loading link $pkgIndexFileName \n$::errorInfo\n\n" 
          }
+      } catchMessage]
+      #--- j'affiche le message d'erreur et je continu la recherche des plugins
+      if { $catchResult !=0 } {
+         console::affiche_erreur "::confLink::findPlugin $::errorInfo\n"
       }
    }
    ::console::affiche_prompt "\n"
 
-   if { [llength $private(namespacelist)] <1 } {
+   if { [llength $private(namespaceList)] <1 } {
       #--- pas driver correct
       return 1
    } else {
@@ -525,7 +518,7 @@ proc ::confLink::getLinkLabels { namespaces } {
 
    foreach namespace $namespaces {
       #--- je verifie que le namespace existe
-      if { [lsearch -exact $private(namespacelist) $namespace] != -1 } {
+      if { [lsearch -exact $private(namespaceList) $namespace] != -1 } {
          foreach linkLabel [$namespace\:\:getLinkLabels] {
             lappend labels $linkLabel
          }
@@ -548,8 +541,8 @@ proc ::confLink::getNamespaceLabel { namespace } {
    variable private
 
    #--- je verifie que le namespace existe
-   if { [lsearch -exact $private(namespacelist) $namespace] != -1 } {
-      return [$namespace\:\:getLabel]
+   if { [lsearch -exact $private(namespaceList) $namespace] != -1 } {
+      return [$namespace\:\:getPluginTitle]
    } else {
       #--- je retourne une chaine vide
       return ""
@@ -569,9 +562,9 @@ proc ::confLink::getNamespaceLabel { namespace } {
 proc ::confLink::getLinkNamespace { linkLabel } {
    variable private
 
-   foreach namespace $private(namespacelist) {
+   foreach namespace $private(namespaceList) {
       #--- je verifie si on peut recuperer l'index
-      if { [$namespace\:\:getLinkIndex $linkLabel] != "" } {
+      if { [$namespace\::getLinkIndex $linkLabel] != "" } {
          return $namespace
       }
    }
@@ -597,7 +590,7 @@ proc ::confLink::getLinkNo { linkLabel } {
 
    set linkNamespace [::confLink::getLinkNamespace $linkLabel]
    if { $linkNamespace != "" } {
-      set linkIndex [$linkNamespace\:\:getLinkIndex $linkLabel]
+      set linkIndex [$linkNamespace\::getLinkIndex $linkLabel]
       #--- je recherche la liaison deja ouverte qui a le meme namespace et le meme index
       foreach linkNo [link::list] {
          if {    "[link$linkNo drivername]" == $linkNamespace
@@ -634,7 +627,7 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
    #--- je liste les packages qui sont presents parmi ceux qui sont autorises
    set authorizedPresentNamespaces [list ]
    foreach  name $authorizedNamespaces  {
-       if { [lsearch $private(namespacelist) $name ] != -1 } {
+       if { [lsearch $private(namespaceList) $name ] != -1 } {
          lappend authorizedPresentNamespaces $name
        }
    }
@@ -645,7 +638,7 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
          #--- je selectionne l'onglet correspondant au linkNamespace
          select $linkNamespace
          #--- je selectionne le link dans l'onglet
-         $linkNamespace\:\:selectConfigLink $private(linkLabel)
+         $linkNamespace\::selectConfigLink $private(linkLabel)
       }
       #--- j'attends la fermeture de la fenetre
       tkwait window $private(frm)

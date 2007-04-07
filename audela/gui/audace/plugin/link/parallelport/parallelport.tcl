@@ -2,35 +2,64 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.9 2007-01-27 15:24:46 robertdelmas Exp $
-#
-
-package provide parallelport 1.0
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
+# Mise a jour $Id: parallelport.tcl,v 1.10 2007-04-07 00:35:17 michelpujol Exp $
 #
 
 namespace eval parallelport {
+   package provide parallelport 1.0
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
+   source [ file join [file dirname [info script]] parallelport.cap ]
 }
 
-#==============================================================
-# Procedures generiques de configuration des drivers
-#==============================================================
+#------------------------------------------------------------
+#  getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::parallelport::getPluginProperty { propertyName } {
+   switch $propertyName {
+   }
+}
+
+
+#------------------------------------------------------------
+#  getPluginTitle
+#     retourne le titre du plugin dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::parallelport::getPluginTitle { } {
+   global caption
+
+   return "$caption(parallelport,titre)"
+}
+
+#------------------------------------------------------------
+#  :getPluginType
+#     retourne le type de plugin
+#------------------------------------------------------------
+proc ::parallelport::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
+#  init
+#     initialise le driver
+#     init est lance automatiquement au chargement de ce fichier tcl
+#  return namespace
+#------------------------------------------------------------
+proc ::parallelport::initPlugin { } {
+   variable private
+   #--- je recupere le nom generique de la liaison
+   ##set private(genericName) [link::genericname parallelport]
+   if { $::tcl_platform(os) == "Linux" } {
+      set private(genericName) "/dev/parport"
+   } else {
+      set private(genericName) "LPT";
+   }
+}
+
 
 #------------------------------------------------------------
 #  configureDriver
@@ -60,7 +89,7 @@ proc ::parallelport::confToWidget { } {
 }
 
 #------------------------------------------------------------
-#  create
+#  createPluginInstance
 #     cree une liaison
 #
 #     retourne le numero du link
@@ -75,7 +104,7 @@ proc ::parallelport::confToWidget { } {
 #   ::parallelport::create "LPT2:" "cam2" "longuepose" "bit 2"
 #     2
 #------------------------------------------------------------
-proc ::parallelport::create { linkLabel deviceId usage comment } {
+proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment } {
    global audace
 
    set linkIndex [getLinkIndex $linkLabel]
@@ -96,14 +125,14 @@ proc ::parallelport::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-#  delete
+#  deletePluginInstance
 #     Supprime une utilisation d'une liaison
 #     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
 #     Ne fait rien si la liaison n'est pas ouverte
 #
 #  return rien
 #------------------------------------------------------------
-proc ::parallelport::delete { linkLabel deviceId usage } {
+proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
    global audace
 
    set linkno [::confLink::getLinkNo $linkLabel]
@@ -150,16 +179,6 @@ proc ::parallelport::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType
-#     retourne le type de driver
-#
-#  return "link"
-#------------------------------------------------------------
-proc ::parallelport::getDriverType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
 #  getHelp
 #     retourne la documentation du driver
 #
@@ -188,17 +207,6 @@ proc ::parallelport::getLinkIndex { linkLabel } {
    return $linkIndex
 }
 
-#------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
-#
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
-#------------------------------------------------------------
-proc ::parallelport::getLabel { } {
-   global caption
-
-   return "$caption(parallelport,titre)"
-}
 
 #------------------------------------------------------------
 #  getLinkLabels
@@ -236,42 +244,6 @@ proc ::parallelport::getSelectedLinkLabel { } {
    }
    #--- je retourne le label du link (premier mot de la ligne )
    return [lindex [$private(frm).available.list get $i] 0]
-}
-
-#------------------------------------------------------------
-#  init
-#     initialise le driver
-#     init est lance automatiquement au chargement de ce fichier tcl
-#  return namespace
-#------------------------------------------------------------
-proc ::parallelport::init { } {
-   variable private
-
-   #--- Charge le fichier caption
-   source [ file join $::audace(rep_plugin) link parallelport parallelport.cap ]
-
-   #--- je recupere le nom generique de la liaison
-   set private(genericName) [link::genericname parallelport]
-
-   #--- Cree les variables dans conf(...) si elles n'existent pas
-   initConf
-
-   #--- J'initialise les variables widget(..)
-   confToWidget
-
-   return [namespace current]
-}
-
-#------------------------------------------------------------
-#  initConf
-#     initialise les parametres dans le tableau conf()
-#
-#  return rien
-#------------------------------------------------------------
-proc ::parallelport::initConf { } {
-   global conf
-
-   return
 }
 
 #------------------------------------------------------------
@@ -365,6 +337,3 @@ proc ::parallelport::widgetToConf { } {
    global conf
 
 }
-
-::parallelport::init
-

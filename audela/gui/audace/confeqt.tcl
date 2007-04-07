@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.15 2007-02-24 13:31:33 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.16 2007-04-07 00:39:00 michelpujol Exp $
 #
 
 namespace eval ::confEqt {
@@ -33,6 +33,9 @@ proc ::confEqt::init { } {
    set private(frm)                "$audace(base).confeqt"
    set private(variablePluginName) ""
 
+   #--- j'ajoute le repetoire des equipements dans la liste des 
+   #--- repertoire pouvant contenir des plugins
+   lappend ::auto_path "$::audace(rep_plugin)/equipment"
    #--- je charge la liste des plugins
    findPlugin
 }
@@ -76,14 +79,14 @@ proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { co
       #--- les plugin  de tous les types sont autorises
       set private(notebookNameList) $private(namespaceList)
       foreach pluginName $private(notebookNameList) {
-         lappend private(notebookLabelList) [::$pluginName\::getLabel]
+         lappend private(notebookLabelList) [::$pluginName\::getPluginTitle]
       }
    } else {
       #--- je cree la liste des plugin dont le type est autorise
       foreach pluginName $private(namespaceList) {
          if { [lsearch -exact $authorizedPluginType [::$pluginName\::getPluginType]] != -1 } {
             lappend private(notebookNameList)  $pluginName
-            lappend private(notebookLabelList) [::$pluginName\::getLabel]
+            lappend private(notebookLabelList) [::$pluginName\::getPluginTitle]
          }
       }
    }
@@ -339,7 +342,7 @@ proc ::confEqt::select { { equipment "" } } {
 
    #--- je selectionne l'onglet qui contient le label de l'equipement
    if { $equipment != "" } {
-      Rnotebook:select $private(frm).usr.book [::$equipment\::getLabel]
+      Rnotebook:select $private(frm).usr.book [::$equipment\::getPluginTitle]
    }
 }
 
@@ -371,9 +374,8 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 #   recherche les plugins presents
 #
 # conditions :
-#  - le plugin doit retourner un namespace non nul quand on charge son source .tcl
 #  - le plugin doit avoir une procedure getPluginType qui retourne "equipment" ou "focuser"
-#  - le plugin doit avoir une procedure getlabel
+#  - le plugin doit avoir une procedure getPluginTitle
 #
 # si le plugin remplit les conditions
 #    son namespace est ajoute dans namespaceList
@@ -388,31 +390,28 @@ proc ::confEqt::findPlugin { } {
 
    #--- j'initialise les listes vides
    set private(namespaceList)  ""
-   set pluginPattern [ file join "$audace(rep_plugin)" equipment * pkgIndex.tcl ]
 
    #--- chargement des differentes fenetres de configuration des plugins
-   set error [catch { glob -nocomplain $pluginPattern } filelist ]
-
-   if { "$filelist" == "" } {
-      #--- aucun fichier correct
-      return 1
-   }
+   set filelist [glob -nocomplain -join "$audace(rep_plugin)" equipment * pkgIndex.tcl ]
 
    #--- je recherche les plugins repondant au filtre pluginPattern
-   foreach pkgIndex $filelist {
+   foreach pkgIndexFileName $filelist {
       set catchResult [catch {
-        #--- je recupere le nom du package
-         set packageName [source "$pkgIndex"]
-         #--- je charge le package
-         package require $packageName
-
-         set equipname $packageName
-         if { [$equipname\::getPluginType] == "equipment"
-              || [$equipname\::getPluginType] == "focuser" } {
-            set pluginlabel "[$equipname\:\:getLabel]"
-            #--- si c'est un plugin valide, je l'ajoute dans la liste des plugins
-            lappend private(namespaceList) $equipname
-            ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v[package present $equipname]\n"
+         ##set dir [file dirname $"pkgIndexFileName"]
+         #--- je recupere le nom du package
+         if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
+            if { $pluginInfo(type)== "equipment" || $pluginInfo(type)== "focuser"} {
+               #--- je charge le package
+               package require $pluginInfo(name)
+               #--- j'initalise le plugin
+               $pluginInfo(namespace)::initPlugin
+               set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+               #--- je l'ajoute dans la liste des plugins
+               lappend private(namespaceList) $pluginInfo(namespace)
+               ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
+            }
+         } else {
+            ::console::affiche_erreur "Error loading equipment $pkgIndexFileName \n$::errorInfo\n\n" 
          }
       } catchMessage]
       #--- j'affiche le message d'erreur et je continu la recherche des plugins
@@ -503,7 +502,7 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
    #--- je cree la liste des plugin de type "focuser"
    set pluginList [list ]
    foreach pluginName $private(namespaceList) {
-      if { [::$pluginName\::getPluginType] == "focuser" } {
+      if {  [::$pluginName\::getPluginType] == "focuser" } {
          lappend pluginList $pluginName
       }
    }
@@ -554,7 +553,7 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    #--- je cree la liste des plugin de type "focuser"
    set pluginList [list ]
    foreach pluginName $private(namespaceList) {
-      if { [::$pluginName\::getPluginType] == "focuser" } {
+      if {  [::$pluginName\::getPluginType] == "focuser" } {
          lappend pluginList $pluginName
       }
    }

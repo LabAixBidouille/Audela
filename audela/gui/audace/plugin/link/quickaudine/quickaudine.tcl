@@ -2,30 +2,13 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.11 2007-03-11 19:16:23 robertdelmas Exp $
-#
-
-package provide quickaudine 1.0
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
+# Mise a jour $Id: quickaudine.tcl,v 1.12 2007-04-07 00:35:18 michelpujol Exp $
 #
 
 namespace eval quickaudine {
+   package provide quickaudine 1.0
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] quickaudine.cap ]
 }
 
 #==============================================================
@@ -60,12 +43,12 @@ proc ::quickaudine::confToWidget { } {
 }
 
 #------------------------------------------------------------
-#  create
+#  createPluginInstance
 #     demarre la liaison
 #
 #  return rien
 #------------------------------------------------------------
-proc ::quickaudine::create { linkLabel deviceId usage comment } {
+proc ::quickaudine::createPluginInstance { linkLabel deviceId usage comment } {
    global audace
 
    #--- je rafraichis la liste
@@ -81,12 +64,12 @@ proc ::quickaudine::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-#  delete
+#  deletePluginInstance
 #     arrete la liaison et libere les ressources occupees
 #
 #  return rien
 #------------------------------------------------------------
-proc ::quickaudine::delete { linkLabel deviceId usage } {
+proc ::quickaudine::deletePluginInstance { linkLabel deviceId usage } {
    global audace
 
    #--- je rafraichis la liste
@@ -95,6 +78,20 @@ proc ::quickaudine::delete { linkLabel deviceId usage } {
    }
    #--- pour l'instant, la liaison est arretee par le pilote de la camera
    return
+}
+
+#------------------------------------------------------------
+#  getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::quickaudine::getPluginProperty { propertyName } {
+   switch $propertyName {
+      
+   }
 }
 
 #------------------------------------------------------------
@@ -134,12 +131,10 @@ proc ::quickaudine::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType
+#  getPluginType 
 #     retourne le type de driver
-#
-#  return "link"
 #------------------------------------------------------------
-proc ::quickaudine::getDriverType { } {
+proc ::quickaudine::getPluginType  { } {
    return "link"
 }
 
@@ -154,12 +149,10 @@ proc ::quickaudine::getHelp { } {
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
-#
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::quickaudine::getLabel { } {
+proc ::quickaudine::getPluginTitle { } {
    global caption
 
    return "$caption(quickaudine,titre)"
@@ -228,17 +221,13 @@ proc ::quickaudine::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-#  init (est lance automatiquement au chargement de ce fichier tcl)
+#  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#
-#  return namespace
 #------------------------------------------------------------
-proc ::quickaudine::init { } {
+proc ::quickaudine::initPlugin  { } {
    variable private
 
-   #--- Charge le fichier caption
-   source [ file join $::audace(rep_plugin) link quickaudine quickaudine.cap ]
-
+   
    #--- je fixe le nom generique de la liaison
    set private(genericName)   "quickaudine"
    set private(statusMessage) ""
@@ -248,8 +237,6 @@ proc ::quickaudine::init { } {
 
    #--- J'initialise les variables widget(..)
    confToWidget
-
-   return [namespace current]
 }
 
 #------------------------------------------------------------
@@ -352,6 +339,4 @@ proc ::quickaudine::widgetToConf { } {
    global conf
 
 }
-
-::quickaudine::init
 

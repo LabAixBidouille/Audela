@@ -2,30 +2,13 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.11 2007-01-27 15:25:34 robertdelmas Exp $
-#
-
-package provide serialport 1.0
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
+# Mise a jour $Id: serialport.tcl,v 1.12 2007-04-07 00:35:18 michelpujol Exp $
 #
 
 namespace eval serialport {
+   package provide serialport 1.0
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] serialport.cap ]   
 }
 
 #==============================================================
@@ -61,12 +44,12 @@ proc ::serialport::confToWidget { } {
 }
 
 #------------------------------------------------------------
-#  create
+#  createPluginInstance
 #     demarre la liaison
 #
 #  return rien
 #------------------------------------------------------------
-proc ::serialport::create { linkLabel deviceId usage comment } {
+proc ::serialport::createPluginInstance { linkLabel deviceId usage comment } {
    variable private
    global audace
 
@@ -87,12 +70,12 @@ proc ::serialport::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-#  delete
+#  deletePluginInstance
 #     arrete la liaison et libere les ressources occupees
 #
 #  return rien
 #------------------------------------------------------------
-proc ::serialport::delete { linkLabel deviceId usage } {
+proc ::serialport::deletePluginInstance { linkLabel deviceId usage } {
    global audace
 
    #--- pour l'instant, la liaison est arretee par le pilote du peripherique
@@ -107,6 +90,20 @@ proc ::serialport::delete { linkLabel deviceId usage } {
    }
    #---
    return
+}
+
+#------------------------------------------------------------
+#  getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::serialport::getPluginProperty { propertyName } {
+   switch $propertyName {
+     
+   }
 }
 
 #------------------------------------------------------------
@@ -146,12 +143,10 @@ proc ::serialport::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType
+#  getPluginType 
 #     retourne le type de driver
-#
-#  return "link"
 #------------------------------------------------------------
-proc ::serialport::getDriverType { } {
+proc ::serialport::getPluginType  { } {
    return "link"
 }
 
@@ -180,12 +175,10 @@ proc ::serialport::initConf { } {
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
-#
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::serialport::getLabel { } {
+proc ::serialport::getPluginTitle { } {
    global caption
 
    return "$caption(serialport,titre)"
@@ -260,16 +253,13 @@ proc ::serialport::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-#  init (est lance automatiquement au chargement de ce fichier tcl)
+#  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #
 #  return namespace
 #------------------------------------------------------------
-proc ::serialport::init { } {
+proc ::serialport::initPlugin  { } {
    variable private
-
-   #--- Charge le fichier caption
-   source [ file join $::audace(rep_plugin) link serialport serialport.cap ]
 
    #--- Je charge les variables d'environnement
    initConf
@@ -286,8 +276,6 @@ proc ::serialport::init { } {
 
    #--- J'initialise les variables widget(..)
    confToWidget
-
-   return [namespace current]
 }
 
 #------------------------------------------------------------
@@ -385,75 +373,73 @@ proc ::serialport::widgetToConf { } {
 #
 #  return rien
 #------------------------------------------------------------
-   proc ::serialport::Recherche_Ports { } {
-      global audace
-      global conf
+proc ::serialport::Recherche_Ports { } {
+   global audace
+   global conf
 
-      #--- Recherche le ou les ports COM exclus
-      set kd ""
-      set port_exclus $conf(serial,port_exclus)
-      set nbr_port_exclus [ llength $port_exclus ]
-      if { $nbr_port_exclus == "1" } {
-         set kd [string index $port_exclus [expr [string length $port_exclus]-1]]
-      } else {
-         for { set i 0 } { $i < $nbr_port_exclus } { incr i } {
-            set a [ lindex $port_exclus $i ]
-            set kdd [string index $a [expr [string length $a]-1]]
-            lappend kd $kdd
-            set kd [ lsort $kd ]
-         }
-      }
-
-      #--- Suivant l'OS
-      if { $::tcl_platform(os) == "Linux" } {
-         set port_com     "/dev/ttyS"
-         set port_com_usb "/dev/ttyUSB"
-         set kk  "0"
-         set kkt "20"
-      } else {
-         set port_com "COM"
-         set kk  "1"
-         set kkt "20"
-      }
-
-      #--- Recherche des ports com
-      set comlist              ""
-      set comlist_usb          ""
-      set audace(list_com)     ""
-
-      set i "0"
-      for { set k $kk } { $k < $kkt } { incr k } {
-         if { $k != "[ lindex $kd $i]" } {
-            set errnum [ catch { open $port_com$k r+ } msg ]
-            if { $errnum == "0" } {
-               lappend comlist $k
-               close $msg
-            }
-         } else {
-            incr i
-         }
-      }
-      set long_com [ llength $comlist ]
-
-      for { set k 0 } { $k < $long_com } { incr k } {
-         lappend audace(list_com) "$port_com[ lindex $comlist $k ]"
-      }
-
-      if { $::tcl_platform(os) == "Linux" } {
-         for { set k $kk } { $k < 20 } { incr k } {
-            set errnum [ catch { open $port_com_usb$k r+ } msg ]
-            if { $errnum == "0" } {
-               lappend comlist_usb $k
-               close $msg
-            }
-         }
-         set long_com_usb [ llength $comlist_usb ]
-
-         for { set k 0 } { $k < $long_com_usb } { incr k } {
-            lappend audace(list_com) "$port_com_usb[ lindex $comlist_usb $k ]"
-         }
+   #--- Recherche le ou les ports COM exclus
+   set kd ""
+   set port_exclus $conf(serial,port_exclus)
+   set nbr_port_exclus [ llength $port_exclus ]
+   if { $nbr_port_exclus == "1" } {
+      set kd [string index $port_exclus [expr [string length $port_exclus]-1]]
+   } else {
+      for { set i 0 } { $i < $nbr_port_exclus } { incr i } {
+         set a [ lindex $port_exclus $i ]
+         set kdd [string index $a [expr [string length $a]-1]]
+         lappend kd $kdd
+         set kd [ lsort $kd ]
       }
    }
 
-::serialport::init
+   #--- Suivant l'OS
+   if { $::tcl_platform(os) == "Linux" } {
+      set port_com     "/dev/ttyS"
+      set port_com_usb "/dev/ttyUSB"
+      set kk  "0"
+      set kkt "20"
+   } else {
+      set port_com "COM"
+      set kk  "1"
+      set kkt "20"
+   }
+
+   #--- Recherche des ports com
+   set comlist              ""
+   set comlist_usb          ""
+   set audace(list_com)     ""
+
+   set i "0"
+   for { set k $kk } { $k < $kkt } { incr k } {
+      if { $k != "[ lindex $kd $i]" } {
+         set errnum [ catch { open $port_com$k r+ } msg ]
+         if { $errnum == "0" } {
+            lappend comlist $k
+            close $msg
+         }
+      } else {
+         incr i
+      }
+   }
+   set long_com [ llength $comlist ]
+
+   for { set k 0 } { $k < $long_com } { incr k } {
+      lappend audace(list_com) "$port_com[ lindex $comlist $k ]"
+   }
+
+   if { $::tcl_platform(os) == "Linux" } {
+      for { set k $kk } { $k < 20 } { incr k } {
+         set errnum [ catch { open $port_com_usb$k r+ } msg ]
+         if { $errnum == "0" } {
+            lappend comlist_usb $k
+            close $msg
+         }
+      }
+      set long_com_usb [ llength $comlist_usb ]
+
+      for { set k 0 } { $k < $long_com_usb } { incr k } {
+         lappend audace(list_com) "$port_com_usb[ lindex $comlist_usb $k ]"
+      }
+   }
+}
 
