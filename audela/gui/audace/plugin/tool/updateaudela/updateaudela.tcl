@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.1 2007-04-07 01:04:50 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.2 2007-04-07 20:54:38 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -117,6 +117,7 @@ proc ::updateaudela::confToWidget { visuNo } {
    variable private
    global conf
 
+   set private(position) "$conf(updateaudela,position)"
 }
 
 #------------------------------------------------------------
@@ -200,12 +201,13 @@ proc ::updateaudela::fillConfigPage { frm visuNo } {
    set private(tree)     $frm.plugin.tree
    set private(kitTable) $frm.kit.table
 
-   #--- Je position la fenetre
-   wm resizable [ winfo toplevel $private(frm) ] 1 1
-   wm geometry [ winfo toplevel $private(frm) ] $::conf(updateaudela,position)
-
    #--- J'initialise les variables des widgets
    confToWidget $visuNo
+
+   #--- Je positione la fenetre
+   wm resizable [ winfo toplevel $private(frm) ] 1 1
+  ### wm geometry [ winfo toplevel $private(frm) ] $::conf(updateaudela,position)
+   wm geometry [ winfo toplevel $private(frm) ] $private(position)
 
    #--- frame des kits
    TitleFrame $frm.kit -borderwidth 2 -text $caption(updateaudela,kitFrame)
@@ -365,6 +367,34 @@ proc ::updateaudela::showHelp { } {
    variable private
 
    ::audace::showHelpScript [ file join $private(pluginDirectory) tool updateaudela ] "updateaudela.htm"
+}
+
+#------------------------------------------------------------
+#  ::updateaudela::apply
+#  recupere la position de l'outil apres appui sur Appliquer
+#------------------------------------------------------------
+proc ::updateaudela::apply { { visuNo 1 } } {
+::updateaudela::recupPosition}
+
+#------------------------------------------------------------
+#  ::updateaudela::close
+#  recupere la position de l'outil apres appui sur Fermer
+#------------------------------------------------------------
+proc ::updateaudela::close { { visuNo 1 } } {
+::updateaudela::recupPosition}
+
+#------------------------------------------------------------
+#  ::updateaudela::recupPosition
+#  recupere la position de l'outil
+#------------------------------------------------------------
+proc ::updateaudela::recupPosition { } {
+   variable private
+
+   #--- Je mets la position actuelle de la fenetre dans conf()
+   set geom [ winfo geometry [winfo toplevel $private(frm) ] ]
+   set deb [ expr 1 + [ string first + $geom ] ]
+   set fin [ string length $geom ]
+   set ::conf(updateaudela,position) "+[ string range $geom $deb $fin ]"
 }
 
 #------------------------------------------------------------
