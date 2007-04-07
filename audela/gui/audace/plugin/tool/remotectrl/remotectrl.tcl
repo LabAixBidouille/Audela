@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.9 2007-04-07 00:38:35 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.10 2007-04-07 19:36:53 robertdelmas Exp $
 #
 
 #============================================================
@@ -125,6 +125,7 @@ namespace eval ::Rmctrl {
       set panneau(Rmctrl,choix_bin)                     "1x1 2x2 4x4"
       set panneau(Rmctrl,binning)                       "2x2"
       set panneau(Rmctrl,menu)                          "$caption(rmctrl,coord)"
+      set panneau(Rmctrl,nomObjet)                      ""
 
       #--- Coordonnees J2000.0 de M104
       set panneau(Rmctrl,getobj)    "12h40m0 -11d37m22"
@@ -255,6 +256,13 @@ namespace eval ::Rmctrl {
          update
       }
       ::Rmctrl::cmdAfficheCoord
+   }
+
+   proc setRaDec { 1 listRaDec nomObjet } {
+      global panneau
+
+      set panneau(Rmctrl,getobj)   $listRaDec
+      set panneau(Rmctrl,nomObjet) $nomObjet
    }
 
    proc cmdSpeed { { value " " } } {
@@ -875,8 +883,12 @@ proc RmctrlBuildIF { This } {
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Frame pour choisir un catalogue
-         ::cataGoto::createFrameCatalogue $This.fra2.catalogue $panneau(Rmctrl,getobj) 1
+         ::cataGoto::createFrameCatalogue $This.fra2.catalogue $panneau(Rmctrl,getobj) 1 "::Rmctrl"
          pack $This.fra2.catalogue -in $This.fra2 -anchor nw -side top -padx 4 -pady 1
+
+         #--- Label de l'objet choisi
+         label $This.fra2.lab1 -textvariable panneau(Rmctrl,nomObjet) -relief flat
+         pack $This.fra2.lab1 -in $This.fra2 -anchor center -padx 2 -pady 1
 
          #--- Entry pour l'objet a entrer
          entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Rmctrl,getobj) \
