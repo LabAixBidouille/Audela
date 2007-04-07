@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.39 2007-04-07 00:38:29 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.40 2007-04-07 20:29:25 robertdelmas Exp $
 #
 
 #==============================================================
@@ -169,6 +169,7 @@ namespace eval ::AcqFC {
       switch $propertyName {
          function     { return "acquisition" }
          multivisu    { return 1 }
+         console      { return 1 }
       }
    }
 
