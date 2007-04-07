@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.61 2007-04-03 20:30:11 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.62 2007-04-07 00:42:44 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -490,15 +490,24 @@ namespace eval ::audace {
       set audace(imageNo) [visu$visuNo image]
       set audace(hCanvas) $::confVisu::private($visuNo,hCanvas)
 
-      #--- Chargement des differents outils
-      foreach fichier [ glob -nocomplain [ file join audace plugin tool * pkgIndex.tcl ] ] {
-         uplevel #0 "source $fichier"
-         set nom [ file tail [ file dirname "$fichier" ] ]
-         package require $nom
-         ::console::affiche_prompt "# $fichier [ package present $nom ] \n"
+      #--- J'ajoute le repertoire des outils dans le chemin
+      lappend ::auto_path [file join $audace(rep_plugin) tool]
+      
+      #--- Chargement des differents outils      
+      foreach pkgIndexFileName [ glob -nocomplain [ file join $audace(rep_plugin) tool * pkgIndex.tcl ] ] {
+         if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo] == 0 } {
+            set result [package require $pluginInfo(name)]
+            if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
+               #--- j'execute la procedure initPlugin si elle existe
+               $pluginInfo(namespace)::initPlugin $audace(base) 
+            }
+            set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
+            ::console::affiche_prompt "# Outil : $pluginInfo(name)  $pluginInfo(version)\n"
+         } else {
+            ::console::affiche_erreur "Error loading plugin in safe interpreter from\n$pkgIndexFileName \n$::errorInfo\n\n" 
+         }
       }
       ::console::disp "\n"
-
       return $visuNo
    }
 
@@ -1245,7 +1254,85 @@ namespace eval ::audace {
       ::confVisu::visuDynamix $audace(visuNo) $max $min
    }
 
+   #------------------------------------------------------------
+   # ::audace::getPluginInfo
+   #    retourne les informations sur un plugin dans le tableau passe en parametre
+   #      pluginInfo(name)      nom du plugin
+   #      pluginInfo(version)   version du plugin
+   #      pluginInfo(command)   commande pour charger le plugin 
+   #      pluginInfo(namespace) namespace principal du plugin
+   #      pluginInfo(title)     titre du plugin dans la langue de l'utilisateur
+   #      pluginInfo(type)      type du plugin
+   #
+   # parametres : 
+   #    pkgIndexFileName : nom complet du fichier pkgIndex.tcl (avec le repertoire)
+   #    pluginInfo : tableau (array) des informations sur le plugin rempli par cette procedure
+   # return : 
+   #     0 si pas d'erreur, le resultat est dans le tableau donné en paramètre.
+   #    -1 si une erreur, le libellé de l'erreur est dans ::::errorInfo
+   #
+   # Exemple d'utilisation avec le fichier
+   #        audace/gui/plugin/equipment/focuserjmi/pkgIndex.tcl
+   #    qui contient 
+   #        package ifneeded focuserjmi 1.0 [ list source [ file join $dir focuserjmi.tcl ] ]
+   #    
+   #    Les commandes :
+   #       set fileName "$audace(rep_plugin)equipment/focuserjmi/pkgIndex.tcl"
+   #       ::audace::getPluginInfo $fileName pluginInfo
+   #       ::console::disp "plugin name     =$pluginInfo(name)      \n"
+   #       ::console::disp "plugin version  =$pluginInfo(version)   \n"
+   #       ::console::disp "plugin command  =$pluginInfo(command)   \n"
+   #       ::console::disp "plugin namespace=$pluginInfo(namespace) \n"
+   #       ::console::disp "plugin title    =$pluginInfo(title)      \n"
+   #       ::console::disp "plugin type     =$pluginInfo(type)      \n"
+   #    affichent : 
+   #       plugin name     =focuserjmi
+   #       plugin version  =1.0
+   #       plugin command  =source c:/audela/gui/audace/plugin/equipment/focuserjmi/focuserjmi.tcl
+   #       plugin namespace=focuserjmi
+   #       plugin title    =Focaliseur JMI
+   #       plugin type     =focuser
+   #------------------------------------------------------------   
+   proc getPluginInfo { pkgIndexFileName pluginInfo } {
+      upvar $pluginInfo pinfo
+      
+      #--- je cree un interpreteur temporaire pour charger le package sans pertuber Audela
+      #--- j'utilise le meme principe que la 
+      set interpTemp [interp create -safe ]
+      set catchResult [ catch {
+         interp expose $interpTemp source
+         interp expose $interpTemp file
+         $interpTemp eval  [ list set langage $::langage]
+         $interpTemp eval  [ list set pkgIndexFileName "$pkgIndexFileName"]
+         $interpTemp eval  { set dir "[file dirname $pkgIndexFileName]" }
+         $interpTemp eval  { source  "$pkgIndexFileName" } 
+         set pinfo(name)    [$interpTemp eval { set pluginName [lindex [package names ] 0] }]
+         set pinfo(version) [$interpTemp eval { set pluginVersion [package versions $pluginName] } ]
+         set pinfo(command) [$interpTemp eval { set sourceFile [package ifneeded $pluginName $pluginVersion] } ]
+         set namespaceList2 [$interpTemp eval { global caption; set caption(test) ""; eval "$sourceFile" ; set pluginNamspace [namespace children ::] } ]
+         if { [llength $namespaceList2 ] > 0 } {
+            set pinfo(namespace)  [lindex $namespaceList2 0]
+         } else {
+            error "Namespace not found in plugin $pinfo(name)"
+         }
+         #--- je recupere le type du plugin
+         set pinfo(type) [$interpTemp eval { $pluginNamspace\::getPluginType } ]
+         #--- je recupere le titre du plugin
+         set pinfo(title) [$interpTemp eval { $pluginNamspace\::getPluginTitle } ]
+         
+      } ]
+      #--- je supprime l'interpreteur temporaire
+      interp delete $interpTemp
+      #--- Je retourne -1 s'il y a eu une erreur
+      if { $catchResult == 1 } {
+         return "-1"
+      } else {
+         return "0"
+      }         
+   }
 }
+
+
 ########################## Fin du namespace audace ##########################
 
 # Scrolled_Canvas
@@ -1359,8 +1446,8 @@ proc getVisuNo { tkpath } {
 #  startdebug
 #     active le debugger "RamDebugger"
 #
-#     le RamDebugger doit être installé dans le répertoire
-#      audace/lib/RamDebugger
+#     RamDebugger doit être installé dans le répertoire
+#     audace/lib/RamDebugger
 #------------------------------------------------------------
 proc startdebug { } {
    global audace
@@ -1372,15 +1459,19 @@ proc startdebug { } {
    #}
    #package require commR
    #comm::register audela 1
-   #comm::register audela 1
-   #comm::register audela 1
 
    catch {
-      #load ../bin/tk84.dll
-      load ../bin/tk84t.dll
+      #--- Chargement statique de la librairie TK pour RamDebugger
+      if { $::tcl_platform(os) == "Linux" } {
+         #--- pour LINUX , il faut inserer prefixe "lib"  devant le nom de la librairie
+         load [file join [file dirname $::tk_library] "lib[file tail $::tk_library][info sharedlibextension]"]
+      } else {
+         load [file join "$::audela_start_dir" tk84t.dll ]
+      }
    }
    package require RamDebugger
 }
+
 
 #
 #--- Execute en premier au demarrage

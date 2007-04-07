@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.66 2007-03-25 13:29:51 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.67 2007-04-07 00:39:00 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -2501,6 +2501,11 @@ namespace eval ::confCam {
       #--- Je constitue la liste des liaisons pour la longuepose
       set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" "external" } ]
 
+      #--- Utilisation de la longue pose
+      checkbutton $frm.longuepose -text "$caption(confcam,dslr_longuepose)" -highlightthickness 0 \
+         -variable confCam(dslr,longuepose) -command { ::confCam::ConfDSLR }
+      pack $frm.longuepose -in $frm.frame8 -anchor w -side left -padx 10 -pady 10
+
       #--- Je verifie le contenu de la liste
       if { [llength $list_combobox ] > 0 } {
          #--- si la liste n'est pas vide,
@@ -2518,11 +2523,6 @@ namespace eval ::confCam {
          #--- j'empeche de selectionner l'option longue
          $frm.longuepose configure -state disable
       }
-
-      #--- Utilisation de la longue pose
-      checkbutton $frm.longuepose -text "$caption(confcam,dslr_longuepose)" -highlightthickness 0 \
-         -variable confCam(dslr,longuepose) -command { ::confCam::ConfDSLR }
-      pack $frm.longuepose -in $frm.frame8 -anchor w -side left -padx 10 -pady 10
 
       #--- Bouton de configuration des ports et liaisons
       button $frm.configure_longuepose -text "$caption(confcam,configurer)" -relief raised \
@@ -4345,7 +4345,7 @@ namespace eval ::confCam {
                #--- j'affiche un message d'information
                console::affiche_erreur "$caption(confcam,camera) [ cam$camNo name ] ([ cam$camNo ccd ])\n"
                console::affiche_erreur "$caption(confcam,port_liaison)\
-                  ([ ::[ ::confLink::getLinkNamespace $conf(audine,port) ]::getLabel ])\
+                  ([ ::[ ::confLink::getLinkNamespace $conf(audine,port) ]::getPluginTitle ])\
                   $caption(confcam,2points) $conf(audine,port)\n"
                console::affiche_saut "\n"
             }

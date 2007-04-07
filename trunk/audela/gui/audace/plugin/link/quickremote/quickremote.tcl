@@ -2,30 +2,13 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.11 2007-03-11 19:16:43 robertdelmas Exp $
-#
-
-package provide quickremote 1.1
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
+# Mise a jour $Id: quickremote.tcl,v 1.12 2007-04-07 00:35:18 michelpujol Exp $
 #
 
 namespace eval quickremote {
+   package provide quickremote 1.1
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] quickremote.cap ]
 }
 
 #==============================================================
@@ -60,7 +43,7 @@ proc ::quickremote::confToWidget { } {
 }
 
 #------------------------------------------------------------
-#  create
+#  createPluginInstance
 #     demarre la liaison
 #
 #     retourne le numero du link
@@ -75,7 +58,7 @@ proc ::quickremote::confToWidget { } {
 #   ::quickremote::create "quickremote2" "cam2" "longuepose" "bit 2"
 #     2
 #------------------------------------------------------------
-proc ::quickremote::create { linkLabel deviceId usage comment } {
+proc ::quickremote::createPluginInstance { linkLabel deviceId usage comment } {
    global audace
 
    set linkIndex [getLinkIndex $linkLabel]
@@ -96,14 +79,14 @@ proc ::quickremote::create { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-#  delete
+#  deletePluginInstance
 #     Supprime une utilisation d'une liaison
 #     et supprime la liaison si elle n'est plus utilises par aucun autre peripherique
 #     Ne fait rien si la liaison n'est pas ouverte
 #
 #  return rien
 #------------------------------------------------------------
-proc ::quickremote::delete { linkLabel deviceId usage } {
+proc ::quickremote::deletePluginInstance { linkLabel deviceId usage } {
    global audace
 
    set linkno [::confLink::getLinkNo $linkLabel]
@@ -119,6 +102,22 @@ proc ::quickremote::delete { linkLabel deviceId usage } {
       }
    }
 }
+
+#------------------------------------------------------------
+#  getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::quickremote::getPluginProperty { propertyName } {
+   switch $propertyName {
+      
+   }
+}
+
+
 
 #------------------------------------------------------------
 #  fillConfigPage
@@ -157,12 +156,10 @@ proc ::quickremote::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType
+#  getPluginType 
 #     retourne le type de driver
-#
-#  return "link"
 #------------------------------------------------------------
-proc ::quickremote::getDriverType { } {
+proc ::quickremote::getPluginType  { } {
    return "link"
 }
 
@@ -177,12 +174,10 @@ proc ::quickremote::getHelp { } {
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
-#
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::quickremote::getLabel { } {
+proc ::quickremote::getPluginTitle { } {
    global caption
 
    return "$caption(quickremote,titre)"
@@ -251,16 +246,11 @@ proc ::quickremote::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-#  init (est lance automatiquement au chargement de ce fichier tcl)
+#  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#
-#  return namespace
 #------------------------------------------------------------
-proc ::quickremote::init { } {
+proc ::quickremote::initPlugin  { } {
    variable private
-
-   #--- Charge le fichier caption
-   source [ file join $::audace(rep_plugin) link quickremote quickremote.cap ]
 
    #--- je fixe le nom generique de la liaison
    set private(genericName)   "quickremote"
@@ -271,8 +261,6 @@ proc ::quickremote::init { } {
 
    #--- J'initialise les variables widget(..)
    confToWidget
-
-   return [namespace current]
 }
 
 #------------------------------------------------------------
@@ -375,6 +363,3 @@ proc ::quickremote::widgetToConf { } {
    global conf
 
 }
-
-::quickremote::init
-

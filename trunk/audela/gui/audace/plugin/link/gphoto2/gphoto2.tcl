@@ -2,30 +2,13 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.5 2007-01-27 15:16:14 robertdelmas Exp $
-#
-
-package provide gphoto2 1.0
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
+# Mise a jour $Id: gphoto2.tcl,v 1.6 2007-04-07 00:35:17 michelpujol Exp $
 #
 
 namespace eval gphoto2 {
+   package provide gphoto2 1.0
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] gphoto2.cap ]
 }
 
 #------------------------------------------------------------
@@ -57,25 +40,39 @@ proc ::gphoto2::confToWidget { } {
 }
 
 #------------------------------------------------------------
-#  create
+#  createPluginInstance
 #     demarre la liaison
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::gphoto2::create { linkLabel deviceId usage comment } {
+proc ::gphoto2::createPluginInstance { linkLabel deviceId usage comment } {
    #--- pour l'instant, la liaison est demarree par le pilote de la camera
    return
 }
 
 #------------------------------------------------------------
-#  delete
+#  deletePluginInstance
 #     arrete la liaison et libere les ressources occupees
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::gphoto2::delete { linkLabel deviceId usage } {
+proc ::gphoto2::deletePluginInstance { linkLabel deviceId usage } {
    #--- pour l'instant, la liaison est arretee par le pilote de la camera
    return
+}
+
+#------------------------------------------------------------
+#  getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::gphoto2::getPluginProperty { propertyName } {
+   switch $propertyName {
+      
+   }
 }
 
 #------------------------------------------------------------
@@ -99,12 +96,10 @@ proc ::gphoto2::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getDriverType
+#  getPluginType 
 #     retourne le type de driver
-#
-#  return "link"
 #------------------------------------------------------------
-proc ::gphoto2::getDriverType { } {
+proc ::gphoto2::getPluginType  { } {
    return "link"
 }
 
@@ -119,12 +114,10 @@ proc ::gphoto2::getHelp { } {
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le label du driver
-#
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::gphoto2::getLabel { } {
+proc ::gphoto2::getPluginTitle { } {
    global caption
 
    return "$caption(gphoto2,titre)"
@@ -174,14 +167,10 @@ proc ::gphoto2::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 #  init (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
-#
-#  return namespace name
 #------------------------------------------------------------
-proc ::gphoto2::init { } {
+proc ::gphoto2::initPlugin  { } {
    variable private
 
-   #--- Charge le fichier caption
-   source [ file join $::audace(rep_plugin) link gphoto2 gphoto2.cap ]
 
    #--- je fixe le nom generique de la liaison  identique au namespace
    set private(genericName) "gphoto2"
@@ -191,8 +180,6 @@ proc ::gphoto2::init { } {
 
    #--- J'initialise les variables widget(..)
    confToWidget
-
-   return [namespace current]
 }
 
 #------------------------------------------------------------
@@ -242,6 +229,4 @@ proc ::gphoto2::widgetToConf { } {
    global conf
    set conf(dslr,debug)     $widget(debug)
 }
-
-::gphoto2::init
 
