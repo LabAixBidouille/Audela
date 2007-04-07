@@ -2,33 +2,87 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.8 2006-12-16 14:09:06 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.9 2007-04-07 00:38:33 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
 # is available in file cmaude_ini.tcl to be easily modified
 #
 
-package provide cmaude 1.0
 
-namespace eval ::cmaude {
 #============================================================
 #===   Definition of namespace cmaude to create a panel   ===
 #============================================================
+namespace eval ::cmaude {
+   package provide cmaude 1.0
+
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] cmaude.cap ]
 
    #================================================================
    #===   Definition of automatic functions to build the panel   ===
    #================================================================
 
-   global audace
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool cmaude cmaude.cap ]
+      return "$caption(cmaude,titre_mascot)"
+   }
 
-   proc init { { in "" } } {
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "acquisition" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.cmaude
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       variable cmconf
@@ -51,7 +105,6 @@ namespace eval ::cmaude {
       #--- Initialisation du compteur des images
       set compteur "1"
       #--- Initialisation des variables panneau
-      set panneau(menu_name,cmaude)       "$caption(cmaude,titre_mascot)"
       set panneau(cmaude,titre)           "$caption(cmaude,titre_mascot)"
       set panneau(cmaude,aide)            "$caption(cmaude,help_titre)"
       set panneau(cmaude,parcourir)       "$caption(cmaude,parcourir)"
@@ -82,6 +135,10 @@ namespace eval ::cmaude {
       cmaudeBuildIF $This
    }
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
       global caption
@@ -99,6 +156,10 @@ namespace eval ::cmaude {
       ::console::affiche_prompt "----------------------------\n\n"
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
 
@@ -352,7 +413,7 @@ namespace eval ::cmaude {
          $This.fra2.but1 configure -relief raised -state normal
          update
       } else {
-         ::confCam::run 
+         ::confCam::run
          tkwait window $audace(base).confCam
       }
    #--- End of proc cmdGO
@@ -382,7 +443,7 @@ namespace eval ::cmaude {
          $This.fra2.but2 configure -relief raised -state normal
          update
       } else {
-         ::confCam::run 
+         ::confCam::run
          tkwait window $audace(base).confCam
       }
    }
@@ -587,10 +648,11 @@ namespace eval ::cmaude {
 
 }
 
+#------------------------------------------------------------
+# cmaudeBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
 proc cmaudeBuildIF {This} {
-#======================
-#=== Panel graphism ===
-#======================
 global audace color panneau
 
    #--- Frame of panel
@@ -742,9 +804,6 @@ global audace color panneau
 #================================
 #=== Intialisation of pannel  ===
 #================================
-global audace
-
-::cmaude::init $audace(base)
 
 #=== End of file cmaude.tcl ===
 

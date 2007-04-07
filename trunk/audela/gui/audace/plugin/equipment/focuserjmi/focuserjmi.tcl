@@ -2,56 +2,26 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.6 2007-02-12 12:32:53 robertdelmas Exp $
-#
-
-#
-# Procedures generiques obligatoires (pour configurer tous les plugins camera, monture, equipement) :
-#     configurePlugin   : Configure le plugin
-#     createPlugin      : Cree une instance du plugin
-#     deletePlugin      : Arrete une instance du plugin et libere les ressources occupees
-#     getLabel          : Retourne le nom affichable du plugin
-#     getHelp           : Retourne la documentation html associee
-#     getPluginType     : Retourne le type de plugin
-#     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
-#     isReady           : Informe de l'etat de fonctionnement du plugin
-#
-# Procedures specifiques aux plugins "focuser" :
+# Mise a jour $Id: focuserjmi.tcl,v 1.7 2007-04-07 00:35:07 robertdelmas Exp $
 #
 
 namespace eval ::focuserjmi {
-
-}
-
-#==============================================================
-# Procedures generiques de configuration des equipements
-#==============================================================
-
-#------------------------------------------------------------
-#  ::focuserjmi::init (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le equipement
-#
-#  return namespace name
-#------------------------------------------------------------
-proc ::focuserjmi::init { } {
-   variable private
-   global conf
-
    package provide focuserjmi 1.0
 
-   #--- Charge le fichier caption
-   source [ file join $::audace(rep_plugin) equipment focuserjmi focuserjmi.cap ]
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
+   source [ file join [file dirname [info script]] focuserjmi.cap ]
+}
 
-   #--- Cree les variables dans conf(...) si elles n'existent pas
-   if { ! [ info exists conf(focuserjmi,link) ] }         { set conf(focuserjmi,link)         "" }
-   if { ! [ info exists conf(focuserjmi,bitStart) ] }     { set conf(focuserjmi,bitStart)     "4" }
-   if { ! [ info exists conf(focuserjmi,bitDirection) ] } { set conf(focuserjmi,bitDirection) "5" }
-   if { ! [ info exists conf(focuserjmi,start) ] }        { set conf(focuserjmi,start)        "0" }
+#------------------------------------------------------------
+#  ::focuserjmi::getPluginTitle
+#     retourne le titre du plugin dans la langue de l'utilisateur
+#
+#  return "Titre du plugin"
+#------------------------------------------------------------
+proc ::focuserjmi::getPluginTitle { } {
+   global caption
 
-   #--- variables locales
-   set private(linkNo) "0"
-
-   return [namespace current]
+   return "$caption(focuserjmi,label)"
 }
 
 #------------------------------------------------------------
@@ -65,16 +35,41 @@ proc ::focuserjmi::getPluginType { } {
 }
 
 #------------------------------------------------------------
-#  ::focuserjmi::getLabel
-#     retourne le label du plugin
+#  ::focuserjmi::getPluginProperty
+#     retourne la valeur de la propriete
 #
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::focuserjmi::getLabel { } {
-   global caption
+proc ::focuserjmi::getPluginProperty { propertyName } {
 
-   return "$caption(focuserjmi,label)"
+   switch $propertyName {
+      function { return "acquisition" }
+   }
 }
+
+
+#------------------------------------------------------------
+#  ::focuserjmi::init (est lance automatiquement au chargement de ce fichier tcl)
+#     initialise le equipement
+#
+#  return namespace name
+#------------------------------------------------------------
+proc ::focuserjmi::initPlugin { } {
+   variable private
+   global conf
+
+   #--- Cree les variables dans conf(...) si elles n'existent pas
+   if { ! [ info exists conf(focuserjmi,link) ] }         { set conf(focuserjmi,link)         "" }
+   if { ! [ info exists conf(focuserjmi,bitStart) ] }     { set conf(focuserjmi,bitStart)     "4" }
+   if { ! [ info exists conf(focuserjmi,bitDirection) ] } { set conf(focuserjmi,bitDirection) "5" }
+   if { ! [ info exists conf(focuserjmi,start) ] }        { set conf(focuserjmi,start)        "0" }
+
+   #--- variables locales
+   set private(linkNo) "0"
+}
+
 
 #------------------------------------------------------------
 #  ::focuserjmi::getHelp
@@ -325,6 +320,4 @@ proc ::focuserjmi::possedeControleEtendu { } {
       set result "0"
    }
 }
-
-::focuserjmi::init
 

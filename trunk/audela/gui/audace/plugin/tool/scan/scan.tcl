@@ -3,21 +3,80 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.20 2007-01-20 15:46:13 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.21 2007-04-07 00:38:35 robertdelmas Exp $
 #
 
-package provide scan 1.0
-
+#============================================================
+# Declaration du namespace Dscan
+#    initialise le namespace
+#============================================================
 namespace eval ::Dscan {
-   global audace
+   package provide scan 1.0
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool scan scan.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] scan.cap ]
 
-   proc init { { in "" } } {
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(scan,drift_scan)"
+   }
+
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "acquisition" }
+         subfunction1 { return "scan" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.dscan
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       global caption conf panneau
@@ -26,7 +85,7 @@ namespace eval ::Dscan {
       set This $this
 
       #--- Initialisation des captions
-      set panneau(menu_name,Dscan)       "$caption(scan,drift_scan)"
+      set panneau(Dscan,titre)          "$caption(scan,drift_scan)"
       set panneau(Dscan,aide)            "$caption(scan,help_titre)"
       set panneau(Dscan,col)             "$caption(scan,colonnes)"
       set panneau(Dscan,lig)             "$caption(scan,lignes)"
@@ -141,10 +200,10 @@ namespace eval ::Dscan {
                set panneau(Dscan,binning) "2x2"
                ::Dscan::cmdCalcul
             }
-         } 
+         }
          audinet {
             #--- C'est bon, on ne fait rien pour le binning
-         } 
+         }
          parallelport {
             #--- C'est bon, on ne fait rien pour le binning
          }
@@ -595,7 +654,7 @@ proc DscanBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,Dscan) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(Dscan,titre) \
             -command "::audace::showHelpPlugin tool scan scan.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Dscan,aide)
@@ -824,8 +883,4 @@ proc DscanBuildIF { This } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $This
 }
-
-global audace
-
-::Dscan::init $audace(base)
 

@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.3 2007-02-12 12:36:00 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.4 2007-04-07 00:35:07 robertdelmas Exp $
 #
 
 #
@@ -20,7 +20,10 @@
 #
 
 namespace eval ::focuseraudecom {
+   package provide focuseraudecom 1.0
 
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
+   source [ file join [file dirname [info script]] focuseraudecom.cap ]
 }
 
 #==============================================================
@@ -33,18 +36,25 @@ namespace eval ::focuseraudecom {
 #
 #  return namespace name
 #------------------------------------------------------------
-proc ::focuseraudecom::init { } {
+proc ::focuseraudecom::initPlugin { } {
    global audace
-
-   package provide focuseraudecom 1.0
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) equipment focuseraudecom focuseraudecom.cap ]
 
    #--- Cree les variables dans conf(...) si elles n'existent pas
    #--- pas de variable conf() pour ce focuser
 
    return [namespace current]
+}
+
+#------------------------------------------------------------
+#  ::focuseraudecom::getPluginTitle
+#     retourne le titre du plugin dans la langue de l'utilisateur
+#
+#  return "Titre du plugin"
+#------------------------------------------------------------
+proc ::focuseraudecom::getPluginTitle { } {
+   global caption
+
+   return "$caption(focuseraudecom,label)"
 }
 
 #------------------------------------------------------------
@@ -55,18 +65,6 @@ proc ::focuseraudecom::init { } {
 #------------------------------------------------------------
 proc ::focuseraudecom::getPluginType { } {
    return "focuser"
-}
-
-#------------------------------------------------------------
-#  ::focuseraudecom::getLabel
-#     retourne le label du plugin
-#
-#  return "Titre de l'onglet (dans la langue de l'utilisateur)"
-#------------------------------------------------------------
-proc ::focuseraudecom::getLabel { } {
-   global caption
-
-   return "$caption(focuseraudecom,label)"
 }
 
 #------------------------------------------------------------
@@ -347,6 +345,4 @@ proc ::focuseraudecom::possedeControleEtendu { } {
       set result "0"
    }
 }
-
-::focuseraudecom::init
 

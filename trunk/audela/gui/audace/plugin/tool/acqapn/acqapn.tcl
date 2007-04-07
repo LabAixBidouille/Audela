@@ -2,20 +2,80 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.12 2007-03-21 22:11:34 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.13 2007-04-07 00:38:29 robertdelmas Exp $
 #
 
-   package provide acqapn 1.0
-
+   #============================================================
+   # Declaration du namespace AcqAPN
+   #    initialise le namespace
+   #============================================================
    namespace eval ::AcqAPN {
-      global audace
+      package provide acqapn 1.0
 
-      source [ file join $audace(rep_plugin) tool acqapn acqapn.cap ]
+      #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+      source [ file join [file dirname [info script]] acqapn.cap ]
 
-      proc Init { { in "" } } {
+      #------------------------------------------------------------
+      # getPluginTitle
+      #    retourne le titre du plugin dans la langue de l'utilisateur
+      #------------------------------------------------------------
+      proc getPluginTitle { } {
+         global caption
+
+         return "$caption(acqapn,titre,panneau)"
+      }
+
+      #------------------------------------------------------------
+      # getPluginType
+      #    retourne le type de plugin
+      #------------------------------------------------------------
+      proc getPluginType { } {
+         return "tool"
+      }
+
+      #------------------------------------------------------------
+      # getPluginProperty
+      #    retourne la valeur de la propriete
+      #
+      # parametre :
+      #    propertyName : nom de la propriete
+      # return : valeur de la propriete ou "" si la propriete n'existe pas
+      #------------------------------------------------------------
+      proc getPluginProperty { propertyName } {
+         switch $propertyName {
+            function     { return "acquisition" }
+            subfunction1 { return "coolpix" }
+         }
+      }
+
+      #------------------------------------------------------------
+      # initPlugin
+      #    initialise le plugin
+      #------------------------------------------------------------
+      proc initPlugin{ } {
+
+      }
+
+      #------------------------------------------------------------
+      # createPluginInstance
+      #    cree une nouvelle instance de l'outil
+      #------------------------------------------------------------
+      proc createPluginInstance { { in "" } { visuNo 1 } } {
          createPanel $in.acqapn
       }
 
+      #------------------------------------------------------------
+      # deletePluginInstance
+      #    suppprime l'instance du plugin
+      #------------------------------------------------------------
+      proc deletePluginInstance { visuNo } {
+
+      }
+
+      #------------------------------------------------------------
+      # createPanel
+      #    prepare la creation de la fenetre de l'outil
+      #------------------------------------------------------------
       proc createPanel { this } {
          global audace conf confCam caption panneau apn_base
          variable This
@@ -64,7 +124,6 @@
          ::AcqAPN::InitVar
 
          #--- Caractéristiques du panneau
-         set panneau(menu_name,AcqAPN) "$caption(acqapn,titre,panneau)"
          set panneau(AcqAPN,titre)     "$caption(acqapn,titre,panneau_1)"
          #--- Largeur de l'outil en fonction de l'OS
          if { $::tcl_platform(os) == "Linux" } {
@@ -94,12 +153,20 @@
          AcqAPNBuildIF $This
       }
 
+      #------------------------------------------------------------
+      # startTool
+      #    affiche la fenetre de l'outil
+      #------------------------------------------------------------
       proc startTool { visuNo } {
          variable This
 
          pack $This -anchor center -expand 0 -fill y -side left
       }
 
+      #------------------------------------------------------------
+      # stopTool
+      #    masque la fenetre de l'outil
+      #------------------------------------------------------------
       proc stopTool { visuNo } {
          variable This
 
@@ -696,9 +763,9 @@
             set erreur 1
          }
          if { $erreur=="1" } { set panneau(AcqAPN,intervalle) $panneau(AcqAPN,intervalle_mini) }
-   }
+      }
 
-   #
+      #
       #::AcqAPN::TestValeurs
       #--- Cette procédure vérifie que le temps de pose est vide, un nombre entier positif ou est une fraction 1/n
       #
@@ -1288,6 +1355,10 @@
 #====================== Fin des fenêtres annexes =================================================
 }
 
+   #------------------------------------------------------------
+   # AcqAPNBuildIF
+   #    cree la fenetre de l'outil
+   #------------------------------------------------------------
    proc AcqAPNBuildIF { This } {
       global audace panneau confCam caption apn_base
 
@@ -1443,6 +1514,4 @@
          #--- Mise à jour dynamique de la couleur
          ::confColor::applyColor $This
    }
-
-      ::AcqAPN::Init $audace(base)
 

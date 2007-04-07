@@ -2,31 +2,67 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.14 2007-03-25 15:48:45 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.15 2007-04-07 00:38:33 robertdelmas Exp $
 #
-
-package provide autoguider 1.0
 
 #==============================================================
 #   Declaration du namespace autoguider
 #    initialise le namespace
 #==============================================================
 namespace eval ::autoguider {
-   global audace caption
+   package provide autoguider 1.0
 
-   source [ file join $audace(rep_plugin) tool autoguider autoguider.cap ]
-   source [ file join $audace(rep_plugin) tool autoguider autoguiderconfig.tcl ]
+   #--- Je charge le fichier caption pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] autoguider.cap ]
 }
 
 #------------------------------------------------------------
-# ::autoguider::Init
-#    cree une nouvelle instance de l'outil
+# ::autoguider::getPluginProperty
+#    retourne la valeur de la propriete
 #
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::autoguider::Init { { in "" } { visuNo 1 } } {
-   variable private
-   global audace conf
+proc ::autoguider::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function     { return "acquisition" }
+      subfunction1 { return "autoguider" }
+      multivisu    { return 1 }
+   }
+}
 
+#------------------------------------------------------------
+# ::autoguider::getPluginTitle
+#    retourne le titre du plugin dans la langue de l'utilisateur
+#
+# return "Titre du plugin"
+#------------------------------------------------------------
+proc ::autoguider::getPluginTitle { } {
+   global caption
+
+   return "$caption(autoguider,menu)"
+}
+
+#------------------------------------------------------------
+# ::autoguider::getPluginType
+#    retourne le type de plugin
+#
+# return "focuser"
+#------------------------------------------------------------
+proc ::autoguider::getPluginType { } {
+   return "tool"
+}
+
+#------------------------------------------------------------
+# ::autoguider::createPluginInstance
+#    cree une nouvelle instance de l'outil
+#------------------------------------------------------------
+proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
+   variable private
+   global audace caption conf
+
+   source [ file join $audace(rep_plugin) tool autoguider autoguiderconfig.tcl ]
    set ::caption(autguider,darkError) "echec de la soustration du dark "
 
    if { ! [ info exists conf(autoguider,pose) ] }                { set conf(autoguider,pose)                 "0" }
@@ -71,25 +107,6 @@ proc ::autoguider::Init { { in "" } { visuNo 1 } } {
    set private($visuNo,interval)          ""
    set private($visuNo,previousClock)     "0"
    set private($visuNo,updateAxis)        "0"
-
-   #--- je cree la fenetre d'autoguidage
-   createPanel $visuNo
-
-   #--- j'adapte l'affichage des boutons en fonction de la camera selectionnee
-   adaptPanel  $visuNo
-}
-
-#------------------------------------------------------------
-# ::autoguider::createPanel
-#    cree la fenetre de l'outil
-#
-#------------------------------------------------------------
-proc ::autoguider::createPanel { visuNo } {
-   variable private
-   global audace caption conf panneau
-
-   #---
-   set panneau(menu_name,autoguider) "$caption(autoguider,menu)"
 
    #--- Petit raccourci bien pratique
    set This $private($visuNo,This)
@@ -195,14 +212,16 @@ proc ::autoguider::createPanel { visuNo } {
 
    #--- j'active la mise a jour automatique de l'affichage en fonction de la camera
    ::confVisu::addCameraListener $visuNo "::autoguider::adaptPanel $visuNo"
+
+   #--- j'adapte l'affichage des boutons en fonction de la camera selectionnee
+   adaptPanel $visuNo
 }
 
 #------------------------------------------------------------
-# ::autoguider::deletePanel
-#    supprime la fenetre de l'outil
-#
+# ::autoguider::deletePluginInstance
+#    suppprime l'instance du plugin
 #------------------------------------------------------------
-proc ::autoguider::deletePanel { visuNo } {
+proc ::autoguider::deletePluginInstance { visuNo } {
    variable private
 
    #--- je desactive l'adaptation de l'affichage en focntion de la camera
@@ -213,9 +232,16 @@ proc ::autoguider::deletePanel { visuNo } {
 }
 
 #------------------------------------------------------------
+# ::autoguider::initPlugin
+#    initialise le plugin
+#------------------------------------------------------------
+proc ::autoguider::initPlugin{ } {
+
+}
+
+#------------------------------------------------------------
 # ::autoguider::adaptPanel
 #    adapte l'affichage des boutons en fonction de la camera
-#
 #------------------------------------------------------------
 proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2 "" } } {
    variable private
@@ -258,7 +284,6 @@ proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2
 #------------------------------------------------------------
 # ::autoguider::startTool
 #    affiche la fenetre de l'outil
-#
 #------------------------------------------------------------
 proc ::autoguider::startTool { { visuNo 1 } } {
    variable private
@@ -285,7 +310,6 @@ proc ::autoguider::startTool { { visuNo 1 } } {
 #------------------------------------------------------------
 # ::autoguider::stopTool
 #    masque la fenetre de l'outil
-#
 #------------------------------------------------------------
 proc ::autoguider::stopTool { { visuNo 1 } } {
    variable private
@@ -310,11 +334,10 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
 
 #------------------------------------------------------------
 # ::autoguider::startAcquisition
-#  execute les acquisitions en boucle tant que private($visuNo,suiviState)==1
-#  si private($visuNo,suiviState)== 0 , ne pas demarrer la boucle
-#  si private($visuNo,suiviState)== 1 , faire les acquisitions en boucle
-#  si private($visuNo,suiviState)== 2 , arreter les acquisitions a la fin de la boucle en cours
-
+#    execute les acquisitions en boucle tant que private($visuNo,suiviState)==1
+#    si private($visuNo,suiviState)== 0 , ne pas demarrer la boucle
+#    si private($visuNo,suiviState)== 1 , faire les acquisitions en boucle
+#    si private($visuNo,suiviState)== 2 , arreter les acquisitions a la fin de la boucle en cours
 #------------------------------------------------------------
 proc ::autoguider::startAcquisition { visuNo } {
    variable private
@@ -369,7 +392,6 @@ proc ::autoguider::startAcquisition { visuNo } {
 #------------------------------------------------------------
 # ::autoguider::doAcquisition
 #    fait une acquisition (utilise le mutithread s'il est disponible)
-#
 #------------------------------------------------------------
 proc ::autoguider::doAcquisition { visuNo camNo} {
    variable private
@@ -402,7 +424,6 @@ proc ::autoguider::doAcquisition { visuNo camNo} {
 #------------------------------------------------------------
 # ::autoguider::processAcquisition
 #    traite une acquisition
-#
 #------------------------------------------------------------
 proc ::autoguider::processAcquisition { visuNo camNo} {
    variable private
@@ -618,7 +639,6 @@ proc ::autoguider::processAcquisition { visuNo camNo} {
 # ::autoguider::stopAcquisition
 #    Demande l'arret des acquisitions . L'arret sera effectif apres la fin
 #    de l'acquisition en cours
-#
 #------------------------------------------------------------
 proc ::autoguider::stopAcquisition { visuNo } {
    variable private
@@ -635,7 +655,7 @@ proc ::autoguider::stopAcquisition { visuNo } {
 #    selectionne la plus petite vitesse
 #
 # parametres :
-#   visuNo    : numero de la visu courante
+#    visuNo    : numero de la visu courante
 #------------------------------------------------------------
 proc ::autoguider::initMount { visuNo } {
    variable private
@@ -652,11 +672,11 @@ proc ::autoguider::initMount { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::setOrigin
-#   initialise le point origine dans private(visuNo,originCoord)
+#    initialise le point origine dans private(visuNo,originCoord)
 #
 # parametres :
-#   visuNo    : numero de la visu courante
-#   x,y       : coordonnees de l'origine des axes (referentiel ecran)
+#    visuNo    : numero de la visu courante
+#    x,y       : coordonnees de l'origine des axes (referentiel ecran)
 #------------------------------------------------------------
 proc ::autoguider::setOrigin { visuNo x y } {
    variable private
@@ -671,11 +691,11 @@ proc ::autoguider::setOrigin { visuNo x y } {
 
 #------------------------------------------------------------
 # ::autoguider::setTargetCoord
-#   initialise les cooredonnees de la cible dans private(visuNo,targetCoord)
+#    initialise les cooredonnees de la cible dans private(visuNo,targetCoord)
 #
 # parametres :
-#   visuNo    : numero de la visu courante
-#   x,y       : coordonnees de l'origine des axes (referentiel ecran)
+#    visuNo    : numero de la visu courante
+#    x,y       : coordonnees de l'origine des axes (referentiel ecran)
 #------------------------------------------------------------
 proc ::autoguider::setTargetCoord { visuNo x y } {
    variable private
@@ -711,7 +731,7 @@ proc ::autoguider::setTargetCoord { visuNo x y } {
 }
 #------------------------------------------------------------
 # ::autoguider::createTarget
-#  affiche la cible autour du point de coordonnees targetCoord
+#    affiche la cible autour du point de coordonnees targetCoord
 #
 #           PSF                     SLIT
 #       *----------* y1=y0+w   *----------*  y2=y0+w
@@ -723,8 +743,8 @@ proc ::autoguider::setTargetCoord { visuNo x y } {
 #       *----------* y1=y0-w   *----------*  y1=y0-w
 #       x1         x2          x1         x2
 # parametres :
-#   visuNo      : numero de la visu courante
-#   targetCoord : coordonnees de la cible (referentiel buffer)
+#    visuNo      : numero de la visu courante
+#    targetCoord : coordonnees de la cible (referentiel buffer)
 #------------------------------------------------------------
 proc ::autoguider::createTarget { visuNo } {
    variable private
@@ -790,10 +810,10 @@ proc ::autoguider::createTarget { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::createAlphaDeltaAxis
-#   dessine les axes alpha et delta centres sur l'origine
+#    dessine les axes alpha et delta centres sur l'origine
 #
 # parametres :
-#   visuNo    : numero de la visu courante
+#    visuNo    : numero de la visu courante
 #------------------------------------------------------------
 proc ::autoguider::createAlphaDeltaAxis { visuNo originCoord angle } {
    #--- je supprime les axes s'ils existent deja
@@ -806,11 +826,10 @@ proc ::autoguider::createAlphaDeltaAxis { visuNo originCoord angle } {
 
 #------------------------------------------------------------
 # ::autoguider::deleteAlphaDeltaAxis
-#  arrete l'affichage des axes alpha et delta
+#    arrete l'affichage des axes alpha et delta
 #
 # parametres :
-#   visuNo    : numero de la visu courante
-#
+#    visuNo    : numero de la visu courante
 #------------------------------------------------------------
 proc ::autoguider::deleteAlphaDeltaAxis { visuNo } {
    variable private
@@ -821,11 +840,10 @@ proc ::autoguider::deleteAlphaDeltaAxis { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::deleteTarget
-#  supprime l'affichage de la cible
+#    supprime l'affichage de la cible
 #
 # parametres :
-#   visuNo    : numero de la visu courante
-#
+#    visuNo    : numero de la visu courante
 #------------------------------------------------------------
 proc ::autoguider::deleteTarget { visuNo } {
    variable private
@@ -839,11 +857,11 @@ proc ::autoguider::deleteTarget { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::moveTarget
-#   deplace l'affichage de la cible
+#    deplace l'affichage de la cible
 #
 # parametres :
-#   visuNo      : numero de la visu courante
-#   targetCoord : coordonnees de la cible (referentiel buffer)
+#    visuNo      : numero de la visu courante
+#    targetCoord : coordonnees de la cible (referentiel buffer)
 #------------------------------------------------------------
 proc ::autoguider::moveTarget { visuNo targetCoord } {
    variable private
@@ -918,11 +936,11 @@ proc ::autoguider::moveTarget { visuNo targetCoord } {
 #    trace un axe avec un libelle a chaque extremite
 #
 # parametres :
-#   visuNo    : numero de la visu courante
-#   coord     : coordonnees de l'origine des axes (referentiel buffer)
-#   angle     : angle d'inclinaison des axes (en degres)
-#   label1    : libelle de l'extremite negative de l'axe
-#   label2    : libelle de l'extremite positive de l'axe
+#    visuNo    : numero de la visu courante
+#    coord     : coordonnees de l'origine des axes (referentiel buffer)
+#    angle     : angle d'inclinaison des axes (en degres)
+#    label1    : libelle de l'extremite negative de l'axe
+#    label2    : libelle de l'extremite positive de l'axe
 #------------------------------------------------------------
 proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
    variable private
@@ -1009,7 +1027,6 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
 #    affiche/cache les axes alpha et delta centres sur l'origine
 #    si showAlphaDeltaAxis==0 , efface l'image
 #    si showAlphaDeltaAxis==1 , ne fait rien , l'image sera affiche apres la prochaine acquisition
-#
 #------------------------------------------------------------
 proc ::autoguider::changeShowAlphaDeltaAxis { visuNo } {
    variable private
@@ -1027,7 +1044,6 @@ proc ::autoguider::changeShowAlphaDeltaAxis { visuNo } {
 # ::autoguider::changeShowImage
 #    si showImage==0 , efface l'image
 #    si showImage==1 , ne fait rien , l'image sera affiche apres la prochaine acquisition
-#
 #------------------------------------------------------------
 proc ::autoguider::changeShowImage { visuNo } {
    if { $::conf(autoguider,showImage) == "0" } {
@@ -1043,7 +1059,6 @@ proc ::autoguider::changeShowImage { visuNo } {
 # ::autoguider::changeShowTarget
 #    si showTarget==0 , efface la zone cible
 #    si showTarget==1 , ne fait rien , la cible sera affichee apres la prochaine acquistion
-#
 #------------------------------------------------------------
 proc ::autoguider::changeShowTarget { visuNo } {
    variable private
@@ -1073,7 +1088,6 @@ proc ::autoguider::changeShowTarget { visuNo } {
 #------------------------------------------------------------
 # ::autoguider::configureWebcam
 #    affiche la fenetre de configuration d'une webcam
-#
 #------------------------------------------------------------
 proc ::autoguider::webcamConfigure { visuNo } {
    global caption
@@ -1097,7 +1111,6 @@ proc ::autoguider::webcamConfigure { visuNo } {
 #------------------------------------------------------------
 # ::autoguider::selectBinning
 #    affiche la fenetre de selection du format d'image d'une webcam
-#
 #------------------------------------------------------------
 proc ::autoguider::selectBinning { visuNo } {
    variable private
@@ -1136,15 +1149,15 @@ proc ::autoguider::selectBinning { visuNo } {
 
 #------------------------------------------------------------
 # ::autoguider::moveTelescope { }
-#   Deplace le telescope pendant un duree determinee
-#   Le deplacement est interrompu si private($visuNo,suiviState)!=0
+#    Deplace le telescope pendant un duree determinee
+#    Le deplacement est interrompu si private($visuNo,suiviState)!=0
 #
 # parametres :
-#   visuNo    : numero de la visu courante
-#   direction : e w n s
-#   delay     : duree du deplacement en milliseconde (nombre entier)
+#    visuNo    : numero de la visu courante
+#    direction : e w n s
+#    delay     : duree du deplacement en milliseconde (nombre entier)
 # return
-#   rien
+#    rien
 #------------------------------------------------------------
 proc ::autoguider::moveTelescope { visuNo direction delay} {
    variable private
@@ -1176,6 +1189,4 @@ proc ::autoguider::moveTelescope { visuNo direction delay} {
    ##::telescope::stop $direction
    tel$::audace(telNo) radec stop $direction
 }
-
-::autoguider::Init $audace(base)
 

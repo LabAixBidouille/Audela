@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.4 2006-08-12 21:09:40 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.5 2007-04-07 00:38:33 robertdelmas Exp $
 #
 #****************************************************************
 #
@@ -26,20 +26,77 @@
 #
 #----------------------------------------------------------------
 
-package provide cmanimate 1.0
-
+#============================================================
+# Declaration du namespace cmanim
+#    initialise le namespace
+#============================================================
 namespace eval ::cmanim {
-   variable This
-   variable parametres
-   global audace
+   package provide cmanimate 1.0
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool cmanimate cmanimate.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] cmanimate.cap ]
 
-   proc init { { in "" } } {
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(cmanimate,titre)"
+   }
+
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "utility" }
+         subfunction1 { return "animate" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.cmanim
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       global audace
@@ -61,7 +118,7 @@ namespace eval ::cmanim {
       #--- Initialisation du nom de la fenetre
       set This $this
       #--- Initialisation des captions
-      set panneau(menu_name,cmanim)       "$caption(cmanimate,titre)"
+      set panneau(cmanim,titre)           "$caption(cmanimate,titre)"
       set panneau(cmanim,aide)            "$caption(cmanimate,help_titre)"
       set panneau(cmanim,genericfilename) "$caption(cmanimate,nom_generique)"
       set panneau(cmanim,parcourir)       "$caption(cmanimate,parcourir)"
@@ -114,8 +171,8 @@ namespace eval ::cmanim {
          if [ catch { open $nom_fichier w } fichier ] {
             #---
          } else {
-            foreach { a b } [ array get parametres ] { 
-               puts $fichier "set parametres($a) \"$b\"" 
+            foreach { a b } [ array get parametres ] {
+               puts $fichier "set parametres($a) \"$b\""
             }
             close $fichier
          }
@@ -159,6 +216,10 @@ namespace eval ::cmanim {
       }
    }
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
       variable parametres
@@ -181,6 +242,10 @@ namespace eval ::cmanim {
       console::affiche_prompt "$caption(cmanimate,en_tete_10)"
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
       global audace
@@ -282,7 +347,7 @@ namespace eval ::cmanim {
                   set altut4($k) [lindex [buf$audace(bufNo) getkwd "ALTUT4"] 1]
                   set aziut4($k) [lindex [buf$audace(bufNo) getkwd "AZUT4"] 1]
                }
-            } elseif { $panneau(cmanim,position) == "1" } {            
+            } elseif { $panneau(cmanim,position) == "1" } {
             #--- Positionnement pour l'option 'Votre instrument' avec des images en binning 1x1
                #--- A developper, recuperation des coordonnees de pointage (lx200, audecom, ouranos, etc.)
             }
@@ -892,10 +957,11 @@ namespace eval ::cmanim {
 #--- End of the procedures
 }
 
+#------------------------------------------------------------
+# cmanimBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
 proc cmanimBuildIF { This } {
-#======================
-#=== Panel graphism ===
-#======================
    global audace
    global caption
    global color
@@ -908,7 +974,7 @@ proc cmanimBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label for title
-         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,cmanim) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(cmanim,titre) \
             -command {
                ::audace::showHelpPlugin tool cmanimate cmanimate.htm
             }
@@ -1100,13 +1166,6 @@ proc cmanimBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
-
-#================================
-#=== Intialisation of pannel  ===
-#================================
-global audace
-
-::cmanim::init $audace(base)
 
 #=== End of file cmanimate.tcl ===
 

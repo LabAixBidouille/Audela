@@ -3,10 +3,8 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.9 2007-03-24 15:54:27 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.10 2007-04-07 00:38:33 robertdelmas Exp $
 #
-
-package provide foc 1.0
 
 set ::graphik(compteur) {}
 set ::graphik(inten)    {}
@@ -15,23 +13,84 @@ set ::graphik(fwhmy)    {}
 set ::graphik(contr)    {}
 set ::graphik(fichier)  ""
 
+#============================================================
+# Declaration du namespace Focs
+#    initialise le namespace
+#============================================================
 namespace eval ::Focs {
-   global audace
+   package provide foc 1.0
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool foc foc.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] foc.cap ]
 
-   proc init { { in "" } } {
+   #------------------------------------------------------------
+   # getPluginTitle
+   #    retourne le titre du plugin dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(foc,focalisation)"
+   }
+
+   #------------------------------------------------------------
+   # getPluginType
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginProperty
+   #    retourne la valeur de la propriete
+   #
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
+   #------------------------------------------------------------
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         function     { return "acquisition" }
+         subfunction1 { return "focusing" }
+      }
+   }
+
+   #------------------------------------------------------------
+   # initPlugin
+   #    initialise le plugin
+   #------------------------------------------------------------
+   proc initPlugin{ } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPluginInstance
+   #    cree une nouvelle instance de l'outil
+   #------------------------------------------------------------
+   proc createPluginInstance { { in "" } { visuNo 1 } } {
       createPanel $in.focs
    }
 
+   #------------------------------------------------------------
+   # deletePluginInstance
+   #    suppprime l'instance du plugin
+   #------------------------------------------------------------
+   proc deletePluginInstance { visuNo } {
+
+   }
+
+   #------------------------------------------------------------
+   # createPanel
+   #    prepare la creation de la fenetre de l'outil
+   #------------------------------------------------------------
    proc createPanel { this } {
       variable This
       global caption panneau
 
       set This $this
       #---
-      set panneau(menu_name,Focs)        "$caption(foc,focalisation)"
+      set panneau(Focs,titre)            "$caption(foc,focalisation)"
       set panneau(Focs,aide)             "$caption(foc,help_titre)"
       set panneau(Focs,acq)              "$caption(foc,acquisition)"
       set panneau(Focs,menu)             "$caption(foc,centrage)"
@@ -87,6 +146,10 @@ namespace eval ::Focs {
       $This.fra4.we.lab configure -text $audace(focus,labelspeed)
    }
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
 
@@ -95,6 +158,10 @@ namespace eval ::Focs {
       ::Focs::Adapt_Panneau_Foc
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
       global audace
@@ -622,6 +689,10 @@ proc visuf { win_name x y { title "" } { yesno "yes" } } {
    }
 }
 
+#------------------------------------------------------------
+# FocsBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
 proc FocsBuildIF { This } {
    global audace caption panneau
 
@@ -631,10 +702,8 @@ proc FocsBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,Focs) \
-            -command {
-               ::audace::showHelpPlugin tool foc foc.htm
-            }
+         Button $This.fra1.but -borderwidth 1 -text $panneau(Focs,titre) \
+            -command "::audace::showHelpPlugin tool foc foc.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(Focs,aide)
 
@@ -802,8 +871,4 @@ proc FocsBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
-
-global audace
-
-::Focs::init $audace(base)
 

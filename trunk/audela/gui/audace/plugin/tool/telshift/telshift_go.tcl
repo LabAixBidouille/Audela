@@ -2,53 +2,122 @@
 # Fichier : telshift_go.tcl
 # Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Mise a jour $Id: telshift_go.tcl,v 1.3 2006-06-20 21:31:52 robertdelmas Exp $
+# Mise a jour $Id: telshift_go.tcl,v 1.4 2007-04-07 00:38:36 robertdelmas Exp $
 #
 
-package provide telshift 1.0
-
+#============================================================
+# Declaration du namespace ImagerDeplacer
+#    initialise le namespace
+#============================================================
 namespace eval ::ImagerDeplacer {
-   variable This
-   global audace
+   package provide telshift 1.0
 
-   #--- Chargement des captions
-   source [ file join $audace(rep_plugin) tool telshift telshift_go.cap ]
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] telshift_go.cap ]
+}
 
-   proc init { { in "" } } {
-      createPanel $in.imagerdeplacer
+#------------------------------------------------------------
+# ::ImagerDeplacer::getPluginTitle
+#    retourne le titre du plugin dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::ImagerDeplacer::getPluginTitle { } {
+   global caption
+
+   return "$caption(telshift_go,telshift)"
+}
+
+#------------------------------------------------------------
+# ::ImagerDeplacer::getPluginType
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::ImagerDeplacer::getPluginType { } {
+   return "tool"
+}
+
+#------------------------------------------------------------
+# ::ImagerDeplacer::getPluginProperty
+#    retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::ImagerDeplacer::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function     { return "acquisition" }
+      subfunction1 { return "aiming" }
    }
+}
 
-   proc createPanel { this } {
-      variable This
-      global panneau
-      global caption
-
-      set This $this
-      #---
-      set panneau(menu_name,ImagerDeplacer) "$caption(telshift_go,telshift)"
-      set panneau(ImagerDeplacer,aide)      "$caption(telshift_go,help_titre)"
-      set panneau(ImagerDeplacer,titre1)    "$caption(telshift_go,acquisition)"
-      set panneau(ImagerDeplacer,acq)       "$caption(telshift_go,acq)"
-      ImagerDeplacerBuildIF $This
-   }
-
-   proc startTool { visuNo } {
-      variable This
-
-      pack $This -side left -fill y
-   }
-
-   proc stopTool { visuNo } {
-      variable This
-
-      pack forget $This
-   }
+#------------------------------------------------------------
+# ::ImagerDeplacer::initPlugin
+#    initialise le plugin
+#------------------------------------------------------------
+proc ::ImagerDeplacer::initPlugin{ } {
 
 }
 
-proc ImagerDeplacerBuildIF { This } {
-   global audace
-   global panneau
+#------------------------------------------------------------
+# ::ImagerDeplacer::createPluginInstance
+#    cree une nouvelle instance de l'outil
+#------------------------------------------------------------
+proc ::ImagerDeplacer::createPluginInstance { { in "" } { visuNo 1 } } {
+   ::ImagerDeplacer::createPanel $in.imagerdeplacer
+}
+
+#------------------------------------------------------------
+# ::ImagerDeplacer::deletePluginInstance
+#    suppprime l'instance du plugin
+#------------------------------------------------------------
+proc ::ImagerDeplacer::deletePluginInstance { visuNo } {
+
+}
+
+#------------------------------------------------------------
+# ::ImagerDeplacer::createPanel
+#    prepare la creation de la fenetre de l'outil
+#------------------------------------------------------------
+proc ::ImagerDeplacer::createPanel { this } {
+   variable This
+   global caption panneau
+
+   #--- Initialisation du nom de la fenetre
+   set This $this
+   #--- Initialisation des captions
+   set panneau(ImagerDeplacer,titre)  "$caption(telshift_go,telshift)"
+   set panneau(ImagerDeplacer,aide)   "$caption(telshift_go,help_titre)"
+   set panneau(ImagerDeplacer,titre1) "$caption(telshift_go,acquisition)"
+   set panneau(ImagerDeplacer,acq)    "$caption(telshift_go,acq)"
+   #--- Construction de l'interface
+   ::ImagerDeplacer::ImagerDeplacerBuildIF $This
+}
+
+#------------------------------------------------------------
+# ::ImagerDeplacer::startTool
+#    affiche la fenetre de l'outil
+#------------------------------------------------------------
+proc ::ImagerDeplacer::startTool { visuNo } {
+   variable This
+
+   pack $This -side left -fill y
+}
+
+#------------------------------------------------------------
+# ::ImagerDeplacer::stopTool
+#    masque la fenetre de l'outil
+#------------------------------------------------------------
+proc ::ImagerDeplacer::stopTool { visuNo } {
+   variable This
+
+   pack forget $This
+}
+
+#------------------------------------------------------------
+# ::ImagerDeplacer::ImagerDeplacerBuildIF
+#    cree la fenetre de l'outil
+#------------------------------------------------------------
+proc ::ImagerDeplacer::ImagerDeplacerBuildIF { This } {
+   global audace panneau
 
    frame $This -borderwidth 2 -relief groove
 
@@ -56,10 +125,8 @@ proc ImagerDeplacerBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(menu_name,ImagerDeplacer) \
-            -command {
-               ::audace::showHelpPlugin tool telshift telshift.htm
-            }
+         Button $This.fra1.but -borderwidth 1 -text $panneau(ImagerDeplacer,titre) \
+            -command "::audace::showHelpPlugin tool telshift telshift.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(ImagerDeplacer,aide)
 
@@ -82,8 +149,4 @@ proc ImagerDeplacerBuildIF { This } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
 }
-
-global audace
-
-::ImagerDeplacer::init $audace(base)
 

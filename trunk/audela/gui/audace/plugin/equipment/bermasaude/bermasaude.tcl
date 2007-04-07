@@ -2,10 +2,8 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.12 2007-03-16 23:08:24 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.13 2007-04-07 00:35:06 robertdelmas Exp $
 #
-
-package provide bermasaude 1.0
 
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
@@ -20,7 +18,6 @@ package provide bermasaude 1.0
 #     configurePlugin   : Configure le plugin
 #     isReady           : Informe de l'etat de fonctionnement du driver
 #
-
 
 # Procedures specifiques a ce driver :
 #     Representation_roue_a_filtres : Representation graphique de la roue a filtres
@@ -46,10 +43,10 @@ package provide bermasaude 1.0
 #
 
 namespace eval bermasaude {
+   package provide bermasaude 1.0
 
-   #==============================================================
-   # Procedures generiques de configuration des drivers
-   #==============================================================
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
+   source [ file join [file dirname [info script]] bermasaude.cap ]
 
    #------------------------------------------------------------
    #  init (est lance automatiquement au chargement de ce fichier tcl)
@@ -57,22 +54,30 @@ namespace eval bermasaude {
    #
    #  return namespace name
    #------------------------------------------------------------
-   proc init { } {
+   proc initPlugin { } {
       global audace bermasaude conf
 
       #--- Initialisation
       set bermasaude(connect) "0"
       set bermasaude(attente) "50"
 
-      #--- Charge le fichier caption
-      source [ file join $audace(rep_plugin) equipment bermasaude bermasaude.cap ]
 
       #--- Cree les variables dans conf(...) si elles n'existent pas
       if { ! [ info exists conf(bermasaude,port) ] }  { set conf(bermasaude,port)  "" }
       if { ! [ info exists conf(bermasaude,combi) ] } { set conf(bermasaude,combi) "0" }
       if { ! [ info exists conf(bermasaude,start) ] } { set conf(bermasaude,start) "0" }
+   }
 
-      return [namespace current]
+   #------------------------------------------------------------
+   #  getPluginTitle
+   #     retourne le titre du plugin dans la langue de l'utilisateur
+   #
+   #  return "Titre du plugin"
+   #------------------------------------------------------------
+   proc getPluginTitle { } {
+      global caption
+
+      return "$caption(bermasaude,titre)"
    }
 
    #------------------------------------------------------------
@@ -83,18 +88,6 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "equipment"
-   }
-
-   #------------------------------------------------------------
-   #  getLabel
-   #     retourne le label du driver
-   #
-   #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
-   #------------------------------------------------------------
-   proc getLabel { } {
-      global caption
-
-      return "$caption(bermasaude,titre)"
    }
 
    #------------------------------------------------------------
@@ -731,6 +724,4 @@ namespace eval bermasaude {
     }
 
 }
-
-::bermasaude::init
 

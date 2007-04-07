@@ -3,23 +3,68 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tel.tcl,v 1.10 2007-04-01 20:56:54 robertdelmas Exp $
+# Mise a jour $Id: tel.tcl,v 1.11 2007-04-07 00:38:36 robertdelmas Exp $
 #
 
+#============================================================
+# Declaration du namespace tlscp
+#    initialise le namespace
+#============================================================
 namespace eval ::tlscp {
-}
-
-proc ::tlscp::Init { { in "" } { visuNo 1 } } {
    package provide tel 1.0
-   #--- Chargement des captions
-   source [ file join $::audace(rep_plugin) tool tel tel.cap ]
-   #---
-   set ::panneau(menu_name,tlscp) "$caption(tel,telescope)"
-   #---
-   createPanel $visuNo
+
+   #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
+   source [ file join [file dirname [info script]] tel.cap ]
+
 }
 
-proc ::tlscp::createPanel { visuNo } {
+#------------------------------------------------------------
+# ::tlscp::getPluginTitle
+#    retourne le titre du plugin dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::tlscp::getPluginTitle { } {
+   global caption
+
+   return "$caption(tel,telescope)"
+}
+
+#------------------------------------------------------------
+# ::tlscp::getPluginType
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::tlscp::getPluginType { } {
+   return "tool"
+}
+
+#------------------------------------------------------------
+# ::tlscp::getPluginProperty
+#    retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::tlscp::getPluginProperty { propertyName } {
+   switch $propertyName {
+      function     { return "aiming" }
+      subfunction1 { return "acquisition" }
+      multivisu    { return 1 }
+   }
+}
+
+#------------------------------------------------------------
+# ::tlscp::initPlugin
+#    initialise le plugin
+#------------------------------------------------------------
+proc ::tlscp::initPlugin{ } {
+
+}
+
+#------------------------------------------------------------
+# ::tlscp::createPluginInstance
+#    cree une nouvelle instance de l'outil
+#------------------------------------------------------------
+proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    variable private
    global audace caption conf
 
@@ -29,6 +74,7 @@ proc ::tlscp::createPanel { visuNo } {
    set private($visuNo,choix_bin)   "1x1 2x2 4x4"
    set private($visuNo,binning)     "2x2"
    set private($visuNo,menu)        "$caption(tel,coord)"
+   set private($visuNo,nomObjet)    ""
 
    #--- Coordonnees J2000.0 de M104
    set private($visuNo,getobj)      "12h40m0 -11d37m22"
@@ -41,9 +87,7 @@ proc ::tlscp::createPanel { visuNo } {
 
          #--- Label du titre
          Button $private($visuNo,This).fra1.but -borderwidth 1 -text $caption(tel,telescope) \
-            -command {
-               ::audace::showHelpPlugin tool tel tel.htm
-            }
+            -command "::audace::showHelpPlugin tool tel tel.htm"
          pack $private($visuNo,This).fra1.but -in $private($visuNo,This).fra1 -anchor center -expand 1 \
             -fill both -side top -ipadx 5
          DynamicHelp::add $private($visuNo,This).fra1.but -text $caption(tel,help_titre)
@@ -54,10 +98,14 @@ proc ::tlscp::createPanel { visuNo } {
       frame $private($visuNo,This).fra2 -borderwidth 1 -relief groove
 
          #--- Frame pour choisir un catalogue
-         ::cataGoto::createFrameCatalogue $private($visuNo,This).fra2.catalogue $::tlscp::private($visuNo,getobj) $visuNo
+         ::cataGoto::createFrameCatalogue $private($visuNo,This).fra2.catalogue $::tlscp::private($visuNo,getobj) $visuNo "::tlscp"
          pack $private($visuNo,This).fra2.catalogue -in $private($visuNo,This).fra2 -anchor nw -side top -padx 4 -pady 1
 
-         #--- Entry pour l'objet a entrer
+         #--- Label de l'objet choisi
+         label $private($visuNo,This).fra2.lab1 -textvariable ::tlscp::private($visuNo,nomObjet) -relief flat
+         pack $private($visuNo,This).fra2.lab1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
+
+         #--- Entry pour les coordonnes de l'objet
          entry $private($visuNo,This).fra2.ent1 -font $audace(font,arial_8_b) \
             -textvariable ::tlscp::private($visuNo,getobj) -relief groove -width 16
          pack $private($visuNo,This).fra2.ent1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
@@ -269,11 +317,10 @@ proc ::tlscp::createPanel { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::tlscp::deletePanel
-#    supprime la fenetre de l'outil
-#
+# ::tlscp::deletePluginInstance
+#    suppprime l'instance du plugin
 #------------------------------------------------------------
-proc ::tlscp::deletePanel { visuNo } {
+proc ::tlscp::deletePluginInstance { visuNo } {
    variable private
 
    #--- je detruis le panel
@@ -340,6 +387,10 @@ proc ::tlscp::adaptPanel { visuNo { varName "" } { varIndex "" } { operation "" 
    }
 }
 
+#------------------------------------------------------------
+# ::tlscp::startTool
+#    affiche la fenetre de l'outil
+#------------------------------------------------------------
 proc ::tlscp::startTool { visuNo } {
    variable private
 
@@ -352,6 +403,10 @@ proc ::tlscp::startTool { visuNo } {
    ::telescope::afficheCoord
 }
 
+#------------------------------------------------------------
+# ::tlscp::stopTool
+#    masque la fenetre de l'outil
+#------------------------------------------------------------
 proc ::tlscp::stopTool { visuNo } {
    variable private
 
@@ -431,6 +486,13 @@ proc ::tlscp::cmdGoto { visuNo } {
    $private($visuNo,This).fra2.fra2a.but2 configure -relief raised -state normal -text $caption(tel,coord) \
       -font $audace(font,arial_8_b) -command { ::telescope::afficheCoord }
    update
+}
+
+proc ::tlscp::setRaDec { visuNo listRaDec nomObjet } {
+   variable private
+
+   set private($visuNo,getobj)   $listRaDec
+   set private($visuNo,nomObjet) $nomObjet
 }
 
 proc ::tlscp::PlusLong { visuNo } {
@@ -633,6 +695,4 @@ proc ::tlscp::TestReel { valeur } {
    }
    return $test
 }
-
-::tlscp::Init $::audace(base)
 
