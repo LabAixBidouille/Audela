@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise a jour $Id: help.tcl,v 1.3 2007-03-02 17:24:38 michelpujol Exp $
+# Mise a jour $Id: help.tcl,v 1.4 2007-04-07 21:16:48 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -62,7 +62,7 @@ namespace eval ::audace {
 
    #----------------------------------------------------------------------------------------
    #  ::audace::showHelpItem
-   #  
+   #
    #  ouvre la fenetre d'aide si elle n'est pas deja ouverte
    #  puis affiche la page HTML demandee
    #
@@ -104,7 +104,7 @@ namespace eval ::audace {
 
    #----------------------------------------------------------------------------------------
    #  ::audace::showHelpPlugin
-   #  
+   #
    #  ouvre la fenetre d'aide si elle n'est pas deja ouverte
    #  puis affiche la page HTML demandee
    #
@@ -146,9 +146,9 @@ namespace eval ::audace {
 
    #----------------------------------------------------------------------------------------
    #  ::audace::showHelpScript
-   #  
-   #  affiche l'aide d'un script quelconque 
-   #  le fichier d'aide doit etre dans le repertoire 
+   #
+   #  affiche l'aide d'un script quelconque
+   #  le fichier d'aide doit etre dans le repertoire
    #  scriptDirectory/langage/xxx.htm
    #
    #  parametres :
@@ -190,7 +190,7 @@ namespace eval ::audace {
 
    #------------------------------------------------------------
    #  ::audace::showMain
-   #  
+   #
    #  ouvre la fenetre du sommaire de l'aide
    #------------------------------------------------------------
    proc ::audace::showMain { } {
@@ -218,7 +218,7 @@ namespace eval ::audace {
 
    #------------------------------------------------------------
    #  ::audace::showFunctions
-   #  
+   #
    #  ouvre la fenetre de l'inventaire des fonctions
    #------------------------------------------------------------
    proc ::audace::showFunctions { } {
@@ -228,14 +228,14 @@ namespace eval ::audace {
       if { ! [ info exists audace(help_window) ] || ! [ winfo exists $audace(help_window) ] } {
          ::audace::initHelp
       }
- 
+
       if { [ winfo exists $audace(base).help ] } {
          wm deiconify $audace(base).help
       }
 
       #--- J'attends que la fenetre d'aide soit creee
       update
-     
+
       ::HelpViewer::LoadFile $audace(help_window) [ file join $audace(help_dir) $help(dir,prog) "interfa5c.htm" ] 1 ""
 
       #--- Focus
@@ -246,7 +246,7 @@ namespace eval ::audace {
    #------------------------------------------------------------
    #  ::audace::initHelp
    #  initalise l'acces au repertoire d'aide
-   #  
+   #
    #  cree les variables audace(help_dir) et audace(help_window)
    #------------------------------------------------------------
    proc ::audace::initHelp { } {
@@ -254,7 +254,7 @@ namespace eval ::audace {
 
       #--- Je verifie que les packages necessaires sont la
       package require helpviewer
-      
+
       #--- Je prepare le nom du repertoire de l'aide en fonction de la langue
       if { ( $langage != "french" ) && ( $langage != "english" ) } {
          set audace(help_langage) "english"
@@ -273,7 +273,7 @@ namespace eval ::audace {
       #--- Je cree la fenetre d'aide
       set audace(help_window) [ ::HelpViewer::HelpWindow $audace(help_dir) "$audace(base).help" \
          "630x450+100+50" "$caption(audace,aide)" ]
-         
+
       #--- J'attends que la fenetre d'aide soit creee
       update
 

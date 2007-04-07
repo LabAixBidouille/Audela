@@ -2,7 +2,7 @@
 # Fichier : movie.tcl
 # Description : Lecture des films avi, mov, mpeg (pour plateforme Windows uniquement)
 # Auteur : Michel PUJOL
-# Mise a jour $Id: movie.tcl,v 1.4 2006-06-20 17:32:49 robertdelmas Exp $
+# Mise a jour $Id: movie.tcl,v 1.5 2007-04-07 21:16:48 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -22,7 +22,7 @@ namespace eval ::Movie {
    }
 
    #------------------------------------------------------------
-   # Movie::open 
+   # Movie::open
    #   ouvre le fichier du film
    #   et affiche la premiere image
    #------------------------------------------------------------
@@ -41,7 +41,7 @@ namespace eval ::Movie {
       }
 
       set hWindow [createMovieWindow $hCanvas $x $y $anchor]
-      catch { 
+      catch {
          #--- je ferme la session
          #mci "close aliasmovie"
       }
