@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.14 2007-04-07 00:32:38 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.15 2007-04-07 19:38:12 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -236,12 +236,8 @@ namespace eval cataGoto {
          set catalogue($visuNo,nom_objet) "$caption(catagoto,zenith)"
       }
 
-      #--- Mise a jour des coordonnees pour l'outil Telescope
+      #--- Mise a jour des coordonnees pour les outils Telescope et Controle a distance
       $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet)
-
-      #--- Mise a jour des coordonnees pour l'outil Controle a distance
-      global panneau
-      set panneau(Rmctrl,getobj) $catalogue($visuNo,list_radec)
 
       #--- Bouclage pour laisser la boite ouverte et vider les champs
       if { $catalogue(validation) == "1" } {
