@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.62 2007-04-07 00:42:44 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.63 2007-04-07 19:40:28 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -492,19 +492,19 @@ namespace eval ::audace {
 
       #--- J'ajoute le repertoire des outils dans le chemin
       lappend ::auto_path [file join $audace(rep_plugin) tool]
-      
-      #--- Chargement des differents outils      
+
+      #--- Chargement des differents outils
       foreach pkgIndexFileName [ glob -nocomplain [ file join $audace(rep_plugin) tool * pkgIndex.tcl ] ] {
          if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo] == 0 } {
             set result [package require $pluginInfo(name)]
             if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
                #--- j'execute la procedure initPlugin si elle existe
-               $pluginInfo(namespace)::initPlugin $audace(base) 
+               $pluginInfo(namespace)::initPlugin $audace(base)
             }
             set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
-            ::console::affiche_prompt "# Outil : $pluginInfo(name)  $pluginInfo(version)\n"
+            ::console::affiche_prompt "#Outil : $pluginInfo(title) v$pluginInfo(version)\n"
          } else {
-            ::console::affiche_erreur "Error loading plugin in safe interpreter from\n$pkgIndexFileName \n$::errorInfo\n\n" 
+            ::console::affiche_erreur "Error loading plugin in safe interpreter from\n$pkgIndexFileName \n$::errorInfo\n\n"
          }
       }
       ::console::disp "\n"
@@ -1259,23 +1259,23 @@ namespace eval ::audace {
    #    retourne les informations sur un plugin dans le tableau passe en parametre
    #      pluginInfo(name)      nom du plugin
    #      pluginInfo(version)   version du plugin
-   #      pluginInfo(command)   commande pour charger le plugin 
+   #      pluginInfo(command)   commande pour charger le plugin
    #      pluginInfo(namespace) namespace principal du plugin
    #      pluginInfo(title)     titre du plugin dans la langue de l'utilisateur
    #      pluginInfo(type)      type du plugin
    #
-   # parametres : 
+   # parametres :
    #    pkgIndexFileName : nom complet du fichier pkgIndex.tcl (avec le repertoire)
    #    pluginInfo : tableau (array) des informations sur le plugin rempli par cette procedure
-   # return : 
+   # return :
    #     0 si pas d'erreur, le resultat est dans le tableau donné en paramètre.
    #    -1 si une erreur, le libellé de l'erreur est dans ::::errorInfo
    #
    # Exemple d'utilisation avec le fichier
    #        audace/gui/plugin/equipment/focuserjmi/pkgIndex.tcl
-   #    qui contient 
+   #    qui contient
    #        package ifneeded focuserjmi 1.0 [ list source [ file join $dir focuserjmi.tcl ] ]
-   #    
+   #
    #    Les commandes :
    #       set fileName "$audace(rep_plugin)equipment/focuserjmi/pkgIndex.tcl"
    #       ::audace::getPluginInfo $fileName pluginInfo
@@ -1285,19 +1285,19 @@ namespace eval ::audace {
    #       ::console::disp "plugin namespace=$pluginInfo(namespace) \n"
    #       ::console::disp "plugin title    =$pluginInfo(title)      \n"
    #       ::console::disp "plugin type     =$pluginInfo(type)      \n"
-   #    affichent : 
+   #    affichent :
    #       plugin name     =focuserjmi
    #       plugin version  =1.0
    #       plugin command  =source c:/audela/gui/audace/plugin/equipment/focuserjmi/focuserjmi.tcl
    #       plugin namespace=focuserjmi
    #       plugin title    =Focaliseur JMI
    #       plugin type     =focuser
-   #------------------------------------------------------------   
+   #------------------------------------------------------------
    proc getPluginInfo { pkgIndexFileName pluginInfo } {
       upvar $pluginInfo pinfo
-      
+
       #--- je cree un interpreteur temporaire pour charger le package sans pertuber Audela
-      #--- j'utilise le meme principe que la 
+      #--- j'utilise le meme principe que la
       set interpTemp [interp create -safe ]
       set catchResult [ catch {
          interp expose $interpTemp source
@@ -1305,7 +1305,7 @@ namespace eval ::audace {
          $interpTemp eval  [ list set langage $::langage]
          $interpTemp eval  [ list set pkgIndexFileName "$pkgIndexFileName"]
          $interpTemp eval  { set dir "[file dirname $pkgIndexFileName]" }
-         $interpTemp eval  { source  "$pkgIndexFileName" } 
+         $interpTemp eval  { source  "$pkgIndexFileName" }
          set pinfo(name)    [$interpTemp eval { set pluginName [lindex [package names ] 0] }]
          set pinfo(version) [$interpTemp eval { set pluginVersion [package versions $pluginName] } ]
          set pinfo(command) [$interpTemp eval { set sourceFile [package ifneeded $pluginName $pluginVersion] } ]
@@ -1319,7 +1319,7 @@ namespace eval ::audace {
          set pinfo(type) [$interpTemp eval { $pluginNamspace\::getPluginType } ]
          #--- je recupere le titre du plugin
          set pinfo(title) [$interpTemp eval { $pluginNamspace\::getPluginTitle } ]
-         
+
       } ]
       #--- je supprime l'interpreteur temporaire
       interp delete $interpTemp
@@ -1328,10 +1328,9 @@ namespace eval ::audace {
          return "-1"
       } else {
          return "0"
-      }         
+      }
    }
 }
-
 
 ########################## Fin du namespace audace ##########################
 
