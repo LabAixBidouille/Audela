@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.67 2007-04-07 00:39:00 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.68 2007-04-07 15:04:51 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -41,17 +41,17 @@ namespace eval ::confCam {
       #--- Je charge le package Thread  si l'option multitread est activive dans le TCL
       if { [info exists ::tcl_platform(threaded)] } {
          if { $::tcl_platform(threaded)==1 } {
-            if { ! [catch {package require Thread}]} {
+            #--- Je charge le package Thread
+            #--- La version minimale 2.6.3 pour disposer de la commande thread::copycommand
+            if { ! [catch {package require Thread 2.6.3}]} {
+               #--- Je redirige les messages d'erreur vers la procedure ::confCam::dispThreadError
                thread::errorproc ::confCam::dispThreadError
-               set audace(updateMutex) [thread::mutex create]
             } else {
                set ::tcl_platform(threaded) 0
-               set audace(updateMutex) ""
             }
          }
       } else {
          set ::tcl_platform(threaded) 0
-         set audace(updateMutex) ""
       }
 
       #--- Intialise les variables de chaque camera
