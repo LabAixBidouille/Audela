@@ -2,7 +2,7 @@
 # Fichier : iris.tcl
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: iris.tcl,v 1.5 2007-01-20 10:40:24 robertdelmas Exp $
+# Mise a jour $Id: iris.tcl,v 1.6 2007-04-07 21:16:48 robertdelmas Exp $
 #
 
 #
@@ -13,7 +13,7 @@ proc iris_initlinux { } {
    global audace
 
    set fileId [ open [ file join $audace(rep_install) bin scriptis_init.tcl ] w ]
-   puts -nonewline $fileId ">" 
+   puts -nonewline $fileId ">"
    close $fileId
 
    catch { exec wine scriptis.exe scriptis_init.tcl }
@@ -24,7 +24,7 @@ proc iris_initlinux { } {
 proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 ""} {arg7 ""} {arg8 ""} {arg9 ""} {arg10 ""} {arg11 ""} {arg12 ""} {arg13 ""} {arg14 ""} {arg15 ""} } {
    global audace
 
-   #--- Cas particuliers 
+   #--- Cas particuliers
    switch $commande {
       "bestof" {
          if {[file exist [file join $audace(rep_images) select.lst]]=="1"} {
@@ -83,7 +83,7 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
       }
    }
 
-   #--- Cas particuliers 
+   #--- Cas particuliers
    switch $commande {
       "bestof" {
          while {[file exist [file join $audace(rep_images) select.lst]]=="0"} {
@@ -170,7 +170,7 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
       noffset2 "tmp_r_" "tmp_r_" "0" $nb_select
       iris "file_trans" "tmp_r_" "tmp_r2_" $nb_select
       suppr_serie "tmp_r_"
-      sadd "tmp_r2_" "tmp_r" $nb_select    
+      sadd "tmp_r2_" "tmp_r" $nb_select
       suppr_serie "tmp_r2_"
       file rename [file join $audace(rep_images) tmp_r$conf(extension,defaut)] [file join $subdir r$conf(extension,defaut)]
    }

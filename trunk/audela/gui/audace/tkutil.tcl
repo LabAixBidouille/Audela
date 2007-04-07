@@ -2,12 +2,11 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.9 2006-12-16 16:22:45 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.10 2007-04-07 21:16:48 robertdelmas Exp $
 #
 
 namespace eval tkutil {
    global audace
-   global tkutil
 
    #--- Chargement des captions
    source [ file join $audace(rep_caption) tkutil.cap ]
@@ -19,8 +18,7 @@ namespace eval tkutil {
    #
    proc getOpenFileType { } {
       variable openFileType
-      global audace
-      global caption
+      global audace caption
 
       #---
       set openFileType [ list ]
@@ -33,6 +31,7 @@ namespace eval tkutil {
             [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ] ] \
             [ list "$caption(tkutil,image_fits)"       [ buf$audace(bufNo) extension ].gz ]
       }
+
       #---
       lappend openFileType \
          [ list "$caption(tkutil,image_file)"       {.fit}       ] \
@@ -81,8 +80,7 @@ namespace eval tkutil {
    #
    proc box_load { { parent } { initialdir } { numero_buffer } { type } { visuNo "1" } } {
       variable openFileType
-      global audace
-      global caption
+      global audace caption
 
       #--- Ouvre la fenetre de choix des fichiers
       if { $type == "1" } {
@@ -123,7 +121,7 @@ namespace eval tkutil {
       catch {
          #--- Je detruis la boite de dialogue cree par tk_getOpenFile
          #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
-        ### ::console::disp "box_load  [ winfo children .audace.__tk_filedialog.f2 ] \n" 
+        ### ::console::disp "box_load [ winfo children .audace.__tk_filedialog.f2 ] \n"
          destroy $parent.__tk_filedialog
       }
       #---
@@ -135,8 +133,7 @@ namespace eval tkutil {
    # Ouvre la fenetre de selection des fichiers html a proposer au chargement
    #
    proc box_load_html { { parent } { initialdir } { numero_buffer } { type } } {
-      global audace
-      global caption
+      global audace caption
 
       #--- Ouvre la fenetre de choix des fichiers
       if { $type == "1" } {
@@ -149,7 +146,7 @@ namespace eval tkutil {
       catch {
          #--- Je detruis la boite de dialogue cree par tk_getOpenFile
          #--- Car sous Linux la fenetre n'est pas detruite a la fin de l'utilisation (bug de linux ?)
-        ### ::console::disp "box_load  [ winfo children .audace.__tk_filedialog.f2 ] \n" 
+        ### ::console::disp "box_load [ winfo children .audace.__tk_filedialog.f2 ] \n"
          destroy $parent.__tk_filedialog
       }
       #---
@@ -163,8 +160,7 @@ namespace eval tkutil {
    #
    proc getSaveFileType { } {
       variable saveFileType
-      global audace
-      global caption
+      global audace caption
 
       #---
       set saveFileType [ list ]
@@ -208,8 +204,7 @@ namespace eval tkutil {
    #
    proc box_save { { parent } { initialdir } { numero_buffer } { type } { visuNo "" } } {
       variable saveFileType
-      global audace
-      global caption
+      global audace caption
 
       #--- Ouvre la fenetre de choix des fichiers
       if { $type == "1" } {

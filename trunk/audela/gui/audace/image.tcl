@@ -2,7 +2,7 @@
 # Fichier : image.tcl
 # Description : Manipulation des images (a deplacer dans aud1.tcl)
 # Auteur : Michel PUJOL
-# Mise a jour $Id: image.tcl,v 1.4 2006-06-20 17:31:23 robertdelmas Exp $
+# Mise a jour $Id: image.tcl,v 1.5 2007-04-07 21:16:48 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -19,10 +19,9 @@ namespace eval ::Image {
    #    charge un film dans la fenetre standard
    #------------------------------------------------------------------------------
    proc loadmovie { filename } {
-      global audace
-      global conf
+      global audace conf
 
-      #--- je masque la fenetre des images 
+      #--- je masque la fenetre des images
       $audace(hCanvas) itemconfigure display -state hidden
 
       #--- j'affiche le film
@@ -97,12 +96,12 @@ namespace eval ::Image {
 
    #------------------------------------------------------------
    #  Image::nextStep { }
-   #    
+   #
    #------------------------------------------------------------
    proc nextStep { index option} {
       variable private
-      global audace
       variable imgPriv
+      global audace
 
       set filename "$private(filename)"
 

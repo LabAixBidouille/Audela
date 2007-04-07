@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.6 2006-10-29 14:30:28 michelpujol Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.7 2007-04-07 21:16:48 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -90,8 +90,7 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------------------------
    proc open { } {
       variable private
-      global conf
-      global caption
+      global caption conf
 
       #--- server ftpd pour tester le client ftp
       package require ftp
@@ -137,7 +136,7 @@ namespace eval ::ftpclient {
    # retourne le repertoire courant
    #------------------------------------------------------------------------------
    proc getDirectory { } {
-      variable private 
+      variable private
       global conf
 
       return "$private(directory)"
@@ -233,7 +232,7 @@ namespace eval ::ftpclient {
       #--- je copie le fichier dans le repertoire local
       set temp "[pwd]"
       cd "$targetDir"
-      catch { 
+      catch {
          set result [ftp::Get $private(connection) "$sourceFile" "."]
       }
 
@@ -249,9 +248,7 @@ namespace eval ::ftpclient {
    #------------------------------------------------------------------------------
    proc showProgressWindow { { targetsize "0" } sourceFile } {
       variable private
-      global audace
-      global caption
-      global color
+      global audace caption color
 
       if { ![string is integer $targetsize] } {
          set targetsize "0"
@@ -312,7 +309,7 @@ namespace eval ::ftpclient {
       } else {
          set cpt 100
       }
-      
+
       if { ![ winfo exists $audace(base).ftpprogress ] } {
          #--- si la fenetre de la barre de progression n'existe pas
          return
@@ -352,7 +349,7 @@ namespace eval ::ftpclient {
    }
 
    #------------------------------------------------------------
-   #  ftpclient::initConf{ } 
+   #  ftpclient::initConf{ }
    #  initialise les parametres dans le tableau conf()
    #------------------------------------------------------------
    proc initConf { } {
@@ -455,7 +452,7 @@ namespace eval ::ftpclient {
    }
 
    #------------------------------------------------------------
-   #  ftpclient::apply { } 
+   #  ftpclient::apply { }
    #  (appelee par ::confGenerique quand on termine avec le bouton OK ou APPLIQUER)
    #  copie les variables des widgets dans le tableau conf() ou private()
    #  et ouvre la connexion ftp
@@ -463,8 +460,7 @@ namespace eval ::ftpclient {
    proc apply { visuNo } {
       variable private
       variable widget
-      global conf
-      global caption
+      global caption conf
 
       #--- je copie les valeurs des widgets
       set private(hostname)          $widget(hostname)
@@ -509,7 +505,7 @@ namespace eval ::ftpclient {
                }
             }
          }
-         
+
          #-- je copie templist dans conf
          for {set i 0} {$i < 10 } {incr i } {
             set conf(ftpclient,connection,$i) $templist($i)
@@ -526,14 +522,13 @@ namespace eval ::ftpclient {
    #  ftpclient::fillConfigPage { }
    #  (appelee par ::confGenerique a l'ouverture de la fenetre de configuration)
    #  affiche les widgets dans la fenetre de configuration
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc fillConfigPage { frm visuNo } {
       variable widget
       variable private
-      global caption
-      global audace
+      global audace caption
 
       #--- je memorise la reference de la frame
       set widget(frm) $frm
@@ -641,7 +636,7 @@ namespace eval ::ftpclient {
       frame $widget(frm).framepreview -borderwidth 1 -relief raised
       #pack $widget(frm).framepreview -side top -fill both -expand 1
 
-      #--- listpreview 
+      #--- listpreview
       label $widget(frm).framepreview.listpreview -font $audace(font,listbox) -justify left
       pack $widget(frm).framepreview.listpreview -anchor center -side top -padx 2 -pady 2 -fill both -expand 1
 
@@ -652,7 +647,7 @@ namespace eval ::ftpclient {
       #--- name preview
       label $widget(frm).framepreview.detail.name -font $audace(font,listbox) -justify left
       pack $widget(frm).framepreview.detail.name -anchor center -side left -padx 2 -pady 2 -fill both -expand 1
-      
+
       #--- size preview
       label $widget(frm).framepreview.detail.size -font $audace(font,listbox) -justify left
       pack $widget(frm).framepreview.detail.size -anchor center -side left -padx 2 -pady 2 -fill both -expand 1
@@ -666,7 +661,7 @@ namespace eval ::ftpclient {
    #  ftpclient::cbCommand { }
    #  (appelee par la combobox a chaque changement de selection)
    #  affiche les valeurs dans les widgets
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc cbCommand { cb } {
@@ -695,13 +690,12 @@ namespace eval ::ftpclient {
    #  ftpclient::preview { }
    #  (appelee par le bouton de pre-visualisation)
    #  affiche les valeurs dans les autres widgets
-   #  
+   #
    #  return rien
    #------------------------------------------------------------
    proc preview { listpreview namepreview sizepreview } {
       variable widget
-      global conf
-      global caption
+      global caption conf
 
       #--- j'ouvre la connexion ftp avc les parametres temporaires
       set cnx [ftp::Open $widget(hostname) $widget(user) $widget(password) -port $widget(port) -timeout $widget(timeout) ]
@@ -714,7 +708,7 @@ namespace eval ::ftpclient {
 
       #--- je lis le contenu du repertoire
       set listResult [ftp::List $cnx "$widget(directory)" ]
-      
+
       if { $listResult == "" } {
          set message "$caption(ftpclient,directory_error) \"$widget(directory)\" "
          tk_messageBox -title "ftpclient" -type ok -message "$message" -icon error
@@ -762,7 +756,7 @@ namespace eval ::ftpserver {
 
    proc start { } {
       package require ftpd
-      
+
       ::ftpd::config -authUsrCmd ::ftpserver::noauth -logCmd ::ftpserver::log
 
       ::ftpd::server
