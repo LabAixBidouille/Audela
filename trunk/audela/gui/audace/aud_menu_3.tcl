@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.18 2007-04-04 17:32:37 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.19 2007-04-08 21:08:00 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -440,48 +440,48 @@ namespace eval ::pretraitement {
       if { $pretraitement(choix_mode) == "0" } {
          #--- Il faut une image affichee
          if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,header_noimage)
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,header_noimage)"
             set pretraitement(avancement) ""
             return
          }
       } elseif { $pretraitement(choix_mode) == "1" } {
          #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
          if { $pretraitement(in) == "" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,definir_image_entree)
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,definir_image_entree)"
             set pretraitement(avancement) ""
             return
          }
          if { $pretraitement(out) == "" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,definir_image_sortie)
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,definir_image_sortie)"
             set pretraitement(avancement) ""
             return
          }
       } elseif { $pretraitement(choix_mode) == "2" } {
          #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
          if { $pretraitement(in) == "" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,definir_entree_generique)
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,definir_entree_generique)"
             set pretraitement(avancement) ""
             return
          }
          if { $pretraitement(nb) == "" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,choix_nbre_images)
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,choix_nbre_images)"
             set pretraitement(avancement) ""
             return
          }
          if { [ TestEntier $pretraitement(nb) ] == "0" } {
-            tk_messageBox -title $caption(pretraitement,attention) -icon error \
-               -message $caption(pretraitement,nbre_entier)
+            tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+               -message "$caption(pretraitement,nbre_entier)"
             set pretraitement(avancement) ""
             return
          }
          if { $pretraitement(out) == "" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,definir_sortie_generique)
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,definir_sortie_generique)"
             set pretraitement(avancement) ""
             return
          }
@@ -498,32 +498,32 @@ namespace eval ::pretraitement {
             set conf(multy) $pretraitement(scaleWindow_multy)
             #--- Tests sur les facteurs d'echelle
             if { $pretraitement(scaleWindow_multx) == "" && $pretraitement(scaleWindow_multy) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,choix_coefficients)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,choix_coefficients)"
                set pretraitement(avancement) ""
                return
             }
             if { $pretraitement(scaleWindow_multx) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,coef_manquant)"
                set pretraitement(avancement) ""
                return
             }
             if { $pretraitement(scaleWindow_multy) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,coef_manquant)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(scaleWindow_multx) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(scaleWindow_multy) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -545,7 +545,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -569,7 +569,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -593,7 +593,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -601,14 +601,14 @@ namespace eval ::pretraitement {
          "$caption(audace,menu,offset)" {
             #--- Tests sur la constante
             if { $pretraitement(const) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_cte)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_cte)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -618,8 +618,8 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                     -message $caption(pretraitement,cte_invalide)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -633,7 +633,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -647,7 +647,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -655,14 +655,14 @@ namespace eval ::pretraitement {
          "$caption(audace,menu,mult_cte)" {
             #--- Tests sur la constante
             if { $pretraitement(const) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_cte)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_cte)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -672,8 +672,8 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                     -message $caption(pretraitement,cte_invalide)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -687,7 +687,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -701,7 +701,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -712,32 +712,32 @@ namespace eval ::pretraitement {
             set conf(clip_maxi) $pretraitement(clipWindow_maxi)
             #--- Tests sur les constantes
             if { $pretraitement(clipWindow_mini) == "" && $pretraitement(clipWindow_maxi) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,choix_coefficients)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,choix_coefficients)"
                set pretraitement(avancement) ""
                return
             }
             if { $pretraitement(clipWindow_mini) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,coef_manquant)"
                set pretraitement(avancement) ""
                return
             }
             if { $pretraitement(clipWindow_maxi) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,coef_manquant)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(clipWindow_mini) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(clipWindow_maxi) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -754,7 +754,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -777,7 +777,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -804,7 +804,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -815,32 +815,32 @@ namespace eval ::pretraitement {
             set conf(back_threshold) $pretraitement(subskyWindow_back_threshold)
             #--- Tests sur les constantes
             if { $pretraitement(subskyWindow_back_kernel) == "" && $pretraitement(subskyWindow_back_threshold) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,choix_coefficients)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,choix_coefficients)"
                set pretraitement(avancement) ""
                return
             }
             if { $pretraitement(subskyWindow_back_kernel) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,coef_manquant)"
                set pretraitement(avancement) ""
                return
             }
             if { $pretraitement(subskyWindow_back_threshold) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,coef_manquant)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,coef_manquant)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(subskyWindow_back_kernel) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(subskyWindow_back_threshold) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -859,7 +859,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -880,7 +880,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -901,7 +901,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -909,14 +909,14 @@ namespace eval ::pretraitement {
          "$caption(audace,menu,noffset)" {
             #--- Tests sur la constante
             if { $pretraitement(const) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_fond_ciel)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_fond_ciel)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -926,7 +926,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -940,7 +940,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -954,7 +954,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -962,14 +962,14 @@ namespace eval ::pretraitement {
          "$caption(audace,menu,ngain)" {
             #--- Tests sur la constante
             if { $pretraitement(const) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_fond_ciel)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_fond_ciel)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -979,7 +979,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -993,7 +993,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -1007,7 +1007,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -1016,25 +1016,25 @@ namespace eval ::pretraitement {
             #--- Test sur l'operande
             if { $pretraitement(2,operand) == "" } {
                if { $pretraitement(choix_mode) == "0" } {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_image_B)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_image_B)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_operande)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_operande)"
                }
                set pretraitement(avancement) ""
                return
             }
             #--- Tests sur la constante
             if { $pretraitement(const) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_cte)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_cte)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -1044,7 +1044,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -1059,7 +1059,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -1074,7 +1074,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -1083,25 +1083,25 @@ namespace eval ::pretraitement {
             #--- Test sur l'operande
             if { $pretraitement(2,operand) == "" } {
                if { $pretraitement(choix_mode) == "0" } {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_image_B)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_image_B)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_operande)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_operande)"
                }
                set pretraitement(avancement) ""
                return
             }
             #--- Tests sur la constante
             if { $pretraitement(const) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_cte)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_cte)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -1111,7 +1111,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -1126,7 +1126,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -1141,7 +1141,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -1150,25 +1150,25 @@ namespace eval ::pretraitement {
             #--- Test sur l'operande
             if { $pretraitement(2,operand) == "" } {
                if { $pretraitement(choix_mode) == "0" } {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_image_B)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_image_B)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_operande)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_operande)"
                }
                set pretraitement(avancement) ""
                return
             }
             #--- Tests sur la constante
             if { $pretraitement(const) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_cte)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_cte)"
                set pretraitement(avancement) ""
                return
             }
             if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set pretraitement(avancement) ""
                return
             }
@@ -1178,7 +1178,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -1193,7 +1193,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -1208,7 +1208,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -1216,15 +1216,15 @@ namespace eval ::pretraitement {
          "$caption(audace,menu,opt_noir)" {
             #--- Test sur le noir
             if { $pretraitement(3,dark) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_noir)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_noir)"
                set pretraitement(avancement) ""
                return
             }
             #--- Test sur l'offset
             if { $pretraitement(3,offset) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_offset)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_offset)"
                set pretraitement(avancement) ""
                return
             }
@@ -1234,7 +1234,7 @@ namespace eval ::pretraitement {
                if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "1" } {
@@ -1249,7 +1249,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             } elseif { $pretraitement(choix_mode) == "2" } {
@@ -1264,7 +1264,7 @@ namespace eval ::pretraitement {
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } else {
-                  tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                   set pretraitement(avancement) ""
                }
             }
@@ -1873,7 +1873,7 @@ namespace eval ::pretraitement {
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
          if { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(info_filename_in)  [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+            set pretraitement(info_filename_in)  [ ::pretraitement::nom_generique [ file tail $filename ] ]
             set pretraitement(in)                [ lindex $pretraitement(info_filename_in) 0 ]
             set pretraitement(nb)                [ lindex $pretraitement(info_filename_in) 1 ]
             set pretraitement(valeur_indice)     [ lindex $pretraitement(info_filename_in) 2 ]
@@ -1882,7 +1882,7 @@ namespace eval ::pretraitement {
          }
       } elseif { $In_Out == "2" } {
          if { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(info_filename_out) [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+            set pretraitement(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
             set pretraitement(out)               [ lindex $pretraitement(info_filename_out) 0 ]
          } else {
             set pretraitement(out)               [ file rootname [ file tail $filename ] ]
@@ -2101,10 +2101,10 @@ namespace eval ::pretraitement {
       #--- Longueur de la liste des index
       set longueur_serie [ llength $liste_serie ]
       if { $index_serie != "" && $longueur_serie > "1" } {
-         tk_messageBox -title $caption(pretraitement,attention) -type ok \
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,nom_generique_ok)"
       } else {
-         tk_messageBox -title $caption(pretraitement,attention) -type ok \
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,nom_generique_ko)"
          #--- Ce n'est pas un nom generique, sortie anticipee
          set nom_generique  ""
@@ -2136,23 +2136,39 @@ namespace eval ::pretraitement {
             #--- Est-ce une serie avec des fichiers manquants ?
             set etat_serie [ numerotation_usuelle $nom_generique ]
             if { $etat_serie == "0" } {
-               #--- Il manque des fichiers dans la serie, je renumerote la serie
-               renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message "$caption(pretraitement,renumerote_termine)"
+               #--- Il manque des fichiers dans la serie, je propose de renumeroter la serie
+               set choix [ tk_messageBox -title "$caption(pretraitement,attention)" \
+                  -message "$caption(pretraitement,fichier_manquant)\n$caption(pretraitement,renumerotation)" \
+                  -icon question -type yesno ]
+               if { $choix == "yes" } {
+                  renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,renumerote_termine)"
+               } else {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,pas_renumerotation)"
+                  #--- Sortie anticipee
+                  set nom_generique  ""
+                  set longueur_serie ""
+                  set indice_min     "1"
+                  ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
+                  ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
+                  ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
+                  return [ list $nom_generique $longueur_serie $indice_min ]
+               }
             } else {
                #--- Il ne manque pas de fichiers dans la serie
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                   -message "$caption(pretraitement,numerotation_ok)\n$caption(pretraitement,pas_fichier_manquant)"
             }
          } else {
             #--- La serie ne commence pas par 1
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,renumerote_manuel)"
          }
       } else {
          #--- La serie commence par 0
-         tk_messageBox -title $caption(pretraitement,attention) -type ok \
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,indice_pas_1)"
          #--- Je recherche le dernier indice de la liste
          set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
@@ -2165,13 +2181,29 @@ namespace eval ::pretraitement {
          #--- Est-ce une serie avec des fichiers manquants ?
          set etat_serie [ numerotation_usuelle $nom_generique ]
          if { $etat_serie == "0" } {
-            #--- Il manque des fichiers dans la serie, je renumerote la serie
-            renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message "$caption(pretraitement,renumerote_termine)\n$caption(pretraitement,fichier_indice_0)"
+            #--- Il manque des fichiers dans la serie, je propose de renumeroter la serie
+            set choix [ tk_messageBox -title "$caption(pretraitement,attention)" \
+               -message "$caption(pretraitement,fichier_manquant)\n$caption(pretraitement,renumerotation)" \
+               -icon question -type yesno ]
+            if { $choix == "yes" } {
+               renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,renumerote_termine)\n$caption(pretraitement,fichier_indice_0)"
+            } else {
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,pas_renumerotation)"
+               #--- Sortie anticipee
+               set nom_generique  ""
+               set longueur_serie ""
+               set indice_min     "1"
+               ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
+               ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
+               ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
+               return [ list $nom_generique $longueur_serie $indice_min ]
+            }
          } else {
             #--- Il ne manque pas de fichiers dans la serie
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,pas_fichier_manquant)\n$caption(pretraitement,fichier_indice_0)"
          }
       }
@@ -2437,8 +2469,8 @@ namespace eval ::traiteImage {
       #--- Il faut une image affichee
       if { ( $traiteImage(operation) != "$caption(audace,menu,r+v+b2rvb)" ) && ( $traiteImage(operation) != "$caption(audace,menu,rvb2r+v+b)" ) } {
          if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] != "1" } {
-            tk_messageBox -title $caption(pretraitement,attention) -type ok \
-               -message $caption(pretraitement,header_noimage)
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,header_noimage)"
             set traiteImage(avancement) ""
             return
          }
@@ -2452,15 +2484,15 @@ namespace eval ::traiteImage {
          "$caption(audace,menu,r+v+b2rvb)" {
             #--- Test sur le nom generique des images R, V et B
             if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_entree_generique)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_entree_generique)"
                set traiteImage(avancement) ""
                return
             }
             #--- Test sur l'image RVB
             if { $traiteImage(rvbWindow_rvb_filename) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_image_sortie)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_image_sortie)"
                set traiteImage(avancement) ""
                return
             }
@@ -2472,22 +2504,22 @@ namespace eval ::traiteImage {
             if { $m == "" } {
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteImage(avancement) ""
             }
          } \
          "$caption(audace,menu,rvb2r+v+b)" {
             #--- Test sur l'image RVB
             if { $traiteImage(rvbWindow_rvb_filename) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_image_entree)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_image_entree)"
                set traiteImage(avancement) ""
                return
             }
             #--- Test sur le nom generique des images R, V et B
             if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_sortie_generique)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_sortie_generique)"
                set traiteImage(avancement) ""
                return
             }
@@ -2503,7 +2535,7 @@ namespace eval ::traiteImage {
             if { $m == "" } {
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteImage(avancement) ""
             }
          } \
@@ -2515,7 +2547,7 @@ namespace eval ::traiteImage {
             if { $m == "" } {
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteImage(avancement) ""
             }
          }
@@ -2910,26 +2942,26 @@ namespace eval ::traiteWindow {
 
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $traiteWindow(in) == "" } {
-          tk_messageBox -title $caption(pretraitement,attention) -type ok \
-             -message $caption(pretraitement,definir_entree_generique)
+          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+             -message "$caption(pretraitement,definir_entree_generique)"
           set traiteWindow(avancement) ""
           return
       }
       if { $traiteWindow(nb) == "" } {
-          tk_messageBox -title $caption(pretraitement,attention) -type ok \
-             -message $caption(pretraitement,choix_nbre_images)
+          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+             -message "$caption(pretraitement,choix_nbre_images)"
           set traiteWindow(avancement) ""
           return
       }
       if { [ TestEntier $traiteWindow(nb) ] == "0" } {
-         tk_messageBox -title $caption(pretraitement,attention) -icon error \
-            -message $caption(pretraitement,nbre_entier)
+         tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+            -message "$caption(pretraitement,nbre_entier)"
           set traiteWindow(avancement) ""
          return
       }
       if { $traiteWindow(out) == "" } {
-          tk_messageBox -title $caption(pretraitement,attention) -type ok \
-             -message $caption(pretraitement,definir_image_sortie)
+          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+             -message "$caption(pretraitement,definir_image_sortie)"
           set traiteWindow(avancement) ""
           return
       }
@@ -2948,7 +2980,7 @@ namespace eval ::traiteWindow {
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          } \
@@ -2961,7 +2993,7 @@ namespace eval ::traiteWindow {
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          } \
@@ -2974,7 +3006,7 @@ namespace eval ::traiteWindow {
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          } \
@@ -2987,7 +3019,7 @@ namespace eval ::traiteWindow {
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          }
@@ -3093,7 +3125,7 @@ namespace eval ::traiteWindow {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set traiteWindow(info_filename_in) [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+         set traiteWindow(info_filename_in) [ ::pretraitement::nom_generique [ file tail $filename ] ]
          set traiteWindow(in)               [ lindex $traiteWindow(info_filename_in) 0 ]
          set traiteWindow(nb)               [ lindex $traiteWindow(info_filename_in) 1 ]
          set traiteWindow(valeur_indice)    [ lindex $traiteWindow(info_filename_in) 2 ]
@@ -3503,32 +3535,32 @@ namespace eval ::faireImageRef {
 
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $faireImageRef(in) == "" } {
-          tk_messageBox -title $caption(pretraitement,attention) -type ok \
-             -message $caption(pretraitement,definir_entree_generique)
+          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+             -message "$caption(pretraitement,definir_entree_generique)"
           set faireImageRef(avancement) ""
           return
       }
       if { $faireImageRef(nb) == "" } {
-          tk_messageBox -title $caption(pretraitement,attention) -type ok \
-             -message $caption(pretraitement,choix_nbre_images)
+          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+             -message "$caption(pretraitement,choix_nbre_images)"
           set faireImageRef(avancement) ""
           return
       }
       if { [ TestEntier $faireImageRef(nb) ] == "0" } {
-         tk_messageBox -title $caption(pretraitement,attention) -icon error \
-            -message $caption(pretraitement,nbre_entier)
+         tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+            -message "$caption(pretraitement,nbre_entier)"
           set faireImageRef(avancement) ""
          return
       }
       if { $faireImageRef(out) == "" } {
          if { $faireImageRef(operation) == $caption(audace,menu,raw2cfa) || $faireImageRef(operation) == $caption(audace,menu,pretraite) } {
-             tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                -message $caption(pretraitement,definir_sortie_generique)
+             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                -message "$caption(pretraitement,definir_sortie_generique)"
              set faireImageRef(avancement) ""
              return
          } else {
-             tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                -message $caption(pretraitement,definir_image_sortie)
+             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                -message "$caption(pretraitement,definir_image_sortie)"
              set faireImageRef(avancement) ""
              return
          }
@@ -3544,7 +3576,7 @@ namespace eval ::faireImageRef {
             if { $m == "" } {
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
          } \
@@ -3556,7 +3588,7 @@ namespace eval ::faireImageRef {
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
          } \
@@ -3564,8 +3596,8 @@ namespace eval ::faireImageRef {
             #--- Test sur l'offset
             if { $faireImageRef(dark,no-offset) == "0" } {
                if { $faireImageRef(offset) == "" } {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_offset)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_offset)"
                   set faireImageRef(avancement) ""
                   return
                }
@@ -3605,7 +3637,7 @@ namespace eval ::faireImageRef {
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
          } \
@@ -3613,8 +3645,8 @@ namespace eval ::faireImageRef {
             #--- Test sur l'offset
             if { $faireImageRef(flat-field,no-offset) == "0" } {
                if { $faireImageRef(offset) == "" } {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_offset)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_offset)"
                   set faireImageRef(avancement) ""
                   return
                }
@@ -3622,22 +3654,22 @@ namespace eval ::faireImageRef {
             #--- Test sur le dark
             if { $faireImageRef(flat-field,no-dark) == "0" } {
                if { $faireImageRef(dark) == "" } {
-                  tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                     -message $caption(pretraitement,definir_noir)
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_noir)"
                   set faireImageRef(avancement) ""
                   return
                }
             }
             #--- Tests sur la valeur de normalisation
             if { $faireImageRef(norm) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_cte)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_cte)"
                set faireImageRef(avancement) ""
                return
             }
             if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error \
-                  -message $caption(pretraitement,cte_invalide)
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                  -message "$caption(pretraitement,cte_invalide)"
                set faireImageRef(avancement) ""
                return
             }
@@ -3688,22 +3720,22 @@ namespace eval ::faireImageRef {
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
          } \
          "$caption(audace,menu,pretraite)" {
             #--- Test sur l'offset
             if { $faireImageRef(offset) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_offset)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_offset)"
                set faireImageRef(avancement) ""
                return
             }
             #--- Test sur le dark
             if { $faireImageRef(dark) == "" } {
-               tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                  -message $caption(pretraitement,definir_noir)
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,definir_noir)"
                set faireImageRef(avancement) ""
                return
             }
@@ -3711,8 +3743,8 @@ namespace eval ::faireImageRef {
             if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
                if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
                   if { $faireImageRef(flat-field) == "" } {
-                     tk_messageBox -title $caption(pretraitement,attention) -type ok \
-                        -message $caption(pretraitement,definir_flat-field)
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_flat-field)"
                      set faireImageRef(avancement) ""
                      return
                   }
@@ -3769,7 +3801,7 @@ namespace eval ::faireImageRef {
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
             } else {
-               tk_messageBox -title $caption(pretraitement,attention) -icon error -message $m
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
          }
@@ -3925,12 +3957,12 @@ namespace eval ::faireImageRef {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set faireImageRef(info_filename_in)  [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+         set faireImageRef(info_filename_in)  [ ::pretraitement::nom_generique [ file tail $filename ] ]
          set faireImageRef(in)                [ lindex $faireImageRef(info_filename_in) 0 ]
          set faireImageRef(nb)                [ lindex $faireImageRef(info_filename_in) 1 ]
          set faireImageRef(valeur_indice)     [ lindex $faireImageRef(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
-         set faireImageRef(info_filename_out) [ ::pretraitement::nom_generique [ file rootname [ file tail $filename ] ] ]
+         set faireImageRef(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
          set faireImageRef(out)               [ lindex $faireImageRef(info_filename_out) 0 ]
       } elseif { $In_Out == "3" } {
          set faireImageRef(offset) [ file rootname [ file tail $filename ] ]
