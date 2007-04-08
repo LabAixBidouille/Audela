@@ -1,14 +1,32 @@
-Forme des donnees a inclure dans le catalogue utilisateur
-(coordonnees pour J2000.0)
+Forme des données à inclure dans le catalogue utilisateur :
+(coordonnées pour J2000.0)
 
 nom  hh mm ss.s  +dd mm ss  mag.
 nom  hh mm ss.s  -dd mm ss  mag.
 
-Si le fichier comprend des commentaires (comme dans cet exemple), le
-catalogue utilisateur debute imperativement apres le separateur '---'
+Nom :
+- Alphanumérique.
 
-S'il n'y a pas de commentaire, le catalogue utilisateur debute
-desuite, la presence de '---' n'est pas necessaire
+Ascension Droite :
+- Les heures (hh) sont écrites sur 2 caractères.
+- Les minutes (mm) sont écrites sur 2 caractères.
+- Les secondes (ss.s) sont décimales, 2 caractères avant le ".", 1 après.
+
+Déclinaison :
+- Les degrés (+/-dd) sont écrits sur 2 caractères précédés par un "+" ou un "-".
+- Les minutes d'angle (mm) sont écrites sur 2 caractères.
+- Les secondes d'angle (ss) sont écrites sur 2 caractères.
+
+Magnitude :
+- Valeur décimale.
+
+Les différentes colonnes sont séparées et alignées par des espaces.
+
+Si le fichier comprend des commentaires (comme dans cet exemple), le
+catalogue utilisateur débute impérativement après le séparateur '---'.
+
+S'il n'y a pas de commentaire, le catalogue utilisateur débute
+desuite, la présence de '---' n'est pas nécessaire.
 
 ---
 UGC12908  00 01 26.6  +31 26 02  14.2
