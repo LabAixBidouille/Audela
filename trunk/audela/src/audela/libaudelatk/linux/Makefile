@@ -8,7 +8,6 @@ OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 include ../../../Makefile1
 
 CXXFLAGS += -I$(EXTINC) -I../../include
-LDFLAGS  += -laudela  -L $(OUTPUTDIR)
 
 # Link 
 # Remarque : ajout de l'option "-rpath ."
@@ -23,7 +22,7 @@ LDFLAGS  += -laudela  -L $(OUTPUTDIR)
 $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libaudela.so 
 	@echo "*lib:" > libaudelatk.specs
 	@echo "    -rpath ." >> libaudelatk.specs
-	$(LD) $(LDFLAGS) -specs libaudelatk.specs -o $@ $? 
+	$(LD) $(LDFLAGS) -specs libaudelatk.specs -L $(OUTPUTDIR) -laudela -o $@ $(OBJ)
 	$(CP) $@ $(OUTPUTDIR)
 	@$(RM) libaudelatk.specs
 

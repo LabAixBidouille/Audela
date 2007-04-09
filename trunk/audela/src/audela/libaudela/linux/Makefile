@@ -15,9 +15,7 @@ OBJ  = $(patsubst $(SRCDIR)/%.cpp, %.o, $(filter $(SRCDIR)/%.cpp, $(SRC)))
 include ../../../Makefile1
 
 CXXFLAGS += -I$(EXTINC) -Wno-deprecated
-LDFLAGS += -L$(OUTPUTDIR) -ldcraw -ldcjpeg
 
-# Link 
 # Remarque : ajout de l'option "-rpath ."
 # L'option -rpath permet d'eviter l'utilisation deconseillee de la variable 
 # LB_LIBRARY_PATH au runtime.
@@ -30,7 +28,7 @@ LDFLAGS += -L$(OUTPUTDIR) -ldcraw -ldcjpeg
 $(OUTPUT): $(OBJ) $(OUTPUTDIR)/libdcraw.so $(OUTPUTDIR)/libdcjpeg.so
 	@echo "*lib:" > libaudela.specs
 	@echo "    -rpath ." >> libaudela.specs
-	$(LD) $(LDFLAGS) -specs libaudela.specs -o $@ $? 
+	$(LD) $(LDFLAGS) -specs libaudela.specs -L$(OUTPUTDIR) -ldcraw -ldcjpeg -o $@ $(OBJ)
 	$(CP) $@ $(OUTPUTDIR)
 	@$(RM) libaudela.specs
 	mkdir -p  ../../include
