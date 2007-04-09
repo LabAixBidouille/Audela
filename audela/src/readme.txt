@@ -213,61 +213,22 @@ Vous pouvez tout compiler d'un coup :
 4.2 Installation des drivers optionels
 --------------------------------------
 
-4.2.1 Installation ftd2xx
--------------------------
+4.2.1 Configuration du peripherique optionnel FTDI
+-------------------------------------------------
 
-   Ce driver est nécessaire seulement pour les liaisons avec quickremote 
+   Le peripherique optionnel FTDI (USB/Serial converter) est utilise seulement par les liaisons avec quickremote 
    et quickaudine.
 
-   Ce driver est livre avec AudeLA et il est installe automatiquement dans
+   Le driver FTDI libftd2xx.so est livre avec AudeLA et il est installe automatiquement dans
    audela/bin quand on installe les modules externes (voir ci-dessus).
 
    Recommandations pour l'execution de AudeLA :
-      - ajouter le repertoire audela/bin dans la variable d'environnement
-        LD_LIBRARY_PATH avant de demarrer AudeLA.
-
-      - verifier que LD_LIBRARY_PATH est correctement valorise :
-            $ cd audela/bin
-            $ ldd libquicka.so
-            libftd2xx.so.0 => libftd2xx.so.0 (0xb7e25000)
-         Si cette commande retourne libftd2xx.so.0 => not found  , verifier
-         LD_LIBRARY_PATH
-
       - demarrer AudeLA avec un compte ayant les droits d'acces sur 
         les ports USB (root par exemple)
 
       - pour eviter les confits avec d'autres drivers FTDI, desactiver 
         les hotplugs : 
-         Unload ftdi_sio and usbserial if it is attached to your device 
          # rmmod ftdi_sio 
-         # rmmod usbserial 
-
-   Ce driver est fourni par FTDI 
-       http://www.ftdichip.com/Drivers/D2XX/Linux/libftd2xx0.4.10.tar.gz
-
-4.2.2 Installation libgphoto2 2.1.6
------------------------------------
-
-   Ce driver est nécessaire seulement pour la camera DSLR (appareil photo numérique).
-   
-   AudeLA founit un patch pour supporter les longues poses supérieures à 30 secondes
-   pour les appareils Canon et Nikon.
-
-   Télécharger libgphoto2-2.1.6.tar.gz depuis le site http://www.gphoto.org/ , 
-   puis dezipper les modifications libgphoto2-2.1.6-patch-b.tar.gz ,
-   puis installer :
-
-   $ tar xzvf libgphoto2-2.1.6.tar.gz 
-   $ cd libgphoto2-2.1.6
-   $ tar xzvf libgphoto2-2.1.6-patch-b.tar.gz 
-   $ ./configure --with-drivers=canon,ptp2 --prefix=/usr 
-   $ make
-   $ su root
-   # make install
-
-   Remarque : 
-   il n'est pas necessaire d'installer gtkam et gphoto2.
-   Ne pas confondre gphoto2 avec libgphoto2 !!
 
    
 5 MAC OS-X
