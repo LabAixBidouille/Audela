@@ -110,10 +110,10 @@ void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
    if (x2>naxis1-1) {x2=naxis1-1;}
    if (y1>naxis2-1) {y1=naxis2-1;}
    if (y2>naxis2-1) {y2=naxis2-1;}
-   naxis1 = x2-x1;
-   naxis2 = y2-y1;
+   naxis1 = x2-x1+1;
+   naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
-   GetPixels(x1, y1, x2-1, y2-1, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
+   GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
 
    //changement de coordonnees  (image entiere -> fenetre)
    xmax -= x1;
@@ -196,14 +196,6 @@ void CPixels::AstroFlux(int x1, int y1, int x2, int y2,
       }
    }
    
-//   nbpix=0;
-//   for(j=0;j<naxis2;j++) {
-//      offset = pixTemp + j * naxis1;
-//      for(i=0;i<naxis1;i++) {
-//         vec[*nbpix]=*(offset+i);
-//         nbpix++;
-//      }
-//   }
    util_qsort_double(vec,0,*nbpix-2,NULL);
    // calcule la valeur du fond pour 20 pourcent de l'histogramme
    fond=(float)vec[(int)(0.2*(*nbpix-1))];
