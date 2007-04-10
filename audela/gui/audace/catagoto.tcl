@@ -2,14 +2,14 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.15 2007-04-07 19:38:12 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.16 2007-04-10 17:19:55 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
 
    #
    # cataGoto::init
-   # Chargement des captions et initialisation de varaibles
+   # Chargement des captions et initialisation de variables
    #
    proc init { { visuNo 1 } } {
       global audace
@@ -22,10 +22,11 @@ namespace eval cataGoto {
       source [ file join $audace(rep_caption) catagoto.cap ]
 
       #--- Initialisation de variables
-      set cataGoto(carte,validation) "0"
-      set cataGoto(carte,avant_plan) "0"
-      set catalogue(validation)      "0"
-      set catalogue(autre_catalogue) "2"
+      set cataGoto(carte,validation)   "0"
+      set cataGoto(carte,avant_plan)   "0"
+      set catalogue(validation)        "0"
+      set catalogue(autre_catalogue)   "2"
+      set catalogue($visuNo,nom_objet) ""
       set catalogue(liste_cata)      "$caption(catagoto,coord) $caption(catagoto,planete) $caption(catagoto,asteroide) \
          $caption(catagoto,etoile) $caption(catagoto,messier) $caption(catagoto,ngc) $caption(catagoto,ic) \
          $caption(catagoto,utilisateur) $caption(catagoto,zenith)"
@@ -249,7 +250,7 @@ namespace eval cataGoto {
 
    #
    # cataGoto::initPlanete
-   # Initialisation de varaibles
+   # Initialisation de variables
    #
    proc initPlanete { } {
       global catalogue
@@ -624,7 +625,7 @@ namespace eval cataGoto {
 
    #
    # cataGoto::initCataAsteroide
-   # Initialisation de varaibles
+   # Initialisation de variables
    #
    proc initCataAsteroide { } {
       global catalogue
@@ -824,8 +825,11 @@ namespace eval cataGoto {
          #--- Traitement du nom de l'asteroide
          set catalogue(asteroide_choisi) [ suppr_accents $catalogue(asteroide_choisi) ]
          #--- Demande et extraction des ephemerides
-         set liste [vo_skybotresolver [ mc_date2jd now ] $catalogue(asteroide_choisi) text basic 500 ]
-         if { [string first "SKYBOTResolver" $liste ] == -1 } {
+         set liste [ vo_skybotresolver [ mc_date2jd now ] $catalogue(asteroide_choisi) text basic 500 ]
+         if { $liste == "failed" } {
+            tk_messageBox -title "$caption(catagoto,asteroide)" -icon error -message "$caption(catagoto,besoin_internet)"
+         }
+         if { [ string first "SKYBOTResolver" $liste ] == -1 } {
             set liste_titres [ lindex [ lrange [ split $liste ";" ] 0 end ] 0 ]
             #--- Traitement d'une erreur particuliere, la requete repond 'item'
             if { $liste_titres == "item" } {
@@ -843,6 +847,9 @@ namespace eval cataGoto {
                   set catalogue(aster_dec) [ lindex $liste_objet 3 ]
                   set catalogue(asteroide_dec_) [ string trimleft [ mc_angle2dms $catalogue(aster_dec) 90 zero 2 + string ] + ]
                   set catalogue(asteroide_mag_) [ lindex $liste_objet 5 ]
+               } else {
+                  set catalogue(asteroide_choisi) ""
+                  set catalogue(asteroide_mag)    "-"
                }
             }
          } else {
@@ -921,7 +928,7 @@ namespace eval cataGoto {
 
    #
    # cataGoto::initCataObjet
-   # Initialisation de varaibles
+   # Initialisation de variables
    #
    proc initCataObjet { } {
       global catalogue
@@ -1249,7 +1256,7 @@ namespace eval cataGoto {
 
    #
    # cataGoto::initCataEtoiles
-   # Initialisation de varaibles
+   # Initialisation de variables
    #
    proc initCataEtoiles { } {
       global catalogue
@@ -1578,7 +1585,7 @@ namespace eval cataGoto {
 
    #
    # cataGoto::initCataObjetUtilisateur
-   # Initialisation de varaibles
+   # Initialisation de variables
    #
    proc initCataObjetUtilisateur { } {
       global catalogue
