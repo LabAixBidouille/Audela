@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.9 2007-03-16 22:55:11 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.10 2007-04-10 19:37:36 robertdelmas Exp $
 #
 
 namespace eval camera {
@@ -44,29 +44,29 @@ namespace eval camera {
    }
 
    #
-   # ::camera::dispLine t Nb_Line_sec Nb_Line_Total
+   # ::camera::dispLine t Nb_Line_sec Nb_Line_Total scan_Delai
    # Decompte du nombre de lignes du scan
    #
-   proc dispLine { t Nb_Line_sec Nb_Line_Total } {
+   proc dispLine { t Nb_Line_sec Nb_Line_Total scan_Delai } {
       global panneau
 
       set t [ expr $t-1 ]
       set tt [ expr $t*$Nb_Line_sec ]
       if { $panneau(Scan,Stop) == "0" } {
          if { $t > "1" } {
-            after 1000 ::camera::dispLine $t $Nb_Line_sec $Nb_Line_Total
+            after 1000 ::camera::dispLine $t $Nb_Line_sec $Nb_Line_Total $scan_Delai
             if { $Nb_Line_Total >= "30" } {
-               ::camera::Avancement_scan $tt $Nb_Line_Total
+               ::camera::Avancement_scan $tt $Nb_Line_Total $scan_Delai
             }
          }
       }
    }
 
    #
-   # ::camera::Avancement_scan tt Nb_Line_Total
+   # ::camera::Avancement_scan tt Nb_Line_Total scan_Delai
    # Affichage de la progression en lignes du scan
    #
-   proc Avancement_scan { tt Nb_Line_Total } {
+   proc Avancement_scan { tt Nb_Line_Total scan_Delai } {
       global audace caption conf
 
       #--- Recuperation de la position de la fenetre
@@ -88,11 +88,11 @@ namespace eval camera {
          label $audace(base).progress_scan.lab_status -text "" -font $audace(font,arial_12_b) -justify center
          pack $audace(base).progress_scan.lab_status -side top -fill x -expand true -pady 5
          if { $tt == "-10" } {
-            if { $conf(tempo_scan,delai) > "1" } {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
+            if { $scan_Delai > "1" } {
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $scan_Delai \
                   $caption(camera,secondes)"
             } else {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $scan_Delai \
                   $caption(camera,seconde)"
             }
          } else {
@@ -101,11 +101,11 @@ namespace eval camera {
          }
       } else {
          if { $tt == "-10" } {
-            if { $conf(tempo_scan,delai) > "1" } {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
+            if { $scan_Delai > "1" } {
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $scan_Delai \
                   $caption(camera,secondes)"
             } else {
-               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $conf(tempo_scan,delai) \
+               $audace(base).progress_scan.lab_status configure -text "$caption(camera,attente) $scan_Delai \
                   $caption(camera,seconde)"
             }
          } else {
