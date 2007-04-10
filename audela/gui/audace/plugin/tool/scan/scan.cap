@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.13 2007-01-27 14:52:10 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.14 2007-04-10 19:28:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,6 +13,7 @@ global caption langage
 
 set caption(scan,drift_scan)        "Drift Scan"
 set caption(scan,help_titre)        "Help For This Tool"
+set caption(scan,configuration)     "Setup"
 set caption(scan,colonnes)          "Columns"
 set caption(scan,lignes)            "Lines"
 set caption(scan,pixel)             "Pixel"
@@ -51,6 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scan,drift_scan)     "Drift scan"
    set caption(scan,help_titre)     "Aide pour cet outil"
+   set caption(scan,configuration)  "Configuration"
    set caption(scan,colonnes)       "Colonnes"
    set caption(scan,lignes)         "Lignes"
    set caption(scan,pixel)          "Pixel"
@@ -89,6 +91,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scan,drift_scan)     "Drift scan"
    set caption(scan,help_titre)     "Aiuto per questo tool"
+   set caption(scan,configuration)  "Configurazione"
    set caption(scan,colonnes)       "Colonne"
    set caption(scan,lignes)         "Linee"
    set caption(scan,pixel)          "Pixel"
@@ -127,6 +130,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scan,drift_scan)     "Drift scan"
    set caption(scan,help_titre)     "Ayuda para esta herramienta"
+   set caption(scan,configuration)  "Configuración"
    set caption(scan,colonnes)       "Columnas"
    set caption(scan,lignes)         "Lineas"
    set caption(scan,pixel)          "Píxel"
@@ -165,6 +169,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scan,drift_scan)     "Drift Scan"
    set caption(scan,help_titre)     "Hilfe für dieses Gerät"
+   set caption(scan,configuration)  "Konfiguration"
    set caption(scan,colonnes)       "Kolonnen"
    set caption(scan,lignes)         "Reihen"
    set caption(scan,pixel)          "Rasterpunkt"
@@ -203,6 +208,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scan,drift_scan)     "Drift scan"
    set caption(scan,help_titre)     "Ajuda para esta ferramenta"
+   set caption(scan,configuration)  "Configuração"
    set caption(scan,colonnes)       "Colunas"
    set caption(scan,lignes)         "Linhas"
    set caption(scan,pixel)          "Pixel"
@@ -241,6 +247,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scan,drift_scan)     "Drift Scan"
    set caption(scan,help_titre)     "Help For This Tool"
+   set caption(scan,configuration)  "Setup"
    set caption(scan,colonnes)       "Columns"
    set caption(scan,lignes)         "Lines"
    set caption(scan,pixel)          "Pixel"
