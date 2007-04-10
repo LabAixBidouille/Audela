@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.21 2007-04-07 00:38:35 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.22 2007-04-10 19:29:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -62,6 +62,11 @@ namespace eval ::Dscan {
    #    cree une nouvelle instance de l'outil
    #------------------------------------------------------------
    proc createPluginInstance { { in "" } { visuNo 1 } } {
+      global audace
+
+      #--- Chargement des fichiers auxiliaires
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool scan scanSetup.tcl ]\""
+      #--- Mise en place de l'interface graphique
       createPanel $in.dscan
    }
 
@@ -85,8 +90,9 @@ namespace eval ::Dscan {
       set This $this
 
       #--- Initialisation des captions
-      set panneau(Dscan,titre)          "$caption(scan,drift_scan)"
+      set panneau(Dscan,titre)           "$caption(scan,drift_scan)"
       set panneau(Dscan,aide)            "$caption(scan,help_titre)"
+      set panneau(Dscan,configuration)   "$caption(scan,configuration)"
       set panneau(Dscan,col)             "$caption(scan,colonnes)"
       set panneau(Dscan,lig)             "$caption(scan,lignes)"
       set panneau(Dscan,pixel)           "$caption(scan,pixel)"
@@ -149,6 +155,9 @@ namespace eval ::Dscan {
       if { ! [ info exists parametres(Dscan,binning) ] } { set parametres(Dscan,binning) "2x2" }
       if { ! [ info exists parametres(Dscan,foc) ] }     { set parametres(Dscan,foc)     ".85" }
       if { ! [ info exists parametres(Dscan,dec) ] }     { set parametres(Dscan,dec)     "0d" }
+
+      #--- Creation des variables de la boite de configuration si elles n'existent pas
+      ::scanSetup::initToConf
    }
 
    proc Enregistrement_Var { } {
@@ -228,7 +237,7 @@ namespace eval ::Dscan {
    proc startTool { visuNo } {
       variable This
       variable parametres
-      global panneau
+      global audace panneau
 
       #--- Chargement de la configuration
       ::Dscan::Chargement_Var
@@ -241,6 +250,9 @@ namespace eval ::Dscan {
       set panneau(Dscan,binning) "$parametres(Dscan,binning)"
       set panneau(Dscan,foc)     "$parametres(Dscan,foc)"
       set panneau(Dscan,dec)     "$parametres(Dscan,dec)"
+
+      #--- Initialisation des variables de la boite de configuration
+      ::scanSetup::confToWidget
 
       #--- Calcul de dt en fonction des parametres initialises
       ::Dscan::cmdCalcul
@@ -291,7 +303,8 @@ namespace eval ::Dscan {
 
    proc cmdGo { { motor motoron } } {
       variable This
-      global audace conf panneau
+      variable parametres
+      global audace panneau
 
       if { [ ::cam::list ] != "" } {
          if { [ ::confCam::hasScan $audace(camNo) ] == "1" } {
@@ -330,25 +343,19 @@ namespace eval ::Dscan {
                }
             }
 
-            #--- Temporisation ou non entre l'arret moteur et le debut de la pose
-            if { [ info exists conf(tempo_scan,active) ] == "0" } {
-               set conf(tempo_scan,active) "1"
-               set conf(tempo_scan,delai)  "3"
-            }
-
             #--- Attente du demarrage du scan
-            if { $conf(tempo_scan,active) == "1" } {
+            if { $panneau(Dscan,active) == "1" } {
                #--- Decompte du temps d'attente
-               set attente $conf(tempo_scan,delai)
-               if { $conf(tempo_scan,delai) > "0" } {
-                  while { $conf(tempo_scan,delai) > "0" } {
-                     ::camera::Avancement_scan "-10" $panneau(Dscan,lig1)
+               set attente $panneau(Dscan,delai)
+               if { $panneau(Dscan,delai) > "0" } {
+                  while { $panneau(Dscan,delai) > "0" } {
+                     ::camera::Avancement_scan "-10" $panneau(Dscan,lig1) $panneau(Dscan,delai)
                      update
                      after 1000
-                     incr conf(tempo_scan,delai) "-1"
+                     incr panneau(Dscan,delai) "-1"
                   }
                }
-               set conf(tempo_scan,delai) $attente
+               set panneau(Dscan,delai) $attente
             }
 
             #--- Gestion graphique du bouton STOP - Devient actif avec le debut du scan
@@ -417,7 +424,7 @@ namespace eval ::Dscan {
       #--- Appel du timer
       if { $panneau(Dscan,lig1) > "$panneau(Dscan,nblg)" } {
          set t [ expr $panneau(Dscan,lig1)/$panneau(Dscan,nblg1) ]
-         ::camera::dispLine $t $panneau(Dscan,nblg1) $panneau(Dscan,lig1)
+         ::camera::dispLine $t $panneau(Dscan,nblg1) $panneau(Dscan,lig1) $panneau(Dscan,delai)
       }
 
       #--- Attente de la fin de la pose
@@ -651,13 +658,23 @@ proc DscanBuildIF { This } {
    frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
+      frame $This.fra0 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(Dscan,titre) \
+         Button $This.fra0.but -borderwidth 1 -text $panneau(Dscan,titre) \
             -command "::audace::showHelpPlugin tool scan scan.htm"
+         pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
+         DynamicHelp::add $This.fra0.but -text $panneau(Dscan,aide)
+
+      pack $This.fra0 -side top -fill x
+
+      #--- Frame du bouton de configuration
+      frame $This.fra1 -borderwidth 2 -relief groove
+
+         #--- Label du bouton Configuration
+         button $This.fra1.but -borderwidth 1 -text $panneau(Dscan,configuration) \
+            -command { ::scanSetup::run $audace(base).scanSetup }
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(Dscan,aide)
 
       pack $This.fra1 -side top -fill x
 
