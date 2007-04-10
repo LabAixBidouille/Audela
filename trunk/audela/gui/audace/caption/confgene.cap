@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.16 2007-03-20 18:05:23 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.17 2007-04-10 19:34:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -34,13 +34,6 @@ set caption(confgene,fichier_image_jpeg_newquality)         "You can choose a ne
 set caption(confgene,alarme)                                "Aural warning when exposure ends"
 set caption(confgene,alarme_active)                         "Enable Aural Warning"
 set caption(confgene,alarme_delai)                          "sec. before end of exposure"
-
-set caption(confgene,tempo_scan)                            "Drift Scan and Fast Scan"
-set caption(confgene,tempo_scan_titre)                      "Duration between motor cut-off and start of exposure:"
-set caption(confgene,tempo_scan_sans)                       "Delay Off"
-set caption(confgene,tempo_scan_avec)                       "Delay On"
-set caption(confgene,tempo_scan_delai)                      "Delay Time"
-set caption(confgene,tempo_scan_seconde)                    "sec."
 
 set caption(confgene,position)                              "Observer Location"
 set caption(confgene,nom_observateur)                       "Observer Name:"
@@ -140,13 +133,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Active l'alarme sonore"
    set caption(confgene,alarme_delai)                       "sec. avant la fin de la pose"
 
-   set caption(confgene,tempo_scan)                         "Drift scan et scan rapide"
-   set caption(confgene,tempo_scan_titre)                   "Temporisation entre l'arrêt du moteur d'A.D. et le début de la pose :"
-   set caption(confgene,tempo_scan_sans)                    "Aucune temporisation"
-   set caption(confgene,tempo_scan_avec)                    "Active la temporisation"
-   set caption(confgene,tempo_scan_delai)                   "Délai de temporisation"
-   set caption(confgene,tempo_scan_seconde)                 "sec."
-
    set caption(confgene,position)                           "Position de l'observateur"
    set caption(confgene,nom_observateur)                    "Nom de l'observateur :"
    set caption(confgene,nom_observatoire)                   "Nom de l'observatoire :"
@@ -244,13 +230,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme)                             "Segnale acustico di fine posa"
    set caption(confgene,alarme_active)                      "Segnale acustico attivo"
    set caption(confgene,alarme_delai)                       "sec. alla fine della posa"
-
-   set caption(confgene,tempo_scan)                         "Drift scan e scannerizzazione rapida"
-   set caption(confgene,tempo_scan_titre)                   "Ritardo tra l'arresto del motore di A.R. e l'inizio della posa:"
-   set caption(confgene,tempo_scan_sans)                    "Ritardo nullo"
-   set caption(confgene,tempo_scan_avec)                    "Attivazione ritardo"
-   set caption(confgene,tempo_scan_delai)                   "Ritardo della temporizzazione"
-   set caption(confgene,tempo_scan_seconde)                 "sec."
 
    set caption(confgene,position)                           "Posizione dell'osservatore"
    set caption(confgene,nom_observateur)                    "Nome dell'osservatore:"
@@ -350,13 +329,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Activar alarma sonora"
    set caption(confgene,alarme_delai)                       "seg. antes del fin de exposición"
 
-   set caption(confgene,tempo_scan)                         "Drift scan y fast scan"
-   set caption(confgene,tempo_scan_titre)                   "Retardo entre la parada del motor de AR y el principio de la exposición:"
-   set caption(confgene,tempo_scan_sans)                    "Retardo desactivado"
-   set caption(confgene,tempo_scan_avec)                    "Retardo activado"
-   set caption(confgene,tempo_scan_delai)                   "Tiempo de retardo"
-   set caption(confgene,tempo_scan_seconde)                 "seg."
-
    set caption(confgene,position)                           "Posición del observador"
    set caption(confgene,nom_observateur)                    "Nombre del observador:"
    set caption(confgene,nom_observatoire)                   "Nombre del observatorio:"
@@ -454,13 +426,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme)                             "Bildleuchtungsende ton Alarm"
    set caption(confgene,alarme_active)                      "Aktiviert die Ton Alarm"
    set caption(confgene,alarme_delai)                       "Sek. bis das Bildleuchtungsende"
-
-   set caption(confgene,tempo_scan)                         "Drift Scan und schnell Scan"
-   set caption(confgene,tempo_scan_titre)                   "Zwischen den RA Motor halten und den Anfang des Bildleuchtung abwarten:"
-   set caption(confgene,tempo_scan_sans)                    "Kein Abwarten"
-   set caption(confgene,tempo_scan_avec)                    "Mit Abwarten"
-   set caption(confgene,tempo_scan_delai)                   "Abwarten Zeit"
-   set caption(confgene,tempo_scan_seconde)                 "sek."
 
    set caption(confgene,position)                           "Beobachter Stellung"
    set caption(confgene,nom_observateur)                    "Nahmen der Beobachter:"
@@ -560,13 +525,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Activar alarme sonoro"
    set caption(confgene,alarme_delai)                       "seg. antes do fim de exposição"
 
-   set caption(confgene,tempo_scan)                         "Drift scan e fast scan"
-   set caption(confgene,tempo_scan_titre)                   "Intervalo entre a paragem do motor de AR e o início da exposição:"
-   set caption(confgene,tempo_scan_sans)                    "Atraso desactivado"
-   set caption(confgene,tempo_scan_avec)                    "Atraso activado"
-   set caption(confgene,tempo_scan_delai)                   "Tempo de atraso"
-   set caption(confgene,tempo_scan_seconde)                 "seg."
-
    set caption(confgene,position)                           "Posição do observador"
    set caption(confgene,nom_observateur)                    "Nome do observador:"
    set caption(confgene,nom_observatoire)                   "Nome do observatório:"
@@ -664,13 +622,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme)                             "Lydadvarsel når eksponering slutter"
    set caption(confgene,alarme_active)                      "Aktiver lydadvarsel"
    set caption(confgene,alarme_delai)                       "sek. før eksponering slutter"
-
-   set caption(confgene,tempo_scan)                         "Drift scan og hurtig scan"
-   set caption(confgene,tempo_scan_titre)                   "Varighed mellem RA-motor standsning og start på eksponering:"
-   set caption(confgene,tempo_scan_sans)                    "Ingen forsinkelse"
-   set caption(confgene,tempo_scan_avec)                    "Med forsinkelse"
-   set caption(confgene,tempo_scan_delai)                   "Forsinkelsestid"
-   set caption(confgene,tempo_scan_seconde)                 "sek."
 
    set caption(confgene,position)                           "Observators position"
    set caption(confgene,nom_observateur)                    "Observators navn:"
