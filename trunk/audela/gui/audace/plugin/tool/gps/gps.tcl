@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Panneau de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.4 2007-04-07 00:38:34 robertdelmas Exp $
+# Mise a jour $Id: gps.tcl,v 1.5 2007-04-10 17:18:40 robertdelmas Exp $
 #
 
 namespace eval ::Gps {
@@ -329,7 +329,8 @@ namespace eval ::Gps {
           }
        } ]
        if { $catchResult == "1" } {
-          tk_messageBox -title $caption(gps,ecoute_horloge) -type error -message "$::errorInfo"
+          tk_messageBox -title $caption(gps,ecoute_horloge) -type ok -icon warning -message "$::errorInfo"
+          ::Gps::ArretHorloge
           return "55"
        }
     }
@@ -527,7 +528,7 @@ namespace eval ::Gps {
         #Trame Commande Automatique (t3)
         set t3 [frame $This.fautomatique -borderwidth 1 -relief groove -width 125]
         label $t3.l -text $caption(gps,automatique) -font $police(gras)
-       ::pack $t3.l -fill x -side top
+        ::pack $t3.l -fill x -side top
 
         set t31 [frame $t3.fautobis -borderwidth 1 -relief groove -width 120]
         set commande(demarrage_auto) ::Gps::DemarrageAuto
