@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.14 2007-01-29 21:57:07 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.15 2007-04-10 21:06:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -29,6 +29,7 @@ set caption(scanfast,comment10)           "You can now run the command:"
 
 set caption(scanfast,scanfast)            "Fast Scan"
 set caption(scanfast,help_titre)          "Help For This Tool"
+set caption(scanfast,configuration)       "Setup"
 set caption(scanfast,colonnes)            "Columns"
 set caption(scanfast,lignes)              "Lines"
 set caption(scanfast,interligne)          "Line Spacing"
@@ -85,6 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Scan rapide"
    set caption(scanfast,help_titre)       "Aide pour cet outil"
+   set caption(scanfast,configuration)    "Configuration"
    set caption(scanfast,colonnes)         "Colonnes"
    set caption(scanfast,lignes)           "Lignes"
    set caption(scanfast,interligne)       "Interligne"
@@ -141,6 +143,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Scanneriz. rapida"
    set caption(scanfast,help_titre)       "Aiuto per questo tool"
+   set caption(scanfast,configuration)    "Configurazione"
    set caption(scanfast,colonnes)         "Colonne"
    set caption(scanfast,lignes)           "Linee"
    set caption(scanfast,interligne)       "Spazio interlinea"
@@ -197,6 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Scan rápido"
    set caption(scanfast,help_titre)       "Ayuda para esta herramienta"
+   set caption(scanfast,configuration)    "Configuración"
    set caption(scanfast,colonnes)         "Columnas"
    set caption(scanfast,lignes)           "Lineas"
    set caption(scanfast,interligne)       "Interlineado"
@@ -253,6 +257,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Schnell Scan"
    set caption(scanfast,help_titre)       "Hilfe für dieses Gerät"
+   set caption(scanfast,configuration)    "Konfiguration"
    set caption(scanfast,colonnes)         "Kolonnen"
    set caption(scanfast,lignes)           "Reihen"
    set caption(scanfast,interligne)       "Reihen Wechsel"
@@ -309,6 +314,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Scan rápido"
    set caption(scanfast,help_titre)       "Ajuda para esta ferramenta"
+   set caption(scanfast,configuration)    "Configuração"
    set caption(scanfast,colonnes)         "Colunas"
    set caption(scanfast,lignes)           "Linhas"
    set caption(scanfast,interligne)       "Espaçamento entre linhas"
@@ -365,6 +371,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanfast,scanfast)         "Fast Scan"
    set caption(scanfast,help_titre)       "Help For This Tool"
+   set caption(scanfast,configuration)    "Setup"
    set caption(scanfast,colonnes)         "Columns"
    set caption(scanfast,lignes)           "Lines"
    set caption(scanfast,interligne)       "Line Spacing"
