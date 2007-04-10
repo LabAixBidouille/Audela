@@ -198,7 +198,28 @@ Note aux utilisateurs de cameras SBIG : Installez le driver systeme pour la came
 avec le logiciel propose par SBIG: "SetupDriverChecker.exe", disponible gratuitement 
 a l'adresse suivante: ftp://ftp.sbig.com/pub/SetupDriverChecker.exe
 
-  
+Note aux utilisateurs d'APN (Appareil Photo Numerique) :
+   La liaison USB entre AudeLA et les APN requiert libusb-win32 qui est disponible 
+   sur le site  http://libusb-win32.sourceforge.net
+   Télécharger le fichier libusb-win32-filter-bin-0.1.10.1.exe 
+   Puis installer libusb-win32 en executant ce fichier.
+
+Note aux utilisateurs de Quickaudine et de Quickremote : 
+   La liaison USB entre AudeLA et Quickaudine ou Quickremote necessite le driver FTDI
+   qui est disponible sur le site http://www.ftdichip.com/
+   (menu Drivers->D2XX)
+   
+   Pour Windows XP 64 bits , télécharger le fichier 
+        http://www.ftdichip.com/Drivers/CDM/WinXPx64/CDM%202.00.00%20x64.zip
+   Pour Windows XP 32 bits , télécharger le fichier 
+        http://www.ftdichip.com/Drivers/CDM/Win2000/CDM%202.00.00.zip
+   Pour Windows 98 ou Me , télécharger le fichier    
+        http://www.ftdichip.com/Drivers/D2XX/Win98/D30104.zip
+
+   Puis dézipper le fichier dans un répertoire temporaire et lancer l'installation 
+   en suivant la précédure décrite dans 
+   http://www.ftdichip.com/Documents/InstallGuides.htm
+
 5.2 Linux
 ---------
 
@@ -217,9 +238,6 @@ Les briques suivantes sont requises. Le paquet Debian correspondant est mentionn
   Extended image format support for Tcl/Tk                      (libtk-img)
   GNU Scientific Library (GSL) -- library package               (libgsl0)
   The BLT extension library for Tcl/Tk - run-time package       (blt)
-  Gphoto2 digital camera library                                (libgphoto2-2)
-  Gphoto2 digital camera library (development files)            (libgphoto2-2-dev)
-  Gphoto2 digital camera port library                           (libgphoto2-port0)
   Userspace USB programming library                             (libusb-0.1-4)
 
 Les outils pour compiler/developper:
