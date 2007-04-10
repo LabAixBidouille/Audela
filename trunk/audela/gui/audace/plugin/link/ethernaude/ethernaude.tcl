@@ -2,14 +2,14 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.13 2007-04-07 00:35:17 michelpujol Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.14 2007-04-10 21:14:57 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
    package provide ethernaude 1.0
+
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ethernaude.cap ]
-
 }
 
 #------------------------------------------------------------
@@ -203,7 +203,7 @@ proc ::ethernaude::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getPluginType 
+#  getPluginType
 #     retourne le type de plugin
 #------------------------------------------------------------
 proc ::ethernaude::getPluginType { } {
@@ -232,7 +232,6 @@ proc ::ethernaude::getPluginProperty { propertyName } {
    switch $propertyName {
    }
 }
-
 
 #------------------------------------------------------------
 #  getPluginTitle
