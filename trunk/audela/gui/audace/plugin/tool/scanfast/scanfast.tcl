@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.22 2007-04-07 00:38:35 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.23 2007-04-10 21:06:22 robertdelmas Exp $
 #
 
 global panneau
@@ -136,6 +136,11 @@ namespace eval ::Scanfast {
    #    cree une nouvelle instance de l'outil
    #------------------------------------------------------------
    proc createPluginInstance { { in "" } { visuNo 1 } } {
+      global audace
+
+      #--- Chargement des fichiers auxiliaires
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool scanfast scanfastSetup.tcl ]\""
+      #--- Mise en place de l'interface graphique
       createPanel $in.scanfast
    }
 
@@ -161,6 +166,7 @@ namespace eval ::Scanfast {
       #--- Initialisation des captions
       set panneau(Scanfast,titre)           "$caption(scanfast,scanfast)"
       set panneau(Scanfast,aide)            "$caption(scanfast,help_titre)"
+      set panneau(Scanfast,configuration)   "$caption(scanfast,configuration)"
       set panneau(Scanfast,col)             "$caption(scanfast,colonnes)"
       set panneau(Scanfast,lig)             "$caption(scanfast,lignes)"
       set panneau(Scanfast,interligne)      "$caption(scanfast,interligne)"
@@ -221,6 +227,9 @@ namespace eval ::Scanfast {
       if { ! [ info exists parametres(Scanfast,interligne) ] } { set parametres(Scanfast,interligne) "100" }
       if { ! [ info exists parametres(Scanfast,dt) ] }         { set parametres(Scanfast,dt)         "40" }
       if { ! [ info exists parametres(Scanfast,speed) ] }      { set parametres(Scanfast,speed)      "8000" }
+
+      #--- Creation des variables de la boite de configuration si elles n'existent pas
+      ::scanfastSetup::initToConf
    }
 
    proc Enregistrement_Var { } {
@@ -321,6 +330,9 @@ namespace eval ::Scanfast {
       set panneau(Scanfast,dt)          "$parametres(Scanfast,dt)"
       set panneau(Scanfast,speed)       "$parametres(Scanfast,speed)"
 
+      #--- Initialisation des variables de la boite de configuration
+      ::scanfastSetup::confToWidget
+
       #--- Configuration dynamique de l'outil en fonction de la liaison
       ::Scanfast::Adapt_Outil_Scanfast
       ::confVisu::addCameraListener 1 ::Scanfast::Adapt_Outil_Scanfast
@@ -406,25 +418,19 @@ namespace eval ::Scanfast {
                }
             }
 
-            #--- Temporisation ou non entre l'arret moteur et le debut de la pose
-            if { [ info exists conf(tempo_scan,active) ] == "0" } {
-               set conf(tempo_scan,active) "1"
-               set conf(tempo_scan,delai)  "3"
-            }
-
             #--- Attente du demarrage du scan
-            if { $conf(tempo_scan,active) == "1" } {
+            if { $panneau(Scanfast,active) == "1" } {
                #--- Decompte du temps d'attente
-               set attente $conf(tempo_scan,delai)
-               if { $conf(tempo_scan,delai) > "0" } {
-                  while { $conf(tempo_scan,delai) > "0" } {
-                     ::camera::Avancement_scan "-10" $panneau(Scanfast,lig1)
+               set attente $panneau(Scanfast,delai)
+               if { $panneau(Scanfast,delai) > "0" } {
+                  while { $panneau(Scanfast,delai) > "0" } {
+                     ::camera::Avancement_scan "-10" $panneau(Scanfast,lig1) $panneau(Scanfast,delai)
                      update
                      after 1000
-                     incr conf(tempo_scan,delai) "-1"
+                     incr panneau(Scanfast,delai) "-1"
                   }
                }
-               set conf(tempo_scan,delai) $attente
+               set panneau(Scanfast,delai) $attente
             }
 
             #--- Gestion graphique du bouton STOP - Devient actif avec le debut du scan
@@ -484,7 +490,7 @@ namespace eval ::Scanfast {
                #--- Appel du timer
                if { $panneau(Scanfast,lig1) > "$panneau(Scanfast,nblg)" } {
                   set t [ expr $panneau(Scanfast,lig1)/$panneau(Scanfast,nblg1) ]
-                  ::camera::dispLine $t $panneau(Scanfast,nblg1) $panneau(Scanfast,lig1)
+                  ::camera::dispLine $t $panneau(Scanfast,nblg1) $panneau(Scanfast,lig1) $panneau(Scanfast,delai)
                }
                #--- Attente de la fin de la pose
                vwait scan_result$audace(camNo)
@@ -750,13 +756,23 @@ proc ScanfastBuildIF { This } {
    frame $This -borderwidth 2 -relief groove
 
       #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
+      frame $This.fra0 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(Scanfast,titre) \
+         Button $This.fra0.but -borderwidth 1 -text $panneau(Scanfast,titre) \
             -command "::audace::showHelpPlugin tool scanfast scanfast.htm"
+         pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
+         DynamicHelp::add $This.fra0.but -text $panneau(Scanfast,aide)
+
+      pack $This.fra0 -side top -fill x
+
+      #--- Frame du bouton de configuration
+      frame $This.fra1 -borderwidth 2 -relief groove
+
+         #--- Label du bouton Configuration
+         button $This.fra1.but -borderwidth 1 -text $panneau(Scanfast,configuration) \
+            -command { ::scanfastSetup::run $audace(base).scanfastSetup }
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(Scanfast,aide)
 
       pack $This.fra1 -side top -fill x
 
