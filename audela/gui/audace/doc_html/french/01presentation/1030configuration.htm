@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 10 mars 2005</p>
+<p class="date">Date de mise &agrave; jour : 10 avril 2007</p>
 <h1>Configuration (suite) </h1>
 <h3> 6. Fichiers image</h3>
 <p> Ici, il s'agit de param&eacute;trer les fichiers des images que nous allons acqu&eacute;rir, ouvrir ou enregistrer. Voici la bo&icirc;te de dialogue que vous obtenez par un clic gauche de la souris sur Fichiers image... : </p>
@@ -24,28 +24,7 @@
 <img src="../images/image21.gif" alt="" width="318" height="131" />
 <p>Vous avez donc le choix entre Active l'alarme sonore ou non, en cochant ou non la case qui pr&eacute;c&egrave;de ce commentaire. Dans le cas o&ugrave; vous avez choisi d'activer l'alarme sonore, vous devez indiquer &agrave; quel moment doit retentir ce signal, en renseignant le champ qui pr&eacute;c&egrave;de sec. avant la fin de la pose. Dans l'exemple de notre capture d'&eacute;cran, l'alarme retentira 2 secondes avant la fin de la pose CDD. </p>
 <p>L&agrave; aussi, votre choix doit &ecirc;tre valid&eacute; par un appui sur le bouton OK ou Appliquer. La sauvegarde de la nouvelle configuration vous sera demand&eacute;e &agrave; la fermeture du logiciel. </p>
-<h3> 8. Drift scan et scan rapide</h3>
-<p> Ce param&eacute;trage est tr&egrave;s similaire au pr&eacute;c&eacute;dent. En cliquant avec le bouton gauche de la souris sur Drift scan et scan rapide... vous obtenez la bo&icirc;te de dialogue suivante &agrave; votre &eacute;cran : </p>
-<img src="../images/image22.gif" alt="" width="348" height="173" />
-<p>Sa configuration ne vous sera utile que lorsque vous utiliserez les outils Drift scan et Scan rapide pour l'acquisition d'images (scans) CCD, nous explorerons les possibilit&eacute;s de ces outils dans le chapitre concern&eacute; aux acquisitions. </p>
-<p>Tout d'abord, il faut avoir quelques notions de la prise de vue en mode drift scan. Lorsque vous faites une acquisition CCD en g&eacute;n&eacute;ral le moteur qui actionne l'axe horaire (ascension droite) de votre monture &eacute;quatoriale est en fonctionnement pour compenser la rotation de la Terre. Quand vous faites une acquisition en mode drift scan, le moteur d'ascension droite est g&eacute;n&eacute;ralement arr&ecirc;t&eacute;. Dans ce cas le ciel 'd&eacute;file' devant votre instrumentation, si nous synchronisons exactement la vitesse de lecture de la cam&eacute;ra avec le d&eacute;filement de la vo&ucirc;te c&eacute;leste, alors nous acqu&eacute;rons une image au 'kilom&egrave;tre'. Ce n'est pas tr&egrave;s compliqu&eacute;, nous &eacute;tudierons cela le moment venu. </p>
-<p>Cette bo&icirc;te de dialogue nous permet de g&eacute;rer une &eacute;ventuelle temporisation entre l'arr&ecirc;t du moteur d'ascension droite et le d&eacute;but de la pose. Cela d&eacute;pend principalement de votre instrumentation et de sa capabilit&eacute; &agrave; absorber les &eacute;ventuelles vibrations dues &agrave; l'arr&ecirc;t du moteur. </p>
-<p>Si votre monture &eacute;quatoriale est suffisamment stable, vous pouvez cocher Aucune temporisation. Dans ce cas, en mode drift scan la pose d&eacute;butera juste apr&egrave;s l'arr&ecirc;t du moteur. </p>
-<p>Par contre, si vous souhaitez &eacute;liminer les &eacute;ventuelles vibrations dues &agrave; l'arr&ecirc;t du moteur ou simplement si vous &ecirc;tes prudent, nous vous recommandons de cocher Active la temporisation et de choisir le temps d'attente entre l'arr&ecirc;t du moteur et le d&eacute;but de la pose CCD. Pour cela, il vous suffit de renseigner le champ D&eacute;lai de temporisation, dans notre exemple nous avons choisi un d&eacute;lai de 3 secondes. </p>
-<p>Comme &agrave; chaque fois, il vous appartient de valider votre choix par l'interm&eacute;diaire du bouton OK ou Appliquer. La sauvegarde de la nouvelle configuration vous sera demand&eacute;e &agrave; la fermeture du logiciel. </p>
-<p>Nota : Actuellement, cette option est seulement accessible aux t&eacute;lescopes du type LX200 ou AudeCom (en mode LX200 et en mode natif). Nous verrons cela dans le chapitre d&eacute;di&eacute; &agrave; la configuration et au pilotage des t&eacute;lescopes. </p>
-<h3> 9. Messages sur la Console</h3>
-<p> Ce param&eacute;trage permet de rendre 'muet' les outils 'bavards'. Seuls les outils Acquisition et Pr&eacute;traitement sont concern&eacute;s. Je m'explique, ces 2 outils tracent toutes les actions que vous faites en affichant sur la Console des messages clairs d&eacute;crivant le processus en cours. De plus ces m&ecirc;mes messages sont &eacute;galement enregistr&eacute;s dans un fichier avec l'extension log dans le r&eacute;pertoire d&eacute;di&eacute; aux images. En cliquant avec le bouton gauche de la souris sur Messages sur la Console... vous avez la bo&icirc;te de dialogue suivante qui s'affiche &agrave; l'&eacute;cran : </p>
-<img src="../images/image27.gif" alt="" width="318" height="179" />
-<p>Dans le cas pr&eacute;sent les 2 outils Acquisition et Pr&eacute;traitement affichent des messages d&eacute;crivant le processus en cours sur la Console. Le r&eacute;sultat peut &ecirc;tre le suivant dans le cas de l'acquisition d'une image : </p>
-<img src="../images/image28.gif" alt="" width="740" height="511" />
-<p>Il suffit de lire le message, vous venez de r&eacute;aliser &agrave; 22h 26m 20s TU l'acquisition d'une image CCD de 60 secondes de pose en binning 2x2 en mode 'une image'. En plus d'&ecirc;tre affich&eacute; sur la Console, ce message est &eacute;galement enregistr&eacute; dans un fichier avec l'extension log dans le r&eacute;pertoire d&eacute;di&eacute; aux images. </p>
-<p>Il est possible par la bo&icirc;te de dialogue Messages sur la Console de rendre l'outil Acquisition muet vis &agrave; vis de la Console. Pour cela vous devez cliquer sur Non en face du nom de l'outil Acquisition. </p>
-<img src="../images/image29.gif" alt="" width="318" height="179" />
-<p>Vous devez ensuite valider ce choix en cliquant sur le bouton OK ou Appliquer. Il n'y aura donc plus d'affichage de messages sur la Console pour tracer le processus en cours, par contre ce m&ecirc;me processus sera toujours enregistr&eacute; dans un fichier avec l'extension log que vous pourrez consulter ult&eacute;rieurement. </p>
-<p>Si vous souhaitez &agrave; nouveau retrouver l'affichage du processus sur la Console, il vous suffit tout simplement de cliquer sur Oui en regard du nom de l'outil et ensuite de valider votre choix par un appui sur OK ou sur Appliquer. </p>
-<p>Comme d'habitude la sauvegarde de la nouvelle configuration vous sera demand&eacute;e &agrave; la fermeture du logiciel. </p>
-<h3> 10. Type de fen&ecirc;tre</h3>
+<h3> 8. Type de fen&ecirc;tre</h3>
 <p>En cliquant avec le bouton gauche de la souris sur Type de fen&ecirc;tre... vous avez la bo&icirc;te de dialogue suivante &agrave; votre &eacute;cran : </p>
 <img src="../images/image30.gif" alt="" width="356" height="151" />
 <p>Ici c'est le choix du formatage des boutons de validation, d'aide et d'annulation qui vous est propos&eacute;. Vous pouvez donc choisir d'avoir toutes les bo&icirc;tes de dialogue avec 4 boutons (OK, Appliquer, Aide et Fermer) ou seulement avec 3 boutons (Appliquer, Aide et Fermer). C'est tout simplement une question de go&ucirc;t. Aud'ACE est livr&eacute;e par d&eacute;faut avec une configuration &agrave; 4 boutons. </p>
@@ -53,7 +32,7 @@
 <p>Le bouton Aide permet d'acc&egrave;der &agrave; l'aide de la bo&icirc;te de dialogue. </p>
 <p>Enfin le bouton Fermer permet (s'il n'est pas pr&eacute;c&eacute;d&eacute; d'un appui sur Appliquer) la fermeture de la bo&icirc;te sans la prise en compte de la nouvelle configuration. </p>
 <p>L&agrave; aussi, le choix de votre configuration (&agrave; 3 ou 4 boutons) doit &ecirc;tre valid&eacute; par un appui sur le bouton OK ou Appliquer. Comme d'habitude, la sauvegarde de la nouvelle configuration vous sera demand&eacute;e &agrave; la fermeture du logiciel. </p>
-<h3> 11. Apparence</h3>
+<h3> 9. Apparence</h3>
 <p>En cliquant avec le bouton gauche de la souris sur Apparence... vous avez la bo&icirc;te de dialogue suivante qui s'ouvre sur votre &eacute;cran : </p>
 <img src="../images/image56.gif" alt="" width="318" height="340" />
 <p>Dans le cas pr&eacute;sent on a acc&egrave;s aux couleurs diurnes de l'interface Aud'ACE, c'est &agrave; dire &agrave; des couleurs pour une utilisation de jour. </p>
@@ -87,7 +66,7 @@
 <li>textColor : Couleur g&eacute;n&eacute;rale des textes, hors zones de saisie des donn&eacute;es. </li>
 </ul>
 <p>Le plus simple est encore de changer les couleurs une &agrave; une et d'observer les &eacute;volutions dans l'interface Aud'ACE. </p>
-<h3> 12. S&eacute;lection des outils</h3>
+<h3> 10. S&eacute;lection des outils</h3>
 <p>Bien que cette option ne soit pas accessible par le menu d&eacute;roulant Configuration, il est important d'en parler ici. </p>
 <p>Ce param&eacute;trage permet de s&eacute;lectionner les outils que l'on souhaite accessibles &agrave; partir du menu d&eacute;roulant Outils et d'y associer &eacute;ventuellement un raccourci par l'interm&eacute;diaire de touches du clavier. En cliquant avec le bouton gauche de la souris sur S&eacute;lection des outils... vous avez par exemple la bo&icirc;te de dialogue suivante qui s'affiche &agrave; l'&eacute;cran : </p>
 <img src="../images/image23.gif" alt="" width="425" height="364" />
