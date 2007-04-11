@@ -2,416 +2,443 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.7 2007-02-10 17:44:49 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.8 2007-04-11 17:35:47 michelpujol Exp $
 #
 
 namespace eval ::confPad {
+}
 
-   #--- variables locales de ce namespace
-   array set private {
-      namespace      "confPad"
-      frm            ""
-      driverType     "pad"
-      driverPattern  ""
-      namespacelist  ""
-      driverlist     ""
+#------------------------------------------------------------
+# init ( est lance automatiquement au chargement de ce fichier tcl)
+# initialise les variable conf(..) et caption(..)
+# demarrer le driver selectionne par defaut
+#------------------------------------------------------------
+proc ::confPad::init { } {
+   variable private
+   global audace
+   global conf
+
+   #--- cree les variables dans conf(..) si elles n'existent pas
+   if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
+   if { ! [ info exists conf(confPad,start) ] }    { set conf(confPad,start)    "0" }
+   if { ! [ info exists conf(confPad,position) ] } { set conf(confPad,position) "+155+100" }
+
+   #--- charge le fichier caption
+   source [ file join $audace(rep_caption) confpad.cap ]
+
+   #--- Initialise les variables locales
+   set private(pluginList) ""
+   set private(pluginTitleList)    ""
+   set private(frm)           "$audace(base).confPad"
+   set private(variablePluginName) ""
+   
+   #--- j'ajoute le repertoire pouvant contenir des plugins
+   lappend ::auto_path [file join "$::audace(rep_plugin)" pad]
+   #--- je recherche les plugin presents
+   findPlugin
+
+   #--- je verifie que le plugin par defaut existe dans la liste
+   if { [lsearch $private(pluginList) $conf(confPad)] == -1 } {
+      #--- s'il n'existe pas , je vide le nom du plugin par defaut
+      set conf(confPad) ""
    }
+}
 
-   #------------------------------------------------------------
-   # init ( est lance automatiquement au chargement de ce fichier tcl)
-   # initialise les variable conf(..) et caption(..)
-   # demarrer le driver selectionne par defaut
-   #------------------------------------------------------------
-   proc init { } {
-      variable private
-      global audace
-      global conf
+#------------------------------------------------------------
+#  getLabel
+#     retourne le titre de la fenetre
+#
+#  return "Titre de la fenetre de choix (dans la langue de l'utilisateur)"
+#------------------------------------------------------------
+proc ::confPad::getLabel { } {
+   global caption
+   return "$caption(confpad,config)"
+}
 
-      #---
-      set private(driverPattern) [ file join audace plugin pad * pkgIndex.tcl ]
-      set private(frm)           "$audace(base).confPad"
-      #--- cree les variables dans conf(..) si elles n'existent pas
-      if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
-      if { ! [ info exists conf(confPad,start) ] }    { set conf(confPad,start)    "0" }
-      if { ! [ info exists conf(confPad,position) ] } { set conf(confPad,position) "+155+100" }
+#------------------------------------------------------------
+# run
+# Affiche la fenetre de choix et de configuration
+#
+# Parametres :
+#    variablePluginName : contient le nom de la variable dans laquelle sera
+#                         copie le nom du plugin selectionné
+#------------------------------------------------------------
+proc ::confPad::run { {variablePluginName ""} } {
+   variable private
+   global conf
 
-      #--- charge le fichier caption
-      source [ file join $audace(rep_caption) confpad.cap ]
-
-      findDriver
-
-      #--- configure le driver selectionne par defaut
-      #if { $conf(confPad,start) == "1" } {
-      #   configureDriver
-      #}
-
-   }
-
-   #------------------------------------------------------------
-   #  getLabel
-   #     retourne le titre de la fenetre
-   #
-   #  return "Titre de la fenetre de choix (dans la langue de l'utilisateur)"
-   #------------------------------------------------------------
-   proc getLabel { } {
-      global caption
-
-      return "$caption(confpad,config)"
-   }
-
-   #------------------------------------------------------------
-   # run
-   # Affiche la fenetre de choix et de configuration
-   #
-   #------------------------------------------------------------
-   proc run { } {
-      variable private
-      global conf
-
-      if { [createDialog ]==0 } {
-         select $conf(confPad)
-         catch { tkwait visibility $private(frm) }
-      }
-   }
-
-   #------------------------------------------------------------
-   # ok
-   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-   # la configuration, et fermer la fenetre de reglage
-   #------------------------------------------------------------
-   proc ok { } {
-      variable private
-
-      $private(frm).cmd.ok configure -relief groove -state disabled
-      $private(frm).cmd.appliquer configure -state disabled
-      $private(frm).cmd.fermer configure -state disabled
-      appliquer
-      fermer
-   }
-
-   #------------------------------------------------------------
-   # appliquer
-   # Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
-   # memoriser et appliquer la configuration
-   #------------------------------------------------------------
-   proc appliquer { } {
-      variable private
-      global conf
-
-      $private(frm).cmd.ok configure -state disabled
-      $private(frm).cmd.appliquer configure -relief groove -state disabled
-      $private(frm).cmd.fermer configure -state disabled
-
-      #--- j'arrete la raquette precedente
-      stopDriver
-
-      #--- je recupere le namespace correspondant au label
-      set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ]
-      if { $index != -1 } {
-         set conf(confPad) [lindex $private(namespacelist) $index]
+   set private(variablePluginName) $variablePluginName
+   
+   if { [createDialog ]==0 } {
+      if { $variablePluginName != "" } {
+         #--- je recupere le nom du plugin pre-selectionne par l'appelant
+         set pluginName [set $variablePluginName]
       } else {
-         set conf(confPad) ""
+         #--- je recupere le nom du plugin par defaut
+         set pluginName $conf(confPad)
       }
-
-      #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
-      foreach name $private(namespacelist) {
-         set drivername [ $name\:\:widgetToConf ]
+      if { $pluginName != "" } {
+         #--- je selectionne l'onglet deu plugin
+         select $pluginName
       }
+   }
+}
 
-      #--- je mets a jour le nom de la raquette
-      getLabelPad
+#------------------------------------------------------------
+# ok
+# Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
+# la configuration, et fermer la fenetre de reglage
+#------------------------------------------------------------
+proc ::confPad::ok { } {
+   variable private
 
-      #--- je demarre le driver selectionne
-      configureDriver
+   $private(frm).cmd.ok configure -relief groove -state disabled
+   $private(frm).cmd.appliquer configure -state disabled
+   $private(frm).cmd.fermer configure -state disabled
+   appliquer
+   fermer
+}
 
-      $private(frm).cmd.ok configure -state normal
-      $private(frm).cmd.appliquer configure -relief raised -state normal
-      $private(frm).cmd.fermer configure -state normal
+#------------------------------------------------------------
+# appliquer
+# Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
+# memoriser et appliquer la configuration
+#------------------------------------------------------------
+proc ::confPad::appliquer { } {
+   variable private
+   global conf
+
+   $private(frm).cmd.ok configure -state disabled
+   $private(frm).cmd.appliquer configure -relief groove -state disabled
+   $private(frm).cmd.fermer configure -state disabled
+
+   #--- je recupere le namespace correspondant au label
+   set label "[Rnotebook:currentName $private(frm).usr.book ]"
+   set index [lsearch -exact $private(pluginTitleList) $label ]
+   if { $index != -1 } {
+      set padName [lindex $private(pluginList) $index]
+   } else {
+      set padName ""
    }
 
-   #------------------------------------------------------------
-   # afficheAide
-   # Fonction appellee lors de l'appui sur le bouton 'Aide'
-   #------------------------------------------------------------
-   proc afficheAide { } {
-      variable private
-      global conf
-      global help
+   #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
+   foreach name $private(pluginList) {
+      $name\::widgetToConf
+   }
 
-      $private(frm).cmd.ok configure -state disabled
-      $private(frm).cmd.appliquer configure -state disabled
-      $private(frm).cmd.fermer configure -state disabled
-      $private(frm).cmd.aide configure -relief groove -state disabled
+   #--- je copie le nom dans la variable de sortie
+   if { $private(variablePluginName) != "" } {
+      set $private(variablePluginName) $padName
+   }
 
-      #--- je recupere le label de l'onglet selectionne
-      set private(conf_confPad) [Rnotebook:currentName $private(frm).usr.book ]
-      #--- je recupere le namespace correspondant au label
-      set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ]
-      if { $index != -1 } {
-         set private(conf_confPad) [ lindex $private(namespacelist) $index ]
-      } else {
-         set private(conf_confPad) ""
-      }
+   #--- je demarre le plugin selectionne
+   configureDriver $padName
+
+   $private(frm).cmd.ok configure -state normal
+   $private(frm).cmd.appliquer configure -relief raised -state normal
+   $private(frm).cmd.fermer configure -state normal
+}
+
+#------------------------------------------------------------
+# afficheAide
+# Fonction appellee lors de l'appui sur le bouton 'Aide'
+#------------------------------------------------------------
+proc ::confPad::afficheAide { } {
+   variable private
+   global conf
+   global help
+
+   #--- je recupere l'index de l'onglet selectionne
+   set index [Rnotebook:currentIndex $private(frm).usr.book ]
+   if { $index != -1 } {
+      set pluginName [lindex $private(pluginList) [expr $index -1]]
       #--- j'affiche la documentation
-      set driver_doc [ $private(conf_confPad)\:\:getHelp ]
-      ::audace::showHelpPlugin pad $private(conf_confPad) "$driver_doc"
-
-      $private(frm).cmd.ok configure -state normal
-      $private(frm).cmd.appliquer configure -state normal
-      $private(frm).cmd.fermer configure -state normal
-      $private(frm).cmd.aide configure -relief raised -state normal
+      set pluginHelp [ $pluginName\::getHelp ]
+      ::audace::showHelpPlugin pad $pluginName "$pluginHelp"
    }
+}
 
-   #------------------------------------------------------------
-   # fermer
-   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
-   #------------------------------------------------------------
-   proc fermer { } {
-      variable private
+#------------------------------------------------------------
+# fermer
+# Fonction appellee lors de l'appui sur le bouton 'Fermer'
+#------------------------------------------------------------
+proc ::confPad::fermer { } {
+   variable private
 
-      ::confPad::recup_position
-      $private(frm).cmd.ok configure -state disabled
-      $private(frm).cmd.appliquer configure -state disabled
-      $private(frm).cmd.fermer configure -relief groove -state disabled
-      destroy $private(frm)
-   }
+   ::confPad::recup_position
+   destroy $private(frm)
+}
 
-   #------------------------------------------------------------
-   # confPad::recup_position
-   # Permet de recuperer et de sauvegarder la position de la
-   # fenetre de configuration de la raquette
-   #------------------------------------------------------------
-   proc recup_position { } {
-      variable private
-      global conf
+#------------------------------------------------------------
+# confPad::recup_position
+# Permet de recuperer et de sauvegarder la position de la
+# fenetre de configuration de la raquette
+#------------------------------------------------------------
+proc ::confPad::recup_position { } {
+   variable private
+   global conf
 
-      set private(confPad,geometry) [ wm geometry $private(frm) ]
-      set deb [ expr 1 + [ string first + $private(confPad,geometry) ] ]
-      set fin [ string length $private(confPad,geometry) ]
-      set private(confPad,position) "+[ string range $private(confPad,geometry) $deb $fin ]"
-      #---
-      set conf(confPad,position) $private(confPad,position)
-   }
+   set private(confPad,geometry) [ wm geometry $private(frm) ]
+   set deb [ expr 1 + [ string first + $private(confPad,geometry) ] ]
+   set fin [ string length $private(confPad,geometry) ]
+   set private(confPad,position) "+[ string range $private(confPad,geometry) $deb $fin ]"
+   #---
+   set conf(confPad,position) $private(confPad,position)
+}
 
-   #------------------------------------------------------------
-   # createDialog
-   # Affiche la fenetre a onglet
-   # retrun 0 = OK , 1 = error (no driver found)
-   #------------------------------------------------------------
-   proc createDialog { } {
-      variable private
-      global conf
-      global caption
+#------------------------------------------------------------
+# createDialog
+# Affiche la fenetre a onglet
+# retrun 0 = OK , 1 = error (no driver found)
+#------------------------------------------------------------
+proc ::confPad::createDialog { } {
+   variable private
+   global conf
+   global caption
 
-      if { [winfo exists $private(frm)] } {
-         wm withdraw $private(frm)
-         wm deiconify $private(frm)
-         focus $private(frm)
-         return 0
-      }
-
-      #--- je mets a jour la liste des drivers
-      if { [findDriver] == 1 } {
-         return 1
-      }
-
-      #---
-      set private(confPad,position) $conf(confPad,position)
-
-      #---
-      if { [ info exists private(confPad,geometry) ] } {
-         set deb [ expr 1 + [ string first + $private(confPad,geometry) ] ]
-         set fin [ string length $private(confPad,geometry) ]
-         set private(confPad,position) "+[ string range $private(confPad,geometry) $deb $fin ]"
-      }
-
-      toplevel $private(frm)
-      if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $private(frm) 550x256$private(confPad,position)
-         wm minsize $private(frm) 550 256
-      } else {
-         wm geometry $private(frm) 440x256$private(confPad,position)
-         wm minsize $private(frm) 440 256
-      }
-      wm resizable $private(frm) 1 1
+   if { [winfo exists $private(frm)] } {
+      wm withdraw $private(frm)
       wm deiconify $private(frm)
-      wm title $private(frm) "$caption(confpad,config)"
-      wm protocol $private(frm) WM_DELETE_WINDOW "::confPad::fermer"
-
-      frame $private(frm).usr -borderwidth 0 -relief raised
-
-      #--- creation de la fenetre a onglets
-      set mainFrame $private(frm).usr.book
-
-      #--- j'affiche les onglets dans la fenetre
-      Rnotebook:create $mainFrame -tabs "$private(driverlist)" -borderwidth 1
-
-      #--- je demande a chaque driver d'afficher sa page de config
-      set indexOnglet 1
-      foreach name $private(namespacelist) {
-         set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
-         incr indexOnglet
-      }
-
-      pack $mainFrame -fill both -expand 1
-      pack $private(frm).usr -side top -fill both -expand 1
-
-      #--- frame bouton ok, appliquer, fermer
-      frame $private(frm).cmd -borderwidth 1 -relief raised
-      button $private(frm).cmd.ok -text "$caption(confpad,ok)" -relief raised -state normal -width 7 \
-         -command " ::confPad::ok "
-      if { $conf(ok+appliquer)=="1" } {
-         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-      }
-      button $private(frm).cmd.appliquer -text "$caption(confpad,appliquer)" -relief raised -state normal -width 8 \
-         -command " ::confPad::appliquer "
-      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.fermer -text "$caption(confpad,fermer)" -relief raised -state normal -width 7 \
-         -command " ::confPad::fermer "
-      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.aide -text "$caption(confpad,aide)" -relief raised -state normal -width 8 \
-         -command " ::confPad::afficheAide "
-      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $private(frm).cmd -side top -fill x
-
-      #---
       focus $private(frm)
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $private(frm) <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $private(frm)
-
       return 0
    }
 
-   #------------------------------------------------------------
-   # select [label]
-   # Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
-   # Si le label est omis ou inconnu, le premier onglet est selectionne
-   #------------------------------------------------------------
-   proc select { { name "" } } {
-      variable private
+   #---
+   set private(confPad,position) $conf(confPad,position)
 
-      #--- je recupere le label correspondant au namespace
-      set index [ lsearch -exact $private(namespacelist) "$name" ]
-      if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [ lindex $private(driverlist) $index ]
-      }
+   #---
+   if { [ info exists private(confPad,geometry) ] } {
+      set deb [ expr 1 + [ string first + $private(confPad,geometry) ] ]
+      set fin [ string length $private(confPad,geometry) ]
+      set private(confPad,position) "+[ string range $private(confPad,geometry) $deb $fin ]"
    }
 
-   #------------------------------------------------------------
-   # configureDriver
-   # configure le driver dont le label est dans $conf(confPad)
-   #------------------------------------------------------------
-   proc configureDriver { } {
-      variable private
-      global conf
+   toplevel $private(frm)
+   if { $::tcl_platform(os) == "Linux" } {
+      wm geometry $private(frm) 550x256$private(confPad,position)
+      wm minsize $private(frm) 550 256
+   } else {
+      wm geometry $private(frm) 440x256$private(confPad,position)
+      wm minsize $private(frm) 440 256
+   }
+   wm resizable $private(frm) 1 1
+   wm deiconify $private(frm)
+   wm title $private(frm) "$caption(confpad,config)"
+   wm protocol $private(frm) WM_DELETE_WINDOW "::confPad::fermer"
 
-      if { $conf(confPad) == "" } {
-         #--- pas de driver selectionne par defaut
-         return
-      }
+   frame $private(frm).usr -borderwidth 0 -relief raised
 
-      #--- je charge les drivers
-      if { [llength $private(namespacelist)] <1 } {
-         findDriver
-      }
+   #--- creation de la fenetre a onglets
+   set mainFrame $private(frm).usr.book
 
-      #--- je configure le driver
-      catch { $conf(confPad)\:\:stopDriver }
-      #--- je configure le driver
-      catch { $conf(confPad)\:\:configureDriver }
+   #--- j'affiche les onglets dans la fenetre
+   Rnotebook:create $mainFrame -tabs "$private(pluginTitleList)" -borderwidth 1
 
+   #--- je demande a chaque driver d'afficher sa page de config
+   set indexOnglet 1
+   foreach name $private(pluginList) {
+      set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
+      incr indexOnglet
    }
 
-   #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver selectionne
-   #
-   #  return rien
-   #------------------------------------------------------------
-   proc stopDriver { } {
-      global conf
+   pack $mainFrame -fill both -expand 1
+   pack $private(frm).usr -side top -fill both -expand 1
 
-      if { "$conf(confPad)" != "" } {
-         catch { $conf(confPad)\:\:stopDriver }
-      }
+   #--- frame bouton ok, appliquer, fermer
+   frame $private(frm).cmd -borderwidth 1 -relief raised
+   button $private(frm).cmd.ok -text "$caption(confpad,ok)" -relief raised -state normal -width 7 \
+      -command " ::confPad::ok "
+   if { $conf(ok+appliquer)=="1" } {
+      pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+   }
+   button $private(frm).cmd.appliquer -text "$caption(confpad,appliquer)" -relief raised -state normal -width 8 \
+      -command " ::confPad::appliquer "
+   pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+   button $private(frm).cmd.fermer -text "$caption(confpad,fermer)" -relief raised -state normal -width 7 \
+      -command " ::confPad::fermer "
+   pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+   button $private(frm).cmd.aide -text "$caption(confpad,aide)" -relief raised -state normal -width 8 \
+      -command " ::confPad::afficheAide "
+   pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+   pack $private(frm).cmd -side top -fill x
+
+   #---
+   focus $private(frm)
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $private(frm) <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $private(frm)
+
+   return 0
+}
+
+#------------------------------------------------------------
+# createFramePad
+#    Cree une frame pour selectionner le plugin dans une combobox
+#    Cette frame est destinee a etre inseree dans une fenetre.
+# Parametres :
+#    frm     : chemin TK de la frame a creer
+#    variablePluginName : contient le nom de la variable dans laquelle sera
+#                         copie le nom du plugin selectionné
+# Return
+#    nothing
+# Exemple:
+#    ::confEqt::createFramePad $frm.padList ::confTel(audine,plugin)
+#    pack $frm.pluginList -in $frm -anchor center -side right -padx 10
+#
+#------------------------------------------------------------
+proc ::confPad::createFramePad { frm variablePluginName} {
+   variable private
+   global conf
+   global caption
+
+   set private(frame) $frm
+   #--- je cree la frame si elle n'existe pas deja
+   if { [winfo exists $frm ] == 0 } {
+      frame $private(frame) -borderwidth 0 -relief raised
    }
 
-   #------------------------------------------------------------
-   # findDriver
-   # recherche les fichiers .tcl presents dans driverPattern
-   #
-   # conditions :
-   #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
-   #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
-   #  - le driver doit avoir une procedure getlabel
-   #
-   # si le driver remplit les conditions
-   #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
-   # sinon le fichier tcl est ignore car ce n'est pas un driver
-   #
-   # retrun 0 = OK , 1 = error (no driver found)
-   #------------------------------------------------------------
-   proc findDriver { } {
-      variable private
-      global caption
+   ComboBox $frm.list \
+      -width 15       \
+      -height [llength $private(pluginList)] \
+      -relief sunken  \
+      -borderwidth 1  \
+      -textvariable $variablePluginName \
+      -editable 0     \
+      -values $private(pluginList)
+   pack $frm.list -in $frm -anchor center -side left -padx 0 -pady 10
 
-      #--- j'initialise les listes vides
-      set private(namespacelist)  ""
-      set private(driverlist)     ""
-
-      #--- chargement des differentes fenetres de configuration des drivers
-      set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
-
-      if { "$filelist" == "" } {
-         #--- aucun fichier correct
-         return 1
-      }
-
-      #--- je recherche les drivers repondant au filtre driverPattern
-      foreach fichier [glob $private(driverPattern)] {
-         uplevel #0 "source $fichier"
-         catch {
-            set padname [ file tail [ file dirname "$fichier" ] ]
-            package require $padname
-            if { [$padname\:\:getDriverType] == $private(driverType) } {
-               set driverlabel "[$padname\:\:getLabel]"
-               #--- si c'est un driver valide, je l'ajoute dans la liste
-               lappend private(namespacelist) $padname
-               lappend private(driverlist) $driverlabel
-               ::console::affiche_prompt "#$caption(confpad,raquette) $driverlabel v[package present $padname]\n"
-            }
-         }
-      }
-      ::console::affiche_prompt "\n"
-
-      if { [llength $private(namespacelist)] <1 } {
-         #--- pas driver correct
-         return 1
-      } else {
-         #--- tout est ok
-         return 0
-      }
-   }
-
-   proc getLabelPad { } {
-      global audace conf
-
-      set erreur [catch { set nom_raquette [$conf(confPad)::getLabel] } msg ]
-
-      if { $erreur == "1" } {
-         set audace(nom_raquette) ""
-      } else {
-         set audace(nom_raquette) "$nom_raquette"
-      }
-   }
+   #--- bouton de configuration de l'equipement
+   button $frm.configure -text "$caption(confpad,configurer) ..." \
+      -command "::confPad::run $variablePluginName"
+   pack $frm.configure -in $frm -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
 
 }
+
+#------------------------------------------------------------
+# select [label]
+# Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
+# Si le label est omis ou inconnu, le premier onglet est selectionne
+#------------------------------------------------------------
+proc ::confPad::select { { name "" } } {
+   variable private
+
+   #--- je recupere le label correspondant au namespace
+   set index [ lsearch -exact $private(pluginList) "$name" ]
+   if { $index != -1 } {
+      Rnotebook:select $private(frm).usr.book [ lindex $private(pluginTitleList) $index ]
+   }
+}
+
+#------------------------------------------------------------
+# configureDriver
+#    configure le driver dont le label est dans $conf(confPad)
+#------------------------------------------------------------
+proc ::confPad::configureDriver { pluginName } {
+   variable private
+   global conf
+
+   #--- je ferme la raquette precedente
+   if { $conf(confPad) != "" } {
+      $conf(confPad)::deletePluginInstance
+   }
+   
+   set conf(confPad) $pluginName
+   
+   #--- je cree le plugin
+   if { $conf(confPad) != "" } {
+      $conf(confPad)::createPluginInstance
+   }
+}
+
+#------------------------------------------------------------
+#  stopDriver
+#     arrete le driver selectionne
+#
+#  return rien
+#------------------------------------------------------------
+proc ::confPad::stopDriver { } {
+   global conf
+
+   if { "$conf(confPad)" != "" } {
+      $conf(confPad)::deletePluginInstance
+   }
+}
+
+#------------------------------------------------------------
+# findPlugin
+# recherche les plugins de type "pad" 
+#
+# conditions :
+#  - le driver doit avoir une procedure getPluginType qui retourne une valeur egale à $driverType
+#  - le driver doit avoir une procedure getPluginTitle
+#
+# si le driver remplit les conditions
+#    son label est ajouté dans la liste pluginList, 
+#    et son titre est ajoute dans la liste pluginTitleList
+# sinon le fichier est ignore
+#
+# retrun 0 = OK , 1 = error (no driver found)
+#------------------------------------------------------------
+proc ::confPad::findPlugin { } {
+   variable private
+   global caption  audace
+
+   #--- j'initialise les listes vides
+   set private(pluginList) ""
+   set private(pluginTitleList)    ""
+
+   #--- je recherche les fichiers link/*/pkgIndex.tcl
+   set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" pad * pkgIndex.tcl ]
+   #--- je recherche les drivers repondant au filtre driverPattern
+   foreach pkgIndexFileName $filelist {
+      set catchResult [catch {
+         #--- je recupere le nom du package
+         if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
+            if { $pluginInfo(type)== "pad"} {
+               #--- je charge le package
+               package require $pluginInfo(name)
+               #--- j'initalise le plugin
+               $pluginInfo(namespace)::initPlugin
+               set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+               #--- je l'ajoute dans la liste des plugins
+               lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
+               lappend private(pluginTitleList) $pluginlabel
+               ::console::affiche_prompt "#$caption(confpad,raquette) $pluginlabel v$pluginInfo(version)\n"
+            }
+         } else {
+            ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n" 
+         }
+      } catchMessage]         
+      #--- j'affiche le message d'erreur et je continu la recherche des plugins
+      if { $catchResult !=0 } {
+        console::affiche_erreur "::confLink::findPlugin $::errorInfo\n"
+     }
+   }
+   ::console::affiche_prompt "\n"
+
+   if { [llength $private(pluginList)] <1 } {
+      #--- pas driver correct
+      return 1
+   } else {
+      #--- tout est ok
+      return 0
+   }
+}
+
+proc ::confPad::getLabelPad { } {
+   global audace conf
+
+   if { $conf(confPad) != "" } {
+      return [$conf(confPad)::getPluginTitle]
+   } else {
+      return ""
+   }
+}
+
+
 
 #--- connexion au demarrage du driver selectionne par defaut
 ::confPad::init

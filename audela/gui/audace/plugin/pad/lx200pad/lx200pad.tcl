@@ -2,82 +2,52 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.7 2007-02-10 17:46:07 robertdelmas Exp $
-#
-
-package provide lx200pad 1.0
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init                : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName       : retourne le nom du driver
-#     getLabel            : retourne le nom affichable du driver
-#     getHelp             : retourne la documentation htm associee
-#     getDriverType       : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf            : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage      : affiche la fenetre de configuration de ce driver
-#     confToWidget        : copie le tableau conf() dans les variables des widgets
-#     widgetToConf        : copie les variables des widgets dans le tableau conf()
-#     configureDriver     : configure le driver et reserve les ressources
-#     stopDriver          : arrete le driver et libere les ressources occupees
-#     isReady             : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
-#     run                 : affiche la raquette
-#     startSurveilleSpeed : lance la surveillance de la vitesse
-#     surveilleSpeed      : surveillance de la vitesse
-#     lx200_set_slew      : vitesse slew
-#     lx200_set_find      : vitesse find
-#     lx200_set_cntr      : vitesse cntr
-#     lx200_set_guide     : vitesse guide
+# Mise a jour $Id: lx200pad.tcl,v 1.8 2007-04-11 17:32:42 michelpujol Exp $
 #
 
 namespace eval ::lx200pad {
-
-   #==============================================================
-   # Procedures generiques de configuration des drivers
-   #==============================================================
+   package provide lx200pad 1.0
+   source [ file join [file dirname [info script]] lx200pad.cap ]
 
    #------------------------------------------------------------
-   #  init
-   #     initialise le driver
-   #
-   #  return namespace name
+   #  initPlugin
+   #     initialise le plugin
    #------------------------------------------------------------
-   proc init { } {
-      global audace
-
-      #--- Charge le fichier caption
-      source [ file join $audace(rep_plugin) pad lx200pad lx200pad.cap ]
-
+   proc initPlugin { } {
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf
-
       #--- J'initialise les variables widget(..)
       confToWidget
-
-      return [namespace current]
    }
 
    #------------------------------------------------------------
-   #  getDriverType
-   #     retourne le type de driver
+   #  getPluginProperty
+   #     retourne la valeur de la propriete
    #
-   #  return "pad"
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete , ou "" si la propriete n'existe pas
    #------------------------------------------------------------
-   proc getDriverType { } {
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         
+      }
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType 
+   #     retourne le type de plugin 
+   #------------------------------------------------------------
+   proc getPluginType  { } {
       return "pad"
    }
 
    #------------------------------------------------------------
-   #  getLabel
-   #     retourne le label du driver
-   #
-   #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+   #  getPluginTitle 
+   #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getLabel { } {
+   proc getPluginTitle  { } {
       global caption
-
       return "$caption(lx200pad,titre)"
    }
 
@@ -182,12 +152,12 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  configureDriver
-   #     configure le driver
+   #  createPluginInstance
+   #     cree une intance du plugin
    #
-   #  return nothing
+   #  return rien
    #------------------------------------------------------------
-   proc configureDriver { } {
+   proc createPluginInstance { } {
       global conf
 
       #--- Affiche la raquette
@@ -196,12 +166,13 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver et libere les ressources occupees
+   #  deletePluginInstance
+   #     suppprime l'instance du plugin 
    #
-   #  return nothing
+   #  return rien
    #------------------------------------------------------------
-   proc stopDriver { } {
+   proc deletePluginInstance { } {
+
       global conf
       global audace
 
@@ -306,7 +277,7 @@ namespace eval ::lx200pad {
       wm geometry .lx200pad $geomlx200(larg)x$geomlx200(long)+$positionxy
       wm resizable .lx200pad 0 0
       wm title .lx200pad $caption(lx200pad,titre)
-      wm protocol .lx200pad WM_DELETE_WINDOW "::lx200pad::stopDriver"
+      wm protocol .lx200pad WM_DELETE_WINDOW "::lx200pad::deletePluginInstance"
 
       #--- Create the title
       #--- Cree le titre
@@ -1257,6 +1228,4 @@ namespace eval ::lx200pad {
    }
 
 }
-
-::lx200pad::init
 

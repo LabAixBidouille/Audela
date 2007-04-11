@@ -1,8 +1,8 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.2 2006-06-20 18:32:05 robertdelmas Exp $
+# Mise a jour $Id: pkgIndex.tcl,v 1.3 2007-04-11 17:32:42 michelpujol Exp $
 #
 
-package ifneeded guide 1.0 [ list source [ file join $::audace(rep_plugin) chart guide guide.tcl ] ]
+package ifneeded guide 1.0 [ list source [ file join $dir guide.tcl ] ]
 

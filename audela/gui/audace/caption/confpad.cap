@@ -1,6 +1,6 @@
 #
 # Fichier : confpad.cap
-# Mise a jour $Id: confpad.cap,v 1.6 2007-01-27 14:40:58 robertdelmas Exp $
+# Mise a jour $Id: confpad.cap,v 1.7 2007-04-11 17:32:42 michelpujol Exp $
 #
 
 #=========================================================================
@@ -17,6 +17,8 @@ set caption(confpad,ok)             "OK"
 set caption(confpad,appliquer)      "Apply"
 set caption(confpad,fermer)         "Close"
 set caption(confpad,aide)           "Help"
+set caption(confpad,configurer)             "Set up"
+
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -27,6 +29,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)   "Appliquer"
    set caption(confpad,fermer)      "Fermer"
    set caption(confpad,aide)        "Aide"
+   set caption(confpad,configurer)  "Configurer"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -37,6 +40,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)   "Applica"
    set caption(confpad,fermer)      "Chiudi"
    set caption(confpad,aide)        "Aiuto"
+   set caption(confpad,configurer)  "Configurare"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -47,6 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)   "Aplicar"
    set caption(confpad,fermer)      "Cerrar"
    set caption(confpad,aide)        "Ayuda"
+   set caption(confpad,configurer)  "Configurar"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -57,6 +62,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)   "Anwenden"
    set caption(confpad,fermer)      "Schließen"
    set caption(confpad,aide)        "Hilfe"
+   set caption(confpad,configurer)  "Konfigurieren"
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -67,6 +73,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)   "Aplicar"
    set caption(confpad,fermer)      "Fechar"
    set caption(confpad,aide)        "Ajuda"
+   set caption(confpad,configurer)  "Configurar"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -77,6 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)   "Anvend"
    set caption(confpad,fermer)      "Luk"
    set caption(confpad,aide)        "Hjælp"
+   set caption(confpad,configurer)  "Set up"
 }
 
 #=========================================================================

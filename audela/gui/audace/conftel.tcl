@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.27 2007-03-17 09:10:36 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.28 2007-04-11 17:35:47 michelpujol Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -37,6 +37,8 @@ namespace eval ::confTel {
       uplevel #0 "source \"[ file join $audace(rep_plugin) mount ouranos ouranoscom.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) mount temma temma.tcl ]\""
 
+      #--- Initalise le numero de telescope a nul
+      set audace(telNo) "0"
       #--- Charge le nom de la raquette utilisee
       ::confPad::getLabelPad
    }
@@ -52,13 +54,13 @@ namespace eval ::confTel {
       global audace conf confTel
 
       set This "$audace(base).confTel"
+      set confTel(nomRaquette) [::confPad::getLabelPad]
       createDialog
       if { [ info exists conf ] } {
          select $conf(telescope)
       } else {
          select lx200
       }
-     ### catch { tkwait visibility $This }
    }
 
    #
@@ -803,30 +805,10 @@ namespace eval ::confTel {
       checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
          -highlightthickness 0 -variable confTel(raquette)
       pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
-      ComboBox $frm.nom_raquette \
-         -width 10         \
-         -height [ llength $::confPad::private(driverlist) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -modifycmd {
-            set label $audace(nom_raquette)
-            set index [lsearch -exact $::confPad::private(driverlist) $label ]
-            if { $index != -1 } {
-               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
-            } else {
-               set ::confPad::private(conf_confPad) ""
-            }
-            set conf(confPad) $::confPad::private(conf_confPad)
-            ::confPad::run
-         } \
-         -textvariable audace(nom_raquette) \
-         -editable 0       \
-         -values $::confPad::private(driverlist)
-      pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
 
-      #--- Choix de la raquette
-      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame3 -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
+      #--- Frame raquette
+      ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
+      pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
 
       #--- Site web officiel du LX200
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
@@ -1356,14 +1338,14 @@ namespace eval ::confTel {
       frame $frm.frame14 -borderwidth 0 -relief raised
       pack $frm.frame14 -in $frm.frame5 -side top -fill x
 
-      frame $frm.frame17 -borderwidth 0 -relief raised
-      pack $frm.frame17 -in $frm.frame5 -side bottom -fill x
+      #frame $frm.frame17 -borderwidth 0 -relief raised
+      #pack $frm.frame17 -in $frm.frame5 -side bottom -fill x
 
-      frame $frm.frame15 -borderwidth 0 -relief raised
-      pack $frm.frame15 -in $frm.frame5 -side bottom -fill x
+      #frame $frm.frame15 -borderwidth 0 -relief raised
+      #pack $frm.frame15 -in $frm.frame5 -side bottom -fill x
 
       frame $frm.frame18 -borderwidth 0 -relief raised
-      pack $frm.frame18 -in $frm.frame2 -side top -fill x
+      pack $frm.frame18 -in $frm.frame2 -side bottom -fill x
 
       frame $frm.frame19 -borderwidth 0 -relief raised
       pack $frm.frame19 -in $frm.frame2 -side top -fill x
@@ -1434,6 +1416,11 @@ namespace eval ::confTel {
          -command { ::confAudecomPec::run "$audace(base).confAudecomPec" }
       pack $frm.progpec -in $frm.frame13 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
 
+      #--- Le bouton de commande
+      button $frm.ctlmobile -text "$caption(conftel,audecom_ctl_mobile)" -state normal \
+         -command { ::confAudecomMobile::run "$audace(base).confAudecomMobile" }
+      pack $frm.ctlmobile -in $frm.frame14 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+
       #--- Affiche le bouton de controle de la vitesse de King si le telescope AudeCom est connecte
       if { $confTel(audecom,connect) == "1" } {
          if { [ winfo exists $audace(base).confAudecomKing ] } {
@@ -1447,39 +1434,14 @@ namespace eval ::confTel {
          }
       }
 
-      #--- Le bouton de commande
-      button $frm.ctlmobile -text "$caption(conftel,audecom_ctl_mobile)" -state normal \
-         -command { ::confAudecomMobile::run "$audace(base).confAudecomMobile" }
-      pack $frm.ctlmobile -in $frm.frame15 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
-
       #--- Le checkbutton pour la visibilite de la raquette a l'ecran
       checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
          -highlightthickness 0 -variable confTel(raquette)
       pack $frm.raquette -in $frm.frame16 -anchor center -side left -padx 10 -pady 8
-      ComboBox $frm.nom_raquette \
-         -width 10         \
-         -height [ llength $::confPad::private(driverlist) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -modifycmd {
-            set label $audace(nom_raquette)
-            set index [lsearch -exact $::confPad::private(driverlist) $label ]
-            if { $index != -1 } {
-               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
-            } else {
-               set ::confPad::private(conf_confPad) ""
-            }
-            set conf(confPad) $::confPad::private(conf_confPad)
-            ::confPad::run
-         } \
-         -textvariable audace(nom_raquette) \
-         -editable 0       \
-         -values $::confPad::private(driverlist)
-      pack $frm.nom_raquette -in $frm.frame16 -anchor center -side left -padx 0 -pady 8
 
-      #--- Choix de la raquette
-      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame17 -anchor center -side left -padx 10 -pady 3 -ipadx 10 -ipady 5 -expand true
+      #--- Frame raquette
+      ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
+      pack $frm.nom_raquette -in $frm.frame16 -anchor center -side left -padx 0 -pady 8
 
       #--- Le checkbutton pour la monture equatoriale allemande
       checkbutton $frm.german -text "$caption(conftel,audecom_mont_allemande)" -highlightthickness 0 \
@@ -1757,31 +1719,11 @@ namespace eval ::confTel {
       #--- Le checkbutton pour la visibilite de la raquette a l'ecran
       checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
          -highlightthickness 0 -variable confTel(raquette)
-      pack $frm.raquette -in $frm.frame7 -anchor nw -side left -padx 10 -pady 10
-      ComboBox $frm.nom_raquette \
-         -width 10         \
-         -height [ llength $::confPad::private(driverlist) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -modifycmd {
-            set label $audace(nom_raquette)
-            set index [lsearch -exact $::confPad::private(driverlist) $label ]
-            if { $index != -1 } {
-               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
-            } else {
-               set ::confPad::private(conf_confPad) ""
-            }
-            set conf(confPad) $::confPad::private(conf_confPad)
-            ::confPad::run
-         } \
-         -textvariable audace(nom_raquette) \
-         -editable 0       \
-         -values $::confPad::private(driverlist)
-      pack $frm.nom_raquette -in $frm.frame7 -anchor center -side left -padx 0 -pady 10
-
-      #--- Choix de la raquette
-      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame7 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+      pack $frm.raquette -in $frm.frame7  -side left -padx 10 -pady 10
+         
+      #--- Frame raquette
+      ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
+      pack $frm.nom_raquette -in $frm.frame7 -side left -padx 0 -pady 10
 
       #--- Site web officiel Temma et Takahashi
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
@@ -1861,7 +1803,7 @@ namespace eval ::confTel {
       pack $frm.frame1 -side top -fill x
 
       frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 1
+      pack $frm.frame2 -side top -fill both -expand 0
 
       frame $frm.frame3 -borderwidth 0 -relief raised
       pack $frm.frame3 -side bottom -fill x -pady 2
@@ -1883,31 +1825,11 @@ namespace eval ::confTel {
       #--- Le checkbutton pour la visibilite de la raquette a l'ecran
       checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
          -highlightthickness 0 -variable confTel(raquette)
-      pack $frm.raquette -in $frm.frame2 -anchor n -side left -padx 10 -pady 10
-      ComboBox $frm.nom_raquette \
-         -width 10         \
-         -height [ llength $::confPad::private(driverlist) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -modifycmd {
-            set label $audace(nom_raquette)
-            set index [lsearch -exact $::confPad::private(driverlist) $label ]
-            if { $index != -1 } {
-               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
-            } else {
-               set ::confPad::private(conf_confPad) ""
-            }
-            set conf(confPad) $::confPad::private(conf_confPad)
-            ::confPad::run
-         } \
-         -textvariable audace(nom_raquette) \
-         -editable 0       \
-         -values $::confPad::private(driverlist)
-      pack $frm.nom_raquette -in $frm.frame2 -anchor n -side left -padx 0 -pady 10
-
-      #--- Choix de la raquette
-      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame2 -anchor n -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
+      pack $frm.raquette -in $frm.frame2 -side left -padx 10 -pady 10
+      
+      #--- Frame raquette
+      ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
+      pack $frm.nom_raquette -in $frm.frame2 -side left -padx 0 -pady 10
 
       #--- Site web officiel des drivers ASCOM
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
@@ -2049,30 +1971,10 @@ namespace eval ::confTel {
       checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
          -highlightthickness 0 -variable confTel(raquette)
       pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
-      ComboBox $frm.nom_raquette \
-         -width 10         \
-         -height [ llength $::confPad::private(driverlist) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -modifycmd {
-            set label $audace(nom_raquette)
-            set index [lsearch -exact $::confPad::private(driverlist) $label ]
-            if { $index != -1 } {
-               set ::confPad::private(conf_confPad) [ lindex $::confPad::private(namespacelist) $index ]
-            } else {
-               set ::confPad::private(conf_confPad) ""
-            }
-            set conf(confPad) $::confPad::private(conf_confPad)
-            ::confPad::run
-         } \
-         -textvariable audace(nom_raquette) \
-         -editable 0       \
-         -values $::confPad::private(driverlist)
-      pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
 
-      #--- Choix de la raquette
-      button $frm.choix_raquette -text "$caption(conftel,config_raquette)" -command { ::confPad::run }
-      pack $frm.choix_raquette -in $frm.frame3 -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
+      #--- Frame raquette
+      ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
+      pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
 
       #--- Site web officiel du Celestron
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
@@ -2584,8 +2486,10 @@ namespace eval ::confTel {
       }
 
       #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees
+      
       if { $conf(raquette) == "1" } {
-         ::confPad::configureDriver
+         #--- je cree la nouvelle raquette
+         ::confPad::configureDriver $confTel(nomRaquette)
       } else {
          ::confPad::stopDriver
       }

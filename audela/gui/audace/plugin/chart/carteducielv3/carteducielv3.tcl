@@ -4,76 +4,50 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.8 2007-02-10 17:42:43 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.9 2007-04-11 17:32:42 michelpujol Exp $
 #
 
-package provide carteducielv3 1.0
-
-#
-# Procedures generiques de configuration (obligatoires pour tous les drivers camera, telescope, equipement,..)
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver              : arrete le driver
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
-#     gotoObject        : centre le champ de la carte  sur un objet
-#     getSelectedObject : recupere les coordonnees de l'objet selectionne sur la carte
-#
 namespace eval carteducielv3 {
-   global audace
-
-   #--- variables  privees utilisees uniquement dans les procedures de ce namespace
-   array set private {
-      socket ""
-   }
-
-   #==============================================================
-   # fonctions generiques de configuration des drivers
-   #==============================================================
+   package provide carteducielv3 1.0
+   source [ file join [file dirname [info script]] carteducielv3.cap ]
 
    #------------------------------------------------------------
-   #  init
-   #     initialise le driver
-   #
-   #  return namespace name
+   #  initPlugin
+   #     initialise le plugin
    #------------------------------------------------------------
-   proc init { } {
-      global audace
+   proc initPlugin { } {
 
       #--- je cree les variables dans conf(...)
       initConf
-
-      #--- charge le fichier caption
-      source [ file join $audace(rep_plugin) chart carteducielv3 carteducielv3.cap ]
-
-      return [ namespace current ]
    }
 
    #------------------------------------------------------------
-   #  getDriverType
-   #     retourne le type de driver
+   #  getPluginProperty
+   #     retourne la valeur de la propriete
    #
-   #  return "catalog"
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete , ou "" si la propriete n'existe pas
    #------------------------------------------------------------
-   proc getDriverType { } {
-      return "catalog"
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         
+      }
    }
 
    #------------------------------------------------------------
-   #  getLabel
-   #     retourne le label du driver
-   #
-   #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+   #  getPluginType 
+   #     retourne le type de plugin 
    #------------------------------------------------------------
-   proc getLabel { } {
+   proc getPluginType  { } {
+      return "chart"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginTitle 
+   #     retourne le label du driver dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle  { } {
       global caption
 
       return "$caption(carteducielv3,titre)"
@@ -86,7 +60,6 @@ namespace eval carteducielv3 {
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
-
       return "carteducielv3.htm"
    }
 
@@ -113,6 +86,7 @@ namespace eval carteducielv3 {
       if { ! [ info exists conf(carteducielv3,host) ] }          { set conf(carteducielv3,host)          "127.0.0.1" }
       if { ! [ info exists conf(carteducielv3,port) ] }          { set conf(carteducielv3,port)          "3292" }
 
+      set private(socket) ""
       return
    }
 
@@ -258,7 +232,7 @@ namespace eval carteducielv3 {
       button $frm.frame2.explore -text "$caption(carteducielv3,parcourir)" -width 1 \
          -command {
             set ::carteducielv3::widget(binarypath) [ tk_chooseDirectory -title "$caption(carteducielv3,dossier)" \
-            -initialdir ".." -parent $audace(base).confCat ]
+            -initialdir ".." -parent $::carteducielv3::widget(frm) ]
          }
       pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
 
@@ -327,24 +301,23 @@ namespace eval carteducielv3 {
    }
 
    #------------------------------------------------------------
-   #  configureDriver
-   #     configure le driver
+   #  createPluginInstance
+   #     cree une intance du plugin
    #
    #  return rien
    #------------------------------------------------------------
-   proc configureDriver { } {
-
+   proc createPluginInstance { } {
       #rien a faire pour carteduciel
       return
    }
 
    #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver
+   #  deletePluginInstance
+   #     suppprime l'instance du plugin 
    #
    #  return rien
    #------------------------------------------------------------
-   proc stopDriver { } {
+   proc deletePluginInstance { } {
 
       #rien a faire pour carteduciel
       return
@@ -830,22 +803,8 @@ namespace eval carteducielv3 {
          #--- Prépare l'ouverture du logiciel
          set a_effectuer "exec \"$filename\" &"
          #--- Affichage sur la console
-         ::console::affiche_saut "\n"
-         ::console::disp $filename
-         ::console::affiche_saut "\n"
-         if [catch $a_effectuer input] {
-            set audace(current_edit) $input
-         }
-         cd "$pwd0"
-      } else {
-         #--- Affichage sur la console
-         ::console::affiche_saut "\n"
-         ::console::disp $filename
-         ::console::affiche_saut "\n"
-         set audace(current_edit) $input
-         ::console::affiche_resultat "$caption(carteducielv3,gagne)\n"
-         cd "$pwd0"
-      }
+      } 
+      cd "$pwd0"
       after 2000
       return "0"
 
@@ -948,6 +907,4 @@ namespace eval carteducielv3 {
    }
 
 }
-
-::carteducielv3::init
 
