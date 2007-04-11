@@ -406,7 +406,8 @@ proc spc_dat2fits { args } {
         #--- Calcul des coéfficients de linéarisation de la calibration a1x+b1 :
 	for {set x 20} {$x<=[ expr $naxis1-10 ]} { set x [ expr $x+20 ]} {
             lappend xpos $x
-            lappend lambdaspoly [ expr $spc_a+$spc_b*$x+$spc_c*$x*$x ]
+            #lappend lambdaspoly [ expr $spc_a+$spc_b*$x+$spc_c*$x*$x ]
+            lappend lambdaspoly [ lindex $abscisses [ expr $x-1] ]
         }
 
 
@@ -421,6 +422,8 @@ proc spc_dat2fits { args } {
 
 	#------- Affecte une valeur aux mots cle liés à la spectroscopie ----------
 	::console::affiche_resultat "Dispersion : $dispersion ; RMS=$rms\n"
+	buf$audace(bufNo) setkwd [list "DATE-OBS" "0000-00-00T00:00:00.00" string "Start of exposure. FITS standard" "Iso 8601"]
+	buf$audace(bufNo) setkwd [list "EXPOSURE" 0. float "Exposure duration" "second"]
 	if { $xdepart == 1.0 } {
 	    buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart $nbunit "" "pixel"]
 	    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion $nbunit "" "pixel"]
@@ -1246,8 +1249,8 @@ proc spc_fit2png { args } {
 	}
 
 	#--- Effacement des fichiers de batch :
-	file delete "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
-	file delete "$audace(rep_images)/${spcfile}.gp"
+	file delete -force "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
+	file delete -force "$audace(rep_images)/${spcfile}.gp"
 	::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
 	return "${spcfile}.png"
     } else {
@@ -1356,8 +1359,8 @@ proc spc_fit2pngopt { args } {
 	}
 
 	#--- Effacement des fichiers de batch :
-	file delete "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
-	file delete "$audace(rep_images)/${spcfile}.gp"
+	file delete -force "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
+	file delete -force "$audace(rep_images)/${spcfile}.gp"
 
 	#--- Fin du script :
 	::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
@@ -1484,9 +1487,9 @@ proc spc_multifit2png { args } {
 
 	#--- Effacement des fichiers de batch :
 	#if { 1==0 } {
-	file delete "$audace(rep_images)/multiplot.gp"
+	file delete -force "$audace(rep_images)/multiplot.gp"
         foreach fichier $listedat {
-	    file delete "$audace(rep_images)/$fichier"
+	    file delete -force "$audace(rep_images)/$fichier"
         }
 	#}
 	::console::affiche_resultat "Profils de raie exporté sous multiplot.png\n"
@@ -1577,8 +1580,8 @@ proc spc_fit2ps { args } {
 	}
 
 	#--- Effacement des fichiers de batch :
-	file delete "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
-	file delete "$audace(rep_images)/${spcfile}.gp"
+	file delete -force "$audace(rep_images)/${spcfile}$spcaudace(extdat)"
+	file delete -force "$audace(rep_images)/${spcfile}.gp"
 
 	#--- Fin du script :
 	::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.ps\n"
@@ -2225,7 +2228,7 @@ proc spc_autofit2png { args } {
 	    set ydeb [ lindex $args 4 ]
 	    set yfin [ lindex $args 5 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ?[[?xdeb xfin?] ?ydeb yfin?]?\n\n"
+	    ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ??xdeb xfin? ?ydeb yfin??\n\n"
 	    return 0
 	}
 
@@ -2339,7 +2342,7 @@ proc spc_autofit2png { args } {
 	file copy -force "$audace(rep_images)/$spectre$conf(extension,defaut)" "$audace(rep_images)/${nom_sans_espaces}_$datefile$conf(extension,defaut)"
 	return "${nom_sans_espaces}_$datefile$extimg"
     } else {
-	::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ?[[?xdeb xfin?] ?ydeb yfin?]?\n\n"
+	::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ??xdeb xfin? ?ydeb yfin??\n\n"
     }
 }
 #**********************************************************************************#
@@ -2613,7 +2616,6 @@ proc spc_export2png { args } {
        #buf$audace(bufNo) save "$audace(rep_images)/$spectre"
        #buf$audace(bufNo) bitpix short
 
-
        #--- Détermine lambda_min et lambda_max :
        set contenu [ spc_fits2data $spectre ]
        set lambdas [ lindex $contenu 0 ]
@@ -2628,12 +2630,16 @@ proc spc_export2png { args } {
 	   incr i
        }
        set i 1
+       set lfin ""
        foreach lambda $lambdas intensite $intensites {
 	   if { $intensite==0. && $i>=$dnaxis1 } {
 	       set lfin [ lindex $lambdas [ expr $i-2 ] ]
 	       break
 	   }
 	   incr i
+       }
+       if { $lfin=="" } {
+	   set lfin [ lindex $lambdas [ expr $i-2 ] ]
        }
        set lambdarange [ list $ldeb $lfin ]
 
@@ -2652,7 +2658,7 @@ proc spc_export2png { args } {
        #--- Affichage du graphe PNG :
        if { $nomprofilpng!="" } {
 	   if { $conf(edit_viewer)!="" } {
-	       set answer [ catch { exec $conf(edit_viewer) $audace(rep_images)/$nomprofilpng & } ]
+	       set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/$nomprofilpng" & } ]
 	   } else {
 	       ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
 	   }

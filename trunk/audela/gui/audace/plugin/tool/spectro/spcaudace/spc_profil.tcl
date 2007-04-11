@@ -356,7 +356,9 @@ proc spc_detect { args } {
 	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
 	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
 	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
-	set windowcoords [ list 1 1 1 $naxis2 ]
+	set y1 [ expr int(.05*$naxis2) ]
+	set y2 [ expr int(.95*$naxis2) ]
+	set windowcoords [ list 1 $y1 1 $y2 ]
 	
 	#buf$audace(bufNo) binx 1 $naxis1 3
 	#set ycentre [lindex [ buf$audace(bufNo) centro $windowcoords ] 1]
@@ -420,7 +422,7 @@ proc spc_detectasym { args } {
 	set ycenter [ lindex $gparams 5 ]
 	#-- Choix : la largeur de la gaussienne est de 1.9*FWHM
 	set largeur [ expr 1.9*[ lindex $gparams 6 ] ]
-	file delete "$audace(rep_images)/${fichier}_spcx$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/${fichier}_spcx$conf(extension,defaut)"
 	return [ list $ycenter $largeur ]
     } else {
 	::console::affiche_erreur "Usage: spc_detectasym spectre_2D_fits\n\n"
@@ -524,6 +526,12 @@ proc spc_binlopt { args } {
 	}
 
 	#--- Effectue le binning optimise par la mathode de Roberval (lopt de tt_user2.c)
+	set yepaisseur [ expr $ylargeur-3 ]
+	if { $yepaisseur<=4. } {
+	    #set ylargeur 5.
+	    ::console::affiche_resultat "Épaisseur de binning de Roberval trop faible. Fin de procédure.\n"
+	    return ""
+	}
 	buf$audace(bufNo) load "$audace(rep_images)/$spectre2d"
 	buf$audace(bufNo) imaseries "LOPT y1=$yinf y2=$ysup height=1"
 
@@ -612,13 +620,19 @@ proc spc_profil { args } {
 	#--- Bining :
 	if { $methodebin == "add" } {
 	    set profil_fc [ spc_bins $spectre_zone_fc ]
-	    file delete "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
+	    file delete -force "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
 	} elseif { $methodebin == "rober" } {
 	    #-- Cas particulier de zone de binning : elle est decoupée et c'est $spectre_zone_fc
 	    #-- au lieu de faire : [ spc_binlopt $spectre_zone_fc $ycenter $hauteur ]
 	    buf$audace(bufNo) load "$audace(rep_images)/$spectre_zone_fc"
 	    set ylargeur [ expr [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]-1 ]
 	    #-- Bizarement, lopt ne peut prendre la dimension totale d'une image :
+	    set yepaisseur [ expr $ylargeur-3 ]
+	    if { $yepaisseur<=4. } {
+		#set ylargeur 5.
+		::console::affiche_resultat "Épaisseur de binning de Roberval trop faible. Fin de procédure.\n"
+		return ""
+	    }
 	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
 	    buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
 	    buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
@@ -630,15 +644,15 @@ proc spc_profil { args } {
 	    }
 	    buf$audace(bufNo) bitpix short
 	    set profil_fc ${spectre_zone_fc}_spc
-	    file delete "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
+	    file delete -force "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
 	} else {
 	    set profil_fc [ spc_bins $spectre_zone_fc ]
-	    file delete "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
+	    file delete -force "$audace(rep_images)/$spectre_zone_fc$conf(extension,defaut)"
 	}
 
 	#--- Message de fin et nettoyage :
 	::console::affiche_resultat "Profil de raies sauvé sous $profil_fc\n"
-	file delete "$audace(rep_images)/${spectre2d}_zone$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/${spectre2d}_zone$conf(extension,defaut)"
 	return $profil_fc
    } else {
 	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add, rober, horne)?\n\n"
@@ -743,7 +757,7 @@ proc spc_subsky { args } {
 	    #-- Soustraction :
 	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
-	    file delete "$audace(rep_images)/${spectre}_zonesupmed$conf(extension,defaut)"
+	    file delete -force "$audace(rep_images)/${spectre}_zonesupmed$conf(extension,defaut)"
 	} elseif { $methodemoy == "moy2" } {
 
 	    #--- Moyenne de la valeur des fonds de ciel tirés des 2 zones :
@@ -799,7 +813,7 @@ proc spc_subsky { args } {
 
 	    #--- Aucune soustraction du fond de ciel
 	    ::console::affiche_resultat "Aucune soustraction du fond de ciel.\n"
-	    file copy "$audace(rep_images)/${spectre}_zone$conf(extension,defaut)" "$audace(rep_images)/${spectre}_zone_fc$conf(extension,defaut)"
+	    file copy -force "$audace(rep_images)/${spectre}_zone$conf(extension,defaut)" "$audace(rep_images)/${spectre}_zone_fc$conf(extension,defaut)"
 	} else {
 	    ::console::affiche_resultat "Mauvaise option de calcul du fond de ciel.\n"
 	}
@@ -954,11 +968,11 @@ proc spc_bin { args } {
 	#--- Suppression des fichiers intermediaires
 	## $conf(extension_default)
 	::console::affiche_resultat "Effacement des fichiers temporaires...\n"
-	file delete "$audace(rep_images)/${filenamespc_spatial}_sp$conf(extension,defaut)"
-	file delete "$audace(rep_images)/${filenamespc_spatial}_spinf$conf(extension,defaut)"
-	file delete "$audace(rep_images)/${filenamespc_spatial}_spsup$conf(extension,defaut)"
-	file delete "$audace(rep_images)/${filenamespc_spatial}_zone$conf(extension,defaut)"
-	file delete "$audace(rep_images)/${filenamespc_spatial}_zonev$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/${filenamespc_spatial}_sp$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/${filenamespc_spatial}_spinf$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/${filenamespc_spatial}_spsup$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/${filenamespc_spatial}_zone$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/${filenamespc_spatial}_zonev$conf(extension,defaut)"
 	return ${filenamespc_spatial}_spc
     } else {
 	::console::affiche_erreur "Usage: spc_bin spectre_2D_zone spectre_2D_entier liste_coordonnées_zone\n\n"
@@ -1014,7 +1028,7 @@ proc spc_bins { args } {
       # buf$audace(bufNo) imaseries "PROFILE filename=$audace(rep_images)/${filenamespc_zone}_spc$extsp direction=x offset=1"
 
       #--- Efface les fichiers temporaires :
-      file delete "$audace(rep_images)/$filenamespc_zone$conf(extension,defaut)"
+      file delete -force "$audace(rep_images)/$filenamespc_zone$conf(extension,defaut)"
       buf$audace(bufNo) bitpix short
       return ${filenamespc_zone}_spc
    } else {
@@ -1248,7 +1262,7 @@ proc spc_profilx { args } {
 	#- J'ai modifié tt_user3 ligne 350 de la libtt.
 	#set fsortie [ file rootname [ spc_dat2fits $nomprofil$extsp ] ]
 	#file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/${fichier}_spcx$conf(extension,defaut)"
-	#file delete "$audace(rep_images)/$nomprofil$extsp"
+	#file delete -force "$audace(rep_images)/$nomprofil$extsp"
 	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_spcx"
 	::console::affiche_resultat "Profil d'intensité de la ligne sauvé sous ${fichier}_spcx$conf(extension,defaut)\n"
 	return ${fichier}_spcx
@@ -1747,7 +1761,7 @@ proc spc_profillampe { args } {
        set spectre_lampe [ lindex $args 1 ]
 
        #--- Crée le profil de raie du spectre de la lampe de étalon :
-       set linecoords [ spc_detect $spectre_objet ]
+       set linecoords [ spc_detectasym $spectre_objet ]
        set y1 [ expr int([ lindex $linecoords 0 ]+0.5*[ lindex $linecoords 1 ]) ]
        set y2 [ expr int([ lindex $linecoords 0 ]-0.5*[ lindex $linecoords 1 ]) ]
        buf$audace(bufNo) load $audace(rep_images)/$spectre_lampe
@@ -1802,7 +1816,7 @@ proc spc_profilx_060607 { args } {
 	#- J'ai modifié tt_user3 ligne 350 de la libtt.
 	set fsortie [ file rootname [ spc_dat2fits $nomprofil$extsp ] ]
 	file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/${fichier}_spcx$conf(extension,defaut)"
-	file delete "$audace(rep_images)/$nomprofil$extsp"
+	file delete -force "$audace(rep_images)/$nomprofil$extsp"
 	::console::affiche_resultat "Profil d'intensité de la ligne sauvé sous ${fichier}_spcx$conf(extension,defaut)\n"
 	return ${fichier}_spcx
     } else {
@@ -2018,7 +2032,7 @@ proc spc_subsky_050700 { args } {
 	    #-- Soustraction :
 	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
-	    file delete "$audace(rep_images)/${spectre}_zonesupmed$conf(extension,defaut)"
+	    file delete -force "$audace(rep_images)/${spectre}_zonesupmed$conf(extension,defaut)"
 	} elseif { $methodemoy == "moy2" } {
 
 	    #--- Moyenne de la valeur des fonds de ciel tirés des 2 zones :
@@ -2074,7 +2088,7 @@ proc spc_subsky_050700 { args } {
 
 	    #--- Aucune soustraction du fond de ciel
 	    ::console::affiche_resultat "Aucune soustraction du fond de ciel.\n"
-	    file copy "$audace(rep_images)/${spectre}_zone$conf(extension,defaut)" "$audace(rep_images)/${spectre}_zone_fc$conf(extension,defaut)"
+	    file copy -force "$audace(rep_images)/${spectre}_zone$conf(extension,defaut)" "$audace(rep_images)/${spectre}_zone_fc$conf(extension,defaut)"
 	} else {
 	    ::console::affiche_resultat "Mauvaise option de calcul du fond de ciel.\n"
 	}

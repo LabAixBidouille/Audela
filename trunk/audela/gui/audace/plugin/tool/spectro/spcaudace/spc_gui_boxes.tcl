@@ -32,11 +32,15 @@ namespace eval ::param_spc_audace_export2png {
       set ldeb [ lindex $lambdarange 0 ]
       set lfin [ lindex $lambdarange 1 ]
       set listevalmotsclef [ lindex $args 2 ]
+      #-- Recupere et isole le premiere elelemnt quie est NOM_OBJET :
+      #set len [ llength [
+      #set listevalmots [ lrange
 
 
       if { [ string length [ info commands .param_spc_audace_export2png.* ] ] != "0" } {
          destroy .param_spc_audace_export2png
       }
+
 
       # === Initialisation des variables qui seront changées :
       set i 1
@@ -47,6 +51,8 @@ namespace eval ::param_spc_audace_export2png {
 	  }
 	  incr i
       }
+
+
       set audace(param_spc_audace,export2png,config,lambda_deb) $ldeb
       set audace(param_spc_audace,export2png,config,lambda_fin) $lfin
       set audace(param_spc_audace,export2png,config,ydeb) "*"
@@ -68,11 +74,11 @@ namespace eval ::param_spc_audace_export2png {
       set caption(param_spc_audace,export2png,stop_button) "Annuler"
       set caption(param_spc_audace,export2png,return_button) "OK"
       #set caption(param_spc_audace,export2png,config,spectre) "Nom du profil de la lampe de calibration"
-      set caption(param_spc_audace,export2png,config,nom_objet) "Nom de l'objet"
-      set caption(param_spc_audace,export2png,config,mot1) "Observateur(s)"
-      set caption(param_spc_audace,export2png,config,mot2) "Nom de l'observatoire"
-      set caption(param_spc_audace,export2png,config,mot3) "Télecscope"
-      set caption(param_spc_audace,export2png,config,mot4) "Spectrographe"
+      set caption(param_spc_audace,export2png,config,mot1) "Nom de l'objet"
+      set caption(param_spc_audace,export2png,config,mot2) "Observateur(s)"
+      set caption(param_spc_audace,export2png,config,mot3) "Nom de l'observatoire"
+      set caption(param_spc_audace,export2png,config,mot4) "Télecscope"
+      set caption(param_spc_audace,export2png,config,mot5) "Spectrographe"
       set caption(param_spc_audace,export2png,config,lambda_deb) "Longueur d'onde minimum"
       set caption(param_spc_audace,export2png,config,lambda_fin) "Longueur d'onde maximum"
       set caption(param_spc_audace,export2png,config,ydeb) "Intensité minimum"
@@ -146,7 +152,7 @@ namespace eval ::param_spc_audace_export2png {
 	      -fg $audace(param_spc_audace,export2png,color,textdisp) -relief flat -width 100
       pack  .param_spc_audace_export2png.spectre.entry -in .param_spc_audace_export2png.spectre -side left -fill none
       pack .param_spc_audace_export2png.spectre -in .param_spc_audace_export2png -fill none -pady 1 -padx 12
-      }
+
       
       #--- Label + Entry pour nom_objet
       frame .param_spc_audace_export2png.nom_objet -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
@@ -161,6 +167,7 @@ namespace eval ::param_spc_audace_export2png {
 	      -fg $audace(param_spc_audace,export2png,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_export2png.nom_objet.entry -in .param_spc_audace_export2png.nom_objet -side left -fill none
       pack .param_spc_audace_export2png.nom_objet -in .param_spc_audace_export2png -fill none -pady 1 -padx 12
+      }
 
       #--- Label + Entry pour mot1
       frame .param_spc_audace_export2png.mot1 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
@@ -218,6 +225,21 @@ namespace eval ::param_spc_audace_export2png {
 	      -fg $audace(param_spc_audace,export2png,color,textdisp) -relief flat -width 70
       pack  .param_spc_audace_export2png.mot4.entry -in .param_spc_audace_export2png.mot4 -side left -fill none
       pack .param_spc_audace_export2png.mot4 -in .param_spc_audace_export2png -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour mot5
+      frame .param_spc_audace_export2png.mot5 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
+      label .param_spc_audace_export2png.mot5.label  \
+	      -font $audace(param_spc_audace,export2png,font,c12b) \
+	      -text "$caption(param_spc_audace,export2png,config,mot5) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
+      pack  .param_spc_audace_export2png.mot5.label -in .param_spc_audace_export2png.mot5 -side left -fill none
+      entry  .param_spc_audace_export2png.mot5.entry  \
+	      -font $audace(param_spc_audace,export2png,font,c12b) \
+	      -textvariable audace(param_spc_audace,export2png,config,mot5) -bg $audace(param_spc_audace,export2png,color,backdisp) \
+	      -fg $audace(param_spc_audace,export2png,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_export2png.mot5.entry -in .param_spc_audace_export2png.mot5 -side left -fill none
+      pack .param_spc_audace_export2png.mot5 -in .param_spc_audace_export2png -fill none -pady 1 -padx 12
 
 
       #--- Label + Entry pour lambda_deb
@@ -286,19 +308,19 @@ namespace eval ::param_spc_audace_export2png {
 
       ::param_spc_audace_export2png::recup_conf
       set spectre $audace(param_spc_audace,export2png,config,spectre)
-      set nom_objet $audace(param_spc_audace,export2png,config,nom_objet)
-      set mot1 $audace(param_spc_audace,export2png,config,mot1)
+      set nom_objet $audace(param_spc_audace,export2png,config,mot1)
       set mot2 $audace(param_spc_audace,export2png,config,mot2)
       set mot3 $audace(param_spc_audace,export2png,config,mot3)
       set mot4 $audace(param_spc_audace,export2png,config,mot4)
+      set mot5 $audace(param_spc_audace,export2png,config,mot5)
       set lambda_deb $audace(param_spc_audace,export2png,config,lambda_deb)
       set lambda_fin $audace(param_spc_audace,export2png,config,lambda_fin)
       set ydeb $audace(param_spc_audace,export2png,config,ydeb)
       set yfin $audace(param_spc_audace,export2png,config,yfin)
-      set listevalmots [ list $nom_objet $mot1 $mot2 $mot3 $mot4 ]
+      set listevalmots [ list $nom_objet $mot2 $mot3 $mot4 $mot5 ]
 
       #--- Mise à jour des mots clef et création du graphique :
-      if { $nom_objet!="" && $mot1!="" && $mot2!="" && $mot3!="" && $mot4!="" && $lambda_deb!="" && $lambda_fin!="" && $ydeb!="" && $yfin!="" } {
+      if { $nom_objet!="" && $mot2!="" && $mot3!="" && $mot4!="" && $mot5!="" && $lambda_deb!="" && $lambda_fin!="" && $ydeb!="" && $yfin!="" } {
 	  #-- Mise à jour des mots clef :
 	  buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	  foreach valmot $listevalmots mot $spcaudace(motsheader) def $spcaudace(motsheaderdef) {

@@ -2441,7 +2441,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
       set audace(param_spc_audace,traite2scalibre,font,c10b) [ list {Arial} 10 bold ]
       
       # === Captions
-      set caption(param_spc_audace,traite2scalibre,titre2) "Traitement -> calibration\n (application à d'autres spectres)"
+      set caption(param_spc_audace,traite2scalibre,titre2) "Application des calibrations (sans RI)\n aux spectres"
       set caption(param_spc_audace,traite2scalibre,titre) "Réduction de spectres"
       set caption(param_spc_audace,traite2scalibre,stop_button) "Annuler"
       set caption(param_spc_audace,traite2scalibre,return_button) "OK"
@@ -2466,7 +2466,7 @@ namespace eval ::param_spc_audace_traite2scalibre {
       
       #--- Cree la fenetre .param_spc_audace_traite2scalibre de niveau le plus haut
       toplevel .param_spc_audace_traite2scalibre -class Toplevel -bg $audace(param_spc_audace,traite2scalibre,color,backpad)
-      wm geometry .param_spc_audace_traite2scalibre 450x563+10+10
+      wm geometry .param_spc_audace_traite2scalibre 450x563+224-50
       wm resizable .param_spc_audace_traite2scalibre 1 1
       wm title .param_spc_audace_traite2scalibre $caption(param_spc_audace,traite2scalibre,titre)
       wm protocol .param_spc_audace_traite2scalibre WM_DELETE_WINDOW "::param_spc_audace_traite2scalibre::annuler"
@@ -2959,8 +2959,8 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       
       #--- Cree la fenetre .param_spc_audace_traite2rinstrum de niveau le plus haut
       toplevel .param_spc_audace_traite2rinstrum -class Toplevel -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
-      # wm geometry .param_spc_audace_traite2rinstrum 450x630+10+10
-      wm geometry .param_spc_audace_traite2rinstrum 450x611+10+10
+      # wm geometry .param_spc_audace_traite2rinstrum 450x630+10+10 #+224-50
+      wm geometry .param_spc_audace_traite2rinstrum 450x586+144-5
       wm resizable .param_spc_audace_traite2rinstrum 1 1
       wm title .param_spc_audace_traite2rinstrum $caption(param_spc_audace,traite2rinstrum,titre)
       wm protocol .param_spc_audace_traite2rinstrum WM_DELETE_WINDOW "::param_spc_audace_traite2rinstrum::annuler"
@@ -3344,6 +3344,7 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       pack  .param_spc_audace_traite2rinstrum.ejbad.combobox -in .param_spc_audace_traite2rinstrum.ejbad -side right -fill none
       pack .param_spc_audace_traite2rinstrum.ejbad -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
 
+       if { 1==0 } {
       #--- Label + Entry pour ejtilt
       #-- Partie Label
       frame .param_spc_audace_traite2rinstrum.ejtilt -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
@@ -3363,6 +3364,8 @@ namespace eval ::param_spc_audace_traite2rinstrum {
          -values $liste_on
       pack  .param_spc_audace_traite2rinstrum.ejtilt.combobox -in .param_spc_audace_traite2rinstrum.ejtilt -side right -fill none
       pack .param_spc_audace_traite2rinstrum.ejtilt -in .param_spc_audace_traite2rinstrum -fill x -pady 1 -padx 12
+   }
+
 
       #--- Label + Entry pour methraie
       #-- Partie Label
@@ -3487,7 +3490,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       set liste_methsky [ list "med" "moy" "moy2" "sup" "inf" "back" "none" ]
       set liste_methinv [ list "o" "n" ]
       set liste_methbin [ list "add" "rober" "horne" ]
-      set liste_norma [ list "e" "a" "n" ]
+      set liste_norma [ list "o" "e" "a" "n" ]
       set liste_smooth [ list "o" "n" ]
       set liste_on [ list "o" "n" ]
 
@@ -3540,7 +3543,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       set caption(param_spc_audace,traite2srinstrum,config,methbin) "Méthode de binning des colonnes"
       set caption(param_spc_audace,traite2srinstrum,config,methinv) "Inversion gauche-droite des profils de raies (o/n)"
       set caption(param_spc_audace,traite2srinstrum,config,smooth) "Adoucissement (o/n)"
-      set caption(param_spc_audace,traite2srinstrum,config,norma) "Normalisation (emission/absorption/non)"
+      set caption(param_spc_audace,traite2srinstrum,config,norma) "Normalisation (oui/émission/absorption/non)"
       set caption(param_spc_audace,traite2srinstrum,config,ejbad) "Rejet des spectres trop faibles (o/n)"
       set caption(param_spc_audace,traite2srinstrum,config,ejtilt) "Rejet des spectres trop inclinés (o/n)"
       set caption(param_spc_audace,traite2srinstrum,config,export_png) "Export vers un graphique au format PNG (o/n)"
@@ -3549,7 +3552,8 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       
       #--- Cree la fenetre .param_spc_audace_traite2srinstrum de niveau le plus haut
       toplevel .param_spc_audace_traite2srinstrum -class Toplevel -bg $audace(param_spc_audace,traite2srinstrum,color,backpad)
-      wm geometry .param_spc_audace_traite2srinstrum 450x630+10+10
+      #wm geometry .param_spc_audace_traite2srinstrum 450x558+10+10
+      wm geometry .param_spc_audace_traite2srinstrum 450x558+140-4
       wm resizable .param_spc_audace_traite2srinstrum 1 1
       wm title .param_spc_audace_traite2srinstrum $caption(param_spc_audace,traite2srinstrum,titre)
       wm protocol .param_spc_audace_traite2srinstrum WM_DELETE_WINDOW "::param_spc_audace_traite2srinstrum::annuler"
@@ -3911,6 +3915,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       pack  .param_spc_audace_traite2srinstrum.ejbad.combobox -in .param_spc_audace_traite2srinstrum.ejbad -side right -fill none
       pack .param_spc_audace_traite2srinstrum.ejbad -in .param_spc_audace_traite2srinstrum -fill x -pady 1 -padx 12
 
+       if { 1==0 } {
       #--- Label + Entry pour ejtilt
       #-- Partie Label
       frame .param_spc_audace_traite2srinstrum.ejtilt -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traite2srinstrum,color,backpad)
@@ -3930,6 +3935,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
          -values $liste_on
       pack  .param_spc_audace_traite2srinstrum.ejtilt.combobox -in .param_spc_audace_traite2srinstrum.ejtilt -side right -fill none
       pack .param_spc_audace_traite2srinstrum.ejtilt -in .param_spc_audace_traite2srinstrum -fill x -pady 1 -padx 12
+   }
 
 
       #--- Label + Entry pour export_png
@@ -4129,7 +4135,8 @@ namespace eval ::param_spc_audace_lampe2calibre {
       #--- Cree la fenetre .param_spc_audace_lampe2calibre de niveau le plus haut
       toplevel .param_spc_audace_lampe2calibre -class Toplevel -bg $audace(param_spc_audace,lampe2calibre,color,backpad)
       # wm geometry .param_spc_audace_lampe2calibre 450x630+10+10
-      wm geometry .param_spc_audace_lampe2calibre 450x330+10+10
+      # wm geometry .param_spc_audace_lampe2calibre 450x276+10+10
+      wm geometry .param_spc_audace_lampe2calibre 450x276+65-3
       wm resizable .param_spc_audace_lampe2calibre 1 1
       wm title .param_spc_audace_lampe2calibre $caption(param_spc_audace,lampe2calibre,titre)
       wm protocol .param_spc_audace_lampe2calibre WM_DELETE_WINDOW "::param_spc_audace_lampe2calibre::annuler"

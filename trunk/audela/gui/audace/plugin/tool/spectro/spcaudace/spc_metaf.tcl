@@ -760,6 +760,18 @@ proc spc_traite2rinstrum { args } {
        }
 
 
+       #--- Renumérotation et détection des darks_flat : 070323
+       if { [ file exists "$audace(rep_images)/$dflat$conf(extension,defaut)" ] } {
+	   set darkflatmaster $dflat
+       } elseif { [ catch { glob -dir $audace(rep_images) ${dflat}\[0-9\]$conf(extension,defaut) ${dflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+	   renumerote $dflat
+	   set darkflatmaster [ bm_smed $dflat ]
+       } else {
+	   ::console::affiche_resultat "Le(s) fichier(s) $dflat n'existe(nt) pas.\n"
+	   return ""
+       }
+
+
 
        #--- Traitement du spectre de la lampe de calibration :
        ::console::affiche_resultat "\n\n**** Traitement du spectre de lampe de calibration ****\n\n"
@@ -788,13 +800,14 @@ proc spc_traite2rinstrum { args } {
        ::console::affiche_resultat "\n\n**** Etalonnage en longueur d'onde du spectre de lampe de calibration ****\n\n"
        #-- Création du profil de raie de la lampe :
        set profillampe [ spc_profillampe ${img}1 $lampeflip ]
-       #file delete "$audace(rep_images)/$lampeflip$conf(extension,defaut)"
+       #file delete -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)"
        set lampecalibree [ spc_calibre $profillampe ]
-       file rename -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)" "$audace(rep_images)/lampe_spectre2D-traite$conf(extension,defaut)"
+       set nomimg [ string trim $img "-" ]
+       file rename -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)" "$audace(rep_images)/lampe_spectre2D-traite-$nomimg$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$profillampe$conf(extension,defaut)"
        #- 04012007 :
-       file rename -force "$audace(rep_images)/$lampecalibree$conf(extension,defaut)" "$audace(rep_images)/lampe_redressee_calibree$conf(extension,defaut)"
-       set lampecalibree "lampe_redressee_calibree"
+       file rename -force "$audace(rep_images)/$lampecalibree$conf(extension,defaut)" "$audace(rep_images)/lampe_redressee_calibree-$nomimg$conf(extension,defaut)"
+       set lampecalibree "lampe_redressee_calibree-$nomimg"
 
 
        #--- Prétraitement de $nbimg images :
@@ -848,7 +861,7 @@ proc spc_traite2rinstrum { args } {
 
        #::console::affiche_resultat "Sortie : $ftilt\n"
        #--- Appariement de $nbimg images :
-       ::console::affiche_resultat "\n\n**** Appariement de $nbimg images ****\n\n"
+       ::console::affiche_resultat "\n\n**** Appariement vertical de $nbimg images ****\n\n"
        if { $methreg == "spc" } {
 	   set freg [ spc_register $ftilt ]
        } elseif { $methreg == "reg" } {
@@ -929,7 +942,7 @@ proc spc_traite2rinstrum { args } {
        set rep_instrum [ spc_rinstrum $fcal $etoile_cat ]
        ::console::affiche_resultat "\nRéponse instrumentale sauvée sous $rep_instrum\n"
        file rename -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre_1c$conf(extension,defaut)"
-       file delete -force "$audace(rep_images)/$etoile_cat"
+       file delete -force "$audace(rep_images)/$etoile_cat$conf(extension,defaut)"
 
 
        #--- Message de fin du script :
@@ -1040,7 +1053,7 @@ proc spc_traite2srinstrum { args } {
 
 
        #--- Appariement de $nbimg images :
-       ::console::affiche_resultat "\n\n**** Appariement de $nbimg images ****\n\n"
+       ::console::affiche_resultat "\n\n**** Appariement vertical de $nbimg images ****\n\n"
        if { $methreg == "spc" } {
 	   set freg [ spc_register $ftilt ]
        } elseif { $methreg == "reg" } {
@@ -1096,6 +1109,7 @@ proc spc_traite2srinstrum { args } {
        file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
 
 
+
        #--- Correction de la réponse intrumentale :
        ::console::affiche_resultat "\n\n**** Correction de la réponse intrumentale ****\n\n"
        #set rinstrum_ech [ spc_echant $rinstrum $fcal ]
@@ -1104,6 +1118,7 @@ proc spc_traite2srinstrum { args } {
        set fricorr [ spc_divri $fcal $rinstrum ]
        #- 040107 :
        #set fricorr [ spc_div $fcal $rinstrum ]
+
 
        if { $fricorr == 0 } {
 	   ::console::affiche_resultat "\nLa division par la réponse intrumentale n'a pas pu peut être calculée.\n"
@@ -1125,9 +1140,16 @@ proc spc_traite2srinstrum { args } {
 	   set fnorma [ spc_autonormaraie $fricorr a ]
 	   file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
 	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre-norma_2bb$conf(extension,defaut)"
+       } elseif { $methnorma == "o" } {
+	   ::console::affiche_resultat "\n\n**** Normalisation du profil de raies ****\n\n"
+	   set fnorma [ spc_autonorma $fricorr ]
+	   file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre-norma_2bb$conf(extension,defaut)"
        } elseif { $methsmo == "n" } {
 	   set fnorma "$fricorr"
        }
+
+
 
        #--- Doucissage du profil de raies :
        if { $methsmo == "o" } {
@@ -1147,7 +1169,7 @@ proc spc_traite2srinstrum { args } {
        #--- Message de fin du script :
        file copy -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-traite-final$conf(extension,defaut)"
        ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-traite\n\n"
-       file delete "$audace(rep_images)/$fsmooth$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)"
        # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
        #spc_loadfit $fsmooth
        #return $fsmooth

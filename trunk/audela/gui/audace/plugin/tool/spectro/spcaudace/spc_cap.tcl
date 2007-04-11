@@ -122,7 +122,7 @@ if {[string compare $langage french] ==0 } {
      set captionspc(spc_traite2rinstrum_w) "1) Calcul de la réponse instrumentale"
      set captionspc(spc_lampe2calibre_w) "2) Calibrations d'une lampe spectrale"
      set captionspc(spc_traite2srinstrum_w) "3) Application des calibrations aux spectres"
-     set captionspc(spc_traite2scalibre_w) "Prétraitement -> calibration (application à d'autres spectres)"
+     set captionspc(spc_traite2scalibre_w) "Application des calibrations (sans RI) aux spectres"
      # set captionspc(spc_traitesimple2calibre_w) "Prétraitement simple -> calibration"
      # set captionspc(spc_traitesimple2rinstrum_w) "Prétraitement simple -> réponse instrumentale"
      set captionspc(spc_geom2calibre_w) "Corrections géométriques -> calibration"

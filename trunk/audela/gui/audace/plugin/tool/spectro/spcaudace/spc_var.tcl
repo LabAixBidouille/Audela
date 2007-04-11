@@ -10,13 +10,13 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "20b-03-2007"
+set spcaudace(version) "1.0 - 25/03/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
 #--- Liste des contributeurs au développement d'SpcAudace :
 set spcaudace(author) "Benjamin MAUCLAIRE"
-set spcaudace(contribs) "Alain Klotz, Michel Pujol, Patrick Lailly"
+set spcaudace(contribs) "Alain Klotz, Michel Pujol, Patrick Lailly, François Cochard"
 
 
 #--- Extension des fichiers :
@@ -51,11 +51,15 @@ set spcaudace(motsheaderdef) [ list "Current name of the object" "Observer name"
 set spcaudace(spcdoc) [ file join $spcaudace(repspc) doc liste_fonctions.html ]
 set spcaudace(sitedoc) "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/liste_fonctions.html"
 
+#--- Site de la base de données BeSS :
+set spcaudace(sitebess) "http://basebe.obspm.fr/basebe/"
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
 #-- Hauteur max d'un spectre 2D pour ne considérer que du slant :
 set spcaudace(hmax) 300
 
+#-- Angle limit autorisé pour un tilt :
+set spcaudace(tilt_limit) 0.746
 
 
 #----------------------------------------------------------------------------------#
