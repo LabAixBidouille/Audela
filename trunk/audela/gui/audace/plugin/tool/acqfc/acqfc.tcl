@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.40 2007-04-07 20:29:25 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.41 2007-04-11 17:38:30 robertdelmas Exp $
 #
 
 #==============================================================
@@ -19,6 +19,10 @@ namespace eval ::AcqFC {
    proc createPluginInstance { { in "" } { visuNo 1 } } {
       variable parametres
       global audace caption conf panneau
+
+      #--- Chargement des fichiers auxiliaires
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc acqfcSetup.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool acqfc dlgshift.tcl ]\""
 
       #---
       set panneau(AcqFC,$visuNo,base) "$in"
@@ -112,6 +116,7 @@ namespace eval ::AcqFC {
          set panneau(AcqFC,$visuNo,lg_film) "$parametres(acqFC,$visuNo,lg_film)"
       }
 
+      #--- Mise en place de l'interface graphique
       AcqFCBuildIF $visuNo
 
       #--- Traitement du bouton Configuration pour la camera APN (DSLR)
@@ -169,7 +174,6 @@ namespace eval ::AcqFC {
       switch $propertyName {
          function     { return "acquisition" }
          multivisu    { return 1 }
-         console      { return 1 }
       }
    }
 
@@ -440,6 +444,8 @@ namespace eval ::AcqFC {
       if { [ file exists $fichier ] } {
          source $fichier
       }
+
+      #--- Creation des variables si elles n'existent pas
       if { ! [ info exists parametres(acqFC,$visuNo,pose) ] }    { set parametres(acqFC,$visuNo,pose)    "5" }   ; #--- Temps de pose : 5s
       if { ! [ info exists parametres(acqFC,$visuNo,bin) ] }     { set parametres(acqFC,$visuNo,bin)     "2x2" } ; #--- Binning : 2x2
       if { ! [ info exists parametres(acqFC,$visuNo,obt) ] }     { set parametres(acqFC,$visuNo,obt)     "2" }   ; #--- Obturateur : Synchro
@@ -450,6 +456,9 @@ namespace eval ::AcqFC {
       if { ! [ info exists parametres(acqFC,$visuNo,y1) ] }      { set parametres(acqFC,$visuNo,y1)      "100" } ; #--- Video fenetree : y1
       if { ! [ info exists parametres(acqFC,$visuNo,x2) ] }      { set parametres(acqFC,$visuNo,x2)      "350" } ; #--- Video fenetree : x2
       if { ! [ info exists parametres(acqFC,$visuNo,y2) ] }      { set parametres(acqFC,$visuNo,y2)      "250" } ; #--- Video fenetree : y2
+
+      #--- Creation des variables de la boite de configuration si elles n'existent pas
+      ::acqfcSetup::initToConf $visuNo
    }
 #***** Fin de la procedure Chargement_Var **********************
 
@@ -489,6 +498,9 @@ namespace eval ::AcqFC {
 #***** Procedure startTool *************************************
    proc startTool { { visuNo 1 } } {
       global conf panneau
+
+      #--- Initialisation des variables de la boite de configuration
+      ::acqfcSetup::confToWidget $visuNo
 
       #--- Creation des fenetres auxiliaires si necessaire
       if { $panneau(AcqFC,$visuNo,mode) == "4" } {
@@ -2373,7 +2385,7 @@ namespace eval ::AcqFC {
 #--- Cette procedure est recopiee de methking.tcl, elle permet l'affichage de differents
 #--- messages (dans la console, le fichier log, etc.)
    proc Message { visuNo niveau args } {
-      global caption conf panneau
+      global caption panneau
 
       switch -exact -- $niveau {
          console {
@@ -2390,10 +2402,7 @@ namespace eval ::AcqFC {
              }
          }
          consolog {
-            if { [ info exists conf(messages_console_acqfc) ] == "0" } {
-               set conf(messages_console_acqfc) "1"
-            }
-            if { $conf(messages_console_acqfc) == "1" } {
+            if { $panneau(AcqFC,$visuNo,messages) == "1" } {
                ::console::disp [eval [concat {format} $args]]
                update idletasks
             }
@@ -3242,8 +3251,12 @@ namespace eval ::AcqFC {
 proc AcqFCBuildIF { visuNo } {
    global audace caption conf panneau
 
-   #--- Lancement des options
-   source [ file join $audace(rep_plugin) tool acqfc dlgshift.tcl ]
+   #--- Determination de la fenetre parente
+   if { $visuNo == "1" } {
+      set base "$audace(base)"
+   } else {
+      set base ".visu$visuNo"
+   }
 
    #--- Trame du panneau
    frame $panneau(AcqFC,$visuNo,This) -borderwidth 2 -relief groove
@@ -3255,6 +3268,13 @@ proc AcqFCBuildIF { visuNo } {
       pack $panneau(AcqFC,$visuNo,This).titre.but -side top -fill x -in $panneau(AcqFC,$visuNo,This).titre -ipadx 5
       DynamicHelp::add $panneau(AcqFC,$visuNo,This).titre.but -text $caption(acqfc,help_titre)
    pack $panneau(AcqFC,$visuNo,This).titre -side top -fill x
+
+   #--- Trame du bouton de configuration
+   frame $panneau(AcqFC,$visuNo,This).config -borderwidth 2 -relief groove
+      button $panneau(AcqFC,$visuNo,This).config.but -borderwidth 1 -text $caption(acqfc,configuration) \
+        -command "::acqfcSetup::run $visuNo $base.acqfcSetup"
+      pack $panneau(AcqFC,$visuNo,This).config.but -side top -fill x -in $panneau(AcqFC,$visuNo,This).config -ipadx 5
+   pack $panneau(AcqFC,$visuNo,This).config -side top -fill x
 
    #--- Trame du temps de pose
    frame $panneau(AcqFC,$visuNo,This).pose -borderwidth 2 -relief ridge
@@ -3300,7 +3320,7 @@ proc AcqFCBuildIF { visuNo } {
    pack $panneau(AcqFC,$visuNo,This).bin.conf -fill x -expand true -ipady 3
 
    #--- Trame de l'obturateur
-   frame $panneau(AcqFC,$visuNo,This).obt -borderwidth 2 -relief ridge -width 15
+   frame $panneau(AcqFC,$visuNo,This).obt -borderwidth 2 -relief ridge -width 16
       button $panneau(AcqFC,$visuNo,This).obt.but -text $caption(acqfc,obt) -command "::AcqFC::ChangeObt $visuNo" \
          -state normal
       pack $panneau(AcqFC,$visuNo,This).obt.but -side left -ipady 3
@@ -3308,7 +3328,7 @@ proc AcqFCBuildIF { visuNo } {
         -font $audace(font,arial_10_b) -relief groove
       pack $panneau(AcqFC,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
       label $panneau(AcqFC,$visuNo,This).obt.lab1 -text "" -font $audace(font,arial_10_b) -relief ridge \
-         -justify center -width 15
+         -justify center -width 16
       pack $panneau(AcqFC,$visuNo,This).obt.lab1 -side top -ipady 3
    pack $panneau(AcqFC,$visuNo,This).obt -side top -fill x
 
@@ -3325,7 +3345,7 @@ proc AcqFCBuildIF { visuNo } {
    #--- Trame du Status
    frame $panneau(AcqFC,$visuNo,This).status -borderwidth 2 -relief ridge
       label $panneau(AcqFC,$visuNo,This).status.lab -text "" -font $audace(font,arial_10_b) -relief ridge \
-         -justify center -width 15
+         -justify center -width 16
       pack $panneau(AcqFC,$visuNo,This).status.lab -side top -pady 1
    pack $panneau(AcqFC,$visuNo,This).status -side top
 
@@ -3340,8 +3360,8 @@ proc AcqFCBuildIF { visuNo } {
    set panneau(AcqFC,$visuNo,mode_en_cours) [ lindex $panneau(AcqFC,$visuNo,list_mode) [ expr $panneau(AcqFC,$visuNo,mode) - 1 ] ]
    frame $panneau(AcqFC,$visuNo,This).mode -borderwidth 5 -relief ridge
       ComboBox $panneau(AcqFC,$visuNo,This).mode.but \
-        -width 14         \
-        -font $audace(font,arial_10_b) \
+        -width 15         \
+        -font $audace(font,arial_10_n) \
         -height [llength $panneau(AcqFC,$visuNo,list_mode)] \
         -relief raised    \
         -borderwidth 1    \
