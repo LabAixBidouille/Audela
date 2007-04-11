@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.64 2007-04-10 19:32:51 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.65 2007-04-11 17:34:33 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1305,7 +1305,7 @@ namespace eval ::audace {
          set pinfo(name)    [$interpTemp eval { set pluginName [lindex [package names ] 0] }]
          set pinfo(version) [$interpTemp eval { set pluginVersion [package versions $pluginName] } ]
          set pinfo(command) [$interpTemp eval { set sourceFile [package ifneeded $pluginName $pluginVersion] } ]
-         set namespaceList2 [$interpTemp eval { global caption; set caption(test) ""; eval "$sourceFile" ; set pluginNamspace [namespace children ::] } ]
+         set namespaceList2 [$interpTemp eval { global caption; set caption(test) ""; eval "$sourceFile" ; set pluginNamspace [lindex [namespace children ::] 0] } ]
          if { [llength $namespaceList2 ] > 0 } {
             set pinfo(namespace)  [lindex $namespaceList2 0]
          } else {
@@ -1315,7 +1315,6 @@ namespace eval ::audace {
          set pinfo(type) [$interpTemp eval { $pluginNamspace\::getPluginType } ]
          #--- je recupere le titre du plugin
          set pinfo(title) [$interpTemp eval { $pluginNamspace\::getPluginTitle } ]
-
       } ]
       #--- je supprime l'interpreteur temporaire
       interp delete $interpTemp
@@ -1459,7 +1458,8 @@ proc startdebug { } {
       #--- Chargement statique de la librairie TK pour RamDebugger
       if { $::tcl_platform(os) == "Linux" } {
          #--- pour LINUX , il faut inserer prefixe "lib"  devant le nom de la librairie
-         load [file join [file dirname $::tk_library] "lib[file tail $::tk_library][info sharedlibextension]"]
+         ##load [file join [file dirname $::tcl_library] "lib[file tail $::tk_library][info sharedlibextension]"]
+         load "/usr/lib/libtk8.4.so"
       } else {
          load [file join "$::audela_start_dir" tk84t.dll ]
       }
