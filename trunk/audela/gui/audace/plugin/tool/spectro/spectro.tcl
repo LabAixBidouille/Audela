@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.16 2007-04-07 00:38:35 robertdelmas Exp $
+# Mise a jour $Id: spectro.tcl,v 1.17 2007-04-11 21:32:19 michelpujol Exp $
 #
 
 #============================================================
@@ -23,7 +23,7 @@ namespace eval ::spectro {
 proc ::spectro::getPluginTitle { } {
    global caption
 
-   return "$caption(spectro,titre,outil)"
+   return "$caption(spectro,spc_audace)"
 }
 
 #------------------------------------------------------------
@@ -51,10 +51,14 @@ proc ::spectro::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 # ::spectro::initPlugin
-#    initialise le plugin
+#    initialise le plugin au demarrage de audace
+#    eviter de chager trop de choses (epnser a ceux qui n'utilisent pas spcaudace)
 #------------------------------------------------------------
-proc ::spectro::initPlugin{ } {
-
+proc ::spectro::initPlugin { tkbase } {
+   global audace
+   #--- Chargement des fonctions de spectrographie
+   #--- pour l'utilisation depuis la console sans ouvrir la fentre de spcaudace
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool spectro spcaudace.tcl ]\""
 }
 
 #------------------------------------------------------------
@@ -64,10 +68,8 @@ proc ::spectro::initPlugin{ } {
 proc ::spectro::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
-   #--- Chargement des fonctions de spectrographie
-   uplevel #0 "source \"[ file join $audace(rep_plugin) tool spectro spcaudace.tcl ]\""
-   #--- Mise en place de l'interface graphique
-   ::spectro::createPanel $in.spectro
+   #--- charge le source de la fenetre de spcaudace
+   uplevel #0 source [ file join $audace(rep_plugin) tool spectro spcaudace spc_gui.tcl ]
 }
 
 #------------------------------------------------------------
@@ -75,26 +77,8 @@ proc ::spectro::createPluginInstance { { in "" } { visuNo 1 } } {
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::spectro::deletePluginInstance { visuNo } {
-
-}
-
-#------------------------------------------------------------
-# ::spectro::createPanel
-#    prepare la creation de la fenetre de l'outil
-#------------------------------------------------------------
-proc ::spectro::createPanel { this } {
-   variable This
-   global caption panneau
-
-   #--- Initialisation du nom de la fenetre
-   set This $this
-   #--- Initialisation des captions
-   set panneau(spectro,titre)      "$caption(spectro,titre,outil)"
-   set panneau(spectro,aide)       "$caption(spectro,help,titre)"
-   set panneau(spectro,configure)  "$caption(spectro,configure)"
-   set panneau(spectro,spc_audace) "$caption(spectro,spc_audace)"
-   #--- Construction de l'interface
-   ::spectro::spectroBuildIF $This
+   #--- rien a faire pour l'instant
+   #car spcaudace ne peut pas etre supprime de la memoire
 }
 
 #------------------------------------------------------------
@@ -102,9 +86,9 @@ proc ::spectro::createPanel { this } {
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::spectro::startTool { visuNo } {
-   variable This
 
-   pack $This -side left -fill y
+   #--- j'ouvre la fenetre 
+   spc_winini
 }
 
 #------------------------------------------------------------
@@ -112,48 +96,6 @@ proc ::spectro::startTool { visuNo } {
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::spectro::stopTool { visuNo } {
-   variable This
-
-   pack forget $This
-}
-
-#------------------------------------------------------------
-# ::spectro::spectroBuildIF
-#    cree la fenetre de l'outil
-#------------------------------------------------------------
-proc ::spectro::spectroBuildIF { This } {
-   global audace panneau
-
-   #--- Frame de l'outil
-   frame $This -borderwidth 2 -relief groove
-
-      #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
-
-         #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(spectro,titre) \
-            -command "::audace::showHelpPlugin tool spectro spectro.htm"
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(spectro,aide)
-
-      pack $This.fra1 -side top -fill x
-
-      #--- Frame des boutons
-      frame $This.fra2 -borderwidth 1 -relief groove
-
-         #--- Bouton configurer
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(spectro,configure) \
-            -command { source [ file join $audace(rep_plugin) tool spectro spectro_configure.tcl ] }
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
-
-         #--- Bouton editer un profil
-         button $This.fra2.but2 -borderwidth 2 -text $panneau(spectro,spc_audace) \
-            -command { source [ file join $audace(rep_plugin) tool spectro spcaudace spc_gui.tcl ] }
-         pack $This.fra2.but2 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
-
-      pack $This.fra2 -side top -fill x
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+   #--- rien a faire , car la fenetre est fermee par l'utilsateur
 }
 
