@@ -66,7 +66,7 @@ proc spc_centergauss { args } {
      return $centre
 
    } else {
-     ::console::affiche_erreur "Usage: spc_centergauss nom_fichier (de type fits) x_debut x_fin a/e\n\n"
+     ::console::affiche_erreur "Usage: spc_centergauss nom_fichier (de type fits) x_debut (pixels) x_fin (pixels) type_raie (a/e)\n\n"
    }
 }
 #****************************************************************#
@@ -117,7 +117,7 @@ proc spc_centergaussl { args } {
      return $centre
 
    } else {
-     ::console::affiche_erreur "Usage: spc_centergaussl nom_fichier (de type fits) x_debut x_fin a/e\n\n"
+     ::console::affiche_erreur "Usage: spc_centergaussl nom_profil_calibré_fits lambda_debut lambda_fin type_raie (a/e)\n\n"
    }
 }
 #****************************************************************#
@@ -152,7 +152,7 @@ proc spc_centergrav { args } {
 	::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
      return $centre
     } else {
-	::console::affiche_erreur "Usage: spc_centergrav profil_de_raies (non calibré) x_debut x_fin\n\n"
+	::console::affiche_erreur "Usage: spc_centergrav profil_de_raies (non calibré) x_debut (pixels) x_fin (pixels)\n\n"
     }
 }
 #****************************************************************#
@@ -192,7 +192,7 @@ proc spc_centergravl { args } {
 	::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
      return $centre
     } else {
-	::console::affiche_erreur "Usage: spc_centergravl profil_de_raies (calibré) x_debut x_fin\n\n"
+	::console::affiche_erreur "Usage: spc_centergravl profil_de_raies_calibré lambda_debut lambda_fin\n\n"
     }
 }
 #****************************************************************#
@@ -765,12 +765,12 @@ proc spc_snr { args } {
    #- une raie de moins de 0.92 A est du bruit
    set largeur_bruit 0.92
 
-   if {[llength $args] == 1} {
-       set fichier [ lindex $args 0 ]
+   if { [llength $args]==1 } {
+       set fichier [ file rootname [ lindex $args 0 ] ]
 
        #--- Capture des renseignements
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-       set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "NAXIS2" ] !=-1 } {
 	   set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
@@ -808,7 +808,7 @@ proc spc_snr { args } {
        }
 
        #--- Affichage des résultats :
-       file delete "$audace(rep_images)/${fichier}_crop$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/${fichier}_crop$conf(extension,defaut)"
        ::console::affiche_resultat "SNR=$S/$N=$SNR\n"
        return $SNR
 
@@ -1091,8 +1091,8 @@ proc spc_icontinuum { args } {
     global audace
     set nbtranches 10
 
-    if { [llength $args] == 1 } {
-	set fichier [ lindex $args 0 ]
+    if { [llength $args]==1 } {
+	set fichier [ file rootname [ lindex $args 0 ] ]
 
 	#--- Calcul des paramètres de l'image :
 	buf$audace(bufNo) load "$audace(rep_images)/$fichier"

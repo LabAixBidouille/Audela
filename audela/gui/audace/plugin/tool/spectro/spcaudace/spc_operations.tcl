@@ -104,7 +104,7 @@ proc spc_pretrait { args } {
        if { [ file exists "$audace(rep_images)/$nom_dark$conf(extension,defaut)" ] } {
 	   set dark_liste [ list $nom_dark ]
 	   set nb_dark 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   renumerote $nom_dark
 	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_dark [ llength $dark_liste ]
@@ -405,11 +405,22 @@ proc spc_normaraie { args } {
 proc spc_autonorma { args } {
 
     global audace
-    global conf
+    global conf caption
 
-    if {[llength $args] == 1} {
-	set fichier [ file rootname [ lindex $args 0 ] ]
-
+    if { [llength $args]<=1 } {
+       if { [llength $args] == 1 } {
+	   set fichier [ file rootname [ lindex $args 0 ] ]
+       } elseif { [llength $args]==0 } {
+	   set spctrouve [ file rootname [ file tail [ tk_getOpenFile -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+	       set fichier $spctrouve
+	   } else {
+	       ::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
+	       return 0
+	   }
+       } else {
+	   ::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
+       }
 	#--- Détermination de la valeur du continuum :
 	set icont [ spc_icontinuum $fichier ]
 	set coefnorm [ expr 1./$icont ]
@@ -422,7 +433,7 @@ proc spc_autonorma { args } {
 	buf$audace(bufNo) bitpix short
 
 	#--- Traitement des résultats :
-	::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm.\n"
+	::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm\n"
 	return ${fichier}_norm
     } else {
 	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
@@ -1120,7 +1131,6 @@ proc spc_div { args } {
 	    buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_div"
 	    buf$audace(bufNo) bitpix short
-	    file delete "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
 	    ::console::affiche_resultat "Division des 2 profils sauvée sous ${fichier}_div$conf(extension,defaut)\n"
 	    return ${fichier}_div
 	} else {
@@ -1236,12 +1246,11 @@ proc spc_divri { args } {
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
 		if { $ordo2 == 0.0 } {
 		    buf$audace(bufNo) setpix [list $i 1] 0.0
-		    incr i
 		    incr nbdivz
 		} else {
 		    buf$audace(bufNo) setpix [list $i 1] [ expr 1.0*$ordo1/$ordo2 ]
-		    incr i
 		}
+		incr i
 	    }
 	    ::console::affiche_resultat "Fin de la division : $nbdivz divisions par 0.\n"
 
@@ -1250,7 +1259,7 @@ proc spc_divri { args } {
 	    buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_ricorr"
 	    buf$audace(bufNo) bitpix short
-	    file delete "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
+	    file delete -force "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
 	    ::console::affiche_resultat "Division du profil par la réponse intrumentale sauvée sous ${fichier}_ricorr$conf(extension,defaut)\n"
 	    return ${fichier}_ricorr
 	} else {
@@ -1480,16 +1489,16 @@ proc spc_smooth0 { args } {
 # Arguments : fichier fits, ?largeur du motif à gommer?
 ####################################################################
 
-proc spc_passebas { args } {
+proc spc_passebas1 { args } {
     global conf
     global audace
 
     if { [llength $args] <= 2 } {
 	if { [llength $args] == 2 } {
-	    set fichier [ lindex $args 0 ]
+	    set fichier [ file rootname [ lindex $args 0 ] ]
 	    set largeur [ lindex $args 1 ]
 	} elseif { [llength $args] == 1 } {
-	    set fichier [ lindex $args 0 ]
+	    set fichier [ file rootname [ lindex $args 0 ] ]
 	    set largeur 25
 	} else {
 	    ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?largeur motif à gommer(25)?\n\n"
@@ -1521,6 +1530,145 @@ proc spc_passebas { args } {
 	return $file_out
     } else {
 	::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?largeur motif à gommer(25)?\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+####################################################################
+# Procedure de filtrage passe bas (fonction rectangulaire ou "Blackman")
+#
+# Auteur : Patrick LAILLY
+# Date creation : 18-3-07
+# Date modification : 22-3-07
+# Arguments : fichier fits, ?demilargeur du motif à gommer?, type de filtre
+# Algo : application (par passage dans l'espace de Fourier) d'un filtre
+# passe-bas de réponse impulsionnelle finie. Deux types de filtres sont
+# proposés : rectangle ou Blackman. Les données filtrées sont calculées
+# sauf aux bords (dont l'étendue est égale à la demi-largeur du filtre).
+# Sur ces bords on reproduit les données d'entrée.
+####################################################################
+
+proc spc_passebas { args } {
+    global conf
+    global audace
+
+    if { [llength $args] <= 2 } {
+	if { [llength $args] == 2 } {
+	    set fichier [ file rootname [ lindex $args 0 ] ]
+	    set demilargeur [ lindex $args 1 ]
+	} elseif { [llength $args] == 1 } {
+	    set fichier [ file rootname [ lindex $args 0 ] ]
+	    set demilargeur 25
+	} else {
+	    ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?demilargeur motif à gommer(25)?\n\n"
+	    return 0
+	}
+
+	set datas [ spc_fits2data $fichier ]
+	set abscisses [ lindex $datas 0 ]
+	set ordonnees [ lindex $datas 1 ]
+	set nordonnees $ordonnees
+	set nabscisses $abscisses
+
+
+	#test sur la parité du nombre d'écchantillons
+	set len [ llength $abscisses ]
+	set nlen $len
+	set dx [ expr [ lindex $abscisses [ expr $nlen-1 ] ]-[ lindex $abscisses [ expr $nlen-2 ] ] ]
+	#::console::affiche_resultat "dx=$dx\n"
+
+	if {[ expr $len%2 ]==0} {
+	lappend nordonnees 0.
+	lappend nabscisses [ expr [ lindex $abscisses [ expr $nlen-1 ] ] + $dx ]
+	set nlen [ expr $nlen +1 ]
+	}
+
+	# initialisation du filtre
+	set nlarg [ expr 2*$demilargeur+1 ]
+	::console::affiche_resultat "demilargeur du filtre=$demilargeur\n"
+	set amplit [ expr 1./$nlarg ]
+	set filtr [ list ]
+	set temps ""
+	set lignezeros ""
+	for {set i 0} {$i<$nlen} {incr i} {
+	lappend filtr 0.
+	lappend lignezeros 0.
+	lappend temps [ expr $i*1. ]
+	}
+	#::console::affiche_resultat "nlen= $nlen\n"
+	#::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
+	for {set i 0} {$i<=$demilargeur} {incr i} {
+	set filtr [ lreplace $filtr $i $i $amplit ]
+	}
+	#::console::affiche_resultat "longueur filtre= [llength $filtr ]\n"
+	set redemar [ expr $nlen-$demilargeur ]
+	#::console::affiche_resultat "redemar=$redemar\n"
+	for {set i $redemar} {$i<$nlen} {incr i} {
+	set filtr [ lreplace $filtr $i $i $amplit ]
+	}
+	set filtrfft [ gsl_fft $filtr $temps]
+	set refiltrfft [ lindex $filtrfft 0 ]
+	set imfiltrfft [ lindex $filtrfft 1 ]
+	#if {$imfiltrfft != $lignezeros} {
+	#::console::affiche_resultat "erreur part imag filtr=$imfiltrfft\n"
+	#}
+	::console::affiche_resultat "longueur partie imag fft= [ llength $imfiltrfft ]\n"
+	set amplitfft [ gsl_fft $nordonnees $temps]
+ 	set reamplitfft [ lindex $amplitfft 0 ]
+	set imamplitfft [ lindex $amplitfft 1 ]
+	set reprod ""
+	set improd ""
+	for {set i 0} {$i<$nlen} {incr i} {
+ 	set prod1 [ expr [ lindex $refiltrfft $i ]*[ lindex $reamplitfft $i ] ]
+	set prod2 [ expr [ lindex $refiltrfft $i ]*[ lindex $imamplitfft $i ] ]
+	lappend reprod $prod1
+	lappend improd $prod2
+	}
+
+	set result [ gsl_ifft $reprod $improd $temps ]
+	set reconvol [ lindex $result 0 ]
+	set imconvol [ lindex $result 1 ]
+	#if {$imconvol != $lignezeros} {
+	#::console::affiche_resultat "erreur part imag filtr=$imfiltrfft\n"
+	#}
+	::console::affiche_resultat "longueur résultat convolution= [ llength $reconvol ]\n"
+	#élimination des effets de bord (remplacement par les valeurs d'origine)
+
+	for {set i 0} {$i<$demilargeur} {incr i} {
+	set reconvol [ lreplace $reconvol $i $i [ lindex $ordonnees $i ] ]
+	}
+	for {set i [expr $len-$demilargeur ]} {$i<$len} {incr i} {
+	set reconvol [ lreplace $reconvol $i $i [ lindex $ordonnees $i ] ]
+	}
+
+	set nordonnees [ lrange $reconvol 0 [ expr $len-1 ] ]
+	
+
+	::console::affiche_resultat "longueur résultat filtrage= [ llength $nordonnees ]\n"
+	#set nordonnees [ concat nordonnees1 nordonnees2 nordonnees3 ]
+
+
+	if { 1==0 } {
+	#--- Affichage du graphe
+        #--- Meth1
+        ::plotxy::clf
+        ::plotxy::plot $abscisses $nordonnees r 1
+        ::plotxy::hold on
+        ::plotxy::plot $abscisses $ordonnees ob 0
+        ::plotxy::plotbackground #FFFFFF
+        ##::plotxy::xlabel "x"
+        ##::plotxy::ylabel "y"
+        ::plotxy::title "bleu : orginal ; rouge : passe bas largeur $demilargeur"
+    }
+
+	#--- Sauvegarde du fichier :
+	set file_out [ spc_data2fits ${fichier}_pbas [ list $abscisses $nordonnees ] ]
+	::console::affiche_resultat "Profil filtré (passe bas) sauvé sous ${fichier}_pbas\n"
+	return $file_out
+    } else {
+	::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?demilargeur motif à gommer(25)?\n\n"
     }
 }
 #****************************************************************#
@@ -1883,7 +2031,7 @@ proc spc_divri_21102006 { args } {
 	    buf$audace(bufNo) save "$audace(rep_images)/$fichier_out"
 
 	    #--- Fin du script :
-	    file delete "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
+	    file delete -force "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
 	    ::console::affiche_resultat "Division du profil par la réponse intrumentale sauvée sous $fichier_out$conf(extension,defaut)\n"
 	    return $fichier_out
 	} else {

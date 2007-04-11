@@ -119,7 +119,7 @@ proc spc_vhelio { args } {
 	       set y [ lindex $ldate 0 ]
 	       set mo [ lindex $ldate 1 ]
 	       set d [ lindex $ldate 2 ]
-	       set datef [ list $d $mo $y ]
+	       set datef [ list $y $mo $d ]
 	   }
        } elseif { [llength $args] == 7 } {
 	   # DATE-OBS : 2005-11-26T20:47:04
@@ -129,14 +129,14 @@ proc spc_vhelio { args } {
 	       set y [ lindex $ldate 0 ]
 	       set mo [ lindex $ldate 1 ]
 	       set d [ lindex $ldate 2 ]
-	       set datef [ list $d $mo $y ]
+	       set datef [ list $y $mo $d ]
 	   }
 	   set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
 	   set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
        } elseif { [llength $args] == 10 } {
 	   set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
 	   set decf [ list "${dec_d}d${dec_m}m${dec_s}s" ]
-	   set datef [ list $jj $mm $aaaa ]
+	   set datef [ list $aaaa $mm $jj ]
        }
 
        #--- Calcul de la vitesse héliocentrique :
@@ -605,24 +605,101 @@ proc spc_ne2 { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 04-08-2005
-# Date de mise à jour : 10-05-2006
+# Date de mise à jour : 24-03-2007
 # Arguments : nom générique des profils de raies normalisés à 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
 ##########################################################
 
 proc spc_ewcourbe { args } {
 
-    global audace
+    global audace spcaudace
     global conf
-	global tcl_platform
-    set ewfile "ewcourbe"
-	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
-	set ext ".dat"
+    global tcl_platform
 
-    if {[llength $args] == 4} {
+    set ewfile "ewcourbe"
+    set ext ".dat"
+
+    if { [llength $args]==1 } {
+	set lambda [lindex $args 0 ]
+
+	set ldates ""
+	set list_ew ""
+	set intensite_raie 1
+	set fileliste [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ]
+
+	foreach fichier $fileliste {
+	    ::console::affiche_resultat "\nTraitement de $fichier\n"
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	    set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
+	    # Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
+	    lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
+	    # lappend ldates [ expr $date-50000. ]
+	    #lappend list_ew [ expr -1.*[ spc_autoew $fichier $lambda ] ]
+	    lappend list_ew [ spc_autoew $fichier $lambda ]
+	}
+
+	#--- Création du fichier de données
+	# ::console::affiche_resultat "$ldates \n $list_ew\n"
+	set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
+	foreach sdate $ldates ew $list_ew {
+	    puts $file_id1 "$sdate\t$ew"
+	}
+	close $file_id1
+
+	#--- Création du script de tracage avec gnuplot
+	set titre "Evolution de la largeur equivalente au cours du temps"
+	set legendey "Largeur equivalente (A)"
+	set legendex "Date (JD-2450000)"
+	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
+	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * * \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
+	close $file_id2
+	if { $tcl_platform(os)=="Linux" } {	
+	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	} else {
+	    #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
+	    ::console::affiche_resultat "$answer\n"
+	}
+
+	#--- Affichage du graphe PNG :
+	if { $conf(edit_viewer)!="" } {
+	    set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/ew_courbe.png" & } ]
+	} else {
+	    ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
+	}
+
+
+	#--- Traitement du résultat :
+	return "ew_courbe.png"
+    } else {
+	::console::affiche_erreur "Usage: spc_ewcourbe lambda_raie\n\n"
+    }
+}
+#*******************************************************************************#
+
+
+##########################################################
+# Procedure de tracer de largeur équivalente pour une série de spectres
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 04-08-2005
+# Date de mise à jour : 10-05-2006
+# Arguments : nom générique des profils de raies normalisés à 1, longueur d'onde de la raie (A), largeur de la raie (A), type de raie (a/e)
+##########################################################
+
+proc spc_ewcourbe_opt { args } {
+
+    global audace spcaudace
+    global conf
+    global tcl_platform
+
+    set ewfile "ewcourbe"
+    set ext ".dat"
+
+    if { [llength $args]==3 } {
 	set nom_generic [ lindex $args 0 ]
-	set lambda [lindex $args 1 ]
-	set largeur_raie [lindex $args 2 ]
-	set type_raie [lindex $args 3 ]
+	set lambda [ lindex $args 1 ]
+	set largeur_raie [ lindex $args 2 ]
 
 	set ldates ""
 	set list_ew ""
@@ -633,14 +710,13 @@ proc spc_ewcourbe { args } {
 	    set fichier [ file tail $fichier ]
 	    ::console::affiche_resultat "\nTraitement de $fichier\n"
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	    set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
+	    set date [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ]
 	    # Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
-	    lappend ldates [ expr int($date*10000.)/10000.-50000. ]
+	    lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
 	    # lappend ldates [ expr $date-50000. ]
-	    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	    set ldeb [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-	    set disp [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-
+	    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	    set ldeb [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	    set disp [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 	    set ldeb [ expr $lambda-0.5*$largeur_raie ]
 	    set lfin [ expr $lambda+0.5*$largeur_raie ]
 	    lappend list_ew [ spc_ew3 $fichier $ldeb $lfin ]
@@ -657,31 +733,34 @@ proc spc_ewcourbe { args } {
 	#--- Création du script de tracage avec gnuplot
 	set titre "Evolution de la largeur equivalente au cours du temps"
 	set legendey "Largeur equivalente (A)"
-	set legendex "Date (JD-50000)"
-	set repertoire_gp [ file join $audace(rep_scripts) spcaudace gp ]
-	#exec echo "call \"${repertoire_gp}/gpx11.cfg\" \"${spcfile}$ext\" \"$titre\" * * $xdeb $xfin $pas \"${spcfile}.png\" \"$legendex\" \"$legendey\" " > $repertoire_gp/run_gp
+	set legendex "Date (JD-2450000)"
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
-	puts $file_id2 "call \"${repertoire_gp}/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * * \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * * \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
 	close $file_id2
 	if { $tcl_platform(os)=="Linux" } {	
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	} else {
 	    #-- wgnuplot et pgnuplot doivent etre dans le rep gp de spcaudace
-	    set answer [ catch { exec ${repertoire_gp}/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
+	    set answer [ catch { exec $spcaudace(repgp)/gpwin32/pgnuplot.exe $audace(rep_images)/${ewfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	}
-	#set file_id3 [open "$audace(rep_images)/trace_gp.bat" w+]
-	#puts $file_id3 "gnuplot \"${ewfile}.gp\" "
-	#close $file_id3
-	## exec gnuplot $repertoire_gp/run_gp
-	#::console::affiche_resultat "\nExécuter dans un terminal : trace_gp.bat\n"
 
+	#--- Affichage du graphe PNG :
+	if { $conf(edit_viewer)!="" } {
+	    set answer [ catch { exec $conf(edit_viewer) "$audace(rep_images)/ew_courbe.png" & } ]
+	} else {
+	    ::console::affiche_resultat "Configurer \"Editeurs/Visualisateur d'images\" pour permettre l'affichage du graphique\n"
+	}
+
+	#--- Traitement du résultat :
+	return "ew_courbe.png"
     } else {
-	::console::affiche_erreur "Usage: spc_ewcourbe nom_générique_profils_normalisés_fits lambda_raie largeur_raie a/e (absorption/émission)\n\n"
+	::console::affiche_erreur "Usage: spc_ewcourbe_opt nom_générique_profils_normalisés_fits lambda_raie largeur_raie\n\n"
     }
 }
 #*******************************************************************************#
+
 
 
 
@@ -715,7 +794,7 @@ proc spc_ewdirw { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	    set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
 	    #- Ne tient que des 4 premières décimales du jour julien
-	    set jddate [ expr int($date*10000.)/10000.+2400000. ]
+	    set jddate [ expr int($date*10000.)/10000.+2400000.5 ]
 	    set mesure [ spc_autoew2 $fichier $lambda ]
 	    set ew [ lindex $mesure 0 ]
 	    set sigma_ew [ lindex $mesure 1 ]
@@ -1053,11 +1132,11 @@ proc spc_ew3 { args } {
 
 	#--- Détermine le type de raie : émission ou absorption et donne un signe à EW
 	if { 1==0 } {
-	set valsselect [ list $xsel $ysel ]
-	set intensity [ spc_aire $valsselect ]
-	if { $intensity>=1 } {
+	  set valsselect [ list $xsel $ysel ]
+	  set intensity [ spc_aire $valsselect ]
+	  if { $intensity>=1 } {
 	    set ew [ expr -1.*$ew ]
-	}
+	  }
 	}
 
 	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
@@ -1296,3 +1375,21 @@ proc spc_autoew2 { args } {
     }
 }
 #***************************************************************************#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#==========================================================================#
+#           Acnciennes implémentations                                     #
+#==========================================================================#
+

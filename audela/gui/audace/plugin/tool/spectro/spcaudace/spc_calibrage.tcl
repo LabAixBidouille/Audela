@@ -943,6 +943,10 @@ proc spc_calibre { args } {
        #--- Effectue la calibration de la lampe spectrale : 
        # set etaloncalibre [ spc_calibren $profiletalon $xa1 $xa2 $lambda1 $type1 $xb1 $xb2 $lambda2 $type2 ]
        # NON : file delete "$audace(rep_images)/$profiletalon$conf(extension,defaut)"
+       visu1 zoom 0.5
+       #::confVisu::setZoom 0.5 0.5
+       ::confVisu::autovisu 1
+
        if { $spcalibre != "" } {
 	   loadima $spcalibre
 	   return $spcalibre
@@ -957,21 +961,25 @@ proc spc_calibre { args } {
 #****************************************************************#
 
 
+
+
 ####################################################################
 # Fonction d'étalonnage à partir de raies de l'eau autour de Ha
 #
 # Auteur : Benjamin MAUCLAIRE
-# Date creation : 30-09-2006
-# Date modification : 03-10-2006
+# Date creation : 08-04-2007
+# Date modification : 08-04-2007
 # Arguments : nom_profil_raies
 ####################################################################
 
-proc spc_calibrehaeau { args } {
+proc spc_findwaterlines { args } {
     global conf
     global audace
     # set pas 10
+    #-- Demi-largeur de recherche des raies telluriques (Angstroms)
     #set ecart 4.0
-    set ecart 1.5
+    #set ecart 1.5
+    set ecart 1.0
     #set erreur 0.01
     set ldeb 6528.0
     set lfin 6580.0
@@ -981,17 +989,18 @@ proc spc_calibrehaeau { args } {
     #-- Liste ESO-Pollman :
     #set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6574.880 6586.730 ]
     set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6572.079 6574.880 ]
+    #set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6572.079 ]
 
     set nbargs [ llength $args ]
     if { $nbargs <= 2 } {
 	if { $nbargs == 1 } {
 	    set filename [ lindex $args 0 ]
-	    set largeur 0
+	    set largeur 28
 	} elseif { $nbargs == 2 } {
 	    set filename [ lindex $args 0 ]
 	    set largeur [ lindex $args 1 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_calibrehaeau nom_profil_de_raies ?largeur_raie?\n"
+	    ::console::affiche_erreur "Usage: spc_autocalibrehaeau nom_profil_de_raies ?largeur_raie (pixel)?\n"
 	    return 0
 	}
 	#set pas [ expr int($largeur/2) ]
@@ -1013,7 +1022,279 @@ proc spc_calibrehaeau { args } {
 	    set xfin [ expr int(($lfin-$crval1)/$cdelt1) ]
 	} else {
 	    ::console::affiche_resultat "Plage de longueurs d'onde incompatibles avec la calibration tellurique\n"
+	    return ""
+	}
+
+	#--- Filtrage pour isoler le continuum :
+	set ffiltered [ spc_smoothsg $filename $largeur ]
+	set fcont1 [ spc_div $filename $ffiltered ]
+
+	#--- Inversion et mise a 0 du niveau moyen :
+	buf$audace(bufNo) load "$audace(rep_images)/$fcont1"
+	set icontinuum [ expr 2*[ lindex [ buf$audace(bufNo) stat ] 4 ] ]
+	buf$audace(bufNo) mult -1.0
+	buf$audace(bufNo) offset $icontinuum
+	buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti"
+
+
+	#--- Recherche des raies d'émission :
+	::console::affiche_resultat "Recherche des raies d'absorption de l'eau...\n"
+	#buf$audace(bufNo) scale {1 3} 1
+	set nbraies [ llength $listeraies ]
+	foreach raie $listeraies {
+	    set x1 [ expr int(($raie-$ecart-$crval1)/$cdelt1) ]
+	    set x2 [ expr int(($raie+$ecart-$crval1)/$cdelt1) ]
+	    set coords [ list $x1 1 $x2 1 ]
+	    set xcenter [ lindex [ buf$audace(bufNo) centro $coords ] 0 ]
+	    #set xcenter [ lindex [ buf$audace(bufNo) fitgauss $coords ] 1 ]
+	    lappend listelmesurees [ expr $xcenter*$cdelt1+$crval1 ]
+	    lappend errors $mes_incertitude
+
+
+	  if { 1==0 } {
+	    if { $largeur == 0 } {
+		# set xcenter [ lindex [ buf$audace(bufNo) fitgauss $coords ] 1 ]
+		set xcenter [ lindex [ buf$audace(bufNo) centro $coords ] 1 ]
+		lappend listemesures $xcenter
+		lappend listelmesurees [ expr $xcenter*$cdelt1+$crval1 ]
+	    } else {
+		#set xcenter [ lindex [ buf$audace(bufNo) fitgauss $coords -fwhmx $largeur ] 1 ]
+		set xcenter [ lindex [ buf$audace(bufNo) centro $coords $largeur ] 1 ]
+		lappend listemesures $xcenter
+		lappend listelmesurees [ expr $xcenter*$cdelt1+$crval1 ]
+	    }
+	  }
+
+
+	}
+	::console::affiche_resultat "Liste des raies trouvées :\n$listelmesurees\n"
+	# ::console::affiche_resultat "Liste des raies trouvées : $listemesures\n"
+	::console::affiche_resultat "Liste des raies de référence :\n$listeraies\n"
+
+	#--- Effacement des fichiers temporaires :
+	file delete -force "$audace(rep_images)/$ffiltered$conf(extension,defaut)"
+	file delete -force "$audace(rep_images)/$fcont1$conf(extension,defaut)"
+
+
+      if { 0==1} {
+	#------------------------------------------------------------#
+	set flag 0
+	if { $flag==1} {
+	#--- Constitution de la chaine x_n lambda_n :
+	#foreach mes $listemesures eau $listeraies {
+	    # append listecoords "$mes $eau "
+	#    append listecoords $mes
+	#    append listecoords $eau
+	#}
+	#::console::affiche_resultat "Coords : $listecoords\n"
+	set i 1
+	foreach mes $listemesures eau $listeraies {
+	    set x$i $mes
+	    set l$i $eau
+	    incr i
+	}
+
+	#--- Calibration en longueur d'onde :
+	::console::affiche_resultat "Calibration du profil avec les raies de l'eau...\n"
+	#set calibreargs [ list $filename $listecoords ]
+	#set len [ llength $calibreargs ]
+	#::console::affiche_resultat "$len args : $calibreargs\n"
+	#set sortie [ spc_calibren $calibreargs ]
+	set sortie [ spc_calibren $filename $x1 $l1 $x2 $l2 $x3 $l3 $x4 $l4 $x5 $l5 $x6 $l6 ]
+	return $sortie
+        }
+	#------------------------------------------------------------#
+	    
+	#--- Calcul du polynôme de calibration a+bx+cx^2 :
+	set sortie [ spc_ajustdeg2 $listemesures $listeraies $errors ]
+ 	set coeffs [ lindex $sortie 0 ]
+	set c [ lindex $coeffs 2 ]
+	set b [ lindex $coeffs 1 ]
+	set a [ lindex $coeffs 0 ]
+	set chi2 [ lindex $sortie 1 ]
+	set covar [ lindex $sortie 2 ]
+	::console::affiche_resultat "Chi2=$chi2\n"
+	set lambda0deg2 [ expr $a+$b+$c ]
+	set rms [ expr $cdelt1*sqrt($chi2/$nbraies) ]
+	::console::affiche_resultat "RMS=$rms angstrom\n"
+
+	#--- Calcul des coéfficients de linéarisation de la calibration a1x+b1 (régression linéaire sur les abscisses choisies et leur lambda issues du polynome) :
+	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	for {set x 20} {$x<=[ expr $naxis1-10 ]} { set x [ expr $x+20 ]} {
+	    lappend xpos $x
+	    lappend lambdaspoly [ expr $a+$b*$x+$c*$x*$x ]
+	    lappend errorsd1 $mes_incertitude
+	}
+	set listevals [ list $xpos $lambdaspoly ]
+	#set sortie1 [ spc_ajustdeg1 $xpos $lambdaspoly $errorsd1 ]
+	set coeffsdeg1 [ spc_reglin $listevals ]
+	set a1 [ lindex $coeffsdeg1 0 ]
+	set b1 [ lindex $coeffsdeg1 1 ]
+	set lambda0deg1 [ expr $a1+$b1 ]
+
+
+	#--- Nouvelle valeur de Lambda0 :
+	#set lambda0 [ expr 0.5*abs($lambda0deg1-$lambda0deg2)+$lambda0deg2 ]
+	#-- Reglages :
+	#- 40 -10 l0deg1 : AB
+	#- 40 -40 l0deg1 : AB+
+	#- 20 -10 l0deg2 : AB++
+	set lambda0 $lambda0deg2
+
+
+	#--- Redonne le lambda du centre des raies apres réétalonnage :
+	set ecart2 0.6
+	foreach raie $listeraies {
+	    set x1 [ expr int(($raie-$ecart2-$lambda0)/$cdelt1) ]
+	    set x2 [ expr int(($raie+$ecart2-$lambda0)/$cdelt1) ]
+	    set coords [ list $x1 1 $x2 1 ]
+	    if { $largeur == 0 } {
+		set x [ lindex [ buf$audace(bufNo) fitgauss $coords ] 1 ]
+		#lappend listemesures $xcenter
+		# lappend listelmesurees2 [ expr $a+$b*$x+$c*$x*$x ]
+		lappend listelmesurees2 [ expr $lambda0+$cdelt1*$x ]
+	    } else {
+		set x [ lindex [ buf$audace(bufNo) fitgauss $coords -fwhmx $largeur ] 1 ]
+		#lappend listemesures $xcenter
+		lappend listelmesurees2 [ expr $a+$b*$x+$c*$x*$x ]
+	    }
+	}
+	#::console::affiche_resultat "Liste des raies après réétalonnage :\n$listelmesurees2\nÀ comparer avec :\n$listeraies\n"
+
+
+	#--- Mise à jour des mots clefs :
+	buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
+	#-- Longueur d'onde de départ :
+	buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+	#-- Dispersion moyenne :
+	#buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
+	#buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
+	#-- Corrdonnée représentée sur l'axe 1 (ie X) :
+	#buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
+	#-- Mots clefs du polynôme :
+	buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
+	buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
+	#buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
+	#buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
+	buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+
+	#--- Sauvegarde :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/l${filename}"
+
+	#--- Fin du script :
+	::console::affiche_resultat "Spectre étalonné sauvé sous l${filename}\n"
+	return l${filename}
+     }
+   } else {
+       ::console::affiche_erreur "Usage: spc_findwaterlines profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+
+
+
+####################################################################
+# Procédure de recalage en longueur d'onde a partir d'une raie tellurique de l'eau
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 25-03-2007
+# Date modification : 25-03-2007
+# Arguments : profil_de_raies_étoile_référence profil_de_raies_a_calibrer lambda_eau_mesurée_6532
+####################################################################
+
+proc spc_calibrehaeau { args } {
+    global conf
+    global audace
+
+    set ldeb 6528.0
+    set lfin 6580.0
+    #-- Liste C.Buil :
+    ## set listeraies [ list 6532.359 6542.313 6548.622 6552.629 6574.852 6586.597 ]
+    #set listeraies [ list 6532.359 6543.912 6548.622 6552.629 6574.852 6586.597 ]
+    #-- Liste ESO-Pollman :
+    #set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6574.880 6586.730 ]
+    set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6572.079 6574.880 ]
+
+    if { [llength $args]==3 } {
+	set spreference [ lindex $args 0 ]
+	set spacalibrer [ lindex $args 1 ]
+	set leau [ lindex $args 2 ]
+
+
+	#--- Affichage des résultats :
+	::console::affiche_resultat "Le spectre calibré est sauvé sous $fileout\n"
+	return ""
+    } else {
+       ::console::affiche_erreur "Usage: spc_calibrehaeau profil_de_raies_étoile_référence profil_de_raies_a_calibrer lambda_eau_mesurée_6532\n\n"
+   }
+}
+#***************************************************************************#
+
+
+
+
+####################################################################
+# Fonction d'étalonnage à partir de raies de l'eau autour de Ha
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 30-09-2006
+# Date modification : 03-10-2006
+# Arguments : nom_profil_raies
+####################################################################
+
+proc spc_autocalibrehaeau { args } {
+    global conf
+    global audace
+    # set pas 10
+    #set ecart 4.0
+    set ecart 1.5
+    #set erreur 0.01
+    set ldeb 6528.0
+    set lfin 6580.0
+    #-- Liste C.Buil :
+    ## set listeraies [ list 6532.359 6542.313 6548.622 6552.629 6574.852 6586.597 ]
+    #set listeraies [ list 6532.359 6543.912 6548.622 6552.629 6574.852 6586.597 ]
+    #-- Liste ESO-Pollman :
+    #set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6574.880 6586.730 ]
+    set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6572.079 6574.880 ]
+    #set listeraies [ list 6532.351 6543.912 6548.651 6552.646 6572.079 ]
+
+    set nbargs [ llength $args ]
+    if { $nbargs <= 2 } {
+	if { $nbargs == 1 } {
+	    set filename [ lindex $args 0 ]
+	    set largeur 0
+	} elseif { $nbargs == 2 } {
+	    set filename [ lindex $args 0 ]
+	    set largeur [ lindex $args 1 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_autocalibrehaeau nom_profil_de_raies ?largeur_raie (pixel)?\n"
 	    return 0
+	}
+	#set pas [ expr int($largeur/2) ]
+
+	#--- Gestion des profils calibrés en longueur d'onde :
+	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	#-- Retire les petites raies qui seraient des pixels chauds ou autre :
+	#buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
+	#-- Renseigne sur les parametres de l'image :
+	set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+	set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+	#-- Incertitude sur mesure=1/nbpix*disp, nbpix_incertitude=1 :
+	set mes_incertitude [ expr 1.0/($cdelt1*$cdelt1) ]
+
+	#--- Calcul des xdeb et xfin bornant les 6 raies de l'eau :
+	if { $ldeb>$crval1+2. && $lfin<[ expr $naxis1*$cdelt1+$crval1-2. ] } {
+	    set xdeb [ expr int(($lfin-$crval1)/$cdelt1) ]
+	    set xfin [ expr int(($lfin-$crval1)/$cdelt1) ]
+	} else {
+	    ::console::affiche_resultat "Plage de longueurs d'onde incompatibles avec la calibration tellurique\n"
+	    return ""
 	}
 
 	#--- Recherche des raies d'émission :
@@ -1037,7 +1318,7 @@ proc spc_calibrehaeau { args } {
 	}
 	::console::affiche_resultat "Liste des raies trouvées :\n$listelmesurees\n"
 	# ::console::affiche_resultat "Liste des raies trouvées : $listemesures\n"
-
+	::console::affiche_resultat "Liste des raies de référence :\n$listeraies\n"
 
 	#------------------------------------------------------------#
 	set flag 0
@@ -1134,10 +1415,10 @@ proc spc_calibrehaeau { args } {
 	#-- Corrdonnée représentée sur l'axe 1 (ie X) :
 	#buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
 	#-- Mots clefs du polynôme :
-	buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+A.x.x+B.x+C" string "" ""]
-	buf$audace(bufNo) setkwd [list "SPC_C" $a float "" "angstrom"]
-	buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
-	buf$audace(bufNo) setkwd [list "SPC_A" $c float "" "angstrom.angstrom/pixel.pixel"]
+	buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
+	buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
+	#buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
+	#buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
 	buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
 
 	#--- Sauvegarde :
@@ -1149,7 +1430,7 @@ proc spc_calibrehaeau { args } {
 	return l${filename}
 
    } else {
-       ::console::affiche_erreur "Usage: spc_calibrehaeau profil_de_raies_a_calibrer ?largeur_raie?\n\n"
+       ::console::affiche_erreur "Usage: spc_autocalibrehaeau profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n\n"
    }
 }
 #****************************************************************#
@@ -1211,7 +1492,7 @@ proc spc_corrvhelio { args } {
 
        #--- Traitement du résultat :
        file rename -force "$audace(rep_images)/$fileout$conf(extension,defaut)" "$audace(rep_images)/${spectre}_vhel$conf(extension,defaut)"
-       ::console::affiche_resultat "Spectre étalonné sauvé sous ${spectre}_vhel\n"
+       ::console::affiche_resultat "Spectre décalé de $deltal A sauvé sous ${spectre}_vhel\n"
        return ${spectre}_vhel
    } else {
        #::console::affiche_erreur "Usage: spc_corrvhelio profil_raies_étalonné lambda_calage ?[[?RA_d RA_m RA_s DEC_h DEC_m DEC_s?] ?JJ MM AAAA?]?\n\n"
@@ -1394,13 +1675,21 @@ proc spc_rinstrum { args } {
        #set rinstrum3 [ spc_passebas $rinstrum2 10 ]
        #set rinstrum [ spc_smooth2 $rinstrum3 ]
 
-       #-- Meth3 : interpolation polynomiale de degré 1 et 2
+       #-- Meth 6 : filtrage linéaire par morçeaux -> RI 0 spéciale basse résulution
+       #set rinstrum0 [ spc_ajust_piecewiselinear $result_division 60 30 ]
+       #set rinstrum [ spc_passebas $rinstrum0 31 ]
+       # file delete "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+       #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale_br$conf(extension,defaut)"
+
+
+       #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1 
        set rinstrum [ spc_ajustrid1 $result_division ]
        file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale1$conf(extension,defaut)"
+       #-- Meth 4 : interpolation polynomiale de 2 -> RI 2
        set rinstrum [ spc_ajustrid2 $result_division ]
        file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale2$conf(extension,defaut)"
 
-       #-- Meth 4 :
+       #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
        set rinstrum [ spc_ajustripbas $result_division ]
        file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale3$conf(extension,defaut)"
 
