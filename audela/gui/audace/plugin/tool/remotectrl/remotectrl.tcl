@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.10 2007-04-07 19:36:53 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.11 2007-04-11 17:38:46 michelpujol Exp $
 #
 
 #============================================================
@@ -1168,13 +1168,13 @@ proc RmctrlBuildIF { This } {
          if {$rpcid(state)=="server"} {
             button $base.but_home -text $panneau(Rmctrl,wiz_con1,unconnect_backyard) -borderwidth 2 \
                -font $panneau(Rmctrl,font,button) -command {
-                  ::confPad::stopDriver
+                  ::confPad::deletePluginInstance
                   wiz_del_server
                }
          } else {
             button $base.but_home -text $panneau(Rmctrl,wiz_con1,unconnect_home) -borderwidth 2 \
                -font $panneau(Rmctrl,font,button) -command {
-                  ::confPad::stopDriver
+                  ::confPad::deletePluginInstance
                   wiz_del_client
                }
          }
