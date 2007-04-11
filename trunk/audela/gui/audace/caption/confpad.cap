@@ -1,6 +1,6 @@
 #
 # Fichier : confpad.cap
-# Mise a jour $Id: confpad.cap,v 1.7 2007-04-11 17:32:42 michelpujol Exp $
+# Mise a jour $Id: confpad.cap,v 1.8 2007-04-11 18:33:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,7 +17,7 @@ set caption(confpad,ok)             "OK"
 set caption(confpad,appliquer)      "Apply"
 set caption(confpad,fermer)         "Close"
 set caption(confpad,aide)           "Help"
-set caption(confpad,configurer)             "Set up"
+set caption(confpad,configurer)     "Set up"
 
 
 # *************** Version française ***************************
@@ -84,7 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)   "Anvend"
    set caption(confpad,fermer)      "Luk"
    set caption(confpad,aide)        "Hjælp"
-   set caption(confpad,configurer)  "Set up"
+   set caption(confpad,configurer)  "Opsætning"
 }
 
 #=========================================================================
