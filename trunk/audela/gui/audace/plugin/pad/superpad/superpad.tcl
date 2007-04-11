@@ -2,74 +2,54 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.11 2007-02-12 12:39:27 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.12 2007-04-11 17:32:43 michelpujol Exp $
 #
 
-package provide superpad 1.0
 
-#==============================================================
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
-#     run               : affiche la raquette
-#
-#==============================================================
 
 namespace eval ::superpad {
-
-   #==============================================================
-   # Procedures generiques de configuration des drivers
-   #==============================================================
+   package provide superpad 1.0
+   source [ file join [file dirname [info script]] superpad.cap ]
 
    #------------------------------------------------------------
-   #  init (est lance automatiquement au chargement de ce fichier tcl)
-   #     initialise le driver
-   #
-   #  return namespace name
+   #  initPlugin
+   #     initialise le plugin
    #------------------------------------------------------------
-   proc init { } {
-      global audace
-
-      #--- charge le fichier caption
-      source [ file join $audace(rep_plugin) pad superpad superpad.cap ]
-
+   proc initPlugin { } {
       #--- cree les variables dans conf(..) si elles n'existent pas
       initConf
 
       #--- j'initialise les variables widget(..)
       confToWidget
-
-      return [namespace current]
    }
 
    #------------------------------------------------------------
-   #  getDriverType
-   #     retourne le type de driver
+   #  getPluginProperty
+   #     retourne la valeur de la propriete
    #
-   #  return "pad"
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete , ou "" si la propriete n'existe pas
    #------------------------------------------------------------
-   proc getDriverType { } {
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         
+      }
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType 
+   #     retourne le type de plugin 
+   #------------------------------------------------------------
+   proc getPluginType  { } {
       return "pad"
    }
 
    #------------------------------------------------------------
-   #  getLabel
-   #     retourne le label du driver
-   #
-   #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+   #  getPluginTitle 
+   #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getLabel { } {
+   proc getPluginTitle  { } {
       global caption
 
       return "$caption(superpad,titre)"
@@ -197,12 +177,12 @@ namespace eval ::superpad {
    }
 
    #------------------------------------------------------------
-   #  configureDriver
-   #     configure le driver
+   #  createPluginInstance
+   #     cree une intance du plugin
    #
-   #  return nothing
+   #  return rien
    #------------------------------------------------------------
-   proc configureDriver { } {
+   proc createPluginInstance { } {
       global conf
 
       #--- affiche la raquette
@@ -212,13 +192,12 @@ namespace eval ::superpad {
    }
 
    #------------------------------------------------------------
-   #  stopDriver
-   #     sauvegarde les parametres courants
-   #     et libere les ressources occupees
+   #  deletePluginInstance
+   #     suppprime l'instance du plugin 
    #
-   #  return nothing
+   #  return rien
    #------------------------------------------------------------
-   proc stopDriver { } {
+   proc deletePluginInstance { } {
       global conf
 
       if { [ winfo exists .superpad ] } {
@@ -324,7 +303,7 @@ namespace eval ::superpad {
       #--- Destroy the toplevel window with the upper right cross
       #--- Detruit la fenetre principale avec la croix en haut a droite
       bind .superpad <Destroy> {
-         ::superpad::stopDriver
+         ::superpad::deletePluginInstance
       }
 
       # =========================================
@@ -944,7 +923,6 @@ namespace eval ::AlignManager {
       pack $This -in $parentFrame -fill x
 
    }
-
 }
 
 ###################################################################
@@ -1066,8 +1044,6 @@ namespace eval FrameFocusManager {
 ###################################################################
 
 namespace eval DlgSelectStar {
-   variable This
-   variable selectedStar
 
    #
    # DlgSelectStar::run this args
@@ -1186,5 +1162,4 @@ namespace eval DlgSelectStar {
 
 }
 
-::superpad::init
 

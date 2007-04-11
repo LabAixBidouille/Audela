@@ -2,43 +2,18 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.6 2007-02-10 17:45:49 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.7 2007-04-11 17:32:42 michelpujol Exp $
 #
 
-package provide guide 1.0
-
-#
-# Procedures generiques de configuration (obligatoires pour tous les drivers camera, telescope, equipement,...)
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
-#     gotoObject        : affiche la carte de champ de l'objet
-#     launch            : lance GUIDE
-#
 namespace eval guide {
-   global audace
-
-   #==============================================================
-   # Fonctions generiques de gestion des drivers
-   #==============================================================
+   package provide guide 1.0
+   source [ file join [file dirname [info script]] guide.cap ]
 
    #------------------------------------------------------------
-   #  init
-   #     initialise le driver
-   #
-   #  return namespace name
+   #  initPlugin
+   #     initialise le plugin
    #------------------------------------------------------------
-   proc init { } {
+   proc initPlugin { } {
       global audace
 
       if { $::tcl_platform(os) == "Linux" } {
@@ -48,29 +23,36 @@ namespace eval guide {
       } else {
          #--- Je charge les variables d'environnement
          initConf
-         #--- Charge le fichier caption
-         source [ file join $audace(rep_plugin) chart guide guide.cap ]
-         return [ namespace current ]
       }
    }
 
    #------------------------------------------------------------
-   #  getDriverType
-   #     retourne le type de driver
+   #  getPluginProperty
+   #     retourne la valeur de la propriete
    #
-   #  return "catalog"
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete , ou "" si la propriete n'existe pas
    #------------------------------------------------------------
-   proc getDriverType { } {
-      return "catalog"
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         
+      }
    }
 
    #------------------------------------------------------------
-   #  getLabel
-   #     retourne le label du driver
-   #
-   #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+   #  getPluginType 
+   #     retourne le type de plugin 
    #------------------------------------------------------------
-   proc getLabel { } {
+   proc getPluginType  { } {
+      return "chart"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginTitle 
+   #     retourne le label du driver dans la langue de l'utilisateur
+   #------------------------------------------------------------
+   proc getPluginTitle  { } {
       global caption
 
       return "$caption(guide,titre)"
@@ -83,7 +65,6 @@ namespace eval guide {
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
-
       return "guide.htm"
    }
 
@@ -225,7 +206,7 @@ namespace eval guide {
       button $frm.frame1.explore -text "$caption(guide,parcourir)" -width 1 \
          -command {
             set ::guide::widget(dirname) [ tk_chooseDirectory -title "$caption(guide,dossier)" \
-            -initialdir .. -parent $audace(base).confCat ]
+            -initialdir .. -parent $::guide::widget(frm) ]
          }
       pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
@@ -263,13 +244,12 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  configureDriver
-   #     configure le driver
+   #  createPluginInstance
+   #     cree une intance du plugin
    #
    #  return rien
    #------------------------------------------------------------
-   proc configureDriver { } {
-
+   proc createPluginInstance { } {
       #--- Chargement de la librairie guide pour Windows seulement
       if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
          catch { load libgs.dll }
@@ -278,12 +258,12 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver
+   #  deletePluginInstance
+   #     suppprime l'instance du plugin 
    #
    #  return rien
    #------------------------------------------------------------
-   proc stopDriver { } {
+   proc deletePluginInstance { } {
 
       #--- Rien a faire pour guide
       return
@@ -436,10 +416,6 @@ namespace eval guide {
          cd "$pwd0"
       }
       return "0"
-
    }
-
 }
-
-::guide::init
 

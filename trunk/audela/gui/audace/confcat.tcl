@@ -1,21 +1,11 @@
 #
 # Fichier : confcat.tcl
-# Description : Affiche la fenetre de configuration des drivers du type 'catalog'
+# Description : Affiche la fenetre de configuration des plugins du type 'catalog'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.6 2007-02-10 17:43:54 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.7 2007-04-11 17:35:47 michelpujol Exp $
 #
 
 namespace eval ::confCat {
-
-   #--- variables locales de ce namespace
-   array set private {
-      namespace      "confCat"
-      frm            ""
-      driverType     "catalog"
-      driverPattern  ""
-      namespacelist  ""
-      driverlist     ""
-   }
 
    #------------------------------------------------------------
    # init  (est lance automatiquement au chargement de ce fichier tcl)
@@ -27,10 +17,6 @@ namespace eval ::confCat {
       global audace
       global conf
 
-      #---
-      set private(driverPattern) [ file join audace plugin chart * pkgIndex.tcl ]
-      set private(frm)           "$audace(base).confCat"
-
       #--- cree les variables dans conf(..) si elles n'existent pas
       if { ! [ info exists conf(confCat) ] }          { set conf(confCat)          "" }
       if { ! [ info exists conf(confCat,start) ] }    { set conf(confCat,start)    "0" }
@@ -39,7 +25,15 @@ namespace eval ::confCat {
       #--- charge le fichier caption
       source [ file join $audace(rep_caption) confcat.cap ]
 
-      findDriver
+      #--- Initialise les variables locales
+      set private(pluginList) ""
+      set private(pluginTitleList)    ""
+      set private(frm)           "$audace(base).confcat"
+
+
+      #--- j'ajoute le repertoire pouvant contenir des plugins
+      lappend ::auto_path [file join "$::audace(rep_plugin)" chart]
+      findPlugin
 
       #--- configure le driver selectionne par defaut
       #if { $conf(confCat,start) == "1" } {
@@ -106,26 +100,34 @@ namespace eval ::confCat {
       $private(frm).cmd.aide configure -state disabled
 
       #--- j'arrete le driver precedent
-      stopDriver
+      if { "$conf(confCat)" != "" } {
+         #--- je detruis le plugin danc catch , au cas ou il aurait été supprimé
+         #--- depuis sa derniere selections
+         catch { 
+            $conf(confCat)::deletePluginInstance
+         }
+      }
 
       #--- je recupere le label de l'onglet selectionne
       set conf(confCat) [Rnotebook:currentName $private(frm).usr.book ]
       #--- je recupere le namespace correspondant au label
       set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ]
+      set index [lsearch -exact $private(pluginTitleList) $label ]
       if { $index != -1 } {
-         set conf(confCat) [lindex $private(namespacelist) $index]
+         set conf(confCat) [lindex $private(pluginList) $index]
       } else {
          set conf(confCat) ""
       }
 
-      #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
-      foreach name $private(namespacelist) {
-         set drivername [ $name\:\:widgetToConf ]
+      #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
+      foreach name $private(pluginList) {
+         $name\::widgetToConf
       }
 
-      #--- je demarre le driver selectionne
-      configureDriver
+      #--- je demarre le plugin selectionne
+      if { $conf(confCat) != "" } {
+         $conf(confCat)::createPluginInstance
+      }
 
       $private(frm).cmd.ok configure -state normal
       $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -140,31 +142,15 @@ namespace eval ::confCat {
    proc afficheAide { } {
       variable private
       global conf
-      global help
 
-      $private(frm).cmd.ok configure -state disabled
-      $private(frm).cmd.appliquer configure -state disabled
-      $private(frm).cmd.fermer configure -state disabled
-      $private(frm).cmd.aide configure -relief groove -state disabled
-
-      #--- je recupere le label de l'onglet selectionne
-      set private(conf_confCat) [Rnotebook:currentName $private(frm).usr.book ]
-      #--- je recupere le namespace correspondant au label
-      set label "[Rnotebook:currentName $private(frm).usr.book ]"
-      set index [lsearch -exact $private(driverlist) $label ]
+      #--- je recupere l'index de l'onglet selectionne
+      set index [Rnotebook:currentIndex $private(frm).usr.book ]
       if { $index != -1 } {
-         set private(conf_confCat) [lindex $private(namespacelist) $index]
-      } else {
-         set private(conf_confCat) ""
+         set pluginName [lindex $private(pluginList) [expr $index -1]]
+         #--- j'affiche la documentation
+         set pluginHelp [ $pluginName\::getHelp ]
+         ::audace::showHelpPlugin chart $pluginName "$pluginHelp"
       }
-      #--- j'affiche la documentation
-      set driver_doc [ $private(conf_confCat)\:\:getHelp ]
-      ::audace::showHelpPlugin chart $private(conf_confCat) "$driver_doc"
-
-      $private(frm).cmd.ok configure -state normal
-      $private(frm).cmd.appliquer configure -state normal
-      $private(frm).cmd.fermer configure -state normal
-      $private(frm).cmd.aide configure -relief raised -state normal
    }
 
    #------------------------------------------------------------
@@ -173,12 +159,7 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    proc fermer { } {
       variable private
-
       ::confCat::recup_position
-      $private(frm).cmd.ok configure -state disabled
-      $private(frm).cmd.appliquer configure -state disabled
-      $private(frm).cmd.fermer configure -relief groove -state disabled
-      $private(frm).cmd.aide configure -state disabled
       destroy $private(frm)
    }
 
@@ -217,11 +198,6 @@ namespace eval ::confCat {
          return 0
       }
 
-      #--- je mets a jour la liste des drivers
-      if { [findDriver] == 1 } {
-         return 1
-      }
-
       #---
       set private(confCat,position) $conf(confCat,position)
 
@@ -251,11 +227,11 @@ namespace eval ::confCat {
       set mainFrame $private(frm).usr.book
 
       #--- j'affiche les onglets dans la fenetre
-      Rnotebook:create $mainFrame -tabs "$private(driverlist)" -borderwidth 1
+      Rnotebook:create $mainFrame -tabs "$private(pluginTitleList)" -borderwidth 1
 
       #--- je demande a chaque driver d'afficher sa page de config
       set indexOnglet 1
-      foreach name $private(namespacelist) {
+      foreach name $private(pluginList) {
          set drivername [ $name\:\:fillConfigPage [Rnotebook:frame $mainFrame $indexOnglet] ]
          incr indexOnglet
       }
@@ -309,9 +285,9 @@ namespace eval ::confCat {
       variable private
 
       #--- je recupere le label correspondant au namespace
-      set index [lsearch -exact $private(namespacelist) "$name" ]
+      set index [lsearch -exact $private(pluginList) "$name" ]
       if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [lindex  $private(driverlist)  $index]
+         Rnotebook:select $private(frm).usr.book [lindex  $private(pluginTitleList)  $index]
       }
    }
 
@@ -324,21 +300,6 @@ namespace eval ::confCat {
       global conf
       global audace
 
-      if { $conf(confCat) == "" } {
-         #--- pas de driver selectionne par defaut
-         return
-      }
-
-      #--- je charge les drivers si ce n'est pas deja fait
-      if { [llength $private(namespacelist)] <1 } {
-         findDriver
-      }
-
-      #--- je configure le driver
-      catch {
-         $conf(confCat)\:\:configureDriver
-         ::console::affiche_prompt "# $fichier\n"
-      }
 
    }
 
@@ -352,60 +313,61 @@ namespace eval ::confCat {
       global conf
 
       if { "$conf(confCat)" != "" } {
-         catch { $conf(confCat)\:\:stopDriver }
+         catch { 
+            $conf(confCat)::deletePluginInstance
+         }
       }
    }
 
    #------------------------------------------------------------
-   # findDriver
-   # recherche les fichiers .tcl presents dans driverPattern
-   #
-   # conditions :
-   #  - le driver doit retourner un namespace non nul quand on charge son source .tcl
-   #  - le driver doit avoir une procedure getDriverType qui retourne une valeur egale à $driverType
-   #  - le driver doit avoir une procedure getlabel
+   # findPlugin
+   # recherche les fichiers .tcl presents dans plugin/chart
    #
    # si le driver remplit les conditions
-   #    son label est ajouté dans la liste driverlist, et son namespace est ajoute dans namespacelist
+   #    son label est ajouté dans la liste namespaceList, et son namespace est ajoute dans namespacelist
    # sinon le fichier tcl est ignore car ce n'est pas un driver
    #
    # retrun 0 = OK , 1 = error (no driver found)
    #------------------------------------------------------------
-   proc findDriver { } {
+   proc findPlugin { } {
       variable private
       global audace
       global caption
 
       #--- j'initialise les listes vides
-      set private(namespacelist) ""
-      set private(driverlist)    ""
+      set private(pluginList) ""
+      set private(pluginTitleList)    ""
 
-      #--- chargement des differentes fenetres de configuration des drivers
-      set error [catch { glob -nocomplain $private(driverPattern) } filelist ]
-
-      if { "$filelist" == "" } {
-         #--- aucun fichier correct
-         return 1
-      }
-
+      #--- je recherche les fichiers link/*/pkgIndex.tcl
+      set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" chart * pkgIndex.tcl ]
       #--- je recherche les drivers repondant au filtre driverPattern
-      foreach fichier [glob $private(driverPattern)] {
-         uplevel #0 "source $fichier"
-         catch {
-            set catname [ file tail [ file dirname "$fichier" ] ]
-            package require $catname
-            if { [$catname\:\:getDriverType] == $private(driverType) } {
-               set driverlabel "[$catname\:\:getLabel]"
-               #--- si c'est un driver valide, je l'ajoute dans la liste
-               lappend private(namespacelist) $catname
-               lappend private(driverlist) $driverlabel
-               ::console::affiche_prompt "#$caption(confcat,carte) $driverlabel v[package present $catname]\n"
+      foreach pkgIndexFileName $filelist {
+         set catchResult [catch {
+            #--- je recupere le nom du package
+            if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
+               if { $pluginInfo(type)== "chart"} {
+                  #--- je charge le package
+                  package require $pluginInfo(name)
+                  #--- j'initalise le plugin
+                  $pluginInfo(namespace)::initPlugin
+                  set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                  #--- je l'ajoute dans la liste des plugins
+                  lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
+                  lappend private(pluginTitleList) $pluginlabel
+                  ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
+               }
+            } else {
+               ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n" 
             }
-         }
+         } catchMessage]         
+         #--- j'affiche le message d'erreur et je continu la recherche des plugins
+         if { $catchResult !=0 } {
+           console::affiche_erreur "::confCat::findPlugin $::errorInfo\n"
+        }
       }
       ::console::affiche_prompt "\n"
 
-      if { [llength $private(namespacelist)] <1 } {
+      if { [llength $private(pluginList)] <1 } {
          #--- aucun driver correct
          return 1
       } else {

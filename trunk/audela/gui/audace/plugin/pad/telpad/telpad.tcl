@@ -2,76 +2,53 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.9 2007-02-12 12:40:25 robertdelmas Exp $
-#
-
-package provide telpad 1.0
-
-#
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : initialise le namespace (appelee pendant le chargement de ce source)
-#     getDriverName     : retourne le nom du driver
-#     getLabel          : retourne le nom affichable du driver
-#     getHelp           : retourne la documentation htm associee
-#     getDriverType     : retourne le type de driver (pour classer le driver dans le menu principal)
-#     initConf          : initialise les parametres de configuration s'il n'existe pas dans le tableau conf()
-#     fillConfigPage    : affiche la fenetre de configuration de ce driver
-#     confToWidget      : copie le tableau conf() dans les variables des widgets
-#     widgetToConf      : copie les variables des widgets dans le tableau conf()
-#     configureDriver   : configure le driver
-#     stopDriver        : arrete le driver et libere les ressources occupees
-#     isReady           : informe de l'etat de fonctionnement du driver
-#
-# Procedures specifiques a ce driver :
-#     run               : affiche la raquette
-#     fermer            : ferme la raquette
-#     createDialog      : creation de l'interface graphique
+# Mise a jour $Id: telpad.tcl,v 1.10 2007-04-11 17:32:43 michelpujol Exp $
 #
 
 namespace eval telpad {
-
-   #==============================================================
-   # Procedures generiques de configuration des drivers
-   #==============================================================
+   package provide telpad 1.0
+   source [ file join [file dirname [info script]]  telpad.cap ]
 
    #------------------------------------------------------------
-   #  init (est lance automatiquement au chargement de ce fichier tcl)
-   #     initialise le driver
-   #
-   #  return namespace name
+   #  initPlugin
+   #     initialise le plugin
    #------------------------------------------------------------
-   proc init { } {
-      global audace
-
-      #--- Charge le fichier caption
-      source [ file join $audace(rep_plugin) pad telpad telpad.cap ]
-
+   proc initPlugin { } {
+      
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf
 
       #--- J'initialise les variables widget(..)
       confToWidget
-
-      return [namespace current]
    }
 
    #------------------------------------------------------------
-   #  getDriverType
-   #     retourne le type de driver
+   #  getPluginProperty
+   #     retourne la valeur de la propriete
    #
-   #  return "pad"
+   # parametre :
+   #    propertyName : nom de la propriete
+   # return : valeur de la propriete , ou "" si la propriete n'existe pas
    #------------------------------------------------------------
-   proc getDriverType { } {
+   proc getPluginProperty { propertyName } {
+      switch $propertyName {
+         
+      }
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType 
+   #     retourne le type de plugin 
+   #------------------------------------------------------------
+   proc getPluginType  { } {
       return "pad"
    }
 
    #------------------------------------------------------------
-   #  getLabel
-   #     retourne le label du driver
-   #
-   #  return "Titre de l'onglet (dans la langue de l'utilisateur)"
+   #  getPluginTitle 
+   #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getLabel { } {
+   proc getPluginTitle  { } {
       global caption
 
       return "$caption(telpad,titre)"
@@ -162,12 +139,12 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
-   #  configureDriver
-   #     configure le driver
+   #  createPluginInstance
+   #     cree une intance du plugin
    #
-   #  return nothing
+   #  return rien
    #------------------------------------------------------------
-   proc configureDriver { } {
+   proc createPluginInstance { } {
       global audace
 
       #--- Affiche la raquette
@@ -176,15 +153,22 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver et libere les ressources occupees
+   #  deletePluginInstance
+   #     suppprime l'instance du plugin 
    #
-   #  return nothing
+   #  return rien
    #------------------------------------------------------------
-   proc stopDriver { } {
+   proc deletePluginInstance { } {
+      variable This
+      global conf
+
       #--- Ferme la raquette
-      fermer
-      return
+      if { [info exists This] == 1 } {
+         if { [ winfo exists $This ] == 1 } {
+            set conf(telpad,wmgeometry) "[ wm geometry $This ]"
+           destroy $This
+         } 
+      }
    }
 
    #------------------------------------------------------------
@@ -219,21 +203,6 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
-   #  fermer
-   #     fonction appellee lors de l'appui sur la croix
-   #------------------------------------------------------------
-   proc fermer { } {
-      variable This
-      global conf
-
-      if { [ winfo exists $This ] == 1 } {
-         set conf(telpad,wmgeometry) "[ wm geometry $This ]"
-      }
-
-      destroy $This
-   }
-
-   #------------------------------------------------------------
    #  createDialog
    #     creation de l'interface graphique
    #------------------------------------------------------------
@@ -255,7 +224,7 @@ namespace eval telpad {
          wm geometry $This 157x256+657+252
       }
       wm resizable $This 1 1
-      wm protocol $This WM_DELETE_WINDOW ::telpad::fermer
+      wm protocol $This WM_DELETE_WINDOW ::telpad::deletePluginInstance
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -418,6 +387,4 @@ namespace eval telpad {
   }
 
 }
-
-::telpad::init
 
