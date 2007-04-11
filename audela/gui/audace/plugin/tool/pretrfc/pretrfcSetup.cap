@@ -1,0 +1,107 @@
+#
+# Fichier : pretrfcSetup.cap
+# Mise a jour $Id: pretrfcSetup.cap,v 1.1 2007-04-11 18:04:43 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(pretrfcSetup,titre)                     "Preprocessing - Console Messages"
+set caption(pretrfcSetup,texte)                     "Choose whether you want to display messages in the Console:"
+set caption(pretrfcSetup,oui)                       "Yes"
+set caption(pretrfcSetup,non)                       "No"
+
+set caption(pretrfcSetup,ok)                        "OK"
+set caption(pretrfcSetup,appliquer)                 "Apply"
+set caption(pretrfcSetup,fermer)                    "Close"
+set caption(pretrfcSetup,aide)                      "Help"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(pretrfcSetup,titre)                  "Prétraitement - Messages sur la Console"
+   set caption(pretrfcSetup,texte)                  "Vous pouvez choisir ici l'affichage ou non de messages sur la Console :"
+   set caption(pretrfcSetup,oui)                    "Oui"
+   set caption(pretrfcSetup,non)                    "Non"
+
+   set caption(pretrfcSetup,ok)                     "OK"
+   set caption(pretrfcSetup,appliquer)              "Appliquer"
+   set caption(pretrfcSetup,fermer)                 "Fermer"
+   set caption(pretrfcSetup,aide)                   "Aide"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(pretrfcSetup,titre)                  "Pretrattamento - Messaggio sulla Console"
+   set caption(pretrfcSetup,texte)                  "Scegliere se si vuole far apparire messaggi sulla Console:"
+   set caption(pretrfcSetup,oui)                    "Si"
+   set caption(pretrfcSetup,non)                    "No"
+
+   set caption(pretrfcSetup,ok)                     "OK"
+   set caption(pretrfcSetup,appliquer)              "Applica"
+   set caption(pretrfcSetup,fermer)                 "Chiudi"
+   set caption(pretrfcSetup,aide)                   "Aiuto"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(pretrfcSetup,titre)                  "Preproceso - Mensajes de Consola"
+   set caption(pretrfcSetup,texte)                  "Elige si prefieres mostrar mensajes en la Consola:"
+   set caption(pretrfcSetup,oui)                    "Sí"
+   set caption(pretrfcSetup,non)                    "No"
+
+   set caption(pretrfcSetup,ok)                     "OK"
+   set caption(pretrfcSetup,appliquer)              "Aplicar"
+   set caption(pretrfcSetup,fermer)                 "Cerrar"
+   set caption(pretrfcSetup,aide)                   "Ayuda"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(pretrfcSetup,titre)                  "Vorhandlung - Auf die Konsole auftragen"
+   set caption(pretrfcSetup,texte)                  "Sie können hier die Mitteilungen wählen die sie zeigen oder nicht zeigen wollen:"
+   set caption(pretrfcSetup,oui)                    "Ja"
+   set caption(pretrfcSetup,non)                    "Nein"
+
+   set caption(pretrfcSetup,ok)                     "OK"
+   set caption(pretrfcSetup,appliquer)              "Anwenden"
+   set caption(pretrfcSetup,fermer)                 "Schließen"
+   set caption(pretrfcSetup,aide)                   "Hilfe"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(pretrfcSetup,titre)                  "Pré-processamento - Mensagens de Consola"
+   set caption(pretrfcSetup,texte)                  "Indique se prefere mostrar mensagens na Consola:"
+   set caption(pretrfcSetup,oui)                    "Sim"
+   set caption(pretrfcSetup,non)                    "Não"
+
+   set caption(pretrfcSetup,ok)                     "OK"
+   set caption(pretrfcSetup,appliquer)              "Aplicar"
+   set caption(pretrfcSetup,fermer)                 "Fechar"
+   set caption(pretrfcSetup,aide)                   "Ajuda"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(pretrfcSetup,titre)                  "Preprocessing - Console Messages"
+   set caption(pretrfcSetup,texte)                  "Choose whether you want to display messages in the Console:"
+   set caption(pretrfcSetup,oui)                    "Yes"
+   set caption(pretrfcSetup,non)                    "No"
+
+   set caption(pretrfcSetup,ok)                     "OK"
+   set caption(pretrfcSetup,appliquer)              "Anvend"
+   set caption(pretrfcSetup,fermer)                 "Luk"
+   set caption(pretrfcSetup,aide)                   "Hjælp"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
