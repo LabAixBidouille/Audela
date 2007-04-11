@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.7 2007-01-27 14:49:57 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.8 2007-04-11 18:06:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,6 +16,8 @@ set caption(pretrfc,titre)                      "Preprocess."
 set caption(pretrfc,titrelong)                  "Automatic preprocessing"
 set caption(pretrfc,lance)                      "Run"
 set caption(pretrfc,help,titre)                 "Help For This Tool"
+set caption(pretrfc,aide)                       "Help"
+set caption(pretrfc,configuration)              "Setup"
 set caption(pretrfc,pbouvfich)                  "Unable to open the log file.\
   \nChange the tool now and check\nyou can access the image folder."
 set caption(pretrfc,ouvsess)                    "----- New Preprocessing Session (rev %s)\n"
@@ -173,6 +175,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,titrelong)               "Prétraitement automatique"
    set caption(pretrfc,lance)                   "Lance"
    set caption(pretrfc,help,titre)              "Aide pour cet outil"
+   set caption(pretrfc,aide)                    "Aide"
+   set caption(pretrfc,configuration)           "Configuration"
    set caption(pretrfc,pbouvfich)               "Impossible d'ouvrir le fichier \
       log.\nChangez immédiatement d'outil, puis vérifiez\nque \
       le répertoire des images est accessible."
@@ -333,6 +337,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,titrelong)               "Pretrattamento automatico"
    set caption(pretrfc,lance)                   "Esegui"
    set caption(pretrfc,help,titre)              "Aiuto per questo tool"
+   set caption(pretrfc,aide)                    "Aiuto"
+   set caption(pretrfc,configuration)           "Configurazione"
    set caption(pretrfc,pbouvfich)               "Impossibile aprire il file di \
       log.\nCambiare l'accessorio e verificare\nche \
       la cartella delle immagini sia accessibile."
@@ -492,6 +498,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,titrelong)               "Preproceso automático"
    set caption(pretrfc,lance)                   "Empezar"
    set caption(pretrfc,help,titre)              "Ayuda para esta herramienta"
+   set caption(pretrfc,aide)                    "Ayuda"
+   set caption(pretrfc,configuration)           "Configuración"
    set caption(pretrfc,pbouvfich)               "No se puede abrir el fichero de log.\n \
       Cambie la herramienta ahora y compruebe que\nse puede \
       acceder a la carpeta de imágenes."
@@ -652,6 +660,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,titrelong)               "Automatische Vorhandlung"
    set caption(pretrfc,lance)                   "Anlässt"
    set caption(pretrfc,help,titre)              "Hilfe für dieses Gerät"
+   set caption(pretrfc,aide)                    "Hilfe"
+   set caption(pretrfc,configuration)           "Konfiguration"
    set caption(pretrfc,pbouvfich)               "Log. Datei unmöglich zu öffnen.\n \
       Erst das Gerät wechseln, und dann kontrollieren\ndass \
       das Bild Register zugänglich ist."
@@ -812,6 +822,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,titrelong)               "Pré-processamento automático"
    set caption(pretrfc,lance)                   "Executar"
    set caption(pretrfc,help,titre)              "Ajuda para esta ferramenta"
+   set caption(pretrfc,aide)                    "Ajuda"
+   set caption(pretrfc,configuration)           "Configuração"
    set caption(pretrfc,pbouvfich)               "Impossível abrir o ficheiro \
       log.\nAltere imediatamente a ferramenta, e verifique\nse \
       o directório das imagens está acessível."
@@ -972,6 +984,8 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,titrelong)               "Automatic preprocessing"
    set caption(pretrfc,lance)                   "Run"
    set caption(pretrfc,help,titre)              "Help For This Tool"
+   set caption(pretrfc,aide)                    "Help"
+   set caption(pretrfc,configuration)           "Setup"
    set caption(pretrfc,pbouvfich)               "Unable to open the log file.\
       \nChange the tool now and check\nyou can access the image folder."
    set caption(pretrfc,ouvsess)                 "----- New Preprocessing Session (rev %s)\n"
