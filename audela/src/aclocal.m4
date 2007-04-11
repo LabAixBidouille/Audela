@@ -2682,7 +2682,9 @@ AC_DEFUN([GCC_STACK_PROTECT_DISABLE_CC],[
     AC_MSG_CHECKING([whether ${CC} accepts -fno-stack-protector])
     ssp_old_cflags="$CFLAGS"
     CFLAGS="$CFLAGS -fno-stack-protector"
+    AC_LANG_PUSH([C])
     AC_TRY_COMPILE(,,, ssp_cc=no)
+    AC_LANG_POP([C])
     echo $ssp_cc
     if test "X$ssp_cc" = "Xno"; then
       CFLAGS="$ssp_old_cflags"
@@ -2696,7 +2698,9 @@ AC_DEFUN([GCC_STACK_PROTECT_DISABLE_CXX],[
     AC_MSG_CHECKING([whether ${CXX} accepts -fno-stack-protector])
     ssp_old_cxxflags="$CXXFLAGS"
     CXXFLAGS="$CXXFLAGS -fno-stack-protector"
+    AC_LANG_PUSH([C++])
     AC_TRY_COMPILE(,,, ssp_cxx=no)
+    AC_LANG_POP([C++])
     echo $ssp_cxx
     if test "X$ssp_cxx" = "Xno"; then
 	CXXFLAGS="$ssp_old_cxxflags"
