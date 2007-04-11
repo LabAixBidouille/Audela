@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.17 2007-04-11 21:32:19 michelpujol Exp $
+# Mise a jour $Id: spectro.tcl,v 1.18 2007-04-11 22:00:24 robertdelmas Exp $
 #
 
 #============================================================
@@ -69,7 +69,7 @@ proc ::spectro::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
    #--- charge le source de la fenetre de spcaudace
-   uplevel #0 source [ file join $audace(rep_plugin) tool spectro spcaudace spc_gui.tcl ]
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool spectro spcaudace spc_gui.tcl ]\""
 }
 
 #------------------------------------------------------------
