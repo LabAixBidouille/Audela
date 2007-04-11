@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.7 2007-04-07 20:29:53 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.8 2007-04-11 18:05:26 robertdelmas Exp $
 #
 
 #============================================================
@@ -30,6 +30,9 @@ namespace eval ::pretraitFC {
 
       # Lecture du fichier de configuration
       ::pretraitFC::RecuperationParametres
+
+      # Initialisation des variables de la boite de configuration
+      ::pretrfcSetup::confToWidget
 
       # Gestion du fichier de log
       # Creation du nom de fichier log
@@ -113,7 +116,6 @@ namespace eval ::pretraitFC {
       switch $propertyName {
          function     { return "utility" }
          subfunction1 { return "preprocessing" }
-         console      { return 1 }
       }
    }
 #***** Fin de la procedure getPluginProperty**************************
@@ -126,6 +128,11 @@ namespace eval ::pretraitFC {
 
 #***** Procedure createPluginInstance ********************************
    proc createPluginInstance { { in "" } { visuNo 1 } } {
+      global audace
+
+      #--- Chargement des fichiers auxiliaires
+      uplevel #0 "source \"[ file join $audace(rep_plugin) tool pretrfc pretrfcSetup.tcl ]\""
+      #--- Mise en place de l'interface graphique
       createPanel $in.pretraitFC
    }
 #***** Fin de la procedure createPluginInstance **********************
@@ -245,6 +252,8 @@ namespace eval ::pretraitFC {
       if { ! [ info exists conf_pt_fc(cosmPrech) ] }       { set conf_pt_fc(cosmPrech)       "1" }
       if { ! [ info exists conf_pt_fc(NrContientPrech) ] } { set conf_pt_fc(NrContientPrech) "1" }
       if { ! [ info exists conf_pt_fc(FichScript) ] }      { set conf_pt_fc(FichScript)      "correction" }
+      # Creation des variables de la boite de configuration si elles n'existent pas
+      ::pretrfcSetup::initToConf
    }
 #***** Fin de la procedure RecuperationParametres ********************
 
@@ -1776,7 +1785,7 @@ namespace eval ::pretraitFC {
 # messages (dans la console, le fichier log, etc...)
    proc Message { niveau args } {
       variable This
-      global caption conf
+      global caption panneau
 
       switch -exact -- $niveau {
          console {
@@ -1791,10 +1800,7 @@ namespace eval ::pretraitFC {
             flush $::pretraitFC::log_id
          }
          consolog {
-            if { [ info exists conf(messages_console_pretrfc) ] == "0" } {
-               set conf(messages_console_pretrfc) "1"
-            }
-            if { $conf(messages_console_pretrfc) == "1" } {
+            if { $panneau(pretrfc,messages) == "1" } {
                ::console::disp [eval [concat {format} $args]]
                update idletasks
             }
@@ -2215,6 +2221,22 @@ proc creeFenetrePrFC { } {
          pack $audace(base).fenetrePretr.et6.ligne3.rad3 -side left
       pack $audace(base).fenetrePretr.et6.ligne3 -side top -fill x
    pack $audace(base).fenetrePretr.et6 -side top -fill x
+
+   #--- Trame pour la configuration et l'aide
+   frame $audace(base).fenetrePretr.but -borderwidth 2 -relief groove
+      #--- Bouton Configuration
+      button $audace(base).fenetrePretr.but.config -borderwidth 2 -width 15 -text $caption(pretrfc,configuration) \
+         -font $audace(font,arial_10_n) -command {
+            ::pretrfcSetup::run $audace(base).pretrfcSetup
+         }
+      pack $audace(base).fenetrePretr.but.config -side left -anchor sw -in $audace(base).fenetrePretr.but
+      #--- Bouton Aide
+      button $audace(base).fenetrePretr.but.aide -borderwidth 2 -width 5 -text $caption(pretrfc,aide) \
+         -font $audace(font,arial_10_n) -command {
+            ::audace::showHelpPlugin tool pretrfc pretrfc.htm
+         }
+      pack $audace(base).fenetrePretr.but.aide -side right -anchor sw -in $audace(base).fenetrePretr.but
+   pack $audace(base).fenetrePretr.but -side top -fill x
 
    focus $audace(base).fenetrePretr
 
