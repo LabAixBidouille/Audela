@@ -2,7 +2,7 @@
 # Fichier : telshift_go.tcl
 # Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Mise a jour $Id: telshift_go.tcl,v 1.4 2007-04-07 00:38:36 robertdelmas Exp $
+# Mise a jour $Id: telshift_go.tcl,v 1.5 2007-04-12 20:30:00 robertdelmas Exp $
 #
 
 #============================================================
@@ -62,7 +62,10 @@ proc ::ImagerDeplacer::initPlugin{ } {
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::ImagerDeplacer::createPluginInstance { { in "" } { visuNo 1 } } {
-   ::ImagerDeplacer::createPanel $in.imagerdeplacer
+   global audace
+
+   #--- Charge le source de la fenetre Imager & deplacer
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool telshift telshift.tcl ]\""
 }
 
 #------------------------------------------------------------
@@ -74,32 +77,12 @@ proc ::ImagerDeplacer::deletePluginInstance { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::createPanel
-#    prepare la creation de la fenetre de l'outil
-#------------------------------------------------------------
-proc ::ImagerDeplacer::createPanel { this } {
-   variable This
-   global caption panneau
-
-   #--- Initialisation du nom de la fenetre
-   set This $this
-   #--- Initialisation des captions
-   set panneau(ImagerDeplacer,titre)  "$caption(telshift_go,telshift)"
-   set panneau(ImagerDeplacer,aide)   "$caption(telshift_go,help_titre)"
-   set panneau(ImagerDeplacer,titre1) "$caption(telshift_go,acquisition)"
-   set panneau(ImagerDeplacer,acq)    "$caption(telshift_go,acq)"
-   #--- Construction de l'interface
-   ::ImagerDeplacer::ImagerDeplacerBuildIF $This
-}
-
-#------------------------------------------------------------
 # ::ImagerDeplacer::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::ImagerDeplacer::startTool { visuNo } {
-   variable This
-
-   pack $This -side left -fill y
+   #--- J'ouvre la fenetre
+   ::ImagerDeplacer::createPanel
 }
 
 #------------------------------------------------------------
@@ -107,46 +90,6 @@ proc ::ImagerDeplacer::startTool { visuNo } {
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::ImagerDeplacer::stopTool { visuNo } {
-   variable This
-
-   pack forget $This
-}
-
-#------------------------------------------------------------
-# ::ImagerDeplacer::ImagerDeplacerBuildIF
-#    cree la fenetre de l'outil
-#------------------------------------------------------------
-proc ::ImagerDeplacer::ImagerDeplacerBuildIF { This } {
-   global audace panneau
-
-   frame $This -borderwidth 2 -relief groove
-
-      #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
-
-         #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(ImagerDeplacer,titre) \
-            -command "::audace::showHelpPlugin tool telshift telshift.htm"
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(ImagerDeplacer,aide)
-
-      pack $This.fra1 -side top -fill x
-
-      #--- Frame du bouton
-      frame $This.fra2 -borderwidth 1 -relief groove
-
-         #--- Label du bouton
-         label $This.fra2.lab1 -borderwidth 0 -text $panneau(ImagerDeplacer,titre1)
-         pack $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -side top
-
-         #--- Bouton AcqVisu
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(ImagerDeplacer,acq) \
-            -command { source [ file join $audace(rep_plugin) tool telshift telshift.tcl ] }
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 10 -ipadx 5 -ipady 5
-
-      pack $This.fra2 -side top -fill x
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+   #--- Rien a faire, car la fenetre est fermee par l'utilisateur
 }
 
