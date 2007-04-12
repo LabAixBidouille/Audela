@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.18 2007-04-11 22:00:24 robertdelmas Exp $
+# Mise a jour $Id: spectro.tcl,v 1.19 2007-04-12 17:46:12 robertdelmas Exp $
 #
 
 #============================================================
@@ -52,12 +52,13 @@ proc ::spectro::getPluginProperty { propertyName } {
 #------------------------------------------------------------
 # ::spectro::initPlugin
 #    initialise le plugin au demarrage de audace
-#    eviter de chager trop de choses (epnser a ceux qui n'utilisent pas spcaudace)
+#    eviter de charger trop de choses (penser a ceux qui n'utilisent pas spcaudace)
 #------------------------------------------------------------
 proc ::spectro::initPlugin { tkbase } {
    global audace
-   #--- Chargement des fonctions de spectrographie
-   #--- pour l'utilisation depuis la console sans ouvrir la fentre de spcaudace
+
+   #--- Chargement des fonctions de spectrographie pour l'utilisation
+   #--- depuis la console sans ouvrir la fenetre de spcaudace
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool spectro spcaudace.tcl ]\""
 }
 
@@ -68,7 +69,7 @@ proc ::spectro::initPlugin { tkbase } {
 proc ::spectro::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
-   #--- charge le source de la fenetre de spcaudace
+   #--- Charge le source de la fenetre de spcaudace
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool spectro spcaudace spc_gui.tcl ]\""
 }
 
@@ -77,8 +78,8 @@ proc ::spectro::createPluginInstance { { in "" } { visuNo 1 } } {
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::spectro::deletePluginInstance { visuNo } {
-   #--- rien a faire pour l'instant
-   #car spcaudace ne peut pas etre supprime de la memoire
+   #--- Rien a faire pour l'instant
+   #--- Car spcaudace ne peut pas etre supprime de la memoire
 }
 
 #------------------------------------------------------------
@@ -86,8 +87,7 @@ proc ::spectro::deletePluginInstance { visuNo } {
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::spectro::startTool { visuNo } {
-
-   #--- j'ouvre la fenetre 
+   #--- J'ouvre la fenetre
    spc_winini
 }
 
@@ -96,6 +96,6 @@ proc ::spectro::startTool { visuNo } {
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::spectro::stopTool { visuNo } {
-   #--- rien a faire , car la fenetre est fermee par l'utilsateur
+   #--- Rien a faire, car la fenetre est fermee par l'utilisateur
 }
 
