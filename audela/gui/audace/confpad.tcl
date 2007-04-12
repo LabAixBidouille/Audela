@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.8 2007-04-11 17:35:47 michelpujol Exp $
+# Mise a jour $Id: confpad.tcl,v 1.9 2007-04-12 21:43:30 michelpujol Exp $
 #
 
 namespace eval ::confPad {
@@ -46,13 +46,20 @@ proc ::confPad::init { } {
 
 #------------------------------------------------------------
 #  getLabel
-#     retourne le titre de la fenetre
-#
-#  return "Titre de la fenetre de choix (dans la langue de l'utilisateur)"
+#     retourne le titre de la fenetre dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::confPad::getLabel { } {
    global caption
    return "$caption(confpad,config)"
+}
+
+#------------------------------------------------------------
+#  getCurrentPad
+#     retourne le nom de la raquette courante
+#------------------------------------------------------------
+proc ::confPad::getCurrentPad { } {
+   global conf
+   return $conf(confPad)
 }
 
 #------------------------------------------------------------
@@ -427,18 +434,6 @@ proc ::confPad::findPlugin { } {
       return 0
    }
 }
-
-proc ::confPad::getLabelPad { } {
-   global audace conf
-
-   if { $conf(confPad) != "" } {
-      return [$conf(confPad)::getPluginTitle]
-   } else {
-      return ""
-   }
-}
-
-
 
 #--- connexion au demarrage du driver selectionne par defaut
 ::confPad::init
