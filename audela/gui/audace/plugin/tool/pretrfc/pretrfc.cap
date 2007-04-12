@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.8 2007-04-11 18:06:13 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.9 2007-04-12 17:43:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,10 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(pretrfc,menu)                       "Preprocessing"
-set caption(pretrfc,titre)                      "Preprocess."
 set caption(pretrfc,titrelong)                  "Automatic preprocessing"
-set caption(pretrfc,lance)                      "Run"
-set caption(pretrfc,help,titre)                 "Help For This Tool"
 set caption(pretrfc,aide)                       "Help"
 set caption(pretrfc,configuration)              "Setup"
 set caption(pretrfc,pbouvfich)                  "Unable to open the log file.\
@@ -171,10 +168,7 @@ set caption(pretrfc,ModePLUOpt)                 "# Calculation Mode: Dark Frame 
 if { [ string compare $langage "french" ] == 0 } {
 
    set caption(pretrfc,menu)                    "Prétraitement"
-   set caption(pretrfc,titre)                   "Prétraitement"
    set caption(pretrfc,titrelong)               "Prétraitement automatique"
-   set caption(pretrfc,lance)                   "Lance"
-   set caption(pretrfc,help,titre)              "Aide pour cet outil"
    set caption(pretrfc,aide)                    "Aide"
    set caption(pretrfc,configuration)           "Configuration"
    set caption(pretrfc,pbouvfich)               "Impossible d'ouvrir le fichier \
@@ -333,10 +327,7 @@ if { [ string compare $langage "french" ] == 0 } {
 } elseif { [ string compare $langage "italian" ] == 0 } {
 
    set caption(pretrfc,menu)                    "Pretrattamento"
-   set caption(pretrfc,titre)                   "Pretrattamento"
    set caption(pretrfc,titrelong)               "Pretrattamento automatico"
-   set caption(pretrfc,lance)                   "Esegui"
-   set caption(pretrfc,help,titre)              "Aiuto per questo tool"
    set caption(pretrfc,aide)                    "Aiuto"
    set caption(pretrfc,configuration)           "Configurazione"
    set caption(pretrfc,pbouvfich)               "Impossibile aprire il file di \
@@ -494,10 +485,7 @@ if { [ string compare $langage "french" ] == 0 } {
 } elseif { [ string compare $langage "spanish" ] == 0 } {
 
    set caption(pretrfc,menu)                    "Preproceso"
-   set caption(pretrfc,titre)                   "Preproceso"
    set caption(pretrfc,titrelong)               "Preproceso automático"
-   set caption(pretrfc,lance)                   "Empezar"
-   set caption(pretrfc,help,titre)              "Ayuda para esta herramienta"
    set caption(pretrfc,aide)                    "Ayuda"
    set caption(pretrfc,configuration)           "Configuración"
    set caption(pretrfc,pbouvfich)               "No se puede abrir el fichero de log.\n \
@@ -656,10 +644,7 @@ if { [ string compare $langage "french" ] == 0 } {
 } elseif { [ string compare $langage "german" ] == 0 } {
 
    set caption(pretrfc,menu)                    "Vorhandlung"
-   set caption(pretrfc,titre)                   "Vorhandlung"
    set caption(pretrfc,titrelong)               "Automatische Vorhandlung"
-   set caption(pretrfc,lance)                   "Anlässt"
-   set caption(pretrfc,help,titre)              "Hilfe für dieses Gerät"
    set caption(pretrfc,aide)                    "Hilfe"
    set caption(pretrfc,configuration)           "Konfiguration"
    set caption(pretrfc,pbouvfich)               "Log. Datei unmöglich zu öffnen.\n \
@@ -818,10 +803,7 @@ if { [ string compare $langage "french" ] == 0 } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(pretrfc,menu)                    "Pré-processamento"
-   set caption(pretrfc,titre)                   "Pré-processamento"
    set caption(pretrfc,titrelong)               "Pré-processamento automático"
-   set caption(pretrfc,lance)                   "Executar"
-   set caption(pretrfc,help,titre)              "Ajuda para esta ferramenta"
    set caption(pretrfc,aide)                    "Ajuda"
    set caption(pretrfc,configuration)           "Configuração"
    set caption(pretrfc,pbouvfich)               "Impossível abrir o ficheiro \
@@ -980,10 +962,7 @@ if { [ string compare $langage "french" ] == 0 } {
 } elseif { [ string compare $langage "danish" ] == 0 } {
 
    set caption(pretrfc,menu)                    "Preprocessing"
-   set caption(pretrfc,titre)                   "Preprocess."
    set caption(pretrfc,titrelong)               "Automatic preprocessing"
-   set caption(pretrfc,lance)                   "Run"
-   set caption(pretrfc,help,titre)              "Help For This Tool"
    set caption(pretrfc,aide)                    "Help"
    set caption(pretrfc,configuration)           "Setup"
    set caption(pretrfc,pbouvfich)               "Unable to open the log file.\
