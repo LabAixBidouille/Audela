@@ -168,7 +168,7 @@ mode release.
 		AudeLA. Les deux options servent a indiquer les repertoires ou trouver
 		chacun de ces deux fichiers. 
 		Utilisez la commande find / | grep "tclConfig" pour localiser les fichiers.
-	--with-gsl-prefix={path}
+	--with-gsl-exec-prefix={path}
 		La librairie GSL est recherchee a partir des emplacements standard.
 		Cette option permet de preciser le prefix d'installation de GSL le cas
 		echeant. Cette librairie n'est pas necessaire : Si elle est absente, 
