@@ -1,6 +1,6 @@
 #
 # Fichier : spectro.cap
-# Mise a jour $Id: spectro.cap,v 1.11 2007-03-12 19:34:20 robertdelmas Exp $
+# Mise a jour $Id: spectro.cap,v 1.12 2007-04-12 17:43:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,11 +11,9 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(spectro,titre,outil)                        "Spectroscopy"
-set caption(spectro,help,titre)                         "Help For This Tool"
-set caption(spectro,configure)                          "Set up"
 set caption(spectro,spc_audace)                         "SpcAud'ACE"
 
+set caption(spectro,configure)                          "Set up"
 set caption(spectro,configure,titre)                    "Spectroscopy: Setup"
 set caption(spectro,configure,titre2)                   "Spectroscopy: Setup"
 set caption(spectro,configure,load_button)              "Load Setup"
@@ -38,11 +36,9 @@ set caption(spectro,configure,config,comment)           "Comments"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "Spectroscopie"
-   set caption(spectro,help,titre)                      "Aide pour cet outil"
-   set caption(spectro,configure)                       "Configurer"
    set caption(spectro,spc_audace)                      "SpcAud'ACE"
 
+   set caption(spectro,configure)                       "Configurer"
    set caption(spectro,configure,titre)                 "Spectroscopie : Configuration"
    set caption(spectro,configure,titre2)                "Spectroscopie : Configuration"
    set caption(spectro,configure,load_button)           "Charge la configuration"
@@ -65,11 +61,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "Spettroscopia"
-   set caption(spectro,help,titre)                      "Aiuto per questo tool"
-   set caption(spectro,configure)                       "Configurare"
    set caption(spectro,spc_audace)                      "SpcAud'ACE"
 
+   set caption(spectro,configure)                       "Configurare"
    set caption(spectro,configure,titre)                 "Spettroscopia: Configurazione"
    set caption(spectro,configure,titre2)                "Spettroscopia: Configurazione"
    set caption(spectro,configure,load_button)           "Caricamento della configurazione"
@@ -92,11 +86,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "Espectroscopia"
-   set caption(spectro,help,titre)                      "Ayuda para esta herramienta"
-   set caption(spectro,configure)                       "Configurar"
    set caption(spectro,spc_audace)                      "SpcAud'ACE"
 
+   set caption(spectro,configure)                       "Configurar"
    set caption(spectro,configure,titre)                 "Espectroscopia: Configuración"
    set caption(spectro,configure,titre2)                "Espectroscopia: Configuración"
    set caption(spectro,configure,load_button)           "Cargar la configuración"
@@ -119,11 +111,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "Spektroskopie"
-   set caption(spectro,help,titre)                      "Hilfe für dieses Gerät"
-   set caption(spectro,configure)                       "Konfigurieren"
    set caption(spectro,spc_audace)                      "SpcAud'ACE"
 
+   set caption(spectro,configure)                       "Konfigurieren"
    set caption(spectro,configure,titre)                 "Spektroskopie: Konfiguration"
    set caption(spectro,configure,titre2)                "Spektroskopie: Konfiguration"
    set caption(spectro,configure,load_button)           "Konfiguration laden"
@@ -146,11 +136,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "Espectroscopia"
-   set caption(spectro,help,titre)                      "Ajuda para esta ferramenta"
-   set caption(spectro,configure)                       "Configurar"
    set caption(spectro,spc_audace)                      "SpcAud'ACE"
 
+   set caption(spectro,configure)                       "Configurar"
    set caption(spectro,configure,titre)                 "Espectroscopia : Configuração"
    set caption(spectro,configure,titre2)                "Espectroscopia : Configuração"
    set caption(spectro,configure,load_button)           "Carregar a configuração"
@@ -173,11 +161,9 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(spectro,titre,outil)                     "Spectroscopy"
-   set caption(spectro,help,titre)                      "Help For This Tool"
-   set caption(spectro,configure)                       "Set up"
    set caption(spectro,spc_audace)                      "SpcAud'ACE"
 
+   set caption(spectro,configure)                       "Set up"
    set caption(spectro,configure,titre)                 "Spectroscopy: Setup"
    set caption(spectro,configure,titre2)                "Spectroscopy: Setup"
    set caption(spectro,configure,load_button)           "Load Setup"
