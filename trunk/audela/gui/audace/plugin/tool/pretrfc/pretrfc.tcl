@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.9 2007-04-12 17:44:56 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.10 2007-04-12 21:57:38 robertdelmas Exp $
 #
 
 #============================================================
@@ -89,7 +89,7 @@ namespace eval ::pretraitFC {
 
       # Recuperation de la position de la fenetre de reglages
       ::pretraitFC::recup_position
-      set conf_pt_fc(fenetrePretr,position) $panneau(pretraitFC,position)
+      set conf_pt_fc(position) $panneau(pretraitFC,position)
       # Sauvegarde des parametres dans le fichier de config
       ::pretraitFC::SauvegardeParametres
       # Fermeture de la fenetre de pretraitement
@@ -173,9 +173,9 @@ namespace eval ::pretraitFC {
          DemarragePretraitFC
 
          #---
-         if { ! [ info exists conf_pt_fc(fenetrePretr,position) ] } { set conf_pt_fc(fenetrePretr,position) "+100+5" }
+         if { ! [ info exists conf_pt_fc(position) ] } { set conf_pt_fc(position) "+100+5" }
 
-         set panneau(pretraitFC,position) $conf_pt_fc(fenetrePretr,position)
+         set panneau(pretraitFC,position) $conf_pt_fc(position)
 
          if { [ info exists panneau(pretraitFC,geometry) ] } {
             set deb [ expr 1 + [ string first + $panneau(pretraitFC,geometry) ] ]
@@ -1783,7 +1783,7 @@ namespace eval ::pretraitFC {
             flush $::pretraitFC::log_id
          }
          consolog {
-            if { $panneau(pretrfc,messages) == "1" } {
+            if { $panneau(pretraitFC,messages) == "1" } {
                ::console::disp [eval [concat {format} $args]]
                update idletasks
             }
