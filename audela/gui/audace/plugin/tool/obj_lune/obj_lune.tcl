@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.6 2007-03-25 13:28:50 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.7 2007-04-12 17:47:47 robertdelmas Exp $
 #
 
 global audace
@@ -111,8 +111,11 @@ namespace eval obj_Lune {
    #
    proc fermer { } {
       variable This
+      global conf
       global obj_lune
 
+      #--- Recuperation de la position et de la dimension de la fenetre
+      set conf(obj_lune,wmgeometry) [ wm geometry $This ]
       #--- Destruction des images specifiques a cet outil
       catch {
          image delete imageflag2a
@@ -128,6 +131,7 @@ namespace eval obj_Lune {
    proc createDialog { } {
       variable This
       global caption
+      global conf
       global obj_lune
 
       #--- Initialisation
@@ -141,14 +145,14 @@ namespace eval obj_Lune {
          focus $This.cmd.goto
          return
       }
+
       toplevel $This
-      if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $This 740x475+10+10
-         wm minsize $This 740 475
+      if { [ info exists conf(obj_lune,wmgeometry) ] == "1" } {
+         wm geometry $This $conf(obj_lune,wmgeometry)
       } else {
          wm geometry $This 620x455+10+10
-         wm minsize $This 620 455
       }
+      wm minsize $This 620 455
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(obj_lune,titre)"
