@@ -2,7 +2,7 @@
 # Fichier : pretrfcSetup.tcl
 # Description : Choisir l'affichage ou non de messages sur la Console
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.2 2007-04-11 18:10:30 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.tcl,v 1.3 2007-04-12 21:57:58 robertdelmas Exp $
 #
 
 namespace eval pretrfcSetup {
@@ -26,7 +26,7 @@ namespace eval pretrfcSetup {
       global conf_pt_fc
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists conf_pt_fc(pretrfc,messages) ] } { set conf_pt_fc(pretrfc,messages) "1" }
+      if { ! [ info exists conf_pt_fc(messages) ] } { set conf_pt_fc(messages) "1" }
    }
 
    #
@@ -37,7 +37,7 @@ namespace eval pretrfcSetup {
       global conf_pt_fc panneau
 
       #--- confToWidget
-      set panneau(pretrfc,messages) $conf_pt_fc(pretrfc,messages)
+      set panneau(pretraitFC,messages) $conf_pt_fc(messages)
    }
 
    #
@@ -146,12 +146,12 @@ namespace eval pretrfcSetup {
 
          radiobutton $This.radio2 -anchor w -highlightthickness 0 \
             -text "$caption(pretrfcSetup,non)" -value 0 \
-            -variable panneau(pretrfc,messages)
+            -variable panneau(pretraitFC,messages)
          pack $This.radio2 -in $This.frame7 -side right -padx 5 -pady 5 -ipady 0
 
          radiobutton $This.radio3 -anchor w -highlightthickness 0 \
             -text "$caption(pretrfcSetup,oui)" -value 1 \
-            -variable panneau(pretrfc,messages)
+            -variable panneau(pretraitFC,messages)
          pack $This.radio3 -in $This.frame7 -side right -padx 5 -pady 5 -ipady 0
       } else {
          label $This.lab4 -text ""
@@ -203,7 +203,7 @@ namespace eval pretrfcSetup {
    proc widgetToConf { } {
       global conf_pt_fc panneau
 
-      set conf_pt_fc(pretrfc,messages) $panneau(pretrfc,messages)
+      set conf_pt_fc(messages) $panneau(pretraitFC,messages)
    }
 }
 
