@@ -2,14 +2,14 @@
 # Fichier : telshift_go.tcl
 # Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Mise a jour $Id: telshift_go.tcl,v 1.5 2007-04-12 20:30:00 robertdelmas Exp $
+# Mise a jour $Id: telshift_go.tcl,v 1.6 2007-04-12 21:43:33 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace ImagerDeplacer
+# Declaration du namespace telshift
 #    initialise le namespace
 #============================================================
-namespace eval ::ImagerDeplacer {
+namespace eval ::telshift {
    package provide telshift 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -17,32 +17,32 @@ namespace eval ::ImagerDeplacer {
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::getPluginTitle
+# ::telshift::getPluginTitle
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::ImagerDeplacer::getPluginTitle { } {
+proc ::telshift::getPluginTitle { } {
    global caption
 
    return "$caption(telshift_go,telshift)"
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::getPluginType
+# ::telshift::getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
-proc ::ImagerDeplacer::getPluginType { } {
+proc ::telshift::getPluginType { } {
    return "tool"
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::getPluginProperty
+# ::telshift::getPluginProperty
 #    retourne la valeur de la propriete
 #
 # parametre :
 #    propertyName : nom de la propriete
 # return : valeur de la propriete ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::ImagerDeplacer::getPluginProperty { propertyName } {
+proc ::telshift::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "acquisition" }
       subfunction1 { return "aiming" }
@@ -50,18 +50,18 @@ proc ::ImagerDeplacer::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::initPlugin
+# ::telshift::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::ImagerDeplacer::initPlugin{ } {
+proc ::telshift::initPlugin{ } {
 
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::createPluginInstance
+# ::telshift::createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
-proc ::ImagerDeplacer::createPluginInstance { { in "" } { visuNo 1 } } {
+proc ::telshift::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
    #--- Charge le source de la fenetre Imager & deplacer
@@ -69,27 +69,27 @@ proc ::ImagerDeplacer::createPluginInstance { { in "" } { visuNo 1 } } {
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::deletePluginInstance
+# ::telshift::deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
-proc ::ImagerDeplacer::deletePluginInstance { visuNo } {
+proc ::telshift::deletePluginInstance { visuNo } {
 
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::startTool
+# ::telshift::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
-proc ::ImagerDeplacer::startTool { visuNo } {
+proc ::telshift::startTool { visuNo } {
    #--- J'ouvre la fenetre
-   ::ImagerDeplacer::createPanel
+   ::telshift::createPanel
 }
 
 #------------------------------------------------------------
-# ::ImagerDeplacer::stopTool
+# ::telshift::stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
-proc ::ImagerDeplacer::stopTool { visuNo } {
+proc ::telshift::stopTool { visuNo } {
    #--- Rien a faire, car la fenetre est fermee par l'utilisateur
 }
 

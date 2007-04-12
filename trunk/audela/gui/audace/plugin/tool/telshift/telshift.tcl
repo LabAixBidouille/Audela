@@ -4,16 +4,16 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Mise a jour $Id: telshift.tcl,v 1.6 2007-04-12 20:30:42 robertdelmas Exp $
+# Mise a jour $Id: telshift.tcl,v 1.7 2007-04-12 21:43:15 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
 
 #============================================================
-# Declaration du namespace ImagerDeplacer
+# Declaration du namespace telshift
 #    initialise le namespace
 #============================================================
-namespace eval ::ImagerDeplacer {
+namespace eval ::telshift {
 
    #--- loading captions
    source [ file join $audace(rep_plugin) tool telshift telshift.cap ]
@@ -43,7 +43,7 @@ namespace eval ::ImagerDeplacer {
       wm minsize $base 350 480
       wm title $base "$caption(telshift,titre)"
       wm geometry $base +150+100
-      wm protocol $base WM_DELETE_WINDOW ::ImagerDeplacer::Close
+      wm protocol $base WM_DELETE_WINDOW ::telshift::Close
 
       #--- create frames
       frame $base.filename -borderwidth 2 -relief raised
@@ -57,9 +57,9 @@ namespace eval ::ImagerDeplacer {
       pack $base.para -ipady 5 -padx 10 -pady 10
 
       #--- create buttons
-      button $base.btn.ok -text "$caption(telshift,ok)" -command ::ImagerDeplacer::Run
-      button $base.btn.annuler -text "$caption(telshift,annuler)" -command ::ImagerDeplacer::Close
-      button $base.btn.help1 -text "$caption(telshift,aide)" -command ::ImagerDeplacer::Open
+      button $base.btn.ok -text "$caption(telshift,ok)" -command ::telshift::Run
+      button $base.btn.annuler -text "$caption(telshift,annuler)" -command ::telshift::Close
+      button $base.btn.help1 -text "$caption(telshift,aide)" -command ::telshift::Open
       pack $base.btn.ok -side left -ipadx 30 -ipady 5
       pack $base.btn.annuler -side left -ipadx 20 -ipady 5
       pack $base.btn.help1 -side right -ipadx 20 -ipady 5
@@ -143,8 +143,8 @@ namespace eval ::ImagerDeplacer {
       bind $base.image.r2 <Button-1> {$base.para.nest1.labnbr config -text "$caption(telshift,nbposes)"}
 
       #--- set up key binding
-      bind $base.btn.ok <Return> ::ImagerDeplacer::Run
-      bind $base.btn.annuler <Escape> ::ImagerDeplacer::Close
+      bind $base.btn.ok <Return> ::telshift::Run
+      bind $base.btn.annuler <Escape> ::telshift::Close
       focus $base.para.nest1.nbr
 
       #--- Mise a jour dynamique des couleurs
