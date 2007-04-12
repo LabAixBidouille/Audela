@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.8 2007-04-11 18:05:26 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.9 2007-04-12 17:44:56 robertdelmas Exp $
 #
 
 #============================================================
@@ -132,8 +132,6 @@ namespace eval ::pretraitFC {
 
       #--- Chargement des fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool pretrfc pretrfcSetup.tcl ]\""
-      #--- Mise en place de l'interface graphique
-      createPanel $in.pretraitFC
    }
 #***** Fin de la procedure createPluginInstance **********************
 
@@ -143,31 +141,16 @@ namespace eval ::pretraitFC {
    }
 #***** Fin de la procedure deletePluginInstance **********************
 
-#***** Procedure createPanel *****************************************
-   proc createPanel { this } {
-      variable This
-      global caption panneau
-
-      #--- Initialisation du nom de la fenetre
-      set This $this
-      #--- Construction de l'interface
-      pretraitFCBuildIF $This
-   }
-#***** Fin de la procedure createPanel *******************************
-
 #***** Procedure startTool *******************************************
    proc startTool { visuNo } {
-      variable This
-
-      pack $This -side left -fill y
+      #--- J'ouvre la fenetre
+      ::pretraitFC::fenetrePretr
    }
 #***** Fin de la procedure startTool *********************************
 
 #***** Procedure stopTool ********************************************
    proc stopTool { visuNo } {
-      variable This
-
-      pack forget $This
+      #--- Rien a faire, car la fenetre est fermee par l'utilisateur
    }
 #***** Fin de la procedure stopTool **********************************
 
@@ -1823,39 +1806,6 @@ namespace eval ::pretraitFC {
 #=====================================================================
 #   Fin de la declaration du Namespace pretraitFC
 #=====================================================================
-
-#---------------------------------------------------------------------------------------------
-
-proc pretraitFCBuildIF { This } {
-   global audace panneau caption
-
-   #--- Trame du panneau
-   frame $This -borderwidth 2 -relief groove
-
-      #--- Trame du titre du panneau
-      frame $This.titre -borderwidth 2 -relief groove
-
-        Button $This.titre.but -borderwidth 2 -text $caption(pretrfc,titre) \
-           -command {
-              ::audace::showHelpPlugin tool pretrfc pretrfc.htm
-           }
-        pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
-        DynamicHelp::add $This.titre.but -text $caption(pretrfc,help,titre)
-
-      pack $This.titre -side top -fill x
-
-      #--- Trame du bouton Lancement
-      frame $This.lance -borderwidth 1 -relief groove
-
-         button $This.lance.but -text $caption(pretrfc,lance) \
-            -borderwidth 2 -command ::pretraitFC::fenetrePretr
-         pack $This.lance.but -in $This.lance -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
-
-      pack $This.lance -side top -fill x
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
-   }
 
 #---------------------------------------------------------------------------------------------
 proc creeFenetrePrFC { } {
