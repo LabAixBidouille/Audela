@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_go.tcl,v 1.6 2007-04-07 00:38:34 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.tcl,v 1.7 2007-04-12 17:45:24 robertdelmas Exp $
 #
 
 #============================================================
@@ -62,7 +62,12 @@ proc ::Obj_Lune_Go::initPlugin{ } {
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::Obj_Lune_Go::createPluginInstance { { in "" } { visuNo 1 } } {
-   ::Obj_Lune_Go::createPanel $in.obj_lune_go
+   global audace
+
+   #--- Chargement du package Img pour visualiser les cartes de la Lune au format jpg
+   package require Img 1.3
+   #--- Charge le source de la fenetre Objectif Lune
+   uplevel #0 "source \"[ file join $audace(rep_plugin) tool obj_lune obj_lune.tcl ]\""
 }
 
 #------------------------------------------------------------
@@ -74,33 +79,12 @@ proc ::Obj_Lune_Go::deletePluginInstance { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::createPanel
-#    prepare la creation de la fenetre de l'outil
-#------------------------------------------------------------
-proc ::Obj_Lune_Go::createPanel { this } {
-   variable This
-   global caption panneau
-
-   #--- Initialisation du nom de la fenetre
-   set This $this
-   #--- Initialisation des captions
-   set panneau(Obj_Lune_Go,titre)   "$caption(obj_lune_go,obj_lune)"
-   set panneau(Obj_Lune_Go,aide)    "$caption(obj_lune_go,help_titre)"
-   set panneau(Obj_Lune_Go,execute) "$caption(obj_lune_go,executer)"
-   #--- Construction de l'interface
-   ::Obj_Lune_Go::Obj_Lune_GoBuildIF $This
-}
-
-#------------------------------------------------------------
 # ::Obj_Lune_Go::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
 proc ::Obj_Lune_Go::startTool { visuNo } {
-   variable This
-
-   pack $This -side left -fill y
-   #--- Chargement du package Img pour visualiser les cartes de la Lune au format jpg
-   package require Img 1.3
+   #--- J'ouvre la fenetre
+   ::obj_Lune::run
 }
 
 #------------------------------------------------------------
@@ -108,45 +92,6 @@ proc ::Obj_Lune_Go::startTool { visuNo } {
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
 proc ::Obj_Lune_Go::stopTool { visuNo } {
-   variable This
-
-   pack forget $This
-}
-
-#------------------------------------------------------------
-# ::Obj_Lune_Go::Obj_Lune_GoBuildIF
-#    cree la fenetre de l'outil
-#------------------------------------------------------------
-proc ::Obj_Lune_Go::Obj_Lune_GoBuildIF { This } {
-   global audace panneau
-
-   frame $This -borderwidth 2 -relief groove
-
-      #--- Frame du titre
-      frame $This.fra1 -borderwidth 2 -relief groove
-
-         #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(Obj_Lune_Go,titre) \
-            -command "::audace::showHelpPlugin tool obj_lune obj_lune.htm"
-         pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(Obj_Lune_Go,aide)
-
-      pack $This.fra1 -side top -fill x
-
-      #--- Frame du bouton de lancement
-      frame $This.fra2 -borderwidth 1 -relief groove
-
-         #--- Bouton Execute
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(Obj_Lune_Go,execute) \
-            -command {
-               source [ file join $audace(rep_plugin) tool obj_lune obj_lune.tcl ]
-               ::obj_Lune::run
-            }
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 5 -pady 5 -ipadx 5 -ipady 5
-
-      pack $This.fra2 -side top -fill x
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+   #--- Rien a faire, car la fenetre est fermee par l'utilisateur
 }
 
