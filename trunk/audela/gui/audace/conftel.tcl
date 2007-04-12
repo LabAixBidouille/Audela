@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.28 2007-04-11 17:35:47 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.29 2007-04-12 21:43:31 michelpujol Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -39,8 +39,6 @@ namespace eval ::confTel {
 
       #--- Initalise le numero de telescope a nul
       set audace(telNo) "0"
-      #--- Charge le nom de la raquette utilisee
-      ::confPad::getLabelPad
    }
 
    #
@@ -54,7 +52,7 @@ namespace eval ::confTel {
       global audace conf confTel
 
       set This "$audace(base).confTel"
-      set confTel(nomRaquette) [::confPad::getLabelPad]
+      set confTel(nomRaquette) [::confPad::getCurrentPad]
       createDialog
       if { [ info exists conf ] } {
          select $conf(telescope)
