@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.21 2007-04-06 05:45:41 alainklotz Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.22 2007-04-13 15:07:34 robertdelmas Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -31,6 +31,7 @@
 # subsky  back_kernel back_threshold  ?tt_options?
 # subsky1  in out back_kernel back_threshold ?tt_options?
 # subsky2  in out number back_kernel back_threshold ?first_index? ?tt_options?
+# window1 in out {x1 y1 x2 y2} ?tt_options?
 # window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
 # smedian  in out number ?first_index? ?tt_options?
 # sadd  in out number ?first_index? ?tt_options?
@@ -52,9 +53,8 @@
 #
 
 proc offset {args} {
-   # value
+   #--- value
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
@@ -66,9 +66,8 @@ proc offset {args} {
 }
 
 proc offset1 {args} {
-   # in out const ?tt_options?
+   #--- in out const ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {($n>=3)} {
@@ -85,9 +84,8 @@ proc offset1 {args} {
 }
 
 proc offset2 {args} {
-   # in out const number ?first_index? ?tt_options?
+   #--- in out const number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {($n>=4)} {
@@ -109,9 +107,8 @@ proc offset2 {args} {
 }
 
 proc ngain1 {args} {
-   # in out const ?tt_options?
+   #--- in out const ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {($n>=3)} {
@@ -128,9 +125,8 @@ proc ngain1 {args} {
 }
 
 proc ngain2 {args} {
-   # in out const number ?first_index? ?tt_options?
+   #--- in out const number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {($n>=4)} {
@@ -152,9 +148,8 @@ proc ngain2 {args} {
 }
 
 proc noffset1 {args} {
-   # in out const ?tt_options?
+   #--- in out const ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {($n>=3)} {
@@ -171,9 +166,8 @@ proc noffset1 {args} {
 }
 
 proc noffset2 {args} {
-   # in out const number ?first_index? ?tt_options?
+   #--- in out const number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {($n>=4)} {
@@ -195,9 +189,8 @@ proc noffset2 {args} {
 }
 
 proc add {args} {
-   # operand value
+   #--- operand value
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       set operand [lindex $args 0]
@@ -223,9 +216,8 @@ proc add {args} {
 }
 
 proc add1 {args} {
-   # in operand out const ?tt_options?
+   #--- in operand out const ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -258,9 +250,8 @@ proc add1 {args} {
 }
 
 proc add2 {args} {
-   # in operand out const number ?first_index? ?tt_options?
+   #--- in operand out const number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=5} {
@@ -298,9 +289,8 @@ proc add2 {args} {
 }
 
 proc sub {args} {
-   # operand value
+   #--- operand value
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       set operand [lindex $args 0]
@@ -326,9 +316,8 @@ proc sub {args} {
 }
 
 proc sub1 {args} {
-   # in operand out const ?tt_options?
+   #--- in operand out const ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -361,9 +350,8 @@ proc sub1 {args} {
 }
 
 proc sub2 {args} {
-   # in operand out const number ?first_index? ?tt_options?
+   #--- in operand out const number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=5} {
@@ -401,9 +389,8 @@ proc sub2 {args} {
 }
 
 proc div {args} {
-   # operand value
+   #--- operand value
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       set operand [lindex $args 0]
@@ -429,9 +416,8 @@ proc div {args} {
 }
 
 proc div1 {args} {
-   # in operand out const ?tt_options?
+   #--- in operand out const ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -464,9 +450,8 @@ proc div1 {args} {
 }
 
 proc div2 {args} {
-   # in operand out const number ?first_index? ?tt_options?
+   #--- in operand out const number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=5} {
@@ -504,9 +489,8 @@ proc div2 {args} {
 }
 
 proc opt {args} {
-   # dark offset
+   #--- dark offset
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       set len [expr [string length $audace(rep_images)]-1]
@@ -546,9 +530,8 @@ proc opt {args} {
 }
 
 proc opt1 {args} {
-   # in dark offset out ?tt_options?
+   #--- in dark offset out ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -599,9 +582,8 @@ proc opt1 {args} {
 }
 
 proc opt2 {args} {
-   # in dark offset out number ?first_index? ?tt_options?
+   #--- in dark offset out number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=5} {
@@ -657,9 +639,8 @@ proc opt2 {args} {
 }
 
 proc delete2 {args} {
-   # in number
+   #--- in number
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       set ext [buf$audace(bufNo) extension]
@@ -683,10 +664,9 @@ proc delete2 {args} {
 }
 
 proc register {args} {
-   # in out number ?-box {x1 y1 x2 y2}? ?tt_options?
-   # options : "tt options" or -box {x1 y1 x2 y2}
+   #--- in out number ?-box {x1 y1 x2 y2}? ?tt_options?
+   #--- options : "tt options" or -box {x1 y1 x2 y2}
    global audace
-   global caption
 
    set argc [llength $args]
    if { $argc < 3} {
@@ -754,9 +734,8 @@ proc register {args} {
 }
 
 proc register2 {args} {
-   # in out number ?first_index? ?tt_options?
+   #--- in out number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=3} {
@@ -780,9 +759,9 @@ proc register2 {args} {
 }
 
 proc registerbox {args} {
-   # in out number ?visuNo? ?first_index? ?tt_options?
+   #--- in out number ?visuNo? ?first_index? ?tt_options?
    global audace
-   global caption
+
    #--- decode la ligne de commande
    set in [lindex $args 0]
    set out [lindex $args 1]
@@ -823,6 +802,7 @@ proc registerbox {args} {
          lappend y [lindex $res 1]
          ::console::affiche_resultat "$k : $res\n"
       }
+      console::affiche_saut "\n"
       set tx0 [lindex $x 0]
       set ty0 [lindex $y 0]
       for {set k 1} {$k<=$number} {incr k} {
@@ -834,15 +814,14 @@ proc registerbox {args} {
          buf$audace(bufNo) save ${path}/${out}${k}${ext}
       }
    } else {
-      error "Usage: register in out number ?visuNo? ?first_index? ?tt_options?"
+      error "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?"
       return $error;
    }
 }
 
 proc registerwcs {args} {
-   # in out number ?first_index? ?tt_options?
+   #--- in out number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=3} {
@@ -863,8 +842,8 @@ proc registerwcs {args} {
 }
 
 proc subsky {args} {
+   #--- back_kernel back_threshold ?tt_options?
    global audace
-   global caption
 
    set argc [llength $args]
    if { $argc < 2} {
@@ -888,8 +867,8 @@ proc subsky {args} {
 }
 
 proc subsky1 {args} {
+   #--- in out back_kernel back_threshold ?tt_options?
    global audace
-   global caption
 
    set argc [llength $args]
    if { $argc < 4} {
@@ -920,8 +899,8 @@ proc subsky1 {args} {
 }
 
 proc subsky2 {args} {
+   #--- in out number back_kernel back_threshold ?first_index? ?tt_options?"
    global audace
-   global caption
 
    set argc [llength $args]
    if { $argc < 5} {
@@ -957,9 +936,48 @@ proc subsky2 {args} {
    ttscript2  "IMA/SERIES \"$path\" \"$out\" 1 $number \"$ext\" \"$path\" \"$out\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
 }
 
-proc window2 {args} {
+proc window1 {args} {
+   #--- in out {x1 y1 x2 y2} ?tt_options?
    global audace
-   global caption
+
+   set argc [llength $args]
+   if { $argc < 3} {
+      error "Usage: window1 in out {x1 y1 x2 y2} ?tt_options?"
+      return $error;
+   }
+   #--- decode la ligne de commande source audace/surchaud.tcl ; window2 ic a {50 50 100 100}
+   set in [lindex $args 0]
+   set out [lindex $args 1]
+   set box [lindex $args 2]
+   set x1 [lindex $box 0]
+   set y1 [lindex $box 1]
+   set x2 [lindex $box 2]
+   set y2 [lindex $box 3]
+   if {$x2<$x1} {
+      set dummy $x1
+      set x1 $x2
+      set x2 $dummy
+   }
+   if {$y2<$y1} {
+      set dummy $y1
+      set y1 $y2
+      set y2 $dummy
+   }
+   set options ""
+   if {$argc>=4} {
+      set options "[lrange $args 3 end]"
+   }
+   set ext "[buf$audace(bufNo) extension]"
+   set path "$audace(rep_images)"
+   set script "IMA/SERIES \"$path\" \"$in\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\"  WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 $options"
+   #::console::affiche_resultat "$script\n"
+   ttscript2 $script
+   ttscript2  "IMA/SERIES \"$path\" \"$out\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
+}
+
+proc window2 {args} {
+   #--- in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
+   global audace
 
    set argc [llength $args]
    if { $argc < 4} {
@@ -1003,9 +1021,8 @@ proc window2 {args} {
 }
 
 proc smedian {args} {
-   # in out number ?first_index? ?tt_options?
+   #--- in out number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=3} {
@@ -1027,9 +1044,8 @@ proc smedian {args} {
 }
 
 proc sadd {args} {
-   # in out number ?first_index? ?tt_options?
+   #--- in out number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=3} {
@@ -1051,9 +1067,8 @@ proc sadd {args} {
 }
 
 proc ssigma {args} {
-   # in out number ?first_index? ?tt_options?
+   #--- in out number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=3} {
@@ -1075,9 +1090,8 @@ proc ssigma {args} {
 }
 
 proc smean {args} {
-   # in out number ?first_index? ?tt_options?
+   #--- in out number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=3} {
@@ -1099,9 +1113,8 @@ proc smean {args} {
 }
 
 proc ssk {args} {
-   # in out number kappa ?first_index? ?tt_options?
+   #--- in out number kappa ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -1123,9 +1136,8 @@ proc ssk {args} {
 }
 
 proc ssort {args} {
-   # in out number percent ?first_index? ?tt_options?
+   #--- in out number percent ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -1147,9 +1159,8 @@ proc ssort {args} {
 }
 
 proc uncosmic {args} {
-   # coef
+   #--- coef
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
@@ -1161,9 +1172,8 @@ proc uncosmic {args} {
 }
 
 proc uncosmic2 {args} {
-   # in out number coef ?first_index? ?tt_options?
+   #--- in out number coef ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -1184,9 +1194,8 @@ proc uncosmic2 {args} {
 }
 
 proc convgauss {args} {
-   # sigma
+   #--- sigma
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
@@ -1198,9 +1207,8 @@ proc convgauss {args} {
 }
 
 proc convgauss2 {args} {
-   # in out number sigma ?first_index? ?tt_options?
+   #--- in out number sigma ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -1222,9 +1230,8 @@ proc convgauss2 {args} {
 }
 
 proc mult {args} {
-   # const
+   #--- const
    global audace
-   global caption
 
    if {[llength $args] == 1} {
       set ext [buf$audace(bufNo) extension]
@@ -1236,9 +1243,8 @@ proc mult {args} {
 }
 
 proc mult1 {args} {
-   # in out const ?tt_options?
+   #--- in out const ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=3} {
@@ -1255,9 +1261,8 @@ proc mult1 {args} {
 }
 
 proc mult2 {args} {
-   # in out const number ?first_index? ?tt_options?
+   #--- in out const number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -1279,9 +1284,8 @@ proc mult2 {args} {
 }
 
 proc trans {args} {
-   # dx dy
+   #--- dx dy
    global audace
-   global caption
 
    if {[llength $args] == 2} {
       set ext [buf$audace(bufNo) extension]
@@ -1293,9 +1297,8 @@ proc trans {args} {
 }
 
 proc trans2 {args} {
-   # in out dx dy number ?first_index? ?tt_options?
+   #--- in out dx dy number ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=5} {
@@ -1317,9 +1320,8 @@ proc trans2 {args} {
 }
 
 proc scale1 {args} {
-   # in out scale_x scale_y ?tt_options?
+   #--- in out scale_x scale_y ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=4} {
@@ -1335,9 +1337,8 @@ proc scale1 {args} {
 }
 
 proc scale2 {args} {
-   # in out number scale_x scale_y ?first_index? ?tt_options?
+   #--- in out number scale_x scale_y ?first_index? ?tt_options?
    global audace
-   global caption
 
    set n [llength $args]
    if {$n>=5} {
