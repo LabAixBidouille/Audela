@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.41 2007-04-11 17:38:30 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.42 2007-04-13 23:06:05 michelpujol Exp $
 #
 
 #==============================================================
@@ -199,7 +199,7 @@ namespace eval ::AcqFC {
    #  initPlugin
    #     initialise le plugin
    #------------------------------------------------------------
-   proc initPlugin{ } {
+   proc initPlugin { tkbase } {
 
    }
 
