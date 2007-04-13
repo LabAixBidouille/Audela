@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_go.tcl,v 1.7 2007-04-12 17:45:24 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.tcl,v 1.8 2007-04-13 23:14:30 michelpujol Exp $
 #
 
 #============================================================
@@ -46,6 +46,7 @@ proc ::Obj_Lune_Go::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "aiming" }
       subfunction1 { return "moon" }
+      display      { return "window" }
    }
 }
 
@@ -53,7 +54,7 @@ proc ::Obj_Lune_Go::getPluginProperty { propertyName } {
 # ::Obj_Lune_Go::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::initPlugin{ } {
+proc ::Obj_Lune_Go::initPlugin { tkpath } {
 
 }
 
