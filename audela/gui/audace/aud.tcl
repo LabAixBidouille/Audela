@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.66 2007-04-13 15:10:15 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.67 2007-04-13 23:10:18 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -183,6 +183,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace movie.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confvisu.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace sextractor.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_audela) audace fullscreen.tcl ]\""
 
       #---
       set audace(rep_audela) [pwd]
