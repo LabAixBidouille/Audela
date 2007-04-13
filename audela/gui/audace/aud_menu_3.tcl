@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.19 2007-04-08 21:08:00 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.20 2007-04-13 15:14:49 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -353,10 +353,11 @@ namespace eval ::pretraitement {
                pack $This.usr.1.radiobutton.rad3 -side top -anchor w -padx 10 -pady 5
             pack $This.usr.1.radiobutton -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
-            set list_pretraitement [ list $caption(audace,menu,scale) $caption(audace,menu,offset) \
-               $caption(audace,menu,mult_cte) $caption(audace,menu,clip) $caption(audace,menu,subsky) \
-               $caption(audace,menu,noffset) $caption(audace,menu,ngain) $caption(audace,menu,addition) \
-               $caption(audace,menu,soust) $caption(audace,menu,division) $caption(audace,menu,opt_noir) ]
+            set list_pretraitement [ list $caption(audace,menu,window1) $caption(audace,menu,scale) \
+               $caption(audace,menu,offset) $caption(audace,menu,mult_cte) $caption(audace,menu,clip) \
+               $caption(audace,menu,subsky) $caption(audace,menu,noffset) $caption(audace,menu,ngain) \
+               $caption(audace,menu,addition) $caption(audace,menu,soust) $caption(audace,menu,division) \
+               $caption(audace,menu,opt_noir) ]
             #---
             menubutton $This.usr.1.but1 -textvariable pretraitement(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -422,7 +423,6 @@ namespace eval ::pretraitement {
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { { visuNo "1" } } {
-      variable This
       global audace caption pretraitement
 
       #---
@@ -492,6 +492,62 @@ namespace eval ::pretraitement {
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $pretraitement(operation) \
+         "$caption(audace,menu,window1)" {
+            #---
+            if { $pretraitement(choix_mode) == "0" } {
+               #---
+               catch { window } m
+               if { $m == "" } {
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } else {
+                  set pretraitement(avancement) ""
+               }
+            } elseif { $pretraitement(choix_mode) == "1" } {
+               #---
+               ::console::affiche_resultat "Usage: window1 in out {x1 y1 x2 y2}\n\n"
+               #--- Un cadre trace avec la souris n'existe pas
+               if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
+                  set coordWindow ""
+                  loadima $in
+                  tk_messageBox -title $caption(confVisu,attention) -type ok \
+                     -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
+               }
+               set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
+               catch { window1 $in $out [ lindex $coordWindow 0 ] } m
+               #---
+               if { $m == "" } {
+                  if { $pretraitement(disp_2) == 1 } {
+                     loadima $out
+                  }
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } else {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+                  set pretraitement(avancement) ""
+               }
+            } elseif { $pretraitement(choix_mode) == "2" } {
+               #---
+               ::console::affiche_resultat "Usage: window2 in out number {x1 y1 x2 y2} ?first_index?\n\n"
+               #--- Un cadre trace avec la souris n'existe pas
+               if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
+                  set coordWindow ""
+                  loadima $in$first
+                  tk_messageBox -title $caption(confVisu,attention) -type ok \
+                     -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
+               }
+               set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
+               catch { window2 $in $out $nb [ lindex $coordWindow 0 ] $first } m
+               #---
+               if { $m == "" } {
+                  if { $pretraitement(disp_2) == 1 } {
+                     loadima $out$end
+                  }
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } else {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+                  set pretraitement(avancement) ""
+               }
+            }
+         } \
          "$caption(audace,menu,scale)" {
             #---
             set conf(multx) $pretraitement(scaleWindow_multx)
@@ -1292,7 +1348,9 @@ namespace eval ::pretraitement {
       global caption help pretraitement
 
       #---
-      if { $pretraitement(operation) == $caption(audace,menu,scale) } {
+      if { $pretraitement(operation) == $caption(audace,menu,window1) } {
+         set pretraitement(page_web) "1019recadrer"
+      } elseif { $pretraitement(operation) == $caption(audace,menu,scale) } {
          set pretraitement(page_web) "1020reechantillonner"
       } elseif { $pretraitement(operation) == $caption(audace,menu,offset) } {
          set pretraitement(page_web) "1030ajouter_cte"
@@ -1351,6 +1409,52 @@ namespace eval ::pretraitement {
       #--- a l'interieur. Un '\' est ajoute apres chaque choix (sauf le dernier) pour indiquer
       #--- que la commande switch continue sur la ligne suivante
       switch $pretraitement(operation) \
+         "$caption(audace,menu,window1)" {
+            set pretraitement(const) "0"
+            if { $pretraitement(choix_mode) == "0" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.2
+               pack forget $This.usr.8
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
+               pack forget $This.usr.7
+               pack $This.usr.10 -in $This.usr -side top -fill both
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $pretraitement(choix_mode) == "1" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.2
+               pack $This.usr.8 -in $This.usr -side top -fill both
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
+               pack $This.usr.7 -in $This.usr -side top -fill both
+               pack forget $This.usr.10
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            } elseif { $pretraitement(choix_mode) == "2" } {
+               pack forget $This.usr.0
+               pack $This.usr.1 -in $This.usr -side top -fill both
+               pack forget $This.usr.8
+               pack $This.usr.2 -in $This.usr -side top -fill both
+               pack forget $This.usr.3
+               pack forget $This.usr.4
+               pack forget $This.usr.5
+               pack forget $This.usr.6
+               pack forget $This.usr.11
+               pack forget $This.usr.12
+               pack $This.usr.7 -in $This.usr -side top -fill both
+               pack forget $This.usr.10
+               pack $This.usr.9 -in $This.usr -side top -fill both
+            }
+         } \
          "$caption(audace,menu,scale)" {
             set pretraitement(const) ""
             if { $pretraitement(choix_mode) == "0" } {
@@ -2814,6 +2918,14 @@ namespace eval ::traiteWindow {
             pack $This.usr.3.1 -side top -fill both
         # pack $This.usr.3 -in $This.usr -side top -fill both
 
+         frame $This.usr.3a -borderwidth 1 -relief raised
+            frame $This.usr.3a.1 -borderwidth 0 -relief flat
+               checkbutton $This.usr.3a.1.che1 -text "$caption(pretraitement,afficher_der_image_fin)" \
+                  -variable traiteWindow(disp)
+               pack $This.usr.3a.1.che1 -side left -padx 10 -pady 5
+            pack $This.usr.3a.1 -side top -fill both
+        # pack $This.usr.3a -in $This.usr -side top -fill both
+
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.1 -borderwidth 0 -relief flat
                button $This.usr.2.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
@@ -2854,7 +2966,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
             set list_traiteWindow [ list $caption(audace,menu,mediane) $caption(audace,menu,somme) \
-               $caption(audace,menu,moyenne) $caption(audace,menu,ecart_type) ]
+               $caption(audace,menu,moyenne) $caption(audace,menu,ecart_type) $caption(audace,menu,recentrer) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteWindow(operation) -menu $This.usr.1.but1.menu -relief raised
             pack $This.usr.1.but1 -side right -padx 10 -pady 5 -ipady 5
@@ -2939,31 +3051,37 @@ namespace eval ::traiteWindow {
       set nb    $traiteWindow(nb)
       set first $traiteWindow(valeur_indice)
       set out   $traiteWindow(out)
+      set end   [ expr $nb + ( $first - 1 ) ]
 
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $traiteWindow(in) == "" } {
-          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-             -message "$caption(pretraitement,definir_entree_generique)"
-          set traiteWindow(avancement) ""
-          return
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,definir_entree_generique)"
+         set traiteWindow(avancement) ""
+         return
       }
       if { $traiteWindow(nb) == "" } {
-          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-             -message "$caption(pretraitement,choix_nbre_images)"
-          set traiteWindow(avancement) ""
-          return
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,choix_nbre_images)"
+         set traiteWindow(avancement) ""
+         return
       }
       if { [ TestEntier $traiteWindow(nb) ] == "0" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-            -message "$caption(pretraitement,nbre_entier)"
-          set traiteWindow(avancement) ""
+           -message "$caption(pretraitement,nbre_entier)"
+         set traiteWindow(avancement) ""
          return
       }
       if { $traiteWindow(out) == "" } {
-          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-             -message "$caption(pretraitement,definir_image_sortie)"
-          set traiteWindow(avancement) ""
-          return
+         if { $traiteWindow(operation) != "$caption(audace,menu,recentrer)" } {
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,definir_image_sortie)"
+         } else {
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,definir_sortie_generique)"
+         }
+         set traiteWindow(avancement) ""
+         return
       }
 
       #--- Switch passe au format sur une seule ligne logique : Les accolades englobant la liste
@@ -3022,6 +3140,27 @@ namespace eval ::traiteWindow {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
+         } \
+         "$caption(audace,menu,recentrer)" {
+            ::console::affiche_resultat "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?\n\n"
+            #--- Un cadre trace avec la souris n'existe pas
+            if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
+               set coordWindow ""
+               loadima $in$first
+               tk_messageBox -title $caption(confVisu,attention) -type ok \
+                  -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
+            }
+            set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
+            catch { registerbox $in $out $nb $audace(visuNo) $first } m
+            if { $m == "" } {
+               if { $traiteWindow(disp) == 1 } {
+                  loadima $out$end
+               }
+               set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
+            } else {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set traiteWindow(avancement) ""
+            }
          }
       ::traiteWindow::recup_position
    }
@@ -3054,6 +3193,8 @@ namespace eval ::traiteWindow {
          set traiteWindow(page_web) "1140serie_moyenne"
       } elseif { $traiteWindow(operation) == $caption(audace,menu,ecart_type) } {
          set traiteWindow(page_web) "1150serie_ecart_type"
+      } elseif { $traiteWindow(operation) == $caption(audace,menu,recentrer) } {
+         set traiteWindow(page_web) "1160serie_recentrer"
       }
 
       #---
@@ -3088,6 +3229,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.3a
          } \
          "$caption(audace,menu,somme)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -3095,6 +3237,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.3a
          } \
          "$caption(audace,menu,moyenne)" {
             pack $This.usr.0 -in $This.usr -side top -fill both
@@ -3102,6 +3245,7 @@ namespace eval ::traiteWindow {
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.3a
          } \
          "$caption(audace,menu,ecart_type)" {
             pack forget $This.usr.0
@@ -3109,6 +3253,15 @@ namespace eval ::traiteWindow {
             pack $This.usr.1 -in $This.usr -side top -fill both
             pack $This.usr.2 -in $This.usr -side top -fill both
             pack $This.usr.3 -in $This.usr -side top -fill both
+            pack forget $This.usr.3a
+         } \
+         "$caption(audace,menu,recentrer)" {
+            pack forget $This.usr.0
+            pack $This.usr.4 -in $This.usr -side bottom -fill both
+            pack $This.usr.1 -in $This.usr -side top -fill both
+            pack $This.usr.2 -in $This.usr -side top -fill both
+            pack forget $This.usr.3
+            pack $This.usr.3a -in $This.usr -side top -fill both
          }
    }
 
@@ -3153,6 +3306,12 @@ namespace eval ::traiteWindow {
          set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
          set traiteWindow(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
          set traiteWindow(formule)        "$caption(pretraitement,formule) B = ( A1 + A2 + ... + An ) / n"
+      } elseif { $traiteWindow(operation) == "$caption(audace,menu,recentrer)" } {
+         set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree)"
+         set traiteWindow(nombre)         "$caption(pretraitement,image_nombre)"
+         set traiteWindow(premier_indice) "$caption(pretraitement,image_premier_indice)"
+         set traiteWindow(image_B)        "$caption(pretraitement,image_generique_sortie)"
+         set traiteWindow(formule)        ""
       } else {
          set traiteWindow(image_A)        "$caption(pretraitement,image_generique_entree)"
          set traiteWindow(nombre)         "$caption(pretraitement,image_nombre)"
