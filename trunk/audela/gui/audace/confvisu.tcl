@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.53 2007-04-07 00:39:00 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.54 2007-04-13 23:12:51 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -727,16 +727,16 @@ namespace eval ::confVisu {
       set bufNo [visu$visuNo buf]
       if { [ buf$bufNo imageready ] == "1" } {
          if { $private($visuNo,fullscreen) == "1" } {
-            if { [::Image::isAnimatedGIF "$private($visuNo,lastFileName)"] == 1 } {
-               #--- Ne fonctionne que pour des gif animes (type Image en dur dans le script), pas pour des videos
-               set private(gif_anime) "1"
-               ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
-            } else {
+            ##if { [::Image::isAnimatedGIF "$private($visuNo,lastFileName)"] == 1 } {
+            ##   #--- Ne fonctionne que pour des gif animes (type Image en dur dans le script), pas pour des videos
+            ##   set private(gif_anime) "1"
+            ##   ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
+            ##} else {
+            ##}
                set private(gif_anime) "0"
                ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
-            }
          } else {
-            ::FullScreen::close $visuNo
+            ::FullScreen::closeWindow $visuNo
          }
       } else {
          set private($visuNo,fullscreen) "0"
@@ -925,7 +925,7 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  selectTool
-   #     arrete l'outil courant
+   #     arrete l'outil courant si le nouvel outil n'a pa pas la prop display=window"
    #     demarre le nouvel outil
    #  parametres :
    #    visuNo: numero de la visu
@@ -934,34 +934,42 @@ namespace eval ::confVisu {
    proc selectTool { visuNo toolName } {
       variable private
 
-      if { "private($visuNo,currentTool)" != "" } {
-         #--- Cela veut dire qu'il y a deja un outil selectionne
-         if { "private($visuNo,currentTool)" != "$toolName" } {
-            #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
-            stopTool $visuNo
-         }
-         if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
-            #--- je cree une instance de l'outil
-            set catchResult [catch { 
-               namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo 
-            }]
-            if { $catchResult == 1  } {
-               ::console::affiche_erreur "$::errorInfo\n"
-               tk_messageBox -message "$::errorInfo. See console" -icon error
-               return
-            } 
 
-            #--- j'ajoute cette intance dans la liste
-           lappend private($visuNo,pluginInstanceList) $toolName 
-         }          
-         #--- je demarre l'outil
-         namespace inscope $toolName startTool $visuNo  
-         #--- je memorise le nom de l'outil en cours d'execution
-         set private($visuNo,currentTool) $toolName
-      } else {
-         #--- Dans ce cas, aucun outil n'est selectionne
-         namespace inscope $toolName createPluginInstance $visuNo
+      if { "$private($visuNo,currentTool)" != "" } {
+         #--- Cela veut dire qu'il y a deja un outil selectionne
+         if { "$private($visuNo,currentTool)" != "$toolName" } {
+            if { [$toolName\::getPluginProperty "display" ] != "window" 
+              && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
+               #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
+               stopTool $visuNo
+            }
+         }
       }
+
+      
+      #--- je verifie que l'outils a deja une instance cree
+      if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
+         #--- je cree une instance de l'outil
+         set catchResult [catch { 
+            namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo 
+         }]
+         if { $catchResult == 1  } {
+            ::console::affiche_erreur "$::errorInfo\n"
+            tk_messageBox -message "$::errorInfo. See console" -icon error
+            return
+         } 
+         #--- j'ajoute cette intance dans la liste
+         lappend private($visuNo,pluginInstanceList) $toolName 
+      }
+      #--- je demarre l'outil
+      namespace inscope $toolName startTool $visuNo  
+
+     #--- je memorise le nom de l'outil en cours d'execution
+     if { [$toolName\::getPluginProperty "display" ] != "window" } { 
+        set private($visuNo,currentTool) $toolName
+     }
+
+   
    }
 
    #------------------------------------------------------------

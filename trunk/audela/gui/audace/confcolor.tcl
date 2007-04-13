@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.11 2007-01-28 09:25:48 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.12 2007-04-13 23:12:51 michelpujol Exp $
 #
 
 namespace eval confColor {
@@ -269,7 +269,7 @@ namespace eval confColor {
    #
    #  param : aucun
    #------------------------------------------------------------
-   proc close { visuNo } {
+   proc closeWindow { visuNo } {
       variable widget
       global audace
       global conf

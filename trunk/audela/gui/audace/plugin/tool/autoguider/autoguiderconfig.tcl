@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.5 2007-03-27 18:53:47 robertdelmas Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.6 2007-04-13 23:13:45 michelpujol Exp $
 #
 
 ################################################################
@@ -110,7 +110,7 @@ proc ::autoguider::config::run { visuNo } {
 # ::autoguider::config::close
 #   retourne le nom de la fenetre de configuration
 #------------------------------------------------------------
-proc ::autoguider::config::close { visuNo } {
+proc ::autoguider::config::closeWindow { visuNo } {
    variable private
    global caption
 
