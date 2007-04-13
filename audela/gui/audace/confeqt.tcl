@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.16 2007-04-07 00:39:00 michelpujol Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.17 2007-04-13 23:15:38 michelpujol Exp $
 #
 
 namespace eval ::confEqt {
@@ -407,7 +407,7 @@ proc ::confEqt::findPlugin { } {
                $pluginInfo(namespace)::initPlugin
                set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
                #--- je l'ajoute dans la liste des plugins
-               lappend private(namespaceList) $pluginInfo(namespace)
+               lappend private(namespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
                ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
             }
          } else {
