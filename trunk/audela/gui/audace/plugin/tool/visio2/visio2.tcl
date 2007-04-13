@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.16 2007-04-07 00:38:36 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.17 2007-04-13 23:11:04 michelpujol Exp $
 #
 
 namespace eval ::Visio2 {
@@ -13,8 +13,7 @@ namespace eval ::Visio2 {
 
    proc createPluginInstance { { in "" } { visuNo 1 } } {
       variable private
-      global audace
-      global caption
+      global audace caption conf
 
       array set private {
          This          ""
@@ -53,7 +52,6 @@ namespace eval ::Visio2 {
       source [ file join $audace(rep_audela) audace movie.tcl ]
       source [ file join $audace(rep_audela) audace ftpclient.tcl ]
       source [ file join $audace(rep_audela) audace image.tcl ]
-      source [ file join $audace(rep_audela) audace fullscreen.tcl ]
 
       #--- je charge le package Tablelist
       package require Tablelist
