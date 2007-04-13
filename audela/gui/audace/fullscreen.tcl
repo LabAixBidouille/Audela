@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.10 2006-10-29 14:30:28 michelpujol Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.11 2007-04-13 23:12:51 michelpujol Exp $
 #
 
 ##############################################################################
@@ -16,7 +16,7 @@
 #       ouvre la fenetre plein ecran et affiche les images ou les films
 #       contenus dans les fichiers
 #
-#   ::FullScreen::close visuNo
+#   ::FullScreen::closeWindow visuNo
 #       ferme la fenetre plein ecran
 #       (la fenetre peut etre aussi fermee en appyuant sur la touche ESCAPE)
 #
@@ -217,7 +217,7 @@ namespace eval ::FullScreen {
    # close
    #   ferme la fenetre plein ecran
    #------------------------------------------------------------------------------
-   proc close { visuNo } {
+   proc closeWindow { visuNo } {
       variable private
       global audace
 
@@ -632,7 +632,7 @@ namespace eval ::FullScreen {
 
       $menu add separator
       $menu add command -label $caption(fullscreen,close) \
-         -command "::FullScreen::close $visuNo"
+         -command "::FullScreen::closeWindow $visuNo"
 
       bind $private(hCanvas) <ButtonPress-1> ""
       bind $private(hCanvas) <ButtonPress-3> [list tk_popup $menu %X %Y]
@@ -651,8 +651,8 @@ namespace eval ::FullScreen {
             ::FullScreen::loadPreviousItem $visuNo
          }
       }
-      bind $private(toplevel) <Key-Escape> "::FullScreen::close $visuNo"
-      bind $private(toplevel) <Key-space>  "::FullScreen::close $visuNo"
+      bind $private(toplevel) <Key-Escape> "::FullScreen::closeWindow $visuNo"
+      bind $private(toplevel) <Key-space>  "::FullScreen::closeWindow $visuNo"
    }
 
    #------------------------------------------------------------

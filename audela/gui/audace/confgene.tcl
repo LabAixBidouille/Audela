@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.26 2007-04-11 17:03:22 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.27 2007-04-13 23:12:51 michelpujol Exp $
 #
 
 #
@@ -2206,10 +2206,11 @@ namespace eval confVersion {
 # Description : Configuration generique
 #  Cree une fenetre de configuration generique
 #  Cette fenetre appelle les fonction specifiques du namespace passe en parametre
+#     namespace::apply            pour le bouton appliquer ou ok
+#     namespace::closeWindow      pour le bouton fermer ou ok
+#     namespace::getLabel         retourne le titre de la fenetre
 #     namespace::fillConfigPage   pour la creation des widgets dans la fenetre
 #     namespace::showHelp         pour le bouton d'aide
-#     namespace::apply            pour le bouton appliquer ou ok
-#     namespace::close            pour le bouton fermer ou ok
 #
 
 namespace eval confGenerique {
@@ -2256,7 +2257,7 @@ namespace eval confGenerique {
 
       set confResult($NameSpace) "1"
       ::confGenerique::apply $visuNo $NameSpace
-      ::confGenerique::close $visuNo $NameSpace $This
+      ::confGenerique::closeWindow $visuNo $NameSpace $This
    }
 
    #
@@ -2283,14 +2284,14 @@ namespace eval confGenerique {
    }
 
    #
-   # confGenerique::close
+   # confGenerique::closeWindow
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
-   # Ferme la fenetre si la procedure namepace::close retourne une valeur
+   # Ferme la fenetre si la procedure namepace::closeWindow retourne une valeur
    # differente de "0"
-   proc close { visuNo NameSpace This } {
-      if { [info procs $NameSpace\:\:close ] != "" } {
-         #--- appelle la procedure "close"
-         set result [$NameSpace\:\:close $visuNo]
+   proc closeWindow { visuNo NameSpace This } {
+      if { [info procs $NameSpace\:\:closeWindow ] != "" } {
+         #--- appelle la procedure "closeWindow"
+         set result [$NameSpace\:\:closeWindow $visuNo]
          if { $result == "0" } {
             return
          }
@@ -2345,7 +2346,7 @@ namespace eval confGenerique {
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
-         -command "::confGenerique::close $visuNo $NameSpace $This"
+         -command "::confGenerique::closeWindow $visuNo $NameSpace $This"
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Aide'
