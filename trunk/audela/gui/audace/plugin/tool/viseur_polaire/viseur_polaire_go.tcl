@@ -4,7 +4,7 @@
 # Type Takahashi : Viseur polaire à niveau
 # Type EQ6 : Viseur polaire à constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_go.tcl,v 1.4 2007-04-07 00:38:36 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_go.tcl,v 1.5 2007-04-14 08:35:45 robertdelmas Exp $
 #
 
 #============================================================
@@ -48,6 +48,7 @@ proc ::ViseurPolaire::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "utility" }
       subfunction1 { return "aiming" }
+      display      { return "panel" }
    }
 }
 
@@ -55,7 +56,7 @@ proc ::ViseurPolaire::getPluginProperty { propertyName } {
 # ::ViseurPolaire::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::ViseurPolaire::initPlugin{ } {
+proc ::ViseurPolaire::initPlugin { tkbase } {
 
 }
 

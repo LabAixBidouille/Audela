@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.15 2007-04-07 00:38:33 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.16 2007-04-14 08:30:01 robertdelmas Exp $
 #
 
 #==============================================================
@@ -29,7 +29,16 @@ proc ::autoguider::getPluginProperty { propertyName } {
       function     { return "acquisition" }
       subfunction1 { return "autoguider" }
       multivisu    { return 1 }
+      display      { return "panel" }
    }
+}
+
+#------------------------------------------------------------
+# ::autoguider::initPlugin
+#    initialise le plugin
+#------------------------------------------------------------
+proc ::autoguider::initPlugin { tkbase } {
+
 }
 
 #------------------------------------------------------------

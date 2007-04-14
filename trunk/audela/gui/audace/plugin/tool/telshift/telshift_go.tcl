@@ -2,7 +2,7 @@
 # Fichier : telshift_go.tcl
 # Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Mise a jour $Id: telshift_go.tcl,v 1.6 2007-04-12 21:43:33 robertdelmas Exp $
+# Mise a jour $Id: telshift_go.tcl,v 1.7 2007-04-14 08:35:06 robertdelmas Exp $
 #
 
 #============================================================
@@ -46,6 +46,7 @@ proc ::telshift::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "acquisition" }
       subfunction1 { return "aiming" }
+      display      { return "window" }
    }
 }
 
@@ -53,7 +54,7 @@ proc ::telshift::getPluginProperty { propertyName } {
 # ::telshift::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::telshift::initPlugin{ } {
+proc ::telshift::initPlugin { tkbase } {
 
 }
 

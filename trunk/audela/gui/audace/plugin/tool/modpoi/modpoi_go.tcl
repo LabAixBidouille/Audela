@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.7 2007-04-07 00:38:34 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.8 2007-04-14 08:32:09 robertdelmas Exp $
 #
 
 #============================================================
@@ -46,6 +46,7 @@ proc ::Modelpoi::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "utility" }
       subfunction1 { return "aiming" }
+      display      { return "panel" }
    }
 }
 
@@ -53,7 +54,7 @@ proc ::Modelpoi::getPluginProperty { propertyName } {
 # ::Modelpoi::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::Modelpoi::initPlugin{ } {
+proc ::Modelpoi::initPlugin { tkbase } {
 
 }
 

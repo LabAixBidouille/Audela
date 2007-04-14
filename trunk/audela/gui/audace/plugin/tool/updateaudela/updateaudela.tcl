@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.2 2007-04-07 20:54:38 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.3 2007-04-14 08:35:25 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -13,7 +13,7 @@ namespace eval ::updateaudela {
 }
 
 #------------------------------------------------------------
-#  getPluginProperty
+#  ::updateaudela::getPluginProperty
 #     retourne la valeur de la propriete
 #
 # parametre :
@@ -23,7 +23,16 @@ namespace eval ::updateaudela {
 proc ::updateaudela::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "setup" }
+      display      { return "window" }
    }
+}
+
+#------------------------------------------------------------
+# ::updateaudela::initPlugin
+#    initialise le plugin
+#------------------------------------------------------------
+proc ::updateaudela::initPlugin { tkbase } {
+
 }
 
 #------------------------------------------------------------

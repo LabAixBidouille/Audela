@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Panneau d'acquisition APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.13 2007-04-07 00:38:29 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.14 2007-04-14 08:28:03 robertdelmas Exp $
 #
 
    #============================================================
@@ -45,6 +45,7 @@
          switch $propertyName {
             function     { return "acquisition" }
             subfunction1 { return "coolpix" }
+            display      { return "panel" }
          }
       }
 
@@ -52,7 +53,7 @@
       # initPlugin
       #    initialise le plugin
       #------------------------------------------------------------
-      proc initPlugin{ } {
+      proc initPlugin { tkbase } {
 
       }
 

@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.11 2007-04-11 17:38:46 michelpujol Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.12 2007-04-14 08:33:05 robertdelmas Exp $
 #
 
 #============================================================
@@ -45,6 +45,7 @@ namespace eval ::Rmctrl {
       switch $propertyName {
          function     { return "aiming" }
          subfunction1 { return "acquisition" }
+         display      { return "panel" }
       }
    }
 
@@ -52,7 +53,7 @@ namespace eval ::Rmctrl {
    # initPlugin
    #    initialise le plugin
    #------------------------------------------------------------
-   proc initPlugin{ } {
+   proc initPlugin { tkbase } {
 
    }
 

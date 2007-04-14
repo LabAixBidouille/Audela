@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.5 2007-04-07 00:38:35 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.6 2007-04-14 08:34:31 robertdelmas Exp $
 #
 
 #============================================================
@@ -46,6 +46,7 @@ proc ::Snaude::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "acquisition" }
       subfunction1 { return "display" }
+      display      { return "panel" }
    }
 }
 
@@ -53,7 +54,7 @@ proc ::Snaude::getPluginProperty { propertyName } {
 # ::Snaude::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::Snaude::initPlugin{ } {
+proc ::Snaude::initPlugin { tkbase } {
 
 }
 
