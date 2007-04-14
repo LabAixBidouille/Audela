@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.10 2007-04-12 21:57:38 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.11 2007-04-14 08:40:26 robertdelmas Exp $
 #
 
 #============================================================
@@ -116,12 +116,13 @@ namespace eval ::pretraitFC {
       switch $propertyName {
          function     { return "utility" }
          subfunction1 { return "preprocessing" }
+         display      { return "window" }
       }
    }
 #***** Fin de la procedure getPluginProperty**************************
 
 #***** Procedure initPlugin ******************************************
-   proc initPlugin{ } {
+   proc initPlugin { tkbase } {
 
    }
 #***** Fin de la procedure initPlugin ********************************
@@ -2189,6 +2190,9 @@ proc creeFenetrePrFC { } {
    pack $audace(base).fenetrePretr.but -side top -fill x
 
    focus $audace(base).fenetrePretr
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $audace(base).fenetrePretr <Key-F1> { ::console::GiveFocus }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $audace(base).fenetrePretr
