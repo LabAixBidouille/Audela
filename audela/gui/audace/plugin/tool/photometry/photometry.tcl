@@ -2,7 +2,7 @@
 # Fichier : photometry.tcl
 # Description : Outil de traitement d'images de photometrie
 # Auteur : Alain Klotz
-# Mise a jour $Id: photometry.tcl,v 1.3 2007-04-07 00:38:34 robertdelmas Exp $
+# Mise a jour $Id: photometry.tcl,v 1.4 2007-04-14 08:32:42 robertdelmas Exp $
 #
 
 namespace eval ::photometry {
@@ -42,6 +42,7 @@ proc ::photometry::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "analysis" }
       subfunction1 { return "photometry" }
+      display      { return "panel" }
    }
 }
 
@@ -49,7 +50,7 @@ proc ::photometry::getPluginProperty { propertyName } {
 # ::photometry::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::photometry::initPlugin{ } {
+proc ::photometry::initPlugin { tkbase } {
 
 }
 

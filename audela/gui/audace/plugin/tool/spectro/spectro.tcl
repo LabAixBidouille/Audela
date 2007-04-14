@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.19 2007-04-12 17:46:12 robertdelmas Exp $
+# Mise a jour $Id: spectro.tcl,v 1.20 2007-04-14 08:34:16 robertdelmas Exp $
 #
 
 #============================================================
@@ -46,6 +46,7 @@ proc ::spectro::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "analysis" }
       subfunction1 { return "spectro" }
+      display      { return "window" }
    }
 }
 

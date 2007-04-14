@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.22 2007-04-10 19:29:15 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.23 2007-04-14 08:33:32 robertdelmas Exp $
 #
 
 #============================================================
@@ -46,6 +46,7 @@ namespace eval ::Dscan {
       switch $propertyName {
          function     { return "acquisition" }
          subfunction1 { return "scan" }
+         display      { return "panel" }
       }
    }
 
@@ -53,7 +54,7 @@ namespace eval ::Dscan {
    # initPlugin
    #    initialise le plugin
    #------------------------------------------------------------
-   proc initPlugin{ } {
+   proc initPlugin { tkbase } {
 
    }
 

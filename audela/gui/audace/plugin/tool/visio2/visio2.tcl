@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.17 2007-04-13 23:11:04 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.18 2007-04-14 08:36:27 robertdelmas Exp $
 #
 
 namespace eval ::Visio2 {
@@ -119,6 +119,7 @@ namespace eval ::Visio2 {
    proc getPluginProperty { propertyName } {
       switch $propertyName {
          function     { return "display" }
+         display      { return "panel" }
       }
    }
 
@@ -144,7 +145,7 @@ namespace eval ::Visio2 {
    #  initPlugin
    #     initialise le plugin
    #------------------------------------------------------------
-   proc initPlugin{ } {
+   proc initPlugin { tkbase } {
 
    }
 

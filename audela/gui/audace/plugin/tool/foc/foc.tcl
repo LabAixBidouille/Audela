@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.10 2007-04-07 00:38:33 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.11 2007-04-14 08:31:03 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -53,6 +53,7 @@ namespace eval ::Focs {
       switch $propertyName {
          function     { return "acquisition" }
          subfunction1 { return "focusing" }
+         display      { return "panel" }
       }
    }
 
@@ -60,7 +61,7 @@ namespace eval ::Focs {
    # initPlugin
    #    initialise le plugin
    #------------------------------------------------------------
-   proc initPlugin{ } {
+   proc initPlugin { tkbase } {
 
    }
 

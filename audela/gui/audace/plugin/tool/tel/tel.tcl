@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tel.tcl,v 1.12 2007-04-07 19:35:08 robertdelmas Exp $
+# Mise a jour $Id: tel.tcl,v 1.13 2007-04-14 08:34:47 robertdelmas Exp $
 #
 
 #============================================================
@@ -49,6 +49,7 @@ proc ::tlscp::getPluginProperty { propertyName } {
       function     { return "aiming" }
       subfunction1 { return "acquisition" }
       multivisu    { return 1 }
+      display      { return "panel" }
    }
 }
 
@@ -56,7 +57,7 @@ proc ::tlscp::getPluginProperty { propertyName } {
 # ::tlscp::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::tlscp::initPlugin{ } {
+proc ::tlscp::initPlugin { tkbase } {
 
 }
 

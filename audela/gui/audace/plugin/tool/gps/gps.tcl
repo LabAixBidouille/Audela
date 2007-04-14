@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Panneau de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.5 2007-04-10 17:18:40 robertdelmas Exp $
+# Mise a jour $Id: gps.tcl,v 1.6 2007-04-14 08:31:28 robertdelmas Exp $
 #
 
 namespace eval ::Gps {
@@ -718,13 +718,14 @@ namespace eval ::Gps {
         switch $propertyName {
             function     { return "utility" }
             subfunction1 { return "gps" }
+            display      { return "panel" }
         }
     }
 
     ##############################################################
     ### initPlugin ###############################################
     ##############################################################
-    proc initPlugin{ } {
+    proc initPlugin { tkbase } {
 
     }
 
