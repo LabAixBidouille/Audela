@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.11 2007-04-13 23:12:51 michelpujol Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.12 2007-04-14 08:44:15 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -214,7 +214,7 @@ namespace eval ::FullScreen {
    }
 
    #------------------------------------------------------------------------------
-   # close
+   # closeWindow
    #   ferme la fenetre plein ecran
    #------------------------------------------------------------------------------
    proc closeWindow { visuNo } {
