@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.12 2007-04-13 23:12:51 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.13 2007-04-14 08:44:32 robertdelmas Exp $
 #
 
 namespace eval confColor {
@@ -264,7 +264,7 @@ namespace eval confColor {
    }
 
    #------------------------------------------------------------
-   #  ::confColor::close
+   #  ::confColor::closeWindow
    #  est appele quand on ferme la fenetre sans sauvegarder les modifications
    #
    #  param : aucun
