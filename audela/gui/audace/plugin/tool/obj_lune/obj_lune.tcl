@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.7 2007-04-12 17:47:47 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.8 2007-04-14 08:42:13 robertdelmas Exp $
 #
 
 global audace
@@ -186,6 +186,9 @@ namespace eval obj_Lune {
             -command { ::audace::showHelpPlugin tool obj_lune obj_lune.htm }
          pack $This.cmd.aide -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
       pack $This.cmd -side top -fill x
+
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $This <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
