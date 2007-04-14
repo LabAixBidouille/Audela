@@ -4,7 +4,7 @@
 # Auteur : Christian JASINSKI (e-mail : chris.jasinski@wanadoo.fr)
 # Avec l'aide d'Alain KLOTZ pour la partie la plus difficile (grande boucle interne aux procédures)
 # Avec l'aide de Robert DELMAS qui a apporté de nombreuses modifications, notamment en matière de traitement des erreurs
-# Mise a jour $Id: telshift.tcl,v 1.7 2007-04-12 21:43:15 robertdelmas Exp $
+# Mise a jour $Id: telshift.tcl,v 1.8 2007-04-14 08:43:45 robertdelmas Exp $
 #
 
 #!/logiciels/public/Tcl/bin/wish
@@ -24,7 +24,10 @@ namespace eval ::telshift {
       global audace
       global caption
       global panneau
+      global conf
       global color
+
+      if { ! [ info exists conf(telshift,position) ] } { set conf(telshift,position) "+150+100" }
 
       set base $audace(base).telima
 
@@ -42,7 +45,7 @@ namespace eval ::telshift {
       #--- set window title
       wm minsize $base 350 480
       wm title $base "$caption(telshift,titre)"
-      wm geometry $base +150+100
+      wm geometry $base $conf(telshift,position)
       wm protocol $base WM_DELETE_WINDOW ::telshift::Close
 
       #--- create frames
@@ -147,6 +150,9 @@ namespace eval ::telshift {
       bind $base.btn.annuler <Escape> ::telshift::Close
       focus $base.para.nest1.nbr
 
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $base <Key-F1> { ::console::GiveFocus }
+
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $base
    }
@@ -241,8 +247,22 @@ namespace eval ::telshift {
             close $fileId
          }
       }
+      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+      bind $aide <Key-F1> { ::console::GiveFocus }
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $aide
+   }
+
+   #--- launch recupPosition procedure to close the main window
+   proc recupPosition { } {
+      global base
+      global conf
+
+      #--- Je mets la position actuelle de la fenetre dans conf()
+      set geom [ winfo geometry [winfo toplevel $base ] ]
+      set deb [ expr 1 + [ string first + $geom ] ]
+      set fin [ string length $geom ]
+      set conf(telshift,position) "+[ string range $geom $deb $fin ]"
    }
 
    #--- launch Close procedure to close the main window
@@ -256,6 +276,7 @@ namespace eval ::telshift {
       catch {cam$audace(camNo) stop}
       after 200
       set aide $audace(base).help1
+      ::telshift::recupPosition
       if { [winfo exists $aide] } {
          destroy $aide
       }
