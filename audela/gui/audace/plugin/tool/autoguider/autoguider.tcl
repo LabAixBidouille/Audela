@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.16 2007-04-14 08:30:01 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.17 2007-04-16 18:04:15 michelpujol Exp $
 #
 
 #==============================================================
@@ -415,7 +415,7 @@ proc ::autoguider::doAcquisition { visuNo camNo} {
       if { [set $statusVariableName] == "exp" } {
          vwait ::status_cam$camNo
       }
-      ::autoguider::processAcquisition $visuNo $camNo
+      after 0 [list ::autoguider::processAcquisition $visuNo $camNo]
    } else {
       #--- je fais une acquisition avec la thread de la camera
       thread::send -async $private($visuNo,camThreadNo) "set visuNo $visuNo"
@@ -441,7 +441,7 @@ proc ::autoguider::processAcquisition { visuNo camNo} {
 
    set bufNo $private($visuNo,bufNo)
 
-   #--- je place un catch pour intercepter les erreurs d'acces aux péripehriques
+   #--- je place un catch pour intercepter les erreurs d'acces aux peripheriques
    #--- et arreter proprement en cas d'erreur
    set catchError [ catch {
       #--- je soutrais le dark
