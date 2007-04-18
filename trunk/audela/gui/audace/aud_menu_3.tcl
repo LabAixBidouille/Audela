@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.20 2007-04-13 15:14:49 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.21 2007-04-18 17:46:11 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2683,7 +2683,7 @@ namespace eval ::traiteImage {
       } elseif { $traiteImage(operation) == $caption(audace,menu,rvb2r+v+b) } {
          set traiteImage(page_web) "1016rvb2r+v+b"
       } elseif { $traiteImage(operation) == $caption(audace,menu,cfa2rgb) } {
-         set traiteImage(page_web) "1117cfa2rvb"
+         set traiteImage(page_web) "1017cfa2rvb"
       }
 
       #---
