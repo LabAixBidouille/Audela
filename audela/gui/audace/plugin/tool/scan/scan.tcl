@@ -1,9 +1,9 @@
 #
 # Fichier : scan.tcl
 # Description : Outil pour l'acquisition en mode drift scan
-# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
+# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele, Audinet et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.23 2007-04-14 08:33:32 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.24 2007-04-19 17:31:42 robertdelmas Exp $
 #
 
 #============================================================
@@ -67,6 +67,7 @@ namespace eval ::Dscan {
 
       #--- Chargement des fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool scan scanSetup.tcl ]\""
+
       #--- Mise en place de l'interface graphique
       createPanel $in.dscan
    }
@@ -105,6 +106,7 @@ namespace eval ::Dscan {
       set panneau(Dscan,declinaison)     "$caption(scan,declinaison)"
       set panneau(Dscan,calcul)          "$caption(scan,calcul)"
       set panneau(Dscan,ms)              "$caption(scan,milliseconde)"
+      set panneau(Dscan,obturateur)      "$caption(scan,obt)"
       set panneau(Dscan,acq)             "$caption(scan,acquisition)"
       set panneau(Dscan,go0)             "$caption(scan,goccd)"
       set panneau(Dscan,stop)            "$caption(scan,stop)"
@@ -156,6 +158,7 @@ namespace eval ::Dscan {
       if { ! [ info exists parametres(Dscan,binning) ] } { set parametres(Dscan,binning) "2x2" }
       if { ! [ info exists parametres(Dscan,foc) ] }     { set parametres(Dscan,foc)     ".85" }
       if { ! [ info exists parametres(Dscan,dec) ] }     { set parametres(Dscan,dec)     "0d" }
+      if { ! [ info exists parametres(Dscan,obt) ] }     { set parametres(Dscan,obt)     "2" }
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       ::scanSetup::initToConf
@@ -173,6 +176,7 @@ namespace eval ::Dscan {
       set parametres(Dscan,binning) $panneau(Dscan,binning)
       set parametres(Dscan,foc)     $panneau(Dscan,foc)
       set parametres(Dscan,dec)     $panneau(Dscan,dec)
+      set parametres(Dscan,obt)     $panneau(Dscan,obt)
 
       #--- Sauvegarde des parametres
       catch {
@@ -192,9 +196,35 @@ namespace eval ::Dscan {
       variable This
       global conf panneau
 
+      #--- Numero de la camera
+      set camNo [ ::confVisu::getCamNo 1 ]
+
+      #--- Configuration de l'obturateur
+      if { $camNo != "0" } {
+         if { ! [ info exists conf(audine,foncobtu) ] } {
+            set conf(audine,foncobtu) "2"
+         } else {
+            if { $conf(audine,foncobtu) == "0" } {
+               set panneau(Dscan,obt) "0"
+            } elseif { $conf(audine,foncobtu) == "1" } {
+               set panneau(Dscan,obt) "1"
+            } elseif { $conf(audine,foncobtu) == "2" } {
+               set panneau(Dscan,obt) "2"
+            }
+         }
+         pack $This.fra4.obt.but -side left -ipady 3
+         pack $This.fra4.obt.lab1 -side left -fill x -expand true -ipady 3
+         pack forget $This.fra4.obt.lab2
+         $This.fra4.obt.lab1 configure -text $panneau(Dscan,obt,$panneau(Dscan,obt))
+      } else {
+         pack forget $This.fra4.obt.but
+         pack forget $This.fra4.obt.lab1
+         pack $This.fra4.obt.lab2 -side top -fill x -ipady 3
+      }
+
       #--- Mise a jour de la liste des binnings disponibles
       $This.fra3.bin.but_bin.menu delete 0 20
-      set list_binning_scan [ ::confCam::getBinningList_Scan [ ::confVisu::getCamNo 1 ] ]
+      set list_binning_scan [ ::confCam::getBinningList_Scan $camNo ]
       foreach valbin $list_binning_scan {
          $This.fra3.bin.but_bin.menu add radiobutton -label "$valbin" \
             -indicatoron "1" \
@@ -235,10 +265,14 @@ namespace eval ::Dscan {
       }
    }
 
+   #------------------------------------------------------------
+   # startTool
+   #    affiche la fenetre de l'outil
+   #------------------------------------------------------------
    proc startTool { visuNo } {
       variable This
       variable parametres
-      global audace panneau
+      global caption panneau
 
       #--- Chargement de la configuration
       ::Dscan::Chargement_Var
@@ -251,9 +285,15 @@ namespace eval ::Dscan {
       set panneau(Dscan,binning) "$parametres(Dscan,binning)"
       set panneau(Dscan,foc)     "$parametres(Dscan,foc)"
       set panneau(Dscan,dec)     "$parametres(Dscan,dec)"
+      set panneau(Dscan,obt)     "$parametres(Dscan,obt)"
 
       #--- Initialisation des variables de la boite de configuration
       ::scanSetup::confToWidget
+
+      #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
+      set panneau(Dscan,obt,0) "$caption(scan,obtu_ouvert)"
+      set panneau(Dscan,obt,1) "$caption(scan,obtu_ferme)"
+      set panneau(Dscan,obt,2) "$caption(scan,obtu_synchro)"
 
       #--- Calcul de dt en fonction des parametres initialises
       ::Dscan::cmdCalcul
@@ -273,6 +313,10 @@ namespace eval ::Dscan {
       pack $This -side left -fill y
    }
 
+   #------------------------------------------------------------
+   # stopTool
+   #    masque la fenetre de l'outil
+   #------------------------------------------------------------
    proc stopTool { visuNo } {
       variable This
 
@@ -304,7 +348,6 @@ namespace eval ::Dscan {
 
    proc cmdGo { { motor motoron } } {
       variable This
-      variable parametres
       global audace panneau
 
       if { [ ::cam::list ] != "" } {
@@ -400,16 +443,13 @@ namespace eval ::Dscan {
    proc scan { w h bin dt f } {
       global audace panneau
 
-      #--- Petit raccourci
-      set camera cam$audace(camNo)
-
       #--- Calcul du nombre de lignes par seconde
       set panneau(Dscan,nblg1) [ expr 1000./$dt ]
       set panneau(Dscan,nblg)  [ expr int($panneau(Dscan,nblg1)) + 1 ]
 
-      #--- Sauvegarde de l'etat de l'obturateur
-      set panneau(shutter_state) [ cam$audace(camNo) shutter ]
-      cam$audace(camNo) shutter synchro
+     ### #--- Sauvegarde de l'etat de l'obturateur
+     ### set panneau(shutter_state) [ cam$audace(camNo) shutter ]
+     ### cam$audace(camNo) shutter synchro
 
       #--- Declenchement de l'acquisition
       if { $f == "0" } {
@@ -436,8 +476,8 @@ namespace eval ::Dscan {
          destroy $audace(base).progress_scan
       }
 
-      #--- Restauration de l'etat initial de l'obturateur
-      cam$audace(camNo) shutter $panneau(shutter_state)
+     ### #--- Restauration de l'etat initial de l'obturateur
+     ### cam$audace(camNo) shutter $panneau(shutter_state)
    }
 
    proc cmdStop { } {
@@ -500,7 +540,7 @@ namespace eval ::Dscan {
       variable parametres
       global audace panneau
 
-      catch {
+      if { [ ::cam::list ] != "" } {
          set parametres(Dscan,col2)   "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
          set parametres(Dscan,dimpix) "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e006]"
          set panneau(Dscan,col2)      "$parametres(Dscan,col2)"
@@ -541,6 +581,71 @@ namespace eval ::Dscan {
 
       #--- Calcul de dt en fonction de la declinaison
       ::Dscan::cmdCalcul
+   }
+
+   proc changeObt { } {
+      variable This
+      global audace caption confCam frmm panneau
+
+      if { [ ::cam::list ] != "" } {
+         #---
+         set camNo      $audace(camNo)
+         set camProduct [ cam$camNo product ]
+         #---
+         set ShutterOptionList    [ ::confCam::getShutterOption $camNo ]
+         set lg_ShutterOptionList [ llength $ShutterOptionList ]
+         #---
+         if { [ ::confCam::hasShutter $camNo ] } {
+            incr panneau(Dscan,obt)
+            if { $lg_ShutterOptionList == "3" } {
+               if { $panneau(Dscan,obt) == "3" } {
+                  set panneau(Dscan,obt) "0"
+               }
+            } elseif { $lg_ShutterOptionList == "2" } {
+               if { $panneau(Dscan,obt) == "3" } {
+                  set panneau(Dscan,obt) "1"
+               }
+            }
+            $This.fra4.obt.lab1 configure -text $panneau(Dscan,obt,$panneau(Dscan,obt))
+            if { "$camProduct" == "audine" } {
+               set conf(audine,foncobtu) $panneau(Dscan,obt)
+               catch { set frm $frmm(Camera1) }
+            }
+            #---
+            switch -exact -- $panneau(Dscan,obt) {
+               0  {
+                  set confCam(audine,foncobtu) $caption(scan,obtu_ouvert)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "opened"
+               }
+               1  {
+                  set confCam(audine,foncobtu) $caption(scan,obtu_ferme)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "closed"
+               }
+               2  {
+                  set confCam(audine,foncobtu) $caption(scan,obtu_synchro)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "synchro"
+               }
+            }
+         } else {
+            tk_messageBox -title $caption(scan,pb) -type ok \
+               -message $caption(scan,onlycam+obt)
+         }
+      } else {
+         ::confCam::run
+         tkwait window $audace(base).confCam
+      }
    }
 
    #--- Cette procedure verifie que la chaine passee en argument decrit bien un entier
@@ -828,6 +933,24 @@ proc DscanBuildIF { This } {
 
       #--- Frame de l'acquisition
       frame $This.fra4 -borderwidth 1 -relief groove
+
+         #--- Frame de l'obturateur
+         frame $This.fra4.obt -borderwidth 2 -relief ridge -width 16
+
+            #--- Bouton de changement d'etat de l'obturateur
+            button $This.fra4.obt.but -text $panneau(Dscan,obturateur) -command "::Dscan::changeObt" \
+               -state normal
+            pack $This.fra4.obt.but -side left -ipady 3
+
+            #--- Label pour l'etat de l'obturateur
+            label $This.fra4.obt.lab1 -text "" -width 6 -font $audace(font,arial_10_b) -relief groove
+            pack $This.fra4.obt.lab1 -side left -fill x -expand true -ipady 3
+
+            #--- Label avant la connexion de la camera
+            label $This.fra4.obt.lab2 -text "" -font $audace(font,arial_10_b) -relief ridge -justify center
+            pack $This.fra4.obt.lab2 -side top -fill x -ipady 3
+
+         pack $This.fra4.obt -side top -fill x
 
          #--- Label pour l'acquisition
          label $This.fra4.lab1 -text $panneau(Dscan,acq) -relief flat
