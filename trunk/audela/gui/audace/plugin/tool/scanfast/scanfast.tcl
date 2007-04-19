@@ -1,9 +1,9 @@
 #
 # Fichier : scanfast.tcl
 # Description : Outil pour l'acquisition en mode scan rapide
-# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaison parallele, Audinet ou EthernAude)
+# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele, Audinet et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.24 2007-04-14 08:33:55 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.25 2007-04-19 17:31:59 robertdelmas Exp $
 #
 
 global panneau
@@ -141,6 +141,7 @@ namespace eval ::Scanfast {
 
       #--- Chargement des fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool scanfast scanfastSetup.tcl ]\""
+
       #--- Mise en place de l'interface graphique
       createPanel $in.scanfast
    }
@@ -176,6 +177,7 @@ namespace eval ::Scanfast {
       set panneau(Scanfast,ms)              "$caption(scanfast,milliseconde)"
       set panneau(Scanfast,calib)           "$caption(scanfast,calibration)"
       set panneau(Scanfast,loops)           "$caption(scanfast,boucles)"
+      set panneau(Scanfast,obturateur)      "$caption(scanfast,obt)"
       set panneau(Scanfast,acq)             "$caption(scanfast,acquisition)"
       set panneau(Scanfast,go0)             "$caption(scanfast,goccd)"
       set panneau(Scanfast,stop)            "$caption(scanfast,stop)"
@@ -228,6 +230,7 @@ namespace eval ::Scanfast {
       if { ! [ info exists parametres(Scanfast,interligne) ] } { set parametres(Scanfast,interligne) "100" }
       if { ! [ info exists parametres(Scanfast,dt) ] }         { set parametres(Scanfast,dt)         "40" }
       if { ! [ info exists parametres(Scanfast,speed) ] }      { set parametres(Scanfast,speed)      "8000" }
+      if { ! [ info exists parametres(Scanfast,obt) ] }        { set parametres(Scanfast,obt)        "2" }
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       ::scanfastSetup::initToConf
@@ -245,6 +248,7 @@ namespace eval ::Scanfast {
       set parametres(Scanfast,interligne) $panneau(Scanfast,interligne)
       set parametres(Scanfast,dt)         $panneau(Scanfast,dt)
       set parametres(Scanfast,speed)      $panneau(Scanfast,speed)
+      set parametres(Scanfast,obt)        $panneau(Scanfast,obt)
 
       #--- Sauvegarde des parametres
       catch {
@@ -262,11 +266,37 @@ namespace eval ::Scanfast {
 
    proc Adapt_Outil_Scanfast { { a "" } { b "" } { c "" } } {
       variable This
-      global caption conf panneau
+      global conf panneau
+
+      #--- Numero de la camera
+      set camNo [ ::confVisu::getCamNo 1 ]
+
+      #--- Configuration de l'obturateur
+      if { $camNo != "0" } {
+         if { ! [ info exists conf(audine,foncobtu) ] } {
+            set conf(audine,foncobtu) "2"
+         } else {
+            if { $conf(audine,foncobtu) == "0" } {
+               set panneau(Scanfast,obt) "0"
+            } elseif { $conf(audine,foncobtu) == "1" } {
+               set panneau(Scanfast,obt) "1"
+            } elseif { $conf(audine,foncobtu) == "2" } {
+               set panneau(Scanfast,obt) "2"
+            }
+         }
+         pack $This.fra4.obt.but -side left -ipady 3
+         pack $This.fra4.obt.lab1 -side left -fill x -expand true -ipady 3
+         pack forget $This.fra4.obt.lab2
+         $This.fra4.obt.lab1 configure -text $panneau(Scanfast,obt,$panneau(Scanfast,obt))
+      } else {
+         pack forget $This.fra4.obt.but
+         pack forget $This.fra4.obt.lab1
+         pack $This.fra4.obt.lab2 -side top -fill x -ipady 3
+      }
 
       #--- Mise a jour de la liste des binnings disponibles
       $This.fra3.bin.but_bin.menu delete 0 20
-      set list_binning_scan [ ::confCam::getBinningList_Scan [ ::confVisu::getCamNo 1 ] ]
+      set list_binning_scan [ ::confCam::getBinningList_Scan $camNo ]
       foreach valbin $list_binning_scan {
          $This.fra3.bin.but_bin.menu add radiobutton -label "$valbin" \
             -indicatoron "1" \
@@ -317,22 +347,28 @@ namespace eval ::Scanfast {
    proc startTool { visuNo } {
       variable This
       variable parametres
-      global panneau
+      global caption panneau
 
       #--- Chargement de la configuration
       ::Scanfast::Chargement_Var
 
       #--- Initialisation des variables de l'outil
-      set panneau(Scanfast,col1)        "$parametres(Scanfast,col1)"
-      set panneau(Scanfast,col2)        "$parametres(Scanfast,col2)"
-      set panneau(Scanfast,lig1)        "$parametres(Scanfast,lig1)"
-      set panneau(Scanfast,binning)     "$parametres(Scanfast,binning)"
-      set panneau(Scanfast,interligne)  "$parametres(Scanfast,interligne)"
-      set panneau(Scanfast,dt)          "$parametres(Scanfast,dt)"
-      set panneau(Scanfast,speed)       "$parametres(Scanfast,speed)"
+      set panneau(Scanfast,col1)       "$parametres(Scanfast,col1)"
+      set panneau(Scanfast,col2)       "$parametres(Scanfast,col2)"
+      set panneau(Scanfast,lig1)       "$parametres(Scanfast,lig1)"
+      set panneau(Scanfast,binning)    "$parametres(Scanfast,binning)"
+      set panneau(Scanfast,interligne) "$parametres(Scanfast,interligne)"
+      set panneau(Scanfast,dt)         "$parametres(Scanfast,dt)"
+      set panneau(Scanfast,speed)      "$parametres(Scanfast,speed)"
+      set panneau(Scanfast,obt)        "$parametres(Scanfast,obt)"
 
       #--- Initialisation des variables de la boite de configuration
       ::scanfastSetup::confToWidget
+
+      #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
+      set panneau(Scanfast,obt,0) "$caption(scanfast,obtu_ouvert)"
+      set panneau(Scanfast,obt,1) "$caption(scanfast,obtu_ferme)"
+      set panneau(Scanfast,obt,2) "$caption(scanfast,obtu_synchro)"
 
       #--- Configuration dynamique de l'outil en fonction de la liaison
       ::Scanfast::Adapt_Outil_Scanfast
@@ -438,9 +474,9 @@ namespace eval ::Scanfast {
             $This.fra4.but2 configure -relief raised -text $panneau(Scanfast,stop) -state normal
             update
 
-            #--- Sauvegarde de l'etat de l'obturateur
-            set shutter_state [ cam$audace(camNo) shutter ]
-            cam$audace(camNo) shutter synchro
+           ### #--- Sauvegarde de l'etat de l'obturateur
+           ### set shutter_state [ cam$audace(camNo) shutter ]
+           ### cam$audace(camNo) shutter synchro
 
             #--- Declenchement de l'acquisition
             if { [ ::confLink::getLinkNamespace $conf(audine,port) ] == "parallelport" } {
@@ -501,8 +537,8 @@ namespace eval ::Scanfast {
                }
             }
 
-            #--- Restauration de l'etat initial de l'obturateur
-            cam$audace(camNo) shutter $shutter_state
+           ### #--- Restauration de l'etat initial de l'obturateur
+           ### cam$audace(camNo) shutter $shutter_state
 
             #--- Gestion graphique du bouton GO CCD
             $This.fra4.but1 configure -relief groove -text $panneau(Scanfast,go2) -state disabled
@@ -610,7 +646,7 @@ namespace eval ::Scanfast {
       variable parametres
       global audace conf panneau
 
-      catch {
+      if { [ ::cam::list ] != "" } {
          set parametres(Scanfast,col2) "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
          set panneau(Scanfast,col2)    "$parametres(Scanfast,col2)"
          $This.fra2.fra1.ent2 configure -textvariable panneau(Scanfast,col2)
@@ -634,6 +670,71 @@ namespace eval ::Scanfast {
          if { $choix == "yes" } {
             ::Scanfast::cmdCalcul
          }
+      }
+   }
+
+   proc changeObt { } {
+      variable This
+      global audace caption confCam frmm panneau
+
+      if { [ ::cam::list ] != "" } {
+         #---
+         set camNo      $audace(camNo)
+         set camProduct [ cam$camNo product ]
+         #---
+         set ShutterOptionList    [ ::confCam::getShutterOption $camNo ]
+         set lg_ShutterOptionList [ llength $ShutterOptionList ]
+         #---
+         if { [ ::confCam::hasShutter $camNo ] } {
+            incr panneau(Scanfast,obt)
+            if { $lg_ShutterOptionList == "3" } {
+               if { $panneau(Scanfast,obt) == "3" } {
+                  set panneau(Scanfast,obt) "0"
+               }
+            } elseif { $lg_ShutterOptionList == "2" } {
+               if { $panneau(Scanfast,obt) == "3" } {
+                  set panneau(Scanfast,obt) "1"
+               }
+            }
+            $This.fra4.obt.lab1 configure -text $panneau(Scanfast,obt,$panneau(Scanfast,obt))
+            if { "$camProduct" == "audine" } {
+               set conf(audine,foncobtu) $panneau(Scanfast,obt)
+               catch { set frm $frmm(Camera1) }
+            }
+            #---
+            switch -exact -- $panneau(Scanfast,obt) {
+               0  {
+                  set confCam(audine,foncobtu) $caption(scanfast,obtu_ouvert)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "opened"
+               }
+               1  {
+                  set confCam(audine,foncobtu) $caption(scanfast,obtu_ferme)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "closed"
+               }
+               2  {
+                  set confCam(audine,foncobtu) $caption(scanfast,obtu_synchro)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "synchro"
+               }
+            }
+         } else {
+            tk_messageBox -title $caption(scanfast,pb) -type ok \
+               -message $caption(scanfast,onlycam+obt)
+         }
+      } else {
+         ::confCam::run
+         tkwait window $audace(base).confCam
       }
    }
 
@@ -905,6 +1006,24 @@ proc ScanfastBuildIF { This } {
 
       #--- Frame de l'acquisition
       frame $This.fra4 -borderwidth 1 -relief groove
+
+         #--- Frame de l'obturateur
+         frame $This.fra4.obt -borderwidth 2 -relief ridge -width 16
+
+            #--- Bouton de changement d'etat de l'obturateur
+            button $This.fra4.obt.but -text $panneau(Scanfast,obturateur) -command "::Scanfast::changeObt" \
+               -state normal
+            pack $This.fra4.obt.but -side left -ipady 3
+
+            #--- Label pour l'etat de l'obturateur
+            label $This.fra4.obt.lab1 -text "" -width 6 -font $audace(font,arial_10_b) -relief groove
+            pack $This.fra4.obt.lab1 -side left -fill x -expand true -ipady 3
+
+            #--- Label avant la connexion de la camera
+            label $This.fra4.obt.lab2 -text "" -font $audace(font,arial_10_b) -relief ridge -justify center
+            pack $This.fra4.obt.lab2 -side top -fill x -ipady 3
+
+         pack $This.fra4.obt -side top -fill x
 
          #--- Label pour l'acquisition
          label $This.fra4.lab1 -text $panneau(Scanfast,acq) -relief flat
