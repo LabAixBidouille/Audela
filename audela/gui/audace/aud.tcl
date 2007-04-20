@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.67 2007-04-13 23:10:18 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.68 2007-04-20 21:29:51 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -61,7 +61,6 @@ namespace eval ::audace {
       initLastEnv $visuNo
       dispClock1
       affiche_Outil_F2
-
    }
 
    proc initEnv { } {
@@ -631,58 +630,58 @@ namespace eval ::audace {
            }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,r+v+b2rvb)..." \
-         { ::traiteImage::run "$caption(audace,menu,r+v+b2rvb)" "$audace(base).traiteImage" }
+         { ::traiteImage::run "r+v+b2rvb" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rvb2r+v+b)..." \
-         { ::traiteImage::run "$caption(audace,menu,rvb2r+v+b)" "$audace(base).traiteImage" }
+         { ::traiteImage::run "rvb2r+v+b" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
-         { ::traiteImage::run "$caption(audace,menu,cfa2rgb)" "$audace(base).faireImageRef" }
+         { ::traiteImage::run "cfa2rgb" "$audace(base).traiteImage" }
      ### Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,raw2cfa)..." \
-     ###    { ::faireImageRef::run "$caption(audace,menu,raw2cfa)" "$audace(base).faireImageRef" }
+     ###    { ::traiteImage::run "raw2cfa" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,window1)..."\
-         { ::pretraitement::run "$caption(audace,menu,window1)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_recadrer" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,scale)..." \
-         { ::pretraitement::run "$caption(audace,menu,scale)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_reechantillonner" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,offset)..." \
-         { ::pretraitement::run "$caption(audace,menu,offset)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_ajouter_cte" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mult_cte)..." \
-         { ::pretraitement::run "$caption(audace,menu,mult_cte)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_multiplier_cte" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,clip)..." \
-         { ::pretraitement::run "$caption(audace,menu,clip)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_ecreter" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,subsky)..." \
-         { ::pretraitement::run "$caption(audace,menu,subsky)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_soust_fond_ciel" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,noffset)..." \
-         { ::pretraitement::run "$caption(audace,menu,noffset)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_norm_fond" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,ngain)..." \
-         { ::pretraitement::run "$caption(audace,menu,ngain)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_norm_eclai" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,addition)..." \
-         { ::pretraitement::run "$caption(audace,menu,addition)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_addition" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,soust)..." \
-         { ::pretraitement::run "$caption(audace,menu,soust)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_soustraction" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,division)..." \
-         { ::pretraitement::run "$caption(audace,menu,division)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_division" "$audace(base).pretraitement" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,opt_noir)..." \
-         { ::pretraitement::run "$caption(audace,menu,opt_noir)" "$audace(base).pretraitement" }
+         { ::pretraitement::run "multi_opt_noir" "$audace(base).pretraitement" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,mediane)..." \
-         { ::traiteWindow::run "$caption(audace,menu,mediane)" "$audace(base).traiteWindow" }
+         { ::traiteWindow::run "serie_mediane" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,somme)..." \
-         { ::traiteWindow::run "$caption(audace,menu,somme)" "$audace(base).traiteWindow" }
+         { ::traiteWindow::run "serie_somme" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,moyenne)..." \
-         { ::traiteWindow::run "$caption(audace,menu,moyenne)" "$audace(base).traiteWindow" }
+         { ::traiteWindow::run "serie_moyenne" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,ecart_type)..." \
-         { ::traiteWindow::run "$caption(audace,menu,ecart_type)" "$audace(base).traiteWindow" }
+         { ::traiteWindow::run "serie_ecart_type" "$audace(base).traiteWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,recentrer)..." \
-         { ::traiteWindow::run "$caption(audace,menu,recentrer)" "$audace(base).traiteWindow" }
+         { ::traiteWindow::run "serie_recentrer" "$audace(base).traiteWindow" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_offset)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_offset)" "$audace(base).faireImageRef" }
+         { ::faireImageRef::run "faire_offset" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_dark)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_dark)" "$audace(base).faireImageRef" }
+         { ::faireImageRef::run "faire_dark" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,faire_flat_field)..." \
-         { ::faireImageRef::run "$caption(audace,menu,faire_flat_field)" "$audace(base).faireImageRef" }
+         { ::faireImageRef::run "faire_flat_field" "$audace(base).faireImageRef" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,pretraite)..." \
-         { ::faireImageRef::run "$caption(audace,menu,pretraite)" "$audace(base).faireImageRef" }
+         { ::faireImageRef::run "pretraitement" "$audace(base).faireImageRef" }
 
       Menu           $visuNo "$caption(audace,menu,traitement)"
       Menu_Command   $visuNo "$caption(audace,menu,traitement)" "$caption(audace,menu,masque_flou)..." \
@@ -1456,8 +1455,8 @@ proc startdebug { } {
    catch {
       #--- Chargement statique de la librairie TK pour RamDebugger
       if { $::tcl_platform(os) == "Linux" } {
-         #--- pour LINUX , il faut inserer prefixe "lib"  devant le nom de la librairie
-         ##load [file join [file dirname $::tcl_library] "lib[file tail $::tk_library][info sharedlibextension]"]
+         #--- Pour LINUX, il faut inserer le prefixe "lib" devant le nom de la librairie
+        ### load [file join [file dirname $::tcl_library] "lib[file tail $::tk_library][info sharedlibextension]"]
          load "/usr/lib/libtk8.4.so"
       } else {
          load [file join "$::audela_start_dir" tk84t.dll ]
@@ -1465,7 +1464,6 @@ proc startdebug { } {
    }
    package require RamDebugger
 }
-
 
 #
 #--- Execute en premier au demarrage
