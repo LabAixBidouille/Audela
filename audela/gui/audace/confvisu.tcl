@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.54 2007-04-13 23:12:51 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.55 2007-04-21 21:48:43 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -181,19 +181,16 @@ namespace eval ::confVisu {
       }
 
       #--- je ferme l'outil courant
-      if { $visuNo == "1" } {
-         if { [getTool $visuNo] != "" } {
-            ::[getTool $visuNo]::deletePanel $visuNo
-         }
-      } else {
-         #--- je ferme les outils 
-         if { "$private($visuNo,This)" != "$audace(base).select" } {
-            foreach pluginInstance $private($visuNo,pluginInstanceList) {
-               $pluginInstance\::deletePluginInstance $visuNo
-             }
+      if { [getTool $visuNo] != "" } {
+         ::[getTool $visuNo]::stopTool $visuNo
+      }
+      #--- je detruis tous les outils 
+      if { "$private($visuNo,This)" != "$audace(base).select" } {
+         foreach pluginInstance $private($visuNo,pluginInstanceList) {
+            $pluginInstance\::deletePluginInstance $visuNo
          }
       }
-
+      
       #--- je supprime l'image associee a la visu
       image delete image[visu$visuNo image]
 

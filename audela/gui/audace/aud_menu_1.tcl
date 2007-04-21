@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.7 2007-02-10 18:05:58 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.8 2007-04-21 21:47:01 michelpujol Exp $
 #
 
 namespace eval ::audace {
@@ -263,103 +263,103 @@ namespace eval ::audace {
          }
          destroy .main
       }
-      #--- Si l'outil SnVisu est affiche, je le ferme avant de quitter
-      if { [ winfo exists $audace(base).snvisu ] } {
-         sn_delete
-      }
-      #--- Si l'outil CCD Couleur est affiche, je le ferme avant de quitter
-      if { [ winfo exists $audace(base).test ] } {
-         testexit
-      }
       #---
       menustate disabled
-      wm protocol $audace(base) WM_DELETE_WINDOW ::audace::rien
-      wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::rien
-      #--- Positions et tailles des fenetres
-      set conf(audace,visu1,wmgeometry) "[wm geometry $audace(base)]"
-      set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
-      if {[winfo exists $audace(base).tjrsvisible]==1} {
-         set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
-      }
-      #--- Arrete les plugins camera
-      ::confCam::stopDriver
-      #--- Arrete le plugin monture
-      ### ::confTel::stopDriver
-      #--- Arrete le plugin equipement
-      ::confEqt::stopDriver
-      #--- Arrete le plugin raquette
-      ::confPad::stopDriver
-      #--- Arrete le plugin carte
-      ::confCat::stopDriver
-      #--- Arrete les visu sauf la visu1
-      foreach visuNo [visu::list] {
-         if { $visuNo != "1"  } {
-            ::confVisu::close $visuNo
+      set catchError [ catch {
+         wm protocol $audace(base) WM_DELETE_WINDOW ::audace::rien
+         wm protocol $audace(Console) WM_DELETE_WINDOW ::audace::rien
+         #--- Positions et tailles des fenetres
+         set conf(audace,visu1,wmgeometry) "[wm geometry $audace(base)]"
+         set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
+         if {[winfo exists $audace(base).tjrsvisible]==1} {
+            set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
          }
-      }
-
-      if { $::tcl_platform(os) == "Linux" } {
-         set filename [ file join ~ .audela config.ini ]
-         set filebak [ file join ~ .audela config.bak ]
-      } else {
-         set filename [ file join $audace(rep_audela) audace config.ini ]
-         set filebak [ file join $audace(rep_audela) audace config.bak ]
-      }
-      set filename2 $filename
-      catch {
-         file copy -force $filename $filebak
-      }
-      array set file_conf [ini_getArrayFromFile $filename]
-
-      #--- Suppression des fichiers temporaires 'fonction_transfert.pal' et 'fonction_transfert_x.pal'
-      if { [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ] != "" } {
-         #--- Cas des fichiers temporaires 'fonction_transfert_x.pal'
-         set index_final [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ]
-         for { set index "1" } { $index <= $index_final } { incr index } {
-            file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ]$index[ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
-            file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ string trimright [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ] "_" ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
+         #--- Arrete les plugins camera
+         ::confCam::stopDriver
+         #--- Arrete le plugin monture
+         ### ::confTel::stopDriver
+         #--- Arrete le plugin equipement
+         ::confEqt::stopDriver
+         #--- Arrete le plugin raquette
+         ::confPad::stopDriver
+         #--- Arrete le plugin carte
+         ::confCat::stopDriver
+         #--- Arrete les visu sauf la visu1
+         foreach visuName [winfo children .] {
+            set visuNo ""
+            scan $visuName ".visu%d" visuNo 
+            if { $visuNo != ""  } {
+               ::confVisu::close $visuNo
+            }
          }
-      } else {
-         #--- Cas du fichier temporaire 'fonction_transfert.pal'
-         file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ][ lindex [ decomp $tmp(fichier_palette).pal ] 2 ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
-      }
-
-      if {[ini_fileNeedWritten file_conf conf]} {
-         set old_focus [focus]
-         set choice [tk_messageBox -message "$caption(audace,enregistrer_config_1)\n$caption(audace,enregistrer_config_2)" \
-            -title "$caption(audace,enregistrer_config_3)" -icon question -type yesnocancel]
-         if {$choice=="yes"} {
-            #--- Enregistrer la configuration
-            array set theconf [ini_merge file_conf conf]
-            ini_writeIniFile $filename2 theconf
-            ::confVisu::stopTool $audace(visuNo)
-            ::audace::shutdown_devices
-            exit
-         } elseif {$choice=="no"} {
-            #--- Pas d'enregistrement
-            wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
-            wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
-            ::confVisu::stopTool $audace(visuNo)
-            ::audace::shutdown_devices
-            exit
+         
+         if { $::tcl_platform(os) == "Linux" } {
+            set filename [ file join ~ .audela config.ini ]
+            set filebak [ file join ~ .audela config.bak ]
          } else {
+            set filename [ file join $audace(rep_audela) audace config.ini ]
+            set filebak [ file join $audace(rep_audela) audace config.bak ]
+         }
+         set filename2 $filename
+         catch {
+            file copy -force $filename $filebak
+         }
+         array set file_conf [ini_getArrayFromFile $filename]
+         
+         #--- Suppression des fichiers temporaires 'fonction_transfert.pal' et 'fonction_transfert_x.pal'
+         if { [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ] != "" } {
+            #--- Cas des fichiers temporaires 'fonction_transfert_x.pal'
+            set index_final [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ]
+            for { set index "1" } { $index <= $index_final } { incr index } {
+               file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ]$index[ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
+               file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ string trimright [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ] "_" ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
+            }
+         } else {
+            #--- Cas du fichier temporaire 'fonction_transfert.pal'
+            file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ][ lindex [ decomp $tmp(fichier_palette).pal ] 2 ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
+         }
+         
+         if {[ini_fileNeedWritten file_conf conf]} {
+            set old_focus [focus]
+            set choice [tk_messageBox -message "$caption(audace,enregistrer_config_1)\n$caption(audace,enregistrer_config_2)" \
+                  -title "$caption(audace,enregistrer_config_3)" -icon question -type yesnocancel]
+            if {$choice=="yes"} {
+               #--- Enregistrer la configuration
+               array set theconf [ini_merge file_conf conf]
+               ini_writeIniFile $filename2 theconf
+               ::confVisu::close $audace(visuNo)
+               ::audace::shutdown_devices
+               exit
+            } elseif {$choice=="no"} {
+               #--- Pas d'enregistrement
+               wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
+               wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
+               ::confVisu::close $audace(visuNo)
+               ::audace::shutdown_devices
+               exit
+            } else {
+               wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
+               wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
+            }
+            focus $old_focus
+         } else {
+            set choice [tk_messageBox -type yesno -icon warning -title "$caption(audace,attention)" \
+                  -message "$caption(audace,quitter)"]
+            if {$choice=="yes"} {
+               ::confVisu::close $audace(visuNo)
+               ::audace::shutdown_devices
+               exit
+            }
+            ::console::affiche_resultat "$caption(audace,enregistrer_config_4)\n\n"
             wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
             wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
          }
-         focus $old_focus
-      } else {
-         set choice [tk_messageBox -type yesno -icon warning -title "$caption(audace,attention)" \
-            -message "$caption(audace,quitter)"]
-         if {$choice=="yes"} {
-            ::confVisu::stopTool $audace(visuNo)
-            ::audace::shutdown_devices
-            exit
-         }
-         ::console::affiche_resultat "$caption(audace,enregistrer_config_4)\n\n"
-         wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
-         wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
-      }
       #---
+      } catchMessage ]
+      if { $catchError == 1 } {
+         ::console::affiche_erreur "$::errorInfo\n"
+         tk_messageBox -message "$catchMessage" -title "$caption(audace,enregistrer_config_3)" -icon error 
+      }
       menustate normal
       focus $audace(base)
    }
