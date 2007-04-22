@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.8 2007-04-21 21:47:01 michelpujol Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.9 2007-04-22 07:16:10 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -287,12 +287,12 @@ namespace eval ::audace {
          #--- Arrete les visu sauf la visu1
          foreach visuName [winfo children .] {
             set visuNo ""
-            scan $visuName ".visu%d" visuNo 
-            if { $visuNo != ""  } {
+            scan $visuName ".visu%d" visuNo
+            if { $visuNo != "" } {
                ::confVisu::close $visuNo
             }
          }
-         
+
          if { $::tcl_platform(os) == "Linux" } {
             set filename [ file join ~ .audela config.ini ]
             set filebak [ file join ~ .audela config.bak ]
@@ -305,7 +305,7 @@ namespace eval ::audace {
             file copy -force $filename $filebak
          }
          array set file_conf [ini_getArrayFromFile $filename]
-         
+
          #--- Suppression des fichiers temporaires 'fonction_transfert.pal' et 'fonction_transfert_x.pal'
          if { [ lindex [ decomp $tmp(fichier_palette).pal ] 2 ] != "" } {
             #--- Cas des fichiers temporaires 'fonction_transfert_x.pal'
@@ -318,7 +318,7 @@ namespace eval ::audace {
             #--- Cas du fichier temporaire 'fonction_transfert.pal'
             file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ][ lindex [ decomp $tmp(fichier_palette).pal ] 2 ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
          }
-         
+
          if {[ini_fileNeedWritten file_conf conf]} {
             set old_focus [focus]
             set choice [tk_messageBox -message "$caption(audace,enregistrer_config_1)\n$caption(audace,enregistrer_config_2)" \
@@ -358,7 +358,7 @@ namespace eval ::audace {
       } catchMessage ]
       if { $catchError == 1 } {
          ::console::affiche_erreur "$::errorInfo\n"
-         tk_messageBox -message "$catchMessage" -title "$caption(audace,enregistrer_config_3)" -icon error 
+         tk_messageBox -message "$catchMessage" -title "$caption(audace,enregistrer_config_3)" -icon error
       }
       menustate normal
       focus $audace(base)
