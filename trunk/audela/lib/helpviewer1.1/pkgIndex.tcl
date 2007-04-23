@@ -8,4 +8,5 @@
 # script is sourced, the variable $dir must contain the
 # full path name of this file's directory.
 
-package ifneeded helpviewer 1.1 [list source [file join $dir helpviewer.tcl]]
+#-- version 1.1.1 = version 1.1 modified for Audela
+package ifneeded helpviewer 1.1.1 [list source [file join $dir helpviewer.tcl]]

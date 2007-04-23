@@ -1,9 +1,3 @@
-#
-# Fichier : helpviewer.tcl
-# Auteur : Ramon Ribó
-# Date de mise a jour : 29 juin 2004
-#
-
 
 # lappend auto_path /c/compasser/addons
 # lappend auto_path /c/TclTk/RamDebugger/addons
@@ -40,21 +34,25 @@ lappend auto_path [file dirname [file dirname [info script]]]
 ################################################################################
 
 
-package provide helpviewer 1.1
+
 # requiring exactly 2.1 to avoid getting the one from Activestate
-catch { package require -exact Tkhtml 2.1 }
+#catch { package require -exact Tkhtml 2.1 }
+#package require Tkhtml 3.0
+package require Tkhtml ;#de momento que funcione si tiene solo la version 2
 
 package require BWidget
 package require supergrid
 package require dialogwin
 package require fileutil
-package require htmlparse 1.1
+package require htmlparse
 package require struct 2.1
 
+catch { package require img::jpeg }
+catch { package require img::png }
 catch { package require resizer } 
 package require msgcat
 
-if { [info procs _] == "" } {
+if { [info command _] eq "" } {
     proc ::_ { args } {
         if { [regexp {(.*)#C#(.*)} [lindex $args 0] {} str comm] } {
             set args [lreplace $args 0 0 $str]
@@ -172,6 +170,10 @@ namespace eval History {
         variable pos
         variable menu
         
+        if { $pos >= [expr [llength $list]-1] } {
+            bell
+            return
+        }
         incr pos 1
         if { $pos == [expr [llength $list]-1] } {
             if { [info exists menu] && [winfo exists $menu] } {
@@ -200,7 +202,8 @@ namespace eval HelpViewer {
     variable Images
     variable BigImages
     variable SearchPos ""
-
+    variable selection_state ""
+    
     variable searchcase 0
     variable searchmode -exact
     variable searchcase 0
@@ -347,14 +350,26 @@ proc HelpViewer::FormCmd {n cmd args} {
     }
 }
 
+proc HelpViewer::do_not_delete_image { args } {
+    set a 1
+}
+
 proc HelpViewer::ImageCmd { htmlwidget args } {
     variable showImages
     variable OldImages
     variable Images
     variable BigImages
+    variable html
+    global HelpPriv
 
     if {!$showImages} {
-        return smgray
+        if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+            return smgray
+        } else {
+            set img [image create photo]
+            $img copy smgray
+            return $img
+        }
     }
     set fn [lindex $args 0]
 
@@ -372,11 +387,22 @@ proc HelpViewer::ImageCmd { htmlwidget args } {
         unset OldImages($fn)
         return $Images($fn)
     }
+    set fn [file join $HelpPriv(basedir) $fn]
     if {[catch {image create photo -file $fn} img]} {
-        return smgray
+        if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+            return smgray
+        } else {
+            set img [image create photo]
+            $img copy smgray
+            return $img
+        }
     }
     set userwidth [lindex $args 1]
     set userheight [lindex $args 2]
+
+    if { $userwidth eq "" && [image width $img] > .9*[winfo width $html] } {
+        set userwidth [expr {int(.9*[winfo width $html])}]
+    }
 
     if { $userwidth ne "" && [info command img_zoom] ne "" } {
         if { [regexp {([\d.]+)%} $userwidth {} width_percent] } {
@@ -425,6 +451,96 @@ proc HelpViewer::AppletCmd {w arglist} {
     label $w -text "The Applet $w" -bd 2 -relief raised
 }
 
+proc HelpViewer::Motion { w x y } {
+    variable selection_state
+
+    set txt ""
+    
+    set PATH [winfo parent [winfo parent $w]]
+    $PATH configure -cursor ""
+    
+    set node ""
+    foreach node [$w node $x $y] {
+        for {set n $node} {$n!=""} {set n [$n parent]} {
+            set tag [$n tag]
+            if {$tag=="a" && [$n attr -default "" href]!=""} {
+                $PATH configure -cursor hand2
+                set txt "hyper-link: [$n attr href]"
+                break
+            } 
+        }
+    }
+    if {$txt == "" && $node != ""} {
+        for {set n $node} {$n!=""} {set n [$n parent]} {
+            set tag [$n tag]
+            if {$tag==""} {
+                $PATH configure -cursor xterm
+                set txt [string range [$n text] 0 20]
+            } else {
+                set txt "<[$n tag]>$txt"
+            }
+        }
+    }
+    if { $selection_state eq "press" } {
+        set to [$w node -index $x $y]
+        if {[llength $to]==2} {
+            foreach {node index} $to {}
+            $w select to $node $index
+        }
+        selection own $w
+    }
+}
+
+proc HelpViewer::ButtonRelease1 { w x y } {
+    variable selection_state
+
+    set selection_state ""
+}
+
+proc HelpViewer::ButtonPress1 { w x y } {
+    variable selection_state
+
+    $w select clear
+    set from [$w node -index $x $y]
+    if {[llength $from]==2} {
+        foreach {node index} $from {}
+        $w select from $node $index
+        $w select to $node $index
+        set selection_state press
+    }
+    set node [lindex [$w node $x $y] 0]
+    set href ""
+    while { $node ne "" } {
+        if { [$node tag] eq "a" && [$node att -default "" href] ne "" } {
+            set href [$node att href]
+            break
+        }
+        set node [$node parent]
+    }
+    if { $href ne "" } { LoadRef $w $href }
+}
+
+proc HelpViewer::DoubleButtonPress1 { w x y } {
+    variable selection_state
+
+    set node ""
+    foreach "node index" [$w select from] break
+    if { $node eq "" } { return }
+    set txt [$node text]
+    foreach "ini end" [list $index $index] break
+    for { set i $index } { $i >= 0 } { incr i -1 } {
+        if { ![regexp {\w} [string index $txt $i]] } { break }
+        set ini $i
+    }
+    for { set i $index } { $i < [string length $txt] } { incr i } {
+        if { ![regexp {\w} [string index $txt $i]] } { break }
+        set end $i
+    }
+    $w select from $node $ini
+    $w select to $node [expr {$end+1}]
+    set selection_state press
+}
+
 # This procedure is called when the user clicks on a hyperlink.
 # See the "bind $base.h.h.x" below for the binding that invokes this
 # procedure
@@ -443,10 +559,20 @@ proc HelpViewer::HrefBinding {w x y} {
     LoadRef $w $new
 }
 
+proc HelpViewer::xml { args } {
+    set map [list > "&gt;" < "&lt;" & "&amp;" \" "&quot;" ' "&apos;"]
+    return [string map $map [join $args ""]]
+}
+
+proc HelpViewer::xml_inv { args } {
+    set map [list "&gt;" > "&lt;" < "&amp;" & "&quot;" \" "&apos;" ']
+    return [string map $map [join $args ""]]
+}
+
 proc HelpViewer::LoadRef { w new { enterinhistory 1 } } {
     global tcl_platform
 
-#--- Begin change Michel : Delete "%1" for Netscape and open file pdf
+#--- Begin change AudeLA : Delete "%1" for  open file pdf
     if { [regexp {http:/localhost/cgi-bin/man/man2html\?(\w+)\+(\w+)} $new {} sec word] } {
         SearchManHelpFor $w $word $sec
         return
@@ -456,7 +582,7 @@ proc HelpViewer::LoadRef { w new { enterinhistory 1 } } {
         if { [regexp {:/[^/]} $url] } {
             regsub {:/} $url {://} url
         }
-        if { $tcl_platform(platform) != "windows" } {
+        if { $tcl_platform(platform) != "windows"} {
             set comm [auto_execok konqueror]
             if { $comm == "" } {
                 set comm [auto_execok netscape]
@@ -494,14 +620,19 @@ proc HelpViewer::LoadRef { w new { enterinhistory 1 } } {
                 regsub -all {"%1"} $comm {} comm
                 if { [ string match "http://*" $url ] == "0" } {
                     regsub -all {//} $url {/} url
-                    set url [ file normalize $url ]
+                    if { "$extension" != ".pdf" } {
+                        set url [ file normalize $url ]
+                    } else {
+                        #--- we need url=full path for local PDF file
+                        set url [ file normalize [file join $::HelpPriv(basedir) $url ]]
+                    }
                 }
                 eval [concat "exec $comm $url &"]
             }
         }
         return
     }
-#--- End change Michel
+#--- End change AudeLA
 
     if {$new!=""} {
         set LastFile [GiveLastFile $w]
@@ -513,7 +644,11 @@ proc HelpViewer::LoadRef { w new { enterinhistory 1 } } {
         incr len -1
         if {[string range $new 0 $len]==$pattern} {
             incr len
-            $w yview [string range $new $len end]
+            set tag [string range $new $len end]
+            if { [package vcompare [package present Tkhtml] 3.0] >= 0 } {
+                set tag [$w search "a\[name='[xml_inv $tag]'\]"]
+            }
+            $w yview $tag
             if { $enterinhistory } {
                 History::Add $new
             }
@@ -526,10 +661,9 @@ proc HelpViewer::LoadRef { w new { enterinhistory 1 } } {
 }
 
 proc HelpViewer::Load { w } {
-    set filetypes {
-        {{Html Files} {.html .htm}}
-        {{All Files} *}
-    }
+    set filetypes [list \
+            [list [_ "Html Files"] {.html .htm}] \
+            [list [_ "All files"] *]]
     global lastDir htmltext
     set f [tk_getOpenFile -initialdir $lastDir -filetypes $filetypes]
     
@@ -548,7 +682,45 @@ proc HelpViewer::Clear { w } {
     variable Images
 
     global hotkey
-    $w clear
+    if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+        $w clear
+    } else {
+        $w reset
+        $w style {
+            /* This is a CSS style sheet */
+            body {
+                font-family: Verdana, helvetica, sans-serif;
+                font-size: 10pt;
+                margin: 1em;
+                text-align: justify;
+            }
+            h1,h2,h3 { 
+                background-color: #d7e4ef;
+                font-weight: bold;
+                font-size: 12pt;
+            }
+            p {
+                text-align: justify;
+                margin-top: 0cm;
+                margin-bottom: 4pt;
+            }
+            blockquote {
+                margin-top: 0cm;
+                margin-bottom: 0cm;
+                margin-right: 0cm;
+            }
+            ul {
+                margin-top: 0cm;
+                margin-bottom: 0cm;
+            }
+            td {
+                vertical-align: top
+            }
+            li {
+                margin-bottom: 4pt;
+            }
+        }
+    }
     catch {unset hotkey}
     ClearBigImages
     ClearOldImages
@@ -562,7 +734,7 @@ proc HelpViewer::ClearOldImages {} {
     variable OldImages
  
    foreach fn [array names OldImages] {
-        image delete $OldImages($fn)
+        catch { image delete $OldImages($fn) }
     }
     array unset OldImages
 }
@@ -594,6 +766,28 @@ proc HelpViewer::ReadFile {name} {
             set r [read $fp]
             close $fp
         }
+        if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+            #some libTkHtml.dll show incorrecty this letter, 
+            #and other dll's like ActiveState 8.4.9.0 or 8.5.0.0 crash
+            regsub -all {\u00E9} $r {\&eacute;} r
+        } else {
+            set map {
+                á &aacute;
+                é &eacute;
+                í &iacute;
+                ó &oacute;
+                ú &uacute;
+                à &agrave;
+                è &egrave;
+                ì &igrave;
+                ò &ograve;
+                ù &ugrave;
+                ñ &ntilde;
+                ä &auml;
+                ö &ouml;
+            }
+            set r [string map $map $r]
+        }
         return $r
     }
 }
@@ -607,11 +801,11 @@ proc HelpViewer::LoadFile {w name { enterinhistory 1 } { tag "" } } {
     if { $name == "" } { return }
 
     if { [file isdir $name] } {
-#--- begin change michel : catch error: no files match blob pattern
+#--- begin change audela : catch error when no files match glob pattern
         if { [catch { set files [glob -dir $name *] } ] !=0 } {
             set files [list]
         }        
-#--- end change michel         
+#--- end change audela         
         if { [llength $files] == 1 } {
             set name [lindex $files 0]
         } else {
@@ -638,7 +832,10 @@ proc HelpViewer::LoadFile {w name { enterinhistory 1 } { tag "" } } {
     Clear $w
     EnterLastFile $w $name
 
-    $w config -base $name
+    if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+        $w configure -base $name
+    }
+    set HelpPriv(basedir) [file dirname $name]
     if { $enterinhistory } {
         if { $tag == "" } {
             History::Add $name
@@ -646,12 +843,15 @@ proc HelpViewer::LoadFile {w name { enterinhistory 1 } { tag "" } } {
             History::Add $name#$tag
         }
     }
-    $w sel clear
+    $w select clear
     $w parse $html
     ClearOldImages
     if { $tag != "" } {
         update idletasks
-        $w yview $tag
+        if { [package vcompare [package present Tkhtml] 3.0] >= 0 } {
+            set tag [$w search "a\[name='[xml_inv $tag]'\]"]
+        }
+        if { $tag ne "" } { $w yview $tag }
     }
     TryToSelect $name
     set SearchPos ""
@@ -709,7 +909,7 @@ proc HelpViewer::SearchManHelpFor { w word { mansection "" } } {
 
     Clear $w
 
-    $w sel clear
+    $w select clear
     $w parse $html
     ClearOldImages
     variable SearchPos
@@ -743,24 +943,24 @@ proc HelpViewer::ManageSel { htmlw w x y type } {
     switch -glob $type {
         press {
             update idletasks
-            $htmlw sel clear
+            $htmlw select clear
             set idx [$htmlw index @$x,$y]
             if { $idx == "" } { return }
             $htmlw insert $idx
-            $htmlw sel set $idx $idx
+            $htmlw select set $idx $idx
         }
         motion* {
             if { $type == "motion" } {
                 #set ini [$htmlw index sel.first]
                 set ini [$htmlw index insert]
                 if { $ini == "" } { 
-                    $htmlw sel clear
+                    $htmlw select clear
                 } else {
                     set idx [$htmlw index @$x,$y]
                     if { $idx <= $ini } {
-                        $htmlw sel set $idx $ini
+                        $htmlw select set $idx $ini
                     } else {
-                        $htmlw sel set $ini $idx
+                        $htmlw select set $ini $idx
                     }
                 }
             }
@@ -788,17 +988,17 @@ proc HelpViewer::ManageSel { htmlw w x y type } {
             #set ini [$htmlw index sel.first]
             set ini [$htmlw index insert]
             if { $ini == "" } { 
-                $htmlw sel clear
+                $htmlw select clear
                 return
             }
             set idx [$htmlw index @$x,$y]
             if { $idx == $ini } {
-                $htmlw sel clear
+                $htmlw select clear
             } else {
                 if { $idx <= $ini } {
-                    $htmlw sel set $idx $ini
+                    $htmlw select set $idx $ini
                 } else {
-                    $htmlw sel set $ini $idx
+                    $htmlw select set $ini $idx
                 }
             }
             if { $tcl_platform(platform) != "windows"} {
@@ -811,7 +1011,7 @@ proc HelpViewer::ManageSel { htmlw w x y type } {
 
 
 proc HelpViewer::LooseSelection { w } {
-    $w sel clear
+    $w select clear
 }
 
 proc HelpViewer::CopySelected { w { offset 0 } { maxBytes 0} } {
@@ -861,32 +1061,86 @@ proc HelpViewer::CopySelected { w { offset 0 } { maxBytes 0} } {
     }
 }
 
+proc guiGetSelection { w { offset 0 } { maxChars 0 } } {
+    catch {
+        set span [$w select span]
+        if {[llength $span] != 4} {
+            return ""
+        }
+        foreach {n1 i1 n2 i2} $span {}
+        
+        set not_empty 0
+        set T ""
+        set N $n1
+        while {1} {
+            
+            if {[$N tag] eq ""} {
+                set index1 0
+                set index2 end
+                if {$N == $n1} {set index1 $i1}
+                if {$N == $n2} {set index2 [expr {$i2-1}]}
+                
+                set text [string range [$N text] $index1 $index2]
+                append T $text
+                if {[string trim $text] ne ""} {set not_empty 1}
+            } else {
+                array set prop [$N prop]
+                if {$prop(display) ne "inline" && $not_empty} {
+                    append T "\n"
+                    set not_empty 0
+                }
+            }
+            
+            if {$N eq $n2} break 
+            
+            if {[$N nChild] > 0} {
+                set N [$N child 0]
+            } else {
+                while {[set next_node [$N right_sibling]] eq ""} {
+                    set N [$N parent]
+                }
+                set N $next_node
+            }
+            
+            if {$N eq ""} {error "End of tree!"}
+        }
+        if { $::tcl_platform(platform) == "windows"} {
+            clipboard clear -displayof $w
+            clipboard append -displayof $w $T
+        } else {
+            set T [string range $T $offset [expr $offset + $maxChars]]
+        }
+    } msg
+    return $msg
+}
+
+
 # what can be: HTML or Word or CSV
 proc HelpViewer::SaveHTMLAs { w what } {
 
     set fromfile [GiveLastFile $w]
     switch $what {
         HTML {
-            set types {
-                {{HTML file}      {.html .htm}   }
-                {{All Files}       *             }
-            }
+            set types [list \
+                    [list [_ "Html Files"] {.html .htm}] \
+                    [list [_ "All files"] *]]
+
             set ext ".html"
             set initial [file tail $fromfile]
         }
         Word {
-            set types {
-                {{Word file}      {.doc}         }
-                {{All Files}       *             }
-            }
+            set types [list \
+                    [list [_ "Word file"] {.doc}] \
+                    [list [_ "All files"] *]]
+
             set ext ".doc"
             set initial [file root [file tail $fromfile]].doc
         }
         CSV {
-            set types {
-                {{CSV file}      {.csv .txt}     }
-                {{All Files}       *             }
-            }
+            set types [list \
+                    [list [_ "CSV file"] {.csv .txt}] \
+                    [list [_ "All files"] *]]
+
             set ext ".csv"
             set initial [file root [file tail $fromfile]].csv
         }
@@ -984,7 +1238,7 @@ proc HelpViewer::FindApplicationForOpening { file } {
     return $comm
 }
 
-proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { tocfile "" } } {
+proc HelpViewer::HelpWindow { file { base .help} { geom "" } { title "" } { tocfile "" } } {
     variable HelpBaseDir
     variable html
     variable tree
@@ -1033,38 +1287,24 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     }
     set HelpBaseDir [filenormalize $HelpBaseDir]
 
-   # if { $geom == "" } {
-   #    set width 640
-   #    set height 430
-   #    set x [expr [winfo screenwidth $base]/2-$width/2]
-   #    set y [expr [winfo screenheight $base]/2-$height/2]
-   #    wm geom $base ${width}x${height}+${x}+${y}
-   # } else {
-   #    wm geom $base $geom
-   # }
+    #          if { $geom == "" } {
+    #              set width 400
+    #              set height 500
+    #              set x [expr [winfo screenwidth $base]/2-$width/2]
+    #              set y [expr [winfo screenheight $base]/2-$height/2]
+    #              wm geom $base ${width}x${height}+${x}+${y}
+    #          } else {
+    #              wm geom $base $geom
+    #          }
 
     if { [info procs InitWindow] != "" } {
         InitWindow $base $title PostHelpViewerWindowGeom
+        if { ![winfo exists $base] } return ;# windows disabled || usemorewindows == 0
     } else {
         toplevel $base
         wm title $base $title
     }
     wm withdraw $base
-
-    bind $base <MouseWheel> {
-        set w %W
-        while { $w != [winfo toplevel $w] } {
-            catch {
-                set ycomm [$w cget -yscrollcommand]
-                if { $ycomm != "" } {
-                    $w yview scroll [expr int(-1*%D/36)] units
-                    break
-                }
-            }
-            set w [winfo parent $w]
-        }
-        break
-    }
 
     # These images are used in place of GIFs or of form elements
     #
@@ -1240,15 +1480,17 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     # the HTML viewer
     ################################################################################
 
-    set pw [PanedWindow $base.pw -side top -pad 0 -weights available -grid 0 -activator line]
+    set pw [panedwindow $base.pw -orient horizontal -grid 0]
 
     if { [catch {
         foreach "weight1 weight2" [RamDebugger::ManagePanes $pw h "5 12"] break
     }]} {
-        set weight1 5
-        set weight2 12
+        set weight1 180
+        set weight2 400
     }
-    set pane1 [$pw add -weight $weight1]
+#     set pane1 [$pw add -weight $weight1]
+    set pane1 [frame $pw.pane1]
+    $pw add $pane1 -width $weight1
     
     $pane1 configure -bg \#add8d8
     NoteBook $pane1.nb -homogeneous 1 -bd 1 -internalborderwidth 3 -bg \#add8d8 \
@@ -1281,10 +1523,11 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     set f2 [$pane1.nb insert end search -text [_ "Search"] -image viewmag16]
 
     label $f2.l1 -text "S:" -bg #add8d8 -grid 0
-    entry $f2.e1 -textvariable HelpViewer::searchstring -bg #add8d8 -grid "1 py3"
+    ComboBox $f2.e1 -textvariable HelpViewer::searchstring -entrybg #add8d8 \
+        -bd 1 -grid "1 py3"
 
     $pane1.nb itemconfigure search -raisecmd "tkTabToWindow $f2.e1"
-    bind $f2.e1 <Return> "focus $f2.lf1.lb; HelpViewer::SearchInAllHelp"
+    $f2.e1 bind <Return> "focus $f2.lf1.lb; HelpViewer::SearchInAllHelp $f2.e1"
     
 
     ScrolledWindow $f2.lf1 -relief sunken -borderwidth 1 -grid "0 2"
@@ -1312,7 +1555,9 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     $pane1.nb compute_size
     $pane1.nb raise tree
 
-    set pane2 [$pw add -weight $weight2]
+#     set pane2 [$pw add -weight $weight2]
+    set pane2 [frame $pw.pane2]
+    $pw add $pane2 -width $weight2
 
     set sw [ScrolledWindow $pane2.lf -relief sunken -borderwidth 0 -grid "0 2"]
     set html [html $sw.h \
@@ -1329,14 +1574,14 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
         -takefocus 1 \
         -fontcommand HelpViewer::pickFont \
         -width 550 \
-        -height 500 \
+        -height 450 \
         -borderwidth 0 \
        ]
     $sw setwidget $html
 
-    bind $html.x <1> "focus $html; HelpViewer::HrefBinding $html %x %y"
-
-    bind $base <Control-c> "HelpViewer::CopySelected $html"
+    if { [package vcompare [package present Tkhtml] 3.0] >= 0 } {
+        $html configure -imagecmd [list HelpViewer::ImageCmd $sw.h]
+    }
 
     frame $base.buts -bg grey93 -grid "0 ew"
 
@@ -1366,7 +1611,11 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     $base.buts.b3.m add command -label [_ "Close"] -acc "ESC" -command \
              "destroy [winfo toplevel $html]"
 
-    bind $html.x <3> [list tk_popup $base.buts.b3.m %X %Y]
+    if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+        bind $html.x <ButtonRelease-3> [list tk_popup $base.buts.b3.m %X %Y]
+    } else {
+        bind $html <ButtonRelease-3> [list tk_popup $base.buts.b3.m %X %Y]
+    }
 
 #     menubutton $base.buts.b3 -image imatge_save -bg grey93 -relief flat \
 #             -menu $base.buts.b3.m -height 50 -grid "2 e" -activebackground grey93
@@ -1415,24 +1664,39 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     # This binding changes the cursor when the mouse move over
     # top of a hyperlink.
     #
-    bind HtmlClip <Motion> {
-        set parent [winfo parent %W]
-        set url [$parent href %x %y] 
-        if {[string length $url] > 0} {
-            $parent configure -cursor hand2
-        } else {
-            $parent configure -cursor {}
+    if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+        bind HtmlClip <Motion> {
+            set parent [winfo parent %W]
+            set url [$parent href %x %y] 
+            if {[string length $url] > 0} {
+                $parent configure -cursor hand2
+            } else {
+                $parent configure -cursor {}
+            }
         }
-    }
-
-
+        bind $html.x <1> "focus $html; HelpViewer::HrefBinding $html %x %y"
+        bind $base <Control-c> "HelpViewer::CopySelected $html"
+        if {[string equal "unix" $::tcl_platform(platform)]} {
+            bind $html.x <4> { %W yview scroll -1 units }
+            bind $html.x <5> { %W yview scroll 1 units }
+            bind $tree.c <4> { %W yview scroll -5 units }
+            bind $tree.c <5> { %W yview scroll 5 units }
+        }
+    } else {
+        bind $html <Motion> [list HelpViewer::Motion %W %x %y]
+        set f [winfo parent [winfo parent $html]]
+        bind $html <Leave> [list $f configure -cursor ""]
+        bind $html <1> "focus $html; HelpViewer::ButtonPress1 $html %x %y"
+        bind $html <Double-1> "focus $html; HelpViewer::DoubleButtonPress1 $html %x %y"
+        bind $html <ButtonRelease-1> "focus $html; HelpViewer::ButtonRelease1 $html %x %y"
+        bind $base <Control-c> [list guiGetSelection $html]
     if {[string equal "unix" $::tcl_platform(platform)]} {
-        bind $html.x <4> { %W yview scroll -1 units }
-        bind $html.x <5> { %W yview scroll 1 units }
+            bind $html <4> { %W yview scroll -1 units }
+            bind $html <5> { %W yview scroll 1 units }
         bind $tree.c <4> { %W yview scroll -5 units }
         bind $tree.c <5> { %W yview scroll 5 units }
     }
-
+    }
     focus $html
 
     bind $html
@@ -1451,6 +1715,7 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
         %W yview moveto 1
     }
 
+    bind $html <Control-o> "HelpViewer::Load $html"
 
     bind $base <1> "HelpViewer::ManageSel $html %W %x %y press"
     bind $base <B1-Motion> "HelpViewer::ManageSel $html %W %x %y motion"
@@ -1483,7 +1748,9 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     if { $tocfile == "" } {
         FillDir $tree root
     } else {
-        FillTreeWithToc $tree root $tocfile
+        if { [catch { FillTreeWithToc $tree root $tocfile } ] } {
+             FillDir $tree root
+        }
     }
 
     bind [winfo toplevel $html] <Control-f> "focus $html; HelpViewer::SearchWindow ; break"
@@ -1495,12 +1762,31 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
 
     bind [winfo toplevel $html] <Control-f> "focus $html; HelpViewer::SearchWindow ; break"
 
+    set cmd_tree "[list $notebook raise tree]"
+    set cmd_search "[list $notebook raise search] ; [list tkTabToWindow $f2.e1]"
+    bind [winfo toplevel $html] <Alt-KeyPress-c> $cmd_tree
+    bind [winfo toplevel $html] <Control-KeyPress-i> $cmd_search
+    bind [winfo toplevel $html] <Alt-KeyPress-i> $cmd_search
+    bind [winfo toplevel $html] <Control-KeyPress-s> $cmd_search
+    bind [winfo toplevel $html] <Alt-KeyPress-s> $cmd_search
 
-    bind [winfo toplevel $html] <Alt-KeyPress-c> [list $notebook raise tree]
-    bind [winfo toplevel $html] <Control-KeyPress-i> [list $notebook raise search]
-    bind [winfo toplevel $html] <Alt-KeyPress-i> [list $notebook raise search]
-    bind [winfo toplevel $html] <Control-KeyPress-s> [list $notebook raise search]
-    bind [winfo toplevel $html] <Alt-KeyPress-s> [list $notebook raise search]
+    addtag_to_all_widgets $base mousewheel
+    bind mousewheel <MouseWheel> {
+        set w [winfo containing %X %Y]
+        while { $w != [winfo toplevel $w] } {
+            set err [catch {
+                    set ycomm [$w cget -yscrollcommand]
+                    if { $ycomm != "" } {
+                        $w yview scroll [expr int(-1*%D/36)] units
+                        break
+                    }
+                }]
+            if { !$err } { break }
+            set w [winfo parent $w]
+        }
+        break
+    }
+    gestures::init [winfo toplevel $html] [list HelpViewer::gestures_do]
 
 
     # If an arguent was specified, read it into the HTML widget.
@@ -1511,18 +1797,41 @@ proc HelpViewer::HelpWindow { file { base .help } { geom "" } { title "" } { toc
     }
     set x [expr [winfo screenwidth $base]/2-400]
     set y [expr [winfo screenheight $base]/2-300]
-#--- begin change michel: user geom parameter
+#--- begin change audela: user geom parameter
     if { "$geom" == "" } {
       wm geom $base 650x400+${x}+$y
     } else {
       wm geom $base $geom
     }
-#--- end change michel
+#--- end change audela
       
     update idletasks
     wm deiconify $base
 
     return $html
+}
+
+proc HelpViewer::gestures_do { gesture } {
+    variable html
+
+    switch $gesture {
+        GestureLeft {
+            History::GoBackward $html
+        }
+        GestureRight {
+            History::GoForward $html
+        }
+        GestureUp,GestureDown {
+            wm withdraw [winfo toplevel $html]
+        }
+    }
+}
+
+proc HelpViewer::addtag_to_all_widgets { w tag } {
+    bindtags $w [concat [list $tag] [bindtags $w]]
+    foreach wc [winfo children $w] {
+        addtag_to_all_widgets $wc $tag
+    }
 }
 
 
@@ -1631,8 +1940,12 @@ proc HelpViewer::_FillTreeWithToc { tree treeparentnode htmltree parentNode dir 
                     -text $txt -drawcross never \
                     -data [list file [file join $dir $href]]
 
-                set parentdata [$tree itemcget $treeparentnode -data]
-                if { [lindex $data 0] ne "folder" } {
+                if { $treeparentnode eq "root" } {
+                    set parentdata ""
+                } else {
+                    set parentdata [$tree itemcget $treeparentnode -data]
+                }
+                if { [lindex $data 0] ne "folder" && $treeparentnode ne "root" } {
                     $tree itemconfigure $treeparentnode -image appbook16 -drawcross \
                         allways -data [list folder [lindex $parentdata 1]]
                 }
@@ -1671,7 +1984,10 @@ proc HelpViewer::FillDir { tree node } {
         lappend files [file tail $i]
     }
     if { [set ipos [lsearch -regexp $files {_toc\.html?$}]] != -1 } {
-        return [FillTreeWithToc $tree $node [file join $dir [lindex $files $ipos]]]
+        set err [catch {
+                FillTreeWithToc $tree $node [file join $dir [lindex $files $ipos]]
+            } out]
+        if { !$err } { return $out }
     }
     foreach i [lsort -dictionary $files] {
         set fullpath [file join $dir $i]
@@ -1683,10 +1999,10 @@ proc HelpViewer::FillDir { tree node } {
                 -data [list folder $fullpath] -drawcross allways
             incr idxfolder
         } elseif { [string match .htm* [file ext $i]] } {
-#--- begin change michel: use html title instead filename
+#--- begin change audela: use html title instead filename
             #set name [file root $i]
             set name [HelpViewer::getFileTitle $fullpath]
-#--- end change michel
+#--- end change audela
             $tree insert end $node $item -image filedocument16 -text $name \
                 -data [list file $fullpath]
         }
@@ -1837,8 +2153,76 @@ proc HelpViewer::TryToSelect { name } {
     } 
 }
 
+proc HelpViewer::Search3 {} {
+    variable html
+    variable searchstring
+    variable SearchPos
+    variable searchcase
+    variable searchFromBegin
+
+    if { ![info exists searchstring] } {
+        WarnWin "Before using 'Continue search', use 'Search'" [winfo toplevel $html]
+        return
+    }
+    if { $searchstring eq "" } { return }
+
+    set bnode ""
+    if { $SearchPos ne "" } {
+        foreach "bnode idx" $SearchPos break
+    } elseif { !$searchFromBegin } {
+        foreach "bnode idx" [$html select from] break
+    }
+    foreach node [$html search *] {
+        if { $bnode ne "" && $node ne $bnode } { continue }
+        if { $searchcase } {
+            set rex "(?q)$searchstring"
+        } else {
+            set rex "(?iq)$searchstring"
+        }
+        set ret [regexp -inline -all -indices $rex [$node text]]
+        if { $node eq $bnode } {
+            foreach i $ret {
+                foreach "ini end" $i break
+                if { $idx == $ini } {
+                    set idx ""
+                } elseif { $idx eq "" } {
+                    set bnode $node
+                    break
+                }
+            }
+            set bnode ""
+        } elseif { $bnode eq "" && $ret ne "" } {
+            foreach "ini end" [lindex $ret 0] break
+            set bnode $node
+            break
+        }
+    }
+    if { $bnode eq "" && $SearchPos ne "" } {
+        bell
+        set SearchPos ""
+        Search3
+        return
+    }
+    if { $bnode eq "" } {
+        bell
+        return
+    }
+    
+    $html select clear
+    $html select from $bnode $ini
+    $html select to $bnode [expr {$end+1}]
+    $html yview $bnode
+    $html yview scroll -1 unit
+    set SearchPos [list $bnode $ini]
+}
+
+
 proc HelpViewer::Search {} {
     variable html
+
+    if { [package vcompare [package present Tkhtml] 3.0] >= 0 } {
+        return [Search3]
+    }
 
     if { ![info exists ::HelpViewer::searchstring] } {
         WarnWin "Before using 'Continue search', use 'Search'" [winfo toplevel $html]
@@ -1885,9 +2269,6 @@ proc HelpViewer::Search {} {
             $html refresh
 
             set HelpViewer::SearchPos $idx1
-
-
-
         }
     }
 }
@@ -1899,7 +2280,7 @@ proc HelpViewer::SearchWindow {} {
     variable searchFromBegin
     variable SearchType
 
-    set f [DialogWin::Init $html [ "Search"] separator "" [_ "Ok"] [_ "Cancel"]]
+    set f [DialogWin::Init $html [_ "Search"] separator "" [_ "Ok"] [_ "Cancel"]]
     set w [winfo toplevel $f]
 
     label $f.l1 -text [_ "Text"]: -grid 0
@@ -1925,7 +2306,7 @@ proc HelpViewer::SearchWindow {} {
 
     set searchmode -exact
     set searchcase 0
-    set searchFromBegin 0
+    set searchFromBegin 1
     set SearchType -forwards
 
     tkTabToWindow $f.e1
@@ -2021,9 +2402,9 @@ proc HelpViewer::CreateIndex {} {
         if { $title == "" } {
             regexp {(?i)<h([1234])>(.*?)</h\1>} $aa {} {} title
         }
-#--- begin change michel: convert escape sequence in the title        
+#--- begin change audela: convert escape sequence in the title        
         set title [::htmlparse::mapEscapes "$title" ]
-#--- end change michel        
+#--- end change audela        
         lappend IndexFilesTitles [list $file $title]
         set IndexPos [expr [llength $IndexFilesTitles]-1]
 
@@ -2092,7 +2473,7 @@ proc HelpViewer::CreateIndex {} {
     WaitState 0
 }
 
-#--- begin change michel: new procedure getFileTitle
+#--- begin change audela: new procedure getFileTitle
 proc HelpViewer::getFileTitle { fileName } {
      if {[catch {open $fileName r} fin]} {
         set title [file root [file tail $fileName] ]
@@ -2117,7 +2498,7 @@ proc HelpViewer::getFileTitle { fileName } {
     }
     return $title
 }
-#--- end change michel
+#--- end change audela
 
 
 proc HelpViewer::IsWordGood { word otherwords } {
@@ -2167,12 +2548,22 @@ proc HelpViewer::HasFileTheWord { file otherwords } {
     return 1
 }
 
-proc HelpViewer::SearchInAllHelp {} {
+proc HelpViewer::SearchInAllHelp { { combo "" } } {
     variable HelpBaseDir
     variable Index
     variable searchlistbox1
 
     set word [string tolower $HelpViewer::searchstring]
+    
+    if { $combo ne "" } {
+        set values [$combo cget -values]
+        if { [set ipos [lsearch -exact $values $word]] != -1 } {
+            set values [lreplace $values $ipos $ipos]
+        }
+        set values [linsert $values 0 $word]
+        $combo configure -values [lrange $values 0 8]
+    }
+
     CreateIndex
 
     set HelpViewer::SearchFound ""
@@ -2312,15 +2703,94 @@ proc HelpViewer::WaitState { what } {
     switch $what {
         1 {
             $tree configure -cursor watch
-            $html configure -cursor watch
+            if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+                $html configure -cursor watch
+            } else {
+                [winfo parent [winfo parent $html]] configure -cursor watch
+            }
         }
         0 {
             $tree configure -cursor ""
-            $html configure -cursor ""
+            if { [package vcompare [package present Tkhtml] 3.0] < 0 } {
+                $html configure -cursor ""
+            } else {
+                [winfo parent [winfo parent $html]] configure -cursor ""
+            }
         }
     }
     update
 }
+
+################################################################################
+#    gestures
+#
+# 
+################################################################################
+
+namespace eval gestures {
+    variable path
+    variable callback
+}
+
+proc gestures::init { w _callback } {
+    variable callback 
+
+    set callback($w) $_callback
+
+    _prepare_for_gestures $w gestures_$w
+    bind gestures_$w <ButtonPress-3> [list gestures::press %X %Y]
+    bind gestures_$w <B3-Motion> [list gestures::motion %X %Y]
+    bind gestures_$w <ButtonRelease-3> [list gestures::release $w %X %Y]
+}
+
+proc gestures::_prepare_for_gestures { w bindtag } {
+    bindtags $w [linsert [bindtags $w] 0 $bindtag]
+    foreach i [winfo children $w] { _prepare_for_gestures $i $bindtag }
+}
+
+proc gestures::press { x y } {
+    variable path
+
+    set path [list $x $y]
+}
+
+proc gestures::motion { x y } {
+    variable path
+
+    lappend path $x $y
+}
+
+proc gestures::release { w x y } {
+    variable path
+    variable callback
+
+    lappend path $x $y
+
+    set t 10
+    foreach "x y" $path {
+        if { ![info exists box(minx)] || $x < $box(minx) } { set box(minx) $x }
+        if { ![info exists box(miny)] || $y < $box(miny) } { set box(miny) $y }
+        if { ![info exists box(maxx)] || $x > $box(maxx) } { set box(maxx) $x }
+        if { ![info exists box(maxy)] || $y > $box(maxy) } { set box(maxy) $y }
+    }
+
+    if { $box(maxx)-$box(minx) < $t && $box(maxy)-$box(miny) < $t } { return }
+
+    foreach "x0 y0" [lrange $path 0 1] break
+    foreach "xend yend" [lrange $path end-1 end] break
+
+    if { $x0-$xend >= $t } {
+        set gesture GestureLeft
+    } elseif { $xend-$x0 >= $t } {
+        set gesture GestureRight
+    } elseif { $x0-$box(miny) >= $t && $xend-$box(miny) >= $t } {
+        set gesture GestureUp,GestureDown
+    } else { return }
+   
+    uplevel #0 $callback($w) $gesture
+    return -code break
+}
+
 
 if { [info exists argv0] && [info script] == $argv0 } {
     set cmd [string map [list %FILE [list [info script]]] {
@@ -2341,3 +2811,13 @@ if { [info exists argv0] && [info script] == $argv0 } {
     }
     HelpViewer::HelpWindow $file
 }
+
+#package provide helpviewer 1.1
+
+#-- version 1.1.1 = version 1.1 modified for Audela
+#  modifications:
+#  load local PDF  files 
+#  LoadFile : catch error when no files match glob pattern
+#  user geom parameter
+
+package provide helpviewer 1.1.1
