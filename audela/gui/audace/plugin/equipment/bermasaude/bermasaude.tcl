@@ -2,15 +2,16 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.13 2007-04-07 00:35:06 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.14 2007-04-23 15:44:43 robertdelmas Exp $
 #
 
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     init              : Initialise le namespace (appelee pendant le chargement de ce source)
+#     initPlugin        : Initialise le plugin
 #     getLabel          : Retourne le nom affichable du plugin
 #     getHelp           : Retourne la documentation htm associee
 #     getStartFlag      : Retourne l'indicateur de lancement au démarrage
+#     getPluginTitle    : Retourne le titre du plugin dans la langue de l'utilisateur
 #     getPluginType     : Retourne le type de plugin
 #     fillConfigPage    : Affiche la fenetre de configuration de ce driver
 #     createPlugin      : Cree une instance du plugin
@@ -49,8 +50,8 @@ namespace eval bermasaude {
    source [ file join [file dirname [info script]] bermasaude.cap ]
 
    #------------------------------------------------------------
-   #  init (est lance automatiquement au chargement de ce fichier tcl)
-   #     initialise le driver
+   #  init
+   #     initialise le plugin
    #
    #  return namespace name
    #------------------------------------------------------------
