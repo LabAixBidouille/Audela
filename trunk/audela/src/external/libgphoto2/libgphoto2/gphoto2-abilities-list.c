@@ -151,8 +151,8 @@ foreach_func (const char *filename, lt_ptr data)
 	CameraList *list = data;
 	int result;
 
-	gp_log (GP_LOG_DEBUG, "gphoto2-abilities-list",
-		"Found '%s'.", filename);
+	//gp_log (GP_LOG_DEBUG, "gphoto2-abilities-list",
+	//	"Found '%s'.", filename);
 	result = gp_list_append (list, filename, NULL);
 
 	return ((result == GP_OK)?0:1);
@@ -192,8 +192,8 @@ gp_abilities_list_load_dir (CameraAbilitiesList *list, const char *dir,
 		return (GP_ERROR);
 	}
 	CHECK_RESULT (count = gp_list_count (flist));
-	gp_log (GP_LOG_DEBUG, "gp-abilities-list", "Found %i "
-		"camera drivers.", count);
+	//gp_log (GP_LOG_DEBUG, "gp-abilities-list", "Found %i "
+	//	"camera drivers.", count);
 	lt_dlinit ();
 	p = gp_context_progress_start (context, (float) count,
 		_("Loading camera drivers from '%s'..."), dir);
@@ -206,8 +206,12 @@ gp_abilities_list_load_dir (CameraAbilitiesList *list, const char *dir,
 
          }
       ////strcat(filename,".dll");
-		lh = lt_dlopen (filename);
+  		lh = lt_dlopen (filename);
 #else 
+         if( strstr(strlwr((char *) filename), "libgphoto2_") == NULL ) {
+            continue;
+
+         }
 		lh = lt_dlopenext (filename);
 #endif
 
