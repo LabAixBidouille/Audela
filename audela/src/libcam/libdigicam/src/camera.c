@@ -27,7 +27,7 @@
  * dans le fichier camera.h
  */
 
-// $Id: camera.c,v 1.9 2007-03-24 22:40:33 michelpujol Exp $
+// $Id: camera.c,v 1.10 2007-04-23 19:17:46 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -61,7 +61,7 @@ struct camini CAM_INI[] = {
     "dslr",			/* camera product */
      "cmos",		/* ccd name */
       3088, 2086,			/* maxx maxy */
-      23, 14,			/* overscans x */
+      0, 0,			/* overscans x */
       0, 0,			/* overscans y */
       7.4e-6, 7.4e-6,		/* photosite dim (m) */
       65535.,			/* observed saturation */
@@ -144,16 +144,6 @@ struct _PrivateParams {
 
 char *canonQuality[] =
 {
-/*
-      { "Large:Fine"    },
-      { "Large:Normal"  },
-      { "Middle:Fine"   },
-      { "Middle:Normal" },
-      { "Small:Fine"    },
-      { "Small:Normal"  },
-      { "CRW"  },
-      { "" }
-*/
       "Large:Fine"    ,
       "Large:Normal" ,
       "Middle:Fine"  ,
