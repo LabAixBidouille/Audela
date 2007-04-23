@@ -27,8 +27,11 @@ all: libgphoto2.so
 # Tool invocations
 libgphoto2.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
+	@echo "*lib:" > libgphoto2.specs
+	@echo "    -rpath ." >> libgphoto2.specs
 	@echo 'Invoking: GCC C Linker'
-	gcc -L../../libgphoto2_port/libgphoto2_port/linux -shared -o"libgphoto2.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L../../libgphoto2_port/libgphoto2_port/linux  -specs libgphoto2.specs -shared -o"libgphoto2.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	@$(RM) libgphoto2.specs
 	@echo 'Finished building target: $@'
 	@echo ' '
 
