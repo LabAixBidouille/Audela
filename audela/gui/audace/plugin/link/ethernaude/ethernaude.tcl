@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.14 2007-04-10 21:14:57 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.15 2007-04-23 15:44:11 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -73,7 +73,7 @@ proc ::ethernaude::confToWidget { } {
 #  return nothing
 #------------------------------------------------------------
 proc ::ethernaude::createPluginInstance { linkLabel deviceId usage comment } {
-   #--- pour l'instant, la liaison ethernaude est demarree par le pilote de la camera
+   #--- Pour l'instant, la liaison ethernaude est demarree par le pilote de la camera
    variable private
 
    set private(started) "1"
@@ -88,11 +88,19 @@ proc ::ethernaude::createPluginInstance { linkLabel deviceId usage comment } {
 #  return nothing
 #------------------------------------------------------------
 proc ::ethernaude::deletePluginInstance { linkLabel deviceId usage } {
-   #--- pour l'instant, la liaison ethernaude est arretee par le pilote de la camera
+   #--- Pour l'instant, la liaison ethernaude est arretee par le pilote de la camera
    variable private
 
    set private(started) "0"
    ConfEthernAude
+   #--- Je ferme le tutorial EthernAude s'il est affiche
+   if { [ winfo exist .main ] } {
+      if { [ winfo exist .second ] } {
+         destroy .second
+      }
+      destroy .main
+   }
+   #---
    return
 }
 
@@ -176,7 +184,7 @@ proc ::ethernaude::fillConfigPage { frm } {
 
    #--- Lancement de la presentation et du tutorial
    button $frm.tutorial -text "$caption(ethernaude,tutorial_ethernaude)" -relief raised -state normal \
-      -command "source [ file join $audace(rep_plugin) link ethernaude tutorial tuto.tcl ]"
+      -command { source [ file join $audace(rep_plugin) link ethernaude tutorial tuto.tcl ] }
    pack $frm.tutorial -in $frm.frame5 -anchor center -side top -padx 10 -pady 2 -ipadx 10 -ipady 5 -expand true
 
    #--- Gestion des boutons actifs/inactifs
@@ -252,7 +260,7 @@ proc ::ethernaude::getPluginTitle { } {
 proc ::ethernaude::getLinkIndex { linkLabel } {
    variable private
 
-   #--- je recupere linkIndex qui est apres le linkType dans linkLabel
+   #--- Je recupere linkIndex qui est apres le linkType dans linkLabel
    set linkIndex ""
    if { [string first $private(genericName) $linkLabel] == 0 } {
       scan $linkLabel "$private(genericName)%s" linkIndex
@@ -279,7 +287,7 @@ proc ::ethernaude::getLinkLabels { } {
 proc ::ethernaude::getSelectedLinkLabel { } {
    variable private
 
-   #--- je retourne le label du seul link
+   #--- Je retourne le label du seul link
    return "$private(genericName)1"
 }
 
@@ -342,7 +350,7 @@ proc ::ethernaude::isReady { } {
 proc ::ethernaude::selectConfigLink { linkLabel } {
    variable private
 
-   #--- rien a faire car il n'y qu'un seul link de ce type
+   #--- Rien a faire car il n'y qu'un seul link de ce type
 }
 
 #------------------------------------------------------------
