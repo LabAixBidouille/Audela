@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.8 2007-04-22 07:15:55 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.9 2007-04-23 15:42:25 robertdelmas Exp $
 #
 
 #============================================================
@@ -71,7 +71,11 @@ proc ::Snaude::createPluginInstance { { in "" } { visuNo 1 } } {
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
 proc ::Snaude::deletePluginInstance { visuNo } {
-   sn_delete
+   global audace
+
+   if { [ winfo exists $audace(base).snvisu ] } {
+      sn_delete
+   }
 }
 
 #------------------------------------------------------------
