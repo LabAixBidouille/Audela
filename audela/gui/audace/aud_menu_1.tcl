@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.9 2007-04-22 07:16:10 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.10 2007-04-23 15:43:26 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -256,13 +256,6 @@ namespace eval ::audace {
    proc quitter { } {
       global audace caption conf tmp
 
-      #--- Si le tutorial EthernAude est affiche, je le ferme en premier avant de quitter
-      if { [ winfo exist .main ] } {
-         if { [ winfo exist .second ] } {
-            destroy .second
-         }
-         destroy .main
-      }
       #---
       menustate disabled
       set catchError [ catch {
