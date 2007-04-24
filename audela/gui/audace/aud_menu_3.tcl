@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.22 2007-04-20 21:32:13 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.23 2007-04-24 17:47:41 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -111,6 +111,9 @@ namespace eval ::pretraitement {
       set pretraitement(nb)             ""
       set pretraitement(valeur_indice)  "1"
       set pretraitement(out)            ""
+      set pretraitement(img_operand)    ""
+      set pretraitement(dark)           ""
+      set pretraitement(offset)         ""
       set pretraitement(disp_1)         "1"
       set pretraitement(disp_2)         "1"
       set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
@@ -240,7 +243,7 @@ namespace eval ::pretraitement {
                pack $This.usr.5.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.5.1.lab8 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.5.1.lab8 -side left -padx 5 -pady 5
-               entry $This.usr.5.1.ent8 -textvariable pretraitement(3,dark) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.5.1.ent8 -textvariable pretraitement(dark) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.5.1.ent8 -side right -padx 10 -pady 5
             pack $This.usr.5.1 -side top -fill both
             frame $This.usr.5.2 -borderwidth 0 -relief flat
@@ -249,7 +252,7 @@ namespace eval ::pretraitement {
                pack $This.usr.5.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.5.2.lab9 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.5.2.lab9 -side left -padx 5 -pady 5
-               entry $This.usr.5.2.ent9 -textvariable pretraitement(3,offset) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.5.2.ent9 -textvariable pretraitement(offset) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.5.2.ent9 -side right -padx 10 -pady 5
             pack $This.usr.5.2 -side top -fill both
         # pack $This.usr.5 -in $This.usr -side top -fill both
@@ -261,7 +264,7 @@ namespace eval ::pretraitement {
                pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.4.1.lab6 -textvariable "pretraitement(operande)"
                pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.1.ent6 -textvariable pretraitement(2,operand) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.4.1.ent6 -textvariable pretraitement(img_operand) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.4.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.4.1 -side top -fill both
             frame $This.usr.4.2 -borderwidth 0 -relief flat
@@ -504,7 +507,6 @@ namespace eval ::pretraitement {
       set nb    $pretraitement(nb)
       set first $pretraitement(valeur_indice)
       set out   $pretraitement(out)
-      set end   [ expr $nb + ( $first - 1 ) ]
 
       #--- Tests sur les images
       if { $pretraitement(choix_mode) == "0" } {
@@ -549,110 +551,114 @@ namespace eval ::pretraitement {
             set pretraitement(avancement) ""
             return
          }
+         if { $pretraitement(valeur_indice) == "" } {
+            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+               -message "$caption(pretraitement,choix_premier_indice)"
+            set pretraitement(avancement) ""
+            return
+         }
+         if { [ TestEntier $pretraitement(valeur_indice) ] == "0" } {
+            tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+               -message "$caption(pretraitement,nbre_entier1)"
+            set pretraitement(avancement) ""
+            return
+         }
          if { $pretraitement(out) == "" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                -message "$caption(pretraitement,definir_sortie_generique)"
             set pretraitement(avancement) ""
             return
          }
+         #--- Calcul du dernier indice de la serie
+         set end [ expr $nb + ( $first - 1 ) ]
       }
 
       #--- Switch
       switch $pretraitement(operation) {
          "multi_recadrer" {
             #---
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { window } m
-               if { $m == "" } {
+            set catchError [ catch {
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  window
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               ::console::affiche_resultat "Usage: window1 in out {x1 y1 x2 y2} \n\n"
-               #--- Un cadre trace avec la souris n'existe pas
-               if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
-                  set coordWindow ""
-                  loadima $in
-                  tk_messageBox -title $caption(confVisu,attention) -type ok \
-                     -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
-               }
-               set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
-               catch { window1 $in $out [ lindex $coordWindow 0 ] } m
-               #---
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  ::console::affiche_resultat "Usage: window1 in out {x1 y1 x2 y2} \n\n"
+                  #--- Un cadre trace avec la souris n'existe pas
+                  if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
+                     set coordWindow ""
+                     loadima $in
+                     tk_messageBox -title $caption(confVisu,attention) -type ok \
+                        -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
+                  }
+                  set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
+                  window1 $in $out [ lindex $coordWindow 0 ]
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               ::console::affiche_resultat "Usage: window2 in out number {x1 y1 x2 y2} ?first_index?\n\n"
-               #--- Un cadre trace avec la souris n'existe pas
-               if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
-                  set coordWindow ""
-                  loadima $in$first
-                  tk_messageBox -title $caption(confVisu,attention) -type ok \
-                     -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
-               }
-               set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
-               catch { window2 $in $out $nb [ lindex $coordWindow 0 ] $first } m
-               #---
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  ::console::affiche_resultat "Usage: window2 in out number {x1 y1 x2 y2} ?first_index?\n\n"
+                  #--- Un cadre trace avec la souris n'existe pas
+                  if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
+                     set coordWindow ""
+                     loadima $in$first
+                     tk_messageBox -title $caption(confVisu,attention) -type ok \
+                        -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
+                  }
+                  set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
+                  window2 $in $out $nb [ lindex $coordWindow 0 ] $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_reechantillonner" {
             #---
-            set conf(multx) $pretraitement(scaleWindow_multx)
-            set conf(multy) $pretraitement(scaleWindow_multy)
-            #--- Tests sur les facteurs d'echelle
-            if { $pretraitement(scaleWindow_multx) == "" && $pretraitement(scaleWindow_multy) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,choix_coefficients)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(scaleWindow_multx) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,coef_manquant)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(scaleWindow_multy) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,coef_manquant)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(scaleWindow_multx) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(scaleWindow_multy) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch {
+            set catchError [ catch {
+               set conf(multx) $pretraitement(scaleWindow_multx)
+               set conf(multy) $pretraitement(scaleWindow_multy)
+               #--- Tests sur les facteurs d'echelle
+               if { $pretraitement(scaleWindow_multx) == "" && $pretraitement(scaleWindow_multy) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,choix_coefficients)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(scaleWindow_multx) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,coef_manquant)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(scaleWindow_multy) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,coef_manquant)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(scaleWindow_multx) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(scaleWindow_multy) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
                   set x $pretraitement(scaleWindow_multx)
                   set y $pretraitement(scaleWindow_multy)
                   set maxi "50"
@@ -664,17 +670,10 @@ namespace eval ::pretraitement {
                   if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
                   buf$audace(bufNo) scale [ list $x $y ] 1
                   ::audace::autovisu $audace(visuNo)
-               } m
-               if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               ::console::affiche_resultat "Usage: scale1 in out scale_x scale_y\n\n"
-               catch {
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  ::console::affiche_resultat "Usage: scale1 in out scale_x scale_y\n\n"
                   set x $pretraitement(scaleWindow_multx)
                   set y $pretraitement(scaleWindow_multy)
                   set maxi "50"
@@ -685,20 +684,13 @@ namespace eval ::pretraitement {
                   if { [ expr $y ] > "$maxi" } { set y "$maxi" }
                   if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
                   scale1 $in $out $x $y
-               } m
-               if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               ::console::affiche_resultat "Usage: scale2 in out number scale_x scale_y ?first_index?\n\n"
-               catch {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  ::console::affiche_resultat "Usage: scale2 in out number scale_x scale_y ?first_index?\n\n"
                   set x $pretraitement(scaleWindow_multx)
                   set y $pretraitement(scaleWindow_multy)
                   set maxi "50"
@@ -709,180 +701,152 @@ namespace eval ::pretraitement {
                   if { [ expr $y ] > "$maxi" } { set y "$maxi" }
                   if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
                   scale2 $in $out $nb $x $y $first
-               } m
-               if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_ajouter_cte" {
-            #--- Tests sur la constante
-            if { $pretraitement(const) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_cte)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { offset $pretraitement(const) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
+            set catchError [ catch {
+               #--- Tests sur la constante
+               if { $pretraitement(const) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_cte)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(const) ] == "0" } {
                   tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
                      -message "$caption(pretraitement,cte_invalide)"
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: offset1 in out const\n\n"
-               catch { offset1 $in $out $const } m
-               if { $m == "" } {
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  offset $pretraitement(const)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: offset1 in out const\n\n"
+                  offset1 $in $out $const
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: offset2 in out const number ?first_index?\n\n"
-               catch { offset2 $in $out $const $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: offset2 in out const number ?first_index?\n\n"
+                  offset2 $in $out $const $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_multiplier_cte" {
-            #--- Tests sur la constante
-            if { $pretraitement(const) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_cte)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { mult $pretraitement(const) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
+            set catchError [ catch {
+               #--- Tests sur la constante
+               if { $pretraitement(const) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_cte)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(const) ] == "0" } {
                   tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
                      -message "$caption(pretraitement,cte_invalide)"
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: mult1 in out const\n\n"
-               catch { mult1 $in $out $const } m
-               if { $m == "" } {
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  mult $pretraitement(const)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: mult1 in out const\n\n"
+                  mult1 $in $out $const
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: mult2 in out const number ?first_index?\n\n"
-               catch { mult2 $in $out $const $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: mult2 in out const number ?first_index?\n\n"
+                  mult2 $in $out $const $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_ecreter" {
-            #---
-            set conf(clip_mini) $pretraitement(clipWindow_mini)
-            set conf(clip_maxi) $pretraitement(clipWindow_maxi)
-            #--- Tests sur les constantes
-            if { $pretraitement(clipWindow_mini) == "" && $pretraitement(clipWindow_maxi) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,choix_coefficients)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(clipWindow_mini) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,coef_manquant)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(clipWindow_maxi) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,coef_manquant)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(clipWindow_mini) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(clipWindow_maxi) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
+            set catchError [ catch {
                #---
-               catch {
+               set conf(clip_mini) $pretraitement(clipWindow_mini)
+               set conf(clip_maxi) $pretraitement(clipWindow_maxi)
+               #--- Tests sur les constantes
+               if { $pretraitement(clipWindow_mini) == "" && $pretraitement(clipWindow_maxi) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,choix_coefficients)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(clipWindow_mini) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,coef_manquant)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(clipWindow_maxi) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,coef_manquant)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(clipWindow_mini) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(clipWindow_maxi) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
                   if { $pretraitement(clipWindow_mini) != "" } {
                      buf$audace(bufNo) clipmin $pretraitement(clipWindow_mini)
                   }
                   if { $pretraitement(clipWindow_maxi) != "" } {
                      buf$audace(bufNo) clipmax $pretraitement(clipWindow_maxi)
                   }
-               } m
-               if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               catch {
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
                   set buf_clip [ ::buf::create ]
                   buf$buf_clip load $audace(rep_images)/$in
                   if { $pretraitement(clipWindow_mini) != "" } {
@@ -893,19 +857,12 @@ namespace eval ::pretraitement {
                   }
                   buf$buf_clip save $audace(rep_images)/$out
                   ::buf::delete $buf_clip
-               } m
-               if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               catch {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
                   for { set index "$first" } { $index <= $end } { incr index } {
                      set buf_clip($index) [ ::buf::create ]
                      buf$buf_clip($index) load $audace(rep_images)/$in$index
@@ -920,56 +877,55 @@ namespace eval ::pretraitement {
                   for { set index "$first" } { $index <= $end } { incr index } {
                      ::buf::delete $buf_clip($index)
                   }
-               } m
-               if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_soust_fond_ciel" {
-            #---
-            set conf(back_kernel)    $pretraitement(subskyWindow_back_kernel)
-            set conf(back_threshold) $pretraitement(subskyWindow_back_threshold)
-            #--- Tests sur les constantes
-            if { $pretraitement(subskyWindow_back_kernel) == "" && $pretraitement(subskyWindow_back_threshold) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,choix_coefficients)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(subskyWindow_back_kernel) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,coef_manquant)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(subskyWindow_back_threshold) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,coef_manquant)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(subskyWindow_back_kernel) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(subskyWindow_back_threshold) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
+            set catchError [ catch {
                #---
-               catch {
+               set conf(back_kernel)    $pretraitement(subskyWindow_back_kernel)
+               set conf(back_threshold) $pretraitement(subskyWindow_back_threshold)
+               #--- Tests sur les constantes
+               if { $pretraitement(subskyWindow_back_kernel) == "" && $pretraitement(subskyWindow_back_threshold) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,choix_coefficients)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(subskyWindow_back_kernel) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,coef_manquant)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(subskyWindow_back_threshold) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,coef_manquant)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(subskyWindow_back_kernel) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(subskyWindow_back_threshold) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
                   set k $pretraitement(subskyWindow_back_kernel)
                   set t $pretraitement(subskyWindow_back_threshold)
                   if { [ expr $k ] < "4" } { set k "3" }
@@ -978,17 +934,10 @@ namespace eval ::pretraitement {
                   if { [ expr $t ] > "1" } { set t "1" }
                   subsky $k $t
                   ::audace::autovisu $audace(visuNo)
-               } m
-               if { $m == "" } {
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               ::console::affiche_resultat "Usage: subsky1 in out back_kernel back_threshold\n\n"
-               catch {
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  ::console::affiche_resultat "Usage: subsky1 in out back_kernel back_threshold\n\n"
                   set k $pretraitement(subskyWindow_back_kernel)
                   set t $pretraitement(subskyWindow_back_threshold)
                   if { [ expr $k ] < "4" } { set k "3" }
@@ -996,20 +945,13 @@ namespace eval ::pretraitement {
                   if { [ expr $t ] < "0" } { set t "0" }
                   if { [ expr $t ] > "1" } { set t "1" }
                   subsky1 $in $out $k $t
-               } m
-               if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               ::console::affiche_resultat "Usage: subsky2 in out number back_kernel back_threshold ?first_index?\n\n"
-               catch {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  ::console::affiche_resultat "Usage: subsky2 in out number back_kernel back_threshold ?first_index?\n\n"
                   set k $pretraitement(subskyWindow_back_kernel)
                   set t $pretraitement(subskyWindow_back_threshold)
                   if { [ expr $k ] < "4" } { set k "3" }
@@ -1017,379 +959,324 @@ namespace eval ::pretraitement {
                   if { [ expr $t ] < "0" } { set t "0" }
                   if { [ expr $t ] > "1" } { set t "1" }
                   subsky2 $in $out $nb $k $t $first
-               } m
-               if { $m == "" } {
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_norm_fond" {
-            #--- Tests sur la constante
-            if { $pretraitement(const) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_fond_ciel)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { noffset $pretraitement(const) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+            set catchError [ catch {
+               #--- Tests sur la constante
+               if { $pretraitement(const) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_fond_ciel)"
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: noffset1 in out const\n\n"
-               catch { noffset1 $in $out $const } m
-               if { $m == "" } {
+               if { [ string is double -strict $pretraitement(const) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  noffset $pretraitement(const)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: noffset1 in out const\n\n"
+                  noffset1 $in $out $const
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: noffset2 in out const number ?first_index? ?tt_options?\n\n"
-               catch { noffset2 $in $out $const $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: noffset2 in out const number ?first_index? ?tt_options?\n\n"
+                  noffset2 $in $out $const $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_norm_eclai" {
-            #--- Tests sur la constante
-            if { $pretraitement(const) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_fond_ciel)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { ngain $pretraitement(const) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+            set catchError [ catch {
+               #--- Tests sur la constante
+               if { $pretraitement(const) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_fond_ciel)"
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: ngain1 in out const\n\n"
-               catch { ngain1 $in $out $const } m
-               if { $m == "" } {
+               if { [ string is double -strict $pretraitement(const) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  ngain $pretraitement(const)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: ngain1 in out const\n\n"
+                  ngain1 $in $out $const
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: ngain2 in out const number ?first_index? ?tt_options?\n\n"
-               catch { ngain2 $in $out $const $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: ngain2 in out const number ?first_index? ?tt_options?\n\n"
+                  ngain2 $in $out $const $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_addition" {
-            #--- Test sur l'operande
-            if { $pretraitement(2,operand) == "" } {
-               if { $pretraitement(choix_mode) == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_image_B)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_operande)"
-               }
-               set pretraitement(avancement) ""
-               return
-            }
-            #--- Tests sur la constante
-            if { $pretraitement(const) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_cte)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { add $pretraitement(2,operand) $pretraitement(const) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+            set catchError [ catch {
+               #--- Test sur l'operande
+               if { $pretraitement(img_operand) == "" } {
+                  if { $pretraitement(choix_mode) == "0" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_image_B)"
+                  } else {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_operande)"
+                  }
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set operand $pretraitement(2,operand)
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: add1 in operand out const\n\n"
-               catch { add1 $in $operand $out $const } m
-               if { $m == "" } {
+               #--- Tests sur la constante
+               if { $pretraitement(const) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_cte)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(const) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  add $pretraitement(img_operand) $pretraitement(const)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set operand $pretraitement(img_operand)
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: add1 in operand out const\n\n"
+                  add1 $in $operand $out $const
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set operand $pretraitement(2,operand)
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: add2 in operand out const number ?first_index? ?tt_options?\n\n"
-               catch { add2 $in $operand $out $const $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set operand $pretraitement(img_operand)
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: add2 in operand out const number ?first_index? ?tt_options?\n\n"
+                  add2 $in $operand $out $const $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_soustraction" {
-            #--- Test sur l'operande
-            if { $pretraitement(2,operand) == "" } {
-               if { $pretraitement(choix_mode) == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_image_B)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_operande)"
-               }
-               set pretraitement(avancement) ""
-               return
-            }
-            #--- Tests sur la constante
-            if { $pretraitement(const) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_cte)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { sub $pretraitement(2,operand) $pretraitement(const) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+            set catchError [ catch {
+               #--- Test sur l'operande
+               if { $pretraitement(img_operand) == "" } {
+                  if { $pretraitement(choix_mode) == "0" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_image_B)"
+                  } else {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_operande)"
+                  }
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set operand $pretraitement(2,operand)
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: sub1 in operand out const\n\n"
-               catch { sub1 $in $operand $out $const } m
-               if { $m == "" } {
+               #--- Tests sur la constante
+               if { $pretraitement(const) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_cte)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(const) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  sub $pretraitement(img_operand) $pretraitement(const)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set operand $pretraitement(img_operand)
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: sub1 in operand out const\n\n"
+                  sub1 $in $operand $out $const
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set operand $pretraitement(2,operand)
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: sub2 in operand out const number ?first_index? ?tt_options?\n\n"
-               catch { sub2 $in $operand $out $const $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set operand $pretraitement(img_operand)
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: sub2 in operand out const number ?first_index? ?tt_options?\n\n"
+                  sub2 $in $operand $out $const $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_division" {
-            #--- Test sur l'operande
-            if { $pretraitement(2,operand) == "" } {
-               if { $pretraitement(choix_mode) == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_image_B)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_operande)"
-               }
-               set pretraitement(avancement) ""
-               return
-            }
-            #--- Tests sur la constante
-            if { $pretraitement(const) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_cte)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { [ string is double -strict $pretraitement(const) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { div $pretraitement(2,operand) $pretraitement(const) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+            set catchError [ catch {
+               #--- Test sur l'operande
+               if { $pretraitement(img_operand) == "" } {
+                  if { $pretraitement(choix_mode) == "0" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_image_B)"
+                  } else {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_operande)"
+                  }
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set operand $pretraitement(2,operand)
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: div1 in operand out const\n\n"
-               catch { div1 $in $operand $out $const } m
-               if { $m == "" } {
+               #--- Tests sur la constante
+               if { $pretraitement(const) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_cte)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $pretraitement(const) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  div $pretraitement(img_operand) $pretraitement(const)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set operand $pretraitement(img_operand)
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: div1 in operand out const\n\n"
+                  div1 $in $operand $out $const
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set operand $pretraitement(2,operand)
-               set const $pretraitement(const)
-               ::console::affiche_resultat "Usage: div2 in operand out const number ?first_index? ?tt_options?\n\n"
-               catch { div2 $in $operand $out $const $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set operand $pretraitement(img_operand)
+                  set const $pretraitement(const)
+                  ::console::affiche_resultat "Usage: div2 in operand out const number ?first_index? ?tt_options?\n\n"
+                  div2 $in $operand $out $const $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
          "multi_opt_noir" {
-            #--- Test sur le noir
-            if { $pretraitement(3,dark) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_noir)"
-               set pretraitement(avancement) ""
-               return
-            }
-            #--- Test sur l'offset
-            if { $pretraitement(3,offset) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_offset)"
-               set pretraitement(avancement) ""
-               return
-            }
-            if { $pretraitement(choix_mode) == "0" } {
-               #---
-               catch { opt $pretraitement(3,dark) $pretraitement(3,offset) } m
-               if { $m == "" } {
-                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+            set catchError [ catch {
+               #--- Test sur le noir
+               if { $pretraitement(dark) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_noir)"
                   set pretraitement(avancement) ""
+                  return
                }
-            } elseif { $pretraitement(choix_mode) == "1" } {
-               #---
-               set dark $pretraitement(3,dark)
-               set offset $pretraitement(3,offset)
-               ::console::affiche_resultat "Usage: opt1 in dark offset out\n\n"
-               catch { opt1 $in $dark $offset $out } m
-               if { $m == "" } {
+               #--- Test sur l'offset
+               if { $pretraitement(offset) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_offset)"
+                  set pretraitement(avancement) ""
+                  return
+               }
+               if { $pretraitement(choix_mode) == "0" } {
+                  #---
+                  opt $pretraitement(dark) $pretraitement(offset)
+                  set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
+               } elseif { $pretraitement(choix_mode) == "1" } {
+                  #---
+                  set dark $pretraitement(dark)
+                  set offset $pretraitement(offset)
+                  ::console::affiche_resultat "Usage: opt1 in dark offset out\n\n"
+                  opt1 $in $dark $offset $out
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
-               }
-            } elseif { $pretraitement(choix_mode) == "2" } {
-               #---
-               set dark $pretraitement(3,dark)
-               set offset $pretraitement(3,offset)
-               ::console::affiche_resultat "Usage: opt2 in dark offset out number ?first_index? ?tt_options?\n\n"
-               catch { opt2 $in $dark $offset $out $nb $first } m
-               if { $m == "" } {
+               } elseif { $pretraitement(choix_mode) == "2" } {
+                  #---
+                  set dark $pretraitement(dark)
+                  set offset $pretraitement(offset)
+                  ::console::affiche_resultat "Usage: opt2 in dark offset out number ?first_index? ?tt_options?\n\n"
+                  opt2 $in $dark $offset $out $nb $first
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
-               } else {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-                  set pretraitement(avancement) ""
                }
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set pretraitement(avancement) ""
             }
          }
       }
@@ -1464,11 +1351,14 @@ namespace eval ::pretraitement {
       }
       $This.usr.7.1.che1 configure -text "$pretraitement(afficher_image)"
       #---
-      set pretraitement(avancement)     ""
-      set pretraitement(in)             ""
-      set pretraitement(nb)             ""
-      set pretraitement(valeur_indice)  "1"
-      set pretraitement(out)            ""
+      set pretraitement(avancement)    ""
+      set pretraitement(in)            ""
+      set pretraitement(nb)            ""
+      set pretraitement(valeur_indice) "1"
+      set pretraitement(out)           ""
+      set pretraitement(img_operand)   ""
+      set pretraitement(dark)          ""
+      set pretraitement(offset)        ""
       #---
       ::pretraitement::formule
       #---
@@ -2057,11 +1947,11 @@ namespace eval ::pretraitement {
             set pretraitement(out)               [ file rootname [ file tail $filename ] ]
          }
       } elseif { $In_Out == "3" } {
-         set pretraitement(2,operand) [ file rootname [ file tail $filename ] ]
+         set pretraitement(img_operand) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
-         set pretraitement(3,dark) [ file rootname [ file tail $filename ] ]
+         set pretraitement(dark) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "5" } {
-         set pretraitement(3,offset) [ file rootname [ file tail $filename ] ]
+         set pretraitement(offset) [ file rootname [ file tail $filename ] ]
       }
    }
 
@@ -2360,7 +2250,7 @@ namespace eval ::pretraitement {
                   -message "$caption(pretraitement,renumerote_termine)\n$caption(pretraitement,fichier_indice_0)"
             } else {
                tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,pas_renumerotation)"
+                  -message "$caption(pretraitement,pas_renumerotation)\n$caption(pretraitement,fichier_indice_0)"
                #--- Sortie anticipee
                set nom_generique  ""
                set longueur_serie ""
@@ -2685,71 +2575,68 @@ namespace eval ::traiteImage {
       #--- Switch
       switch $traiteImage(operation) {
          "r+v+b2rvb" {
-            #--- Test sur le nom generique des images R, V et B
-            if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_entree_generique)"
-               set traiteImage(avancement) ""
-               return
-            }
-            #--- Test sur l'image RVB
-            if { $traiteImage(rvbWindow_rvb_filename) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_image_sortie)"
-               set traiteImage(avancement) ""
-               return
-            }
-            #---
-            catch {
+            set catchError [ catch {
+               #--- Test sur le nom generique des images R, V et B
+               if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_entree_generique)"
+                  set traiteImage(avancement) ""
+                  return
+               }
+               #--- Test sur l'image RVB
+               if { $traiteImage(rvbWindow_rvb_filename) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_image_sortie)"
+                  set traiteImage(avancement) ""
+                  return
+               }
+               #---
                fitsconvert3d $audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename) 3 .fit $audace(rep_images)/$traiteImage(rvbWindow_rvb_filename)
                loadima $traiteImage(rvbWindow_rvb_filename)
-            } m
-            if { $m == "" } {
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteImage(avancement) ""
             }
          }
          "rvb2r+v+b" {
-            #--- Test sur l'image RVB
-            if { $traiteImage(rvbWindow_rvb_filename) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_image_entree)"
-               set traiteImage(avancement) ""
-               return
-            }
-            #--- Test sur le nom generique des images R, V et B
-            if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_sortie_generique)"
-               set traiteImage(avancement) ""
-               return
-            }
-            #---
-            catch {
+            set catchError [ catch {
+               #--- Test sur l'image RVB
+               if { $traiteImage(rvbWindow_rvb_filename) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_image_entree)"
+                  set traiteImage(avancement) ""
+                  return
+               }
+               #--- Test sur le nom generique des images R, V et B
+               if { $traiteImage(rvbWindow_r+v+b_filename) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_sortie_generique)"
+                  set traiteImage(avancement) ""
+                  return
+               }
+               #---
                buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 1
                buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)1.fit"
                buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 2
                buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)2.fit"
                buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 3
                buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)3.fit"
-            } m
-            if { $m == "" } {
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteImage(avancement) ""
             }
          }
          "cfa2rgb" {
-            catch {
+            set catchError [ catch {
                buf$audace(bufNo) cfa2rgb 1
                ::audace::autovisu $audace(visuNo)
-            } m
-            if { $m == "" } {
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteImage(avancement) ""
             }
@@ -2852,13 +2739,15 @@ namespace eval ::traiteImage {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $traiteImage(operation) == "r+v+b2rvb" && $option == "1" } {
-         set traiteImage(rvbWindow_r+v+b_filename) [ file rootname [ file tail $filename ] ]
+         set traiteImage(info_filename_out)        [ ::pretraitement::nom_generique [ file tail $filename ] ]
+         set traiteImage(rvbWindow_r+v+b_filename) [ lindex $traiteImage(info_filename_out) 0 ]
       } elseif { $traiteImage(operation) == "r+v+b2rvb" && $option == "2" } {
          set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "rvb2r+v+b" && $option == "1" } {
          set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "rvb2r+v+b" && $option == "2" } {
-         set traiteImage(rvbWindow_r+v+b_filename) [ file rootname [ file tail $filename ] ]
+         set traiteImage(info_filename_out)        [ ::pretraitement::nom_generique [ file tail $filename ] ]
+         set traiteImage(rvbWindow_r+v+b_filename) [ lindex $traiteImage(info_filename_out) 0 ]
       }
    }
 
@@ -3192,7 +3081,6 @@ namespace eval ::traiteWindow {
       set nb    $traiteWindow(nb)
       set first $traiteWindow(valeur_indice)
       set out   $traiteWindow(out)
-      set end   [ expr $nb + ( $first - 1 ) ]
 
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $traiteWindow(in) == "" } {
@@ -3213,6 +3101,18 @@ namespace eval ::traiteWindow {
          set traiteWindow(avancement) ""
          return
       }
+      if { $traiteWindow(valeur_indice) == "" } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,choix_premier_indice)"
+         set traiteWindow(avancement) ""
+         return
+      }
+      if { [ TestEntier $traiteWindow(valeur_indice) ] == "0" } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+            -message "$caption(pretraitement,nbre_entier1)"
+         set traiteWindow(avancement) ""
+         return
+      }
       if { $traiteWindow(out) == "" } {
          if { $traiteWindow(operation) != "serie_recentrer" } {
             tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
@@ -3224,78 +3124,85 @@ namespace eval ::traiteWindow {
          set traiteWindow(avancement) ""
          return
       }
+      #--- Calcul du dernier indice de la serie
+      set end [ expr $nb + ( $first - 1 ) ]
 
       #--- Switch
       switch $traiteWindow(operation) {
          "serie_mediane" {
-            ::console::affiche_resultat "Usage: smedian in out number ?first_index? ?tt_options?\n\n"
-            catch { smedian $in $out $nb $first } m
-            if { $m == "" } {
+            set catchError [ catch {
+               ::console::affiche_resultat "Usage: smedian in out number ?first_index? ?tt_options?\n\n"
+               smedian $in $out $nb $first
                if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          }
          "serie_somme" {
-            ::console::affiche_resultat "Usage: sadd in out number ?first_index? ?tt_options?\n\n"
-            catch { sadd $in $out $nb $first } m
-            if { $m == "" } {
+            set catchError [ catch {
+               ::console::affiche_resultat "Usage: sadd in out number ?first_index? ?tt_options?\n\n"
+               sadd $in $out $nb $first
                if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          }
          "serie_moyenne" {
-            ::console::affiche_resultat "Usage: smean in out number ?first_index? ?tt_options?\n\n"
-            catch { smean $in $out $nb $first } m
-            if { $m == "" } {
+            set catchError [ catch {
+               ::console::affiche_resultat "Usage: smean in out number ?first_index? ?tt_options?\n\n"
+               smean $in $out $nb $first
                if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          }
          "serie_ecart_type" {
-            ::console::affiche_resultat "Usage: ssigma in out number ?first_index? bitpix=-32\n\n"
-            catch { ssigma $in $out $nb $first "bitpix=-32" } m
-            if { $m == "" } {
+            set catchError [ catch {
+               ::console::affiche_resultat "Usage: ssigma in out number ?first_index? bitpix=-32\n\n"
+               ssigma $in $out $nb $first "bitpix=-32"
                if { $traiteWindow(disp) == 1 } {
                   loadima $out
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
          }
          "serie_recentrer" {
-            ::console::affiche_resultat "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?\n\n"
-            #--- Un cadre trace avec la souris n'existe pas
-            if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
-               set coordWindow ""
-               loadima $in$first
-               tk_messageBox -title $caption(confVisu,attention) -type ok \
-                  -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
-            }
-            set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
-            catch { registerbox $in $out $nb $audace(visuNo) $first } m
-            if { $m == "" } {
+            set catchError [ catch {
+               ::console::affiche_resultat "Usage: registerbox in out number ?visuNo? ?first_index? ?tt_options?\n\n"
+               #--- Un cadre trace avec la souris n'existe pas
+               if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] == "" } {
+                  set coordWindow ""
+                  loadima $in$first
+                  tk_messageBox -title $caption(confVisu,attention) -type ok \
+                     -message "$caption(pretraitement,tracer_boite)\n$caption(pretraitement,appuyer_ok)"
+               }
+               set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
+               registerbox $in $out $nb $audace(visuNo) $first
                if { $traiteWindow(disp) == 1 } {
                   loadima $out$end
                }
                set traiteWindow(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set traiteWindow(avancement) ""
             }
@@ -3419,7 +3326,12 @@ namespace eval ::traiteWindow {
          set traiteWindow(nb)               [ lindex $traiteWindow(info_filename_in) 1 ]
          set traiteWindow(valeur_indice)    [ lindex $traiteWindow(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
-         set traiteWindow(out)              [ file rootname [ file tail $filename ] ]
+         if { $traiteWindow(operation) == "serie_recentrer" } {
+            set traiteWindow(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
+            set traiteWindow(out)               [ lindex $traiteWindow(info_filename_out) 0 ]
+         } else {
+            set traiteWindow(out)               [ file rootname [ file tail $filename ] ]
+         }
       }
    }
 
@@ -3861,7 +3773,6 @@ namespace eval ::faireImageRef {
       set nb    $faireImageRef(nb)
       set first $faireImageRef(valeur_indice)
       set out   $faireImageRef(out)
-      set end   [ expr $nb + ( $first - 1 ) ]
 
       #--- Tests sur les images d'entree, le nombre d'images et les images de sortie
       if { $faireImageRef(in) == "" } {
@@ -3882,6 +3793,18 @@ namespace eval ::faireImageRef {
           set faireImageRef(avancement) ""
          return
       }
+      if { $faireImageRef(valeur_indice) == "" } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,choix_premier_indice)"
+         set faireImageRef(avancement) ""
+         return
+      }
+      if { [ TestEntier $faireImageRef(valeur_indice) ] == "0" } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+            -message "$caption(pretraitement,nbre_entier1)"
+         set faireImageRef(avancement) ""
+         return
+      }
       if { $faireImageRef(out) == "" } {
          if { $faireImageRef(operation) == "pretraitement" } {
              tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
@@ -3895,230 +3818,232 @@ namespace eval ::faireImageRef {
              return
          }
       }
+      #--- Calcul du dernier indice de la serie
+      set end [ expr $nb + ( $first - 1 ) ]
 
       #--- Switch
       switch $faireImageRef(operation) {
          "faire_offset" {
-            catch { smedian $in $out $nb $first } m
-            if { $m == "" } {
+            set catchError [ catch {
+               smedian $in $out $nb $first
                if { $faireImageRef(disp) == 1 } {
                   loadima $out
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
          }
          "faire_dark" {
-            #--- Test sur l'offset
-            if { $faireImageRef(dark,no-offset) == "0" } {
-               if { $faireImageRef(offset) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_offset)"
-                  set faireImageRef(avancement) ""
-                  return
+            set catchError [ catch {
+               #--- Test sur l'offset
+               if { $faireImageRef(dark,no-offset) == "0" } {
+                  if { $faireImageRef(offset) == "" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_offset)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
                }
-            }
-            #---
-            set offset $faireImageRef(offset)
-            set const "0"
-            set temp "temp"
-            if { $faireImageRef(dark,no-offset) == "0" } {
-               catch { sub2 $in $offset $temp $const $nb $first } m
-               if { $faireImageRef(methode) == "0" } {
-                  #--- Somme
-                  catch { sadd $temp $out $nb $first } m
-               } elseif { $faireImageRef(methode) == "1" } {
-                  #--- Moyenne
-                  catch { smean $temp $out $nb $first } m
-               } elseif { $faireImageRef(methode) == "2" } {
-                  #--- Mediane
-                  catch { smedian $temp $out $nb $first } m
+               #---
+               set offset $faireImageRef(offset)
+               set const "0"
+               set temp "temp"
+               if { $faireImageRef(dark,no-offset) == "0" } {
+                  sub2 $in $offset $temp $const $nb $first
+                  if { $faireImageRef(methode) == "0" } {
+                     #--- Somme
+                     sadd $temp $out $nb $first
+                  } elseif { $faireImageRef(methode) == "1" } {
+                     #--- Moyenne
+                     smean $temp $out $nb $first
+                  } elseif { $faireImageRef(methode) == "2" } {
+                     #--- Mediane
+                     smedian $temp $out $nb $first
+                  }
+                  delete2 $temp $nb
+               } elseif { $faireImageRef(dark,no-offset) == "1" } {
+                  if { $faireImageRef(methode) == "0" } {
+                     #--- Somme
+                     sadd $in $out $nb $first
+                  } elseif { $faireImageRef(methode) == "1" } {
+                     #--- Moyenne
+                     smean $in $out $nb $first
+                  } elseif { $faireImageRef(methode) == "2" } {
+                     #--- Mediane
+                     smedian $in $out $nb $first
+                  }
                }
-               catch { delete2 $temp $nb } m
-            } elseif { $faireImageRef(dark,no-offset) == "1" } {
-               if { $faireImageRef(methode) == "0" } {
-                  #--- Somme
-                  catch { sadd $in $out $nb $first } m
-               } elseif { $faireImageRef(methode) == "1" } {
-                  #--- Moyenne
-                  catch { smean $in $out $nb $first } m
-               } elseif { $faireImageRef(methode) == "2" } {
-                  #--- Mediane
-                  catch { smedian $in $out $nb $first } m
-               }
-            }
-            if { $m == "" } {
                if { $faireImageRef(disp) == 1 } {
                   loadima $out
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
          }
          "faire_flat_field" {
-            #--- Test sur l'offset
-            if { $faireImageRef(flat-field,no-offset) == "0" } {
+            set catchError [ catch {
+               #--- Test sur l'offset
+               if { $faireImageRef(flat-field,no-offset) == "0" } {
+                  if { $faireImageRef(offset) == "" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_offset)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
+               }
+               #--- Test sur le dark
+               if { $faireImageRef(flat-field,no-dark) == "0" } {
+                  if { $faireImageRef(dark) == "" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_noir)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
+               }
+               #--- Tests sur la valeur de normalisation
+               if { $faireImageRef(norm) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,definir_cte)"
+                  set faireImageRef(avancement) ""
+                  return
+               }
+               if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,cte_invalide)"
+                  set faireImageRef(avancement) ""
+                  return
+               }
+               #---
+               set offset $faireImageRef(offset)
+               set dark   $faireImageRef(dark)
+               set norm   $faireImageRef(norm)
+               set const  "0"
+               set temp   "temp"
+               set tempo  "tempo"
+               if { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "0" } {
+                  #--- Realisation de l'image ( Offset + Dark )
+                  set buf_pretrait [ ::buf::create ]
+                  buf$buf_pretrait load $audace(rep_images)/$offset
+                  buf$buf_pretrait add $audace(rep_images)/$dark $const
+                  buf$buf_pretrait save $audace(rep_images)/offset+dark
+                  ::buf::delete $buf_pretrait
+                  #---
+                  sub2 $in $offset+dark $temp $const $nb $first
+                  noffset2 $temp $tempo $norm $nb $first
+                  smedian $tempo $out $nb $first
+                  delete2 $temp $nb
+                  delete2 $tempo $nb
+                  #--- Suppression du fichier intermediaire
+                  file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
+               } else {
+                  if { $faireImageRef(flat-field,no-dark) == "1" } {
+                     #---
+                     sub2 $in $offset $temp $const $nb $first
+                     noffset2 $temp $tempo $norm $nb $first
+                     smedian $tempo $out $nb $first
+                     delete2 $temp $nb
+                     delete2 $tempo $nb
+                  } elseif { $faireImageRef(flat-field,no-offset) == "1" } {
+                     #---
+                     sub2 $in $dark $temp $const $nb $first
+                     noffset2 $temp $tempo $norm $nb $first
+                     smedian $tempo $out $nb $first
+                     delete2 $temp $nb
+                     delete2 $tempo $nb
+                  }
+               }
+               if { $faireImageRef(disp) == 1 } {
+                  loadima $out
+               }
+               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set faireImageRef(avancement) ""
+            }
+         }
+         "pretraitement" {
+            set catchError [ catch {
+               #--- Test sur l'offset
                if { $faireImageRef(offset) == "" } {
                   tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                      -message "$caption(pretraitement,definir_offset)"
                   set faireImageRef(avancement) ""
                   return
                }
-            }
-            #--- Test sur le dark
-            if { $faireImageRef(flat-field,no-dark) == "0" } {
+               #--- Test sur le dark
                if { $faireImageRef(dark) == "" } {
                   tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                      -message "$caption(pretraitement,definir_noir)"
                   set faireImageRef(avancement) ""
                   return
                }
-            }
-            #--- Tests sur la valeur de normalisation
-            if { $faireImageRef(norm) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_cte)"
-               set faireImageRef(avancement) ""
-               return
-            }
-            if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                  -message "$caption(pretraitement,cte_invalide)"
-               set faireImageRef(avancement) ""
-               return
-            }
-            #---
-            set offset $faireImageRef(offset)
-            set dark   $faireImageRef(dark)
-            set norm   $faireImageRef(norm)
-            set const  "0"
-            set temp   "temp"
-            set tempo  "tempo"
-            if { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "0" } {
-               #--- Realisation de l'image ( Offset + Dark )
-               catch {
-                  set buf_pretrait [ ::buf::create ]
-                  buf$buf_pretrait load $audace(rep_images)/$offset
-                  buf$buf_pretrait add $audace(rep_images)/$dark $const
-                  buf$buf_pretrait save $audace(rep_images)/offset+dark
-                  ::buf::delete $buf_pretrait
-               } m
-               #---
-               catch { sub2 $in $offset+dark $temp $const $nb $first } m
-               catch { noffset2 $temp $tempo $norm $nb $first } m
-               catch { smedian $tempo $out $nb $first } m
-               catch { delete2 $temp $nb } m
-               catch { delete2 $tempo $nb } m
-               #--- Suppression du fichier intermediaire
-               catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
-            } else {
-               if { $faireImageRef(flat-field,no-dark) == "1" } {
-                  #---
-                  catch { sub2 $in $offset $temp $const $nb $first } m
-                  catch { noffset2 $temp $tempo $norm $nb $first } m
-                  catch { smedian $tempo $out $nb $first } m
-                  catch { delete2 $temp $nb } m
-                  catch { delete2 $tempo $nb } m
-               } elseif { $faireImageRef(flat-field,no-offset) == "1" } {
-                  #---
-                  catch { sub2 $in $dark $temp $const $nb $first } m
-                  catch { noffset2 $temp $tempo $norm $nb $first } m
-                  catch { smedian $tempo $out $nb $first } m
-                  catch { delete2 $temp $nb } m
-                  catch { delete2 $tempo $nb } m
-               }
-            }
-            if { $m == "" } {
-               if { $faireImageRef(disp) == 1 } {
-                  loadima $out
-               }
-               set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
-               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
-               set faireImageRef(avancement) ""
-            }
-         }
-         "pretraitement" {
-            #--- Test sur l'offset
-            if { $faireImageRef(offset) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_offset)"
-               set faireImageRef(avancement) ""
-               return
-            }
-            #--- Test sur le dark
-            if { $faireImageRef(dark) == "" } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,definir_noir)"
-               set faireImageRef(avancement) ""
-               return
-            }
-            #--- Test sur le flat-field
-            if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+               #--- Test sur le flat-field
                if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                  if { $faireImageRef(flat-field) == "" } {
-                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                        -message "$caption(pretraitement,definir_flat-field)"
-                     set faireImageRef(avancement) ""
-                     return
+                  if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+                     if { $faireImageRef(flat-field) == "" } {
+                        tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                           -message "$caption(pretraitement,definir_flat-field)"
+                        set faireImageRef(avancement) ""
+                        return
+                     }
                   }
                }
-            }
-            #---
-            set offset     $faireImageRef(offset)
-            set dark       $faireImageRef(dark)
-            set flat       $faireImageRef(flat-field)
-            set const      "0"
-            set const_mult "1"
-            set temp       "temp"
-            #--- Deux possibilites de pretraitement
-            if { $faireImageRef(opt) == "0" } {
-               #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
-               #--- Realisation de X = ( Offset + Dark )
-               catch {
+               #---
+               set offset     $faireImageRef(offset)
+               set dark       $faireImageRef(dark)
+               set flat       $faireImageRef(flat-field)
+               set const      "0"
+               set const_mult "1"
+               set temp       "temp"
+               #--- Deux possibilites de pretraitement
+               if { $faireImageRef(opt) == "0" } {
+                  #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
+                  #--- Realisation de X = ( Offset + Dark )
                   set buf_pretrait [ ::buf::create ]
                   buf$buf_pretrait load $audace(rep_images)/$offset
                   buf$buf_pretrait add $audace(rep_images)/$dark $const
                   buf$buf_pretrait save $audace(rep_images)/offset+dark
                   ::buf::delete $buf_pretrait
-               } m
-               if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                  #--- Realisation de Y = [ Generique d'entree - ( X ) ]
-                  catch { sub2 $in offset+dark $temp $const $nb $first } m
-                  #--- Realisation de Z = Y / Flat-field
-                  catch { div2 $temp $flat $out $const_mult $nb $first } m
-                  #--- Suppression des fichiers temporaires
-                  catch { delete2 $temp $nb } m
+                  if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+                     #--- Realisation de Y = [ Generique d'entree - ( X ) ]
+                     sub2 $in offset+dark $temp $const $nb $first
+                     #--- Realisation de Z = Y / Flat-field
+                     div2 $temp $flat $out $const_mult $nb $first
+                     #--- Suppression des fichiers temporaires
+                     delete2 $temp $nb
+                  } else {
+                     #--- Realisation de Y = [ Generique d'entree - ( X ) ]
+                     sub2 $in offset+dark $out $const $nb $first
+                  }
+                  #--- Suppression du fichier intermediaire
+                  file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                } else {
-                  #--- Realisation de Y = [ Generique d'entree - ( X ) ]
-                  catch { sub2 $in offset+dark $out $const $nb $first } m
+                  if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+                     #--- Optimisation du noir
+                     opt2 $in $dark $offset $temp $nb $first
+                     #--- Division par le flat
+                     div2 $temp $flat $out $const_mult $nb $first
+                     #--- Suppression des fichiers temporaires
+                     delete2 $temp $nb
+                  } else {
+                     #--- Optimisation du noir
+                     opt2 $in $dark $offset $out $nb $first
+                  }
                }
-               #--- Suppression du fichier intermediaire
-               catch { file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ] } m
-            } else {
-               if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                  #--- Optimisation du noir
-                  catch { opt2 $in $dark $offset $temp $nb $first } m
-                  #--- Division par le flat
-                  catch { div2 $temp $flat $out $const_mult $nb $first } m
-                  #--- Suppression des fichiers temporaires
-                  catch { delete2 $temp $nb } m
-               } else {
-                  #--- Optimisation du noir
-                  catch { opt2 $in $dark $offset $out $nb $first } m
-               }
-            }
-            #---
-            if { $m == "" } {
+               #---
                if { $faireImageRef(disp) == 1 } {
                   loadima $out$end
                }
                set faireImageRef(avancement) "$caption(pretraitement,fin_traitement)"
-            } else {
+            } m ]
+            if { $catchError == "1" } {
                tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
                set faireImageRef(avancement) ""
             }
@@ -4262,8 +4187,13 @@ namespace eval ::faireImageRef {
          set faireImageRef(nb)                [ lindex $faireImageRef(info_filename_in) 1 ]
          set faireImageRef(valeur_indice)     [ lindex $faireImageRef(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
-         set faireImageRef(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
-         set faireImageRef(out)               [ lindex $faireImageRef(info_filename_out) 0 ]
+
+         if { $faireImageRef(operation) == "pretraitement" } {
+            set faireImageRef(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
+            set faireImageRef(out)               [ lindex $faireImageRef(info_filename_out) 0 ]
+         } else {
+            set faireImageRef(out)               [ file rootname [ file tail $filename ] ]
+         }
       } elseif { $In_Out == "3" } {
          set faireImageRef(offset) [ file rootname [ file tail $filename ] ]
       } elseif { $In_Out == "4" } {
