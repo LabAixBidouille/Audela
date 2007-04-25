@@ -699,7 +699,7 @@ void CPixelsGray::Opt(char *dark, char *offset)
 
    datatype = TFLOAT;
    s = new char[128];
-   sprintf(s,"OPT dark=%s bias=%s",dark,offset);
+   sprintf(s,"OPT \"dark=%s\" \"bias=%s\"",dark,offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
    delete s;
    if(msg) throw CErrorLibtt(msg);
