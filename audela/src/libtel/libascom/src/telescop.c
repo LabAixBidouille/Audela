@@ -296,13 +296,21 @@ int mytel_radec_init_additional(struct telprop *tel)
 int mytel_radec_state(struct telprop *tel,char *result)
 {
    char s[1024];
+   int slewing=0,tracking=0,connected=0;
    strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   strcpy(s,"$telcmd Connected"); mytel_tcleval(tel,s);
+   if (strcmp(tel->interp->result,"1")==0) {
+      connected=1;
+	}
    strcpy(s,"$telcmd Slewing"); mytel_tcleval(tel,s);
    if (strcmp(tel->interp->result,"1")==0) {
-      strcpy(result,"pointing");
-   } else {
-      strcpy(result,"tracking");
-   }
+      slewing=1;
+	}
+   strcpy(s,"$telcmd Tracking"); mytel_tcleval(tel,s);
+   if (strcmp(tel->interp->result,"1")==0) {
+      tracking=1;
+	}
+   sprintf(result,"{connected %d} {slewing %d} {tracking %d} ",connected,slewing,tracking);
    return 0;
 }
 
@@ -398,6 +406,7 @@ int mytel_radec_motor(struct telprop *tel)
       strcpy(s,"$telcmd Tracking 0"); mytel_tcleval(tel,s);
    } else {
       /* start the motor */
+      strcpy(s,"$telcmd Unpark"); mytel_tcleval(tel,s);
       strcpy(s,"$telcmd Tracking 1"); mytel_tcleval(tel,s);
    }
    /*sprintf(s,"after 50"); mytel_tcleval(tel,s);*/
