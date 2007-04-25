@@ -7,19 +7,19 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 01 avril 2005</p>
+<p class="date">Date de mise &agrave; jour : 25 avril 2007</p>
 <h1>R&egrave;gles &agrave; respecter lors de la cr&eacute;ation d'un script ou 
-  d'un outil pour son int&eacute;gration dans Aud'ACE </h1>
+  d'un plugin pour son int&eacute;gration dans Aud'ACE </h1>
 <h1>Sommaire </h1>
 <blockquote>
   <p><a href="#introduction">1. Introduction </a></p>
   <p><a href="#structure">2. Structure g&eacute;n&eacute;rale </a></p>
   <p><a href="#variable">3. Variables g&eacute;n&eacute;rales</a></p>
   <p><a href="#internationalisation">4. Internationalisation</a></p>
-  <p><a href="#plugin">5. R&egrave;gle d'&eacute;criture d'un plug-in</a></p>
+  <p><a href="#plugin">5. R&egrave;gles d'&eacute;criture d'un plugin</a></p>
 </blockquote>
 <h1> <a name="introduction"></a>1. Introduction</h1>
-<p>Audela, et son interface graphique Aud'ACE sont des logiciels ouverts, qui 
+<p>AudeLA, et son interface graphique Aud'ACE sont des logiciels ouverts, qui 
   permettent &agrave; tout le monde d&#8217;ajouter ou de personnaliser toutes 
   les fonctions possibles et imaginables. Mais l&#8217;exp&eacute;rience nous 
   a montr&eacute; que pour une parfaite int&eacute;gration dans le logiciel, plusieurs 
@@ -27,7 +27,7 @@
   de lister, expliquer et d&eacute;crire ces r&egrave;gles. Il doit servir aux 
   programmeurs lors de leurs d&eacute;veloppements. Il est destin&eacute; aussi 
   &agrave; valider de nouveaux scripts avant leur int&eacute;gration dans une 
-  prochaine r&eacute;vision de Audela/Aud'ACE. Si donc votre application est destin&eacute;e 
+  prochaine r&eacute;vision de AudeLA/Aud'ACE. Si votre application est destin&eacute;e 
   &agrave; faire partie int&eacute;grante du logiciel, nous vous invitons &agrave; 
   respecter scrupuleusement ces r&egrave;gles. Cette contrainte n&#8217;a bien 
   s&ucirc;r aucun caract&egrave;re obligatoire si votre d&eacute;veloppement est 
@@ -42,11 +42,12 @@
     par exemple pour pointer sur les bons r&eacute;pertoires...</li>
   <li>Les r&egrave;gles portant sur l'internationalisation (traduction en multiples 
     langues).</li>
+  <li>Les r&egrave;gles portant sur l'&eacute;criture des plugins.</li>
 </ul>
 <p>Ce document est appel&eacute; &agrave; &eacute;voluer en fonction des exp&eacute;riences 
   des uns et des autres : N&#8217;h&eacute;sitez pas &agrave; faire des propositions 
   d&#8217;am&eacute;lioration &agrave; l&#8217;&eacute;quipe de d&eacute;veloppement 
-  Audela/Aud'ACE. </p>
+  AudeLA/Aud'ACE. </p>
 <h1> <a name="structure"></a>2. Structure g&eacute;n&eacute;rale</h1>
 <h2>2.1. Cr&eacute;ation d&#8217;une nouvelle application</h2>
 <p>Un script peut prendre principalement deux formes dans Aud'ACE : </p>
@@ -55,9 +56,9 @@
     donc ind&eacute;pendant de l&#8217;interface graphique Aud'ACE (s&#8217;il 
     contient une interface graphique, alors c&#8217;est dans une fen&ecirc;tre 
     ind&eacute;pendante). Dans ce cas, le respect des pr&eacute;sentes r&egrave;gles 
-    permettra l'utilisation du script depuis Audela, ind&eacute;pendamment de 
+    permettra l'utilisation du script depuis AudeLA, ind&eacute;pendamment de 
     l'environnement graphique de Aud'ACE.</li>
-  <li> Soit il prend la forme d&#8217;un nouveau outil ou nouvelle fonctionnalit&eacute;, 
+  <li> Soit il prend la forme d&#8217;un nouveau outil ou d'une nouvelle fonctionnalit&eacute;, 
     c&#8217;est &agrave; dire qu&#8217;il s&#8217;int&egrave;gre dans l&#8217;interface 
     graphique de Aud'ACE. Dans ce cas, le script doit respecter la structure d&eacute;crite 
     dans la documentation du logiciel (cf. rubrique Cr&eacute;er un nouvel outil). 
@@ -70,39 +71,34 @@
   similaire, et de faire converger nos efforts. </p>
 <h2> 2.2. Convention sur les noms et les r&eacute;pertoires</h2>
 <p>Dans le cas d'un script simple, la seule r&egrave;gle &agrave; respecter est 
-  de mettre votre fichier .tcl dans le r&eacute;pertoire "scripts". </p>
+  de mettre votre fichier <b>TCL</b> dans le r&eacute;pertoire "scripts". </p>
 <p>Dans le cas d'un outil Aud'ACE, il vous faut d&eacute;finir deux noms : Le 
   premier sera celui du script lui-m&ecirc;me, et le second sera celui affich&eacute; 
-  dans le menu d&eacute;roulant Outils (ce sera aussi le titre de l'outil). Dans 
-  la mesure du possible, nous vous invitons &agrave; utiliser un seul nom pour 
-  ces deux fonctions, mais ce n'est pas toujours &eacute;vident du fait du peu 
-  de place disponible pour le titre de l'outil. Faisons l'hypoth&egrave;se que 
+  dans le menu d&eacute;roulant Outils (ce sera aussi le titre de l'outil). Faisons l'hypoth&egrave;se que 
   votre fichier s'appelle "mon_fichier_a_moi.tcl", et que le titre de votre application 
-  est "MonFich". Dans ce cas, les diff&eacute;rents fichiers utilis&eacute;s par 
+  est "Mon outil". Dans ce cas, les diff&eacute;rents fichiers utilis&eacute;s par 
   votre application devront respecter les r&egrave;gles suivantes : </p>
-<p>Le fichier mon_fichier_a_moi.tcl sera &eacute;crit uniquement avec des minuscules, 
-  et sera install&eacute; dans le r&eacute;pertoire "[...]/Audela/audace/panneau". 
+<p>Le fichier "mon_fichier_a_moi.tcl" sera &eacute;crit uniquement avec des minuscules, 
+  et sera install&eacute; dans le r&eacute;pertoire "[...]/gui/audace/plugin/tool/mon_fichier_a_moi". 
 </p>
 <p>Si vous avez besoin de fichiers compl&eacute;mentaires (par exemple, un fichier 
-  de configuration), vous le placerez dans un sous-r&eacute;pertoire ayant le 
-  m&ecirc;me nom que votre fichier. Dans notre exemple, il s'agira du r&eacute;pertoire 
-  [...]/audace/plugin/tool/mon_fichier_a_moi. </p>
+  de configuration), vous le placerez dans le m&ecirc;me r&eacute;pertoire que votre fichier. </p>
 <p>Dans ce r&eacute;pertoire, le cas &eacute;ch&eacute;ant, le fichier de configuration 
   aura le m&ecirc;me nom que votre fichier de script, mais avec l'extension .ini 
-  : Dans notre cas, il s'agira de mon_fichier_a_moi.ini . Il est imp&eacute;ratif 
+  : Dans notre cas, il s'agira de "mon_fichier_a_moi.ini". Il est imp&eacute;ratif 
   de ne pas utiliser le nom "config.ini" qui est r&eacute;serv&eacute; au fichier 
   de configuration de l'application Aud'ACE. </p>
 <p>Dans la mesure du possible, tous les autres fichiers compl&eacute;mentaires 
   dont vous aurez besoin devront respecter cette m&ecirc;me r&egrave;gle de nom 
-  (m&ecirc;me nom que le fichier de script). Ceci facilitera son identification 
+  (nom voisin du fichier de script). Ceci facilitera son identification 
   ult&eacute;rieure. </p>
 <p>Si vous travaillez avec un fichier de log (un fichier g&eacute;n&eacute;r&eacute; 
   par votre application, et qui enregistre des r&eacute;sultats sur le disque), 
-  son nom commencera par le nom du fichier .tcl, et aura cette fois l'extension 
+  son nom commencera par le nom du fichier TCL, et aura cette fois l'extension 
   .log. En g&eacute;n&eacute;ral, le nom du fichier contient aussi la date, voire 
   l'heure de sa cr&eacute;ation, pour &eacute;viter l'&eacute;crasement quand 
   on lance l'application plusieurs fois. Pour notre exemple, on peut imaginer 
-  un fichier de log cr&eacute;e le 22 mai 2002 - Il pourrait alors porter le nom 
+  un fichier de log cr&eacute;e le 22 mai 2002 : Il pourrait alors porter le nom 
   "mon_fichier_a_moi_20020522.log". En g&eacute;n&eacute;ral, ce fichier est &eacute;crit 
   dans le r&eacute;pertoire images. Ceci n'est qu'un exemple, la seule convention 
   &agrave; respecter est que le nom du fichier de script apparaisse clairement 
@@ -110,17 +106,17 @@
 <p>Si vous faites un fichier de documentation (nous vous y invitons fortement), 
   il devra &ecirc;tre au format .htm ou .pdf (l'&eacute;quipe de d&eacute;veloppement 
   saura vous aider si vous ne savez pas g&eacute;n&eacute;rer ce format), et son 
-  nom sera toujours mon_fichier_a_moi.htm ou mon_fichier_a_moi.pdf. En effet, 
+  nom sera toujours "mon_fichier_a_moi.htm" ou "mon_fichier_a_moi.pdf". En effet, 
   il est important que l'utilisateur trouve le fichier d'aide sous le m&ecirc;me 
-  nom que le panneau sur lequel il cherche de l'aide... Ce fichier sera install&eacute; 
-  dans le r&eacute;pertoiremon_fichier_a_moi/french pour la version fran&ccedil;aise 
-  et mon_fichier_a_moi/english pour la version anglaise, pour &ecirc;tre accessible 
+  nom que l'outil sur lequel il cherche de l'aide... Ce fichier sera install&eacute; 
+  dans le r&eacute;pertoire "mon_fichier_a_moi/french" pour la version fran&ccedil;aise 
+  et "mon_fichier_a_moi/english" pour la version anglaise, pour &ecirc;tre accessible 
   depuis le menu Aide de l'outil (bouton du nom de l'outil). </p>
 <p>Il y a un dernier fichier important &agrave; prendre en compte : Celui des 
   captions (fichier contenant toutes les cha&icirc;nes de caract&egrave;res utilis&eacute;es 
   par votre application, et traduites dans toutes les langues de Aud'ACE). Ce 
-  fichier, install&eacute; dans le r&eacute;pertoire [...]audace/plugin/tool/mon_fichier_a_moi 
-  aura pour extension .cap, et se commencera par le nom du fichier de script. 
+  fichier, install&eacute; dans le r&eacute;pertoire "[...]gui/audace/plugin/tool/mon_fichier_a_moi" 
+  aura pour extension "cap", et commencera par le nom du fichier de script. 
   Avec notre exemple, cela donne "mon_fichier_a_moi.cap". Nous reviendrons sur 
   ce fichier dans la partie "Internationalisation" du pr&eacute;sent document. 
 </p>
@@ -135,28 +131,28 @@
 <ul>
   <li> audace(rep_images) qui contient le nom du r&eacute;pertoire o&ugrave; sont 
     sauvegard&eacute;es les images (d&eacute;clarer en d&eacute;but de script 
-    : global audace).</li>
+    "global audace").</li>
   <li> audace(rep_scripts) qui contient le nom du r&eacute;pertoire o&ugrave; 
     sont sauvegard&eacute;s les scripts (d&eacute;clarer en d&eacute;but de script 
-    : global audace).</li>
+    "global audace").</li>
   <li> audace(rep_cat) qui contient le nom du r&eacute;pertoire o&ugrave; sont 
     sauvegard&eacute;s les catalogues (d&eacute;clarer en d&eacute;but de script 
-    : global audace).</li>
+    "global audace").</li>
   <li> audace(rep_plugin) qui contient le nom du r&eacute;pertoire o&ugrave; sont 
     sauvegard&eacute;es les diff&eacute;rents plugins (d&eacute;clarer en d&eacute;but 
-    de script : global audace).</li>
+    de script "global audace").</li>
   <li> audace(rep_caption) qui contient le nom du r&eacute;pertoire des fichiers 
-    de captions (cf. internationalisation - d&eacute;clarer en d&eacute;but de 
-    script : global audace).</li>
+    de captions du noyau du logiciel (cf. internationalisation, d&eacute;clarer en d&eacute;but de 
+    script "global audace").</li>
 </ul>
 <p>Toutes ces variables sont initialis&eacute;es &agrave; l'installation ou au 
-  lancement de Audela, et permettent de pointer sur les bons r&eacute;pertoires, 
-  quelque soit le r&eacute;pertoire d'installation de Audela. </p>
+  lancement de AudeLA, et permettent de pointer sur les bons r&eacute;pertoires, 
+  quelque soit le r&eacute;pertoire d'installation de AudeLA. </p>
 <h2> 3.2. Format des fichiers d'images (extension .fit ou .fit.gz)</h2>
-<p>Plusieurs format de fichiers d&#8217;images sont support&eacute;s par Audela, 
+<p>Plusieurs formats de fichiers d&#8217;images sont support&eacute;s par AudeLA, 
   selon qu&#8217;ils sont compress&eacute;s ou non. Si vous avez besoin, dans 
   votre script de g&eacute;n&eacute;rer des noms complets de fichiers, vous devez 
-  respecter l&#8217;extension du nom de fichier. Elle est accessible par la variable 
+  respecter l&#8217;extension par d&eacute;faut des fichiers images. Elle est accessible par la variable 
   conf(extension,defaut). A la cr&eacute;ation d&#8217;un nouveau buffer, vous 
   devez attribuer cette valeur au buffer : </p>
 <ul>
@@ -168,199 +164,202 @@
   </p>
 </ul>
 <p>Attention, vous devez d&eacute;clarer dans le script les variables globales 
-  audace, et le cas &eacute;ch&eacute;ant conf. </p>
+  "audace", et le cas &eacute;ch&eacute;ant "conf". </p>
 <h2> 3.3. Autres r&egrave;gles</h2>
 <p>Le num&eacute;ro des buffers de Aud'ACE est g&eacute;r&eacute; par l&#8217;application. 
   Pour permettre les &eacute;volutions futures, vous ne devez pas mettre dans 
-  vos scripts des commandes telles que buf1 mais vous devez les remplacer par 
-  la forme suivante : </p>
+  vos scripts des commandes telles que "buf1", vous devez les remplacer par : </p>
 <ul>
   <p><code>buf$audace(bufNo)</code> </p>
 </ul>
-<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
-<p>Dans le m&ecirc;me esprit, vous devez proscrire les commandes cam1 mais vous 
-  devez les remplacer par la forme suivante : </p>
+<p>en ayant d&eacute;clar&eacute; "global audace" au pr&eacute;alable. </p>
+<p>Dans le m&ecirc;me esprit, vous devez proscrire les commandes "cam1", vous 
+  devez les remplacer par : </p>
 <ul>
   <p><code>cam$audace(camNo)</code> </p>
 </ul>
-<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
-<p>Toujours dans la m&ecirc;me veine, vous devez proscrire les commandes tel1 
-  mais vous devez les remplacer par la forme suivante : </p>
+<p>en ayant d&eacute;clar&eacute; "global audace" au pr&eacute;alable. </p>
+<p>Toujours dans la m&ecirc;me veine, vous devez proscrire les commandes "tel1", 
+  vous devez les remplacer par : </p>
 <ul>
   <p><code>tel$audace(telNo)</code> </p>
 </ul>
-<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
-<p>Enfin, vous devez proscrire les commandes visu1 mais vous devez les remplacer 
-  par la forme suivante : </p>
+<p>en ayant d&eacute;clar&eacute; "global audace" au pr&eacute;alable. </p>
+<p>Enfin, vous devez proscrire les commandes "visu1", vous devez les remplacer 
+  par : </p>
 <ul>
   <p><code>visu$audace(visuNo)</code> </p>
 </ul>
-<p>en ayant d&eacute;clar&eacute; global audace au pr&eacute;alable. </p>
+<p>en ayant d&eacute;clar&eacute; "global audace" au pr&eacute;alable. </p>
 <h1> <a name="internationalisation"></a>4. Internationalisation</h1>
-<p> Audela a &eacute;t&eacute; pr&eacute;vu pour travailler avec plusieurs langues. 
+<p> AudeLA a &eacute;t&eacute; pr&eacute;vu pour travailler avec plusieurs langues. 
   Pour que cela puisse fonctionner dans tous les cas, il a &eacute;t&eacute; d&eacute;fini 
-  que toutes les cha&icirc;nes de caract&egrave;res g&eacute;n&eacute;r&eacute;es 
-  par le programme sont &eacute;crites dans des variables caption(mon_fichier_a_moi,xxx). 
-  Ces variables sont rassembl&eacute;es dans un fichier cap_mon_fichier_a_moi.tcl 
+  que toutes les cha&icirc;nes de caract&egrave;res g&eacute;r&eacute;es 
+  par le programme sont &eacute;crites dans des variables "caption(mon_fichier_a_moi,xxx)". 
+  Ces variables sont rassembl&eacute;es dans un fichier "mon_fichier_a_moi.cap" 
   (le nom est bien s&ucirc;r &agrave; adapter en fonction de votre fichier), qui 
   est appel&eacute; au d&eacute;but du script (voir plus haut la partie "convention 
   sur les noms et les r&eacute;pertoires" pour le nom de ce fichier et son r&eacute;pertoire 
-  d'installation). Le fichier cap_mon_fichier_a_moi.tcl doit &ecirc;tre install&eacute; 
-  dans le r&eacute;pertoire audace/caption. </p>
+  d'installation). Le fichier "mon_fichier_a_moi.cap" doit &ecirc;tre install&eacute; 
+  dans le r&eacute;pertoire "[...]/gui/audace/plugin/tool/mon_fichier_a_moi". </p>
 <p>Le fait de mettre les captions dans un fichier &agrave; part simplifie le travail 
   de traduction (comme il est peu probable que vous parliez toutes les langues 
-  du logiciel, le fichier mon_fichier_a_moi.cap pourra &ecirc;tre transmis &agrave; 
+  du logiciel, le fichier "mon_fichier_a_moi.cap" pourra &ecirc;tre transmis &agrave; 
   plusieurs traducteurs de l&#8217;&eacute;quipe de d&eacute;veloppement). Le 
-  contenu du fichier mon_fichier_a_moi.cap aura la structure suivante : </p>
-<p><code>#</code><br />
-  <code># Fichier : Audela.cap</code><br />
-  <code># Date de mise a jour : 10 octobre 2004</code><br />
-  <code>#</code><br />
+  contenu du fichier "mon_fichier_a_moi.cap" aura la structure suivante : </p>
   <br />
-  <code>#=========================================================================</code><br />
-  <code># D&eacute;but de la d&eacute;claration des textes localis&eacute;s (internationalisation)</code><br />
-  <code>#=========================================================================</code><br />
-  <br />
-  <code>global caption</code><br />
-  <br />
-  <code># *************** Version anglaise ****************************</code><br />
-  <br />
-  <code>set caption(Audela,main_title) "Audela: Interface Selection"</code><br />
-  <code>set caption(Audela,language) "Language Selection:"</code><br />
-  <code>set caption(Audela,description) "Choose the interface you want to use:"</code><br />
-  <code>set caption(Audela,soft1) "Tutorial"</code><br />
-  <code>set caption(Audela,soft2) "Aud'ACE"</code><br />
-  <code>set caption(Audela,launch) "Run"</code><br />
-  <code>set caption(Audela,dirtcl) "../test test.tcl"</code><br />
-  <code>set caption(Audela,direct_audace) "Do not display this interface any more."</code><br />
-  <br />
-  <code># *************** Version fran&ccedil;aise ***************************</code><br />
-  <code>if { [ string compare $langage "french" ] == "0" } {</code><br />
-  <br />
-  <code>set caption(Audela,main_title) "Audela : S&eacute;lection de l'interface 
-  utilisateur"</code><br />
-  <code>set caption(Audela,language) "S&eacute;lection de la langue :"</code><br />
-  <code>set caption(Audela,description) "S&eacute;lectionnez l'interface que vous 
-  voulez utiliser :"</code><br />
-  <code>set caption(Audela,soft1) "Tutorial"</code><br />
-  <code>set caption(Audela,soft2) "Aud'ACE"</code><br />
-  <code>set caption(Audela,launch) "Lancer"</code><br />
-  <code>set caption(Audela,dirtcl) "../test test.tcl"</code><br />
-  <code>set caption(Audela,direct_audace) "Ne plus afficher cette interface."</code><br />
-  <br />
-  <code># *************** Version italienne ***************************</code><br />
-  <code>} elseif { [ string compare $langage "italian" ] == "0" } {</code><br />
-  <br />
-  <code>set caption(Audela,main_title) "Audela: Scelta dell'interfaccia utente"</code><br />
-  <code>set caption(Audela,language) "Scelta delle lingue:"</code><br />
-  <code>set caption(Audela,description) "Scegliere l'interfaccia d'uso:"</code><br />
-  <code>set caption(Audela,soft1) "Tutorial"</code><br />
-  <code>set caption(Audela,soft2) "Aud'ACE"</code><br />
-  <code>set caption(Audela,launch) "Esegui"</code><br />
-  <code>set caption(Audela,dirtcl) "../test test.tcl"</code><br />
-  <code>set caption(Audela,direct_audace) "Non visualizzare piu` questa interfaccia."</code><br />
-  <br />
-  <code># *************** Version espagnole ***************************</code><br />
-  <code>} elseif { [ string compare $langage "spanish" ] == "0" } {</code><br />
-  <br />
-  <code>set caption(Audela,main_title) "Audela: Alternativas de interfaz de usuario"</code><br />
-  <code>set caption(Audela,language) "Selecci&oacute; de idioma:"</code><br />
-  <code>set caption(Audela,description) "Escoger la interfaz de usuario a utilizar:"</code><br />
-  <code>set caption(Audela,soft1) "Tutorial"</code><br />
-  <code>set caption(Audela,soft2) "Aud'ACE"</code><br />
-  <code>set caption(Audela,launch) "Arrancar"</code><br />
-  <code>set caption(Audela,dirtcl) "../test test.tcl"</code><br />
-  <code>set caption(Audela,direct_audace) "No mostrar esta interfaz m&aacute;s."</code><br />
-  <br />
-  <code># *************** Version allemande ***************************</code><br />
-  <code>} elseif { [ string compare $langage "german" ] == "0" } {</code><br />
-  <br />
-  <code>set caption(Audela,main_title) "### Audela : S&eacute;lection de l'interface 
-  utilisateur"</code><br />
-  <code>set caption(Audela,language) "### S&eacute;lection de la langue :"</code><br />
-  <code>set caption(Audela,description) "### S&eacute;lectionnez l'interface que 
-  vous voulez utiliser :"</code><br />
-  <code>set caption(Audela,soft1) "### Tutorial"</code><br />
-  <code>set caption(Audela,soft2) "Aud'ACE"</code><br />
-  <code>set caption(Audela,launch) "### Lancer"</code><br />
-  <code>set caption(Audela,dirtcl) "../test test.tcl"</code><br />
-  <code>set caption(Audela,direct_audace) "### Ne plus afficher cette interface."</code><br />
-  <br />
-  <code># *************** Version danoise *****************************</code><br />
-  <code>} elseif { [ string compare $langage "danish" ] == "0" } {</code><br />
-  <br />
-  <code>set caption(Audela,main_title) "Audela: Valg af brugerflade"</code><br />
-  <code>set caption(Audela,language) "Valg af sprog:"</code><br />
-  <code>set caption(Audela,description) "V&aelig;lg den brugerflade, du &oslash;nsker!"</code><br />
-  <code>set caption(Audela,soft1) "Tutorial"</code><br />
-  <code>set caption(Audela,soft2) "Aud'ACE"</code><br />
-  <code>set caption(Audela,launch) "K&oslash;r"</code><br />
-  <code>set caption(Audela,dirtcl) "../test test.tcl"</code><br />
-  <code>set caption(Audela,direct_audace) "Vis ikke denne meddelelse igen!"</code><br />
-  <br />
-  <code>}</code><br />
-  <br />
-  <code>#=========================================================================</code><br />
-  <code># Fin de la d&eacute;claration des textes localis&eacute;s (internationalisation)</code><br />
-  <code>#=========================================================================</code><br />
-  <br />
-</p>
+<pre>#
+# Fichier : audela.cap
+# Mise a jour $Id: script1b.htm,v 1.3 2007-04-25 20:03:28 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption
+
+# *************** Version anglaise ****************************
+
+set caption(audela,main_title)        "AudeLA: Interface Selection"
+set caption(audela,language)          "Language Selection:"
+set caption(audela,description)       "Choose the interface you want to use:"
+set caption(audela,soft1)             "Tutorial"
+set caption(audela,soft2)             "Aud'ACE"
+set caption(audela,launch)            "Run"
+set caption(audela,dirtcl)            "../gui/test test.tcl"
+set caption(audela,direct_audace)     "Do not display this interface any more."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA : Sélection de l'interface utilisateur"
+   set caption(audela,language)       "Sélection de la langue :"
+   set caption(audela,description)    "Sélectionnez l'interface que vous voulez utiliser :"
+   set caption(audela,soft1)          "Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Lancer"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "Ne plus afficher cette interface."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA: Scelta dell'interfaccia utente"
+   set caption(audela,language)       "Scelta delle lingue:"
+   set caption(audela,description)    "Scegliere l'interfaccia d'uso:"
+   set caption(audela,soft1)          "Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Esegui"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "Non visualizzare piu` questa interfaccia."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(audela,main_title)     "AudeLA: Alternativas de interfaz de usuario"
+   set caption(audela,language)       "Selecció de idioma:"
+   set caption(audela,description)    "Escoger la interfaz de usuario a utilizar:"
+   set caption(audela,soft1)          "Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "Arrancar"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "No mostrar esta interfaz más."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(audela,main_title)     "### AudeLA : Sélection de l'interface utilisateur"
+   set caption(audela,language)       "### Sélection de la langue :"
+   set caption(audela,description)    "### Sélectionnez l'interface que vous voulez utiliser :"
+   set caption(audela,soft1)          "### Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "### Lancer"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "### Ne plus afficher cette interface."
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(audela,main_title)     "### AudeLA : Sélection de l'interface utilisateur"
+   set caption(audela,language)       "### Sélection de la langue :"
+   set caption(audela,description)    "### Sélectionnez l'interface que vous voulez utiliser :"
+   set caption(audela,soft1)          "### Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "### Lancer"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "### Ne plus afficher cette interface."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(audela,main_title)     "### AudeLA : Sélection de l'interface utilisateur"
+   set caption(audela,language)       "### Sélection de la langue :"
+   set caption(audela,description)    "### Sélectionnez l'interface que vous voulez utiliser :"
+   set caption(audela,soft1)          "### Tutorial"
+   set caption(audela,soft2)          "Aud'ACE"
+   set caption(audela,launch)         "### Lancer"
+   set caption(audela,dirtcl)         "../gui/test test.tcl"
+   set caption(audela,direct_audace)  "### Ne plus afficher cette interface."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================</pre>
 <p>Si vous ne connaissez pas la traduction de vos messages dans l&#8217;une ou 
   l&#8217;autre langue, laissez le message dans votre langue natale, en le faisant 
   pr&eacute;c&eacute;der de ### pour aider leur d&eacute;tection par les traducteurs 
-  (&agrave; titre d'exemple, vous constaterez ci-dessus que la partie espagnole 
-  est en attente de traduction). Bien s&ucirc;r, dans le corps de votre script, 
+  (&agrave; titre d'exemple, vous constaterez ci-dessus que les parties allemande, portugaise  
+  et danoise sont en attente de traduction). Bien s&ucirc;r, dans le corps de votre script, 
   vous devrez lancer au tout d&eacute;but la lecture de ce fichier de captions 
   (commande du type "source [ file join $audace(rep_plugin) toolmon_fichier_a_moi 
   mon_fichier_a_moi.cap ]" ), et vous ne devrez utiliser que les variables contenant 
   les captions (par exemple : Message console $caption(mon_fichier_a_moi,titre) 
   ). </p>
-<p>&nbsp;</p>
-<h1> <a name="plugin"></a>5. R&egrave;gle d'&eacute;criture d'un plug-in</h1>
-<p>Un plug-in est un module compl&eacute;mentaire de AudeLA permettant d'ajouter 
+<h1> <a name="plugin"></a>5. R&egrave;gles d'&eacute;criture d'un plugin</h1>
+<p>Un plugin est un module compl&eacute;mentaire de AudeLA permettant d'ajouter 
   une nouvelle fonctionnalit&eacute; &agrave; AudeLA. Il est install&eacute; dans 
-  le r&eacute;pertoire des plug-ins sans avoir &agrave; modifier AudeLA par ailleurs.</p>
-<p>&nbsp;</p>
-<h2>5.1 Contenu minimal d'un plug-in</h2>
-<p>Un plug-in est constitut&eacute; au moins de <b>deux fichiers TCL</b> situ&eacute;s 
+  le r&eacute;pertoire des plugins sans avoir &agrave; modifier AudeLA par ailleurs.</p>
+<h2>5.1 Contenu minimal d'un plugin</h2>
+<p>Un plugin est constitut&eacute; au moins de <b>deux fichiers TCL</b> situ&eacute;s 
   dans le m&ecirc;me r&eacute;pertoire :</p>
 <ul>
-  <li>le fichier <b>pkgIndex.tcl </b>. Il contient les caract&eacute;ristiques 
+  <li>Le fichier <b>pkgIndex.tcl</b>. Il contient les caract&eacute;ristiques 
     du plugin : 
     <ul>
-      <li>le nom du plugin</li>
-      <li>la version la plugin </li>
-      <li>le nom du fichier principal contenant le programme principal TCL du 
-        plug-in </li>
+      <li>Le nom du plugin. </li>
+      <li>La version du plugin. </li>
+      <li>Le nom du fichier principal contenant le programme principal TCL du 
+        plugin. </li>
     </ul>
     <p>Exemple :</p>
     <blockquote> 
       <pre>package ifneeded focuserjmi 1.0 [list source [file join $dir focuserjmi.tcl]]</pre>
     </blockquote>
   </li>
-  <li><b>le fichier principal du plugin</b>. Il contient le code TCL du namespace 
-    du plug-in avec obligatoirement : 
+  <li><b>Le fichier principal du plugin</b>. Il contient le code TCL du namespace 
+    du plugin avec obligatoirement : 
     <ul>
-      <li>la d&eacute;claration du namespace </li>
-      <li>la proc&eacute;dure createPluginInstance</li>
-      <li>la proc&eacute;dure deletePluginInstance</li>
-      <li>la proc&eacute;dure getPluginProperty</li>
-      <li>la proc&eacute;dure getPluginTitle</li>
-      <li>la proc&eacute;dure getPluginType</li>
-      <li>la proc&eacute;dure initPlugin</li>
+      <li>La d&eacute;claration du namespace. </li>
+      <li>La proc&eacute;dure createPluginInstance. </li>
+      <li>La proc&eacute;dure deletePluginInstance. </li>
+      <li>La proc&eacute;dure getPluginProperty. </li>
+      <li>La proc&eacute;dure getPluginTitle. </li>
+      <li>La proc&eacute;dure getPluginType. </li>
+      <li>La proc&eacute;dure initPlugin. </li>
     </ul>
-    <p>&nbsp;</p>
     <p>Exemple :</p>
     <blockquote> 
       <pre>namespace eval ::focuserjmi {
   package provide focuserjmi 1.0
-  #--- Je charge le fichier caption pour recupere la label du titre
-  #--- utilis&eacute; par la procedure getLabel
+
+  #--- Je charge le fichier caption pour recuperer le label du titre
+  #--- utilise par la procedure getLabel
   source &quot;[file join [file dirname [info script]] focuserjmi.cap]&quot;    
 }
 
-
-proc ::focuserjmi::getPluginPropery { propertyName} {
+proc ::focuserjmi::getPluginProperty { propertyName } {
    switch $propertyName {
 	 xxxx { return &quot;aaaa&quot; }
 	 yyyy { return &quot;bbbb&quot; }
@@ -374,6 +373,7 @@ proc ::focuserjmi::getPluginPropery { propertyName} {
       <pre>proc ::focuserjmi::initPlugin { tkbase } {
    variable private
    global conf
+
    #--- Cree les variables dans conf(...) si elles n'existent pas
    if { ! [ info exists conf(focuserjmi,link) ] } { set conf(focuserjmi,link) &quot;&quot; }
    if { ! [ info exists conf(focuserjmi,bitStart) ] } { set conf(focuserjmi,bitStart) &quot;4&quot; }
@@ -382,161 +382,149 @@ proc ::focuserjmi::getPluginPropery { propertyName} {
     </blockquote>
   </li>
 </ul>
-<h2>5.2 R&egrave;gles du fichier principal </h2>
-<blockquote> 
+<h2>5.2 R&egrave;gles pour le fichier principal </h2>
   <p><b>La d&eacute;claration du namespace </b>doit contenir la commande &quot;<b>package 
     provide</b>&quot; avec le m&ecirc;me num&eacute;ro de version que celui figurant 
-    dans la commande &quot;<b>package ifneeded</b>&quot; du fichier pkgIndex.tcl 
-    .</p>
-  <p><b>La d&eacute;claration du namespace</b> doit pouvoir &ecirc;tre charg&eacute; 
-    dans un<b> interpr&eacute;teur &quot;safe. </b>Ceci implique : </p>
+    dans la commande &quot;<b>package ifneeded</b>&quot; du fichier pkgIndex.tcl.</p>
+  <p><b>La d&eacute;claration du namespace</b> doit pouvoir &ecirc;tre charg&eacute;e 
+    dans un<b> interpr&eacute;teur &quot;safe&quot;. </b>Ceci implique : </p>
   <ul>
     <li>
-      <div align="left">qu'il ne doit pas utiliser de variable globale d&eacute;clar&eacute;e 
-        ailleurs dans AudeLA (sauf caption et langage)</div>
+      <div align="left">Qu'il ne doit pas utiliser de variable globale d&eacute;clar&eacute;e 
+        ailleurs dans AudeLA (sauf caption et langage).</div>
     </li>
     <li>
-      <div align="left">qu'il ne doit pas charger d'autres fichiers qui ne respecteraient 
+      <div align="left">Qu'il ne doit pas charger d'autres fichiers qui ne respecteraient 
         pas cette r&egrave;gle.</div>
     </li>
     <li>
-      <div align="left">qu'il ne doit pas en particulier contenir de commande 
+      <div align="left">Qu'il ne doit pas en particulier contenir de commande 
         &quot;<b>package require</b>&quot;.</div>
     </li>
   </ul>
   <p><b>Les proc&eacute;dures getPluginType et getPluginTitle</b> doivent pouvoir 
-    &ecirc;tre charg&eacute;es dans un<b> interpr&eacute;teur &quot;safe&quot;</b> 
-    . En cons&eacute;quence elles ne doivent pas utiliser d'autres variables que 
+    &ecirc;tre charg&eacute;es dans un<b> interpr&eacute;teur &quot;safe&quot;</b>.
+    En cons&eacute;quence elles ne doivent pas utiliser d'autres variables que 
     celles cr&eacute;&eacute;es dans la d&eacute;claration du namespace. </p>
-  <p><b>La proc&eacute;dure init</b> est optionelle. Elle peut faire appel &agrave; 
+  <p><b>La proc&eacute;dure initPlugin</b> est optionnelle. Elle peut faire appel &agrave; 
     n'importe quelle fonction ou variable globale (pas de contrainte de l'interpr&eacute;teur 
     &quot;safe&quot;).</p>
-</blockquote>
-<p>Pour comprendre comment ces proc&eacute;dure sont utilis&eacute;es, voir <a href="#chargement_plugin">5.3 
-  Chargement d'un plugin dans Audace</a></p>
-<p>&nbsp;</p>
-<h2> 5.3 Les types de plugin</h2>
-<h3>5.3.1 les outils (tools)</h3>
-<p>La proc&eacute;dure <b>getPluginType</b> d'un outil doit retourner &quot;<b>tools</b>&quot;.</p>
+<p>Pour comprendre comment ces proc&eacute;dures sont utilis&eacute;es, voir <a href="#chargement_plugin">5.4 
+  Chargement d'un plugin dans Aud'ACE</a></p>
+<h2> 5.3 Les types de plugins</h2>
+<h3>5.3.1 Les outils (pluginType = tool)</h3>
+<p>La proc&eacute;dure <b>getPluginType</b> d'un outil doit retourner &quot;<b>tool</b>&quot;.</p>
 <blockquote>
   <p>Exemple : </p>
   <pre>proc ::autoguider::getPluginType { } {
-   return &quot;tools&quot;
+   return &quot;tool&quot;
 }</pre>
 </blockquote>
 <p>Un outil doit avoir obligatoirement les proc&eacute;dures suivantes : </p>
 <blockquote> 
   <pre>proc ::autoguider::startTool { { visuNo 1 }}  {
-	#--- creation du panneau ou de la fenetre
+	#--- creation de l'outil ou de la fenetre
 
 }</pre>
   <pre>proc ::autoguider::stopTool { { visuNo 1 } } {
-	#--- masquage du panneau
+	#--- masquage de l'outil
 
-}
-</pre>
+}</pre>
 </blockquote>
 <p><br>
-  La proc&eacute;dure <b>getPluginPropery</b> doit retourner la valeur de la propri&eacute;t&eacute; 
+  La proc&eacute;dure <b>getPluginProperty</b> doit retourner la valeur de la propri&eacute;t&eacute; 
   &quot;<b>display</b>&quot; qui peut &ecirc;tre :</p>
 <ul>
-  <li>&quot;panel&quot; si le plugin poss&egrave;de un panneau qui s'affiche dans 
-    la visu (exemple : acquisition) </li>
+  <li>&quot;panel&quot; si le plugin poss&eacute;de un panneau qui s'affiche dans 
+    la visu (exemple : Acquisition). </li>
   <li>&quot;window&quot; si l'outil poss&eacute;de une fen&ecirc;tre independante 
-    (exemple: objectif lune)  </li>
-    <p>Exemple: </p>
-    <pre>proc ::acqFC::getPluginPropery { propertyName} {
+    (exemple : Objectif Lune). </li>
+    <p>Exemple : </p>
+    <pre>proc ::acqFC::getPluginProperty { propertyName} {
    switch $propertyName {
 	 display { return &quot;panel&quot; }
-	 yyyy { return &quot;bbbb&quot; }
+	 yyyy    { return &quot;bbbb&quot; }
 }</pre>
-   
 </ul>
-<p>&nbsp;</p>
 <blockquote>
 <blockquote></blockquote>
 </blockquote>
-<h3>5.3.2 les cameras (camera)</h3>
-<p>... &agrave; compl&eacute;ter</p>
+<h3>5.3.2 Les cam&eacute;ras (pluginType = camera)</h3>
+<p>... &agrave; compl&eacute;ter. </p>
 <blockquote> 
   <blockquote></blockquote>
 </blockquote>
-<h3>5.3.3 les montures (mount)</h3>
-<p>... &agrave; compl&eacute;ter</p>
+<h3>5.3.3 Les montures (pluginType = mount)</h3>
+<p>... &agrave; compl&eacute;ter. </p>
 <blockquote> 
   <blockquote></blockquote>
 </blockquote>
-<h3>5.3.4 les liaisons (link)</h3>
-<p>... &agrave; compl&eacute;ter</p>
+<h3>5.3.4 Les liaisons (pluginType = link)</h3>
+<p>... &agrave; compl&eacute;ter. </p>
 <blockquote> 
   <blockquote></blockquote>
 </blockquote>
-<h3>5.3.5 les &eacute;quipements (pluginType=equipment)</h3>
-<p>... &agrave; compl&eacute;ter</p>
+<h3>5.3.5 Les &eacute;quipements (pluginType = equipment)</h3>
+<p>... &agrave; compl&eacute;ter. </p>
 <blockquote> 
   <blockquote></blockquote>
 </blockquote>
-<h3>5.3.6 Les &eacute;quipements (pluginType=equipment)</h3>
-<p>... &agrave; compl&eacute;ter</p>
+<h3>5.3.6 Les cartes (pluginType = chart)</h3>
+<p>... &agrave; compl&eacute;ter. </p>
 <blockquote> 
   <blockquote></blockquote>
 </blockquote>
-<h3>5.3.7 Les cartes (pluginType=chart)</h3>
-<p>... &agrave; compl&eacute;ter</p>
+<h3>5.3.7 Les raquettes (pluginType = pad)</h3>
+<p>... &agrave; compl&eacute;ter. </p>
 <blockquote> 
   <blockquote></blockquote>
 </blockquote>
-<h3>5.3.8 Les raquettes (pluginType=pad)</h3>
-<h2>&nbsp;</h2>
-<p>&nbsp;</p>
-<h2><a name="chargement_plugin"></a>5.4 Chargement d'un plugin dans Audace</h2>
+<h2><a name="chargement_plugin"></a>5.4 Chargement d'un plugin dans Aud'ACE</h2>
 <p>Le chargement d'un plugin s'effectue en deux &eacute;tapes.</p>
-<p>Etape 1: Au d&eacute;marrage de Audela, Aud'Ace recherche les fichiers<b> pkgIndex.tcl 
+<p>Etape 1 : Au d&eacute;marrage de AudeLA, Aud'ACE recherche les fichiers<b> pkgIndex.tcl 
   </b>et effectue les op&eacute;rations suivantes pour chacun d'eux : </p>
 <ul>
-  <li>charge le fichier principal dans <b>un interpr&eacute;teur safe (*)</b>, 
-    interprete la <b>d&eacute;claration du namespace </b>pour r&eacute;cup&eacute;rer 
+  <li>Charge le fichier principal dans <b>un interpr&eacute;teur safe (*)</b>, 
+    interpr&egrave;te la <b>d&eacute;claration du namespace </b>pour r&eacute;cup&eacute;rer 
     le nom du namespace et ex&eacute;cute les proc&eacute;dures <b>getPluginType</b> 
-    et <b>getsPluginTitle</b> pour r&eacute;cup&eacute;rer le type et le titre 
+    et <b>getPluginTitle</b> pour r&eacute;cup&eacute;rer le type et le titre 
     du plugin.</li>
-  <li> charge le fichier principal dans l'interpr&eacute;teur normale de Audace 
-    et ex&eacute;cute la procedure optionelle<b> initPlugin. </b><i>La proc&eacute;dure<b> 
+  <li>Charge le fichier principal dans l'interpr&eacute;teur normal de Aud'ACE 
+    et ex&eacute;cute la proc&eacute;dure optionnelle<b> initPlugin. </b><i>La proc&eacute;dure<b> 
     initPlugin </b>doit contenir le strict minimum pour &eacute;viter d'encombrer 
     la m&eacute;moire avec des d&eacute;clarations qui peuvent &ecirc;tre inutiles 
     si l'utilisateur n'utilise pas ce plugin ! Il vaut mieux mettre les d&eacute;clarations 
-    utiles dans la proc&eacute;dure <b>createPluginInstance</b>.</i></li>
+    utiles dans la proc&eacute;dure <b>createPluginInstance</b></i>. </li>
 </ul>
-<p>Etape 2: Quand le plugin est s&eacute;lectionn&eacute;, Aud'Ace effectue les 
+<p>Etape 2 : Quand le plugin est s&eacute;lectionn&eacute;, Aud'ACE effectue les 
   op&eacute;rations suivantes : </p>
 <ul>
-  <li>ex&eacute;cute la pr&eacute;c&eacute;dure <b>getPluginPropery</b> pour r&eacute;cup&eacute;rer 
-    des propri&eacute;t&eacute;s en fonction du type de plugin</li>
-  <li>ex&eacute;cute la proc&eacute;dure <b>createPluginInstance</b> .</li>
+  <li>Ex&eacute;cute la proc&eacute;dure <b>getPluginProperty</b> pour r&eacute;cup&eacute;rer 
+    des propri&eacute;t&eacute;s en fonction du type de plugin. </li>
+  <li>Ex&eacute;cute la proc&eacute;dure <b>createPluginInstance</b>. </li>
 </ul>
-Pour arr&ecirc;ter un plugin, Aud'Ace ex&eacute;cute la proc&eacute;dure <b>deletePluginInstance</b> 
-<p>(*) un interpreteur safe est interpr&eacute;teur TCL dans lequel aucune variable 
-  globale n'est d&eacute;clar&eacute;.</p>
-<h2>&nbsp;</h2>
-<h2><a name="migration-outils"></a>5.4 Mise aux normes des outils</h2>
+Pour arr&ecirc;ter un plugin, Aud'ACE ex&eacute;cute la proc&eacute;dure <b>deletePluginInstance</b>. 
+<p>(*) Un interpr&eacute;teur safe est un interpr&eacute;teur TCL dans lequel aucune variable 
+  globale n'est d&eacute;clar&eacute;e.</p>
+<h2><a name="migration-outils"></a>5.5 Mise aux normes des outils</h2>
 <p>Les outils de la version 1.4.0-beta2 doivent &ecirc;tre modifi&eacute;s de 
   la fa&ccedil;on suivante :</p>
-<p>1) modifier la d&eacute;claration du namespace :<br>
+<p>1) Modifier la d&eacute;claration du namespace :<br>
 </p>
 <pre>
      namespace eval ::xxxxxxxxx{
         package provide autoguider 1.0
+
         #--- Charge le fichier caption
         source [ file join [file dirname [info script]] xxxxxxxxx.cap ]
      }</pre>
-<p>2) renommer la procedure &quot;Init&quot; en &quot;createPluginInstance&quot; 
-  et supprimer return [namespace current] &agrave; la fin de la proc&eacute;dure</p>
+<p>2) Renommer la proc&eacute;dure &quot;Init&quot; en &quot;createPluginInstance&quot; 
+  et supprimer return [namespace current] &agrave; la fin de la proc&eacute;dure. </p>
 <p></p>
-<p>3) ajouter deletePluginInstance, getPluginProperty, getPluginTitle,<br>
-  getPluginType , initPlugin<br>
-</p>
+<p>3) Ajouter les proc&eacute;dures deletePluginInstance, getPluginProperty, getPluginTitle, getPluginType et initPlugin.</p>
 <blockquote> 
-  <p>remarque : les proc&eacute;dures deletePluginInstance et initPlugin ne font 
-    rien pour l'instant (sauf pour spectro)</p>
+  <p>Remarque : Les proc&eacute;dures deletePluginInstance et initPlugin ne font 
+    rien pour l'instant (sauf pour spectro par exemple). </p>
   <pre>#------------------------------------------------------------
 # deletePluginInstance
 # suppprime l'instance du plugin
@@ -555,7 +543,7 @@ proc getPluginProperty { propertyName } {
    switch $propertyName {
       function { return &quot;acquisition&quot; }
       display  { return &quot;panel&quot; }
-    }
+   }
 }</pre>
   <pre>#------------------------------------------------------------
 # getPluginTitle
@@ -563,6 +551,7 @@ proc getPluginProperty { propertyName } {
 #------------------------------------------------------------
 proc getPluginTitle { } {
    global caption
+
    return &quot;$caption(xxxxxxx,title)&quot;
 }</pre>
   <pre>#------------------------------------------------------------
@@ -576,19 +565,19 @@ proc getPluginType { } {
 # initPlugin
 # initialise le plugin
 #------------------------------------------------------------
-proc initPlugin{ } {</pre>
+proc initPlugin { } {</pre>
   <pre>}</pre>
 </blockquote>
 <p></p>
-<p>4) supprimer set panneau(menu_name,autoguider)</p>
-<p><br>
-  5) supprimer &agrave; la fin du fichier<br>
+<p>4) Supprimer : set panneau(menu_name,autoguider) ...</p>
+<p>
+  5) Supprimer &agrave; la fin du fichier :<br>
 </p>
 <blockquote> 
   <p>global audace<br>
     ::xxxxx::Init $audace(base)</p>
 </blockquote>
-<p>6) modifier le fichier pkgIndex.tcl</p>
+<p>6) Modifier le fichier pkgIndex.tcl :</p>
 <blockquote>
   <p>package ifneeded autoguider 1.0 [list source [file join $dir autoguider.tcl 
     ]] </p>
