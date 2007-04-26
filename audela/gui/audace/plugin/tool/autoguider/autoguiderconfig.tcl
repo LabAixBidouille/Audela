@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.7 2007-04-14 08:46:33 robertdelmas Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.8 2007-04-26 18:01:38 robertdelmas Exp $
 #
 
 ################################################################
@@ -182,21 +182,21 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -variable ::autoguider::config::widget($visuNo,detection)
       grid $frm.detection.slit -in [$frm.detection getframe]  -row 0 -column 1 -columnspan 1 -sticky ewns
       LabelEntry $frm.detection.targetBox -label "$caption(autoguider,targetBoxSize) (pixels)" \
-         -labeljustify left -labelwidth 20 -width 3 -justify right \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
          -textvariable ::autoguider::config::widget($visuNo,targetBoxSize)
       grid $frm.detection.targetBox -in [$frm.detection getframe] -row 1 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.slitWidth -label "$caption(autoguider,slitWidth)" \
-         -labeljustify left -labelwidth 20 -width 3 -justify right \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
          -textvariable ::autoguider::config::widget($visuNo,slitWidth)
       grid $frm.detection.slitWidth -in [$frm.detection getframe] -row 2 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.slitRatio -label "$caption(autoguider,slitRatio)" \
-         -labeljustify left -labelwidth 20 -width 3 -justify right \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
          -textvariable ::autoguider::config::widget($visuNo,slitRatio)
       grid $frm.detection.slitRatio -in [$frm.detection getframe] -row 3 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.lipWidth -label "$caption(autoguider,lipWidth)" \
-         -labeljustify left -labelwidth 20 -width 3 -justify right \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
          -textvariable ::autoguider::config::widget($visuNo,lipWidth)
       grid $frm.detection.lipWidth -in [$frm.detection getframe] -row 4 -column 0 -columnspan 2 -sticky ewns
@@ -206,7 +206,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    TitleFrame $frm.apprenti -borderwidth 2 -relief ridge -text "$caption(autoguider,apprenti)"
       Button $frm.apprenti.go -text "$caption(autoguider,go)" -width 10 -command "::autoguider::config::startLearn $visuNo"
       pack $frm.apprenti.go -in [$frm.apprenti getframe] -side top -fill none -expand 0
-      LabelEntry $frm.apprenti.delay -label "$caption(autoguider,delay) (s)" \
+      LabelEntry $frm.apprenti.delay -label "$caption(autoguider,delay)" \
          -labeljustify left -labelwidth 14 -width 5 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
          -textvariable ::autoguider::config::widget($visuNo,learn,delay)
@@ -219,12 +219,12 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    #--- Frame ascension droite
    TitleFrame $frm.alpha -borderwidth 2 -relief ridge -text "$caption(autoguider,AD)"
       LabelEntry $frm.alpha.gainprop -label "$caption(autoguider,vitesse)" \
-         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -labeljustify left -labelwidth 16 -width 5 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -999 999} \
          -textvariable ::autoguider::config::widget($visuNo,alphaSpeed)
       pack $frm.alpha.gainprop -in [$frm.alpha getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.alpha.seuil -label "$caption(autoguider,seuil)" \
-         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -labeljustify left -labelwidth 16 -width 5 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 0 99} \
          -textvariable ::autoguider::config::widget($visuNo,seuilx)
       pack $frm.alpha.seuil -in [$frm.alpha getframe] -anchor w -side top -fill x -expand 0
@@ -236,12 +236,12 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    #--- Frame declinaison
    TitleFrame $frm.delta -borderwidth 2 -text "$caption(autoguider,declinaison)"
       LabelEntry $frm.delta.gainprop -label "$caption(autoguider,vitesse)" \
-         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -labeljustify left -labelwidth 16 -width 5 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -999 999} \
          -textvariable ::autoguider::config::widget($visuNo,deltaSpeed)
       pack $frm.delta.gainprop -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.delta.seuil -label "$caption(autoguider,seuil)" \
-         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -labeljustify left -labelwidth 16 -width 5 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 0 99} \
          -textvariable ::autoguider::config::widget($visuNo,seuily)
       pack $frm.delta.seuil -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
@@ -266,7 +266,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    #--- Frame Cumul
    TitleFrame $frm.cumul -borderwidth 2 -text "$caption(autoguider,cumulTitle)"
       LabelEntry $frm.cumul.nb -label "$caption(autoguider,cumulNb)" \
-         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -labeljustify left -labelwidth 18 -width 5 -justify right \
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 0 100} \
          -textvariable ::autoguider::config::widget($visuNo,cumulNb)
       pack $frm.cumul.nb -in [$frm.cumul getframe] -anchor w -side top -fill x -expand 0
