@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.23 2007-04-24 17:47:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.24 2007-04-27 22:42:16 michelpujol Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2556,7 +2556,7 @@ namespace eval ::traiteImage {
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { { visuNo "1" } } {
-      global audace caption traiteImage
+      global audace caption conf traiteImage
 
       #---
       set traiteImage(avancement) "$caption(pretraitement,en_cours)"
@@ -2591,7 +2591,7 @@ namespace eval ::traiteImage {
                   return
                }
                #---
-               fitsconvert3d $audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename) 3 .fit $audace(rep_images)/$traiteImage(rvbWindow_rvb_filename)
+               fitsconvert3d $audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename) 3 $conf(extension,defaut) $audace(rep_images)/$traiteImage(rvbWindow_rvb_filename)
                loadima $traiteImage(rvbWindow_rvb_filename)
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
@@ -2617,12 +2617,14 @@ namespace eval ::traiteImage {
                   return
                }
                #---
-               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 1
-               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)1.fit"
-               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 2
-               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)2.fit"
-               buf$audace(bufNo) load3d "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename).fit" 3
-               buf$audace(bufNo) save "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)3.fit"
+               buf$audace(bufNo) load "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename)"
+               buf$audace(bufNo) setkwd [list RGBFILTR R string "Color extracted (Red)" ""]
+               buf$audace(bufNo) save3d "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)1" 3 1 1
+               buf$audace(bufNo) setkwd [list RGBFILTR G string "Color extracted (Green)" ""]
+               buf$audace(bufNo) save3d "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)2" 3 2 2
+               buf$audace(bufNo) setkwd [list RGBFILTR B string "Color extracted (Blue)" ""]
+               buf$audace(bufNo) save3d "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)3" 3 3 3
+               buf$audace(bufNo) delkwd "RGBFILTR"
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
             if { $catchError == "1" } {
@@ -2744,7 +2746,7 @@ namespace eval ::traiteImage {
       } elseif { $traiteImage(operation) == "r+v+b2rvb" && $option == "2" } {
          set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "rvb2r+v+b" && $option == "1" } {
-         set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
+         set traiteImage(rvbWindow_rvb_filename) [ file tail $filename ]
       } elseif { $traiteImage(operation) == "rvb2r+v+b" && $option == "2" } {
          set traiteImage(info_filename_out)        [ ::pretraitement::nom_generique [ file tail $filename ] ]
          set traiteImage(rvbWindow_r+v+b_filename) [ lindex $traiteImage(info_filename_out) 0 ]
