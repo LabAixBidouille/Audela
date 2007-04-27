@@ -695,7 +695,7 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    int msg;                         // Code erreur de libtt
    int datatype;                    // Type du pointeur de l'image
    int bitpix;
-   int naxis1,naxis2,nnaxis2;
+   int naxis1,naxis2,nnaxis2,nnaxis3;
    int nb_keys;
    char **keynames=NULL;
    char **values=NULL;
@@ -716,11 +716,13 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    } else {
       nnaxis2 = naxis2;
    }
-   naxis3  = (iaxis3_end-iaxis3_beg+1);
-   ppix1 = (TYPE_PIXELS *) malloc(naxis1* nnaxis2 * naxis3 * sizeof(float));
+   
    if (pix->getPixelClass()==CLASS_GRAY) {
+      ppix1 = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
       pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_RGB, (int) ppix1);
    } else {
+      naxis3 = 3;
+      ppix1 = (TYPE_PIXELS *) malloc(naxis1* naxis2 * naxis3 * sizeof(float));
       pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_R, (int) ppix1);
       pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_G, (int) ppix1+naxis1*naxis2*sizeof(float));
       pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_B, (int) ppix1+2*naxis1*naxis2*sizeof(float));
@@ -750,8 +752,8 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
       if (iaxis3_end<iaxis3_beg) { dummy=iaxis3_beg; iaxis3_beg=iaxis3_end; iaxis3_end=iaxis3_beg;}
       if (iaxis3_beg<1) { iaxis3_beg=1; }
       if (iaxis3_end>naxis3) { iaxis3_end=naxis3; }
-      naxis3=iaxis3_end-iaxis3_beg+1;
-      msg = Libtt_main(TT_PTR_SAVEIMA3D,13,filename,ppix1,&datatype,&naxis1,&nnaxis2,&naxis3,
+      nnaxis3=iaxis3_end-iaxis3_beg+1;
+      msg = Libtt_main(TT_PTR_SAVEIMA3D,13,filename,ppix,&datatype,&naxis1,&nnaxis2,&nnaxis3,
          &bitpix,&nb_keys,keynames,values,comments,units,datatypes);
    }
    if(msg) {
