@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.10 2007-04-23 15:43:26 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.11 2007-04-27 22:41:02 michelpujol Exp $
 #
 
 namespace eval ::audace {
@@ -93,24 +93,30 @@ namespace eval ::audace {
       #---
       set private(geometry_header_$visuNo) $conf(geometry_header_$visuNo)
       #---
-      set i 0
-      if [winfo exists $base.header] {
-         ::audace::closeHeader $visuNo
-      }
-      #---
-      toplevel $base.header
-      wm transient $base.header $base
-      if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
-         wm minsize $base.header 632 303
-      }
-      wm resizable $base.header 1 1
-      wm title $base.header "$caption(audace,header_title) (visu$visuNo) - $::confVisu::private($visuNo,lastFileName)"
-      wm geometry $base.header $private(geometry_header_$visuNo)
-      wm protocol $base.header WM_DELETE_WINDOW "::audace::closeHeader $visuNo"
-
-      if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
+      if { [winfo exists $base.header] == 0 } {
+         toplevel $base.header
+         wm transient $base.header $base
+         if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
+            wm minsize $base.header 632 303
+         }
+         wm resizable $base.header 1 1
+         wm geometry $base.header $private(geometry_header_$visuNo)
+         wm protocol $base.header WM_DELETE_WINDOW "::audace::closeHeader $visuNo"
          Scrolled_Text $base.header.slb -width 87 -font $audace(font,en_tete_1) -height 20
          pack $base.header.slb -fill y -expand true
+         #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
+         ::confVisu::addFileNameListener $visuNo "::audace::header $visuNo"
+         #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+         bind $base.header <Key-F1> { ::console::GiveFocus }
+         #--- Mise a jour dynamique des couleurs
+         ::confColor::applyColor $base.header
+      } else {
+         $base.header.slb.list delete 1.0 end
+      }
+      #---
+      wm title $base.header "$caption(audace,header_title) (visu$visuNo) - $::confVisu::private($visuNo,lastFileName)"
+      #---
+      if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
          $base.header.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
          $base.header.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
          $base.header.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
@@ -134,22 +140,9 @@ namespace eval ::audace {
             $base.header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
          }
       } else {
-         label $base.header.l -text "$caption(audace,header_noimage)"
-         pack $base.header.l -padx 20 -pady 10
+         $base.header.slb.list insert end "$caption(audace,header_noimage)"
       }
       update
-
-      #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
-      ::confVisu::addFileNameListener $visuNo "::audace::header $visuNo"
-
-      #--- Focus
-      focus $base.header
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $base.header <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $base.header
    }
 
    #
