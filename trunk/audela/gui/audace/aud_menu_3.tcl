@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.24 2007-04-27 22:42:16 michelpujol Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.25 2007-04-28 19:38:52 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -848,14 +848,14 @@ namespace eval ::pretraitement {
                } elseif { $pretraitement(choix_mode) == "1" } {
                   #---
                   set buf_clip [ ::buf::create ]
-                  buf$buf_clip load $audace(rep_images)/$in
+                  buf$buf_clip load [ file join $audace(rep_images) $in ]
                   if { $pretraitement(clipWindow_mini) != "" } {
                      buf$buf_clip clipmin $pretraitement(clipWindow_mini)
                   }
                   if { $pretraitement(clipWindow_maxi) != "" } {
                      buf$buf_clip clipmax $pretraitement(clipWindow_maxi)
                   }
-                  buf$buf_clip save $audace(rep_images)/$out
+                  buf$buf_clip save [ file join $audace(rep_images) $out ]
                   ::buf::delete $buf_clip
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out
@@ -865,14 +865,14 @@ namespace eval ::pretraitement {
                   #---
                   for { set index "$first" } { $index <= $end } { incr index } {
                      set buf_clip($index) [ ::buf::create ]
-                     buf$buf_clip($index) load $audace(rep_images)/$in$index
+                     buf$buf_clip($index) load [ file join $audace(rep_images) $in$index ]
                      if { $pretraitement(clipWindow_mini) != "" } {
                         buf$buf_clip($index) clipmin $pretraitement(clipWindow_mini)
                      }
                      if { $pretraitement(clipWindow_maxi) != "" } {
                         buf$buf_clip($index) clipmax $pretraitement(clipWindow_maxi)
                      }
-                     buf$buf_clip($index) save $audace(rep_images)/$out$index
+                     buf$buf_clip($index) save [ file join $audace(rep_images) $out$index ]
                   }
                   for { set index "$first" } { $index <= $end } { incr index } {
                      ::buf::delete $buf_clip($index)
@@ -2233,8 +2233,8 @@ namespace eval ::pretraitement {
          set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
          #--- Je renumerote le fichier portant l'indice 0
          set buf_pretrait [ ::buf::create ]
-         buf$buf_pretrait load "$audace(rep_images)/$nom_generique$indice_min$ext_serie"
-         buf$buf_pretrait save "$audace(rep_images)/$nom_generique$dernier_indice$ext_serie"
+         buf$buf_pretrait load [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
+         buf$buf_pretrait save [ file join $audace(rep_images) $nom_generique$dernier_indice$ext_serie ]
          ::buf::delete $buf_pretrait
          file delete [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
          #--- Est-ce une serie avec des fichiers manquants ?
@@ -2591,8 +2591,10 @@ namespace eval ::traiteImage {
                   return
                }
                #---
-               fitsconvert3d $audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename) 3 $conf(extension,defaut) $audace(rep_images)/$traiteImage(rvbWindow_rvb_filename)
+               fitsconvert3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename) ] 3 $conf(extension,defaut) [ file join $audace(rep_images) $traiteImage(rvbWindow_rvb_filename) ]
                loadima $traiteImage(rvbWindow_rvb_filename)
+               buf$audace(bufNo) delkwd "RGBFILTR"
+               saveima $traiteImage(rvbWindow_rvb_filename)
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
             if { $catchError == "1" } {
@@ -2617,13 +2619,13 @@ namespace eval ::traiteImage {
                   return
                }
                #---
-               buf$audace(bufNo) load "$audace(rep_images)/$traiteImage(rvbWindow_rvb_filename)"
-               buf$audace(bufNo) setkwd [list RGBFILTR R string "Color extracted (Red)" ""]
-               buf$audace(bufNo) save3d "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)1" 3 1 1
-               buf$audace(bufNo) setkwd [list RGBFILTR G string "Color extracted (Green)" ""]
-               buf$audace(bufNo) save3d "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)2" 3 2 2
-               buf$audace(bufNo) setkwd [list RGBFILTR B string "Color extracted (Blue)" ""]
-               buf$audace(bufNo) save3d "$audace(rep_images)/$traiteImage(rvbWindow_r+v+b_filename)3" 3 3 3
+               buf$audace(bufNo) load [ file join $audace(rep_images) $traiteImage(rvbWindow_rvb_filename) ]
+               buf$audace(bufNo) setkwd [ list RGBFILTR R string "Color extracted (Red)" "" ]
+               buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)1 ] 3 1 1
+               buf$audace(bufNo) setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
+               buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)2 ] 3 2 2
+               buf$audace(bufNo) setkwd [ list RGBFILTR B string "Color extracted (Blue)" "" ]
+               buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)3 ] 3 3 3
                buf$audace(bufNo) delkwd "RGBFILTR"
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
@@ -3931,9 +3933,9 @@ namespace eval ::faireImageRef {
                if { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "0" } {
                   #--- Realisation de l'image ( Offset + Dark )
                   set buf_pretrait [ ::buf::create ]
-                  buf$buf_pretrait load $audace(rep_images)/$offset
-                  buf$buf_pretrait add $audace(rep_images)/$dark $const
-                  buf$buf_pretrait save $audace(rep_images)/offset+dark
+                  buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
+                  buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
+                  buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
                   ::buf::delete $buf_pretrait
                   #---
                   sub2 $in $offset+dark $temp $const $nb $first
@@ -4009,9 +4011,9 @@ namespace eval ::faireImageRef {
                   #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
                   #--- Realisation de X = ( Offset + Dark )
                   set buf_pretrait [ ::buf::create ]
-                  buf$buf_pretrait load $audace(rep_images)/$offset
-                  buf$buf_pretrait add $audace(rep_images)/$dark $const
-                  buf$buf_pretrait save $audace(rep_images)/offset+dark
+                  buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
+                  buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
+                  buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
                   ::buf::delete $buf_pretrait
                   if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
