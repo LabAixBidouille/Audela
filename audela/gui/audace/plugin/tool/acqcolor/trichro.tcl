@@ -2,7 +2,7 @@
 # Fichier : trichro.tcl
 # Description : Outil pour importer une trichromie
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: trichro.tcl,v 1.4 2007-01-27 15:23:25 robertdelmas Exp $
+# Mise a jour $Id: trichro.tcl,v 1.5 2007-04-28 19:33:23 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -201,19 +201,31 @@ pack $audace(base).test3.frame5 \
 button $audace(base).test3.but_valid \
    -text "$caption(trichro,executer)" -borderwidth 2 \
    -command {
-      if { [ buf1001 imageready ] == "1" } {
-         #--- Charge l'image dans 3 fichiers
-         set infos(type_image) "couleur"
+      catch {
+         #--- Noms des images des plans rouge, vert et bleu
          set nomr [ file join $infos(dir) $infos(image_r) ]
          set nomv [ file join $infos(dir) $infos(image_v) ]
          set nomb [ file join $infos(dir) $infos(image_b) ]
-         rgb_load {$nomr$conf(extension,defaut)} {$nomv$conf(extension,defaut)} {$nomb$conf(extension,defaut)}
-         #--- Affiche l'image
-         set infos(type_image) "couleur"
-         testvisu
-         #--- Sauve l'image dans un seul fichier
+         #--- Changement temporaire du nom des images pour utiliser la fonction fitsconvert3d
+         file copy $nomr$conf(extension,defaut) [ file join $infos(dir) tmp_1 ]$conf(extension,defaut)
+         file copy $nomv$conf(extension,defaut) [ file join $infos(dir) tmp_2 ]$conf(extension,defaut)
+         file copy $nomb$conf(extension,defaut) [ file join $infos(dir) tmp_3 ]$conf(extension,defaut)
+         #--- Nom de l'image RVB
          set filename [ file join $infos(dir) $infos(image_rvb) ]
-         rgb_save $filename$conf(extension,defaut)
+         #--- Conversion R+V+B --> RVB
+         fitsconvert3d [ file join $infos(dir) "tmp_" ] 3 $conf(extension,defaut) $filename
+         #--- Suppression des images temporaires
+         file delete [ file join $infos(dir) tmp_1$conf(extension,defaut) ]
+         file delete [ file join $infos(dir) tmp_2$conf(extension,defaut) ]
+         file delete [ file join $infos(dir) tmp_3$conf(extension,defaut) ]
+         #--- Affiche l'image RVB
+         set infos(type_image) "couleur"
+         buf1000 load $filename
+         testvisu
+         #--- Supprime le mot-cles RGBFILTR et enregistre l'image RVB
+         buf1000 delkwd "RGBFILTR"
+         buf1000 save $filename
+         #--- Ferme la boite de dialogue
          destroy $audace(base).test3
       }
    }
