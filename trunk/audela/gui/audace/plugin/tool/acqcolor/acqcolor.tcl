@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.11 2007-02-02 15:01:59 alainklotz Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.12 2007-04-28 19:35:47 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -1552,14 +1552,13 @@ proc header_color { } {
    global caption
    global color
 
-   set i 0
    if [winfo exists $audace(base).header_color] {
       destroy $audace(base).header_color
    }
    toplevel $audace(base).header_color
    wm transient $audace(base).header_color $audace(base).test
    if { [ buf1000 imageready ] == "1" } {
-      wm minsize $audace(base).header_color 632 303
+      wm minsize $audace(base).header_color 632 380
    }
    wm resizable $audace(base).header_color 0 1
    if { [ buf1000 imageready ] == "1" } {
