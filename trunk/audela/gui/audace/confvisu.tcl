@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.55 2007-04-21 21:48:43 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.56 2007-04-28 19:40:56 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -15,7 +15,7 @@ namespace eval ::confVisu {
    proc init { } {
       variable private
       global conf
-      
+
    }
 
    #------------------------------------------------------------
@@ -79,6 +79,8 @@ namespace eval ::confVisu {
       set private($visuNo,lastFileName)    "?"
       set private($visuNo,maxdyn)          "32767"
       set private($visuNo,mindyn)          "-32768"
+      set private($visuNo,a)               "0"
+      set private($visuNo,b)               "1"
       set private($visuNo,hCanvas)         $private($visuNo,This).can1.canvas
       set private($visuNo,hCrosshairH)     $private($visuNo,hCanvas).crosshairH
       set private($visuNo,hCrosshairV)     $private($visuNo,hCanvas).crosshairV
@@ -184,13 +186,13 @@ namespace eval ::confVisu {
       if { [getTool $visuNo] != "" } {
          ::[getTool $visuNo]::stopTool $visuNo
       }
-      #--- je detruis tous les outils 
+      #--- je detruis tous les outils
       if { "$private($visuNo,This)" != "$audace(base).select" } {
          foreach pluginInstance $private($visuNo,pluginInstanceList) {
             $pluginInstance\::deletePluginInstance $visuNo
          }
       }
-      
+
       #--- je supprime l'image associee a la visu
       image delete image[visu$visuNo image]
 
@@ -354,8 +356,7 @@ namespace eval ::confVisu {
 
       visu$visuNo clear
       ::confVisu::ComputeScaleRange $visuNo
-      ::confVisu::ChangeHiCutDisplay $visuNo [lindex $cuts 0]
-      ::confVisu::ChangeLoCutDisplay $visuNo [lindex $cuts 1]
+      ::confVisu::ChangeCutsDisplay $visuNo
 
       #--- prise en compte de la palette prealablement choisie
       ::audace::MAJ_palette $visuNo
@@ -935,7 +936,7 @@ namespace eval ::confVisu {
       if { "$private($visuNo,currentTool)" != "" } {
          #--- Cela veut dire qu'il y a deja un outil selectionne
          if { "$private($visuNo,currentTool)" != "$toolName" } {
-            if { [$toolName\::getPluginProperty "display" ] != "window" 
+            if { [$toolName\::getPluginProperty "display" ] != "window"
               && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
                #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
                stopTool $visuNo
@@ -943,30 +944,30 @@ namespace eval ::confVisu {
          }
       }
 
-      
+
       #--- je verifie que l'outils a deja une instance cree
       if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
          #--- je cree une instance de l'outil
-         set catchResult [catch { 
-            namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo 
+         set catchResult [catch {
+            namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo
          }]
          if { $catchResult == 1  } {
             ::console::affiche_erreur "$::errorInfo\n"
             tk_messageBox -message "$::errorInfo. See console" -icon error
             return
-         } 
+         }
          #--- j'ajoute cette intance dans la liste
-         lappend private($visuNo,pluginInstanceList) $toolName 
+         lappend private($visuNo,pluginInstanceList) $toolName
       }
       #--- je demarre l'outil
-      namespace inscope $toolName startTool $visuNo  
+      namespace inscope $toolName startTool $visuNo
 
      #--- je memorise le nom de l'outil en cours d'execution
-     if { [$toolName\::getPluginProperty "display" ] != "window" } { 
+     if { [$toolName\::getPluginProperty "display" ] != "window" } {
         set private($visuNo,currentTool) $toolName
      }
 
-   
+
    }
 
    #------------------------------------------------------------
@@ -1848,30 +1849,39 @@ namespace eval ::confVisu {
       ::seuilWindow::run $private($visuNo,This) $visuNo
    }
 
+   proc index2cut { visuNo val } {
+      variable private
+      return [ expr $val * $private($visuNo,a) + $private($visuNo,b) ]
+   }
+
    proc onHiCutCommand { visuNo val } {
+      set new_hi_cut [ index2cut $visuNo $val ]
+      #::console::affiche_resultat "onHiCutCommand: $val => $new_hi_cut\n"
       set sbh [visu$visuNo cut]
-      visu$visuNo cut [list $val [lindex $sbh 1]]
-      ChangeHiCutDisplay $visuNo $val
+      visu$visuNo cut [list $new_hi_cut [lindex $sbh 1]]
+      ChangeCutsDisplay $visuNo
    }
 
    proc onLoCutCommand { visuNo val } {
+      set new_lo_cut [ index2cut $visuNo $val ]
+      #::console::affiche_resultat "onLoCutCommand: $val => $new_lo_cut\n"
       set sbh [visu$visuNo cut]
-      visu$visuNo cut [list [lindex $sbh 0] $val]
-      ChangeLoCutDisplay $visuNo $val
+      visu$visuNo cut [list [lindex $sbh 0] $new_lo_cut]
+      ChangeCutsDisplay $visuNo
    }
 
-   proc ChangeHiCutDisplay { visuNo val } {
+   proc ChangeCutsDisplay { visuNo } {
       variable private
 
-      $private($visuNo,This).fra1.sca1 set $val
-      $private($visuNo,This).fra1.lab1 configure -text $val
+      set sh [lindex [visu$visuNo cut] 0]
+      set sb [lindex [visu$visuNo cut] 1]
+      if { [ expr abs( $sh - $sb ) ] > 100 } {
+         $private($visuNo,This).fra1.lab1 configure -text [format %d [expr int($sh)]]
+         $private($visuNo,This).fra1.lab2 configure -text [format %d [expr int($sb)]]
+      } else {
+         $private($visuNo,This).fra1.lab1 configure -text [format %.4e $sh]
+         $private($visuNo,This).fra1.lab2 configure -text [format %.4e $sb]
    }
-
-   proc ChangeLoCutDisplay { visuNo val } {
-      variable private
-
-      $private($visuNo,This).fra1.sca2 set $val
-      $private($visuNo,This).fra1.lab2 configure -text $val
    }
 
    proc onCutScaleRelease { visuNo } {
@@ -1890,7 +1900,7 @@ namespace eval ::confVisu {
       set zone(sh1) $private($visuNo,This).fra1.sca1
       set zone(sb1) $private($visuNo,This).fra1.sca2
       if { $conf(seuils,auto_manuel) == 1 } {
-         #--- Calcule les nouveaux seuils
+         #--- Calcule la nouvelle dynamique de deplacement des curseurs
          set sh [lindex [visu$visuNo cut] 0]
          set sb [lindex [visu$visuNo cut] 1]
          if {$sb<$sh} {
@@ -1904,13 +1914,25 @@ namespace eval ::confVisu {
          if {$range == 0} {
             set range 1024
          }
-         set maxi [ expr $maxi + $conf(seuils,%_dynamique) / 100.0 * $range ]
-         set mini [ expr $mini - $conf(seuils,%_dynamique) / 100.0 * $range ]
-         #--- Redimensionne le scale widget
-         $zone(sb1) configure -from $mini -to $maxi
-         $zone(sh1) configure -from $mini -to $maxi
-         set private($visuNo,mindyn) $mini
-         set private($visuNo,maxdyn) $maxi
+         set private($visuNo,mincut) [ expr $mini - $conf(seuils,%_dynamique) / 100.0 * $range ]
+         set private($visuNo,maxcut) [ expr $maxi + $conf(seuils,%_dynamique) / 100.0 * $range ]
+         set private($visuNo,minindex) [ $private($visuNo,This).fra1.sca1 cget -from ]
+         set private($visuNo,maxindex) [ $private($visuNo,This).fra1.sca1 cget -to ]
+
+         #--- Calcul des coefficients de transformation seuil de visu = f(position):
+         #---         cut = a * pos + b
+         set cut_lo $private($visuNo,mincut)
+         set cut_hi $private($visuNo,maxcut)
+         set index_lo $private($visuNo,minindex)
+         set index_hi $private($visuNo,maxindex)
+
+         set private($visuNo,a) [ expr ( $cut_lo - $cut_hi ) / ( $index_lo - $index_hi ) ]
+         set private($visuNo,b) [ expr ( $cut_lo * $index_hi - $cut_hi * $index_lo ) / ( $index_hi - $index_lo ) ]
+
+         #--- Repositionnement des poignees a leur nouvelle position
+         $private($visuNo,This).fra1.sca1 set [ expr ( $sh - $private($visuNo,b) ) / $private($visuNo,a) ]
+         $private($visuNo,This).fra1.sca2 set [ expr ( $sb - $private($visuNo,b) ) / $private($visuNo,a) ]
+#::console::affiche_resultat "ComputeScaleRange: sh=$sh, sb=$sb, min_index=$private($visuNo,minindex), max_index=$private($visuNo,maxindex), maxi=$maxi, mini=$mini, a=$private($visuNo,a), b=$private($visuNo,b)\n"
       } elseif { $conf(seuils,auto_manuel) == 2 } {
          $zone(sb1) configure -from $private($visuNo,mindyn) -to $private($visuNo,maxdyn)
          $zone(sh1) configure -from $private($visuNo,mindyn) -to $private($visuNo,maxdyn)
