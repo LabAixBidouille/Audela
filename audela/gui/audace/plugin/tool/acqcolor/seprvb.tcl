@@ -2,7 +2,7 @@
 # Fichier : seprvb.tcl
 # Description : Outil pour la separation des plans couleur
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: seprvb.tcl,v 1.4 2007-01-27 15:22:53 robertdelmas Exp $
+# Mise a jour $Id: seprvb.tcl,v 1.5 2007-04-28 19:32:18 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -137,13 +137,24 @@ button $audace(base).test1.but_valid \
          set infos(type_image) "couleur"
          set nom [ file join $infos(dir) $infos(nom_image) ]
          for { set k 1 } { $k <= $infos(nbre_images) } { incr k } {
-            loadima "${nom}$k$conf(extension,defaut);1"
-            saveima "${nom}r$k$conf(extension,defaut)"
-            loadima "${nom}$k$conf(extension,defaut);2"
-            saveima "${nom}v$k$conf(extension,defaut)"
-            loadima "${nom}$k$conf(extension,defaut);3"
-            saveima "${nom}b$k$conf(extension,defaut)"
+            #--- Chargement des images
+            buf1000 load "${nom}$k$conf(extension,defaut)"
+            #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan rouge
+            buf1000 setkwd [list RGBFILTR R string "Color extracted (Red)" ""]
+            #--- Sauvegarde du plan rouge
+            buf1000 save3d "${nom}r$k$conf(extension,defaut)" 3 1 1
+            #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan vert
+            buf1000 setkwd [list RGBFILTR G string "Color extracted (Green)" ""]
+            #--- Sauvegarde du plan vert
+            buf1000 save3d "${nom}v$k$conf(extension,defaut)" 3 2 2
+            #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan bleu
+            buf1000 setkwd [list RGBFILTR B string "Color extracted (Blue)" ""]
+            #--- Sauvegarde du plan bleu
+            buf1000 save3d "${nom}b$k$conf(extension,defaut)" 3 3 3
+            #--- Suppression du mot-cles RGBFILTR
+            buf1000 delkwd "RGBFILTR"
          }
+         #--- Ferme la boite de dialogue
          destroy $audace(base).test1
       }
    }
