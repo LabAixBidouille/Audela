@@ -2,7 +2,7 @@
 # Fichier : smedianrvb.tcl
 # Description : Outil pour calculer la mediane d'une pile d'images
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: smedianrvb.tcl,v 1.5 2007-01-27 15:23:07 robertdelmas Exp $
+# Mise a jour $Id: smedianrvb.tcl,v 1.6 2007-04-28 19:32:52 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -175,38 +175,63 @@ button $audace(base).test2.but_valid \
    -text "$caption(smedianrvb,executer)" -borderwidth 2 \
    -command {
       catch {
-         set nom "$infos(nom_image)"
-         set nom1 "$infos(nom_mediane)"
-         set nb "$infos(nbre_images)"
          set infos(type_image) "couleur"
-         #--- Separe les couleurs
-         for { set k 1 } { $k <= $infos(nbre_images) } { incr k } {
-            loadima "${nom}$k$conf(extension,defaut);1"
-            saveima "${nom}r$k$conf(extension,defaut)"
-            loadima "${nom}$k$conf(extension,defaut);2"
-            saveima "${nom}v$k$conf(extension,defaut)"
-            loadima "${nom}$k$conf(extension,defaut);3"
-            saveima "${nom}b$k$conf(extension,defaut)"
+         set nom  [ file join $infos(dir) $infos(nom_image) ]
+         set nom1 [ file join $infos(dir) $infos(nom_mediane) ]
+         set nb "$infos(nbre_images)"
+         #--- Separe les couleurs rouge, verte et bleue
+         for { set k 1 } { $k <= $nb } { incr k } {
+            #--- Chargement des images
+            buf1000 load "${nom}$k$conf(extension,defaut)"
+            #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan rouge
+            buf1000 setkwd [list RGBFILTR R string "Color extracted (Red)" ""]
+            #--- Sauvegarde du plan rouge
+            buf1000 save3d "${nom}r$k$conf(extension,defaut)" 3 1 1
+            #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan vert
+            buf1000 setkwd [list RGBFILTR G string "Color extracted (Green)" ""]
+            #--- Sauvegarde du plan vert
+            buf1000 save3d "${nom}v$k$conf(extension,defaut)" 3 2 2
+            #--- Creation dans le buffer du mot-cles RGBFILTR pour le plan bleu
+            buf1000 setkwd [list RGBFILTR B string "Color extracted (Blue)" ""]
+            #--- Sauvegarde du plan bleu
+            buf1000 save3d "${nom}b$k$conf(extension,defaut)" 3 3 3
+            #--- Suppression du mot-cles RGBFILTR
+            buf1000 delkwd "RGBFILTR"
          }
-         #--- Execute la mediane de chaque couleur
-         smedian ${nom}r ${nom1}r ${nb}
-         smedian ${nom}v ${nom1}v ${nb}
-         smedian ${nom}b ${nom1}b ${nb}
-         #--- Charge l'image dans 3 fichiers
+         #--- Realise la mediane de chaque plan couleur
+         smedian [ file tail ${nom}r ] [ file tail ${nom1}r ] $nb
+         smedian [ file tail ${nom}v ] [ file tail ${nom1}v ] $nb
+         smedian [ file tail ${nom}b ] [ file tail ${nom1}b ] $nb
+         #--- Noms des images des plans rouge, vert et bleu
          set nom1r [ file join $infos(dir) $infos(nom_mediane)r ]
          set nom1v [ file join $infos(dir) $infos(nom_mediane)v ]
          set nom1b [ file join $infos(dir) $infos(nom_mediane)b ]
-         rgb_load {$nom1r$conf(extension,defaut)} {$nom1v$conf(extension,defaut)} {$nom1b$conf(extension,defaut)}
-         #--- Affiche l'image
-         set infos(type_image) "couleur"
-         testvisu
-         #--- Sauve l'image dans un seul fichier
+         #--- Changement temporaire du nom des images pour utiliser la fonction fitsconvert3d
+         file copy $nom1r$conf(extension,defaut) [ file join $infos(dir) tmp_1 ]$conf(extension,defaut)
+         file copy $nom1v$conf(extension,defaut) [ file join $infos(dir) tmp_2 ]$conf(extension,defaut)
+         file copy $nom1b$conf(extension,defaut) [ file join $infos(dir) tmp_3 ]$conf(extension,defaut)
+         #--- Nom de l'image RVB
          set filename [ file join $infos(dir) ${nom1} ]
-         rgb_save $filename$conf(extension,defaut)
+         #--- Conversion R+V+B --> RVB
+         fitsconvert3d [ file join $infos(dir) "tmp_" ] 3 $conf(extension,defaut) $filename
+         #--- Suppression des images temporaires
+         file delete [ file join $infos(dir) tmp_1$conf(extension,defaut) ]
+         file delete [ file join $infos(dir) tmp_2$conf(extension,defaut) ]
+         file delete [ file join $infos(dir) tmp_3$conf(extension,defaut) ]
+         #--- Affiche l'image RVB
+         set infos(type_image) "couleur"
+         buf1000 load $filename
+         testvisu
+         #--- Supprime le mot-cles RGBFILTR et enregistre l'image RVB
+         buf1000 delkwd "RGBFILTR"
+         buf1000 save $filename
          #--- Detruit les fichiers intermediaires
-         delete2 ${nom}r ${nb}
-         delete2 ${nom}v ${nb}
-         delete2 ${nom}b ${nb}
+         file delete [ file join $infos(dir) $nom1r$conf(extension,defaut) ]
+         file delete [ file join $infos(dir) $nom1v$conf(extension,defaut) ]
+         file delete [ file join $infos(dir) $nom1b$conf(extension,defaut) ]
+         delete2 [ file tail ${nom}r ] $nb
+         delete2 [ file tail ${nom}v ] $nb
+         delete2 [ file tail ${nom}b ] $nb
          #--- Detruit la fenêtre devant l'image
          destroy $audace(base).test2
       }
