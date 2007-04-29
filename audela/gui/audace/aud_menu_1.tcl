@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.11 2007-04-27 22:41:02 michelpujol Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.12 2007-04-29 13:30:49 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -226,7 +226,6 @@ namespace eval ::audace {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_scripts) $audace(bufNo) "3" ]
       #---
       if [string compare $filename ""] {
-         ::console::affiche_saut "\n"
          ::console::affiche_erreur "\n"
          ::console::affiche_erreur "$caption(audace,script) $filename\n"
          ::console::affiche_erreur "\n"
@@ -239,6 +238,7 @@ namespace eval ::audace {
          }
          ::console::affiche_erreur "$caption(audace,script_termine)\n"
          ::console::affiche_erreur "\n"
+         ::console::affiche_saut "\n"
       }
    }
 
