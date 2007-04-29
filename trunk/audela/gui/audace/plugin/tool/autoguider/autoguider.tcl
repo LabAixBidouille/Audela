@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.17 2007-04-16 18:04:15 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.18 2007-04-29 07:08:40 robertdelmas Exp $
 #
 
 #==============================================================
@@ -182,38 +182,42 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
 
    #--- Frame pour l'autoguidage
    frame $This.suivi -borderwidth 2 -relief ridge
-       checkbutton $This.suivi.but_autovisu -text "$caption(autoguider,image)" \
-          -variable ::conf(autoguider,showImage) \
-          -command "::autoguider::changeShowImage $visuNo"
-       checkbutton $This.suivi.but_showtarget -text "$caption(autoguider,cible)" \
-          -variable ::conf(autoguider,showTarget) \
-          -command "::autoguider::changeShowTarget $visuNo"
-       checkbutton $This.suivi.but_showaxis -text "$caption(autoguider,axe_AD)" \
-          -variable ::conf(autoguider,showAlphaDeltaAxis) \
-          -command "::autoguider::changeShowAlphaDeltaAxis $visuNo"
-       checkbutton $This.suivi.moteur_ok -padx 0 -pady 0 \
-          -text "$caption(autoguider,ctrl_monture)" \
-          -variable ::autoguider::private($visuNo,monture_ok) -command "::autoguider::initMount $visuNo"
-       label $This.suivi.label_d      -text "$caption(autoguider,ecart_origine_etoile)"
-       label $This.suivi.dx           -textvariable ::autoguider::private($visuNo,dx)
-       label $This.suivi.dy           -textvariable ::autoguider::private($visuNo,dy)
-       label $This.suivi.delay_alpha  -textvariable ::autoguider::private($visuNo,delay,alpha)
-       label $This.suivi.delay_delta  -textvariable ::autoguider::private($visuNo,delay,delta)
-       label $This.suivi.lab_clock    -textvariable ::autoguider::private($visuNo,interval)
-       button $This.suivi.but_config  -text "$caption(autoguider,config_guidage)" \
-          -command "::autoguider::config::run $visuNo"
+      checkbutton $This.suivi.but_autovisu -text "$caption(autoguider,image)" \
+         -variable ::conf(autoguider,showImage) \
+         -command "::autoguider::changeShowImage $visuNo"
+      checkbutton $This.suivi.but_showtarget -text "$caption(autoguider,cible)" \
+         -variable ::conf(autoguider,showTarget) \
+         -command "::autoguider::changeShowTarget $visuNo"
+      checkbutton $This.suivi.but_showaxis -text "$caption(autoguider,axe_AD)" \
+         -variable ::conf(autoguider,showAlphaDeltaAxis) \
+         -command "::autoguider::changeShowAlphaDeltaAxis $visuNo"
+      checkbutton $This.suivi.moteur_ok -padx 0 -pady 0 \
+         -text "$caption(autoguider,ctrl_monture)" \
+         -variable ::autoguider::private($visuNo,monture_ok) -command "::autoguider::initMount $visuNo"
+      label $This.suivi.label_d      -text "$caption(autoguider,ecart_origine_etoile)"
+      label $This.suivi.dx           -textvariable ::autoguider::private($visuNo,dx)
+      label $This.suivi.dy           -textvariable ::autoguider::private($visuNo,dy)
+      label $This.suivi.label_delay  -text "$caption(autoguider,impulsion)"
+      label $This.suivi.delay_alpha  -textvariable ::autoguider::private($visuNo,delay,alpha)
+      label $This.suivi.delay_delta  -textvariable ::autoguider::private($visuNo,delay,delta)
+      label $This.suivi.label_clock  -text "$caption(autoguider,intervalle)"
+      label $This.suivi.lab_clock    -textvariable ::autoguider::private($visuNo,interval)
+      button $This.suivi.but_config  -text "$caption(autoguider,config_guidage)" \
+         -command "::autoguider::config::run $visuNo"
 
-       grid $This.suivi.but_autovisu   -row 0 -column 0 -columnspan 3 -sticky {}
-       grid $This.suivi.but_showtarget -row 1 -column 0 -columnspan 3 -sticky {}
-       grid $This.suivi.but_showaxis   -row 2 -column 0 -columnspan 3 -sticky {}
-       grid $This.suivi.moteur_ok      -row 3 -column 0 -columnspan 3 -sticky {}
-       grid $This.suivi.label_d        -row 4 -column 0 -sticky w
-       grid $This.suivi.dx             -row 4 -column 1 -sticky w
-       grid $This.suivi.dy             -row 4 -column 2 -sticky w
-       grid $This.suivi.delay_alpha    -row 5 -column 1 -sticky w
-       grid $This.suivi.delay_delta    -row 5 -column 2 -sticky w
-       grid $This.suivi.lab_clock      -row 6 -column 0 -columnspan 3
-       grid $This.suivi.but_config     -row 7 -column 0 -columnspan 3
+      grid $This.suivi.but_autovisu   -row 0 -column 0 -columnspan 3 -sticky {}
+      grid $This.suivi.but_showtarget -row 1 -column 0 -columnspan 3 -sticky {}
+      grid $This.suivi.but_showaxis   -row 2 -column 0 -columnspan 3 -sticky {}
+      grid $This.suivi.moteur_ok      -row 3 -column 0 -columnspan 3 -sticky {}
+      grid $This.suivi.label_d        -row 4 -column 0 -sticky w
+      grid $This.suivi.dx             -row 4 -column 1 -sticky w
+      grid $This.suivi.dy             -row 4 -column 2 -sticky w
+      grid $This.suivi.label_delay    -row 5 -column 0 -sticky w
+      grid $This.suivi.delay_alpha    -row 5 -column 1 -sticky w
+      grid $This.suivi.delay_delta    -row 5 -column 2 -sticky w
+      grid $This.suivi.label_clock    -row 6 -column 0 -sticky w
+      grid $This.suivi.lab_clock      -row 6 -column 0 -columnspan 3
+      grid $This.suivi.but_config     -row 7 -column 0 -columnspan 3
    pack $This.suivi -side top -fill x
 
    #--- Mise a jour dynamique des couleurs
@@ -270,21 +274,21 @@ proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2
 
    #--- j'adapte les boutons de selection de pose et de binning
    if { [confCam::getLongExposure $camNo] == "1" } {
-         #--- cameras autre que webcam, ou webcam avec la longue pose
-         pack $This.pose.lab1 -anchor center -side left -padx 5
-         pack $This.pose.combo -anchor center -side left -fill x -expand 1
-         pack $This.binning.lab1 -anchor center -side left -padx 0
-         pack $This.binning.combo -anchor center -side left -fill x -expand true
-         pack forget $This.pose.confwebcam
-         pack forget $This.binning.selectBinning
+      #--- cameras autre que webcam, ou webcam avec la longue pose
+      pack $This.pose.lab1 -anchor center -side left -padx 5
+      pack $This.pose.combo -anchor center -side left -fill x -expand 1
+      pack $This.binning.lab1 -anchor center -side left -padx 0
+      pack $This.binning.combo -anchor center -side left -fill x -expand true
+      pack forget $This.pose.confwebcam
+      pack forget $This.binning.selectBinning
    } else {
-         #--- webcam
-         pack forget $This.pose.lab1
-         pack forget $This.pose.combo
-         pack forget $This.binning.lab1
-         pack forget $This.binning.combo
-         pack $This.pose.confwebcam -anchor center -side left -fill x -expand 1
-         pack $This.binning.selectBinning  -anchor center -side left -fill x -expand 1
+      #--- webcam
+      pack forget $This.pose.lab1
+      pack forget $This.pose.combo
+      pack forget $This.binning.lab1
+      pack forget $This.binning.combo
+      pack $This.pose.confwebcam -anchor center -side left -fill x -expand 1
+      pack $This.binning.selectBinning  -anchor center -side left -fill x -expand 1
       #--- je met la pose a zero car cette varaible n'est utilisee et doit etre nulle
       set ::conf(autoguider,pose) "0"
    }
