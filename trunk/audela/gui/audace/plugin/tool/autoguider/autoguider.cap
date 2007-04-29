@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.20 2007-04-26 18:02:21 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.21 2007-04-29 07:07:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,12 +23,13 @@ set caption(autoguider,axe_AD)                   "Axes (RA, Dec)"
 set caption(autoguider,ctrl_monture)             "Tracking on"
 set caption(autoguider,config_guidage)           "Setup..."
 set caption(autoguider,ecart_origine_etoile)     "Deviation"
+set caption(autoguider,impulsion)                "Pulse"
+set caption(autoguider,intervalle)               "Interval"
 
 set caption(autoguider,pose)                     "Exp."
 set caption(autoguider,binning)                  "Binning"
 set caption(autoguider,GO)                       "GO CCD"
 set caption(autoguider,STOP)                     "STOP\nCCD"
-set caption(autoguider,intervalle)               "Interval"
 
 set caption(autoguider,seuil)                    "Threshold (pixels)"
 set caption(autoguider,detection)                "Star Detection"
@@ -76,12 +77,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,ctrl_monture)          "Suivi actif"
    set caption(autoguider,config_guidage)        "Configuration..."
    set caption(autoguider,ecart_origine_etoile)  "Ecart"
+   set caption(autoguider,impulsion)             "Impul."
+   set caption(autoguider,intervalle)            "Intervalle"
 
    set caption(autoguider,pose)                  "Pose"
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
-   set caption(autoguider,intervalle)            "Intervalle"
 
    set caption(autoguider,seuil)                 "Seuil (pixels)"
    set caption(autoguider,detection)             "Détection étoile"
@@ -129,12 +131,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,ctrl_monture)          "Inseg. on"
    set caption(autoguider,config_guidage)        "Settaggio..."
    set caption(autoguider,ecart_origine_etoile)  "Scarto"
+   set caption(autoguider,impulsion)             "Impulsi"
+   set caption(autoguider,intervalle)            "Intervallo"
 
    set caption(autoguider,pose)                  "Posa"
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
-   set caption(autoguider,intervalle)            "Intervallo"
 
    set caption(autoguider,seuil)                 "Soglia (pixels)"
    set caption(autoguider,detection)             "Detezione stella"
@@ -182,12 +185,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,ctrl_monture)          "Seg. on"
    set caption(autoguider,config_guidage)        "Configuración..."
    set caption(autoguider,ecart_origine_etoile)  "Desviación"
+   set caption(autoguider,impulsion)             "Impulsos"
+   set caption(autoguider,intervalle)            "Intervalo"
 
    set caption(autoguider,pose)                  "Exp."
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
-   set caption(autoguider,intervalle)            "Intervalo"
 
    set caption(autoguider,seuil)                 "Nivel (pixels)"
    set caption(autoguider,detection)             "Detección de estrella"
@@ -235,12 +239,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,ctrl_monture)          "Folgung an"
    set caption(autoguider,config_guidage)        "Konfiguration..."
    set caption(autoguider,ecart_origine_etoile)  "Abweichung"
+   set caption(autoguider,impulsion)             "Pulsen"
+   set caption(autoguider,intervalle)            "Zeit"
 
    set caption(autoguider,pose)                  "Bel."
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
-   set caption(autoguider,intervalle)            "Zeit"
 
    set caption(autoguider,seuil)                 "Schwelle(Pixels)"
    set caption(autoguider,detection)             "Stern Entdeckung"
@@ -288,12 +293,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,ctrl_monture)          "Seguimento activo"
    set caption(autoguider,config_guidage)        "Configuração..."
    set caption(autoguider,ecart_origine_etoile)  "Desvio"
+   set caption(autoguider,impulsion)             "Impulsos"
+   set caption(autoguider,intervalle)            "Intervalo"
 
    set caption(autoguider,pose)                  "Exposição"
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
-   set caption(autoguider,intervalle)            "Intervalo"
 
    set caption(autoguider,seuil)                 "Limiar (pixels)"
    set caption(autoguider,detection)             "Detecção estrela"
@@ -341,12 +347,13 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,ctrl_monture)          "Tracking on"
    set caption(autoguider,config_guidage)        "Setup..."
    set caption(autoguider,ecart_origine_etoile)  "Deviation"
+   set caption(autoguider,impulsion)             "Pulse"
+   set caption(autoguider,intervalle)            "Interval"
 
    set caption(autoguider,pose)                  "Exp."
    set caption(autoguider,binning)               "Binning"
    set caption(autoguider,GO)                    "GO CCD"
    set caption(autoguider,STOP)                  "STOP\nCCD"
-   set caption(autoguider,intervalle)            "Interval"
 
    set caption(autoguider,seuil)                 "Threshold (pixels)"
    set caption(autoguider,detection)             "Star Detection"
