@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.5 2006-11-15 20:47:39 robertdelmas Exp $
+# Mise a jour $Id: console.tcl,v 1.6 2007-04-29 12:49:34 robertdelmas Exp $
 #
 
 namespace eval ::console {
@@ -106,6 +106,13 @@ namespace eval ::console {
    proc affiche_resultat {ligne} {
       variable This
       $This.txt1 insert end "# $ligne" style_resultat
+      $This.txt1 see insert
+      update
+   }
+
+   proc affiche_resultat_bis {ligne} {
+      variable This
+      $This.txt1 insert end $ligne style_resultat
       $This.txt1 see insert
       update
    }
