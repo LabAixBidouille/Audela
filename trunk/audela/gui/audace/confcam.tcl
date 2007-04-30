@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.68 2007-04-07 15:04:51 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.69 2007-04-30 08:08:59 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -131,7 +131,6 @@ namespace eval ::confCam {
       if { ! [ info exists conf(dslr,mirh) ] }                 { set conf(dslr,mirh)                 "0" }
       if { ! [ info exists conf(dslr,mirv) ] }                 { set conf(dslr,mirv)                 "0" }
       if { ! [ info exists conf(apn,baud) ] }                  { set conf(apn,baud)                  "115200" }
-     ### if { ! [ info exists conf(apn,serial_port) ] }           { set conf(apn,serial_port)           [ lindex "$audace(list_com)" 0 ] }
 
       #--- initConf 11
       if { ! [ info exists conf(andor,cool) ] }        { set conf(andor,cool)        "0" }
@@ -154,7 +153,7 @@ namespace eval ::confCam {
       ::cemes::init
 
       #--- item par defaut
-      set confCam(currentCamItem)   "A"
+      set confCam(currentCamItem) "A"
 
       #--- Initialisation des variables d'echange avec les widgets
       set confCam(A,visuName) "visu1"
@@ -170,9 +169,9 @@ namespace eval ::confCam {
       set confCam(B,camName)  ""
       set confCam(C,camName)  ""
       set confCam(position)   $conf(camera,position)
-      set confCam(A,threadNo)  "0"
-      set confCam(B,threadNo)  "0"
-      set confCam(C,threadNo)  "0"
+      set confCam(A,threadNo) "0"
+      set confCam(B,threadNo) "0"
+      set confCam(C,threadNo) "0"
 
       #--- Initalise les listes de cameras
       set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
@@ -183,8 +182,7 @@ namespace eval ::confCam {
    }
 
    proc dispThreadError { thread_id errorInfo} {
-   ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
-
+      ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
    }
 
    #
@@ -617,13 +615,13 @@ namespace eval ::confCam {
    }
 
    #
-   # cree une thread dediee a la camera
-   # retourne le numero de la thread place dans la variable confCam(camItem,threadNo)
+   #--- Cree une thread dediee a la camera
+   #--- Retourne le numero de la thread place dans la variable confCam(camItem,threadNo)
    #
-   proc createThread { camNo bufNo visuNo} {
+   proc createThread { camNo bufNo visuNo } {
       global confCam
 
-      #--- Je cree la thread de la camera , si l'option multithread est activee dans le TCL
+      #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
       if { $::tcl_platform(threaded)==1 } {
          #--- creation dun nouvelle thread
          set threadNo [thread::create ]
@@ -2378,7 +2376,6 @@ namespace eval ::confCam {
       set confCam(dslr,mirh)                 $conf(dslr,mirh)
       set confCam(dslr,mirv)                 $conf(dslr,mirv)
       set confCam(apn,baud)                  $conf(apn,baud)
-     ### set confCam(apn,serial_port)           $conf(apn,serial_port)
 
       #--- Initialisation
       set frmm(Camera10) [ Rnotebook:frame $nn 10 ]
@@ -2468,20 +2465,6 @@ namespace eval ::confCam {
             ::confCam::ConfDSLR
          }
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 20 -pady 5
-
-      #--- Definition du port serie
-     ### label $frm.lab2 -text $caption(confcam,apn_port)
-     ### pack $frm.lab2 -in $frm.frame2 -anchor e -side left -padx 10 -pady 10
-
-     ### ComboBox $frm.s_port \
-     ###    -width 14         \
-     ###    -height [ llength $audace(list_com) ]  \
-     ###    -relief sunken    \
-     ###    -borderwidth 1    \
-     ###    -textvariable confCam(apn,serial_port) \
-     ###    -editable 0       \
-     ###    -values $audace(list_com)
-     ### pack $frm.s_port -in $frm.frame2 -anchor e -side left -padx 5 -pady 10
 
       #--- Definition de la vitesse du port serie
       label $frm.lab3 -text $caption(confcam,apn_baud)
@@ -3066,7 +3049,7 @@ namespace eval ::confCam {
          if { $confCam($camItem,threadNo)!=0 } {
             #--- Je supprime la thread
             thread::release $confCam($camItem,threadNo)
-            set confCam($camItem,threadNo)   "0"
+            set confCam($camItem,threadNo) "0"
          }
 
          #--- Je ferme les ressources specifiques de la camera
@@ -3302,6 +3285,7 @@ namespace eval ::confCam {
    #
    proc getThreadNo { camNo } {
       global confCam
+
       if { $confCam(A,camNo) == $camNo } {
          set camItem "A"
       } elseif { $confCam(B,camNo) == $camNo } {
@@ -3624,7 +3608,7 @@ namespace eval ::confCam {
       global confcolor
       global confCam
 
-      # Initialisation de la variable erreur
+      #--- Initialisation de la variable erreur
       set erreur "1"
 
       #--- Affichage d'un message d'alerte si necessaire
@@ -4371,7 +4355,7 @@ namespace eval ::confCam {
          if { $confCam($camItem,threadNo)!=0 } {
             #--- Je supprime la thread
             thread::release $confCam($camItem,threadNo)
-            set confCam($camItem,threadNo)  "0"
+            set confCam($camItem,threadNo) "0"
          }
 
          #--- En cas de probleme, camera par defaut
@@ -4509,7 +4493,6 @@ namespace eval ::confCam {
             set conf(dslr,mirh)                   $confCam(dslr,mirh)
             set conf(dslr,mirv)                   $confCam(dslr,mirv)
             set conf(apn,baud)                    $confCam(apn,baud)
-           ### set conf(apn,serial_port)             $confCam(apn,serial_port)
             if { [ info exists confCam(apn,model) ] } {
                set conf(apn,model)                $confCam(apn,model)
             } else {
