@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.29 2007-03-12 22:34:59 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.30 2007-04-30 08:07:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -125,7 +125,6 @@ set caption(confcam,dslr_longueposebit)         "Control Bit Number"
 set caption(confcam,dslr_longueposestart)       "Control when exposure begins"
 set caption(confcam,dslr_detect_service)        "Stop Automatic Detection of Digital Cameras"
 set caption(confcam,dslr_telecharger)           "Download Image"
-set caption(confcam,apn_port)                   "Digital Camera Control Port"
 set caption(confcam,apn_baud)                   "Serial Port Speed (bauds)"
 
 set caption(confcam,andor_config)               "Folder Containing Setup Files"
@@ -284,7 +283,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_longueposestart)    "Commande au début de la pose"
    set caption(confcam,dslr_detect_service)     "Arrêt de la détection automatique des appareils photo numériques"
    set caption(confcam,dslr_telecharger)        "Télécharger l'image"
-   set caption(confcam,apn_port)                "Port de commande de l'APN"
    set caption(confcam,apn_baud)                "Vitesse du port série (bauds)"
 
    set caption(confcam,andor_config)            "Répertoire contenant les fichiers de configuration"
@@ -443,7 +441,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_longueposestart)    "Comando all'inizio della posa"
    set caption(confcam,dslr_detect_service)     "Arresto detezione automatica delle camere digitali"
    set caption(confcam,dslr_telecharger)        "Scaricare l'immagine"
-   set caption(confcam,apn_port)                "Porta della Fotocamera digitale"
    set caption(confcam,apn_baud)                "Velocita' porta seriale (bauds)"
 
    set caption(confcam,andor_config)            "Cartella contenente i file di configurazione"
@@ -602,7 +599,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_longueposestart)    "Control cuando empieza la exposición"
    set caption(confcam,dslr_detect_service)     "Parar la detección automática de cámaras digitales"
    set caption(confcam,dslr_telecharger)        "Descargar imagen"
-   set caption(confcam,apn_port)                "Puerto de control de la cámara digital"
    set caption(confcam,apn_baud)                "Velocidad del Puerto Serie (baudios)"
 
    set caption(confcam,andor_config)            "Doirectorio que contiene los ficheros de configuracion"
@@ -761,7 +757,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_longueposestart)    "Anfang der Belichtung Antrieb"
    set caption(confcam,dslr_detect_service)     "Ende der digitale Fotoapparate automatische Registrierung"
    set caption(confcam,dslr_telecharger)        "Das Bild herunterladen"
-   set caption(confcam,apn_port)                "Digital Fotoapparat Steuer Port"
    set caption(confcam,apn_baud)                "Seriell Port Geschwindigkeit (Bauds)"
 
    set caption(confcam,andor_config)            "Register der die setup Dateien enthaltet"
@@ -920,7 +915,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_longueposestart)    "Controlo do Início da Exposição"
    set caption(confcam,dslr_detect_service)     "Parar Automaticamente a Detecção de Câmaras Digitais"
    set caption(confcam,dslr_telecharger)        "Download da Imagem"
-   set caption(confcam,apn_port)                "Porta de Controlo da Câmara Digital"
    set caption(confcam,apn_baud)                "Velocidade da Porta Série (bauds)"
 
    set caption(confcam,andor_config)            "Pasta que contém os ficheiros de configuração"
@@ -1079,7 +1073,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_longueposestart)    "Control when exposure begins"
    set caption(confcam,dslr_detect_service)     "Stop Automatic Detection of Digital Cameras"
    set caption(confcam,dslr_telecharger)        "Download Image"
-   set caption(confcam,apn_port)                "Digital Camera Control Port"
    set caption(confcam,apn_baud)                "Serial Port Speed (bauds)"
 
    set caption(confcam,andor_config)            "Folder Containing Setup Files"
