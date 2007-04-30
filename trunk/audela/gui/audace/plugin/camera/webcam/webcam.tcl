@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.6 2007-03-24 01:38:07 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.7 2007-04-30 08:13:03 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -356,7 +356,7 @@ proc ::webcam::configureCamera { camItem } {
       }
 
       #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
-      if { $confCam($camItem,threadNo) != 0 &&  [cam$camNo longueposelinkno] != 0} {
+      if { $confCam($camItem,threadNo) != 0 && [cam$camNo longueposelinkno] != 0} {
          thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
       }
 
@@ -373,10 +373,14 @@ proc ::webcam::configureCamera { camItem } {
 #    Arrete la WebCam
 #
 proc ::webcam::stop { camNo camItem } {
-   global conf
+   global audace conf frmm
 
-   #--- Gestion des widgets actifs/inactifs
-   ::webcam::ConfigWebCam $camItem
+   #--- Boutons de configuration de la WebCam inactif
+   if { [ winfo exists $audace(base).confCam ] } {
+      set frm $frmm(Camera7)
+      $frm.conf_webcam configure -state disabled
+      $frm.format_webcam configure -state disabled
+   }
    #--- Je ferme la liaison longuepose
    if { $conf(webcam,$camItem,longuepose) == 1 } {
       ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose"
@@ -396,19 +400,15 @@ proc ::webcam::ConfigWebCam { camItem } {
          #--- Boutons de configuration de la WebCam actif
          $frm.conf_webcam configure -state normal -command "cam$confCam($camItem,camNo) videosource"
          $frm.format_webcam configure -state normal -command "cam$confCam($camItem,camNo) videoformat"
-         #--- Configure les widgets associes a la longue pose
-         ::webcam::checkConfigLonguePose $camItem
-         #--- Configure les widgets associes au choix du CCD
-         ::webcam::checkConfigCCDN&B $camItem
       } else {
          #--- Boutons de configuration de la WebCam inactif
          $frm.conf_webcam configure -state disabled
          $frm.format_webcam configure -state disabled
-         #--- Configure les widgets associes a la longue pose
-         ::webcam::checkConfigLonguePose $camItem
-         #--- Configure les widgets associes au choix du CCD
-         pack forget $frm.frame14
       }
+      #--- Configure les widgets associes a la longue pose
+      ::webcam::checkConfigLonguePose $camItem
+      #--- Configure les widgets associes au choix du CCD
+      ::webcam::checkConfigCCDN&B $camItem
    }
 }
 
