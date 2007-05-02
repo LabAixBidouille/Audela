@@ -711,8 +711,11 @@ void mc_xyzeq2ec(double xeq, double yeq, double zeq, double eps, double *xec, do
 void mc_ad2hd(double jd, double longuai, double asd, double *ha);
 void mc_hd2ad(double jd, double longuai, double ha, double *asd);
 void mc_hd2parallactic(double ha, double dec, double latitude, double *parallactic);
+void mc_hd2parallactic_altalt(double ha, double dec, double latitude, double *parallactic);
 void mc_hd2ah(double ha, double dec, double latitude, double *az, double *h);
 void mc_ah2hd(double az, double h, double latitude, double *ha, double *dec);
+void mc_hd2rp(double ha, double dec, double latitude, double *az, double *h);
+void mc_rp2hd(double az, double h, double latitude, double *ha, double *dec);
 void mc_ad2ah(double jd, double longuai, double latitude, double asd, double dec, double *az,double *h);
 void mc_radec2galactic(double ra2000, double dec2000, double *lon,double *lat);
 void mc_galactic2radec(double lon,double lat, double *ra2000, double *dec2000);
@@ -1166,10 +1169,16 @@ void mc_hd2ad(double jd, double longuai, double ha, double *asd);
    Transforme l'angle horaire en ascension droite
 void mc_hd2parallactic(double ha, double dec, double latitude, double *parallactic);
    Transforme les coord. sph. equatoriales vers angle parallactic          
+void mc_hd2parallactic_altalt(double ha, double dec, double latitude, double *parallactic);
+   Transforme les coord. sph. equatoriales vers angle parallactic altalt
 void mc_hd2ah(double ha, double dec, double latitude, double *az, double *h);
    Transforme les coord. sph. equatoriales vers sph. azinuth hauteur
 void mc_ah2hd(double az, double h, double latitude, double *ha, double *dec);
- Transforme les coord. sph. azinuth hauteur vers sph. equatoriales       
+   Transforme les coord. sph. azinuth hauteur vers sph. equatoriales       
+void mc_hd2rp(double ha, double dec, double latitude, double *az, double *h);
+   Transforme les coord. sph. equatoriales vers sph. roulis assiette      
+void mc_rp2hd(double az, double h, double latitude, double *ha, double *dec);
+   Transforme les coord. sph. roulis assiette vers sph. equatoriales      
 void mc_ad2ah(double jd, double longuai, double latitude, double asd, double dec, double *az,double *h);
    Transforme les coord. sph. equatoriales vers sph. azinuth hauteur
 void mc_radec2galactic(double ra2000, double dec2000, double *lon,double *lat);

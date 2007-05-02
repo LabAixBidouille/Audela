@@ -855,6 +855,195 @@ int Cmd_mctcl_altaz2hadec(ClientData clientData, Tcl_Interp *interp, int argc, c
    return(result);
 }
 
+int Cmd_mctcl_radec2altalt(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* conversion ra,dec -> az,h,HA,parallactic                                 */
+/****************************************************************************/
+/*                                                                          */
+/* Entrees :                 												             */
+/*                                                                          */
+/****************************************************************************/
+{
+   char s[524];
+   int result;
+   double ra,dec,longi,rhocosphip,rhosinphip,jj;
+   double ha,latitude,altitude,az,h,parallactic;
+   /*double xaz,xh,xp,xhr;*/
+
+   if(argc<=4) {
+      sprintf(s,"Usage: %s Angle_ra Angle_dec Home Date", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+ 	   return(result);
+   } else {
+	   result=TCL_OK;
+      /* --- decode l'angle RA ---*/
+      mctcl_decode_angle(interp,argv[1],&ra);
+      ra*=(DR);
+      /* --- decode l'angle DEC ---*/
+      mctcl_decode_angle(interp,argv[2],&dec);
+      dec*=(DR);
+      /* --- decode le Home ---*/
+      mctcl_decode_topo(interp,argv[3],&longi,&rhocosphip,&rhosinphip);
+      mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+      latitude*=(DR);
+      /* --- decode la date ---*/
+      mctcl_decode_date(interp,argv[4],&jj);
+      /* --- calcul de conversion ---*/
+      mc_ad2hd(jj,longi,ra,&ha);
+      mc_hd2rp(ha,dec,latitude,&az,&h);
+      mc_hd2parallactic_altalt(ha,dec,latitude,&parallactic);
+      /* --- test ---*/
+      /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
+	   /* --- sortie des resultats ---*/
+      sprintf(s,"%.12g %.12g %.12g %.12g",az/(DR),h/(DR),ha/(DR),parallactic/(DR));
+      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return(result);
+}
+
+int Cmd_mctcl_hadec2altalt(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* conversion HA,dec -> r,p,HA,parallactic                                 */
+/****************************************************************************/
+/*                                                                          */
+/* Entrees :                 												             */
+/*                                                                          */
+/****************************************************************************/
+{
+   char s[524];
+   int result;
+   double dec,longi,rhocosphip,rhosinphip;
+   double ha,latitude,altitude,az,h,parallactic;
+   /*double xaz,xh,xp,xhr;*/
+
+   if(argc<=3) {
+      sprintf(s,"Usage: %s Angle_HA Angle_dec Home", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+ 	   return(result);
+   } else {
+	   result=TCL_OK;
+      /* --- decode l'angle HA ---*/
+      mctcl_decode_angle(interp,argv[1],&ha);
+      ha*=(DR);
+      /* --- decode l'angle DEC ---*/
+      mctcl_decode_angle(interp,argv[2],&dec);
+      dec*=(DR);
+      /* --- decode le Home ---*/
+      mctcl_decode_topo(interp,argv[3],&longi,&rhocosphip,&rhosinphip);
+      mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+      latitude*=(DR);
+      /* --- calcul de conversion ---*/
+      mc_hd2rp(ha,dec,latitude,&az,&h);
+      mc_hd2parallactic_altalt(ha,dec,latitude,&parallactic);
+      /* --- test ---*/
+      /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
+	   /* --- sortie des resultats ---*/
+      sprintf(s,"%.12g %.12g %.12g %.12g",az/(DR),h/(DR),ha/(DR),parallactic/(DR));
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return(result);
+}
+
+int Cmd_mctcl_altalt2hadec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* conversion roulis assiette -> HA,dec,HA,parallactic                      */
+/****************************************************************************/
+/*                                                                          */
+/* Entrees :                 								                */
+/*                                                                          */
+/****************************************************************************/
+{
+   char s[524];
+   int result;
+   double dec,longi,rhocosphip,rhosinphip;
+   double ha,latitude,altitude,az,h,parallactic;
+   /*double xaz,xh,xp,xhr;*/
+
+   if(argc<=3) {
+      sprintf(s,"Usage: %s Angle_roll Angle_pitch Home", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+ 	   return(result);
+   } else {
+	   result=TCL_OK;
+      /* --- decode l'angle az ---*/
+      mctcl_decode_angle(interp,argv[1],&az);
+      az*=(DR);
+      /* --- decode l'angle DEC ---*/
+      mctcl_decode_angle(interp,argv[2],&h);
+      h*=(DR);
+      /* --- decode le Home ---*/
+      mctcl_decode_topo(interp,argv[3],&longi,&rhocosphip,&rhosinphip);
+      mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+      latitude*=(DR);
+      /* --- calcul de conversion ---*/
+      mc_rp2hd(az,h,latitude,&ha,&dec);
+      mc_hd2parallactic_altalt(ha,dec,latitude,&parallactic);
+      /* --- test ---*/
+      /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/	   
+      /* --- sortie des resultats ---*/
+      sprintf(s,"%.12g %.12g %.12g",ha/(DR),dec/(DR),parallactic/(DR));
+      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return(result);
+}
+
+int Cmd_mctcl_altalt2radec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* conversion rouli assiette -> ra,dec,HA,parallactic                                 */
+/****************************************************************************/
+/*                                                                          */
+/* Entrees :                 												             */
+/*                                                                          */
+/****************************************************************************/
+{
+   char s[524];
+   int result;
+   double ra,dec,longi,rhocosphip,rhosinphip,jj;
+   double ha,latitude,altitude,az,h,parallactic;
+   /*double xaz,xh,xp,xhr;*/
+
+   if(argc<=4) {
+      sprintf(s,"Usage: %s Angle_roll Angle_pitch Home Date", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+ 	   return(result);
+   } else {
+	   result=TCL_OK;
+      /* --- decode l'angle AZ ---*/
+      mctcl_decode_angle(interp,argv[1],&az);
+      az*=(DR);
+      /* --- decode l'angle H ---*/
+      mctcl_decode_angle(interp,argv[2],&h);
+      h*=(DR);
+      /* --- decode le Home ---*/
+      mctcl_decode_topo(interp,argv[3],&longi,&rhocosphip,&rhosinphip);
+      mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+      latitude*=(DR);
+      /* --- decode la date ---*/
+      mctcl_decode_date(interp,argv[4],&jj);
+      /* --- calcul de conversion ---*/
+      mc_rp2hd(az,h,latitude,&ha,&dec);
+      mc_hd2ad(jj,longi,ha,&ra);
+      mc_hd2parallactic_altalt(ha,dec,latitude,&parallactic);
+      /* --- test ---*/
+      /*mc_equat2altaz(2000,9,22.,longi,latitude,ra,dec,&xaz,&xh,&xhr,&xp);*/
+	   /* --- sortie des resultats ---*/
+      sprintf(s,"%.12g %.12g %.12g %.12g",ra/(DR),dec/(DR),ha/(DR),parallactic/(DR));
+      /*sprintf(s,"%lf %lf %lf %lf (%lf %lf %lf %lf)",az/(DR),h/(DR),ha/(DR),parallactic/(DR),xaz/(DR),xh/(DR),xhr/(DR),xp/(DR));*/
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+   }
+   return(result);
+}
+
 int Cmd_mctcl_refraction(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Calcul de la refraction                                                  */
