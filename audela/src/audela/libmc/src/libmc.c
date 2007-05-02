@@ -69,6 +69,10 @@
    Tcl_CreateCommand(interp,"mc_hadec2altaz",(Tcl_CmdProc *)Cmd_mctcl_hadec2altaz,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_altaz2hadec",(Tcl_CmdProc *)Cmd_mctcl_altaz2hadec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_altaz2radec",(Tcl_CmdProc *)Cmd_mctcl_altaz2radec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_radec2altalt",(Tcl_CmdProc *)Cmd_mctcl_radec2altalt,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_hadec2altalt",(Tcl_CmdProc *)Cmd_mctcl_hadec2altalt,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_altalt2hadec",(Tcl_CmdProc *)Cmd_mctcl_altalt2hadec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_altalt2radec",(Tcl_CmdProc *)Cmd_mctcl_altalt2radec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_refraction",(Tcl_CmdProc *)Cmd_mctcl_refraction,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_precessradec",(Tcl_CmdProc *)Cmd_mctcl_precessradec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);	 
    Tcl_CreateCommand(interp,"mc_nutationradec",(Tcl_CmdProc *)Cmd_mctcl_nutationradec,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);	 

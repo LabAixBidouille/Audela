@@ -631,6 +631,21 @@ void mc_hd2parallactic(double ha, double dec, double latitude, double *parallact
    *parallactic=aa;
 }
 
+void mc_hd2parallactic_altalt(double ha, double dec, double latitude, double *parallactic)
+/***************************************************************************/
+/* Transforme les coord. sph. equatoriales vers angle parallactic altalt   */
+/***************************************************************************/
+/* ha est l'angle horaire local.                                           */
+/***************************************************************************/
+{
+   double aa;
+   if (fabs(latitude)>=PISUR2) { aa=0;}
+   else if ((ha==0.)&&(dec==latitude)) { aa=0.; }
+   else {
+      aa=atan2(sin(ha),cos(dec)/tan(latitude)+sin(dec)*cos(ha));
+   }
+   *parallactic=aa;
+}
 
 void mc_hd2ah(double ha, double dec, double latitude, double *az, double *h)
 /***************************************************************************/
@@ -663,6 +678,42 @@ void mc_ah2hd(double az, double h, double latitude, double *ha, double *dec)
    else {
       ahh=atan2(sin(az),cos(az)*sin(latitude)+tan(h)*cos(latitude));
       decc=mc_asin(sin(latitude)*sin(h)-cos(latitude)*cos(h)*cos(az));
+   }
+   *ha=fmod(4*PI+ahh,2*PI);
+   *dec=decc;
+}
+
+void mc_hd2rp(double ha, double dec, double latitude, double *az, double *h)
+/***************************************************************************/
+/* Transforme les coord. sph. equatoriales vers sph. roulis assiette       */
+/***************************************************************************/
+/* ha est l'angle horaire local.                                           */
+/***************************************************************************/
+{
+   double aa,hh;
+   if (dec>=PISUR2) { aa=(PI); hh=latitude;}
+   else if (dec<=-PISUR2) { aa=0.; hh=-latitude;}
+   else {
+      aa=atan2(sin(ha),cos(ha)*cos(latitude)+tan(dec)*sin(latitude));
+      hh=mc_asin(cos(latitude)*sin(dec)-sin(latitude)*cos(dec)*cos(ha));
+   }
+   *az=fmod(4*PI+aa,2*PI);
+   *h=hh;
+}
+
+void mc_rp2hd(double az, double h, double latitude, double *ha, double *dec)
+/***************************************************************************/
+/* Transforme les coord. sph. roulis assiette vers sph. equatoriales       */
+/***************************************************************************/
+/* ha est l'angle horaire local.                                           */
+/***************************************************************************/
+{
+   double ahh,decc;
+   if (h>=PISUR2) { ahh=0.; decc=latitude;}
+   else if (h<=-PISUR2) { ahh=0.; decc=-latitude;}
+   else {
+      ahh=atan2(sin(az),cos(az)*cos(latitude)-tan(h)*sin(latitude));
+      decc=mc_asin(cos(latitude)*sin(h)+sin(latitude)*cos(h)*cos(az));
    }
    *ha=fmod(4*PI+ahh,2*PI);
    *dec=decc;
