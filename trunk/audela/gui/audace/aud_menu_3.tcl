@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.25 2007-04-28 19:38:52 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.26 2007-05-05 21:40:35 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -496,7 +496,7 @@ namespace eval ::pretraitement {
    # Procedure correspondant a l'appui sur le bouton Appliquer
    #
    proc cmdApply { { visuNo "1" } } {
-      global audace caption pretraitement
+      global audace caption conf pretraitement
 
       #---
       set pretraitement(avancement) "$caption(pretraitement,en_cours)"
@@ -848,6 +848,7 @@ namespace eval ::pretraitement {
                } elseif { $pretraitement(choix_mode) == "1" } {
                   #---
                   set buf_clip [ ::buf::create ]
+                  buf$buf_clip extension $conf(extension,defaut)
                   buf$buf_clip load [ file join $audace(rep_images) $in ]
                   if { $pretraitement(clipWindow_mini) != "" } {
                      buf$buf_clip clipmin $pretraitement(clipWindow_mini)
@@ -865,6 +866,7 @@ namespace eval ::pretraitement {
                   #---
                   for { set index "$first" } { $index <= $end } { incr index } {
                      set buf_clip($index) [ ::buf::create ]
+                     buf$buf_clip extension $conf(extension,defaut)
                      buf$buf_clip($index) load [ file join $audace(rep_images) $in$index ]
                      if { $pretraitement(clipWindow_mini) != "" } {
                         buf$buf_clip($index) clipmin $pretraitement(clipWindow_mini)
@@ -2142,7 +2144,7 @@ namespace eval ::pretraitement {
    # Renumerote la serie s'il y a des trous ou si elle debute par un 0
    #
    proc nom_generique { filename } {
-      global audace caption
+      global audace caption conf
 
       #--- Est-ce un nom générique de fichiers ?
       set nom_generique  [ lindex [ decomp $filename ] 1 ]
@@ -2233,6 +2235,7 @@ namespace eval ::pretraitement {
          set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
          #--- Je renumerote le fichier portant l'indice 0
          set buf_pretrait [ ::buf::create ]
+         buf$buf_pretrait extension $conf(extension,defaut)
          buf$buf_pretrait load [ file join $audace(rep_images) $nom_generique$indice_min$ext_serie ]
          buf$buf_pretrait save [ file join $audace(rep_images) $nom_generique$dernier_indice$ext_serie ]
          ::buf::delete $buf_pretrait
@@ -3933,6 +3936,7 @@ namespace eval ::faireImageRef {
                if { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "0" } {
                   #--- Realisation de l'image ( Offset + Dark )
                   set buf_pretrait [ ::buf::create ]
+                  buf$buf_pretrait extension $conf(extension,defaut)
                   buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
                   buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
                   buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
@@ -4011,6 +4015,7 @@ namespace eval ::faireImageRef {
                   #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
                   #--- Realisation de X = ( Offset + Dark )
                   set buf_pretrait [ ::buf::create ]
+                  buf$buf_pretrait extension $conf(extension,defaut)
                   buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
                   buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
                   buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
