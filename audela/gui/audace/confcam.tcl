@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.69 2007-04-30 08:08:59 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.70 2007-05-06 15:18:15 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -4118,7 +4118,7 @@ namespace eval ::confCam {
                   }
                   photopc {
                      set camNo ""
-                     set erreur [ catch { ::AcqAPN::Off ; ::AcqAPN::Query } camNo ]
+                     set erreur [ catch { ::acqapn::Off ; ::acqapn::Query } camNo ]
                      if { $camNo=="" } {
                         set camNo "1"
                         if { ! [ info exists camNo ] } { set camNo "1" } else { incr camNo "1" }
