@@ -7,14 +7,14 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 26 novembre 2006</p>
+<p class="date">Date de mise &agrave; jour : 05 mai 2007</p>
 <h1>Cam&eacute;ra </h1>
 <p>Ces commandes permettent de contr&ocirc;ler l'acquisition d'images avec des cam&eacute;ras reconnues par AudeLA : Audine, Hi-SIS, ST7, CookBook 245, Starlight, Kitty, WebCam (port USB Windows uniquement), AudiNet (liaison Ethernet), EthernAude (liaison Ethernet), etc. Les commandes qui permettent de contr&ocirc;ler une cam&eacute;ra s'&eacute;crivent "<code>cam</code>" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;&eacute;es par la commande "<code>::cam::create ...</code>". Ainsi il est possible de piloter plusieurs cam&eacute;ras, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Lors d'une acquisition, l'image est stock&eacute;e dans un buffer (&agrave; renseigner avec la fonction <a href="#buf">cam1 buf</a>). En plus, si on pr&eacute;cise &agrave; quel t&eacute;lescope (automatique) est reli&eacute;e la cam&eacute;ra (&agrave; renseigner avec <a href="#tel">cam1 tel</a>), elle r&eacute;cup&egrave;re automatiquement ses coordonn&eacute;es, et les inscrit dans le header FITS. </p>
 <p>Il est important de savoir que les auteurs ne disposent pas personnellement de ces cam&eacute;ras, et donc qu'il peut y avoir des probl&egrave;mes avec certaines cam&eacute;ras. </p>
 <p>Les commandes sont divis&eacute;es en deux cat&eacute;gories : </p>
 <ul>
-  <li> Les commandes communes : sont utilisables par toutes les cam&eacute;ras support&eacute;es. </li>
-  <li>Les commandes sp&eacute;cifiques : propres &agrave; chaque cam&eacute;ra en fonction de fonctionnalit&eacute;s propres.</li>
+  <li>Les commandes communes : Sont utilisables par toutes les cam&eacute;ras support&eacute;es. </li>
+  <li>Les commandes sp&eacute;cifiques : Propres &agrave; chaque cam&eacute;ra en fonction de fonctionnalit&eacute;s propres.</li>
 </ul>
 <h1> 1. Commandes communes</h1>
 <h2> 1.1. Commandes d'acquisition</h2>
@@ -92,9 +92,9 @@
 <h3> <a name="cooler" id="cooler"></a>cam1 cooler <em>?cool_mode?</em></h3>
 <p>Lorsque le syst&egrave;me de refroidissement est g&eacute;r&eacute; par le logiciel, cette fonction a pour param&egrave;tre, l'une des valeurs suivante :</p>
 <ul>
-  off : permet d'arr&ecirc;ter le refroidissement.
-  <li>on : permet de mettre en fonctionnement le refroidissement. </li>
-  <li>check value : envoie une consigne de temp&eacute;rature &agrave; atteindre (en degr&eacute;s).</li>
+  off : Permet d'arr&ecirc;ter le refroidissement.
+  <li>on : Permet de mettre en fonctionnement le refroidissement. </li>
+  <li>check value : Envoie une consigne de temp&eacute;rature &agrave; atteindre (en degr&eacute;s).</li>
 </ul>
 <h3> <a name="foclen" id="foclen"></a>cam1 foclen <em>?value?</em></h3>
 <p>Fixe la valeur de la longueur focale du syst&egrave;me optique plac&eacute; devant le capteur CCD. Entrer la valeur m&egrave;tres.</p>
@@ -109,8 +109,8 @@
 <h3> <a name="set0" id="set0"></a><a name="set255" id="set255"></a><a name="test" id="test"></a><a
  name="test2" id="test2"></a>cam1 set0, cam1 set255, cam1 test, cam1 test2</h3>
 <p>Ces quatre commandes sont celles qui permettent de tester la cam&eacute;ra Audine, comme d&eacute;crit dans sa documentation de montage.</p>
-<h3> <a name="scan" id="scan"></a>cam1 scan <em>width height bin dt ?-firstpix index? ?-fast speed? ?-perfo? ?-tmpfile?</em></h3>
-<p>D&eacute;clenche une acquisition en mode drift scan avec le fonctionnement suivant: &agrave; l'issue de chaque p&eacute;riode <em>dt</em>, <em>bin</em> lignes sont somm&eacute;es dans le CCD avant d'&ecirc;tre lues. Seule la partie de cette "super-ligne" d&eacute;crite par <em>-firstpix</em> et <em>width</em> sera lue avec un binning de <em>bin</em>. L'image cr&eacute;ee aura alors comme largeur: <em>width</em>/<em>bin</em> (arrondi) et comme hauteur: <em>height</em>. L'intervalle s&eacute;parant chaque ligne est bien dt. </p>
+<h3> <a name="scan" id="scan"></a>cam1 scan <em>width height bin dt ?-biny biny? ?-firstpix index? ?-fast speed? ?-perfo? ?-tmpfile?</em></h3>
+<p>D&eacute;clenche une acquisition en mode drift scan avec le fonctionnement suivant : A l'issue de chaque p&eacute;riode <em>dt</em>, <em>bin</em> lignes sont somm&eacute;es dans le CCD avant d'&ecirc;tre lues. Seule la partie de cette "super-ligne" d&eacute;crite par <em>-firstpix</em> et <em>width</em> sera lue avec un binning de <em>bin</em>. L'image cr&eacute;ee aura alors comme largeur <em>width</em>/<em>bin</em> (arrondi) et comme hauteur <em>height</em>. L'intervalle s&eacute;parant chaque ligne est bien dt. </p>
 <p><em>Width</em> indique la largeur de l'image en photosites (donc ind&eacute;pendante du binning). <p>
 <p><em>Height</em> indique le nombre de lignes qu'on souhaite sur l'image finale. <p>
 <p><em>Bin</em> indique le facteur de binning, identique sur les lignes et les colonnes. <p>
@@ -122,11 +122,11 @@
 <p>La hauteur de l'image n'est limit&eacute;e que par la quantit&eacute; de m&eacute;moire disponible de la machine, et de ses performances. Il faut tout de m&ecirc;me savoir que sur l'image finale il y aura un gradient sur les 512/<em>bin</em> premi&egrave;res lignes (cas d'un KAF-0400, poss&eacute;dant 512 lignes) car elles n'auront pas eu la m&ecirc;me dur&eacute;e de pr&eacute;sence dans le CCD (la premi&egrave;re ligne y reste <em>dt</em>, la quinzi&egrave;me 15*<em>dt</em>/<em>bin</em> et la 700&egrave;me 512*<em>dt</em>/<em>bin.</em> </p>
 <p>Cette commande n'effectue aucun test concernant les param&egrave;tres d'entr&eacute;e, aussi il faut &ecirc;tre vigilant sur le positionnement du scan. Par exemple avec un KAF-0400 : </p>
 <p><em>cam1 scan 205 300 3 200 -firstpix 650</em> </p>
-<p>ne va lire que la portion de ligne comprise entre les colonnes 650 et 650+205-1=854 du CCD. Le probl&egrave;me est que le KAF-0400 ne poss&egrave;de que (!) 768 colonnes optiques: la commande fonctionnera quand m&ecirc;me, mais les colonnes au del&agrave; de 768 correspondront &agrave; des pixels masqu&eacute;s, et de post-scan : il ne faudra pas s'&eacute;tonner de voir une image noire sur sa partie droite. A noter que le -1 dans le calcul de la colonne finale est li&eacute; au probl&egrave;me des piquets et des intervalles (n piquets = n-1 intervalles). </p>
-<p>Pour utiliser le mode drift-scan afin de compenser la rotation de la Terre, il faut utiliser la formule suivante: </p>
+<p>ne va lire que la portion de ligne comprise entre les colonnes 650 et 650+205-1=854 du CCD. Le probl&egrave;me est que le KAF-0400 ne poss&egrave;de que (!) 768 colonnes optiques : La commande fonctionnera quand m&ecirc;me, mais les colonnes au del&agrave; de 768 correspondront &agrave; des pixels masqu&eacute;s, et de post-scan : Il ne faudra pas s'&eacute;tonner de voir une image noire sur sa partie droite. A noter que le -1 dans le calcul de la colonne finale est li&eacute; au probl&egrave;me des piquets et des intervalles (n piquets = n-1 intervalles). </p>
+<p>Pour utiliser le mode drift-scan afin de compenser la rotation de la Terre, il faut utiliser la formule suivante : </p>
 <ul>
   <li>dt = 86164*atan(9e-6*bin/(2*f))/180, o&ugrave; f = focale de l'instrument et bin le facteur de binning. </li>
-  <li>ex: f=1m, bin=2 =&gt; dt = 246.8 ms (pensez &agrave; basculer la calculatrice en degr&eacute;s !) </li>
+  <li>ex : f=1m, bin=2 =&gt; dt = 246.8 ms (pensez &agrave; basculer la calculatrice en degr&eacute;s !) </li>
 </ul>
 <p>La fonction scan met &agrave; jour la variable scan_result1 pour la cam&eacute;ra cam1, etc. &agrave; la fin de la pose, de telle sorte qu'un vwait permette de la d&eacute;tecter.</p>
 <h3> <a name="scanloop" id="scanloop"></a>cam1 scanloop</h3>
@@ -136,18 +136,18 @@
 <h3> <a name="shuttertype" id="shuttertype"></a>cam1 shuttertype <em>?audine|thierry? ?options?</em></h3>
 <p>Permet de s&eacute;lectionner le type d'obturateur. Le param&egrave;tre value peut avoir l'une des valeurs suivantes : </p>
 <ul>
-  <li>audine : pour un obturateur classique de la cam&eacute;ra Audine (d&eacute;crit dans la documentation).</li>
+  <li>audine : Pour un obturateur classique de la cam&eacute;ra Audine (d&eacute;crit dans la documentation).</li>
   <li>utiliser option &eacute;gale "inverse" si l'obturateur fonctionne &agrave; l'envers.</li>
-  <li>thierry : pour un obturateur de type Pierre Thierry, bas&eacute; sur un pilotage par servo-moteurs.</li>
+  <li>thierry : Pour un obturateur de type Pierre Thierry, bas&eacute; sur un pilotage par servo-moteurs.</li>
 </ul>
 <h3> <a name="obtupierre" id="obtupierre"></a>cam1 obtupierre ?a b c d e t flag?</h3>
 <p>Permet de changer les valeurs des param&egrave;tres de l'obturateur de type Pierre Thierry.</p>
 <h3> <a name="ampli" id="ampli"></a>cam1 ampli <em>synchro|on|off ?nbcleanings?</em></h3>
 <p>Commute le mode de l'amplificateur du CCD des Audines . Trois modes sont possibles : </p>
 <ul>
-  <li>synchro : mode par d&eacute;faut. L'amplificateur est arr&ecirc;t&eacute; juste apr&egrave;s la phase de nettoyage du CCD en d&eacute;but d'int&eacute;gration. Il est automatiquement remis en fonctionnement juste avant la lecture des pixels. Noter que l'option ?nbcleaning? permet de r&eacute;gler le nombre de nettoyages du registre horizontal avant lecture. Par d&eacute;faut cette valeur est fix&eacute;e &agrave; 60. Il est possible qu'il faille augmenter cette valeur dans le cas du Kaf-1600. </li>
-  <li>on : l'amplificateur est toujours en fonctionnement, m&ecirc;me pendant les int&eacute;grations. L'option ?nbcleaning? n'a aucune influence. Dans ce mode, le signal d'&eacute;lectroluminescence appara&icirc;t dans un coin de l'image. </li>
-  <li>off :l'amplificateur n'est jamais en fonctionnement, m&ecirc;me pendant les lectures. L'option ?nbcleaning? n'a aucune influence. Dans ce mode, l'image obtenue n'est pas influenc&eacute;e par la lumi&egrave;re re&ccedil;ue sur le CCD et n'a pas d'int&eacute;r&ecirc;t autre qu'une mise au point de l'&eacute;lectronique</li>
+  <li>synchro : Mode par d&eacute;faut. L'amplificateur est arr&ecirc;t&eacute; juste apr&egrave;s la phase de nettoyage du CCD en d&eacute;but d'int&eacute;gration. Il est automatiquement remis en fonctionnement juste avant la lecture des pixels. Noter que l'option ?nbcleaning? permet de r&eacute;gler le nombre de nettoyages du registre horizontal avant lecture. Par d&eacute;faut cette valeur est fix&eacute;e &agrave; 60. Il est possible qu'il faille augmenter cette valeur dans le cas du Kaf-1600. </li>
+  <li>on : L'amplificateur est toujours en fonctionnement, m&ecirc;me pendant les int&eacute;grations. L'option ?nbcleaning? n'a aucune influence. Dans ce mode, le signal d'&eacute;lectroluminescence appara&icirc;t dans un coin de l'image. </li>
+  <li>off : L'amplificateur n'est jamais en fonctionnement, m&ecirc;me pendant les lectures. L'option ?nbcleaning? n'a aucune influence. Dans ce mode, l'image obtenue n'est pas influenc&eacute;e par la lumi&egrave;re re&ccedil;ue sur le CCD et n'a pas d'int&eacute;r&ecirc;t autre qu'une mise au point de l'&eacute;lectronique</li>
 </ul>
 <h3> <a name="outtime" id="outtime"></a>cam1 outtime <em>billion_out</em></h3>
 <p>Calcule la dur&eacute;e d'une instruction out envoy&eacute;e sur le port parall&egrave;le. Le param&egrave;tre billion_out repr&eacute;sente le nombre milliards de fois que va &ecirc;tre ex&eacute;cut&eacute; cette instruction pour que le r&eacute;sultat soit correct. Comme la dur&eacute;e totale du calcul ne peut &ecirc;tre connue qu'a une seconde pr&egrave;s, une dur&eacute;e totale de plusieurs secondes est n&eacute;cessaire pour avoir une valeur correcte. Cela correspond g&eacute;n&eacute;ralement &agrave; environ 15 pour le param&egrave;tre <em>billion_out</em>.</p>
