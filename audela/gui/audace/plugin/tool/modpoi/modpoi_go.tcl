@@ -2,14 +2,14 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.8 2007-04-14 08:32:09 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.9 2007-05-06 14:56:06 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace Modelpoi
+# Declaration du namespace modelpoi
 #    initialise le namespace
 #============================================================
-namespace eval ::Modelpoi {
+namespace eval ::modelpoi {
    package provide modpoi 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -17,32 +17,32 @@ namespace eval ::Modelpoi {
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::getPluginTitle
+# ::modelpoi::getPluginTitle
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::Modelpoi::getPluginTitle { } {
+proc ::modelpoi::getPluginTitle { } {
    global caption
 
    return "$caption(modpoi_go,modpoi)"
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::getPluginType
+# ::modelpoi::getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
-proc ::Modelpoi::getPluginType { } {
+proc ::modelpoi::getPluginType { } {
    return "tool"
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::getPluginProperty
+# ::modelpoi::getPluginProperty
 #    retourne la valeur de la propriete
 #
 # parametre :
 #    propertyName : nom de la propriete
 # return : valeur de la propriete ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::Modelpoi::getPluginProperty { propertyName } {
+proc ::modelpoi::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "utility" }
       subfunction1 { return "aiming" }
@@ -51,75 +51,75 @@ proc ::Modelpoi::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::initPlugin
+# ::modelpoi::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::Modelpoi::initPlugin { tkbase } {
+proc ::modelpoi::initPlugin { tkbase } {
 
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::createPluginInstance
+# ::modelpoi::createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
-proc ::Modelpoi::createPluginInstance { { in "" } { visuNo 1 } } {
-   ::Modelpoi::createPanel $in.modelpoi
+proc ::modelpoi::createPluginInstance { { in "" } { visuNo 1 } } {
+   ::modelpoi::createPanel $in.modelpoi
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::deletePluginInstance
+# ::modelpoi::deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
-proc ::Modelpoi::deletePluginInstance { visuNo } {
+proc ::modelpoi::deletePluginInstance { visuNo } {
 
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::createPanel
+# ::modelpoi::createPanel
 #    prepare la creation de la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Modelpoi::createPanel { this } {
+proc ::modelpoi::createPanel { this } {
    variable This
    global caption panneau
 
    #--- Initialisation du nom de la fenetre
    set This $this
    #--- Initialisation des captions
-   set panneau(Modelpoi,titre)   "$caption(modpoi_go,modpoi)"
-   set panneau(Modelpoi,aide)    "$caption(modpoi_go,help_titre)"
-   set panneau(Modelpoi,titre1)  "$caption(modpoi_go,titre)"
-   set panneau(Modelpoi,nouveau) "$caption(modpoi_go,nouveau)"
-   set panneau(Modelpoi,charger) "$caption(modpoi_go,ouvrir)"
-   set panneau(Modelpoi,editer)  "$caption(modpoi_go,editer)"
+   set panneau(modelpoi,titre)   "$caption(modpoi_go,modpoi)"
+   set panneau(modelpoi,aide)    "$caption(modpoi_go,help_titre)"
+   set panneau(modelpoi,titre1)  "$caption(modpoi_go,titre)"
+   set panneau(modelpoi,nouveau) "$caption(modpoi_go,nouveau)"
+   set panneau(modelpoi,charger) "$caption(modpoi_go,ouvrir)"
+   set panneau(modelpoi,editer)  "$caption(modpoi_go,editer)"
    #--- Construction de l'interface
-   ::Modelpoi::ModelpoiBuildIF $This
+   ::modelpoi::modelpoiBuildIF $This
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::startTool
+# ::modelpoi::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Modelpoi::startTool { visuNo } {
+proc ::modelpoi::startTool { visuNo } {
    variable This
 
    pack $This -side left -fill y
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::stopTool
+# ::modelpoi::stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Modelpoi::stopTool { visuNo } {
+proc ::modelpoi::stopTool { visuNo } {
    variable This
 
    pack forget $This
 }
 
 #------------------------------------------------------------
-# ::Modelpoi::ModelpoiBuildIF
+# ::modelpoi::modelpoiBuildIF
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Modelpoi::ModelpoiBuildIF { This } {
+proc ::modelpoi::modelpoiBuildIF { This } {
    global audace panneau
 
    frame $This -borderwidth 2 -relief groove
@@ -128,21 +128,21 @@ proc ::Modelpoi::ModelpoiBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(Modelpoi,titre) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(modelpoi,titre) \
             -command "::audace::showHelpPlugin tool modpoi modpoi.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(Modelpoi,aide)
+         DynamicHelp::add $This.fra1.but -text $panneau(modelpoi,aide)
 
       pack $This.fra1 -side top -fill x
 
       #--- Frame TPOINT
       frame $This.fra2 -borderwidth 1 -relief groove
 
-         label $This.fra2.lab1 -borderwidth 0 -text $panneau(Modelpoi,titre1)
+         label $This.fra2.lab1 -borderwidth 0 -text $panneau(modelpoi,titre1)
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -side top -pady 5
 
          #--- Bouton Nouveau
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(Modelpoi,nouveau) \
+         button $This.fra2.but1 -borderwidth 2 -text $panneau(modelpoi,nouveau) \
             -command {
                #--- Je connecte la monture si ce n'est pas fait
                if { [ ::tel::list ] == "" } {
@@ -159,7 +159,7 @@ proc ::Modelpoi::ModelpoiBuildIF { This } {
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
          #--- Bouton Ouvrir
-         button $This.fra2.but2 -borderwidth 2 -text $panneau(Modelpoi,charger) \
+         button $This.fra2.but2 -borderwidth 2 -text $panneau(modelpoi,charger) \
             -command {
                #--- Je connecte la monture si ce n'est pas fait
                if { [ ::tel::list ] == "" } {
@@ -182,7 +182,7 @@ proc ::Modelpoi::ModelpoiBuildIF { This } {
          pack $This.fra2.but2 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 3
 
          #--- Bouton Editer
-         button $This.fra2.but3 -borderwidth 2 -text $panneau(Modelpoi,editer) \
+         button $This.fra2.but3 -borderwidth 2 -text $panneau(modelpoi,editer) \
             -command {
                #--- Chargement du script
                source [ file join $audace(rep_plugin) tool modpoi modpoi.tcl ]

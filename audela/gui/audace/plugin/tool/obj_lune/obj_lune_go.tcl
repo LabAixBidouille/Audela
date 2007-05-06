@@ -2,14 +2,14 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_go.tcl,v 1.9 2007-04-14 08:32:26 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.tcl,v 1.10 2007-05-06 14:56:24 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace Obj_Lune_Go
+# Declaration du namespace obj_lune_go
 #    initialise le namespace
 #============================================================
-namespace eval ::Obj_Lune_Go {
+namespace eval ::obj_lune_go {
    package provide obj_lune 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -17,32 +17,32 @@ namespace eval ::Obj_Lune_Go {
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::getPluginTitle
+# ::obj_lune_go::getPluginTitle
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::getPluginTitle { } {
+proc ::obj_lune_go::getPluginTitle { } {
    global caption
 
    return "$caption(obj_lune_go,obj_lune)"
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::getPluginType
+# ::obj_lune_go::getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::getPluginType { } {
+proc ::obj_lune_go::getPluginType { } {
    return "tool"
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::getPluginProperty
+# ::obj_lune_go::getPluginProperty
 #    retourne la valeur de la propriete
 #
 # parametre :
 #    propertyName : nom de la propriete
 # return : valeur de la propriete ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::getPluginProperty { propertyName } {
+proc ::obj_lune_go::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "aiming" }
       subfunction1 { return "moon" }
@@ -51,18 +51,18 @@ proc ::Obj_Lune_Go::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::initPlugin
+# ::obj_lune_go::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::initPlugin { tkbase } {
+proc ::obj_lune_go::initPlugin { tkbase } {
 
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::createPluginInstance
+# ::obj_lune_go::createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::createPluginInstance { { in "" } { visuNo 1 } } {
+proc ::obj_lune_go::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
    #--- Chargement du package Img pour visualiser les cartes de la Lune au format jpg
@@ -72,27 +72,27 @@ proc ::Obj_Lune_Go::createPluginInstance { { in "" } { visuNo 1 } } {
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::deletePluginInstance
+# ::obj_lune_go::deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::deletePluginInstance { visuNo } {
+proc ::obj_lune_go::deletePluginInstance { visuNo } {
 
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::startTool
+# ::obj_lune_go::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::startTool { visuNo } {
+proc ::obj_lune_go::startTool { visuNo } {
    #--- J'ouvre la fenetre
    ::obj_Lune::run
 }
 
 #------------------------------------------------------------
-# ::Obj_Lune_Go::stopTool
+# ::obj_lune_go::stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Obj_Lune_Go::stopTool { visuNo } {
+proc ::obj_lune_go::stopTool { visuNo } {
    #--- Rien a faire, car la fenetre est fermee par l'utilisateur
 }
 
