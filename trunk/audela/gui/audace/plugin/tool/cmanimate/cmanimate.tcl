@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.6 2007-04-14 08:30:22 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.7 2007-05-06 13:59:35 robertdelmas Exp $
 #
 #****************************************************************
 #
@@ -147,7 +147,7 @@ namespace eval ::cmanim {
       cmanimBuildIF $This
    }
 
-   proc Chargement_Var { } {
+   proc chargementVar { } {
       variable parametres
       global audace
 
@@ -159,7 +159,7 @@ namespace eval ::cmanim {
       if { ! [ info exists parametres(cmanim,position) ]} { set parametres(cmanim,position) "0" }
    }
 
-   proc Enregistrement_Var { } {
+   proc enregistrementVar { } {
       variable parametres
       global audace
       global panneau
@@ -180,14 +180,14 @@ namespace eval ::cmanim {
       }
    }
 
-   proc Adapt_Panneau_AcqFC { { a "" } { b "" } { c "" } } {
+   proc adaptOutilcmanimate { { a "" } { b "" } { c "" } } {
       variable This
       global panneau
 
       if { $panneau(cmanim,position) == "0" } {
          pack forget $This.frauts.case3
          pack $This.frauts.case2 -in $This.frauts -side bottom -fill none -ipadx 5 -ipady 2 -pady 2 -padx 2
-         pack $This.frauts.lab.but1 -anchor center -expand 1 -fill both -side left
+         pack $This.frauts.lab.but1 -anchor center -fill both -side left -expand true
          pack forget $This.frauts.lab.but2
          pack forget $This.frauts.lab.but2.labURL1
          pack forget $This.frauts.lab.but2.labURL2
@@ -203,16 +203,16 @@ namespace eval ::cmanim {
          pack forget $This.frauts.lab.but2.labURL2
          pack forget $This.frauts.lab.but2.labURL3
          pack forget $This.frauts.lab.but2.labURL4
-         pack $This.frauts.lab.but3 -anchor center -expand 1 -fill both -side left
+         pack $This.frauts.lab.but3 -anchor center -fill both -side left -expand true
       } elseif { $panneau(cmanim,position) == "2" } {
          pack forget $This.frauts.case2
          pack $This.frauts.case3 -in $This.frauts -side bottom -fill none -ipadx 5 -ipady 2 -pady 2 -padx 2
          pack forget $This.frauts.lab.but1
-         pack $This.frauts.lab.but2 -anchor center -expand 1 -fill both -side left
-         pack $This.frauts.lab.but2.labURL1 -anchor center -expand 1 -fill both -side left
-         pack $This.frauts.lab.but2.labURL2 -anchor center -expand 1 -fill both -side left
-         pack $This.frauts.lab.but2.labURL3 -anchor center -expand 1 -fill both -side left
-         pack $This.frauts.lab.but2.labURL4 -anchor center -expand 1 -fill both -side left
+         pack $This.frauts.lab.but2 -anchor center -fill both -side left -expand true
+         pack $This.frauts.lab.but2.labURL1 -anchor center -fill both -side left -expand true
+         pack $This.frauts.lab.but2.labURL2 -anchor center -fill both -side left -expand true
+         pack $This.frauts.lab.but2.labURL3 -anchor center -fill both -side left -expand true
+         pack $This.frauts.lab.but2.labURL4 -anchor center -fill both -side left -expand true
          pack forget $This.frauts.lab.but3
       }
    }
@@ -227,8 +227,8 @@ namespace eval ::cmanim {
       global caption
       global panneau
 
-      trace add variable ::panneau(cmanim,position) write ::cmanim::Adapt_Panneau_AcqFC
-      ::cmanim::Chargement_Var
+      trace add variable ::panneau(cmanim,position) write ::cmanim::adaptOutilcmanimate
+      ::cmanim::chargementVar
       set panneau(cmanim,position) "$parametres(cmanim,position)"
       pack $This -side left -fill y
       console::affiche_prompt "$caption(cmanimate,en_tete_1)"
@@ -252,8 +252,8 @@ namespace eval ::cmanim {
       global audace
       global panneau
 
-      trace remove variable ::panneau(cmanim,position) write ::cmanim::Adapt_Panneau_AcqFC
-      ::cmanim::Enregistrement_Var
+      trace remove variable ::panneau(cmanim,position) write ::cmanim::adaptOutilcmanimate
+      ::cmanim::enregistrementVar
       pack forget $This
       if { [ winfo exists $audace(base).erreurfichier ] } {
          destroy $audace(base).erreurfichier
@@ -285,11 +285,11 @@ namespace eval ::cmanim {
          $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
          update
          #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
-         #--- supportee par la variable error retournee par la procedure animate_mascot du present script
-         set error [ animate_mascot $panneau(cmanim,filename) $panneau(cmanim,nbi) $panneau(cmanim,ms) \
+         #--- supportee par la variable error retournee par la procedure animateMascot du present script
+         set error [ animateMascot $panneau(cmanim,filename) $panneau(cmanim,nbi) $panneau(cmanim,ms) \
             $panneau(cmanim,nbl) ]
          if { $error == "1" } {
-            ::cmanim::ErreurFichier
+            ::cmanim::erreurFichier
          }
          grab release $This.frago.but1
          $This.frago.but1 configure -relief raised -state normal
@@ -300,7 +300,7 @@ namespace eval ::cmanim {
       }
    }
 
-   proc animate_mascot { filename nb {millisecondes 200} {nbtours 10} } {
+   proc animateMascot { filename nb {millisecondes 200} {nbtours 10} } {
       #--- filename : Nom generique des fichiers image filename*.fit a animer
       #--- nb : Nombre d'images (1 a nb)
       #--- millisecondes : Temps entre chaque image affichee
@@ -453,11 +453,11 @@ namespace eval ::cmanim {
          $This.fra6.labURL2 configure -text "$panneau(cmanim,status)"
          update
          #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
-         #--- supportee par la variable error retournee par la procedure animate_mascot_last du present script
-         set error [ ::cmanim::animate_mascot_last $panneau(cmanim,filename) $numbrstart $numbrend \
+         #--- supportee par la variable error retournee par la procedure animateMascotLast du present script
+         set error [ ::cmanim::animateMascotLast $panneau(cmanim,filename) $numbrstart $numbrend \
             $panneau(cmanim,ms) $panneau(cmanim,nbl) ]
          if { $error == "1" } {
-            ::cmanim::ErreurFichier
+            ::cmanim::erreurFichier
          }
          grab release $This.frago.but5
          $This.frago.but5 configure -relief raised -state normal
@@ -468,7 +468,7 @@ namespace eval ::cmanim {
       }
    }
 
-   proc animate_mascot_last { filename numbrstart numbrend millisecondes nbtours } {
+   proc animateMascotLast { filename numbrstart numbrend millisecondes nbtours } {
       #--- filename : Nom generique des fichiers image filename*.fit a animer
       #--- numbrstart : Numero de l'image de debut
       #--- numbrend : Numero de l'image de fin
@@ -602,7 +602,7 @@ namespace eval ::cmanim {
          set num [ catch { loadima $nom_image } msg ]
          if { $num == "1" } {
             incr numero -1
-            ::cmanim::ErreurFichier
+            ::cmanim::erreurFichier
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
             set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
@@ -630,13 +630,13 @@ namespace eval ::cmanim {
          incr numero -1
          if { $numero < "1" } {
             set numero "1"
-            ::cmanim::ErreurFichier
+            ::cmanim::erreurFichier
          }
          set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
          set num [ catch { loadima $nom_image } msg ]
          if { $num == "1" } then {
             incr numero 1
-            ::cmanim::ErreurFichier
+            ::cmanim::erreurFichier
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
             set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
@@ -672,7 +672,7 @@ namespace eval ::cmanim {
          set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
          set num [catch {loadima $nom_image} msg]
          if { $num == "1" } then {
-            ::cmanim::ErreurFichier
+            ::cmanim::erreurFichier
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
             set panneau(cmanim,status) "$caption(cmanimate,image_numero)$numero - [string range $datefits 0 15]"
@@ -701,7 +701,7 @@ namespace eval ::cmanim {
          set nom_image [ file join $audace(rep_images) $panneau(cmanim,filename)$numero$conf(extension,defaut) ]
          set num [catch {loadima $nom_image} msg]
          if { $num == "1" } then {
-            ::cmanim::ErreurFichier
+            ::cmanim::erreurFichier
             set numero "1"
          } else {
             set datefits [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
@@ -883,7 +883,7 @@ namespace eval ::cmanim {
       $audace(hCanvas) create text 515 45 -text "$caption(cmanimate,vent)" -fill $color(cyan) -tags uts
    }
 
-   proc ErreurFichier { } {
+   proc erreurFichier { } {
    #--- Notice the user of a wrong folder or file
       global audace
       global caption
@@ -911,7 +911,7 @@ namespace eval ::cmanim {
       ::confColor::applyColor $audace(base).erreurfichier
    }
 
-   proc Position_Tel { } {
+   proc positionTel { } {
    #--- Notice the user of a wrong folder or file
       global audace
       global caption
@@ -943,7 +943,7 @@ namespace eval ::cmanim {
       ::confColor::applyColor $audace(base).position_tel
    }
 
-   proc edit_nom_image { } {
+   proc editNomGenerique { } {
       global audace
       global panneau
 
@@ -952,7 +952,9 @@ namespace eval ::cmanim {
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom generique
-      set panneau(cmanim,filename) [ lindex [ decomp $filename ] 1 ]
+      set filenameAnimation        [ ::pretraitement::nom_generique [ file tail $filename ] ]
+      set panneau(cmanim,filename) [ lindex $filenameAnimation 0 ]
+      set panneau(cmanim,nbi)      [ lindex $filenameAnimation 1 ]
    }
 
 #--- End of the procedures
@@ -993,7 +995,7 @@ proc cmanimBuildIF { This } {
 
          #--- Bouton parcourir
          button $This.fra2.but1 -borderwidth 2 -text "$panneau(cmanim,parcourir)" \
-            -command { ::cmanim::edit_nom_image }
+            -command { ::cmanim::editNomGenerique }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -ipady 3 -side left
 
          #--- Entry for generic name
@@ -1119,7 +1121,7 @@ proc cmanimBuildIF { This } {
          #--- Labels color of the UT's
          frame $This.frauts.lab -borderwidth 0 -height 100 -relief groove
             button $This.frauts.lab.but1 -borderwidth 2 -text "$caption(cmanimate,pas_instrument)" \
-               -font $audace(font,arial_10_b) -command { ::cmanim::Position_Tel }
+               -font $audace(font,arial_10_b) -command { ::cmanim::positionTel }
             pack $This.frauts.lab.but1 -in $This.frauts.lab -anchor center -fill both -side left -expand true
             button $This.frauts.lab.but2 -borderwidth 2 -font $audace(font,arial_10_b) -state disabled
             pack $This.frauts.lab.but2 -in $This.frauts.lab -anchor center -fill both -side left -expand true
@@ -1136,9 +1138,8 @@ proc cmanimBuildIF { This } {
                -font $audace(font,arial_10_b) -fg $color(blue)
             pack $This.frauts.lab.but2.labURL4 -in $This.frauts.lab.but2 -anchor center -fill both -side left -expand true
             button $This.frauts.lab.but3 -borderwidth 2 -text "$caption(cmanimate,instrument)" \
-               -font $audace(font,arial_10_b) -command { ::cmanim::Position_Tel }
-            pack $This.frauts.lab.but3 -in $This.frauts.lab -anchor center -expand 1 -fill both -side left \
-               -expand true
+               -font $audace(font,arial_10_b) -command { ::cmanim::positionTel }
+            pack $This.frauts.lab.but3 -in $This.frauts.lab -anchor center -fill both -side left -expand true
          pack   $This.frauts.lab -in $This.frauts -side top -fill none -padx 2 -pady 2 -ipadx 4 -ipady 2
 
       pack $This.frauts -side top -fill x
@@ -1158,10 +1159,10 @@ proc cmanimBuildIF { This } {
 
       #--- Binding pour afficher le nom generique des images et le positionnement des instruments
       catch {
-         bind $This.frauts.lab.but2.labURL1 <ButtonPress-1> { ::cmanim::Position_Tel }
-         bind $This.frauts.lab.but2.labURL2 <ButtonPress-1> { ::cmanim::Position_Tel }
-         bind $This.frauts.lab.but2.labURL3 <ButtonPress-1> { ::cmanim::Position_Tel }
-         bind $This.frauts.lab.but2.labURL4 <ButtonPress-1> { ::cmanim::Position_Tel }
+         bind $This.frauts.lab.but2.labURL1 <ButtonPress-1> { ::cmanim::positionTel }
+         bind $This.frauts.lab.but2.labURL2 <ButtonPress-1> { ::cmanim::positionTel }
+         bind $This.frauts.lab.but2.labURL3 <ButtonPress-1> { ::cmanim::positionTel }
+         bind $This.frauts.lab.but2.labURL4 <ButtonPress-1> { ::cmanim::positionTel }
       }
 
       #--- Mise a jour dynamique des couleurs
