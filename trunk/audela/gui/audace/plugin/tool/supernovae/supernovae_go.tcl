@@ -2,14 +2,14 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.9 2007-04-23 15:42:25 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.10 2007-05-06 14:56:43 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace Snaude
+# Declaration du namespace snaude
 #    initialise le namespace
 #============================================================
-namespace eval ::Snaude {
+namespace eval ::snaude {
    package provide supernovae 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -17,32 +17,32 @@ namespace eval ::Snaude {
 }
 
 #------------------------------------------------------------
-# ::Snaude::getPluginTitle
+# ::snaude::getPluginTitle
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::Snaude::getPluginTitle { } {
+proc ::snaude::getPluginTitle { } {
    global caption
 
    return "$caption(supernovae_go,supernovae)"
 }
 
 #------------------------------------------------------------
-# ::Snaude::getPluginType
+# ::snaude::getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
-proc ::Snaude::getPluginType { } {
+proc ::snaude::getPluginType { } {
    return "tool"
 }
 
 #------------------------------------------------------------
-# ::Snaude::getPluginProperty
+# ::snaude::getPluginProperty
 #    retourne la valeur de la propriete
 #
 # parametre :
 #    propertyName : nom de la propriete
 # return : valeur de la propriete ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::Snaude::getPluginProperty { propertyName } {
+proc ::snaude::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "acquisition" }
       subfunction1 { return "display" }
@@ -51,26 +51,26 @@ proc ::Snaude::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::Snaude::initPlugin
+# ::snaude::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::Snaude::initPlugin { tkbase } {
+proc ::snaude::initPlugin { tkbase } {
 
 }
 
 #------------------------------------------------------------
-# ::Snaude::createPluginInstance
+# ::snaude::createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
-proc ::Snaude::createPluginInstance { { in "" } { visuNo 1 } } {
-   ::Snaude::createPanel $in.snaude
+proc ::snaude::createPluginInstance { { in "" } { visuNo 1 } } {
+   ::snaude::createPanel $in.snaude
 }
 
 #------------------------------------------------------------
-# ::Snaude::deletePluginInstance
+# ::snaude::deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
-proc ::Snaude::deletePluginInstance { visuNo } {
+proc ::snaude::deletePluginInstance { visuNo } {
    global audace
 
    if { [ winfo exists $audace(base).snvisu ] } {
@@ -79,50 +79,50 @@ proc ::Snaude::deletePluginInstance { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::Snaude::createPanel
+# ::snaude::createPanel
 #    prepare la creation de la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Snaude::createPanel { this } {
+proc ::snaude::createPanel { this } {
    variable This
    global caption panneau
 
    #--- Initialisation du nom de la fenetre
    set This $this
    #--- Initialisation des captions
-   set panneau(Snaude,titre)     "$caption(supernovae_go,supernovae)"
-   set panneau(Snaude,aide)      "$caption(supernovae_go,help,titre)"
-   set panneau(Snaude,recherche) "$caption(supernovae_go,recherche_sn)"
-   set panneau(Snaude,snacq)     "$caption(supernovae_go,sn_acq)"
-   set panneau(Snaude,snvisu)    "$caption(supernovae_go,sn_visu)"
+   set panneau(snaude,titre)     "$caption(supernovae_go,supernovae)"
+   set panneau(snaude,aide)      "$caption(supernovae_go,help,titre)"
+   set panneau(snaude,recherche) "$caption(supernovae_go,recherche_sn)"
+   set panneau(snaude,snacq)     "$caption(supernovae_go,sn_acq)"
+   set panneau(snaude,snvisu)    "$caption(supernovae_go,sn_visu)"
    #--- Construction de l'interface
-   SnaudeBuildIF $This
+   snaudeBuildIF $This
 }
 
 #------------------------------------------------------------
-# ::Snaude::startTool
+# ::snaude::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Snaude::startTool { visuNo } {
+proc ::snaude::startTool { visuNo } {
    variable This
 
    pack $This -side left -fill y
 }
 
 #------------------------------------------------------------
-# ::Snaude::stopTool
+# ::snaude::stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Snaude::stopTool { visuNo } {
+proc ::snaude::stopTool { visuNo } {
    variable This
 
    pack forget $This
 }
 
 #------------------------------------------------------------
-# ::Snaude::SnaudeBuildIF
+# ::snaude::snaudeBuildIF
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
-proc ::Snaude::SnaudeBuildIF { This } {
+proc ::snaude::snaudeBuildIF { This } {
    global audace panneau
 
    frame $This -borderwidth 2 -relief groove
@@ -131,10 +131,10 @@ proc ::Snaude::SnaudeBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(Snaude,titre) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(snaude,titre) \
             -command "::audace::showHelpPlugin tool supernovae supernovae_go.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(Snaude,aide)
+         DynamicHelp::add $This.fra1.but -text $panneau(snaude,aide)
 
       pack $This.fra1 -side top -fill x
 
@@ -142,16 +142,16 @@ proc ::Snaude::SnaudeBuildIF { This } {
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Label du frame
-         label $This.fra2.lab1 -borderwidth 0 -text $panneau(Snaude,recherche)
+         label $This.fra2.lab1 -borderwidth 0 -text $panneau(snaude,recherche)
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -expand 1 -fill both -side top
 
          #--- Bouton Sn Acq
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(Snaude,snacq) \
+         button $This.fra2.but1 -borderwidth 2 -text $panneau(snaude,snacq) \
             -command { source [ file join $audace(rep_plugin) tool supernovae snacq.tcl ] }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
 
          #--- Bouton Sn Visu
-         button $This.fra2.but2 -borderwidth 2 -text $panneau(Snaude,snvisu) \
+         button $This.fra2.but2 -borderwidth 2 -text $panneau(snaude,snvisu) \
             -command { source [ file join $audace(rep_plugin) tool supernovae snvisu.tcl ] }
          pack $This.fra2.but2 -in $This.fra2 -anchor center -fill none -pady 5 -ipadx 5 -ipady 5
 
