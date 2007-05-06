@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.16 2007-04-19 17:30:19 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.17 2007-05-06 08:48:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -202,7 +202,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,secondes)         "segundos..."
    set caption(scanfast,comment3)         "Calculo de tiempo muerto:"
    set caption(scanfast,comment4)         "Tiempo muerto"
-   set caption(scanfast,ms/ligne)         "ms/linea"
+   set caption(scanfast,ms/ligne)         "ms/línea"
    set caption(scanfast,comment5)         "No podrá utilizar"
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Cálculo del 'número repeticiones' requerido:"
@@ -217,7 +217,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,help_titre)       "Ayuda para esta herramienta"
    set caption(scanfast,configuration)    "Configuración"
    set caption(scanfast,colonnes)         "Columnas"
-   set caption(scanfast,lignes)           "Lineas"
+   set caption(scanfast,lignes)           "Líneas"
    set caption(scanfast,interligne)       "Interlineado"
    set caption(scanfast,binning)          "Binning"
    set caption(scanfast,calcul)           "Calcular"
@@ -264,7 +264,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,secondes)         "Sekunden..."
    set caption(scanfast,comment3)         "Totzeit Rechnung:"
    set caption(scanfast,comment4)         "Totzeit"
-   set caption(scanfast,ms/ligne)         "ms/Reihen"
+   set caption(scanfast,ms/ligne)         "ms/Linie"
    set caption(scanfast,comment5)         "Sie werden dieses nicht benutzen können"
    set caption(scanfast,ms)               "ms"
    set caption(scanfast,comment6)         "Notwendigen 'Schleifen Zahl' Rechnung:"
@@ -279,8 +279,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,help_titre)       "Hilfe für dieses Gerät"
    set caption(scanfast,configuration)    "Konfiguration"
    set caption(scanfast,colonnes)         "Kolonnen"
-   set caption(scanfast,lignes)           "Reihen"
-   set caption(scanfast,interligne)       "Reihen Wechsel"
+   set caption(scanfast,lignes)           "Linien"
+   set caption(scanfast,interligne)       "Linien Wechsel"
    set caption(scanfast,binning)          "Binning"
    set caption(scanfast,calcul)           "Rechnung"
    set caption(scanfast,milliseconde)     "millisek."
