@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.10 2007-04-10 19:37:36 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.11 2007-05-06 08:46:52 robertdelmas Exp $
 #
 
 namespace eval camera {
@@ -48,7 +48,7 @@ namespace eval camera {
    # Decompte du nombre de lignes du scan
    #
    proc dispLine { t Nb_Line_sec Nb_Line_Total scan_Delai } {
-      global panneau
+      global audace panneau
 
       set t [ expr $t-1 ]
       set tt [ expr $t*$Nb_Line_sec ]
@@ -59,6 +59,8 @@ namespace eval camera {
                ::camera::Avancement_scan $tt $Nb_Line_Total $scan_Delai
             }
          }
+      } else {
+         destroy $audace(base).progress_scan
       }
    }
 
@@ -96,8 +98,13 @@ namespace eval camera {
                   $caption(camera,seconde)"
             }
          } else {
-            $audace(base).progress_scan.lab_status configure -text "[ expr int($tt) ] $caption(camera,ligne) \
-               / $Nb_Line_Total $caption(camera,ligne)"
+            if { [ expr int($tt) ] >= "2" } {
+               $audace(base).progress_scan.lab_status configure -text "[ expr int($tt) ] $caption(camera,lignes) \
+                  / $Nb_Line_Total $caption(camera,lignes)"
+            } else {
+               $audace(base).progress_scan.lab_status configure -text "[ expr int($tt) ] $caption(camera,ligne) \
+                  / $Nb_Line_Total $caption(camera,lignes)"
+            }
          }
       } else {
          if { $tt == "-10" } {
@@ -109,8 +116,13 @@ namespace eval camera {
                   $caption(camera,seconde)"
             }
          } else {
-            $audace(base).progress_scan.lab_status configure -text "[ expr int($tt) ] $caption(camera,ligne) \
-               / $Nb_Line_Total $caption(camera,ligne)"
+            if { [ expr int($tt) ] >= "2" } {
+               $audace(base).progress_scan.lab_status configure -text "[ expr int($tt) ] $caption(camera,lignes) \
+                  / $Nb_Line_Total $caption(camera,lignes)"
+            } else {
+               $audace(base).progress_scan.lab_status configure -text "[ expr int($tt) ] $caption(camera,ligne) \
+                  / $Nb_Line_Total $caption(camera,lignes)"
+            }
          }
       }
 
