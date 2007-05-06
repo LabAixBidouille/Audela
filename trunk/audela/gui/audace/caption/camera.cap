@@ -1,6 +1,6 @@
 #
 # Fichier : camera.cap
-# Mise a jour $Id: camera.cap,v 1.8 2007-01-27 14:35:55 robertdelmas Exp $
+# Mise a jour $Id: camera.cap,v 1.9 2007-05-06 08:47:28 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,10 +12,11 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(camera,en_cours)        "Acquiring..."
-set caption(camera,secondes)        "seconds"
 set caption(camera,seconde)         "second"
+set caption(camera,secondes)        "seconds"
 set caption(camera,sec)             "sec."
-set caption(camera,ligne)           "lines"
+set caption(camera,ligne)           "line"
+set caption(camera,lignes)          "lines"
 set caption(camera,attente)         "Waiting:"
 set caption(camera,numerisation)    "Read CCD"
 
@@ -23,10 +24,11 @@ set caption(camera,numerisation)    "Read CCD"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(camera,en_cours)     "Acquisition en cours..."
-   set caption(camera,secondes)     "secondes"
    set caption(camera,seconde)      "seconde"
+   set caption(camera,secondes)     "secondes"
    set caption(camera,sec)          "sec."
-   set caption(camera,ligne)        "lignes"
+   set caption(camera,ligne)        "ligne"
+   set caption(camera,lignes)       "lignes"
    set caption(camera,attente)      "Attente :"
    set caption(camera,numerisation) "Lecture CCD"
 
@@ -34,10 +36,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(camera,en_cours)     "Acquisizione in corso ..."
-   set caption(camera,secondes)     "secondi"
    set caption(camera,seconde)      "secondo"
+   set caption(camera,secondes)     "secondi"
    set caption(camera,sec)          "sec."
-   set caption(camera,ligne)        "linee"
+   set caption(camera,ligne)        "linea"
+   set caption(camera,lignes)       "linee"
    set caption(camera,attente)      "Attendere:"
    set caption(camera,numerisation) "Lettura CCD"
 
@@ -45,10 +48,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(camera,en_cours)     "Adquiriendo ..."
-   set caption(camera,secondes)     "segundos"
    set caption(camera,seconde)      "segundo"
+   set caption(camera,secondes)     "segundos"
    set caption(camera,sec)          "seg."
-   set caption(camera,ligne)        "lineas"
+   set caption(camera,ligne)        "línea"
+   set caption(camera,lignes)       "líneas"
    set caption(camera,attente)      "Esperando:"
    set caption(camera,numerisation) "Leer CCD"
 
@@ -56,10 +60,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(camera,en_cours)     "Laufende Anschaffung..."
-   set caption(camera,secondes)     "Sekunden"
    set caption(camera,seconde)      "Sekunde"
+   set caption(camera,secondes)     "Sekunden"
    set caption(camera,sec)          "Sek."
-   set caption(camera,ligne)        "Reihen"
+   set caption(camera,ligne)        "Linie"
+   set caption(camera,lignes)       "Linien"
    set caption(camera,attente)      "Warten:"
    set caption(camera,numerisation) "CCD Lesen"
 
@@ -67,10 +72,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(camera,en_cours)     "A adquirir..."
-   set caption(camera,secondes)     "segundos"
    set caption(camera,seconde)      "segundo"
+   set caption(camera,secondes)     "segundos"
    set caption(camera,sec)          "seg."
-   set caption(camera,ligne)        "linhas"
+   set caption(camera,ligne)        "linha"
+   set caption(camera,lignes)       "linhas"
    set caption(camera,attente)      "A aguardar:"
    set caption(camera,numerisation  "Ler CCD"
 
@@ -78,10 +84,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(camera,en_cours)     "Eksponering er aktiv..."
-   set caption(camera,secondes)     "sekunder"
    set caption(camera,seconde)      "sekund"
+   set caption(camera,secondes)     "sekunder"
    set caption(camera,sec)          "sek."
-   set caption(camera,ligne)        "linjer"
+   set caption(camera,ligne)        "linie"
+   set caption(camera,lignes)       "linjer"
    set caption(camera,attente)      "Venter:"
    set caption(camera,numerisation) "Læs CCD"
 
