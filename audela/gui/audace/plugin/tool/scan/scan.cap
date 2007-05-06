@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.15 2007-04-19 17:29:51 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.16 2007-05-06 08:48:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -147,7 +147,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,help_titre)     "Ayuda para esta herramienta"
    set caption(scan,configuration)  "Configuración"
    set caption(scan,colonnes)       "Columnas"
-   set caption(scan,lignes)         "Lineas"
+   set caption(scan,lignes)         "Líneas"
    set caption(scan,pixel)          "Píxel"
    set caption(scan,micron)         "µm"
    set caption(scan,interligne)     "Interlineado"
@@ -191,10 +191,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,help_titre)     "Hilfe für dieses Gerät"
    set caption(scan,configuration)  "Konfiguration"
    set caption(scan,colonnes)       "Kolonnen"
-   set caption(scan,lignes)         "Reihen"
+   set caption(scan,lignes)         "Linien"
    set caption(scan,pixel)          "Rasterpunkt"
    set caption(scan,micron)         "µm"
-   set caption(scan,interligne)     "Reihen Wechsel"
+   set caption(scan,interligne)     "Linien Wechsel"
    set caption(scan,focale)         "Brennweite"
    set caption(scan,metre)          "m"
    set caption(scan,declinaison)    "Bre."
