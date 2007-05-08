@@ -695,13 +695,12 @@ void CPixelsGray::Offset(float offset)
 void CPixelsGray::Opt(char *dark, char *offset)
 {
    int msg, datatype;
-   char * s;
+   // "s" doit etre suffisamment grande pour contenir les noms complets des deux fichiers. 
+   char s[2048];
 
    datatype = TFLOAT;
-   s = new char[128];
    sprintf(s,"OPT \"dark=%s\" \"bias=%s\"",dark,offset);
    msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
-   delete s;
    if(msg) throw CErrorLibtt(msg);
 }
 
