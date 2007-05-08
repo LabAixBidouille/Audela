@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.11 2007-04-14 08:31:03 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.12 2007-05-08 16:43:49 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -14,10 +14,10 @@ set ::graphik(contr)    {}
 set ::graphik(fichier)  ""
 
 #============================================================
-# Declaration du namespace Focs
+# Declaration du namespace focs
 #    initialise le namespace
 #============================================================
-namespace eval ::Focs {
+namespace eval ::focs {
    package provide foc 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -91,37 +91,37 @@ namespace eval ::Focs {
 
       set This $this
       #---
-      set panneau(Focs,titre)            "$caption(foc,focalisation)"
-      set panneau(Focs,aide)             "$caption(foc,help_titre)"
-      set panneau(Focs,acq)              "$caption(foc,acquisition)"
-      set panneau(Focs,menu)             "$caption(foc,centrage)"
-      set panneau(Focs,centrage_fenetre) "1"
-      set panneau(Focs,compteur)         "0"
-      set panneau(Focs,bin)              "1"
-      set panneau(Focs,exptime)          "2"
-      set panneau(Focs,secondes)         "$caption(foc,seconde)"
-      set panneau(Focs,go)               "$caption(foc,go)"
-      set panneau(Focs,stop)             "$caption(foc,stop)"
-      set panneau(Focs,raz)              "$caption(foc,raz)"
-      set panneau(Focs,focuser)          "focuserlx200"
-      set panneau(Focs,motorfoc)         "$caption(foc,moteur_focus)"
-      set panneau(Focs,position)         "$caption(foc,pos_focus)"
-      set panneau(Focs,trouve)           "$caption(foc,se_trouve)"
-      set panneau(Focs,pas)              "$caption(foc,pas)"
-      set panneau(Focs,deplace)          "$caption(foc,aller_a)"
-      set panneau(Focs,initialise)       "$caption(foc,init)"
-      set panneau(Focs,graphe)           "$caption(foc,graphe)"
+      set panneau(focs,titre)            "$caption(foc,focalisation)"
+      set panneau(focs,aide)             "$caption(foc,help_titre)"
+      set panneau(focs,acq)              "$caption(foc,acquisition)"
+      set panneau(focs,menu)             "$caption(foc,centrage)"
+      set panneau(focs,centrage_fenetre) "1"
+      set panneau(focs,compteur)         "0"
+      set panneau(focs,bin)              "1"
+      set panneau(focs,exptime)          "2"
+      set panneau(focs,secondes)         "$caption(foc,seconde)"
+      set panneau(focs,go)               "$caption(foc,go)"
+      set panneau(focs,stop)             "$caption(foc,stop)"
+      set panneau(focs,raz)              "$caption(foc,raz)"
+      set panneau(focs,focuser)          "focuserlx200"
+      set panneau(focs,motorfoc)         "$caption(foc,moteur_focus)"
+      set panneau(focs,position)         "$caption(foc,pos_focus)"
+      set panneau(focs,trouve)           "$caption(foc,se_trouve)"
+      set panneau(focs,pas)              "$caption(foc,pas)"
+      set panneau(focs,deplace)          "$caption(foc,aller_a)"
+      set panneau(focs,initialise)       "$caption(foc,init)"
+      set panneau(focs,graphe)           "$caption(foc,graphe)"
 
-      FocsBuildIF $This
+      focsBuildIF $This
    }
 
-   proc Adapt_Panneau_Foc { { a "" } { b "" } { c "" } } {
+   proc adaptOutilFoc { { a "" } { b "" } { c "" } } {
       variable This
       global audace
 
-      if { [ ::focus::possedeControleEtendu $::panneau(Focs,focuser) ] == "1" } {
+      if { [ ::focus::possedeControleEtendu $::panneau(focs,focuser) ] == "1" } {
          #--- Avec controle etendu
-         set ::panneau(Focs,focuser) "focuseraudecom"
+         set ::panneau(focs,focuser) "focuseraudecom"
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -ipady 1 -padx 5
          pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
@@ -134,7 +134,7 @@ namespace eval ::Focs {
          pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -pady 1 -ipadx 15 -padx 5
       } else {
          #--- Sans controle etendu
-         set ::panneau(Focs,focuser) "focuserlx200"
+         set ::panneau(focs,focuser) "focuserlx200"
          pack forget $This.fra5.lab1
          pack forget $This.fra5.but1
          pack forget $This.fra5.fra1.lab1
@@ -154,9 +154,9 @@ namespace eval ::Focs {
    proc startTool { visuNo } {
       variable This
 
-      trace add variable ::conf(telescope) write ::Focs::Adapt_Panneau_Foc
+      trace add variable ::conf(telescope) write ::focs::adaptOutilFoc
       pack $This -side left -fill y
-      ::Focs::Adapt_Panneau_Foc
+      ::focs::adaptOutilFoc
    }
 
    #------------------------------------------------------------
@@ -172,7 +172,7 @@ namespace eval ::Focs {
          set n1n2 [ cam$audace(camNo) nbcells ]
          cam$audace(camNo) window [ list 1 1 [ lindex $n1n2 0 ] [ lindex $n1n2 1 ] ]
       }
-      trace remove variable ::conf(telescope) write ::Focs::Adapt_Panneau_Foc
+      trace remove variable ::conf(telescope) write ::focs::adaptOutilFoc
       pack forget $This
    }
 
@@ -181,7 +181,7 @@ namespace eval ::Focs {
       global audace caption panneau
 
       #--- Verifie que le temps de pose est bien un réel positif
-      if { [ ::Focs::TestReel $panneau(Focs,exptime) ] == "0" } {
+      if { [ ::focs::testReel $panneau(focs,exptime) ] == "0" } {
          tk_messageBox -title $caption(foc,probleme) -type ok -message $caption(foc,entier_positif)
          return
       }
@@ -190,63 +190,63 @@ namespace eval ::Focs {
       if { [ ::cam::list ] != "" } {
          #--- Gestion graphique des boutons
          $This.fra2.but1 configure -relief groove -state disabled
-         $This.fra2.but2 configure -text $panneau(Focs,stop)
+         $This.fra2.but2 configure -text $panneau(focs,stop)
          update
          #--- Applique le binning demande si la camera possede bien ce binning
-         set binningCamera "2"
+         set binningCamera "2x2"
          if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
-            set panneau(Focs,bin) "2"
+            set panneau(focs,bin) "2"
          } else {
-            set panneau(Focs,bin) "1"
+            set panneau(focs,bin) "1"
          }
          #--- Parametrage de la prise de vue en Centrage ou en Fenetrage
-         if { [ info exists panneau(Focs,actuel) ] == "0" } {
-            set panneau(Focs,actuel) "$caption(foc,centrage)"
+         if { [ info exists panneau(focs,actuel) ] == "0" } {
+            set panneau(focs,actuel) "$caption(foc,centrage)"
             set dimxy [ cam$audace(camNo) nbcells ]
-            set panneau(Focs,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
+            set panneau(focs,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
          }
-         if { $panneau(Focs,menu) == "$caption(foc,centrage)" } {
+         if { $panneau(focs,menu) == "$caption(foc,centrage)" } {
             #--- Applique le binning demande si la camera possede bien ce binning
-            set binningCamera "2"
+            set binningCamera "2x2"
             if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
-               set panneau(Focs,bin) "2"
+               set panneau(focs,bin) "2"
             } else {
-               set panneau(Focs,bin) "1"
-         }
+               set panneau(focs,bin) "1"
+            }
             set dimxy [ cam$audace(camNo) nbcells ]
-            set panneau(Focs,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
-            set panneau(Focs,actuel) "$caption(foc,centrage)"
-            set panneau(Focs,boucle) "$caption(foc,off)"
-         } elseif { $panneau(Focs,menu) == "$caption(foc,fenetre)" } {
-            set panneau(Focs,bin) "1"
-            if { $panneau(Focs,actuel) == "$caption(foc,centrage)" } {
+            set panneau(focs,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
+            set panneau(focs,actuel) "$caption(foc,centrage)"
+            set panneau(focs,boucle) "$caption(foc,off)"
+         } elseif { $panneau(focs,menu) == "$caption(foc,fenetre)" } {
+            set panneau(focs,bin) "1"
+            if { $panneau(focs,actuel) == "$caption(foc,centrage)" } {
                if { [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ] != "" } {
                   set a [ lindex [ list [ ::confVisu::getBox $audace(visuNo) ] ] 0 ]
                   set kk 0
                   set b $a
                   #--- Tient compte du binning
                   foreach e $a {
-                     set b [ lreplace $b $kk $kk [ expr $panneau(Focs,bin)*$e ] ]
+                     set b [ lreplace $b $kk $kk [ expr $panneau(focs,bin)*$e ] ]
                      incr kk
                   }
-                  set panneau(Focs,window) $b
+                  set panneau(focs,window) $b
                }
             }
-            set panneau(Focs,actuel) "$caption(foc,fenetre)"
-            set panneau(Focs,boucle) "$caption(foc,on)"
+            set panneau(focs,actuel) "$caption(foc,fenetre)"
+            set panneau(focs,boucle) "$caption(foc,on)"
          }
-         cam$audace(camNo) window $panneau(Focs,window)
+         cam$audace(camNo) window $panneau(focs,window)
          #--- Suppression de la zone selectionnee avec la souris
          ::confVisu::deleteBox $audace(visuNo)
          #--- Appel a la fonction d'acquisition
-         ::Focs::cmdAcq
+         ::focs::cmdAcq
          #--- Gestion graphique des boutons
-         if { $panneau(Focs,actuel) == "$caption(foc,centrage)" } {
-            $This.fra2.but1 configure -relief raised -text $panneau(Focs,go) -state normal
-            $This.fra2.but2 configure -relief raised -text $panneau(Focs,raz)
+         if { $panneau(focs,actuel) == "$caption(foc,centrage)" } {
+            $This.fra2.but1 configure -relief raised -text $panneau(focs,go) -state normal
+            $This.fra2.but2 configure -relief raised -text $panneau(focs,raz)
             update
          } else {
-            $This.fra2.but2 configure -relief raised -text $panneau(Focs,raz)
+            $This.fra2.but2 configure -relief raised -text $panneau(focs,raz)
             update
          }
       } else {
@@ -264,13 +264,13 @@ namespace eval ::Focs {
       set buffer buf$audace(bufNo)
 
       #--- La commande exptime permet de fixer le temps de pose de l'image
-      $camera exptime $panneau(Focs,exptime)
+      $camera exptime $panneau(focs,exptime)
 
       #--- La commande bin permet de fixer le binning
-      $camera bin [ list $panneau(Focs,bin) $panneau(Focs,bin) ]
+      $camera bin [ list $panneau(focs,bin) $panneau(focs,bin) ]
 
       #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-      if { $panneau(Focs,exptime) >= "0" && $panneau(Focs,exptime) < "2" } {
+      if { $panneau(focs,exptime) >= "0" && $panneau(focs,exptime) < "2" } {
          ::camera::Avancement_pose "1"
       }
 
@@ -278,34 +278,34 @@ namespace eval ::Focs {
       $camera acq
 
       #--- Alarme sonore de fin de pose
-      ::camera::alarme_sonore $panneau(Focs,exptime)
+      ::camera::alarme_sonore $panneau(focs,exptime)
 
       #--- Appel de l'arret du moteur de foc a 100 millisecondes de la fin de pose
       set delay 0.100
-      if { [ expr $panneau(Focs,exptime)-$delay ] > "0" } {
-         set delay [ expr $panneau(Focs,exptime)-$delay ]
-         set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::Focs::cmdFocus stop } ]
+      if { [ expr $panneau(focs,exptime)-$delay ] > "0" } {
+         set delay [ expr $panneau(focs,exptime)-$delay ]
+         set audace(after,focstop,id) [ after [ expr int($delay*1000) ] { ::focs::cmdFocus stop } ]
       }
 
       #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-      ::camera::gestionPose $panneau(Focs,exptime) 1 $camera $buffer
+      ::camera::gestionPose $panneau(focs,exptime) 1 $camera $buffer
 
       #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
       if { [ ::confCam::hasCapability $audace(camNo) window ] == "0" } {
-         buf$audace(bufNo) window $panneau(Focs,window)
+         buf$audace(bufNo) window $panneau(focs,window)
       }
 
       #--- Visualisation de l'image acquise
       ::audace::autovisu $audace(visuNo)
 
       #--- Informations sur l'image fenetree
-      if { $panneau(Focs,actuel) == "$caption(foc,fenetre)" } {
-         if { $panneau(Focs,boucle) == "$caption(foc,on)" } {
-            $This.fra2.but1 configure -relief groove -text $panneau(Focs,go)
-            $This.fra2.but2 configure -text $panneau(Focs,stop)
+      if { $panneau(focs,actuel) == "$caption(foc,fenetre)" } {
+         if { $panneau(focs,boucle) == "$caption(foc,on)" } {
+            $This.fra2.but1 configure -relief groove -text $panneau(focs,go)
+            $This.fra2.but2 configure -text $panneau(focs,stop)
             update
-            incr panneau(Focs,compteur)
-            lappend ::graphik(compteur) $panneau(Focs,compteur)
+            incr panneau(focs,compteur)
+            lappend ::graphik(compteur) $panneau(focs,compteur)
             #--- Statistiques
             set s [ stat ]
             set maxi [ lindex $s 2 ]
@@ -330,9 +330,9 @@ namespace eval ::Focs {
             visuf g_fwhmy $::graphik(compteur) $::graphik(fwhmy) "$caption(foc,fwhm_y)" yes
             visuf g_contr $::graphik(compteur) $::graphik(contr) "$caption(foc,contrast_adu)" no
             #--- Valeurs a l'ecran
-            ::Focs::ParaFoc
+            ::focs::qualiteFoc
             update
-            after idle ::Focs::cmdAcq
+            after idle ::focs::cmdAcq
          }
       }
    }
@@ -342,8 +342,8 @@ namespace eval ::Focs {
       global audace caption panneau
 
       if { [ ::cam::list ] != "" } {
-         if { [ $This.fra2.but2 cget -text ] == "$panneau(Focs,raz)" } {
-            set panneau(Focs,compteur) "0"
+         if { [ $This.fra2.but2 cget -text ] == "$panneau(focs,raz)" } {
+            set panneau(focs,compteur) "0"
             set ::graphik(compteur) {}
             set ::graphik(inten)    {}
             set ::graphik(fwhmx)    {}
@@ -358,19 +358,19 @@ namespace eval ::Focs {
             #--- On annule l'identificateur qui arrete le moteur de foc
             catch { after cancel $audace(after,focstop,id) }
             #--- Graphiques du panneau
-            set panneau(Focs,boucle) "$caption(foc,off)"
+            set panneau(focs,boucle) "$caption(foc,off)"
             #--- Annulation de l'alarme de fin de pose
             catch { after cancel bell }
             #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-            ::camera::gestionPose $panneau(Focs,exptime) 0 cam$audace(camNo) buf$audace(bufNo)
+            ::camera::gestionPose $panneau(focs,exptime) 0 cam$audace(camNo) buf$audace(bufNo)
             #--- Arret de la pose
             catch { cam$audace(camNo) stop }
             after 200
             #--- Sauvegarde du fichier .log
-            ::Focs::cmdSauveLog foc.log
+            ::focs::cmdSauveLog foc.log
             #--- Gestion graphique des boutons
-            $This.fra2.but1 configure -relief raised -text $panneau(Focs,go) -state normal
-            $This.fra2.but2 configure -relief raised -text $panneau(Focs,raz) -state normal
+            $This.fra2.but1 configure -relief raised -text $panneau(focs,go) -state normal
+            $This.fra2.but2 configure -relief raised -text $panneau(focs,raz) -state normal
             update
          }
       } else {
@@ -379,7 +379,7 @@ namespace eval ::Focs {
       }
    }
 
-   proc TestReel { valeur } {
+   proc testReel { valeur } {
       #--- Vérifie que la chaine passée en argument décrit bien un réel
       #--- Elle retourne 1 si c'est la cas, et 0 si ce n'est pas un reel
       set test 1
@@ -403,7 +403,7 @@ namespace eval ::Focs {
    }
 
    proc cmdSpeed { } {
-      ::focus::incrementSpeed $::panneau(Focs,focuser) "tool Focs"
+      ::focus::incrementSpeed $::panneau(focs,focuser) "tool focs"
    }
 
    proc cmdFocus { command } {
@@ -413,16 +413,16 @@ namespace eval ::Focs {
       $This.fra4.we.canv1 configure -relief ridge
       $This.fra4.we.canv2 configure -relief ridge
       #--- Commande
-      ::focus::move $::panneau(Focs,focuser) $command
+      ::focus::move $::panneau(focs,focuser) $command
    }
 
-   proc cmdInitfoc { } {
+   proc cmdInitFoc { } {
       variable This
       global audace panneau
 
       if { [ ::tel::list ] != "" } {
          #--- Gestion graphique du bouton
-         $This.fra5.but3 configure -relief groove -text $panneau(Focs,initialise)
+         $This.fra5.but3 configure -relief groove -text $panneau(focs,initialise)
          update
          #--- Met le compteur de foc a zero et rafraichit les affichages
          tel$audace(telNo) focus init 0
@@ -432,7 +432,7 @@ namespace eval ::Focs {
          $This.fra5.fra2.ent3 configure -textvariable audace(focus,nbpas2)
          update
          #--- Gestion graphique du bouton
-         $This.fra5.but3 configure -relief raised -text $panneau(Focs,initialise)
+         $This.fra5.but3 configure -relief raised -text $panneau(focs,initialise)
          update
       } else {
          ::confTel::run
@@ -440,13 +440,13 @@ namespace eval ::Focs {
       }
    }
 
-   proc cmdSetrouvea { } {
+   proc cmdSeTrouveA { } {
       variable This
       global audace panneau
 
       if { [ ::tel::list ] != "" } {
          #--- Gestion graphique du bouton
-         $This.fra5.but1 configure -relief groove -text $panneau(Focs,trouve)
+         $This.fra5.but1 configure -relief groove -text $panneau(focs,trouve)
          update
          #--- Lit et affiche la position du compteur de foc
          set nbpas1 [ tel$audace(telNo) focus coord ]
@@ -455,7 +455,7 @@ namespace eval ::Focs {
          $This.fra5.fra1.lab1 configure -textvariable audace(focus,nbpas1)
          update
          #--- Gestion graphique du bouton
-         $This.fra5.but1 configure -relief raised -text $panneau(Focs,trouve)
+         $This.fra5.but1 configure -relief raised -text $panneau(focs,trouve)
          update
       } else {
          ::confTel::run
@@ -463,7 +463,7 @@ namespace eval ::Focs {
       }
    }
 
-   proc cmdSedeplacea { } {
+   proc cmdSeDeplaceA { } {
       variable This
       global audace panneau
 
@@ -471,18 +471,18 @@ namespace eval ::Focs {
          if { $audace(focus,nbpas2) != "" } {
             #--- Gestion graphique des boutons
             $This.fra5.but3 configure -relief groove -state disabled
-            $This.fra5.but2 configure -relief groove -text $panneau(Focs,deplace)
+            $This.fra5.but2 configure -relief groove -text $panneau(focs,deplace)
             update
             #--- Gestion des limites
             if { $audace(focus,nbpas2) > "32767" } {
                #--- Message au-dela de la limite superieure
-               ::Focs::LimiteFoc
+               ::focs::limiteFoc
                set audace(focus,nbpas2) ""
                $This.fra5.fra2.ent3 configure -textvariable audace(focus,nbpas2)
                update
             } elseif { $audace(focus,nbpas2) < "-32767" } {
                #--- Message au-dela de la limite inferieure
-               ::Focs::LimiteFoc
+               ::focs::limiteFoc
                set audace(focus,nbpas2) ""
                $This.fra5.fra2.ent3 configure -textvariable audace(focus,nbpas2)
                update
@@ -492,12 +492,12 @@ namespace eval ::Focs {
                split $nbpas1 "\n"
                set audace(focus,nbpas1) [ lindex $nbpas1 0 ]
                #--- Lance le goto du focaliseur
-               ::focus::goto $::panneau(Focs,focuser)
+               ::focus::goto $::panneau(focs,focuser)
                #--- Affiche la position d'arrivee
                $This.fra5.fra1.lab1 configure -textvariable audace(focus,nbpas1)
             }
             #--- Gestion graphique des boutons
-            $This.fra5.but2 configure -relief raised -text $panneau(Focs,deplace)
+            $This.fra5.but2 configure -relief raised -text $panneau(focs,deplace)
             $This.fra5.but3 configure -relief raised -state normal
             update
          }
@@ -507,7 +507,7 @@ namespace eval ::Focs {
       }
    }
 
-   proc FormatFoc { } {
+   proc formatFoc { } {
       global audace caption
 
       if [ winfo exists $audace(base).formatfoc ] {
@@ -534,7 +534,7 @@ namespace eval ::Focs {
       ::confColor::applyColor $audace(base).formatfoc
    }
 
-   proc LimiteFoc { } {
+   proc limiteFoc { } {
       global audace caption
 
       if [ winfo exists $audace(base).limitefoc ] {
@@ -566,12 +566,12 @@ namespace eval ::Focs {
       ::confColor::applyColor $audace(base).limitefoc
    }
 
-   proc ParaFoc { } {
+   proc qualiteFoc { } {
       global audace caption conf panneau
 
       #--- Fenetre d'affichage des parametres de la foc
       if [ winfo exists $audace(base).parafoc ] {
-         ::Focs::ferme_ParaFoc
+         ::focs::fermeQualiteFoc
       }
       #--- Initialisation de la position de la fenetre
       if { ! [ info exists conf(parafoc,position) ] } { set conf(parafoc,position) "+500+75" }
@@ -581,9 +581,9 @@ namespace eval ::Focs {
       wm resizable $audace(base).parafoc 0 0
       wm title $audace(base).parafoc "$caption(foc,focalisation)"
       wm geometry $audace(base).parafoc $conf(parafoc,position)
-      wm protocol $audace(base).parafoc WM_DELETE_WINDOW ::Focs::ferme_ParaFoc
+      wm protocol $audace(base).parafoc WM_DELETE_WINDOW ::focs::fermeQualiteFoc
       #--- Cree les etiquettes
-      label $audace(base).parafoc.lab1 -text "$panneau(Focs,compteur)"
+      label $audace(base).parafoc.lab1 -text "$panneau(focs,compteur)"
       pack $audace(base).parafoc.lab1 -padx 10 -pady 2
       label $audace(base).parafoc.lab2 -text "$caption(foc,intensite) $caption(foc,egale) $::inten"
       pack $audace(base).parafoc.lab2 -padx 5 -pady 2
@@ -599,7 +599,7 @@ namespace eval ::Focs {
       ::confColor::applyColor $audace(base).parafoc
    }
 
-   proc ferme_ParaFoc { } {
+   proc fermeQualiteFoc { } {
       global audace conf
 
       #--- Determination de la position de la fenetre
@@ -613,12 +613,12 @@ namespace eval ::Focs {
 
 }
 
-proc FocGraphe { } {
+proc focGraphe { } {
    global audace caption conf panneau
 
    #--- Fenetre d'affichage des parametres de la foc
    if [ winfo exists $audace(base).visufoc ] {
-      ferme_Graphe
+      fermeGraphe
    }
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(visufoc,position) ] } { set conf(visufoc,position) "+200+0" }
@@ -628,12 +628,12 @@ proc FocGraphe { } {
       #--- Creation de la fenetre
       toplevel $audace(base).visufoc
       wm title $audace(base).visufoc "$caption(foc,titre_graphe)"
-      if { $panneau(Focs,exptime) > "2" } {
+      if { $panneau(focs,exptime) > "2" } {
          wm transient $audace(base).visufoc $audace(base)
       }
       wm resizable $audace(base).visufoc 0 0
       wm geometry $audace(base).visufoc $conf(visufoc,position)
-      wm protocol $audace(base).visufoc WM_DELETE_WINDOW { ferme_Graphe }
+      wm protocol $audace(base).visufoc WM_DELETE_WINDOW { fermeGraphe }
       #---
       ::blt::graph $audace(base).visufoc.g_inten
       ::blt::graph $audace(base).visufoc.g_fwhmx
@@ -650,7 +650,7 @@ proc FocGraphe { } {
    }
 }
 
-proc ferme_Graphe { } {
+proc fermeGraphe { } {
    global audace conf
 
    #--- Determination de la position de la fenetre
@@ -691,10 +691,10 @@ proc visuf { win_name x y { title "" } { yesno "yes" } } {
 }
 
 #------------------------------------------------------------
-# FocsBuildIF
+# focsBuildIF
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
-proc FocsBuildIF { This } {
+proc focsBuildIF { This } {
    global audace caption panneau
 
    frame $This -borderwidth 2 -relief groove
@@ -703,10 +703,10 @@ proc FocsBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(Focs,titre) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(focs,titre) \
             -command "::audace::showHelpPlugin tool foc foc.htm"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(Focs,aide)
+         DynamicHelp::add $This.fra1.but -text $panneau(focs,aide)
 
       pack $This.fra1 -side top -fill x
 
@@ -714,45 +714,45 @@ proc FocsBuildIF { This } {
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Label pour acquistion
-         label $This.fra2.lab1 -text $panneau(Focs,acq) -relief flat
+         label $This.fra2.lab1 -text $panneau(focs,acq) -relief flat
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
          #--- Menu
-         menubutton $This.fra2.optionmenu1 -textvariable panneau(Focs,menu) \
+         menubutton $This.fra2.optionmenu1 -textvariable panneau(focs,menu) \
             -menu $This.fra2.optionmenu1.menu -relief raised
          pack $This.fra2.optionmenu1 -in $This.fra2 -anchor center -padx 4 -pady 2 -ipadx 3
          set m [ menu $This.fra2.optionmenu1.menu -tearoff 0 ]
          $m add radiobutton -label "$caption(foc,centrage)" \
             -indicatoron "1" \
             -value "1" \
-            -variable panneau(Focs,centrage_fenetre) \
-            -command { set panneau(Focs,menu) "$caption(foc,centrage)" ; set panneau(Focs,centrage_fenetre) "1" }
+            -variable panneau(focs,centrage_fenetre) \
+            -command { set panneau(focs,menu) "$caption(foc,centrage)" ; set panneau(focs,centrage_fenetre) "1" }
          $m add radiobutton -label "$caption(foc,fenetre)" \
             -indicatoron "1" \
             -value "2" \
-            -variable panneau(Focs,centrage_fenetre) \
-            -command { set panneau(Focs,menu) "$caption(foc,fenetre)" ; set panneau(Focs,centrage_fenetre) "2" }
+            -variable panneau(focs,centrage_fenetre) \
+            -command { set panneau(focs,menu) "$caption(foc,fenetre)" ; set panneau(focs,centrage_fenetre) "2" }
 
          #--- Frame des entry & label
          frame $This.fra2.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour exptime
-            entry $This.fra2.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(Focs,exptime) \
+            entry $This.fra2.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(focs,exptime) \
                -relief groove -width 6 -justify center
             pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label secondes
-            label $This.fra2.fra1.lab1 -text $panneau(Focs,secondes) -relief flat
+            label $This.fra2.fra1.lab1 -text $panneau(focs,secondes) -relief flat
             pack $This.fra2.fra1.lab1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra2.fra1 -in $This.fra2 -anchor center -fill none
 
          #--- Bouton GO
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(Focs,go) -command { ::Focs::cmdGo }
+         button $This.fra2.but1 -borderwidth 2 -text $panneau(focs,go) -command { ::focs::cmdGo }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill x -padx 5 -pady 2 -ipadx 15 -ipady 1
 
          #--- Bouton STOP/RAZ
-         button $This.fra2.but2 -borderwidth 2 -text $panneau(Focs,raz) -command { ::Focs::cmdStop }
+         button $This.fra2.but2 -borderwidth 2 -text $panneau(focs,raz) -command { ::focs::cmdStop }
          pack $This.fra2.but2 -in $This.fra2 -anchor center -fill x -padx 5 -pady 2 -ipadx 15 -ipady 1
 
       pack $This.fra2 -side top -fill x
@@ -761,11 +761,11 @@ proc FocsBuildIF { This } {
       frame $This.fra4 -borderwidth 1 -relief groove
 
          #--- Frame focuser
-         ::confEqt::createFrameFocuserTool $This.fra4.focuser ::panneau(Focs,focuser)
+         ::confEqt::createFrameFocuserTool $This.fra4.focuser ::panneau(focs,focuser)
          pack $This.fra4.focuser -in $This.fra4 -anchor nw -side top -padx 4 -pady 1
 
          #--- Label pour moteur focus
-         label $This.fra4.lab1 -text $panneau(Focs,motorfoc) -relief flat
+         label $This.fra4.lab1 -text $panneau(focs,motorfoc) -relief flat
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1
 
          #--- Create the buttons '- +'
@@ -801,23 +801,23 @@ proc FocsBuildIF { This } {
       pack $This.fra4 -side top -fill x
 
       #--- Speed
-      bind $This.fra4.we.lab <ButtonPress-1> { ::Focs::cmdSpeed }
+      bind $This.fra4.we.lab <ButtonPress-1> { ::focs::cmdSpeed }
 
       #--- Cardinal moves
-      bind $zone(moins) <ButtonPress-1>   { ::Focs::cmdFocus - }
-      bind $zone(moins) <ButtonRelease-1> { ::Focs::cmdFocus stop }
-      bind $zone(plus)  <ButtonPress-1>   { ::Focs::cmdFocus + }
-      bind $zone(plus)  <ButtonRelease-1> { ::Focs::cmdFocus stop }
+      bind $zone(moins) <ButtonPress-1>   { ::focs::cmdFocus - }
+      bind $zone(moins) <ButtonRelease-1> { ::focs::cmdFocus stop }
+      bind $zone(plus)  <ButtonPress-1>   { ::focs::cmdFocus + }
+      bind $zone(plus)  <ButtonRelease-1> { ::focs::cmdFocus stop }
 
       #--- Frame de la position focus
       frame $This.fra5 -borderwidth 1 -relief groove
 
          #--- Label pour la position focus
-         label $This.fra5.lab1 -text $panneau(Focs,position) -relief flat
+         label $This.fra5.lab1 -text $panneau(focs,position) -relief flat
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -fill none -padx 4 -pady 1
 
          #--- Bouton "Se trouve à"
-         button $This.fra5.but1 -borderwidth 2 -text $panneau(Focs,trouve) -command { ::Focs::cmdSetrouvea }
+         button $This.fra5.but1 -borderwidth 2 -text $panneau(focs,trouve) -command { ::focs::cmdSeTrouveA }
          pack $This.fra5.but1 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          #--- Frame des labels
@@ -829,13 +829,13 @@ proc FocsBuildIF { This } {
             pack $This.fra5.fra1.lab1 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
             #--- Label pas
-            label $This.fra5.fra1.lab2 -text $panneau(Focs,pas) -relief flat
+            label $This.fra5.fra1.lab2 -text $panneau(focs,pas) -relief flat
             pack $This.fra5.fra1.lab2 -in $This.fra5.fra1 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra5.fra1 -in $This.fra5 -anchor center -fill none
 
          #--- Bouton "Aller à"
-         button $This.fra5.but2 -borderwidth 2 -text $panneau(Focs,deplace) -command { ::Focs::cmdSedeplacea }
+         button $This.fra5.but2 -borderwidth 2 -text $panneau(focs,deplace) -command { ::focs::cmdSeDeplaceA }
          pack $This.fra5.but2 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
          #--- Frame des entry & label
@@ -845,17 +845,17 @@ proc FocsBuildIF { This } {
             entry $This.fra5.fra2.ent3 -font $audace(font,arial_8_b) -textvariable audace(focus,nbpas2) \
                -relief groove -width 6 -justify center
             pack $This.fra5.fra2.ent3 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
-            bind $This.fra5.fra2.ent3 <Enter> { ::Focs::FormatFoc }
+            bind $This.fra5.fra2.ent3 <Enter> { ::focs::formatFoc }
             bind $This.fra5.fra2.ent3 <Leave> { destroy $audace(base).formatfoc }
 
             #--- Label pas
-            label $This.fra5.fra2.lab4 -text $panneau(Focs,pas) -relief flat
+            label $This.fra5.fra2.lab4 -text $panneau(focs,pas) -relief flat
             pack $This.fra5.fra2.lab4 -in $This.fra5.fra2 -side left -fill none -padx 4 -pady 2
 
          pack $This.fra5.fra2 -in $This.fra5 -anchor center -fill none
 
          #--- Bouton "Initialisation"
-         button $This.fra5.but3 -borderwidth 2 -text $panneau(Focs,initialise) -command { ::Focs::cmdInitfoc }
+         button $This.fra5.but3 -borderwidth 2 -text $panneau(focs,initialise) -command { ::focs::cmdInitFoc }
          pack $This.fra5.but3 -in $This.fra5 -anchor center -fill x -padx 5 -pady 2 -ipadx 15
 
       pack $This.fra5 -side top -fill x
@@ -864,7 +864,7 @@ proc FocsBuildIF { This } {
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Bouton GRAPHE
-         button $This.fra3.but1 -borderwidth 2 -text $panneau(Focs,graphe) -command { FocGraphe }
+         button $This.fra3.but1 -borderwidth 2 -text $panneau(focs,graphe) -command { focGraphe }
          pack $This.fra3.but1 -in $This.fra3 -side bottom -fill x -padx 5 -pady 5 -ipadx 15 -ipady 2
 
       pack $This.fra3 -side top -fill x
