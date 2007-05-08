@@ -2,7 +2,7 @@
 # Fichier : scanfastSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scanfastSetup.tcl,v 1.1 2007-04-10 21:07:20 robertdelmas Exp $
+# Mise a jour $Id: scanfastSetup.tcl,v 1.2 2007-05-08 16:45:02 robertdelmas Exp $
 #
 
 namespace eval scanfastSetup {
@@ -26,8 +26,8 @@ namespace eval scanfastSetup {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::Scanfast::parametres(Scanfast,delai) ] }  { set ::Scanfast::parametres(Scanfast,delai)  "3" }
-      if { ! [ info exists ::Scanfast::parametres(Scanfast,active) ] } { set ::Scanfast::parametres(Scanfast,active) "1" }
+      if { ! [ info exists ::scanfast::parametres(scanfast,delai) ] }  { set ::scanfast::parametres(scanfast,delai)  "3" }
+      if { ! [ info exists ::scanfast::parametres(scanfast,active) ] } { set ::scanfast::parametres(scanfast,active) "1" }
    }
 
    #
@@ -39,8 +39,8 @@ namespace eval scanfastSetup {
       global panneau
 
       #--- confToWidget
-      set panneau(Scanfast,delai)  $::Scanfast::parametres(Scanfast,delai)
-      set panneau(Scanfast,active) $::Scanfast::parametres(Scanfast,active)
+      set panneau(scanfast,delai)  $::scanfast::parametres(scanfast,delai)
+      set panneau(scanfast,active) $::scanfast::parametres(scanfast,active)
    }
 
    #
@@ -138,19 +138,19 @@ namespace eval scanfastSetup {
 
       #--- Radio-bouton 'sans temporisation'
       radiobutton $This.rad1 -anchor nw -highlightthickness 0 \
-         -text "$caption(scanfastSetup,sans_scan)" -value 0 -variable panneau(Scanfast,active)
+         -text "$caption(scanfastSetup,sans_scan)" -value 0 -variable panneau(scanfast,active)
       pack $This.rad1 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
       #--- Radio-bouton 'avec temporisation'
       radiobutton $This.rad2 -anchor nw -highlightthickness 0 \
-         -text "$caption(scanfastSetup,avec_scan)" -value 1 -variable panneau(Scanfast,active)
+         -text "$caption(scanfastSetup,avec_scan)" -value 1 -variable panneau(scanfast,active)
       pack $This.rad2 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
       #--- Cree la zone a renseigner du delai entre l'arret du moteur d'A.D. et le debut de la pose
       label $This.lab3 -text "$caption(scanfastSetup,delai)"
       pack $This.lab3 -in $This.frame5 -anchor w -side left -padx 10 -pady 3
 
-      entry $This.delai -textvariable panneau(Scanfast,delai) -width 3 -justify center
+      entry $This.delai -textvariable panneau(scanfast,delai) -width 3 -justify center
       pack $This.delai -in $This.frame5 -anchor w -side left -padx 0 -pady 2
 
       label $This.lab4 -text "$caption(scanfastSetup,seconde)"
@@ -196,8 +196,8 @@ namespace eval scanfastSetup {
       variable parametres
       global panneau
 
-      set ::Scanfast::parametres(Scanfast,delai)  $panneau(Scanfast,delai)
-      set ::Scanfast::parametres(Scanfast,active) $panneau(Scanfast,active)
+      set ::scanfast::parametres(scanfast,delai)  $panneau(scanfast,delai)
+      set ::scanfast::parametres(scanfast,active) $panneau(scanfast,active)
    }
 
 }
