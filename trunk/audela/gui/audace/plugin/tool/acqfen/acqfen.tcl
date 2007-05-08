@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.8 2007-04-14 08:29:22 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.9 2007-05-08 16:39:21 robertdelmas Exp $
 #
 
 # =========================================================
@@ -348,26 +348,26 @@ namespace eval ::acqfen {
       variable This
       global panneau
 
-     switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
-        00 {
-           pack $This.acqcentred -side top -fill x
-           pack $This.acqred -side top -fill x
-           pack $This.mode -side top -fill x
+      switch -exact -- $panneau(acqfen,affpleinetrame)$panneau(acqfen,afffenetrees) {
+         00 {
+            pack $This.acqcentred -side top -fill x
+            pack $This.acqred -side top -fill x
+            pack $This.mode -side top -fill x
          }
-        01 {
-           pack $This.acqcentred -side top -fill x
-           pack $This.acq -side top -fill x
-           pack $This.mode -side top -fill x
+         01 {
+            pack $This.acqcentred -side top -fill x
+            pack $This.acq -side top -fill x
+            pack $This.mode -side top -fill x
          }
-        10 {
-           pack $This.acqcent -side top -fill x
-           pack $This.acqred -side top -fill x
-           pack $This.mode -side top -fill x
+         10 {
+            pack $This.acqcent -side top -fill x
+            pack $This.acqred -side top -fill x
+            pack $This.mode -side top -fill x
          }
-        11 {
-           pack $This.acqcent -side top -fill x
-           pack $This.acq -side top -fill x
-           pack $This.mode -side top -fill x
+         11 {
+            pack $This.acqcent -side top -fill x
+            pack $This.acq -side top -fill x
+            pack $This.mode -side top -fill x
          }
       }
    }
@@ -379,89 +379,89 @@ namespace eval ::acqfen {
 
       if { [::cam::list] != "" } {
 
-      switch -exact -- $panneau(acqfen,go_stop_cent) {
-      "go" {
-         #--- Modification du bouton, pour eviter un second lancement
-         set panneau(acqfen,go_stop_cent) stop
-         $This.acqcent.but configure -text $caption(acqfen,stop)
-         $This.acqcentred.but configure -text $caption(acqfen,stop)
+         switch -exact -- $panneau(acqfen,go_stop_cent) {
+            "go" {
+               #--- Modification du bouton, pour eviter un second lancement
+               set panneau(acqfen,go_stop_cent) stop
+               $This.acqcent.but configure -text $caption(acqfen,stop)
+               $This.acqcentred.but configure -text $caption(acqfen,stop)
 
-         #--- Suppression de la zone selectionnee avec la souris
-         if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
-            ::confVisu::deleteBox
-         }
+               #--- Suppression de la zone selectionnee avec la souris
+               if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
+                  ::confVisu::deleteBox
+               }
 
-         #--- Mise a jour en-tete audace
-         wm title $audace(base) "$caption(acqfen,audace)"
+               #--- Mise a jour en-tete audace
+               wm title $audace(base) "$caption(acqfen,audace)"
 
-         #--- La commande exptime permet de fixer le temps de pose de l'image.
-         cam$audace(camNo) exptime $panneau(acqfen,pose_centrage)
+               #--- La commande exptime permet de fixer le temps de pose de l'image.
+               cam$audace(camNo) exptime $panneau(acqfen,pose_centrage)
 
-         #--- La commande bin permet de fixer le binning.
-         cam$audace(camNo) bin [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)]
+               #--- La commande bin permet de fixer le binning.
+               cam$audace(camNo) bin [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)]
 
-         #--- La commande window permet de fixer le fenetrage de numerisation du CCD
-         cam$audace(camNo) window [list 1 1 [lindex [cam$audace(camNo) nbcells] 0] [lindex [cam$audace(camNo) nbcells] 1]]
+               #--- La commande window permet de fixer le fenetrage de numerisation du CCD
+               cam$audace(camNo) window [list 1 1 [lindex [cam$audace(camNo) nbcells] 0] [lindex [cam$audace(camNo) nbcells] 1]]
 
-         #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-         if { $panneau(acqfen,pose_centrage) == "0" } {
-            ::camera::Avancement_pose "1"
-         }
+               #--- Cas des poses de 0 s : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
+               if { $panneau(acqfen,pose_centrage) == "0" } {
+                  ::camera::Avancement_pose "1"
+               }
 
-         #--- Lecture du CCD
-         cam$audace(camNo) acq
+               #--- Lecture du CCD
+               cam$audace(camNo) acq
 
-         #--- Alarme sonore de fin de pose
-         ::camera::alarme_sonore $panneau(acqfen,pose_centrage)
+               #--- Alarme sonore de fin de pose
+               ::camera::alarme_sonore $panneau(acqfen,pose_centrage)
 
-         #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-         ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 cam$audace(camNo) buf$audace(bufNo)
+               #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
+               ::camera::gestionPose $panneau(acqfen,pose_centrage) 1 cam$audace(camNo) buf$audace(bufNo)
 
-         #--- Zoom
-         if {$panneau(acqfen,typezoom)=="zoom"} {
-            visu$audace(visuNo) zoom $panneau(acqfen,bin_centrage)
-         } else {
-            #--- Applique le scale si la camera possede bien le binning demande
-            set binningCamera "$panneau(acqfen,bin_centrage)x$panneau(acqfen,bin_centrage)"
-            if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
-               buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
+               #--- Zoom
+               if {$panneau(acqfen,typezoom)=="zoom"} {
+                  visu$audace(visuNo) zoom $panneau(acqfen,bin_centrage)
+               } else {
+                  #--- Applique le scale si la camera possede bien le binning demande
+                  set binningCamera "$panneau(acqfen,bin_centrage)x$panneau(acqfen,bin_centrage)"
+                  if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
+                     buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
+                  }
+               }
+
+               #--- Affichage avec visu auto.
+               audace::autovisu $audace(visuNo)
+
+               #--- On restitue l'affichage du bouton "GO":
+               set panneau(acqfen,go_stop_cent) go
+               $This.acqcent.but configure -text $caption(acqfen,GO)
+               $This.acqcentred.but configure -text $caption(acqfen,GO)
+
+               #--- On modifie le bouton "Go" des acquisitions fenetrees
+               $This.acq.but configure -text $caption(acqfen,actuxy) -command {::acqfen::ActuCoord}
+               $This.acqred.but configure -text $caption(acqfen,actuxy) -command {::acqfen::ActuCoord}
+
+               #--- RAZ du fenetrage
+               set panneau(acqfen,X1) "-"
+               set panneau(acqfen,Y1) "-"
+               set panneau(acqfen,X2) "-"
+               set panneau(acqfen,Y2) "-"
+               place forget $This.acq.matrice_color_invariant.fen
+               place forget $This.acqred.matrice_color_invariant.fen
+               $This.acq.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
+               $This.acqred.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
+               place $This.acq.matrice_color_invariant.fen -x 0 -y 0
+               place $This.acqred.matrice_color_invariant.fen -x 0 -y 0
+            }
+            "stop" {
+               #--- Annulation de l'alarme de fin de pose
+               catch { after cancel bell }
+               #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
+               ::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
+               #--- Arret de la pose
+               catch { cam$audace(camNo) stop }
+               after 200
             }
          }
-
-         #--- Affichage avec visu auto.
-         audace::autovisu $audace(visuNo)
-
-         #--- On restitue l'affichage du bouton "GO":
-         set panneau(acqfen,go_stop_cent) go
-         $This.acqcent.but configure -text $caption(acqfen,GO)
-         $This.acqcentred.but configure -text $caption(acqfen,GO)
-
-         #--- On modifie le bouton "Go" des acquisitions fenetrees
-         $This.acq.but configure -text $caption(acqfen,actuxy) -command {::acqfen::ActuCoord}
-         $This.acqred.but configure -text $caption(acqfen,actuxy) -command {::acqfen::ActuCoord}
-
-         #--- RAZ du fenetrage
-         set panneau(acqfen,X1) "-"
-         set panneau(acqfen,Y1) "-"
-         set panneau(acqfen,X2) "-"
-         set panneau(acqfen,Y2) "-"
-         place forget $This.acq.matrice_color_invariant.fen
-         place forget $This.acqred.matrice_color_invariant.fen
-         $This.acq.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
-         $This.acqred.matrice_color_invariant.fen config -width $panneau(acqfen,mtx_x) -height $panneau(acqfen,mtx_y)
-         place $This.acq.matrice_color_invariant.fen -x 0 -y 0
-         place $This.acqred.matrice_color_invariant.fen -x 0 -y 0
-         }
-      "stop" {
-         #--- Annulation de l'alarme de fin de pose
-         catch { after cancel bell }
-         #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-         ::camera::gestionPose $panneau(acqfen,pose_centrage) 0 cam$audace(camNo) buf$audace(bufNo)
-         #--- Arret de la pose
-         catch { cam$audace(camNo) stop }
-            after 200
-         }
-      }
       } else {
          ::confCam::run
          tkwait window $audace(base).confCam
