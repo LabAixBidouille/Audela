@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.27 2007-04-13 23:12:51 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.28 2007-05-08 16:40:48 robertdelmas Exp $
 #
 
 #
@@ -1239,12 +1239,12 @@ namespace eval confFichierIma {
       foreach visuNo [ ::visu::list ] {
          if { $conf(fichier,compres) == "1" } {
             set panneau(AcqFC,$visuNo,extension)  $conf(extension,new).gz
-            set panneau(Dscan,extension_image)    $conf(extension,new).gz
-            set panneau(Scanfast,extension_image) $conf(extension,new).gz
+            set panneau(dscan,extension_image)    $conf(extension,new).gz
+            set panneau(scanfast,extension_image) $conf(extension,new).gz
          } else {
             set panneau(AcqFC,$visuNo,extension)  $conf(extension,new)
-            set panneau(Dscan,extension_image)    $conf(extension,new)
-            set panneau(Scanfast,extension_image) $conf(extension,new)
+            set panneau(dscan,extension_image)    $conf(extension,new)
+            set panneau(scanfast,extension_image) $conf(extension,new)
          }
       }
    }
