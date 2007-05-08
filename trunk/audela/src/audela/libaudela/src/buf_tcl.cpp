@@ -801,8 +801,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          // set default extension
          strcpy(extfits,Buffer->GetExtension()); 
          strcpy(ext,Buffer->GetExtension()); 
-      } 
-      else {
+      } else {
          strcpy(extfits,"");
          strcpy(ext,interp->result); 
          // je supprime le suffixe de l'extension (numero d'image d'un fichier fit en 3 dimensions)
@@ -2338,7 +2337,21 @@ int cmdTtSub(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       try {
-         buffer->Sub(argv[2],(float)offset);
+         char fileName[1024];
+
+         // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
+         Tcl_Eval(interp,ligne); 
+         strcpy(fileName,interp->result);
+         
+         // j'ajoute l'extension par defaut si necessaire
+         sprintf(ligne,"file extension \"%s\"",fileName); 
+         Tcl_Eval(interp,ligne);
+         if(strcmp(interp->result, "")==0) {
+            strcat(fileName,buffer->GetExtension()); 
+         }
+
+         buffer->Sub(fileName,(float)offset);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -2373,10 +2386,25 @@ int cmdTtAdd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
+
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       try {
-         buffer->Add(argv[2],(float)offset);
+         char fileName[1024];
+
+         // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
+         Tcl_Eval(interp,ligne); 
+         strcpy(fileName,interp->result);
+         
+         // j'ajoute l'extension par defaut si necessaire
+         sprintf(ligne,"file extension \"%s\"",fileName); 
+         Tcl_Eval(interp,ligne);
+         if(strcmp(interp->result, "")==0) {
+            strcat(fileName,buffer->GetExtension()); 
+         }
+         
+         buffer->Add(fileName,(float)offset);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -2414,7 +2442,21 @@ int cmdTtDiv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       try {
-         buffer->Div(argv[2],(float)gain);
+         char fileName[1024];
+
+         // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
+         Tcl_Eval(interp,ligne); 
+         strcpy(fileName,interp->result);
+         
+         // j'ajoute l'extension par defaut si necessaire
+         sprintf(ligne,"file extension \"%s\"",fileName); 
+         Tcl_Eval(interp,ligne);
+         if(strcmp(interp->result, "")==0) {
+            strcat(fileName,buffer->GetExtension()); 
+         }
+         
+         buffer->Div(fileName,(float)gain);
          retour = TCL_OK;
 
       } catch(const CError& e) {
@@ -2564,7 +2606,34 @@ int cmdTtOpt(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       try {
-         buffer->Opt(argv[2],argv[3]);
+         char darkFileName[1024];
+         char offsetFileName[1024];
+
+         // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
+         Tcl_Eval(interp,ligne); 
+         strcpy(darkFileName,interp->result);
+         
+         // j'ajoute l'extension par defaut si necessaire
+         sprintf(ligne,"file extension \"%s\"",darkFileName); 
+         Tcl_Eval(interp,ligne);
+         if(strcmp(interp->result, "")==0) {
+            strcat(darkFileName,buffer->GetExtension()); 
+         }
+
+         // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[3]); 
+         Tcl_Eval(interp,ligne); 
+         strcpy(offsetFileName,interp->result);
+         
+         // j'ajoute l'extension par defaut si necessaire
+         sprintf(ligne,"file extension \"%s\"",offsetFileName); 
+         Tcl_Eval(interp,ligne);
+         if(strcmp(interp->result, "")==0) {
+            strcat(offsetFileName,buffer->GetExtension()); 
+         }
+
+         buffer->Opt(darkFileName,offsetFileName);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
