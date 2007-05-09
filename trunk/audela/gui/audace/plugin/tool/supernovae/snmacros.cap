@@ -1,6 +1,6 @@
 #
 # Fichier : snmacros.cap
-# Mise a jour $Id: snmacros.cap,v 1.7 2007-01-27 14:54:58 robertdelmas Exp $
+# Mise a jour $Id: snmacros.cap,v 1.8 2007-05-09 21:49:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -88,19 +88,19 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(snmacros,obscurite)        "Die Kamera muss in vollkommen Finsternis gestellt sein."
-   set caption(snmacros,acqde1)           "Anschaffung von"
+   set caption(snmacros,acqde1)           "Belichtung von"
    set caption(snmacros,bias)             "Bias"
-   set caption(snmacros,acqbias)          "Bias Anschaffung"
+   set caption(snmacros,acqbias)          "Bias Belichtung"
    set caption(snmacros,synthesebias)     "Bias Zusammenfassung Schlusssatz..."
    set caption(snmacros,synthesebiasfini) "Bias Zusammenfassung beendet"
-   set caption(snmacros,acqbias_stop)     "Bias Anschaffung unterbrecht"
-   set caption(snmacros,acqde2)           "Anschaffung von"
+   set caption(snmacros,acqbias_stop)     "Bias Belichtung unterbrecht"
+   set caption(snmacros,acqde2)           "Belichtung von"
    set caption(snmacros,darkde)           "Darks von"
    set caption(snmacros,seconde)          "Sekunden"
-   set caption(snmacros,acqdark)          "Dark Anschaffung"
+   set caption(snmacros,acqdark)          "Dark Belichtung"
    set caption(snmacros,synthesedark)     "Dark Zusammenfassung Schlusssatz..."
    set caption(snmacros,synthesedarkfini) "Dark Zusammenfassung beendet"
-   set caption(snmacros,acqdark_stop)     "Dark Anschaffung unterbrecht"
+   set caption(snmacros,acqdark_stop)     "Dark Belichtung unterbrecht"
    set caption(snmacros,est)              "O"
 
 # *************** Version portugaise **************************

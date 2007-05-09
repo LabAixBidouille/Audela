@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.30 2007-04-30 08:07:43 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.31 2007-05-09 21:45:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -652,7 +652,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,aide)                    "Hilfe"
    set caption(confcam,arreter)                 "Halten"
 
-   set caption(confcam,acquisition)             "Anschaffung"
+   set caption(confcam,acquisition)             "Belichtung"
    set caption(confcam,camera)                  "Kamera:"
 
    set caption(confcam,audine)                  "Audine"

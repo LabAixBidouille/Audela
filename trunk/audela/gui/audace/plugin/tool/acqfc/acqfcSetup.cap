@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.1 2007-04-11 17:40:58 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.2 2007-05-09 21:41:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -63,7 +63,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(acqfcSetup,titre)                  "Anschaffung - Auf die Konsole auftragen"
+   set caption(acqfcSetup,titre)                  "Belichtung - Auf die Konsole auftragen"
    set caption(acqfcSetup,texte)                  "Sie können hier die Mitteilungen wählen die sie zeigen oder nicht zeigen wollen:"
    set caption(acqfcSetup,oui)                    "Ja"
    set caption(acqfcSetup,non)                    "Nein"

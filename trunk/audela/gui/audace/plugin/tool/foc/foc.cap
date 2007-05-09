@@ -1,6 +1,6 @@
 #
 # Fichier : foc.cap
-# Mise a jour $Id: foc.cap,v 1.6 2007-01-27 14:44:00 robertdelmas Exp $
+# Mise a jour $Id: foc.cap,v 1.7 2007-05-09 21:46:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -173,7 +173,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(foc,focalisation)    "Fokussierung"
    set caption(foc,help_titre)      "Hilfe für dieses Gerät"
-   set caption(foc,acquisition)     "Anschaffung"
+   set caption(foc,acquisition)     "Belichtung"
    set caption(foc,centrage)        "Zentrierung"
    set caption(foc,fenetre)         "Fenster"
    set caption(foc,seconde)         "sek."

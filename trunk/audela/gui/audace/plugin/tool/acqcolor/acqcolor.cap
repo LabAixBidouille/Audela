@@ -1,6 +1,6 @@
 #
 # Fichier : acqcolor.cap
-# Mise a jour $Id: acqcolor.cap,v 1.7 2007-01-27 14:25:59 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.cap,v 1.8 2007-05-09 21:40:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -162,7 +162,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,sec)                 "sek.:"
    set caption(acqcolor,raz)                 "CCD Löschung"
    set caption(acqcolor,lecture)             "CCD Lesen"
-   set caption(acqcolor,total)               "Anschaffung 1x1"
+   set caption(acqcolor,total)               "Belichtung 1x1"
    set caption(acqcolor,acqserie)            "Reihe Anschaf."
    set caption(acqcolor,nbimage)             "Zahl:"
    set caption(acqcolor,attente)             "Zeitraum (ms):"

@@ -1,6 +1,6 @@
 #
 # Fichier : snacq.cap
-# Mise a jour $Id: snacq.cap,v 1.7 2007-01-27 14:54:45 robertdelmas Exp $
+# Mise a jour $Id: snacq.cap,v 1.8 2007-05-09 21:49:06 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -257,14 +257,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,foclen)                 "Brennweite Länge (m)"
    set caption(snacq,fits,OBSERVER)          "Beobachter"
    set caption(snacq,go2)                    "Simulierung"
-   set caption(snacq,go)                     "Anschaffung"
+   set caption(snacq,go)                     "Belichtung"
    set caption(snacq,stop)                   "Stop"
    set caption(snacq,exit)                   "Beenden"
    set caption(snacq,godark)                 "Dark"
    set caption(snacq,gobias)                 "Bias"
    set caption(snacq,help)                   "Hilfe"
 
-   set caption(snacq,status_1)               "          Automatische Galaxien Bilder Anschaffung"
+   set caption(snacq,status_1)               "          Automatische Galaxien Bilder Belichtung"
    set caption(snacq,status_2)               "                 um Supernovae zu entdecken."
    set caption(snacq,status_nodark)          "Kein Dark gefunden (auf Dark drücken)."
    set caption(snacq,status_nobias)          "Kein Bias gefunden (auf Bias drücken)."
@@ -286,7 +286,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snacq,texte1)                 "Bitte während der"
    set caption(snacq,texte2)                 "Sn Anschaf. schließen warten."
    set caption(snacq,texte3)                 "Bitte während das"
-   set caption(snacq,texte4)                 "Anschaffungen Stillstehen warten."
+   set caption(snacq,texte4)                 "Belichtungen Stillstehen warten."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

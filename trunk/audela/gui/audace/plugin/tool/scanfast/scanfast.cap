@@ -1,6 +1,6 @@
 #
 # Fichier : scanfast.cap
-# Mise a jour $Id: scanfast.cap,v 1.17 2007-05-06 08:48:32 robertdelmas Exp $
+# Mise a jour $Id: scanfast.cap,v 1.18 2007-05-09 21:48:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -290,7 +290,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scanfast,obtu_ouvert)      "Offen"
    set caption(scanfast,obtu_ferme)       "Geschlossen"
    set caption(scanfast,obtu_synchro)     "Synchro"
-   set caption(scanfast,acquisition)      "Anschaffung"
+   set caption(scanfast,acquisition)      "Belichtung"
    set caption(scanfast,goccd)            "GO CCD\nan/aus"
    set caption(scanfast,stop)             "Stop"
    set caption(scanfast,en_cours)         "Laufend..."
