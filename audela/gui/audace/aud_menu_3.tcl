@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.26 2007-05-05 21:40:35 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.27 2007-05-09 20:32:29 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -80,10 +80,10 @@ namespace eval ::pretraitement {
    }
 
    #
-   # ::pretraitement::recup_position
+   # ::pretraitement::recupPosition
    # Recupere la position de la fenetre
    #
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       variable widget
       global pretraitement
@@ -1282,7 +1282,7 @@ namespace eval ::pretraitement {
             }
          }
       }
-      ::pretraitement::recup_position
+      ::pretraitement::recupPosition
    }
 
    #
@@ -1292,7 +1292,7 @@ namespace eval ::pretraitement {
    proc cmdClose { } {
       variable This
 
-      ::pretraitement::recup_position
+      ::pretraitement::recupPosition
       destroy $This
       unset This
    }
@@ -1991,21 +1991,21 @@ namespace eval ::pretraitement {
             set pretraitement(premier_indice) ""
             set pretraitement(image_B)        ""
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) A + Cste"
          } elseif { $pretraitement(choix_mode) == "1" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
             set pretraitement(nombre)         ""
             set pretraitement(premier_indice) ""
             set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) B = A + Cste"
          } elseif { $pretraitement(choix_mode) == "2" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
             set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + Cste"
          }
       } elseif { $pretraitement(operation) == "multi_multiplier_cte" } {
          if { $pretraitement(choix_mode) == "0" } {
@@ -2014,21 +2014,21 @@ namespace eval ::pretraitement {
             set pretraitement(premier_indice) ""
             set pretraitement(image_B)        ""
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A x Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) A x Cste"
          } elseif { $pretraitement(choix_mode) == "1" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
             set pretraitement(nombre)         ""
             set pretraitement(premier_indice) ""
             set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A x Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) B = A x Cste"
          } elseif { $pretraitement(choix_mode) == "2" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
             set pretraitement(premier_indice) "$caption(pretraitement,image_premier_indice)"
             set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An x Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An x Cste"
          }
       } elseif { $pretraitement(operation) == "multi_addition" } {
          if { $pretraitement(choix_mode) == "0" } {
@@ -2038,7 +2038,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        ""
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( B ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A + B + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) A + B + Cste"
          } elseif { $pretraitement(choix_mode) == "1" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
             set pretraitement(nombre)         ""
@@ -2046,7 +2046,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A + C + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) B = A + C + Cste"
          } elseif { $pretraitement(choix_mode) == "2" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
@@ -2054,7 +2054,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_ajouter-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + C + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An + C + Cste"
          }
       } elseif { $pretraitement(operation) == "multi_soustraction" } {
          if { $pretraitement(choix_mode) == "0" } {
@@ -2064,7 +2064,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        ""
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( B ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) A - B + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) A - B + Cste"
          } elseif { $pretraitement(choix_mode) == "1" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
             set pretraitement(nombre)         ""
@@ -2072,7 +2072,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = A - C + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) B = A - C + Cste"
          } elseif { $pretraitement(choix_mode) == "2" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
@@ -2080,7 +2080,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,ajouter_cte)"
             set pretraitement(operande)       "$caption(pretraitement,image_soustraire-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An - C + Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = An - C + Cste"
          }
       } elseif { $pretraitement(operation) == "multi_division" } {
          if { $pretraitement(choix_mode) == "0" } {
@@ -2090,7 +2090,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        ""
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
             set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( B ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) ( A / B ) x Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) ( A / B ) x Cste"
          } elseif { $pretraitement(choix_mode) == "1" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_entree-) ( A ) :"
             set pretraitement(nombre)         ""
@@ -2098,7 +2098,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        "$caption(pretraitement,image_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
             set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) B = ( A / C ) x Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) B = ( A / C ) x Cste"
          } elseif { $pretraitement(choix_mode) == "2" } {
             set pretraitement(image_A)        "$caption(pretraitement,image_generique_entree-) ( A ) :"
             set pretraitement(nombre)         "$caption(pretraitement,image_nombre-) ( n ) :"
@@ -2106,7 +2106,7 @@ namespace eval ::pretraitement {
             set pretraitement(image_B)        "$caption(pretraitement,image_generique_sortie-) ( B ) :"
             set pretraitement(constante)      "$caption(pretraitement,cte_mult)"
             set pretraitement(operande)       "$caption(pretraitement,nom_diviser-) ( C ) :"
-            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = ( An / C ) x Cte"
+            set pretraitement(formule)        "$caption(pretraitement,formule) Bn = ( An / C ) x Cste"
          }
       } else {
          if { $pretraitement(choix_mode) == "0" } {
@@ -2363,10 +2363,10 @@ namespace eval ::traiteImage {
    }
 
    #
-   # ::traiteImage::recup_position
+   # ::traiteImage::recupPosition
    # Recupere la position de la fenetre
    #
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       variable widget
       global traiteImage
@@ -2649,7 +2649,7 @@ namespace eval ::traiteImage {
             }
          }
       }
-      ::traiteImage::recup_position
+      ::traiteImage::recupPosition
    }
 
    #
@@ -2659,7 +2659,7 @@ namespace eval ::traiteImage {
    proc cmdClose { } {
       variable This
 
-      ::traiteImage::recup_position
+      ::traiteImage::recupPosition
       destroy $This
       unset This
    }
@@ -2849,10 +2849,10 @@ namespace eval ::traiteWindow {
    }
 
    #
-   # ::traiteWindow::recup_position
+   # ::traiteWindow::recupPosition
    # Recupere la position de la fenetre
    #
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       variable widget
       global traiteWindow
@@ -3215,7 +3215,7 @@ namespace eval ::traiteWindow {
             }
          }
       }
-      ::traiteWindow::recup_position
+      ::traiteWindow::recupPosition
    }
 
    #
@@ -3225,7 +3225,7 @@ namespace eval ::traiteWindow {
    proc cmdClose { } {
       variable This
 
-      ::traiteWindow::recup_position
+      ::traiteWindow::recupPosition
       destroy $This
       unset This
    }
@@ -3450,10 +3450,10 @@ namespace eval ::faireImageRef {
    }
 
    #
-   # ::faireImageRef::recup_position
+   # ::faireImageRef::recupPosition
    # Recupere la position de la fenetre
    #
-   proc recup_position { } {
+   proc recupPosition { } {
       variable This
       variable widget
       global faireImageRef
@@ -3492,7 +3492,13 @@ namespace eval ::faireImageRef {
       set faireImageRef(dark,no-offset)              "0"
       set faireImageRef(flat-field,no-offset)        "0"
       set faireImageRef(flat-field,no-dark)          "0"
+      set faireImageRef(pretraitement,no-offset)     "0"
+      set faireImageRef(pretraitement,no-dark)       "0"
       set faireImageRef(pretraitement,no-flat-field) "0"
+      set faireImageRef(pretraitement,norm-auto)     "0"
+
+      #--- Toutes les images (offset, dark et flat) sont diponibles
+      set faireImageRef(option)                      "000"
 
       #---
       toplevel $This
@@ -3516,6 +3522,9 @@ namespace eval ::faireImageRef {
 
          frame $This.usr.7 -borderwidth 1 -relief raised
             frame $This.usr.7.1 -borderwidth 0 -relief flat
+               checkbutton $This.usr.7.1.che1 -text "$caption(pretraitement,aucune)" \
+                  -variable faireImageRef(pretraitement,no-offset) -command { ::faireImageRef::griserActiver_1 }
+               pack $This.usr.7.1.che1 -side left -padx 10 -pady 5
                button $This.usr.7.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
                pack $This.usr.7.1.explore -side left -padx 10 -pady 5 -ipady 5
@@ -3525,6 +3534,9 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.1 -side top -fill both
             frame $This.usr.7.2 -borderwidth 0 -relief flat
+               checkbutton $This.usr.7.2.che1 -text "$caption(pretraitement,aucune)" \
+                  -variable faireImageRef(pretraitement,no-dark) -command { ::faireImageRef::griserActiver_2 }
+               pack $This.usr.7.2.che1 -side left -padx 10 -pady 5
                button $This.usr.7.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 4 }
                pack $This.usr.7.2.explore -side left -padx 10 -pady 5 -ipady 5
@@ -3538,6 +3550,9 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.3.opt -side right -padx 60 -pady 5
             pack $This.usr.7.3 -side top -fill both
             frame $This.usr.7.4 -borderwidth 0 -relief flat
+               checkbutton $This.usr.7.4.che1 -text "$caption(pretraitement,aucune)" \
+                  -variable faireImageRef(pretraitement,no-flat-field) -command { ::faireImageRef::griserActiver_3 }
+               pack $This.usr.7.4.che1 -side left -padx 10 -pady 5
                button $This.usr.7.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 5 }
                pack $This.usr.7.4.explore -side left -padx 10 -pady 5 -ipady 5
@@ -3546,11 +3561,16 @@ namespace eval ::faireImageRef {
                entry $This.usr.7.4.ent6 -textvariable faireImageRef(flat-field) -width 20 -font $audace(font,arial_8_b)
                pack $This.usr.7.4.ent6 -side right -padx 10 -pady 5
             pack $This.usr.7.4 -side top -fill both
-            frame $This.usr.7.5 -borderwidth 0 -relief flat
-               checkbutton $This.usr.7.5.sans_flat -text "$caption(pretraitement,sans_image_flat-field)" \
-                  -variable faireImageRef(pretraitement,no-flat-field) -command { ::faireImageRef::griser_activer_1 }
-               pack $This.usr.7.5.sans_flat -side left -padx 10 -pady 5
-            pack $This.usr.7.5 -side top -fill both
+            frame $This.usr.7.6 -borderwidth 0 -relief flat
+               checkbutton $This.usr.7.6.che1 -text "$caption(pretraitement,auto)" \
+                  -variable faireImageRef(pretraitement,norm-auto) -command { ::faireImageRef::griserActiver_4 }
+               pack $This.usr.7.6.che1 -side left -padx 10 -pady 5
+               label $This.usr.7.6.lab6 -textvariable "faireImageRef(normalisation)"
+               pack $This.usr.7.6.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.7.6.ent6 -textvariable faireImageRef(norm) -width 15 -justify center \
+                  -font $audace(font,arial_8_b)
+               pack $This.usr.7.6.ent6 -side right -padx 10 -pady 5
+            pack $This.usr.7.6 -side top -fill both
         # pack $This.usr.7 -side top -fill both
 
          frame $This.usr.6 -borderwidth 1 -relief raised
@@ -3580,7 +3600,7 @@ namespace eval ::faireImageRef {
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.4.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-field,no-offset) -command { ::faireImageRef::griser_activer_2 }
+                  -variable faireImageRef(flat-field,no-offset) -command { ::faireImageRef::griserActiver_5 }
                pack $This.usr.4.1.che1 -side left -padx 10 -pady 5
                button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
@@ -3593,7 +3613,7 @@ namespace eval ::faireImageRef {
 
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                checkbutton $This.usr.4.2.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-field,no-dark) -command { ::faireImageRef::griser_activer_3 }
+                  -variable faireImageRef(flat-field,no-dark) -command { ::faireImageRef::griserActiver_6 }
                pack $This.usr.4.2.che1 -side left -padx 10 -pady 5
                button $This.usr.4.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 4 }
@@ -3616,7 +3636,7 @@ namespace eval ::faireImageRef {
          frame $This.usr.3 -borderwidth 1 -relief raised
             frame $This.usr.3.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.3.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(dark,no-offset) -command { ::faireImageRef::griser_activer_4 }
+                  -variable faireImageRef(dark,no-offset) -command { ::faireImageRef::griserActiver_7 }
                pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
                button $This.usr.3.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
@@ -3979,69 +3999,132 @@ namespace eval ::faireImageRef {
          "pretraitement" {
             set catchError [ catch {
                #--- Test sur l'offset
-               if { $faireImageRef(offset) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_offset)"
-                  set faireImageRef(avancement) ""
-                  return
+               if { $faireImageRef(pretraitement,no-offset) == "0" } {
+                  if { $faireImageRef(offset) == "" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_offset)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
                }
                #--- Test sur le dark
-               if { $faireImageRef(dark) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_noir)"
-                  set faireImageRef(avancement) ""
-                  return
+               if { $faireImageRef(pretraitement,no-dark) == "0" } {
+                  if { $faireImageRef(dark) == "" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_noir)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
                }
                #--- Test sur le flat-field
                if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                  if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-                     if { $faireImageRef(flat-field) == "" } {
+                  if { $faireImageRef(flat-field) == "" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_flat-field)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
+               }
+               #--- Tests sur la valeur de normalisation
+               if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+                  if { $faireImageRef(pretraitement,norm-auto) == "0" } {
+                     if { $faireImageRef(norm) == "" } {
                         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                           -message "$caption(pretraitement,definir_flat-field)"
+                           -message "$caption(pretraitement,definir_cte)"
+                        set faireImageRef(avancement) ""
+                        return
+                     }
+                     if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
+                        tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                           -message "$caption(pretraitement,cte_invalide)"
                         set faireImageRef(avancement) ""
                         return
                      }
                   }
                }
+               #--- Calcul automatique de la constante multiplicative
+               if { $faireImageRef(pretraitement,norm-auto) == "1" } {
+                  ::faireImageRef::calculCsteMult
+               }
                #---
                set offset     $faireImageRef(offset)
                set dark       $faireImageRef(dark)
                set flat       $faireImageRef(flat-field)
+               set norm       $faireImageRef(norm)
                set const      "0"
                set const_mult "1"
                set temp       "temp"
-               #--- Deux possibilites de pretraitement
+               set temp1      "temp1"
+               #--- Formule : Generique de sortie = K * [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
+               #--- Deux familles de pretraitement : Sans ou avec optimisation du noir
                if { $faireImageRef(opt) == "0" } {
-                  #--- Formule : Generique de sortie = [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
-                  #--- Realisation de X = ( Offset + Dark )
-                  set buf_pretrait [ ::buf::create ]
-                  buf$buf_pretrait extension $conf(extension,defaut)
-                  buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
-                  buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
-                  buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
-                  ::buf::delete $buf_pretrait
-                  if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+                  #--- Sans optimisation du noir - Offset, dark et flat disponibles
+                  if { $faireImageRef(option) == "000" } {
+                     #--- Realisation de X = ( Offset + Dark )
+                     set buf_pretrait [ ::buf::create ]
+                     buf$buf_pretrait extension $conf(extension,defaut)
+                     buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
+                     buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
+                     buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
+                     ::buf::delete $buf_pretrait
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
                      sub2 $in offset+dark $temp $const $nb $first
-                     #--- Realisation de Z = Y / Flat-field
-                     div2 $temp $flat $out $const_mult $nb $first
+                     #--- Realisation de Y' = K * Y
+                     mult2 $temp $temp1 $norm $nb $first
+                     #--- Realisation de Z = Y' / Flat-field
+                     div2 $temp1 $flat $out $const_mult $nb $first
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
-                  } else {
+                     delete2 $temp1 $nb
+                  #--- Sans optimisation du noir - Dark et flat disponibles - Manque les offsets
+                  } elseif { $faireImageRef(option) == "100" } {
+                     #--- Realisation de Y = [ Generique d'entree - Dark ]
+                     sub2 $in $dark $temp $const $nb $first
+                     #--- Realisation de Y' = K * Y
+                     mult2 $temp $temp1 $norm $nb $first
+                     #--- Realisation de Z = Y' / Flat-field
+                     div2 $temp1 $flat $out $const_mult $nb $first
+                     #--- Suppression des fichiers temporaires
+                     delete2 $temp $nb
+                     delete2 $temp1 $nb
+                  #--- Sans optimisation du noir - Offset et flat disponibles - Manque les darks
+                  } elseif { $faireImageRef(option) == "010" } {
+                     #--- Realisation de Y = [ Generique d'entree - Offset ]
+                     sub2 $in $offset $temp $const $nb $first
+                     #--- Realisation de Y' = K * Y
+                     mult2 $temp $temp1 $norm $nb $first
+                     #--- Realisation de Z = Y' / Flat-field
+                     div2 $temp1 $flat $out $const_mult $nb $first
+                     #--- Suppression des fichiers temporaires
+                     delete2 $temp $nb
+                     delete2 $temp1 $nb
+                  #--- Sans optimisation du noir - Offset et dark disponibles - Manque les flats
+                  } elseif { $faireImageRef(option) == "001" } {
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
                      sub2 $in offset+dark $out $const $nb $first
                   }
                   #--- Suppression du fichier intermediaire
                   file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                } else {
-                  if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+                  #--- Optimisation du noir - Offset, dark et flat disponibles
+                  if { $faireImageRef(option) == "000" } {
                      #--- Optimisation du noir
                      opt2 $in $dark $offset $temp $nb $first
+                     #--- Multiplication par la constante K
+                     mult2 $temp $temp1 $norm $nb $first
                      #--- Division par le flat
-                     div2 $temp $flat $out $const_mult $nb $first
+                     div2 $temp1 $flat $out $const_mult $nb $first
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
-                  } else {
+                     delete2 $temp1 $nb
+                  #--- Optimisation du noir - Dark et flat disponibles - Manque les offsets
+                  } elseif { $faireImageRef(option) == "100" } {
+                     #--- Ce cas n'est pas envisageable
+                  #--- Optimisation du noir - Offset et flat disponibles - Manque les darks
+                  } elseif { $faireImageRef(option) == "010" } {
+                     #--- Ce cas n'est pas envisageable
+                  #--- Optimisation du noir - Offset et dark disponibles - Manque les flats
+                  } elseif { $faireImageRef(option) == "001" } {
                      #--- Optimisation du noir
                      opt2 $in $dark $offset $out $nb $first
                   }
@@ -4058,7 +4141,7 @@ namespace eval ::faireImageRef {
             }
          }
       }
-      ::faireImageRef::recup_position
+      ::faireImageRef::recupPosition
    }
 
    #
@@ -4068,7 +4151,7 @@ namespace eval ::faireImageRef {
    proc cmdClose { } {
       variable This
 
-      ::faireImageRef::recup_position
+      ::faireImageRef::recupPosition
       destroy $This
       unset This
    }
@@ -4241,6 +4324,7 @@ namespace eval ::faireImageRef {
          set faireImageRef(offset)          "$caption(pretraitement,image_offset)"
          set faireImageRef(dark)            "$caption(pretraitement,image_dark)"
          set faireImageRef(flat-field)      "$caption(pretraitement,image_flat-field)"
+         set faireImageRef(normalisation)   "$caption(pretraitement,cte_mult)"
       } else {
          set faireImageRef(image_generique) "$caption(pretraitement,image_generique_entree)"
          set faireImageRef(nombre)          "$caption(pretraitement,image_nombre)"
@@ -4250,44 +4334,148 @@ namespace eval ::faireImageRef {
    }
 
    #
-   # ::faireImageRef::griser_activer_1
-   # Fonction destinee a inhiber ou a activer l'affichage du champ flat-field de la boite pretraitement
+   # ::faireImageRef::calculCsteMult
+   # Fonction destinee a calculer la valeur moyenne de l'image de flat (constante multiplicative)
    #
-   proc griser_activer_1 { } {
+   proc calculCsteMult { } {
+      global audace conf faireImageRef
+
+      #--- Creation d'un buffer temporaire et chargement du flat
+      set buf_pretrait [ ::buf::create ]
+      buf$buf_pretrait extension $conf(extension,defaut)
+      buf$buf_pretrait load [ file join $audace(rep_images) $faireImageRef(flat-field) ]
+      #--- Fenetre à la dimension de l'image du flat
+      set naxis1 [ expr [ lindex [ buf$buf_pretrait getkwd NAXIS1 ] 1 ]-0 ]
+      set naxis2 [ expr [ lindex [ buf$buf_pretrait getkwd NAXIS2 ] 1 ]-0 ]
+      set box [ list 1 1 $naxis1 $naxis2 ]
+      #--- Lecture des statistiques dans la fenetre et extraction de la moyenne du flat
+      set valeurs [ buf$buf_pretrait stat $box ]
+      set moyenne [ lindex $valeurs 4 ]
+      set faireImageRef(norm) $moyenne
+      #--- Destruction du buffer temporaire
+      ::buf::delete $buf_pretrait
+   }
+
+   #
+   # ::faireImageRef::griserActiver_1
+   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite pretraitement
+   #
+   proc griserActiver_1 { } {
       variable This
       global faireImageRef
 
-      if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-         $This.usr.7.4.explore configure -state normal
-         $This.usr.7.4.ent6 configure -state normal
+      #--- Cas particulier des images d'offset qui manquent "100"
+      set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
+      #--- Modification des widgets
+      if { $faireImageRef(pretraitement,no-offset) == "0" } {
+         $This.usr.7.1.explore configure -state normal
+         $This.usr.7.1.ent6 configure -state normal
+         $This.usr.7.2.che1 configure -state normal
+         $This.usr.7.3.opt configure -state normal
+         $This.usr.7.4.che1 configure -state normal
       } else {
-         $This.usr.7.4.explore configure -state disabled
-         $This.usr.7.4.ent6 configure -textvariable faireImageRef(flat-field) -state disabled
+         $This.usr.7.1.explore configure -state disabled
+         $This.usr.7.1.ent6 configure -state disabled
+         $This.usr.7.2.che1 configure -state disabled
+         $This.usr.7.3.opt configure -state disabled
+         $This.usr.7.4.che1 configure -state disabled
+         set faireImageRef(opt) "0"
       }
    }
 
    #
-   # ::faireImageRef::griser_activer_2
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite flat-field
+   # ::faireImageRef::griserActiver_2
+   # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la boite pretraitement
    #
-   proc griser_activer_2 { } {
+   proc griserActiver_2 { } {
       variable This
       global faireImageRef
 
-      if { $faireImageRef(flat-field,no-offset) == "0" } {
+      #--- Cas particulier des images de dark qui manquent "010"
+      set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
+      #--- Modification des widgets
+      if { $faireImageRef(pretraitement,no-dark) == "0" } {
+         $This.usr.7.1.che1 configure -state normal
+         $This.usr.7.2.explore configure -state normal
+         $This.usr.7.2.ent6 configure -state normal
+         $This.usr.7.3.opt configure -state normal
+         $This.usr.7.4.che1 configure -state normal
+      } else {
+         $This.usr.7.1.che1 configure -state disabled
+         $This.usr.7.2.explore configure -state disabled
+         $This.usr.7.2.ent6 configure -state disabled
+         $This.usr.7.3.opt configure -state disabled
+         $This.usr.7.4.che1 configure -state disabled
+         set faireImageRef(opt) "0"
+      }
+   }
+
+   #
+   # ::faireImageRef::griserActiver_3
+   # Fonction destinee a inhiber ou a activer l'affichage du champ flat-field de la boite pretraitement
+   #
+   proc griserActiver_3 { } {
+      variable This
+      global faireImageRef
+
+      #--- Cas particulier des images de flat qui manquent "001"
+      set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
+      #--- Modification des widgets
+      if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
+         $This.usr.7.1.che1 configure -state normal
+         $This.usr.7.2.che1 configure -state normal
+         $This.usr.7.4.explore configure -state normal
+         $This.usr.7.4.ent6 configure -state normal
+         $This.usr.7.6.ent6 configure -state normal
+         $This.usr.7.6.che1 configure -state normal
+      } else {
+         $This.usr.7.1.che1 configure -state disabled
+         $This.usr.7.2.che1 configure -state disabled
+         $This.usr.7.4.explore configure -state disabled
+         $This.usr.7.4.ent6 configure -state disabled
+         $This.usr.7.6.ent6 configure -state disabled
+         $This.usr.7.6.che1 configure -state disabled
+         set faireImageRef(pretraitement,norm-auto) "0"
+      }
+   }
+
+   #
+   # ::faireImageRef::griserActiver_4
+   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la boite pretraitement
+   #
+   proc griserActiver_4 { } {
+      variable This
+      global faireImageRef
+
+      if { $faireImageRef(pretraitement,norm-auto) == "0" } {
+         $This.usr.7.6.ent6 configure -state normal
+      } else {
+         $This.usr.7.6.ent6 configure -state disabled
+      }
+   }
+
+   #
+   # ::faireImageRef::griserActiver_5
+   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite flat-field
+   #
+   proc griserActiver_5 { } {
+      variable This
+      global faireImageRef
+
+     if { $faireImageRef(flat-field,no-offset) == "0" } {
          $This.usr.4.1.explore configure -state normal
          $This.usr.4.1.ent6 configure -state normal
       } else {
          $This.usr.4.1.explore configure -state disabled
-         $This.usr.4.1.ent6 configure -textvariable faireImageRef(offset) -state disabled
+         $This.usr.4.1.ent6 configure -state disabled
       }
    }
 
    #
-   # ::faireImageRef::griser_activer_3
+   # ::faireImageRef::griserActiver_6
    # Fonction destinee a inhiber ou a activer l'affichage du champ dark de la boite flat-field
    #
-   proc griser_activer_3 { } {
+   proc griserActiver_6 { } {
       variable This
       global faireImageRef
 
@@ -4296,15 +4484,15 @@ namespace eval ::faireImageRef {
          $This.usr.4.2.ent6 configure -state normal
       } else {
          $This.usr.4.2.explore configure -state disabled
-         $This.usr.4.2.ent6 configure -textvariable faireImageRef(dark) -state disabled
+         $This.usr.4.2.ent6 configure -state disabled
       }
    }
 
    #
-   # ::faireImageRef::griser_activer_4
+   # ::faireImageRef::griserActiver_7
    # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite dark
    #
-   proc griser_activer_4 { } {
+   proc griserActiver_7 { } {
       variable This
       global faireImageRef
 
@@ -4313,7 +4501,7 @@ namespace eval ::faireImageRef {
          $This.usr.3.1.ent6 configure -state normal
       } else {
          $This.usr.3.1.explore configure -state disabled
-         $This.usr.3.1.ent6 configure -textvariable faireImageRef(offset) -state disabled
+         $This.usr.3.1.ent6 configure -state disabled
       }
    }
 
