@@ -30,13 +30,14 @@
 #define SPECIFIC_CMDLIST \
    {"outtime", (Tcl_CmdProc *) cmdCookbookCamOutTime}, \
    {"readfunc", (Tcl_CmdProc *) cmdCookbookReadFunc}, \
-   {"resetref", (Tcl_CmdProc *) cmdCookbookResetRef},
+   {"resetref", (Tcl_CmdProc *) cmdCookbookResetRef}, \
+   {"delay", (Tcl_CmdProc *) cmdCookbookDelay},
 
 
  /* === Specific commands for that camera === */
 int cmdCookbookCamOutTime(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCookbookReadFunc(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 int cmdCookbookResetRef(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-
+int cmdCookbookDelay(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 
 #endif
