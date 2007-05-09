@@ -36,6 +36,7 @@
 #include <libcam/libcam.h>
 #include "camtcl.h"
 #include <libcam/util.h>
+#include <math.h>
 
 extern struct camini CAM_INI[];
 
@@ -151,6 +152,32 @@ int cmdCookbookResetRef(ClientData clientData, Tcl_Interp * interp, int argc, ch
 	sprintf(ligne, "Usage: %s %s ", argv[0], argv[1]);
 	Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 	retour = TCL_ERROR;
+    }
+    return retour;
+}
+
+
+int cmdCookbookDelay(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
+{
+    char ligne[100];
+    int retour = TCL_OK;
+    struct camprop *cam;
+
+    if (argc <= 1) {
+		sprintf(ligne, "Usage %s %s ?bd1?", argv[0], argv[1]);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		retour = TCL_ERROR;
+    } else {
+		cam = (struct camprop *) clientData;
+		if (argc >= 3) {
+		    cam->bd1 = (int)fabs(atoi(argv[2]));
+			cam->bd2 = 2 * cam->bd1;
+			cam->bd5 = 5 * cam->bd1;
+			cam->bd10 = 10 * cam->bd1;
+	    }
+		sprintf(ligne, "%d", cam->bd1);
+		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+		retour = TCL_OK;
     }
     return retour;
 }
