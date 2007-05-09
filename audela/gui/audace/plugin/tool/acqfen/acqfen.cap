@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.8 2007-03-24 15:04:09 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.9 2007-05-09 21:42:03 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -257,7 +257,7 @@ if { [ string compare $langage "french" ] == 0 } {
 
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
-   set caption(acqfen,titre)           "Fenster Anschaffung"
+   set caption(acqfen,titre)           "Fenster Belichtung"
    set caption(acqfen,help_titre)      "Hilfe für dieses Gerät"
    set caption(acqfen,titre_centrage)  "Vollbild Anschaf."
    set caption(acqfen,titre_fenetrees) "Fenster Anschaf."
@@ -275,11 +275,11 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,stop)            "STOP"
 
 #--- Textes réglages acquisitions série et continu
-   set caption(acqfen,fenreglfen)      "Einstellung Fenster für die Fenster Anschaffungen"
-   set caption(acqfen,fenreglfen1)     "CCD Löschung Zahl vor jede Anschaffung"
+   set caption(acqfen,fenreglfen)      "Einstellung Fenster für die Fenster Belichtungen"
+   set caption(acqfen,fenreglfen1)     "CCD Löschung Zahl vor jede Belichtung"
    set caption(acqfen,fenreglfen11)    "Mangel Wahl"
    set caption(acqfen,fenreglfen12)    "Nur Audine, Löschung Zahl:"
-   set caption(acqfen,fenreglfen2)     "Die Bilder Regelmäßig während euren Anschaffung anzeigen"
+   set caption(acqfen,fenreglfen2)     "Die Bilder Regelmäßig während euren Belichtung anzeigen"
    set caption(acqfen,fenreglfen21)    "Alle"
    set caption(acqfen,fenreglfen22)    "1 von:"
    set caption(acqfen,fenreglfen23)    "Nur das letzte Bild der Reihe"

@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.23 2007-04-18 21:59:33 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.24 2007-05-09 21:41:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -542,8 +542,8 @@ if { [ string compare $langage "french" ] == 0 } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == 0 } {
 
-   set caption(acqfc,menu)                   "Anschaffung"
-   set caption(acqfc,titre)                  "Anschaffung"
+   set caption(acqfc,menu)                   "Belichtung"
+   set caption(acqfc,titre)                  "Belichtung"
    set caption(acqfc,help_titre)             "Hilfe für dieses Gerät"
    set caption(acqfc,configuration)          "Konfiguration"
    set caption(acqfc,pose)                   "Bel."
@@ -576,7 +576,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,titre_3)                "Fortlaufende Videos mit regelmäßige Zwischenzeit"
    set caption(acqfc,intervalle_video)       "Abstand zwischen jede Video Aufnahme Anfang (sek.)"
    set caption(acqfc,show_video)             "Video Vorschau"
-   set caption(acqfc,capture_video)          "Video Anschaffung"
+   set caption(acqfc,capture_video)          "Video Belichtung"
    set caption(acqfc,lg_film)                "Film Dauer"
    set caption(acqfc,rate)                   "Bild Tempo"
    set caption(acqfc,rate_unite)             "Bilder/sek."
@@ -592,7 +592,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,pbouvfich)              "Log. Datei unmöglich zu \
       öffnen.\nErst das Gerät wechseln, und dann kontrollieren\ndass \
       das Bild Register zugänglich ist."
-   set caption(acqfc,ouvsess)                "----- Eine Anschaffung Session öffnen (rev %s)\n"
+   set caption(acqfc,ouvsess)                "----- Eine Belichtung Session öffnen (rev %s)\n"
    set caption(acqfc,affheure)               "%s, %s WZ (Alle Zeiten in diese Datei sind in WZ)\n"
    set caption(acqfc,finsess)                "\n----- Ende der Session um %s WZ\n\n"
    set caption(acqfc,pbfermfichcons)         "Problem während der Verschluss der Datei log\n"
@@ -605,7 +605,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,onlycam+obt)            "Diese Funktion ist leider nicht\nmit diese Kamera verfügbar."
    set caption(acqfc,pbouvfichcons)          "Problem während der Öffnung der Datei log\n"
    set caption(acqfc,selcam)                 "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
-   set caption(acqfc,seltel)                 "Sie müssen erst ein Gestell wählen\n(Konfiguration/Gestell Menu)."
+   set caption(acqfc,seltel)                 "Sie müssen erst ein Montierung wählen\n(Konfiguration/Montierung Menu)."
    set caption(acqfc,saistps)                "Eine Bildleuchtung Zeit erfassen"
    set caption(acqfc,Tpsinv)                 "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
    set caption(acqfc,nbinv)                  "Ungültig Bildleuchtung Zahl \n(muss ein positives Ganz sein)"
@@ -624,18 +624,18 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,stop)                   "STOP\n(Esc)"
    set caption(acqfc,arrprem)                "Vom Benutzer Frühabstellung um %s WZ.\n"
    set caption(acqfc,lg_pose_arret)          "%ss Sekunden eigentliche Belichtung.\n"
-   set caption(acqfc,acquneim)               "\n Eine Bildanschaffung (Bildleuchtung von %ss, binning %s) um %s WZ.\n"
-   set caption(acqfc,lanceserie)             "\nEine Reihe von %s Anschaffung(en) um %s WZ anlassen "
-   set caption(acqfc,lanceserie_int)         "\nEine Reihe von %s Anschaffung(en) mit gleichmäßigen Zwischenzeit (%s sek.) um %s WZ starten "
+   set caption(acqfc,acquneim)               "\n Eine Bild Belichtung (Bildleuchtung von %ss, binning %s) um %s WZ.\n"
+   set caption(acqfc,lanceserie)             "\nEine Reihe von %s Belichtung(en) um %s WZ anlassen "
+   set caption(acqfc,lanceserie_int)         "\nEine Reihe von %s Belichtung(en) mit gleichmäßigen Zwischenzeit (%s sek.) um %s WZ starten "
    set caption(acqfc,nomgen)                 "(Mangel Namen: %s, Bildleuchtung von %ss, binning %s,\
    von Index %s).\n"
    set caption(acqfc,enreg)                  "Speichern"
    set caption(acqfc,dersauve)               "Letztes gespeichertes Bild: %s.\n"
    set caption(acqfc,dersauve_video)         "Letztes gespeichertes Video: %s.\n"
    set caption(acqfc,arret_serie)            "Wollen sie bis die ende diese Belichtung warten?"
-   set caption(acqfc,lancecont)              "\nEine laufende Anschaffung anlassen\
+   set caption(acqfc,lancecont)              "\nEine laufende Belichtung anlassen\
    (Bildleuchtung von %ss, binning %s) zum %s WZ "
-   set caption(acqfc,lancecont_int)          "\nEine Reihe von fortdauernde Anschaffungen mit gleichmäßigen Zwischenzeit (%s sek.) starten\
+   set caption(acqfc,lancecont_int)          "\nEine Reihe von fortdauernde Belichtungen mit gleichmäßigen Zwischenzeit (%s sek.) starten\
    (Bildleuchtung von %ss, binning %s) zum %s WZ "
    set caption(acqfc,acqvideo)               "\nVideo Eroberung (mit %ss Dauer und %s Bilder/sek. Tempo) bei %s WZ.\n"
    set caption(acqfc,acqvideo_cont)          "\nEine Video ununterbrochen regelmäßig spielen (jede %s sek.)\
@@ -644,21 +644,21 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,sansenr)                "(ohne Speicherung).\n"
    set caption(acqfc,enrim)                  "Bei %s WZ, %s Bild Speicherung.\n"
    set caption(acqfc,enrim_video)            "Bei %s WZ, die %s Video aufnehmen.\n"
-   set caption(acqfc,arrcont)                "laufende Anschaffung um %s WZ stoppen.\n"
+   set caption(acqfc,arrcont)                "laufende Belichtung um %s WZ stoppen.\n"
    set caption(acqfc,raz)                    "CCD init."
    set caption(acqfc,lect)                   "Abstattung"
    set caption(acqfc,attente)                "Warten von"
-   set caption(acqfc,en_cours)               "Laufende Anschaffung..."
+   set caption(acqfc,en_cours)               "Laufende Belichtung..."
    set caption(acqfc,demsauv)                "\nSpeicherung Antrag vom Benutzer um %s WZ\n"
    set caption(acqfc,imsauvnom)              "Bild mit den Namen: %s%s gespeichert\n"
    set caption(acqfc,pbmesserr)              "Problem mit die Irrtum Meldung"
    set caption(acqfc,lance_simu)             "\nDie Simulation starten:"
    set caption(acqfc,fin_simu)               "Ende der Simulation.\n"
-   set caption(acqfc,avancement_acq)         "Anschaffung\nim Gange"
+   set caption(acqfc,avancement_acq)         "Belichtung\nim Gange"
    set caption(acqfc,buttonShiftConfig)      "Verschiebung"
-   set caption(acqfc,image,acquisition)      "Aud'ACE - Anschaffung von"
+   set caption(acqfc,image,acquisition)      "Aud'ACE - Belichtung von"
 
-   set caption(acqfc,acquisition_fenetree)   "Fenster Anschaffung"
+   set caption(acqfc,acquisition_fenetree)   "Fenster Belichtung"
    set caption(acqfc,acq_fen_msg)            "Das Fenster wählen"
    set caption(acqfc,refresh)                "Aktualisieren (Rasterpunkten Zahl)"
    set caption(acqfc,x1)                     "x1:"

@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.13 2007-01-27 14:46:52 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.14 2007-05-09 21:47:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -576,7 +576,7 @@ Diese Vorlage ist von TPOINT nachgerichtet.\n\
 Sie einfügt die Kodierer Initialisierung\n\
 Fehler, Achsen (Zeit, Deklination und\n\
 Optischen) Senkrechtung Fehler,\n\
-die Gestell Einstellung Fehler\n\
+die Montierung Einstellung Fehler\n\
 und die mechanische Gabel Biegung.\n\n\
 Die Festlegung der Vorlage Parametern\n\
 ist bei schwenken nach Sternen\n\
@@ -664,7 +664,7 @@ Richtung Hand Kontroller Knöpfe drücken:"
    set caption(modpoi,wiz5,ME)               "N/S Polar Achse Trimmung Fehler"
    set caption(modpoi,wiz5,MA)               "O/W Polar Achse Trimmung Fehler"
    set caption(modpoi,wiz5,FO)               "Gabel Biegung"
-   set caption(modpoi,wiz5,MT)               "Gestell Biegung"
+   set caption(modpoi,wiz5,MT)               "Montierung Biegung"
    set caption(modpoi,wiz5,DAF)              "Delta Achse Biegung"
    set caption(modpoi,wiz5,TF)               "Rohr Biegung"
    set caption(modpoi,wiz5,next)             "Beenden >>"

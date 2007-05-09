@@ -1,6 +1,6 @@
 #
 # Fichier : focuserlx200.cap
-# Mise a jour $Id: focuserlx200.cap,v 1.6 2007-02-17 22:05:56 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.cap,v 1.7 2007-05-09 21:47:05 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -64,11 +64,11 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(focuserlx200,label)       "LX200 Scharfeinstellung"
-   set caption(focuserlx200,link)        "Die Steuervorrichtungen sind zum LX200 Gestell geschickt."
+   set caption(focuserlx200,link)        "Die Steuervorrichtungen sind zum LX200 Montierung geschickt."
 
    set caption(focuserlx200,attention)   "Achtung"
    set caption(focuserlx200,msg1)        "Für diese Handsteuerung haben Sie den LX200 Scharfeinsteller gewählt."
-   set caption(focuserlx200,msg2)        "Es funktioniert nicht mit dieses Gestell."
+   set caption(focuserlx200,msg2)        "Es funktioniert nicht mit dieses Montierung."
    set caption(focuserlx200,msg3)        "Für diese Geräte haben Sie den LX200 Scharfeinsteller gewählt."
 
    set caption(focuserlx200,interro)     "?"

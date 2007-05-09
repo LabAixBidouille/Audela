@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.18 2007-01-27 14:37:55 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.19 2007-05-09 21:44:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -347,7 +347,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(cmaude,titre_mascot)                "Anschaffung (MASCOT)"
+   set caption(cmaude,titre_mascot)                "Belichtung (MASCOT)"
    set caption(cmaude,help_titre)                  "Hilfe für dieses Gerät"
    set caption(cmaude,bias)                        "Bias Bild"
    set caption(cmaude,dark)                        "Dark Bild"
@@ -363,7 +363,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,status)                      "Status"
    set caption(cmaude,status1)                     "Erwerb Status"
    set caption(cmaude,status2)                     "---"
-   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Anschaffung von"
+   set caption(cmaude,image_acq)                   "Aud'ACE (visu1) - Belichtung von"
    set caption(cmaude,parcourir)                   "..."
 
    set caption(cmaude,debut_script)                "Anfang der Skript automatischen Schleifen"
@@ -384,25 +384,25 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,decompte)                    "Abrechnung:"
    set caption(cmaude,attendre_nuit)               "Der Anfang der Nacht warten..."
    set caption(cmaude,nuit_a_commencee)            "Die Nacht ist begonnen..."
-   set caption(cmaude,debut_acquisition)           "Unmittelbar Anfang der Anschaffung Schleifen..."
+   set caption(cmaude,debut_acquisition)           "Unmittelbar Anfang der Belichtung Schleifen..."
    set caption(cmaude,observation_log)             "Beobachtungen für den Julian Tag"
    set caption(cmaude,ou)                          "Oder"
-   set caption(cmaude,boucle_acquisition)          "Anschaffung Schleif"
+   set caption(cmaude,boucle_acquisition)          "Belichtung Schleif"
    set caption(cmaude,prochaine_image)             "Nächstes Bild"
    set caption(cmaude,jour_a_commence)             "Der Tag hat begonnen..."
    set caption(cmaude,nbre_image_nuit)             "Bilder Zahl während der Nacht:"
    set caption(cmaude,fin_observation)             "Ende der Beobachtungen am"
    set caption(cmaude,calcul_parametres)           "Parameter Rechnung für die nächste Nacht..."
-   set caption(cmaude,fin_boucle_acquisition)      "!Manuellen Halten der Anschaffung Schleifen!"
+   set caption(cmaude,fin_boucle_acquisition)      "!Manuellen Halten der Belichtung Schleifen!"
    set caption(cmaude,pas_activite)                "Keine Aktivität"
-   set caption(cmaude,fin_boucle_acquisition_a)    "!Manuellen Halten der Anschaffung Schleifen um"
+   set caption(cmaude,fin_boucle_acquisition_a)    "!Manuellen Halten der Belichtung Schleifen um"
    set caption(cmaude,arret_auto_script)           "Automatischen Skript Beendung"
    set caption(cmaude,hauteur_soleil)              "Sonne Höhe"
    set caption(cmaude,hauteur_lune)                "Mond Höhe"
    set caption(cmaude,au-dessus)                   "Über"
    set caption(cmaude,hauteur_limite_soleil)       "Grenze der astronomischen Dämmerung: -18°"
    set caption(cmaude,hauteur_critique_lune)       "Der Mond wird als störend betrachtet"
-   set caption(cmaude,acquisition_lance)           "Laufende Anschaffung..."
+   set caption(cmaude,acquisition_lance)           "Laufende Belichtung..."
    set caption(cmaude,image)                       "Bild"
    set caption(cmaude,acquise_le)                  "Den ... erworben"
    set caption(cmaude,a)                           "Um"

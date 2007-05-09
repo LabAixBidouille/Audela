@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.18 2007-04-11 17:02:17 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.19 2007-05-09 21:45:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -403,7 +403,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_active)                      "Aktiviert die Ton Alarm"
    set caption(confgene,alarme_delai)                       "Sek. bis das Bildleuchtungsende"
 
-   set caption(confgene,position)                           "Beobachter Stellung"
+   set caption(confgene,position)                           "Beobachter-Position"
    set caption(confgene,nom_observateur)                    "Nahmen der Beobachter:"
    set caption(confgene,nom_observatoire)                   "Nahmen der Sternwarte:"
    set caption(confgene,position_longitude)                 "Länge:"

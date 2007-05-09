@@ -1,6 +1,6 @@
 #
 # Fichier : camera.cap
-# Mise a jour $Id: camera.cap,v 1.9 2007-05-06 08:47:28 robertdelmas Exp $
+# Mise a jour $Id: camera.cap,v 1.10 2007-05-09 21:44:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -59,7 +59,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(camera,en_cours)     "Laufende Anschaffung..."
+   set caption(camera,en_cours)     "Laufende Belichtung..."
    set caption(camera,seconde)      "Sekunde"
    set caption(camera,secondes)     "Sekunden"
    set caption(camera,sec)          "Sek."

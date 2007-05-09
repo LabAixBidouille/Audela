@@ -1,6 +1,6 @@
 #
 # Fichier : remotectrl.cap
-# Mise a jour $Id: remotectrl.cap,v 1.7 2007-04-02 15:59:35 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.cap,v 1.8 2007-05-09 21:48:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -282,7 +282,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(rmctrl,match)                          "MATCH"
    set caption(rmctrl,match_confirm)                  "Vollen sie weiterführen ?"
    set caption(rmctrl,goto)                           "GOTO"
-   set caption(rmctrl,tel)                            "Gestell"
+   set caption(rmctrl,tel)                            "Montierung"
    set caption(rmctrl,non_connecte)                   "nicht verbun."
    set caption(rmctrl,astre_est)                      "Das Gestirn isst"
    set caption(rmctrl,pas_leve)                       "nicht auf."

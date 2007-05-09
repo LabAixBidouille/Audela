@@ -1,6 +1,6 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.9 2007-01-27 14:30:35 robertdelmas Exp $
+# Mise a jour $Id: audecom.cap,v 1.10 2007-05-09 21:42:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -693,7 +693,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,calculer)                "Rechnen"
 
    set caption(audecom,ctrl_king)               "King Tempo Kontrolle"
-   set caption(audecom,pos_obs)                 "Beobachter Stellung:"
+   set caption(audecom,pos_obs)                 "Beobachter-Position:"
    set caption(audecom,longitude)               "Länge:"
    set caption(audecom,latitude)                "Breite:"
    set caption(audecom,altitude)                "Höhe:"
@@ -729,7 +729,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(audecom,para_mot,aide01)         "                               Jeden Druck auf den Knopf ' ? ' anzeigt die passende Hilfe die"
    set caption(audecom,para_mot,aide02)         "                          den Wahl erklärt (wenn notwendig) damit sie den besten Wert wählen"
-   set caption(audecom,para_mot,aide03)         "                                   können für eure äquatorial Teleskop Gestell Konfiguration."
+   set caption(audecom,para_mot,aide03)         "                                   können für eure äquatorial Teleskop Montierung Konfiguration."
    set caption(audecom,para_mot,aide05)         "Die Spielausgleichung Weite soll ein Decimalzahl sein."
    set caption(audecom,para_mot,aide06)         "Sie kann in Rektaszension anders als in Deklination sein."
    set caption(audecom,para_mot,aide11)         "'Mangelwerten': gibt den initialen Wert aus dem AudeCom Mikrocontroller."
@@ -769,7 +769,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,prog_pec,aide01)         "                               Jeden Druck auf den Knopf ' ? ' anzeigt die passende Hilfe die"
    set caption(audecom,prog_pec,aide02)         "                               die verschiedene Schritten für die PEC Programmierung erklärt"
    set caption(audecom,prog_pec,aide03)         "                             so wie die Kontrollen durch zu führen auf der Werten zu erfassen."
-   set caption(audecom,prog_pec,aide11)         "Im Fach unserem äquatorial Gestell, das nominale Folgung Tempo isst bei ein Ganz\
+   set caption(audecom,prog_pec,aide11)         "Im Fach unserem äquatorial Montierung, das nominale Folgung Tempo isst bei ein Ganz\
                                                  festgelegt %s. Für eine nominale Folgung, muss der Rektaszension Motor inkrementiert\
                                                  werden jeden %s x t0 = %s ms mit t0 = %s µs. Tempo Verbesserungen sind eine Funktion\
                                                  des Motors Umdrehung, so isst der Zusammenhang mit den Anfang jedes Zahn des Tangential\
@@ -789,7 +789,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,prog_pec,analyse21)      "                        Die Rechnung des Mittelwert der 20 Werten (t0 bis t19)"
    set caption(audecom,prog_pec,analyse22)      "                                für die Verbesserung des Folgung Tempo ist"
    set caption(audecom,prog_pec,analyse23)      "                                         anders als der nominal Wert"
-   set caption(audecom,prog_pec,analyse24)      "                  Die siderische Folgung ist ungenau, das Gestell wird abdriften."
+   set caption(audecom,prog_pec,analyse24)      "                  Die siderische Folgung ist ungenau, das Montierung wird abdriften."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
