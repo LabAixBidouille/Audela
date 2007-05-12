@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.22 2007-05-09 20:29:26 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.23 2007-05-12 14:56:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -619,19 +619,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Keine"
    set caption(pretraitement,auto)                      "Auto"
 
-   set caption(pretraitement,liste_serie)               "# Liste des index :"
+   set caption(pretraitement,liste_serie)               "Index Liste:"
    set caption(pretraitement,nom_generique)             "Generischen Nahmen:"
-   set caption(pretraitement,nom_generique_ok)          "# C'est bien un nom générique de fichier."
-   set caption(pretraitement,nom_generique_ko)          "# Ce n'est pas un nom générique de fichier."
+   set caption(pretraitement,nom_generique_ok)          "Das ist ein Datei Generischen Nahmen."
+   set caption(pretraitement,nom_generique_ko)          "Das ist kein Datei Generischen Nahmen."
    set caption(pretraitement,fichier_manquant)          "Eine oder mehrere Dateien fehlen in diese Serie."
    set caption(pretraitement,renumerotation)            "Sie müssen diese Serie neu nummerieren bevor die Vorbehandlung Weitermachen."
    set caption(pretraitement,pas_renumerotation)        "Die Serie ist nicht neu nummeriert geworden, sie müssen die Vorbehandlung halten."
-   set caption(pretraitement,renumerote_termine)        "# La renumérotation des fichiers est terminée."
-   set caption(pretraitement,numerotation_ok)           "# La numérotation de la série de fichiers est correcte."
-   set caption(pretraitement,pas_fichier_manquant)      "# Il n'y a pas de fichier manquant dans cette série."
-   set caption(pretraitement,renumerote_manuel)         "# Si la série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
-   set caption(pretraitement,indice_pas_1)              "# Le premier indice de la série n'est pas 1."
-   set caption(pretraitement,fichier_indice_0)          "# Le fichier d'indice 0 porte désormais le dernier indice de la liste."
+   set caption(pretraitement,renumerote_termine)        "Datei Widernummerierung beendet."
+   set caption(pretraitement,numerotation_ok)           "Die Datei Folge Widernummerierung ist korrect."
+   set caption(pretraitement,pas_fichier_manquant)      "Es ist kein fehlende Datei in diese Folge."
+   set caption(pretraitement,renumerote_manuel)         "Wenn die Folge Fehlende Dateien hat, muss die\nDatei Widernummerierung bei Hand gemacht sein."
+   set caption(pretraitement,indice_pas_1)              "Der erste Index der Folge ist nicht 1."
+   set caption(pretraitement,fichier_indice_0)          "Die Index 0 Datei hat jetzt den letzten Index der Folge."
 
    set caption(aud_menu_3,ok)                           "OK"
    set caption(aud_menu_3,appliquer)                    "Anwenden"
