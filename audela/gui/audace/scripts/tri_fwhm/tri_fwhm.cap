@@ -1,6 +1,6 @@
 #
 # Fichier : tri_fwhm.cap
-# Mise a jour $Id: tri_fwhm.cap,v 1.7 2007-01-27 15:49:51 robertdelmas Exp $
+# Mise a jour $Id: tri_fwhm.cap,v 1.8 2007-05-12 14:59:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -68,7 +68,7 @@ set cap_tri(nombre_graphe)          "Number"
 set cap_tri(images)                 "images"
 
 # *************** Version française ***************************
-if { [string compare $langage "french"] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
    set cap_tri(copyright)           "(C)2001-2005   F. Cochard & J. Michelet"
@@ -126,7 +126,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(images)              "images"
 
 # *************** Version italienne ***************************
-} elseif { [string compare $langage "italian"] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
    set cap_tri(copyright)           "(C)2001-2005   F. Cochard & J. Michelet"
@@ -184,7 +184,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(images)              "immagini"
 
 # *************** Version espagnole ***************************
-} elseif { [string compare $langage "spanish"] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
    set cap_tri(copyright)           "(C)2001-2005   F. Cochard & J. Michelet"
@@ -242,7 +242,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(images)              "imágenes"
 
 # *************** Version allemande ***************************
-} elseif { [string compare $langage "german"] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
    set cap_tri(copyright)           "(C)2001-2005   F. Cochard & J. Michelet"
@@ -300,7 +300,7 @@ if { [string compare $langage "french"] == 0 } {
    set cap_tri(images)              "Bilder"
 
 # *************** Version portugaise **************************
-if { [string compare $langage "portuguese"] == 0 } {
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set cap_tri(titre)               "-----------Triagem_FWHM-----------"
    set cap_tri(copyright)           "(C)2001-2005   F. Cochard & J. Michelet"
@@ -358,7 +358,7 @@ if { [string compare $langage "portuguese"] == 0 } {
    set cap_tri(images)              "imagens"
 
 # *************** Version danoise *****************************
-} elseif { [string compare $langage "danish"] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    set cap_tri(titre)               "-------------Tri_FWHM-------------"
    set cap_tri(copyright)           "(C)2001-2005   F. Cochard & J. Michelet"
