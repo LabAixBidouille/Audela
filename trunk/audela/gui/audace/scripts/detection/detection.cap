@@ -1,6 +1,6 @@
 #
 # Fichier : detection.cap
-# Mise a jour $Id: detection.cap,v 1.9 2007-05-09 21:46:05 robertdelmas Exp $
+# Mise a jour $Id: detection.cap,v 1.10 2007-05-12 14:58:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -104,7 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(detection,detection_complete)    "Ende der Messung"
 
 # *************** Version portugaise **************************
-if { [string compare $langage "portuguese"] == 0 } {
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(detection,start_detection)       "Início da detecção"
    set caption(detection,binning)               "Binning"
