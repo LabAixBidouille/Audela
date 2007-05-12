@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.21 2007-04-29 07:07:50 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.22 2007-05-12 15:01:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -63,7 +63,7 @@ set caption(autoguider,alphaReverse)             "Reverse movement"
 set caption(autoguider,deltaReverse)             "Reverse movement"
 
 # *************** Version française ***************************
-if { [ string compare $langage "french" ] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    set caption(autoguider,menu)                  "Autoguidage"
    set caption(autoguider,titre)                 "Autoguidage"
@@ -117,7 +117,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,deltaReverse)          "Inverser le sens"
 
 # *************** Version italienne ***************************
-} elseif { [ string compare $langage "italian" ] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(autoguider,menu)                  "Autoguida"
    set caption(autoguider,titre)                 "Autoguida"
@@ -171,7 +171,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,deltaReverse)          "Movimento inverso"
 
 # *************** Version espagnole ***************************
-} elseif { [ string compare $langage "spanish" ] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(autoguider,menu)                  "Autoguía"
    set caption(autoguider,titre)                 "Autoguía"
@@ -225,7 +225,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,deltaReverse)          "Invertir el movimiento"
 
 # *************** Version allemande ***************************
-} elseif { [ string compare $langage "german" ] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(autoguider,menu)                  "Automatische Steuerung"
    set caption(autoguider,titre)                 "Automatische Steuerung"
@@ -333,7 +333,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(autoguider,deltaReverse)          "Inverter sentido"
 
 # *************** Version danoise *****************************
-} elseif { [ string compare $langage "danish" ] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(autoguider,menu)                  "Autoguider"
    set caption(autoguider,titre)                 "Autoguider"

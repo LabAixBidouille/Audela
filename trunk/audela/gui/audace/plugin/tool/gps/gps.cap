@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.6 2007-01-27 14:45:15 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.7 2007-05-12 15:02:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -67,7 +67,7 @@ set caption(gps,help,titre)                  "Help For This Tool"
 set caption(gps,non_rs232)                   "This port is not an RS232 serial port."
 
 # *************** Version française ***************************
-if { [ string compare $langage "french" ] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    set caption(gps,titre)                    "GPS"
    set caption(gps,parametre)                "Paramètres"
@@ -125,7 +125,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(gps,non_rs232)                "Ce port n'est pas un port série de type RS232."
 
 # *************** Version italienne ***************************
-} elseif { [ string compare $langage "italian" ] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(gps,titre)                    "GPS"
    set caption(gps,parametre)                "Parametri"
@@ -183,7 +183,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(gps,non_rs232)                "Questa non e` una porta seriale tipo RS232."
 
 # *************** Version espagnole ***************************
-} elseif { [ string compare $langage "spanish" ] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(gps,titre)                    "GPS"
    set caption(gps,parametre)                "Parámetros"
@@ -241,7 +241,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(gps,non_rs232)                "Esto no es un puerto serie RS232."
 
 # *************** Version allemande ***************************
-} elseif { [ string compare $langage "german" ] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(gps,titre)                    "GPS"
    set caption(gps,parametre)                "Parameter"
@@ -357,7 +357,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(gps,non_rs232)                "Esta porta não é uma porta série do tipo RS232."
 
 # *************** Version danoise *****************************
-} elseif { [ string compare $langage "danish" ] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(gps,titre)                    "GPS"
    set caption(gps,parametre)                "Parameters"
