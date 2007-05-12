@@ -1,6 +1,6 @@
 #
 # Fichier : modpoi.cap
-# Mise a jour $Id: modpoi.cap,v 1.14 2007-05-09 21:47:48 robertdelmas Exp $
+# Mise a jour $Id: modpoi.cap,v 1.15 2007-05-12 15:02:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -145,7 +145,7 @@ telescope keypad buttons:"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version française ***************************
-if { [ string compare $langage "french" ] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    set caption(modpoi,modele_existe)         "Modèle de pointage opérationnel."
    set caption(modpoi,modele_non_charge)     "Vous n'avez pas chargé de modèle de pointage."
@@ -282,7 +282,7 @@ des directions :"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version italienne ***************************
-} elseif { [ string compare $langage "italian" ] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(modpoi,modele_existe)         "Modello di puntamento pronto."
    set caption(modpoi,modele_non_charge)     "Non e` stato caricato nessun modello di puntamento."
@@ -419,7 +419,7 @@ di direzione:"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version espagnole ***************************
-} elseif { [ string compare $langage "spanish" ] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(modpoi,modele_existe)         "Modelo de apuntado listo?"
    set caption(modpoi,modele_non_charge)     "No se ha cargado ningún modelo de apuntado."
@@ -555,7 +555,7 @@ los mandos del telescopio:"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version allemande ***************************
-} elseif { [ string compare $langage "german" ] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(modpoi,modele_existe)         "Operativ Richtung Modell."
    set caption(modpoi,modele_non_charge)     "Kein Richtung Modell geladen."
@@ -827,7 +827,7 @@ para comandar as direcções:"
    set caption(modpoi,ok)                    "OK"
 
 # *************** Version danoise *****************************
-} elseif { [ string compare $langage "danish" ] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(modpoi,modele_existe)         "Aiming Model Ready."
    set caption(modpoi,modele_non_charge)     "No aiming model loaded."

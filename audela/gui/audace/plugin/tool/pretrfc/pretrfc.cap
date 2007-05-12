@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfc.cap
-# Mise a jour $Id: pretrfc.cap,v 1.9 2007-04-12 17:43:48 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.cap,v 1.10 2007-05-12 15:03:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -165,7 +165,7 @@ set caption(pretrfc,ModePLURapTps)              "# Calculation Mode: Exposure Ti
 set caption(pretrfc,ModePLUOpt)                 "# Calculation Mode: Dark Frame Subtraction through Otpimization\n"
 
 # *************** Version française ***************************
-if { [ string compare $langage "french" ] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretrfc,menu)                    "Prétraitement"
    set caption(pretrfc,titrelong)               "Prétraitement automatique"
@@ -324,7 +324,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,ModePLUOpt)              "# Mode de calcul : Soustraction du noir par optimisation\n"
 
 # *************** Version italienne ***************************
-} elseif { [ string compare $langage "italian" ] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(pretrfc,menu)                    "Pretrattamento"
    set caption(pretrfc,titrelong)               "Pretrattamento automatico"
@@ -482,7 +482,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,ModePLUOpt)              "# Modalita' calcolo: Sottrazione del dark di ottimizzazione\n"
 
 # *************** Version espagnole ***************************
-} elseif { [ string compare $langage "spanish" ] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(pretrfc,menu)                    "Preproceso"
    set caption(pretrfc,titrelong)               "Preproceso automático"
@@ -641,7 +641,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,ModePLUOpt)              "# Modo de cálculo: Resta de dark por optimización\n"
 
 # ************************ Version allemande ****************************
-} elseif { [ string compare $langage "german" ] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(pretrfc,menu)                    "Vorhandlung"
    set caption(pretrfc,titrelong)               "Automatische Vorhandlung"
@@ -959,7 +959,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(pretrfc,ModePLUOpt)              "# Modo de cálculo : Subtracção da imagem de dark frame por optimização\n"
 
 # ************************ Version danoise ******************************
-} elseif { [ string compare $langage "danish" ] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(pretrfc,menu)                    "Preprocessing"
    set caption(pretrfc,titrelong)               "Automatic preprocessing"

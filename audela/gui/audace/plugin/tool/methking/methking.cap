@@ -1,6 +1,6 @@
 #
 # Fichier : methking.cap
-# Mise a jour $Id: methking.cap,v 1.8 2007-05-09 21:47:28 robertdelmas Exp $
+# Mise a jour $Id: methking.cap,v 1.9 2007-05-12 15:02:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -180,7 +180,7 @@ set caption(king,ecart_type)              "    > Standard Deviations: sx = %7.2f
 set caption(king,fin_etape_7)             "    Step 7 completed.\n\n"
 
 # *************** Version française ***************************
-if { [ string compare $langage "french" ] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    # Partie methking
    set caption(king,titre)                "King"
@@ -351,7 +351,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(king,fin_etape_7)          "    Etape 7 terminée.\n\n"
 
 # *************** Version italienne ***************************
-} elseif { [ string compare $langage "italian" ] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    # Partie methking
    set caption(king,titre)                "King"
@@ -522,7 +522,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(king,fin_etape_7)          "    Fase  7 terminata.\n\n"
 
 # *************** Version espagnole ***************************
-} elseif { [ string compare $langage "spanish" ] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    # Partie methking
    set caption(king,titre)                "King"
@@ -693,7 +693,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(king,fin_etape_7)          "    Paso 7 completado.\n\n"
 
 # *************** Version allemande ***************************
-} elseif { [ string compare $langage "german" ] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    # Partie methking
    set caption(king,titre)                "King"
@@ -1035,7 +1035,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(king,fin_etape_7)          "    Etapa 7 terminada.\n\n"
 
 # *************** Version danoise *****************************
-} elseif { [ string compare $langage "danish" ] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    # Partie methking
    set caption(king,titre)                "King"

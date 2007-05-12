@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.24 2007-05-09 21:41:24 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.25 2007-05-12 15:00:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -141,7 +141,7 @@ set caption(acqfc,coord_x1_y1)               "Coordinates (x1,y1):"
 set caption(acqfc,coord_x2_y2)               "Coordinates (x2,y2):"
 
 # *************** Version française ***************************
-if { [ string compare $langage "french" ] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfc,menu)                   "Acquisition"
    set caption(acqfc,titre)                  "Acquisition"
@@ -274,7 +274,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,coord_x2_y2)            "Coordonnées (x2,y2) :"
 
 # *************** Version italienne ***************************
-} elseif { [ string compare $langage "italian" ] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(acqfc,menu)                   "Acquisizione"
    set caption(acqfc,titre)                  "Acquisizione"
@@ -407,7 +407,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,coord_x2_y2)            "Coordinate (x2,y2):"
 
 # *************** Version espagnole ***************************
-} elseif { [ string compare $langage "spanish" ] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(acqfc,menu)                   "Adquisición"
    set caption(acqfc,titre)                  "Adquisición"
@@ -540,7 +540,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,coord_x2_y2)            "Coordenadfas (x2,y2):"
 
 # *************** Version allemande ***************************
-} elseif { [ string compare $langage "german" ] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(acqfc,menu)                   "Belichtung"
    set caption(acqfc,titre)                  "Belichtung"
@@ -806,7 +806,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfc,coord_x2_y2)            "Coordenadas (x2,y2) :"
 
 # *************** Version danoise *****************************
-} elseif { [ string compare $langage "danish" ] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(acqfc,menu)                   "Acquisition"
    set caption(acqfc,titre)                  "Acquisition"

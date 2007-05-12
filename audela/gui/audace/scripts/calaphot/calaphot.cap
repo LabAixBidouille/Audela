@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.9 2007-01-27 15:47:33 robertdelmas Exp $
+# Mise a jour $Id: calaphot.cap,v 1.10 2007-05-12 15:01:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -111,7 +111,7 @@ set texte_photo(champ2)                 " must contain a value"
 set texte_photo(filtre_optique)         "Optical Filter"
 
 # *************** Version française ***************************
-if { [string compare $langage "french"] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
    set texte_photo(titre_saisie)        "Paramètres du script de photométrie"
    set texte_photo(operateur)           "Nom de l'opérateur"
@@ -213,7 +213,7 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(filtre_optique)      "Filtre optique"
 
 # *************** Version italienne ***************************
-} elseif { [string compare $langage "italian"] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
    set texte_photo(titre_saisie)        "Parametri dello script di fotometria"
    set texte_photo(operateur)           "Nome dell'operatore"
@@ -315,7 +315,7 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(filtre_optique)      "Filtro ottico"
 
 # *************** Version espagnole ***************************
-} elseif { [string compare $langage "spanish"] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set texte_photo(titre_saisie)        "Parámetros del script de fotometría"
    set texte_photo(operateur)           "Nombre del operador"
@@ -417,7 +417,7 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(filtre_optique)      "Filtro óptico"
 
 # *************** Version allemande ***************************
-} elseif { [string compare $langage "german"] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
    set texte_photo(titre_saisie)        "Skript Photomessung Parametern"
    set texte_photo(operateur)           "Bedienungsperson Nahmen"
@@ -519,7 +519,7 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(filtre_optique)      "Optischen Filter"
 
 # *************** Version portugaise **************************
-} elseif { [string compare $langage "portuguese"] == 0 } {
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set texte_photo(titre_saisie)        "Parâmetros do script de fotometria"
    set texte_photo(operateur)           "Nome do operador"
@@ -620,7 +620,7 @@ if { [string compare $langage "french"] == 0 } {
    set texte_photo(filtre_optique)      "Filtro óptico"
 
 # *************** Version danoise *****************************
-} elseif { [string compare $langage "danish"] == 0 } {
+} elseif { [ string compare $langage "danish" ] == "0" } {
 
    set texte_photo(titre_saisie)        "Photometry Script Parameters"
    set texte_photo(operateur)           "Operator Name"

@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.9 2007-05-09 21:42:03 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.10 2007-05-12 15:01:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -70,7 +70,7 @@ set caption(acqfen,fichdeja)           "This file already exists.\nAre you sure 
 set caption(acqfen,indpasun)           "Index is not 1.\nDo you confirm dash number?"
 
 # *************** Version française ***************************
-if { [ string compare $langage "french" ] == 0 } {
+if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,indpasun)        "L'index n'est pas à 1.\nVous confirmez cet index ?"
 
 # *************** Version italienne ***************************
-} elseif { [ string compare $langage "italian" ] == 0 } {
+} elseif { [ string compare $langage "italian" ] == "0" } {
 
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
@@ -192,7 +192,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,indpasun)        "L'indice non e' 1.\nConfermare il numero?"
 
 # *************** Version espagnole ***************************
-} elseif { [ string compare $langage "spanish" ] == 0 } {
+} elseif { [ string compare $langage "spanish" ] == "0" } {
 
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
@@ -253,7 +253,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,indpasun)        "El índice no está a 1.\n¿Confirma el índice?"
 
 # *************** Version allemande ***************************
-} elseif { [ string compare $langage "german" ] == 0 } {
+} elseif { [ string compare $langage "german" ] == "0" } {
 
 #--- Textes de titres
    set caption(acqfen,audace)          "Aud'ACE"
@@ -360,7 +360,7 @@ if { [ string compare $langage "french" ] == 0 } {
    set caption(acqfen,sauvegde)        "Guardar"
    set caption(acqfen,serie)           "Série"
    set caption(acqfen,nombre)          "Número"
-   set caption(acqfen,continu)         "Contínuo"
+  set caption(acqfen,continu)         "Contínuo"
    set caption(acqfen,enregistrer)     "Guardar"
    set caption(acqfen,pb)              "Problema"
    set caption(acqfen,donnomfich)      "Dê um nome ao ficheiro"
