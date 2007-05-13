@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.4 2007-04-02 16:17:38 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.5 2007-05-13 10:48:12 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -85,19 +85,19 @@ proc ::cemes::fillConfigPage { frm } {
    pack $frm.frame3 -in $frm.frame1 -side bottom -fill both -expand 1
 
    frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame1 -side left -fill x -expand 1
+   pack $frm.frame4 -in $frm.frame1 -side left -fill x -expand 0
 
    frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame1 -side left -fill x -expand 1
+   pack $frm.frame5 -in $frm.frame1 -side left -fill x -expand 0
 
    frame $frm.frame6 -borderwidth 0 -relief raised
-   pack $frm.frame6 -in $frm.frame4 -side top -fill x -padx 30
+   pack $frm.frame6 -in $frm.frame4 -side top -fill x -padx 10
 
    frame $frm.frame7 -borderwidth 0 -relief raised
    pack $frm.frame7 -in $frm.frame4 -side top -fill x -padx 30
 
    frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -in $frm.frame3 -side top -fill x -expand 1
+   pack $frm.frame8 -in $frm.frame3 -side top -fill both -expand 1
 
    #--- Definition du refroidissement
    checkbutton $frm.cool -text "$caption(cemes,refroidissement)" -highlightthickness 0 \
@@ -125,7 +125,7 @@ proc ::cemes::fillConfigPage { frm } {
 
    #--- Fonctionnement de l'obturateur
    label $frm.lab3 -text "$caption(cemes,fonc_obtu)"
-   pack $frm.lab3 -in $frm.frame8 -anchor center -side left -padx 10 -pady 5
+   pack $frm.lab3 -in $frm.frame8 -anchor nw -side left -padx 10 -pady 5
 
    set list_combobox [ list $caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro) ]
    ComboBox $frm.foncobtu \
@@ -136,7 +136,7 @@ proc ::cemes::fillConfigPage { frm } {
       -editable 0       \
       -textvariable ::cemes::private(foncobtu) \
       -values $list_combobox
-   pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10 -pady 5
+   pack $frm.foncobtu -in $frm.frame8 -anchor nw -side left -padx 10 -pady 5
 
    #--- Site web officiel de la Cemes
    label $frm.lab103 -text "$caption(cemes,titre_site_web)"
@@ -242,6 +242,19 @@ proc ::cemes::getBinningList { } {
 proc ::cemes::getBinningListScan { } {
    set binningListScan { }
    return $binningListScan
+}
+
+# ::cemes::hasCapability
+#    Retourne "la valeur de la propriete"
+#
+#  Parametres :
+#     camNo      : Numero de la camera
+#     capability : Fonctionnalite de la camera
+#
+proc ::cemes::hasCapability { camNo capability } {
+   switch $capability {
+      window { return 1 }
+   }
 }
 
 #
