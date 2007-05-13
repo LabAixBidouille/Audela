@@ -1,4 +1,4 @@
-AudeLA-1.4.0-BETA2 (20070322)
+AudeLA-1.4.0-BETA2 (20070513)
 
 
 1. Introduction
@@ -48,7 +48,8 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - APN (Appareil Photo Numerique),
 - AndorTech,
 - Finger Lakes Instruments,
-- CEMES.
+- CEMES,
+- Nikon CoolPix (port série).
 
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
