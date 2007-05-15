@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.13 2007-01-27 14:27:52 robertdelmas Exp $
+# Mise a jour $Id: astrometry.cap,v 1.14 2007-05-15 21:55:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -22,6 +22,7 @@ set caption(astrometry,cal,delwcs)        "Delete WCS Keywords"
 set caption(astrometry,cal,filename)      "File Name"
 set caption(astrometry,cal,catfolder)     "Path to the Catalog"
 set caption(astrometry,cal,catname)       "Name of Catalog"
+set caption(astrometry,cal,parcourir)     "..."
 set caption(astrometry,cat,usno)          "USNO"
 set caption(astrometry,cat,microcat)      "MicroCat"
 set caption(astrometry,cat,personal)      "Personnal"
@@ -76,6 +77,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,cal,filename)   "Nom du fichier"
    set caption(astrometry,cal,catfolder)  "Chemin d'accès au catalogue"
    set caption(astrometry,cal,catname)    "Nom du catalogue"
+   set caption(astrometry,cal,parcourir)  "..."
    set caption(astrometry,cat,usno)       "USNO"
    set caption(astrometry,cat,microcat)   "MicroCat"
    set caption(astrometry,cat,personal)   "Personnel"
@@ -130,6 +132,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,cal,filename)   "Nome File"
    set caption(astrometry,cal,catfolder)  "Percorso del catalogo"
    set caption(astrometry,cal,catname)    "Nome del catalogo"
+   set caption(astrometry,cal,parcourir)  "..."
    set caption(astrometry,cat,usno)       "USNO"
    set caption(astrometry,cat,microcat)   "MicroCat"
    set caption(astrometry,cat,personal)   "Personale"
@@ -184,6 +187,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,cal,filename)   "Nombre del fichero"
    set caption(astrometry,cal,catfolder)  "Ruta al catálogo"
    set caption(astrometry,cal,catname)    "Nombre del catálogo"
+   set caption(astrometry,cal,parcourir)  "..."
    set caption(astrometry,cat,usno)       "USNO"
    set caption(astrometry,cat,microcat)   "MicroCat"
    set caption(astrometry,cat,personal)   "Personal"
@@ -238,6 +242,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,cal,filename)   "Datei Name"
    set caption(astrometry,cal,catfolder)  "Weg zum Katalog"
    set caption(astrometry,cal,catname)    "Katalog Name"
+   set caption(astrometry,cal,parcourir)  "..."
    set caption(astrometry,cat,usno)       "USNO"
    set caption(astrometry,cat,microcat)   "MicroCat"
    set caption(astrometry,cat,personal)   "Persönlisch"
@@ -292,6 +297,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,cal,filename)   "Nome do ficheiro"
    set caption(astrometry,cal,catfolder)  "Caminho para o catálogo"
    set caption(astrometry,cal,catname)    "Nome do catálogo"
+   set caption(astrometry,cal,parcourir)  "..."
    set caption(astrometry,cat,usno)       "USNO"
    set caption(astrometry,cat,microcat)   "MicroCat"
    set caption(astrometry,cat,personal)   "Pessoal"
@@ -346,6 +352,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,cal,filename)   "File Name"
    set caption(astrometry,cal,catfolder)  "Path to the Catalog"
    set caption(astrometry,cal,catname)    "Name of Catalog"
+   set caption(astrometry,cal,parcourir)  "..."
    set caption(astrometry,cat,usno)       "USNO"
    set caption(astrometry,cat,microcat)   "MicroCat"
    set caption(astrometry,cat,personal)   "Personnal"
