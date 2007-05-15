@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.3 2007-02-10 18:07:48 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.4 2007-05-15 21:53:08 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -122,10 +122,10 @@ namespace eval ::mapWindow {
 
             checkbutton $This.usr.1.che1 -text "$caption(fieldchart,champ_image)" \
                -variable mapWindow(FieldFromImage) -command { ::mapWindow::toggleSource }
-            grid $This.usr.1.che1 -row 0 -column 1 -columnspan 2 -padx 5 -pady 2  -sticky w
+            grid $This.usr.1.che1 -row 0 -column 0 -columnspan 2 -padx 5 -pady 2  -sticky w
 
             label $This.usr.1.lab1 -text "$caption(fieldchart,catalogue)"
-            grid $This.usr.1.lab1 -row 1 -column 1 -padx 5 -pady 2 -sticky w
+            grid $This.usr.1.lab1 -row 1 -column 0 -padx 5 -pady 2 -sticky w
 
             set list_combobox [ list $caption(fieldchart,microcat) $caption(fieldchart,tycho) $caption(fieldchart,loneos) ]
             ComboBox $This.usr.1.cata \
@@ -136,20 +136,20 @@ namespace eval ::mapWindow {
                -textvariable ::mapWindow::widget(mapWindow,catalogue) \
                -editable 0       \
                -values $list_combobox
-            grid $This.usr.1.cata -row 1 -column 2 -padx 5 -pady 2 -sticky e
+            grid $This.usr.1.cata -row 1 -column 1 -padx 5 -pady 2 -sticky e
+
+            label $This.usr.1.lab3 -text "$caption(fieldchart,cat_microcat)"
+            grid $This.usr.1.lab3 -row 2 -column 0 -padx 5 -pady 2 -sticky w
+
+            entry $This.usr.1.ent1 -textvariable ::mapWindow::widget(mapWindow,path_cata)
+            grid $This.usr.1.ent1 -row 2 -column 1 -padx 5 -pady 2 -sticky e
 
             button $This.usr.1.explore -text "$caption(fieldchart,parcourir)" -width 1 \
                -command { set ::mapWindow::widget(mapWindow,path_cata) [ ::mapWindow::parcourir ] }
-            grid $This.usr.1.explore -row 2 -column 0 -padx 5 -pady 2 -sticky w
-
-            label $This.usr.1.lab3 -text "$caption(fieldchart,cat_microcat)"
-            grid $This.usr.1.lab3 -row 2 -column 1 -padx 5 -pady 2 -sticky w
-
-            entry $This.usr.1.ent1 -textvariable ::mapWindow::widget(mapWindow,path_cata)
-            grid $This.usr.1.ent1 -row 2 -column 2 -padx 5 -pady 2 -sticky e
+            grid $This.usr.1.explore -row 2 -column 2 -padx 5 -pady 2 -sticky w
 
             label $This.usr.1.lab2 -text "$caption(fieldchart,magnitude_limite)"
-            grid $This.usr.1.lab2 -row 3 -column 1 -padx 5 -pady 2 -sticky w
+            grid $This.usr.1.lab2 -row 3 -column 0 -padx 5 -pady 2 -sticky w
 
             set list_combobox [ list "10" "12" "14" "16" ]
             ComboBox $This.usr.1.magmax \
@@ -160,7 +160,7 @@ namespace eval ::mapWindow {
                -textvariable ::mapWindow::widget(mapWindow,magmax) \
                -editable 0       \
                -values $list_combobox
-            grid $This.usr.1.magmax -row 3 -column 2 -padx 5 -pady 2 -sticky e
+            grid $This.usr.1.magmax -row 3 -column 1 -padx 5 -pady 2 -sticky e
 
          pack $This.usr.1 -side top -fill both
 

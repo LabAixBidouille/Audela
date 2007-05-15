@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.7 2007-03-13 22:05:59 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.8 2007-05-15 21:53:58 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -171,13 +171,13 @@ namespace eval ::traiteFilters {
 
             frame $This.usr.3 -borderwidth 0 -relief raised
                frame $This.usr.3.1 -borderwidth 0 -relief flat
+                  label $This.usr.3.1.lab1 -text "$caption(traiteFilters,entree)"
+                  pack $This.usr.3.1.lab1 -side left -padx 5 -pady 5
+                  entry $This.usr.3.1.ent1 -textvariable traiteFilters(image_in) -font $audace(font,arial_8_b)
+                  pack $This.usr.3.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
                   button $This.usr.3.1.explore -text "$caption(traiteFilters,parcourir)" -width 1 \
                      -command { ::traiteFilters::parcourir 1 }
                   pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
-                  label $This.usr.3.1.lab1 -text "$caption(traiteFilters,entree)"
-                  pack $This.usr.3.1.lab1 -side left -padx 5 -pady 5
-                  entry $This.usr.3.1.ent1 -textvariable traiteFilters(image_in) -width 50 -font $audace(font,arial_8_b)
-                  pack $This.usr.3.1.ent1 -side right -padx 10 -pady 5
                pack $This.usr.3.1 -side top -fill both
            # pack $This.usr.3 -side top -fill both
 
