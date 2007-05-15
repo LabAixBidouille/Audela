@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.7 2007-05-06 13:58:55 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.8 2007-05-15 21:51:10 robertdelmas Exp $
 #
 
 #============================================================
@@ -233,15 +233,15 @@ proc ::anim::animBuildIF { This } {
          label $This.fra2.lab1 -text $panneau(anim,genericfilename) -relief flat
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
-         #--- Bouton parcourir
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(anim,parcourir) \
-            -command { ::anim::editNomGenerique }
-         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
-
          #--- Entry pour le nom generique
          entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(anim,filename) \
             -width 14 -relief groove
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -side left
+
+         #--- Bouton parcourir
+         button $This.fra2.but1 -borderwidth 2 -text $panneau(anim,parcourir) \
+            -command { ::anim::editNomGenerique }
+         pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
 
       pack $This.fra2 -side top -fill x
 

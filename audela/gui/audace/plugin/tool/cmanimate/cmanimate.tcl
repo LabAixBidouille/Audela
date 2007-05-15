@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.7 2007-05-06 13:59:35 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.8 2007-05-15 21:51:33 robertdelmas Exp $
 #
 #****************************************************************
 #
@@ -993,14 +993,14 @@ proc cmanimBuildIF { This } {
          label  $This.fra2.lab1 -text "$panneau(cmanim,genericfilename)" -relief flat
          pack   $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 2
 
+         #--- Entry for generic name
+         entry  $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanim,filename) -relief groove
+         pack   $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -side left
+
          #--- Bouton parcourir
          button $This.fra2.but1 -borderwidth 2 -text "$panneau(cmanim,parcourir)" \
             -command { ::cmanim::editNomGenerique }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -ipady 3 -side left
-
-         #--- Entry for generic name
-         entry  $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(cmanim,filename) -relief groove
-         pack   $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 4 -side left
 
       pack $This.fra2 -side top -fill x
 

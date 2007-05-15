@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.12 2007-04-29 13:30:49 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.13 2007-05-15 21:53:39 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -450,16 +450,16 @@ namespace eval ::newScript {
       #--- Cree un frame pour y mettre le bouton et la zone a renseigner
       frame $This.frame1 -borderwidth 1 -relief raised
          #--- Positionne le bouton et la zone a renseigner
+         label $This.frame1.lab1 -text "$caption(newscript,nom_script)"
+         pack $This.frame1.lab1 -side left -padx 5 -pady 5
+         entry $This.frame1.ent1 -textvariable newScript::Filename
+         pack $This.frame1.ent1 -side left -padx 5 -pady 5
          button $This.frame1.explore -text "$caption(newscript,parcourir)" -width 1 -command {
             set dirname [ tk_chooseDirectory -title "$caption(newscript,nouveau_script)" \
                -initialdir $audace(rep_scripts) -parent $::newScript::This ]
             set newScript::Filename [ file join $dirname $caption(newscript,pas_de_nom) ]
          }
          pack $This.frame1.explore -side left -padx 5 -pady 5 -ipady 5
-         label $This.frame1.lab1 -text "$caption(newscript,nom_script)"
-         pack $This.frame1.lab1 -side left -padx 5 -pady 5
-         entry $This.frame1.ent1 -textvariable newScript::Filename
-         pack $This.frame1.ent1 -side right -padx 5 -pady 5
       pack $This.frame1 -side top -fill both -expand 1
 
       #--- Cree un frame pour y mettre les boutons
