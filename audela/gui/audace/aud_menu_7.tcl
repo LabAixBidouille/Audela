@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.6 2007-03-03 22:09:28 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.7 2007-05-15 22:28:04 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -62,11 +62,11 @@ namespace eval ::cwdWindow {
       frame $This.usr -borderwidth 0 -relief raised
          frame $This.usr.1 -borderwidth 1 -relief raised
             frame $This.usr.1.a -borderwidth 0 -relief raised
-               button $This.usr.1.a.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-                  -command { ::cwdWindow::change_rep_images }
-               pack $This.usr.1.a.explore -side left -padx 5 -pady 5 -ipady 5
                label $This.usr.1.a.lab1 -text "$caption(cwdWindow,repertoire_images)"
                pack $This.usr.1.a.lab1 -side left -padx 5 -pady 5
+               button $This.usr.1.a.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+                  -command { ::cwdWindow::change_rep_images }
+               pack $This.usr.1.a.explore -side right -padx 5 -pady 5 -ipady 5
                entry $This.usr.1.a.ent1 -textvariable cwdWindow(dir_images) -width $cwdWindow(long)
                pack $This.usr.1.a.ent1 -side right -padx 5 -pady 5
             pack $This.usr.1.a -side top -fill both -expand 1
@@ -84,20 +84,20 @@ namespace eval ::cwdWindow {
             pack $This.usr.1.b -side top -fill both -expand 1
          pack $This.usr.1 -side top -fill both -expand 1
          frame $This.usr.2 -borderwidth 1 -relief raised
-            button $This.usr.2.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-               -command { ::cwdWindow::change_rep_scripts }
-            pack $This.usr.2.explore -side left -padx 5 -pady 5 -ipady 5
             label $This.usr.2.lab2 -text "$caption(cwdWindow,repertoire_scripts)"
             pack $This.usr.2.lab2 -side left -padx 5 -pady 5
+            button $This.usr.2.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+               -command { ::cwdWindow::change_rep_scripts }
+            pack $This.usr.2.explore -side right -padx 5 -pady 5 -ipady 5
             entry $This.usr.2.ent2 -textvariable cwdWindow(dir_scripts) -width $cwdWindow(long)
             pack $This.usr.2.ent2 -side right -padx 5 -pady 5
          pack $This.usr.2 -side top -fill both -expand 1
          frame $This.usr.3 -borderwidth 1 -relief raised
-            button $This.usr.3.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
-               -command { ::cwdWindow::change_rep_catalogues }
-            pack $This.usr.3.explore -side left -padx 5 -pady 5 -ipady 5
             label $This.usr.3.lab3 -text "$caption(cwdWindow,repertoire_catalogues)"
             pack $This.usr.3.lab3 -side left -padx 5 -pady 5
+            button $This.usr.3.explore -text "$caption(aud_menu_7,parcourir)" -width 1 \
+               -command { ::cwdWindow::change_rep_catalogues }
+            pack $This.usr.3.explore -side right -padx 5 -pady 5 -ipady 5
             entry $This.usr.3.ent3 -textvariable cwdWindow(dir_catalogues) -width $cwdWindow(long)
             pack $This.usr.3.ent3 -side right -padx 5 -pady 5
          pack $This.usr.3 -side top -fill both -expand 1
@@ -415,6 +415,8 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
+         label $This.usr1.lab1 -text "$caption(confeditscript,edit_script)"
+         pack $This.usr1.lab1 -side left -padx 5 -pady 5
          button $This.usr1.explore1 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr1.ent1 configure -font $confgene(EditScript,edit_font_italic) -relief solid
@@ -427,9 +429,7 @@ namespace eval ::confEditScript {
                focus $::confEditScript::This.usr1
                $::confEditScript::This.usr1.ent1 configure -font $confgene(EditScript,edit_font) -relief sunken
             }
-         pack $This.usr1.explore1 -side left -padx 5 -pady 5 -ipady 5
-         label $This.usr1.lab1 -text "$caption(confeditscript,edit_script)"
-         pack $This.usr1.lab1 -side left -padx 5 -pady 5
+         pack $This.usr1.explore1 -side right -padx 5 -pady 5 -ipady 5
          entry $This.usr1.ent1 -textvariable confgene(EditScript,edit_script) -width $confgene(EditScript,long) \
             -font $font -relief $relief
          pack $This.usr1.ent1 -side right -padx 5 -pady 5
@@ -445,6 +445,8 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
+         label $This.usr2.lab2 -text "$caption(confeditscript,notice_pdf)"
+         pack $This.usr2.lab2 -side left -padx 5 -pady 5
          button $This.usr2.explore2 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr2.ent2 configure -font $confgene(EditScript,edit_font_italic) -relief solid
@@ -457,9 +459,7 @@ namespace eval ::confEditScript {
                focus $::confEditScript::This.usr2
                $::confEditScript::This.usr2.ent2 configure -font $confgene(EditScript,edit_font) -relief sunken
             }
-         pack $This.usr2.explore2 -side left -padx 5 -pady 5 -ipady 5
-         label $This.usr2.lab2 -text "$caption(confeditscript,notice_pdf)"
-         pack $This.usr2.lab2 -side left -padx 5 -pady 5
+         pack $This.usr2.explore2 -side right -padx 5 -pady 5 -ipady 5
          entry $This.usr2.ent2 -textvariable confgene(EditScript,edit_pdf) -width $confgene(EditScript,long) \
             -font $font -relief $relief
          pack $This.usr2.ent2 -side right -padx 5 -pady 5
@@ -475,6 +475,8 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
+         label $This.usr3.lab3 -text "$caption(confeditscript,navigateur_htm)"
+         pack $This.usr3.lab3 -side left -padx 5 -pady 5
          button $This.usr3.explore3 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr3.ent3 configure -font $confgene(EditScript,edit_font_italic) -relief solid
@@ -487,9 +489,7 @@ namespace eval ::confEditScript {
                focus $::confEditScript::This.usr3
                $::confEditScript::This.usr3.ent3 configure -font $confgene(EditScript,edit_font) -relief sunken
             }
-         pack $This.usr3.explore3 -side left -padx 5 -pady 5 -ipady 5
-         label $This.usr3.lab3 -text "$caption(confeditscript,navigateur_htm)"
-         pack $This.usr3.lab3 -side left -padx 5 -pady 5
+         pack $This.usr3.explore3 -side right -padx 5 -pady 5 -ipady 5
          entry $This.usr3.ent3 -textvariable confgene(EditScript,edit_htm) -width $confgene(EditScript,long) \
             -font $font -relief $relief
          pack $This.usr3.ent3 -side right -padx 5 -pady 5
@@ -505,6 +505,8 @@ namespace eval ::confEditScript {
             set font $confgene(EditScript,edit_font_italic)
             set relief "solid"
          }
+         label $This.usr4.lab4 -text "$caption(confeditscript,viewer)"
+         pack $This.usr4.lab4 -side left -padx 5 -pady 5
          button $This.usr4.explore4 -text "$caption(aud_menu_7,parcourir)" -width 1 \
             -command {
                $::confEditScript::This.usr4.ent4 configure -font $confgene(EditScript,edit_font_italic) -relief solid
@@ -517,9 +519,7 @@ namespace eval ::confEditScript {
                focus $::confEditScript::This.usr4
                $::confEditScript::This.usr4.ent4 configure -font $confgene(EditScript,edit_font) -relief sunken
             }
-         pack $This.usr4.explore4 -side left -padx 5 -pady 5 -ipady 5
-         label $This.usr4.lab4 -text "$caption(confeditscript,viewer)"
-         pack $This.usr4.lab4 -side left -padx 5 -pady 5
+         pack $This.usr4.explore4 -side right -padx 5 -pady 5 -ipady 5
          entry $This.usr4.ent4 -textvariable confgene(EditScript,edit_viewer) -width $confgene(EditScript,long) \
             -font $font -relief $relief
          pack $This.usr4.ent4 -side right -padx 5 -pady 5
