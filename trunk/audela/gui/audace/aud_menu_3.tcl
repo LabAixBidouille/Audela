@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.27 2007-05-09 20:32:29 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.28 2007-05-15 21:54:42 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -238,34 +238,34 @@ namespace eval ::pretraitement {
 
          frame $This.usr.5 -borderwidth 1 -relief raised
             frame $This.usr.5.1 -borderwidth 0 -relief flat
+               label $This.usr.5.1.lab8 -text "$caption(pretraitement,image_dark)"
+               pack $This.usr.5.1.lab8 -side left -padx 5 -pady 5
+               entry $This.usr.5.1.ent8 -textvariable pretraitement(dark) -font $audace(font,arial_8_b)
+               pack $This.usr.5.1.ent8 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.5.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 4 }
                pack $This.usr.5.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.5.1.lab8 -text "$caption(pretraitement,image_dark)"
-               pack $This.usr.5.1.lab8 -side left -padx 5 -pady 5
-               entry $This.usr.5.1.ent8 -textvariable pretraitement(dark) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.5.1.ent8 -side right -padx 10 -pady 5
             pack $This.usr.5.1 -side top -fill both
             frame $This.usr.5.2 -borderwidth 0 -relief flat
+               label $This.usr.5.2.lab9 -text "$caption(pretraitement,image_offset)"
+               pack $This.usr.5.2.lab9 -side left -padx 5 -pady 5
+               entry $This.usr.5.2.ent9 -textvariable pretraitement(offset) -font $audace(font,arial_8_b)
+               pack $This.usr.5.2.ent9 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.5.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 5 }
                pack $This.usr.5.2.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.5.2.lab9 -text "$caption(pretraitement,image_offset)"
-               pack $This.usr.5.2.lab9 -side left -padx 5 -pady 5
-               entry $This.usr.5.2.ent9 -textvariable pretraitement(offset) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.5.2.ent9 -side right -padx 10 -pady 5
             pack $This.usr.5.2 -side top -fill both
         # pack $This.usr.5 -in $This.usr -side top -fill both
 
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
+               label $This.usr.4.1.lab6 -textvariable "pretraitement(operande)"
+               pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
+               entry $This.usr.4.1.ent6 -textvariable pretraitement(img_operand) -font $audace(font,arial_8_b)
+               pack $This.usr.4.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 3 }
                pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.4.1.lab6 -textvariable "pretraitement(operande)"
-               pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.1.ent6 -textvariable pretraitement(img_operand) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.4.1.ent6 -side right -padx 10 -pady 5
             pack $This.usr.4.1 -side top -fill both
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                label $This.usr.4.2.lab7 -textvariable "pretraitement(constante)"
@@ -288,57 +288,57 @@ namespace eval ::pretraitement {
 
          frame $This.usr.8 -borderwidth 1 -relief raised
             frame $This.usr.8.1 -borderwidth 0 -relief flat
+               label $This.usr.8.1.lab1 -textvariable "pretraitement(image_A)"
+               pack $This.usr.8.1.lab1 -side left -padx 5 -pady 5
+               entry $This.usr.8.1.ent1 -textvariable pretraitement(in) -font $audace(font,arial_8_b)
+               pack $This.usr.8.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.8.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 1 }
                pack $This.usr.8.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.8.1.lab1 -textvariable "pretraitement(image_A)"
-               pack $This.usr.8.1.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.8.1.ent1 -textvariable pretraitement(in) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.8.1.ent1 -side right -padx 10 -pady 5
             pack $This.usr.8.1 -side top -fill both
             frame $This.usr.8.2 -borderwidth 0 -relief flat
+               label $This.usr.8.2.lab1 -textvariable "pretraitement(image_B)"
+               pack $This.usr.8.2.lab1 -side left -padx 5 -pady 5
+               entry $This.usr.8.2.ent1 -textvariable pretraitement(out) -font $audace(font,arial_8_b)
+               pack $This.usr.8.2.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.8.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 2 }
                pack $This.usr.8.2.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.8.2.lab1 -textvariable "pretraitement(image_B)"
-               pack $This.usr.8.2.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.8.2.ent1 -textvariable pretraitement(out) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.8.2.ent1 -side right -padx 10 -pady 5
             pack $This.usr.8.2 -side top -fill both
         # pack $This.usr.8 -in $This.usr -side top -fill both
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.1 -borderwidth 0 -relief flat
+               label $This.usr.2.1.lab1 -textvariable "pretraitement(image_A)"
+               pack $This.usr.2.1.lab1 -side left -padx 5 -pady 5
+               entry $This.usr.2.1.ent1 -textvariable pretraitement(in) -font $audace(font,arial_8_b)
+               pack $This.usr.2.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.2.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 1 }
                pack $This.usr.2.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.2.1.lab1 -textvariable "pretraitement(image_A)"
-               pack $This.usr.2.1.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.2.1.ent1 -textvariable pretraitement(in) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.2 -borderwidth 0 -relief flat
+               label $This.usr.2.2.lab2 -textvariable "pretraitement(nombre)" -width 20
+               pack $This.usr.2.2.lab2 -side left -padx 5 -pady 5
                entry $This.usr.2.2.ent2 -textvariable pretraitement(nb) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5
-               label $This.usr.2.2.lab2 -textvariable "pretraitement(nombre)"
-               pack $This.usr.2.2.lab2 -side right -padx 5 -pady 5
+               pack $This.usr.2.2.ent2 -side left -padx 10 -pady 5
             pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
+               label $This.usr.2.3.lab3 -textvariable "pretraitement(premier_indice)" -width 20
+               pack $This.usr.2.3.lab3 -side left -padx 5 -pady 5
                entry $This.usr.2.3.ent3 -textvariable pretraitement(valeur_indice) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5
-               label $This.usr.2.3.lab3 -textvariable "pretraitement(premier_indice)"
-               pack $This.usr.2.3.lab3 -side right -padx 5 -pady 5
+               pack $This.usr.2.3.ent3 -side left -padx 10 -pady 5
             pack $This.usr.2.3 -side top -fill both
             frame $This.usr.2.4 -borderwidth 0 -relief flat
+               label $This.usr.2.4.lab4 -textvariable "pretraitement(image_B)"
+               pack $This.usr.2.4.lab4 -side left -padx 5 -pady 5
+               entry $This.usr.2.4.ent4 -textvariable pretraitement(out) -font $audace(font,arial_8_b)
+               pack $This.usr.2.4.ent4 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.2.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::pretraitement::parcourir 2 }
                pack $This.usr.2.4.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.2.4.lab4 -textvariable "pretraitement(image_B)"
-               pack $This.usr.2.4.lab4 -side left -padx 5 -pady 5
-               entry $This.usr.2.4.ent4 -textvariable pretraitement(out) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5
             pack $This.usr.2.4 -side top -fill both
         # pack $This.usr.2 -in $This.usr -side top -fill both
 
@@ -2419,40 +2419,40 @@ namespace eval ::traiteImage {
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.20 -borderwidth 0 -relief flat
-               button $This.usr.2.20.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 1 }
-               pack $This.usr.2.20.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.20.lab5 -text "$caption(pretraitement,image_gene_entree_r+v+b)"
                pack $This.usr.2.20.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.20.ent5 -textvariable traiteImage(rvbWindow_r+v+b_filename) -width 20 \
+               entry $This.usr.2.20.ent5 -textvariable traiteImage(rvbWindow_r+v+b_filename) \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.20.ent5 -side right -padx 10 -pady 5
+               pack $This.usr.2.20.ent5 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.2.20.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 1 }
+               pack $This.usr.2.20.btn1 -side left -padx 10 -pady 5 -ipady 5
            # pack $This.usr.2.20 -side top -fill both
             frame $This.usr.2.21 -borderwidth 0 -relief flat
-               button $This.usr.2.21.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 2 }
-               pack $This.usr.2.21.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.21.lab5 -text "$caption(pretraitement,image_sortie_rvb)"
                pack $This.usr.2.21.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.21.ent5 -textvariable traiteImage(rvbWindow_rvb_filename) -width 20 \
+               entry $This.usr.2.21.ent5 -textvariable traiteImage(rvbWindow_rvb_filename) \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.21.ent5 -side right -padx 10 -pady 5
+               pack $This.usr.2.21.ent5 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.2.21.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 2 }
+               pack $This.usr.2.21.btn1 -side left -padx 10 -pady 5 -ipady 5
            # pack $This.usr.2.21 -side top -fill both
             frame $This.usr.2.22 -borderwidth 0 -relief flat
-               button $This.usr.2.22.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 1 }
-               pack $This.usr.2.22.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.22.lab5 -text "$caption(pretraitement,image_entree_rvb)"
                pack $This.usr.2.22.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.22.ent5 -textvariable traiteImage(rvbWindow_rvb_filename) -width 20 \
+               entry $This.usr.2.22.ent5 -textvariable traiteImage(rvbWindow_rvb_filename) \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.22.ent5 -side right -padx 10 -pady 5
+               pack $This.usr.2.22.ent5 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.2.22.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 1 }
+               pack $This.usr.2.22.btn1 -side left -padx 10 -pady 5 -ipady 5
            # pack $This.usr.2.22 -side top -fill both
             frame $This.usr.2.23 -borderwidth 0 -relief flat
-               button $This.usr.2.23.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 2 }
-               pack $This.usr.2.23.btn1 -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.23.lab5 -text "$caption(pretraitement,image_gene_sortie_r+v+b)"
                pack $This.usr.2.23.lab5 -side left -padx 5 -pady 5
-               entry $This.usr.2.23.ent5 -textvariable traiteImage(rvbWindow_r+v+b_filename) -width 20 \
+               entry $This.usr.2.23.ent5 -textvariable traiteImage(rvbWindow_r+v+b_filename) \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.23.ent5 -side right -padx 10 -pady 5
+               pack $This.usr.2.23.ent5 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.2.23.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 2 }
+               pack $This.usr.2.23.btn1 -side left -padx 10 -pady 5 -ipady 5
            # pack $This.usr.2.23 -side top -fill both
         # pack $This.usr.2 -side bottom -fill both
 
@@ -2925,36 +2925,36 @@ namespace eval ::traiteWindow {
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.1 -borderwidth 0 -relief flat
+               label $This.usr.2.1.lab1 -textvariable "traiteWindow(image_A)"
+               pack $This.usr.2.1.lab1 -side left -padx 5 -pady 5
+               entry $This.usr.2.1.ent1 -textvariable traiteWindow(in) -font $audace(font,arial_8_b)
+               pack $This.usr.2.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.2.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::traiteWindow::parcourir 1 }
                pack $This.usr.2.1.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.2.1.lab1 -textvariable "traiteWindow(image_A)"
-               pack $This.usr.2.1.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.2.1.ent1 -textvariable traiteWindow(in) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.2 -borderwidth 0 -relief flat
+               label $This.usr.2.2.lab2 -textvariable "traiteWindow(nombre)" -width 20
+               pack $This.usr.2.2.lab2 -side left -padx 5 -pady 5
                entry $This.usr.2.2.ent2 -textvariable traiteWindow(nb) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5
-               label $This.usr.2.2.lab2 -textvariable "traiteWindow(nombre)"
-               pack $This.usr.2.2.lab2 -side right -padx 5 -pady 5
+               pack $This.usr.2.2.ent2 -side left -padx 10 -pady 5
             pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
+               label $This.usr.2.3.lab3 -textvariable "traiteWindow(premier_indice)" -width 20
+               pack $This.usr.2.3.lab3 -side left -padx 5 -pady 5
                entry $This.usr.2.3.ent3 -textvariable traiteWindow(valeur_indice) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5
-               label $This.usr.2.3.lab3 -textvariable "traiteWindow(premier_indice)"
-               pack $This.usr.2.3.lab3 -side right -padx 5 -pady 5
+               pack $This.usr.2.3.ent3 -side left -padx 10 -pady 5
             pack $This.usr.2.3 -side top -fill both
             frame $This.usr.2.4 -borderwidth 0 -relief flat
+               label $This.usr.2.4.lab4 -textvariable "traiteWindow(image_B)"
+               pack $This.usr.2.4.lab4 -side left -padx 5 -pady 5
+               entry $This.usr.2.4.ent4 -textvariable traiteWindow(out) -font $audace(font,arial_8_b)
+               pack $This.usr.2.4.ent4 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.2.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::traiteWindow::parcourir 2 }
                pack $This.usr.2.4.explore -side left -padx 10 -pady 5 -ipady 5
-               label $This.usr.2.4.lab4 -textvariable "traiteWindow(image_B)"
-               pack $This.usr.2.4.lab4 -side left -padx 5 -pady 5
-               entry $This.usr.2.4.ent4 -textvariable traiteWindow(out) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5
             pack $This.usr.2.4 -side top -fill both
         # pack $This.usr.2 -in $This.usr -side top -fill both
 
@@ -3525,41 +3525,41 @@ namespace eval ::faireImageRef {
                checkbutton $This.usr.7.1.che1 -text "$caption(pretraitement,aucune)" \
                   -variable faireImageRef(pretraitement,no-offset) -command { ::faireImageRef::griserActiver_1 }
                pack $This.usr.7.1.che1 -side left -padx 10 -pady 5
-               button $This.usr.7.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 3 }
-               pack $This.usr.7.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.7.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.7.1.ent6 -side right -padx 10 -pady 5
+               entry $This.usr.7.1.ent6 -textvariable faireImageRef(offset) -font $audace(font,arial_8_b)
+               pack $This.usr.7.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.7.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 3 }
+               pack $This.usr.7.1.explore -side right -padx 10 -pady 5 -ipady 5
             pack $This.usr.7.1 -side top -fill both
             frame $This.usr.7.2 -borderwidth 0 -relief flat
                checkbutton $This.usr.7.2.che1 -text "$caption(pretraitement,aucune)" \
                   -variable faireImageRef(pretraitement,no-dark) -command { ::faireImageRef::griserActiver_2 }
                pack $This.usr.7.2.che1 -side left -padx 10 -pady 5
-               button $This.usr.7.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 4 }
-               pack $This.usr.7.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.2.lab6 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.7.2.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.2.ent6 -textvariable faireImageRef(dark) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.7.2.ent6 -side right -padx 10 -pady 5
+               entry $This.usr.7.2.ent6 -textvariable faireImageRef(dark) -font $audace(font,arial_8_b)
+               pack $This.usr.7.2.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.7.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 4 }
+               pack $This.usr.7.2.explore -side right -padx 10 -pady 5 -ipady 5
             pack $This.usr.7.2 -side top -fill both
             frame $This.usr.7.3 -borderwidth 0 -relief flat
                checkbutton $This.usr.7.3.opt -text "$caption(audace,menu,opt_noir)" -variable faireImageRef(opt)
-               pack $This.usr.7.3.opt -side right -padx 60 -pady 5
+               pack $This.usr.7.3.opt -side right -padx 80 -pady 5
             pack $This.usr.7.3 -side top -fill both
             frame $This.usr.7.4 -borderwidth 0 -relief flat
                checkbutton $This.usr.7.4.che1 -text "$caption(pretraitement,aucune)" \
                   -variable faireImageRef(pretraitement,no-flat-field) -command { ::faireImageRef::griserActiver_3 }
                pack $This.usr.7.4.che1 -side left -padx 10 -pady 5
-               button $This.usr.7.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 5 }
-               pack $This.usr.7.4.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.7.4.lab6 -text "$caption(pretraitement,image_flat-field)"
                pack $This.usr.7.4.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.4.ent6 -textvariable faireImageRef(flat-field) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.7.4.ent6 -side right -padx 10 -pady 5
+               entry $This.usr.7.4.ent6 -textvariable faireImageRef(flat-field) -font $audace(font,arial_8_b)
+               pack $This.usr.7.4.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.7.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 5 }
+               pack $This.usr.7.4.explore -side right -padx 10 -pady 5 -ipady 5
             pack $This.usr.7.4 -side top -fill both
             frame $This.usr.7.6 -borderwidth 0 -relief flat
                checkbutton $This.usr.7.6.che1 -text "$caption(pretraitement,auto)" \
@@ -3567,9 +3567,9 @@ namespace eval ::faireImageRef {
                pack $This.usr.7.6.che1 -side left -padx 10 -pady 5
                label $This.usr.7.6.lab6 -textvariable "faireImageRef(normalisation)"
                pack $This.usr.7.6.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.7.6.ent6 -textvariable faireImageRef(norm) -width 15 -justify center \
+               entry $This.usr.7.6.ent6 -textvariable faireImageRef(norm) -width 10 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.7.6.ent6 -side right -padx 10 -pady 5
+               pack $This.usr.7.6.ent6 -side left -padx 10 -pady 5
             pack $This.usr.7.6 -side top -fill both
         # pack $This.usr.7 -side top -fill both
 
@@ -3602,35 +3602,35 @@ namespace eval ::faireImageRef {
                checkbutton $This.usr.4.1.che1 -text "$caption(pretraitement,aucune)" \
                   -variable faireImageRef(flat-field,no-offset) -command { ::faireImageRef::griserActiver_5 }
                pack $This.usr.4.1.che1 -side left -padx 10 -pady 5
-               button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 3 }
-               pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.4.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
                entry $This.usr.4.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.4.1.ent6 -side right -padx 10 -pady 5
+               pack $This.usr.4.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 3 }
+               pack $This.usr.4.1.explore -side left -padx 10 -pady 5 -ipady 5
             pack $This.usr.4.1 -side top -fill both
 
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                checkbutton $This.usr.4.2.che1 -text "$caption(pretraitement,aucune)" \
                   -variable faireImageRef(flat-field,no-dark) -command { ::faireImageRef::griserActiver_6 }
                pack $This.usr.4.2.che1 -side left -padx 10 -pady 5
-               button $This.usr.4.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 4 }
-               pack $This.usr.4.2.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.4.2.lab6 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.4.2.lab6 -side left -padx 5 -pady 5
                entry $This.usr.4.2.ent6 -textvariable faireImageRef(dark) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.4.2.ent6 -side right -padx 10 -pady 5
+               pack $This.usr.4.2.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.4.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 4 }
+               pack $This.usr.4.2.explore -side left -padx 10 -pady 5 -ipady 5
             pack $This.usr.4.2 -side top -fill both
 
             frame $This.usr.4.3 -borderwidth 0 -relief flat
-               label $This.usr.4.3.lab7 -textvariable "faireImageRef(normalisation)"
-               pack $This.usr.4.3.lab7 -side left -padx 5 -pady 5
                entry $This.usr.4.3.ent7 -textvariable faireImageRef(norm) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
                pack $This.usr.4.3.ent7 -side right -padx 10 -pady 5
-            pack $This.usr.4.3 -side top -fill both
+               label $This.usr.4.3.lab7 -textvariable "faireImageRef(normalisation)"
+               pack $This.usr.4.3.lab7 -side right -padx 5 -pady 5
+            pack $This.usr.4.3 -side top -fill both -padx 60
         # pack $This.usr.4 -side top -fill both
 
          frame $This.usr.3 -borderwidth 1 -relief raised
@@ -3638,48 +3638,48 @@ namespace eval ::faireImageRef {
                checkbutton $This.usr.3.1.che1 -text "$caption(pretraitement,aucune)" \
                   -variable faireImageRef(dark,no-offset) -command { ::faireImageRef::griserActiver_7 }
                pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
-               button $This.usr.3.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 3 }
-               pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.3.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.3.1.lab6 -side left -padx 5 -pady 5
                entry $This.usr.3.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.3.1.ent6 -side right -padx 10 -pady 5
+               pack $This.usr.3.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.3.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 3 }
+               pack $This.usr.3.1.explore -side left -padx 10 -pady 5 -ipady 5
             pack $This.usr.3.1 -side top -fill both
         # pack $This.usr.3 -side top -fill both
 
          frame $This.usr.2 -borderwidth 1 -relief raised
             frame $This.usr.2.1 -borderwidth 0 -relief flat
-               button $This.usr.2.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 1 }
-               pack $This.usr.2.1.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.1.lab1 -textvariable "faireImageRef(image_generique)"
                pack $This.usr.2.1.lab1 -side left -padx 5 -pady 5
-               entry $This.usr.2.1.ent1 -textvariable faireImageRef(in) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.2.1.ent1 -side right -padx 10 -pady 5
+               entry $This.usr.2.1.ent1 -textvariable faireImageRef(in) -font $audace(font,arial_8_b)
+               pack $This.usr.2.1.ent1 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.2.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 1 }
+               pack $This.usr.2.1.explore -side right -padx 10 -pady 5 -ipady 5
             pack $This.usr.2.1 -side top -fill both
             frame $This.usr.2.2 -borderwidth 0 -relief flat
+               label $This.usr.2.2.lab2 -textvariable "faireImageRef(nombre)" -width 20
+               pack $This.usr.2.2.lab2 -side left -padx 5 -pady 5
                entry $This.usr.2.2.ent2 -textvariable faireImageRef(nb) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.2.ent2 -side right -padx 10 -pady 5
-               label $This.usr.2.2.lab2 -textvariable "faireImageRef(nombre)"
-               pack $This.usr.2.2.lab2 -side right -padx 5 -pady 5
+               pack $This.usr.2.2.ent2 -side left -padx 10 -pady 5
             pack $This.usr.2.2 -side top -fill both
             frame $This.usr.2.3 -borderwidth 0 -relief flat
+               label $This.usr.2.3.lab3 -textvariable "faireImageRef(premier_indice)" -width 20
+               pack $This.usr.2.3.lab3 -side left -padx 5 -pady 5
                entry $This.usr.2.3.ent3 -textvariable faireImageRef(valeur_indice) -width 7 -justify center \
                   -font $audace(font,arial_8_b)
-               pack $This.usr.2.3.ent3 -side right -padx 10 -pady 5
-               label $This.usr.2.3.lab3 -textvariable "faireImageRef(premier_indice)"
-               pack $This.usr.2.3.lab3 -side right -padx 5 -pady 5
+               pack $This.usr.2.3.ent3 -side left -padx 10 -pady 5
             pack $This.usr.2.3 -side top -fill both
             frame $This.usr.2.4 -borderwidth 0 -relief flat
-               button $This.usr.2.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
-                  -command { ::faireImageRef::parcourir 2 }
-               pack $This.usr.2.4.explore -side left -padx 10 -pady 5 -ipady 5
                label $This.usr.2.4.lab4 -textvariable "faireImageRef(image_sortie)"
                pack $This.usr.2.4.lab4 -side left -padx 5 -pady 5
-               entry $This.usr.2.4.ent4 -textvariable faireImageRef(out) -width 20 -font $audace(font,arial_8_b)
-               pack $This.usr.2.4.ent4 -side right -padx 10 -pady 5
+               entry $This.usr.2.4.ent4 -textvariable faireImageRef(out) -font $audace(font,arial_8_b)
+               pack $This.usr.2.4.ent4 -side left -padx 10 -pady 5 -fill x -expand 1
+               button $This.usr.2.4.explore -text "$caption(pretraitement,parcourir)" -width 1 \
+                  -command { ::faireImageRef::parcourir 2 }
+               pack $This.usr.2.4.explore -side right -padx 10 -pady 5 -ipady 5
             pack $This.usr.2.4 -side top -fill both
         # pack $This.usr.2 -side top -fill both
 

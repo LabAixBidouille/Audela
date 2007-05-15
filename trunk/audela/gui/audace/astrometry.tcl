@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.14 2007-01-28 09:25:15 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.15 2007-05-15 21:54:18 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -146,30 +146,30 @@ namespace eval ::astrometry {
          pack $astrom(This).cal.${cal}.fra_0.cat -side left
       pack $astrom(This).cal.${cal}.fra_0 -anchor center -fill x
       frame $astrom(This).cal.${cal}.fra_1
-         button $astrom(This).cal.${cal}.fra_1.but -text ... \
+         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,catfolder)"
+         pack $astrom(This).cal.${cal}.fra_1.lab -side left
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width 50
+         pack $astrom(This).cal.${cal}.fra_1.ent -side left -padx 5
+         button $astrom(This).cal.${cal}.fra_1.but -text "$caption(astrometry,cal,parcourir)" \
             -command {
                set d [::astrometry::getdirname]
                if {$d!=""} {set ::astrometry::catvalues(catfolder) $d ; update ; focus $::astrometry::astrom(This) }
             }
          pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 5 -ipady 5
-         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,catfolder)"
-         pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(catfolder) -width 50
-         pack $astrom(This).cal.${cal}.fra_1.ent -side left -padx 5
       pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
       #--- Calibration from a file
       set cal file
       frame $astrom(This).cal.${cal}.fra_1
-         button $astrom(This).cal.${cal}.fra_1.but -text ... \
+         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,filename)"
+         pack $astrom(This).cal.${cal}.fra_1.lab -side left
+         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(reffile) -width 40
+         pack $astrom(This).cal.${cal}.fra_1.ent -side left
+         button $astrom(This).cal.${cal}.fra_1.but -text "$caption(astrometry,cal,parcourir)" \
             -command {
                set d [ ::tkutil::box_load $::astrometry::astrom(This) $audace(rep_images) $audace(bufNo) "1" ]
                if {$d!=""} {set ::astrometry::catvalues(reffile) $d ; update ; focus $::astrometry::astrom(This)}
             }
          pack $astrom(This).cal.${cal}.fra_1.but -side left -padx 2 -ipady 5
-         label $astrom(This).cal.${cal}.fra_1.lab -text "$caption(astrometry,cal,filename)"
-         pack $astrom(This).cal.${cal}.fra_1.lab -side left
-         entry $astrom(This).cal.${cal}.fra_1.ent -textvariable ::astrometry::catvalues(reffile) -width 40
-         pack $astrom(This).cal.${cal}.fra_1.ent -side left
       pack $astrom(This).cal.${cal}.fra_1 -anchor center -fill x
       #--- Button to start the calibration and help
       frame $astrom(This).cal.fra_2

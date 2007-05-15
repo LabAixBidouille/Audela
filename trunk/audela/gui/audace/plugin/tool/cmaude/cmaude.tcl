@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.10 2007-04-14 08:30:43 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.11 2007-05-15 21:51:59 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -680,7 +680,7 @@ global audace color panneau
             #--- Bouton parcourir
             button $This.fra2.fra4.explore1 -borderwidth 2 -text $panneau(cmaude,parcourir) \
                -command { ::cmaude::parcourir 1 }
-            pack $This.fra2.fra4.explore1 -in $This.fra2.fra4 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
+            pack $This.fra2.fra4.explore1 -in $This.fra2.fra4 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side right
             #--- Label for the name of bias
             label $This.fra2.fra4.lab1 -text "$panneau(cmaude,label_bias)" -relief flat
             pack $This.fra2.fra4.lab1 -in $This.fra2.fra4 -anchor center -expand 1 -fill both -padx 4 -pady 1
@@ -695,7 +695,7 @@ global audace color panneau
             #--- Bouton parcourir
             button $This.fra2.fra5.explore2 -borderwidth 2 -text $panneau(cmaude,parcourir) \
                -command { ::cmaude::parcourir 2 }
-            pack $This.fra2.fra5.explore2 -in $This.fra2.fra5 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
+            pack $This.fra2.fra5.explore2 -in $This.fra2.fra5 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side right
             #--- Label for the name of dark
             label $This.fra2.fra5.lab2 -text "$panneau(cmaude,label_dark)" -relief flat
             pack $This.fra2.fra5.lab2 -in $This.fra2.fra5 -anchor center -expand 1 -fill both -padx 4 -pady 1
@@ -710,7 +710,7 @@ global audace color panneau
             #--- Bouton parcourir
             button $This.fra2.fra6.explore3 -borderwidth 2 -text $panneau(cmaude,parcourir) \
                -command { ::cmaude::parcourir 3 }
-            pack $This.fra2.fra6.explore3 -in $This.fra2.fra6 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
+            pack $This.fra2.fra6.explore3 -in $This.fra2.fra6 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side right
             #--- Label for the name of overlay
             label $This.fra2.fra6.lab2a -text "$panneau(cmaude,label_overlay)" -relief flat
             pack $This.fra2.fra6.lab2a -in $This.fra2.fra6 -anchor center -expand 1 -fill both -padx 4 -pady 1
