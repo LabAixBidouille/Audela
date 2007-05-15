@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.7 2007-04-11 17:32:42 michelpujol Exp $
+# Mise a jour $Id: guide.tcl,v 1.8 2007-05-15 22:27:42 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -36,20 +36,20 @@ namespace eval guide {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         
+
       }
    }
 
    #------------------------------------------------------------
-   #  getPluginType 
-   #     retourne le type de plugin 
+   #  getPluginType
+   #     retourne le type de plugin
    #------------------------------------------------------------
    proc getPluginType  { } {
       return "chart"
    }
 
    #------------------------------------------------------------
-   #  getPluginTitle 
+   #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
    proc getPluginTitle  { } {
@@ -203,15 +203,15 @@ namespace eval guide {
       label $frm.frame1.labA_partir_de -text "$caption(guide,a_partir_de)"
       pack $frm.frame1.labA_partir_de -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
+      entry $frm.frame1.nomDossier -textvariable ::guide::widget(dirname) -width 15
+      pack $frm.frame1.nomDossier -side left -padx 10 -pady 5
+
       button $frm.frame1.explore -text "$caption(guide,parcourir)" -width 1 \
          -command {
             set ::guide::widget(dirname) [ tk_chooseDirectory -title "$caption(guide,dossier)" \
             -initialdir .. -parent $::guide::widget(frm) ]
          }
       pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
-
-      entry $frm.frame1.nomDossier -textvariable ::guide::widget(dirname) -width 15
-      pack $frm.frame1.nomDossier -side left -padx 10 -pady 5
 
       button $frm.recherche -text "$caption(guide,rechercher)" -relief raised -state normal \
          -command { ::guide::Recherche_Fichier }
@@ -259,7 +259,7 @@ namespace eval guide {
 
    #------------------------------------------------------------
    #  deletePluginInstance
-   #     suppprime l'instance du plugin 
+   #     suppprime l'instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
