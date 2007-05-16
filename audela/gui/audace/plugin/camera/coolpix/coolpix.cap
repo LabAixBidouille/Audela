@@ -1,0 +1,86 @@
+#
+# Fichier : coolpix.cap
+# Mise a jour $Id: coolpix.cap,v 1.1 2007-05-16 20:44:07 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(coolpix,camera)                       "Nikon CoolPix"
+
+set caption(coolpix,baud)                         "Serial Port Speed (bauds)"
+
+set caption(coolpix,titre_site_web)               "Reference Web Site:"
+set caption(coolpix,site_web_ref)                 "http://photopc.sourceforge.net/"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(coolpix,camera)                    "Nikon CoolPix"
+
+   set caption(coolpix,baud)                      "Vitesse du port série (bauds)"
+
+   set caption(coolpix,titre_site_web)            "Site Web de référence :"
+   set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(coolpix,camera)                    "Nikon CoolPix"
+
+   set caption(coolpix,baud)                      "Velocita' porta seriale (bauds)"
+
+   set caption(coolpix,titre_site_web)            "Sito Web di riferimento:"
+   set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(coolpix,camera)                    "Nikon CoolPix"
+
+   set caption(coolpix,baud)                      "Velocidad del Puerto Serie (baudios)"
+
+   set caption(coolpix,titre_site_web)            "Sitio Web de referencia:"
+   set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(coolpix,camera)                    "Nikon CoolPix"
+
+   set caption(coolpix,baud)                      "Seriell Port Geschwindigkeit (Bauds)"
+
+   set caption(coolpix,titre_site_web)            "Referenz Webseite:"
+   set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(coolpix,camera)                    "Nikon CoolPix"
+
+   set caption(coolpix,baud)                      "Velocidade da Porta Série (bauds)"
+
+   set caption(coolpix,titre_site_web)            "Site Web de referência:"
+   set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(coolpix,camera)                    "Nikon CoolPix"
+
+   set caption(coolpix,baud)                      "Serial Port Speed (bauds)"
+
+   set caption(coolpix,titre_site_web)            "Reference Web Site:"
+   set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
