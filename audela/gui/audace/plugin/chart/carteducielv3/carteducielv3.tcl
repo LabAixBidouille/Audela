@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.9 2007-04-11 17:32:42 michelpujol Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.10 2007-05-16 18:12:26 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -16,8 +16,7 @@ namespace eval carteducielv3 {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-
-      #--- je cree les variables dans conf(...)
+      #--- Je cree les variables dans conf(...)
       initConf
    }
 
@@ -31,23 +30,23 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         
+
       }
    }
 
    #------------------------------------------------------------
-   #  getPluginType 
-   #     retourne le type de plugin 
+   #  getPluginType
+   #     retourne le type de plugin
    #------------------------------------------------------------
-   proc getPluginType  { } {
+   proc getPluginType { } {
       return "chart"
    }
 
    #------------------------------------------------------------
-   #  getPluginTitle 
+   #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getPluginTitle  { } {
+   proc getPluginTitle { } {
       global caption
 
       return "$caption(carteducielv3,titre)"
@@ -74,13 +73,14 @@ namespace eval carteducielv3 {
 
       #--- je fixe le nom du fichier executable en fonction de l'OS
       if { $::tcl_platform(os) == "Linux"  } {
-         if { ! [ info exists conf(carteducielv3,binaryname) ] }       { set conf(carteducielv3,binaryname)       "cdc_vcx" }
+         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "cdc_vcx" }
       } else {
-         if { ! [ info exists conf(carteducielv3,binaryname) ] }       { set conf(carteducielv3,binaryname)       "cdc.exe" }
+         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "cdc.exe" }
       }
 
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
       if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00ss" }
+      if { ! [ info exists conf(carteducielv3,dirname) ] }       { set conf(carteducielv3,dirname)       "" }
       if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath)    " " }
       if { ! [ info exists conf(carteducielv3,localserver) ] }   { set conf(carteducielv3,localserver)   "1" }
       if { ! [ info exists conf(carteducielv3,host) ] }          { set conf(carteducielv3,host)          "127.0.0.1" }
@@ -92,27 +92,27 @@ namespace eval carteducielv3 {
 
    #------------------------------------------------------------
    #  Recherche_Fichier
-   #     lancement de la recherche du fichier executable de Carte du Ciel
+   #     lancement de la recherche du fichier executable de Cartes du Ciel
    #
    #  return rien
    #------------------------------------------------------------
    proc Recherche_Fichier { } {
       variable widget
 
-      if { ( $widget(binarypath) != "" ) && ( $widget(binaryname) != "" ) } {
+      if { ( $widget(dirname) != "" ) && ( $widget(binaryname) != "" ) } {
          #--- Fichier a rechercher
          set fichier_recherche $widget(binaryname)
          #--- Sur les dossiers
-         set repertoire $::carteducielv3::widget(binarypath)
+         set repertoire $::carteducielv3::widget(dirname)
 
          #--- Gestion du bouton de recherche
          $widget(frm).recherche configure -relief groove -state disabled
          #--- La variable widget(binarypath) existe deja
-         set repertoire_1 [ string trimright $widget(binarypath) "$fichier_recherche" ]
+         set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
          set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
          set repertoire_2 [ string trimleft $repertoire_2 "\{" ]
          set repertoire_2 [ string trimright $repertoire_2 "\}" ]
-         if { $widget(binarypath) != $repertoire_2 || "$widget(binarypath)" == "" } {
+         if { "$widget(binarypath)" != "$repertoire_2" || "$widget(binarypath)" == "" } {
             #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
             set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
             set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$fichier_recherche" ]
@@ -121,7 +121,7 @@ namespace eval carteducielv3 {
             if { $repertoire == "" } {
                set repertoire " "
             }
-            set widget(binarypath) $repertoire
+            set widget(binarypath) "$repertoire"
          } else {
             #--- Il n'y a rien a faire
          }
@@ -142,13 +142,14 @@ namespace eval carteducielv3 {
       variable widget
       global conf
 
-      set widget(fixedfovstate)     "$conf(carteducielv3,fixedfovstate)"
-      set widget(fixedfovvalue)     "$conf(carteducielv3,fixedfovvalue)"
-      set widget(binaryname)        "$conf(carteducielv3,binaryname)"
-      set widget(binarypath)        "$conf(carteducielv3,binarypath)"
-      set widget(localserver)       "$conf(carteducielv3,localserver)"
-      set widget(cdchost)           "$conf(carteducielv3,host)"
-      set widget(cdcport)           "$conf(carteducielv3,port)"
+      set widget(fixedfovstate) "$conf(carteducielv3,fixedfovstate)"
+      set widget(fixedfovvalue) "$conf(carteducielv3,fixedfovvalue)"
+      set widget(binaryname)    "$conf(carteducielv3,binaryname)"
+      set widget(dirname)       "$conf(carteducielv3,dirname)"
+      set widget(binarypath)    "$conf(carteducielv3,binarypath)"
+      set widget(localserver)   "$conf(carteducielv3,localserver)"
+      set widget(cdchost)       "$conf(carteducielv3,host)"
+      set widget(cdcport)       "$conf(carteducielv3,port)"
 
    }
 
@@ -165,6 +166,7 @@ namespace eval carteducielv3 {
       set conf(carteducielv3,fixedfovstate) "$widget(fixedfovstate)"
       set conf(carteducielv3,fixedfovvalue) "$widget(fixedfovvalue)"
       set conf(carteducielv3,binaryname)    "$widget(binaryname)"
+      set conf(carteducielv3,dirname)       "$widget(dirname)"
       set conf(carteducielv3,binarypath)    "$widget(binarypath)"
       set conf(carteducielv3,localserver)   "$widget(localserver)"
       set conf(carteducielv3,host)          "$widget(cdchost)"
@@ -179,9 +181,7 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      global audace
-      global caption
-      global color
+      global audace caption color
 
       #--- je memorise la reference de la frame
       set widget(frm) $frm
@@ -229,15 +229,15 @@ namespace eval carteducielv3 {
       label $frm.frame2.labA_partir_de -text "$caption(carteducielv3,a_partir_de)"
       pack $frm.frame2.labA_partir_de -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
+      entry $frm.frame2.nomDossier -textvariable ::carteducielv3::widget(dirname) -width 15
+      pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
+
       button $frm.frame2.explore -text "$caption(carteducielv3,parcourir)" -width 1 \
          -command {
-            set ::carteducielv3::widget(binarypath) [ tk_chooseDirectory -title "$caption(carteducielv3,dossier)" \
+            set ::carteducielv3::widget(dirname) [ tk_chooseDirectory -title "$caption(carteducielv3,dossier)" \
             -initialdir ".." -parent $::carteducielv3::widget(frm) ]
          }
       pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
-
-      entry $frm.frame2.nomDossier -textvariable $::carteducielv3::widget(binarypath) -width 15
-      pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
 
       button $frm.recherche -text "$caption(carteducielv3,rechercher)" -relief raised -state normal \
          -command { ::carteducielv3::Recherche_Fichier }
@@ -246,7 +246,7 @@ namespace eval carteducielv3 {
       entry $frm.chemin -textvariable ::carteducielv3::widget(binarypath) -width 55 -state disabled
       pack $frm.chemin -in $frm.frame3 -anchor center -side left -padx 10
 
-      #--- adresse IP du serveur distant
+      #--- Adresse IP du serveur distant
       label $frm.labcdchost -text "$caption(carteducielv3,cdchost)"
       pack $frm.labcdchost -in $frm.frame4 -anchor center -side left -padx 10 -pady 7
 
@@ -297,7 +297,6 @@ namespace eval carteducielv3 {
          set frm $::carteducielv3::widget(frm)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #------------------------------------------------------------
@@ -307,19 +306,18 @@ namespace eval carteducielv3 {
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
-      #rien a faire pour carteduciel
+      #--- rien a faire pour carteduciel
       return
    }
 
    #------------------------------------------------------------
    #  deletePluginInstance
-   #     suppprime l'instance du plugin 
+   #     suppprime l'instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-
-      #rien a faire pour carteduciel
+      #--- rien a faire pour carteduciel
       return
    }
 
@@ -330,7 +328,6 @@ namespace eval carteducielv3 {
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
-
       set ready 0
       return  $ready
    }
@@ -351,7 +348,7 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       set result "0"
-      #console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
+     # console::disp "::carteducielv3::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
       if { $nom_objet != "#etoile#" && $nom_objet != "" } {
          selectObject $nom_objet
       } else {
@@ -372,9 +369,9 @@ namespace eval carteducielv3 {
 
       #--- je fixe la taille du champ de la carte
       if { $conf(carteducielv3,fixedfovstate) != 0 } {
-         # j'utilise le champ fixe
+         #--- j'utilise le champ fixe
          set fov $conf(carteducielv3,fixedfovvalue)
-         # je remplace les unites par des espaces
+         #--- je remplace les unites par des espaces
          if { [ sendRequest "SETFOV $fov" ] != "OK!" } {
             return 1
          }
@@ -408,7 +405,7 @@ namespace eval carteducielv3 {
 
       #--- je fixe la taille du champ de la carte
       if { $conf(carteducielv3,fixedfovstate) == 1 } {
-         # j'utilise le champ fixe
+         #--- j'utilise le champ fixe
          set fov $conf(carteducielv3,fixedfovvalue)
          if { [ sendRequest "SETFOV $fov" ] != "OK!" } {
             return 1
@@ -421,7 +418,6 @@ namespace eval carteducielv3 {
       }
 
       return 0
-
    }
 
    #------------------------------------------------------------
@@ -553,14 +549,13 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc getSelectedObject { } {
       global caption
-      global panneau
 
       set result [ sendRequest "GETMSGBOX" ]
       if { $result == "" } {
          return ""
       }
 
-      #je sépare les coordonnees des autres données
+      #--- je sépare les coordonnees des autres données
       set ligne $result
       set cr  ""
       set ra  ""
@@ -576,25 +571,25 @@ namespace eval carteducielv3 {
      # console::disp "CDC entry objType=$objType\n"
      # console::disp "CDC entry detail=$detail \n"
 
-      #Mise en forme de ra
+      #--- Mise en forme de ra
       set ra [lindex [split $ra "."] 0]
 
-      #Mise en forme de dec
-      # je remplace les unites par d, m, s
+      #--- Mise en forme de dec
+      #--- je remplace les unites par d, m, s
       set dec [string map { "\°" d "ß" d "\'" m "\"" s } $dec ]
-      # je remplace le quatrieme caractere par "d"
+      #--- je remplace le quatrieme caractere par "d"
       set dec [string replace $dec 3 3 "d" ]
-      #je supprime les diziemes de secondes apres le point decimal
+      #--- je supprime les diziemes de secondes apres le point decimal
       set dec [lindex [split $dec "."] 0]
-      #j'ajoute l'unite des secondes
+      #--- j'ajoute l'unite des secondes
       append dec "s"
 
-      #Mise en forme de objName
+      #--- Mise en forme de objName
       if { $objType=="" || $objType=="port:" } {
          console::affiche_erreur "$caption(carteducielv3,no_object_select)\n"
          return ""
       } else {
-         #j'extrait les coordonnées du detail de la ligne2
+         #--- j'extrait les coordonnées du detail de la ligne2
          set usualName ""
          set bsc ""
          set ba ""
@@ -615,7 +610,7 @@ namespace eval carteducielv3 {
          set messier ""
          set planete ""
 
-         # je recherche tous les catalogues cites dans la ligne de detail
+         #--- je recherche tous les catalogues cites dans la ligne de detail
          set index [string first "Common Name:" $detail]
          if { $index >= 0 } {
             set usualName [string trim [string range $detail [expr $index + 12] [string length $detail] ] ]
@@ -690,12 +685,12 @@ namespace eval carteducielv3 {
          }
       }
 
-      # je choisi la reference et le catalogue en fonction du type de l'objet
+      #--- je choisi la reference et le catalogue en fonction du type de l'objet
       if { $objType=="*" } {
-         #pour une étoile : nom usuel ou numero d'un catalogue
-         #intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
+         #--- pour une étoile : nom usuel ou numero d'un catalogue
+         #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
          if { $usualName!="" } {
-            # je retiens d'abord le nom usuel s'il existe
+            #--- je retiens d'abord le nom usuel s'il existe
             set objName $usualName
          } elseif { $bsc != "" } {
             set objName "$bsc"
@@ -717,8 +712,8 @@ namespace eval carteducielv3 {
             set objName "$bd"
          }
       } elseif { $objType=="Gb" || $objType=="Gx" || $objType=="Nb" || $objType=="OC" || $objType=="Pl" } {
-         #pour une galaxie , nébuleuse ou un amas
-         # intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
+         #--- pour une galaxie, nébuleuse ou un amas
+         #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
          if { $messier!="" } {
             set objName "M$messier"
          } elseif { $ngc != "" } {
@@ -736,27 +731,27 @@ namespace eval carteducielv3 {
             set objName $png
          }
       } elseif { $objType=="As" } {
-         #pour un astéroide, je prends les 17 premiers caracteres
+         #--- pour un astéroide, je prends les 17 premiers caracteres
          set objName [string trim [string range $detail 0 17  ] ]
       } elseif { $objType=="P" } {
-         #pour une planete : je prends le premier mot
+         #--- pour une planete : je prends le premier mot
          set objName [lindex [split $detail " " ] 0 ]
       } elseif { $objType=="Cm" } {
-         #pour une comete: je prends jusqu'à la parenthese fermante.
+         #--- pour une comete: je prends jusqu'à la parenthese fermante.
          set index [string first ")" $detail]
          set objName [string trim [string range $detail 0 $index ] ]
       } elseif { $objType=="C2" } {
          set objName [string trim [lindex [split $detail "Dim" ] 0 ] ]
          if { [string range $objName 0 2] == "UGC" } {
-            # Pour le catalogue externe UGC genere sans catgen
-            # je supprime les espaces entre UGC et le numero de galaxie
+            #--- Pour le catalogue externe UGC genere sans catgen
+            #--- je supprime les espaces entre UGC et le numero de galaxie
             set objName "UGC[string trim [string range $objName 3 end ] ]"
          }
       }
 
-      #console::disp "CDC result ra=$ra\n"
-      #console::disp "CDC result dec=$dec\n"
-      #console::disp "CDC result objName=$objName\n"
+     # console::disp "CDC result ra=$ra\n"
+     # console::disp "CDC result dec=$dec\n"
+     # console::disp "CDC result objName=$objName\n"
 
       return [list $ra $dec $objName ]
    }
@@ -768,9 +763,7 @@ namespace eval carteducielv3 {
    # return 0 (OK) , 1 (error)
    #------------------------------------------------------------
    proc launch { } {
-      global audace
-      global conf
-      global caption
+      global audace caption conf
 
       #--- Initialisation
       #--- Recherche l'absence de l'entry conf(carteducielv3,binarypath)
@@ -803,11 +796,10 @@ namespace eval carteducielv3 {
          #--- Prépare l'ouverture du logiciel
          set a_effectuer "exec \"$filename\" &"
          #--- Affichage sur la console
-      } 
+      }
       cd "$pwd0"
       after 2000
       return "0"
-
    }
 
    #==============================================================
@@ -824,7 +816,7 @@ namespace eval carteducielv3 {
       variable private
       global caption
 
-      # j'ouvre la connexion vers CarteDuCiel
+      #--- j'ouvre la connexion vers CarteDuCiel
       if { [ openConnection ] == 1 } {
          #--- si erreur :
          set choix [tk_messageBox -type yesno -icon warning -title "$caption(carteducielv3,attention)" \
@@ -849,12 +841,12 @@ namespace eval carteducielv3 {
 
       set result ""
       catch {
-         #console::disp "sendRequest socket=$private(socket)\n"
-         #console::disp "sendRequest REQ= $req\n"
+        # console::disp "sendRequest socket=$private(socket)\n"
+        # console::disp "sendRequest REQ= $req\n"
          puts  $private(socket) $req
          flush $private(socket)
          set result [gets $private(socket)]
-         #console::disp "sendRequest REP= $result\n"
+        # console::disp "sendRequest REP= $result\n"
       }
 
       #--- je ferme la connexion
@@ -869,27 +861,26 @@ namespace eval carteducielv3 {
    #  return 0 (OK) , 1(error)
    #------------------------------------------------------------
    proc openConnection { } {
-      global conf
       variable private
+      global conf
 
       set result 1
       catch {
-         #console::disp "openConnection host=$conf(carteducielv3,host) port=$conf(carteducielv3,port)\n"
+        # console::disp "openConnection host=$conf(carteducielv3,host) port=$conf(carteducielv3,port)\n"
 
          set private(socket) [socket $conf(carteducielv3,host) $conf(carteducielv3,port)]
-         #console::disp "openConnection private(socket)=$private(socket)\n"
+        # console::disp "openConnection private(socket)=$private(socket)\n"
          if { [string compare -length 7 $private(socket) "Failed!"] == 0 } {
             set result 1
          } else {
             set response [gets $private(socket)]
-            #console::disp "CONNECT= $response\n"
+           # console::disp "CONNECT= $response\n"
             set result 0
          }
 
       } msg
 
       return $result
-
    }
 
    #------------------------------------------------------------
@@ -903,7 +894,7 @@ namespace eval carteducielv3 {
 
       puts  $private(socket) "QUIT"
       close $private(socket)
-      #console::disp "closeConnection socket=$private(socket)\n"
+     # console::disp "closeConnection socket=$private(socket)\n"
    }
 
 }

@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.8 2007-05-15 22:27:42 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.9 2007-05-16 18:12:43 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -14,10 +14,8 @@ namespace eval guide {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-      global audace
-
       if { $::tcl_platform(os) == "Linux" } {
-         #--- guide ne fonctionne pas sous Linux
+         #--- Guide ne fonctionne pas sous Linux
          #--- Je retourne une chaine vide pour que ce driver n'apparaisse pas dans le fenetre de configuration
          return ""
       } else {
@@ -44,7 +42,7 @@ namespace eval guide {
    #  getPluginType
    #     retourne le type de plugin
    #------------------------------------------------------------
-   proc getPluginType  { } {
+   proc getPluginType { } {
       return "chart"
    }
 
@@ -52,7 +50,7 @@ namespace eval guide {
    #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getPluginTitle  { } {
+   proc getPluginTitle { } {
       global caption
 
       return "$caption(guide,titre)"
@@ -86,7 +84,7 @@ namespace eval guide {
 
    #------------------------------------------------------------
    #  Recherche_Fichier
-   #     lancement de la recherche du fichier executable de guide
+   #     lancement de la recherche du fichier executable de Guide
    #
    #  return rien
    #------------------------------------------------------------
@@ -104,14 +102,14 @@ namespace eval guide {
          #--- La variable widget(binarypath) existe deja
          set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
          set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
-         set repertoire_2 [ string trimleft $repertoire_2 "{" ]
-         set repertoire_2 [ string trimright $repertoire_2 "}" ]
+         set repertoire_2 [ string trimleft $repertoire_2 "\{" ]
+         set repertoire_2 [ string trimright $repertoire_2 "\}" ]
          if { "$widget(binarypath)" != "$repertoire_2" || "$widget(binarypath)" == "" } {
             #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
             set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
             set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$fichier_recherche" ]
-            set repertoire [ string trimleft $repertoire "{" ]
-            set repertoire [ string trimright $repertoire "}" ]
+            set repertoire [ string trimleft $repertoire "\{" ]
+            set repertoire [ string trimright $repertoire "\}" ]
             if { $repertoire == "" } {
                set repertoire " "
             }
@@ -170,9 +168,7 @@ namespace eval guide {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      global audace
-      global caption
-      global color
+      global audace caption color
 
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
@@ -240,7 +236,6 @@ namespace eval guide {
          set frm $guide::widget(frm)
          $frm.labURL configure -fg $color(blue)
       }
-
    }
 
    #------------------------------------------------------------
@@ -264,7 +259,6 @@ namespace eval guide {
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-
       #--- Rien a faire pour guide
       return
    }
@@ -276,7 +270,6 @@ namespace eval guide {
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
-
       #--- Je teste si la librairie libgs.dll est chargee
       set erreur [ catch { gs_version } result ]
       if { $erreur != "0" || $result == "" } {
@@ -311,7 +304,7 @@ namespace eval guide {
       #--- Je remplace les unites d, m, s par \° \' \"
       set dec [ string map { m "\'" s "\"" } $dec ]
 
-      #console::disp "::guide::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
+     # console::disp "::guide::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
 
       set num [ catch {
          if { $avant_plan == "1" } { gs_guide show } else { gs_guide hide }
@@ -361,11 +354,7 @@ namespace eval guide {
    # return 0 (OK) , 1 (error)
    #------------------------------------------------------------
    proc launch { } {
-      global audace
-      global conf
-      global caption
-
-      console::disp "::guide::launch debut \n"
+      global audace caption conf
 
       #--- Initialisation
       #--- Recherche l'absence de l'entry conf(guide,binarypath)
