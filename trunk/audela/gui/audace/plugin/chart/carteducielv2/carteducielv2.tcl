@@ -1,33 +1,31 @@
 #
 # Fichier : carteducielv2.tcl
-# Description : Driver de communication avec "Cartes Du Ciel" (communication DDE)
+# Description : Driver de communication avec "Cartes du Ciel" (communication DDE)
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.7 2007-04-11 17:32:42 michelpujol Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.8 2007-05-16 18:12:08 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
-   
+
    package provide carteducielv2 1.0
    source [ file join [file dirname [info script]] carteducielv2.cap ]
- 
+
    #------------------------------------------------------------
    #  initPlugin
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-      global audace
-      variable private 
+      variable private
 
       if { $::tcl_platform(os) == "Linux" } {
          #--- CarteDuCiel V2 ne fonctionne pas sous Linux
-         #--- je retourne une chaine vide pour que ce driver n'apparaisse pas dans la fenetre de configuration
+         #--- Je retourne une chaine vide pour que ce driver n'apparaisse pas dans la fenetre de configuration
          return ""
       } else {
-         #--- Je charge les variables d'environnement
+         #--- Charge les variables d'environnement
          initConf
-         #--- charge le fichier caption
          set private(ready) 0
       }
    }
@@ -42,23 +40,23 @@ namespace eval carteducielv2 {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         
+
       }
    }
 
    #------------------------------------------------------------
-   #  getPluginType 
-   #     retourne le type de plugin 
+   #  getPluginType
+   #     retourne le type de plugin
    #------------------------------------------------------------
-   proc getPluginType  { } {
+   proc getPluginType { } {
       return "chart"
    }
 
    #------------------------------------------------------------
-   #  getPluginTitle 
+   #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getPluginTitle  { } {
+   proc getPluginTitle { } {
       global caption
 
       return "$caption(carteducielv2,titre)"
@@ -71,7 +69,6 @@ namespace eval carteducielv2 {
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
-
       return "carteducielv2.htm"
    }
 
@@ -95,7 +92,7 @@ namespace eval carteducielv2 {
 
    #------------------------------------------------------------
    #  Recherche_Fichier
-   #     lancement de la recherche du fichier executable de Carte du Ciel
+   #     lancement de la recherche du fichier executable de Cartes du Ciel
    #
    #  return rien
    #------------------------------------------------------------
@@ -111,20 +108,20 @@ namespace eval carteducielv2 {
          #--- Gestion du bouton de recherche
          $widget(frm).recherche configure -relief groove -state disabled
          #--- La variable widget(binarypath) existe deja
-         set repertoire_1 [ string trimright $widget(binarypath) "$fichier_recherche" ]
+         set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
          set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
          set repertoire_2 [ string trimleft $repertoire_2 "\{" ]
          set repertoire_2 [ string trimright $repertoire_2 "\}" ]
-         if { $widget(binarypath) != $repertoire_2 || "$widget(binarypath)" == "" } {
+         if { "$widget(binarypath)" != "$repertoire_2" || "$widget(binarypath)" == "" } {
             #--- Non, elle a change -> Recherche de la nouvelle variable widget(binarypath) si elle existe
             set repertoire [ ::audace::fichier_partPresent "$fichier_recherche" "$repertoire" ]
             set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$fichier_recherche" ]
-            set repertoire [ string trimleft $repertoire "{" ]
-            set repertoire [ string trimright $repertoire "}" ]
+            set repertoire [ string trimleft $repertoire "\{" ]
+            set repertoire [ string trimright $repertoire "\}" ]
             if { $repertoire == "" } {
                set repertoire " "
             }
-            set widget(binarypath) $repertoire
+            set widget(binarypath) "$repertoire"
          } else {
             #--- Il n'y a rien a faire
          }
@@ -138,7 +135,6 @@ namespace eval carteducielv2 {
             update
             return
          }
-
       }
    }
 
@@ -184,9 +180,7 @@ namespace eval carteducielv2 {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      global audace
-      global caption
-      global color
+      global audace caption color
 
       #--- je memorise la reference de la frame
       set widget(frm) $frm
@@ -215,40 +209,40 @@ namespace eval carteducielv2 {
       pack $frm.frame1.labFOV -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
       checkbutton $frm.frame1.fovState -text "$caption(carteducielv2,fov_state)" \
-         -highlightthickness 0 -variable carteducielv2::widget(fixedfovstate)
+         -highlightthickness 0 -variable ::carteducielv2::widget(fixedfovstate)
       pack $frm.frame1.fovState -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame1.labFovValue -text "$caption(carteducielv2,fov_value)"
       pack $frm.frame1.labFovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
-      entry $frm.frame1.fovValue -textvariable carteducielv2::widget(fixedfovvalue) -width 10
+      entry $frm.frame1.fovValue -textvariable ::carteducielv2::widget(fixedfovvalue) -width 10
       pack $frm.frame1.fovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
 
       #--- Initialisation du chemin du fichier
       label $frm.frame2.labFichier -text "$caption(carteducielv2,fichier)"
       pack $frm.frame2.labFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
-      entry $frm.frame2.nomFichier -textvariable carteducielv2::widget(fichier_recherche) -width 12 -justify center
+      entry $frm.frame2.nomFichier -textvariable ::carteducielv2::widget(fichier_recherche) -width 12 -justify center
       pack $frm.frame2.nomFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame2.labA_partir_de -text "$caption(carteducielv2,a_partir_de)"
       pack $frm.frame2.labA_partir_de -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
 
+      entry $frm.frame2.nomDossier -textvariable ::carteducielv2::widget(dirname) -width 15
+      pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
+
       button $frm.frame2.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
          -command {
             set ::carteducielv2::widget(dirname) [ tk_chooseDirectory -title "$caption(carteducielv2,dossier)" \
-            -initialdir .. -parent $::carteducielv2::widget(frm) ]
+            -initialdir ".." -parent $::carteducielv2::widget(frm) ]
          }
       pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
-
-      entry $frm.frame2.nomDossier -textvariable ::carteducielv2::widget(dirname) -width 15
-      pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
 
       button $frm.recherche -text "$caption(carteducielv2,rechercher)" -relief raised -state normal \
          -command { ::carteducielv2::Recherche_Fichier }
       pack $frm.recherche -in $frm.frame3 -anchor center -side left -pady 7 -ipadx 10 -ipady 5 -expand true
 
-      entry $frm.chemin -textvariable carteducielv2::widget(binarypath) -width 55 -state disabled
+      entry $frm.chemin -textvariable ::carteducielv2::widget(binarypath) -width 55 -state disabled
       pack $frm.chemin -in $frm.frame3 -anchor center -side right -padx 10
 
       #--- Site web officiel de Cartes du Ciel
@@ -280,21 +274,18 @@ namespace eval carteducielv2 {
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
-
-      #rien a faire pour carteduciel
+      #--- rien a faire pour carteduciel
       return
    }
 
- 
    #------------------------------------------------------------
    #  deletePluginInstance
-   #     suppprime l'instance du plugin 
+   #     suppprime l'instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-
-      #rien a faire pour carteduciel
+      #--- rien a faire pour carteduciel
       return
    }
 
@@ -307,20 +298,20 @@ namespace eval carteducielv2 {
    proc isReady { } {
       variable private
 
-      # je teste si DDE est disponible
+      #--- je teste si DDE est disponible
       set erreur [ catch { package require dde } result ]
       if { $erreur } {
-         # dde n'est pas disponible (on est sous linux ?)
+         #--- dde n'est pas disponible (on est sous linux ?)
          set private(ready) 1
       } else {
-         # je teste si carteduciel est lance
-         #set erreur [ catch { dde services ciel DdeSkyChart } result ]
-         #if { $erreur !=0 || $result=="" } {
-         #   #carteduciel n'est pas lance
-         #   set private(ready) 1
-         ##} else {
-         #   set private(ready) 0
-         #}
+         #--- je teste si carteduciel est lance
+        # set erreur [ catch { dde services ciel DdeSkyChart } result ]
+        # if { $erreur !=0 || $result=="" } {
+        #    #--- carteduciel n'est pas lance
+        #    set private(ready) 1
+        # } else {
+        #    set private(ready) 0
+        # }
          set private(ready) 0
       }
       return $private(ready)
@@ -342,7 +333,7 @@ namespace eval carteducielv2 {
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       set result "0"
-      #console::disp "::carteducielv2::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan \n"
+     # console::disp "::carteducielv2::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan \n"
       if { [isReady] != 0 } {
          return 1
       }
@@ -372,22 +363,22 @@ namespace eval carteducielv2 {
 
       #--- je fixe la taille du champ de la carte
       if { $conf(carteducielv2,fixedfovstate) == 0 } {
-         # je recupere la champ de carteduciel
+         #--- je recupere la champ de carteduciel
          set fov [lindex [getRaDecFov] 2]
          if { $fov == "" } {
-            #rien a faire, j'abandonne
+            #--- rien a faire, j'abandonne
             return 1
          }
       } else {
-         # j'utilise le champ fixe
+         #--- j'utilise le champ fixe
          set fov $conf(carteducielv2,fixedfovvalue)
-         # je remplace les unites
+         #--- je remplace les unites
          set fov  [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
       }
 
-      #je supprime les diziemes de secondes apres le point decimal
+      #--- je supprime les diziemes de secondes apres le point decimal
       set ra [lindex [split $ra "."] 0]
-      #je rajoute le "s" des secondes
+      #--- je rajoute le "s" des secondes
       append ra "s"
 
       set dec  [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
@@ -471,16 +462,16 @@ namespace eval carteducielv2 {
 
       #--- je fixe la taille du champ de la carte
       if { $conf(carteducielv2,fixedfovstate) == 1 } {
-         # je recupere la champ de carteduciel
+         #--- je recupere la champ de carteduciel
          set ra [lindex [getRaDecFov] 0 ]
          set dec [lindex [getRaDecFov] 1]
-         # j'utilise le champ fixe
+         #--- j'utilise le champ fixe
          set fov $conf(carteducielv2,fixedfovvalue)
-         # je remplace les unites
+         #--- je remplace les unites
          set dec  [string map { "d" "\°" "m" "\'" "s" "\"" } $dec ]
          set fov  [string map { "d" "\°" "m" "\'" "s" "\"" } $fov ]
          if { $fov == "" } {
-            #rien a faire, j'abandonne
+            #--- rien a faire, j'abandonne
             return 1
          }
          set command "MOVE RA: $ra DEC:$dec FOV:$fov"
@@ -657,14 +648,14 @@ namespace eval carteducielv2 {
          }
       }
 
-      #je decoupe les 5 lignes d'information
+      #--- je decoupe les 5 lignes d'information
       set ligneList [split $result "\n"]
 
-      #foreach c $ligneList {
-      #   console::disp "==> $c\n"
-      #}
+     # foreach c $ligneList {
+     #    console::disp "==> $c\n"
+     # }
 
-      #je sépare les coordonnees des autres données
+      #--- je sépare les coordonnees des autres données
       set ligne2 [lindex $ligneList 2]
       set ra  ""
       set dec ""
@@ -672,27 +663,27 @@ namespace eval carteducielv2 {
       set detail ""
       scan $ligne2 "%s %s %s %\[^\r\] " ra dec objType detail
 
-#console::disp "CDC ----------------\n"
-#console::disp "CDC entry ra=$ra\n"
-#console::disp "CDC entry dec=$dec\n"
-#console::disp "CDC entry objType=$objType\n"
-#console::disp "CDC entry detail=$detail \n"
+     # console::disp "CDC ----------------\n"
+     # console::disp "CDC entry ra=$ra\n"
+     # console::disp "CDC entry dec=$dec\n"
+     # console::disp "CDC entry objType=$objType\n"
+     # console::disp "CDC entry detail=$detail \n"
 
-      #Mise en forme de ra
+      #--- Mise en forme de ra
       set ra [lindex [split $ra "."] 0]
 
-      #Mise en forme de dec
-      # je remplace les unites par d, m, s
+      #--- Mise en forme de dec
+      #--- je remplace les unites par d, m, s
       set dec  [string map { "\°" d "ß" d "\'" m "\"" s } $dec ]
-      # je remplace le quatrieme caractere par "d"
+      #--- je remplace le quatrieme caractere par "d"
       set dec  [string replace $dec 3 3 "d" ]
-      #je supprime les diziemes de secondes apres le point decimal
+      #--- je supprime les diziemes de secondes apres le point decimal
       set dec [lindex [split $dec "."] 0]
 
-      #Mise en forme de objName
+      #--- Mise en forme de objName
       if { $objType=="" } {
-         #si pas d'objet selectionne dans carte du ciel,
-         #j'affiche les coordonnées du centre de la carte
+         #--- si pas d'objet selectionne dans cartes du ciel,
+         #--- j'affiche les coordonnées du centre de la carte
          set ligne1 [lindex $ligneList 1]
          scan $ligne1 "RA: %s DEC:%s" ra dec
          if { $ra== "" || $dec =="" } {
@@ -701,7 +692,7 @@ namespace eval carteducielv2 {
          }
          set objName "centre cdc"
       } else {
-         #j'extrait les coordonnées du detail de la ligne2
+         #--- j'extrait les coordonnées du detail de la ligne2
          set usualName ""
          set ba ""
          set fl ""
@@ -724,7 +715,7 @@ namespace eval carteducielv2 {
          set index [string first ";" $detail]
          if { $index >= 0 } {
             set index1 [expr $index +1]
-            #je cherche le point virgule suivant
+            #--- je cherche le point virgule suivant
             set index2 [string first ";" $detail $index1]
             if { $index2 >= 0 } {
                set index2 [expr $index2 - 1 ]
@@ -732,7 +723,7 @@ namespace eval carteducielv2 {
             }
          }
 
-         # je recherche tous les catalogues cites dans la ligne de detail
+         #--- je recherche tous les catalogues cites dans la ligne de detail
          set index [string first "Fl:" $detail]
          if { $index >= 0 } {
             set fl [string trim [string range $detail [expr $index + 3] [expr $index + 6] ] ]
@@ -799,12 +790,12 @@ namespace eval carteducielv2 {
          }
       }
 
-      # je choisi la reference et le catalogue en fonction du type de l'objet
+      #--- je choisi la reference et le catalogue en fonction du type de l'objet
       if { $objType=="*" } {
-         #pour une étoile : nom usuel ou numero d'un catalogue
-         #intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
+         #--- pour une étoile : nom usuel ou numero d'un catalogue
+         #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
          if { $usualName!="" } {
-            # je retiens d'abord le nom usuel s'il existe
+            #--- je retiens d'abord le nom usuel s'il existe
             set objName $usualName
          } elseif { $ba != "" } {
             set objName "$ba $const"
@@ -824,14 +815,14 @@ namespace eval carteducielv2 {
             set objName "$bd"
          }
       } elseif { $objType=="Gb" || $objType=="Gx" || $objType=="Nb" || $objType=="OC" || $objType=="Pl" } {
-         #pour une galaxie , nébuleuse ou un amas
-         #  intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
+         #--- pour une galaxie , nébuleuse ou un amas
+         #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
          if { $messier!="" } {
             set objName "M$messier"
          } elseif { $ngc != "" } {
             set objName "$ngc"
          } elseif { $ugc != "" } {
-            # je supprime les espaces entre UGC et le numero de galaxie
+            #--- je supprime les espaces entre UGC et le numero de galaxie
             set objName "UGC[string trim [string range $ugc 3 end ] ]"
          } elseif { $pgc != "" } {
             set objName $pgc
@@ -843,27 +834,27 @@ namespace eval carteducielv2 {
             set objName $png
          }
       } elseif { $objType=="As" } {
-         #pour un astéroide, je prends les 17 premiers caracteres
+         #--- pour un astéroide, je prends les 17 premiers caracteres
          set objName [string trim [string range $detail 0 17  ] ]
       } elseif { $objType=="P" } {
-         #pour une planete : je prends le premier mot
+         #--- pour une planete : je prends le premier mot
          set objName [lindex [split $detail " " ] 0 ]
       } elseif { $objType=="Cm" } {
-         #pour une comete: je prends jusqu'à la parenthese fermante
+         #--- pour une comete : je prends jusqu'à la parenthese fermante
          set index [string first ")" $detail]
          set objName [string trim [string range $detail 0 $index ] ]
       } elseif { $objType=="C2" } {
          set objName [string trim [lindex [split $detail "Dim" ] 0 ] ]
          if { [string range $objName 0 2] == "UGC" } {
-            # Pour le catalogue externe UGC genere sans catgen
-            # je supprime les espaces entre UGC et le numero de galaxie
+            #--- Pour le catalogue externe UGC genere sans catgen
+            #--- je supprime les espaces entre UGC et le numero de galaxie
             set objName "UGC[string trim [string range $objName 3 end ] ]"
          }
       }
 
-      #console::disp "CDC result ra=$ra\n"
-      #console::disp "CDC result dec=$dec\n"
-      #console::disp "CDC result objName=$objName\n"
+     # console::disp "CDC result ra=$ra\n"
+     # console::disp "CDC result dec=$dec\n"
+     # console::disp "CDC result objName=$objName\n"
 
       return [list $ra $dec $objName ]
    }
@@ -881,10 +872,10 @@ namespace eval carteducielv2 {
          return ""
       }
 
-      #je decoupe les 5 lignes d'information
+      #--- je decoupe les 5 lignes d'information
       set ligneList [split $result "\n"]
 
-      #je sépare les coordonnees de la ligne 1
+      #--- je sépare les coordonnees de la ligne 1
 
       set ligne1 [lindex $ligneList 1]
       set ra  ""
@@ -893,34 +884,33 @@ namespace eval carteducielv2 {
       set dummy ""
       scan $ligne1 "RA:%s DEC:%s FOV:%s%\[^\r\]" ra dec fov dummy
 
-
-      #Mise en forme de ra
-      ####set ra  [string map { "h" " " "m" " " "s" " " } $ra ]
-      #je supprime les diziemes de secondes apres le point decimal
+      #--- Mise en forme de ra
+     # set ra  [string map { "h" " " "m" " " "s" " " } $ra ]
+      #--- je supprime les diziemes de secondes apres le point decimal
       set ra [lindex [split $ra "."] 0]
-      #je rajoute le "s" des secondes
+      #--- je rajoute le "s" des secondes
       append ra "s"
 
-      #Mise en forme de dec
-      # je remplace les unites par dms
+      #--- Mise en forme de dec
+      #--- je remplace les unites par dms
       set dec  [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $dec ]
-      ### je remplace le quatrieme caractere par un "d"
+      #--- je remplace le quatrieme caractere par un "d"
       set dec  [string replace $dec 3 3 "d" ]
-      #je supprime les diziemes de secondes apres le point decimal
+      #--- je supprime les diziemes de secondes apres le point decimal
       set dec [lindex [split $dec "."] 0]
-      #je rajoute le "s" des secondes
+      #--- je rajoute le "s" des secondes
       append dec "s"
 
-      #Mise en forme de fov
-      # je remplace les unites par des espaces
+      #--- Mise en forme de fov
+      #--- je remplace les unites par des espaces
       set fov  [string map { "\°" "d" "ß" "d" "\'" "m" "\"" "s" } $fov ]
-      # je remplace le quatrieme caractere par un "d"
+      #--- je remplace le quatrieme caractere par un "d"
       set fov  [string replace $fov 3 3 "d" ]
-      # je supprime le signe "+" au debut
+      #--- je supprime le signe "+" au debut
       set fov  [string range $fov 1 end ]
 
-      #console::disp "getRaDecFov ligne1=$ligne1 \n"
-      #console::disp "getRaDecFov ra=$ra dec=$dec fov=$fov###\n\n"
+     # console::disp "getRaDecFov ligne1=$ligne1 \n"
+     # console::disp "getRaDecFov ra=$ra dec=$dec fov=$fov###\n\n"
       return [list $ra $dec $fov]
    }
 
@@ -971,9 +961,7 @@ namespace eval carteducielv2 {
    # return 0 (OK) , 1 (error)
    #------------------------------------------------------------
    proc launch { } {
-      global audace
-      global conf
-      global caption
+      global audace caption conf
 
       #--- Initialisation
       #--- Recherche l'absence de l'entry conf(carteducielv2,binarypath)
@@ -1010,9 +998,9 @@ namespace eval carteducielv2 {
          if [catch $a_effectuer input] {
             set audace(current_edit) $input
          }
-      } 
+      }
       cd "$pwd0"
-      #--- j'attends que carteduciel soit completement demarre
+      #--- J'attends que carteduciel soit completement demarre
       after 2000
       return "0"
    }

@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.15 2007-03-12 22:54:19 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.16 2007-05-16 18:13:04 robertdelmas Exp $
 #
 
 global audace
@@ -1411,6 +1411,12 @@ proc snvisu_configuration { } {
       pack $audace(base).snvisu_3.frame5.dss_dvd \
         -in $audace(base).snvisu_3.frame5 -anchor center -side left \
         -padx 5 -pady 5
+      #--- Entry
+      entry $audace(base).snvisu_3.frame5.ent \
+         -textvariable snconfvisu(rep_dss_dvd) -width 6
+      pack $audace(base).snvisu_3.frame5.ent \
+         -in $audace(base).snvisu_3.frame5 -anchor center -side left \
+         -padx 5 -pady 5
       #--- Bouton parcourir
       button $audace(base).snvisu_3.frame5.explore -text "$caption(snvisu,parcourir)" -width 1 \
          -command {
@@ -1426,12 +1432,6 @@ proc snvisu_configuration { } {
       pack $audace(base).snvisu_3.frame5.explore \
          -in $audace(base).snvisu_3.frame5 -anchor center -side left \
          -padx 5 -pady 5 -ipady 5
-      #--- Entry
-      entry $audace(base).snvisu_3.frame5.ent \
-         -textvariable snconfvisu(rep_dss_dvd) -width 6
-      pack $audace(base).snvisu_3.frame5.ent \
-         -in $audace(base).snvisu_3.frame5 -anchor center -side left \
-         -padx 5 -pady 5
    pack $audace(base).snvisu_3.frame5 -side top -fill both -expand 1
 
    #--- Create the checkbutton
