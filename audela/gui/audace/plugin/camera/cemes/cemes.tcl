@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.5 2007-05-13 10:48:12 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.6 2007-05-16 20:38:19 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -35,11 +35,11 @@ proc ::cemes::confToWidget { } {
    global caption conf
 
    #--- Recupere la configuration de la camera Cemes dans le tableau private(...)
-   set private(cool)        $conf(cemes,cool)
-   set private(foncobtu)    [ lindex "$caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro)" $conf(cemes,foncobtu) ]
-   set private(mirh)        $conf(cemes,mirh)
-   set private(mirv)        $conf(cemes,mirv)
-   set private(temp)        $conf(cemes,temp)
+   set private(cool)     $conf(cemes,cool)
+   set private(foncobtu) [ lindex "$caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro)" $conf(cemes,foncobtu) ]
+   set private(mirh)     $conf(cemes,mirh)
+   set private(mirv)     $conf(cemes,mirv)
+   set private(temp)     $conf(cemes,temp)
 }
 
 #
@@ -51,11 +51,11 @@ proc ::cemes::widgetToConf { } {
    global caption conf
 
    #--- Memorise la configuration de la camera Cemes dans le tableau conf(cemes,...)
-   set conf(cemes,cool)                  $private(cool)
-   set conf(cemes,foncobtu)              [ lsearch "$caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro)" "$private(foncobtu)" ]
-   set conf(cemes,mirh)                  $private(mirh)
-   set conf(cemes,mirv)                  $private(mirv)
-   set conf(cemes,temp)                  $private(temp)
+   set conf(cemes,cool)     $private(cool)
+   set conf(cemes,foncobtu) [ lsearch "$caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro)" "$private(foncobtu)" ]
+   set conf(cemes,mirh)     $private(mirh)
+   set conf(cemes,mirv)     $private(mirv)
+   set conf(cemes,temp)     $private(temp)
 }
 
 #
@@ -64,7 +64,7 @@ proc ::cemes::widgetToConf { } {
 #
 proc ::cemes::fillConfigPage { frm } {
    variable private
-   global audace caption color confCam
+   global audace caption color
 
    #--- confToWidget
    ::cemes::confToWidget
