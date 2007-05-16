@@ -2,7 +2,7 @@
 # Fichier : trichro.tcl
 # Description : Outil pour importer une trichromie
 # Auteur : Pierre THIERRY
-# Mise a jour $Id: trichro.tcl,v 1.5 2007-04-28 19:33:23 robertdelmas Exp $
+# Mise a jour $Id: trichro.tcl,v 1.6 2007-05-16 18:14:00 robertdelmas Exp $
 #
 
 global audace caption conf infos
@@ -56,6 +56,13 @@ pack $audace(base).test3.frame1 \
       -in $audace(base).test3.frame1 -side left -anchor center \
       -padx 3 -pady 3
 
+   #--- Cree l'entry
+   entry $audace(base).test3.frame1.ent \
+      -textvariable infos(dir) -width 45
+   pack $audace(base).test3.frame1.ent \
+      -in $audace(base).test3.frame1 -side left -anchor center -expand 1 \
+      -padx 10 -pady 3
+
    #--- Cree le bouton parcourir
    button $audace(base).test3.frame1.explore -text "$caption(trichro,parcourir)" -width 1 \
       -command {
@@ -71,13 +78,6 @@ pack $audace(base).test3.frame1 \
       }
    pack $audace(base).test3.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
-   #--- Cree l'entry
-   entry $audace(base).test3.frame1.ent \
-      -textvariable infos(dir) -width 45
-   pack $audace(base).test3.frame1.ent \
-      -in $audace(base).test3.frame1 -side left -anchor center -expand 1 \
-      -padx 10 -pady 3
-
 #--- Cree un frame
 frame $audace(base).test3.frame2 \
    -borderwidth 0 -cursor arrow
@@ -90,6 +90,13 @@ pack $audace(base).test3.frame2 \
    pack $audace(base).test3.frame2.lab \
       -in $audace(base).test3.frame2 -side left -anchor center \
       -padx 3 -pady 3
+
+   #--- Cree l'entry
+   entry $audace(base).test3.frame2.ent \
+      -textvariable infos(image_r)
+   pack $audace(base).test3.frame2.ent \
+      -in $audace(base).test3.frame2 -side left -anchor center -expand 1 -fill x \
+      -padx 10 -pady 3
 
    #--- Cree le bouton charger le nom d'une image
    button $audace(base).test3.frame2.explore -text "$caption(trichro,parcourir)" -width 1 \
@@ -104,13 +111,6 @@ pack $audace(base).test3.frame2 \
       }
    pack $audace(base).test3.frame2.explore -side left -padx 10 -pady 5 -ipady 5
 
-   #--- Cree l'entry
-   entry $audace(base).test3.frame2.ent \
-      -textvariable infos(image_r)
-   pack $audace(base).test3.frame2.ent \
-      -in $audace(base).test3.frame2 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3
-
 #--- Cree un frame
 frame $audace(base).test3.frame3 \
    -borderwidth 0 -cursor arrow
@@ -123,6 +123,13 @@ pack $audace(base).test3.frame3 \
    pack $audace(base).test3.frame3.lab \
       -in $audace(base).test3.frame3 -side left -anchor center \
       -padx 3 -pady 3
+
+   #--- Cree l'entry
+   entry $audace(base).test3.frame3.ent \
+      -textvariable infos(image_v)
+   pack $audace(base).test3.frame3.ent \
+      -in $audace(base).test3.frame3 -side left -anchor center -expand 1 -fill x \
+      -padx 10 -pady 3
 
    #--- Cree le bouton charger le nom d'une image
    button $audace(base).test3.frame3.explore -text "$caption(trichro,parcourir)" -width 1 \
@@ -137,13 +144,6 @@ pack $audace(base).test3.frame3 \
       }
    pack $audace(base).test3.frame3.explore -side left -padx 10 -pady 5 -ipady 5
 
-   #--- Cree l'entry
-   entry $audace(base).test3.frame3.ent \
-      -textvariable infos(image_v)
-   pack $audace(base).test3.frame3.ent \
-      -in $audace(base).test3.frame3 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3
-
 #--- Cree un frame
 frame $audace(base).test3.frame4 \
    -borderwidth 0 -cursor arrow
@@ -157,6 +157,13 @@ pack $audace(base).test3.frame4 \
       -in $audace(base).test3.frame4 -side left -anchor center \
       -padx 3 -pady 3
 
+   #--- Cree l'entry
+   entry $audace(base).test3.frame4.ent \
+      -textvariable infos(image_b)
+   pack $audace(base).test3.frame4.ent \
+      -in $audace(base).test3.frame4 -side left -anchor center -expand 1 -fill x \
+      -padx 10 -pady 3
+
    #--- Cree le bouton charger le nom d'une image
    button $audace(base).test3.frame4.explore -text "$caption(trichro,parcourir)" -width 1 \
       -command {
@@ -169,13 +176,6 @@ pack $audace(base).test3.frame4 \
          $audace(base).test3.frame4.ent configure -textvariable infos(image_b)
       }
    pack $audace(base).test3.frame4.explore -side left -padx 10 -pady 5 -ipady 5
-
-   #--- Cree l'entry
-   entry $audace(base).test3.frame4.ent \
-      -textvariable infos(image_b)
-   pack $audace(base).test3.frame4.ent \
-      -in $audace(base).test3.frame4 -side left -anchor center -expand 1 -fill x \
-      -padx 10 -pady 3
 
 #--- Cree un frame
 frame $audace(base).test3.frame5 \
