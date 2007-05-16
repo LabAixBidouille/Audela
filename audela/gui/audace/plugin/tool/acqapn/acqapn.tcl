@@ -1,8 +1,8 @@
 #
 # Fichier : acqapn.tcl
-# Description : Panneau d'acquisition APN
+# Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.16 2007-05-06 15:16:54 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.17 2007-05-16 20:49:30 robertdelmas Exp $
 #
 
    #============================================================
@@ -97,7 +97,7 @@
       proc createPanel { this } {
          variable This
          variable compteur_erreur
-         global apn_base audace caption conf confCam panneau
+         global audace caption conf confCam panneau
 
          set This $this
          set compteur_erreur "1"
@@ -115,25 +115,25 @@
          if { [ file exists $fichier ] } { source $fichier }
 
          #--- Creation des infos de configuration (config.ini) si elles n'existent pas
-         if {![info exists conf(apn,adjust)]}       {set conf(apn,adjust)       "Standard"}
-         if {![info exists conf(apn,baud)]}         {set conf(apn,baud)         "115200"}
-         if {![info exists conf(apn,compression)]}  {set conf(apn,compression)  "Basic"}
+         if {![info exists conf(coolpix,adjust)]}       {set conf(coolpix,adjust)       "Standard"}
+         if {![info exists conf(coolpix,baud)]}         {set conf(coolpix,baud)         "115200"}
+         if {![info exists conf(coolpix,compression)]}  {set conf(coolpix,compression)  "Basic"}
          #--- dzoom multiplie par 10 ??????
-         if {![info exists conf(apn,dzoom)]}        {set conf(apn,dzoom)        "8"}
-         if {![info exists conf(apn,exposure)]}     {set conf(apn,exposure)     "0.0"}
-         if {![info exists conf(apn,flash)]}        {set conf(apn,flash)        "Off"}
-         if {![info exists conf(apn,focus)]}        {set conf(apn,focus)        "Infinity"}
-         if {![info exists conf(apn,format)]}       {set conf(apn,format)       "VGA"}
-         if {![info exists conf(apn,lens)]}         {set conf(apn,lens)         "Telephoto"}
-         if {![info exists conf(apn,metering)]}     {set conf(apn,metering)     "Center"}
-         if {![info exists conf(apn,mode)]}         {set conf(apn,mode)         "Off"}
-         if {![info exists conf(apn,model)]}        {set conf(apn,model)        "Coolpix-5700"}
-         if {![info exists conf(apn,video_scale)]}  {set conf(apn,video_scale)  "2.0"}
-         if {![info exists conf(apn,whitebalance)]} {set conf(apn,whitebalance) "Auto"}
+         if {![info exists conf(coolpix,dzoom)]}        {set conf(coolpix,dzoom)        "8"}
+         if {![info exists conf(coolpix,exposure)]}     {set conf(coolpix,exposure)     "0.0"}
+         if {![info exists conf(coolpix,flash)]}        {set conf(coolpix,flash)        "Off"}
+         if {![info exists conf(coolpix,focus)]}        {set conf(coolpix,focus)        "Infinity"}
+         if {![info exists conf(coolpix,format)]}       {set conf(coolpix,format)       "VGA"}
+         if {![info exists conf(coolpix,lens)]}         {set conf(coolpix,lens)         "Telephoto"}
+         if {![info exists conf(coolpix,metering)]}     {set conf(coolpix,metering)     "Center"}
+         if {![info exists conf(coolpix,mode)]}         {set conf(coolpix,mode)         "Off"}
+         if {![info exists conf(coolpix,model)]}        {set conf(coolpix,model)        "Coolpix-5700"}
+         if {![info exists conf(coolpix,video_scale)]}  {set conf(coolpix,video_scale)  "2.0"}
+         if {![info exists conf(coolpix,whitebalance)]} {set conf(coolpix,whitebalance) "Auto"}
 
-         #--- Initialisation des variables affichees dans la fenetre d'info sur l'apn
-         foreach var { camera_id serial_number version battery memory_free } { set confCam(apn_init,$var) "-" }
-         set confCam(apn,nb_images) "-"
+         #--- Initialisation des variables affichees dans la fenetre d'info sur l'APN
+         foreach var { camera_id serial_number version battery memory_free } { set confCam(coolpix_init,$var) "-" }
+         set confCam(coolpix,nb_images) "-"
 
          #--- Recuperation de la derniere configuration pour la mise a jour des panneaux 'acqapn' et 'infos'
          ::acqapn::SetOptions
@@ -155,7 +155,7 @@
          set panneau(acqapn,mini)            "image"
          set panneau(acqapn,a_effacer)       "last"
 
-         #--- Les variables du panneau deduites du modele d'apn
+         #--- Les variables de l'outil deduites du modele d'APN
          ::acqapn::ConfigPanneau
 
          #--- Construction de l'interface graphique
@@ -185,15 +185,15 @@
       #
       # ::acqapn::SetOptions
       #--- Fonction appelee au demarrage et par le bouton 'Reinitialiser'
-      #--- Specifie les variables confCam(apn,...) en rappellant les valeurs memorisees dans config.ini
+      #--- Specifie les variables confCam(coolpix,...) en rappellant les valeurs memorisees dans config.ini
       #
       proc SetOptions { } {
          global conf confCam
 
-         foreach var { baud } { set confCam(apn,$var) $conf(apn,$var) }
+         foreach var { baud } { set confCam(coolpix,$var) $conf(coolpix,$var) }
          foreach var { video_scale model adjust compression flash focus format lens\
             metering whitebalance exposure mode dzoom } {
-            set confCam(apn,$var) $conf(apn,$var)
+            set confCam(coolpix,$var) $conf(coolpix,$var)
          }
          #--- La combinaison format+compression est etablie et verifiee
          ::acqapn::Resolution
@@ -202,7 +202,7 @@
       #
       #::acqapn::SaveOptions
       #--- Fonction appelee par le bouton 'Memoriser'
-      #--- Memorise les valeurs de confCam(apn) dans config.ini
+      #--- Memorise les valeurs de conf(coolpix,...) dans config.ini
       #
       proc SaveOptions { } {
          global conf confCam
@@ -210,12 +210,12 @@
          #--- Verification de la validite de la resolution avant la sauvegarde
          ::acqapn::Resolution
          #--- Sauvegarde si resolution valide
-         if { $confCam(apn,resolution) > "0" } {
+         if { $confCam(coolpix,resolution) > "0" } {
             #---Les seules variables de configuration sauvegardees
-            foreach var { baud } { set conf(apn,$var) $confCam(apn,$var) }
+            foreach var { baud } { set conf(coolpix,$var) $confCam(coolpix,$var) }
             foreach var { video_scale model adjust format compression flash focus format lens\
                metering whitebalance exposure mode dzoom} {
-               set conf(apn,$var) $confCam(apn,$var)
+               set conf(coolpix,$var) $confCam(coolpix,$var)
             }
          } else {
             ::acqapn::ErrComm 7
@@ -236,14 +236,15 @@
          }
          #---Les variables de configuration confCam // conf
          foreach var { lens flash zoom mode format compression focus metering whitebalance adjust exposure } {
-            console::affiche_saut "$var : $confCam(apn$reglages,$var)\n"
+            console::affiche_saut "$var : $confCam(coolpix$reglages,$var)\n"
          }
+         console::affiche_saut "\n"
       }
 
       #
       #::acqapn::ShowVideo
       #--- Procedure d'apercu en mode video associee au bouton 'Video'
-      #--- Au lancement du panneau le bouton affiche "Video Connecte"
+      #--- Au lancement de l'outil le bouton affiche "Video Connecte"
       #--- Lorsque la connexion est etablie le bouton affiche "Video on", un appui sur "Video on" affiche le viseur
       #--- Lorsque l'image est affichee, le bouton affiche "Video off", un appui sur "Video off" supprime le viseur
       #
@@ -255,7 +256,7 @@
 
             $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state disabled
 
-            #--- Si aucune camera n'est connectee, appelle le panneau confcam
+            #--- Si aucune camera n'est connectee, appelle la boite Configuration de la camera
             if { [ ::cam::list ] == "" } {
                ::confCam::run
                ::confCam::select A webcam
@@ -335,11 +336,11 @@
          #--- Recherche du port serie sur lequel la camera repond
          set port [::acqapn::IdCom]
          if { $port!="no port" && $port!="not found" } {
-            set panneau(acqapn,cmd_usb)  "-l$port:"
-            console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,connect) $port\n"
-            console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(apn,baud)\n"
+            set panneau(acqapn,cmd_usb) "-l$port:"
+            console::affiche_erreur "$confCam(coolpix,model) $caption(acqapn,msg,connect) $port\n"
+            console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(coolpix,baud)\n"
             console::affiche_saut "\n"
-            ::confVisu::setCamera $audace(visuNo) $audace(camNo) "$confCam(apn,model)"
+            ::confVisu::setCamera "$audace(visuNo)" "$audace(camNo)" "$confCam(coolpix,model)"
          } else {
             $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::acqapn::Query }
             if { $port=="not found" } { set msg 1 } else { set msg 2 }
@@ -352,7 +353,7 @@
 
          #--- Cree le fichier audace\audace\plugin\tool\acqapn\saveconf.log
          catch { set reponse [exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) clock -t -f 3\
-            -s $confCam(apn,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg
+            -s $confCam(coolpix,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg
          if {![info exists reponse] || ( [info exists reponse] && $msg!="$reponse" ) } {
             ::acqapn::ErrComm $msg
             $This.fra4.connect configure -text $caption(acqapn,sw_connect,on)
@@ -385,7 +386,7 @@
          }
          close $fd
 
-         #--- L'apn est connecte et les infos sont disponibles dans le panneau
+         #--- L'APN est connecte et les infos sont disponibles dans la boite
          set panneau(acqapn,initstate) "1"
 
          #--- Liste des parametres sur la console
@@ -400,7 +401,7 @@
 
       #
       # ::acqapn::Off
-      #--- Fonction appelee quitter et mettre l'APN en mode Off
+      #--- Fonction appelee pour quitter et mettre l'APN en mode Off
       #
       proc Off { } {
          variable This
@@ -417,15 +418,15 @@
          ::acqapn::ConfigEtat disabled
 
          #--- Remise en etat des parametres
-         catch { exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(apn,baud) \
-            flash $confCam(apn_init,flash)\
-            dzoom $confCam(apn_init,dzoom)\
-            resolution $confCam(apn_init,resolution)\
-            focus $confCam(apn_init,focus)\
-            adjust $confCam(apn_init,adjust)\
-            whitebalance $confCam(apn_init,whitebalance)\
-            metering $confCam(apn_init,code_metering)\
-            $panneau(apn_init,exposurecmd) $confCam(apn_init,code_exposure)\
+         catch { exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(coolpix,baud) \
+            flash $confCam(coolpix_init,flash)\
+            dzoom $confCam(coolpix_init,dzoom)\
+            resolution $confCam(coolpix_init,resolution)\
+            focus $confCam(coolpix_init,focus)\
+            adjust $confCam(coolpix_init,adjust)\
+            whitebalance $confCam(coolpix_init,whitebalance)\
+            metering $confCam(coolpix_init,code_metering)\
+            $panneau(coolpix_init,exposurecmd) $confCam(coolpix_init,code_exposure)\
             mode Off
          } msg
 
@@ -433,6 +434,7 @@
             if { $compteur_erreur == "1" } {
                incr compteur_erreur "1"
                ::acqapn::Off
+               return
             } else {
                ::acqapn::ErrComm $msg
                $This.fra4.connect configure -text $caption(acqapn,sw_connect,off)
@@ -444,33 +446,34 @@
          }
 
          #--- Destruction de la fenetre 'Images' et de la la liste des vues
-         if [winfo exists $This.avance] { global audace ; destroy $This.avance }
+         if [winfo exists $This.avance] { destroy $This.avance }
          destroy $This.fra4.expose
          if [winfo exists $This.fra4.vues] { destroy $This.fra4.vues }
          if [winfo exists $This.fra4.memory] { destroy $This.fra4.memory }
          destroy $This.fra7
-        ### place $This.fra4 -x 4 -y 426 -height 50 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
          pack $This.fra4 -side top -fill x
 
-         #--- Modification du flag de la liaison serie et reinitialisation de variables ilees aux images et poses
+         #--- Modification du flag de la liaison serie et reinitialisation des variables liees aux images et poses
          set panneau(acqapn,initstate) "0"
          ::acqapn::InitVar
 
          #--- Mise a jour des variables et reconfiguration du bouton de la fenetre '+Infos'
-         foreach var { camera_id serial_number version battery memory_free } { set confCam(apn_init,$var) "-" }
-         set confCam(apn,nb_images) "-"
+         foreach var { camera_id serial_number version battery memory_free } { set confCam(coolpix_init,$var) "-" }
+         set confCam(coolpix,nb_images) "-"
          $This.fra2.info configure -font $audace(font,arial_8_n)
          $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::acqapn::Query }
          ::acqapn::ConfigEtat normal
 
          #--- Impression d'un message
-         console::affiche_saut "\n"
-         console::affiche_erreur "$confCam(apn,model) $caption(acqapn,msg,deconnect)\n"
+         if { $compteur_erreur == "1" } {
+            console::affiche_erreur "$confCam(coolpix,model) $caption(acqapn,msg,deconnect)\n"
+            console::affiche_saut "\n"
+         }
       }
 
       #
       #--- ::acqapn::Expose
-      # Fonction appelee pour connecter ou deconnecter l'apn
+      # Fonction appelee pour connecter ou deconnecter l'APN
       #
       proc Expose { } {
          variable This
@@ -481,13 +484,12 @@
          $This.fra4.expose configure -text $caption(acqapn,sw,encours)
          ::acqapn::ConfigEtat disabled
 
-         #--- Les champs "temps de pose", "nombre de poses", "delai"
-         #--- et "intervalle" ont ete verifies a la saisie
-         #--- on affine les autres parametres
-         set confCam(apn,code_metering) [::acqapn::Metering $confCam(apn,metering)]
-         set confCam(apn,dzoom) [::acqapn::Dzoom $confCam(apn,lens)]
+         #--- Les champs "temps de pose", "nombre de poses", "delai" et "intervalle"
+         #--- ont ete verifies a la saisie, on affine les autres parametres
+         set confCam(coolpix,code_metering) [::acqapn::Metering $confCam(coolpix,metering)]
+         set confCam(coolpix,dzoom) [::acqapn::Dzoom $confCam(coolpix,lens)]
          ::acqapn::Resolution
-         if { $confCam(apn,resolution) < "0" } {
+         if { $confCam(coolpix,resolution) < "0" } {
             $This.fra4.expose configure -text $caption(acqapn,sw,exposer)
             ::acqapn::ConfigEtat normal
             return
@@ -501,7 +503,7 @@
          }
          update
 
-         #if { $panneau(acqapn,duree_pose)!="auto" } { set confCam(apn,duree_pose) "Auto" }
+         #if { $panneau(acqapn,duree_pose)!="auto" } { set confCam(coolpix,duree_pose) "Auto" }
 
          set time_next "ns"
          set intervalle $panneau(acqapn,intervalle)
@@ -509,17 +511,17 @@
          while { $panneau(acqapn,nb_poses) > 0 } {
             set msg ""
             catch {
-               exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(apn,baud)\
-               flash $confCam(apn,flash)\
-               dzoom $confCam(apn,dzoom)\
-               resolution $confCam(apn,resolution)\
-               focus $confCam(apn,focus)\
-               adjust $confCam(apn,adjust)\
-               whitebalance $confCam(apn,whitebalance)\
-               metering $confCam(apn,code_metering)\
-                  $panneau(acqapn,exposurecmd) $confCam(apn,code_exposure)\
+               exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(coolpix,baud)\
+               flash $confCam(coolpix,flash)\
+               dzoom $confCam(coolpix,dzoom)\
+               resolution $confCam(coolpix,resolution)\
+               focus $confCam(coolpix,focus)\
+               adjust $confCam(coolpix,adjust)\
+               whitebalance $confCam(coolpix,whitebalance)\
+               metering $confCam(coolpix,code_metering)\
+                  $panneau(coolpix_init,exposurecmd) $confCam(coolpix,code_exposure)\
                dzoom 1.0X\
-               snapshot mode $confCam(apn,mode)
+               snapshot mode $confCam(coolpix,mode)
             } msg
             #--- le temps apres la prise de vue
             set time_now [clock seconds]
@@ -543,10 +545,10 @@
             }
 
             #--- Si le LCD de l'APN n'est pas deja eteint,
-            #--- on l'eteint apres un delai de 1 secondes
-            if { $confCam(apn,mode)!="Off" } {
+            #--- on l'eteint apres un delai de 1 seconde
+            if { $confCam(coolpix,mode)!="Off" } {
                after 1000
-               exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(apn,baud) mode Off
+               exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(coolpix,baud) mode Off
             }
 
             #--- Les parametres avec des erreurs : shutter aperture color zoom
@@ -567,13 +569,13 @@
             set panneau(acqapn,intervalle) $intervalle
 
             #--- Reinitialisation des variables specifiques aux images
-            set panneau(acqapn,imagelist)    ""
-            set confCam(apn,nb_images)    "0"
+            set panneau(acqapn,imagelist)     ""
+            set confCam(coolpix,nb_images)    "0"
             #--- MAJ de la liste des images
             ::acqapn::MajList
             ::acqapn::ConfigListeVues
-            console::affiche_saut "\n# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
-            [clock format $time_now -format "%H:%M:%S" -gmt 1 ]\n"
+            console::affiche_saut "# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
+            [clock format $time_now -format "%H:%M:%S" -gmt 1 ].\n\n"
             update
          }
 
@@ -585,7 +587,6 @@
 
          #--- Reconfiguration du bouton 'Go' et reactivation du panneau
          $This.fra4.expose configure -text $caption(acqapn,sw,exposer)
-        ### place $This.fra4 -x 4 -y 426 -height 130 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
          pack $This.fra4 -side top -fill x
          set panneau(acqapn,nb_poses) "1"
          ::acqapn::ConfigEtat normal
@@ -603,42 +604,41 @@
          $This.avance.efface.erase configure -text $caption(acqapn,sw,encours)
          ::acqapn::ConfigEtat disabled
 
-         catch { exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $confCam(apn,baud)\
+         catch { exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $confCam(coolpix,baud)\
             erase$panneau(acqapn,a_effacer) } msg
 
          if { $msg!="eph_open failed" } {
-            if { $panneau(acqapn,a_effacer)=="all" || ($panneau(acqapn,a_effacer)=="last" && $confCam(apn,nb_images)=="1") } {
+            if { $panneau(acqapn,a_effacer)=="all" || ($panneau(acqapn,a_effacer)=="last" && $confCam(coolpix,nb_images)=="1") } {
 
                #--- Message sur la console
-               console::affiche_saut "\n# $caption(acqapn,msg,carte) $caption(acqapn,msg,effacee)\n"
+               console::affiche_saut "# $caption(acqapn,msg,carte) $caption(acqapn,msg,effacee)\n\n"
 
-               #--- Destruction du panneau annexe
+               #--- Destruction des boites annexes
                destroy $This.avance
                destroy $This.fra4.vues
-              ### place $This.fra4 -x 4 -y 426 -height 78 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
                pack $This.fra4 -side top -fill x
 
                #--- Reinitialisation des variables specifiques aux images
-               set confCam(apn,nb_images)       "0"
-               set panneau(acqapn,imagelist)    ""
-               set panneau(acqapn,imagename)    ""
-               set panneau(acqapn,selection)    ""
+               set confCam(coolpix,nb_images) "0"
+               set panneau(acqapn,imagelist)  ""
+               set panneau(acqapn,imagename)  ""
+               set panneau(acqapn,selection)  ""
 
-            } elseif { $panneau(acqapn,a_effacer)=="last" && $confCam(apn,nb_images)>"1" } {
+            } elseif { $panneau(acqapn,a_effacer)=="last" && $confCam(coolpix,nb_images)>"1" } {
 
                #--- Affichage sur la console de la reference de l'image effacee
-               console::affiche_saut "\n# $panneau(acqapn,imagename) $caption(acqapn,msg,effacee)\n"
+               console::affiche_saut "# $panneau(acqapn,imagename) $caption(acqapn,msg,effacee)\n\n"
 
                #--- Mise a jour de la liste des poses
-               incr confCam(apn,nb_images) -1
-               set panneau(acqapn,imagelist) [lrange $panneau(acqapn,imagelist) 0 [expr $confCam(apn,nb_images)-1]]
+               incr confCam(coolpix,nb_images) -1
+               set panneau(acqapn,imagelist) [lrange $panneau(acqapn,imagelist) 0 [expr $confCam(coolpix,nb_images)-1]]
                ::acqapn::ConfigListeVues
             }
          } else {
             ::acqapn::ErrComm $msg
          }
 
-         #--- Activation des commandes du panneau principal
+         #--- Activation des commandes de l'outil principal
          if [winfo exists $This.avance.efface.erase] { $This.avance.efface.erase configure -text $caption(acqapn,but,effacer) }
          ::acqapn::ConfigEtat normal
       }
@@ -655,13 +655,13 @@
          $This.avance.charge.load configure -text $caption(acqapn,sw,encours)
          ::acqapn::ConfigEtat disabled
 
-         if { $confCam(apn,nb_images)!="0" && $confCam(apn,nb_images)!="-" } {
+         if { $confCam(coolpix,nb_images)!="0" && $confCam(coolpix,nb_images)!="-" } {
             cd "$conf(rep_images)"
-            catch { exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(apn,baud)\
+            catch { exec $panneau(acqapn,photopc) -q $panneau(acqapn,cmd_usb) -s $confCam(coolpix,baud)\
                "$panneau(acqapn,mini)" $panneau(acqapn,selection) "$panneau(acqapn,imagename)" } msg
             if { $msg=="" } {
                #--- Message sur la console
-               console::affiche_saut "\n# photo N° $panneau(acqapn,selection) $panneau(acqapn,imagename) chargee\n"
+               console::affiche_saut "# $caption(acqapn,label,vue) $panneau(acqapn,selection) $panneau(acqapn,imagename) $caption(acqapn,label,chargee)\n\n"
                #--- Affichage
                if { $panneau(acqapn,affichage)=="1" } {
                   cd "$audace(rep_audela)"
@@ -683,7 +683,7 @@
       #
       # ::acqapn::IdentifyParameter
       #--- Fonction appelee pour identifier la valeur d'un parametre
-      #--- Analyse des infos renvoyees par l'apn
+      #--- Analyse des infos renvoyees par l'APN
       #
       proc IdentifyParameter { file arg var index} {
          global confCam
@@ -691,23 +691,23 @@
          set file0 [lindex [split $file ":"] 0]
          set file1 [lindex [split $file ":"] 1]
          if { [string match $file0 $arg]=="1" } {
-            set confCam(apn_init,$var)  "[lindex $file1 $index]"
+            set confCam(coolpix_init,$var)  "[lindex $file1 $index]"
             update
             if { $var=="resolution" } {
                ::acqapn::ReverseResolution
             } elseif { $var=="dzoom" } {
-               switch -exact $confCam(apn_init,dzoom) {
-                  0 { set confCam(apn_init,lens) "Telephoto" ; set confCam(apn_init,dzoom) "8" }
-                  2 { set confCam(apn_init,lens) "Wide" }
-                  4 { set confCam(apn_init,lens) "FishEye" }
+               switch -exact $confCam(coolpix_init,dzoom) {
+                  0 { set confCam(coolpix_init,lens) "Telephoto" ; set confCam(coolpix_init,dzoom) "8" }
+                  2 { set confCam(coolpix_init,lens) "Wide" }
+                  4 { set confCam(coolpix_init,lens) "FishEye" }
                }
             } elseif { $var=="exposure" } {
-               set confCam(apn_init,exposure) [format "%+1.1f" $confCam(apn_init,exposure)]
-               ::acqapn::Exposure "_init" [expr $confCam(apn_init,exposure)/10]
+               set confCam(coolpix_init,exposure) [format "%+1.1f" $confCam(coolpix_init,exposure)]
+               ::acqapn::Exposure "_init" [expr $confCam(coolpix_init,exposure)/10]
             } elseif { $var=="metering" } {
-               set confCam(apn_init,code_metering) [::acqapn::Metering $confCam(apn_init,metering)]
+               set confCam(coolpix_init,code_metering) [::acqapn::Metering $confCam(coolpix_init,metering)]
             } elseif { $var=="adjust" } {
-               if { $confCam(apn_init,adjust)=="Auto" } { set confCam(apn_init,adjust) "Standard" }
+               if { $confCam(coolpix_init,adjust)=="Auto" } { set confCam(coolpix_init,adjust) "Standard" }
             }
          }
       }
@@ -726,7 +726,6 @@
             #--- Si le nombre de poses vaut "0" ou "1"
             if { $panneau(acqapn,nb_poses)=="0" || $panneau(acqapn,nb_poses)=="1" } {
                set panneau(acqapn,intervalle) ""
-              ### place $This.fra7 -x 4 -y 560 -height 100 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
                pack $This.fra4 -side top -fill x
                if { $panneau(acqapn,nb_poses)=="0" } {
                   ::acqapn::ErrComm 9
@@ -736,14 +735,12 @@
             } else {
                #--- Le nb d'images est > 1
                set panneau(acqapn,intervalle) $panneau(acqapn,intervalle_mini)
-              ### place $This.fra7 -x 4 -y 560 -height 124 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
                 pack $This.fra4 -side top -fill x
                update
             }
          } else {
             set panneau(acqapn,intervalle) ""
             ::acqapn::ErrComm 10
-           ### place $This.fra7 -x 4 -y 560 -height 100 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
             pack $This.fra4 -side top -fill x
          }
          return $verif
@@ -791,18 +788,18 @@
       proc TestValeurs { valeur } {
          global confCam
 
-         set confCam(apn,duree_pose) ""
+         set confCam(coolpix,duree_pose) ""
          #--- Si aucune valeur n'est saisie, alors 'Auto'
          if { $valeur=="auto" } {
-            set confCam(apn,duree_pose) Auto
+            set confCam(coolpix,duree_pose) Auto
          } elseif { [::acqapn::TestEntier $valeur]=="1" } {
             #--- Si une valeur est saisie, on teste s'il s'agit d'un entier
-            set confCam(apn,duree_pose) $valeur
+            set confCam(coolpix,duree_pose) $valeur
          } elseif { [lindex [split $valeur "/"] 0]=="1" \
             && [::acqapn::TestEntier [lindex [split $valeur "/"] 1]]=="1"} {
             #--- S'il s'agit d'une fraction 1/n, le numerateur vaut 1
             #--- On teste si le denominateur est un entier positif
-            set confCam(apn,duree_pose) $valeur
+            set confCam(coolpix,duree_pose) $valeur
          } else {
             ::acqapn::ErrComm 6
          }
@@ -832,12 +829,12 @@
          global caption confCam panneau
 
          switch -exact $msg {
-            "eph_open failed" { set message "$confCam(apn,model) $caption(acqapn,msg,pas_detecte)$caption(acqapn,msg,conseil)" }
-            "1"         { set message "$confCam(apn,model) $caption(acqapn,msg,pas_detecte)$caption(acqapn,msg,conseil)" }
+            "eph_open failed" { set message "$confCam(coolpix,model) $caption(acqapn,msg,pas_detecte)$caption(acqapn,msg,conseil)" }
+            "1"         { set message "$confCam(coolpix,model) $caption(acqapn,msg,pas_detecte)$caption(acqapn,msg,conseil)" }
             "2"         { set message "$caption(acqapn,port_serie) $caption(acqapn,msg,pas_detecte)" }
             "3"         { set message "$caption(acqapn,msg,no_resolution)" }
-            "4"         { set message "$caption(acqapn,msg,new_dzoom) : $confCam(apn,dzoom) " }
-            "5"         { set message "$caption(acqapn,msg,new_resolution) : $confCam(apn_init,resolution)" }
+            "4"         { set message "$caption(acqapn,msg,new_dzoom) : $confCam(coolpix,dzoom) " }
+            "5"         { set message "$caption(acqapn,msg,new_resolution) : $confCam(coolpix_init,resolution)" }
             "6"         { set message "$caption(acqapn,msg,pose)" }
             "7"         { set message "$caption(acqapn,msg,no_save)" }
             "8"         { set message "$caption(acqapn,no_video_mode)" }
@@ -860,18 +857,18 @@
       #--- Fonction appelee pour configurer un combobox et creer sa liste
       #
       proc SetComboBoxList { this variable } {
-         global apn_base confCam
+         global coolpix_base confCam
 
-         set hauteur [llength $apn_base($variable)]
+         set hauteur [llength $coolpix_base($variable)]
          if { $hauteur > "5" } { set hauteur 5 }
          ComboBox $this -relief sunken -borderwidth 1 -width 14 -editable 0 -height $hauteur \
-            -values $apn_base($variable)
+            -values $coolpix_base($variable)
 
          #--- Affiche l'element selectionne, sinon le premier element de la liste
-         if { ![info exists confCam(apn,$variable)] } {
+         if { ![info exists confCam(coolpix,$variable)] } {
             $this setvalue @0
          } else {
-            $this configure -text $confCam(apn,$variable)
+            $this configure -text $confCam(coolpix,$variable)
          }
 
          #--- Mise a jour dynamique de la couleur
@@ -886,14 +883,14 @@
          global panneau
 
          #--- Reinitialisation des parametres
-         set panneau(acqapn,duree_pose)   "auto"
-         set panneau(acqapn,nb_poses)     "1"
-         set panneau(acqapn,intervalle)   ""
-         set panneau(acqapn,delai)        "0"
+         set panneau(acqapn,duree_pose) "auto"
+         set panneau(acqapn,nb_poses)   "1"
+         set panneau(acqapn,intervalle) ""
+         set panneau(acqapn,delai)      "0"
          #--- Reconfiguration de la liste des poses
-         set panneau(acqapn,imagelist)    ""
-         set panneau(acqapn,imagename)    ""
-         set panneau(acqapn,selection)    ""
+         set panneau(acqapn,imagelist)  ""
+         set panneau(acqapn,imagename)  ""
+         set panneau(acqapn,selection)  ""
       }
 
       #
@@ -918,29 +915,29 @@
 
       #
       #::acqapn::ConfigPanneau
-      #--- Fonction appelee pour adapter le panneau a l'apn
+      #--- Fonction appelee pour adapter l'outil a l'APN
       #
       proc ConfigPanneau { } {
          variable This
-         global apn_base confCam panneau
+         global coolpix_base confCam panneau
 
-         set index [lsearch $apn_base(model) $confCam(apn,model)]
+         set index [lsearch $coolpix_base(model) $confCam(coolpix,model)]
          foreach var { ccd_size pixel_size H_focus L_focus } {
-            set panneau(acqapn,$var) [lindex $apn_base($var) $index]
+            set panneau(acqapn,$var) [lindex $coolpix_base($var) $index]
          }
-         if { $confCam(apn,model) == "Coolpix-990" } {
+         if { $confCam(coolpix,model) == "Coolpix-990" } {
             # *** Parametres specifiques au CoolPix 990 ***
-            set apn_base(format) " MAX XGA VGA 3:2 "
+            set coolpix_base(format) " MAX XGA VGA 3:2 "
          } else {
-            set apn_base(format) " VGA XGA SXGA UXGA 3:2 MAX "
+            set coolpix_base(format) " VGA XGA SXGA UXGA 3:2 MAX "
          }
          #--- Si la valeur n'est plus dans la liste on prend le premier de la nouvelle liste
-         if { ![regexp $confCam(apn,format) $apn_base(format)] } {
-            set confCam(apn,format) [lindex $apn_base(format) 0]
+         if { ![regexp $confCam(coolpix,format) $coolpix_base(format)] } {
+            set confCam(coolpix,format) [lindex $coolpix_base(format) 0]
          }
          #--- Si la fenetre est affichee on change l'affichage
          if { [winfo exists $This.fra3.reglage.var]=="1" && [$This.fra3.reglage.var get]=="format" } {
-            $This.fra3.valeur.val configure -values $apn_base(format) -text $confCam(apn,format)
+            $This.fra3.valeur.val configure -values $coolpix_base(format) -text $confCam(coolpix,format)
          }
          update
       }
@@ -950,20 +947,20 @@
       #--- Fonction appelee pour reconstruire une nouvelle liste d'images
       #
       proc MajList { } {
-         global apn_base confCam panneau
+         global coolpix_base confCam panneau
 
          set file ""
          if { $panneau(acqapn,initstate)=="1" } {
 
             #--- Mise a jour du nombre de poses en memoire
-            catch { set infos [exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $confCam(apn,baud) count] }  msg
+            catch { set infos [exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $confCam(coolpix,baud) count] } msg
             if { $msg!="" && $msg!="$infos" } { ::acqapn::ErrComm $msg ; return }
-            set confCam(apn,nb_images) [lindex $infos end]
+            set confCam(coolpix,nb_images) [lindex $infos end]
 
-            if { $confCam(apn,nb_images) > "0" } {
+            if { $confCam(coolpix,nb_images) > "0" } {
 
                #--- Cree le fichier saverep.log dans audace\audace\plugin\tool\acqapn\saverep.log
-               catch { set infos [exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $confCam(apn,baud) list] } msg
+               catch { set infos [exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $confCam(coolpix,baud) list] } msg
                if { $msg!="" && $msg!="$infos" } { ::acqapn::ErrComm $msg ; return }
                set rp [open $panneau(acqapn,saverep) w]
                puts $rp $infos
@@ -983,7 +980,7 @@
                close $rp
             }
             #--- Affiche la liste des images dans le panneau
-            set apn_base(imagelist) $panneau(acqapn,imagelist)
+            set coolpix_base(imagelist) $panneau(acqapn,imagelist)
          }
       }
 
@@ -997,7 +994,7 @@
 
          if [winfo exists $This.fra4.vues] { global audace ; destroy $This.fra4.vues }
 
-         if { $panneau(acqapn,imagelist)!="" && $confCam(apn,nb_images) > "0" } {
+         if { $panneau(acqapn,imagelist)!="" && $confCam(coolpix,nb_images) > "0" } {
             #--- Construction et affichage de la liste des vues contenues dans l'appareil photo
             ::acqapn::SetComboBoxList $This.fra4.vues "imagelist"
             pack $audace(base).acqapn.fra4.vues\
@@ -1048,7 +1045,7 @@
       #====================== Les fenetres annexes =================================================
       #
       #::acqapn::Photo
-      #--- Complement du panneau principal
+      #--- Complement de l'outil principal
       #
       proc Photo { } {
          variable This
@@ -1060,7 +1057,7 @@
          pack $audace(base).acqapn.fra4.expose\
             -in $audace(base).acqapn.fra4 -anchor center -side top -fill x
 
-         #---Le bouton 'Memoire' pour ouvrir le panneau des reglages avances
+         #---Le bouton 'Memoire' pour ouvrir le boite des reglages avances
          Button $This.fra4.memory -borderwidth 4 -text $caption(acqapn,label,avance)\
             -font $audace(font,arial_8_n) -state normal -command { ::acqapn::Avance }
          pack $audace(base).acqapn.fra4.memory\
@@ -1070,11 +1067,9 @@
          ::acqapn::MajList
          ::acqapn::ConfigListeVues
 
-         if {$confCam(apn,nb_images)=="0"} {
-           ### place $This.fra4 -x 4 -y 426 -height 78 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
+         if {$confCam(coolpix,nb_images)=="0"} {
            pack $This.fra4 -side top -fill x
          } else {
-           ### place $This.fra4 -x 4 -y 426 -height 130 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
            pack $This.fra4 -side top -fill x
          }
 
@@ -1131,7 +1126,6 @@
          DynamicHelp::add $This.fra7.timer
          $This.fra7.timer bind <Leave> { ::acqapn::VerifIntervalle }
 
-        ### place $This.fra7 -x 4 -y 560 -height 100 -width $panneau(acqapn,large) -anchor nw -bordermode ignore
          pack $This.fra4 -side top -fill x
 
          #--- Mise a jour dynamique de la couleur
@@ -1140,7 +1134,7 @@
 
       #
       #::acqapn::PlusInfo
-      #--- Fenetre appelee pour afficher les donnees relatives a l'apn
+      #--- Fenetre appelee pour afficher les donnees relatives a l'APN
       #
       proc PlusInfo { } {
          variable This
@@ -1159,7 +1153,7 @@
          wm protocol $This.info WM_DELETE_WINDOW { destroy $audace(base).acqapn.info }
 
          #--- Indication du constructeur
-         LabelFrame $This.info.connect -textvariable confCam(apn_init,camera_id)\
+         LabelFrame $This.info.connect -textvariable confCam(coolpix_init,camera_id)\
             -font $audace(font,arial_8_n) -side left -padx 5
          pack $audace(base).acqapn.info.connect\
             -in $audace(base).acqapn.info -anchor center -side top
@@ -1167,7 +1161,7 @@
          #--- Identification du n° de serie
          LabelFrame $This.info.numser -text $caption(acqapn,info,serial)\
             -font $audace(font,arial_8_n) -side left -padx 5
-            label $This.info.numser.num -textvariable confCam(apn_init,serial_number) -font $audace(font,arial_8_n)
+            label $This.info.numser.num -textvariable confCam(coolpix_init,serial_number) -font $audace(font,arial_8_n)
             pack $audace(base).acqapn.info.numser.num\
                -in $audace(base).acqapn.info.numser -side left
          pack $audace(base).acqapn.info.numser\
@@ -1176,7 +1170,7 @@
          #--- Identification de la version
          LabelFrame $This.info.version -text $caption(acqapn,info,version)\
             -font $audace(font,arial_8_n) -side left -padx 5
-            label $This.info.version.num -textvariable confCam(apn_init,version) -font $audace(font,arial_8_n)
+            label $This.info.version.num -textvariable confCam(coolpix_init,version) -font $audace(font,arial_8_n)
             pack $audace(base).acqapn.info.version.num\
                -in $audace(base).acqapn.info.version -side left
          pack $audace(base).acqapn.info.version\
@@ -1206,7 +1200,7 @@
          #--- Charge de la batterie
          LabelFrame $This.info.batt -text $caption(acqapn,info,batterie)\
             -font $audace(font,arial_8_n) -side left -padx 5
-            label $This.info.batt.size -textvariable confCam(apn_init,battery) -font $audace(font,arial_8_n)
+            label $This.info.batt.size -textvariable confCam(coolpix_init,battery) -font $audace(font,arial_8_n)
             pack $audace(base).acqapn.info.batt.size\
                -in $audace(base).acqapn.info.batt -side left
          pack $audace(base).acqapn.info.batt\
@@ -1215,7 +1209,7 @@
          #--- Nombre de photos enregistrees
          LabelFrame $This.info.vues -text $caption(acqapn,info,vues)\
             -font $audace(font,arial_8_n) -side left -padx 5
-            label $This.info.vues.size -textvariable confCam(apn,nb_images) -font $audace(font,arial_8_n)
+            label $This.info.vues.size -textvariable confCam(coolpix,nb_images) -font $audace(font,arial_8_n)
             pack $audace(base).acqapn.info.vues.size\
                -in $audace(base).acqapn.info.vues -side left
          pack $audace(base).acqapn.info.vues\
@@ -1224,7 +1218,7 @@
          #--- Memoire libre
          LabelFrame $This.info.mem -text $caption(acqapn,info,memoire_libre)\
             -font $audace(font,arial_8_n) -side left -padx 5
-            label $This.info.mem.size -textvariable confCam(apn_init,memory_free) -font $audace(font,arial_8_n)
+            label $This.info.mem.size -textvariable confCam(coolpix_init,memory_free) -font $audace(font,arial_8_n)
             pack $audace(base).acqapn.info.mem.size\
                -in $audace(base).acqapn.info.mem -side left
             label $This.info.mem.dim -text $caption(acqapn,info,unites) -font $audace(font,arial_8_n)
@@ -1291,7 +1285,7 @@
          global audace caption conf confCam confgene panneau
 
          set this $audace(base).acqapn.avance
-        ### if { [winfo exists $this] && $confCam(apn,nb_images)!="0" } { global audace ; destroy $This.avance }
+        ### if { [winfo exists $this] && $confCam(coolpix,nb_images)!="0" } { global audace ; destroy $This.avance }
          if { [winfo exists $this] != "0" } { global audace ; destroy $This.avance }
 
          #--- Creation de la fenetre
@@ -1305,18 +1299,18 @@
          wm protocol $this WM_DELETE_WINDOW { destroy $audace(base).acqapn.avance }
 
          frame $this.efface -borderwidth 2 -relief ridge
-         #--- Le bouton 'Effacer' la memoire de l'apn
+         #--- Le bouton 'Effacer' la memoire de l'APN
          Button $this.efface.erase -borderwidth 4 -text $caption(acqapn,but,effacer)\
             -width 20 -command { ::acqapn::EraseCard }
          pack $audace(base).acqapn.avance.efface.erase\
             -in $audace(base).acqapn.avance.efface -anchor center -side top -fill x
          #--- Les radiosbuttons du choix de la commande
          frame $this.efface.choix
-            radiobutton $this.efface.choix.dernier -text "derniere"\
+            radiobutton $this.efface.choix.dernier -text $caption(acqapn,label,derniere)\
                -variable panneau(acqapn,a_effacer) -value "last"
             pack $audace(base).acqapn.avance.efface.choix.dernier\
                -in $audace(base).acqapn.avance.efface.choix -anchor center -side left
-            radiobutton $this.efface.choix.toutes -text "toutes"\
+            radiobutton $this.efface.choix.toutes -text $caption(acqapn,label,toutes)\
                -variable panneau(acqapn,a_effacer) -value "all"
             pack $audace(base).acqapn.avance.efface.choix.toutes\
                -in $audace(base).acqapn.avance.efface.choix -anchor center -side right
@@ -1326,7 +1320,7 @@
             -in $audace(base).acqapn.avance -fill x
 
          frame $this.charge -borderwidth 2 -relief ridge
-         #--- Le bouton 'Charger' la memoire de l'apn
+         #--- Le bouton 'Charger' la memoire de l'APN
          Button $this.charge.load -borderwidth 4 -text $caption(acqapn,but,charger)\
             -width 20 -command { ::acqapn::DownloadCard }
          pack $audace(base).acqapn.avance.charge.load\
@@ -1352,23 +1346,23 @@
 
          frame $this.traite -borderwidth 2 -relief ridge
             #--- Creation du bouton 'Traitement avance' l'image
-         Button $this.traite.correction -borderwidth 4 -text $caption(acqapn,but,traiter)\
-            -width 20 -command {
-               if {$conf(edit_viewer)=="" && $panneau(acqapn,affichage)=="1"} {
-                  ::acqapn::ErrComm 12
-                  set confgene(EditScript,error,viewer) "0"
-                  ::confEditScript::run "$audace(base).confEditScript"
-               } else {
-                  cd "$conf(rep_images)"
-                  if { [ file exists $panneau(acqapn,imagename) ]=="1" } {
-                     ::audace::Lance_viewer_images_apn $panneau(acqapn,imagename)
+            Button $this.traite.correction -borderwidth 4 -text $caption(acqapn,but,traiter)\
+               -width 20 -command {
+                  if {$conf(edit_viewer)=="" && $panneau(acqapn,affichage)=="1"} {
+                     ::acqapn::ErrComm 12
+                     set confgene(EditScript,error,viewer) "0"
+                     ::confEditScript::run "$audace(base).confEditScript"
                   } else {
-                     ::acqapn::ErrComm 13
+                     cd "$conf(rep_images)"
+                     if { [ file exists $panneau(acqapn,imagename) ]=="1" } {
+                        ::audace::Lance_viewer_images_apn $panneau(acqapn,imagename)
+                     } else {
+                        ::acqapn::ErrComm 13
+                     }
                   }
                }
-            }
-         pack $audace(base).acqapn.avance.traite.correction\
-            -in $audace(base).acqapn.avance.traite -anchor center -side top -fill x
+            pack $audace(base).acqapn.avance.traite.correction\
+               -in $audace(base).acqapn.avance.traite -anchor center -side top -fill x
          pack $audace(base).acqapn.avance.traite\
             -in $audace(base).acqapn.avance -fill x
 
@@ -1383,7 +1377,7 @@
    #    cree la fenetre de l'outil
    #------------------------------------------------------------
    proc acqapnBuildIF { This } {
-      global apn_base audace caption confCam panneau
+      global coolpix_base audace caption confCam panneau
 
       frame $This -borderwidth 2 -relief groove
          #--- Frame du titre et du bouton de l'aide
@@ -1407,12 +1401,12 @@
             pack $This.fra2.opt_model -in $This.fra2 -anchor center -side top -pady 2
             $This.fra2.opt_model configure -modifycmd {
                   set this "$audace(base).acqapn"
-                  set confCam(apn,model) [$this.fra2.opt_model get]
-                  #--- Mise a jour des valeurs dependantes du modele d'apn dans le panneau d'infos
+                  set confCam(coolpix,model) [$this.fra2.opt_model get]
+                  #--- Mise a jour des valeurs dependantes du modele d'APN dans la boite d'infos
                   ::acqapn::ConfigPanneau
-                  #--- Mise a jour des scale 'zoom' et "correction d'exposition' dans le panneau 'acqapn'
+                  #--- Mise a jour des scales 'zoom' et "correction d'exposition' dans l'outil 'acqapn'
                   $this.fra3.zoom.opt_zoom_variant configure -from $panneau(acqapn,L_focus) -to $panneau(acqapn,H_focus)
-                  set confCam(apn,zoom) $panneau(acqapn,L_focus)
+                  set confCam(coolpix,zoom) $panneau(acqapn,L_focus)
                   update
                }
 
@@ -1436,7 +1430,7 @@
                -font $audace(font,arial_8_n) -state normal \
                -command {
                   ::confCam::run
-                  ::confCam::select A dslr
+                  ::confCam::select A coolpix
                   tkwait window $audace(base).confCam
                }
             pack $This.fra5.avance -in $This.fra5 -anchor center -side top -fill x
@@ -1444,10 +1438,10 @@
             #--- Definition de l'echelle de l'image video
             LabelFrame $This.fra5.scale -borderwidth 0 -relief groove \
                -text $caption(acqapn,label,scale) -side top -anchor center
-               scale $This.fra5.scale.opt_scale_variant -variable confCam(apn,video_scale)\
+               scale $This.fra5.scale.opt_scale_variant -variable confCam(coolpix,video_scale)\
                   -orient horizontal -from 1 -to 4 -resolution 0.1\
                   -borderwidth 2 -width 5 -length 95 -state normal -relief groove\
-                  -command { catch { ::acqapn::MajVideo $confCam(apn,video_scale) } }
+                  -command { catch { ::acqapn::MajVideo $confCam(coolpix,video_scale) } }
                pack $This.fra5.scale.opt_scale_variant -in $This.fra5.scale -anchor w -side right -padx 5
             pack $This.fra5.scale -in $This.fra5 -anchor center -side top -fill x
 
@@ -1471,9 +1465,9 @@
                   #--- Capture de la nouvelle variable affichee
                   set panneau(acqapn,variable_affichee) [$this.reglage.var get]
                   #--- Configuration de la liste des valeurs specifique de la variable
-                  $this.valeur.val configure -values $apn_base($panneau(acqapn,variable_affichee))
+                  $this.valeur.val configure -values $coolpix_base($panneau(acqapn,variable_affichee))
                   #--- Affichage de la valeur correspondante
-                  $this.valeur.val configure -text $confCam(apn,$panneau(acqapn,variable_affichee))
+                  $this.valeur.val configure -text $confCam(coolpix,$panneau(acqapn,variable_affichee))
                }
             pack $This.fra3.reglage -in $This.fra3 -anchor center -side top -fill x
 
@@ -1487,20 +1481,21 @@
                   #--- Construction du combobox des valeurs utilisables pour la valeur afichee
                   ::acqapn::SetComboBoxList $This.fra3.valeur.val "$panneau(acqapn,variable_affichee)"
                   pack $This.fra3.valeur.val -in $This.fra3.valeur -anchor center -side top -padx 2 -pady 4
-                  $This.fra3.valeur.val configure -text $confCam(apn,$panneau(acqapn,variable_affichee))
+                  $This.fra3.valeur.val configure -text $confCam(coolpix,$panneau(acqapn,variable_affichee))
                   $This.fra3.valeur.val configure -modifycmd {
                      set this "$audace(base).acqapn.fra3"
                      #--- Capture de la nouvelle variable modifiee
                      set panneau(acqapn,variable_affichee) [$this.reglage.var get]
                      #--- Recherche de la valeur litterale associee a l'index et mise a jour
-                     set confCam(apn,$panneau(acqapn,variable_affichee)) [$this.valeur.val get]
+                     set confCam(coolpix,$panneau(acqapn,variable_affichee)) [$this.valeur.val get]
                      ::acqapn::VerifData $panneau(acqapn,variable_affichee)
                   }
                pack $This.fra3.valeur -in $This.fra3 -anchor center -side top -fill x
 
                #--- Le zoom
-               LabelFrame $This.fra3.zoom -borderwidth 0 -relief groove -text $caption(acqapn,label,zoom) -side top -anchor center
-                  scale $This.fra3.zoom.opt_zoom_variant -variable confCam(apn,zoom)\
+               LabelFrame $This.fra3.zoom -borderwidth 0 -relief groove \
+                  -text $caption(acqapn,label,zoom) -side top -anchor center
+                  scale $This.fra3.zoom.opt_zoom_variant -variable confCam(coolpix,zoom)\
                      -orient horizontal -from $panneau(acqapn,L_focus) -to $panneau(acqapn,H_focus) -resolution 1\
                      -borderwidth 2 -width 5 -length 95 -state normal -relief groove\
                      -command { #a faire }
@@ -1510,7 +1505,7 @@
                #--- La correction d'exposition
                LabelFrame $This.fra3.exposure -borderwidth 0 -relief groove\
                   -text $caption(acqapn,label,exposition) -side top -anchor center
-                  scale $This.fra3.exposure.opt_exposure_variant -variable confCam(apn,exposure)\
+                  scale $This.fra3.exposure.opt_exposure_variant -variable confCam(coolpix,exposure)\
                      -orient horizontal -from -2.0 -to 2.0 -resolution 0.33\
                      -borderwidth 2 -width 5 -length 95 -state normal -relief groove\
                      -command { ::acqapn::Exposure "" }
