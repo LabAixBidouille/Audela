@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.9 2007-04-06 16:09:12 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.10 2007-05-16 18:15:08 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -13,7 +13,7 @@
 #    modpoi_wiz
 #    * A la fin :
 #      ** Les 10 coefficients du modele sont ecrits dans le fichier modpoi_res.txt
-#      ** Le fichier modpoi_test.txt est constitue de 6 lignes et comprend les
+#      ** Le fichier modpoi_test.txt est constitue de 8 lignes et comprend les 6
 #         colonnes suivantes :
 #         col-1 : angle horaire theorique (degres)
 #         col-2 : declinaison theorique (degres)
@@ -939,10 +939,10 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
    set decadt [mc_angle2dms $decadt 90 nozero 0 + string]
    #--- Stocke le résultat pour etoile $starindex
    set modpoi(star$starindex,starname0) "$starname"
-   set modpoi(star$starindex,rae)    $rae
-   set modpoi(star$starindex,dece)   $dece
-   set modpoi(star$starindex,raadt)  $raadt
-   set modpoi(star$starindex,decadt) $decadt
+   set modpoi(star$starindex,rae)       $rae
+   set modpoi(star$starindex,dece)      $dece
+   set modpoi(star$starindex,raadt)     $raadt
+   set modpoi(star$starindex,decadt)    $decadt
    set wiz wiz3
    #----------------------------------------
    #--- New toplevel
@@ -1526,7 +1526,7 @@ proc modpoi_coord { } {
    lappend modpoi(starname,choosen) "$modpoi(starname,actual)"
 }
 
-proc modpoi_catalogmean2apparent { rae dece equinox date } {
+proc modpoi_catalogmean2apparent { rae dece equinox date { dra_dan "" } { ddec_dan "" } } {
 #--- Input
 #--- rae,dece : coordinates J2000.0 (degrees)
 #--- Output
@@ -1542,7 +1542,7 @@ proc modpoi_catalogmean2apparent { rae dece equinox date } {
    #--- Aberration annuelle
    set radec [mc_aberrationradec annual [list $rae $dece] $date ]
    #--- Correction de precession
-   set radec [mc_precessradec $radec $equinox $date]
+   set radec [mc_precessradec $radec $equinox $date [list $dra_dan $ddec_dan]]
    #--- Correction de nutation
    set radec [mc_nutationradec $radec $date]
    #--- Aberration de l'aberration diurne
@@ -1674,21 +1674,59 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
    set modpoi(stars,names) ""
    set modpoi(stars,coords) ""
    if {$msg==1} {
-      set len [expr [llength $contents]-1]
-      for {set k 0} {$k<$len} {incr k} {
-         set thestar [lindex $contents $k]
-         set name "[string range $thestar 0 20]"
-         set name [string trim "$name"]
-         set designation "[string range $thestar 21 35]"
-         set designation [string trim "$designation"]
-         lappend modpoi(stars,names) "$name ($designation)"
-         set rah "[string range $thestar 36 37]"
-         set ram "[string range $thestar 39 40]"
-         set ras "[string range $thestar 42 45]"
-         set decd "[string range $thestar 50 52]"
-         set decm "[string range $thestar 54 55]"
-         set decs "[string range $thestar 57 58]"
-         lappend modpoi(stars,coords) "${rah}h${ram}m${ras}s ${decd}d${decm}m${decs}s"
+      if { $modpoi(stars,catalog) != "hip_1091_stars.txt" } {
+         #--- Determine le nombre d'elements de la liste
+         set len [expr [llength $contents]-1]
+         #--- Isole les enregistrements
+         for {set k 0} {$k<$len} {incr k} {
+            set thestar [lindex $contents $k]
+            set name "[string range $thestar 0 20]"
+            set name [string trim "$name"]
+            set designation "[string range $thestar 21 35]"
+            set designation [string trim "$designation"]
+            lappend modpoi(stars,names) "$name ($designation)"
+            set rah "[string range $thestar 36 37]"
+            set ram "[string range $thestar 39 40]"
+            set ras "[string range $thestar 42 45]"
+            set decd "[string range $thestar 50 52]"
+            set decm "[string range $thestar 54 55]"
+            set decs "[string range $thestar 57 58]"
+            lappend modpoi(stars,coords) "${rah}h${ram}m${ras}s ${decd}d${decm}m${decs}s"
+         }
+      } else {
+         #--- Determine le nombre d'elements de la liste du catalogue hip_1091_stars.txt
+         set long [llength $contents]
+         #--- Recherche le numero de la ligne de separation des commentaires avec le catalogue
+         set search "#------;----------;----------;-----;------;--------;--------;-------"
+         set ligne_en_trop "0"
+         for {set j 0} {$j <= $long} {incr j} {
+            set ligne [lindex $contents $j]
+            if { [string compare [lindex $ligne 0] "$search"]=="0"} {
+               set ligne_en_trop "1"
+               break
+            }
+         }
+         if { $ligne_en_trop == "1" } {
+            #--- Supprime les 'j' lignes de commentaires
+            set contents [lreplace $contents 0 $j]
+         }
+         #--- Determine le nombre d'elements de la nouvelle liste
+         set len [expr [llength $contents]-1]
+         #--- Isole les enregistrements
+         for {set k 0} {$k<$len} {incr k} {
+            set thestar [lindex $contents $k]
+            set name "[string range $thestar 0 5]"
+            set name [string trim "$name"]
+            lappend modpoi(stars,names) "HIP $name"
+            set rad "[string range $thestar 7 16]"
+            set decd "[string range $thestar 18 27]"
+            set decd_radian [ mc_angle2rad $decd ]
+            set dra_mas "[string range $thestar 42 49]"
+            set dra_dan [expr $dra_mas*1e-3/(3600.*cos($decd_radian))]
+            set ddec_mas "[string range $thestar 51 58]"
+            set ddec_dan [expr $ddec_mas*1e-3/3600.]
+            lappend modpoi(stars,coords) "${rad}d ${decd}d ${dra_dan} ${ddec_dan}"
+         }
       }
    } else {
       set modpoi(stars,names) { \
@@ -1782,7 +1820,9 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
       }
       set rae [lindex $star 0]
       set dece [lindex $star 1]
-      set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date]
+      set dra_dan [lindex $star 2]
+      set ddec_dan [lindex $star 3]
+      set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date $dra_dan $ddec_dan]
       set hauteur [lindex $listv 3]
       set dummy [list [lindex $radec_moon 0] [lindex $radec_moon 1] $rae $dece]
       set sepmoon [lindex [mc_anglesep $dummy] 0]
@@ -1807,7 +1847,7 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
          set starname "[lindex $modpoi(stars,names) $k]"
          set rae [lindex $star 0]
          set dece [lindex $star 1]
-         set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date]
+         set listv [modpoi_catalogmean2apparent $rae $dece J2000.0 $date $dra_dan $ddec_dan]
          set hauteur [lindex $listv 3]
          if {$starname=="$modpoi(starname,actual)"} {
             #--- Case :
@@ -1843,7 +1883,7 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
       incr k
    }
    set thestar [lindex $lcoords $kmin]
-   ##::console::affiche_resultat "$thestar\n"
+  ### ::console::affiche_resultat "$thestar\n"
    set modpoi(starname,actual) "[lindex [lindex $lcoords $kmin] 0]"
    return $thestar
 }
@@ -2459,7 +2499,11 @@ proc createDialog_name_modpoi { } {
 
    #--- Cree un frame pour y mettre le bouton et la zone a renseigner
    frame $This.frame1 -borderwidth 1 -relief raised
-      #--- Positionne le label et la zone a renseigner
+      #--- Positionne le label, la zone a renseigner et le bouton
+      label $This.frame1.lab1 -text "$caption(modpoi,name_modpoi)"
+      pack $This.frame1.lab1 -side left -padx 5 -pady 5
+      entry $This.frame1.ent1 -textvariable modpoi(Filename) -width 40
+      pack $This.frame1.ent1 -side left -padx 5 -pady 5
       button $This.frame1.explore -text "$caption(modpoi,parcourir)" -width 1 -command {
          #--- Fenetre parent
          set fenetre "$audace(base).modpoi"
@@ -2471,10 +2515,6 @@ proc createDialog_name_modpoi { } {
          set modpoi(Filename) [ file rootname [ file tail $modpoi(Filename) ] ]
       }
       pack $This.frame1.explore -side left -padx 5 -pady 5 -ipady 5
-      label $This.frame1.lab1 -text "$caption(modpoi,name_modpoi)"
-      pack $This.frame1.lab1 -side left -padx 5 -pady 5
-      entry $This.frame1.ent1 -textvariable modpoi(Filename) -width 40
-      pack $This.frame1.ent1 -side right -padx 5 -pady 5
    pack $This.frame1 -side top -fill both -expand 1
 
    #--- Cree un frame pour y mettre le bouton
