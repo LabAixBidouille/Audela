@@ -1,6 +1,6 @@
 #
 # Fichier : cartedicielv2.cap
-# Mise a jour $Id: carteducielv2.cap,v 1.6 2007-01-27 14:36:43 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.cap,v 1.7 2007-05-16 18:11:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -48,12 +48,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,site_web_ref)   "http://www.astrosurf.com/astropc/cartes/index.html"
    set caption(carteducielv2,attention)      "Attention"
    set caption(carteducielv2,option)         "Option :"
-   set caption(carteducielv2,creation)       "Création d'une carte de champ avec Carte Du Ciel"
-   set caption(carteducielv2,lance)          "Pour utiliser cette option, le logiciel Carte Du Ciel doit déjà être lancé.\n\nVoulez-vous lancer Carte du Ciel ?"
-   set caption(carteducielv2,verification)   "Vérifiez que Carte du Ciel V2 est installé et sélectionné\ndans le menu 'Configuration --> Carte'."
+   set caption(carteducielv2,creation)       "Création d'une carte de champ avec Cartes Du Ciel"
+   set caption(carteducielv2,lance)          "Pour utiliser cette option, le logiciel Cartes Du Ciel doit déjà être lancé.\n\nVoulez-vous lancer Cartes du Ciel ?"
+   set caption(carteducielv2,verification)   "Vérifiez que Cartes du Ciel V2 est installé et sélectionné\ndans le menu 'Configuration --> Carte'."
    set caption(carteducielv2,rate)           "Accès non possible"
    set caption(carteducielv2,gagne)          "Accès réussi"
-   set caption(carteducielv2,no_connect)     "La connexion à Carte du Ciel a échoué."
+   set caption(carteducielv2,no_connect)     "La connexion à Cartes du Ciel a échoué."
    set caption(carteducielv2,coord_no_found) "Coordonnées du centre de la carte introuvables."
 
 # *************** Version italienne ***************************
