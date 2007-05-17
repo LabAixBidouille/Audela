@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.56 2007-04-28 19:40:56 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.57 2007-05-17 08:14:53 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -220,17 +220,10 @@ namespace eval ::confVisu {
    #          -novisu : pas de rafraichissement
    #  retour: null
    #------------------------------------------------------------
-   proc autovisu { visuNo { force "-no" } { fileName "" } } {
+   proc autovisu { visuNo { force "-no" } } {
       variable private
       global conf
       global caption
-
-      #--- je mets a jour le nom du fichier dans le titre de la fenetre
-      if { $fileName != "" } {
-        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo) - $fileName"
-      } else {
-        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
-      }
 
       if { $force == "-novisu" } {
          return
@@ -318,8 +311,6 @@ namespace eval ::confVisu {
          ::confVisu::redrawCrosshair $visuNo
       }
 
-      #--- je mets a jour le nom du fichier (cette variable est surveillee par un listener)
-      set private($visuNo,lastFileName) "$fileName"
    }
 
    #
@@ -2082,6 +2073,43 @@ namespace eval ::confVisu {
       if { ![winfo exists $private($visuNo,hCrosshairV)] } {
          destroy $private($visuNo,hCrosshairV)
       }
+   }
+
+   #------------------------------------------------------------
+   #  setFileName
+   #    modifie le nom du fichier courant
+   #    et affiche le nom dans le titre
+   #  parametres :
+   #    visuNo : numero de la visu
+   #    fileName: nom du fichier
+   #------------------------------------------------------------
+   proc setFileName { visuNo fileName} {
+      variable private
+      global caption
+
+      #--- je mets a jour le nom du fichier (cette variable est surveillee par un listener)
+      set private($visuNo,lastFileName) "$fileName"
+
+      #--- je mets a jour le nom du fichier dans le titre de la fenetre
+      if { $fileName != "" } {
+        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo) - $fileName"
+      } else {
+        wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
+      }
+
+   }
+
+   #------------------------------------------------------------
+   #  getFileName
+   #     retourne le nom du fichier courant
+   #
+   #  parametres :
+   #    visuNo : numero de la visu
+   #------------------------------------------------------------
+   proc getFileName { visuNo } {
+      variable private
+
+      return $private($visuNo,lastFileName)
    }
 
 }

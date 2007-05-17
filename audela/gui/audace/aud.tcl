@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.68 2007-04-20 21:29:51 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.69 2007-05-17 08:14:53 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -999,8 +999,8 @@ namespace eval ::audace {
    #  autovisu
    #     rafraichit l'affichage
    #------------------------------------------------------------
-   proc autovisu { visuNo { force "-no" } { fileName "" } } {
-      ::confVisu::autovisu $visuNo $force $fileName
+   proc autovisu { { visuNo "1" } { force "-no" } } {
+      ::confVisu::autovisu $visuNo $force
    }
 
    #
