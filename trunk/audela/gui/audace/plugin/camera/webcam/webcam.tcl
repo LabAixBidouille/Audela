@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.7 2007-04-30 08:13:03 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.8 2007-05-17 16:58:53 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -104,87 +104,95 @@ proc ::webcam::fillConfigPage { frm camItem } {
    pack $frm.frame2 -side bottom -fill x -pady 2
 
    frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side left -fill both -expand 1
+   pack $frm.frame3 -in $frm.frame1 -side left -fill x -expand 1 -anchor nw
 
-   frame $frm.frame3a -borderwidth 0 -relief raised
-   pack $frm.frame3a -in $frm.frame1 -side left -fill both -expand 1
+   frame $frm.frame4 -borderwidth 0 -relief raised
+   pack $frm.frame4 -in $frm.frame1 -side left -fill none -anchor ne
 
-   frame $frm.frame4 -borderwidth 1 -relief solid
-   pack $frm.frame4 -in $frm.frame3a -side top -fill x
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame3 -side bottom -fill x -pady 5
+   frame $frm.frame5 -borderwidth 1 -relief solid
+   pack $frm.frame5 -in $frm.frame4 -side top -fill none -anchor e
 
    frame $frm.frame6 -borderwidth 0 -relief raised
    pack $frm.frame6 -in $frm.frame3 -side bottom -fill x -pady 5
 
    frame $frm.frame7 -borderwidth 0 -relief raised
-   pack $frm.frame7 -in $frm.frame3 -side left -fill x -pady 5
+   pack $frm.frame7 -in $frm.frame3 -side bottom -fill x -pady 5
 
    frame $frm.frame8 -borderwidth 0 -relief raised
    pack $frm.frame8 -in $frm.frame3 -side left -fill x -pady 5
 
    frame $frm.frame9 -borderwidth 0 -relief raised
-   pack $frm.frame9 -in $frm.frame4 -side top -fill x -pady 5
+   pack $frm.frame9 -in $frm.frame3 -side left -fill x -padx 20
 
    frame $frm.frame10 -borderwidth 0 -relief raised
-   pack $frm.frame10 -in $frm.frame4 -side top -fill x -pady 5
+   pack $frm.frame10 -in $frm.frame5 -side top -fill x -pady 5
 
    frame $frm.frame11 -borderwidth 0 -relief raised
-   pack $frm.frame11 -in $frm.frame4 -side top -fill x -pady 5
+   pack $frm.frame11 -in $frm.frame5 -side top -fill x -pady 5
 
    frame $frm.frame12 -borderwidth 0 -relief raised
-   pack $frm.frame12 -in $frm.frame4 -side top -fill x -pady 5
+   pack $frm.frame12 -in $frm.frame5 -side top -fill x -pady 5
 
    frame $frm.frame13 -borderwidth 0 -relief raised
-   pack $frm.frame13 -in $frm.frame3a -side bottom -fill x -pady 5
+   pack $frm.frame13 -in $frm.frame5 -side top -fill x -pady 5
 
    frame $frm.frame14 -borderwidth 0 -relief raised
-   pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
+   pack $frm.frame14 -in $frm.frame4 -side bottom -fill x -pady 5
+
+   frame $frm.frame15 -borderwidth 0 -relief raised
+   pack $frm.frame15 -in $frm.frame14 -side right -fill x -pady 5
 
    #--- Definition du canal USB
    label $frm.lab1 -text "$caption(webcam,canal_usb)"
-   pack $frm.lab1 -in $frm.frame7 -anchor center -side left -padx 10
+   pack $frm.lab1 -in $frm.frame8 -anchor center -side left -padx 10
 
    #--- Je constitue la liste des canaux USB
    set list_combobox [ list 0 1 2 3 4 5 6 7 8 9 ]
 
    #--- Choix du canal USB
    ComboBox $frm.port \
-      -width 7          \
+      -width 5        \
       -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
+      -relief sunken  \
+      -borderwidth 1  \
       -textvariable ::webcam::private($camItem,channel) \
-      -editable 0       \
+      -editable 0     \
       -values $list_combobox
-   pack $frm.port -in $frm.frame7 -anchor center -side left -padx 10
+   pack $frm.port -in $frm.frame8 -anchor center -side left -padx 0
 
    #--- Miroir en x et en y
    checkbutton $frm.mirx -text "$caption(webcam,miroir_x)" -highlightthickness 0 \
       -variable ::webcam::private($camItem,mirh)
-   pack $frm.mirx -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
+   pack $frm.mirx -in $frm.frame9 -anchor w -side top -padx 20 -pady 10
 
    checkbutton $frm.miry -text "$caption(webcam,miroir_y)" -highlightthickness 0 \
       -variable ::webcam::private($camItem,mirv)
-   pack $frm.miry -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
+   pack $frm.miry -in $frm.frame9 -anchor w -side top -padx 20 -pady 10
 
    #--- Boutons de configuration de la source et du format video
    button $frm.conf_webcam -text "$caption(webcam,conf_source)"
-   pack $frm.conf_webcam -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   pack $frm.conf_webcam -in $frm.frame7 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+
    button $frm.format_webcam -text "$caption(webcam,format_video)"
-   pack $frm.format_webcam -in $frm.frame5 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   pack $frm.format_webcam -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
    #--- Option longue pose avec lien au site web de Steve Chambers
    checkbutton $frm.longuepose -highlightthickness 0 -variable ::webcam::private($camItem,longuepose) \
       -command "::webcam::checkConfigLonguePose $camItem"
-   pack $frm.longuepose -in $frm.frame9 -anchor center -side left -pady 3
+   pack $frm.longuepose -in $frm.frame10 -anchor center -side left -pady 3
 
    label $frm.labURL_a -text "$caption(webcam,longuepose)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL_a -in $frm.frame9 -anchor center -side left -pady 3
+   pack $frm.labURL_a -in $frm.frame10 -anchor center -side left -pady 3
 
    label $frm.lab2 -text "$caption(webcam,longueposeport)"
-   pack $frm.lab2 -in $frm.frame10 -anchor center -side left -padx 3 -pady 5
+   pack $frm.lab2 -in $frm.frame11 -anchor center -side left -padx 3 -pady 5
+
+   #--- Bouton de configuration des liaisons
+   button $frm.configure -text "$caption(webcam,configurer)" -relief raised \
+      -command "::webcam::configureLinkLonguePose $camItem ; \
+         ::confLink::run ::webcam::private($camItem,longueposeport) \
+         { parallelport quickremote } \"- $caption(webcam,longuepose1) - $caption(webcam,camera)\""
+   pack $frm.configure -in $frm.frame11 -side left -pady 0 -ipadx 10 -ipady 1
 
    #--- Je constitue la liste des liaisons pour la longuepose
    set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" } ]
@@ -217,51 +225,44 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -textvariable ::webcam::private($camItem,longueposeport) \
       -values $list_combobox \
       -modifycmd "::webcam::configureLinkLonguePose $camItem"
-   pack $frm.lpport -in $frm.frame10 -anchor center -side right -padx 10 -pady 5
-
-   #--- Bouton de configuration des liaisons
-   button $frm.configure -text "$caption(webcam,configurer)" -relief raised \
-      -command "::webcam::configureLinkLonguePose $camItem ; \
-         ::confLink::run ::webcam::private($camItem,longueposeport) \
-         { parallelport quickremote } \"- $caption(webcam,longuepose1) - $caption(webcam,camera)\""
-   pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
+   pack $frm.lpport -in $frm.frame11 -anchor center -side right -padx 10 -pady 5
 
    label $frm.lab3 -text "$caption(webcam,longueposebit)"
-   pack $frm.lab3 -in $frm.frame11 -anchor center -side left -padx 3 -pady 5
+   pack $frm.lab3 -in $frm.frame12 -anchor center -side left -padx 3 -pady 5
 
    set list_combobox [ list 0 1 2 3 4 5 6 7 ]
    ComboBox $frm.longueposelinkbit \
-      -width 7          \
+      -width 5                     \
       -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
+      -relief sunken               \
+      -borderwidth 1               \
       -textvariable ::webcam::private($camItem,longueposelinkbit) \
-      -editable 0       \
+      -editable 0                  \
       -values $list_combobox
-   pack $frm.longueposelinkbit -in $frm.frame11 -anchor center -side right -padx 10 -pady 5
+   pack $frm.longueposelinkbit -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
 
    label $frm.lab4 -text "$caption(webcam,longueposestart)"
-   pack $frm.lab4 -in $frm.frame12 -anchor center -side left -padx 3 -pady 5
+   pack $frm.lab4 -in $frm.frame13 -anchor center -side left -padx 3 -pady 5
 
    entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($camItem,longueposestartvalue) -justify center
-   pack $frm.longueposestartvalue -in $frm.frame12 -anchor center -side right -padx 10 -pady 5
+   pack $frm.longueposestartvalue -in $frm.frame13 -anchor center -side right -padx 10 -pady 5
 
    #--- WebCam modifiee avec un capteur Noir et Blanc
    checkbutton $frm.ccd_N_B -text "$caption(webcam,ccd_N_B)" -highlightthickness 0 \
       -variable ::webcam::private($camItem,ccd_N_B) -command "::webcam::checkConfigCCDN&B $camItem"
-   pack $frm.ccd_N_B -in $frm.frame13 -anchor center -side left -pady 3 -pady 8
+   pack $frm.ccd_N_B -in $frm.frame14 -anchor center -side left -pady 3 -pady 8
 
    set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
    ComboBox $frm.dim_ccd_N_B \
-      -width 6         \
+      -width 5               \
       -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -editable 0       \
+      -relief sunken         \
+      -borderwidth 1         \
+      -editable 0            \
       -textvariable ::webcam::private($camItem,dim_ccd_N_B) \
       -modifycmd "::webcam::checkConfigCCDN&B $camItem" \
       -values $list_combobox
-   pack $frm.dim_ccd_N_B -in $frm.frame14 -anchor center -side right -padx 10 -pady 5
+   pack $frm.dim_ccd_N_B -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
 
    #--- Gestion des widgets actifs/inactifs
    ::webcam::ConfigWebCam $camItem
@@ -456,10 +457,10 @@ proc ::webcam::checkConfigCCDN&B { camItem } {
          } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/2''" } {
             set ::webcam::private($camItem,ccd) "ICX414AL-6"
          }
-         pack $frm.frame14 -in $frm.frame13 -side right -fill x -pady 5
+         pack $frm.frame15 -in $frm.frame14 -side right -fill x -pady 5
       } else {
          set ::webcam::private($camItem,ccd) "ICX098BQ-A"
-         pack forget $frm.frame14
+         pack forget $frm.frame15
       }
    }
 }

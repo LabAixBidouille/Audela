@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.1 2007-05-16 20:39:47 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.2 2007-05-17 16:57:53 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -82,10 +82,10 @@ proc ::cookbook::fillConfigPage { frm } {
    pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
 
    frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame3 -anchor n -side left -fill x -pady 18
+   pack $frm.frame4 -in $frm.frame3 -anchor center -side left -fill x
 
    frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -pady 15
+   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -padx 20
 
    frame $frm.frame6 -borderwidth 0 -relief raised
    pack $frm.frame6 -in $frm.frame1 -side top -fill x -expand 0
@@ -141,9 +141,9 @@ proc ::cookbook::fillConfigPage { frm } {
 
    #--- Parametrage du delai
    label $frm.lab3 -text "$caption(cookbook,delai)"
-   pack $frm.lab3 -in $frm.frame6 -anchor center -side left -padx 10
+   pack $frm.lab3 -in $frm.frame6 -anchor center -side left -padx 10 -pady 4
 
-   entry $frm.delai_a -textvariable ::cookbook::private(delai) -width 5 -justify center
+   entry $frm.delai_a -textvariable ::cookbook::private(delai) -width 7 -justify center
    pack $frm.delai_a -in $frm.frame6 -anchor center -side left
 
    #--- Site web officiel de la CB245

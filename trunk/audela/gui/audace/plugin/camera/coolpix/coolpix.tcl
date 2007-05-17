@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.1 2007-05-16 20:43:50 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.2 2007-05-17 16:58:07 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -81,14 +81,14 @@ proc ::coolpix::fillConfigPage { frm } {
 
    set list_combobox [ list 115200 57600 38400 19200 9600 ]
    ComboBox $frm.listeBaud \
-      -width 14            \
+      -width 8             \
       -height [ llength $list_combobox ] \
       -relief sunken       \
       -borderwidth 1       \
       -textvariable confCam(coolpix,baud) \
       -editable 0          \
       -values $list_combobox
-   pack $frm.listeBaud -in $frm.frame3 -anchor e -side left -padx 5 -pady 10
+   pack $frm.listeBaud -in $frm.frame3 -anchor e -side left -padx 0 -pady 10
 
    #--- Site web officiel de la Nikon CoolPix
    label $frm.lab103 -text "$caption(coolpix,titre_site_web)"

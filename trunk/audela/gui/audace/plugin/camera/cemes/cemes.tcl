@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.6 2007-05-16 20:38:19 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.7 2007-05-17 16:57:36 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -82,13 +82,13 @@ proc ::cemes::fillConfigPage { frm } {
    pack $frm.frame2 -side bottom -fill x -pady 2
 
    frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side bottom -fill both -expand 1
+   pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
 
    frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame1 -side left -fill x -expand 0
+   pack $frm.frame4 -in $frm.frame3 -side left -fill x -expand 0
 
    frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame1 -side left -fill x -expand 0
+   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -padx 20
 
    frame $frm.frame6 -borderwidth 0 -relief raised
    pack $frm.frame6 -in $frm.frame4 -side top -fill x -padx 10
@@ -97,7 +97,7 @@ proc ::cemes::fillConfigPage { frm } {
    pack $frm.frame7 -in $frm.frame4 -side top -fill x -padx 30
 
    frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -in $frm.frame3 -side top -fill both -expand 1
+   pack $frm.frame8 -in $frm.frame1 -side top -fill x -expand 0
 
    #--- Definition du refroidissement
    checkbutton $frm.cool -text "$caption(cemes,refroidissement)" -highlightthickness 0 \
@@ -117,11 +117,11 @@ proc ::cemes::fillConfigPage { frm } {
    #--- Miroir en x et en y
    checkbutton $frm.mirx -text "$caption(cemes,miroir_x)" -highlightthickness 0 \
       -variable ::cemes::private(mirh)
-   pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 10 -pady 10
+   pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
 
    checkbutton $frm.miry -text "$caption(cemes,miroir_y)" -highlightthickness 0 \
       -variable ::cemes::private(mirv)
-   pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 10 -pady 10
+   pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
 
    #--- Fonctionnement de l'obturateur
    label $frm.lab3 -text "$caption(cemes,fonc_obtu)"
@@ -129,14 +129,14 @@ proc ::cemes::fillConfigPage { frm } {
 
    set list_combobox [ list $caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro) ]
    ComboBox $frm.foncobtu \
-      -width 11         \
+      -width 11           \
       -height [ llength $list_combobox ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -editable 0       \
+      -relief sunken      \
+      -borderwidth 1      \
+      -editable 0         \
       -textvariable ::cemes::private(foncobtu) \
       -values $list_combobox
-   pack $frm.foncobtu -in $frm.frame8 -anchor nw -side left -padx 10 -pady 5
+   pack $frm.foncobtu -in $frm.frame8 -anchor nw -side left -padx 0 -pady 5
 
    #--- Site web officiel de la Cemes
    label $frm.lab103 -text "$caption(cemes,titre_site_web)"

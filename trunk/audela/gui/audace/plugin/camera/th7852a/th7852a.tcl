@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.1 2007-05-16 20:45:15 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.2 2007-05-17 16:58:29 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -76,26 +76,29 @@ proc ::th7852a::fillConfigPage { frm } {
    pack $frm.frame2 -side bottom -fill x -pady 2
 
    frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -anchor n -side top -fill x
+   pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
 
    frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame1 -anchor n -side top -fill both -expand 1
+   pack $frm.frame4 -in $frm.frame3 -anchor center -side left -fill x
 
-   #--- Miroir en x et en y
-   checkbutton $frm.mirx -text "$caption(th7852a,miroir_x)" -highlightthickness 0 \
-      -variable ::th7852a::private(mirh)
-   pack $frm.mirx -in $frm.frame3 -anchor w -side top -padx 10 -pady 10
-
-   checkbutton $frm.miry -text "$caption(th7852a,miroir_y)" -highlightthickness 0 \
-      -variable ::th7852a::private(mirv)
-   pack $frm.miry -in $frm.frame3 -anchor w -side top -padx 10 -pady 10
+   frame $frm.frame5 -borderwidth 0 -relief raised
+   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -padx 20
 
    #--- Definition du coefficient
    label $frm.lab2 -text "$caption(th7852a,coef)"
    pack $frm.lab2 -in $frm.frame4 -anchor n -side left -padx 10 -pady 12
 
    entry $frm.coef -textvariable ::th7852a::private(coef) -width 5 -justify center
-   pack $frm.coef -in $frm.frame4 -anchor n -side left -padx 10 -pady 12
+   pack $frm.coef -in $frm.frame4 -anchor n -side left -padx 0 -pady 12
+
+   #--- Miroir en x et en y
+   checkbutton $frm.mirx -text "$caption(th7852a,miroir_x)" -highlightthickness 0 \
+      -variable ::th7852a::private(mirh)
+   pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+
+   checkbutton $frm.miry -text "$caption(th7852a,miroir_y)" -highlightthickness 0 \
+      -variable ::th7852a::private(mirv)
+   pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
 
    #--- Site web officiel de la TH7852A d'Yves LATIL
    label $frm.lab103 -text "$caption(th7852a,titre_site_web)"
