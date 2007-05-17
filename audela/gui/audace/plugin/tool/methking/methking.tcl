@@ -1,8 +1,8 @@
 #
 # Fichier : methking.tcl
-# Description : panneau d'aide à la mise en station par la méthode de King.
+# Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.8 2007-04-14 08:31:50 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.9 2007-05-17 15:20:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -10,7 +10,7 @@
 #    initialise le namespace
 #============================================================
 namespace eval ::MethKing {
-    package provide methking 1.14
+    package provide methking 1.15
 
     # Chargement des captions pour recuperer le titre utilise par getPluginLabel
     source [ file join [file dirname [info script]] methking.cap ]
@@ -23,7 +23,7 @@ namespace eval ::MethKing {
     variable numero_version
 
     # Numéro de la version du logiciel
-    set numero_version v1.14
+    set numero_version v1.15
 
     # Vitesse de rotation de la Terre (2*pi/86164.0905 rd/s)
     set omega 7.2921159e-5
@@ -1524,8 +1524,8 @@ namespace eval ::MethKing {
             set numero_visu_2 [::visu::create $numero_buffer_2 $numero_buffer_2]
 
             # Effacement de l'image précédente
-            visu$numero_visu_1 disp 0 0
-            visu$numero_visu_2 disp 0 0
+            visu$numero_visu_1 disp
+            visu$numero_visu_2 disp
 
             # Mise en mémoire de ces infos (pour que ArretReglages puisse y accéder)
             set panneau(meth_king,numero_buffer_1) $numero_buffer_1
