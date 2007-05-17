@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.32 2007-05-16 20:46:27 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.33 2007-05-17 20:52:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,10 +28,8 @@ set caption(confcam,hisis)                      "Hi-SIS"
 set caption(confcam,sbig)                       "SBIG"
 set caption(confcam,starlight)                  "Starlight"
 set caption(confcam,kitty)                      "Kitty"
-set caption(confcam,scr1300xtc)                 "SCR1300XTC"
 set caption(confcam,dslr)                       "Digital Camera"
 set caption(confcam,andor)                      "Andor"
-set caption(confcam,fingerlakes)                "FLI"
 
 set caption(confcam,port)                       "Port"
 set caption(confcam,port_liaison)               "Port / Link"
@@ -137,9 +135,7 @@ set caption(confcam,port_hisis)                 "Hi-SIS Port - Model"
 set caption(confcam,port_sbig)                  "SBIG Port"
 set caption(confcam,port_starlight)             "Starlight Port - Model"
 set caption(confcam,port_kitty)                 "Kitty Port - Model"
-set caption(confcam,port_scr1300xtc)            "SCR1300XTC Port"
 set caption(confcam,port_andor)                 "Andor Port"
-set caption(confcam,port_fingerlakes)           "FLI Port"
 
 set caption(confcam,site_web_ref)               "Reference Web Site:"
 set caption(confcam,site_audine)                "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -147,10 +143,8 @@ set caption(confcam,site_hisis)                 "http://www.europixel.it/europix
 set caption(confcam,site_sbig)                  "http://www.sbig.com/"
 set caption(confcam,site_starlight)             "http://www.starlight-xpress.co.uk/index.htm"
 set caption(confcam,site_kitty)                 "http://perso.wanadoo.fr/bernard.dalstein/"
-set caption(confcam,site_scr1300xtc)            "http://synonyme.nerim.net/imagerie/HomePage.html"
 set caption(confcam,site_dslr)                  "http://gphoto.sourceforge.net/"
 set caption(confcam,site_andor)                 "http://www.andor-tech.com"
-set caption(confcam,site_fingerlakes)           "http://www.fli-cam.com"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -172,10 +166,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,sbig)                    "SBIG"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "APN"
    set caption(confcam,andor)                   "Andor"
-   set caption(confcam,fingerlakes)             "FLI"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Liaison"
@@ -281,9 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_sbig)               "Port SBIG"
    set caption(confcam,port_starlight)          "Port Starlight"
    set caption(confcam,port_kitty)              "Port Kitty"
-   set caption(confcam,port_scr1300xtc)         "Port SCR1300XTC"
    set caption(confcam,port_andor)              "Port Andor"
-   set caption(confcam,port_fingerlakes)        "Port FLI"
 
    set caption(confcam,site_web_ref)            "Site Web de référence :"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/index_fr.htm"
@@ -291,10 +281,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_fingerlakes)        "http://www.fli-cam.com"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -316,10 +304,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,sbig)                    "SBIG"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Fotocamera digitale"
    set caption(confcam,andor)                   "Andor"
-   set caption(confcam,fingerlakes)             "FLI"
 
    set caption(confcam,port)                    "Porte"
    set caption(confcam,port_liaison)            "Porte / Collegamento"
@@ -425,9 +411,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_sbig)               "Porta SBIG"
    set caption(confcam,port_starlight)          "Porta Starlight"
    set caption(confcam,port_kitty)              "Porta Kitty"
-   set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
-   set caption(confcam,port_fingerlakes)        "Porta FLI"
 
    set caption(confcam,site_web_ref)            "Sito Web di riferimento:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -435,10 +419,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_fingerlakes)        "http://www.fli-cam.com"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -460,10 +442,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,sbig)                    "SBIG"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Cámara digital"
    set caption(confcam,andor)                   "Andor"
-   set caption(confcam,fingerlakes)             "FLI"
 
    set caption(confcam,port)                    "Puerto"
    set caption(confcam,port_liaison)            "Puerto / Enlace"
@@ -569,9 +549,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_sbig)               "Puerto SBIG"
    set caption(confcam,port_starlight)          "Puerto Starlight"
    set caption(confcam,port_kitty)              "Puerto Kitty"
-   set caption(confcam,port_scr1300xtc)         "Puerto SCR1300XTC"
    set caption(confcam,port_andor)              "Puerto Andor"
-   set caption(confcam,port_fingerlakes)        "Puerto FLI"
 
    set caption(confcam,site_web_ref)            "Sitio Web de referencia:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -579,10 +557,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_fingerlakes)        "http://www.fli-cam.com"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -604,10 +580,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,sbig)                    "SBIG"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Digital Fotoapparat"
    set caption(confcam,andor)                   "Andor"
-   set caption(confcam,fingerlakes)             "FLI"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -713,9 +687,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_sbig)               "SBIG Port"
    set caption(confcam,port_starlight)          "Starlight Port"
    set caption(confcam,port_kitty)              "Kitty Port"
-   set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
-   set caption(confcam,port_fingerlakes)        "FLI Port"
 
    set caption(confcam,site_web_ref)            "Referenz Webseite:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -723,10 +695,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_fingerlakes)        "http://www.fli-cam.com"
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -748,10 +718,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,sbig)                    "SBIG"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Digital Câmara"
    set caption(confcam,andor)                   "Andor"
-   set caption(confcam,fingerlakes)             "FLI"
 
    set caption(confcam,port)                    "Porta"
    set caption(confcam,port_liaison)            "Porta / Ligação"
@@ -857,9 +825,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_sbig)               "Porta SBIG"
    set caption(confcam,port_starlight)          "Porta modelo - Starlight"
    set caption(confcam,port_kitty)              "Porta modelo - Kitty"
-   set caption(confcam,port_scr1300xtc)         "Porta SCR1300XTC"
    set caption(confcam,port_andor)              "Porta Andor"
-   set caption(confcam,port_fingerlakes)        "Porta FLI"
 
    set caption(confcam,site_web_ref)            "Site Web de referência:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -867,10 +833,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_fingerlakes)        "http://www.fli-cam.com"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -892,10 +856,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,sbig)                    "SBIG"
    set caption(confcam,starlight)               "Starlight"
    set caption(confcam,kitty)                   "Kitty"
-   set caption(confcam,scr1300xtc)              "SCR1300XTC"
    set caption(confcam,dslr)                    "Digital Camera"
    set caption(confcam,andor)                   "Andor"
-   set caption(confcam,fingerlakes)             "FLI"
 
    set caption(confcam,port)                    "Port"
    set caption(confcam,port_liaison)            "Port / Link"
@@ -1001,9 +963,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,port_sbig)               "SBIG Port"
    set caption(confcam,port_starlight)          "Starlight Port - Model"
    set caption(confcam,port_kitty)              "Kitty Port - Model"
-   set caption(confcam,port_scr1300xtc)         "SCR1300XTC Port"
    set caption(confcam,port_andor)              "Andor Port"
-   set caption(confcam,port_fingerlakes)        "FLI Port"
 
    set caption(confcam,site_web_ref)            "Reference Web Site:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
@@ -1011,10 +971,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_sbig)               "http://www.sbig.com/"
    set caption(confcam,site_starlight)          "http://www.starlight-xpress.co.uk/index.htm"
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
-   set caption(confcam,site_scr1300xtc)         "http://synonyme.nerim.net/imagerie/HomePage.html"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
-   set caption(confcam,site_fingerlakes)        "http://www.fli-cam.com"
 
 }
 
