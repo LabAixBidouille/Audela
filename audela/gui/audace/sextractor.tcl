@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sextractor.tcl,v 1.4 2006-11-11 10:29:25 robertdelmas Exp $
+# Mise a jour $Id: sextractor.tcl,v 1.5 2007-05-18 16:29:56 robertdelmas Exp $
 #
 
 global audace
@@ -268,11 +268,11 @@ proc sextractor { args } {
    global audace
 
    set pathbin .
-   catch {set pathbin "$audace(rep_gui)/../bin"}
-   set exefile "${pathbin}/sextractor.exe"
+   catch { set pathbin [ file join $audace(rep_gui) .. bin ] }
+   set exefile [ file join ${pathbin} sextractor.exe ]
    set k [file exists "$exefile"]
    if {$k==0} {
-      set exefile "${pathbin}/sex.exe"
+      set exefile [ file join ${pathbin} sex.exe ]
       set k [file exists "$exefile"]
    }
    if {$k==0} {
@@ -293,12 +293,12 @@ proc sextractor { args } {
 
    #--- Creation des fichiers de configuration s'ils n'existent pas deja
    if { [ file exist [ file join ${audace(rep_gui)} config.param ] ] == "0" } {
-      sextractor_config_param "${audace(rep_gui)}/config.param"
+      sextractor_config_param [ file join ${audace(rep_gui)} config.param ]
    }
    if { [ file exist [ file join ${audace(rep_gui)} config.sex ] ] == "0" } {
-      sextractor_config_sex "${audace(rep_gui)}/config.sex"
+      sextractor_config_sex [ file join ${audace(rep_gui)} config.sex ]
    }
    if { [ file exist [ file join ${audace(rep_gui)} default.nnw ] ] == "0" } {
-      sextractor_default_nnw "${audace(rep_gui)}/default.nnw"
+      sextractor_default_nnw [ file join ${audace(rep_gui)} default.nnw ]
    }
 
