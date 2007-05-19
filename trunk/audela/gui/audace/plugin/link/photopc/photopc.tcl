@@ -2,12 +2,12 @@
 # Fichier : photopc.tcl
 # Description : Interface de liaison PhotoPC
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: photopc.tcl,v 1.5 2007-04-07 00:35:18 michelpujol Exp $
+# Mise a jour $Id: photopc.tcl,v 1.6 2007-05-19 10:40:01 robertdelmas Exp $
 #
-
 
 namespace eval photopc {
    package provide photopc 1.0
+
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] photopc.cap ]
 }
@@ -22,7 +22,7 @@ proc ::photopc::configureDriver { } {
    global audace
 
    #--- Affiche la liaison
-   ###photopc::run "$audace(base).photopc"
+  ### photopc::run "$audace(base).photopc"
 
    return
 }
@@ -71,10 +71,9 @@ proc ::photopc::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::photopc::getPluginProperty { propertyName } {
    switch $propertyName {
-      
+
    }
 }
-
 
 #------------------------------------------------------------
 #  fillConfigPage
@@ -84,17 +83,19 @@ proc ::photopc::getPluginProperty { propertyName } {
 #------------------------------------------------------------
 proc ::photopc::fillConfigPage { frm } {
    variable widget
-   global caption
 
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
-#  getPluginType 
+#  getPluginType
 #     retourne le type de driver
 #------------------------------------------------------------
-proc ::photopc::getPluginType  { } {
+proc ::photopc::getPluginType { } {
    return "link"
 }
 
@@ -160,12 +161,11 @@ proc ::photopc::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-#  init (est lance automatiquement au chargement de ce fichier tcl)
+#  initPlugin (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #------------------------------------------------------------
-proc ::photopc::initPlugin  { } {
+proc ::photopc::initPlugin { } {
    variable private
-
 
    #--- je fixe le nom generique de la liaison  identique au namespace
    set private(genericName) "photopc"
@@ -200,7 +200,7 @@ proc ::photopc::isReady { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return nothing

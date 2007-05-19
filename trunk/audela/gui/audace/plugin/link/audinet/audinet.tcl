@@ -2,14 +2,14 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.9 2007-04-07 00:35:17 michelpujol Exp $
+# Mise a jour $Id: audinet.tcl,v 1.10 2007-05-19 10:38:07 robertdelmas Exp $
 #
 
 namespace eval audinet {
    package provide audinet 1.0
+
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] audinet.cap ]
-   
 }
 
 #------------------------------------------------------------
@@ -22,7 +22,7 @@ proc ::audinet::configureDriver { } {
    global audace
 
    #--- Affiche la liaison
-   ###::audinet::run "$audace(base).audinet"
+  ### ::audinet::run "$audace(base).audinet"
 
    return
 }
@@ -50,7 +50,7 @@ proc ::audinet::confToWidget { } {
 }
 
 #------------------------------------------------------------
-#  create
+#  createPluginInstance
 #     demarre la liaison
 #
 #  return nothing
@@ -61,7 +61,7 @@ proc ::audinet::createPluginInstance { linkLabel deviceId usage comment } {
 }
 
 #------------------------------------------------------------
-#  delete
+#  deletePluginInstance
 #     arrete la liaison et libere les ressources occupees
 #
 #  return nothing
@@ -103,7 +103,6 @@ proc ::audinet::getPluginType { } {
    return "link"
 }
 
-
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
@@ -112,9 +111,7 @@ proc ::audinet::getPluginType { } {
 #------------------------------------------------------------
 proc ::audinet::fillConfigPage { frm } {
    variable widget
-   global audace
-   global caption
-   global color
+   global audace caption color
 
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
@@ -253,6 +250,9 @@ proc ::audinet::fillConfigPage { frm } {
    label $frm.labURL -text "$caption(audinet,site_audinet)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame6 -side top -fill x -pady 2
 
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    bind $frm.labURL <ButtonPress-1> {
       set filename "$caption(audinet,site_audinet)"
@@ -317,14 +317,13 @@ proc ::audinet::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-#  init (est lance automatiquement au chargement de ce fichier tcl)
+#  initPlugin (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #
 #  return namespace name
 #------------------------------------------------------------
 proc ::audinet::initPlugin { } {
    variable private
-
 
    #--- je fixe le nom generique de la liaison  identique au namespace
    set private(genericName) "audinet"
@@ -343,8 +342,7 @@ proc ::audinet::initPlugin { } {
 #  return rien
 #------------------------------------------------------------
 proc ::audinet::initConf { } {
-   global conf
-   global caption
+   global conf caption
 
    if { ! [ info exists conf(audinet,host) ] }         { set conf(audinet,host)         "168.254.216.36" }
    if { ! [ info exists conf(audinet,ipsetting) ] }    { set conf(audinet,ipsetting)    "0" }
@@ -371,7 +369,7 @@ proc ::audinet::isReady { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return nothing
@@ -383,7 +381,7 @@ proc ::audinet::selectConfigLink { linkLabel } {
 }
 
 #------------------------------------------------------------
-#  testping ip
+#  testping
 #     teste la connexion d'un appareil
 #------------------------------------------------------------
 proc ::audinet::testping { ip } {
@@ -391,7 +389,7 @@ proc ::audinet::testping { ip } {
 
    set res  [ ::ping $ip ]
    set res1 [ lindex $res 0 ]
-   set res2 [ lindex $res 1 ]
+  set res2 [ lindex $res 1 ]
    if { $res1 == "1" } {
         set tres1 "$caption(audinet,appareil_connecte) $ip"
    } else {
@@ -422,5 +420,4 @@ proc ::audinet::widgetToConf { } {
    set conf(audinet,focuser_addr) $widget(audinet,focuser_addr)
    set conf(audinet,focuser_bit)  $widget(audinet,focuser_bit)
 }
-
 

@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.15 2007-04-23 15:44:11 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.16 2007-05-19 10:38:34 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -112,9 +112,7 @@ proc ::ethernaude::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::ethernaude::fillConfigPage { frm } {
    variable widget
-   global audace
-   global caption
-   global color
+   global audace caption color
 
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
@@ -197,6 +195,9 @@ proc ::ethernaude::fillConfigPage { frm } {
    label $frm.labURL -text "$caption(ethernaude,site_ethernaude)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame6 -side top -fill x -pady 2
 
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    bind $frm.labURL <ButtonPress-1> {
       set filename "$caption(ethernaude,site_ethernaude)"
@@ -238,6 +239,7 @@ proc ::ethernaude::getHelp { } {
 #------------------------------------------------------------
 proc ::ethernaude::getPluginProperty { propertyName } {
    switch $propertyName {
+
    }
 }
 
@@ -295,9 +297,9 @@ proc ::ethernaude::getSelectedLinkLabel { } {
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #------------------------------------------------------------
-proc ::ethernaude::initPlugin  { } {
-   global audace
+proc ::ethernaude::initPlugin { } {
    variable private
+   global audace
 
    #--- Je fixe le nom generique de la liaison identique au namespace
    set private(genericName) "ethernaude"
@@ -323,10 +325,10 @@ proc ::ethernaude::initPlugin  { } {
 proc ::ethernaude::initConf { } {
    global conf
 
-   if { ! [ info exists conf(ethernaude,host) ] }      { set conf(ethernaude,host)       "169.254.164.70" }
-   if { ! [ info exists conf(ethernaude,ipsetting) ] } { set conf(ethernaude,ipsetting)  "0" }
-   if { ! [ info exists conf(ethernaude,debug) ] }     { set conf(ethernaude,debug)      "0" }
-   if { ! [ info exists conf(ethernaude,canspeed) ] }  { set conf(ethernaude,canspeed)   "7" }
+   if { ! [ info exists conf(ethernaude,host) ] }      { set conf(ethernaude,host)      "169.254.164.70" }
+   if { ! [ info exists conf(ethernaude,ipsetting) ] } { set conf(ethernaude,ipsetting) "0" }
+   if { ! [ info exists conf(ethernaude,debug) ] }     { set conf(ethernaude,debug)     "0" }
+   if { ! [ info exists conf(ethernaude,canspeed) ] }  { set conf(ethernaude,canspeed)  "7" }
 
    return
 }
@@ -342,7 +344,7 @@ proc ::ethernaude::isReady { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return nothing
@@ -354,11 +356,11 @@ proc ::ethernaude::selectConfigLink { linkLabel } {
 }
 
 #------------------------------------------------------------
-#  testping ip
+#  testping
 #     teste la connexion d'un appareil
 #------------------------------------------------------------
 proc ::ethernaude::testping { ip } {
-   global caption
+  global caption
 
    set res  [ ::ping $ip ]
    set res1 [ lindex $res 0 ]
