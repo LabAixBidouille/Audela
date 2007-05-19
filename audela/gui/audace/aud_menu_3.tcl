@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.28 2007-05-15 21:54:42 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.29 2007-05-19 23:28:25 michelpujol Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2606,7 +2606,7 @@ namespace eval ::traiteImage {
             }
          }
          "rvb2r+v+b" {
-            set catchError [ catch {
+           set catchError [ catch {
                #--- Test sur l'image RVB
                if { $traiteImage(rvbWindow_rvb_filename) == "" } {
                   tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
@@ -2623,6 +2623,11 @@ namespace eval ::traiteImage {
                }
                #---
                buf$audace(bufNo) load [ file join $audace(rep_images) $traiteImage(rvbWindow_rvb_filename) ]
+               #--- je fixe NAXIS=2
+               set kwdNaxis [buf$audace(bufNo) getkwd NAXIS]
+               set kwdNaxis [lreplace $kwdNaxis 1 1 "2"]
+               buf$audace(bufNo) setkwd $kwdNaxis
+               #---j'enregistre les 3 plans dans 3 fichiers separes
                buf$audace(bufNo) setkwd [ list RGBFILTR R string "Color extracted (Red)" "" ]
                buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)1 ] 3 1 1
                buf$audace(bufNo) setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
@@ -2630,6 +2635,9 @@ namespace eval ::traiteImage {
                buf$audace(bufNo) setkwd [ list RGBFILTR B string "Color extracted (Blue)" "" ]
                buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)3 ] 3 3 3
                buf$audace(bufNo) delkwd "RGBFILTR"
+               #--- je restaure NAXIS=3
+               set kwdNaxis [lreplace $kwdNaxis 1 1 "3"]
+               buf$audace(bufNo) setkwd $kwdNaxis
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
             if { $catchError == "1" } {
