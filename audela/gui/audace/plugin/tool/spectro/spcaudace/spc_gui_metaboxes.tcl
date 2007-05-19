@@ -2279,18 +2279,19 @@ namespace eval ::param_spc_audace_calibreprofil {
       #--- Mise à vide des abscisses dont les lambda sont vides :
       set i 0
       set listex [ list $x1 $x2 $x3 $x4 $x5 $x6 ]
-      #foreach x $listex lamb $listel {
-      #    if { $lamb=="" } {
-      #        set listex [ lreplace $listex $i $i "" ]
-      #    }
-      #    incr i
-      #}
       
       #--- Tri des deux listes x et Lmabda et reaffectation :
       #-- Création de la liste contenant les couples (x,Lambda) :
+      set doubleliste [ list ]
       foreach x $listex lamb $listel {
-        lappend doubleliste [ list $x $lamb ]
+	  if { $lamb == "" } {
+	      set x ""
+	      lappend doubleliste [ list $x $lamb ]
+	  } else {
+	      set doubleliste [ linsert $doubleliste 0 [ list $x $lamb ] ]
+	  }
       }
+
       #-- Réaffectation et initialisation à "" des abscisses Xi non utilisées :
       set i 1
       foreach couple $doubleliste {
@@ -2303,7 +2304,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 	  }
 	  incr i
       }
- 
+
 
       #--- Calibration associée au nombre de raies données :
       if { $x1!="" && $x2!="" && $x3=="" } {
@@ -2348,7 +2349,7 @@ namespace eval ::param_spc_audace_calibreprofil {
 	  destroy .param_spc_audace_calibreprofil
 	  return $spcalibre
       } else {
-	  tk_messageBox -title "Erreur de saisie" -icon error -message "Nombre de raies inssufidant pour effectuer une calibration"
+	  tk_messageBox -title "Erreur de saisie" -icon error -message "Nombre de raies insufisant pour effectuer une calibration"
 	  return 0
       }
   }
@@ -3508,7 +3509,7 @@ namespace eval ::param_spc_audace_traite2srinstrum {
       set audace(param_spc_audace,traite2srinstrum,config,smooth) "n"
       set audace(param_spc_audace,traite2srinstrum,config,norma) "n"
       set audace(param_spc_audace,traite2srinstrum,config,offset) "none"
-      set audace(param_spc_audace,traite2srinstrum,config,ejbad) "o"
+      set audace(param_spc_audace,traite2srinstrum,config,ejbad) "n"
       set audace(param_spc_audace,traite2srinstrum,config,ejtilt) "n"
       set audace(param_spc_audace,traite2srinstrum,config,methmasters) "o"
       set audace(param_spc_audace,traite2srinstrum,config,export_png) "n"

@@ -383,10 +383,17 @@ proc spc_dat2fits { args } {
 		set intensite 0
 	    }
 	}
+	#-- Détermine la première longueur d'onde :
+	foreach abscisse $abscisses {
+	    if { [ regexp {([0-9]+\.*[0-9]*)} $abscisse match mabscisse ] } {
+		set xdepart $mabscisse
+		break
+	    }
+	}
 
 
 	#--- Calcul du polynôme de la loi de dispersion :
-	set xdepart [ expr 1.0*[lindex $abscisses 0] ]
+	#set xdepart [ expr 1.0*[lindex $abscisses 0] ]
 	if { $xdepart == 1.0 } {
 	    set dispersion 1.
 	} else {
@@ -403,21 +410,27 @@ proc spc_dat2fits { args } {
 	    #::console::affiche_resultat "c=[ expr $spc_c*100000000 ], d=[ expr $spc_d*100000000 ]\n"
 	}
 
-        #--- Calcul des coéfficients de linéarisation de la calibration a1x+b1 :
+        #--- Calcul des coéfficients de la calibration linéarisée a1+b1*x :
 	for {set x 20} {$x<=[ expr $naxis1-10 ]} { set x [ expr $x+20 ]} {
             lappend xpos $x
             #lappend lambdaspoly [ expr $spc_a+$spc_b*$x+$spc_c*$x*$x ]
             lappend lambdaspoly [ lindex $abscisses [ expr $x-1] ]
         }
-
+	#- b1+a1*x :
+	#set listevals [ list $xpos $lambdaspoly ]
+        #set coeffsdeg1 [ spc_reglin $listevals ]
+        #set a1 [ lindex $coeffsdeg1 0 ]
+        #set b1 [ lindex $coeffsdeg1 1 ]
+	#set dispersion $a1
 
         #-- Régression linéaire sur les abscisses choisies et leur lambda issues du polynome :
-	set listevals [ list $xpos $lambdaspoly ]
-        set coeffsdeg1 [ spc_reglin $listevals ]
-        set a1 [ lindex $coeffsdeg1 0 ]
-        set b1 [ lindex $coeffsdeg1 1 ]
+	#- 070512 :
+	set coeffsdeg1 [ lindex [ spc_ajustdeg1 $abscisses_lin $abscisses 1 ] 0 ]
+	set a1 [ lindex $coeffsdeg1 0 ]
+	set b1 [ lindex $coeffsdeg1 1 ]
+	::console::affiche_resultat "$a1 ; $b1 \n"
         set lambda0deg1 [ expr $a1+$b1 ]
-	set dispersion $a1
+	set dispersion $b1
 
 
 	#------- Affecte une valeur aux mots cle liés à la spectroscopie ----------
@@ -430,8 +443,8 @@ proc spc_dat2fits { args } {
 	    buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
 	} else {
 	    buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
-	    buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart $nbunit "" "Angstrom"]
-	    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion $nbunit "" "Angstrom/pixel"]
+	    buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart $nbunit "" "angstrom"]
+	    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion $nbunit "" "angstrom/pixel"]
 	    buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
 	    #-- Corrdonnée représentée sur l'axe 1 (ie X) :
 	    buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
@@ -679,11 +692,7 @@ proc spc_fits2dat { args } {
      }
      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 	 set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
-     }
-     if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
 	 set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
-     }
-     if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
 	 set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
      }
      if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
@@ -739,7 +748,7 @@ proc spc_fits2dat { args } {
 		 #-- Une liste commence à 0 ; Un vecteur fits commence à 1
 		 for {set k 1} {$k<=$naxis1} {incr k} {
 		     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
-		     set lambda [ expr $lambda0+($k)*$dispersion*1.0 ]
+		     set lambda [ expr $lambda0+($k-1)*$dispersion*1.0 ]
 		     #-- Lit la valeur des elements du fichier fit
 		     set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
 		     ##lappend profilspc(intensite) $intensite
@@ -778,8 +787,8 @@ proc spc_fits2dat { args } {
 		 #-- Calibration linéaire :
 		 #-- Une liste commence à 0 ; Un vecteur fits commence à 1
 		 for {set k 1} {$k<=$naxis1} {incr k} {
-		     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
-		     set lambda [ expr $lambda0+($k)*$dispersion*1.0 ]
+		     #-- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde (attention : lambda0=crval!=a+b) :
+		     set lambda [ expr $lambda0+($k-1)*$dispersion*1.0 ]
 		     #-- Lit la valeur des elements du fichier fit
 		     set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1 ] ] 1 ]
 		     ##lappend profilspc(intensite) $intensite
@@ -842,85 +851,77 @@ proc spc_data2fits { args } {
 	return 0
     }
 
-	set abscisses [lindex $coordonnees 0]
-	set intensites [lindex $coordonnees 1]
-	set len [llength $abscisses]
+      set abscisses [lindex $coordonnees 0]
+      set intensites [lindex $coordonnees 1]
+      set naxis1 [llength $abscisses]
+      
+      #--- Création du fichier fits
+      buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+      buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+      buf$audace(bufNo) setkwd [ list "NAXIS1" $naxis1 int "" "" ]
+      buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
+      #-- Corrdonnée représentée sur l'axe 1 (ie X) :
+      buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
+      #-- Mots clefs du polynôme :
+      
+      #--- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné
+      set xdepart [expr 1.0*[lindex $abscisses 0] ]
+      buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart $nbunit "" "angstrom"]
+      
+      
+      #--- Calcul de la dispersion par régression linéaire :
+      for {set k 1} {$k<=$naxis1} {incr k} {
+	  lappend xpos $k
+      }
+      set listevals [ list $xpos $abscisses ]
+      set coeffsdeg1 [ spc_reglin $listevals ]
+      set dispersion [ lindex $coeffsdeg1 0 ]
+      #-- Mise à jour fichier fits
+      buf$audace(bufNo) setkwd [list "CDELT1" $dispersion $nbunit "" "angstrom/pixel"]
+      
+      #--- Calcul de la laoi de calibration non-linéaire :
+      set results [ spc_ajustdeg2 $xpos $abscisses 1 ]
+      set coeffs [ lindex $results 0 ]
+      set chi2 [ lindex $results 1 ]
+      set spc_d 0.
+      set spc_c [ lindex $coeffs 2 ]
+      set spc_b [ lindex $coeffs 1 ]
+      set spc_a [ lindex $coeffs 0 ]
+      set lambda0deg3 [ expr $spc_a+$spc_b+$spc_c+$spc_d ]
+      set rms [ expr $lambda0deg3*sqrt($chi2/$naxis1) ]
+      #-- Mise a jour des mots clef :
+      if { [ expr abs($spc_a) ] >=0.00000001 } {
+	  buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
+	  buf$audace(bufNo) setkwd [list "SPC_A" $spc_a $nbunit "" "angstrom"]
+	  buf$audace(bufNo) setkwd [list "SPC_B" $spc_b $nbunit "" "angstrom/pixel"]
+	  buf$audace(bufNo) setkwd [list "SPC_C" $spc_c $nbunit "" "angstrom.angstrom/pixel.pixel"]
+	  buf$audace(bufNo) setkwd [list "SPC_D" $spc_d $nbunit "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
+      }
 
-	#--- Création du fichier fits
-	buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
-	buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
-	buf$audace(bufNo) setkwd [ list "NAXIS1" $len int "" "" ]
-	# buf$audace(bufNo) setkwd [list "NAXIS2" 1 int "" ""]
-
-	#--- Valeur minimale de l'abscisse (xdepart) : =0 si profil non étalonné
-	set xdepart [expr 1.0*[lindex $abscisses 0] ]
-	buf$audace(bufNo) setkwd [list "CRVAL1" $xdepart $nbunit "" "Angstrom"]
-
-	#--- Calcul d'une dispersion moyenne :
-	set l1 [lindex $abscisses 1]
-	set l2 [lindex $abscisses 2]
-	set disp1 [expr 1.0*abs($l2-$l1)]
-	set l1 [lindex $abscisses [expr int($len/2)] ]
-	set l2 [lindex $abscisses [expr int($len/2)+1] ]
-	set disp2 [expr 1.0*abs($l2-$l1)]
-	if { [ expr abs($disp2- $disp1) ] <= $precision } {
-	    #-- Mesure de la dispersion suposée linéaire
-	    set dispersion $disp1
-	} else {
-	    #-- Mesure de la dispersion suposée non-linéaire
-	    #set dispersion [spc_dispersion_moy $abscisses]
-	    set l1 [lindex $abscisses 1]
-	    set l2 [lindex $abscisses [expr int($len/10)]]
-	    set l3 [lindex $abscisses [expr int(2*$len/10)]]
-	    set l4 [lindex $abscisses [expr int(3*$len/10)]]
-	    set dl1 [expr ($l2-$l1)/(int($len/10)-1)]
-	    set dl2 [expr ($l4-$l3)/(int($len/10)-1)]
-	    set dispersion [expr 0.5*($dl2+$dl1)]
-	    #set dispersion $disp1
-	}
-
-	#--- Calcul de la dispersion par régression linéaire :
-	for {set k 1} {$k<=$len} {incr k} {
-	    lappend xpos $k
-	}
-	set listevals [ list $abscisses $xpos ]
-	set coeffsdeg1 [ spc_reglin $listevals ]
-	set dispersion [ expr 1.0/[ lindex $coeffsdeg1 0 ] ]
-
-	
-	#--- Mise à jour fichier fits
-	buf$audace(bufNo) setkwd [list "CDELT1" $dispersion $nbunit "" "Angstrom/pixel"]
-
-	#--- Type de dispersion : LINEAR, NONLINEAR
-	#if { [expr abs($dl2-$dl1)] <= $precision } {
-	#    buf$audace(bufNo) setkwd [list "CTYPE1" "LINEAR" string "" ""]
-	#} elseif { [expr abs($dl2-$dl1)] > $precision } {
-	#    buf$audace(bufNo) setkwd [list "CTYPE1" "NONLINEAR" string "" ""]
-	#}
-
-	#--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
-	# Une liste commence à 0 ; Un vecteur fits commence à 1
-	set intensite 0
-	for {set k 0} {$k<$len} {incr k} {
-	    append intensite [lindex $intensites $k]
-	    #::console::affiche_resultat "$intensite\n"
-	    if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {
-		buf$audace(bufNo) setpix [list [expr $k+1] 1] $mintensite
-		set intensite 0
-	    }
-	}
-
-	#--- Sauvegarde du fichier fits ainsi créé
-	if { $nbunit == "double" || $nbunit == "float" } {
-	    buf$audace(bufNo) bitpix float
-	} elseif { $nbunit == "int" } {
-	    buf$audace(bufNo) bitpix short
-	}
-	buf$audace(bufNo) save "$audace(rep_images)/$nom_fichier$conf(extension,defaut)"
-	return $nom_fichier
-    } else {
-       ::console::affiche_erreur "Usage: spc_data2fits nom_fichier_fits_sortie liste_coordonnées_x_et_y unitées_coordonnées (float/double)\n\n"
-    }
+            
+      #--- Rempli la matrice 1D du fichier fits avec les valeurs du profil de raie ---
+      # Une liste commence à 0 ; Un vecteur fits commence à 1
+      set intensite 0
+      for {set k 0} {$k<$naxis1} {incr k} {
+	  append intensite [lindex $intensites $k]
+	  if { [regexp {([0-9]+\.*[0-9]*)} $intensite match mintensite] } {
+	      buf$audace(bufNo) setpix [list [expr $k+1] 1] $mintensite
+	      set intensite 0
+	  }
+      }
+      
+      #--- Sauvegarde du fichier fits ainsi créé
+      if { $nbunit == "double" || $nbunit == "float" } {
+	  buf$audace(bufNo) bitpix float
+      } elseif { $nbunit == "int" } {
+	  buf$audace(bufNo) bitpix short
+      }
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_fichier$conf(extension,defaut)"
+      buf$audace(bufNo) bitpix short
+      return $nom_fichier
+  } else {
+      ::console::affiche_erreur "Usage: spc_data2fits nom_fichier_fits_sortie liste_coordonnées_x_et_y unitées_coordonnées (float/double)\n\n"
+  }
 }
 #**********************************************************************#
 
@@ -955,11 +956,7 @@ proc spc_fits2data { args } {
      }
      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 	 set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
-     }
-     if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
 	 set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
-     }
-     if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
 	 set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
      }
      if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
@@ -994,7 +991,7 @@ proc spc_fits2data { args } {
 		 #-- Calibration linéaire :
 	     } else {
 		 for {set k 1} {$k<=$naxis1} {incr k} {
-		     lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
+		     lappend abscisses [ expr $lambda0+($k-1)*$dispersion*1.0 ]
 		     lappend intensites [ buf$audace(bufNo) getpix [list $k 1] ]
 		 }
 	     }
@@ -1028,7 +1025,7 @@ proc spc_fits2data { args } {
 		 #-- Calibration linéaire :
 	     } else {
 		 for {set k 1} {$k<=$naxis1} {incr k} {
-		     lappend abscisses [ expr $lambda0+($k)*$dispersion*1.0 ]
+		     lappend abscisses [ expr $lambda0+($k-1)*$dispersion*1.0 ]
 		     lappend intensites [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
 		 }
 	     }
@@ -1429,7 +1426,7 @@ proc spc_multifit2png { args } {
 	foreach fichier $listefile {
 	    set filedat [ spc_fits2dat $fichier ]
 	    lappend listedat $filedat
-	    if { $i != $len } {
+	    if { $i != $naxis1 } {
 		#append plotcmd "'$audace(rep_images)/$filedat' w l, "
 		append plotcmd "'$filedat' w l, "
 		#append plotcmd "'$filedat' using 1:($2+$i) w l, "
@@ -2262,6 +2259,8 @@ proc spc_autofit2png { args } {
 	#--- Détermination des paramètres d'exposition :
 	if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
 	    set duree_totale [ expr round([ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]) ]
+	} else {
+	    set duree_totale [ expr round([ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]) ]
 	}
 	#-- Recherche du nombre d'occurence du nombre "99" dans un des mots clefs TT :
 	set nombre_poses 0
@@ -2421,6 +2420,8 @@ proc spc_autofit2pngps { args } {
 	#--- Détermination des paramètres d'exposition :
 	if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
 	    set duree_totale [ expr round([ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]) ]
+	} else {
+	    set duree_totale [ expr round([ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]) ]
 	}
 	#-- Recherche du nombre d'occurence du nombre "99" dans un des mots clefs TT :
 	set nombre_poses 0

@@ -103,6 +103,9 @@ proc spc_vhelio { args } {
 	       set ra_m [ lindex $ra 0 ]
 	       set ra_s [ lindex $ra 0 ]
 	       set raf [ list "${ra_h}h${ra_m}m${ra_s}s" ]
+	   } else {
+	       ::console::affiche_resultat "Aucune corrdonnées trouvée.\n"
+	       return ""
 	   }
 	   # OBJCTDEC= '-05 23 52.444'
 	   if { [ lsearch $listemotsclef "OBJCTDEC" ] !=-1 } {

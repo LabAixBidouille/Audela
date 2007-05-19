@@ -941,15 +941,17 @@ proc spc_traite2rinstrum { args } {
        # set fricorr [ spc_rinstrumcorr $fcal $etoile_ref $etoile_cat ]
        set rep_instrum [ spc_rinstrum $fcal $etoile_cat ]
        ::console::affiche_resultat "\nRéponse instrumentale sauvée sous $rep_instrum\n"
-       file rename -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre_1c$conf(extension,defaut)"
+       file rename -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre_1b$conf(extension,defaut)"
+       set etoile_cat [ file rootname $etoile_cat ]
        file delete -force "$audace(rep_images)/$etoile_cat$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/${etoile_cat}_ech$conf(extension,defaut)"
 
 
        #--- Message de fin du script :
-       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-calibre_1c\n\n"
+       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-calibre_1b\n\n"
        # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
-       spc_loadfit ${img}-profil-calibre_1c
-       return ${img}-profil-calibre_1c
+       spc_loadfit "${img}-profil-calibre_1b"
+       return "${img}-profil-calibre_1b"
    } else {
        ::console::affiche_erreur "Usage: spc_traite2rinstrum nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe profil_étoile_catalogue méthode_appariement (reg, spc) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_bad_spectres (o/n) rejet_rotation_importante (o/n) sélection_manuelle_raie_géométrie (o/n) effacer_masters (o/n)\n\n"
    }
@@ -1082,6 +1084,7 @@ proc spc_traite2srinstrum { args } {
        #--- Retrait des cosmics
        if { $methcos == "o" } {
 	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
+	   uncosmic 0.5
 	   uncosmic 0.5
 	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
        }
@@ -1264,12 +1267,23 @@ proc spc_lampe2calibre { args } {
 
        #--- Traitement du spectre de la lampe de calibration :
        ::console::affiche_resultat "\n\n**** Traitement du spectre de lampe de calibration ****\n\n"
-       #-- Retrait du dark :
+       #-- Retrait du dark : engendre des problemes de détection des raies !
+       if { 0==1 } {
        buf$audace(bufNo) load "$audace(rep_images)/$lampe"
-       buf$audace(bufNo) sub "$audace(rep_images)/$darkmaster" 0
+       set exposurel [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+       buf$audace(bufNo) load "$audace(rep_images)/$darkmaster"
+       set exposured [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+       buf$audace(bufNo) mult [ expr $exposurel/$exposured*1. ]
+       buf$audace(bufNo) save "$audace(rep_images)/${darkmaster}t"
+       buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+       buf$audace(bufNo) sub "$audace(rep_images)/${darkmaster}t" 0
        buf$audace(bufNo) save "$audace(rep_images)/${lampe}-t"
        set lampet "${lampe}-t"
-       
+       file delete "$audace(rep_images)/${darkmaster}t$conf(extension,defaut)"
+       }
+       file copy -force "$audace(rep_images)/$lampe$conf(extension,defaut)" "$audace(rep_images)/${lampe}-t$conf(extension,defaut)" 
+       set lampet "${lampe}-t"
+
        #-- Correction du smilex du spectre de lampe de calibration :
        set smilexcoefs [ spc_smilex $lampet $methraie ]
        set lampegeom [ lindex $smilexcoefs 0 ]
@@ -1288,7 +1302,6 @@ proc spc_lampe2calibre { args } {
        ::console::affiche_resultat "\n\n**** Etalonnage en longueur d'onde du spectre de lampe de calibration ****\n\n"
        #-- Création du profil de raie de la lampe :
        set profillampe [ spc_profillampe $ftilt $lampeflip ]
-       file rename -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)" "$audace(rep_images)/lampe_spectre2D_redresse$conf(extension,defaut)"
        #-- Calibration du profil de la lampe :
        set lampecalibree [ spc_calibre $profillampe ]
        file delete -force "$audace(rep_images)/$profillampe$conf(extension,defaut)"
@@ -1298,6 +1311,7 @@ proc spc_lampe2calibre { args } {
 
        #--- Message de fin du script :
        set nomimg [ string trim $img "-" ]
+       file rename -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)" "$audace(rep_images)/lampe_spectre2D_redresse-$nomimg$conf(extension,defaut)"
        file rename -force "$audace(rep_images)/$lampecalibree$conf(extension,defaut)" "$audace(rep_images)/lampe_redressee_calibree-${nomimg}$conf(extension,defaut)"
        ::console::affiche_resultat "\n\nSpectre de lampe de calibration corrigé et calibré sauvé sous lampe_redressee_calibree-${nomimg}$conf(extension,defaut)\n\n"
        spc_loadfit lampe_redressee_calibree-${nomimg}

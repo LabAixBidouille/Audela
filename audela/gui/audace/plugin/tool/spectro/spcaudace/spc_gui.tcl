@@ -76,12 +76,7 @@ proc spc_winini { } {
 
    # === On cree une nouvelle fenetre ===
    wm withdraw .
-   if {[winfo exists .spc] == "1" } {
-      #--- je mets la fenetre au premier plan si elle existe deja
-      focus .spc
-      return
-   } else {
-      #--- je cree la fenetre si elle n'existe pas 
+   if {[info command .spc] == "" } {
       toplevel .spc -class Toplevel
    }
    wm title .spc "$captionspc(main_title) - $profilspc(initialfile)"   
@@ -132,9 +127,10 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $captionspc(spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
       .spc.menuBar.file add command -label $captionspc(spc_file_space)
       .spc.menuBar.file add command -label $captionspc(spc_bessmodule_w) -command "spc_bessmodule" -underline 0
-      .spc.menuBar.file add command -label $::caption(spectro,configure) \
-          -command { source [ file join "$::audace(rep_plugin)" tool spectro spectro_configure.tcl] } \
-          -underline 0 
+      .spc.menuBar.file add command -label $captionspc(spc_file_space)
+      .spc.menuBar.file add command -label $captionspc(spc_simbad) -command "spc_simbad" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_bess) -command "spc_bess" -underline 0
+      .spc.menuBar.file add command -label $captionspc(spc_uves) -command "spc_uves" -underline 0
       .spc.menuBar.file add command -label $captionspc(spc_file_space)
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
@@ -179,8 +175,9 @@ proc spc_winini { } {
       # .spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
       .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
       .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
-      # .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
-      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_profil_zone" -underline 0
+      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
+      #.spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_profil_zone" -underline 0
+      #.spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_profil_zone" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       #bind .spc <Control-N> spc_open_fitfile
@@ -248,13 +245,20 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0
       menu .spc.menuBar.analyse -tearoff 0
       #.spc.menuBar.analyse add command -label $captionspc(spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-A"
+      .spc.menuBar.analyse add command -label $captionspc(spc_surveys) -command "spc_surveys" -underline 0
+      .spc.menuBar.analyse add command -label $captionspc(spc_bebuil) -command "spc_bebuil" -underline 0
+      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
       .spc.menuBar.analyse add command -label $captionspc(spc_vradiale_w) -command "spc_vradiale" -underline 0
       #.spc.menuBar.analyse add command -label $captionspc(spc_vexp_w) -command "spc_vexp" -underline 0
       #.spc.menuBar.analyse add command -label $captionspc(spc_vrot_w) -command "spc_vrot" -underline 0
+      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
       .spc.menuBar.analyse add command -label $captionspc(spc_ew_w) -command "spc_autoew" -underline 0
       .spc.menuBar.analyse add command -label $captionspc(spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
+      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
       .spc.menuBar.analyse add command -label $captionspc(spc_npte_w) -command "spc_npte" -underline 0 -accelerator "Ctrl-E"
       .spc.menuBar.analyse add command -label $captionspc(spc_npne_w) -command "spc_npne" -underline 0 -accelerator "Ctrl-D"
+      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
+      .spc.menuBar.analyse add command -label $captionspc(spc_spectrum) -command "spc_spectrum" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       bind .spc <Control-A> mes_especes
@@ -780,6 +784,8 @@ proc spc_postscript {} {
    #.spc.g postscript output $filename.ps
    .spc.g postscript output $filename
 }
+
+spc_winini
 
 
 

@@ -162,7 +162,7 @@ proc spc_extract_profil_zone { args } {
 
 	#--- Traitement des résultats :
 	::console::affiche_resultat "Profil de raies de la zone sélectionnéé sauvé sous $fileout\n"
-	return $fileout
+	return "$fileout"
     } else {
 	::console::affiche_erreur "Usage: spc_extract_profil_zone spectre_2D\n\n"
     }
@@ -1436,13 +1436,14 @@ proc spc_loadfit { {filenamespc ""} } {
       # set filenamespc [tk_getOpenFile -title $captionspc(loadspcfit) -filetypes [list [list "$captionspc(spc_profile)" {$conf(extension,defaut)}]] -initialdir $idir -initialfile $ifile ]
       set rep_et_filename [tk_getOpenFile -title $captionspc(loadspcfit) -filetypes [list [list "$captionspc(spc_profile)" {.fit}]] -initialdir $idir -initialfile $ifile ]
 
-      set filenamespc [ file rootname [ file tail $rep_et_filename ] ]
       if {[string compare $rep_et_filename ""] == 0 } {
 	  return 0
-      }
+      } 
+            
    } else {
        #set repertoire [pwd]
-       set repertoire $audace(rep_images)
+       set repertoire "$audace(rep_images)"
+       set profilspc(initialdir) "$audace(rep_images)"
        set rep_et_filename "$repertoire/$filenamespc"
    }
 
@@ -1458,6 +1459,12 @@ proc spc_loadfit { {filenamespc ""} } {
    #set profilspc(intensite) [lindex $spectre 0]
    #set intensites [lindex $spectre 0]
    #============================================================================#
+
+   #--- Initialise les variables d'environnement :
+   #catch {unset profilspc} {}
+   set filenamespc [ file rootname [ file tail $rep_et_filename ] ]
+   set profilspc(initialdir) [file dirname $rep_et_filename ]
+   #set profilspc(initialfile) [file tail $filenamespc]
 
    #--- Détermine les éléments de calcul des longueurs d'onde :
    buf$audace(bufNo) load "$rep_et_filename"
@@ -1615,7 +1622,7 @@ proc spc_loaddat { {filenamespc ""} } {
    ## === Lecture du fichier de profil de raie ===
    catch {unset profilspc} {}
    set profilspc(initialdir) [file dirname $filenamespc]
-   set profilspc(initialfile) [file tail $filenamespc]
+   #set profilspc(initialfile) [file tail $filenamespc]
    set input [open "$filenamespc" r]
    set contents [split [read $input] \n]
    close $input
