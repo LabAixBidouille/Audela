@@ -7,17 +7,17 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 15 ao&ucirc;t 2005</p>
+<p class="date">Date de mise &agrave; jour : 18 mai 2007</p>
 <h1>Piloter un instrument sur le port s&eacute;rie du PC </h1>
 
 <p> De tr&egrave;s nombreux instruments d'astronomie sont pilot&eacute;s par le port s&eacute;rie des PC : Moteurs, codeurs, t&eacute;lescopes, roues &agrave; filtres, etc. </p>
 <p>Audela permet de communiquer avec des syst&egrave;mes ext&eacute;rieurs au PC en envoyant des ordres par le port s&eacute;rie. Il s'agit simplement d'utiliser des fonctions Tcl adapt&eacute;es. Apr&egrave;s une rapide description des fonctions de communication du port s&eacute;rie, nous &eacute;tudierons un exemple concret : La programmation du protocole de la carte AudeCom qui se compose d'une carte &eacute;lectronique et de 3 moteurs pour l'entra&icirc;nement horaire, la d&eacute;clinaison et la focalisation. </p>
 <h2> 1. Fonctions Tcl pour le port s&eacute;rie</h2>
-<p>Les fonctions d&eacute;crites ici sont pr&eacute;sentes dans Tcl. Elles s'appliquent indiff&eacute;remment sous Windows (Win 95, 98, NT, Me, 2000 et XP) et Linux, ce qui permet, avec un jeu de commandes Tcl communes, d'&eacute;crire un pilote d'instrument directement compatible pour Windows et Linux. </p>
+<p>Les fonctions d&eacute;crites ici sont pr&eacute;sentes dans le Tcl. Elles s'appliquent indiff&eacute;remment sous Windows (Win 95, 98, NT, Me, 2000 et XP) et Linux, ce qui permet, avec un jeu de commandes Tcl communes, d'&eacute;crire un pilote d'instrument directement compatible pour Windows et Linux. </p>
 <h3> 1.1. La fonction d'ouverture de la communication</h3>
 <p>La fonction Tcl
 <pre>open</pre> 
-permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas du port s&eacute;rie, ce flux de donn&eacute;es se nomme comx (x = 1, 2, 3 ou 4) sous Windows et /dev/ttySx (x = 0, 1, 2 ou 3) sous Linux. Par exemple, pour ouvrir le port com2 sous Windows, on &eacute;crira : 
+permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas du port s&eacute;rie, ce flux de donn&eacute;es se nomme comx (x = 1, 2, 3, 4, etc.) sous Windows et /dev/ttySx (x = 0, 1, 2, 3, etc.) sous Linux. Par exemple, pour ouvrir le port com2 sous Windows, on &eacute;crira : 
   </p> 
   <pre>open "com2" r+</pre> 
   <p>Le r+ signifie que l'on ouvre en lecture (r comme read) et en &eacute;criture (le +). La fonction open, retourne un num&eacute;ro d'identificateur. Il est important de garder ce num&eacute;ro car il sera demand&eacute; &agrave; chaque op&eacute;ration d'entr&eacute;e/sortie et aussi pour fermer la connexion. Ainsi, on pr&eacute;f&eacute;rera &eacute;crire : </p>
@@ -58,7 +58,7 @@ permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas d
 </ul>
   <p>Configuration ASCII : </p>
   <p>Dans la suite de cette description, le mot &lt;CR&gt; signifie retour chariot (Carriage Return en anglais). Au niveau du langage Tcl, cela correspond au caract&egrave;re d&eacute;fini par \r correspondant au code ASCII num&eacute;ro 13 d&eacute;cimal (code CR). </p>
-  <p>Si on a choisi de commander AudeCom via l'Hyperterminal de Windows (hors Audela), pr&eacute;ciser "Envoyer les fins de ligne avec retour &agrave; la ligne" non coch&eacute;. Si c'est coch&eacute;, un code LF sera ajout&eacute; &agrave; chaque CR envoy&eacute;. Windows ne comprend pas spontan&eacute;ment qu'apr&egrave;s un retour chariot on ne souhaite pas en g&eacute;n&eacute;ral que le texte se r&eacute;&eacute;crive sur la m&ecirc;me ligne. </p>
+  <p>Si on a choisi de commander la carte AudeCom via l'Hyperterminal de Windows (hors Audela), pr&eacute;ciser "Envoyer les fins de ligne avec retour &agrave; la ligne" non coch&eacute;. Si c'est coch&eacute;, un code LF sera ajout&eacute; &agrave; chaque CR envoy&eacute;. Windows ne comprend pas spontan&eacute;ment qu'apr&egrave;s un retour chariot on ne souhaite pas en g&eacute;n&eacute;ral que le texte se r&eacute;&eacute;crive sur la m&ecirc;me ligne. </p>
   <h3> 2.2.2. Commandes LX200</h3>
   <h3> 2.2.2.1. Les commandes principales reconnues sont :</h3>
   <ul> 
@@ -68,7 +68,7 @@ permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas d
   <li> #:Sr HH:MM:SS# M&eacute;morisation d'une position en ascension droite (format long).</li> 
   <li> #:Sd SDD&deg;MM# M&eacute;morisation d'une position en d&eacute;clinaison (format court).</li> 
   <li> #:Sd SDD&deg;MM:SS# M&eacute;morisation d'une position en d&eacute;clinaison (format long).</li> 
-  <li> #:CM# (MATCH) Les coordonn&eacute;es du t&eacute;lescopes deviennent celles m&eacute;moris&eacute;es.</li> 
+  <li> #:CM# (MATCH) Les coordonn&eacute;es du t&eacute;lescope deviennent celles m&eacute;moris&eacute;es.</li> 
   <li> #:MS# D&eacute;placement du t&eacute;lescope vers les coordonn&eacute;es m&eacute;moris&eacute;es.</li> 
   <li> #:GD# Demande de la d&eacute;clinaison courante.</li> 
   <li> #:GR# Demande de l'ascension droite courante.</li> 
@@ -88,7 +88,7 @@ permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas d
   <li> #:FQ# Provoque l'arr&ecirc;t du d&eacute;placement de la focalisation.</li> 
 </ul>
   <p>Toutes ces commandes sont celles utilis&eacute;es par la raquette virtuelle, c'est &agrave; dire la raquette que l'on peut faire appara&icirc;tre dans les logiciels "plan&eacute;tarium". </p>
-  <p>Nous allons voir qu'il est tout &agrave; fait possible de piloter AudeCom directement en mode natif, ce qui permet donc d'utiliser explicitement les secondes de temps et de degr&eacute;s dans l'envoie des coordonn&eacute;es &agrave; pointer. </p>
+  <p>Nous allons voir qu'il est tout &agrave; fait possible de piloter la carte AudeCom directement en mode natif, ce qui permet donc d'utiliser explicitement les secondes de temps et de degr&eacute;s dans l'envoie des coordonn&eacute;es &agrave; pointer. </p>
   <ul> 
   <li> #:Lx# Commande "non LX200", provoque le passage en mode de commande natif.</li> 
 </ul>
@@ -108,11 +108,11 @@ permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas d
   <li> vSNNNNNNNN&lt;RC&gt; Choix de la vitesse de d&eacute;rive en d&eacute;clinaison. </li> 
   <li> kSNNNNNNNN&lt;RC&gt; Variation de la vitesse de suivi sid&eacute;ral pour King et autres. </li> 
   <li> A&lt;RC&gt; Retour de la position en ascension sous la forme HH:MM:SS&lt;RC&gt;. </li> 
-  <li> D&lt;RC&gt; Retour de la d&eacute;clinaison sous la forme SDD:MM:SS&lt;RC&gt;. </li> 
+  <li> D&lt;RC&gt; Retour de la position en d&eacute;clinaison sous la forme SDD:MM:SS&lt;RC&gt;. </li> 
   <li> W&lt;RC&gt; Retour du nombre de tics par tour en ascension droite sous la forme NNNNNN&lt;RC&gt; en dizaines de tics par tour. </li> 
   <li> Y&lt;RC&gt; Retour du nombre de tics par tour en d&eacute;clinaison sous la forme NNNNNN&lt;RC&gt; en dizaines de tics par tour. </li> 
 </ul>
-  <p>N.B. : &lt;CR&gt; correspond au code ASCII du &#8216;retour chariot&#8217; qui correspond &agrave; la valeur 13 en d&eacute;cimal. On peut l'obtenir sur un PC en activant la touche &#8216;retour chariot&#8217;, ou simultan&eacute;ment les touches &lt;CTRL&gt; et M ou &lt;ALT&gt; et 1 puis 3 sur le pav&eacute; num&eacute;rique (utile si le &#8216;retour chariot&#8217; est interpr&eacute;t&eacute; et non transmis par le logiciel utilis&eacute;). Si on utilise un langage de programmation qui respecte la syntaxe du C, il faut terminer la ligne de commande par &#8216;\r&#8217; et pas par &#8216;\n&#8217; qui provoque selon le syst&egrave;me d'exploitation l'&eacute;mission de &#8216;saut de ligne&#8217; ou &#8216;saut de ligne&#8217; et &#8216;retour chariot&#8217;, ce qui perturbe dans tous les cas AudeCom.</p>
+  <p>N.B. : &lt;CR&gt; correspond au code ASCII du &#8216;retour chariot&#8217; qui correspond &agrave; la valeur 13 en d&eacute;cimal. On peut l'obtenir sur un PC en activant la touche &#8216;retour chariot&#8217;, ou simultan&eacute;ment les touches &lt;CTRL&gt; et M ou &lt;ALT&gt; et 1 puis 3 sur le pav&eacute; num&eacute;rique (utile si le &#8216;retour chariot&#8217; est interpr&eacute;t&eacute; et non transmis par le logiciel utilis&eacute;). Si on utilise un langage de programmation qui respecte la syntaxe du C, il faut terminer la ligne de commande par &#8216;\r&#8217; et pas par &#8216;\n&#8217; qui provoque selon le syst&egrave;me d'exploitation l'&eacute;mission de &#8216;saut de ligne&#8217; ou &#8216;saut de ligne&#8217; et &#8216;retour chariot&#8217;, ce qui perturbe dans tous les cas la carte AudeCom.</p>
   <p>Le r&ocirc;le de uSNNNNNNNN et vSNNNNNNNN est de provoquer un d&eacute;placement lent par rapport au fond du ciel, en ascension droite et/ou en d&eacute;clinaison pour : </p>
   <ul> 
   <li> Suivre la Lune, le Soleil, les plan&egrave;tes. </li> 
@@ -258,7 +258,7 @@ permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas d
   <p>Ce script, doit &ecirc;tre &eacute;crit dans le fichier acomdriv.tcl pour &ecirc;tre utilis&eacute; avec les exemples ult&eacute;rieurs. </p>
   <h3> 2.3. Utiliser le script de driver minimal</h3>
   <p>L'exemple suivant montre comment pointer un objet avec le script minimal : </p>
-  <pre>#--- acomtest.tcl : test du protocole de la carte  AudeCom</pre> 
+  <pre>#--- acomtest.tcl : test du protocole de la carte AudeCom</pre> 
   <pre>source acomdriv.tcl</pre> 
   <pre>set tty [ acom_create com2 ]</pre> 
   <pre>::console::affiche_resultat [ acom_coord $tty ]</pre> 
@@ -378,24 +378,24 @@ permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas d
   <pre>proc ::tel::create { type port {tty 0} } {</pre> 
   <pre>   if { $type == "audecom" } {</pre> 
   <pre>      set tty [ acom_create $port ]</pre> 
-  <pre>      #--- on surcharge la fonction tel1</pre> 
-  <pre>      proc ::tel$tty { fonc listargv } {</pre> 
-  <pre>         global tty</pre> 
-  <pre>         set result "Fonction non reconnue"</pre> 
-  <pre>         switch $fonc {</pre> 
-  <pre>            coord {</pre> 
-  <pre>               set result [acom_coord $tty $listargv]</pre> 
-  <pre>            }</pre> 
-  <pre>            goto {</pre> 
-  <pre>               set result [acom_goto $tty $listargv]</pre> 
-  <pre>            }</pre> 
-  <pre>         }</pre> 
-  <pre>         return $result</pre> 
-  <pre>      }</pre> 
   <pre>   } else {</pre> 
   <pre>      ::tel::create_audela $type $port $tty</pre> 
   <pre>   }</pre> 
   <pre>   return $tty</pre> 
+  <pre>}</pre> 
+  <pre>#--- on surcharge la fonction tel1</pre> 
+  <pre>proc ::tel$tty { fonc listargv } {</pre> 
+  <pre>   global tty</pre> 
+  <pre>   set result "Fonction non reconnue"</pre> 
+  <pre>   switch $fonc {</pre> 
+  <pre>      coord {</pre> 
+  <pre>         set result [acom_coord $tty $listargv]</pre> 
+  <pre>      }</pre> 
+  <pre>      goto {</pre> 
+  <pre>         set result [acom_goto $tty $listargv]</pre> 
+  <pre>      }</pre> 
+  <pre>   }</pre> 
+  <pre>   return $result</pre> 
   <pre>}</pre> 
   <pre>#--- on surcharge la fonction de deconnexion du telescope</pre> 
   <pre>proc ::tel::delete { tty } {</pre> 
@@ -435,17 +435,12 @@ permet d'ouvrir la communication avec un "flux" de donn&eacute;es. Dans le cas d
   <pre>tel::delete $tty</pre> 
   <p>Ainsi, il devient possible d'utiliser un instrument personnel en ex&eacute;cutant des scripts Audela ou Audace qui pilotent des t&eacute;lescopes. </p>
   <h2> 4. Autres exemples de scripts</h2>
-  <p>Audela est riche d'autres exemples de scripts d&eacute;velopp&eacute;s pour r&eacute;pondre &agrave; des protocoles et/ou des applications sp&eacute;cifiques. Vous acc&eacute;derez &agrave; ces protocoles et/ou applications par le menu d&eacute;roulant R&eacute;glages et ensuite T&eacute;lescope. Ce sont entre autres les objets t&eacute;lescope suivants : </p>
+  <p>Audela est riche d'autres exemples de scripts d&eacute;velopp&eacute;s pour r&eacute;pondre &agrave; des protocoles et/ou des applications sp&eacute;cifiques. Vous acc&eacute;derez &agrave; ces protocoles et/ou applications par le menu d&eacute;roulant Configuration et ensuite Monture. Ce sont entre autres les objets t&eacute;lescope suivants : </p>
   <h3> 4.1. Ouranos</h3>
   <p>Qui pilote l'interface sp&eacute;cifique Ouranos pour permettre de conna&icirc;tre, apr&egrave;s initialisation, la position de votre t&eacute;lescope. Vous pouvez d&eacute;cortiquer les scripts conftel.tcl et ouranoscom.tcl pour en apprendre plus. </p>
-  <h3> 4.2. ComPad</h3>
-  <p>Plus de d&eacute;tails sur le fonctionnement de cette interface sont donn&eacute;s &agrave; <a
- href="http://www.astrosurf.com/audine/pisco/pilot.htm">cette adresse sur le site Audine</a>. </p>
-  <h3> 4.3. AvrCom</h3>
-  <p>Est destin&eacute; &agrave; piloter un microcontr&ocirc;leur &agrave; programmer par l'amateur lui-m&ecirc;me. Etudiez donc les scripts conftel.tcl et avrcom.tcl. </p>
-  <h3> 4.4. Autres...</h3>
-  <p>D'autres protocoles verront le jour en fonction des besoins de chaque utilisateur, d&eacute;j&agrave; TelCom et LXnet pointent le bout de leurs nez. Cette page a pour but de vous montrer qu'il n'est pas insurmontable de cr&eacute;er un script et une interface graphique pour un protocole particulier. </p>
-  <h3> 4.5. Le cas particulier d'AudeCom</h3>
+  <h3> 4.2. Autres...</h3>
+  <p>D'autres protocoles verront le jour en fonction des besoins de chaque utilisateur, d&eacute;j&agrave; Temma, ASCOM et Celestron pointent le bout de leurs nez. Cette page a pour but de vous montrer qu'il n'est pas insurmontable de cr&eacute;er un script et une interface graphique pour un protocole particulier. </p>
+  <h3> 4.3. Le cas particulier d'AudeCom</h3>
   <p>Ce protocole, d&eacute;fini par Philippe Kauffmann, est totalement implant&eacute; dans Audela par l'interm&eacute;diaire de panneaux de configuration et d'interfaces graphiques. Je vous recommande l'&eacute;tude approfondie des fichiers conftel.tcl et audecom.tcl pour la d&eacute;finition et la prise en compte du protocole AudeCom, ainsi que les fichiers foc.tcl, tel.tcl, etc. pour comprendre la mise en oeuvre de ce protocole par l'interm&eacute;diaire d'interfaces graphiques sp&eacute;cifiques. </p>
 </body>
 
