@@ -1,13 +1,13 @@
 #
 # Fichier : bess.cap
-# Mise a jour $Id: bess_module.cap,v 1.5 2007-05-19 14:03:19 robertdelmas Exp $
+# Mise a jour $Id: bess_module.cap,v 1.6 2007-05-19 14:19:52 robertdelmas Exp $
 #
 
 #=========================================================================
 #   Début de la déclaration des textes localisés (internationalisation)
 #=========================================================================
 
-global text_bess
+global text_bess langage
 
 # *************** Version anglaise ****************************
 
