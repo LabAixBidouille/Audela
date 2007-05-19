@@ -33,7 +33,7 @@
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 21-12-2005
+# Date de mise à jour : 21-12-2005/2007-04-27
 # Arguments : fichier .fit du profil de raie, x_debut (pixel), x_fin (pixel), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
@@ -44,8 +44,9 @@ proc spc_centergauss { args } {
 
    if {[llength $args] == 4} {
      set fichier [ lindex $args 0 ]
-     set xdeb [ expr int([lindex $args 1 ]) ]
-     set xfin [ expr int([lindex $args 2]) ]
+     #- 2007-04-27 : int -> round
+     set xdeb [ expr round([lindex $args 1 ]) ]
+     set xfin [ expr round([lindex $args 2]) ]
      set type [ lindex $args 3 ]
 
      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
@@ -55,8 +56,6 @@ proc spc_centergauss { args } {
 	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
 	 buf$audace(bufNo) mult -1.0
 	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	 # Inverse de nouveau le spectre pour le rendre comme l'original
-	 buf$audace(bufNo) mult -1.0
      } elseif { [string compare $type "e"] == 0 } {
 	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      }
@@ -77,7 +76,7 @@ proc spc_centergauss { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 21-12-2005
+# Date de mise à jour : 21-12-2005/2007-04-27
 # Arguments : fichier .fit du profil de raie, x_debut (wavelength), x_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
@@ -88,16 +87,17 @@ proc spc_centergaussl { args } {
 
    if {[llength $args] == 4} {
      set fichier [ lindex $args 0 ]
-     set ldeb [ expr int([lindex $args 1 ]) ]
-     set lfin [ expr int([lindex $args 2]) ]
+     set ldeb [ lindex $args 1 ]
+     set lfin [ lindex $args 2 ]
      set type [ lindex $args 3 ]
 
      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
      #buf$audace(bufNo) load $fichier
      set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
      set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-     set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
-     set xfin [ expr int(($lfin-$crval)/$cdelt) ]
+     #- 2007-04-27 : int -> round
+     set xdeb [ expr round(($ldeb-$crval)/$cdelt) ]
+     set xfin [ expr round(($lfin-$crval)/$cdelt) ]
 
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
@@ -105,8 +105,6 @@ proc spc_centergaussl { args } {
 	 buf$audace(bufNo) mult -1.0
 	 # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
 	 set lreponse [buf$audace(bufNo) fitgauss $listcoords ]
-	 #-- Inverse de nouveau le spectre pour le rendre comme l'original
-	 buf$audace(bufNo) mult -1.0
      } elseif { [string compare $type "e"] == 0 } {
 	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      }
@@ -128,7 +126,7 @@ proc spc_centergaussl { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 30-08-2005
-# Date de mise à jour : 21-12-2005
+# Date de mise à jour : 21-12-2005/2007-04-27
 # Arguments : fichier .fit du profil de raie, x_debut (pixel), x_fin (pixel)
 ##########################################################
 
@@ -139,8 +137,9 @@ proc spc_centergrav { args } {
 
     if {[llength $args] == 3} {
 	set fichier [ lindex $args 0 ]
-	set xdeb [ expr int([lindex $args 1 ]) ]
-	set xfin [ expr int([lindex $args 2]) ]
+	#- 2007-04-27 : int -> round
+	set xdeb [ expr round([lindex $args 1 ]) ]
+	set xfin [ expr round([lindex $args 2]) ]
 
 	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 
@@ -163,7 +162,7 @@ proc spc_centergrav { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 30-08-2005
-# Date de mise à jour : 21-12-2005/21-08-06
+# Date de mise à jour : 21-12-2005/21-08-2006/2007-04-27
 # Arguments : fichier .fit du profil de raie, x_debut (pixel), x_fin (pixel)
 ##########################################################
 
@@ -174,23 +173,52 @@ proc spc_centergravl { args } {
 
     if {[llength $args] == 3} {
 	set fichier [ file rootname [ lindex $args 0 ] ]
-	set ldeb [ expr int([lindex $args 1 ]) ]
-	set lfin [ expr int([lindex $args 2]) ]
+	set ldeb [ lindex $args 1 ]
+	set lfin [ lindex $args 2 ]
 
+	#--- Conversion des longeurs d'onde en pixels :
 	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
 	set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-	set xdeb [ expr int(($ldeb-$crval)/$cdelt) ]
-	set xfin [ expr int(($lfin-$crval)/$cdelt) ]
-
+	set listemotsclef [ buf$audace(bufNo) getkwds ]
+	if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	    set flag_spccal 1
+	    set spc_a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
+	    set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
+	    set spc_c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
+	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+		set spc_d [ lindex [buf$audace(bufNo) getkwd "SPC_D"] 1 ]
+	    } else {
+		set spc_d 0.
+	    }
+	    set xdeb [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($ldeb))*$spc_c))/(2*$spc_c)) ]
+	    set xfin [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($lfin))*$spc_c))/(2*$spc_c)) ]
+	} else {
+	    set flag_spccal 0
+	    #- 2007-04-27 : int -> round
+	    set xdeb [ expr round(($ldeb-$crval)/$cdelt) ]
+	    set xfin [ expr round(($lfin-$crval)/$cdelt) ]
+	}
 	set listcoords [list $xdeb 1 $xfin 1]
-	set listecoefscale [ list 1 3 ]
-	buf$audace(bufNo) scale $listecoefscale 1
+
+
+	#--- Détermination du barycentre de la raie d'absorption :
+	#set listecoefscale [ list 1 3 ]
+	#buf$audace(bufNo) scale $listecoefscale 1
+	buf$audace(bufNo) mult -1.0
 	set lreponse [ buf$audace(bufNo) centro $listcoords ]
-	set xcentre [lindex $lreponse 0]
-	set centre [ expr $xcentre*$cdelt+$crval ]
-	::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
-     return $centre
+	set xcenter [ lindex $lreponse 0 ]
+
+	#--- Traduit la position en longueur d'onde :
+	if { $flag_spccal } {
+	    set lcentre [ expr $spc_a+$xcenter*$spc_b+$xcenter*$xcenter*$spc_c+pow($xcenter,3)*$spc_d ]
+	} else {
+	    set lcentre [ expr $xcenter*$cdelt+$crval ]
+	}
+
+	#--- Traitement du resultat :
+	::console::affiche_resultat "Le centre de gravité de la raie est : $lcentre (pixels)\n"
+	return $lcentre
     } else {
 	::console::affiche_erreur "Usage: spc_centergravl profil_de_raies_calibré lambda_debut lambda_fin\n\n"
     }
@@ -764,6 +792,91 @@ proc spc_snr { args } {
    global conf
    #- une raie de moins de 0.92 A est du bruit
    set largeur_bruit 0.92
+   set nbtranches 10
+
+   if { [llength $args]==1 } {
+       set fichier [ file rootname [ lindex $args 0 ] ]
+
+       #--- Capture des renseignements
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "NAXIS2" ] !=-1 } {
+	   set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+       } else {
+	   set naxis2 1
+       }
+       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	   set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+       } else {
+	   set disp 1.
+       }
+
+       #--- Caclul du signal moyen sur l'interval du continuum  et determination de cet interval :
+       #set S [ lindex [ buf$audace(bufNo) stat ] 4 ]
+       #-- Détermine l'intensité moyenne sur chaque tranches :
+       set largeur [ expr int($naxis1/$nbtranches) ]
+       set listresults ""
+       for {set i 0} {$i<$nbtranches} {incr i} {
+	   if { $i==0 } {
+	       set zone [ list 1 1 $largeur 1 ]
+	       set x1 1
+	       set x2 $largeur
+	   } else {
+	       set x1 [ expr $i*$largeur ]
+	       set x2 [ expr ($i+1)*$largeur ]
+	       set zone [ list $x1 1 $x2 1 ]
+	   }
+	   set result [ buf$audace(bufNo) stat $zone ]
+	   lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $x1 $x2 ]
+       }
+       #-- Tri par ecart-type :
+       set listresults [ lsort -increasing -real -index 1 $listresults ]
+       set S [ lindex [ lindex $listresults 0 ] 0 ]
+       set xdeb [ lindex [ lindex $listresults 0 ] 2 ]
+       set xfin [ lindex [ lindex $listresults 0 ] 3 ]
+       #::console::affiche_resultat "$xdeb ; $xfin ; $S\n"
+
+
+       #--- Calcul la déviation standard :
+       if { 1==0 } {
+       set somme 0
+       set intensites [ lindex [ spc_fits2data $fichier ] 1 ]
+       for { set i [ expr $xdeb-1 ] } { $i<$xfin } { incr i } {
+	   set intensite [ lindex $intensites $i ]
+	   set somme [ expr $somme+pow($intensite-$S,2) ]
+       }
+       set N [ expr sqrt($somme/($xfin-$xdeb+1)) ]
+       }
+       set N [ lindex [ buf$audace(bufNo) stat [ list $xdeb 1 $xfin 1 ] ] 5 ]
+
+       #--- Calcul de SNR :
+       if { $N != 0 } {
+	   set SNR [ expr $S/$N ]
+       } else {
+	   ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
+	   set SNR O
+       }
+
+       #--- Affichage des résultats :
+       file delete -force "$audace(rep_images)/${fichier}_crop$conf(extension,defaut)"
+       ::console::affiche_resultat "SNR=$S/$N=$SNR\n"
+       return $SNR
+
+   } else {
+       ::console::affiche_erreur "Usage: spc_snr nom_fichier_fits\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+proc spc_snr1 { args } {
+
+   global audace
+   global conf
+   #- une raie de moins de 0.92 A est du bruit
+   set largeur_bruit 0.92
 
    if { [llength $args]==1 } {
        set fichier [ file rootname [ lindex $args 0 ] ]
@@ -787,7 +900,9 @@ proc spc_snr { args } {
        set xdeb [ expr int(0.05*$naxis1) ]
        set xfin [ expr int(0.95*$naxis1) ]
        buf$audace(bufNo) window [ list $xdeb 1 $xfin $naxis2 ]
+       buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save "$audace(rep_images)/${fichier}_crop"
+       buf$audace(bufNo) bitpix short
 
        #--- Caclul du signal moyen "global sur l'image":
        set S [ lindex [ buf$audace(bufNo) stat ] 4 ]
@@ -813,7 +928,7 @@ proc spc_snr { args } {
        return $SNR
 
    } else {
-       ::console::affiche_erreur "Usage: spc_snr nom_fichier_fits\n\n"
+       ::console::affiche_erreur "Usage: spc_snr1 nom_fichier_fits\n\n"
    }
 }
 #****************************************************************#
