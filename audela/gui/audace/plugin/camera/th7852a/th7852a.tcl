@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.2 2007-05-17 16:58:29 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.3 2007-05-19 08:40:47 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -106,6 +106,9 @@ proc ::th7852a::fillConfigPage { frm } {
 
    label $frm.labURL -text "$caption(th7852a,site_web_ref)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
   ### bind $frm.labURL <ButtonPress-1> {

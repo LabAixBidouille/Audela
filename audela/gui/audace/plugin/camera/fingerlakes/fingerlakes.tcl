@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.1 2007-05-17 20:49:52 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.2 2007-05-19 08:40:09 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -145,6 +145,9 @@ proc ::fingerlakes::fillConfigPage { frm } {
 
    label $frm.labURL -text "$caption(fingerlakes,site_web_ref)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    bind $frm.labURL <ButtonPress-1> {

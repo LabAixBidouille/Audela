@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.2 2007-05-17 16:57:53 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.3 2007-05-19 08:39:21 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -152,6 +152,9 @@ proc ::cookbook::fillConfigPage { frm } {
 
    label $frm.labURL -text "$caption(cookbook,site_web_ref)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    bind $frm.labURL <ButtonPress-1> {

@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.8 2007-05-17 16:58:53 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.9 2007-05-19 08:41:05 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -273,6 +273,9 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    label $frm.labURL -text "$caption(webcam,site_web_ref)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    #--- Pour le site web de reference
