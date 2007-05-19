@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.10 2007-05-16 18:12:26 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.11 2007-05-19 08:47:23 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -283,6 +283,9 @@ namespace eval carteducielv3 {
 
       label $frm.labURL -text "$caption(carteducielv3,site_web_ref)" -font $audace(font,url) -fg $color(blue)
       pack $frm.labURL -in $frm.frame5 -side top -fill x -pady 2
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $frm
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
       bind $frm.labURL <ButtonPress-1> {
