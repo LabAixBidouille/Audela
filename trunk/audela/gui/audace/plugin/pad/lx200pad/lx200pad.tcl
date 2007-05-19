@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.8 2007-04-11 17:32:42 michelpujol Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.9 2007-05-19 09:18:44 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -30,24 +30,25 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         
+
       }
    }
 
    #------------------------------------------------------------
-   #  getPluginType 
-   #     retourne le type de plugin 
+   #  getPluginType
+   #     retourne le type de plugin
    #------------------------------------------------------------
-   proc getPluginType  { } {
+   proc getPluginType { } {
       return "pad"
    }
 
    #------------------------------------------------------------
-   #  getPluginTitle 
+   #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getPluginTitle  { } {
+   proc getPluginTitle { } {
       global caption
+
       return "$caption(lx200pad,titre)"
    }
 
@@ -58,7 +59,6 @@ namespace eval ::lx200pad {
    #  return "nom_driver.htm"
    #------------------------------------------------------------
    proc getHelp { } {
-
       return "lx200pad.htm"
    }
 
@@ -149,6 +149,9 @@ namespace eval ::lx200pad {
       checkbutton $frm.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
          -variable ::lx200pad::widget(visible) -onvalue 1 -offvalue 0
       pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $frm
    }
 
    #------------------------------------------------------------
@@ -167,14 +170,12 @@ namespace eval ::lx200pad {
 
    #------------------------------------------------------------
    #  deletePluginInstance
-   #     suppprime l'instance du plugin 
+   #     suppprime l'instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-
-      global conf
-      global audace
+      global audace conf
 
       if { [ winfo exists .lx200pad ] } {
          #--- Enregistre la position de la raquette
@@ -214,12 +215,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc run { {zoom .5} {positionxy 0+0} } {
       variable widget
-      global audace
-      global caption
-      global zonelx200
-      global geomlx200
-      global statustel
-      global color
+      global audace caption color geomlx200 statustel zonelx200
 
       if { [ string length [ info commands .lx200pad.display* ] ] != "0" } {
          destroy .lx200pad
@@ -288,7 +284,12 @@ namespace eval ::lx200pad {
       pack .lx200pad.meade \
          -in .lx200pad -fill x -side top
 
-      frame .lx200pad.display -borderwidth 4  -relief sunken -bg $colorlx200(backdisp)
+      frame .lx200pad.display \
+         -borderwidth 4  -relief sunken \
+         -bg $colorlx200(backdisp)
+      pack .lx200pad.display -in .lx200pad \
+         -fill x -side top \
+         -pady $geomlx200(10pixels) -padx 12
 
       #--- Label pour RA
       label .lx200pad.display.ra \
@@ -303,8 +304,6 @@ namespace eval ::lx200pad {
          -textvariable audace(telescope,getdec) -bg $colorlx200(backdisp) \
          -fg $colorlx200(textdisp) -relief flat -height 1 -width 12
       pack .lx200pad.display.dec -in .lx200pad.display -anchor center -pady 0
-
-      pack .lx200pad.display -in .lx200pad  -fill x -side top -pady $geomlx200(10pixels) -padx 12
 
       #--- Refreach the coordinates on the display
       bind .lx200pad.display.ra  <ButtonPress-1> { ::telescope::afficheCoord }
@@ -333,6 +332,7 @@ namespace eval ::lx200pad {
          -borderwidth 0 -relief flat -bg $colorlx200(backpad)
       pack .lx200pad.func.enter \
          -in .lx200pad.func -side left
+
       #--- Button-design
       canvas .lx200pad.func.enter.canv1 \
          -width $geomlx200(larg2) -height $geomlx200(haut2) \
@@ -1155,8 +1155,7 @@ namespace eval ::lx200pad {
    #  return rien
    #------------------------------------------------------------
    proc surveilleSpeed { } {
-      global audace
-      global suveilleSpeedActif
+      global audace suveilleSpeedActif
 
       #--- J'attends un changement de la valeur de audace(telescope,speed)
       vwait audace(telescope,speed)
@@ -1185,6 +1184,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc lx200_set_slew { } {
       global color zonelx200
+
       $zonelx200(slew)  itemconfigure 1 -fill $color(red)
       $zonelx200(find)  itemconfigure 1 -fill $color(black)
       $zonelx200(cntr)  itemconfigure 1 -fill $color(black)
@@ -1197,6 +1197,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc lx200_set_find { } {
       global color zonelx200
+
       $zonelx200(slew)  itemconfigure 1 -fill $color(black)
       $zonelx200(find)  itemconfigure 1 -fill $color(red)
       $zonelx200(cntr)  itemconfigure 1 -fill $color(black)
@@ -1209,6 +1210,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc lx200_set_cntr { } {
       global color zonelx200
+
       $zonelx200(slew)  itemconfigure 1 -fill $color(black)
       $zonelx200(find)  itemconfigure 1 -fill $color(black)
       $zonelx200(cntr)  itemconfigure 1 -fill $color(red)
@@ -1221,6 +1223,7 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc lx200_set_guide { } {
       global color zonelx200
+
       $zonelx200(slew)  itemconfigure 1 -fill $color(black)
       $zonelx200(find)  itemconfigure 1 -fill $color(black)
       $zonelx200(cntr)  itemconfigure 1 -fill $color(black)
