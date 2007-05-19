@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.9 2007-05-16 18:12:43 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.10 2007-05-19 08:47:43 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -222,6 +222,9 @@ namespace eval guide {
 
       label $frm.labURL -text "$caption(guide,site_web_ref)" -font $audace(font,url) -fg $color(blue)
       pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $frm
 
       #--- Creation du lien avec le navigateur web et changement de sa couleur
       bind $frm.labURL <ButtonPress-1> {
