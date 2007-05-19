@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.9 2007-05-19 08:41:05 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.10 2007-05-19 23:27:20 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -14,9 +14,14 @@ namespace eval ::webcam {
 #
 proc ::webcam::init { } {
    global audace conf
+   variable private
 
    #--- Charge le fichier caption
    source [ file join $audace(rep_plugin) camera webcam webcam.cap ]
+   set caption(webcam,framerate) "Images/s"
+   set caption(webcam,shutter) "shutter"
+   set caption(webcam,gain) "gain"
+   set caption(webcam,auto)    "auto"
 
    #--- Initialise les variables de la webcams A
    foreach camItem { A B C } {
@@ -31,7 +36,34 @@ proc ::webcam::init { } {
       if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }              { set conf(webcam,$camItem,ccd_N_B)              "0" }
       if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }          { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
       if { ! [ info exists conf(webcam,$camItem,ccd) ] }                  { set conf(webcam,$camItem,ccd)                  "" }
+      if { ! [ info exists conf(webcam,$camItem,videoformat) ] }          { set conf(webcam,$camItem,videoformat)          "QCIF" }
+      if { ! [ info exists conf(webcam,$camItem,port) ] }                 { set conf(webcam,$camItem,port)                 "/dev/video0" }
+
+      if { $::tcl_platform(os) == "Linux" } {
+         if { ! [ info exists conf(webcam,$camItem,configWindowPosition)]} { set conf(webcam,$camItem,configWindowPosition) "+0+0"  }
+         if { ! [ info exists conf(webcam,$camItem,framerate) ] }         { set conf(webcam,$camItem,framerate) "5"  }
+         if { ! [ info exists conf(webcam,$camItem,shutter) ] }           { set conf(webcam,$camItem,shutter) "1/25"  }
+         if { ! [ info exists conf(webcam,$camItem,gain) ] }              { set conf(webcam,$camItem,gain) "50"  }
+         if { ! [ info exists conf(webcam,$camItem,autoShutter) ] }       { set conf(webcam,$camItem,autoShutter) "1"  }
+         if { ! [ info exists conf(webcam,$camItem,autoGain) ] }       { set conf(webcam,$camItem,autoGain) "1"  }
+      }
    }
+
+   #--- definition des format video
+   #--- Attention : les valeurs de private(videoFormatLabels) et private(videoFormatNames)
+   #---             doivent etre dans le meme ordre.
+   set private(videoFormatLabels) [ list \
+      "VGA - 640 x 480" \
+      "CIF - 352 x 288" \
+      "SIF - 320 x 240" \
+      "SSIF - 240 x 176" \
+      "QCIF - 176 x 144" \
+      "QSIF - 160 x 120" \
+      "SQCIF - 128 x 96" \
+   ]
+   set private(videoFormatNames)  [ list "VGA" "CIF" "SIF" "SSIF" "QCIF" "QSIF" "SQCIF" ]
+
+   set private(portList) ""
 }
 
 #
@@ -41,6 +73,7 @@ proc ::webcam::init { } {
 proc ::webcam::confToWidget { } {
    variable private
    global conf
+console::disp "::webcam::confToWidget \n"
 
    #--- Recupere la configuration de la WebCam dans le tableau private($camItem,...)
    foreach camItem { A B C } {
@@ -55,6 +88,13 @@ proc ::webcam::confToWidget { } {
       set private($camItem,ccd_N_B)              $conf(webcam,$camItem,ccd_N_B)
       set private($camItem,dim_ccd_N_B)          $conf(webcam,$camItem,dim_ccd_N_B)
       set private($camItem,ccd)                  $conf(webcam,$camItem,ccd)
+
+      #--- je copie le port correspondant de la camera
+      set private($camItem,port)                 $conf(webcam,$camItem,port)
+      #--- je copie le label correspondant au format
+      set formatIndex [lsearch -exact $private(videoFormatNames) $conf(webcam,$camItem,videoformat)]
+      set private($camItem,videoformat) [lindex $private(videoFormatLabels) $formatIndex]
+
    }
 }
 
@@ -78,6 +118,12 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,ccd_N_B)              $private($camItem,ccd_N_B)
    set conf(webcam,$camItem,dim_ccd_N_B)          $private($camItem,dim_ccd_N_B)
    set conf(webcam,$camItem,ccd)                  $private($camItem,ccd)
+
+   set conf(webcam,$camItem,port)                 $private($camItem,port)
+
+   #--- je copie la format correspondant au label
+   set formatIndex [lsearch -exact $private(videoFormatLabels) $private($camItem,videoformat)]
+   set conf(webcam,$camItem,videoformat) [lindex $private(videoFormatNames) $formatIndex]
 }
 
 #
@@ -88,8 +134,13 @@ proc ::webcam::fillConfigPage { frm camItem } {
    variable private
    global audace caption color confCam
 
+   set private(frm) $frm
+console::disp "::webcam::fillConfigPage debut $camItem\n"
    #--- confToWidget
    ::webcam::confToWidget
+
+
+console::disp "::webcam::fillConfigPage frm=$frm\n"
 
    #--- Supprime tous les widgets de l'onglet
    foreach i [ winfo children $frm ] {
@@ -169,20 +220,42 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -variable ::webcam::private($camItem,mirv)
    pack $frm.miry -in $frm.frame9 -anchor w -side top -padx 20 -pady 10
 
-   #--- Boutons de configuration de la source et du format video
-   button $frm.conf_webcam -text "$caption(webcam,conf_source)"
-   pack $frm.conf_webcam -in $frm.frame7 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
-
-   button $frm.format_webcam -text "$caption(webcam,format_video)"
-   pack $frm.format_webcam -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   #--- Boutons de configuration de la source
+   if { $::tcl_platform(os) == "Linux" } {
+      label $frm.frame7.portLabel -text "Port"
+      pack $frm.frame7.portLabel -anchor nw -side top -padx 10
+      listbox $frm.frame7.portList -listvariable ::webcam::private(portList) -state normal -height 3
+      pack $frm.frame7.portList -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -expand true
+      bind $frm.frame7.portList <<ListboxSelect>> "::webcam::selectPort $camItem $frm.frame6.portList"
+   } else {
+      button $frm.frame7.conf_webcam -text "$caption(webcam,conf_source)"
+      pack $frm.frame7.conf_webcam -in $frm.frame7 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   }
+   #--- Boutons de configuration du format video
+   if { $::tcl_platform(os) == "Linux" } {
+      label $frm.frame6.videoFormatLabel -text "$caption(webcam,format_video)"
+      pack $frm.frame6.videoFormatLabel -anchor nw -side top -padx 10
+      ComboBox $frm.frame6.videoFormatList \
+         -width 20         \
+         -height [ llength $private(videoFormatLabels) ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable ::webcam::private($camItem,videoformat) \
+         -values $private(videoFormatLabels)
+      pack $frm.frame6.videoFormatList -anchor center -padx 10 -pady 5 -ipadx 10 -expand true
+   } else {
+      button $frm.frame6.format_webcam -text "$caption(webcam,format_video)"
+      pack $frm.frame6.format_webcam -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   }
 
    #--- Option longue pose avec lien au site web de Steve Chambers
    checkbutton $frm.longuepose -highlightthickness 0 -variable ::webcam::private($camItem,longuepose) \
       -command "::webcam::checkConfigLonguePose $camItem"
    pack $frm.longuepose -in $frm.frame10 -anchor center -side left -pady 3
 
-   label $frm.labURL_a -text "$caption(webcam,longuepose)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL_a -in $frm.frame10 -anchor center -side left -pady 3
+   set labelName [::confCam::createUrlLabel $frm.frame10 "$caption(webcam,longuepose)" "$caption(webcam,site_web_chambers)"]
+   pack $labelName -anchor center -side left -pady 3
 
    label $frm.lab2 -text "$caption(webcam,longueposeport)"
    pack $frm.lab2 -in $frm.frame11 -anchor center -side left -padx 3 -pady 5
@@ -271,43 +344,11 @@ proc ::webcam::fillConfigPage { frm camItem } {
    label $frm.lab103 -text "$caption(webcam,titre_site_web)"
    pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
 
-   label $frm.labURL -text "$caption(webcam,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+   set labelName [::confCam::createUrlLabel $frm.frame2 "$caption(webcam,site_web_ref)" "$caption(webcam,site_web_ref)"]
+   pack $labelName -side top -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-
-   #--- Creation du lien avec le navigateur web et changement de sa couleur
-   #--- Pour le site web de reference
-   bind $frm.labURL <ButtonPress-1> {
-      set filename "$caption(webcam,site_web_ref)"
-      ::audace::Lance_Site_htm $filename
-   }
-   bind $frm.labURL <Enter> {
-      global frmm
-      set frm $frmm(Camera7)
-      $frm.labURL configure -fg $color(purple)
-   }
-   bind $frm.labURL <Leave> {
-      global frmm
-      set frm $frmm(Camera7)
-      $frm.labURL configure -fg $color(blue)
-   }
-   #--- Pour le site web de Steve Chambers
-   bind $frm.labURL_a <ButtonPress-1> {
-      set filename "$caption(webcam,site_web_chambers)"
-      ::audace::Lance_Site_htm $filename
-   }
-   bind $frm.labURL_a <Enter> {
-      global frmm
-      set frm $frmm(Camera7)
-      $frm.labURL_a configure -fg $color(purple)
-   }
-   bind $frm.labURL_a <Leave> {
-      global frmm
-      set frm $frmm(Camera7)
-      $frm.labURL_a configure -fg $color(blue)
-   }
 }
 
 #
@@ -317,7 +358,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 proc ::webcam::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create webcam USB -channel $conf(webcam,$camItem,channel) \
+   set camNo [ cam::create webcam "$conf(webcam,$camItem,port)" -channel $conf(webcam,$camItem,channel) \
       -lpport $conf(webcam,$camItem,longueposeport) -name WEBCAM -ccd $conf(webcam,$camItem,ccd) ]
    console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
       $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
@@ -331,6 +372,12 @@ proc ::webcam::configureCamera { camItem } {
    #--- Je configure l'oriention des miroirs par defaut
    cam$camNo mirrorh $conf(webcam,$camItem,mirh)
    cam$camNo mirrorv $conf(webcam,$camItem,mirv)
+
+   #--- Je configure le format video (pour Linux uniquement)
+   if { $::tcl_platform(os) == "Linux" } {
+      cam$camNo videoformat $conf(webcam,$camItem,videoformat)
+      cam$camNo framerate $conf(webcam,$camItem,framerate)
+   }
    #--- Je cree la thread dediee a la camera
    set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
 
@@ -368,8 +415,22 @@ proc ::webcam::configureCamera { camItem } {
       #--- Pas de liaison longue pose
       cam$camNo longuepose 0
    }
+
    #---
    ::confVisu::visuDynamix $confCam($camItem,visuNo) 255 -255
+}
+
+#------------------------------------------------------------
+#  selectPort
+#     selectionne un port
+#
+#  return null
+#------------------------------------------------------------
+proc ::webcam::selectPort { camItem tklist } {
+   variable private
+
+   set index [$tklist curselection]
+   set private($camItem,port) [lindex [lindex $private(portList) $index] 0]
 }
 
 #
@@ -377,17 +438,24 @@ proc ::webcam::configureCamera { camItem } {
 #    Arrete la WebCam
 #
 proc ::webcam::stop { camNo camItem } {
-   global audace conf frmm
+   global conf
+   variable private
 
-   #--- Boutons de configuration de la WebCam inactif
-   if { [ winfo exists $audace(base).confCam ] } {
-      set frm $frmm(Camera7)
-      $frm.conf_webcam configure -state disabled
-      $frm.format_webcam configure -state disabled
-   }
-   #--- Je ferme la liaison longuepose
-   if { $conf(webcam,$camItem,longuepose) == 1 } {
-      ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose"
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      #--- Boutons de configuration de la WebCam inactif
+      if { [ winfo exists $frm] } {
+         if { $::tcl_platform(os) == "Linux" } {
+            $frm.frame6.videoFormatList configure -state disabled
+         } else {
+            $frm.frame7.conf_webcam configure -state disabled
+            $frm.frame6.format_webcam configure -state disabled
+         }
+      }
+      #--- Je ferme la liaison longuepose
+      if { $conf(webcam,$camItem,longuepose) == 1 } {
+         ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose"
+      }
    }
 }
 
@@ -396,23 +464,47 @@ proc ::webcam::stop { camNo camItem } {
 #    Configure les widgets de configuration de la WebCam
 #
 proc ::webcam::ConfigWebCam { camItem } {
-   global audace conf confCam frmm
+   global audace conf confCam
+   variable private
 
-   if { [ winfo exists $audace(base).confCam ] } {
-      set frm $frmm(Camera7)
-      if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "webcam" } {
-         #--- Boutons de configuration de la WebCam actif
-         $frm.conf_webcam configure -state normal -command "cam$confCam($camItem,camNo) videosource"
-         $frm.format_webcam configure -state normal -command "cam$confCam($camItem,camNo) videoformat"
-      } else {
-         #--- Boutons de configuration de la WebCam inactif
-         $frm.conf_webcam configure -state disabled
-         $frm.format_webcam configure -state disabled
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "webcam" } {
+            #--- Boutons de configuration de la WebCam actif
+            if { $::tcl_platform(os) == "Linux" } {
+               $frm.frame6.videoFormatList configure -state normal
+            } else {
+               $frm.frame7.conf_webcam configure -state normal -command "cam$confCam($camItem,camNo) videosource"
+               $frm.frame6.format_webcam configure -state normal -command "cam$confCam($camItem,camNo) videoformat"
+            }
+         } else {
+            #--- Boutons de configuration de la WebCam inactif
+            if { $::tcl_platform(os) == "Linux" } {
+               $frm.frame6.videoFormatList configure -state disabled
+            } else {
+               $frm.frame7.conf_webcam configure -state disabled
+               $frm.frame6.format_webcam configure -state disabled
+            }
+         }
+         #--- Configure les widgets associes a la longue pose
+         ::webcam::checkConfigLonguePose $camItem
+         #--- Configure les widgets associes au choix du CCD
+         ::webcam::checkConfigCCDN&B $camItem
+
+         #--- actualise la liste des ports
+         if { $::tcl_platform(os) == "Linux" } {
+            #--- je remplis la liste avec la liste des ports
+            if { "$private(portList)" == "" } {
+               set private(portList) [lsort -dictionary [ glob -nocomplain /dev/video? ]]
+            }
+            #--- je selectionne le port courant
+             set index [lsearch $private(portList) $private($camItem,port)]
+             if { $index != -1 } {
+                $frm.frame6.portList selection set $index
+             }
+         }
       }
-      #--- Configure les widgets associes a la longue pose
-      ::webcam::checkConfigLonguePose $camItem
-      #--- Configure les widgets associes au choix du CCD
-      ::webcam::checkConfigCCDN&B $camItem
    }
 }
 
@@ -422,22 +514,23 @@ proc ::webcam::ConfigWebCam { camItem } {
 #
 proc ::webcam::checkConfigLonguePose { camItem } {
    variable private
-   global audace frmm
 
-   if { [ winfo exists $audace(base).confCam ] } {
-      set frm $frmm(Camera7)
-      if { $private($camItem,longuepose) == "1" } {
-         #--- Widgets de configuration de la longue pose actifs
-         $frm.lpport configure -state normal
-         $frm.configure configure -state normal
-         $frm.longueposelinkbit configure -state normal
-         $frm.longueposestartvalue configure -state normal
-      } else {
-         #--- Widgets de configuration de la longue pose inactifs
-         $frm.lpport configure -state disabled
-         $frm.configure configure -state disabled
-         $frm.longueposelinkbit configure -state disabled
-         $frm.longueposestartvalue configure -state disabled
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $private($camItem,longuepose) == "1" } {
+            #--- Widgets de configuration de la longue pose actifs
+            $frm.lpport configure -state normal
+            $frm.configure configure -state normal
+            $frm.longueposelinkbit configure -state normal
+            $frm.longueposestartvalue configure -state normal
+         } else {
+            #--- Widgets de configuration de la longue pose inactifs
+            $frm.lpport configure -state disabled
+            $frm.configure configure -state disabled
+            $frm.longueposelinkbit configure -state disabled
+            $frm.longueposestartvalue configure -state disabled
+         }
       }
    }
 }
@@ -448,22 +541,24 @@ proc ::webcam::checkConfigLonguePose { camItem } {
 #
 proc ::webcam::checkConfigCCDN&B { camItem } {
    variable private
-   global audace confCam frmm
+   global audace
 
-   if { [ winfo exists $audace(base).confCam ] } {
-      set frm $frmm(Camera7)
-      if { $::webcam::private($camItem,ccd_N_B) == "1" } {
-         if { $::webcam::private($camItem,dim_ccd_N_B) == "1/4''" } {
-            set ::webcam::private($camItem,ccd) "ICX098BL-6"
-         } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/3''" } {
-            set ::webcam::private($camItem,ccd) "ICX424AL-6"
-         } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/2''" } {
-            set ::webcam::private($camItem,ccd) "ICX414AL-6"
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $::webcam::private($camItem,ccd_N_B) == "1" } {
+            if { $::webcam::private($camItem,dim_ccd_N_B) == "1/4''" } {
+               set ::webcam::private($camItem,ccd) "ICX098BL-6"
+            } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/3''" } {
+               set ::webcam::private($camItem,ccd) "ICX424AL-6"
+            } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/2''" } {
+               set ::webcam::private($camItem,ccd) "ICX414AL-6"
+            }
+            pack $frm.frame15 -in $frm.frame14 -side right -fill x -pady 5
+         } else {
+            set ::webcam::private($camItem,ccd) "ICX098BQ-A"
+            pack forget $frm.frame15
          }
-         pack $frm.frame15 -in $frm.frame14 -side right -fill x -pady 5
-      } else {
-         set ::webcam::private($camItem,ccd) "ICX098BQ-A"
-         pack forget $frm.frame15
       }
    }
 }
@@ -505,7 +600,7 @@ proc ::webcam::getBinningListScan { } {
 
 #
 # ::webcam::getLongExposure
-#    Retourne 1 si le mode longue pose est activé
+#    Retourne 1 si le mode longue pose est activï¿½
 #    Sinon retourne 0
 #
 proc ::webcam::getLongExposure { camItem } {
@@ -567,3 +662,225 @@ proc ::webcam::hasShutter { } {
    return 0
 }
 
+
+#------------------------------------------------------------
+# ========== Namespace de la fentre de configuration ========
+#
+#
+#------------------------------------------------------------
+namespace eval ::webcam::config {
+}
+
+#------------------------------------------------------------
+# config::run
+#    affiche la fenetre de configuration de l'autoguidage
+#
+#------------------------------------------------------------
+proc ::webcam::config::run { visuNo { camItem "A" }  } {
+   variable private
+
+   if { $::tcl_platform(os) == "Linux" } {
+      set private($visuNo,toplevel) "[confVisu::getBase $visuNo].webcamconfig"
+      set private($visuNo,camItem) $camItem
+
+      set private(frameRateList) [list "5" "10" "15" "20" "25" "30" "50"]
+      set private(shutterList) [list "1/25" "1/33" "1/50" "1/100" "1/250" "1/500" "1/1000" "1/2500" "1/5000" "1/10000"]
+
+      #--- j'affiche la fenetre de configuration
+      ::confGenerique::run $private($visuNo,toplevel) "::webcam::config" $visuNo nomodal
+      wm geometry $private($visuNo,toplevel) $::conf(webcam,$camItem,configWindowPosition)
+      set result 0
+   } else {
+      set result [ catch { after 10 "cam[ ::confVisu::getCamNo $visuNo ] videosource" } ]
+   }
+   return $result
+}
+
+#------------------------------------------------------------
+# ::webcam::config::apply { }
+#   copie les variables private() dans le tableau conf()
+#------------------------------------------------------------
+proc ::webcam::config::apply { visuNo } {
+   global conf
+   variable private
+
+   set camItem $private($visuNo,camItem)
+   set camNo   $::confCam($camItem,camNo)
+
+   set ::conf(webcam,$private($visuNo,camItem),autoShutter) $private($visuNo,autoShutter)
+   set ::conf(webcam,$private($visuNo,camItem),autoGain) $private($visuNo,autoGain)
+
+   if { $private($visuNo,framerate) != $::conf(webcam,$camItem,framerate) } {
+      #cam$camNo framerate $private($visuNo,framerate)
+      set ::conf(webcam,$private($visuNo,camItem),framerate) $private($visuNo,framerate)
+      console::disp ":webcam::config::apply framerate=$private($visuNo,framerate)\n"
+   }
+
+   if { $private($visuNo,shutter) != $::conf(webcam,$camItem,shutter) } {
+      #cam$camNo framerate $private($visuNo,shutter)
+      set ::conf(webcam,$private($visuNo,camItem),shutter) $private($visuNo,shutter)
+      console::disp ":webcam::config::apply shutter=$private($visuNo,shutter)\n"
+   }
+
+   if { $private($visuNo,gain) != $::conf(webcam,$camItem,gain) } {
+      #cam$camNo gain $private($visuNo,gain)
+      set ::conf(webcam,$private($visuNo,camItem),gain)  $private($visuNo,gain)
+      console::disp ":webcam::config::gain shutter=$private($visuNo,gain)\n"
+   }
+}
+
+#------------------------------------------------------------
+# ::webcam::config::closeWindow
+#   ferme la fenetre de configuration
+#------------------------------------------------------------
+proc ::webcam::config::closeWindow { visuNo } {
+   variable private
+
+   #--- j'enregistre la position de la fentre de configuration
+   set geometry [ wm geometry $private($visuNo,toplevel)]
+   set deb [ expr 1 + [ string first + $geometry ] ]
+   set fin [ string length $geometry ]
+   set ::conf(webcam,$private($visuNo,camItem),configWindowPosition) "+[ string range $geometry $deb $fin ]"
+}
+
+#------------------------------------------------------------
+# ::webcam::config::getLabel
+#   retourne le nom de la fenetre de configuration
+#------------------------------------------------------------
+proc ::webcam::config::getLabel { } {
+   global caption
+
+   return "$caption(webcam,configurer) $caption(webcam,camera)"
+}
+
+#------------------------------------------------------------
+# ::webcam::config::fillConfigPage { }
+#   fenetre de configuration de la camera
+#   return rien
+#------------------------------------------------------------
+proc ::webcam::config::fillConfigPage { frm visuNo } {
+   variable private
+   global caption
+
+   set private($visuNo,This) $frm
+
+   #--- j'initialise les variables des widgets
+   set private($visuNo,framerate)  $::conf(webcam,$private($visuNo,camItem),framerate)
+   set private($visuNo,shutter)    $::conf(webcam,$private($visuNo,camItem),shutter)
+   set private($visuNo,gain)       $::conf(webcam,$private($visuNo,camItem),gain)
+   set private($visuNo,autoShutter) $::conf(webcam,$private($visuNo,camItem),autoShutter)
+   set private($visuNo,autoGain)   $::conf(webcam,$private($visuNo,camItem),autoGain)
+
+   #--- Frame detection etoile
+   TitleFrame $frm.framerate -borderwidth 2 -relief ridge -text "$caption(webcam,framerate)"
+      listbox $frm.framerate.list -state normal  -width 9 -listvariable ::webcam::config::private(frameRateList)
+      pack $frm.framerate.list -in [$frm.framerate getframe] -anchor w -side top -fill y -expand 1
+      bind $frm.framerate.list <<ListboxSelect>> "::webcam::config::onSelectFrameRate $visuNo $frm.framerate.list"
+   pack $frm.framerate -anchor w -side left -fill y -expand 0
+
+   TitleFrame $frm.shutter -borderwidth 2 -relief ridge -text "$caption(webcam,shutter)"
+      checkbutton $frm.shutter.auto -text "$caption(webcam,auto)" -highlightthickness 0 \
+         -variable ::webcam::config::private($visuNo,autoShutter) \
+         -command "::webcam::config::onSetAutoShutter $visuNo $frm.shutter.list"
+      pack $frm.shutter.auto -in [$frm.shutter getframe] -anchor w -side top -fill none -expand 0
+      listbox $frm.shutter.list -state normal  -width 9 -listvariable ::webcam::config::private(shutterList)
+      pack $frm.shutter.list -in [$frm.shutter getframe] -anchor w -side top -fill y -expand 1
+      bind $frm.shutter.list <<ListboxSelect>> "::webcam::config::onSelectShutter $visuNo $frm.shutter.list"
+   pack $frm.shutter -anchor w -side left -fill y -expand 0
+
+   TitleFrame $frm.gain -borderwidth 2 -relief ridge -text "$caption(webcam,gain)"
+      checkbutton $frm.gain.auto -text "$caption(webcam,auto)" -highlightthickness 0 \
+         -variable ::webcam::config::private($visuNo,autoGain) \
+         -command "::webcam::config::onSetAutoGain $visuNo $frm.gain.scale"
+      pack $frm.gain.auto -in [$frm.gain getframe] -anchor w -side top -fill none -expand 0
+      scale $frm.gain.scale -from "0" -to "100"  \
+         -orient vertical -showvalue true -tickinterval 1 -resolution 1  -width 8 \
+         -borderwidth 1 -relief groove -command "::webcam::config::onSelectGain $visuNo $frm.gain.scale"
+      pack $frm.gain.scale -in [$frm.gain getframe] -anchor w -side top -fill y -expand 1
+   pack $frm.gain -anchor w -side left -fill y -expand 0
+
+
+   pack $frm -fill x -expand 1
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+   ::webcam::config::onSetAutoShutter $visuNo $frm.shutter.list
+   ::webcam::config::onSetAutoGain $visuNo $frm.gain.scale
+}
+
+#------------------------------------------------------------
+#  onSelectFrameRate
+#     selectionne le nombre d'image par seconde
+#
+#  return null
+#------------------------------------------------------------
+proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
+   variable private
+
+   #--- je copie la valeur selectionnee dans la variable private
+   set private($visuNo,framerate) [$tklist get [$tklist curselection]]
+}
+
+#------------------------------------------------------------
+#  onSelectShutter
+#     selectionne la vitesse d'obturation
+#
+#  return null
+#------------------------------------------------------------
+proc ::webcam::config::onSelectShutter { visuNo tklist } {
+   variable private
+
+   #--- je copie la valeur selectionnee
+   set value [$tklist get [$tklist curselection]]
+   #--- j'ajoute un point pour transformer en valeur decimale
+   append value "."
+   #--- je convertis en fraction de 65535.
+   set private($visuNo,shutter) [expr int( 65535. * [expr $value]) ]
+}
+
+#------------------------------------------------------------
+#  onSelectGain
+#     selectionne le gain
+#
+#  return null
+#------------------------------------------------------------
+proc ::webcam::config::onSelectGain { visuNo tkscale value } {
+   variable private
+
+   #--- j'ajoute un point pour transformer en valeur decimale
+   append value "."
+   #--- je convertis en fraction de 65535.
+   set private($visuNo,shutter) [expr int( 65535. * $value / 100.) ]
+}
+
+#------------------------------------------------------------
+#  onSetAutoShutter
+#     change le mode automatique du gain
+#
+#  return null
+#------------------------------------------------------------
+proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
+   variable private
+
+   if { $private($visuNo,autoShutter) == 0 } {
+      $tklist configure -state normal
+   } else {
+      $tklist configure -state disabled
+   }
+}
+
+#------------------------------------------------------------
+#  onSetGainAuto
+#     change le mode automatique du gain
+#
+#  return null
+#------------------------------------------------------------
+proc ::webcam::config::onSetAutoGain { visuNo tkscale } {
+   variable private
+
+   if { $private($visuNo,autoGain) == 0 } {
+      $tkscale configure -state normal
+   } else {
+      $tkscale configure -state disabled
+   }
+}
