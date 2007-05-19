@@ -2,11 +2,12 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.12 2007-04-07 00:35:18 michelpujol Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.13 2007-05-19 10:40:20 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
    package provide quickaudine 1.0
+
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] quickaudine.cap ]
 }
@@ -25,7 +26,7 @@ proc ::quickaudine::configureDriver { } {
    global audace
 
    #--- Affiche la liaison
-   ###quickaudine::run "$audace(base).quickaudine"
+  ### quickaudine::run "$audace(base).quickaudine"
 
    return
 }
@@ -90,7 +91,7 @@ proc ::quickaudine::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::quickaudine::getPluginProperty { propertyName } {
    switch $propertyName {
-      
+
    }
 }
 
@@ -127,14 +128,15 @@ proc ::quickaudine::fillConfigPage { frm } {
    #--- je mets a jour la liste
    refreshAvailableList
 
-   ::confColor::applyColor $private(frm)
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
-#  getPluginType 
+#  getPluginType
 #     retourne le type de driver
 #------------------------------------------------------------
-proc ::quickaudine::getPluginType  { } {
+proc ::quickaudine::getPluginType { } {
    return "link"
 }
 
@@ -224,10 +226,9 @@ proc ::quickaudine::getSelectedLinkLabel { } {
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #------------------------------------------------------------
-proc ::quickaudine::initPlugin  { } {
+proc ::quickaudine::initPlugin { } {
    variable private
 
-   
    #--- je fixe le nom generique de la liaison
    set private(genericName)   "quickaudine"
    set private(statusMessage) ""
@@ -305,7 +306,7 @@ proc ::quickaudine::refreshAvailableList { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return rien

@@ -2,11 +2,12 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.12 2007-04-07 00:35:18 michelpujol Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.13 2007-05-19 10:40:40 robertdelmas Exp $
 #
 
 namespace eval quickremote {
    package provide quickremote 1.1
+
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] quickremote.cap ]
 }
@@ -113,11 +114,9 @@ proc ::quickremote::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::quickremote::getPluginProperty { propertyName } {
    switch $propertyName {
-      
+
    }
 }
-
-
 
 #------------------------------------------------------------
 #  fillConfigPage
@@ -152,14 +151,15 @@ proc ::quickremote::fillConfigPage { frm } {
    #--- je mets a jour la liste
    refreshAvailableList
 
-   ::confColor::applyColor $private(frm)
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
-#  getPluginType 
+#  getPluginType
 #     retourne le type de driver
 #------------------------------------------------------------
-proc ::quickremote::getPluginType  { } {
+proc ::quickremote::getPluginType { } {
    return "link"
 }
 
@@ -249,7 +249,7 @@ proc ::quickremote::getSelectedLinkLabel { } {
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #------------------------------------------------------------
-proc ::quickremote::initPlugin  { } {
+proc ::quickremote::initPlugin { } {
    variable private
 
    #--- je fixe le nom generique de la liaison
@@ -329,7 +329,7 @@ proc ::quickremote::refreshAvailableList { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return rien
@@ -363,3 +363,4 @@ proc ::quickremote::widgetToConf { } {
    global conf
 
 }
+

@@ -2,13 +2,14 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.12 2007-04-07 00:35:18 michelpujol Exp $
+# Mise a jour $Id: serialport.tcl,v 1.13 2007-05-19 10:40:58 robertdelmas Exp $
 #
 
 namespace eval serialport {
    package provide serialport 1.0
+
    #--- Charge le fichier caption
-   source [ file join [file dirname [info script]] serialport.cap ]   
+   source [ file join [file dirname [info script]] serialport.cap ]
 }
 
 #==============================================================
@@ -25,7 +26,7 @@ proc ::serialport::configureDriver { } {
    global audace
 
    #--- Affiche la liaison
-   ###serialport::run "$audace(base).serialport"
+  ### serialport::run "$audace(base).serialport"
 
    return
 }
@@ -102,7 +103,7 @@ proc ::serialport::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::serialport::getPluginProperty { propertyName } {
    switch $propertyName {
-     
+
    }
 }
 
@@ -139,14 +140,15 @@ proc ::serialport::fillConfigPage { frm } {
    #--- je mets a jour la liste
    refreshAvailableList
 
-   ::confColor::applyColor $private(frm)
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
-#  getPluginType 
+#  getPluginType
 #     retourne le type de driver
 #------------------------------------------------------------
-proc ::serialport::getPluginType  { } {
+proc ::serialport::getPluginType { } {
    return "link"
 }
 
@@ -258,7 +260,7 @@ proc ::serialport::getSelectedLinkLabel { } {
 #
 #  return namespace
 #------------------------------------------------------------
-proc ::serialport::initPlugin  { } {
+proc ::serialport::initPlugin { } {
    variable private
 
    #--- Je charge les variables d'environnement
@@ -331,7 +333,7 @@ proc ::serialport::refreshAvailableList { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return rien
@@ -374,8 +376,7 @@ proc ::serialport::widgetToConf { } {
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::Recherche_Ports { } {
-   global audace
-   global conf
+   global audace conf
 
    #--- Recherche le ou les ports COM exclus
    set kd ""

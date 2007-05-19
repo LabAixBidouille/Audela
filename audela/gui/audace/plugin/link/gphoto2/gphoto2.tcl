@@ -2,11 +2,12 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.6 2007-04-07 00:35:17 michelpujol Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.7 2007-05-19 10:39:17 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {
    package provide gphoto2 1.0
+
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] gphoto2.cap ]
 }
@@ -21,7 +22,7 @@ proc ::gphoto2::configureDriver { } {
    global audace
 
    #--- Affiche la liaison
-   ###gphoto2::run "$audace(base).gphoto2"
+  ### gphoto2::run "$audace(base).gphoto2"
 
    return
 }
@@ -36,7 +37,7 @@ proc ::gphoto2::confToWidget { } {
    variable widget
    global conf
 
-   set widget(debug)     $conf(dslr,debug)
+   set widget(debug) $conf(dslr,debug)
 }
 
 #------------------------------------------------------------
@@ -71,7 +72,7 @@ proc ::gphoto2::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::gphoto2::getPluginProperty { propertyName } {
    switch $propertyName {
-      
+
    }
 }
 
@@ -93,13 +94,15 @@ proc ::gphoto2::fillConfigPage { frm } {
       -variable ::gphoto2::widget(debug)
    pack $frm.debug -in $frm -anchor center -side left -padx 10 -pady 2
 
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
-#  getPluginType 
+#  getPluginType
 #     retourne le type de driver
 #------------------------------------------------------------
-proc ::gphoto2::getPluginType  { } {
+proc ::gphoto2::getPluginType { } {
    return "link"
 }
 
@@ -165,12 +168,11 @@ proc ::gphoto2::getSelectedLinkLabel { } {
 }
 
 #------------------------------------------------------------
-#  init (est lance automatiquement au chargement de ce fichier tcl)
+#  initPlugin (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #------------------------------------------------------------
-proc ::gphoto2::initPlugin  { } {
+proc ::gphoto2::initPlugin { } {
    variable private
-
 
    #--- je fixe le nom generique de la liaison  identique au namespace
    set private(genericName) "gphoto2"
@@ -191,8 +193,7 @@ proc ::gphoto2::initPlugin  { } {
 proc ::gphoto2::initConf { } {
    global conf
 
-   if { ! [ info exists conf(dslr,debug) ] }     { set conf(dslr,debug)      "0" }
-
+   if { ! [ info exists conf(dslr,debug) ] } { set conf(dslr,debug) "0" }
    return
 }
 
@@ -207,7 +208,7 @@ proc ::gphoto2::isReady { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return nothing
@@ -227,6 +228,7 @@ proc ::gphoto2::selectConfigLink { linkLabel } {
 proc ::gphoto2::widgetToConf { } {
    variable widget
    global conf
-   set conf(dslr,debug)     $widget(debug)
+
+   set conf(dslr,debug) $widget(debug)
 }
 

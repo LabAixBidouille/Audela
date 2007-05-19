@@ -2,16 +2,14 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.4 2007-04-07 00:35:17 michelpujol Exp $
+# Mise a jour $Id: external.tcl,v 1.5 2007-05-19 10:38:57 robertdelmas Exp $
 #
-
-
 
 namespace eval external {
    package provide external 1.0
+
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] external.cap ]
-
 }
 
 #------------------------------------------------------------
@@ -24,7 +22,7 @@ proc ::external::configureDriver { } {
    global audace
 
    #--- Affiche la liaison
-   ###external::run "$audace(base).external"
+  ### external::run "$audace(base).external"
 
    return
 }
@@ -77,7 +75,6 @@ proc ::external::getPluginProperty { propertyName } {
    }
 }
 
-
 #------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
@@ -86,17 +83,18 @@ proc ::external::getPluginProperty { propertyName } {
 #------------------------------------------------------------
 proc ::external::fillConfigPage { frm } {
    variable widget
-   global caption
 
    #--- Je memorise la reference de la frame
    set widget(frm) $frm
 
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 #------------------------------------------------------------
-#  getPluginType 
+#  getPluginType
 #     retourne le type de driver
 #------------------------------------------------------------
-proc ::external::getPluginType  { } {
+proc ::external::getPluginType { } {
    return "link"
 }
 
@@ -107,7 +105,6 @@ proc ::external::getPluginType  { } {
 #  return "nom_driver.htm"
 #------------------------------------------------------------
 proc ::external::getHelp { } {
-
    return "external.htm"
 }
 
@@ -165,7 +162,7 @@ proc ::external::getSelectedLinkLabel { } {
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
 #     initialise le driver
 #------------------------------------------------------------
-proc ::external::initPlugin  { } {
+proc ::external::initPlugin { } {
    variable private
 
    #--- je fixe le nom generique de la liaison  identique au namespace
@@ -177,7 +174,6 @@ proc ::external::initPlugin  { } {
    #--- J'initialise les variables widget(..)
    confToWidget
 }
-
 
 #------------------------------------------------------------
 #  initConf
@@ -198,12 +194,11 @@ proc ::external::initConf { } {
 #  return 0 (ready) , 1 (not ready)
 #------------------------------------------------------------
 proc ::external::isReady { } {
-
    return 0
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return nothing
@@ -223,3 +218,4 @@ proc ::external::widgetToConf { } {
    global conf
 
 }
+

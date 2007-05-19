@@ -2,11 +2,12 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.10 2007-04-07 00:35:17 michelpujol Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.11 2007-05-19 10:39:41 robertdelmas Exp $
 #
 
 namespace eval parallelport {
    package provide parallelport 1.0
+
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] parallelport.cap ]
 }
@@ -21,9 +22,9 @@ namespace eval parallelport {
 #------------------------------------------------------------
 proc ::parallelport::getPluginProperty { propertyName } {
    switch $propertyName {
+
    }
 }
-
 
 #------------------------------------------------------------
 #  getPluginTitle
@@ -44,13 +45,14 @@ proc ::parallelport::getPluginType { } {
 }
 
 #------------------------------------------------------------
-#  init
+#  initPlugin
 #     initialise le driver
 #     init est lance automatiquement au chargement de ce fichier tcl
 #  return namespace
 #------------------------------------------------------------
 proc ::parallelport::initPlugin { } {
    variable private
+
    #--- je recupere le nom generique de la liaison
    ##set private(genericName) [link::genericname parallelport]
    if { $::tcl_platform(os) == "Linux" } {
@@ -59,7 +61,6 @@ proc ::parallelport::initPlugin { } {
       set private(genericName) "LPT";
    }
 }
-
 
 #------------------------------------------------------------
 #  configureDriver
@@ -71,7 +72,7 @@ proc ::parallelport::configureDriver { } {
    global audace
 
    #--- Affiche la liaison
-   ###parallelport::run "$audace(base).parallelport"
+  ### parallelport::run "$audace(base).parallelport"
 
    return
 }
@@ -169,13 +170,13 @@ proc ::parallelport::fillConfigPage { frm } {
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(parallelport,refresh)" -command { ::parallelport::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
-
    pack $frm.available -side left -fill both -expand true
 
    #--- je mets a jour la liste
    refreshAvailableList
 
-   ::confColor::applyColor $private(frm)
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
@@ -206,7 +207,6 @@ proc ::parallelport::getLinkIndex { linkLabel } {
    scan $linkLabel "$private(genericName)%d" linkIndex
    return $linkIndex
 }
-
 
 #------------------------------------------------------------
 #  getLinkLabels
@@ -253,7 +253,6 @@ proc ::parallelport::getSelectedLinkLabel { } {
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
 proc ::parallelport::isReady { } {
-
    return 0
 }
 
@@ -303,7 +302,7 @@ proc ::parallelport::refreshAvailableList { } {
 }
 
 #------------------------------------------------------------
-#  selectConfigItem
+#  selectConfigLink
 #     selectionne un link dans la fenetre de configuration
 #
 #  return rien
@@ -311,7 +310,7 @@ proc ::parallelport::refreshAvailableList { } {
 proc ::parallelport::selectConfigLink { linkLabel } {
    variable private
 
-   $private(frm).available.list selection clear 0 end
+  $private(frm).available.list selection clear 0 end
 
    #--- je recherche linkLabel dans la listbox  (linkLabel est le premier element de chaque ligne)
    for {set i 0} {$i<[$private(frm).available.list size]} {incr i} {
@@ -337,3 +336,4 @@ proc ::parallelport::widgetToConf { } {
    global conf
 
 }
+
