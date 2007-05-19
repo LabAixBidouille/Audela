@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.15 2007-05-15 21:54:18 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.16 2007-05-19 20:18:39 michelpujol Exp $
 #
 
 namespace eval ::astrometry {
@@ -626,36 +626,10 @@ namespace eval ::astrometry {
       if {$catastar<3} {
          return
       }
-      #--- Read the values of header keywords
-      ::astrometry::updatewcs
-      #--- Bind sur les coordonnees
-      $audace(base).fra1.labURLX configure -fg $color(blue)
-      $audace(base).fra1.labURLY configure -fg $color(blue)
-      set audace(labcoord,type) xy
-      bind $audace(base).fra1.labURLX <Button-1> {
-         global audace
-         if { $audace(labcoord,type) == "xy" } {
-            set audace(labcoord,type) radec
-            $audace(base).fra1.labURLX configure -text "$caption(astrometry,RA) $caption(astrometry,egale) $caption(astrometry,tiret)"
-            $audace(base).fra1.labURLY configure -text "$caption(astrometry,DEC) $caption(astrometry,egale) $caption(astrometry,tiret)"
-         } else {
-            set audace(labcoord,type) xy
-            $audace(base).fra1.labURLX configure -text "$caption(astrometry,X) $caption(astrometry,egale) $caption(astrometry,tiret)"
-            $audace(base).fra1.labURLY configure -text "$caption(astrometry,Y) $caption(astrometry,egale) $caption(astrometry,tiret)"
-         }
-      }
-      bind $audace(base).fra1.labURLY <Button-1> {
-         global audace
-         if { $audace(labcoord,type) == "xy" } {
-            set audace(labcoord,type) radec
-            $audace(base).fra1.labURLX configure -text "$caption(astrometry,RA) $caption(astrometry,egale) $caption(astrometry,tiret)"
-            $audace(base).fra1.labURLY configure -text "$caption(astrometry,DEC) $caption(astrometry,egale) $caption(astrometry,tiret)"
-         } else {
-            set audace(labcoord,type) xy
-            $audace(base).fra1.labURLX configure -text "$caption(astrometry,X) $caption(astrometry,egale) $caption(astrometry,tiret)"
-            $audace(base).fra1.labURLY configure -text "$caption(astrometry,Y) $caption(astrometry,egale) $caption(astrometry,tiret)"
-         }
-      }
+
+      #--- je configure confVisu pour gerer les deux echelles
+      ::confVisu::setAvailableScale $::audace(visuNo) "xy_radec"
+
       #---
       if {$starfile=="yes"} {
          set stars [mc_readcat [ list BUFFER $audace(bufNo) ] [ list * ASTROMMICROCAT $astrom(catfolder) ] {LIST} -objmax 10000 -magr< 14 -magr> 10]
