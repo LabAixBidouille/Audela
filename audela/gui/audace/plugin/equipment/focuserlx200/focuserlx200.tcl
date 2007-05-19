@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.7 2007-04-07 00:35:08 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.8 2007-05-19 09:43:33 robertdelmas Exp $
 #
 
 #
@@ -31,17 +31,12 @@ namespace eval ::focuserlx200 {
 #==============================================================
 
 #------------------------------------------------------------
-#  ::focuserlx200::init
-#     initialise le equipement
-#
-#  return namespace name
+#  ::focuserlx200::initPlugin
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::focuserlx200::initPlugin { } {
-   global audace
-
    #--- Cree les variables dans conf(...) si elles n'existent pas
    #--- pas de variable conf() pour ce focuser
-
 }
 
 #------------------------------------------------------------
@@ -104,6 +99,9 @@ proc ::focuserlx200::fillConfigPage { frm } {
 
    label $frm.frame1.labelLink -text "$caption(focuserlx200,link)"
    grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
@@ -113,9 +111,7 @@ proc ::focuserlx200::fillConfigPage { frm } {
 #  return nothing
 #------------------------------------------------------------
 proc ::focuserlx200::configurePlugin { } {
-
    #--- copie les variables des widgets dans le tableau conf()
-
 }
 
 #------------------------------------------------------------

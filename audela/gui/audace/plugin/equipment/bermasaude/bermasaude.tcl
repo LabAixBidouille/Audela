@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.14 2007-04-23 15:44:43 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.15 2007-05-19 09:42:41 robertdelmas Exp $
 #
 
 #
@@ -50,10 +50,8 @@ namespace eval bermasaude {
    source [ file join [file dirname [info script]] bermasaude.cap ]
 
    #------------------------------------------------------------
-   #  init
+   #  initPlugin
    #     initialise le plugin
-   #
-   #  return namespace name
    #------------------------------------------------------------
    proc initPlugin { } {
       global audace bermasaude conf
@@ -61,7 +59,6 @@ namespace eval bermasaude {
       #--- Initialisation
       set bermasaude(connect) "0"
       set bermasaude(attente) "50"
-
 
       #--- Cree les variables dans conf(...) si elles n'existent pas
       if { ! [ info exists conf(bermasaude,port) ] }  { set conf(bermasaude,port)  "" }
@@ -245,6 +242,9 @@ namespace eval bermasaude {
          button $frm.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised -state disabled
          pack $frm.but_5 -in $frm.frame4 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
       }
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $frm
 
       #--- Site web officiel de la roue a filtres BerMasAude
       label $frm.lab103 -text "$caption(bermasaude,site_web_ref)"
