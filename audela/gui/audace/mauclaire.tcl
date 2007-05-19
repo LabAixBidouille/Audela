@@ -2,7 +2,7 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: mauclaire.tcl,v 1.8 2007-03-20 20:40:22 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.9 2007-05-19 14:01:34 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -33,7 +33,7 @@
 # bm_fwhm                : Calcule la largeur equivalente d'une etoile en secondes d'arc
 # bm_cutima              : Decoupage d'une zone selectionnee a la souris d'une image chargee
 # bm_zoomima             : Zoom de l'image ou d'une partie selectionnee de l'image chargee
-
+# bm_exptime             : Calcule la duree totale d'exposition d'une serie
 #-----------------------------------------------------------------------------#
 
 ###############################################################################
@@ -71,7 +71,7 @@ proc bm_sphot { args } {
       #--- Initialsie la lste des fichiers :
       #set liste_images [ glob ${nom_generique}*$conf(extension,defaut) ]
       #set liste_images [ lsort -dictionary [glob ${nom_generique}*$conf(extension,defaut)] ]
-      set liste_images [ lsort -dictionary [glob -dir $audace(rep_images) -tails ${nom_generique}\[0-9\]*$conf(extension,defaut)] ]
+      set liste_images [ lsort -dictionary [glob -dir $audace(rep_images) -tails ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
       if { $nbargs<=2 } {
          #--- Creation de la zone de mesures :
@@ -412,7 +412,7 @@ proc bm_datefrac { args } {
       set s [ lindex $ldate 5 ]
 
       #--- Calcul la fraction de jour :
-      set dfrac [ expr $d+$h/24.0+$mi/3600.0+$s/84600.0 ]
+      set dfrac [ expr $d+$h/24.0+$mi/1440.0+$s/86400.0 ]
 
       #-- Ne tient compte que des 3 premieres decimales
       set cdfrac [ expr round($dfrac*1000.)/1000. ]
@@ -825,6 +825,9 @@ proc bm_sflat { args } {
             #buf$audace(bufNo) setpix [ list $x $y ] $intensite
          #}
       #}
+      buf$audace(bufNo) setkwd [ list NAXIS 2 int "" "" ]
+      buf$audace(bufNo) setkwd [ list NAXIS1 $naxis1 int "" "" ]
+      buf$audace(bufNo) setkwd [ list NAXIS2 $naxis2 int "" "" ]
       buf$audace(bufNo) save $nom_flat
       ::console::affiche_resultat "Flat artificiel sauvé sous $nom_flat\n"
       return $nom_flat
@@ -1223,40 +1226,28 @@ proc bm_register { args } {
 # Argument : nom_generique_fichier (sans extension)
 ###############################################################################
 
-proc bm_sadd0 { args } {
-   global audace
-   global conf
-
-   if {[llength $args] == 1} {
-      set repdflt [bm_goodrep]
-      set nom_generique [ lindex $args 0 ]
-      set nb_file [ llength [  glob -dir $audace(rep_images) ${nom_generique}*$conf(extension,defaut) ] ]
-      regexp {(.+)\-} $nom_generique match pref_nom
-
-      ::console::affiche_resultat "Somme de $nb_file images... sauvées sous ${pref_nom}_s$nb_file\n"
-      sadd $nom_generique ${pref_nom}_s$nb_file $nb_file
-      cd $repdflt
-      return ${pref_nom}_s$nb_file
-   } else {
-      ::console::affiche_erreur "Usage: bm_sadd nom_generique_fichier (sans extension)\n\n"
-   }
-}
-
-#--- Version sans expression reguliere (fragile)
 proc bm_sadd { args } {
    global audace
    global conf
 
    if {[llength $args] == 1} {
-      #set repdflt [bm_goodrep]
       set nom_generique [ file rootname [ lindex $args 0 ] ]
-      set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]*$conf(extension,defaut) ] ]
+      set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ]
+      set nb_file [ llength $liste_fichiers ]
 
+      #--- Somme :
       ::console::affiche_resultat "Somme de $nb_file images...\n"
-      sadd "$nom_generique" "${nom_generique}s$nb_file" $nb_file
-      ::console::affiche_resultat "Somme sauvées sous ${nom_generique}s$nb_file\n"
-      #cd $repdflt
-      return ${nom_generique}s$nb_file
+      sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+
+      #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
+      set exptime [ bm_exptime $nom_generique ]
+      buf$audace(bufNo) load "$audace(rep_images)/${nom_generique}-s$nb_file"
+      buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
+      buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
+
+      #--- Traitement du resultat :
+      ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
+      return "${nom_generique}-s$nb_file"
    } else {
       ::console::affiche_erreur "Usage: bm_sadd nom_generique_fichier\n\n"
    }
@@ -1281,10 +1272,10 @@ proc bm_smed { args } {
       set nb_file [ llength [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 
       ::console::affiche_resultat "Somme médiane de $nb_file images...\n"
-      smedian "$nom_generique" "${nom_generique}smd$nb_file" $nb_file
-      ::console::affiche_resultat "Somme médiane sauvée sous ${nom_generique}smd$nb_file\n"
+      smedian "$nom_generique" "${nom_generique}-smd$nb_file" $nb_file
+      ::console::affiche_resultat "Somme médiane sauvée sous ${nom_generique}-smd$nb_file\n"
       #cd $repdflt
-      return ${nom_generique}smd$nb_file
+      return "${nom_generique}-smd$nb_file"
    } else {
       ::console::affiche_erreur "Usage: bm_smed nom_generique_fichier\n\n"
    }
@@ -1415,4 +1406,77 @@ proc bm_zoomima { args } {
    }
 }
 #-----------------------------------------------------------------------------#
+
+###############################################################################
+# Description : Calcule la duree totale d'exposition d'une serie
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 25-03-2007
+# Date de mise a jour : 25-03-2007
+# Arguments : nom generique
+###############################################################################
+
+proc bm_exptime { args } {
+   global audace
+   global conf
+
+   if { [ llength $args ]==1 } {
+      set nom_generique [ lindex $args 0 ]
+
+      #--- Liste des images :
+      set liste_fichiers [ lsort -dictionary [glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+      set nb_file [ llength $liste_fichiers ]
+
+      #--- Calcul de exptime :
+      #-- Premiere image :
+      buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
+      set date_deb [ mc_date2ymdhms [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+      set d [ lindex $date_deb 2 ]
+      set h [ lindex $date_deb 3 ]
+      set mi [ lindex $date_deb 4 ]
+      set s [ lindex $date_deb 5 ]
+      set dfrac_deb [ expr $d+$h/24.0+$mi/1440.0+$s/86400.0 ]
+      #-- Derniere image :
+      buf$audace(bufNo) load [ lindex $liste_fichiers [ expr $nb_file-1 ] ]
+      set date_fin [ mc_date2ymdhms [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ] ]
+      set d [ lindex $date_fin 2 ]
+      set h [ lindex $date_fin 3 ]
+      set mi [ lindex $date_fin 4 ]
+      set s [ lindex $date_fin 5 ]
+      set dfrac_fin [ expr $d+$h/24.0+$mi/1440.0+$s/86400.0 ]
+      #-- Difference et conversion en secondes :
+      set duree [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+      set exptime [ expr ($dfrac_fin-$dfrac_deb)*86400.0+$duree ]
+
+      #--- Traitement du resultat :
+      ::console::affiche_resultat "Durée totale d'acquisition : $exptime s\n"
+      return $exptime
+   } else {
+      ::console::affiche_erreur "Usage: bm_exptime nom_generique_série\n\n"
+   }
+}
+#*****************************************************************************#
+
+
+#=============================================================================#
+#                    Anciennes implémentations                                #
+#=============================================================================#
+
+proc bm_sadd_20060806 { args } {
+   global audace
+   global conf
+
+   if {[llength $args] == 1} {
+      set repdflt [bm_goodrep]
+      set nom_generique [ lindex $args 0 ]
+      set nb_file [ llength [  glob -dir $audace(rep_images) ${nom_generique}*$conf(extension,defaut) ] ]
+      regexp {(.+)\-} $nom_generique match pref_nom
+
+      ::console::affiche_resultat "Somme de $nb_file images... sauvées sous ${pref_nom}_s$nb_file\n"
+      sadd $nom_generique ${pref_nom}_s$nb_file $nb_file
+      cd $repdflt
+      return ${pref_nom}_s$nb_file
+   } else {
+      ::console::affiche_erreur "Usage: bm_sadd nom_generique_fichier (sans extension)\n\n"
+   }
+}
 
