@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.2 2007-05-17 16:58:07 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.3 2007-05-19 08:39:45 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -96,6 +96,9 @@ proc ::coolpix::fillConfigPage { frm } {
 
    label $frm.labURL -text "$caption(coolpix,site_web_ref)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    bind $frm.labURL <ButtonPress-1> {

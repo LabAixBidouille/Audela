@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.1 2007-05-17 20:52:07 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.2 2007-05-19 08:40:30 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -139,6 +139,9 @@ proc ::scr1300xtc::fillConfigPage { frm } {
 
    label $frm.labURL -text "$caption(scr1300xtc,site_web_ref)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    bind $frm.labURL <ButtonPress-1> {

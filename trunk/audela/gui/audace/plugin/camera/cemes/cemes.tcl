@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.7 2007-05-17 16:57:36 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.8 2007-05-19 08:39:03 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -144,6 +144,9 @@ proc ::cemes::fillConfigPage { frm } {
 
    label $frm.labURL -text "$caption(cemes,site_web_ref)" -font $audace(font,url) -fg $color(blue)
    pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 
    #--- Creation du lien avec le navigateur web et changement de sa couleur
    bind $frm.labURL <ButtonPress-1> {
