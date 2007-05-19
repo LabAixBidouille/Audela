@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.7 2007-04-07 00:35:07 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.8 2007-05-19 09:43:17 robertdelmas Exp $
 #
 
 namespace eval ::focuserjmi {
@@ -43,18 +43,14 @@ proc ::focuserjmi::getPluginType { } {
 # return : valeur de la propriete , ou "" si la propriete n'existe pas
 #------------------------------------------------------------
 proc ::focuserjmi::getPluginProperty { propertyName } {
-
    switch $propertyName {
       function { return "acquisition" }
    }
 }
 
-
 #------------------------------------------------------------
-#  ::focuserjmi::init (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le equipement
-#
-#  return namespace name
+#  ::focuserjmi::initPlugin (est lance automatiquement au chargement de ce fichier tcl)
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::focuserjmi::initPlugin { } {
    variable private
@@ -69,7 +65,6 @@ proc ::focuserjmi::initPlugin { } {
    #--- variables locales
    set private(linkNo) "0"
 }
-
 
 #------------------------------------------------------------
 #  ::focuserjmi::getHelp
@@ -186,6 +181,8 @@ proc ::focuserjmi::fillConfigPage { frm } {
       pack $frm.start.chk -side top -padx 3 -pady 3 -fill x
    pack $frm.start -side bottom -fill x
 
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
@@ -199,9 +196,9 @@ proc ::focuserjmi::configurePlugin { } {
    global conf
 
    #--- copie les variables des widgets dans le tableau conf()
-   set conf(focuserjmi,link)           $widget(link)
-   set conf(focuserjmi,bitStart)       $widget(bitStart)
-   set conf(focuserjmi,bitDirection)   $widget(bitDirection)
+   set conf(focuserjmi,link)         $widget(link)
+   set conf(focuserjmi,bitStart)     $widget(bitStart)
+   set conf(focuserjmi,bitDirection) $widget(bitDirection)
 }
 
 #------------------------------------------------------------

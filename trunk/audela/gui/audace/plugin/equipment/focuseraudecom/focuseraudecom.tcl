@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.4 2007-04-07 00:35:07 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.5 2007-05-19 09:43:02 robertdelmas Exp $
 #
 
 #
@@ -31,18 +31,12 @@ namespace eval ::focuseraudecom {
 #==============================================================
 
 #------------------------------------------------------------
-#  ::focuseraudecom::init
-#     initialise le equipement
-#
-#  return namespace name
+#  ::focuseraudecom::initPlugin
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::focuseraudecom::initPlugin { } {
-   global audace
-
    #--- Cree les variables dans conf(...) si elles n'existent pas
    #--- pas de variable conf() pour ce focuser
-
-   return [namespace current]
 }
 
 #------------------------------------------------------------
@@ -105,6 +99,9 @@ proc ::focuseraudecom::fillConfigPage { frm } {
 
    label $frm.frame1.labelLink -text "$caption(focuseraudecom,link)"
    grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
@@ -114,9 +111,7 @@ proc ::focuseraudecom::fillConfigPage { frm } {
 #  return nothing
 #------------------------------------------------------------
 proc ::focuseraudecom::configurePlugin { } {
-
    #--- copie les variables des widgets dans le tableau conf()
-
 }
 
 #------------------------------------------------------------
