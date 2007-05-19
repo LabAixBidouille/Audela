@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.33 2007-05-17 20:52:58 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.34 2007-05-19 23:24:55 michelpujol Exp $
 #
 
 #=========================================================================
@@ -146,6 +146,9 @@ set caption(confcam,site_kitty)                 "http://perso.wanadoo.fr/bernard
 set caption(confcam,site_dslr)                  "http://gphoto.sourceforge.net/"
 set caption(confcam,site_andor)                 "http://www.andor-tech.com"
 
+set caption(confcam,pb)                         "Problem"
+set caption(confcam,onlycam+obt)                "Sorry, this function is not\navailable with this camera."
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -283,6 +286,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
+
+   set caption(confcam,pb)                      "Problème"
+   set caption(confcam,onlycam+obt)             "Désolé, cette fonction n'est pas\ndisponible avec cette caméra."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -422,6 +428,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
 
+   set caption(confcam,pb)                      "Problema"
+   set caption(confcam,onlycam+obt)             "Spiacenti, ma questa funzionalita'\nnon e` disponibile per questa camera."
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -559,6 +568,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
+
+   set caption(confcam,pb)                      "Problema"
+   set caption(confcam,onlycam+obt)             "Lo siento, esta función\nno está disponible en\neste modelo de cámara."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -698,6 +710,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
 
+   set caption(confcam,pb)                      "Problem"
+   set caption(confcam,onlycam+obt)             "Diese Funktion ist leider nicht\nmit diese Kamera verfügbar."
+
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -836,6 +851,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
 
+   set caption(confcam,pb)                      "Problema"
+   set caption(confcam,onlycam+obt)             "Desculpe, esta função não está\ndisponível com esta câmara."
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -973,6 +991,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,site_kitty)              "http://perso.wanadoo.fr/bernard.dalstein/"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
    set caption(confcam,site_andor)              "http://www.andor-tech.com"
+
+   set caption(confcam,pb)                      "Problem"
+   set caption(confcam,onlycam+obt)             "Sorry, this function is not\navailable with this camera."
 
 }
 

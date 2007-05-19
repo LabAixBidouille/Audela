@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele, Audinet et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.27 2007-05-08 16:44:16 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.28 2007-05-19 23:24:55 michelpujol Exp $
 #
 
 global panneau
@@ -715,59 +715,10 @@ namespace eval ::scanfast {
       global audace caption confCam frmm panneau
 
       if { [ ::cam::list ] != "" } {
-         #---
-         set camNo      $audace(camNo)
-         set camProduct [ cam$camNo product ]
-         #---
-         set ShutterOptionList    [ ::confCam::getShutterOption $camNo ]
-         set lg_ShutterOptionList [ llength $ShutterOptionList ]
-         #---
-         if { [ ::confCam::hasShutter $camNo ] } {
-            incr panneau(scanfast,obt)
-            if { $lg_ShutterOptionList == "3" } {
-               if { $panneau(scanfast,obt) == "3" } {
-                  set panneau(scanfast,obt) "0"
-               }
-            } elseif { $lg_ShutterOptionList == "2" } {
-               if { $panneau(scanfast,obt) == "3" } {
-                  set panneau(scanfast,obt) "1"
-               }
-            }
+         set result [::confCam::setShutter $audace(camNo) $panneau(scanfast,obt)]
+         if { $result != -1 } {
+            set panneau(scanfast,obt) $result
             $This.fra4.obt.lab1 configure -text $panneau(scanfast,obt,$panneau(scanfast,obt))
-            if { "$camProduct" == "audine" } {
-               set conf(audine,foncobtu) $panneau(scanfast,obt)
-               catch { set frm $frmm(Camera1) }
-            }
-            #---
-            switch -exact -- $panneau(scanfast,obt) {
-               0  {
-                  set confCam(audine,foncobtu) $caption(scanfast,obtu_ouvert)
-                  catch {
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
-                  cam$camNo shutter "opened"
-               }
-               1  {
-                  set confCam(audine,foncobtu) $caption(scanfast,obtu_ferme)
-                  catch {
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
-                  cam$camNo shutter "closed"
-               }
-               2  {
-                  set confCam(audine,foncobtu) $caption(scanfast,obtu_synchro)
-                  catch {
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
-                  cam$camNo shutter "synchro"
-               }
-            }
-         } else {
-            tk_messageBox -title $caption(scanfast,pb) -type ok \
-               -message $caption(scanfast,onlycam+obt)
          }
       } else {
          ::confCam::run

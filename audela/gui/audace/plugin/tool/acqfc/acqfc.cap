@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.25 2007-05-12 15:00:54 robertdelmas Exp $
+# Mise a jour $Id: acqfc.cap,v 1.26 2007-05-19 23:24:54 michelpujol Exp $
 #
 
 #=========================================================================
@@ -70,7 +70,6 @@ set caption(acqfc,auto)                      "Synchro"
 set caption(acqfc,obtu_ouvert)               "Open"
 set caption(acqfc,obtu_ferme)                "Closed"
 set caption(acqfc,obtu_synchro)              "Synchro"
-set caption(acqfc,onlycam+obt)               "Sorry, this function is not\navailable with this camera."
 set caption(acqfc,pbouvfichcons)             "Problem when opening the log file.\n"
 set caption(acqfc,selcam)                    "You must select a camera first\n(Setup/Camera)."
 set caption(acqfc,seltel)                    "You must select a mount first\n(Setup/Mount)."
@@ -203,7 +202,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,obtu_ouvert)            "Ouvert"
    set caption(acqfc,obtu_ferme)             "Fermé"
    set caption(acqfc,obtu_synchro)           "Synchro"
-   set caption(acqfc,onlycam+obt)            "Désolé, cette fonction n'est pas\ndisponible avec cette caméra."
    set caption(acqfc,pbouvfichcons)          "Problème durant l'ouverture du fichier log.\n"
    set caption(acqfc,selcam)                 "Vous devez d'abord sélectionner une caméra\n(menu Configuration/Caméra)."
    set caption(acqfc,seltel)                 "Vous devez d'abord sélectionner une monture\n(menu Configuration/Monture)."
@@ -336,7 +334,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,obtu_ouvert)            "Aperto"
    set caption(acqfc,obtu_ferme)             "Chiuso"
    set caption(acqfc,obtu_synchro)           "Sincronizza"
-   set caption(acqfc,onlycam+obt)            "Spiacenti, ma questa funzionalita'\nnon e` disponibile per questa camera."
    set caption(acqfc,pbouvfichcons)          "Problema durante l'apertura del file di log\n"
    set caption(acqfc,selcam)                 "Occorre selezionare preventivamente una\ncamera CCD (menu Configurazione/Camera)."
    set caption(acqfc,seltel)                 "Occorre selezionare preventivamente una\nmontatura (menu Configurazione/Montatura)."
@@ -469,7 +466,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,obtu_ouvert)            "Abierto"
    set caption(acqfc,obtu_ferme)             "Cerrado"
    set caption(acqfc,obtu_synchro)           "Sincro"
-   set caption(acqfc,onlycam+obt)            "Lo siento, esta función\nno está disponible en\neste modelo de cámara."
    set caption(acqfc,pbouvfichcons)          "Problema durante la apertura del fichero log\n"
    set caption(acqfc,selcam)                 "Debe seleccionar primero una cámara\n(menú Configuración/Cámara)."
    set caption(acqfc,seltel)                 "Debe seleccionar primero una montura\n(menú Configuración/Montura)."
@@ -602,7 +598,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,obtu_ouvert)            "Offen"
    set caption(acqfc,obtu_ferme)             "Geschlossen"
    set caption(acqfc,obtu_synchro)           "Synchro"
-   set caption(acqfc,onlycam+obt)            "Diese Funktion ist leider nicht\nmit diese Kamera verfügbar."
    set caption(acqfc,pbouvfichcons)          "Problem während der Öffnung der Datei log\n"
    set caption(acqfc,selcam)                 "Sie müssen erst eine Kamera wählen\n(Konfiguration/Kamera Menu)."
    set caption(acqfc,seltel)                 "Sie müssen erst ein Montierung wählen\n(Konfiguration/Montierung Menu)."
@@ -735,7 +730,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,obtu_ouvert)            "Aberto"
    set caption(acqfc,obtu_ferme)             "Fechado"
    set caption(acqfc,obtu_synchro)           "Sincro"
-   set caption(acqfc,onlycam+obt)            "Desculpe, esta função não está\ndisponível com esta câmara."
    set caption(acqfc,pbouvfichcons)          "Problema durante a abertura do ficheiro log.\n"
    set caption(acqfc,selcam)                 "Deve seleccionar primeiro uma câmara\n(menu Configuração/Câmara)."
    set caption(acqfc,seltel)                 "Deve seleccionar primeiro uma montagem\n(menu Configuração/Montagem)."
@@ -859,7 +853,7 @@ if { [ string compare $langage "french" ] == "0" } {
       Change the tool now and check\nyou can access the image folder."
    set caption(acqfc,ouvsess)                "----- Opening a New Acquisition Session (rev %s)\n"
    set caption(acqfc,affheure)               "%s, %s UT (All time values in this file are expressed in UT)\n"
-   set caption(acqfc,finsess)                "\n----- Session ends at %s UT\n\n"
+   set caption(acqfc,finsess)     "\n----- Session ends at %s UT\n\n"
    set caption(acqfc,pbfermfichcons)         "Problem when closing log file.\n"
    set caption(acqfc,ouv)                    "Open"
    set caption(acqfc,ferme)                  "Closed"
@@ -867,7 +861,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,obtu_ouvert)            "Open"
    set caption(acqfc,obtu_ferme)             "Closed"
    set caption(acqfc,obtu_synchro)           "Synchro"
-   set caption(acqfc,onlycam+obt)            "Sorry, this function is not\navailable with this camera."
    set caption(acqfc,pbouvfichcons)          "Problem when opening the log file.\n"
    set caption(acqfc,selcam)                 "You must select a camera first\n(Setup/Camera)."
    set caption(acqfc,seltel)                 "You must select a mount first\n(Setup/Mount)."

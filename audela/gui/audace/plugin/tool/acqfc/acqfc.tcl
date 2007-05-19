@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.43 2007-04-14 08:28:50 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.44 2007-05-19 23:24:54 michelpujol Exp $
 #
 
 #==============================================================
@@ -581,75 +581,11 @@ namespace eval ::AcqFC {
       global audace caption conf confCam frmm panneau
 
       #---
-      set camNo      [ ::confVisu::getCamNo $visuNo ]
-      set camProduct [ cam$camNo product ]
-      #---
-      set ShutterOptionList [ ::confCam::getShutterOption $camNo ]
-      set lg_ShutterOptionList [ llength $ShutterOptionList ]
-      #---
-      if { "$camProduct" != "" } {
-         if { [ ::confCam::hasShutter $camNo ] } {
-            incr panneau(AcqFC,$visuNo,obt)
-            if { $lg_ShutterOptionList == "3" } {
-               if { $panneau(AcqFC,$visuNo,obt) == "3" } {
-                  set panneau(AcqFC,$visuNo,obt) "0"
-               }
-            } elseif { $lg_ShutterOptionList == "2" } {
-               if { $panneau(AcqFC,$visuNo,obt) == "3" } {
-                  set panneau(AcqFC,$visuNo,obt) "1"
-               }
-            }
-            $panneau(AcqFC,$visuNo,This).obt.lab configure -text $panneau(AcqFC,$visuNo,obt,$panneau(AcqFC,$visuNo,obt))
-            if { "$camProduct" == "audine" } {
-               set conf(audine,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera1) }
-            } elseif { "$camProduct" == "hisis" } {
-               set conf(hisis,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera2) }
-            } elseif { "$camProduct" == "sbig" } {
-               set conf(sbig,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera3) }
-            } elseif { "$camProduct" == "andor" } {
-               set conf(andor,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera11) }
-            } elseif { "$camProduct" == "cemes" } {
-               set conf(andor,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera11) }
-            } elseif { "$camProduct" == "fingerlakes" } {
-               set conf(fingerlakes,foncobtu) $panneau(AcqFC,$visuNo,obt)
-               catch { set frm $frmm(Camera12) }
-            }
-            #---
-            switch -exact -- $panneau(AcqFC,$visuNo,obt) {
-               0  {
-                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ouvert)
-                  catch {
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
-                  cam[ ::confVisu::getCamNo $visuNo ] shutter "opened"
-               }
-               1  {
-                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ferme)
-                  catch {
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
-                  cam[ ::confVisu::getCamNo $visuNo ] shutter "closed"
-               }
-               2  {
-                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_synchro)
-                  catch {
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
-                  cam[ ::confVisu::getCamNo $visuNo ] shutter "synchro"
-               }
-            }
-         } else {
-            tk_messageBox -title $caption(acqfc,pb) -type ok \
-               -message $caption(acqfc,onlycam+obt)
-         }
+      set camNo [ ::confVisu::getCamNo $visuNo ]
+      set result [::confCam::setShutter $camNo $panneau(AcqFC,$visuNo,obt) ]
+      if { $result != -1 } {
+         set panneau(AcqFC,$visuNo,obt) $result
+         $panneau(AcqFC,$visuNo,This).obt.lab configure -text $panneau(AcqFC,$visuNo,obt,$panneau(AcqFC,$visuNo,obt))
       }
    }
 #***** Fin de la procedure de changement de l'obturateur *******
@@ -3186,7 +3122,7 @@ namespace eval ::AcqFC {
    proc webcamConfigure { visuNo } {
       global caption
 
-      set result [ catch { after 10 "cam[ ::confVisu::getCamNo $visuNo ] videosource" } ]
+      set result [ ::webcam::config::run $visuNo ]
       if { $result == "1" } {
          if { [ ::confVisu::getCamera $visuNo ] == "" } {
             ::audace::menustate disabled
