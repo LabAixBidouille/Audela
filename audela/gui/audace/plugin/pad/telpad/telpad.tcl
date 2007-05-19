@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.10 2007-04-11 17:32:43 michelpujol Exp $
+# Mise a jour $Id: telpad.tcl,v 1.11 2007-05-19 09:19:27 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -14,10 +14,8 @@ namespace eval telpad {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-      
       #--- Cree les variables dans conf(...) si elles n'existent pas
       initConf
-
       #--- J'initialise les variables widget(..)
       confToWidget
    }
@@ -32,23 +30,23 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         
+
       }
    }
 
    #------------------------------------------------------------
-   #  getPluginType 
-   #     retourne le type de plugin 
+   #  getPluginType
+   #     retourne le type de plugin
    #------------------------------------------------------------
-   proc getPluginType  { } {
+   proc getPluginType { } {
       return "pad"
    }
 
    #------------------------------------------------------------
-   #  getPluginTitle 
+   #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getPluginTitle  { } {
+   proc getPluginTitle { } {
       global caption
 
       return "$caption(telpad,titre)"
@@ -136,6 +134,9 @@ namespace eval telpad {
       checkbutton $frm.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
          -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
       pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $frm
    }
 
    #------------------------------------------------------------
@@ -154,7 +155,7 @@ namespace eval telpad {
 
    #------------------------------------------------------------
    #  deletePluginInstance
-   #     suppprime l'instance du plugin 
+   #     suppprime l'instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
@@ -167,7 +168,7 @@ namespace eval telpad {
          if { [ winfo exists $This ] == 1 } {
             set conf(telpad,wmgeometry) "[ wm geometry $This ]"
            destroy $This
-         } 
+         }
       }
    }
 

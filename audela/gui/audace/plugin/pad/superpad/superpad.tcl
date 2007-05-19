@@ -2,10 +2,8 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.12 2007-04-11 17:32:43 michelpujol Exp $
+# Mise a jour $Id: superpad.tcl,v 1.13 2007-05-19 09:19:10 robertdelmas Exp $
 #
-
-
 
 namespace eval ::superpad {
    package provide superpad 1.0
@@ -18,7 +16,6 @@ namespace eval ::superpad {
    proc initPlugin { } {
       #--- cree les variables dans conf(..) si elles n'existent pas
       initConf
-
       #--- j'initialise les variables widget(..)
       confToWidget
    }
@@ -33,23 +30,23 @@ namespace eval ::superpad {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         
+
       }
    }
 
    #------------------------------------------------------------
-   #  getPluginType 
-   #     retourne le type de plugin 
+   #  getPluginType
+   #     retourne le type de plugin
    #------------------------------------------------------------
-   proc getPluginType  { } {
+   proc getPluginType { } {
       return "pad"
    }
 
    #------------------------------------------------------------
-   #  getPluginTitle 
+   #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
-   proc getPluginTitle  { } {
+   proc getPluginTitle { } {
       global caption
 
       return "$caption(superpad,titre)"
@@ -174,6 +171,9 @@ namespace eval ::superpad {
       checkbutton $frm.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
          -variable ::superpad::widget(visible) -onvalue 1 -offvalue 0
       pack $frm.visible -in $frm.frame4 -anchor nw -side left -padx 10 -pady 10
+
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $frm
    }
 
    #------------------------------------------------------------
@@ -193,7 +193,7 @@ namespace eval ::superpad {
 
    #------------------------------------------------------------
    #  deletePluginInstance
-   #     suppprime l'instance du plugin 
+   #     suppprime l'instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
@@ -246,14 +246,7 @@ namespace eval ::superpad {
       #--- Definition of global variables (arrays)
       #--- Definition des variables globales (arrays)
       variable widget
-      global caption       #--- Texts of captions
-      global geompad       #--- geompad size of widgets
-      global langage
-      global statustel
-      global conf
-      global audace
-      global colorpad
-      global color
+      global audace caption color colorpad conf geompad statustel
 
       #--- Definition of colorpads
       #--- Definition des couleurs
@@ -355,8 +348,7 @@ namespace eval ::telescopePad {
    #------------------------------------------------------------
    proc displayCoord { } {
       variable private
-      global caption
-      global audace
+      global audace caption
 
       if {[::tel::list]!=""} {
          set radec [ tel$audace(telNo) radec coord ]
@@ -378,12 +370,7 @@ namespace eval ::telescopePad {
    proc addFrame { parentFrame zoom } {
       variable This
       variable private
-      global audace
-      global panneau
-      global caption
-      global colorpad
-      global geompad
-      global statustel
+      global audace caption colorpad geompad panneau statustel
 
       set This $parentFrame.movepad
       set statustel(speed) 1
@@ -566,9 +553,7 @@ namespace eval ::AlignManager {
    #------------------------------------------------------------
    proc centerStar { } {
       variable private
-      global audace
-      global caption
-      global conf
+      global audace caption conf
 
       if {[info exists audace(picture,w)]!=1} {
          tk_messageBox -type ok -icon warning -title $caption(superpad,ErrorMessageTitle) \
@@ -619,9 +604,9 @@ namespace eval ::AlignManager {
       set mirx [cam$camNo mirrorx]
       set miry [cam$camNo mirrory]
 
-      if {    (([expr $deltax] >0 ) && ($mirx==0) && ($private(mountSide)=="e" )) 
-           || (([expr $deltax] <0 ) && ($mirx==1) && ($private(mountSide)=="e" )) 
-           || (([expr $deltax] <0 ) && ($mirx==0) && ($private(mountSide)=="w" )) 
+      if {    (([expr $deltax] >0 ) && ($mirx==0) && ($private(mountSide)=="e" ))
+           || (([expr $deltax] <0 ) && ($mirx==1) && ($private(mountSide)=="e" ))
+           || (([expr $deltax] <0 ) && ($mirx==0) && ($private(mountSide)=="w" ))
            || (([expr $deltax] >0 ) && ($mirx==1) && ($private(mountSide)=="w" ))} {
           console::disp "move $moveTime ms\nto est \n"
           set direction "e"
@@ -659,9 +644,9 @@ namespace eval ::AlignManager {
       }
       set moveTime [expr int($moveTime * $binning / 4 ) ]
 
-      if {    (([expr $deltay ]>0) && ($miry==0) && ($private(mountSide)=="e" )) 
-           || (([expr $deltay ]<0) && ($miry==1) && ($private(mountSide)=="e" )) 
-           || (([expr $deltay ]<0) && ($miry==0) && ($private(mountSide)=="w" )) 
+      if {    (([expr $deltay ]>0) && ($miry==0) && ($private(mountSide)=="e" ))
+           || (([expr $deltay ]<0) && ($miry==1) && ($private(mountSide)=="e" ))
+           || (([expr $deltay ]<0) && ($miry==0) && ($private(mountSide)=="w" ))
            || (([expr $deltay ]>0) && ($miry==1) && ($private(mountSide)=="w" )) } {
           console::disp "move $moveTime ms\nto north \n"
           set direction "n"
@@ -823,10 +808,7 @@ namespace eval ::AlignManager {
    proc addFrame { parentFrame } {
       variable This
       variable private
-      global audace
-      global caption
-      global colorpad
-      global geompad
+      global audace caption colorpad geompad
 
       set private(This) $parentFrame.frameAlign
       set This $private(This)
@@ -959,12 +941,7 @@ namespace eval FrameFocusManager {
    #------------------------------------------------------------
    proc addFrame { parentFrame zoom } {
       variable private
-      global audace
-      global caption
-      global conf
-      global colorpad
-      global geompad
-      global panneau
+      global audace caption colorpad conf geompad panneau
 
       set private(This) "$parentFrame.frameFocusManager"
       set This $private(This)
@@ -1082,10 +1059,7 @@ namespace eval DlgSelectStar {
    proc createDialog { } {
       variable This
       variable startname
-      global conf
-      global caption
-      global stars
-      global audace
+      global audace caption conf stars
 
       set stars(Achernar)       {01h37m47s -57d13m31s 01 }
       set stars(Acrux)          {12h26m39s -63d06m33s 02}
@@ -1161,5 +1135,4 @@ namespace eval DlgSelectStar {
    }
 
 }
-
 
