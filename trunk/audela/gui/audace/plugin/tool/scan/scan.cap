@@ -1,6 +1,6 @@
 #
 # Fichier : scan.cap
-# Mise a jour $Id: scan.cap,v 1.17 2007-05-09 21:48:28 robertdelmas Exp $
+# Mise a jour $Id: scan.cap,v 1.18 2007-05-19 23:24:55 michelpujol Exp $
 #
 
 #=========================================================================
@@ -47,7 +47,6 @@ set caption(scan,saisir_indice)     "Enter the index value."
 set caption(scan,indice_entier)     "Index is not valid (must be a positive integer)."
 set caption(scan,confirmation)      "Confirm"
 set caption(scan,fichier_existe)    "This file already exists.\nAre you sure you want to save?"
-set caption(scan,onlycam+obt)       "Sorry, this function is not\navailable with this camera."
 
 set caption(scan,attention)         "Warning"
 set caption(scan,message)           "This tool can only be used with an Audine camera driven through\na parallel port, an AudiNet interface or an EthernAude interface."
@@ -91,7 +90,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,indice_entier)  "Index invalide (doit être un entier positif)."
    set caption(scan,confirmation)   "Confirmer"
    set caption(scan,fichier_existe) "Ce fichier existe déjà sur le disque.\nConfirmez-vous l'enregistrement ?"
-   set caption(scan,onlycam+obt)    "Désolé, cette fonction n'est pas\ndisponible avec cette caméra."
 
    set caption(scan,attention)      "Attention"
    set caption(scan,message)        "Cet outil ne fonctionne qu'avec une caméra Audine pilotée par\nun port parallèle, par une AudiNet ou par une EthernAude."
@@ -135,7 +133,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,indice_entier)  "Indice non valido (deve essere un intero positivo)."
    set caption(scan,confirmation)   "Confermare"
    set caption(scan,fichier_existe) "Questo file e` gia` presente.\nConfermare la registrazione?"
-   set caption(scan,onlycam+obt)    "Spiacenti, ma questa funzionalita'\nnon e` disponibile per questa camera."
 
    set caption(scan,attention)      "Attenzione"
    set caption(scan,message)        "Questa funzione va usata solamente con una camera Audine pilotata\ntramite porta parallela, AudiNet o per una EthernAude."
@@ -179,7 +176,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,indice_entier)  "Indice invalido (debe ser un entero positivo)."
    set caption(scan,confirmation)   "Confirmar"
    set caption(scan,fichier_existe) "Este fichero ya existe.\n¿Seguro que quiere guardar?"
-   set caption(scan,onlycam+obt)    "Lo siento, esta función\nno está disponible en\neste modelo de cámara."
 
    set caption(scan,attention)      "Aviso"
    set caption(scan,message)        "Esta herramienta soli puede utilizarse con una Audine atacada\na traves de puerto paralelo, una interfaz AudiNet o EthernAude."
@@ -223,7 +219,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,indice_entier)  "Ungültiges Index (muss ein positives Ganz sein)."
    set caption(scan,confirmation)   "Bestätigen"
    set caption(scan,fichier_existe) "Diese Datei ist schon auf die Platte.\nBestätigen sie die Speicherung?"
-   set caption(scan,onlycam+obt)    "Diese Funktion ist leider nicht\nmit diese Kamera verfügbar."
 
    set caption(scan,attention)      "Achtung"
    set caption(scan,message)        "Diese Software funktioniert nur mit eine Audine Kamera durch einen Parallel\nAnschluss, eine AudiNet oder EthernAude Schnittstelle getrieben."
@@ -267,7 +262,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,indice_entier)  "Índice inválido (deve ser um inteiro positivo)."
    set caption(scan,confirmation)   "Confirmar"
    set caption(scan,fichier_existe) "Este ficheiro já existe no disco.\nTem a certeza que deseja guardar ?"
-   set caption(scan,onlycam+obt)    "Desculpe, esta função não está\ndisponível com esta câmara."
 
    set caption(scan,attention)      "Atenção"
    set caption(scan,message)        "Esta ferramenta funciona apenas com uma camara Audine pilotada por\numa porta paralela, por uma AudiNet ou por uma EthernAude."
@@ -311,7 +305,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(scan,indice_entier)  "Index is not valid (must be a positive integer)."
    set caption(scan,confirmation)   "Confirm"
    set caption(scan,fichier_existe) "This file already exists.\nAre you sure you want to save?"
-   set caption(scan,onlycam+obt)    "Sorry, this function is not\navailable with this camera."
 
    set caption(scan,attention)      "Warning"
    set caption(scan,message)        "This tool can only be used with an Audine camera driven through\na parallel port, an AudiNet interface or an EthernAude interface."

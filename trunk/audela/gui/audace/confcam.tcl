@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.72 2007-05-17 20:54:55 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.73 2007-05-19 23:25:51 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -633,6 +633,19 @@ namespace eval ::confCam {
          set threadNo "0"
       }
       return $threadNo
+   }
+
+   #
+   # cree un widget "label" avec une URL du site WEB
+   #
+   proc createUrlLabel { tkparent title url  } {
+      global audace color
+
+      label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+      bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
+      bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
+      bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
+      return  $tkparent.labURL
    }
 
    #
@@ -2572,6 +2585,86 @@ namespace eval ::confCam {
       #--- je selectionne l'onglet correspondant a la camera de cet item
       ::confCam::select $camItem [lindex $confCam(names) $index]
    }
+
+#***** Procedure de changement de l'obturateur *****************
+   proc setShutter { camNo shutterState} {
+      global audace caption conf confCam frmm panneau
+
+      #---
+      set camProduct [ cam$camNo product ]
+      #---
+      set ShutterOptionList [ ::confCam::getShutterOption $camNo ]
+      set lg_ShutterOptionList [ llength $ShutterOptionList ]
+      #---
+      if { "$camProduct" != "" } {
+         if { [ ::confCam::hasShutter $camNo ] } {
+            incr shutterState
+            if { $lg_ShutterOptionList == "3" } {
+               if { $shutterState == "3" } {
+                  set shutterState "0"
+               }
+            } elseif { $lg_ShutterOptionList == "2" } {
+               if { $shutterState == "3" } {
+                  set shutterState "1"
+               }
+            }
+            if { "$camProduct" == "audine" } {
+               set conf(audine,foncobtu) $shutterState
+               catch { set frm $frmm(Camera1) }
+            } elseif { "$camProduct" == "hisis" } {
+               set conf(hisis,foncobtu) $shutterState
+               catch { set frm $frmm(Camera2) }
+            } elseif { "$camProduct" == "sbig" } {
+               set conf(sbig,foncobtu) $shutterState
+               catch { set frm $frmm(Camera3) }
+            } elseif { "$camProduct" == "andor" } {
+               set conf(andor,foncobtu) $shutterState
+               catch { set frm $frmm(Camera11) }
+            } elseif { "$camProduct" == "cemes" } {
+               set conf(andor,foncobtu) $shutterState
+               catch { set frm $frmm(Camera11) }
+            } elseif { "$camProduct" == "fingerlakes" } {
+               set conf(fingerlakes,foncobtu) $shutterState
+               catch { set frm $frmm(Camera12) }
+            }
+            #---
+            switch -exact -- $shutterState {
+               0  {
+                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ouvert)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "opened"
+               }
+               1  {
+                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ferme)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "closed"
+               }
+               2  {
+                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_synchro)
+                  catch {
+                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
+                     $frm.foncobtu configure -values $ShutterOptionList
+                  }
+                  cam$camNo shutter "synchro"
+               }
+            }
+         } else {
+            tk_messageBox -title $caption(confcam,pb) -type ok \
+               -message $caption(confcam,onlycam+obt)
+            return -1
+         }
+      } else {
+         return -1
+      }
+      return $shutterState
+   }
+#***** Fin de la procedure de changement de l'obturateur *******
 
    #----------------------------------------------------------------------------
    # confCam::stopItem
