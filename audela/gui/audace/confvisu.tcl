@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.57 2007-05-17 08:14:53 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.58 2007-05-20 17:36:43 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -102,6 +102,7 @@ namespace eval ::confVisu {
 
       set private($visuNo,camNo)           "0"
       set private($visuNo,camName)         ""
+      set private($visuNo,camItem)         ""
 
       set private($visuNo,intensity)       "1"
 
@@ -162,48 +163,51 @@ namespace eval ::confVisu {
       global conf
       global caption
 
-      set bufNo [visu$visuNo buf]
+      #--- je verifie que la visu existe
+      if { [info commands "::visu$visuNo" ] == "::visu$visuNo" } {
+         set bufNo [visu$visuNo buf]
 
-      #--- si une camera a le meme buffer que la visu, je ferme la camera
-      foreach camNo [::cam::list] {
-         if { [cam$camNo buf] == $bufNo } {
-            ::confCam::closeCamera $camNo
+         #--- si une camera a le meme buffer que la visu, je ferme la camera
+         foreach camNo [::cam::list] {
+            if { [cam$camNo buf] == $bufNo } {
+               ::confCam::closeCamera $camNo
+            }
          }
-      }
 
-      #--- je supprime les bind
-      ::confVisu::deleteBindDialog $visuNo
+         #--- je supprime les bind
+         ::confVisu::deleteBindDialog $visuNo
 
-      #--- je memorise la position de la fenetre
-      set conf(audace,visu$visuNo,wmgeometry) "[wm geometry $::confVisu::private($visuNo,This)]"
-
-      #--- je supprime le menubar et toutes ses entree
-      if { $private($visuNo,menu) != "" } {
-         Menubar_Delete $visuNo
-      }
-
-      #--- je ferme l'outil courant
-      if { [getTool $visuNo] != "" } {
-         ::[getTool $visuNo]::stopTool $visuNo
-      }
-      #--- je detruis tous les outils
-      if { "$private($visuNo,This)" != "$audace(base).select" } {
-         foreach pluginInstance $private($visuNo,pluginInstanceList) {
-            $pluginInstance\::deletePluginInstance $visuNo
+         #--- je memorise la position de la fenetre
+         set conf(audace,visu$visuNo,wmgeometry) "[wm geometry $::confVisu::private($visuNo,This)]"
+         
+         #--- je supprime le menubar et toutes ses entree
+         if { $private($visuNo,menu) != "" } {
+            Menubar_Delete $visuNo
          }
+
+         #--- je ferme l'outil courant
+         if { [getTool $visuNo] != "" } {
+            ::[getTool $visuNo]::stopTool $visuNo
+         }
+         #--- je detruis tous les outils
+         if { "$private($visuNo,This)" != "$audace(base).select" } {
+            foreach pluginInstance $private($visuNo,pluginInstanceList) {
+               $pluginInstance\::deletePluginInstance $visuNo
+            }
+         }
+
+         #--- je supprime l'image associee a la visu
+         image delete image[visu$visuNo image]
+
+         #--- je supprime la visu
+         ::visu::delete $visuNo
+
+         #--- je supprime le buffer associe a la visu
+         ::buf::delete $bufNo
+
+         #--- je supprime les graphes des coupes
+         ::sectiongraph::closeToplevel $visuNo
       }
-
-      #--- je supprime l'image associee a la visu
-      image delete image[visu$visuNo image]
-
-      #--- je supprime la visu
-      ::visu::delete $visuNo
-
-      #--- je supprime le buffer associe a la visu
-      ::buf::delete $bufNo
-
-      #--- je supprime les graphes des coupes
-      ::sectiongraph::closeToplevel $visuNo
 
       #--- je supprime la fenetre
       destroy $private($visuNo,This)
@@ -325,19 +329,15 @@ namespace eval ::confVisu {
    proc visu { visuNo { cuts "autocuts" } } {
       variable private
 
-      set bufNo [visu$visuNo buf ]
 
       if { [llength $cuts] == 1 } {
          if { $cuts == "autocuts"} {
+            set bufNo [visu$visuNo buf ]
             set cuts [ lrange [ buf$bufNo autocuts ] 0 1 ]
          } elseif { $cuts == "current" } {
-            #--- autre choix = on garde les seuils actuels
-            #set cuts [visu$visuNo cut ]
-            #set sh [ expr [ lindex $cuts 0 ] ]
-            #set sb [ expr [ lindex $cuts 1 ] ]
-
-            set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
-            visu$visuNo cut $cuts
+            #--- on ne touche pas aux seuils 
+            #set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
+            #visu$visuNo cut $cuts
          } else {
             console::affiche_erreur "confVisu::visu inexptected value cuts=$cuts \n"
          }
@@ -608,18 +608,30 @@ namespace eval ::confVisu {
          set private($visuNo,camProductName) [cam$camNo product]
          #--- Je determine camItem
          if { $confCam(A,camNo) == $camNo } {
-            set camItem "A"
+            set private($visuNo,camItem) "A"
          } elseif { $confCam(B,camNo) == $camNo } {
-            set camItem "B"
+            set private($visuNo,camItem)  "B"
          } elseif { $confCam(C,camNo) == $camNo } {
-            set camItem "C"
+            set private($visuNo,camItem)  "C"
          } else {
-            set camItem ""
+            set private($visuNo,camItem)  ""
          }
          #--- J'affiche le nom de la camera
          $private($visuNo,This).fra1.labCam_name_labURL configure \
-            -text "$camItem $caption(confVisu,2points) $private($visuNo,camName) $model" -fg $color(blue)
+            -text "$private($visuNo,camItem)  $caption(confVisu,2points) $private($visuNo,camName) $model" -fg $color(blue)
       }
+   }
+
+   #------------------------------------------------------------
+   #  getCamItem
+   #     retourne l'item de camera associee a la visu
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc getCamItem { visuNo } {
+      variable private
+
+      return $private($visuNo,camItem)
    }
 
    #------------------------------------------------------------
@@ -1665,7 +1677,7 @@ namespace eval ::confVisu {
          if { $xi != "$caption(confVisu,tiret)" } {
             set result [catch { set temp [ buf$bufNo xy2radec [ list $xi $yi ] ] } ]
             if { $result == 1 } {
-               #--- en cas d'erreur de conversion, je reviens encoordonnees xy
+               #--- en cas d'erreur de conversion, je reviens en coordonnees xy
                set private($visuNo,labcoord_type) "xy"
                return
             }
@@ -1872,7 +1884,7 @@ namespace eval ::confVisu {
       } else {
          $private($visuNo,This).fra1.lab1 configure -text [format %.4e $sh]
          $private($visuNo,This).fra1.lab2 configure -text [format %.4e $sb]
-   }
+      }
    }
 
    proc onCutScaleRelease { visuNo } {
