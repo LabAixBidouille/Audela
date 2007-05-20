@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.30 2007-05-20 09:57:19 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.31 2007-05-20 14:25:06 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2161,7 +2161,7 @@ namespace eval ::pretraitement {
       }
       #--- Longueur de la liste des index
       set longueur_serie [ llength $liste_serie ]
-      if { $index_serie != "" && $longueur_serie > "1" } {
+      if { $index_serie != "" && $longueur_serie >= "1" } {
          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,nom_generique_ok)"
       } else {
