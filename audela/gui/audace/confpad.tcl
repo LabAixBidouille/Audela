@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.10 2007-05-20 13:31:16 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.11 2007-05-20 14:42:29 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -15,8 +15,7 @@ namespace eval ::confPad {
 #------------------------------------------------------------
 proc ::confPad::init { } {
    variable private
-   global audace
-   global conf
+   global audace conf
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
@@ -50,6 +49,7 @@ proc ::confPad::init { } {
 #------------------------------------------------------------
 proc ::confPad::getLabel { } {
    global caption
+
    return "$caption(confpad,config)"
 }
 
@@ -59,6 +59,7 @@ proc ::confPad::getLabel { } {
 #------------------------------------------------------------
 proc ::confPad::getCurrentPad { } {
    global conf
+
    return $conf(confPad)
 }
 
@@ -113,7 +114,6 @@ proc ::confPad::ok { } {
 #------------------------------------------------------------
 proc ::confPad::appliquer { } {
    variable private
-   global conf
 
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
@@ -152,8 +152,6 @@ proc ::confPad::appliquer { } {
 #------------------------------------------------------------
 proc ::confPad::afficheAide { } {
    variable private
-   global conf
-   global help
 
    #--- je recupere l'index de l'onglet selectionne
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
@@ -200,8 +198,7 @@ proc ::confPad::recupPosition { } {
 #------------------------------------------------------------
 proc ::confPad::createDialog { } {
    variable private
-   global conf
-   global caption
+   global caption conf
 
    if { [winfo exists $private(frm)] } {
       wm withdraw $private(frm)
@@ -298,7 +295,6 @@ proc ::confPad::createDialog { } {
 #------------------------------------------------------------
 proc ::confPad::createFramePad { frm variablePluginName} {
    variable private
-   global conf
    global caption
 
    set private(frame) $frm
@@ -391,11 +387,11 @@ proc ::confPad::stopDriver { } {
 #------------------------------------------------------------
 proc ::confPad::findPlugin { } {
    variable private
-   global caption  audace
+   global audace caption
 
    #--- j'initialise les listes vides
-   set private(pluginList) ""
-   set private(pluginTitleList)    ""
+   set private(pluginList)      ""
+   set private(pluginTitleList) ""
 
    #--- je recherche les fichiers link/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" pad * pkgIndex.tcl ]
