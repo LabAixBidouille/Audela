@@ -4,6 +4,7 @@
 
 #include "Capture.h"
 
+#include <stdio.h>
 
 // macros
 #define WIDTHBYTES(bits)        (((bits) + 31) / 32 * 4)
@@ -93,9 +94,33 @@ BOOL CCapture::createWindow(char * appTitle, HWND hwndParent, ICaptureListener *
 *----------------------------------------------------------------------
 */
 
-unsigned int     CCapture::getImageWidth(){ return capStatus.uiImageWidth  ; }
-unsigned int     CCapture::getImageHeight(){ return capStatus.uiImageHeight ; }
-unsigned long    CCapture::getVideoFormatSize(){ return capGetVideoFormatSize(hwndCap) ; }
+unsigned int     CCapture::getImageWidth(){ 
+
+   BITMAPINFO bi;
+   int   formatSize;
+   
+   formatSize = capGetVideoFormatSize(hwndCap);
+
+   getVideoFormat(&bi, formatSize);
+   return bi.bmiHeader.biWidth;
+   //return capStatus.uiImageWidth  ; 
+
+}
+
+unsigned int     CCapture::getImageHeight() { 
+   BITMAPINFO bi;
+   int   formatSize;
+   
+   formatSize = capGetVideoFormatSize(hwndCap);
+   getVideoFormat(&bi, formatSize);
+   return bi.bmiHeader.biHeight;
+   //return capStatus.uiImageHeight ; 
+
+}
+unsigned long    CCapture::getVideoFormatSize(){ 
+   return capGetVideoFormatSize(hwndCap) ; 
+}
+
 unsigned long    CCapture::getVideoFormat(BITMAPINFO * pbi, int size ) { 
    return capGetVideoFormat(hwndCap, pbi, size);
 }
@@ -216,6 +241,10 @@ BOOL    CCapture::singleFrameCapture(){
 
 BOOL    CCapture::grabFrameNoStop(){ 
    return capGrabFrameNoStop(hwndCap);    
+}
+
+BOOL    CCapture::getDriverName( char * driverName) { 
+   return capDriverGetName(hwndCap, sizeof(driverName)-1, driverName);    
 }
 
 BOOL    CCapture::grabFrame(){ 
@@ -436,10 +465,10 @@ BOOL CCapture::openDlgVideoCompression() {
 
 
 
-BOOL CCapture::initHardware(UINT uIndex)
-{
+BOOL CCapture::initHardware(UINT uIndex) {
    UINT    uError ;
    
+ 
    // Try connecting to the capture drive r
    if (uError = capDriverConnect(hwndCap, uIndex)) {
       bHaveHardware = TRUE;

@@ -28,520 +28,13 @@
 #if defined(OS_LIN)
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <linux/ppdev.h>
-#include <linux/parport.h>
+//#include <linux/ppdev.h>
+//#include <linux/parport.h>
 #include <errno.h>
 #endif
 
-/* --- Global variable for TDI acquisition mode ---*/
-// ScanStruct *TheScanStruct = NULL;
-
 /**
- *  cmdCamClose.
- *  Ferme la caméra                                
- *  
- *  close the camera.
- */
-#if 0
-int cmdCamClose(ClientData clientData, Tcl_Interp * interp, int argc,
-                char *argv[])
-{
-   struct camprop *cam;
-
-   cam = (struct camprop *) clientData;
-
-#if defined(OS_WIN)
-   if (cam->capture != NULL) {
-      delete cam->capture;
-      cam->capture = NULL;
-   }  
-
-#if !defined(OS_WIN_USE_LPT_OLD_STYLE)
-   if (cam->hLongExposureDevice != INVALID_HANDLE_VALUE) {
-      CloseHandle(cam->hLongExposureDevice);
-      cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
-   }
-#endif
-
-#endif
-
-#if defined(OS_LIN)
-   if (cam->cam_fd >= 0) {
-      close(cam->cam_fd);
-      cam->cam_fd = -1;
-   }
-   if (cam->long_fd >= 0) {
-      webcam_setLongExposureDevice(cam, cam->longueposestop);
-      ioctl(cam->long_fd, PPRELEASE);
-      close(cam->long_fd);
-      cam->long_fd = -1;
-   }
-
-   if (cam->rgbBuffer != NULL) {
-      free(cam->rgbBuffer);
-      cam->rgbBuffer = NULL;
-   }
-   cam->rgbBufferSize = 0;
-
-   if (cam->yuvBuffer != NULL) {
-      free(cam->yuvBuffer);
-      cam->yuvBuffer = NULL;
-   }
-   cam->yuvBufferSize = 0;
-
-//   printf("camera close\n");
-
-#endif
-
-   return TCL_OK;
-}
-#endif
-
-/**
- * cmdCamVideoSource.
- * Réglage des paramètres de la caméra
- *
- * Under Linux it calls <b>::confCam::confVideoSource</b> command
- * and shows VideoSource window dialog.
-*/
-int cmdCamVideoSource(ClientData clientData, Tcl_Interp * interp, int argc,
-                      char *argv[])
-{
-#if defined(OS_WIN)
-   HWND hWnd = NULL;
-#endif
-
-#if defined(OS_LIN)
-   int num;
-   char ligne[128];
-#endif
-
-   struct camprop *cam;
-
-   cam = (struct camprop *) clientData;
-
-#if defined(OS_LIN)
-   sscanf(argv[0], "cam%d", &num);
-   sprintf(ligne, "::confCam::confVideoSource %d", num);
-   Tcl_Eval(interp, ligne);
-#endif
-
-#if defined(OS_WIN)
-
-   if (cam->capture == NULL) {
-      return TCL_ERROR;
-   } else {
-      cam->capture->openDlgVideoSource();
-   }
-#endif
-   return TCL_OK;
-}
-
-/**
- * cmdCamGetVideoSource - returns specified camera settings.
- * Implemented for Linux, use with many options.
-*/
-int cmdCamGetVideoSource(ClientData clientData, Tcl_Interp * interp,
-                         int argc, char *argv[])
-{
-   struct camprop *cam;
-   int result = TCL_OK;
-
-#if defined(OS_LIN)
-   char returnValue[512], *curValue;
-   int i, n;
-   char commands[] =
-      "-restoreUser -restoreFactory -picSettings -gain -sharpness -shutter -noise -compression -whiteBalance -backlight -flicker";
-#endif
-
-   cam = (struct camprop *) clientData;
-
-#if defined(OS_LIN)
-   strcpy(returnValue, "");
-   curValue = returnValue;
-
-   /* decode the options */
-   for (i = 2; i < argc; i++) {
-      if ((n = strlen(returnValue)) > 0) {
-         curValue = returnValue + n;
-         sprintf(curValue, " ");
-         curValue++;
-      }
-      if (strcmp(argv[i], "-restoreUser") == 0) {
-         if (webcam_getVideoSource(cam, curValue, RESTOREUSER)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-picSettings") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETPICSETTINGS)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-restoreFactory") == 0) {
-         if (webcam_getVideoSource(cam, curValue, RESTOREFACTORY)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-gain") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETGAIN)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-sharpness") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETSHARPNESS)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-shutter") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETSHUTTER)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-noise") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETNOISE)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-compression") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETCOMPRESSION)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-whiteBalance") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETWHITEBALANCE)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-backlight") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETBACKLIGHT)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-flicker") == 0) {
-         if (webcam_getVideoSource(cam, curValue, GETFLICKER)) {
-            strcpy(returnValue, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-
-      sprintf(returnValue, "%s - command unknown. Possible commands: %s",
-              argv[i], commands);
-      result = TCL_ERROR;
-      break;
-   }
-
-   if (argc <= 2) {
-      sprintf(returnValue, "%s - possible commands: %s",
-              argv[1], commands);
-      result = TCL_ERROR;
-   }
-
-   Tcl_SetResult(interp, returnValue, TCL_VOLATILE);
-#endif
-   return result;
-}
-
-
-/**
- * cmdCamSetVideoSource - sets specified camera settings.
- * Implemented for Linux, use with many options.
-*/
-int cmdCamSetVideoSource(ClientData clientData, Tcl_Interp * interp,
-                         int argc, char *argv[])
-{
-   struct camprop *cam;
-   int result = TCL_OK;
-
-#if defined(OS_LIN)
-   char ligne[512], mode[64];
-   int i;
-   int brightness = 0, contrast = 0, colour = 0, whiteness = 0, param =
-      0, red = 0, blue = 0;
-   char commands[] =
-      "-saveUser -picSettings -gain -sharpness -shutter -noise -compression -whiteBalance -backlight -flicker";
-#endif
-
-   cam = (struct camprop *) clientData;
-
-#if defined(OS_LIN)
-   strcpy(ligne, "");
-
-   /* decode the options */
-   for (i = 2; i < argc; i++) {
-      if (strcmp(argv[i], "-saveUser") == 0) {
-         if (webcam_saveUser(cam)) {
-            strcpy(ligne, cam->msg);
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-picSettings") == 0) {
-         if (argc > (i + 4)) {
-            brightness = atoi(argv[++i]);
-            contrast = atoi(argv[++i]);
-            colour = atoi(argv[++i]);
-            whiteness = atoi(argv[++i]);
-            if (brightness >= 0 && brightness <= 65535
-                && contrast >= 0 && contrast <= 65535
-                && colour >= 0 && colour <= 65535
-                && whiteness >= 0 && whiteness <= 65535) {
-               if (webcam_setPicSettings
-                   (cam, brightness, contrast, colour, whiteness)) {
-                  strcpy(ligne, cam->msg);
-                  result = TCL_ERROR;
-                  break;
-               }
-            } else {
-               strcpy(ligne,
-                      "-picSettings - bad arguments, must be numbers");
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-picSettings - not enough arguments\n%s",
-                    "Usage: -picSettings brightness contrast colour whiteness");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-gain") == 0) {
-         if (argc > (i + 1)) {
-            param = atoi(argv[++i]);
-            if (webcam_setVideoSource(cam, param, SETGAIN)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-gain - not enough arguments\n%s",
-                    "Usage: -gain gainValue");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-sharpness") == 0) {
-         if (argc > (i + 1)) {
-            param = atoi(argv[++i]);
-            if (webcam_setVideoSource(cam, param, SETSHARPNESS)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-sharpness - not enough arguments\n%s",
-                    "Usage: -sharpness sharpnessValue");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-shutter") == 0) {
-         if (argc > (i + 1)) {
-            param = atoi(argv[++i]);
-            if (webcam_setVideoSource(cam, param, SETSHUTTER)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-shutter - not enough arguments\n%s",
-                    "Usage: -shutter shutterValue");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-noise") == 0) {
-         if (argc > (i + 1)) {
-            param = atoi(argv[++i]);
-            if (webcam_setVideoSource(cam, param, SETNOISE)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-noise - not enough arguments\n%s",
-                    "Usage: -noise noiseValue");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-compression") == 0) {
-         if (argc > (i + 1)) {
-            param = atoi(argv[++i]);
-            if (webcam_setVideoSource(cam, param, SETCOMPRESSION)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-compression - not enough arguments\n%s",
-                    "Usage: -compression compressionValue");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-whiteBalance") == 0) {
-         if (argc > (i + 1)) {
-            i++;
-            strcpy(mode, argv[i]);
-            if (strcmp(mode, "manual") == 0) {
-               if (argc > (i + 2)) {
-                  red = atoi(argv[++i]);
-                  blue = atoi(argv[++i]);
-                  if (!(red >= 0 && red <= 65535
-                        && blue >= 0 && blue <= 65535)) {
-                     strcpy(ligne,
-                            "-whiteBalance manual - arguments must be numbers");
-                     result = TCL_ERROR;
-                     break;
-                  }
-               } else {
-                  sprintf(ligne,
-                          "-whiteBalance manual - not enough arguments\n%s",
-                          "Usage: -whiteBalance manual redLevel blueLevel");
-                  result = TCL_ERROR;
-                  break;
-               }
-            }
-            if (webcam_setWhiteBalance(cam, mode, red, blue)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-whiteBalance - not enough arguments\n%s%s",
-                    "Usage: -whiteBalance whiteMode ?params?\n",
-                    "you can use modes: manual, auto, indoor, outdoor, fl");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-backlight") == 0) {
-         if (argc > (i + 1)) {
-            param = atoi(argv[++i]);
-            if (webcam_setVideoSource(cam, param, SETBACKLIGHT)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-backlight - not enough arguments\n%s",
-                    "Usage: -backlight 0|1");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-      if (strcmp(argv[i], "-flicker") == 0) {
-         if (argc > (i + 1)) {
-            param = atoi(argv[++i]);
-            if (webcam_setVideoSource(cam, param, SETFLICKER)) {
-               strcpy(ligne, cam->msg);
-               result = TCL_ERROR;
-               break;
-            }
-         } else {
-            sprintf(ligne, "-flicker - not enough arguments\n%s",
-                    "Usage: -flicker 0|1");
-            result = TCL_ERROR;
-            break;
-         }
-         continue;
-      }
-
-      sprintf(ligne, "%s - command unknown. Possible commands: %s",
-              argv[i], commands);
-      result = TCL_ERROR;
-      break;
-   }
-
-   if (argc <= 2) {
-      sprintf(ligne, "%s - possible commands: %s", argv[1], commands);
-      result = TCL_ERROR;
-   }
-
-   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-#endif
-   return result;
-}
-
-
-/**
- *  cmdCamVideoFormat -  Réglage des paramètres de la caméra.
- *
- *  Under Linux it shows a window dialog where you can
- *  chose image format.
-*/
-int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp, int argc,
-                      char *argv[])
-{
-   struct camprop *cam;
-
-#if defined(OS_LIN)
-   char ligne[128];
-   int num;
-#endif
-
-   cam = (struct camprop *) clientData;
-
-#if defined(OS_LIN)
-   sscanf(argv[0], "cam%d", &num);
-   sprintf(ligne, "::confCam::confvideoformat %d", num);
-   Tcl_Eval(interp, ligne);
-#endif
-
-#if defined(OS_WIN)
-   if (argc >= 3) {
-      webcam_videoformat(cam, argv[2]);
-   } else {
-      webcam_videoformat(cam, "");
-   }
-#endif
-
-   return TCL_OK;
-}
-
-/**
- * cmdCamSetVideoFormat - implemented under Linux.
+ * cmdCamVideoFormat - 
  * Sets image format, argument must be format name (one of):
  * - SQCIF - 128x96
  * - QSIF - 160x120
@@ -551,74 +44,35 @@ int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp, int argc,
  * - CIF - 352x288
  * - VGA - 640x480.
 */
-int cmdCamSetVideoFormat(ClientData clientData, Tcl_Interp * interp,
+int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp,
                          int argc, char *argv[])
 {
-
    int result = TCL_OK;
-
-#if defined(OS_LIN)
    char ligne[128];
    struct camprop *cam;
+   char format[32];
 
    cam = (struct camprop *) clientData;
 
-   if (argc == 3) {
-      if (webcam_videoformat(cam, argv[2])) {
-         strcpy(ligne, cam->msg);
-         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   if (argc == 2) {
+      webcam_getVideoFormat(cam, format);
+      Tcl_SetResult(interp, format, TCL_VOLATILE);
+   } else if (argc == 3) {
+      if (webcam_setVideoFormat(cam, argv[2])) {
+         //--- je copie le message d'erreur dans la varable TCL
+         Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
          result = TCL_ERROR;
       }
    } else {
-      sprintf(ligne, "Usage: %s %s format_name", argv[0], argv[1]);
+      sprintf(ligne, "Usage: %s %s ?VGA|CIF|SIF|SSIF|QCIF|QSIF|SQCIF?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
    }
-#endif
-
    return result;
 }
 
 /**
- * cmdCamGetVideoFormat - implemented under Linux.
- * It returns actual video format.
-*/
-int cmdCamGetVideoFormat(ClientData clientData, Tcl_Interp * interp,
-                         int argc, char *argv[])
-{
-
-#if defined(OS_LIN)
-   char ligne[128], format[32];
-   struct camprop *cam;
-
-   cam = (struct camprop *) clientData;
-
-   if (cam->imax == 640 && cam->jmax == 480)
-      strcpy(format, "VGA");
-   else if (cam->imax == 352 && cam->jmax == 288)
-      strcpy(format, "CIF");
-   else if (cam->imax == 320 && cam->jmax == 240)
-      strcpy(format, "SIF");
-   else if (cam->imax == 240 && cam->jmax == 176)
-      strcpy(format, "SSIF");
-   else if (cam->imax == 176 && cam->jmax == 144)
-      strcpy(format, "QCIF");
-   else if (cam->imax == 160 && cam->jmax == 120)
-      strcpy(format, "QSIF");
-   else if (cam->imax == 128 && cam->jmax == 96)
-      strcpy(format, "SQCIF");
-   else
-      strcpy(format, "");
-
-   sprintf(ligne, "%s %dx%d", format, cam->imax, cam->jmax);
-   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-#endif
-
-   return TCL_OK;
-}
-
-/**
- * cmdCamLonguePose - Réglage du mode longue pose.
+ * cmdCamLonguePose - Reglage du mode longue pose.
  *
  * Declare if use long or normal exposure,
  * with no parameters returns actual setting.
@@ -659,7 +113,7 @@ int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc,
 
 /**
  * cmdCamLonguePoseLinkno
- * Change or returns the long exposure port name (long exposure device).
+ * Changes or returns the long exposure port number.
 */
 int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
@@ -723,7 +177,7 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
 
 
 /**
- * cmdCamLonguePoseStartValue - définition du caractere de debut de pose.
+ * cmdCamLonguePoseStartValue - definition du caractere de debut de pose.
 */
 int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
@@ -753,8 +207,8 @@ int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp,
 }
 
 /**
- * cmdCamLonguePoseStopValue - définition du caracter de fin de pose.
-*/
+ * cmdCamLonguePoseStopValue - definition du caracter de fin de pose.
+ */
 int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp,
                               int argc, char *argv[])
 {
@@ -782,6 +236,430 @@ int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp,
    return result;
 }
 
+
+
+/******************************************************************/
+/*  Fonctions d'affichage et de capture video LINUX (M. Pujol)    */
+/*                                                                */
+/*  Pour LINUX uniquement                                       */
+/******************************************************************/
+
+
+#if defined(OS_LIN)
+/**
+ * cmdCamGetVideoParameter - returns specified camera settings.
+ * Implemented for Linux, use with many options.
+*/
+int cmdCamGetVideoParameter(ClientData clientData, Tcl_Interp * interp,
+                         int argc, char *argv[])
+{
+   struct camprop *cam;
+   int result = TCL_OK;
+
+   char returnValue[512], *curValue;
+   int i, n;
+   char commands[] =
+      "-restoreUser -restoreFactory -picSettings -gain -sharpness -shutter -noise -compression -whiteBalance -backlight -flicker";
+
+   cam = (struct camprop *) clientData;
+
+   strcpy(returnValue, "");
+   curValue = returnValue;
+
+   for (i = 2; i < argc; i++) {
+      if ((n = strlen(returnValue)) > 0) {
+         curValue = returnValue + n;
+         sprintf(curValue, " ");
+         curValue++;
+      }
+      if (strcmp(argv[i], "-restoreUser") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, RESTOREUSER)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-picSettings") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETPICSETTINGS)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-restoreFactory") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, RESTOREFACTORY)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-gain") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETGAIN)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-sharpness") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETSHARPNESS)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-shutter") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETSHUTTER)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-noise") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETNOISE)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-compression") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETCOMPRESSION)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-whiteBalance") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETWHITEBALANCE)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-backlight") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETBACKLIGHT)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-flicker") == 0) {
+         if (webcam_getVideoParameter(cam, curValue, GETFLICKER)) {
+            strcpy(returnValue, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+
+      sprintf(returnValue, "%s - command unknown. Possible commands: %s",
+              argv[i], commands);
+      result = TCL_ERROR;
+      break;
+   }
+
+   if (argc <= 2) {
+      sprintf(returnValue, "%s - possible commands: %s",
+              argv[1], commands);
+      result = TCL_ERROR;
+   }
+
+   Tcl_SetResult(interp, returnValue, TCL_VOLATILE);
+   return result;
+}
+
+
+/**
+ * cmdCamSetVideoParameter - sets specified camera settings.
+ * Implemented for Linux, use with many options.
+*/
+int cmdCamSetVideoParameter(ClientData clientData, Tcl_Interp * interp,
+                         int argc, char *argv[])
+{
+   struct camprop *cam;
+   int result = TCL_OK;
+
+   char ligne[512], mode[64];
+   int i;
+   int brightness = 0, contrast = 0, colour = 0, whiteness = 0, param =
+      0, red = 0, blue = 0;
+   char commands[] =
+      "-saveUser -picSettings -gain -sharpness -shutter -noise -compression -whiteBalance -backlight -flicker";
+
+   cam = (struct camprop *) clientData;
+
+   strcpy(ligne, "");
+
+   /* decode the options */
+   for (i = 2; i < argc; i++) {
+      if (strcmp(argv[i], "-saveUser") == 0) {
+         if (webcam_saveUser(cam)) {
+            strcpy(ligne, cam->msg);
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-picSettings") == 0) {
+         if (argc > (i + 4)) {
+            brightness = atoi(argv[++i]);
+            contrast = atoi(argv[++i]);
+            colour = atoi(argv[++i]);
+            whiteness = atoi(argv[++i]);
+            if (brightness >= 0 && brightness <= 65535
+                && contrast >= 0 && contrast <= 65535
+                && colour >= 0 && colour <= 65535
+                && whiteness >= 0 && whiteness <= 65535) {
+               if (webcam_setPicSettings
+                   (cam, brightness, contrast, colour, whiteness)) {
+                  strcpy(ligne, cam->msg);
+                  result = TCL_ERROR;
+                  break;
+               }
+            } else {
+               strcpy(ligne,
+                      "-picSettings - bad arguments, must be numbers");
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-picSettings - not enough arguments\n%s",
+                    "Usage: -picSettings brightness contrast colour whiteness");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-gain") == 0) {
+         if (argc > (i + 1)) {
+            param = atoi(argv[++i]);
+            if (webcam_setVideoParameter(cam, param, SETGAIN)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-gain - not enough arguments\n%s",
+                    "Usage: -gain gainValue");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-sharpness") == 0) {
+         if (argc > (i + 1)) {
+            param = atoi(argv[++i]);
+            if (webcam_setVideoParameter(cam, param, SETSHARPNESS)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-sharpness - not enough arguments\n%s",
+                    "Usage: -sharpness sharpnessValue");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-shutter") == 0) {
+         if (argc > (i + 1)) {
+            param = atoi(argv[++i]);
+            if (webcam_setVideoParameter(cam, param, SETSHUTTER)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-shutter - not enough arguments\n%s",
+                    "Usage: -shutter shutterValue");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-noise") == 0) {
+         if (argc > (i + 1)) {
+            param = atoi(argv[++i]);
+            if (webcam_setVideoParameter(cam, param, SETNOISE)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-noise - not enough arguments\n%s",
+                    "Usage: -noise noiseValue");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-compression") == 0) {
+         if (argc > (i + 1)) {
+            param = atoi(argv[++i]);
+            if (webcam_setVideoParameter(cam, param, SETCOMPRESSION)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-compression - not enough arguments\n%s",
+                    "Usage: -compression compressionValue");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-whiteBalance") == 0) {
+         if (argc > (i + 1)) {
+            i++;
+            strcpy(mode, argv[i]);
+            if (strcmp(mode, "manual") == 0) {
+               if (argc > (i + 2)) {
+                  red = atoi(argv[++i]);
+                  blue = atoi(argv[++i]);
+                  if (!(red >= 0 && red <= 65535
+                        && blue >= 0 && blue <= 65535)) {
+                     strcpy(ligne,
+                            "-whiteBalance manual - arguments must be numbers");
+                     result = TCL_ERROR;
+                     break;
+                  }
+               } else {
+                  sprintf(ligne,
+                          "-whiteBalance manual - not enough arguments\n%s",
+                          "Usage: -whiteBalance manual redLevel blueLevel");
+                  result = TCL_ERROR;
+                  break;
+               }
+            }
+            if (webcam_setWhiteBalance(cam, mode, red, blue)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-whiteBalance - not enough arguments\n%s%s",
+                    "Usage: -whiteBalance whiteMode ?params?\n",
+                    "you can use modes: manual, auto, indoor, outdoor, fl");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-backlight") == 0) {
+         if (argc > (i + 1)) {
+            param = atoi(argv[++i]);
+            if (webcam_setVideoParameter(cam, param, SETBACKLIGHT)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-backlight - not enough arguments\n%s",
+                    "Usage: -backlight 0|1");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+      if (strcmp(argv[i], "-flicker") == 0) {
+         if (argc > (i + 1)) {
+            param = atoi(argv[++i]);
+            if (webcam_setVideoParameter(cam, param, SETFLICKER)) {
+               strcpy(ligne, cam->msg);
+               result = TCL_ERROR;
+               break;
+            }
+         } else {
+            sprintf(ligne, "-flicker - not enough arguments\n%s",
+                    "Usage: -flicker 0|1");
+            result = TCL_ERROR;
+            break;
+         }
+         continue;
+      }
+
+      sprintf(ligne, "%s - command unknown. Possible commands: %s",
+              argv[i], commands);
+      result = TCL_ERROR;
+      break;
+   }
+
+   if (argc <= 2) {
+      sprintf(ligne, "%s - possible commands: %s", argv[1], commands);
+      result = TCL_ERROR;
+   }
+
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   return result;
+}
+
+#endif  // OS_LIN
+
+
+
+#if defined(OS_LIN)
+
+/**
+ * cmdCamFrameRate - 
+ * Sets frame rate capture:
+ * 
+*/
+int cmdCamFrameRate(ClientData clientData, Tcl_Interp * interp,
+                         int argc, char *argv[])
+{
+   int result = TCL_OK;
+   char ligne[1024];
+   struct camprop *cam;
+   int frameRate;
+
+   cam = (struct camprop *) clientData;
+
+
+   if (argc == 2) {
+      if ( webcam_getFrameRate(cam, &frameRate) == 0 ) {
+         sprintf(ligne,"%d",frameRate);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_OK;
+      } else {
+         Tcl_SetResult(interp, "", TCL_VOLATILE);
+         result = TCL_ERROR;
+      }         
+   } else if (argc == 3) {
+      if(Tcl_GetInt(interp,argv[2],&frameRate)==TCL_OK) {
+         if (webcam_setFrameRate(cam, frameRate) == 0 ) {
+            sprintf(ligne,"%d",frameRate);
+            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+            result = TCL_OK;
+         } else {
+            //--- je copie le message d'erreur dans la varable TCL
+            Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      } else {
+         sprintf(ligne, "Usage: %s %s ?frame rate? \n error frame rate=%s ,must be integer", argv[0], argv[1], argv[2]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   } else {
+      sprintf(ligne, "Usage: %s %s ?frame rate?", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   }
+
+   return result;
+}
+
 /**
  * cmdCamValidFrame - set valid frame number.
  * Possible arguments:
@@ -795,7 +673,6 @@ int cmdCamValidFrame(ClientData clientData, Tcl_Interp * interp, int argc,
 
    int result = TCL_OK;
 
-#if defined(OS_LIN)
    char ligne[256];
    int pb = 0, value;
    struct camprop *cam;
@@ -822,20 +699,48 @@ int cmdCamValidFrame(ClientData clientData, Tcl_Interp * interp, int argc,
       sprintf(ligne, "%d", cam->validFrame);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    }
+   return result;
+}
 
 #endif
 
+
+
+/******************************************************************/
+/*  Fonctions d'affichage et de capture video WINDOWS (M. Pujol)  */
+/*                                                                */
+/*  Pour WINDOWS uniquement                                       */
+/******************************************************************/
+
+#if defined(OS_WIN)
+
+/**
+ * cmdCamVideoSource.
+ * Reglage des parametres de la camera
+ *
+ * Under Linux it calls <b>::confCam::confVideoSource</b> command
+ * and shows VideoSource window dialog.
+*/
+int cmdCamVideoSource(ClientData clientData, Tcl_Interp * interp, int argc,
+                      char *argv[])
+{
+   int result = TCL_ERROR;
+   HWND hWnd = NULL;
+
+   struct camprop *cam;
+   cam = (struct camprop *) clientData;
+
+   if (cam->capture == NULL) {
+      result = TCL_ERROR;
+   } else {
+      cam->capture->openDlgVideoSource();
+      result = TCL_OK;
+   }
    return result;
 }
 
 
 
-/******************************************************************/
-/*  Fonctions d'affichage et de capture video (M. Pujol)          */
-/*                                                                */
-/*  Pour Windows uniquement                                       */
-/******************************************************************/
-#if defined(OS_WIN)
 /******************************************************************/
 
 /**
@@ -992,7 +897,7 @@ int cmdCamStartVideoCapture(ClientData clientData, Tcl_Interp * interp,
          return TCL_ERROR;
       }
 
-      // je transforme la fréquence en periode ( en micro-seconde par image)
+      // je transforme la frequence en periode ( en micro-seconde par image)
       if (frameRate < 0.0001) {
 		   microSecPerFrame = 0L;
 	   } else {
@@ -1060,7 +965,7 @@ int cmdCamStopVideoCapture(ClientData clientData, Tcl_Interp * interp,
  * declare la variable TCL 
  *
  *  Parametres :
- *    variable : nom de la variable TCL qui reçoit le status pendant la capture
+ *    variable : nom de la variable TCL qui reeoit le status pendant la capture
  */
 int cmdCamSetVideoSatusVariable(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
