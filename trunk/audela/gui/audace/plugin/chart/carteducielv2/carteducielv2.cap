@@ -1,6 +1,6 @@
 #
 # Fichier : cartedicielv2.cap
-# Mise a jour $Id: carteducielv2.cap,v 1.7 2007-05-16 18:11:24 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.cap,v 1.8 2007-05-20 09:18:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,7 +17,7 @@ set caption(carteducielv2,fov_state)         "Fixed Field of View"
 set caption(carteducielv2,fov_value)         "Size (xxdxxmxxs)"
 set caption(carteducielv2,fichier)           "File To Be Searched"
 set caption(carteducielv2,a_partir_de)       "From"
-set caption(carteducielv2,rechercher)        "Search"
+set caption(carteducielv2,rechercher)        "Search\n(Automatic)"
 set caption(carteducielv2,parcourir)         "..."
 set caption(carteducielv2,dossier)           "From Folder:"
 set caption(carteducielv2,site_web)          "Reference Web Site:"
@@ -41,7 +41,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,fov_value)      "Taille du champ (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Fichier à rechercher"
    set caption(carteducielv2,a_partir_de)    "A partir de"
-   set caption(carteducielv2,rechercher)     "Recherche"
+   set caption(carteducielv2,rechercher)     "Recherche\n(Automatique)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "A partir du dossier :"
    set caption(carteducielv2,site_web)       "Site Web de référence :"
@@ -65,7 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,fov_value)      "Dimensioni del campo (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "File da trovare"
    set caption(carteducielv2,a_partir_de)    "Da"
-   set caption(carteducielv2,rechercher)     "Ricercare"
+   set caption(carteducielv2,rechercher)     "Ricercare\n(Automatico)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "Dalla cartella:"
    set caption(carteducielv2,site_web)       "Sito Web di riferimento:"
@@ -89,7 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,fov_value)      "Tamaño del campo (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Fichero a buscar"
    set caption(carteducielv2,a_partir_de)    "Desde"
-   set caption(carteducielv2,rechercher)     "Buscar"
+   set caption(carteducielv2,rechercher)     "Buscar\n(Automático)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "Desde la carpeta:"
    set caption(carteducielv2,site_web)       "Sitio Web de referencia:"
@@ -113,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,fov_value)      "Größe des Feld (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Datei zu suchen"
    set caption(carteducielv2,a_partir_de)    "Von"
-   set caption(carteducielv2,rechercher)     "Suchen"
+   set caption(carteducielv2,rechercher)     "Suchen\n(Automatisch)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "Vom Unterlagen:"
    set caption(carteducielv2,site_web)       "Referenz Webseite:"
@@ -137,7 +137,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,fov_value)      "Tamanho do campo (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Ficheiro a procurar"
    set caption(carteducielv2,a_partir_de)    "A partir da"
-   set caption(carteducielv2,rechercher)     "Procurar"
+   set caption(carteducielv2,rechercher)     "Procurar\n(Automático)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "A partir da pasta:"
    set caption(carteducielv2,site_web)       "Site Web de referência:"
@@ -161,7 +161,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(carteducielv2,fov_value)      "Feltets størrelse (xxdxxmxxs)"
    set caption(carteducielv2,fichier)        "Søg fil"
    set caption(carteducielv2,a_partir_de)    "Fra"
-   set caption(carteducielv2,rechercher)     "Søg"
+   set caption(carteducielv2,rechercher)     "Søg\n(Automatisk)"
    set caption(carteducielv2,parcourir)      "..."
    set caption(carteducielv2,dossier)        "Fra folder:"
    set caption(carteducielv2,site_web)       "Henvisning til Websider:"
