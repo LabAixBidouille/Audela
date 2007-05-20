@@ -2,20 +2,19 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'catalog'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.7 2007-04-11 17:35:47 michelpujol Exp $
+# Mise a jour $Id: confcat.tcl,v 1.8 2007-05-20 09:21:28 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
 
    #------------------------------------------------------------
-   # init  (est lance automatiquement au chargement de ce fichier tcl)
+   # init (est lance automatiquement au chargement de ce fichier tcl)
    # initialise les variable conf(..) et caption(..)
    # demarrer le driver selectionne par defaut
    #------------------------------------------------------------
    proc init { } {
       variable private
-      global audace
-      global conf
+      global audace conf
 
       #--- cree les variables dans conf(..) si elles n'existent pas
       if { ! [ info exists conf(confCat) ] }          { set conf(confCat)          "" }
@@ -26,10 +25,9 @@ namespace eval ::confCat {
       source [ file join $audace(rep_caption) confcat.cap ]
 
       #--- Initialise les variables locales
-      set private(pluginList) ""
-      set private(pluginTitleList)    ""
-      set private(frm)           "$audace(base).confcat"
-
+      set private(pluginList)      ""
+      set private(pluginTitleList) ""
+      set private(frm)             "$audace(base).confcat"
 
       #--- j'ajoute le repertoire pouvant contenir des plugins
       lappend ::auto_path [file join "$::audace(rep_plugin)" chart]
@@ -39,12 +37,11 @@ namespace eval ::confCat {
       #if { $conf(confCat,start) == "1" } {
       #   configureDriver
       #}
-
    }
 
    #------------------------------------------------------------
-   #  getLabel
-   #     retourne le titre de la fenetre
+   # getLabel
+   # retourne le titre de la fenetre
    #
    #  return "Titre de la fenetre (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
@@ -103,7 +100,7 @@ namespace eval ::confCat {
       if { "$conf(confCat)" != "" } {
          #--- je detruis le plugin danc catch , au cas ou il aurait été supprimé
          #--- depuis sa derniere selections
-         catch { 
+         catch {
             $conf(confCat)::deletePluginInstance
          }
       }
@@ -159,16 +156,17 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    proc fermer { } {
       variable private
-      ::confCat::recup_position
+
+      ::confCat::recupPosition
       destroy $private(frm)
    }
 
    #------------------------------------------------------------
-   # confCat::recup_position
+   # recupPosition
    # Permet de recuperer et de sauvegarder la position de la
    # fenetre de configuration de la carte
    #------------------------------------------------------------
-   proc recup_position { } {
+   proc recupPosition { } {
       variable private
       global conf
 
@@ -187,9 +185,7 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    proc createDialog { } {
       variable private
-      global audace
-      global conf
-      global caption
+      global audace caption conf
 
       if { [ winfo exists $private(frm) ] } {
          wm withdraw $private(frm)
@@ -297,15 +293,27 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    proc configureDriver { } {
       variable private
-      global conf
-      global audace
-
+      global audace conf
 
    }
 
    #------------------------------------------------------------
-   #  stopDriver
-   #     arrete le driver selectionne
+   # createUrlLabel
+   # cree un widget "label" avec une URL du site WEB
+   #------------------------------------------------------------
+   proc createUrlLabel { tkparent title url } {
+      global audace color
+
+      label  $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+      bind   $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
+      bind   $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
+      bind   $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
+      return $tkparent.labURL
+   }
+
+   #------------------------------------------------------------
+   # stopDriver
+   # arrete le driver selectionne
    #
    #  return rien
    #------------------------------------------------------------
@@ -313,7 +321,7 @@ namespace eval ::confCat {
       global conf
 
       if { "$conf(confCat)" != "" } {
-         catch { 
+         catch {
             $conf(confCat)::deletePluginInstance
          }
       }
@@ -331,8 +339,7 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    proc findPlugin { } {
       variable private
-      global audace
-      global caption
+      global audace caption
 
       #--- j'initialise les listes vides
       set private(pluginList) ""
@@ -357,9 +364,9 @@ namespace eval ::confCat {
                   ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
                }
             } else {
-               ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n" 
+               ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n"
             }
-         } catchMessage]         
+         } catchMessage]
          #--- j'affiche le message d'erreur et je continu la recherche des plugins
          if { $catchResult !=0 } {
            console::affiche_erreur "::confCat::findPlugin $::errorInfo\n"
