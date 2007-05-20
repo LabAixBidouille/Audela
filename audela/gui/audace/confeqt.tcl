@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Gere des objets 'equipement' a vocation astronomique
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.17 2007-04-13 23:15:38 michelpujol Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.18 2007-05-20 15:51:15 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -16,8 +16,7 @@ namespace eval ::confEqt {
 #------------------------------------------------------------
 proc ::confEqt::init { } {
    variable private
-   global audace
-   global conf
+   global audace conf
 
    #--- charge le fichier caption
    source [ file join "$audace(rep_caption)" confeqt.cap ]
@@ -33,7 +32,7 @@ proc ::confEqt::init { } {
    set private(frm)                "$audace(base).confeqt"
    set private(variablePluginName) ""
 
-   #--- j'ajoute le repetoire des equipements dans la liste des 
+   #--- j'ajoute le repetoire des equipements dans la liste des
    #--- repertoire pouvant contenir des plugins
    lappend ::auto_path "$::audace(rep_plugin)/equipment"
    #--- je charge la liste des plugins
@@ -55,7 +54,6 @@ proc ::confEqt::getLabel { } {
 #------------------------------------------------------------
 # ::confEqt::run
 # Affiche la fenetre de choix et de configuration
-#
 #
 #------------------------------------------------------------
 proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { configurationTitle "" } } {
@@ -131,7 +129,6 @@ proc ::confEqt::ok { } {
 proc ::confEqt::appliquer { } {
    variable private
    global audace
-   global conf
 
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
@@ -142,7 +139,7 @@ proc ::confEqt::appliquer { } {
    set selectedPluginName  [lindex $private(notebookNameList) $index]
 
    #--- Affichage d'un message d'alerte si necessaire
-   ::confEqt::Connect_Equipement
+   ::confEqt::connectEquipement
 
    #--- je configure le plugin
    ::confEqt::configurePlugin $selectedPluginName
@@ -171,8 +168,6 @@ proc ::confEqt::appliquer { } {
 #------------------------------------------------------------
 proc ::confEqt::afficheAide { } {
    variable private
-   global conf
-   global help
 
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -state disabled
@@ -204,7 +199,7 @@ proc ::confEqt::afficheAide { } {
 proc ::confEqt::fermer { } {
    variable private
 
-   ::confEqt::recup_position
+   ::confEqt::recupPosition
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -state disabled
    $private(frm).cmd.fermer configure -relief groove -state disabled
@@ -215,11 +210,11 @@ proc ::confEqt::fermer { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::recup_position
+# ::confEqt::recupPosition
 # Permet de recuperer et de sauvegarder la position de la
 # fenetre de configuration de l'equipement
 #------------------------------------------------------------
-proc ::confEqt::recup_position { } {
+proc ::confEqt::recupPosition { } {
    variable private
    global conf
 
@@ -229,6 +224,20 @@ proc ::confEqt::recup_position { } {
    set private(confEqt,position) "+[ string range $private(confEqt,geometry) $deb $fin ]"
    #---
    set conf(confEqt,position) $private(confEqt,position)
+}
+
+#------------------------------------------------------------
+# ::confEqt::createUrlLabel
+# cree un widget "label" avec une URL du site WEB
+#------------------------------------------------------------
+proc ::confEqt::createUrlLabel { tkparent title url } {
+   global audace color
+
+   label  $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   bind   $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
+   bind   $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
+   bind   $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
+   return $tkparent.labURL
 }
 
 #------------------------------------------------------------
@@ -251,8 +260,7 @@ proc ::confEqt::configurePlugin { pluginLabel } {
 #------------------------------------------------------------
 proc ::confEqt::createDialog { } {
    variable private
-   global conf
-   global caption
+   global caption conf
 
    if { [winfo exists $private(frm)] } {
       wm withdraw $private(frm)
@@ -385,8 +393,7 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 #------------------------------------------------------------
 proc ::confEqt::findPlugin { } {
    variable private
-   global caption
-   global audace
+   global audace caption
 
    #--- j'initialise les listes vides
    set private(namespaceList)  ""
@@ -411,7 +418,7 @@ proc ::confEqt::findPlugin { } {
                ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
             }
          } else {
-            ::console::affiche_erreur "Error loading equipment $pkgIndexFileName \n$::errorInfo\n\n" 
+            ::console::affiche_erreur "Error loading equipment $pkgIndexFileName \n$::errorInfo\n\n"
          }
       } catchMessage]
       #--- j'affiche le message d'erreur et je continu la recherche des plugins
@@ -431,14 +438,12 @@ proc ::confEqt::findPlugin { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::Connect_Equipement
+# ::confEqt::connectEquipement
 # Affichage d'un message d'alerte pendant la connexion d'un equipement au demarrage
 #------------------------------------------------------------
-proc ::confEqt::Connect_Equipement { } {
+proc ::confEqt::connectEquipement { } {
    variable private
-   global audace
-   global caption
-   global color
+   global audace caption color
 
    if [ winfo exists $audace(base).connectEquipement ] {
       destroy $audace(base).connectEquipement
@@ -490,7 +495,6 @@ proc ::confEqt::Connect_Equipement { } {
 #------------------------------------------------------------
 proc ::confEqt::createFrameFocuser { frm variablePluginName } {
    variable private
-   global conf
    global caption
 
    set private(frame) $frm
@@ -541,7 +545,6 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
 #------------------------------------------------------------
 proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    variable private
-   global conf
    global caption
 
    set private(frame) $frm
@@ -588,7 +591,7 @@ proc ::confEqt::startDriver { } {
    foreach pluginLabel $private(namespaceList) {
       if { [::$pluginLabel\::getStartFlag] == 1 } {
          #--- Affichage d'un message d'alerte si necessaire
-         ::confEqt::Connect_Equipement
+         ::confEqt::connectEquipement
          #--- Lance les plugins equipements au demarrage
          set catchError [ catch { ::$pluginLabel\::createPlugin } catchMessage ]
          if { $catchError == 1 } {
