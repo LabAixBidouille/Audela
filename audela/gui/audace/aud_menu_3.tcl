@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.29 2007-05-19 23:28:25 michelpujol Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.30 2007-05-20 09:57:19 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2623,11 +2623,11 @@ namespace eval ::traiteImage {
                }
                #---
                buf$audace(bufNo) load [ file join $audace(rep_images) $traiteImage(rvbWindow_rvb_filename) ]
-               #--- je fixe NAXIS=2
-               set kwdNaxis [buf$audace(bufNo) getkwd NAXIS]
-               set kwdNaxis [lreplace $kwdNaxis 1 1 "2"]
+               #--- Je fixe NAXIS a 2
+               set kwdNaxis [ buf$audace(bufNo) getkwd NAXIS ]
+               set kwdNaxis [ lreplace $kwdNaxis 1 1 "2" ]
                buf$audace(bufNo) setkwd $kwdNaxis
-               #---j'enregistre les 3 plans dans 3 fichiers separes
+               #---J'enregistre les 3 plans dans 3 fichiers separes
                buf$audace(bufNo) setkwd [ list RGBFILTR R string "Color extracted (Red)" "" ]
                buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)1 ] 3 1 1
                buf$audace(bufNo) setkwd [ list RGBFILTR G string "Color extracted (Green)" "" ]
@@ -2635,8 +2635,8 @@ namespace eval ::traiteImage {
                buf$audace(bufNo) setkwd [ list RGBFILTR B string "Color extracted (Blue)" "" ]
                buf$audace(bufNo) save3d [ file join $audace(rep_images) $traiteImage(rvbWindow_r+v+b_filename)3 ] 3 3 3
                buf$audace(bufNo) delkwd "RGBFILTR"
-               #--- je restaure NAXIS=3
-               set kwdNaxis [lreplace $kwdNaxis 1 1 "3"]
+               #--- Je restaure NAXIS a 3
+               set kwdNaxis [ lreplace $kwdNaxis 1 1 "3" ]
                buf$audace(bufNo) setkwd $kwdNaxis
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
@@ -3612,7 +3612,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.4.1.che1 -side left -padx 10 -pady 5
                label $This.usr.4.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.4.1.ent6 -textvariable faireImageRef(offset) -font $audace(font,arial_8_b)
                pack $This.usr.4.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.4.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }
@@ -3625,7 +3625,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.4.2.che1 -side left -padx 10 -pady 5
                label $This.usr.4.2.lab6 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.4.2.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.4.2.ent6 -textvariable faireImageRef(dark) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.4.2.ent6 -textvariable faireImageRef(dark) -font $audace(font,arial_8_b)
                pack $This.usr.4.2.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.4.2.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 4 }
@@ -3648,7 +3648,7 @@ namespace eval ::faireImageRef {
                pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
                label $This.usr.3.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.3.1.lab6 -side left -padx 5 -pady 5
-               entry $This.usr.3.1.ent6 -textvariable faireImageRef(offset) -width 20 -font $audace(font,arial_8_b)
+               entry $This.usr.3.1.ent6 -textvariable faireImageRef(offset) -font $audace(font,arial_8_b)
                pack $This.usr.3.1.ent6 -side left -padx 10 -pady 5 -fill x -expand 1
                button $This.usr.3.1.explore -text "$caption(pretraitement,parcourir)" -width 1 \
                   -command { ::faireImageRef::parcourir 3 }

@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sextractor.tcl,v 1.5 2007-05-18 16:29:56 robertdelmas Exp $
+# Mise a jour $Id: sextractor.tcl,v 1.6 2007-05-20 09:57:19 robertdelmas Exp $
 #
 
 global audace
@@ -284,7 +284,7 @@ proc sextractor { args } {
    if {($k1<0)&&($k2<0)} {
       set arg_config_sex "-c config.sex"
    }
-   set ligne "exec $exefile $args $arg_config_sex"
+   set ligne "exec \"$exefile\" $args $arg_config_sex"
    set err [ catch {
       eval $ligne
    } msg ]
