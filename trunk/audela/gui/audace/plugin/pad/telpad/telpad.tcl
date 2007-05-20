@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.11 2007-05-19 09:19:27 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.12 2007-05-20 13:30:48 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -128,12 +128,12 @@ namespace eval telpad {
 
       #--- Frame focuser
       ::confEqt::createFrameFocuser $frm.frame1.focuser ::telpad::widget(focuserLabel)
-      pack $frm.frame1.focuser -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.frame1.focuser -anchor nw -side left -padx 10 -pady 10
 
       #--- Raquette toujours visible
-      checkbutton $frm.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
+      checkbutton $frm.frame2.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
          -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm

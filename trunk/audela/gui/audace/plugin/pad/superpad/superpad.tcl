@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.13 2007-05-19 09:19:10 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.14 2007-05-20 13:30:31 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -140,12 +140,12 @@ namespace eval ::superpad {
       pack $frm.frame4 -side top -fill both -expand 0
 
       #--- Label pad size
-      label $frm.labSize -text "$caption(superpad,pad_size)"
-      pack $frm.labSize -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      label $frm.frame1.labSize -text "$caption(superpad,pad_size)"
+      pack $frm.frame1.labSize -anchor center -side left -padx 10 -pady 10
 
       #--- Definition de la taille de la raquette
       set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
-      ComboBox $frm.taille \
+      ComboBox $frm.frame1.taille \
          -width 7          \
          -height [llength $list_combobox ] \
          -relief sunken    \
@@ -153,24 +153,24 @@ namespace eval ::superpad {
          -editable 0       \
          -textvariable ::superpad::widget(padsize) \
          -values $list_combobox
-      pack $frm.taille -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.frame1.taille -anchor nw -side left -padx 10 -pady 10
 
       #--- Definition centerspeed
-      label $frm.labcenterspeed -text "$caption(superpad,center_speed)"
-      pack $frm.labcenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      label $frm.frame2.labcenterspeed -text "$caption(superpad,center_speed)"
+      pack $frm.frame2.labcenterspeed -anchor nw -side left -padx 10 -pady 10
 
       #--- Entry centerspeed
-      entry $frm.entrycenterspeed -relief groove -width 5 -textvariable ::superpad::widget(centerspeed) -justify center
-      pack $frm.entrycenterspeed -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      entry $frm.frame2.entrycenterspeed -relief groove -width 5 -textvariable ::superpad::widget(centerspeed) -justify center
+      pack $frm.frame2.entrycenterspeed -anchor nw -side left -padx 10 -pady 10
 
       #--- Frame focuser
       ::confEqt::createFrameFocuser $frm.frame3.focuser ::superpad::widget(focuserLabel)
-      pack $frm.frame3.focuser -in $frm.frame3 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.frame3.focuser -anchor nw -side left -padx 10 -pady 10
 
       #--- Raquette toujours visible
-      checkbutton $frm.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
+      checkbutton $frm.frame4.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
          -variable ::superpad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.visible -in $frm.frame4 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.frame4.visible -anchor nw -side left -padx 10 -pady 10
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -228,6 +228,10 @@ namespace eval ::superpad {
    # Procedures specifiques du driver
    #==============================================================
 
+   #------------------------------------------------------------
+   #  run
+   #     cree la fenetre de la raquette
+   #------------------------------------------------------------
    proc run { {zoom .4} {positionxy 0+0} } {
       if { [ string length [ info commands .superpad.display* ] ] != "0" } {
          destroy .superpad
@@ -337,6 +341,10 @@ namespace eval ::telescopePad {
       telescopeDec   ""
    }
 
+   #------------------------------------------------------------
+   #  init
+   #     initialisation
+   #------------------------------------------------------------
    proc init { } {
       displayCoord
       update
@@ -365,7 +373,7 @@ namespace eval ::telescopePad {
 
    #------------------------------------------------------------
    #  addFrame
-   #      add a frame with move button
+   #     add a frame with move button
    #------------------------------------------------------------
    proc addFrame { parentFrame zoom } {
       variable This
@@ -547,9 +555,9 @@ namespace eval ::AlignManager {
 
    #------------------------------------------------------------
    #  centerStar
-   #  deplace le telescope pour centre l'étoile sélectionnée au milieu de l'image
-   #  s'il n'existe pas de fenetre de sélection, c'est l'étoile la plus brillante
-   #  de l'image qui est ramenée au centre
+   #     deplace le telescope pour centre l'étoile sélectionnée au milieu de l'image
+   #     s'il n'existe pas de fenetre de sélection, c'est l'étoile la plus brillante
+   #     de l'image qui est ramenée au centre
    #------------------------------------------------------------
    proc centerStar { } {
       variable private
@@ -756,14 +764,14 @@ namespace eval ::AlignManager {
    }
 
    #------------------------------------------------------------
-   # modpoi_catalogmean2apparent
-   #  Input
-   # rae,dece : coordinates J2000.0 (degrees)
-   # Output
-   # rav,decv : true coordinates (degrees)
-   # Hv : true hour angle (degrees)
-   # hv : true altitude altaz coordinate (degrees)
-   # azv : true azimut altaz coodinate (degrees)
+   #  modpoi_catalogmean2apparent
+   #     Input :
+   #       rae,dece : coordinates J2000.0 (degrees)
+   #     Output :
+   #       rav,decv : true coordinates (degrees)
+   #         Hv : true hour angle (degrees)
+   #         hv : true altitude altaz coordinate (degrees)
+   #         azv : true azimut altaz coodinate (degrees)
    #------------------------------------------------------------
    proc modpoi_catalogmean2apparent { rae dece equinox date } {
       global audace modpoi
@@ -803,7 +811,7 @@ namespace eval ::AlignManager {
 
    #------------------------------------------------------------
    #  addFrame
-   #      add a frame with align button
+   #     add a frame with align button
    #------------------------------------------------------------
    proc addFrame { parentFrame } {
       variable This
@@ -919,7 +927,7 @@ namespace eval FrameFocusManager {
 
    #------------------------------------------------------------
    #  cmdFocusSpeed
-   #      change speed of focus motor
+   #     change speed of focus motor
    #------------------------------------------------------------
    proc cmdFocusSpeed { {value " "} } {
       ::focus::incrementSpeed $::conf(superpad,focuserLabel) pad
@@ -937,7 +945,7 @@ namespace eval FrameFocusManager {
 
    #------------------------------------------------------------
    #  addFrame
-   #      adds a frame with focus buttons
+   #     adds a frame with focus buttons
    #------------------------------------------------------------
    proc addFrame { parentFrame zoom } {
       variable private
@@ -1022,11 +1030,11 @@ namespace eval FrameFocusManager {
 
 namespace eval DlgSelectStar {
 
-   #
-   # DlgSelectStar::run this args
-   #   Cree la fenetre de configuration du type de fenetre
-   #   this = chemin de la fenetre
-   #
+   #------------------------------------------------------------
+   #  run this args
+   #     Cree la fenetre de configuration du type de fenetre
+   #     this = chemin de la fenetre
+   #------------------------------------------------------------
    proc run { { this ".selectStar" } } {
       variable This
       variable result ""
@@ -1039,12 +1047,12 @@ namespace eval DlgSelectStar {
       return $result
    }
 
-   #
-   # DlgSelectStar::ok
-   #   Fonction appellee lors de l'appui sur le bouton 'OK' pour
-   #   appliquer la configuration, et fermer la fenetre de
-   #   configuration du type de fenetre
-   #
+   #------------------------------------------------------------
+   #  select
+   #     Fonction appellee lors de l'appui sur le bouton 'OK' pour
+   #     appliquer la configuration, et fermer la fenetre de
+   #     configuration du type de fenetre
+   #------------------------------------------------------------
    proc select { starname } {
       variable This
       variable result
@@ -1056,6 +1064,10 @@ namespace eval DlgSelectStar {
       destroy $This
    }
 
+   #------------------------------------------------------------
+   #  createDialog
+   #     fenetre de selection d'une etoile
+   #------------------------------------------------------------
    proc createDialog { } {
       variable This
       variable startname

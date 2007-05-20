@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.9 2007-05-19 09:18:44 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.10 2007-05-20 13:30:06 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -130,12 +130,12 @@ namespace eval ::lx200pad {
       pack $frm.frame2 -side top -fill both -expand 0
 
       #--- Label pad size
-      label $frm.labSize -text "$caption(lx200pad,pad_size)"
-      pack $frm.labSize -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      label $frm.frame1.labSize -text "$caption(lx200pad,pad_size)"
+      pack $frm.frame1.labSize -anchor nw -side left -padx 10 -pady 10
 
       #--- Definition de la taille de la raquette
       set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
-      ComboBox $frm.taille \
+      ComboBox $frm.frame1.taille \
          -width 7          \
          -height [llength $list_combobox ] \
          -relief sunken    \
@@ -143,12 +143,12 @@ namespace eval ::lx200pad {
          -editable 0       \
          -textvariable ::lx200pad::widget(padsize) \
          -values $list_combobox
-      pack $frm.taille -in $frm.frame1 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.frame1.taille -anchor nw -side left -padx 10 -pady 10
 
       #--- Raquette toujours visible
-      checkbutton $frm.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
+      checkbutton $frm.frame2.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
          -variable ::lx200pad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.visible -in $frm.frame2 -anchor nw -side left -padx 10 -pady 10
+      pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
