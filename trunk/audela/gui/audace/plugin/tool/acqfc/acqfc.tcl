@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.44 2007-05-19 23:24:54 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.45 2007-05-20 17:38:34 michelpujol Exp $
 #
 
 #==============================================================
@@ -344,11 +344,10 @@ namespace eval ::AcqFC {
             pack forget $panneau(AcqFC,$visuNo,This).pose.entr
             pack forget $panneau(AcqFC,$visuNo,This).bin.but
             pack forget $panneau(AcqFC,$visuNo,This).bin.lab
-            pack $panneau(AcqFC,$visuNo,This).bin.conf -fill x -expand true -ipady 3
+            pack $panneau(AcqFC,$visuNo,This).pose.conf -fill x -expand true -ipady 3
             pack forget $panneau(AcqFC,$visuNo,This).obt.but
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
-            pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
             pack forget $panneau(AcqFC,$visuNo,This).obt.dslr
          } else {
             #--- Cas d'une WebCam Longue Pose
@@ -357,11 +356,10 @@ namespace eval ::AcqFC {
             pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
             pack forget $panneau(AcqFC,$visuNo,This).bin.but
             pack forget $panneau(AcqFC,$visuNo,This).bin.lab
-            pack $panneau(AcqFC,$visuNo,This).bin.conf -fill x -expand true -ipady 3
+            pack forget $panneau(AcqFC,$visuNo,This).pose.conf 
             pack forget $panneau(AcqFC,$visuNo,This).obt.but
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
-            pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
             pack forget $panneau(AcqFC,$visuNo,This).obt.dslr
          }
       } elseif { "$camProduct" == "dslr" } {
@@ -371,11 +369,10 @@ namespace eval ::AcqFC {
          pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
          pack $panneau(AcqFC,$visuNo,This).bin.but -side left
          pack $panneau(AcqFC,$visuNo,This).bin.lab -side left
-         pack forget $panneau(AcqFC,$visuNo,This).bin.conf
+         pack forget $panneau(AcqFC,$visuNo,This).pose.conf
          pack forget $panneau(AcqFC,$visuNo,This).obt.but
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
-         pack forget $panneau(AcqFC,$visuNo,This).obt.format
          pack $panneau(AcqFC,$visuNo,This).obt.dslr -fill x -expand true -ipady 3
       } else {
          #--- Ce n'est pas une WebCam, ni une APN (DSLR)
@@ -384,11 +381,10 @@ namespace eval ::AcqFC {
          pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
          pack $panneau(AcqFC,$visuNo,This).bin.but -side left
          pack $panneau(AcqFC,$visuNo,This).bin.lab -side left
-         pack forget $panneau(AcqFC,$visuNo,This).bin.conf
+         pack forget $panneau(AcqFC,$visuNo,This).pose.conf
          pack $panneau(AcqFC,$visuNo,This).obt.but -side left -ipady 3
          pack $panneau(AcqFC,$visuNo,This).obt.lab -side left -fill x -expand true -ipady 3
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
-         pack forget $panneau(AcqFC,$visuNo,This).obt.format
          pack forget $panneau(AcqFC,$visuNo,This).obt.dslr
       }
 
@@ -573,7 +569,7 @@ namespace eval ::AcqFC {
          $panneau(AcqFC,$visuNo,This).obt.dslr configure -state disabled
       }
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
-   }
+  }
 #***** Fin de la procedure de changement du mode d'acquisition *
 
 #***** Procedure de changement de l'obturateur *****************
@@ -3122,7 +3118,7 @@ namespace eval ::AcqFC {
    proc webcamConfigure { visuNo } {
       global caption
 
-      set result [ ::webcam::config::run $visuNo ]
+      set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
       if { $result == "1" } {
          if { [ ::confVisu::getCamera $visuNo ] == "" } {
             ::audace::menustate disabled
@@ -3141,31 +3137,31 @@ namespace eval ::AcqFC {
 #***** Fin de la fenetre de configuration de WebCam ******************
 
 #***** Affichage de la fenetre de selection de format de la WebCam ***
-   proc webcamSelectFormat { visuNo } {
-      global caption panneau
-
-        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] videoformat } ]
-        if { $result == "1" } {
-           if { [ ::confVisu::getCamera $visuNo ] == "" } {
-              ::audace::menustate disabled
-              set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-                       -message $caption(acqfc,selcam) ]
-              set integre non
-              if { $choix == "ok" } {
-                       #--- Ouverture de la fenetre de selection des cameras
-                       ::confCam::run
-                       tkwait window $audace(base).confCam
-              }
-              ::audace::menustate normal
-           }
-        }
-        if { $panneau(AcqFC,$visuNo,mode) == "6" } {
-           #--- En mode video, il faut redimmensionner le canvas immediatement
-           #--- j'arrete et relance le mode video
-           ::confVisu::setVideo $visuNo "0"
-           ::confVisu::setVideo $visuNo "1"
-       }
-   }
+#   proc webcamSelectFormat { visuNo } {
+#      global caption panneau
+#
+#        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] videoformat } ]
+#        if { $result == "1" } {
+#           if { [ ::confVisu::getCamera $visuNo ] == "" } {
+#              ::audace::menustate disabled
+#              set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
+#                       -message $caption(acqfc,selcam) ]
+#              set integre non
+#              if { $choix == "ok" } {
+#                       #--- Ouverture de la fenetre de selection des cameras
+#                       ::confCam::run
+#                       tkwait window $audace(base).confCam
+#              }
+#              ::audace::menustate normal
+#           }
+#        }
+#        if { $panneau(AcqFC,$visuNo,mode) == "6" } {
+#           #--- En mode video, il faut redimmensionner le canvas immediatement
+#           #--- j'arrete et relance le mode video
+#           ::confVisu::setVideo $visuNo "0"
+#           ::confVisu::setVideo $visuNo "1"
+#       }
+#   }
 #***** Fin de la fenetre de selection de format de la WebCam *********
 
 #***** Ouverture de la boite de configuration du telechargement ******
@@ -3233,6 +3229,12 @@ proc AcqFCBuildIF { visuNo } {
       pack $panneau(AcqFC,$visuNo,This).pose.entr -side left -fill both -expand true
    pack $panneau(AcqFC,$visuNo,This).pose -side top -fill x
 
+   #--- Bouton de configuration de la WebCam en lieu et place du widget psoe
+   button $panneau(AcqFC,$visuNo,This).pose.conf -text $caption(acqfc,pose) \
+      -command "::AcqFC::webcamConfigure $visuNo"
+   pack $panneau(AcqFC,$visuNo,This).pose.conf -fill x -expand true -ipady 3
+
+
    #--- Trame du binning
    frame $panneau(AcqFC,$visuNo,This).bin -borderwidth 2 -relief ridge
       menubutton $panneau(AcqFC,$visuNo,This).bin.but -text $caption(acqfc,bin) \
@@ -3251,11 +3253,6 @@ proc AcqFCBuildIF { visuNo } {
       pack $panneau(AcqFC,$visuNo,This).bin.lab -side left -fill both -expand true
    pack $panneau(AcqFC,$visuNo,This).bin -side top -fill x
 
-   #--- Bouton de configuration de la WebCam en lieu et place du widget binning
-   button $panneau(AcqFC,$visuNo,This).bin.conf -text $caption(acqfc,config) \
-      -command "::AcqFC::webcamConfigure $visuNo"
-   pack $panneau(AcqFC,$visuNo,This).bin.conf -fill x -expand true -ipady 3
-
    #--- Trame de l'obturateur
    frame $panneau(AcqFC,$visuNo,This).obt -borderwidth 2 -relief ridge -width 16
       button $panneau(AcqFC,$visuNo,This).obt.but -text $caption(acqfc,obt) -command "::AcqFC::ChangeObt $visuNo" \
@@ -3268,11 +3265,6 @@ proc AcqFCBuildIF { visuNo } {
          -justify center -width 16
       pack $panneau(AcqFC,$visuNo,This).obt.lab1 -side top -ipady 3
    pack $panneau(AcqFC,$visuNo,This).obt -side top -fill x
-
-   #--- Bouton du choix du format de l'image de la WebCam en lieu et place du widget obturateur
-   button $panneau(AcqFC,$visuNo,This).obt.format -text $caption(acqfc,format) \
-      -command "::AcqFC::webcamSelectFormat $visuNo"
-   pack $panneau(AcqFC,$visuNo,This).obt.format -fill x -expand true -ipady 3
 
    #--- Bouton du choix du telechargement de l'image de l'APN en lieu et place du widget obturateur
    button $panneau(AcqFC,$visuNo,This).obt.dslr -text $caption(acqfc,config) -state normal \

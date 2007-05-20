@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.10 2007-05-19 23:27:20 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.11 2007-05-20 17:38:34 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -29,7 +29,6 @@ proc ::webcam::init { } {
       if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }       { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
       if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }    { set conf(webcam,$camItem,longueposelinkbit)    "0" }
       if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] } { set conf(webcam,$camItem,longueposestartvalue) "0" }
-      if { ! [ info exists conf(webcam,$camItem,longueposestopvalue) ] }  { set conf(webcam,$camItem,longueposestopvalue)  "1" }
       if { ! [ info exists conf(webcam,$camItem,mirh) ] }                 { set conf(webcam,$camItem,mirh)                 "0" }
       if { ! [ info exists conf(webcam,$camItem,mirv) ] }                 { set conf(webcam,$camItem,mirv)                 "0" }
       if { ! [ info exists conf(webcam,$camItem,channel) ] }              { set conf(webcam,$camItem,channel)              "0" }
@@ -73,7 +72,6 @@ proc ::webcam::init { } {
 proc ::webcam::confToWidget { } {
    variable private
    global conf
-console::disp "::webcam::confToWidget \n"
 
    #--- Recupere la configuration de la WebCam dans le tableau private($camItem,...)
    foreach camItem { A B C } {
@@ -81,7 +79,6 @@ console::disp "::webcam::confToWidget \n"
       set private($camItem,longueposeport)       $conf(webcam,$camItem,longueposeport)
       set private($camItem,longueposelinkbit)    $conf(webcam,$camItem,longueposelinkbit)
       set private($camItem,longueposestartvalue) $conf(webcam,$camItem,longueposestartvalue)
-      set private($camItem,longueposestopvalue)  $conf(webcam,$camItem,longueposestopvalue)
       set private($camItem,mirh)                 $conf(webcam,$camItem,mirh)
       set private($camItem,mirv)                 $conf(webcam,$camItem,mirv)
       set private($camItem,channel)              $conf(webcam,$camItem,channel)
@@ -111,7 +108,6 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,longueposeport)       $private($camItem,longueposeport)
    set conf(webcam,$camItem,longueposelinkbit)    $private($camItem,longueposelinkbit)
    set conf(webcam,$camItem,longueposestartvalue) $private($camItem,longueposestartvalue)
-   set conf(webcam,$camItem,longueposestopvalue)  $private($camItem,longueposestopvalue)
    set conf(webcam,$camItem,mirh)                 $private($camItem,mirh)
    set conf(webcam,$camItem,mirv)                 $private($camItem,mirv)
    set conf(webcam,$camItem,channel)              $private($camItem,channel)
@@ -135,13 +131,8 @@ proc ::webcam::fillConfigPage { frm camItem } {
    global audace caption color confCam
 
    set private(frm) $frm
-console::disp "::webcam::fillConfigPage debut $camItem\n"
    #--- confToWidget
    ::webcam::confToWidget
-
-
-console::disp "::webcam::fillConfigPage frm=$frm\n"
-
    #--- Supprime tous les widgets de l'onglet
    foreach i [ winfo children $frm ] {
       destroy $i
@@ -225,8 +216,8 @@ console::disp "::webcam::fillConfigPage frm=$frm\n"
       label $frm.frame7.portLabel -text "Port"
       pack $frm.frame7.portLabel -anchor nw -side top -padx 10
       listbox $frm.frame7.portList -listvariable ::webcam::private(portList) -state normal -height 3
-      pack $frm.frame7.portList -in $frm.frame6 -anchor center -padx 10 -pady 5 -ipadx 10 -expand true
-      bind $frm.frame7.portList <<ListboxSelect>> "::webcam::selectPort $camItem $frm.frame6.portList"
+      pack $frm.frame7.portList -anchor center -padx 10 -pady 5 -ipadx 10 -expand true
+      bind $frm.frame7.portList <<ListboxSelect>> "::webcam::selectPort $camItem $frm.frame7.portList"
    } else {
       button $frm.frame7.conf_webcam -text "$caption(webcam,conf_source)"
       pack $frm.frame7.conf_webcam -in $frm.frame7 -anchor center -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
@@ -317,7 +308,16 @@ console::disp "::webcam::fillConfigPage frm=$frm\n"
    label $frm.lab4 -text "$caption(webcam,longueposestart)"
    pack $frm.lab4 -in $frm.frame13 -anchor center -side left -padx 3 -pady 5
 
-   entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($camItem,longueposestartvalue) -justify center
+   #entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($camItem,longueposestartvalue) -justify center
+   set longuePoseStartList [list "0" "1"]
+   ComboBox $frm.longueposestartvalue \
+      -width 4         \
+      -height [ llength $longuePoseStartList ] \
+      -relief sunken    \
+      -borderwidth 1    \
+      -editable 0       \
+      -textvariable ::webcam::private($camItem,longueposestartvalue) \
+      -values $longuePoseStartList
    pack $frm.longueposestartvalue -in $frm.frame13 -anchor center -side right -padx 10 -pady 5
 
    #--- WebCam modifiee avec un capteur Noir et Blanc
@@ -392,7 +392,9 @@ proc ::webcam::configureCamera { camItem } {
             cam$camNo longueposelinkno $linkNo
             cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
             cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
-            cam$camNo longueposestopvalue $conf(webcam,$camItem,longueposestopvalue)
+            #--- si  longueposestartvalue=0 alors longueposestovalue=1
+            #--- si  longueposestartvalue=1 alors longueposestovalue=0
+            cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
          }
          quickremote {
             #--- Je cree la liaison longue pose
@@ -402,7 +404,9 @@ proc ::webcam::configureCamera { camItem } {
             cam$camNo longueposelinkno $linkNo
             cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
             cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
-            cam$camNo longueposestopvalue $conf(webcam,$camItem,longueposestopvalue)
+            #--- si  longueposestartvalue=0 alors longueposestovalue=1
+            #--- si  longueposestartvalue=1 alors longueposestovalue=0
+            cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
          }
       }
 
@@ -476,7 +480,7 @@ proc ::webcam::ConfigWebCam { camItem } {
                $frm.frame6.videoFormatList configure -state normal
             } else {
                $frm.frame7.conf_webcam configure -state normal -command "cam$confCam($camItem,camNo) videosource"
-               $frm.frame6.format_webcam configure -state normal -command "cam$confCam($camItem,camNo) videoformat"
+               $frm.frame6.format_webcam configure -state normal -command "cam$confCam($camItem,camNo) videoformat window"
             }
          } else {
             #--- Boutons de configuration de la WebCam inactif
@@ -501,7 +505,7 @@ proc ::webcam::ConfigWebCam { camItem } {
             #--- je selectionne le port courant
              set index [lsearch $private(portList) $private($camItem,port)]
              if { $index != -1 } {
-                $frm.frame6.portList selection set $index
+                $frm.frame7.portList selection set $index
              }
          }
       }
@@ -573,10 +577,8 @@ proc ::webcam::configureLinkLonguePose { camItem } {
    #--- Je positionne startvalue par defaut en fonction du type de liaison
    if { [ ::confLink::getLinkNamespace $private($camItem,longueposeport) ] == "parallelport" } {
       set private($camItem,longueposestartvalue) "0"
-      set private($camItem,longueposestopvalue)  "1"
    } elseif { [ ::confLink::getLinkNamespace $private($camItem,longueposeport) ] == "quickremote" } {
       set private($camItem,longueposestartvalue) "1"
-      set private($camItem,longueposestopvalue)  "0"
    }
 }
 
@@ -676,7 +678,7 @@ namespace eval ::webcam::config {
 #    affiche la fenetre de configuration de l'autoguidage
 #
 #------------------------------------------------------------
-proc ::webcam::config::run { visuNo { camItem "A" }  } {
+proc ::webcam::config::run { visuNo camItem } {
    variable private
 
    if { $::tcl_platform(os) == "Linux" } {
@@ -684,49 +686,21 @@ proc ::webcam::config::run { visuNo { camItem "A" }  } {
       set private($visuNo,camItem) $camItem
 
       set private(frameRateList) [list "5" "10" "15" "20" "25" "30" "50"]
-      set private(shutterList) [list "1/25" "1/33" "1/50" "1/100" "1/250" "1/500" "1/1000" "1/2500" "1/5000" "1/10000"]
+      set private(shutterList) [list "1/5" "1/10" "1/15" "1/20" "1/25" "1/33" "1/50" "1/100" "1/250" "1/500" "1/1000" "1/2500" "1/5000" "1/10000"]
 
       #--- j'affiche la fenetre de configuration
-      ::confGenerique::run $private($visuNo,toplevel) "::webcam::config" $visuNo nomodal
-      wm geometry $private($visuNo,toplevel) $::conf(webcam,$camItem,configWindowPosition)
+     if { [winfo exists $private($visuNo,toplevel)] == 0 } {
+        ::confGenerique::run $private($visuNo,toplevel) "::webcam::config" $visuNo nomodal
+         wm transient $private($visuNo,toplevel) [winfo parent  $private($visuNo,toplevel) ]
+         wm geometry $private($visuNo,toplevel) $::conf(webcam,$camItem,configWindowPosition) 
+      } else {
+         focus $private($visuNo,toplevel)
+      }
       set result 0
    } else {
       set result [ catch { after 10 "cam[ ::confVisu::getCamNo $visuNo ] videosource" } ]
    }
    return $result
-}
-
-#------------------------------------------------------------
-# ::webcam::config::apply { }
-#   copie les variables private() dans le tableau conf()
-#------------------------------------------------------------
-proc ::webcam::config::apply { visuNo } {
-   global conf
-   variable private
-
-   set camItem $private($visuNo,camItem)
-   set camNo   $::confCam($camItem,camNo)
-
-   set ::conf(webcam,$private($visuNo,camItem),autoShutter) $private($visuNo,autoShutter)
-   set ::conf(webcam,$private($visuNo,camItem),autoGain) $private($visuNo,autoGain)
-
-   if { $private($visuNo,framerate) != $::conf(webcam,$camItem,framerate) } {
-      #cam$camNo framerate $private($visuNo,framerate)
-      set ::conf(webcam,$private($visuNo,camItem),framerate) $private($visuNo,framerate)
-      console::disp ":webcam::config::apply framerate=$private($visuNo,framerate)\n"
-   }
-
-   if { $private($visuNo,shutter) != $::conf(webcam,$camItem,shutter) } {
-      #cam$camNo framerate $private($visuNo,shutter)
-      set ::conf(webcam,$private($visuNo,camItem),shutter) $private($visuNo,shutter)
-      console::disp ":webcam::config::apply shutter=$private($visuNo,shutter)\n"
-   }
-
-   if { $private($visuNo,gain) != $::conf(webcam,$camItem,gain) } {
-      #cam$camNo gain $private($visuNo,gain)
-      set ::conf(webcam,$private($visuNo,camItem),gain)  $private($visuNo,gain)
-      console::disp ":webcam::config::gain shutter=$private($visuNo,gain)\n"
-   }
 }
 
 #------------------------------------------------------------
@@ -771,21 +745,20 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
    set private($visuNo,autoShutter) $::conf(webcam,$private($visuNo,camItem),autoShutter)
    set private($visuNo,autoGain)   $::conf(webcam,$private($visuNo,camItem),autoGain)
 
-   #--- Frame detection etoile
-   TitleFrame $frm.framerate -borderwidth 2 -relief ridge -text "$caption(webcam,framerate)"
-      listbox $frm.framerate.list -state normal  -width 9 -listvariable ::webcam::config::private(frameRateList)
-      pack $frm.framerate.list -in [$frm.framerate getframe] -anchor w -side top -fill y -expand 1
-      bind $frm.framerate.list <<ListboxSelect>> "::webcam::config::onSelectFrameRate $visuNo $frm.framerate.list"
-   pack $frm.framerate -anchor w -side left -fill y -expand 0
-
    TitleFrame $frm.shutter -borderwidth 2 -relief ridge -text "$caption(webcam,shutter)"
       checkbutton $frm.shutter.auto -text "$caption(webcam,auto)" -highlightthickness 0 \
          -variable ::webcam::config::private($visuNo,autoShutter) \
-         -command "::webcam::config::onSetAutoShutter $visuNo $frm.shutter.list"
+         -command "::webcam::config::onSetAutoShutter $visuNo $frm.shutter.scale"
       pack $frm.shutter.auto -in [$frm.shutter getframe] -anchor w -side top -fill none -expand 0
-      listbox $frm.shutter.list -state normal  -width 9 -listvariable ::webcam::config::private(shutterList)
-      pack $frm.shutter.list -in [$frm.shutter getframe] -anchor w -side top -fill y -expand 1
-      bind $frm.shutter.list <<ListboxSelect>> "::webcam::config::onSelectShutter $visuNo $frm.shutter.list"
+      #listbox $frm.shutter.list -state normal -width [llength $private(shutterList)] -listvariable ::webcam::config::private(shutterList)
+      scale $frm.shutter.scale -from "0." -to "100."  \
+         -orient vertical -showvalue true -bigincrement 10 -tickinterval 5 -resolution 1  -width 8 \
+         -borderwidth 1 -relief groove \
+         -variable ::webcam::config::private($visuNo,shutter) \
+         -command "::webcam::config::onSelectShutter $visuNo $frm.shutter.scale"
+
+      pack $frm.shutter.scale -in [$frm.shutter getframe] -anchor w -side top -fill y -expand 1
+      #bind $frm.shutter.list <<ListboxSelect>> "::webcam::config::onSelectShutter $visuNo $frm.shutter.list"
    pack $frm.shutter -anchor w -side left -fill y -expand 0
 
    TitleFrame $frm.gain -borderwidth 2 -relief ridge -text "$caption(webcam,gain)"
@@ -795,16 +768,28 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
       pack $frm.gain.auto -in [$frm.gain getframe] -anchor w -side top -fill none -expand 0
       scale $frm.gain.scale -from "0" -to "100"  \
          -orient vertical -showvalue true -tickinterval 1 -resolution 1  -width 8 \
-         -borderwidth 1 -relief groove -command "::webcam::config::onSelectGain $visuNo $frm.gain.scale"
+         -borderwidth 1 -relief groove \
+         -variable ::webcam::config::private($visuNo,gain) \
+         -command "::webcam::config::onSelectGain $visuNo $frm.gain.scale"
       pack $frm.gain.scale -in [$frm.gain getframe] -anchor w -side top -fill y -expand 1
    pack $frm.gain -anchor w -side left -fill y -expand 0
 
+   TitleFrame $frm.framerate -borderwidth 2 -relief ridge -text "$caption(webcam,framerate)"
+      listbox $frm.framerate.list -state normal  -width 8 -listvariable ::webcam::config::private(frameRateList)
+      pack $frm.framerate.list -in [$frm.framerate getframe] -anchor w -side top -fill y -expand 0
+      bind $frm.framerate.list <<ListboxSelect>> "::webcam::config::onSelectFrameRate $visuNo $frm.framerate.list"
+   pack $frm.framerate -anchor w -side left -fill y -expand 0
 
-   pack $frm -fill x -expand 1
+
+   pack $frm -fill y -expand 1
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-   ::webcam::config::onSetAutoShutter $visuNo $frm.shutter.list
+   
+   $frm.framerate.list selection set [lsearch $private(frameRateList) $private($visuNo,framerate)]
+   $frm.shutter.scale set $private($visuNo,shutter) 
+   $frm.gain.scale    set $private($visuNo,gain) 
+   ::webcam::config::onSetAutoShutter $visuNo $frm.shutter.scale
    ::webcam::config::onSetAutoGain $visuNo $frm.gain.scale
 }
 
@@ -818,24 +803,60 @@ proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
    variable private
 
    #--- je copie la valeur selectionnee dans la variable private
-   set private($visuNo,framerate) [$tklist get [$tklist curselection]]
+   set index [$tklist curselection]
+   if { $index != "" } {
+      set private($visuNo,framerate) [$tklist get $index ]
+      set camItem $private($visuNo,camItem)
+      set camNo   $::confCam($camItem,camNo)        
+      if { $private($visuNo,framerate) != $::conf(webcam,$camItem,framerate) } {
+         set catchResult [ catch { cam$camNo framerate $private($visuNo,framerate) } catchMessage ]
+         if { $catchResult == 0 } {
+            set ::conf(webcam,$private($visuNo,camItem),framerate) $private($visuNo,framerate)
+         } else {
+            tk_messageBox -message "$catchMessage" -title [::webcam::config::getLabel] -icon error
+            set private($visuNo,framerate) $::conf(webcam,$private($visuNo,camItem),framerate)
+            $private($visuNo,This).framerate.list selection clear 0 end
+            $private($visuNo,This).framerate.list selection set [lsearch $private(frameRateList) $private($visuNo,framerate)]
+
+         }
+      }
+   }
 }
 
 #------------------------------------------------------------
 #  onSelectShutter
 #     selectionne la vitesse d'obturation
 #
+#  A negative value sets the shutter speed to automatic (
+#  controlled by the camera's firmware). 
+#  A value of 0..65535 will set manual mode, where the values 
+#  have been calibrated such that 65535 is the longest possible 
+#  exposure time. It is not a linear scale, where a value of '1' 
+#  is 1/65536th of a second, etc.
+#
 #  return null
 #------------------------------------------------------------
-proc ::webcam::config::onSelectShutter { visuNo tklist } {
+proc ::webcam::config::onSelectShutter { visuNo tklist value} {
    variable private
 
-   #--- je copie la valeur selectionnee
-   set value [$tklist get [$tklist curselection]]
-   #--- j'ajoute un point pour transformer en valeur decimale
-   append value "."
-   #--- je convertis en fraction de 65535.
-   set private($visuNo,shutter) [expr int( 65535. * [expr $value]) ]
+   set camItem $private($visuNo,camItem)
+   if { $private($visuNo,shutter) != $::conf(webcam,$camItem,shutter) } {
+      set camNo   $::confCam($camItem,camNo)
+      if { $private($visuNo,autoShutter) == 0 } {
+         #--- j'ajoute un point pour transformer en valeur decimale
+         append value "."
+         set value [expr $value]
+         #--- je convertis le pourcentage en fraction de 65535.
+         set value [expr int( $value * 65535. /  100. ) ]
+         cam$camNo setvideoparameter -shutter $value
+         #--- j'attends un peu pour ne pas saturer 
+         after 100
+      } else {
+            cam$camNo setvideoparameter -shutter "-1"
+      }
+      set ::conf(webcam,$camItem,shutter)     $private($visuNo,shutter)
+   }
+
 }
 
 #------------------------------------------------------------
@@ -847,10 +868,25 @@ proc ::webcam::config::onSelectShutter { visuNo tklist } {
 proc ::webcam::config::onSelectGain { visuNo tkscale value } {
    variable private
 
-   #--- j'ajoute un point pour transformer en valeur decimale
-   append value "."
-   #--- je convertis en fraction de 65535.
-   set private($visuNo,shutter) [expr int( 65535. * $value / 100.) ]
+
+   set camItem $private($visuNo,camItem)
+
+   if { $private($visuNo,gain) != $::conf(webcam,$camItem,gain) } {
+      set camNo   $::confCam($camItem,camNo)
+      if { $private($visuNo,autoGain) == 0 } {
+         #--- j'ajoute un point pour transformer en valeur decimale
+         append value "."
+         #--- je convertis en fraction de 65535.
+         set value [expr int( 65535. * $value / 100.) ]
+         cam$camNo setvideoparameter -gain $value
+         #--- j'attends un peu pour ne pas saturer 
+         after 100
+      } else {
+         cam$camNo setvideoparameter -gain "-1"
+      }
+      set ::conf(webcam,$camItem,gain)      $private($visuNo,gain)
+   }
+
 }
 
 #------------------------------------------------------------
@@ -866,6 +902,24 @@ proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
       $tklist configure -state normal
    } else {
       $tklist configure -state disabled
+   }
+
+   set camItem $private($visuNo,camItem)
+
+   if { $private($visuNo,autoShutter) != $::conf(webcam,$camItem,autoShutter)  } {
+      set camNo   $::confCam($camItem,camNo)
+      if { $private($visuNo,autoShutter) == 0 } {
+         #--- j'ajoute un point pour transformer en valeur decimale
+         set value $::conf(webcam,$camItem,shutter) 
+         append value "."
+         #--- je convertis le pourcentage en fraction de 65535.
+         set value [expr $value]
+         set value [expr int( $value * 65535. /  100. ) ]
+         cam$camNo setvideoparameter -shutter $value
+      } else {
+         cam$camNo setvideoparameter -shutter "-1"
+      }
+      set ::conf(webcam,$camItem,autoShutter) $private($visuNo,autoShutter)
    }
 }
 
@@ -883,4 +937,23 @@ proc ::webcam::config::onSetAutoGain { visuNo tkscale } {
    } else {
       $tkscale configure -state disabled
    }
+
+   set camItem $private($visuNo,camItem)
+
+    if { $private($visuNo,autoGain) != $::conf(webcam,$camItem,autoGain) } {
+      
+      set camNo   $::confCam($camItem,camNo)
+      if { $private($visuNo,autoGain) == 0 } {
+         #--- j'ajoute un point pour transformer en valeur decimale
+         set value $::conf(webcam,$camItem,autoGain)
+         append value "."
+         #--- je convertis en fraction de 65535.
+         set value [expr int( $value * 65535./ 100.) ]
+         cam$camNo setvideoparameter -gain $value
+      } else {
+         cam$camNo setvideoparameter -gain "-1"
+      }
+      set ::conf(webcam,$camItem,autoGain)  $private($visuNo,autoGain)
+   }
+
 }

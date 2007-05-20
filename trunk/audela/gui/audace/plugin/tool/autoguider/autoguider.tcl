@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.18 2007-04-29 07:08:40 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.19 2007-05-20 17:38:34 michelpujol Exp $
 #
 
 #==============================================================
@@ -195,13 +195,13 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
          -text "$caption(autoguider,ctrl_monture)" \
          -variable ::autoguider::private($visuNo,monture_ok) -command "::autoguider::initMount $visuNo"
       label $This.suivi.label_d      -text "$caption(autoguider,ecart_origine_etoile)"
-      label $This.suivi.dx           -textvariable ::autoguider::private($visuNo,dx)
-      label $This.suivi.dy           -textvariable ::autoguider::private($visuNo,dy)
+      label $This.suivi.dx           -textvariable ::autoguider::private($visuNo,dx) -width 5
+      label $This.suivi.dy           -textvariable ::autoguider::private($visuNo,dy) -width 5
       label $This.suivi.label_delay  -text "$caption(autoguider,impulsion)"
-      label $This.suivi.delay_alpha  -textvariable ::autoguider::private($visuNo,delay,alpha)
-      label $This.suivi.delay_delta  -textvariable ::autoguider::private($visuNo,delay,delta)
+      label $This.suivi.delay_alpha  -textvariable ::autoguider::private($visuNo,delay,alpha) -width 5
+      label $This.suivi.delay_delta  -textvariable ::autoguider::private($visuNo,delay,delta) -width 5
       label $This.suivi.label_clock  -text "$caption(autoguider,intervalle)"
-      label $This.suivi.lab_clock    -textvariable ::autoguider::private($visuNo,interval)
+      label $This.suivi.lab_clock    -textvariable ::autoguider::private($visuNo,interval) -justify right
       button $This.suivi.but_config  -text "$caption(autoguider,config_guidage)" \
          -command "::autoguider::config::run $visuNo"
 
@@ -216,7 +216,7 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       grid $This.suivi.delay_alpha    -row 5 -column 1 -sticky w
       grid $This.suivi.delay_delta    -row 5 -column 2 -sticky w
       grid $This.suivi.label_clock    -row 6 -column 0 -sticky w
-      grid $This.suivi.lab_clock      -row 6 -column 0 -columnspan 3
+      grid $This.suivi.lab_clock      -row 6 -column 1 -columnspan 2
       grid $This.suivi.but_config     -row 7 -column 0 -columnspan 3
    pack $This.suivi -side top -fill x
 
@@ -288,7 +288,7 @@ proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2
       pack forget $This.binning.lab1
       pack forget $This.binning.combo
       pack $This.pose.confwebcam -anchor center -side left -fill x -expand 1
-      pack $This.binning.selectBinning  -anchor center -side left -fill x -expand 1
+      pack forget $This.binning.selectBinning
       #--- je met la pose a zero car cette varaible n'est utilisee et doit etre nulle
       set ::conf(autoguider,pose) "0"
    }
@@ -1105,7 +1105,7 @@ proc ::autoguider::changeShowTarget { visuNo } {
 proc ::autoguider::webcamConfigure { visuNo } {
    global caption
 
-   set result [ catch { after 10 "cam[::confVisu::getCamNo $visuNo] videosource" } ]
+   set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
    if { $result == "1" } {
       if { [ ::confVisu::getCamera $visuNo ] == "" } {
          ::audace::menustate disabled
