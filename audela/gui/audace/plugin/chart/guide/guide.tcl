@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.10 2007-05-19 08:47:43 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.11 2007-05-20 09:22:47 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -76,19 +76,19 @@ namespace eval guide {
       global conf
 
       if { ! [ info exists conf(guide,exec) ] }       { set conf(guide,exec)       "GUIDE8.EXE" }
-      if { ! [ info exists conf(guide,dirname) ] }    { set conf(guide,dirname)    "" }
+      if { ! [ info exists conf(guide,dirname) ] }    { set conf(guide,dirname)    "c:/" }
       if { ! [ info exists conf(guide,binarypath) ] } { set conf(guide,binarypath) " " }
 
       return
    }
 
    #------------------------------------------------------------
-   #  Recherche_Fichier
+   #  searchFile
    #     lancement de la recherche du fichier executable de Guide
    #
    #  return rien
    #------------------------------------------------------------
-   proc Recherche_Fichier { } {
+   proc searchFile { } {
       variable widget
 
       if { ( $widget(dirname) != "" ) && ( $widget(fichier_recherche) != "" ) } {
@@ -98,7 +98,7 @@ namespace eval guide {
          set repertoire $::guide::widget(dirname)
 
          #--- Gestion du bouton de recherche
-         $widget(frm).recherche configure -relief groove -state disabled
+         $widget(frm).frame2.recherche configure -relief groove -state disabled
          #--- La variable widget(binarypath) existe deja
          set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
          set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
@@ -120,10 +120,10 @@ namespace eval guide {
 
          if { $widget(binarypath) == " " } {
             set widget(fichier_recherche) [ string tolower $widget(fichier_recherche) ]
-            ::guide::Recherche_Fichier
+            ::guide::searchFile
          } else {
             #--- Gestion du bouton de recherche
-            $widget(frm).recherche configure -relief raised -state normal
+            $widget(frm).frame2.recherche configure -relief raised -state normal
             update
             return
          }
@@ -168,7 +168,7 @@ namespace eval guide {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      global audace caption color
+      global audace caption
 
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
@@ -191,15 +191,15 @@ namespace eval guide {
 
       #--- Initialisation du chemin du fichier
       label $frm.frame1.labFichier -text "$caption(guide,fichier)"
-      pack $frm.frame1.labFichier -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFichier -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame1.nomFichier -textvariable ::guide::widget(fichier_recherche) -width 12 -justify center
-      pack $frm.frame1.nomFichier -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.nomFichier -anchor center -side left -padx 10 -pady 5
 
-      label $frm.frame1.labA_partir_de -text "$caption(guide,a_partir_de)"
-      pack $frm.frame1.labA_partir_de -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      label $frm.frame1.labAPartirDe -text "$caption(guide,a_partir_de)"
+      pack $frm.frame1.labAPartirDe -anchor center -side left -padx 10 -pady 10
 
-      entry $frm.frame1.nomDossier -textvariable ::guide::widget(dirname) -width 15
+      entry $frm.frame1.nomDossier -textvariable ::guide::widget(dirname) -width 20
       pack $frm.frame1.nomDossier -side left -padx 10 -pady 5
 
       button $frm.frame1.explore -text "$caption(guide,parcourir)" -width 1 \
@@ -209,36 +209,30 @@ namespace eval guide {
          }
       pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
-      button $frm.recherche -text "$caption(guide,rechercher)" -relief raised -state normal \
-         -command { ::guide::Recherche_Fichier }
-      pack $frm.recherche -in $frm.frame2 -anchor center -side left -pady 7 -ipadx 10 -ipady 5 -expand true
+      button $frm.frame2.recherche -text "$caption(guide,rechercher)" -relief raised -state normal \
+         -command { ::guide::searchFile }
+      pack $frm.frame2.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
 
-      entry $frm.chemin -textvariable ::guide::widget(binarypath) -width 55 -state disabled
-      pack $frm.chemin -in $frm.frame2 -anchor center -side right -padx 10
+      entry $frm.frame2.chemin -textvariable ::guide::widget(binarypath)
+      pack $frm.frame2.chemin -anchor center -side left -padx 10 -fill x -expand 1
+
+      button $frm.frame2.explore -text "$caption(guide,parcourir)" -width 1 \
+         -command {
+            set ::guide::widget(binarypath) [ ::tkutil::box_load $::guide::widget(frm) \
+               $::guide::widget(dirname) $audace(bufNo) "11" ]
+         }
+      pack $frm.frame2.explore -side right -padx 10 -pady 5 -ipady 5
 
       #--- Site web officiel de guide
-      label $frm.labSite -text "$caption(guide,site_web)"
-      pack $frm.labSite -in $frm.frame4 -side top -fill x -pady 2
+      label $frm.frame4.labSite -text "$caption(guide,site_web)"
+      pack $frm.frame4.labSite -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(guide,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(guide,site_web_ref)" \
+         "$caption(guide,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(guide,site_web_ref)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         set frm $guide::widget(frm)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         set frm $guide::widget(frm)
-         $frm.labURL configure -fg $color(blue)
-      }
    }
 
    #------------------------------------------------------------

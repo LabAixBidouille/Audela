@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.11 2007-05-19 08:47:23 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.12 2007-05-20 09:22:28 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -73,14 +73,14 @@ namespace eval carteducielv3 {
 
       #--- je fixe le nom du fichier executable en fonction de l'OS
       if { $::tcl_platform(os) == "Linux"  } {
-         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "cdc_vcx" }
+         if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "skychart" }
       } else {
          if { ! [ info exists conf(carteducielv3,binaryname) ] } { set conf(carteducielv3,binaryname)    "cdc.exe" }
       }
 
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
       if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00ss" }
-      if { ! [ info exists conf(carteducielv3,dirname) ] }       { set conf(carteducielv3,dirname)       "" }
+      if { ! [ info exists conf(carteducielv3,dirname) ] }       { set conf(carteducielv3,dirname)       "c:/" }
       if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath)    " " }
       if { ! [ info exists conf(carteducielv3,localserver) ] }   { set conf(carteducielv3,localserver)   "1" }
       if { ! [ info exists conf(carteducielv3,host) ] }          { set conf(carteducielv3,host)          "127.0.0.1" }
@@ -91,12 +91,12 @@ namespace eval carteducielv3 {
    }
 
    #------------------------------------------------------------
-   #  Recherche_Fichier
+   #  searchFile
    #     lancement de la recherche du fichier executable de Cartes du Ciel
    #
    #  return rien
    #------------------------------------------------------------
-   proc Recherche_Fichier { } {
+   proc searchFile { } {
       variable widget
 
       if { ( $widget(dirname) != "" ) && ( $widget(binaryname) != "" ) } {
@@ -106,7 +106,7 @@ namespace eval carteducielv3 {
          set repertoire $::carteducielv3::widget(dirname)
 
          #--- Gestion du bouton de recherche
-         $widget(frm).recherche configure -relief groove -state disabled
+         $widget(frm).frame3.recherche configure -relief groove -state disabled
          #--- La variable widget(binarypath) existe deja
          set repertoire_1 [ string trimright "$widget(binarypath)" "$fichier_recherche" ]
          set repertoire_2 [ glob -nocomplain -type f -dir "$repertoire_1" "$fichier_recherche" ]
@@ -126,7 +126,7 @@ namespace eval carteducielv3 {
             #--- Il n'y a rien a faire
          }
          #--- Gestion du bouton de recherche
-         $widget(frm).recherche configure -relief raised -state normal
+         $widget(frm).frame3.recherche configure -relief raised -state normal
          update
          return
       }
@@ -181,7 +181,7 @@ namespace eval carteducielv3 {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      global audace caption color
+      global audace caption
 
       #--- je memorise la reference de la frame
       set widget(frm) $frm
@@ -207,29 +207,29 @@ namespace eval carteducielv3 {
 
       #--- Definition du champ (FOV)
       label $frm.frame1.labFOV -text "$caption(carteducielv3,fov_label)"
-      pack $frm.frame1.labFOV -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFOV -anchor center -side left -padx 10 -pady 10
 
       checkbutton $frm.frame1.fovState -text "$caption(carteducielv3,fov_state)" \
          -highlightthickness 0 -variable ::carteducielv3::widget(fixedfovstate)
-      pack $frm.frame1.fovState -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.fovState -anchor center -side left -padx 10 -pady 5
 
       label $frm.frame1.labFovValue -text "$caption(carteducielv3,fov_value)"
-      pack $frm.frame1.labFovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame1.labFovValue -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame1.fovValue -textvariable ::carteducielv3::widget(fixedfovvalue) -width 10
-      pack $frm.frame1.fovValue -in $frm.frame1 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame1.fovValue -anchor center -side left -padx 10 -pady 5
 
       #--- Initialisation du chemin du fichier
       label $frm.frame2.labFichier -text "$caption(carteducielv3,fichier)"
-      pack $frm.frame2.labFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
+      pack $frm.frame2.labFichier -anchor center -side left -padx 10 -pady 10
 
       entry $frm.frame2.nomFichier -textvariable ::carteducielv3::widget(binaryname) -width 12 -justify center
-      pack $frm.frame2.nomFichier -in $frm.frame2 -anchor center -side left -padx 10 -pady 5
+      pack $frm.frame2.nomFichier -anchor center -side left -padx 10 -pady 5
 
-      label $frm.frame2.labA_partir_de -text "$caption(carteducielv3,a_partir_de)"
-      pack $frm.frame2.labA_partir_de -in $frm.frame2 -anchor center -side left -padx 10 -pady 10
+      label $frm.frame2.labAPartirDe -text "$caption(carteducielv3,a_partir_de)"
+      pack $frm.frame2.labAPartirDe -anchor center -side left -padx 10 -pady 10
 
-      entry $frm.frame2.nomDossier -textvariable ::carteducielv3::widget(dirname) -width 15
+      entry $frm.frame2.nomDossier -textvariable ::carteducielv3::widget(dirname) -width 20
       pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
 
       button $frm.frame2.explore -text "$caption(carteducielv3,parcourir)" -width 1 \
@@ -239,27 +239,34 @@ namespace eval carteducielv3 {
          }
       pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
 
-      button $frm.recherche -text "$caption(carteducielv3,rechercher)" -relief raised -state normal \
-         -command { ::carteducielv3::Recherche_Fichier }
-      pack $frm.recherche -in $frm.frame3 -anchor center -side left -pady 7 -ipadx 10 -ipady 5 -expand true
+      button $frm.frame3.recherche -text "$caption(carteducielv3,rechercher)" -relief raised -state normal \
+         -command { ::carteducielv3::searchFile }
+      pack $frm.frame3.recherche -anchor center -side left -padx 10 -pady 7 -ipadx 10 -ipady 5
 
-      entry $frm.chemin -textvariable ::carteducielv3::widget(binarypath) -width 55 -state disabled
-      pack $frm.chemin -in $frm.frame3 -anchor center -side left -padx 10
+      entry $frm.frame3.chemin -textvariable ::carteducielv3::widget(binarypath)
+      pack $frm.frame3.chemin -anchor center -side left -padx 10 -fill x -expand 1
+
+      button $frm.frame3.explore -text "$caption(carteducielv3,parcourir)" -width 1 \
+         -command {
+            set ::carteducielv3::widget(binarypath) [ ::tkutil::box_load $::carteducielv3::widget(frm) \
+               $::carteducielv3::widget(dirname) $audace(bufNo) "11" ]
+         }
+      pack $frm.frame3.explore -side right -padx 10 -pady 5 -ipady 5
 
       #--- Adresse IP du serveur distant
-      label $frm.labcdchost -text "$caption(carteducielv3,cdchost)"
-      pack $frm.labcdchost -in $frm.frame4 -anchor center -side left -padx 10 -pady 7
+      label $frm.frame4.labcdchost -text "$caption(carteducielv3,cdchost)"
+      pack $frm.frame4.labcdchost -anchor center -side left -padx 10 -pady 7
 
-      entry $frm.cdchost -width 17 -textvariable ::carteducielv3::widget(cdchost)
-      pack $frm.cdchost -in $frm.frame4 -anchor center -side left -padx 15 -pady 10
+      entry $frm.frame4.cdchost -width 17 -textvariable ::carteducielv3::widget(cdchost)
+      pack $frm.frame4.cdchost -anchor center -side left -padx 15 -pady 10
 
-      label $frm.labcdcport -text "$caption(carteducielv3,cdcport)"
-      pack $frm.labcdcport -in $frm.frame4 -anchor center -side left -padx 10 -pady 7
+      label $frm.frame4.labcdcport -text "$caption(carteducielv3,cdcport)"
+      pack $frm.frame4.labcdcport -anchor center -side left -padx 10 -pady 7
 
-      entry $frm.cdcport -width 5 -textvariable ::carteducielv3::widget(cdcport)
-      pack $frm.cdcport -in $frm.frame4 -anchor center -side left -padx 5 -pady 7
+      entry $frm.frame4.cdcport -width 5 -textvariable ::carteducielv3::widget(cdcport)
+      pack $frm.frame4.cdcport -anchor center -side left -padx 5 -pady 7
 
-      button $frm.ping -text "$caption(carteducielv3,testping)" -relief raised -state normal \
+      button $frm.frame4.ping -text "$caption(carteducielv3,testping)" -relief raised -state normal \
          -command {
             global caption
             global confCam
@@ -275,31 +282,18 @@ namespace eval carteducielv3 {
             set tres2 "$caption(carteducielv3,message_ping)"
             tk_messageBox -message "$tres1.\n$tres2 $res2" -icon info
          }
-      pack $frm.ping -in $frm.frame4 -anchor center -side top -pady 7 -ipadx 10 -ipady 5 -expand true
+      pack $frm.frame4.ping -anchor center -side top -pady 7 -ipadx 10 -ipady 5 -expand true
 
       #--- Site web officiel de Cartes du Ciel
-      label $frm.labSite -text "$caption(carteducielv3,site_web)"
-      pack $frm.labSite -in $frm.frame5 -side top -fill x -pady 2
+      label $frm.frame5.labSite -text "$caption(carteducielv3,site_web)"
+      pack $frm.frame5.labSite -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(carteducielv3,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame5 -side top -fill x -pady 2
+      set labelName [ ::confCam::createUrlLabel $frm.frame5 "$caption(carteducielv3,site_web_ref)" \
+         "$caption(carteducielv3,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(carteducielv3,site_web_ref)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         set frm $::carteducielv3::widget(frm)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         set frm $::carteducielv3::widget(frm)
-         $frm.labURL configure -fg $color(blue)
-      }
    }
 
    #------------------------------------------------------------
