@@ -2,16 +2,16 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des drivers du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.9 2007-04-12 21:43:30 michelpujol Exp $
+# Mise a jour $Id: confpad.tcl,v 1.10 2007-05-20 13:31:16 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
 }
 
 #------------------------------------------------------------
-# init ( est lance automatiquement au chargement de ce fichier tcl)
-# initialise les variable conf(..) et caption(..)
-# demarrer le driver selectionne par defaut
+#  init ( est lance automatiquement au chargement de ce fichier tcl)
+#     initialise les variable conf(..) et caption(..)
+#     demarrer le driver selectionne par defaut
 #------------------------------------------------------------
 proc ::confPad::init { } {
    variable private
@@ -31,7 +31,7 @@ proc ::confPad::init { } {
    set private(pluginTitleList)    ""
    set private(frm)           "$audace(base).confPad"
    set private(variablePluginName) ""
-   
+
    #--- j'ajoute le repertoire pouvant contenir des plugins
    lappend ::auto_path [file join "$::audace(rep_plugin)" pad]
    #--- je recherche les plugin presents
@@ -63,19 +63,19 @@ proc ::confPad::getCurrentPad { } {
 }
 
 #------------------------------------------------------------
-# run
-# Affiche la fenetre de choix et de configuration
+#  run
+#     Affiche la fenetre de choix et de configuration
 #
-# Parametres :
-#    variablePluginName : contient le nom de la variable dans laquelle sera
-#                         copie le nom du plugin selectionné
+#     Parametres :
+#       variablePluginName : contient le nom de la variable dans laquelle
+#                            sera copie le nom du plugin selectionné
 #------------------------------------------------------------
-proc ::confPad::run { {variablePluginName ""} } {
+proc ::confPad::run { { variablePluginName "" } } {
    variable private
    global conf
 
    set private(variablePluginName) $variablePluginName
-   
+
    if { [createDialog ]==0 } {
       if { $variablePluginName != "" } {
          #--- je recupere le nom du plugin pre-selectionne par l'appelant
@@ -92,9 +92,9 @@ proc ::confPad::run { {variablePluginName ""} } {
 }
 
 #------------------------------------------------------------
-# ok
-# Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-# la configuration, et fermer la fenetre de reglage
+#  ok
+#     Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
+#     la configuration, et fermer la fenetre de reglage
 #------------------------------------------------------------
 proc ::confPad::ok { } {
    variable private
@@ -107,9 +107,9 @@ proc ::confPad::ok { } {
 }
 
 #------------------------------------------------------------
-# appliquer
-# Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
-# memoriser et appliquer la configuration
+#  appliquer
+#     Fonction appellee lors de l'appui sur le bouton 'Appliquer'
+#     pour memoriser et appliquer la configuration
 #------------------------------------------------------------
 proc ::confPad::appliquer { } {
    variable private
@@ -147,8 +147,8 @@ proc ::confPad::appliquer { } {
 }
 
 #------------------------------------------------------------
-# afficheAide
-# Fonction appellee lors de l'appui sur le bouton 'Aide'
+#  afficheAide
+#     Fonction appellee lors de l'appui sur le bouton 'Aide'
 #------------------------------------------------------------
 proc ::confPad::afficheAide { } {
    variable private
@@ -166,22 +166,22 @@ proc ::confPad::afficheAide { } {
 }
 
 #------------------------------------------------------------
-# fermer
-# Fonction appellee lors de l'appui sur le bouton 'Fermer'
+#  fermer
+#     Fonction appellee lors de l'appui sur le bouton 'Fermer'
 #------------------------------------------------------------
 proc ::confPad::fermer { } {
    variable private
 
-   ::confPad::recup_position
+   ::confPad::recupPosition
    destroy $private(frm)
 }
 
 #------------------------------------------------------------
-# confPad::recup_position
-# Permet de recuperer et de sauvegarder la position de la
-# fenetre de configuration de la raquette
+#  confPad::recupPosition
+#     Permet de recuperer et de sauvegarder la position de la
+#     fenetre de configuration de la raquette
 #------------------------------------------------------------
-proc ::confPad::recup_position { } {
+proc ::confPad::recupPosition { } {
    variable private
    global conf
 
@@ -194,9 +194,9 @@ proc ::confPad::recup_position { } {
 }
 
 #------------------------------------------------------------
-# createDialog
-# Affiche la fenetre a onglet
-# retrun 0 = OK , 1 = error (no driver found)
+#  createDialog
+#     Affiche la fenetre a onglet
+#     retrun 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
 proc ::confPad::createDialog { } {
    variable private
@@ -282,18 +282,18 @@ proc ::confPad::createDialog { } {
 }
 
 #------------------------------------------------------------
-# createFramePad
-#    Cree une frame pour selectionner le plugin dans une combobox
-#    Cette frame est destinee a etre inseree dans une fenetre.
-# Parametres :
-#    frm     : chemin TK de la frame a creer
-#    variablePluginName : contient le nom de la variable dans laquelle sera
-#                         copie le nom du plugin selectionné
-# Return
-#    nothing
-# Exemple:
-#    ::confEqt::createFramePad $frm.padList ::confTel(audine,plugin)
-#    pack $frm.pluginList -in $frm -anchor center -side right -padx 10
+#  createFramePad
+#     Cree une frame pour selectionner le plugin dans une combobox
+#     Cette frame est destinee a etre inseree dans une fenetre.
+#  Parametres :
+#     frm     : chemin TK de la frame a creer
+#     variablePluginName : contient le nom de la variable dans laquelle sera
+#                          copie le nom du plugin selectionné
+#  Return
+#     nothing
+#  Exemple:
+#     ::confEqt::createFramePad $frm.padList ::confTel(audine,plugin)
+#     pack $frm.pluginList -in $frm -anchor center -side right -padx 10
 #
 #------------------------------------------------------------
 proc ::confPad::createFramePad { frm variablePluginName} {
@@ -325,9 +325,9 @@ proc ::confPad::createFramePad { frm variablePluginName} {
 }
 
 #------------------------------------------------------------
-# select [label]
-# Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
-# Si le label est omis ou inconnu, le premier onglet est selectionne
+#  select [label]
+#     Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
+#     Si le label est omis ou inconnu, le premier onglet est selectionne
 #------------------------------------------------------------
 proc ::confPad::select { { name "" } } {
    variable private
@@ -340,8 +340,8 @@ proc ::confPad::select { { name "" } } {
 }
 
 #------------------------------------------------------------
-# configureDriver
-#    configure le driver dont le label est dans $conf(confPad)
+#  configureDriver
+#     configure le driver dont le label est dans $conf(confPad)
 #------------------------------------------------------------
 proc ::confPad::configureDriver { pluginName } {
    variable private
@@ -351,9 +351,9 @@ proc ::confPad::configureDriver { pluginName } {
    if { $conf(confPad) != "" } {
       $conf(confPad)::deletePluginInstance
    }
-   
+
    set conf(confPad) $pluginName
-   
+
    #--- je cree le plugin
    if { $conf(confPad) != "" } {
       $conf(confPad)::createPluginInstance
@@ -375,19 +375,19 @@ proc ::confPad::stopDriver { } {
 }
 
 #------------------------------------------------------------
-# findPlugin
-# recherche les plugins de type "pad" 
+#  findPlugin
+#  recherche les plugins de type "pad"
 #
-# conditions :
-#  - le driver doit avoir une procedure getPluginType qui retourne une valeur egale à $driverType
-#  - le driver doit avoir une procedure getPluginTitle
+#  conditions :
+#   - le driver doit avoir une procedure getPluginType qui retourne une valeur egale à $driverType
+#   - le driver doit avoir une procedure getPluginTitle
 #
-# si le driver remplit les conditions
-#    son label est ajouté dans la liste pluginList, 
-#    et son titre est ajoute dans la liste pluginTitleList
-# sinon le fichier est ignore
+#  si le driver remplit les conditions
+#     son label est ajouté dans la liste pluginList,
+#     et son titre est ajoute dans la liste pluginTitleList
+#  sinon le fichier est ignore
 #
-# retrun 0 = OK , 1 = error (no driver found)
+#  retrun 0 = OK , 1 = error (no driver found)
 #------------------------------------------------------------
 proc ::confPad::findPlugin { } {
    variable private
@@ -416,9 +416,9 @@ proc ::confPad::findPlugin { } {
                ::console::affiche_prompt "#$caption(confpad,raquette) $pluginlabel v$pluginInfo(version)\n"
             }
          } else {
-            ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n" 
+            ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n"
          }
-      } catchMessage]         
+      } catchMessage]
       #--- j'affiche le message d'erreur et je continu la recherche des plugins
       if { $catchResult !=0 } {
         console::affiche_erreur "::confLink::findPlugin $::errorInfo\n"
