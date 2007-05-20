@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.10 2007-04-07 21:16:48 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.11 2007-05-20 09:23:46 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -115,6 +115,9 @@ namespace eval tkutil {
       } elseif { $type == "10" } {
          set title "$caption(tkutil,editer_modpoi)"
          set filetypes [ list [ list "$caption(tkutil,fichier_txt)" ".txt" ] ]
+      } elseif { $type == "11" } {
+         set title "$caption(tkutil,editer_fichier)"
+         set filetypes [ list [ list "$caption(tkutil,fichier_txt)" "*" ] ]
       }
       set filename [ tk_getOpenFile -title $title -filetypes $filetypes -initialdir $initialdir -parent $parent ]
       #---
