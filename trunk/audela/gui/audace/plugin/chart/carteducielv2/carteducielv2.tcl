@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.10 2007-05-20 09:22:10 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.11 2007-05-20 15:52:42 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -253,7 +253,7 @@ namespace eval carteducielv2 {
       label $frm.frame4.labSite -text "$caption(carteducielv2,site_web)"
       pack $frm.frame4.labSite -side top -fill x -pady 2
 
-      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(carteducielv2,site_web_ref)" \
+      set labelName [ ::confCat::createUrlLabel $frm.frame4 "$caption(carteducielv2,site_web_ref)" \
          "$caption(carteducielv2,site_web_ref)" ]
       pack $labelName -side top -fill x -pady 2
 

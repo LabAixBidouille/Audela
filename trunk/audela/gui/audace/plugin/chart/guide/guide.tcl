@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.11 2007-05-20 09:22:47 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.12 2007-05-20 15:53:20 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -227,7 +227,7 @@ namespace eval guide {
       label $frm.frame4.labSite -text "$caption(guide,site_web)"
       pack $frm.frame4.labSite -side top -fill x -pady 2
 
-      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(guide,site_web_ref)" \
+      set labelName [ ::confCat::createUrlLabel $frm.frame4 "$caption(guide,site_web_ref)" \
          "$caption(guide,site_web_ref)" ]
       pack $labelName -side top -fill x -pady 2
 
