@@ -64,6 +64,7 @@ class CCapture {
     BOOL openDlgVideoDisplay();
     BOOL openDlgVideoCompression();
     BOOL initHardware(UINT uIndex);
+    int getDeviceList();
 
     BOOL suppliesPalette();
     unsigned int getImageWidth();
@@ -114,6 +115,7 @@ class CCapture {
     BOOL singleFrameCapture();
     BOOL grabFrameNoStop();
     BOOL grabFrame();
+    BOOL getDriverName( char *driverName);
     BOOL saveDIBFile(char *fileName);
 
     BOOL readFrame(unsigned char * rgbBuffer);

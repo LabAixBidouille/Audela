@@ -22,19 +22,14 @@
 
 #include "sysexp.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
 #include <stdio.h>
 
-#include "camera.h"
-#include <libcam/util.h>
-#include <libcam/libcam.h>
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
 
 #if defined(OS_LIN)
 #include <sys/types.h>
@@ -44,54 +39,27 @@
 #include <linux/videodev.h>
 #include <sys/ioctl.h>
 #include "pwc-ioctl.h"
-
 #include <linux/ppdev.h>
 #include <linux/parport.h>
 #include <errno.h>
-
+#include <sys/mman.h>
 extern int errno;
-
-/**
- * Definitions and global variables for yuv420p_to_rgb24 conversion.
- * Code comes from xawtv.
-*/
-
-#define CLIP         320
-
-# define RED_NULL    128
-# define BLUE_NULL   128
-# define LUN_MUL     256
-# define RED_MUL     512
-# define BLUE_MUL    512
-
-#define GREEN1_MUL  (-RED_MUL/2)
-#define GREEN2_MUL  (-BLUE_MUL/6)
-#define RED_ADD     (-RED_NULL  * RED_MUL)
-#define BLUE_ADD    (-BLUE_NULL * BLUE_MUL)
-#define GREEN1_ADD  (-RED_ADD/2)
-#define GREEN2_ADD  (-BLUE_ADD/6)
-
-static unsigned int ng_yuv_gray[256];
-static unsigned int ng_yuv_red[256];
-static unsigned int ng_yuv_blue[256];
-static unsigned int ng_yuv_g1[256];
-static unsigned int ng_yuv_g2[256];
-static unsigned int ng_clip[256 + 2 * CLIP];
-
-#define GRAY(val)               ng_yuv_gray[val]
-#define RED(gray,red)           ng_clip[ CLIP + gray + ng_yuv_red[red] ]
-#define GREEN(gray,red,blue)    ng_clip[ CLIP + gray + ng_yuv_g1[red] + \
-                                                       ng_yuv_g2[blue] ]
-#define BLUE(gray,blue)         ng_clip[ CLIP + gray + ng_yuv_blue[blue] ]
-
 #endif
+
+#include "camera.h"
+#include <libcam/util.h>
+#include <libcam/libcam.h>
 
 
 /**
  * Definition of different cameras supported by this driver
  * (see declaration in libstruc.h)
  */
-extern "C" struct camini CAM_INI[] = {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct camini CAM_INI[] = {
    {"WEBCAM",        /* camera name */
     "webcam",        /* camera product */
     "ICX098BQ-A",        /* ccd name */
@@ -221,11 +189,56 @@ struct cam_drv_t CAM_DRV = {
     cam_cooler_check
 };
 
-static void yuv420p_to_rgb24(unsigned char *yuv, unsigned char *rgb, int width, int height);
-static void ng_color_yuv2rgb_init(void);
-static int readFrame(struct camprop *cam);
-static int cam_stop_longexposure(struct camprop *cam);
+#ifdef __cplusplus
+}
+#endif
 
+
+#if defined(OS_LIN)
+/**
+ * Definitions and global variables for yuv420p_to_rgb24 conversion.
+ * Code comes from xawtv.
+*/
+
+#define CLIP         320
+
+# define RED_NULL    128
+# define BLUE_NULL   128
+# define LUN_MUL     256
+# define RED_MUL     512
+# define BLUE_MUL    512
+
+#define GREEN1_MUL  (-RED_MUL/2)
+#define GREEN2_MUL  (-BLUE_MUL/6)
+#define RED_ADD     (-RED_NULL  * RED_MUL)
+#define BLUE_ADD    (-BLUE_NULL * BLUE_MUL)
+#define GREEN1_ADD  (-RED_ADD/2)
+#define GREEN2_ADD  (-BLUE_ADD/6)
+
+static unsigned int ng_yuv_gray[256];
+static unsigned int ng_yuv_red[256];
+static unsigned int ng_yuv_blue[256];
+static unsigned int ng_yuv_g1[256];
+static unsigned int ng_yuv_g2[256];
+static unsigned int ng_clip[256 + 2 * CLIP];
+
+#define GRAY(val)               ng_yuv_gray[val]
+#define RED(gray,red)           ng_clip[ CLIP + gray + ng_yuv_red[red] ]
+#define GREEN(gray,red,blue)    ng_clip[ CLIP + gray + ng_yuv_g1[red] + \
+                                                       ng_yuv_g2[blue] ]
+#define BLUE(gray,blue)         ng_clip[ CLIP + gray + ng_yuv_blue[blue] ]
+
+void yuv420p_to_rgb24(unsigned char *yuv, unsigned char *rgb, int width, int height);
+void ng_color_yuv2rgb_init(void);
+int  cam_stop_longexposure(struct camprop *cam);
+int  webcam_smmapInit(struct camprop *cam);
+void webcam_mmapSync(struct camprop *cam);
+void webcam_mmapCapture(struct camprop *cam);
+void webcam_mmapDelete(struct camprop *cam);
+unsigned char * webcam_mmapLastFrame(struct camprop *cam);
+#endif
+
+int readFrame(struct camprop *cam);
 
 /**
  * Definition of a structure specific for this driver 
@@ -235,7 +248,7 @@ static int cam_stop_longexposure(struct camprop *cam);
 #if defined(OS_WIN)
 #pragma pack (1)
 #endif
-
+/*
 typedef struct {
    char id[2];
    long filesize;
@@ -253,6 +266,7 @@ typedef struct {
    long biclrused;
    long biclrimportant;
 } BMPHEAD;
+*/
 
 /* ========================================================= */
 /* ========================================================= */
@@ -272,7 +286,7 @@ typedef struct {
  *  - cam::delete 1
 */
 
-/*!
+/**
  * cam_init
  * - cam_init permet d'initialiser les variables de la
  * - structure 'camprop'                               
@@ -320,8 +334,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    /* default settings */
 
 #if defined(OS_LIN)
-   strcpy(cam->webcamDevice, "/dev/video0");
-   //strcpy(cam->longExposureDevice, "/dev/parport0");
    cam->validFrame = VALID_FRAME;
    cam->rgbBuffer = NULL;
    cam->rgbBufferSize = 0;
@@ -332,17 +344,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->shutterSpeed = -1;
 #endif
 
-/*
-#if defined(OS_WIN)
-   strcpy(cam->longExposureDevice, "lpt1");
-   cam->driver = 0;
-   cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
-   cam->longueposeportindex = 0;
-   cam->longueposeport = 0x378;
-#endif
-*/
-
-
 /* Decode les options de cam::create */
    if (argc >= 5) {
       for (kk = 3; kk < argc - 1; kk++) {
@@ -351,20 +352,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
          }
          if (strcmp(argv[kk], "-format") == 0) {
             strcpy(formatname, argv[kk + 1]);
-         }
-/*
-         if (strcmp(argv[kk], "-lpport") == 0) {
-            strcpy(cam->longExposureDevice, argv[kk + 1]);
-#if defined(OS_WIN)
-            if (strcmp(argv[kk + 1], cam_ports[1]) == 0) {
-               cam->longueposeportindex = 1;
-               cam->longueposeport = 0x278;
-            }
-#endif
-         }
-*/
-         if (strcmp(argv[kk], "-webcamdevice") == 0) {
-            strcpy(cam->webcamDevice, argv[kk + 1]);
          }
          if (strcmp(argv[kk], "-validframe") == 0) {
             cam->validFrame = atoi(argv[kk + 1]);
@@ -379,27 +366,22 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       }
    }
 
-   cam->imax = cam->nb_photox / cam->binx;      /* valeurs par défauts */
-   cam->jmax = cam->nb_photoy / cam->biny;
-
 #if defined(OS_WIN)
-
-   hWnd = GetDesktopWindow();   /* handler du poste de travail */
-   
+   hWnd = GetDesktopWindow();   // handler du poste de travail   
 
    if (hWnd == NULL) {
       strcpy(cam->msg, "GetDesktopWindow null pointer");
       return 1;
    }
 
-/* On s'assure que la fenêtre vidéo n'est pas déja ouverte */
+   // je verifie que la fenetre video n'est pas deja ouverte 
    if (cam->capture != NULL) {
       delete cam->capture;
       delete cam->captureListener;
       cam->capture = NULL;
    }
 
-/* Création de la fenêtre vidéo avec une taille nulle */
+   // je cree fenetre preview
    cam->capture = new CCapture();
    cam->captureListener = new CCaptureListener(cam->interp, cam->camno);
    cam->capture->createWindow("Capture Window", hWnd, cam->captureListener);
@@ -408,62 +390,35 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       return 3;
    }
 
-
-   // On active le driver - Périphérique numéro 0 par défaut
+   // j'active le driver
    if (cam->capture->initHardware( cam->driver) == FALSE) {
       delete cam->captureListener;
       delete cam->capture;
       cam->capture = NULL;
-      sprintf(ligne, "Driver non trouvé");
+      sprintf(ligne, "Driver non trouve");
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       strcpy(cam->msg, "Driver not installed or camera not linked");
       return 4;
-
-      /*return TCL_ERROR; */
-   }
-   if (strcmp(formatname, "") == 0) {
-      strcpy(formatname, "SAME");
-   }
-   
-   /*strcpy(formatname,"VGA");*/
-   if (webcam_videoformat(cam, formatname) == 1) {
-      delete cam->capture;
-      delete cam->captureListener;
-      cam->capture = NULL;
-      strcpy(cam->msg, "videoformat==1");
-      return 5;
-
    }
 
-   /*
-   if (cam->longuepose == 1) {
-      if (webcam_initLongExposureDevice(cam)) {
-         delete cam->capture;
-         delete cam->captureListener;
-         cam->capture = NULL;
-         return 6;
-      }
-   } else
-      cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
-   */
+   cam->nb_photox = (int) cam->capture->getImageWidth();
+   cam->nb_photoy = (int) cam->capture->getImageHeight();
+   cam->binx = 1;
+   cam->biny = 1;
+   cam->imax = cam->nb_photox / cam->binx;    
+   cam->jmax = cam->nb_photoy / cam->biny;
 
-   // pour le mode video
    cam->capture->setPreview(FALSE);
    cam->capture->setCaptureAudio(FALSE);
    cam->videoStatusVarNamePtr[0] = 0;	 
    cam->videoEndCaptureCommandPtr[0] = 0;
-
-   
 #endif
 
 #if defined(OS_LIN)
-
-
    ng_color_yuv2rgb_init();
-
-   if (-1 == (cam->cam_fd = open(cam->webcamDevice, O_RDWR))) {
-      sprintf(cam->msg, "Can't open %s - %s", cam->webcamDevice,
-	    strerror(errno));
+   if (-1 == (cam->cam_fd = open(cam->portname, O_RDONLY))) {
+   //if (-1 == (cam->cam_fd = open(cam->portname, O_RDWR))) {
+      sprintf(cam->msg, "Can't open %s - %s", cam->portname, strerror(errno));
       return 1;
    }
 
@@ -495,23 +450,22 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       return 1;
    }
 
-   cam->imax = vcap.maxwidth;
-   cam->jmax = vcap.maxheight;
+   cam->nb_photox = vcap.maxwidth;
+   cam->nb_photoy = vcap.maxheight;
+   cam->binx = 1;
+   cam->biny = 1;
+   cam->imax = cam->nb_photox / cam->binx;    
+   cam->jmax = cam->nb_photoy / cam->biny;
 
-   
-/*
-   if(ioctl(cam->cam_fd, VIDIOCSPICT, &pic) < 0) {      
-      strcpy(cam->msg,"Can't VIDIOCSPICT");
-      close(cam->cam_fd);
-      cam->cam_fd = -1;
-      return 1;
+   if (strcmp(formatname, "") != 0) {
+      if (webcam_setVideoFormat(cam, formatname) == 1) {
+         sprintf(cam->msg, "invalid video format : %s", formatname);
+         return 1;
+      }
    }
-*/
-	webcam_videoformat(cam, "QCIF");
 
    win.width = cam->imax;
    win.height = cam->jmax;
-
 
    /* Set window settings */
    if (ioctl(cam->cam_fd, VIDIOCSWIN, &win) < 0) {
@@ -520,8 +474,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       cam->cam_fd = -1;
       return 1;
    }
-
-
 
    /* Allocate memory for frame buffers: rgbBuffer and yuvBuffer */
    if ((cam->rgbBufferSize = 3 * cam->imax * cam->jmax) < 0) {
@@ -567,28 +519,38 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    /* Init long exposure device,
     * it uses parport, parport_pc and ppdev modules.
     */
-   if (cam->longuepose == 1) {
-      if (webcam_initLongExposureDevice(cam)) {
-         close(cam->cam_fd);
-         cam->cam_fd = -1;
-         //free(cam->rgbBuffer);
-         //cam->rgbBuffer = NULL;
-         cam->rgbBufferSize = 0;
-         free(cam->yuvBuffer);
-         cam->yuvBuffer = NULL;
-         cam->yuvBufferSize = 0;
-         return 1;
-      }
-   } else
+   if (cam->longuepose == 0) {
       cam->long_fd = -1;
+   }
 
+   // VIDEO_PALETTE_GREY      1       /* Linear greyscale */
+   // VIDEO_PALETTE_HI240     2       /* High 240 cube (BT848) */
+   // VIDEO_PALETTE_RGB565    3       /* 565 16 bit RGB */
+   //VIDEO_PALETTE_RGB24     4       /* 24bit RGB */
+   //VIDEO_PALETTE_RGB32     5       /* 32bit RGB */
+   //VIDEO_PALETTE_RGB555    6       /* 555 15bit RGB */
+   //VIDEO_PALETTE_YUV422    7       /* YUV422 capture */
+   //VIDEO_PALETTE_YUYV      8
+   //VIDEO_PALETTE_UYVY      9       /* The great thing about standards is ... */
+   //VIDEO_PALETTE_YUV420    10
+   //VIDEO_PALETTE_YUV411    11      /* YUV411 capture */
+   //VIDEO_PALETTE_RAW       12      /* RAW capture (BT848) */
+   //VIDEO_PALETTE_YUV422P   13      /* YUV 4:2:2 Planar */
+   //VIDEO_PALETTE_YUV411P   14      /* YUV 4:1:1 Planar */
+   //VIDEO_PALETTE_YUV420P   15      /* YUV 4:2:0 Planar */
+   //VIDEO_PALETTE_YUV410P   16      /* YUV 4:1:0 Planar */
+   //VIDEO_PALETTE_PLANAR    13      /* start of planar entries */
+   //VIDEO_PALETTE_COMPONENT 7       /* start of component entries */
 
-   //printf("%s\n",vcap.name);   
-
+   // j'inialise le mapping memoire du buffer de la camera
+   if ( webcam_smmapInit(cam) == 0 ) {
+      // je fais une capture
+      webcam_mmapCapture(cam);
+   }
 #endif
+
+
    cam_update_window(cam);
-
-
    return 0;
 }
 
@@ -600,37 +562,18 @@ int cam_close(struct camprop *cam)
       delete cam->capture;
       cam->capture = NULL;
    }
-
-/*
-#if !defined(OS_WIN_USE_LPT_OLD_STYLE)
-   if (cam->hLongExposureDevice != INVALID_HANDLE_VALUE) {
-      CloseHandle(cam->hLongExposureDevice);
-      cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
-   }
-#endif
-*/
-
 #endif
 
 #if defined(OS_LIN)
+   int result;
+
+   if (cam->mmap_buffer) { 
+      webcam_mmapDelete(cam);
+   }
    if (cam->cam_fd >= 0) {
-      close(cam->cam_fd);
+      result = close(cam->cam_fd);
       cam->cam_fd = -1;
    }
-   /*
-   if (cam->long_fd >= 0) {
-      webcam_setLongExposureDevice(cam, cam->longueposestop);
-      ioctl(cam->long_fd, PPRELEASE);
-      close(cam->long_fd);
-      cam->long_fd = -1;
-   }
-   */
-
-   //if (cam->rgbBuffer != NULL) {
-   //   free(cam->rgbBuffer);
-   //   cam->rgbBuffer = NULL;
-   //}
-   //cam->rgbBufferSize = 0;
 
    if (cam->yuvBuffer != NULL) {
       free(cam->yuvBuffer);
@@ -639,7 +582,6 @@ int cam_close(struct camprop *cam)
    cam->yuvBufferSize = 0;
 
 #endif
-
    return TCL_OK;
 }
 
@@ -661,15 +603,6 @@ int cam_close(struct camprop *cam)
 */
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
-//   int naxis1, naxis2, bin1, bin2;
-//   Tcl_Interp *interp;
-
-//   interp = cam->interp;
-//   naxis1 = cam->imax;
-//   naxis2 = cam->jmax;
-//   bin1 = cam->binx;
-//   bin2 = cam->biny;
-
    if (cam->longuepose == 0) {
       //cam->exptime = (float) (cam->capture->getTimeLimit() * 1.e-6);
       if (readFrame(cam)) {
@@ -687,9 +620,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 /**
  * cam_stop_longexposure stops long exposure.
- * Under Linux this function reads a frame
- * and store it in cam->rgbBuffer,
- * under Windows it saves frame in file "\@0.bmp".
+ * reads a frame and store it in cam->rgbBuffer,
  *
  * Returns value:
  * - 0 when success.
@@ -700,17 +631,28 @@ int cam_stop_longexposure(struct camprop *cam)
    if (cam->longuepose == 1) {
 
 #if defined(OS_WIN)
-   // une première lecture pour se synchroniser 
-   cam->capture->grabFrameNoStop();
-#endif                          //OS_WIN
+      // une premiere lecture pour se synchroniser 
+      cam->capture->grabFrameNoStop();
+#endif                         
 
-   // fin de la pose 
+#if defined(OS_LIN)
+      if (cam->mmap_buffer) {
+         // j'active l'acces direct ï¿½ la memoire video
+         webcam_mmapCapture(cam);
+         webcam_mmapSync(cam);
+      } else {
+         // une premiere lecture pour se synchroniser 
+         // avec le mode normal de lecture des images
+         read(cam->cam_fd, cam->yuvBuffer, cam->yuvBufferSize);
+      }
+#endif                  
+
       if (webcam_setLongExposureDevice(cam, cam->longueposestop)) {
-         //error description in cam->msg
+         // error description in cam->msg
          return 1;
       }
       if (readFrame(cam)) {
-         //error description in cam->msg
+         // error description in cam->msg
          return 1;
       }
    }
@@ -826,23 +768,6 @@ void cam_cooler_check(struct camprop *cam)
 
 void cam_set_binning(int binx, int biny, struct camprop *cam)
 {
-   /*
-      cam->binx = binx;
-      cam->biny = biny;
-    */
-}
-
-/**
- * Function cam_set_exptim.
- * Probably never used... ???
-*/
-void cam_set_exptime(float exptime, struct camprop *cam)
-{
-   if (cam->longuepose == 1) {
-      cam->exptime = exptime;
-   } else {
-      cam->exptime = (float) (1. / 30.);
-   }
 }
 
 void cam_update_window(struct camprop *cam)
@@ -850,16 +775,6 @@ void cam_update_window(struct camprop *cam)
    int maxx, maxy;
    maxx = cam->nb_photox;
    maxy = cam->nb_photoy;
-   /*
-      if(cam->x1>cam->x2) libcam_swap(&(cam->x1),&(cam->x2));
-      if(cam->x1<0) cam->x1 = 0;
-      if(cam->x2>maxx-1) cam->x2 = maxx-1;
-
-      if(cam->y1>cam->y2) libcam_swap(&(cam->y1),&(cam->y2));
-      if(cam->y1<0) cam->y1 = 0;
-      if(cam->y2>maxy-1) cam->y2 = maxy-1;
-    */
-
    cam->x1 = 0;
    cam->x2 = maxx - 1;
    cam->y1 = 0;
@@ -868,12 +783,36 @@ void cam_update_window(struct camprop *cam)
    cam->x2 = cam->x1 + cam->w * cam->binx - 1;
    cam->h = (cam->y2 - cam->y1) / cam->biny + 1;
    cam->y2 = cam->y1 + cam->h * cam->biny - 1;
-
 }
 
+/**
+ * webcam_getVideoFormat -
+ *
+ * Returns value:
+ * - 0 when success.
+*/
+int webcam_getVideoFormat(struct camprop *cam, char *formatname) {
+      if (cam->imax == 640 && cam->jmax == 480)
+         strcpy(formatname, "VGA");
+      else if (cam->imax == 352 && cam->jmax == 288)
+         strcpy(formatname, "CIF");
+      else if (cam->imax == 320 && cam->jmax == 240)
+         strcpy(formatname, "SIF");
+      else if (cam->imax == 240 && cam->jmax == 176)
+         strcpy(formatname, "SSIF");
+      else if (cam->imax == 176 && cam->jmax == 144)
+         strcpy(formatname, "QCIF");
+      else if (cam->imax == 160 && cam->jmax == 120)
+         strcpy(formatname, "QSIF");
+      else if (cam->imax == 128 && cam->jmax == 96)
+         strcpy(formatname, "SQCIF");
+      else
+         strcpy(formatname, "");
+   return 0;
+}
 
 /**
- * webcam_videoformat - sets video format.
+ * webcam_setVideoFormat - sets video format.
  * Possible format names:
  * - VGA - 640 x 480
  * - CIF - 352 x 288
@@ -889,24 +828,40 @@ void cam_update_window(struct camprop *cam)
 */
 
 
-int webcam_videoformat(struct camprop *cam, char *formatname)
+int webcam_setVideoFormat(struct camprop *cam, char *formatname)
 {
-   char ligne[128];
-   int imax, jmax, box = 1;
 
 #if defined(OS_WIN)
-   HWND hWnd = NULL;
-
-   if (cam->capture == NULL)
+   if (cam->capture == NULL) {
+      sprintf(cam->msg, "Camera not ready (capture=NULL)");
       return 1;
+   }
+   if (cam->capture->hasDlgVideoFormat()) {
+      // j'ouvre la fenetre de configuration du driver de la camera
+      //BringWindowToTop(cam->g_hWndC);
+      //SetForegroundWindow(cam->g_hWndC); 
+      cam->capture->openDlgVideoFormat();
+      // apres la fermeture de la fenetre , je recupere le nouveau format de l'image video 
+      cam->nb_photox = (int) cam->capture->getImageWidth();
+      cam->nb_photoy = (int) cam->capture->getImageHeight();
+      cam->binx = 1;
+      cam->biny = 1;
+      cam->imax = cam->nb_photox / cam->binx;    
+      cam->jmax = cam->nb_photoy / cam->biny;
+   } else {
+      sprintf(cam->msg, "Format dialog not available");
+      return 1;
+   }
+
 #endif
 
 #if defined(OS_LIN)
+   char ligne[128];
+   int imax, jmax, box = 1;
    struct video_window win = { 0, 0, 640, 480, 0, 0, 0x0, 0 };
-#endif
 
-   libcam_strupr(formatname, ligne);
    //change to upper: void libcam_strupr(char *chainein, char *chaineout)
+   libcam_strupr(formatname, ligne);
 
    imax = 0;
    jmax = 0;
@@ -935,30 +890,6 @@ int webcam_videoformat(struct camprop *cam, char *formatname)
       imax = 128;
       jmax = 96;
    }
-#if defined(OS_WIN)
-   /* On récupère le format courant de l'image vidéo */
-   if ((cam->capture->getImageWidth() != (unsigned) imax)
-       && (cam->capture->getImageHeight() != (unsigned) jmax)
-       && (box == 1)) {
-      if (cam->capture->hasDlgVideoFormat()) {
-         //BringWindowToTop(cam->g_hWndC);
-         //SetForegroundWindow(cam->g_hWndC); 
-         cam->capture->openDlgVideoFormat();
-      }
-   }
-   /* On récupère le nouveau format courant de l'image vidéo */
-   cam->nb_photox = (int) cam->capture->getImageWidth();
-   cam->nb_photoy = (int) cam->capture->getImageHeight();
-   cam->binx = 1;
-   cam->biny = 1;
-   cam->imax = cam->nb_photox / cam->binx;      /* valeurs par défauts */
-   cam->jmax = cam->nb_photoy / cam->biny;
-   //cam->celldimx = 5080. / cam->nb_photox;
-   //cam->celldimy = 3810. / cam->nb_photoy;
-
-#endif
-
-#if defined(OS_LIN)
    if (jmax == 0 || imax == 0) {
       sprintf(cam->msg, "Unknown format: %s", formatname);
       return 1;
@@ -978,7 +909,7 @@ int webcam_videoformat(struct camprop *cam, char *formatname)
    cam->nb_photoy = jmax;
    cam->binx = 1;
    cam->biny = 1;
-   cam->imax = cam->nb_photox / cam->binx;      /* valeurs par défauts */
+   cam->imax = cam->nb_photox / cam->binx;      /* valeurs par defauts */
    cam->jmax = cam->nb_photoy / cam->biny;
    cam->celldimx = 5080. / cam->nb_photox;
    cam->celldimy = 3810. / cam->nb_photoy;
@@ -1035,10 +966,50 @@ int webcam_videoformat(struct camprop *cam, char *formatname)
 #endif
 
    cam_update_window(cam);
-
    return 0;
-
 }
+
+
+
+
+#if defined(OS_LIN)
+
+/**
+ * webcam_setFrameRate -
+ *
+ * Returns value:
+ * - 0 when success.
+ * - no 0 when error occurred, error description in cam->msg.
+*/
+
+int webcam_setFrameRate(struct camprop *cam, int value) {
+   struct video_window win;
+
+   ioctl(cam->cam_fd, VIDIOCGWIN, &win);
+   win.flags = (win.flags & ~PWC_FPS_MASK) | ((value << PWC_FPS_SHIFT) & PWC_FPS_FRMASK);
+   if (ioctl(cam->cam_fd, VIDIOCSWIN, &win)) {
+      sprintf(cam->msg,"webcam_setFrameRate value=%d ioctl error=%d %s", value, errno, strerror(errno));
+      return -1;
+   } else {
+      return 0;
+   }
+}
+
+int webcam_getFrameRate(struct camprop *cam, int *value) {
+   struct video_window win;
+
+   if (ioctl(cam->cam_fd, VIDIOCGWIN, &win) == 0 ) {
+      //*value = (win.flags & PWC_FPS_MASK) >> PWC_FPS_SHIFT;
+      *value = (win.flags & PWC_FPS_FRMASK) >> PWC_FPS_SHIFT;
+      return 0;
+   } else {
+      sprintf(cam->msg,"webcam_getFrameRate ioctl error=%d %s", errno, strerror(errno));
+      return -1;
+   } 
+}
+
+
+#endif
 
 
 /**
@@ -1129,163 +1100,19 @@ void yuv420p_to_rgb24(unsigned char *yuv, unsigned char *rgb,
 
 int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value)
 {
-
-/*
-#if defined(OS_LIN)
-   if (cam->long_fd < 0)
-      if (webcam_initLongExposureDevice(cam))
-         return 1;
-
-   // Write a byte 
-   if (ioctl(cam->long_fd, PPWDATA, &value)) {
-      ioctl(cam->long_fd, PPRELEASE);
-      close(cam->long_fd);
-      cam->long_fd = -1;
-      sprintf(cam->msg, "Can't set long exposure, PPWDATA");
-      return 1;
-   }
-#endif
-
-#if defined(OS_WIN)
-
-// Old implementation of this function 
-#if defined(OS_WIN_USE_LPT_OLD_STYLE)
-   unsigned short port;
-
-   port=cam->longueposeport;
-   libcam_out(port, value);
-   quickremote_setChar(value);
-#else
-
-   DWORD nNumberOfBytesWritten = 0;
-
-   if (cam->hLongExposureDevice == INVALID_HANDLE_VALUE)
-      if (webcam_initLongExposureDevice(cam))
-         return 1;
-
-
-   // Write a byte
-   if (!WriteFile
-       (cam->hLongExposureDevice, &value, 1, &nNumberOfBytesWritten, NULL)
-       || nNumberOfBytesWritten != 1) {
-      CloseHandle(cam->hLongExposureDevice);
-      cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
-      sprintf(cam->msg, "Can't set long exposure");
-      return 1;
-   }
-#endif
-#endif
-*/
+   int result = 0;
    char ligne[256];
-   int result;
-
-   // exemple "link1 bit 0 1"
 
    sprintf(ligne, "link%d bit %d %d", cam->longueposelinkno, cam->longueposelinkbit, value);
+
    if( Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
       result = 1;
    } else {
       result = 0;
    }
-
    return result;
 }
 
-
-/**
- * webcam_initLongExposureDevice - initiates a long exposure device
- * and sets cam->longueposestop.
- *
- * Parallel port control:
- * - Linux uses parport, parport_pc and ppdev modules.
- * - Windows uses "lpt1" printer port (with its handshake),
- * so you will need "null printer" modified plug. If you
- * don't like to use "lpt1" printer port you can define
- * OS_WIN_USE_LPT_OLD_STYLE.
- *
- * Returns value:
- * - 0 when success.
- * - no 0 when error occurred, error description in cam->msg.
-*/
-
-
-int webcam_initLongExposureDevice(struct camprop *cam)
-{
-return 0;
-
-/*
-#if defined(OS_LIN)
-   int buffer;   // buffer mode of parallel port 
-
-   if (-1 == (cam->long_fd = open(cam->longExposureDevice, O_RDWR))) {
-      sprintf(cam->msg, "Can't open: %s", cam->longExposureDevice);
-      return 1;
-   }
-   if (ioctl(cam->long_fd, PPCLAIM)) {
-      ioctl(cam->long_fd, PPRELEASE);
-      close(cam->long_fd);
-      cam->long_fd = -1;
-      sprintf(cam->msg, "Can't PPCLAIM: %s", cam->longExposureDevice);
-      return 1;
-   }
-
-   buffer = IEEE1284_MODE_BYTE;
-
-   if (ioctl(cam->long_fd, PPSETMODE, &buffer)) {
-      ioctl(cam->long_fd, PPRELEASE);
-      close(cam->long_fd);
-      cam->long_fd = -1;
-      sprintf(cam->msg, "Can't PPSETMODE: %s", cam->longExposureDevice);
-      return 1;
-   }
-
-   if (ioctl(cam->long_fd, PPWDATA, &(cam->longueposestop))) {
-      ioctl(cam->long_fd, PPRELEASE);
-      close(cam->long_fd);
-      cam->long_fd = -1;
-      sprintf(cam->msg, "Can't set longueposestop");
-      return 1;
-   }
-#endif
-*/
-/*
-#if defined(OS_WIN)
-#if defined(OS_WIN_USE_LPT_OLD_STYLE)
-
-   unsigned short port;
-
-   port=cam->longueposeport;
-   libcam_out(port, cam->longueposestop);
-   quickremote_setChar(cam->longueposestop);
-
-#else
-
-   DWORD nNumberOfBytesWritten = 0;
-
-   cam->hLongExposureDevice =
-      CreateFile(cam->longExposureDevice, GENERIC_WRITE, 0, NULL,
-                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-   if (cam->hLongExposureDevice == INVALID_HANDLE_VALUE) {
-      sprintf(cam->msg, "Can't create (open) file: %s",
-              cam->longExposureDevice);
-      return 1;
-   }
-
-   if (!WriteFile
-       (cam->hLongExposureDevice, &(cam->longueposestop), 1,
-        &nNumberOfBytesWritten, NULL)
-       || nNumberOfBytesWritten != 1) {
-      CloseHandle(cam->hLongExposureDevice);
-      cam->hLongExposureDevice = INVALID_HANDLE_VALUE;
-      sprintf(cam->msg, "Can't set longueposestop");
-      return 1;
-   }
-#endif
-#endif
-*/
-   return 0;
-}
 
 
 /**
@@ -1305,13 +1132,14 @@ int readFrame(struct camprop *cam)
    cam->rgbBuffer = (unsigned char*)malloc(cam->rgbBufferSize);
 
 #if defined(OS_WIN)
-   // on prie pour que ca soit la bonne image, sinon régler framerate à moins de 5 img/sec 
+   // on prie pour que ca soit la bonne image, sinon regler framerate e moins de 5 img/sec 
    cam->capture->readFrame(cam->rgbBuffer);
 #endif
 
 
 #if defined(OS_LIN)
    int i = 0, n = 0;
+   int readResult;
 
    if (cam->cam_fd < 0) {
       strcpy(cam->msg, "cam_fd is < 0");
@@ -1319,64 +1147,65 @@ int readFrame(struct camprop *cam)
    }
 
    if (cam->longuepose == 0) {
-      /* acquisition normale 
-       * normal exposure
-       */
-      if (cam->yuvBufferSize != read(cam->cam_fd,
-                                     cam->yuvBuffer, cam->yuvBufferSize)) {
-         strcpy(cam->msg, "error while reading frame: read()");
-         return -1;
-      }
-   } else if (cam->longuepose == 1) {
-      /* acquisition longue pose 
-       * long exposure
-       */
-      if (cam->validFrame > 0) {
-         for (i = 0; i < cam->validFrame; i++) {
-            if (cam->yuvBufferSize != read(cam->cam_fd,
-                                           cam->yuvBuffer,
-                                           cam->yuvBufferSize)) {
-               strcpy(cam->msg, "error while reading frame: read()");
-               return -1;
-            }
+      //  acquisition normale 
+      if (cam->mmap_buffer) {
+         webcam_mmapCapture(cam);
+         webcam_mmapSync(cam);
+         memcpy(cam->yuvBuffer,webcam_mmapLastFrame(cam), cam->yuvBufferSize);
+      } else {
+         readResult = read(cam->cam_fd, cam->yuvBuffer, cam->yuvBufferSize);
+         if (cam->yuvBufferSize != readResult) {
+            sprintf(cam->msg, "error while reading frame: read()=%d yuvBufferSize=%d",readResult,cam->yuvBufferSize );
+            return -1;
          }
-      } else if (cam->validFrame == 0) {
-         //auto detection, (less then 20 read() calls).
-         for (i = 0; i < 20; i++) {
-            if (cam->yuvBufferSize
-                != read(cam->cam_fd, cam->yuvBuffer, cam->yuvBufferSize)) {
-               strcpy(cam->msg, "error while reading frame: read()");
-               return -1;
+      }
+   } else {
+      //  acquisition long pose 
+      if (cam->mmap_buffer) {
+         for (i = 0; i < cam->validFrame; i++) {
+            webcam_mmapCapture(cam);
+            webcam_mmapSync(cam);
+         }
+         memcpy(cam->yuvBuffer,webcam_mmapLastFrame(cam), cam->yuvBufferSize);
+      } else {
+         
+         if (cam->validFrame > 0) {
+            for (i = 0; i < cam->validFrame; i++) {
+               readResult = read(cam->cam_fd, cam->yuvBuffer, cam->yuvBufferSize);
+               if (cam->yuvBufferSize != readResult) {
+                  sprintf(cam->msg, "error while reading frame: read()=%d yuvBufferSize=%d",readResult,cam->yuvBufferSize );
+                  return -1;
+               }
             }
-            yuv420p_to_rgb24(cam->yuvBuffer, cam->rgbBuffer,
-                             cam->imax, cam->jmax);
-            for (n = 0; n < cam->rgbBufferSize; n++) {
-               /* 
-                * I've done some tests and finding if there is any pixel
-                * brighter than REQUIRED_MAX_VALUE occurred the best 
-                * way of detecting valid frame.
-                * Mean value or mean-square deviation weren't
-                * a good criterion, because mean value is almost the same
-                * for dark and valid frame, mean-square deviation
-                * depends on camera settings - especially noise
-                * reduction level.
-                */
+         } else if (cam->validFrame == 0) {
+            //auto detection, (less then 20 read() calls).
+            for (i = 0; i < 20; i++) {
+               readResult = read(cam->cam_fd, cam->yuvBuffer, cam->yuvBufferSize);
+               if (cam->yuvBufferSize != readResult) {
+                  sprintf(cam->msg, "error while reading frame: read()=%d yuvBufferSize=%d",readResult,cam->yuvBufferSize );
+                  return -1;
+               }
+               yuv420p_to_rgb24(cam->yuvBuffer, cam->rgbBuffer,
+                  cam->imax, cam->jmax);
+               for (n = 0; n < cam->rgbBufferSize; n++) {
+                  
+                  if (cam->rgbBuffer[n] > REQUIRED_MAX_VALUE)
+                     break;
+               }
                if (cam->rgbBuffer[n] > REQUIRED_MAX_VALUE)
                   break;
             }
-            if (cam->rgbBuffer[n] > REQUIRED_MAX_VALUE)
-               break;
-         }
-         if (i >= 20) {
-            strcpy(cam->msg, "impossible to find valid frame");
+            if (i >= 20) {
+               strcpy(cam->msg, "impossible to find valid frame");
+               return -1;
+            }
+         } else {
+            strcpy(cam->msg, "validFrame has invalid value");
             return -1;
          }
-      } else {
-         strcpy(cam->msg, "validFrame has invalid value");
-         return -1;
       }
    }
-
+   
    // Convert yuv to rgb 
    yuv420p_to_rgb24(cam->yuvBuffer, cam->rgbBuffer, cam->imax, cam->jmax);
 
@@ -1385,7 +1214,7 @@ int readFrame(struct camprop *cam)
 }
 
 /**
- * webcam_getVideoSource - returns asked parameters.
+ * webcam_getVideoParameter - returns asked parameters.
  * command is defined by <i>command</i>,
  * result is copied to <i>result</i> string,
  *
@@ -1393,7 +1222,7 @@ int readFrame(struct camprop *cam)
  * - 0 when success.
  * - no 0 when error occurred, error description in cam->msg.
 */
-int webcam_getVideoSource(struct camprop *cam, char *result, int command)
+int webcam_getVideoParameter(struct camprop *cam, char *result, int command)
 {
    int ret = 0;
 
@@ -1583,7 +1412,10 @@ int webcam_setPicSettings(struct camprop *cam, int brightness, int contrast,
    pic.contrast = contrast;
    pic.colour = colour;
    pic.whiteness = whiteness;
+   //pic.palette = VIDEO_PALETTE_YUV420P;
 
+   //printf("webcam_setPicSettings palette=%d brightness=%d contrast=%d colour=%d whiteness=%d\n",
+   //pic.palette , pic.brightness, pic.contrast, pic.colour, pic.whiteness);
    if (ioctl(cam->cam_fd, VIDIOCSPICT, &pic)) {
       strcpy(cam->msg, "Can't VIDIOCSPICT");
       return 1;
@@ -1592,8 +1424,9 @@ int webcam_setPicSettings(struct camprop *cam, int brightness, int contrast,
    return 0;
 }
 
+
 /**
- * webcam_setVideoSource - sets some video source parameters.
+ * webcam_setVideoParameter - sets some video source parameters.
  *
  * Returns value:
  * - 0 when success.
@@ -1601,7 +1434,7 @@ int webcam_setPicSettings(struct camprop *cam, int brightness, int contrast,
  *
  * Function implemented for Linux.
 */
-int webcam_setVideoSource(struct camprop *cam, int paramValue, int command)
+int webcam_setVideoParameter(struct camprop *cam, int paramValue, int command)
 {
    int ret = 0;
 
@@ -1717,13 +1550,77 @@ int webcam_setWhiteBalance(struct camprop *cam, char *mode, int red, int blue)
 }
 
 
+
+/******************************************************************/
+/*  Fonctions d'acces direct a la memoire video LINUX (M. Pujol)  */
+/*                                                                */
+/*  Pour LINUX uniquement                                         */
+/******************************************************************/
+
+
+#if defined(OS_LIN)
+int webcam_smmapInit(struct camprop *cam) {
+   cam->mmap_mbuf.size = 0;
+   cam->mmap_mbuf.frames = 0;
+   cam->mmap_last_sync_buff=-1;
+   cam->mmap_last_capture_buff=-1;
+   cam->mmap_buffer=NULL;
+
+   if (ioctl(cam->cam_fd, VIDIOCGMBUF, &cam->mmap_mbuf)) {
+      // mmap not supported
+      return -1;
+   }
+   cam->mmap_buffer=(unsigned char *)mmap(NULL, cam->mmap_mbuf.size, PROT_READ, MAP_SHARED, cam->cam_fd, 0);
+   if (cam->mmap_buffer == MAP_FAILED) {
+      cam->mmap_mbuf.size = 0;
+      cam->mmap_mbuf.frames = 0;
+      cam->mmap_buffer=NULL;
+      return -1;
+   }
+   return 0;
+}
+
+void webcam_mmapSync(struct camprop *cam) {
+   cam->mmap_last_sync_buff=(cam->mmap_last_sync_buff+1)%cam->mmap_mbuf.frames;
+   if (ioctl(cam->cam_fd, VIDIOCSYNC, &cam->mmap_last_sync_buff) < 0) {
+      printf("webcam_mmapSync() error\n");
+   }
+}
+
+unsigned char * webcam_mmapLastFrame(struct camprop *cam) {
+   return cam->mmap_buffer + cam->mmap_mbuf.offsets[cam->mmap_last_sync_buff];
+}
+
+void webcam_mmapCapture(struct camprop *cam) {
+   struct video_mmap vm;
+   cam->mmap_last_capture_buff=(cam->mmap_last_capture_buff+1)%cam->mmap_mbuf.frames;
+   vm.frame = cam->mmap_last_capture_buff;
+   //vm.format = picture_.palette;
+   vm.format = VIDEO_PALETTE_YUV420P;
+   vm.width = cam->imax ;
+   vm.height = cam->jmax ;
+   if (ioctl(cam->cam_fd, VIDIOCMCAPTURE, &vm) < 0) {
+      printf("webcam_mmapCapture error\n");
+   }
+}
+
+void webcam_mmapDelete(struct camprop *cam) {
+   int result;
+   result = munmap(cam->mmap_buffer, cam->mmap_mbuf.size);
+   if ( result != 0 ) {
+      printf(" webcam_mmapDelete result=%d\n",result);
+   }
+   cam->mmap_buffer = NULL;
+}
+#endif
+
+
 /******************************************************************/
 /*  Fonctions d'affichage et de capture video (M. Pujol)          */
 /*                                                                */
 /*  Pour Windows uniquement                                       */
 /******************************************************************/
 #if defined(OS_WIN)
-
 
 /**
  * startVideoPreview
@@ -1748,13 +1645,13 @@ int startVideoPreview(struct camprop *cam, int previewRate) {
    // je desactive le mode overlay, au cas ou il serait actif
    cam->capture->setOverlay(FALSE);
    // j'adapte la taille de la fenetre
-   rect.left = 0;          // position relative par rapport à la fenetre parent
+   rect.left = 0;          // position relative par rapport e la fenetre parent
    rect.top  = 0;
    rect.right = cam->capture->getImageWidth();
    rect.bottom = cam->capture->getImageHeight();
    cam->capture->setWindowPosition(&rect);
 
-   // j'active la prévisualisation
+   // j'active la previsualisation
    result = cam->capture->setPreview(TRUE);
    return result;
 }
@@ -1773,7 +1670,7 @@ int startVideoPreview(struct camprop *cam, int previewRate) {
 int stopVideoPreview(struct camprop *cam) {
    int result;
 
-   // j'arrete la prévisualisation
+   // j'arrete la previsualisation
    result = cam->capture->setPreview(FALSE);
 
    return result;
@@ -1806,7 +1703,7 @@ int startVideoCapture(struct camprop *cam, unsigned short exptime, unsigned long
    // duree de la capture limitee dans le temps(en seconde)
    cam->capture->setLimitEnabled(TRUE);
    cam->capture->setTimeLimit(exptime);
-   // fréquence de la capture (millisecondes par frame)
+   // frequence de la capture (millisecondes par frame)
    cam->capture->setCaptureRate( microSecPerFrame);
    // nombre maxi de frames dans le fichier AVI (32000 par defaut)
    cam->capture->setIndexSize (32767); 

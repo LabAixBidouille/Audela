@@ -24,12 +24,18 @@
 #define __CAMERA_H__
 
 #ifdef __cplusplus
-extern "C" {			/* Assume C declarations for C++ */
-#endif				/* __cplusplus */
+extern "C" {         /* Assume C declarations for C++ */
+#endif            /* __cplusplus */
 
 #if defined(OS_WIN)
 #include <vfw.h>
 #endif
+
+#if defined(OS_LIN)
+#include <sys/mman.h>            // acces direct memoire
+#include <linux/videodev.h>
+#endif
+
 #include <tcl.h>
 #include "libname.h"
 #include <libcam/libstruc.h>
@@ -43,7 +49,7 @@ extern "C" {			/* Assume C declarations for C++ */
 /**
  * If you define OS_WIN_USE_LPT_OLD_STYLE, you will use
  * libcam_out function with your lpt port,
- * this function doesn’t work under WinXP and others
+ * this function doesnï¿½t work under WinXP and others
  * WinNT systems.
  *
  * If it is not defined, lpt port will be used like printer port, so you
@@ -107,25 +113,25 @@ extern "C" {			/* Assume C declarations for C++ */
 /**
  * class CCaptureListener
  *    implemente l'interface ICaptureListener pour traiter
- *    les erreurs et les messages signalant les changements d'état
+ *    les erreurs et les messages signalant les changements d'ï¿½tat
  */
     class CCaptureListener:public ICaptureListener {
 
       public:
-	CCaptureListener(Tcl_Interp * interp, int camno);
-	~CCaptureListener();
-	int onNewStatus(int statusID, char *message);
-	int onNewError(int errID, char *message);
-	void setTclStatusVariable(char *value);
+   CCaptureListener(Tcl_Interp * interp, int camno);
+   ~CCaptureListener();
+   int onNewStatus(int statusID, char *message);
+   int onNewError(int errID, char *message);
+   void setTclStatusVariable(char *value);
 
       protected:
-	//char *      tclEndProc;
-	char *tclStatusVariable;
-	Tcl_Interp *interp;
-	int camno;
+   //char *      tclEndProc;
+   char *tclStatusVariable;
+   Tcl_Interp *interp;
+   int camno;
 
     };
-#endif				/* __cplusplus */
+#endif            /* __cplusplus */
 
 
 #if defined(OS_WIN) && defined(__cplusplus)
@@ -138,20 +144,20 @@ extern "C" {			/* Assume C declarations for C++ */
 
       public:
 
-	CGuidingListener(Tcl_Interp * interp);
-	~CGuidingListener();
-	void onChangeGuidingStarted(int state);
-	void onChangeOrigin(int x0, int y0);
-	void onMoveTarget(int x, int y, int alphaDelay, int deltaDelay);
-	void setTclStartProc(char *value);
-	void setTclChangeOriginProc(char *value);
-	void setTclMoveTargetProc(char *value);
+   CGuidingListener(Tcl_Interp * interp);
+   ~CGuidingListener();
+   void onChangeGuidingStarted(int state);
+   void onChangeOrigin(int x0, int y0);
+   void onMoveTarget(int x, int y, int alphaDelay, int deltaDelay);
+   void setTclStartProc(char *value);
+   void setTclChangeOriginProc(char *value);
+   void setTclMoveTargetProc(char *value);
 
       protected:
-	char *tclStartProc;
-	char *tclChangeOriginProc;
-	char *tclMoveTargetProc;
-	Tcl_Interp *interp;
+   char *tclStartProc;
+   char *tclChangeOriginProc;
+   char *tclMoveTargetProc;
+   Tcl_Interp *interp;
 
     };
 #endif
@@ -171,7 +177,7 @@ extern "C" {			/* Assume C declarations for C++ */
  *
  * standard parameters, don't change.
 */
-	COMMON_CAMSTRUCT;
+   COMMON_CAMSTRUCT;
 /*
  *  Ajoutez ici les variables necessaires a votre camera 
  *  (mode d'obturateur, etc). 
@@ -180,32 +186,27 @@ extern "C" {			/* Assume C declarations for C++ */
  *  Add here necessary variables for your camera (Webcam).
 */
 #if defined(OS_WIN) && defined(__cplusplus)
-	CCapture *capture;
-	CCaptureListener *captureListener;
-	CCropCapture *cropCapture;
-	CGuidingCapture *guidingCapture;
-	CGuidingListener *guidingListener;
-
-
-   // HANDLE for long exposure device (parallel port)
-	//HANDLE hLongExposureDevice;
-	//int longueposeportindex;
+   CCapture *capture;
+   CCaptureListener *captureListener;
+   CCropCapture *cropCapture;
+   CGuidingCapture *guidingCapture;
+   CGuidingListener *guidingListener;
 #endif
 
-	int imax;
-	int jmax;
-	int driver;
-	int longuepose;
+   int imax;
+   int jmax;
+   int driver;
+   int longuepose;
    int longueposelinkno;
    int longueposelinkbit;
-	char longueposestart;
-	char longueposestop;
+   char longueposestart;
+   char longueposestop;
 
 /**
  * webcam device (only for Linux). uses pwc and pwcx modules
  * - default: /dev/video0
 */
-	char webcamDevice[128];
+   char webcamDevice[128];
 
 /**
  * long exposure device.
@@ -213,7 +214,7 @@ extern "C" {			/* Assume C declarations for C++ */
  * - Linux - "/dev/parport0"
  * - Windows - "lpt1"
 */
-	char longExposureDevice[128];
+   char longExposureDevice[128];
 
 /**
  * Valid image number (used under Linux).
@@ -226,17 +227,17 @@ extern "C" {			/* Assume C declarations for C++ */
  * auto detection is performed (less then 20 read() calls).
  * - dafault: 3
 */
-	int validFrame;
+   int validFrame;
 
 /**
  * cam_fd, webcam device file descriptor.
 */
-	int cam_fd;
+   int cam_fd;
 
 /**
  * long_fd, long exposure device file descriptor.
 */
-	int long_fd;
+   int long_fd;
 
 /**
  * Buffer for rgb frame.
@@ -248,23 +249,23 @@ extern "C" {			/* Assume C declarations for C++ */
  * change buffers sizes and allocates new memory
  * for them.
 */
-	unsigned char *rgbBuffer;
+   unsigned char *rgbBuffer;
 
 /**
  * rgbBufferSize is size in bytes of rgbBuffer.
 */
-	int rgbBufferSize;
+   int rgbBufferSize;
 
 /**
  * Buffer for yuv frame.
  * Used under Linux for keeping yuv frame
 */
-	unsigned char *yuvBuffer;
+   unsigned char *yuvBuffer;
 
 /**
  * yuvBufferSize is size in bytes of yuvBuffer.
 */
-	int yuvBufferSize;
+   int yuvBufferSize;
 
 /**
  * shutterSpeed remember the shutter speed.
@@ -278,78 +279,67 @@ extern "C" {			/* Assume C declarations for C++ */
  *
  * Used under Linux.
 */
-	int shutterSpeed;
+   int shutterSpeed;
+
+/******************************************************************/
+/*  varaible  d'acces direct a la memoire video LINUX (M. Pujol)  */
+/*                                                                */
+/*  Pour LINUX uniquement                                         */
+/******************************************************************/
+#if defined(OS_LIN)
+   struct video_mbuf mmap_mbuf ;
+   unsigned char * mmap_buffer;
+   long mmap_last_sync_buff;
+   long mmap_last_capture_buff;
+#endif
+
 
 /******************************************************************/
 /*  Variables utilisees pour la capture video (M. Pujol)          */
 /*  Pour Windows uniquement                                       */
 /******************************************************************/
 #if defined(OS_WIN)
-	int videonum;		// numero de l'image video
-	char videoStatusVarNamePtr[256];	// variable pour transmettre l'etat de la camera
-	char videoEndCaptureCommandPtr[256];	// command a executer en fin de capture
-	// remarque : ces deux variables ne sont pas allouees dynamiquement a cause d'une erreur de heap
-	// quand je libere la memoire avec free()
+   int videonum;      // numero de l'image video
+   char videoStatusVarNamePtr[256];   // variable pour transmettre l'etat de la camera
+   char videoEndCaptureCommandPtr[256];   // command a executer en fin de capture
+   // remarque : ces deux variables ne sont pas allouees dynamiquement a cause d'une erreur de heap
+   // quand je libere la memoire avec free()
 #endif
 
 /*****************************************************************/
 
-    };
+};  // end of  struct camprop
 
 
-/*
-int cam_init(struct camprop *cam, int argc, char **argv);
-void cam_update_window(struct camprop *cam);
-void cam_start_exp(struct camprop *cam, char *amplionoff);
-void cam_stop_exp(struct camprop *cam);
-void cam_read_ccd(struct camprop *cam, unsigned short *p);
-void cam_shutter_on(struct camprop *cam);
-void cam_shutter_off(struct camprop *cam);
-void cam_ampli_on(struct camprop *cam);
-void cam_ampli_off(struct camprop *cam);
-void cam_measure_temperature(struct camprop *cam);
-void cam_cooler_on(struct camprop *cam);
-void cam_cooler_off(struct camprop *cam);
-void cam_cooler_check(struct camprop *cam);
-void cam_set_binning(int binx, int biny, struct camprop *cam);
-void cam_set_exptime(float exptime, struct camprop *cam);
-*/
+int webcam_initLongExposureDevice(struct camprop *cam);
+int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value);
+int webcam_saveUser(struct camprop *cam);
+int webcam_setPicSettings(struct camprop *cam, int brightness, int contrast, int colour, int whiteness);
+int webcam_getVideoFormat(struct camprop *cam, char *formatname);
+int webcam_setVideoFormat(struct camprop *cam, char *formatname);
 
-//    int webcam_snap(struct camprop *cam, int rgb);
-// short loadbmp24bw(char *nom, unsigned short *buf, struct camprop *cam);
-// short loadbmp24rgb(char *nom, unsigned short *bufrgb, struct camprop *cam);
-    int webcam_videoformat(struct camprop *cam, char *formatname);
-
-//void libcam_strupr(char *chainein, char *chaineout);
-
-
-// void yuv420p_to_rgb24(unsigned char *yuv, unsigned char *rgb, int width, int height);
-// void ng_color_yuv2rgb_init(void);
-    int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value);
-    int webcam_initLongExposureDevice(struct camprop *cam);
-// int readFrame(struct camprop *cam, unsigned char *rgbBuffer);
-// int cam_stop_longexposure(struct camprop *cam);
-    int webcam_getVideoSource(struct camprop *cam, char *result, int command);
-    int webcam_saveUser(struct camprop *cam);
-    int webcam_setPicSettings(struct camprop *cam, int brightness, int contrast, int colour, int whiteness);
-    int webcam_setVideoSource(struct camprop *cam, int paramValue, int command);
-    int webcam_setWhiteBalance(struct camprop *cam, char *mode, int red, int blue);
 
 
 #if defined(OS_WIN)
-    int startVideoPreview(struct camprop *cam, int previewRate);
-    int stopVideoPreview(struct camprop *cam);
-    int startVideoCapture(struct camprop *cam, unsigned short exptime, unsigned long microSecPerFrame, char *fileName);
-    int stopVideoCapture(struct camprop *cam);
+   int startVideoPreview(struct camprop *cam, int previewRate);
+   int stopVideoPreview(struct camprop *cam);
+   int startVideoCapture(struct camprop *cam, unsigned short exptime, unsigned long microSecPerFrame, char *fileName);
+   int stopVideoCapture(struct camprop *cam);
+   int startVideoCrop(struct camprop *cam);
+   int stopVideoCrop(struct camprop *cam);
+   int setVideoCropRect(struct camprop *cam, long x1, long y1, long x2, long y2);
 
-    int startVideoCrop(struct camprop *cam);
-    int stopVideoCrop(struct camprop *cam);
-    int setVideoCropRect(struct camprop *cam, long x1, long y1, long x2, long y2);
+#endif            //defined(OS_WIN)
 
-#endif				//defined(OS_WIN)
-
+#if defined(OS_LIN)
+   int webcam_getFrameRate(struct camprop *cam, int *value);
+   int webcam_setFrameRate(struct camprop *cam, int value);
+   int webcam_getVideoParameter(struct camprop *cam, char *result, int command);
+   int webcam_setVideoParameter(struct camprop *cam, int paramValue, int command);
+   int webcam_setWhiteBalance(struct camprop *cam, char *mode, int red, int blue);
+#endif
 
 #ifdef __cplusplus
-}				/* End of extern "C" { */
-#endif				/* __cplusplus */
+}            /* End of extern "C" { */
+#endif            /* __cplusplus */
 #endif
