@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.28 2007-05-08 16:40:48 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.29 2007-05-20 17:35:14 michelpujol Exp $
 #
 
 #
@@ -284,7 +284,7 @@ namespace eval confPosObs {
          -values $list_combobox
       pack $This.ref_geodesique -in $This.frame16 -anchor w -side top -padx 10 -pady 5
 
-      #--- Cree le bouton 'Mise à jour du format GPS'
+      #--- Cree le bouton 'Mise ï¿½ jour du format GPS'
       button $This.but_gps -text "$caption(confgene,position_miseajour_gps)" -borderwidth 2 \
          -command { ::confPosObs::Position }
       pack $This.but_gps -in $This.frame4 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
@@ -303,7 +303,7 @@ namespace eval confPosObs {
       entry $This.station_uai -textvariable confgene(posobs,station_uai) -width 6
       pack $This.station_uai -in $This.frame18 -anchor w -side left -padx 10 -pady 5
 
-      #--- Cree le bouton 'Mise à jour des formats MPC'
+      #--- Cree le bouton 'Mise ï¿½ jour des formats MPC'
       button $This.but_mpc -text "$caption(confgene,position_miseajour_mpc)" -borderwidth 2 \
          -command { ::confPosObs::MPC }
       pack $This.but_mpc -in $This.frame18 -anchor center -side left -padx 10 -pady 3 -ipadx 10 -ipady 5 -expand true
@@ -315,7 +315,7 @@ namespace eval confPosObs {
       entry $This.fichier_station_uai -textvariable confgene(posobs,fichier_station_uai) -width 16
       pack $This.fichier_station_uai -in $This.frame19 -anchor w -side left -padx 10 -pady 5
 
-      #--- Cree le bouton 'Mise à jour' du fichier des stations UAI
+      #--- Cree le bouton 'Mise ï¿½ jour' du fichier des stations UAI
       button $This.but_maj -text "$caption(confgene,position_miseajour)" -borderwidth 2 \
          -command { ::confPosObs::MaJ }
       pack $This.but_maj -in $This.frame19 -anchor center -side left -padx 10 -pady 3 -ipadx 10 -ipady 5 -expand true
@@ -2319,27 +2319,26 @@ namespace eval confGenerique {
 
       #--- Frame des parametres a configurer
       frame $This.frame1 -borderwidth 1 -relief raised
-
       $NameSpace\:\:fillConfigPage $This.frame1 $visuNo
-
       pack $This.frame1 -side top -fill both -expand 1
 
       #--- Frame des boutons OK, Appliquer et Fermer
       frame $This.frame2 -borderwidth 1 -relief raised
       pack $This.frame2 -side top -fill x
 
-      #--- Cree le bouton 'OK'
+      if { [info commands "$NameSpace\::apply"] !=  "" } {
+      #--- Cree le bouton 'OK' si la procedure NameSpace::apply existe
       button $This.but_ok -text "$caption(confgene,ok)" -width 7 -borderwidth 2 \
          -command "::confGenerique::ok $visuNo $NameSpace $This"
       if { $conf(ok+appliquer) == "1" } {
          pack $This.but_ok -in $This.frame2 -side left -anchor w -padx 3 -pady 3  -ipady 5
       }
 
-      #--- Cree le bouton 'Appliquer'
+      #--- Cree le bouton 'Appliquer' si la procedure NameSpace::apply existe
       button $This.but_appliquer -text "$caption(confgene,appliquer)" -width 8 -borderwidth 2 \
          -command "::confGenerique::apply $visuNo $NameSpace "
       pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
-
+      }
       #--- Cree un label 'Invisible' pour simuler un espacement
       label $This.lab_invisible -width 10
       pack $This.lab_invisible -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
