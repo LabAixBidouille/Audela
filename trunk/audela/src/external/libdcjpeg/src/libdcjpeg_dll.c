@@ -100,6 +100,7 @@ int libdcjpeg_loadFile(char *fileName, unsigned char **outputData, long *outputS
       jpeg_read_scanlines(&cinfo, rowData, 1);
    }
    jpeg_finish_decompress(&cinfo);
+   fclose(file);
    jpeg_destroy_decompress(&cinfo);
    
    *width = cinfo.output_width;
