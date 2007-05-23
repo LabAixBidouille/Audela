@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.13 2007-04-14 08:44:32 robertdelmas Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.14 2007-05-23 16:29:38 robertdelmas Exp $
 #
 
 namespace eval confColor {
@@ -12,9 +12,7 @@ namespace eval confColor {
    source [ file join $audace(rep_caption) confcolor.cap ]
 
    proc init { } {
-      global audace
-      global conf
-      global color
+      global audace color conf
 
       #--- Creation des variables si elles n'exitaitent pas
       if { ! [ info exists conf(confcolor,position) ] }                { set conf(confcolor,position)                "+150+75" }
@@ -93,8 +91,7 @@ namespace eval confColor {
    #  bascule l'apparance jour <=> nuit
    #------------------------------------------------------------
    proc switchDayNight { } {
-      global audace
-      global conf
+      global audace conf
 
       #--- Je change l'apparence
       if { $conf(confcolor,appearance) == "day" } {
@@ -122,7 +119,7 @@ namespace eval confColor {
 
    #------------------------------------------------------------
    #  ::confColor::run
-   #  ouverture de la fenêtre de configuration
+   #  ouverture de la fenetre de configuration
    #------------------------------------------------------------
    proc run { visuNo } {
       global audace
@@ -142,7 +139,7 @@ namespace eval confColor {
 
    #------------------------------------------------------------
    #  ::confColor::showHelp
-   #  affiche l'aide de la fenêtre de configuration
+   #  affiche l'aide de la fenetre de configuration
    #------------------------------------------------------------
    proc showHelp { } {
       global help
@@ -175,8 +172,7 @@ namespace eval confColor {
    #------------------------------------------------------------
    proc apply { visuNo } {
       variable widget
-      global audace
-      global conf
+      global audace conf
 
       #--- Je sauvegarde les couleurs  de widget() dans conf()
       set appearance $conf(confcolor,appearance)
@@ -221,8 +217,7 @@ namespace eval confColor {
    #------------------------------------------------------------
    proc fillConfigPage { frm visuNo } {
       variable widget
-      global conf
-      global caption
+      global caption conf
 
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
@@ -271,8 +266,7 @@ namespace eval confColor {
    #------------------------------------------------------------
    proc closeWindow { visuNo } {
       variable widget
-      global audace
-      global conf
+      global audace conf
 
       #--- Je restore les couleurs precedentes
       if { $widget(appearance) != $conf(confcolor,appearance) } {
@@ -299,7 +293,6 @@ namespace eval confColor {
    proc chooseAppearance { } {
       variable widget
       global audace
-      global conf
 
       #--- Je recupere l'apparence qui vient d'etre choisie
       set appearance $widget(appearance)
@@ -317,7 +310,7 @@ namespace eval confColor {
       }
       ::confColor::applyColor $audace(Console)
 
-      #--- Je met à jour la couleur des boutons de la fenetre de configuration
+      #--- Je met a jour la couleur des boutons de la fenetre de configuration
       foreach {key value} [array get widget color,$appearance,*] {
          set i [lindex [split $key ,] 2]
          $widget(frm).but.b_color_invariant$i configure -fg $widget(color,$widget(appearance),$i) \
@@ -333,8 +326,7 @@ namespace eval confColor {
    #------------------------------------------------------------
    proc chooseColor { colorType buttonName } {
       variable widget
-      global audace
-      global caption
+      global audace caption
 
       #--- Je recupere l'apparence qui vient d'etre choisie
       set appearance $widget(appearance)
@@ -370,8 +362,7 @@ namespace eval confColor {
    #  w : window parent des resources qui doivent changer de couleur
    #------------------------------------------------------------
    proc applyColor { w } {
-      global audace
-      global color
+      global audace color
 
       switch -exact -- [ winfo class $w ] {
          Canvas {
@@ -381,7 +372,7 @@ namespace eval confColor {
                if { [ string first color_invariant $w ] == -1 } {
                   $w configure -bg $audace(color,canvas)
                } else {
-                  ::bermasaude::Representation_roue_a_filtres
+                  ::bermasaude::representationRoueAFiltres
                }
             }
          }
@@ -501,7 +492,7 @@ namespace eval confColor {
             $w configure -selectbackground $audace(color,entryBackColor) -selectforeground $audace(color,entryTextColor)
          }
          default {
-            #--- Trace pour faire apparaitre les widget non traités
+            #--- Trace pour faire apparaitre les widget non traites
            ### console::disp "Defaut ==> w=$w class=[ winfo class $w ]\n"
          }
       }
@@ -516,9 +507,7 @@ namespace eval confColor {
    #------------------------------------------------------------
    proc restoreFactoryColor { } {
       variable widget
-      global caption
-      global audace
-      global conf
+      global audace caption conf
 
       set choice [tk_messageBox \
          -message "$caption(confcolor,confirmation)" \
