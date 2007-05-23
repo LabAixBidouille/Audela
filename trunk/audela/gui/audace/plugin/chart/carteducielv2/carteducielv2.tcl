@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.11 2007-05-20 15:52:42 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.12 2007-05-23 16:31:07 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -20,7 +20,7 @@ namespace eval carteducielv2 {
       variable private
 
       if { $::tcl_platform(os) == "Linux" } {
-         #--- CarteDuCiel V2 ne fonctionne pas sous Linux
+         #--- Cartes du Ciel V2 ne fonctionne pas sous Linux
          #--- Je retourne une chaine vide pour que ce driver n'apparaisse pas dans la fenetre de configuration
          return ""
       } else {
@@ -36,7 +36,7 @@ namespace eval carteducielv2 {
    #
    # parametre :
    #    propertyName : nom de la propriete
-   # return : valeur de la propriete , ou "" si la propriete n'existe pas
+   # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
@@ -182,80 +182,83 @@ namespace eval carteducielv2 {
       variable widget
       global audace caption
 
-      #--- je memorise la reference de la frame
+      #--- Je memorise la reference de la frame
       set widget(frm) $frm
 
-      #--- j'initialise les valeurs
+      #--- J'initialise les valeurs
       confToWidget
 
-      #--- Creation des differents frames
+      #--- Definition du champ (FOV)
       frame $frm.frame1 -borderwidth 0 -relief raised
+         label $frm.frame1.labFOV -text "$caption(carteducielv2,fov_label)"
+         pack $frm.frame1.labFOV -anchor center -side left -padx 10 -pady 10
+
+         checkbutton $frm.frame1.fovState -text "$caption(carteducielv2,fov_state)" \
+            -highlightthickness 0 -variable ::carteducielv2::widget(fixedfovstate)
+         pack $frm.frame1.fovState -anchor center -side left -padx 10 -pady 5
+
+         label $frm.frame1.labFovValue -text "$caption(carteducielv2,fov_value)"
+         pack $frm.frame1.labFovValue -anchor center -side left -padx 10 -pady 10
+
+         entry $frm.frame1.fovValue -textvariable ::carteducielv2::widget(fixedfovvalue) -width 10
+         pack $frm.frame1.fovValue -anchor center -side left -padx 10 -pady 5
+
       pack $frm.frame1 -side top -fill x
 
+      #--- Fichier a rechercher a partir d'un repertoire donne
       frame $frm.frame2 -borderwidth 0 -relief raised
+
+         label $frm.frame2.labFichier -text "$caption(carteducielv2,fichier)"
+         pack $frm.frame2.labFichier -anchor center -side left -padx 10 -pady 10
+
+         entry $frm.frame2.nomFichier -textvariable ::carteducielv2::widget(fichier_recherche) -width 12 -justify center
+         pack $frm.frame2.nomFichier -anchor center -side left -padx 10 -pady 5
+
+         label $frm.frame2.labAPartirDe -text "$caption(carteducielv2,a_partir_de)"
+         pack $frm.frame2.labAPartirDe -anchor center -side left -padx 10 -pady 10
+
+         entry $frm.frame2.nomDossier -textvariable ::carteducielv2::widget(dirname) -width 20
+         pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
+
+         button $frm.frame2.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
+            -command {
+               set ::carteducielv2::widget(dirname) [ tk_chooseDirectory -title "$caption(carteducielv2,dossier)" \
+               -initialdir ".." -parent $::carteducielv2::widget(frm) ]
+            }
+         pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
+
       pack $frm.frame2 -side top -fill x
 
+      #--- Recherche automatique ou manuelle du chemin pour l'executable de Cartes du Ciel
       frame $frm.frame3 -borderwidth 0 -relief raised
+
+         button $frm.frame3.recherche -text "$caption(carteducielv2,rechercher)" -relief raised -state normal \
+            -command { ::carteducielv2::searchFile }
+         pack $frm.frame3.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
+
+         entry $frm.frame3.chemin -textvariable ::carteducielv2::widget(binarypath)
+         pack $frm.frame3.chemin -anchor center -side left -padx 10 -fill x -expand 1
+
+         button $frm.frame3.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
+            -command {
+               set ::carteducielv2::widget(binarypath) [ ::tkutil::box_load $::carteducielv2::widget(frm) \
+                  $::carteducielv2::widget(dirname) $audace(bufNo) "11" ]
+            }
+         pack $frm.frame3.explore -side right -padx 10 -pady 5 -ipady 5
+
       pack $frm.frame3 -side top -fill x
 
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side bottom -fill x
-
-      #--- Definition du champ (FOV)
-      label $frm.frame1.labFOV -text "$caption(carteducielv2,fov_label)"
-      pack $frm.frame1.labFOV -anchor center -side left -padx 10 -pady 10
-
-      checkbutton $frm.frame1.fovState -text "$caption(carteducielv2,fov_state)" \
-         -highlightthickness 0 -variable ::carteducielv2::widget(fixedfovstate)
-      pack $frm.frame1.fovState -anchor center -side left -padx 10 -pady 5
-
-      label $frm.frame1.labFovValue -text "$caption(carteducielv2,fov_value)"
-      pack $frm.frame1.labFovValue -anchor center -side left -padx 10 -pady 10
-
-      entry $frm.frame1.fovValue -textvariable ::carteducielv2::widget(fixedfovvalue) -width 10
-      pack $frm.frame1.fovValue -anchor center -side left -padx 10 -pady 5
-
-      #--- Initialisation du chemin du fichier
-      label $frm.frame2.labFichier -text "$caption(carteducielv2,fichier)"
-      pack $frm.frame2.labFichier -anchor center -side left -padx 10 -pady 10
-
-      entry $frm.frame2.nomFichier -textvariable ::carteducielv2::widget(fichier_recherche) -width 12 -justify center
-      pack $frm.frame2.nomFichier -anchor center -side left -padx 10 -pady 5
-
-      label $frm.frame2.labAPartirDe -text "$caption(carteducielv2,a_partir_de)"
-      pack $frm.frame2.labAPartirDe -anchor center -side left -padx 10 -pady 10
-
-      entry $frm.frame2.nomDossier -textvariable ::carteducielv2::widget(dirname) -width 20
-      pack $frm.frame2.nomDossier -side left -padx 10 -pady 5
-
-      button $frm.frame2.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
-         -command {
-            set ::carteducielv2::widget(dirname) [ tk_chooseDirectory -title "$caption(carteducielv2,dossier)" \
-            -initialdir ".." -parent $::carteducielv2::widget(frm) ]
-         }
-      pack $frm.frame2.explore -side left -padx 10 -pady 5 -ipady 5
-
-      button $frm.frame3.recherche -text "$caption(carteducielv2,rechercher)" -relief raised -state normal \
-         -command { ::carteducielv2::searchFile }
-      pack $frm.frame3.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
-
-      entry $frm.frame3.chemin -textvariable ::carteducielv2::widget(binarypath)
-      pack $frm.frame3.chemin -anchor center -side left -padx 10 -fill x -expand 1
-
-      button $frm.frame3.explore -text "$caption(carteducielv2,parcourir)" -width 1 \
-         -command {
-            set ::carteducielv2::widget(binarypath) [ ::tkutil::box_load $::carteducielv2::widget(frm) \
-               $::carteducielv2::widget(dirname) $audace(bufNo) "11" ]
-         }
-      pack $frm.frame3.explore -side right -padx 10 -pady 5 -ipady 5
-
       #--- Site web officiel de Cartes du Ciel
-      label $frm.frame4.labSite -text "$caption(carteducielv2,site_web)"
-      pack $frm.frame4.labSite -side top -fill x -pady 2
+      frame $frm.frame4 -borderwidth 0 -relief raised
 
-      set labelName [ ::confCat::createUrlLabel $frm.frame4 "$caption(carteducielv2,site_web_ref)" \
-         "$caption(carteducielv2,site_web_ref)" ]
-      pack $labelName -side top -fill x -pady 2
+         label $frm.frame4.labSite -text "$caption(carteducielv2,site_web)"
+         pack $frm.frame4.labSite -side top -fill x -pady 2
+
+         set labelName [ ::confCat::createUrlLabel $frm.frame4 "$caption(carteducielv2,site_web_ref)" \
+            "$caption(carteducielv2,site_web_ref)" ]
+         pack $labelName -side top -fill x -pady 2
+
+      pack $frm.frame4 -side bottom -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -268,7 +271,7 @@ namespace eval carteducielv2 {
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
-      #--- rien a faire pour carteduciel
+      #--- Rien a faire pour Cartes du Ciel
       return
    }
 
@@ -279,7 +282,7 @@ namespace eval carteducielv2 {
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-      #--- rien a faire pour carteduciel
+      #--- Rien a faire pour Cartes du Ciel
       return
    }
 
@@ -287,21 +290,21 @@ namespace eval carteducielv2 {
    #  isReady
    #     informe de l'etat de fonctionnement du driver
    #
-   #  return 0 (ready) , 1 (not ready)
+   #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
       variable private
 
-      #--- je teste si DDE est disponible
+      #--- Je teste si DDE est disponible
       set erreur [ catch { package require dde } result ]
       if { $erreur } {
-         #--- dde n'est pas disponible (on est sous linux ?)
+         #--- DDE n'est pas disponible (on est sous linux ?)
          set private(ready) 1
       } else {
-         #--- je teste si carteduciel est lance
+         #--- Je teste si Cartes du Ciel est lance
         # set erreur [ catch { dde services ciel DdeSkyChart } result ]
         # if { $erreur !=0 || $result=="" } {
-        #    #--- carteduciel n'est pas lance
+        #    #--- Cartes du Ciel n'est pas lance
         #    set private(ready) 1
         # } else {
         #    set private(ready) 0
@@ -319,11 +322,11 @@ namespace eval carteducielv2 {
    # gotoObject
    # Affiche la carte de champ de l'objet choisi
    #  parametres :
-   #     nom_objet :    nom de l'objet     (ex: "NGC7000")
-   #     ad :           ascension droite   (ex: "16h41m42s")
-   #     dec :          declinaison        (ex: "+36d28m00s")
-   #     zoom_objet :   champ 1 à 10
-   #     avant_plan :   1=mettre la carte au premier plan, 0=ne pas mettre au premier plan
+   #     nom_objet :    nom de l'objet     (ex : "NGC7000")
+   #     ad :           ascension droite   (ex : "16h41m42s")
+   #     dec :          declinaison        (ex : "+36d28m00s")
+   #     zoom_objet :   champ de 1 a 10
+   #     avant_plan :   1 = mettre la carte au premier plan, 0 = ne pas mettre au premier plan
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       set result "0"
@@ -342,11 +345,11 @@ namespace eval carteducielv2 {
 
    #------------------------------------------------------------
    #  moveCoord
-   #     centre la fenetre de carteduciel sur les coordonnees passes en parametre
+   #     centre la fenetre de Cartes du Ciel sur les coordonnees passes en parametre
    #     et fixe le champ de diametre fov
-   #     envoie a carteducciel  "MOVE RA: xxhxxmxxs DEC:xxdxx'xx" FOV:xxdxx'xx"
+   #     envoie a Cartes du Ciel "MOVE RA: xxhxxmxxs DEC:xxdxx'xx" FOV:xxdxx'xx"
    #
-   #  return 0 (OK) , 1(error)
+   #  return 0 (OK), 1(error)
    #------------------------------------------------------------
    proc moveCoord { ra dec } {
       global conf
@@ -357,7 +360,7 @@ namespace eval carteducielv2 {
 
       #--- je fixe la taille du champ de la carte
       if { $conf(carteducielv2,fixedfovstate) == 0 } {
-         #--- je recupere la champ de carteduciel
+         #--- je recupere la champ de Cartes du Ciel
          set fov [lindex [getRaDecFov] 2]
          if { $fov == "" } {
             #--- rien a faire, j'abandonne
@@ -385,9 +388,9 @@ namespace eval carteducielv2 {
 
    #------------------------------------------------------------
    #  selectObject { }
-   #     selectionne un objet dans carteducielv2
+   #     selectionne un objet dans Cartes du Ciel v2
    #
-   #  return "0" (OK) , "1"(error)
+   #  return "0" (OK), "1"(error)
    #------------------------------------------------------------
    proc selectObject { objectName } {
       global conf
@@ -400,7 +403,7 @@ namespace eval carteducielv2 {
       }
 
       if { [string compare -length 3 $objectName "MGC" ] == 0 } {
-         #--- catalogue MGC absent de carteduciel
+         #--- catalogue MGC absent de Cartes du Ciel
          set catid "0"
          set objectid ""
       } elseif { [string compare -length 1 $objectName "M" ] == 0 } {
@@ -456,7 +459,7 @@ namespace eval carteducielv2 {
 
       #--- je fixe la taille du champ de la carte
       if { $conf(carteducielv2,fixedfovstate) == 1 } {
-         #--- je recupere la champ de carteduciel
+         #--- je recupere la champ de Cartes du Ciel
          set ra [lindex [getRaDecFov] 0 ]
          set dec [lindex [getRaDecFov] 1]
          #--- j'utilise le champ fixe
@@ -477,7 +480,7 @@ namespace eval carteducielv2 {
 
    #------------------------------------------------------------
    #  getSelectedObject {}
-   #     recupere les coordonnées et le nom de l'objet selectionne dans carteducielv2
+   #     recupere les coordonnees et le nom de l'objet selectionne dans Cartes du Ciel v2
    #     par communication DDE (en attendant une communication pas socket TCP ?)
    #
    #  return [list $ra $dec $objName ]
@@ -485,14 +488,14 @@ namespace eval carteducielv2 {
    #     $dec : declinaison     (ex: "+36d28m00")
    #     $objName: object name  (ex: "M 13")
    #
-   #  Remarque : Si aucun objet n'est selectionne dans carteducielv2,
-   #  alors getSelectedObject retourne les coordonnées du centre de la carte
+   #  Remarque : Si aucun objet n'est selectionne dans Cartes du Ciel v2,
+   #  alors getSelectedObject retourne les coordonnees du centre de la carte
    #
-   #  Description de l'interface Audela / carteducielv2
+   #  Description de l'interface Audela / Cartes du Ciel v2
    #  -------------------------------------
-   #  Requete DDE envoyee a carteducielv2 :
+   #  Requete DDE envoyee a Cartes du Ciel v2 :
    #     dde request ciel DdeSkyChart DdeData
-   #  Reponse DDE retournee par carteducielv2 :
+   #  Reponse DDE retournee par Cartes du Ciel v2 :
    #     ligne 0 : date et heure de la machine
    #     ligne 1 : position du centre et champ de vision de la carte
    #     ligne 2 : contenu de la barre d'etat (dernier objet selectionne)
@@ -506,7 +509,7 @@ namespace eval carteducielv2 {
    #     ligne 3 ==> 2001-12-22T23:50:58
    #     ligne 4 ==> LAT:+43d37m00s LON:-01d27m00s ALT:200m OBS:Toulouse
    #
-   #     Les coordonnées et le nom de l'objet sont extraits de la ligne 2
+   #     Les coordonnees et le nom de l'objet sont extraits de la ligne 2
    #     Les autres lignes ne sont pas utilisees.
    #
    #     Format de la ligne 2 : "$ra $dec $objType $detail"
@@ -531,7 +534,7 @@ namespace eval carteducielv2 {
    #
    #     SI $objType = "*" ALORS
    #        je mets dans $objName le nom usuel de l'etoile s'il existe
-   #        ou le nom du catalogue et le numéro de l'étoile
+   #        ou le nom du catalogue et le numero de l'etoile
    #        et eventuellement le nom de la constellation (catalogues Ba et Fl)
    #
    #       SI existe un point virgule dans $detail  ALORS
@@ -539,7 +542,7 @@ namespace eval carteducielv2 {
    #                     apres le premier point virgule de $detail
    #                     et jusqu'au point virgule suivant ou la fin de $detail
    #       SINON
-   #          $catName = premiere chaine de caractère de $detail jusqu'au premier espace
+   #          $catName = premiere chaine de caractere de $detail jusqu'au premier espace
    #          $const   = chaine de caractere dans $detail qui suit "const:" jusqu'au premier espace suivant
    #          SI       $catName = "GSC"  ALORS $objName = "GSC"+ 10 caracteres de $detail apres catName
    #          SINON SI $catName = "TYC"  ALORS $objName = "TYC"+ 15 caracteres de $detail apres catName
@@ -553,9 +556,9 @@ namespace eval carteducielv2 {
    #     FINSI
    #
    #     SI $objType = "Gb" ou "Gx" ou "Nb" ou "OC" ou "Pl"
-   #       je mets dans $objName le nom du catalogue et le numéro de l'objet
+   #       je mets dans $objName le nom du catalogue et le numero de l'objet
    #
-   #       $catName = premiere chaine de caractère de $detail jusqu'au premier espace
+   #       $catName = premiere chaine de caractere de $detail jusqu'au premier espace
    #       SI       $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
    #       SINON SI $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
    #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
@@ -585,7 +588,7 @@ namespace eval carteducielv2 {
    # ------------------------
    #  Quand un objet est reference dans plusieurs catalogues,
    #  le nom retenu depend de l'ordre des SI $catName=... SINON
-   #  Si vous preferez retenir en priorité le nom de l'objet d'un autre catalogue
+   #  Si vous preferez retenir en priorite le nom de l'objet d'un autre catalogue
    #  il suffit de changer l'ordre des SI $catName=... SINON
    #
    #  ex: l'amas  M13 a s'appelle aussi NGC6205
@@ -597,7 +600,7 @@ namespace eval carteducielv2 {
    #       SINON SI $catName = "UGC"  ALORS  $objName = "UGC" + 9 caracteres de $detail apres catName
    #       ...
    #
-   #  Si vous préférez retenir en priorité le nom du catalogue NGC,
+   #  Si vous preferez retenir en priorite le nom du catalogue NGC,
    #  il suffit d'inverser l'ordre des tests :
    #       SI       $catName = "NGC"  ALORS  $objName = "NGC" + 9 caracteres de $detail apres catName
    #       SINON SI $catName = "M "   ALORS  $objName = "M "  + 3 caracteres de $detail apres catName
@@ -649,7 +652,7 @@ namespace eval carteducielv2 {
      #    console::disp "==> $c\n"
      # }
 
-      #--- je sépare les coordonnees des autres données
+      #--- je separe les coordonnees des autres donnees
       set ligne2 [lindex $ligneList 2]
       set ra  ""
       set dec ""
@@ -676,8 +679,8 @@ namespace eval carteducielv2 {
 
       #--- Mise en forme de objName
       if { $objType=="" } {
-         #--- si pas d'objet selectionne dans cartes du ciel,
-         #--- j'affiche les coordonnées du centre de la carte
+         #--- si pas d'objet selectionne dans Cartes du Ciel,
+         #--- j'affiche les coordonnees du centre de la carte
          set ligne1 [lindex $ligneList 1]
          scan $ligne1 "RA: %s DEC:%s" ra dec
          if { $ra== "" || $dec =="" } {
@@ -686,7 +689,7 @@ namespace eval carteducielv2 {
          }
          set objName "centre cdc"
       } else {
-         #--- j'extrait les coordonnées du detail de la ligne2
+         #--- j'extrait les coordonnees du detail de la ligne2
          set usualName ""
          set ba ""
          set fl ""
@@ -786,7 +789,7 @@ namespace eval carteducielv2 {
 
       #--- je choisi la reference et le catalogue en fonction du type de l'objet
       if { $objType=="*" } {
-         #--- pour une étoile : nom usuel ou numero d'un catalogue
+         #--- pour une etoile : nom usuel ou numero d'un catalogue
          #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
          if { $usualName!="" } {
             #--- je retiens d'abord le nom usuel s'il existe
@@ -809,7 +812,7 @@ namespace eval carteducielv2 {
             set objName "$bd"
          }
       } elseif { $objType=="Gb" || $objType=="Gx" || $objType=="Nb" || $objType=="OC" || $objType=="Pl" } {
-         #--- pour une galaxie , nébuleuse ou un amas
+         #--- pour une galaxie, nebuleuse ou un amas
          #--- intervertir les lignes "if ... elseif " pour changer la priorite des catalogues
          if { $messier!="" } {
             set objName "M$messier"
@@ -828,13 +831,13 @@ namespace eval carteducielv2 {
             set objName $png
          }
       } elseif { $objType=="As" } {
-         #--- pour un astéroide, je prends les 17 premiers caracteres
+         #--- pour un asteroide, je prends les 17 premiers caracteres
          set objName [string trim [string range $detail 0 17  ] ]
       } elseif { $objType=="P" } {
          #--- pour une planete : je prends le premier mot
          set objName [lindex [split $detail " " ] 0 ]
       } elseif { $objType=="Cm" } {
-         #--- pour une comete : je prends jusqu'à la parenthese fermante
+         #--- pour une comete : je prends jusqu'a la parenthese fermante
          set index [string first ")" $detail]
          set objName [string trim [string range $detail 0 $index ] ]
       } elseif { $objType=="C2" } {
@@ -855,7 +858,7 @@ namespace eval carteducielv2 {
 
    #------------------------------------------------------------
    #  getRaDecFov {}
-   #     recupere les coordonnées et la taille du champ affiche dans carteduciel
+   #     recupere les coordonnees et la taille du champ affiche dans Cartes du Ciel
    #------------------------------------------------------------
    proc getRaDecFov { } {
       global caption
@@ -869,7 +872,7 @@ namespace eval carteducielv2 {
       #--- je decoupe les 5 lignes d'information
       set ligneList [split $result "\n"]
 
-      #--- je sépare les coordonnees de la ligne 1
+      #--- je separe les coordonnees de la ligne 1
 
       set ligne1 [lindex $ligneList 1]
       set ra  ""
@@ -920,7 +923,7 @@ namespace eval carteducielv2 {
       #--- encodage de la command  (desactive le codage UTF8)
       set command [encoding convertfrom identity $command]
       #console::disp "carteducielv2::sendDDECommand command=$command \n"
-      #--- envoi la command a carteduciel
+      #--- envoi la commande a Cartes du Ciel
       set erreur [catch {dde poke ciel DdeSkyChart DdeData $command } result ]
       if { $erreur } {
          #--- si erreur :
@@ -950,9 +953,9 @@ namespace eval carteducielv2 {
 
    #------------------------------------------------------------
    # launch
-   #    Lance le logiciel CarteDuciel V2 pour la creation de cartes de champ
+   #    Lance le logiciel Cartes du Ciel V2 pour la creation de cartes de champ
    #
-   # return 0 (OK) , 1 (error)
+   # return 0 (OK), 1 (error)
    #------------------------------------------------------------
    proc launch { } {
       global audace caption conf
@@ -972,7 +975,7 @@ namespace eval carteducielv2 {
       set dirname [file dirname "$conf(carteducielv2,binarypath)"]
       #--- Place temporairement AudeLA dans le dossier de CDC
       cd "$dirname"
-      #--- Prépare l'ouverture du logiciel
+      #--- Prepare l'ouverture du logiciel
       set a_effectuer "exec \"$conf(carteducielv2,binarypath)\" \"$filename\" &"
       #--- Ouvre le logiciel
       if [catch $a_effectuer input] {
@@ -985,16 +988,26 @@ namespace eval carteducielv2 {
          set dirname [file dirname "$conf(carteducielv2,binarypath)"]
          #--- Place temporairement AudeLA dans le dossier de CDC
          cd "$dirname"
-         #--- Prépare l'ouverture du logiciel
+         #--- Prepare l'ouverture du logiciel
          set a_effectuer "exec \"$conf(carteducielv2,binarypath)\" \"$filename\" &"
          #--- Affichage sur la console
          set filename $conf(carteducielv2,binarypath)
+         ::console::affiche_saut "\n"
+         ::console::disp $filename
+         ::console::affiche_saut "\n"
          if [catch $a_effectuer input] {
             set audace(current_edit) $input
          }
+      } else {
+         #--- Affichage sur la console
+         ::console::disp $filename
+         ::console::affiche_saut "\n"
+         set audace(current_edit) $input
+         ::console::affiche_resultat "$caption(carteducielv2,gagne)\n"
+         ::console::affiche_saut "\n"
       }
       cd "$pwd0"
-      #--- J'attends que carteduciel soit completement demarre
+      #--- J'attends que Cartes du Ciel soit completement demarre
       after 2000
       return "0"
    }

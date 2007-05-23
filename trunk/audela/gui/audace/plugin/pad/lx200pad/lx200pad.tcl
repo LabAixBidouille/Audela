@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.10 2007-05-20 13:30:06 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.11 2007-05-23 16:33:21 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -26,7 +26,7 @@ namespace eval ::lx200pad {
    #
    # parametre :
    #    propertyName : nom de la propriete
-   # return : valeur de la propriete , ou "" si la propriete n'existe pas
+   # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
@@ -122,33 +122,35 @@ namespace eval ::lx200pad {
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
 
-      #--- Creation des differents frames
+      #--- Frame de la taille de la raquette
       frame $frm.frame1 -borderwidth 0 -relief raised
+
+         #--- Label de la taille de la raquette
+         label $frm.frame1.labSize -text "$caption(lx200pad,pad_size)"
+         pack $frm.frame1.labSize -anchor nw -side left -padx 10 -pady 10
+
+         #--- Definition de la taille de la raquette
+         set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
+         ComboBox $frm.frame1.taille \
+            -width 7                 \
+            -height [llength $list_combobox ] \
+            -relief sunken           \
+            -borderwidth 1           \
+            -editable 0              \
+            -textvariable ::lx200pad::widget(padsize) \
+            -values $list_combobox
+         pack $frm.frame1.taille -anchor nw -side left -padx 10 -pady 10
+
       pack $frm.frame1 -side top -fill both -expand 0
 
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 0
-
-      #--- Label pad size
-      label $frm.frame1.labSize -text "$caption(lx200pad,pad_size)"
-      pack $frm.frame1.labSize -anchor nw -side left -padx 10 -pady 10
-
-      #--- Definition de la taille de la raquette
-      set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
-      ComboBox $frm.frame1.taille \
-         -width 7          \
-         -height [llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable ::lx200pad::widget(padsize) \
-         -values $list_combobox
-      pack $frm.frame1.taille -anchor nw -side left -padx 10 -pady 10
-
       #--- Raquette toujours visible
-      checkbutton $frm.frame2.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
-         -variable ::lx200pad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
+      frame $frm.frame2 -borderwidth 0 -relief raised
+
+         checkbutton $frm.frame2.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
+            -variable ::lx200pad::widget(visible) -onvalue 1 -offvalue 0
+         pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
+
+      pack $frm.frame2 -side top -fill both -expand 0
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -199,7 +201,7 @@ namespace eval ::lx200pad {
    #  isReady
    #     informe de l'etat de fonctionnement du driver
    #
-   #  return 0 (ready) , 1 (not ready)
+   #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
       return 0
@@ -1160,7 +1162,7 @@ namespace eval ::lx200pad {
       #--- J'attends un changement de la valeur de audace(telescope,speed)
       vwait audace(telescope,speed)
 
-      #--- Si la raquette existe , je met a jour l'affichage de la vitesse
+      #--- Si la raquette existe, je met a jour l'affichage de la vitesse
       if { [ winfo exists .lx200pad ] } {
          switch -exact -- $audace(telescope,speed) {
             1 { ::lx200pad::lx200_set_guide }

@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.12 2007-05-20 13:30:48 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.13 2007-05-23 16:33:57 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -26,7 +26,7 @@ namespace eval telpad {
    #
    # parametre :
    #    propertyName : nom de la propriete
-   # return : valeur de la propriete , ou "" si la propriete n'existe pas
+   # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
@@ -119,21 +119,22 @@ namespace eval telpad {
       #--- Je memorise la reference de la frame
       set widget(frm) $frm
 
-      #--- Creation des differents frames
+      #--- Frame pour le choix du focuser
       frame $frm.frame1 -borderwidth 0 -relief raised
+
+         ::confEqt::createFrameFocuser $frm.frame1.focuser ::telpad::widget(focuserLabel)
+         pack $frm.frame1.focuser -anchor nw -side left -padx 10 -pady 10
+
       pack $frm.frame1 -side top -fill both -expand 0
 
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 0
-
-      #--- Frame focuser
-      ::confEqt::createFrameFocuser $frm.frame1.focuser ::telpad::widget(focuserLabel)
-      pack $frm.frame1.focuser -anchor nw -side left -padx 10 -pady 10
-
       #--- Raquette toujours visible
-      checkbutton $frm.frame2.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
-         -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
+      frame $frm.frame2 -borderwidth 0 -relief raised
+
+         checkbutton $frm.frame2.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
+            -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
+         pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
+
+      pack $frm.frame2 -side top -fill both -expand 0
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -176,7 +177,7 @@ namespace eval telpad {
    #  isReady
    #     informe de l'etat de fonctionnement du driver
    #
-   #  return 0 (ready) , 1 (not ready)
+   #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
       return 0
@@ -228,101 +229,98 @@ namespace eval telpad {
       wm protocol $This WM_DELETE_WINDOW ::telpad::deletePluginInstance
 
       #--- Creation des differents frames
-      frame $This.frame1 -borderwidth 1 -relief raised
+      frame $This.frame1 -borderwidth 1 -relief groove
       pack $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame2 -borderwidth 1 -relief groove
-      pack $This.frame2 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame2 -side top -fill both -expand 1
 
       frame $This.frame3 -borderwidth 1 -relief groove
-      pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
-
-      frame $This.frame4 -borderwidth 1 -relief groove
-      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
+      pack $This.frame3 -side top -fill both -expand 1
 
       #--- Label pour RA
-      label $This.frame2.ent1 -font $audace(font,arial_10_b) -textvariable audace(telescope,getra)
-      pack $This.frame2.ent1 -in $This.frame2 -anchor center -fill none -pady 1
+      label $This.frame1.ent1 -font $audace(font,arial_10_b) -textvariable audace(telescope,getra)
+      pack $This.frame1.ent1 -anchor center -fill none -pady 1
 
       #--- Label pour DEC
-      label $This.frame2.ent2 -font $audace(font,arial_10_b) -textvariable audace(telescope,getdec)
-      pack $This.frame2.ent2 -in $This.frame2 -anchor center -fill none -pady 1
+      label $This.frame1.ent2 -font $audace(font,arial_10_b) -textvariable audace(telescope,getdec)
+      pack $This.frame1.ent2 -anchor center -fill none -pady 1
 
-      set zone(radec) $This.frame2
+      set zone(radec) $This.frame1
       bind $zone(radec) <ButtonPress-1>      { ::telescope::afficheCoord }
       bind $zone(radec).ent1 <ButtonPress-1> { ::telescope::afficheCoord }
       bind $zone(radec).ent2 <ButtonPress-1> { ::telescope::afficheCoord }
 
       #--- Frame des boutons manuels
       #--- Create the button 'N'
-      frame $This.frame3.n -width 27 -borderwidth 0 -relief flat
-      pack $This.frame3.n -in $This.frame3 -side top -fill x
+      frame $This.frame2.n -width 27 -borderwidth 0 -relief flat
+      pack $This.frame2.n -side top -fill x
 
       #--- Button-design 'N'
-      button $This.frame3.n.canv1 -borderwidth 2 \
+      button $This.frame2.n.canv1 -borderwidth 2 \
          -font [ list {Arial} 12 bold ] \
          -text "$caption(telpad,nord)" \
          -width 2  \
          -anchor center \
          -relief ridge
-      pack $This.frame3.n.canv1 -in $This.frame3.n -expand 0 -side top -padx 10 -pady 4
+      pack $This.frame2.n.canv1 -expand 0 -side top -padx 10 -pady 4
 
       #--- Create the buttons 'E W'
-      frame $This.frame3.we -width 27 -borderwidth 0 -relief flat
-      pack $This.frame3.we -in $This.frame3 -side top -fill x
+      frame $This.frame2.we -width 27 -borderwidth 0 -relief flat
+      pack $This.frame2.we -side top -fill x
 
       #--- Button-design 'E'
-      button $This.frame3.we.canv1 -borderwidth 2 \
+      button $This.frame2.we.canv1 -borderwidth 2 \
          -font [ list {Arial} 12 bold ] \
          -text "$caption(telpad,est)" \
          -width 2  \
          -anchor center \
          -relief ridge
-      pack $This.frame3.we.canv1 -in $This.frame3.we -expand 0 -side left -padx 10 -pady 4
+      pack $This.frame2.we.canv1 -expand 0 -side left -padx 10 -pady 4
 
       #--- Write the label of speed
-      label $This.frame3.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
+      label $This.frame2.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(telescope,labelspeed) \
          -borderwidth 0 -relief flat
-      pack $This.frame3.we.lab -in $This.frame3.we -expand 1 -side left
+      pack $This.frame2.we.lab -expand 1 -side left
 
       #--- Button-design 'W'
-      button $This.frame3.we.canv2 -borderwidth 2 \
+      button $This.frame2.we.canv2 -borderwidth 2 \
          -font [ list {Arial} 12 bold ] \
          -text "$caption(telpad,ouest)" \
          -width 2  \
          -anchor center \
          -relief ridge
-      pack $This.frame3.we.canv2 -in $This.frame3.we -expand 0 -side right -padx 10 -pady 4
+      pack $This.frame2.we.canv2 -expand 0 -side right -padx 10 -pady 4
 
       #--- Create the button 'S'
-      frame $This.frame3.s -width 27 -borderwidth 0 -relief flat
-      pack $This.frame3.s -in $This.frame3 -side top -fill x
+      frame $This.frame2.s -width 27 -borderwidth 0 -relief flat
+      pack $This.frame2.s -side top -fill x
 
       #--- Button-design 'S'
-      button $This.frame3.s.canv1 -borderwidth 2 \
+      button $This.frame2.s.canv1 -borderwidth 2 \
          -font [ list {Arial} 12 bold ] \
          -text "$caption(telpad,sud)" \
          -width 2  \
          -anchor center \
          -relief ridge
-      pack $This.frame3.s.canv1 -in $This.frame3.s -expand 0 -side top -padx 10 -pady 4
+      pack $This.frame2.s.canv1 -expand 0 -side top -padx 10 -pady 4
 
-      set zone(n) $This.frame3.n.canv1
-      set zone(e) $This.frame3.we.canv1
-      set zone(w) $This.frame3.we.canv2
-      set zone(s) $This.frame3.s.canv1
+      set zone(n) $This.frame2.n.canv1
+      set zone(e) $This.frame2.we.canv1
+      set zone(w) $This.frame2.we.canv2
+      set zone(s) $This.frame2.s.canv1
 
       #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
       if { [::telescope::possedeControleSuivi] == "1" } {
-         label $This.frame3.s.lab1 \
+         label $This.frame2.s.lab1 \
             -font $audace(font,arial_10_b) -textvariable audace(telescope,controle) \
             -borderwidth 0 -relief flat
-         pack $This.frame3.s.lab1 -in $This.frame3.s -expand 1 -side left
-         bind $This.frame3.s.lab1 <ButtonPress-1> { ::telescope::controleSuivi }
+         pack $This.frame2.s.lab1 -expand 1 -side left
+         bind $This.frame2.s.lab1 <ButtonPress-1> { ::telescope::controleSuivi }
       }
 
       #--- Binding de la vitesse du telescope
-      bind $This.frame3.we.lab <ButtonPress-1> { ::telescope::incrementSpeed }
+      bind $This.frame2.we.lab <ButtonPress-1> { ::telescope::incrementSpeed }
 
       #--- Cardinal moves
       bind $zone(e) <ButtonPress-1>   { catch { ::telescope::move e } }
@@ -335,41 +333,41 @@ namespace eval telpad {
       bind $zone(n) <ButtonRelease-1> { ::telescope::stop n }
 
       #--- Label pour moteur focus
-      label $This.frame4.lab1 -text $caption(telpad,moteur_foc) -relief flat
-      pack $This.frame4.lab1 -in $This.frame4 -anchor center -fill none -padx 4 -pady 1
+      label $This.frame3.lab1 -text $caption(telpad,moteur_foc) -relief flat
+      pack $This.frame3.lab1 -anchor center -fill none -padx 4 -pady 1
 
       #--- Create the buttons '- +'
-      frame $This.frame4.we -width 27 -borderwidth 0 -relief flat
-      pack $This.frame4.we -in $This.frame4 -side top -fill x
+      frame $This.frame3.we -width 27 -borderwidth 0 -relief flat
+      pack $This.frame3.we -side top -fill x
 
       #--- Button '-'
-      button $This.frame4.we.canv1 -borderwidth 2 \
+      button $This.frame3.we.canv1 -borderwidth 2 \
          -font [ list {Arial} 12 bold ] \
          -text "-" \
          -width 2  \
          -anchor center \
          -relief ridge
-      pack $This.frame4.we.canv1 -in $This.frame4.we -expand 0 -side left -padx 10 -pady 4
+      pack $This.frame3.we.canv1 -expand 0 -side left -padx 10 -pady 4
 
       #--- Write the label of speed for LX200 and compatibles
-      label $This.frame4.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) -width 2 \
+      label $This.frame3.we.lab -font [ list {Arial} 12 bold ] -textvariable audace(focus,labelspeed) -width 2 \
          -borderwidth 0 -relief flat
-      pack $This.frame4.we.lab -in $This.frame4.we -expand 1 -side left
+      pack $This.frame3.we.lab -expand 1 -side left
 
       #--- Button '+'
-      button $This.frame4.we.canv2 -borderwidth 2 \
+      button $This.frame3.we.canv2 -borderwidth 2 \
          -font [ list {Arial} 12 bold ] \
          -text "+" \
          -width 2  \
          -anchor center \
          -relief ridge
-      pack $This.frame4.we.canv2 -in $This.frame4.we -expand 0 -side right -padx 10 -pady 4
+      pack $This.frame3.we.canv2 -expand 0 -side right -padx 10 -pady 4
 
-      set zone(moins) $This.frame4.we.canv1
-      set zone(plus)  $This.frame4.we.canv2
+      set zone(moins) $This.frame3.we.canv1
+      set zone(plus)  $This.frame3.we.canv2
 
       #--- Binding de la vitesse du moteur de focalisation
-      bind $This.frame4.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) pad }
+      bind $This.frame3.we.lab <ButtonPress-1> { ::focus::incrementSpeed $::conf(telpad,focuserLabel) pad }
 
       #--- Cardinal moves
       bind $zone(moins) <ButtonPress-1>   { catch { ::focus::move $::conf(telpad,focuserLabel) - } }
