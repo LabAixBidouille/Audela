@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.13 2007-02-14 16:33:52 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.14 2007-05-23 16:25:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,8 +26,8 @@ set caption(bermasaude,bermasaude_nbr_filtres_2)       "positions."
 set caption(bermasaude,bermasaude_port)                "Filter Wheel Port"
 set caption(bermasaude,caractere_2points)              ":"
 
-set caption(bermasaude,site_web_ref)                   "Reference Web Site:"
-set caption(bermasaude,site_bermasaude)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+set caption(bermasaude,site_web)                       "Reference Web Site:"
+set caption(bermasaude,site_web_ref)                   "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
 set caption(bermasaude,bermasaude_vide)                "No Filter"
 set caption(bermasaude,bermasaude_bleu)                "Blue"
@@ -64,8 +64,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_port)             "Port Roue à filtres"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web_ref)                "Site Web de référence :"
-   set caption(bermasaude,site_bermasaude)             "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+   set caption(bermasaude,site_web)                    "Site Web de référence :"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Pas de filtre"
    set caption(bermasaude,bermasaude_bleu)             "Bleu"
@@ -102,8 +102,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_port)             "Porta Ruota portafiltri"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web_ref)                "Sito Web di riferimento:"
-   set caption(bermasaude,site_bermasaude)             "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+   set caption(bermasaude,site_web)                    "Sito Web di riferimento:"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Nessun filtro"
    set caption(bermasaude,bermasaude_bleu)             "Blu"
@@ -140,8 +140,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_port)             "Puerto Rueda de filtros"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web_ref)                "Sitio Web de referencia:"
-   set caption(bermasaude,site_bermasaude)             "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+   set caption(bermasaude,site_web)                    "Sitio Web de referencia:"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Sin filtros"
    set caption(bermasaude,bermasaude_bleu)             "Azul"
@@ -178,8 +178,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_port)             "Filterrad Port"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web_ref)                "Referenz Webseite:"
-   set caption(bermasaude,site_bermasaude)             "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+   set caption(bermasaude,site_web)                    "Referenz Webseite:"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Keinen Filter"
    set caption(bermasaude,bermasaude_bleu)             "Blau"
@@ -216,8 +216,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_port)             "Porta Roda de filtros"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web_ref)                "Site Web de referência:"
-   set caption(bermasaude,site_bermasaude)             "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+   set caption(bermasaude,site_web)                    "Site Web de referência:"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Sem filtro"
    set caption(bermasaude,bermasaude_bleu)             "Azul"
@@ -254,8 +254,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_port)             "Filterhjul port"
    set caption(bermasaude,caractere_2points)           ":"
 
-   set caption(bermasaude,site_web_ref)                "Henvisning til Websider:"
-   set caption(bermasaude,site_bermasaude)             "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
+   set caption(bermasaude,site_web)                    "Henvisning til Websider:"
+   set caption(bermasaude,site_web_ref)                "http://www.astrosurf.com/bernasconi/rouefilt/rouefilt.htm"
 
    set caption(bermasaude,bermasaude_vide)             "Intet filter"
    set caption(bermasaude,bermasaude_bleu)             "Blå"
