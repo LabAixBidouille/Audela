@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.5 2007-05-19 09:43:02 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.6 2007-05-23 16:32:25 robertdelmas Exp $
 #
 
 #
@@ -73,7 +73,7 @@ proc ::focuseraudecom::getHelp { } {
 
 #------------------------------------------------------------
 #  ::focuseraudecom::getStartFlag
-#     retourne l'indicateur de lancement au démarrage de Audela
+#     retourne l'indicateur de lancement au demarrage de Audela
 #
 #  return 0 ou 1
 #------------------------------------------------------------
@@ -91,14 +91,13 @@ proc ::focuseraudecom::getStartFlag { } {
 proc ::focuseraudecom::fillConfigPage { frm } {
    global caption
 
-   #--- je copie les donnees de conf(...) dans les variables widget(...)
-
-   #--- Creation des differents frames
+   #--- Frame pour le label
    frame $frm.frame1 -borderwidth 0 -relief raised
-   pack $frm.frame1 -side top -fill x
 
-   label $frm.frame1.labelLink -text "$caption(focuseraudecom,link)"
-   grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+      label $frm.frame1.labelLink -text "$caption(focuseraudecom,link)"
+      grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+   pack $frm.frame1 -side top -fill x
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm

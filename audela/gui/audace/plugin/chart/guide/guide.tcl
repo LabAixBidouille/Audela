@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.12 2007-05-20 15:53:20 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.13 2007-05-23 16:32:10 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -30,7 +30,7 @@ namespace eval guide {
    #
    # parametre :
    #    propertyName : nom de la propriete
-   # return : valeur de la propriete , ou "" si la propriete n'existe pas
+   # return : valeur de la propriete ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
@@ -176,60 +176,60 @@ namespace eval guide {
       #--- J'initialise les valeurs
       confToWidget
 
-      #--- Creation des differents frames
+      #--- Fichier a rechercher a partir d'un repertoire donne
       frame $frm.frame1 -borderwidth 0 -relief raised
+
+         label $frm.frame1.labFichier -text "$caption(guide,fichier)"
+         pack $frm.frame1.labFichier -anchor center -side left -padx 10 -pady 10
+
+         entry $frm.frame1.nomFichier -textvariable ::guide::widget(fichier_recherche) -width 12 -justify center
+         pack $frm.frame1.nomFichier -anchor center -side left -padx 10 -pady 5
+
+         label $frm.frame1.labAPartirDe -text "$caption(guide,a_partir_de)"
+         pack $frm.frame1.labAPartirDe -anchor center -side left -padx 10 -pady 10
+
+         entry $frm.frame1.nomDossier -textvariable ::guide::widget(dirname) -width 20
+         pack $frm.frame1.nomDossier -side left -padx 10 -pady 5
+
+         button $frm.frame1.explore -text "$caption(guide,parcourir)" -width 1 \
+            -command {
+               set ::guide::widget(dirname) [ tk_chooseDirectory -title "$caption(guide,dossier)" \
+               -initialdir .. -parent $::guide::widget(frm) ]
+            }
+         pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
+
       pack $frm.frame1 -side top -fill x
 
+      #--- Recherche automatique ou manuelle du chemin pour l'executable de Guide
       frame $frm.frame2 -borderwidth 0 -relief raised
+
+         button $frm.frame2.recherche -text "$caption(guide,rechercher)" -relief raised -state normal \
+            -command { ::guide::searchFile }
+         pack $frm.frame2.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
+
+         entry $frm.frame2.chemin -textvariable ::guide::widget(binarypath)
+         pack $frm.frame2.chemin -anchor center -side left -padx 10 -fill x -expand 1
+
+         button $frm.frame2.explore -text "$caption(guide,parcourir)" -width 1 \
+            -command {
+               set ::guide::widget(binarypath) [ ::tkutil::box_load $::guide::widget(frm) \
+                  $::guide::widget(dirname) $audace(bufNo) "11" ]
+            }
+         pack $frm.frame2.explore -side right -padx 10 -pady 5 -ipady 5
+
       pack $frm.frame2 -side top -fill x
 
+      #--- Site web officiel de Guide
       frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side top -fill both -expand 1
 
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side bottom -fill x
+         label $frm.frame3.labSite -text "$caption(guide,site_web)"
+         pack $frm.frame3.labSite -side top -fill x -pady 2
 
-      #--- Initialisation du chemin du fichier
-      label $frm.frame1.labFichier -text "$caption(guide,fichier)"
-      pack $frm.frame1.labFichier -anchor center -side left -padx 10 -pady 10
+         set labelName [ ::confCat::createUrlLabel $frm.frame3 "$caption(guide,site_web_ref)" \
+            "$caption(guide,site_web_ref)" ]
+         pack $labelName -side top -fill x -pady 2
 
-      entry $frm.frame1.nomFichier -textvariable ::guide::widget(fichier_recherche) -width 12 -justify center
-      pack $frm.frame1.nomFichier -anchor center -side left -padx 10 -pady 5
-
-      label $frm.frame1.labAPartirDe -text "$caption(guide,a_partir_de)"
-      pack $frm.frame1.labAPartirDe -anchor center -side left -padx 10 -pady 10
-
-      entry $frm.frame1.nomDossier -textvariable ::guide::widget(dirname) -width 20
-      pack $frm.frame1.nomDossier -side left -padx 10 -pady 5
-
-      button $frm.frame1.explore -text "$caption(guide,parcourir)" -width 1 \
-         -command {
-            set ::guide::widget(dirname) [ tk_chooseDirectory -title "$caption(guide,dossier)" \
-            -initialdir .. -parent $::guide::widget(frm) ]
-         }
-      pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
-
-      button $frm.frame2.recherche -text "$caption(guide,rechercher)" -relief raised -state normal \
-         -command { ::guide::searchFile }
-      pack $frm.frame2.recherche -anchor center -side left  -padx 10 -pady 7 -ipadx 10 -ipady 5
-
-      entry $frm.frame2.chemin -textvariable ::guide::widget(binarypath)
-      pack $frm.frame2.chemin -anchor center -side left -padx 10 -fill x -expand 1
-
-      button $frm.frame2.explore -text "$caption(guide,parcourir)" -width 1 \
-         -command {
-            set ::guide::widget(binarypath) [ ::tkutil::box_load $::guide::widget(frm) \
-               $::guide::widget(dirname) $audace(bufNo) "11" ]
-         }
-      pack $frm.frame2.explore -side right -padx 10 -pady 5 -ipady 5
-
-      #--- Site web officiel de guide
-      label $frm.frame4.labSite -text "$caption(guide,site_web)"
-      pack $frm.frame4.labSite -side top -fill x -pady 2
-
-      set labelName [ ::confCat::createUrlLabel $frm.frame4 "$caption(guide,site_web_ref)" \
-         "$caption(guide,site_web_ref)" ]
-      pack $labelName -side top -fill x -pady 2
+      pack $frm.frame3 -side bottom -fill x
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -242,7 +242,7 @@ namespace eval guide {
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
-      #--- Chargement de la librairie guide pour Windows seulement
+      #--- Chargement de la librairie Guide pour Windows seulement
       if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
          catch { load libgs.dll }
       }
@@ -256,7 +256,7 @@ namespace eval guide {
    #  return rien
    #------------------------------------------------------------
    proc deletePluginInstance { } {
-      #--- Rien a faire pour guide
+      #--- Rien a faire pour Guide
       return
    }
 
@@ -264,7 +264,7 @@ namespace eval guide {
    #  isReady
    #     informe de l'etat de fonctionnement du driver
    #
-   #  return 0 (ready) , 1 (not ready)
+   #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
       #--- Je teste si la librairie libgs.dll est chargee
@@ -289,7 +289,7 @@ namespace eval guide {
    #     nom_objet :    nom de l'objet     (ex: "NGC7000")
    #     ad :           ascension droite   (ex: "16h41m42s")
    #     dec :          declinaison        (ex: "+36d28m00s")
-   #     zoom_objet :   champ 1 à 10
+   #     zoom_objet :   champ 1 a 10
    #     avant_plan :   1=mettre la carte au premier plan 0=ne pas mettre au premier plan
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
@@ -348,7 +348,7 @@ namespace eval guide {
    # launch
    #    Lance le logiciel GUIDE pour la creation de cartes de champ
    #
-   # return 0 (OK) , 1 (error)
+   # return 0 (OK), 1 (error)
    #------------------------------------------------------------
    proc launch { } {
       global audace caption conf
@@ -366,9 +366,9 @@ namespace eval guide {
       set pwd0 [ pwd ]
       #--- Extrait le nom de dossier
       set dirname [ file dirname "$conf(guide,binarypath)" ]
-      #--- Place temporairement AudeLA dans le dossier de guide
+      #--- Place temporairement AudeLA dans le dossier de Guide
       cd "$dirname"
-      #--- Prépare l'ouverture du logiciel
+      #--- Prepare l'ouverture du logiciel
       set a_effectuer "exec \"$conf(guide,binarypath)\" \"$filename\" &"
       #--- Ouvre le logiciel
       if [ catch $a_effectuer input ] {
@@ -379,9 +379,9 @@ namespace eval guide {
          ::confCat::run
          #--- Extrait le nom de dossier
          set dirname [ file dirname "$conf(guide,binarypath)" ]
-         #--- Place temporairement AudeLA dans le dossier de guide
+         #--- Place temporairement AudeLA dans le dossier de Guide
          cd "$dirname"
-         #--- Prépare l'ouverture du logiciel
+         #--- Prepare l'ouverture du logiciel
          set a_effectuer "exec \"$conf(guide,binarypath)\" \"$filename\" &"
          #--- Affichage sur la console
          set filename $conf(guide,binarypath)
@@ -391,16 +391,17 @@ namespace eval guide {
          if [ catch $a_effectuer input ] {
             set audace(current_edit) $input
          }
-         cd "$pwd0"
       } else {
          #--- Affichage sur la console
-         ::console::affiche_saut "\n"
          ::console::disp $filename
          ::console::affiche_saut "\n"
          set audace(current_edit) $input
          ::console::affiche_resultat "$caption(guide,gagne)\n"
-         cd "$pwd0"
+         ::console::affiche_saut "\n"
       }
+      cd "$pwd0"
+      #--- J'attends que Guide soit completement demarre
+      after 2000
       return "0"
    }
 }

@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.8 2007-05-19 09:43:33 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.9 2007-05-23 16:32:59 robertdelmas Exp $
 #
 
 #
@@ -73,7 +73,7 @@ proc ::focuserlx200::getHelp { } {
 
 #------------------------------------------------------------
 #  ::focuserlx200::getStartFlag
-#     retourne l'indicateur de lancement au démarrage de Audela
+#     retourne l'indicateur de lancement au demarrage de Audela
 #
 #  return 0 ou 1
 #------------------------------------------------------------
@@ -91,14 +91,13 @@ proc ::focuserlx200::getStartFlag { } {
 proc ::focuserlx200::fillConfigPage { frm } {
    global caption
 
-   #--- je copie les donnees de conf(...) dans les variables widget(...)
-
-   #--- Creation des differents frames
+   #--- Frame pour le label
    frame $frm.frame1 -borderwidth 0 -relief raised
-   pack $frm.frame1 -side top -fill x
 
-   label $frm.frame1.labelLink -text "$caption(focuserlx200,link)"
-   grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+      label $frm.frame1.labelLink -text "$caption(focuserlx200,link)"
+      grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+   pack $frm.frame1 -side top -fill x
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -168,7 +167,7 @@ proc ::focuserlx200::isReady { } {
 #     si command = "stop" , arrete le mouvement
 #------------------------------------------------------------
 proc ::focuserlx200::move { command } {
-   global audace conf
+   global audace
 
    if { [ ::tel::list ] != "" } {
       if { $audace(focus,labelspeed) != "?" } {

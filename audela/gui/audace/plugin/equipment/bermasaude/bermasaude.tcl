@@ -2,45 +2,45 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.16 2007-05-20 15:51:41 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.17 2007-05-23 16:30:44 robertdelmas Exp $
 #
 
 #
 # Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
-#     initPlugin        : Initialise le plugin
-#     getLabel          : Retourne le nom affichable du plugin
-#     getHelp           : Retourne la documentation htm associee
-#     getStartFlag      : Retourne l'indicateur de lancement au démarrage
-#     getPluginTitle    : Retourne le titre du plugin dans la langue de l'utilisateur
-#     getPluginType     : Retourne le type de plugin
-#     fillConfigPage    : Affiche la fenetre de configuration de ce driver
-#     createPlugin      : Cree une instance du plugin
-#     deletePlugin      : Arrete une instance du plugin et libere les ressources occupees
-#     configurePlugin   : Configure le plugin
-#     isReady           : Informe de l'etat de fonctionnement du driver
+#     initPlugin      : Initialise le plugin
+#     getLabel        : Retourne le nom affichable du plugin
+#     getHelp         : Retourne la documentation htm associee
+#     getStartFlag    : Retourne l'indicateur de lancement au demarrage
+#     getPluginTitle  : Retourne le titre du plugin dans la langue de l'utilisateur
+#     getPluginType   : Retourne le type de plugin
+#     fillConfigPage  : Affiche la fenetre de configuration de ce driver
+#     createPlugin    : Cree une instance du plugin
+#     deletePlugin    : Arrete une instance du plugin et libere les ressources occupees
+#     configurePlugin : Configure le plugin
+#     isReady         : Informe de l'etat de fonctionnement du driver
 #
 
 # Procedures specifiques a ce driver :
-#     Representation_roue_a_filtres : Representation graphique de la roue a filtres
-#     choix_nom_bouton              : Choix du nom des boutons (couleur des filtres)
-#     choix_couleur                 : Choix des couleurs des filtres
-#     filtre_init                   : Initialisation de la roue a filtres
-#     cmd_roue_filtres              : Commande la roue a filtres
-#     filtre_1                      : Positionne le filtre n°1 sur le chemin optique
-#     filtre_2                      : Positionne le filtre n°2 sur le chemin optique
-#     filtre_3                      : Positionne le filtre n°3 sur le chemin optique
-#     filtre_4                      : Positionne le filtre n°4 sur le chemin optique
-#     filtre_5                      : Positionne le filtre n°5 sur le chemin optique
-#     connectBerMasAude             : Permet de rendre actifs ou inactifs les boutons
+#     representationRoueAFiltres : Representation graphique de la roue a filtres
+#     choixNomBouton             : Choix du nom des boutons (couleur des filtres)
+#     choixCouleur               : Choix des couleurs des filtres
+#     filtreInit                 : Initialisation de la roue a filtres
+#     cmdRoueFiltres             : Commande la roue a filtres
+#     filtre_1                   : Positionne le filtre n°1 sur le chemin optique
+#     filtre_2                   : Positionne le filtre n°2 sur le chemin optique
+#     filtre_3                   : Positionne le filtre n°3 sur le chemin optique
+#     filtre_4                   : Positionne le filtre n°4 sur le chemin optique
+#     filtre_5                   : Positionne le filtre n°5 sur le chemin optique
+#     connectBerMasAude          : Permet de rendre actifs ou inactifs les boutons
 #
-#     bermasaude_create             : Creation de la liaison serie
-#     bermasaude_delete             : Fermeture de la liaison serie
-#     bermasaude_reset              : Reset de l'electronique de la roue a filtres
-#     bermasaude_v_firmware         : Retourne la version du firmware
-#     bermasaude_etat_roue          : Retourne l'etat de la roue (0 a l'arret - 1 en rotation)
-#     bermasaude_nbr_filtres        : Retourne le nombre de filtres de la roue
-#     bermasaude_aller_a            : Permet d'aller au filtre n
-#     bermasaude_position           : Retourne la position du filtre sur le chemin optique
+#     bermasaude_create          : Creation de la liaison serie
+#     bermasaude_delete          : Fermeture de la liaison serie
+#     bermasaude_reset           : Reset de l'electronique de la roue a filtres
+#     bermasaude_v_firmware      : Retourne la version du firmware
+#     bermasaude_etat_roue       : Retourne l'etat de la roue (0 a l'arret - 1 en rotation)
+#     bermasaude_nbr_filtres     : Retourne le nombre de filtres de la roue
+#     bermasaude_aller_a         : Permet d'aller au filtre n
+#     bermasaude_position        : Retourne la position du filtre sur le chemin optique
 #
 
 namespace eval bermasaude {
@@ -54,7 +54,7 @@ namespace eval bermasaude {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-      global audace bermasaude conf
+      global bermasaude conf
 
       #--- Initialisation
       set bermasaude(connect) "0"
@@ -100,7 +100,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    #  getStartFlag
-   #     retourne l'indicateur de lancement au démarrage de Audela
+   #     retourne l'indicateur de lancement au demarrage de Audela
    #
    #  return 0 ou 1
    #------------------------------------------------------------
@@ -116,7 +116,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      global audace bermasaude caption color zone conf
+      global bermasaude caption conf zone
 
       #--- Copie de conf(...) dans la variable widget
       set widget(port)  $conf(bermasaude,port)
@@ -129,30 +129,10 @@ namespace eval bermasaude {
       set widget(frm) $frm
 
       #--- Choix des couleurs
-      choix_couleur
+      choixCouleur
 
       #--- Choix du nom des boutons (couleur des filtres)
-      choix_nom_bouton
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill x
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 1
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side bottom -fill x
-
-      frame $frm.frame2.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame2.frame4 -side left -fill both -expand 1
-
-      frame $frm.frame2.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame2.frame5 -side left -fill both -expand 1
-
-      #--- Definition du port
-      label $frm.frame1.lab1 -text "$caption(bermasaude,port)"
-      pack $frm.frame1.lab1 -anchor center -side left -padx 20 -pady 10
+      choixNomBouton
 
       #--- Je verifie le contenu de la liste
       if { [ llength $widget(list_connexion) ] > 0 } {
@@ -167,107 +147,141 @@ namespace eval bermasaude {
          #--- Si la liste est vide, on continue quand meme
       }
 
-      #--- Bouton de configuration des ports et liaisons
-      button $frm.frame1.configure -text "$caption(bermasaude,configurer)" -relief raised \
-         -command {
-            ::confLink::run ::bermasaude::widget(port) { serialport } \
-               "- $caption(bermasaude,controle) - $caption(bermasaude,titre)"
-         }
-      pack $frm.frame1.configure -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+      #--- Frame pour le choix de la liaison et de la combinaison
+      frame $frm.frame1 -borderwidth 0 -relief raised
 
-      #--- Choix du port ou de la liaison
-      ComboBox $frm.frame1.port \
-         -width 7          \
-         -height [ llength $widget(list_connexion) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -textvariable ::bermasaude::widget(port) \
-         -editable 0       \
-         -values $widget(list_connexion)
-      pack $frm.frame1.port -anchor center -side left -padx 10 -pady 10
+         #--- Label du port
+         label $frm.frame1.lab1 -text "$caption(bermasaude,port)"
+         pack $frm.frame1.lab1 -anchor center -side left -padx 20 -pady 10
 
-      #--- Definition de la combinaison des filtres
-      set list_combobox [ list $caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj) ]
-      ComboBox $frm.frame1.combi \
-         -width 5          \
-         -height [ llength $list_combobox ]  \
-         -relief sunken    \
-         -borderwidth 1    \
-         -textvariable ::bermasaude::widget(combi) \
-         -editable 0       \
-         -values $list_combobox
-      pack $frm.frame1.combi -anchor center -side right -padx 20 -pady 10
+         #--- Bouton de configuration des liaisons
+         button $frm.frame1.configure -text "$caption(bermasaude,configurer)" -relief raised \
+            -command {
+               ::confLink::run ::bermasaude::widget(port) { serialport } \
+                  "- $caption(bermasaude,controle) - $caption(bermasaude,titre)"
+            }
+         pack $frm.frame1.configure -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
-      label $frm.frame1.lab2 -text "$caption(bermasaude,bermasaude_combinaison)"
-      pack $frm.frame1.lab2 -anchor center -side right -padx 10 -pady 10
+         #--- Choix du port ou de la liaison
+         ComboBox $frm.frame1.port \
+            -width 7               \
+            -height [ llength $widget(list_connexion) ] \
+            -relief sunken         \
+            -borderwidth 1         \
+            -textvariable ::bermasaude::widget(port) \
+            -editable 0            \
+            -values $widget(list_connexion)
+         pack $frm.frame1.port -anchor center -side left -padx 20 -pady 10
 
-      #--- Representation de la roue a filtres
-      frame $frm.frame2.frame5.frame6 -borderwidth 0 -relief raised
-         #--- Creation d'un canvas pour affichage de cette representation
-         canvas $frm.frame2.frame5.frame6.image2a_color_invariant -width 180 -height 180 -highlightthickness 0
-         pack $frm.frame2.frame5.frame6.image2a_color_invariant
-         set zone(image2a) $frm.frame2.frame5.frame6.image2a_color_invariant
-      pack $frm.frame2.frame5.frame6 -anchor center -fill both -expand 1
+         #--- Definition de la combinaison des filtres
+         set list_combobox [ list $caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj) ]
+         ComboBox $frm.frame1.combi \
+            -width 5                \
+            -height [ llength $list_combobox ] \
+            -relief sunken          \
+            -borderwidth 1          \
+            -textvariable ::bermasaude::widget(combi) \
+            -editable 0             \
+            -values $list_combobox
+         pack $frm.frame1.combi -anchor center -side right -padx 20 -pady 10
+
+         #--- Label de la combinaison
+         label $frm.frame1.lab2 -text "$caption(bermasaude,bermasaude_combinaison)"
+         pack $frm.frame1.lab2 -anchor center -side right -pady 10
+
+      pack $frm.frame1 -side top -fill x
+
+      #--- Frame des boutons de commande et de la representation de la roue a filtres
+      frame $frm.frame2 -borderwidth 0 -relief raised
+
+         #--- Frame des boutons de commande
+         frame $frm.frame2.frame4 -borderwidth 0 -relief raised
+
+            #--- Gestion des boutons de commande
+            if { $bermasaude(connect) == "1" } {
+               button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised \
+                  -state normal -command { ::bermasaude::filtre_1 }
+               pack $frm.frame2.frame4.but_1 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_2 -text "$bermasaude(caption_position_2)" -width 10 -relief raised \
+                  -state normal -command { ::bermasaude::filtre_2 }
+               pack $frm.frame2.frame4.but_2 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_3 -text "$bermasaude(caption_position_3)" -width 10 -relief raised \
+                  -state normal -command { ::bermasaude::filtre_3 }
+               pack $frm.frame2.frame4.but_3 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_4 -text "$bermasaude(caption_position_4)" -width 10 -relief raised \
+                  -state normal -command { ::bermasaude::filtre_4 }
+               pack $frm.frame2.frame4.but_4 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised \
+                  -state normal -command { ::bermasaude::filtre_5 }
+               pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+               #--- Representation de la couleur du filtre
+               $zone(image2a) create oval 65 105 115 155 -fill $bermasaude(color_filtre) -tags cadres -width 2.0
+            } else {
+               button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised \
+                  -state disabled
+               pack $frm.frame2.frame4.but_1 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_2 -text "$bermasaude(caption_position_2)" -width 10 -relief raised \
+                  -state disabled
+               pack $frm.frame2.frame4.but_2 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_3 -text "$bermasaude(caption_position_3)" -width 10 -relief raised \
+                  -state disabled
+               pack $frm.frame2.frame4.but_3 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_4 -text "$bermasaude(caption_position_4)" -width 10 -relief raised \
+                  -state disabled
+               pack $frm.frame2.frame4.but_4 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
+               button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised \
+                  -state disabled
+               pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
+            }
+
+         pack $frm.frame2.frame4 -side left -fill both -expand 1
+
+         #--- Frame de la representation de la roue a filtres
+         frame $frm.frame2.frame5 -borderwidth 0 -relief raised
+
+            #--- Creation d'un canvas pour affichage de cette representation
+            canvas $frm.frame2.frame5.image2a_color_invariant -width 180 -height 180 -highlightthickness 0
+            pack $frm.frame2.frame5.image2a_color_invariant
+            set zone(image2a) $frm.frame2.frame5.image2a_color_invariant
+
+         pack $frm.frame2.frame5 -side left -fill both -expand 1
+
+      pack $frm.frame2 -side top -fill both -expand 1
+
+      #--- Frame pour le site web et le checkbutton creer au demarrage
+      frame $frm.frame3 -borderwidth 0 -relief raised
+
+         #--- Site web officiel de la roue a filtres BerMasAude
+         label $frm.frame3.lab103 -text "$caption(bermasaude,site_web)"
+         pack $frm.frame3.lab103 -side top -fill x -pady 2
+
+         set labelName [ ::confEqt::createUrlLabel $frm.frame3 "$caption(bermasaude,site_web_ref)" \
+            "$caption(bermasaude,site_web_ref)" ]
+         pack $labelName -side top -fill x -pady 2
+
+          #--- Frame du checkbutton creer au demarrage
+         frame $frm.frame3.start -borderwidth 0 -relief flat
+
+            checkbutton $frm.frame3.start.chk -text "$caption(bermasaude,creer_au_demarrage)" \
+               -highlightthickness 0 -variable conf(bermasaude,start)
+            pack $frm.frame3.start.chk -side top -padx 3 -pady 3 -fill x
+
+         pack $frm.frame3.start -side bottom -fill x
+
+      pack $frm.frame3 -side bottom -fill x
 
       #--- Affichage de la representation
-      Representation_roue_a_filtres
-
-      #--- Les boutons de commande
-      if { $bermasaude(connect) == "1" } {
-         button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised -state normal \
-            -command { ::bermasaude::filtre_1 }
-         pack $frm.frame2.frame4.but_1 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_2 -text "$bermasaude(caption_position_2)" -width 10 -relief raised -state normal \
-            -command { ::bermasaude::filtre_2 }
-         pack $frm.frame2.frame4.but_2 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_3 -text "$bermasaude(caption_position_3)" -width 10 -relief raised -state normal \
-            -command { ::bermasaude::filtre_3 }
-         pack $frm.frame2.frame4.but_3 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_4 -text "$bermasaude(caption_position_4)" -width 10 -relief raised -state normal \
-            -command { ::bermasaude::filtre_4 }
-         pack $frm.frame2.frame4.but_4 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised -state normal \
-            -command { ::bermasaude::filtre_5 }
-         pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-         #--- Representation de la couleur du filtre
-         $zone(image2a) create oval 65 105 115 155 -fill $bermasaude(color_filtre) -tags cadres -width 2.0
-      } else {
-         button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised -state disabled
-         pack $frm.frame2.frame4.but_1 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_2 -text "$bermasaude(caption_position_2)" -width 10 -relief raised -state disabled
-         pack $frm.frame2.frame4.but_2 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_3 -text "$bermasaude(caption_position_3)" -width 10 -relief raised -state disabled
-         pack $frm.frame2.frame4.but_3 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_4 -text "$bermasaude(caption_position_4)" -width 10 -relief raised -state disabled
-        pack $frm.frame2.frame4.but_4 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-         button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised -state disabled
-         pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-      }
+      representationRoueAFiltres
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
-
-      #--- Site web officiel de la roue a filtres BerMasAude
-      label $frm.frame3.lab103 -text "$caption(bermasaude,site_web_ref)"
-      pack $frm.frame3.lab103 -side top -fill x -pady 2
-
-      set labelName [ ::confEqt::createUrlLabel $frm.frame3 "$caption(bermasaude,site_bermasaude)" \
-         "$caption(bermasaude,site_bermasaude)" ]
-      pack $labelName -side top -fill x -pady 2
-
-      #--- frame checkbutton creer au demarrage
-      frame $frm.frame3.start -borderwidth 0 -relief flat
-         checkbutton $frm.frame3.start.chk -text "$caption(bermasaude,creer_au_demarrage)" \
-            -highlightthickness 0 -variable conf(bermasaude,start)
-         pack $frm.frame3.start.chk -side top -padx 3 -pady 3 -fill x
-      pack $frm.frame3.start -side bottom -fill x
    }
 
    #------------------------------------------------------------
-   # Representation_roue_a_filtres
+   # representationRoueAFiltres
    #    Representation graphique de la roue a filtres
    #------------------------------------------------------------
-   proc Representation_roue_a_filtres { } {
+   proc representationRoueAFiltres { } {
       global audace zone
 
       #--- Affichage de la representation
@@ -388,7 +402,7 @@ namespace eval bermasaude {
       global bermasaude
 
       #--- Initialisation du graphisme de la roue a filtres
-      filtre_init
+      filtreInit
 
       catch {
          set frm $widget(frm)
@@ -419,10 +433,10 @@ namespace eval bermasaude {
    }
 
    #------------------------------------------------------------
-   # choix_couleur
+   # choixCouleur
    #    Choix des couleurs des filtres
    #------------------------------------------------------------
-   proc choix_couleur { } {
+   proc choixCouleur { } {
       global audace conf
 
       #--- Ouverture du fichier de parametrage des positions de la roue avec les couleurs des filtres
@@ -439,10 +453,10 @@ namespace eval bermasaude {
    }
 
    #------------------------------------------------------------
-   # choix_nom_bouton
+   # choixNomBouton
    #    Choix du nom des boutons (couleur des filtres)
    #------------------------------------------------------------
-   proc choix_nom_bouton { } {
+   proc choixNomBouton { } {
       global bermasaude caption color
 
       for { set i 1 } { $i <= 5 } { incr i } {
@@ -467,17 +481,17 @@ namespace eval bermasaude {
    }
 
    #------------------------------------------------------------
-   # filtre_init
+   # filtreInit
    #    Initialisation de la roue a filtres
    #------------------------------------------------------------
-   proc filtre_init { } {
+   proc filtreInit { } {
       global audace bermasaude caption ttybermasaude zone
 
       #--- Choix des couleurs
-      choix_couleur
+      choixCouleur
 
       #--- Choix du nom des boutons (couleur des filtres)
-      choix_nom_bouton
+      choixNomBouton
 
       #--- Initialisation des variables
       set bermasaude(position) "1"
@@ -510,7 +524,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_1)
 
       #--- Commande de la roue a filtres
-      cmd_roue_filtres
+      cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -525,7 +539,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_2)
 
       #--- Commande de la roue a filtres
-      cmd_roue_filtres
+      cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -540,7 +554,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_3)
 
       #--- Commande de la roue a filtres
-      cmd_roue_filtres
+      cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -555,7 +569,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_4)
 
       #--- Commande de la roue a filtres
-      cmd_roue_filtres
+      cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -570,14 +584,14 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_5)
 
       #--- Commande de la roue a filtres
-      cmd_roue_filtres
+      cmdRoueFiltres
    }
 
    #------------------------------------------------------------
-   # cmd_roue_filtres
+   # cmdRoueFiltres
    #    Commande la roue a filtres
    #------------------------------------------------------------
-   proc cmd_roue_filtres { } {
+   proc cmdRoueFiltres { } {
       variable widget
       global audace bermasaude caption ttybermasaude zone
 

@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.8 2007-05-19 09:43:17 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.9 2007-05-23 16:32:45 robertdelmas Exp $
 #
 
 namespace eval ::focuserjmi {
@@ -78,7 +78,7 @@ proc ::focuserjmi::getHelp { } {
 
 #------------------------------------------------------------
 #  ::focuserjmi::getStartFlag
-#     retourne l'indicateur de lancement au démarrage de Audela
+#     retourne l'indicateur de lancement au demarrage de Audela
 #
 #  return 0 ou 1
 #------------------------------------------------------------
@@ -121,64 +121,68 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised
+
+      #--- Label de la liaison
+      label $frm.frame1.labelLink -text "$caption(focuserjmi,link)"
+      grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+      #--- Choix de la liaison
+      ComboBox $frm.frame1.link \
+         -width 13              \
+         -height [ llength $linkList ] \
+         -relief sunken         \
+         -borderwidth 1         \
+         -editable 0            \
+         -textvariable ::focuserjmi::widget(link) \
+         -values $linkList
+      grid $frm.frame1.link -row 0 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
+
+      #--- Bouton de configuration de la liaison
+      button $frm.frame1.configure -text "$caption(focuserjmi,configure)" -relief raised \
+         -command {
+            ::confLink::run ::focuserjmi::widget(link) {"parallelport" "quickremote"} $caption(focuserjmi,label)
+         }
+      grid $frm.frame1.configure -row 0 -column 2 -columnspan 1 -rowspan 1 -sticky ewns
+
+      #--- Choix du numero du bit pour le demarrage du moteur
+      label $frm.frame1.bitDecrLabel -text "$caption(focuserjmi,bitStart)"
+      grid $frm.frame1.bitDecrLabel -row 1 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+     set bitList [ list 0 1 2 3 4 5 6 7 ]
+      ComboBox $frm.frame1.bitStart \
+         -width 7                   \
+         -height [ llength $bitList ] \
+         -relief sunken             \
+         -borderwidth 1             \
+         -textvariable ::focuserjmi::widget(bitStart) \
+         -editable 0                \
+         -values $bitList
+      grid $frm.frame1.bitStart -row 1 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
+
+      #--- Choix du numero du bit pour le sens de rotation du moteur
+      label $frm.frame1.bitIncrLabel -text "$caption(focuserjmi,bitDirection)"
+      grid $frm.frame1.bitIncrLabel -row 2 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
+      set bitList [ list 0 1 2 3 4 5 6 7 ]
+      ComboBox $frm.frame1.bitDirection \
+         -width 7                       \
+         -height [ llength $bitList ]   \
+         -relief sunken                 \
+         -borderwidth 1                 \
+         -textvariable ::focuserjmi::widget(bitDirection) \
+         -editable 0                    \
+         -values $bitList
+      grid $frm.frame1.bitDirection -row 2 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
+
    pack $frm.frame1 -side top -fill x
 
-   label $frm.frame1.labelLink -text "$caption(focuserjmi,link)"
-   grid $frm.frame1.labelLink -row 0 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
-
-   #--- Choix de la liaison
-   ComboBox $frm.frame1.link \
-      -width 13         \
-      -height [ llength $linkList ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -editable 0       \
-      -textvariable ::focuserjmi::widget(link) \
-      -values $linkList
-   grid $frm.frame1.link -row 0 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
-
-   #--- Bouton de configuration de la liaison
-   button $frm.frame1.configure -text "$caption(focuserjmi,configure)" -relief raised \
-      -command {
-         ::confLink::run ::focuserjmi::widget(link) {"parallelport" "quickremote"} $caption(focuserjmi,label)
-      }
-   grid $frm.frame1.configure -row 0 -column 2 -columnspan 1 -rowspan 1 -sticky ewns
-
-   #--- Choix du numero du bit pour reduire la focale
-   label $frm.frame1.bitDecrLabel -text "$caption(focuserjmi,bitStart)"
-   grid $frm.frame1.bitDecrLabel -row 1 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
-
-   set bitList [ list 0 1 2 3 4 5 6 7 ]
-   ComboBox $frm.frame1.bitStart \
-      -width 7          \
-      -height [ llength $bitList ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::focuserjmi::widget(bitStart) \
-      -editable 0       \
-      -values $bitList
-   grid $frm.frame1.bitStart -row 1 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
-
-   #--- Choix du numero du bit pour augmenter la focale
-   label $frm.frame1.bitIncrLabel -text "$caption(focuserjmi,bitDirection)"
-   grid $frm.frame1.bitIncrLabel -row 2 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
-
-   set bitList [ list 0 1 2 3 4 5 6 7 ]
-   ComboBox $frm.frame1.bitDirection \
-      -width 7          \
-      -height [ llength $bitList ] \
-      -relief sunken    \
-      -borderwidth 1    \
-      -textvariable ::focuserjmi::widget(bitDirection) \
-      -editable 0       \
-      -values $bitList
-   grid $frm.frame1.bitDirection -row 2 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
-
-   #--- frame checkbutton creer au demarrage
+   #--- Frame du checkbutton creer au demarrage
    frame $frm.start -borderwidth 0 -relief flat
+
       checkbutton $frm.start.chk -text "$caption(focuserjmi,creer_au_demarrage)" \
          -highlightthickness 0 -variable conf(focuserjmi,start)
       pack $frm.start.chk -side top -padx 3 -pady 3 -fill x
+
    pack $frm.start -side bottom -fill x
 
    #--- Mise a jour dynamique des couleurs

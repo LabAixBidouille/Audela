@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.14 2007-05-20 13:30:31 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.15 2007-05-23 16:33:38 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -26,7 +26,7 @@ namespace eval ::superpad {
    #
    # parametre :
    #    propertyName : nom de la propriete
-   # return : valeur de la propriete , ou "" si la propriete n'existe pas
+   # return : valeur de la propriete, ou "" si la propriete n'existe pas
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
@@ -123,54 +123,59 @@ namespace eval ::superpad {
       variable private
       global caption
 
-      #--- je memorise la reference de la frame
+      #--- Je memorise la reference de la frame
       set widget(frm) $frm
 
-      #--- Creation des differents frames
+      #--- Frame de la taille de la raquette
       frame $frm.frame1 -borderwidth 0 -relief raised
+
+         #--- Label de la taille de la raquette
+         label $frm.frame1.labSize -text "$caption(superpad,pad_size)"
+         pack $frm.frame1.labSize -anchor center -side left -padx 10 -pady 10
+
+         #--- Definition de la taille de la raquette
+         set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
+         ComboBox $frm.frame1.taille \
+            -width 7                 \
+            -height [llength $list_combobox ] \
+            -relief sunken           \
+            -borderwidth 1           \
+            -editable 0              \
+            -textvariable ::superpad::widget(padsize) \
+            -values $list_combobox
+         pack $frm.frame1.taille -anchor nw -side left -padx 10 -pady 10
+
       pack $frm.frame1 -side top -fill both -expand 0
 
+      #--- Frame pour centerspeed
       frame $frm.frame2 -borderwidth 0 -relief raised
+
+         #--- Definition centerspeed
+         label $frm.frame2.labcenterspeed -text "$caption(superpad,center_speed)"
+         pack $frm.frame2.labcenterspeed -anchor nw -side left -padx 10 -pady 10
+
+         #--- Entry centerspeed
+         entry $frm.frame2.entrycenterspeed -relief groove -width 5 -textvariable ::superpad::widget(centerspeed) -justify center
+         pack $frm.frame2.entrycenterspeed -anchor nw -side left -padx 10 -pady 10
+
       pack $frm.frame2 -side top -fill both -expand 0
 
+      #--- Frame pour le choix du focuser
       frame $frm.frame3 -borderwidth 0 -relief raised
+
+         ::confEqt::createFrameFocuser $frm.frame3.focuser ::superpad::widget(focuserLabel)
+         pack $frm.frame3.focuser -anchor nw -side left -padx 10 -pady 10
+
       pack $frm.frame3 -side top -fill both -expand 0
 
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side top -fill both -expand 0
-
-      #--- Label pad size
-      label $frm.frame1.labSize -text "$caption(superpad,pad_size)"
-      pack $frm.frame1.labSize -anchor center -side left -padx 10 -pady 10
-
-      #--- Definition de la taille de la raquette
-      set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
-      ComboBox $frm.frame1.taille \
-         -width 7          \
-         -height [llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable ::superpad::widget(padsize) \
-         -values $list_combobox
-      pack $frm.frame1.taille -anchor nw -side left -padx 10 -pady 10
-
-      #--- Definition centerspeed
-      label $frm.frame2.labcenterspeed -text "$caption(superpad,center_speed)"
-      pack $frm.frame2.labcenterspeed -anchor nw -side left -padx 10 -pady 10
-
-      #--- Entry centerspeed
-      entry $frm.frame2.entrycenterspeed -relief groove -width 5 -textvariable ::superpad::widget(centerspeed) -justify center
-      pack $frm.frame2.entrycenterspeed -anchor nw -side left -padx 10 -pady 10
-
-      #--- Frame focuser
-      ::confEqt::createFrameFocuser $frm.frame3.focuser ::superpad::widget(focuserLabel)
-      pack $frm.frame3.focuser -anchor nw -side left -padx 10 -pady 10
-
       #--- Raquette toujours visible
-      checkbutton $frm.frame4.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
-         -variable ::superpad::widget(visible) -onvalue 1 -offvalue 0
-      pack $frm.frame4.visible -anchor nw -side left -padx 10 -pady 10
+      frame $frm.frame4 -borderwidth 0 -relief raised
+
+         checkbutton $frm.frame4.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
+            -variable ::superpad::widget(visible) -onvalue 1 -offvalue 0
+         pack $frm.frame4.visible -anchor nw -side left -padx 10 -pady 10
+
+      pack $frm.frame4 -side top -fill both -expand 0
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -218,7 +223,7 @@ namespace eval ::superpad {
    #  isReady
    #     informe de l'etat de fonctionnement du driver
    #
-   #  return 0 (ready) , 1 (not ready)
+   #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
    proc isReady { } {
       return 0
@@ -250,7 +255,7 @@ namespace eval ::superpad {
       #--- Definition of global variables (arrays)
       #--- Definition des variables globales (arrays)
       variable widget
-      global audace caption color colorpad conf geompad statustel
+      global caption color colorpad geompad
 
       #--- Definition of colorpads
       #--- Definition des couleurs
@@ -352,7 +357,7 @@ namespace eval ::telescopePad {
 
    #------------------------------------------------------------
    #  displayCoord
-   #     affiche les coordonnées fournies par skysensor
+   #     affiche les coordonnees fournies par SkySensor
    #------------------------------------------------------------
    proc displayCoord { } {
       variable private
@@ -378,7 +383,7 @@ namespace eval ::telescopePad {
    proc addFrame { parentFrame zoom } {
       variable This
       variable private
-      global audace caption colorpad geompad panneau statustel
+      global audace colorpad geompad statustel
 
       set This $parentFrame.movepad
       set statustel(speed) 1
@@ -555,9 +560,9 @@ namespace eval ::AlignManager {
 
    #------------------------------------------------------------
    #  centerStar
-   #     deplace le telescope pour centre l'étoile sélectionnée au milieu de l'image
-   #     s'il n'existe pas de fenetre de sélection, c'est l'étoile la plus brillante
-   #     de l'image qui est ramenée au centre
+   #     deplace le telescope pour centre l'etoile selectionnee au milieu de l'image
+   #     s'il n'existe pas de fenetre de selection, c'est l'etoile la plus brillante
+   #     de l'image qui est ramenee au centre
    #------------------------------------------------------------
    proc centerStar { } {
       variable private
@@ -736,8 +741,8 @@ namespace eval ::AlignManager {
 
    #------------------------------------------------------------
    #  cmdSkyMap
-   #     recupere et affiche les coordonnées dans une carte
-   #     si les donnees ne sont pas obtenues , l'affichage n'est pas modifie
+   #     recupere et affiche les coordonnees dans une carte
+   #     si les donnees ne sont pas obtenues, l'affichage n'est pas modifie
    #------------------------------------------------------------
    proc cmdSkyMap { } {
       variable private
@@ -816,7 +821,7 @@ namespace eval ::AlignManager {
    proc addFrame { parentFrame } {
       variable This
       variable private
-      global audace caption colorpad geompad
+      global caption colorpad geompad
 
       set private(This) $parentFrame.frameAlign
       set This $private(This)
@@ -949,7 +954,7 @@ namespace eval FrameFocusManager {
    #------------------------------------------------------------
    proc addFrame { parentFrame zoom } {
       variable private
-      global audace caption colorpad conf geompad panneau
+      global audace colorpad conf geompad
 
       set private(This) "$parentFrame.frameFocusManager"
       set This $private(This)
@@ -991,7 +996,7 @@ namespace eval FrameFocusManager {
          -fg $colorpad(textkey) \
          -anchor center \
          -relief ridge
-      pack $This.we.buttonPlus -in $This.we  -expand 0 -side left -padx 4 -pady 8
+      pack $This.we.buttonPlus -in $This.we -expand 0 -side left -padx 4 -pady 8
 
       set zone(moins) $This.we.buttonMoins
       set zone(plus)  $This.we.buttonPlus
@@ -1038,7 +1043,6 @@ namespace eval DlgSelectStar {
    proc run { { this ".selectStar" } } {
       variable This
       variable result ""
-      global caption
 
       set This $this
       createDialog
@@ -1071,7 +1075,7 @@ namespace eval DlgSelectStar {
    proc createDialog { } {
       variable This
       variable startname
-      global audace caption conf stars
+      global caption stars
 
       set stars(Achernar)       {01h37m47s -57d13m31s 01 }
       set stars(Acrux)          {12h26m39s -63d06m33s 02}
