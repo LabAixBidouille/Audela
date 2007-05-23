@@ -1,34 +1,34 @@
 #
 # Fichier : confpad.tcl
-# Description : Affiche la fenetre de configuration des drivers du type 'pad'
+# Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.11 2007-05-20 14:42:29 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.12 2007-05-23 16:28:28 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
 }
 
 #------------------------------------------------------------
-#  init ( est lance automatiquement au chargement de ce fichier tcl)
-#     initialise les variable conf(..) et caption(..)
-#     demarrer le driver selectionne par defaut
+# ::confPad::init ( est lance automatiquement au chargement de ce fichier tcl)
+# initialise les variable conf(..) et caption(..)
+# demarrer le driver selectionne par defaut
 #------------------------------------------------------------
 proc ::confPad::init { } {
    variable private
    global audace conf
 
+   #--- charge le fichier caption
+   source [ file join "$audace(rep_caption)" confpad.cap ]
+
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
    if { ! [ info exists conf(confPad,start) ] }    { set conf(confPad,start)    "0" }
-   if { ! [ info exists conf(confPad,position) ] } { set conf(confPad,position) "+155+100" }
-
-   #--- charge le fichier caption
-   source [ file join $audace(rep_caption) confpad.cap ]
+   if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x265+155+100" }
 
    #--- Initialise les variables locales
-   set private(pluginList) ""
+   set private(pluginList)         ""
    set private(pluginTitleList)    ""
-   set private(frm)           "$audace(base).confPad"
+   set private(frm)                "$audace(base).confPad"
    set private(variablePluginName) ""
 
    #--- j'ajoute le repertoire pouvant contenir des plugins
@@ -38,14 +38,14 @@ proc ::confPad::init { } {
 
    #--- je verifie que le plugin par defaut existe dans la liste
    if { [lsearch $private(pluginList) $conf(confPad)] == -1 } {
-      #--- s'il n'existe pas , je vide le nom du plugin par defaut
+      #--- s'il n'existe pas, je vide le nom du plugin par defaut
       set conf(confPad) ""
    }
 }
 
 #------------------------------------------------------------
-#  getLabel
-#     retourne le titre de la fenetre dans la langue de l'utilisateur
+# ::confPad::getLabel
+# retourne le titre de la fenetre dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::confPad::getLabel { } {
    global caption
@@ -54,8 +54,8 @@ proc ::confPad::getLabel { } {
 }
 
 #------------------------------------------------------------
-#  getCurrentPad
-#     retourne le nom de la raquette courante
+# ::confPad::getCurrentPad
+# retourne le nom de la raquette courante
 #------------------------------------------------------------
 proc ::confPad::getCurrentPad { } {
    global conf
@@ -64,12 +64,12 @@ proc ::confPad::getCurrentPad { } {
 }
 
 #------------------------------------------------------------
-#  run
-#     Affiche la fenetre de choix et de configuration
+# ::confPad::run
+# Affiche la fenetre de choix et de configuration
 #
-#     Parametres :
-#       variablePluginName : contient le nom de la variable dans laquelle
-#                            sera copie le nom du plugin selectionné
+# Parametres :
+#    variablePluginName : contient le nom de la variable dans laquelle
+#                         sera copie le nom du plugin selectionné
 #------------------------------------------------------------
 proc ::confPad::run { { variablePluginName "" } } {
    variable private
@@ -93,9 +93,9 @@ proc ::confPad::run { { variablePluginName "" } } {
 }
 
 #------------------------------------------------------------
-#  ok
-#     Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-#     la configuration, et fermer la fenetre de reglage
+# ::confPad::ok
+# Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
+# la configuration, et fermer la fenetre de reglage
 #------------------------------------------------------------
 proc ::confPad::ok { } {
    variable private
@@ -108,9 +108,9 @@ proc ::confPad::ok { } {
 }
 
 #------------------------------------------------------------
-#  appliquer
-#     Fonction appellee lors de l'appui sur le bouton 'Appliquer'
-#     pour memoriser et appliquer la configuration
+# ::confPad::appliquer
+# Fonction appellee lors de l'appui sur le bouton 'Appliquer'
+# pour memoriser et appliquer la configuration
 #------------------------------------------------------------
 proc ::confPad::appliquer { } {
    variable private
@@ -147,8 +147,8 @@ proc ::confPad::appliquer { } {
 }
 
 #------------------------------------------------------------
-#  afficheAide
-#     Fonction appellee lors de l'appui sur le bouton 'Aide'
+# ::confPad::afficheAide
+# Fonction appellee lors de l'appui sur le bouton 'Aide'
 #------------------------------------------------------------
 proc ::confPad::afficheAide { } {
    variable private
@@ -164,37 +164,34 @@ proc ::confPad::afficheAide { } {
 }
 
 #------------------------------------------------------------
-#  fermer
-#     Fonction appellee lors de l'appui sur le bouton 'Fermer'
+# ::confPad::fermer
+# Fonction appellee lors de l'appui sur le bouton 'Fermer'
 #------------------------------------------------------------
 proc ::confPad::fermer { } {
    variable private
 
-   ::confPad::recupPosition
+   ::confPad::recupPosDim
    destroy $private(frm)
 }
 
 #------------------------------------------------------------
-#  confPad::recupPosition
-#     Permet de recuperer et de sauvegarder la position de la
-#     fenetre de configuration de la raquette
+# ::confPad::recupPosDim
+# Permet de recuperer et de sauvegarder la position et la
+# dimension de la fenetre de configuration de la raquette
 #------------------------------------------------------------
-proc ::confPad::recupPosition { } {
+proc ::confPad::recupPosDim { } {
    variable private
    global conf
 
    set private(confPad,geometry) [ wm geometry $private(frm) ]
-   set deb [ expr 1 + [ string first + $private(confPad,geometry) ] ]
-   set fin [ string length $private(confPad,geometry) ]
-   set private(confPad,position) "+[ string range $private(confPad,geometry) $deb $fin ]"
-   #---
-   set conf(confPad,position) $private(confPad,position)
+   set conf(confPad,geometry) $private(confPad,geometry)
 }
 
 #------------------------------------------------------------
-#  createDialog
-#     Affiche la fenetre a onglet
-#     retrun 0 = OK , 1 = error (no driver found)
+# ::confPad::createDialog
+# Affiche la fenetre a onglet
+#
+# retrun 0 = OK, 1 = error (no driver found)
 #------------------------------------------------------------
 proc ::confPad::createDialog { } {
    variable private
@@ -208,62 +205,61 @@ proc ::confPad::createDialog { } {
    }
 
    #---
-   set private(confPad,position) $conf(confPad,position)
-
-   #---
-   if { [ info exists private(confPad,geometry) ] } {
-      set deb [ expr 1 + [ string first + $private(confPad,geometry) ] ]
-      set fin [ string length $private(confPad,geometry) ]
-      set private(confPad,position) "+[ string range $private(confPad,geometry) $deb $fin ]"
-   }
+   set private(confPad,geometry) $conf(confPad,geometry)
 
    toplevel $private(frm)
-   if { $::tcl_platform(os) == "Linux" } {
-      wm geometry $private(frm) 550x256$private(confPad,position)
-      wm minsize $private(frm) 550 256
+   if { [ info exists private(confPad,geometry) ] == "1" } {
+      wm geometry $private(frm) $private(confPad,geometry)
    } else {
-      wm geometry $private(frm) 440x256$private(confPad,position)
-      wm minsize $private(frm) 440 256
+      wm geometry $private(frm) $private(confPad,geometry)
    }
+   wm minsize $private(frm) 440 265
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confpad,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confPad::fermer"
 
+   #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
 
-   #--- creation de la fenetre a onglets
-   set mainFrame $private(frm).usr.book
+      #--- Creation de la fenetre a onglets
+      set mainFrame $private(frm).usr.book
 
-   #--- j'affiche les onglets dans la fenetre
-   Rnotebook:create $mainFrame -tabs "$private(pluginTitleList)" -borderwidth 1
+         #--- J'affiche les onglets dans la fenetre
+         Rnotebook:create $mainFrame -tabs "$private(pluginTitleList)" -borderwidth 1
 
-   #--- je demande a chaque driver d'afficher sa page de config
-   set indexOnglet 1
-   foreach name $private(pluginList) {
-      set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
-      incr indexOnglet
-   }
+         #--- Je demande a chaque plugin d'afficher sa page de config
+         set indexOnglet 1
+         foreach name $private(pluginList) {
+            set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
+            incr indexOnglet
+         }
 
-   pack $mainFrame -fill both -expand 1
+      pack $mainFrame -fill both -expand 1
+
    pack $private(frm).usr -side top -fill both -expand 1
 
-   #--- frame bouton ok, appliquer, fermer
+   #--- Frame des boutons OK, Appliquer, Aide et Fermer
    frame $private(frm).cmd -borderwidth 1 -relief raised
-   button $private(frm).cmd.ok -text "$caption(confpad,ok)" -relief raised -state normal -width 7 \
-      -command " ::confPad::ok "
-   if { $conf(ok+appliquer)=="1" } {
-      pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-   }
-   button $private(frm).cmd.appliquer -text "$caption(confpad,appliquer)" -relief raised -state normal -width 8 \
-      -command " ::confPad::appliquer "
-   pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-   button $private(frm).cmd.fermer -text "$caption(confpad,fermer)" -relief raised -state normal -width 7 \
-      -command " ::confPad::fermer "
-   pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-   button $private(frm).cmd.aide -text "$caption(confpad,aide)" -relief raised -state normal -width 8 \
-      -command " ::confPad::afficheAide "
-   pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.ok -text "$caption(confpad,ok)" -relief raised -state normal -width 7 \
+         -command "::confPad::ok"
+      if { $conf(ok+appliquer)=="1" } {
+         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+      }
+
+      button $private(frm).cmd.appliquer -text "$caption(confpad,appliquer)" -relief raised -state normal -width 8 \
+         -command "::confPad::appliquer"
+      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.fermer -text "$caption(confpad,fermer)" -relief raised -state normal -width 7 \
+         -command "::confPad::fermer"
+      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.aide -text "$caption(confpad,aide)" -relief raised -state normal -width 8 \
+         -command "::confPad::afficheAide"
+      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
    pack $private(frm).cmd -side top -fill x
 
    #---
@@ -279,19 +275,19 @@ proc ::confPad::createDialog { } {
 }
 
 #------------------------------------------------------------
-#  createFramePad
-#     Cree une frame pour selectionner le plugin dans une combobox
-#     Cette frame est destinee a etre inseree dans une fenetre.
-#  Parametres :
-#     frm     : chemin TK de la frame a creer
-#     variablePluginName : contient le nom de la variable dans laquelle sera
-#                          copie le nom du plugin selectionné
-#  Return
-#     nothing
-#  Exemple:
-#     ::confEqt::createFramePad $frm.padList ::confTel(audine,plugin)
-#     pack $frm.pluginList -in $frm -anchor center -side right -padx 10
+# ::confPad::createFramePad
+# Cree une frame pour selectionner le plugin dans une combobox
+# Cette frame est destinee a etre inseree dans une fenetre.
+# Parametres :
+#    frm     : chemin TK de la frame a creer
+#    variablePluginName : contient le nom de la variable dans laquelle sera
+#                         copie le nom du plugin selectionné
 #
+# Return
+#    nothing
+# Exemple:
+#    ::confEqt::createFramePad $frm.padList ::confTel(audine,plugin)
+#    pack $frm.pluginList -in $frm -anchor center -side right -padx 10
 #------------------------------------------------------------
 proc ::confPad::createFramePad { frm variablePluginName} {
    variable private
@@ -321,9 +317,9 @@ proc ::confPad::createFramePad { frm variablePluginName} {
 }
 
 #------------------------------------------------------------
-#  select [label]
-#     Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
-#     Si le label est omis ou inconnu, le premier onglet est selectionne
+# ::confPad::select [label]
+# Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
+# Si le label est omis ou inconnu, le premier onglet est selectionne
 #------------------------------------------------------------
 proc ::confPad::select { { name "" } } {
    variable private
@@ -336,8 +332,8 @@ proc ::confPad::select { { name "" } } {
 }
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver dont le label est dans $conf(confPad)
+# ::confPad::configureDriver
+# configure le driver dont le label est dans $conf(confPad)
 #------------------------------------------------------------
 proc ::confPad::configureDriver { pluginName } {
    variable private
@@ -357,8 +353,8 @@ proc ::confPad::configureDriver { pluginName } {
 }
 
 #------------------------------------------------------------
-#  stopDriver
-#     arrete le driver selectionne
+# ::confPad::stopDriver
+# arrete le driver selectionne
 #
 #  return rien
 #------------------------------------------------------------
@@ -371,19 +367,19 @@ proc ::confPad::stopDriver { } {
 }
 
 #------------------------------------------------------------
-#  findPlugin
-#  recherche les plugins de type "pad"
+# ::confPad::findPlugin
+# recherche les plugins de type "pad"
 #
-#  conditions :
+# conditions :
 #   - le driver doit avoir une procedure getPluginType qui retourne une valeur egale à $driverType
 #   - le driver doit avoir une procedure getPluginTitle
 #
-#  si le driver remplit les conditions
+# si le driver remplit les conditions
 #     son label est ajouté dans la liste pluginList,
 #     et son titre est ajoute dans la liste pluginTitleList
-#  sinon le fichier est ignore
+# sinon le fichier est ignore
 #
-#  retrun 0 = OK , 1 = error (no driver found)
+# retrun 0 = OK, 1 = error (no driver found)
 #------------------------------------------------------------
 proc ::confPad::findPlugin { } {
    variable private
