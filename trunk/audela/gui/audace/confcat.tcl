@@ -1,8 +1,8 @@
 #
 # Fichier : confcat.tcl
-# Description : Affiche la fenetre de configuration des plugins du type 'catalog'
+# Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.8 2007-05-20 09:21:28 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.9 2007-05-23 16:27:42 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -16,13 +16,13 @@ namespace eval ::confCat {
       variable private
       global audace conf
 
+      #--- charge le fichier caption
+      source [ file join "$audace(rep_caption)" confcat.cap ]
+
       #--- cree les variables dans conf(..) si elles n'existent pas
       if { ! [ info exists conf(confCat) ] }          { set conf(confCat)          "" }
       if { ! [ info exists conf(confCat,start) ] }    { set conf(confCat,start)    "0" }
-      if { ! [ info exists conf(confCat,position) ] } { set conf(confCat,position) "+130+60" }
-
-      #--- charge le fichier caption
-      source [ file join $audace(rep_caption) confcat.cap ]
+      if { ! [ info exists conf(confCat,geometry) ] } { set conf(confCat,geometry) "490x330+130+60" }
 
       #--- Initialise les variables locales
       set private(pluginList)      ""
@@ -43,7 +43,7 @@ namespace eval ::confCat {
    # getLabel
    # retourne le titre de la fenetre
    #
-   #  return "Titre de la fenetre (dans la langue de l'utilisateur)"
+   # return "Titre de la fenetre (dans la langue de l'utilisateur)"
    #------------------------------------------------------------
    proc getLabel { } {
       global caption
@@ -54,7 +54,6 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    # run
    # Affiche la fenetre de choix et de configuration
-   #
    #------------------------------------------------------------
    proc run { } {
       variable private
@@ -98,7 +97,7 @@ namespace eval ::confCat {
 
       #--- j'arrete le driver precedent
       if { "$conf(confCat)" != "" } {
-         #--- je detruis le plugin danc catch , au cas ou il aurait été supprimé
+         #--- je detruis le plugin danc catch, au cas ou il aurait ete supprime
          #--- depuis sa derniere selections
          catch {
             $conf(confCat)::deletePluginInstance
@@ -138,7 +137,6 @@ namespace eval ::confCat {
    #------------------------------------------------------------
    proc afficheAide { } {
       variable private
-      global conf
 
       #--- je recupere l'index de l'onglet selectionne
       set index [Rnotebook:currentIndex $private(frm).usr.book ]
@@ -157,35 +155,32 @@ namespace eval ::confCat {
    proc fermer { } {
       variable private
 
-      ::confCat::recupPosition
+      ::confCat::recupPosDim
       destroy $private(frm)
    }
 
    #------------------------------------------------------------
-   # recupPosition
-   # Permet de recuperer et de sauvegarder la position de la
-   # fenetre de configuration de la carte
+   # recupPosDim
+   # Permet de recuperer et de sauvegarder la position et la
+   # dimension de la fenetre de configuration de la carte
    #------------------------------------------------------------
-   proc recupPosition { } {
+   proc recupPosDim { } {
       variable private
       global conf
 
       set private(confCat,geometry) [ wm geometry $private(frm) ]
-      set deb [ expr 1 + [ string first + $private(confCat,geometry) ] ]
-      set fin [ string length $private(confCat,geometry) ]
-      set private(confCat,position) "+[ string range $private(confCat,geometry) $deb $fin ]"
-      #---
-      set conf(confCat,position) $private(confCat,position)
+      set conf(confCat,geometry) $private(confCat,geometry)
    }
 
    #------------------------------------------------------------
    # createDialog
    # Affiche la fenetre a onglet
-   # retrun 0 = OK , 1 = error (no driver found)
+   #
+   # retrun 0 = OK, 1 = error (no driver found)
    #------------------------------------------------------------
    proc createDialog { } {
       variable private
-      global audace caption conf
+      global caption conf
 
       if { [ winfo exists $private(frm) ] } {
          wm withdraw $private(frm)
@@ -195,69 +190,70 @@ namespace eval ::confCat {
       }
 
       #---
-      set private(confCat,position) $conf(confCat,position)
-
-      #---
-      if { [ info exists private(confCat,geometry) ] } {
-         set deb [ expr 1 + [ string first + $private(confCat,geometry) ] ]
-         set fin [ string length $private(confCat,geometry) ]
-         set private(confCat,position) "+[ string range $private(confCat,geometry) $deb $fin ]"
-      }
+      set private(confCat,geometry) $conf(confCat,geometry)
 
       toplevel $private(frm)
-      if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $private(frm) 600x330$private(confCat,position)
-         wm minsize $private(frm) 600 330
+      if { [ info exists private(confCat,geometry) ] == "1" } {
+         wm geometry $private(frm) $private(confCat,geometry)
       } else {
-         wm geometry $private(frm) 490x330$private(confCat,position)
-         wm minsize $private(frm) 490 330
+         wm geometry $private(frm) $private(confCat,geometry)
       }
-      wm resizable $private(frm) 1 0
+      wm minsize $private(frm) 490 330
+      wm resizable $private(frm) 1 1
       wm deiconify $private(frm)
       wm title $private(frm) "$caption(confcat,config)"
       wm protocol $private(frm) WM_DELETE_WINDOW "::confCat::fermer"
 
+      #--- Frame de la fenetre de configuration
       frame $private(frm).usr -borderwidth 0 -relief raised
 
-      #--- creation de la fenetre a onglets
-      set mainFrame $private(frm).usr.book
+         #--- Creation de la fenetre a onglets
+         set mainFrame $private(frm).usr.book
 
-      #--- j'affiche les onglets dans la fenetre
-      Rnotebook:create $mainFrame -tabs "$private(pluginTitleList)" -borderwidth 1
+            #--- J'affiche les onglets dans la fenetre
+            Rnotebook:create $mainFrame -tabs "$private(pluginTitleList)" -borderwidth 1
 
-      #--- je demande a chaque driver d'afficher sa page de config
-      set indexOnglet 1
-      foreach name $private(pluginList) {
-         set drivername [ $name\:\:fillConfigPage [Rnotebook:frame $mainFrame $indexOnglet] ]
-         incr indexOnglet
-      }
+            #--- Je demande a chaque plugin d'afficher sa page de config
+            set indexOnglet 1
+            foreach name $private(pluginList) {
+               set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
+               incr indexOnglet
+            }
 
-      pack $mainFrame -fill both -expand 1
+         pack $mainFrame -fill both -expand 1
+
       pack $private(frm).usr -side top -fill both -expand 1
 
-      #--- frame bouton créer au demarrage
+      #--- Frame du checkbutton creer au demarrage
       frame $private(frm).start -borderwidth 1 -relief raised
-      checkbutton $private(frm).start.chk -text "$caption(confcat,creer_au_demarrage)" \
-         -highlightthickness 0 -variable conf(confCat,start)
-      pack $private(frm).start.chk -side top -padx 3 -pady 3 -fill x
+
+         checkbutton $private(frm).start.chk -text "$caption(confcat,creer_au_demarrage)" \
+            -highlightthickness 0 -variable conf(confCat,start)
+         pack $private(frm).start.chk -side top -padx 3 -pady 3 -fill x
+
       pack $private(frm).start -side top -fill x
 
-      #--- frame bouton ok, appliquer, fermer
+      #--- Frame des boutons OK, Appliquer, Aide et Fermer
       frame $private(frm).cmd -borderwidth 1 -relief raised
-      button $private(frm).cmd.ok -text "$caption(confcat,ok)" -relief raised -state normal -width 7 \
-         -command " ::confCat::ok "
-      if { $conf(ok+appliquer)=="1" } {
-         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-      }
-      button $private(frm).cmd.appliquer -text "$caption(confcat,appliquer)" -relief raised -state normal -width 8 \
-         -command " ::confCat::appliquer "
-      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.fermer -text "$caption(confcat,fermer)" -relief raised -state normal -width 7 \
-         -command " ::confCat::fermer "
-      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.aide -text "$caption(confcat,aide)" -relief raised -state normal -width 8 \
-         -command " ::confCat::afficheAide "
-      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $private(frm).cmd.ok -text "$caption(confcat,ok)" -relief raised -state normal -width 7 \
+            -command "::confCat::ok"
+         if { $conf(ok+appliquer)=="1" } {
+            pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+         }
+
+         button $private(frm).cmd.appliquer -text "$caption(confcat,appliquer)" -relief raised -state normal -width 8 \
+            -command "::confCat::appliquer"
+         pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $private(frm).cmd.fermer -text "$caption(confcat,fermer)" -relief raised -state normal -width 7 \
+            -command "::confCat::fermer"
+         pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $private(frm).cmd.aide -text "$caption(confcat,aide)" -relief raised -state normal -width 8 \
+            -command "::confCat::afficheAide"
+         pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
       pack $private(frm).cmd -side top -fill x
 
       #---
@@ -292,8 +288,6 @@ namespace eval ::confCat {
    # configure le driver selectionne
    #------------------------------------------------------------
    proc configureDriver { } {
-      variable private
-      global audace conf
 
    }
 
@@ -332,10 +326,10 @@ namespace eval ::confCat {
    # recherche les fichiers .tcl presents dans plugin/chart
    #
    # si le driver remplit les conditions
-   #    son label est ajouté dans la liste namespaceList, et son namespace est ajoute dans namespacelist
+   #    son label est ajoute dans la liste namespaceList, et son namespace est ajoute dans namespacelist
    # sinon le fichier tcl est ignore car ce n'est pas un driver
    #
-   # retrun 0 = OK , 1 = error (no driver found)
+   # retrun 0 = OK, 1 = error (no driver found)
    #------------------------------------------------------------
    proc findPlugin { } {
       variable private

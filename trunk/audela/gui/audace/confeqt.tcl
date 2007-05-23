@@ -1,12 +1,11 @@
 #
 # Fichier : confeqt.tcl
-# Description : Gere des objets 'equipement' a vocation astronomique
+# Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.18 2007-05-20 15:51:15 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.19 2007-05-23 16:28:07 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
-
 }
 
 #------------------------------------------------------------
@@ -23,9 +22,9 @@ proc ::confEqt::init { } {
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confEqt,start) ] }    { set conf(confEqt,start)    "0" }
-   if { ! [ info exists conf(confEqt,position) ] } { set conf(confEqt,position) "+155+100" }
+   if { ! [ info exists conf(confEqt,geometry) ] } { set conf(confEqt,geometry) "460x405+155+100" }
 
-   #--- variables locales
+   #--- Initialise les variables locales
    set private(namepaceList)       ""
    set private(notebookLabelList)  ""
    set private(notebookNameList)   ""
@@ -41,7 +40,7 @@ proc ::confEqt::init { } {
 
 #------------------------------------------------------------
 # ::confEqt::getLabel
-#    retourne le titre de la fenetre
+# retourne le titre de la fenetre
 #
 # return "Titre de la fenetre de choix (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
@@ -54,7 +53,6 @@ proc ::confEqt::getLabel { } {
 #------------------------------------------------------------
 # ::confEqt::run
 # Affiche la fenetre de choix et de configuration
-#
 #------------------------------------------------------------
 proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { configurationTitle "" } } {
    variable private
@@ -199,7 +197,7 @@ proc ::confEqt::afficheAide { } {
 proc ::confEqt::fermer { } {
    variable private
 
-   ::confEqt::recupPosition
+   ::confEqt::recupPosDim
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -state disabled
    $private(frm).cmd.fermer configure -relief groove -state disabled
@@ -210,20 +208,16 @@ proc ::confEqt::fermer { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::recupPosition
-# Permet de recuperer et de sauvegarder la position de la
-# fenetre de configuration de l'equipement
+# ::confEqt::recupPosDim
+# Permet de recuperer et de sauvegarder la position et la
+# dimension de la fenetre de configuration de l'equipement
 #------------------------------------------------------------
-proc ::confEqt::recupPosition { } {
+proc ::confEqt::recupPosDim { } {
    variable private
    global conf
 
    set private(confEqt,geometry) [ wm geometry $private(frm) ]
-   set deb [ expr 1 + [ string first + $private(confEqt,geometry) ] ]
-   set fin [ string length $private(confEqt,geometry) ]
-   set private(confEqt,position) "+[ string range $private(confEqt,geometry) $deb $fin ]"
-   #---
-   set conf(confEqt,position) $private(confEqt,position)
+   set conf(confEqt,geometry) $private(confEqt,geometry)
 }
 
 #------------------------------------------------------------
@@ -241,7 +235,7 @@ proc ::confEqt::createUrlLabel { tkparent title url } {
 }
 
 #------------------------------------------------------------
-# confEqt::configurePlugin
+# ::confEqt::configurePlugin
 # configure le plugin
 #------------------------------------------------------------
 proc ::confEqt::configurePlugin { pluginLabel } {
@@ -256,7 +250,7 @@ proc ::confEqt::configurePlugin { pluginLabel } {
 #    authorizedEquipementType : Liste des types d'equipement a afficher
 #       Si la liste est vide les onglets de tous les types d'equipements sont affiches
 #    configurationTitle : Titre complementaire de la fenetre de dialogue
-# retrun 0 = OK , 1 = error (no plugin found)
+# retrun 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confEqt::createDialog { } {
    variable private
@@ -270,62 +264,61 @@ proc ::confEqt::createDialog { } {
    }
 
    #---
-   set private(confEqt,position) $conf(confEqt,position)
-
-   #---
-   if { [ info exists private(confEqt,geometry) ] } {
-      set deb [ expr 1 + [ string first + $private(confEqt,geometry) ] ]
-      set fin [ string length $private(confEqt,geometry) ]
-      set private(confEqt,position) "+[ string range $private(confEqt,geometry) $deb $fin ]"
-   }
+   set private(confEqt,geometry) $conf(confEqt,geometry)
 
    toplevel $private(frm)
-   if { $::tcl_platform(os) == "Linux" } {
-      wm geometry $private(frm) 620x405$private(confEqt,position)
-      wm minsize $private(frm) 620 405
+   if { [ info exists private(confEqt,geometry) ] == "1" } {
+      wm geometry $private(frm) $private(confEqt,geometry)
    } else {
-      wm geometry $private(frm) 460x405$private(confEqt,position)
-      wm minsize $private(frm) 460 405
+      wm geometry $private(frm) $private(confEqt,geometry)
    }
+   wm minsize $private(frm) 460 405
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confeqt,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confEqt::fermer"
 
+   #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
 
-   #--- creation de la fenetre a onglets
-   set mainFrame $private(frm).usr.book
+      #--- Creation de la fenetre a onglets
+      set mainFrame $private(frm).usr.book
 
-   #--- j'affiche les onglets dans la fenetre
-   Rnotebook:create $mainFrame -tabs "$private(notebookLabelList)" -borderwidth 1
+         #--- J'affiche les onglets dans la fenetre
+         Rnotebook:create $mainFrame -tabs "$private(notebookLabelList)" -borderwidth 1
 
-   #--- je demande a chaque plugin d'afficher sa page de config
-   set indexOnglet 1
-   foreach name $private(notebookNameList) {
-      set pluginname [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
-      incr indexOnglet
-   }
+         #--- Je demande a chaque plugin d'afficher sa page de config
+         set indexOnglet 1
+         foreach name $private(notebookNameList) {
+            set pluginname [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
+            incr indexOnglet
+         }
 
-   pack $mainFrame -fill both -expand 1
+      pack $mainFrame -fill both -expand 1
+
    pack $private(frm).usr -side top -fill both -expand 1
 
-   #--- frame bouton ok, appliquer, fermer
+   #--- Frame des boutons OK, Appliquer, Aide et Fermer
    frame $private(frm).cmd -borderwidth 1 -relief raised
-   button $private(frm).cmd.ok -text "$caption(confeqt,ok)" -relief raised -state normal -width 7 \
-      -command " ::confEqt::ok "
-   if { $conf(ok+appliquer)=="1" } {
-      pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-   }
-   button $private(frm).cmd.appliquer -text "$caption(confeqt,appliquer)" -relief raised -state normal -width 8 \
-      -command " ::confEqt::appliquer "
-   pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-   button $private(frm).cmd.fermer -text "$caption(confeqt,fermer)" -relief raised -state normal -width 7 \
-      -command " ::confEqt::fermer "
-   pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-   button $private(frm).cmd.aide -text "$caption(confeqt,aide)" -relief raised -state normal -width 8 \
-      -command " ::confEqt::afficheAide "
-   pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.ok -text "$caption(confeqt,ok)" -relief raised -state normal -width 7 \
+         -command "::confEqt::ok"
+      if { $conf(ok+appliquer)=="1" } {
+         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+      }
+
+      button $private(frm).cmd.appliquer -text "$caption(confeqt,appliquer)" -relief raised -state normal -width 8 \
+         -command "::confEqt::appliquer"
+      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.fermer -text "$caption(confeqt,fermer)" -relief raised -state normal -width 7 \
+         -command "::confEqt::fermer"
+      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.aide -text "$caption(confeqt,aide)" -relief raised -state normal -width 8 \
+         -command "::confEqt::afficheAide"
+      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
    pack $private(frm).cmd -side top -fill x
 
    #---
@@ -356,7 +349,7 @@ proc ::confEqt::select { { equipment "" } } {
 
 #------------------------------------------------------------
 # ::confEqt::createPlugin
-#    cree le plugin dont le nom est donne en parametre
+# cree le plugin dont le nom est donne en parametre
 #------------------------------------------------------------
 proc ::confEqt::createPlugin { pluginLabel } {
    if { $pluginLabel != "" } {
@@ -367,7 +360,7 @@ proc ::confEqt::createPlugin { pluginLabel } {
 
 #------------------------------------------------------------
 # ::confEqt::deletePlugin
-#    supprime le plugin
+# supprime le plugin
 #
 # return rien
 #------------------------------------------------------------
@@ -379,7 +372,7 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 
 #------------------------------------------------------------
 # ::confEqt::findPlugin
-#   recherche les plugins presents
+# recherche les plugins presents
 #
 # conditions :
 #  - le plugin doit avoir une procedure getPluginType qui retourne "equipment" ou "focuser"
@@ -389,7 +382,7 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 #    son namespace est ajoute dans namespaceList
 #    sinon le fichier tcl est ignore car ce n'est pas un plugin
 #
-# retrun 0 = OK , 1 = error (no plugin found)
+# retrun 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confEqt::findPlugin { } {
    variable private
@@ -480,18 +473,18 @@ proc ::confEqt::connectEquipement { } {
 
 #------------------------------------------------------------
 # ::confEqt::createFrameFocuser
-#    Cree une frame pour selectionner le focuser
-#    Cette frame est destinee a etre inseree dans une fenetre
+# Cree une frame pour selectionner le focuser
+# Cette frame est destinee a etre inseree dans une fenetre
 # Parametres :
 #    frm     : chemin TK de la frame a creer
 #    variablePluginName : contient le nom de la variable dans laquelle sera
 #                         copie le nom du focuser selectionné
+#
 # Return
 #    nothing
 # Exemple:
 #    ::confEqt::createFrameFocuser $frm.focuserList ::confCam(audine,focuser)
 #    pack $frm.focuserList -in $frm -anchor center -side right -padx 10
-#
 #------------------------------------------------------------
 proc ::confEqt::createFrameFocuser { frm variablePluginName } {
    variable private
@@ -536,12 +529,12 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
 #    frm     : chemin TK de la frame a creer
 #    variablePluginName : contient le nom de la variable dans laquelle sera
 #                         copie le nom du focuser selectionné
+#
 # Return
 #    nothing
 # Exemple:
 #    ::confEqt::createFrameFocuserTool $frm.focuserList ::confCam(audine,focuser)
 #    pack $frm.focuserList -in $frm -anchor center -side right -padx 10
-#
 #------------------------------------------------------------
 proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    variable private
@@ -580,8 +573,7 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
 
 #------------------------------------------------------------
 # ::confEqt::startDriver
-#   lance tous les plugins
-#
+# lance tous les plugins
 #------------------------------------------------------------
 proc ::confEqt::startDriver { } {
    variable private
@@ -608,8 +600,7 @@ proc ::confEqt::startDriver { } {
 
 #------------------------------------------------------------
 # ::confEqt::stopDriver
-#   arrete tous les plugins qui sont en service
-#
+# arrete tous les plugins qui sont en service
 #------------------------------------------------------------
 proc ::confEqt::stopDriver { } {
    variable private
