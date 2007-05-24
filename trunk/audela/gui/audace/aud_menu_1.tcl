@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.13 2007-05-15 21:53:39 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.14 2007-05-24 17:41:40 michelpujol Exp $
 #
 
 namespace eval ::audace {
@@ -30,7 +30,7 @@ namespace eval ::audace {
       menustate disabled
       save_cursor
       all_cursor watch
-      set errnum [ catch { saveima $::confVisu::private($visuNo,lastFileName) $visuNo } msg ]
+      set errnum [ catch { saveima [::confVisu::getFileName $visuNo] $visuNo } msg ]
       if { $errnum == "1" } {
          tk_messageBox -message "$msg" -icon error
       }
@@ -114,7 +114,7 @@ namespace eval ::audace {
          $base.header.slb.list delete 1.0 end
       }
       #---
-      wm title $base.header "$caption(audace,header_title) (visu$visuNo) - $::confVisu::private($visuNo,lastFileName)"
+      wm title $base.header "$caption(audace,header_title) (visu$visuNo) - [::confVisu::getFileName $visuNo]"
       #---
       if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
          $base.header.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
