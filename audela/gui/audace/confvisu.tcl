@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.58 2007-05-20 17:36:43 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.59 2007-05-24 17:41:41 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -179,7 +179,7 @@ namespace eval ::confVisu {
 
          #--- je memorise la position de la fenetre
          set conf(audace,visu$visuNo,wmgeometry) "[wm geometry $::confVisu::private($visuNo,This)]"
-         
+
          #--- je supprime le menubar et toutes ses entree
          if { $private($visuNo,menu) != "" } {
             Menubar_Delete $visuNo
@@ -335,7 +335,7 @@ namespace eval ::confVisu {
             set bufNo [visu$visuNo buf ]
             set cuts [ lrange [ buf$bufNo autocuts ] 0 1 ]
          } elseif { $cuts == "current" } {
-            #--- on ne touche pas aux seuils 
+            #--- on ne touche pas aux seuils
             #set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
             #visu$visuNo cut $cuts
          } else {
@@ -734,8 +734,7 @@ namespace eval ::confVisu {
             ##   ::FullScreen::showFiles $visuNo $private($visuNo,hCanvas) $directory [ list [ list $filename "Image" ] ]
             ##} else {
             ##}
-               set private(gif_anime) "0"
-               ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
+            ::FullScreen::showBuffer $visuNo $private($visuNo,hCanvas)
          } else {
             ::FullScreen::closeWindow $visuNo
          }
@@ -974,6 +973,31 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   #  getBase
+   #     retourne le chemin de la toplevel de la visu
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc getBase { visuNo } {
+      variable private
+
+      return $private($visuNo,This)
+   }
+
+   #------------------------------------------------------------
+   #  getFileName
+   #     retourne le nom du fichier courant
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc getFileName { visuNo } {
+      variable private
+
+      return "$private($visuNo,lastFileName)"
+   }
+
+
+   #------------------------------------------------------------
    #  getTool
    #     retourne  le nom de l'outil courant
    #  parametres :
@@ -1009,17 +1033,6 @@ namespace eval ::confVisu {
       variable private
 
       return $private($visuNo,zoom)
-   }
-   #------------------------------------------------------------
-   #  getBase
-   #     retourne le chemin de la toplevel de la visu
-   #  parametres :
-   #    visuNo: numero de la visu
-   #------------------------------------------------------------
-   proc getBase { visuNo } {
-      variable private
-
-      return $private($visuNo,This)
    }
 
    #------------------------------------------------------------

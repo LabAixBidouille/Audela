@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.4 2007-05-17 08:14:53 michelpujol Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.5 2007-05-24 17:42:32 michelpujol Exp $
 #
 
 #
@@ -172,6 +172,8 @@ proc saveima { { filename "?" } { visuNo 1 } } {
             wm title $fenetre "$caption(audace,titre) (visu$visuNo) - $filename"
          }
       }
+      #--- je met a jour le nom du fichier dans confvisu
+      ::confVisu::setFileName $visuNo "$filename"
    }
 
    #--- J'affecte au buffer les seuils de la visu
