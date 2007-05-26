@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.73 2007-05-19 23:25:51 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.74 2007-05-26 23:36:09 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -27,7 +27,7 @@ namespace eval ::confCam {
       if { ! [ info exists conf(camera,B,start) ] }   { set conf(camera,B,start)   "0" }
       if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
       if { ! [ info exists conf(camera,C,start) ] }   { set conf(camera,C,start)   "0" }
-      if { ! [ info exists conf(camera,position) ] }  { set conf(camera,position)  "+25+45" }
+      if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "670x430+25+45" }
 
       #--- Charge les plugins des cameras
       source [ file join $audace(rep_plugin) camera cookbook cookbook.tcl ]
@@ -164,16 +164,16 @@ namespace eval ::confCam {
       set confCam(A,camName)  ""
       set confCam(B,camName)  ""
       set confCam(C,camName)  ""
-      set confCam(position)   "$conf(camera,position)"
+      set confCam(geometry)   "$conf(camera,geometry)"
       set confCam(A,threadNo) "0"
       set confCam(B,threadNo) "0"
       set confCam(C,threadNo) "0"
 
       #--- Initalise les listes de cameras
       set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-            TH7852A SCR1300XTC $caption(confcam,dslr) Andor FLI Cemes $caption(coolpix,camera) ]
+         TH7852A SCR1300XTC $caption(confcam,dslr) Andor FLI Cemes $caption(coolpix,camera) ]
       set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
-            th7852a scr1300xtc dslr andor fingerlakes cemes coolpix ]
+         th7852a scr1300xtc dslr andor fingerlakes cemes coolpix ]
    }
 
    proc dispThreadError { thread_id errorInfo} {
@@ -222,15 +222,15 @@ namespace eval ::confCam {
       global confCam
 
       if { $conf(camera,A,start) == "1" } {
-         set confCam(A,camName)  $conf(camera,A,camName)
+         set confCam(A,camName) $conf(camera,A,camName)
          ::confCam::configureCamera "A"
       }
       if { $conf(camera,B,start) == "1" } {
-         set confCam(B,camName)  $conf(camera,B,camName)
+         set confCam(B,camName) $conf(camera,B,camName)
          ::confCam::configureCamera "B"
       }
       if { $conf(camera,C,start) == "1" } {
-         set confCam(C,camName)  $conf(camera,C,camName)
+         set confCam(C,camName) $conf(camera,C,camName)
          ::confCam::configureCamera "C"
       }
    }
@@ -312,7 +312,7 @@ namespace eval ::confCam {
    proc fermer { } {
       variable This
 
-      ::confCam::recup_position
+      ::confCam::recupPosDim
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -state disabled
       $This.cmd.aide configure -state disabled
@@ -425,20 +425,15 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::recup_position
+   # confCam::recupPosDim
    # Permet de recuperer et de sauvegarder la position de la fenetre de configuration de la camera
    #
-   proc recup_position { } {
+   proc recupPosDim { } {
       variable This
       global conf
-      global confCam
 
       set confCam(geometry) [ wm geometry $This ]
-      set deb [ expr 1 + [ string first + $confCam(geometry) ] ]
-      set fin [ string length $confCam(geometry) ]
-      set confCam(position) "+[ string range $confCam(geometry) $deb $fin ]"
-      #---
-      set conf(camera,position) $confCam(position)
+      set conf(camera,geometry) $confCam(geometry)
    }
 
    proc createDialog { } {
@@ -457,20 +452,9 @@ namespace eval ::confCam {
          return
       }
       #---
-      if { [ info exists confCam(geometry) ] } {
-         set deb [ expr 1 + [ string first + $confCam(geometry) ] ]
-         set fin [ string length $confCam(geometry) ]
-         set confCam(position) "+[ string range $confCam(geometry) $deb $fin ]"
-      }
-      #---
       toplevel $This
-      if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $This 900x430$confCam(position)
-         wm minsize $This 900 430
-      } else {
-         wm geometry $This 670x430$confCam(position)
-         wm minsize $This 670 430
-      }
+      wm geometry $This $confCam(geometry)
+      wm minsize $This 670 430
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(confcam,config)"
@@ -636,13 +620,15 @@ namespace eval ::confCam {
    }
 
    #
-   # cree un widget "label" avec une URL du site WEB
+   # Cree un widget "label" avec une URL du site WEB
    #
-   proc createUrlLabel { tkparent title url  } {
+   proc createUrlLabel { tkparent title url } {
       global audace color
 
       label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
-      bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
+      if { $url != "" } {
+         bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
+      }
       bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
       bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
       return  $tkparent.labURL
@@ -747,11 +733,11 @@ namespace eval ::confCam {
 
       #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 11         \
+         -width 11       \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken  \
+         -borderwidth 1  \
+         -editable 0     \
          -textvariable confCam(audine,port) \
          -values $list_combobox
       pack $frm.port -in $frm.frame10 -anchor center -side right -padx 10
@@ -771,11 +757,11 @@ namespace eval ::confCam {
 
       set list_combobox [ list $caption(confcam,kaf400) $caption(confcam,kaf1600) $caption(confcam,kaf3200) ]
       ComboBox $frm.ccd \
-         -width 7          \
+         -width 7       \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken \
+         -borderwidth 1 \
+         -editable 0    \
          -textvariable confCam(audine,ccd) \
          -values $list_combobox
       pack $frm.ccd -in $frm.frame11 -anchor center -side right -padx 10
@@ -795,11 +781,11 @@ namespace eval ::confCam {
 
       set list_combobox [ list $caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours) ]
       ComboBox $frm.ampli_ccd \
-         -width 10         \
+         -width 10            \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken       \
+         -borderwidth 1       \
+         -editable 0          \
          -textvariable confCam(audine,ampli_ccd) \
          -values $list_combobox
        pack $frm.ampli_ccd -in $frm.frame14 -anchor center -side right -padx 10
@@ -810,11 +796,11 @@ namespace eval ::confCam {
 
       set list_combobox [ list $caption(confcam,can_ad976a) $caption(confcam,can_ltc1605) ]
       ComboBox $frm.can \
-         -width 10         \
+         -width 10      \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken \
+         -borderwidth 1 \
+         -editable 0    \
          -textvariable confCam(audine,can) \
          -values $list_combobox
       pack $frm.can -in $frm.frame15 -anchor center -side right -padx 10
@@ -826,11 +812,11 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,obtu_audine) $caption(confcam,obtu_audine-) \
          $caption(confcam,obtu_i2c) $caption(confcam,obtu_thierry) ]
       ComboBox $frm.typeobtu \
-         -width 11         \
+         -width 11           \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken      \
+         -borderwidth 1      \
+         -editable 0         \
          -textvariable confCam(audine,typeobtu) \
          -values $list_combobox
       pack $frm.typeobtu -in $frm.frame16 -anchor center -side right -padx 10
@@ -843,11 +829,11 @@ namespace eval ::confCam {
          $caption(confcam,obtu_synchro) ]
       set confCam(audine,list_foncobtu) $list_combobox
       ComboBox $frm.foncobtu \
-         -width 11         \
+         -width 11           \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken      \
+         -borderwidth 1      \
+         -editable 0         \
          -textvariable confCam(audine,foncobtu) \
          -values $list_combobox
       pack $frm.foncobtu -in $frm.frame17 -anchor center -side right -padx 10
@@ -864,24 +850,9 @@ namespace eval ::confCam {
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(confcam,site_audine)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_audine)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera1)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera1)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_audine)" \
+         "$caption(confcam,site_audine)" ]
+      pack $labelName -side top -fill x -pady 2
    }
 
    #
@@ -997,11 +968,11 @@ namespace eval ::confCam {
             pack $frm.lab2 -in $frm.frame12 -anchor center -side left -padx 10
             set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_14bits) ]
             ComboBox $frm.res \
-               -width 7          \
+               -width 7       \
                -height [ llength $list_combobox ] \
-               -relief sunken    \
-               -borderwidth 1    \
-               -editable 0       \
+               -relief sunken \
+               -borderwidth 1 \
+               -editable 0    \
                -textvariable confCam(hisis,res) \
                -values $list_combobox
             pack $frm.res -in $frm.frame12 -anchor center -side right -padx 20
@@ -1040,11 +1011,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
             pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1071,11 +1042,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
                pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1102,11 +1073,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
                pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1133,11 +1104,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
             pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1164,11 +1135,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
                pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1195,11 +1166,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
                pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1226,11 +1197,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
                pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1257,11 +1228,11 @@ namespace eval ::confCam {
                set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
                   $caption(confcam,obtu_synchro) ]
                ComboBox $frm.foncobtu \
-                  -width 11         \
+                  -width 11           \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken      \
+                  -borderwidth 1      \
+                  -editable 0         \
                   -textvariable confCam(hisis,foncobtu) \
                   -values $list_combobox
                pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
@@ -1301,11 +1272,11 @@ namespace eval ::confCam {
 
       #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 7          \
+         -width 7        \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken  \
+         -borderwidth 1  \
+         -editable 0     \
          -textvariable confCam(hisis,port) \
          -values $list_combobox
       pack $frm.port -in $frm.frame11 -anchor center -side left -padx 20
@@ -1319,11 +1290,11 @@ namespace eval ::confCam {
          pack $frm.lab2 -in $frm.frame12 -anchor center -side left -padx 10
          set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_14bits) ]
          ComboBox $frm.res \
-            -width 7          \
+            -width 7       \
             -height [ llength $list_combobox ] \
-            -relief sunken    \
-            -borderwidth 1    \
-            -editable 0       \
+            -relief sunken \
+            -borderwidth 1 \
+            -editable 0    \
             -textvariable confCam(hisis,res) \
             -values $list_combobox
          pack $frm.res -in $frm.frame12 -anchor center -side right -padx 20
@@ -1365,12 +1336,12 @@ namespace eval ::confCam {
          set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
             $caption(confcam,obtu_synchro) ]
          ComboBox $frm.foncobtu \
-            -width 11         \
+            -width 11           \
             -height [ llength $list_combobox ] \
-            -relief sunken    \
-            -borderwidth 1    \
+            -relief sunken      \
+            -borderwidth 1      \
             -textvariable confCam(hisis,foncobtu) \
-            -editable 0       \
+            -editable 0         \
             -values $list_combobox
          pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
       } else {
@@ -1382,24 +1353,9 @@ namespace eval ::confCam {
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(confcam,site_hisis)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_hisis)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera2)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera2)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_hisis)" \
+         "$caption(confcam,site_hisis)" ]
+      pack $labelName -side top -fill x -pady 2
    }
 
    #
@@ -1489,11 +1445,11 @@ namespace eval ::confCam {
 
       #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 7          \
+         -width 7        \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken  \
+         -borderwidth 1  \
+         -editable 0     \
          -textvariable confCam(sbig,port) \
          -values $list_combobox
       pack $frm.port -in $frm.frame1 -anchor center -side left -padx 10
@@ -1553,24 +1509,9 @@ namespace eval ::confCam {
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(confcam,site_sbig)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_sbig)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera3)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera3)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_sbig)" \
+         "$caption(confcam,site_sbig)" ]
+      pack $labelName -side top -fill x -pady 2
    }
 
    #
@@ -1679,11 +1620,11 @@ namespace eval ::confCam {
 
       #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 7          \
+         -width 7        \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken  \
+         -borderwidth 1  \
+         -editable 0     \
          -textvariable confCam(starlight,port) \
          -values $list_combobox
       pack $frm.port -in $frm.frame7 -anchor n -side left -padx 10 -pady 15
@@ -1703,11 +1644,11 @@ namespace eval ::confCam {
 
       set list_combobox [ list $caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur) ]
       ComboBox $frm.acc \
-         -width 7          \
+         -width 7       \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken \
+         -borderwidth 1 \
+         -editable 0    \
          -textvariable confCam(starlight,acc) \
          -values $list_combobox
       pack $frm.acc -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
@@ -1716,24 +1657,9 @@ namespace eval ::confCam {
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(confcam,site_starlight)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_starlight)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera5)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera5)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_starlight)" \
+         "$caption(confcam,site_starlight)" ]
+      pack $labelName -side top -fill x -pady 2
    }
 
    #
@@ -1818,11 +1744,11 @@ namespace eval ::confCam {
                #---
                set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
                ComboBox $frm.res \
-                  -width 7          \
+                  -width 7       \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken \
+                  -borderwidth 1 \
+                  -editable 0    \
                   -textvariable confCam(kitty,res) \
                   -values $list_combobox
                pack $frm.res -in $frm.frame10 -anchor center -side right -padx 10
@@ -1832,11 +1758,11 @@ namespace eval ::confCam {
                #---
                set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
                ComboBox $frm.captemp \
-                  -width 12         \
+                  -width 12          \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken     \
+                  -borderwidth 1     \
+                  -editable 0        \
                   -textvariable confCam(kitty,captemp) \
                   -values $list_combobox
                pack $frm.captemp -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
@@ -1863,11 +1789,11 @@ namespace eval ::confCam {
                #---
                set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
                ComboBox $frm.res \
-                  -width 7          \
+                  -width 7       \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken \
+                  -borderwidth 1 \
+                  -editable 0    \
                   -textvariable confCam(kitty,res) \
                   -values $list_combobox
                pack $frm.res -in $frm.frame10 -anchor center -side right -padx 10
@@ -1877,11 +1803,11 @@ namespace eval ::confCam {
                #---
                set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
                ComboBox $frm.captemp \
-                  -width 12         \
+                  -width 12          \
                   -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
+                  -relief sunken     \
+                  -borderwidth 1     \
+                  -editable 0        \
                   -textvariable confCam(kitty,captemp) \
                   -values $list_combobox
                pack $frm.captemp -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
@@ -1958,11 +1884,11 @@ namespace eval ::confCam {
 
       #--- Choix du port ou de la liaison
       ComboBox $frm.port \
-         -width 7          \
+         -width 7        \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken  \
+         -borderwidth 1  \
+         -editable 0     \
          -textvariable confCam(kitty,port) \
          -values $list_combobox
       pack $frm.port -in $frm.frame9 -anchor center -side right -padx 10
@@ -1974,11 +1900,11 @@ namespace eval ::confCam {
 
          set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
          ComboBox $frm.res \
-            -width 7          \
+            -width 7       \
             -height [ llength $list_combobox ] \
-            -relief sunken    \
-            -borderwidth 1    \
-            -editable 0       \
+            -relief sunken \
+            -borderwidth 1 \
+            -editable 0    \
             -textvariable confCam(kitty,res) \
             -values $list_combobox
          pack $frm.res -in $frm.frame10 -anchor center -side right -padx 10
@@ -2000,11 +1926,11 @@ namespace eval ::confCam {
 
          set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
          ComboBox $frm.captemp \
-            -width 12         \
+            -width 12          \
             -height [ llength $list_combobox ] \
-            -relief sunken    \
-            -borderwidth 1    \
-            -editable 0       \
+            -relief sunken     \
+            -borderwidth 1     \
+            -editable 0        \
             -textvariable confCam(kitty,captemp) \
             -values $list_combobox
          pack $frm.captemp -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
@@ -2039,24 +1965,9 @@ namespace eval ::confCam {
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(confcam,site_kitty)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame4 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_kitty)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera6)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera6)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_kitty)" \
+         "$caption(confcam,site_kitty)" ]
+      pack $labelName -side top -fill x -pady 2
    }
 
    #
@@ -2203,13 +2114,13 @@ namespace eval ::confCam {
 
       #--- Choix du port ou de la liaison
       ComboBox $frm.moyen_longuepose \
-         -width 13         \
+         -width 13                   \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken              \
+         -borderwidth 1              \
+         -editable 0                 \
          -textvariable confCam(dslr,longueposeport) \
-         -values $list_combobox \
+         -values $list_combobox      \
          -modifycmd {
             ::confCam::configureAPNLinkLonguePose
          }
@@ -2221,12 +2132,12 @@ namespace eval ::confCam {
 
       set list_combobox [ list 0 1 2 3 4 5 6 7 ]
       ComboBox $frm.longueposelinkbit \
-         -width 7          \
+         -width 7                     \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
+         -relief sunken               \
+         -borderwidth 1               \
          -textvariable confCam(dslr,longueposelinkbit) \
-         -editable 0       \
+         -editable 0                  \
          -values $list_combobox
       pack $frm.longueposelinkbit -in $frm.frame9 -anchor center -side right -padx 20 -pady 5
 
@@ -2256,24 +2167,9 @@ namespace eval ::confCam {
       label $frm.lab104 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab104 -in $frm.frame12 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(confcam,site_dslr)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame12 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_dslr)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera10)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera10)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confCam::createUrlLabel $frm.frame12 "$caption(confcam,site_dslr)" \
+         "$caption(confcam,site_dslr)" ]
+      pack $labelName -side top -fill x -pady 2
    }
 
    #
@@ -2380,11 +2276,11 @@ namespace eval ::confCam {
       set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
          $caption(confcam,obtu_synchro) ]
       ComboBox $frm.foncobtu \
-         -width 11         \
+         -width 11           \
          -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
+         -relief sunken      \
+         -borderwidth 1      \
+         -editable 0         \
          -textvariable confCam(andor,foncobtu) \
          -values $list_combobox
       pack $frm.foncobtu -in $frm.frame9 -anchor center -side left -padx 10 -pady 5
@@ -2413,24 +2309,9 @@ namespace eval ::confCam {
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
       pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(confcam,site_andor)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame3 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(confcam,site_andor)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Camera11)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Camera11)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confCam::createUrlLabel $frm.frame3 "$caption(confcam,site_andor)" \
+         "$caption(confcam,site_andor)" ]
+      pack $labelName -side top -fill x -pady 2
    }
 
    #
@@ -2468,7 +2349,7 @@ namespace eval ::confCam {
       global frmm
 
       #--- Initialisation
-      set frmm(Camera14) [ Rnotebook:frame $nn 14 ]
+     set frmm(Camera14) [ Rnotebook:frame $nn 14 ]
       set frm $frmm(Camera14)
 
       #--- Construction de l'interface graphique
@@ -2476,10 +2357,10 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::Connect_Camera
+   # confCam::connectCamera
    # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
    #
-   proc Connect_Camera { } {
+   proc connectCamera { } {
       variable This
       global audace
       global caption
@@ -2493,10 +2374,12 @@ namespace eval ::confCam {
       wm resizable $audace(base).connectCamera 0 0
       wm title $audace(base).connectCamera "$caption(confcam,attention)"
       if { [ info exists This ] } {
-         set posx_connectCamera [ lindex [ split [ wm geometry $This ] "+" ] 1 ]
-         set posy_connectCamera [ lindex [ split [ wm geometry $This ] "+" ] 2 ]
-         wm geometry $audace(base).connectCamera +[ expr $posx_connectCamera + 50 ]+[ expr $posy_connectCamera + 100 ]
-         wm transient $audace(base).connectCamera $This
+         if { [ winfo exists $This ] } {
+            set posx_connectCamera [ lindex [ split [ wm geometry $This ] "+" ] 1 ]
+            set posy_connectCamera [ lindex [ split [ wm geometry $This ] "+" ] 2 ]
+            wm geometry $audace(base).connectCamera +[ expr $posx_connectCamera + 50 ]+[ expr $posy_connectCamera + 100 ]
+            wm transient $audace(base).connectCamera $This
+         }
       } else {
          wm geometry $audace(base).connectCamera +200+100
          wm transient $audace(base).connectCamera $audace(base)
@@ -2586,7 +2469,10 @@ namespace eval ::confCam {
       ::confCam::select $camItem [lindex $confCam(names) $index]
    }
 
-#***** Procedure de changement de l'obturateur *****************
+   #----------------------------------------------------------------------------
+   # confCam::setShutter
+   # Procedure de changement de l'obturateur de la camera
+   #----------------------------------------------------------------------------
    proc setShutter { camNo shutterState} {
       global audace caption conf confCam frmm panneau
 
@@ -2620,12 +2506,13 @@ namespace eval ::confCam {
             } elseif { "$camProduct" == "andor" } {
                set conf(andor,foncobtu) $shutterState
                catch { set frm $frmm(Camera11) }
-            } elseif { "$camProduct" == "cemes" } {
-               set conf(andor,foncobtu) $shutterState
-               catch { set frm $frmm(Camera11) }
             } elseif { "$camProduct" == "fingerlakes" } {
                set conf(fingerlakes,foncobtu) $shutterState
                catch { set frm $frmm(Camera12) }
+            } elseif { "$camProduct" == "cemes" } {
+               set conf(andor,foncobtu) $shutterState
+               catch { set frm $frmm(Camera11) }
+               catch { set frm $frmm(Camera13) }
             }
             #---
             switch -exact -- $shutterState {
@@ -2664,7 +2551,6 @@ namespace eval ::confCam {
       }
       return $shutterState
    }
-#***** Fin de la procedure de changement de l'obturateur *******
 
    #----------------------------------------------------------------------------
    # confCam::stopItem
@@ -2733,13 +2619,21 @@ namespace eval ::confCam {
                    }
                }
             }
+            coolpix {
+               ::coolpix::stop
+            }
          }
 
          #--- Supprime la camera
          set result [ catch { cam::delete $camNo } erreur ]
          if { $result == "1" } { console::affiche_erreur "$erreur \n" }
-      }
 
+      } else {
+         #--- Cas particulier de la camera Nikon CoolPix (avec camNo = 0)
+         if { $confCam($camItem,camName) == "coolpix" } {
+            ::coolpix::stop
+         }
+      }
 
       #--- Raz des parametres de l'item
       set confCam($camItem,camNo) "0"
@@ -2790,7 +2684,7 @@ namespace eval ::confCam {
                switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                   "parallelport" { set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 } }
                   "quickaudine"  { set binningList { 1x1 2x2 3x3 4x4 } }
-                  "audinet"      { set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 } }
+                  "audinet"      { set binningList { 1x1 2x2 3x3 4x4 } }
                   "ethernaude"   { set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 } }
                }
             }
@@ -2798,7 +2692,7 @@ namespace eval ::confCam {
             webcam      { set binningList [ ::webcam::getBinningList ] }
             th7852a     { set binningList [ ::th7852a::getBinningList ] }
             scr1300xtc  { set binningList [ ::scr1300xtc::getBinningList ] }
-            dslr        { set binningList [ cam$camNo quality list ] }
+            dslr        { set binningList [ ::dslr::getBinningList $camNo ] }
             fingerlakes { set binningList [ ::fingerlakes::getBinningList ] }
             cemes       { set binningList [ ::cemes::getBinningList ] }
             coolpix     { set binningList [ ::coolpix::getBinningList ] }
@@ -3282,7 +3176,7 @@ namespace eval ::confCam {
       set erreur "1"
 
       #--- Affichage d'un message d'alerte si necessaire
-      ::confCam::Connect_Camera
+      ::confCam::connectCamera
 
       #--- J'enregistre le numero de la visu associee a la camera
       if { "$confCam($camItem,camName)" != "" } {
@@ -3318,12 +3212,14 @@ namespace eval ::confCam {
       set confCam(list_visu) $list_visu
 
       if { [ info exists This ] } {
-         $This.startA.visu configure -height [ llength $confCam(list_visu) ]
-         $This.startA.visu configure -values $confCam(list_visu)
-         $This.startB.visu configure -height [ llength $confCam(list_visu) ]
-         $This.startB.visu configure -values $confCam(list_visu)
-         $This.startC.visu configure -height [ llength $confCam(list_visu) ]
-         $This.startC.visu configure -values $confCam(list_visu)
+         if { [ winfo exists $This ] } {
+            $This.startA.visu configure -height [ llength $confCam(list_visu) ]
+            $This.startA.visu configure -values $confCam(list_visu)
+            $This.startB.visu configure -height [ llength $confCam(list_visu) ]
+            $This.startB.visu configure -values $confCam(list_visu)
+            $This.startC.visu configure -height [ llength $confCam(list_visu) ]
+            $This.startC.visu configure -values $confCam(list_visu)
+         }
       }
 
       #--- Je recupere le numero buffer de la visu associee a la camera
@@ -3698,7 +3594,6 @@ namespace eval ::confCam {
                cam$camNo systemservice 0
                #--- je cree la thread dediee a la camera
                set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
-
                #--- Parametrage des longues poses
                if { $conf(dslr,longuepose) == "1" } {
                   switch [ ::confLink::getLinkNamespace $conf(dslr,longueposeport) ] {
