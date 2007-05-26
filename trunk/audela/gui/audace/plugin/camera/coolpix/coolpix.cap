@@ -1,6 +1,6 @@
 #
 # Fichier : coolpix.cap
-# Mise a jour $Id: coolpix.cap,v 1.1 2007-05-16 20:44:07 robertdelmas Exp $
+# Mise a jour $Id: coolpix.cap,v 1.2 2007-05-26 23:08:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,6 +15,8 @@ set caption(coolpix,camera)                       "Nikon CoolPix"
 
 set caption(coolpix,baud)                         "Serial Port Speed (bauds)"
 
+set caption(coolpix,commentaire)                  "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+
 set caption(coolpix,titre_site_web)               "Reference Web Site:"
 set caption(coolpix,site_web_ref)                 "http://photopc.sourceforge.net/"
 
@@ -24,6 +26,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(coolpix,camera)                    "Nikon CoolPix"
 
    set caption(coolpix,baud)                      "Vitesse du port série (bauds)"
+
+   set caption(coolpix,commentaire)               "Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
 
    set caption(coolpix,titre_site_web)            "Site Web de référence :"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
@@ -35,6 +39,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(coolpix,baud)                      "Velocita' porta seriale (bauds)"
 
+   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+
    set caption(coolpix,titre_site_web)            "Sito Web di riferimento:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
 
@@ -44,6 +50,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(coolpix,camera)                    "Nikon CoolPix"
 
    set caption(coolpix,baud)                      "Velocidad del Puerto Serie (baudios)"
+
+   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
 
    set caption(coolpix,titre_site_web)            "Sitio Web de referencia:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
@@ -55,6 +63,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(coolpix,baud)                      "Seriell Port Geschwindigkeit (Bauds)"
 
+   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+
    set caption(coolpix,titre_site_web)            "Referenz Webseite:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
 
@@ -65,6 +75,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(coolpix,baud)                      "Velocidade da Porta Série (bauds)"
 
+   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+
    set caption(coolpix,titre_site_web)            "Site Web de referência:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
 
@@ -74,6 +86,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(coolpix,camera)                    "Nikon CoolPix"
 
    set caption(coolpix,baud)                      "Serial Port Speed (bauds)"
+
+   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
 
    set caption(coolpix,titre_site_web)            "Reference Web Site:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
