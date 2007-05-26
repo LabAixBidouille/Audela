@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.9 2007-05-23 16:27:42 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.10 2007-05-26 23:36:59 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -193,11 +193,7 @@ namespace eval ::confCat {
       set private(confCat,geometry) $conf(confCat,geometry)
 
       toplevel $private(frm)
-      if { [ info exists private(confCat,geometry) ] == "1" } {
-         wm geometry $private(frm) $private(confCat,geometry)
-      } else {
-         wm geometry $private(frm) $private(confCat,geometry)
-      }
+      wm geometry $private(frm) $private(confCat,geometry)
       wm minsize $private(frm) 490 330
       wm resizable $private(frm) 1 1
       wm deiconify $private(frm)

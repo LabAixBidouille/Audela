@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.19 2007-05-23 16:28:07 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.20 2007-05-26 23:37:29 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -267,11 +267,7 @@ proc ::confEqt::createDialog { } {
    set private(confEqt,geometry) $conf(confEqt,geometry)
 
    toplevel $private(frm)
-   if { [ info exists private(confEqt,geometry) ] == "1" } {
-      wm geometry $private(frm) $private(confEqt,geometry)
-   } else {
-      wm geometry $private(frm) $private(confEqt,geometry)
-   }
+   wm geometry $private(frm) $private(confEqt,geometry)
    wm minsize $private(frm) 460 405
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
