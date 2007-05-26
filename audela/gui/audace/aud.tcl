@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.69 2007-05-17 08:14:53 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.70 2007-05-26 23:07:28 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -635,8 +635,6 @@ namespace eval ::audace {
          { ::traiteImage::run "rvb2r+v+b" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
          { ::traiteImage::run "cfa2rgb" "$audace(base).traiteImage" }
-     ### Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,raw2cfa)..." \
-     ###    { ::traiteImage::run "raw2cfa" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,window1)..."\
          { ::pretraitement::run "multi_recadrer" "$audace(base).pretraitement" }
@@ -1004,10 +1002,10 @@ namespace eval ::audace {
    }
 
    #
-   # ::audace::Lance_viewer_images_apn
-   # Lance le viewer pour visualiser les images d'un APN
+   # ::audace::lanceViewerImages
+   # Lance le viewer pour visualiser les images d'un APN CoolPix
    #
-   proc Lance_viewer_images_apn { filename } {
+   proc lanceViewerImages { filename } {
       global audace
       global conf
       global confgene
@@ -1018,23 +1016,30 @@ namespace eval ::audace {
       set confgene(EditScript,error_pdf)    "1"
       set confgene(EditScript,error_htm)    "1"
       set confgene(EditScript,error_viewer) "1"
-      regsub -all " " "$filename" "\%20" filename
-      if [string compare $filename ""] {
+
+      if [ string compare $filename "" ] {
          set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
-         if [catch $a_effectuer input] {
-           # ::console::affiche_erreur "$caption(audace,console_rate)\n"
+         if [ catch $a_effectuer msg ] {
+            #--- Vous devez choisir un viewer d'images
+            ::console::affiche_erreur "$caption(audace,console_rate) \n"
+            ::console::affiche_erreur "$msg \n\n"
             set confgene(EditScript,error_viewer) "0"
             ::confEditScript::run "$audace(base).confEditScript"
             set a_effectuer "exec \"$conf(edit_viewer)\" \"$filename\" &"
-            if [catch $a_effectuer input] {
-               set audace(current_edit) $input
+            if [ catch $a_effectuer msg ] {
+               ::console::affiche_erreur "$caption(audace,console_rate) \n"
+               ::console::affiche_erreur "$msg \n\n"
+            } else {
+               #--- Tout est OK : Ouverture du fichier
+               ::console::affiche_erreur "$caption(audace,console_gagne) \n\n"
             }
          } else {
-            set audace(current_edit) $input
-           # ::console::affiche_erreur "$caption(audace,console_gagne)\n"
+            #--- Tout est OK : Ouverture du fichier
+            ::console::affiche_erreur "$caption(audace,console_gagne) \n\n"
          }
       } else {
-        # ::console::affiche_erreur "$caption(audace,console_annule)\n"
+         #--- Il n'y a pas de fichier a ouvrir
+         ::console::affiche_erreur "$caption(audace,console_annule) \n\n"
       }
       menustate normal
    }
