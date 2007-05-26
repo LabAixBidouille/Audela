@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.45 2007-05-20 17:38:34 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.46 2007-05-26 18:04:24 robertdelmas Exp $
 #
 
 #==============================================================
@@ -12,7 +12,7 @@
 namespace eval ::AcqFC {
    package provide acqfc 2.1
 
-   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginLabel
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqfc.cap ]
 
 #***** Procedure createPluginInstance***************************
@@ -172,9 +172,9 @@ namespace eval ::AcqFC {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-         function     { return "acquisition" }
-         multivisu    { return 1 }
-         display      { return "panel" }
+         function  { return "acquisition" }
+         multivisu { return 1 }
+         display   { return "panel" }
       }
    }
 
@@ -356,7 +356,7 @@ namespace eval ::AcqFC {
             pack $panneau(AcqFC,$visuNo,This).pose.entr -side left
             pack forget $panneau(AcqFC,$visuNo,This).bin.but
             pack forget $panneau(AcqFC,$visuNo,This).bin.lab
-            pack forget $panneau(AcqFC,$visuNo,This).pose.conf 
+            pack forget $panneau(AcqFC,$visuNo,This).pose.conf
             pack forget $panneau(AcqFC,$visuNo,This).obt.but
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab
             pack forget $panneau(AcqFC,$visuNo,This).obt.lab1
@@ -569,12 +569,12 @@ namespace eval ::AcqFC {
          $panneau(AcqFC,$visuNo,This).obt.dslr configure -state disabled
       }
       pack $panneau(AcqFC,$visuNo,mode,$panneau(AcqFC,$visuNo,mode)) -anchor nw -fill x
-  }
+   }
 #***** Fin de la procedure de changement du mode d'acquisition *
 
 #***** Procedure de changement de l'obturateur *****************
    proc ChangeObt { visuNo } {
-      global audace caption conf confCam frmm panneau
+      global audace caption conf confCam panneau
 
       #---
       set camNo [ ::confVisu::getCamNo $visuNo ]
@@ -2028,17 +2028,17 @@ namespace eval ::AcqFC {
 
       #--- J'arrete l'aquisition fenetree si elle est active
       if { $panneau(AcqFC,$visuNo,fenetre) == "1" } {
-        ::AcqFC::stopWindowedFenster $visuNo
-        set panneau(AcqFC,$visuNo,fenetre) "0"
-        ::AcqFC::optionWindowedFenster $visuNo
+         ::AcqFC::stopWindowedFenster $visuNo
+         set panneau(AcqFC,$visuNo,fenetre) "0"
+         ::AcqFC::optionWindowedFenster $visuNo
       }
       #---
       set camNo [ ::confVisu::getCamNo $visuNo ]
       if { [ ::confCam::hasVideo $camNo ] == "1" } {
-        #--- Arret de la visualisation video
-        cam$camNo stopvideoview
-        ::confVisu::setVideo $visuNo 0
-        set panneau(AcqFC,$visuNo,showvideopreview) "0"
+         #--- Arret de la visualisation video
+         cam$camNo stopvideoview
+         ::confVisu::setVideo $visuNo 0
+         set panneau(AcqFC,$visuNo,showvideopreview) "0"
       }
    }
 #***** Fin de la procedure fin d'apercu en mode video **************
@@ -3135,34 +3135,6 @@ namespace eval ::AcqFC {
       }
    }
 #***** Fin de la fenetre de configuration de WebCam ******************
-
-#***** Affichage de la fenetre de selection de format de la WebCam ***
-#   proc webcamSelectFormat { visuNo } {
-#      global caption panneau
-#
-#        set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] videoformat } ]
-#        if { $result == "1" } {
-#           if { [ ::confVisu::getCamera $visuNo ] == "" } {
-#              ::audace::menustate disabled
-#              set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
-#                       -message $caption(acqfc,selcam) ]
-#              set integre non
-#              if { $choix == "ok" } {
-#                       #--- Ouverture de la fenetre de selection des cameras
-#                       ::confCam::run
-#                       tkwait window $audace(base).confCam
-#              }
-#              ::audace::menustate normal
-#           }
-#        }
-#        if { $panneau(AcqFC,$visuNo,mode) == "6" } {
-#           #--- En mode video, il faut redimmensionner le canvas immediatement
-#           #--- j'arrete et relance le mode video
-#           ::confVisu::setVideo $visuNo "0"
-#           ::confVisu::setVideo $visuNo "1"
-#       }
-#   }
-#***** Fin de la fenetre de selection de format de la WebCam *********
 
 #***** Ouverture de la boite de configuration du telechargement ******
    proc choixTelechargement { visuNo} {
