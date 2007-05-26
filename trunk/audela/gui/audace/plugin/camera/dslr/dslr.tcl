@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.10 2007-03-25 13:29:20 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.11 2007-05-26 22:26:40 robertdelmas Exp $
 #
 
 namespace eval dslr {
@@ -156,6 +156,15 @@ namespace eval dslr {
       }
       ::console::affiche_saut "\n"
       ::console::disp "conf(dslr,telecharge_mode) = $conf(dslr,telecharge_mode) cam[ ::confVisu::getCamNo $visuNo ] autoload=[ cam[ ::confVisu::getCamNo $visuNo ] autoload ] \n"
+   }
+
+   #
+   # getBinningList
+   #    Retourne la liste des binnings disponibles de la camera
+   #
+   proc getBinningList { camNo } {
+      set binningList [ cam$camNo quality list ]
+      return $binningList
    }
 
    #
