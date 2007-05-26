@@ -1037,7 +1037,6 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 		    }
 		    /* Nettoyage du ccd */
 		    CAM_DRV.start_exp(cam, "amplion");
-		    audine_shutter_on(cam);
 		    Tcl_Eval(interp, "clock seconds");
 		    cam->clockbegin = (int) atoi(interp->result);
 		    TheScanStruct->t0 = libcam_getms();
