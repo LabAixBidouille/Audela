@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.13 2007-05-23 16:32:10 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.14 2007-05-26 16:31:42 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -289,8 +289,8 @@ namespace eval guide {
    #     nom_objet :    nom de l'objet     (ex: "NGC7000")
    #     ad :           ascension droite   (ex: "16h41m42s")
    #     dec :          declinaison        (ex: "+36d28m00s")
-   #     zoom_objet :   champ 1 a 10
-   #     avant_plan :   1=mettre la carte au premier plan 0=ne pas mettre au premier plan
+   #     zoom_objet :   champ de 1 a 10
+   #     avant_plan :   1 = mettre la carte au premier plan, 0 = ne pas mettre au premier plan
    #------------------------------------------------------------
    proc gotoObject { nom_objet ad dec zoom_objet avant_plan } {
       global caption
@@ -310,7 +310,7 @@ namespace eval guide {
             if { $nom_objet != "#etoile#" && $nom_objet != "" } {
                gs_guide objet $nom_objet
             } else {
-               gs_guide coord $ad $dec { J2000 }
+               gs_guide coord $ad $dec "J2000.0"
             }
          } msg ]
 
@@ -328,7 +328,7 @@ namespace eval guide {
                   if { $nom_objet != "#etoile#" } {
                      gs_guide objet $nom_objet
                   } else {
-                     gs_guide coord $ad $dec { J2000 }
+                     gs_guide coord $ad $dec "J2000.0"
                   }
                } msg ]
                if { $msg == "1" } {
