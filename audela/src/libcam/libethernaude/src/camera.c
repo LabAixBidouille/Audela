@@ -339,7 +339,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
     int binx, biny, x1, x2, y1, y2;
     char ligne[MAXLENGTH];
     char result[MAXLENGTH];
-    int k, sortie, failed;
+    int sortie, failed;
     FILE *fwipe;
 #if defined ETH_DEBUGFILE
     FILE *f;
@@ -382,18 +382,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 		   strcpy(ligne, "ShutterOpen=1");
 	    }
 	    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
-	    util_log("", 1);
-	    for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-		paramCCD_get(k, result, &ParamCCDIn);
-		util_log(result, 0);
-	    }
-	    AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-	    util_log("", 2);
-	    for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-		paramCCD_get(k, result, &ParamCCDOut);
-		util_log(result, 0);
-	    }
-	    util_log("\n", 0);
+	    AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
 	    if (ParamCCDOut.NbreParam >= 1) {
 		paramCCD_get(0, result, &ParamCCDOut);
 		strcpy(cam->msg, "");
@@ -444,23 +433,12 @@ void cam_stop_exp(struct camprop *cam)
    char value[MAXLENGTH + 1];
    char result[MAXLENGTH];
    int paramtype;
-   int k;
+
    /* - AbortExposure sur le CCD numero 1 clock mode 1- */
    paramCCD_clearall(&ParamCCDIn, 1);
    paramCCD_put(-1, "AbortExposure", &ParamCCDIn, 1);
    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-   util_log("", 1);
-   for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-      paramCCD_get(k, result, &ParamCCDIn);
-      util_log(result, 0);
-   }
-   AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-   util_log("", 2);
-   for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-      paramCCD_get(k, result, &ParamCCDOut);
-      util_log(result, 0);
-   }
-   util_log("\n", 0);
+   AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
    if (ParamCCDOut.NbreParam >= 1) {
       paramCCD_get(0, result, &ParamCCDOut);
       strcpy(cam->msg, "");
@@ -524,11 +502,6 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
          libcam_sleep(100);
       }
    }
-
-   /* date-obs */
-   Tcl_Eval(cam->interp, "mc_date2iso8601 now");
-   strcpy(cam->timerExpiration->dateobs, cam->interp->result);
-   strcpy(cam->date_obs, cam->interp->result);
 
    /* - Demarre la lecture de l'image qui est finie - */
    LOG_ETHDEBUGFILE("READ_CCD : demarre la lecture\n");
@@ -654,7 +627,7 @@ void cam_measure_temperature(struct camprop *cam)
     char value[MAXLENGTH + 1];
     char ligne[MAXLENGTH];
     char result[MAXLENGTH];
-    int k, failed, paramtype;
+    int failed, paramtype;
 
     strcpy(cam->msg, "");
     if (cam->authorized == 1) {
@@ -666,18 +639,7 @@ void cam_measure_temperature(struct camprop *cam)
 	paramCCD_clearall(&ParamCCDIn, 1);
 	paramCCD_put(-1, "GetCCD_tempe", &ParamCCDIn, 1);
 	paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
-	util_log("", 1);
-	for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	    paramCCD_get(k, result, &ParamCCDIn);
-	    util_log(result, 0);
-	}
 	AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-	util_log("", 2);
-	for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	    paramCCD_get(k, result, &ParamCCDOut);
-	    util_log(result, 0);
-	}
-	util_log("\n", 0);
 	if (ParamCCDOut.NbreParam >= 1) {
 	    paramCCD_get(0, result, &ParamCCDOut);
 	    strcpy(cam->msg, "");
@@ -726,7 +688,7 @@ void cam_cooler_check(struct camprop *cam)
 {
     char ligne[MAXLENGTH];
     char result[MAXLENGTH];
-    int k, sortie, failed;
+    int sortie, failed;
 
     strcpy(cam->msg, "");
     if (cam->authorized == 1) {
@@ -740,18 +702,7 @@ void cam_cooler_check(struct camprop *cam)
 	paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
 	sprintf(ligne, "Temperature=%f", (float)(cam->check_temperature));
 	paramCCD_put(-1, ligne, &ParamCCDIn, 1);
-	util_log("", 1);
-	for (k = 0; k < ParamCCDIn.NbreParam; k++) {
-	    paramCCD_get(k, result, &ParamCCDIn);
-	    util_log(result, 0);
-	}
-	AskForExecuteCCDCommand(&ParamCCDIn, &ParamCCDOut);
-	util_log("", 2);
-	for (k = 0; k < ParamCCDOut.NbreParam; k++) {
-	    paramCCD_get(k, result, &ParamCCDOut);
-	    util_log(result, 0);
-	}
-	util_log("\n", 0);
+	AskForExecuteCCDCommand_Dump(&ParamCCDIn, &ParamCCDOut);
 	if (ParamCCDOut.NbreParam >= 1) {
 	    paramCCD_get(0, result, &ParamCCDOut);
 	    strcpy(cam->msg, "");
