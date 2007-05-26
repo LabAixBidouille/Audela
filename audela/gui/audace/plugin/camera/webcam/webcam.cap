@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.1 2007-02-02 23:19:22 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.2 2007-05-26 18:36:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -26,6 +26,11 @@ set caption(webcam,conf_source)                 "Video Source Selection"
 set caption(webcam,format_video)                "Video Format Selection"
 set caption(webcam,ccd_N_B)                     "B&W CCD Modified Webcam"
 
+set caption(webcam,shutter)                     "Shutter"
+set caption(webcam,gain)                        "Gain"
+set caption(webcam,auto)                        "Auto"
+set caption(webcam,framerate)                   "Images/s"
+
 set caption(webcam,2points)                     ":"
 
 set caption(webcam,titre_site_web)              "Reference Web Site:"
@@ -49,6 +54,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,conf_source)              "Sélection de la source vidéo"
    set caption(webcam,format_video)             "Sélection du format vidéo"
    set caption(webcam,ccd_N_B)                  "WebCam modifiée avec CCD N&B"
+
+   set caption(webcam,shutter)                  "Obturateur"
+   set caption(webcam,gain)                     "Gain"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Images/s"
 
    set caption(webcam,2points)                  ":"
 
@@ -74,6 +84,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Selezione del formato video"
    set caption(webcam,ccd_N_B)                  "Webcam modificata con CCD B&N"
 
+   set caption(webcam,shutter)                  "Otturatore"
+   set caption(webcam,gain)                     "Gain"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Immagini/s"
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Sito Web di riferimento:"
@@ -97,6 +112,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,conf_source)              "Selección de la entrada de vídeo"
    set caption(webcam,format_video)             "Selección de formato de vídeo"
    set caption(webcam,ccd_N_B)                  "CCD Webcam Blanco y Negro modificada"
+
+   set caption(webcam,shutter)                  "Obturador"
+   set caption(webcam,gain)                     "Ganancia"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Imágenes/s"
 
    set caption(webcam,2points)                  ":"
 
@@ -122,6 +142,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Wahl des Videoformats"
    set caption(webcam,ccd_N_B)                  "Veränderte Schwartz/Weiss Webcam CCD"
 
+   set caption(webcam,shutter)                  "Verschluss"
+   set caption(webcam,gain)                     "Zunahme"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Bilder/s"
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Referenz Webseite:"
@@ -146,6 +171,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,format_video)             "Selecção do Formato Video"
    set caption(webcam,ccd_N_B)                  "Webcam Modificada (CCD B&W)"
 
+   set caption(webcam,shutter)                  "Obturador"
+   set caption(webcam,gain)                     "Ganho"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Imagens/s"
+
    set caption(webcam,2points)                  ":"
 
    set caption(webcam,titre_site_web)           "Site Web de referência:"
@@ -169,6 +199,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,conf_source)              "Video Source Selection"
    set caption(webcam,format_video)             "Video Format Selection"
    set caption(webcam,ccd_N_B)                  "B&W CCD Modified Webcam"
+
+   set caption(webcam,shutter)                  "Shutter"
+   set caption(webcam,gain)                     "Gain"
+   set caption(webcam,auto)                     "Auto"
+   set caption(webcam,framerate)                "Images/s"
 
    set caption(webcam,2points)                  ":"
 
