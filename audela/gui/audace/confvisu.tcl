@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.59 2007-05-24 17:41:41 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.60 2007-05-26 18:37:05 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -328,7 +328,6 @@ namespace eval ::confVisu {
    #
    proc visu { visuNo { cuts "autocuts" } } {
       variable private
-
 
       if { [llength $cuts] == 1 } {
          if { $cuts == "autocuts"} {
@@ -934,7 +933,6 @@ namespace eval ::confVisu {
    proc selectTool { visuNo toolName } {
       variable private
 
-
       if { "$private($visuNo,currentTool)" != "" } {
          #--- Cela veut dire qu'il y a deja un outil selectionne
          if { "$private($visuNo,currentTool)" != "$toolName" } {
@@ -946,14 +944,13 @@ namespace eval ::confVisu {
          }
       }
 
-
       #--- je verifie que l'outils a deja une instance cree
       if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
          #--- je cree une instance de l'outil
          set catchResult [catch {
             namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo
          }]
-         if { $catchResult == 1  } {
+         if { $catchResult == 1 } {
             ::console::affiche_erreur "$::errorInfo\n"
             tk_messageBox -message "$::errorInfo. See console" -icon error
             return
@@ -968,7 +965,6 @@ namespace eval ::confVisu {
      if { [$toolName\::getPluginProperty "display" ] != "window" } {
         set private($visuNo,currentTool) $toolName
      }
-
 
    }
 
@@ -995,7 +991,6 @@ namespace eval ::confVisu {
 
       return "$private($visuNo,lastFileName)"
    }
-
 
    #------------------------------------------------------------
    #  getTool
