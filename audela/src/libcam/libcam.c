@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.16 2007-03-20 20:26:32 denismarchais Exp $
+ * $Id: libcam.c,v 1.17 2007-05-26 20:52:13 denismarchais Exp $
  */
 
 #include "sysexp.h"
@@ -1120,14 +1120,13 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
    if (cam->timerExpiration) {
       strcpy(cam->date_obs, cam->timerExpiration->dateobs);
       Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
+      CAM_DRV.stop_exp(cam);
+      AcqRead((ClientData) cam);
       if (cam->timerExpiration != NULL) {
          free(cam->timerExpiration->dateobs);
          free(cam->timerExpiration);
          cam->timerExpiration = NULL;
       }
-      CAM_DRV.stop_exp(cam);
-      AcqRead((ClientData) cam);
-      
    } else {
       Tcl_SetResult(interp, "No current exposure", TCL_VOLATILE);
       retour = TCL_ERROR;
