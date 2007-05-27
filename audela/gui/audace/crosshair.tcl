@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: crosshair.tcl,v 1.8 2007-01-27 15:14:07 robertdelmas Exp $
+# Mise a jour $Id: crosshair.tcl,v 1.9 2007-05-27 18:47:12 michelpujol Exp $
 #
 
 namespace eval ::Crosshair {
@@ -18,24 +18,17 @@ namespace eval ::Crosshair {
    proc init { } {
       variable private
       global audace
+      global conf
 
       source [ file join $audace(rep_caption) crosshair.cap ]
 
-      initConf
+      #--- j'initialise les parametres dans le tableau conf()
+      if { ! [ info exists conf(crosshair,color) ] }        { set conf(crosshair,color)        "#FF0000" }
+      if { ! [ info exists conf(crosshair,defaultstate) ] } { set conf(crosshair,defaultstate) "0" }
+
       set private(imageSize) " "
 
       return [namespace current]
-   }
-
-   #------------------------------------------------------------
-   #  initConf{ }
-   #     initialise les parametres dans le tableau conf()
-   #------------------------------------------------------------
-   proc initConf { } {
-      global conf
-
-      if { ! [ info exists conf(crosshair,color) ] }        { set conf(crosshair,color)        "#FF0000" }
-      if { ! [ info exists conf(crosshair,defaultstate) ] } { set conf(crosshair,defaultstate) "0" }
    }
 
    #------------------------------------------------------------
@@ -45,19 +38,8 @@ namespace eval ::Crosshair {
    proc run  { visuNo } {
       global conf
 
-      ::confGenerique::run [confVisu::getBase $visuNo].confCrossHair ::Crosshair $visuNo nomodal"
+      ::confGenerique::run $visuNo [confVisu::getBase $visuNo].confCrossHair ::Crosshair  -modal 0
    }
-
-
-
-   #==============================================================
-   # Fonctions de configuration generiques
-   #
-   # fillConfigPage  affiche la fenetre de config
-   # getLabel        retourne le titre de la fenetre de config
-   # apply           applique les modifications
-   # close           ferme la fenetre
-   # showHelp        affiche l'aide
 
    #------------------------------------------------------------
    #  getLabel
@@ -70,19 +52,6 @@ namespace eval ::Crosshair {
       global caption
 
       return "$caption(crosshair,titre)"
-   }
-
-   #------------------------------------------------------------
-   #  confToWidget { }
-   #     copie les parametres du tableau conf() dans les variables des widgets
-   #------------------------------------------------------------
-   proc confToWidget { visuNo } {
-      variable widget
-      global conf
-
-      set widget(color)        $conf(crosshair,color)
-      set widget(defaultstate) $conf(crosshair,defaultstate)
-      set widget(currentstate) [::confVisu::getCrosshair $visuNo]
    }
 
    #------------------------------------------------------------
@@ -114,7 +83,11 @@ namespace eval ::Crosshair {
       set widget(frm) $frm
 
       #--- j'initialise les valeurs
-      confToWidget $visuNo
+      global conf
+
+      set widget(color)        $conf(crosshair,color)
+      set widget(defaultstate) $conf(crosshair,defaultstate)
+      set widget(currentstate) [::confVisu::getCrosshair $visuNo]
 
       #--- creation des differents frames
       frame $frm.frameState -borderwidth 1 -relief raised

@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.8 2007-04-26 18:01:38 robertdelmas Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.9 2007-05-27 18:47:12 michelpujol Exp $
 #
 
 ################################################################
@@ -102,7 +102,7 @@ proc ::autoguider::config::run { visuNo } {
    set private($visuNo,selectedPoint)    ""
 
    #--- j'affiche la fenetre de configuration
-   ::confGenerique::run  "[confVisu::getBase $visuNo].autoguider.config" "::autoguider::config" $visuNo nomodal
+   ::confGenerique::run  $visuNo "[confVisu::getBase $visuNo].autoguider.config" "::autoguider::config" -modal 0
    wm geometry [confVisu::getBase $visuNo].autoguider.config $::conf(autoguider,configWindowPosition)
 }
 
