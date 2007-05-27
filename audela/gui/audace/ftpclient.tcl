@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.7 2007-04-07 21:16:48 robertdelmas Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.8 2007-05-27 18:39:58 michelpujol Exp $
 #
 
 ##############################################################################
@@ -45,7 +45,7 @@ namespace eval ::ftpclient {
    # return 0 si la connexion a echoue
    # return -1 si la connexion est abandonnee
    #------------------------------------------------------------------------------
-   proc selectConnection { } {
+   proc selectConnection { visuNo } {
       variable private
       global audace
 
@@ -68,7 +68,7 @@ namespace eval ::ftpclient {
       set private(password)    ""
 
       #--- affiche la fenetre de connexion
-      set confResult [::confGenerique::run "$audace(base).ftpclient" "::ftpclient"]
+      set confResult [::confGenerique::run $visuNo "$audace(base).ftpclient" "::ftpclient"]
 
       if { $confResult == 1 } {
          if { $private(connection) != "" } {
