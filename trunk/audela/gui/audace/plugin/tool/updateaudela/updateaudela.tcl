@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.3 2007-04-14 08:35:25 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.4 2007-05-27 18:47:12 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
@@ -98,7 +98,7 @@ proc ::updateaudela::startTool { visuNo } {
    set this "$private(base).updateaudela"
    if { [winfo exists $this ] == 0 } {
       #--- j'affiche la fenetre
-      ::confGenerique::run $this [namespace current] $visuNo nomodal
+      ::confGenerique::run $visuNo $this [namespace current] -modal 0
       #--- je remplie la fenetre
       ::updateaudela::fillKitTable
       ::updateaudela::fillPluginTree
