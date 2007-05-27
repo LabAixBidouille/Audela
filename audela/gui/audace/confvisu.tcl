@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.60 2007-05-26 18:37:05 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.61 2007-05-27 18:54:05 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -2118,20 +2118,6 @@ namespace eval ::confVisu {
       }
 
    }
-
-   #------------------------------------------------------------
-   #  getFileName
-   #     retourne le nom du fichier courant
-   #
-   #  parametres :
-   #    visuNo : numero de la visu
-   #------------------------------------------------------------
-   proc getFileName { visuNo } {
-      variable private
-
-      return $private($visuNo,lastFileName)
-   }
-
 }
 #---  namespace end
 
