@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.8 2007-01-27 15:00:17 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.9 2007-05-27 18:39:58 michelpujol Exp $
 #
 
 #=========================================================================
@@ -24,7 +24,7 @@ set caption(visio2,file)                     "File"
 #--- menus
 set caption(visio2,refresh)                  "Update"
 set caption(visio2,select_all)               "Select All"
-set caption(visio2,save_file)                "Save As..."
+set caption(visio2,rename_file)              "Rename..."
 set caption(visio2,delete_file)              "Delete..."
 set caption(visio2,get_file)                 "Move"
 set caption(visio2,column_name)              "Name"
@@ -49,7 +49,7 @@ set caption(visio2,help)                     "Help..."
 set caption(visio2,dialog_title)             "Viewer 2"
 set caption(visio2,delete_file_confirm)      "Are you sure you want to delete the file?"
 set caption(visio2,delete_dir_confirm)       "Are you sure you want to delete the folder and its contents?"
-set caption(visio2,delete_file_error)        "Select a file first"
+set caption(visio2,select_file_error)        "Select a file first"
 set caption(visio2,slideshow_error)          "Select several images first"
 set caption(visio2,ftp_connection_title)     "FTP Connection"
 set caption(visio2,ftp_connection_error)     "Connection to Server Failed:"
@@ -60,7 +60,7 @@ set caption(visio2,delete_button2)           "No"
 set caption(visio2,delete_button3)           "Cancel"
 set caption(visio2,help,titre)               "Help For This Tool"
 
-set caption(visio2,file_exist)               "File already exists. Do you want to replace it?"
+set caption(visio2,confirm_overwrite)               "File already exists. Do you want to replace it?"
 set caption(visio2,show_directory)           "Folder is empty or missing."
 
 #--- fenetre de configuration
@@ -85,7 +85,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- menus
    set caption(visio2,refresh)               "Actualiser"
    set caption(visio2,select_all)            "Tout sélectionner"
-   set caption(visio2,save_file)             "Enregistrer sous..."
+   set caption(visio2,rename_file)           "Renommer..."
    set caption(visio2,delete_file)           "Supprimer..."
    set caption(visio2,get_file)              "Transférer"
    set caption(visio2,column_name)           "Nom"
@@ -110,7 +110,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,dialog_title)          "Visionneuse bis"
    set caption(visio2,delete_file_confirm)   "Etes-vous sûr de vouloir supprimer le fichier ?"
    set caption(visio2,delete_dir_confirm)    "Etes-vous sûr de vouloir supprimer le répertoire et son contenu ?"
-   set caption(visio2,delete_file_error)     "Sélectionner d'abord un fichier"
+   set caption(visio2,select_file_error)     "Sélectionner d'abord un fichier"
    set caption(visio2,slideshow_error)       "Sélectionner d'abord plusieurs images"
    set caption(visio2,ftp_connection_title)  "Connexion FTP"
    set caption(visio2,ftp_connection_error)  "Echec de la connexion au serveur :"
@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Abandonner"
    set caption(visio2,help,titre)            "Aide pour cet outil"
 
-   set caption(visio2,file_exist)            "Le fichier existe déjà. Voulez-vous l'écraser ?"
+   set caption(visio2,confirm_overwrite)     "Le fichier existe déjà. Voulez-vous l'écraser ?"
    set caption(visio2,show_directory)        "Le répertoire est vide ou absent."
 
    #--- fenetre de configuration
@@ -146,7 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- menus
    set caption(visio2,refresh)               "Aggiorna"
    set caption(visio2,select_all)            "Seleziona tutti"
-   set caption(visio2,save_file)             "Salva come..."
+   set caption(visio2,rename_file)           "Rinominare..."
    set caption(visio2,delete_file)           "Eliminare..."
    set caption(visio2,get_file)              "Muovi"
    set caption(visio2,column_name)           "Nome"
@@ -171,7 +171,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,dialog_title)          "Visualizzatore 2"
    set caption(visio2,delete_file_confirm)   "Siete sicuri di voler cancellare il file?"
    set caption(visio2,delete_dir_confirm)    "Siete sicuri di voler eliminare la cartella con il suo conteneuto?"
-   set caption(visio2,delete_file_error)     "Selezionare un file"
+   set caption(visio2,select_file_error)     "Selezionare un file"
    set caption(visio2,slideshow_error)       "Selezionare piu` immagini"
    set caption(visio2,ftp_connection_title)  "Connessione FTP"
    set caption(visio2,ftp_connection_error)  "Connessione al server fallita:"
@@ -182,7 +182,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancella"
    set caption(visio2,help,titre)            "Aiuto per questo tool"
 
-   set caption(visio2,file_exist)            "Il file e` gia` esistente. Sostituirlo?"
+   set caption(visio2,confirm_overwrite)            "Il file e` gia` esistente. Sostituirlo?"
    set caption(visio2,show_directory)        "La cartella e` vuota o assente."
 
    #--- fenetre de configuration
@@ -207,7 +207,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- menus
    set caption(visio2,refresh)               "Actualizar"
    set caption(visio2,select_all)            "Seleccionar todo"
-   set caption(visio2,save_file)             "Salvar como..."
+   set caption(visio2,rename_file)           "Renombrar..."
    set caption(visio2,delete_file)           "Suprimir..."
    set caption(visio2,get_file)              "Transferir"
    set caption(visio2,column_name)           "Nombre"
@@ -232,7 +232,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,dialog_title)          "Visor 2"
    set caption(visio2,delete_file_confirm)   "Seguro que desea borrar el fichero?"
    set caption(visio2,delete_dir_confirm)    "Seguro que quiere borrar la carpeta y todo su contenido?"
-   set caption(visio2,delete_file_error)     "Seleccionar primero un fichero"
+   set caption(visio2,select_file_error)     "Seleccionar primero un fichero"
    set caption(visio2,slideshow_error)       "Seleccionar primero varias imágenes"
    set caption(visio2,ftp_connection_title)  "Conexión FTP"
    set caption(visio2,ftp_connection_error)  "La conexión al servidor falló:"
@@ -243,7 +243,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancelar"
    set caption(visio2,help,titre)            "Ayuda para esta herramienta"
 
-   set caption(visio2,file_exist)            "El fichero ya existe. Quiere reemplazarlo?"
+   set caption(visio2,confirm_overwrite)            "El fichero ya existe. Quiere reemplazarlo?"
    set caption(visio2,show_directory)        "La carpeta está vacía o no existe."
 
    #--- fenetre de configuration
@@ -268,7 +268,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- menus
    set caption(visio2,refresh)               "Aktualisieren"
    set caption(visio2,select_all)            "Alles auswählen"
-   set caption(visio2,save_file)             "Speichern mit..."
+   set caption(visio2,rename_file)           "Wiedernennen..."
    set caption(visio2,delete_file)           "Abschaffen..."
    set caption(visio2,get_file)              "Bewegen"
    set caption(visio2,column_name)           "Namen"
@@ -293,7 +293,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,dialog_title)          "Diabetrachter 2"
    set caption(visio2,delete_file_confirm)   "Sind sie sicher dass sie diese Datei löschen willen ?"
    set caption(visio2,delete_dir_confirm)    "Sind sie sicher dass sie diesen Register und seinen Gehalt löschen willen ?"
-   set caption(visio2,delete_file_error)     "Erst eine Datei wählen"
+   set caption(visio2,select_file_error)     "Erst eine Datei wählen"
    set caption(visio2,slideshow_error)       "Erst mehrere Bilder wählen"
    set caption(visio2,ftp_connection_title)  "FTP Verbindung"
    set caption(visio2,ftp_connection_error)  "Verbindung zum Server durchgefallen:"
@@ -304,7 +304,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Abrechen"
    set caption(visio2,help,titre)            "Hilfe für dieses Gerät"
 
-   set caption(visio2,file_exist)            "Die Datei existiert schon. Vollen sie ihr austauchen ?"
+   set caption(visio2,confirm_overwrite)            "Die Datei existiert schon. Vollen sie ihr austauchen ?"
    set caption(visio2,show_directory)        "Der Register ist lehr oder existiert nicht."
 
    #--- fenetre de configuration
@@ -329,7 +329,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- menus
    set caption(visio2,refresh)               "Actualizar"
    set caption(visio2,select_all)            "Seleccionar tudo"
-   set caption(visio2,save_file)             "Guardar como..."
+   set caption(visio2,rename_file)           "Mudar o nome..."
    set caption(visio2,delete_file)           "Eliminar..."
    set caption(visio2,get_file)              "Mover"
    set caption(visio2,column_name)           "Nome"
@@ -354,7 +354,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,dialog_title)          "Visualizador 2"
    set caption(visio2,delete_file_confirm)   "Tem a certeza que deseja eliminar o ficheiro ?"
    set caption(visio2,delete_dir_confirm)    "Tem a certeza que deseja eliminar o directório e o seu conteúdo ?"
-   set caption(visio2,delete_file_error)     "Seleccionar primeiro um ficheiro"
+   set caption(visio2,select_file_error)     "Seleccionar primeiro um ficheiro"
    set caption(visio2,slideshow_error)       "Seleccionar primeiro várias imagens"
    set caption(visio2,ftp_connection_title)  "Ligação FTP"
    set caption(visio2,ftp_connection_error)  "Falha na ligação ao servidor :"
@@ -365,7 +365,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancelar"
    set caption(visio2,help,titre)            "Ajuda para esta ferramenta"
 
-   set caption(visio2,file_exist)            "O ficheiro já existe. Deseja substituí-lo ?"
+   set caption(visio2,confirm_overwrite)            "O ficheiro já existe. Deseja substituí-lo ?"
    set caption(visio2,show_directory)        "O directório está vazio ou não existe."
 
    #--- fenetre de configuration
@@ -390,7 +390,7 @@ if { [ string compare $langage "french" ] == "0" } {
    #--- menus
    set caption(visio2,refresh)               "Update"
    set caption(visio2,select_all)            "Select All"
-   set caption(visio2,save_file)             "Save As..."
+   set caption(visio2,rename_file)           "Rename..."
    set caption(visio2,delete_file)           "Delete..."
    set caption(visio2,get_file)              "Move"
    set caption(visio2,column_name)           "Navn"
@@ -415,7 +415,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,dialog_title)          "Viewer 2"
    set caption(visio2,delete_file_confirm)   "Are you sure you want to delete the file?"
    set caption(visio2,delete_dir_confirm)    "Are you sure you want to delete the folder and its contents?"
-   set caption(visio2,delete_file_error)     "Select a file first"
+   set caption(visio2,select_file_error)     "Select a file first"
    set caption(visio2,slideshow_error)       "Select several images first"
    set caption(visio2,ftp_connection_title)  "FTP Connection"
    set caption(visio2,ftp_connection_error)  "Connection to Server Failed:"
@@ -426,7 +426,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancel"
    set caption(visio2,help,titre)            "Help For This Tool"
 
-   set caption(visio2,file_exist)            "File already exists. Do you want to replace it?"
+   set caption(visio2,confirm_overwrite)            "File already exists. Do you want to replace it?"
    set caption(visio2,show_directory)        "Folder is empty or missing."
 
    #--- fenetre de configuration
