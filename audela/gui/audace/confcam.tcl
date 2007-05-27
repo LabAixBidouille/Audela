@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.74 2007-05-26 23:36:09 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.75 2007-05-27 21:30:49 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -2587,20 +2587,36 @@ namespace eval ::confCam {
                   ::testAudine::fermer
                }
                ::confCam::ConfAudine
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+               }
             }
             cookbook {
                #--- Je ferme la liaison d'acquisition de la camera
                ::confLink::delete $conf(cookbook,port) "cam$camNo" "acquisition"
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+               }
             }
             kitty {
                ::confCam::ConfKitty
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+               }
             }
             webcam {
-               ::webcam::stop $camNo $camItem
+               ::webcam::stop $camItem
             }
             scr1300xtc {
                #--- Je ferme la liaison d'acquisition de la camera
                ::confLink::delete $conf(scr1300xtc,port) "cam$camNo" "acquisition"
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+               }
             }
             dslr {
                #--- Si la fenetre Telechargement d'images est affichee, je la ferme
@@ -2618,20 +2634,20 @@ namespace eval ::confCam {
                       cam$camNo systemservice $conf(dslr,statut_service)
                    }
                }
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+                 set confCam($camItem,camNo) 0
+               }
             }
             coolpix {
-               ::coolpix::stop
+               ::coolpix::stop $camItem
             }
-         }
-
-         #--- Supprime la camera
-         set result [ catch { cam::delete $camNo } erreur ]
-         if { $result == "1" } { console::affiche_erreur "$erreur \n" }
-
-      } else {
-         #--- Cas particulier de la camera Nikon CoolPix (avec camNo = 0)
-         if { $confCam($camItem,camName) == "coolpix" } {
-            ::coolpix::stop
+            default {
+               #--- Supprime la camera
+               set result [ catch { cam::delete $camNo } erreur ]
+               if { $result == "1" } { console::affiche_erreur "$erreur \n" }
+            }
          }
       }
 
