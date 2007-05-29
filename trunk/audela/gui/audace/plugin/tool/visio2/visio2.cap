@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.9 2007-05-27 18:39:58 michelpujol Exp $
+# Mise a jour $Id: visio2.cap,v 1.10 2007-05-29 20:27:48 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -60,7 +60,7 @@ set caption(visio2,delete_button2)           "No"
 set caption(visio2,delete_button3)           "Cancel"
 set caption(visio2,help,titre)               "Help For This Tool"
 
-set caption(visio2,confirm_overwrite)               "File already exists. Do you want to replace it?"
+set caption(visio2,confirm_overwrite)        "File already exists. Do you want to replace it?"
 set caption(visio2,show_directory)           "Folder is empty or missing."
 
 #--- fenetre de configuration
@@ -68,6 +68,16 @@ set caption(visio2,known_files)              "Recognized Files:"
 set caption(visio2,show_all_files)           "Display the Other Files"
 set caption(visio2,remark)                   "bmp, jpg, ps, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
 set caption(visio2,remark1)                  "avi, mov, mpeg files require tmci package (Windows only)."
+
+#--- fenetre de renommage des fichiers
+set caption(visio2,genericName)              "Generic Name"
+set caption(visio2,firstIndex)               "First index"
+set caption(visio2,rename_file_confirm)      "# Etes-vous sûr de vouloir renommer le fichier ?"
+set caption(visio2,overwrite)                "# Ecraser les fichiers existants"
+set caption(visio2,destinationFolder)        "# Destination"
+set caption(visio2,renameFile)               "# Renommer les fichiers"
+set caption(visio2,copyFile)                 "# Copier les fichiers"
+set caption(visio2,newName)                  "New Name"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -130,6 +140,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,remark)                "Les fichiers bmp, jpg, ps, tiff nécessitent le package Img 1.2.4\nLes fichiers avi, mov, mpeg nécessitent le package tmci (Windows uniquement)."
    set caption(visio2,remark1)               "Les fichiers avi, mov, mpeg nécessitent le package tmci (Windows uniquement)."
 
+   #--- fenetre de renommage des fichiers
+   set caption(visio2,genericName)           "Nom générique"
+   set caption(visio2,firstIndex)            "Premier indice"
+   set caption(visio2,rename_file_confirm)   "Etes-vous sûr de vouloir renommer le fichier ?"
+   set caption(visio2,overwrite)             "Ecraser les fichiers existants"
+   set caption(visio2,destinationFolder)     "Destination"
+   set caption(visio2,renameFile)            "Renommer les fichiers"
+   set caption(visio2,copyFile)              "Copier les fichiers"
+   set caption(visio2,newName)               "Nouveau nom"
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
@@ -182,7 +202,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancella"
    set caption(visio2,help,titre)            "Aiuto per questo tool"
 
-   set caption(visio2,confirm_overwrite)            "Il file e` gia` esistente. Sostituirlo?"
+   set caption(visio2,confirm_overwrite)     "Il file e` gia` esistente. Sostituirlo?"
    set caption(visio2,show_directory)        "La cartella e` vuota o assente."
 
    #--- fenetre de configuration
@@ -190,6 +210,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,show_all_files)        "Visualizza gli altri file"
    set caption(visio2,remark)                "I file bmp, jpg, ps, tiff richiedono il package Img 1.2.4\nI file avi, mov, mpeg richiedono il package tmci (solo per Windows)."
    set caption(visio2,remark1)               "I file avi, mov, mpeg richiedono il package tmci (solo per Windows)."
+
+   #--- fenetre de renommage des fichiers
+   set caption(visio2,genericName)           "Nomi generici"
+   set caption(visio2,firstIndex)            "Primo indice"
+   set caption(visio2,rename_file_confirm)   "# Etes-vous sûr de vouloir renommer le fichier ?"
+   set caption(visio2,overwrite)             "# Ecraser les fichiers existants"
+   set caption(visio2,destinationFolder)     "# Destination"
+   set caption(visio2,renameFile)            "# Renommer les fichiers"
+   set caption(visio2,copyFile)              "# Copier les fichiers"
+   set caption(visio2,newName)               "Nuovo nome"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -243,7 +273,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancelar"
    set caption(visio2,help,titre)            "Ayuda para esta herramienta"
 
-   set caption(visio2,confirm_overwrite)            "El fichero ya existe. Quiere reemplazarlo?"
+   set caption(visio2,confirm_overwrite)     "El fichero ya existe. Quiere reemplazarlo?"
    set caption(visio2,show_directory)        "La carpeta está vacía o no existe."
 
    #--- fenetre de configuration
@@ -251,6 +281,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,show_all_files)        "Mostrar los otros ficheros"
    set caption(visio2,remark)                "Los tipos de fichero bmp, jpg, ps, y tiff requieren el paquete Img 1.2.4\nLos ficheros de tipo avi, mov y mpeg requieren el paquete tmci (sólo Windows)."
    set caption(visio2,remark1)               "Los ficheros de tipo avi, mov y mpeg requieren el paquete tmci (sólo Windows)."
+
+   #--- fenetre de renommage des fichiers
+   set caption(visio2,genericName)           "Nombre genérico"
+   set caption(visio2,firstIndex)            "Primer índice"
+   set caption(visio2,rename_file_confirm)   "# Etes-vous sûr de vouloir renommer le fichier ?"
+   set caption(visio2,overwrite)             "# Ecraser les fichiers existants"
+   set caption(visio2,destinationFolder)     "# Destination"
+   set caption(visio2,renameFile)            "# Renommer les fichiers"
+   set caption(visio2,copyFile)              "# Copier les fichiers"
+   set caption(visio2,newName)               "Nombre nuevo"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -304,7 +344,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Abrechen"
    set caption(visio2,help,titre)            "Hilfe für dieses Gerät"
 
-   set caption(visio2,confirm_overwrite)            "Die Datei existiert schon. Vollen sie ihr austauchen ?"
+   set caption(visio2,confirm_overwrite)     "Die Datei existiert schon. Vollen sie ihr austauchen ?"
    set caption(visio2,show_directory)        "Der Register ist lehr oder existiert nicht."
 
    #--- fenetre de configuration
@@ -312,6 +352,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,show_all_files)        "Die andere Dateien zeigen"
    set caption(visio2,remark)                "Die bmp, jpg, ps, tiff Dateien nötigen das Img 1.2.4 Programmpaket\nDie avi, mov, mpeg Dateien nötigen das tmci Programmpaket (nur Windows)."
    set caption(visio2,remark1)               "Die avi, mov, mpeg Dateien nötigen das tmci Programmpaket (nur Windows)."
+
+   #--- fenetre de renommage des fichiers
+   set caption(visio2,genericName)           "Generischen Nahmen"
+   set caption(visio2,firstIndex)            "Ersten Index"
+   set caption(visio2,rename_file_confirm)   "# Etes-vous sûr de vouloir renommer le fichier ?"
+   set caption(visio2,overwrite)             "# Ecraser les fichiers existants"
+   set caption(visio2,destinationFolder)     "# Destination"
+   set caption(visio2,renameFile)            "# Renommer les fichiers"
+   set caption(visio2,copyFile)              "# Copier les fichiers"
+   set caption(visio2,newName)               "Neuen Namen"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -365,7 +415,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancelar"
    set caption(visio2,help,titre)            "Ajuda para esta ferramenta"
 
-   set caption(visio2,confirm_overwrite)            "O ficheiro já existe. Deseja substituí-lo ?"
+   set caption(visio2,confirm_overwrite)     "O ficheiro já existe. Deseja substituí-lo ?"
    set caption(visio2,show_directory)        "O directório está vazio ou não existe."
 
    #--- fenetre de configuration
@@ -373,6 +423,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,show_all_files)        "Mostrar os outros ficheiros"
    set caption(visio2,remark)                "Os ficheiros bmp, jpg, ps, tiff necessitam do pacote Img 1.2.4\nOs ficheiros avi, mov, mpeg necessitam do pacote tmci (Windows somente)."
    set caption(visio2,remark1)               "Os ficheiros avi, mov, mpeg necessitam do pacote tmci (Windows somente)."
+
+   #--- fenetre de renommage des fichiers
+   set caption(visio2,genericName)           "Nome genérico"
+   set caption(visio2,firstIndex)            "Primeiro índice"
+   set caption(visio2,rename_file_confirm)   "# Etes-vous sûr de vouloir renommer le fichier ?"
+   set caption(visio2,overwrite)             "# Ecraser les fichiers existants"
+   set caption(visio2,destinationFolder)     "# Destination"
+   set caption(visio2,renameFile)            "# Renommer les fichiers"
+   set caption(visio2,copyFile)              "# Copier les fichiers"
+   set caption(visio2,newName)               "Novo nome"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -426,7 +486,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,delete_button3)        "Cancel"
    set caption(visio2,help,titre)            "Help For This Tool"
 
-   set caption(visio2,confirm_overwrite)            "File already exists. Do you want to replace it?"
+   set caption(visio2,confirm_overwrite)     "File already exists. Do you want to replace it?"
    set caption(visio2,show_directory)        "Folder is empty or missing."
 
    #--- fenetre de configuration
@@ -434,6 +494,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,show_all_files)        "Display the Other Files"
    set caption(visio2,remark)                "bmp, jpg, ps, tiff files require Img 1.2.4 package\navi, mov, mpeg files require tmci package (Windows only)."
    set caption(visio2,remark1)               "avi, mov, mpeg files require tmci package (Windows only)."
+
+   #--- fenetre de renommage des fichiers
+   set caption(visio2,genericName)           "Generic Name"
+   set caption(visio2,firstIndex)            "First index"
+   set caption(visio2,rename_file_confirm)   "# Etes-vous sûr de vouloir renommer le fichier ?"
+   set caption(visio2,overwrite)             "# Ecraser les fichiers existants"
+   set caption(visio2,destinationFolder)     "# Destination"
+   set caption(visio2,renameFile)            "# Renommer les fichiers"
+   set caption(visio2,copyFile)              "# Copier les fichiers"
+   set caption(visio2,newName)               "New Name"
 
 }
 
