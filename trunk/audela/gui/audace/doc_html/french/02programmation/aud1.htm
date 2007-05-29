@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 11 novembre 2004</p>
+<p class="date">Date de mise &agrave; jour : 29 mai 2007</p>
 <h1>Fonctions utilitaires </h1>
 <p>Les fonctions qui suivent sont dans le namespace ::</p>
 <p>Elles peuvent &ecirc;tre ex&eacute;cut&eacute;es directement dans la console Aud'ACE.</p>
@@ -25,7 +25,7 @@
 <code> visu {1897 345}</code> <code> visu [list 1897 345]</code>
 <p>Si le seuil haut est plus faible que le seuil bas alors l'image est vue en n&eacute;gatif.</p>
 <h2><a name="stat" id="stat"></a> stat</h2>
-<p>Cette fonction renvoie une liste compos&eacute;e de 8 valeurs, caract&eacute;risant l'image. Ces valeurs sont d&eacute;crites dans le tableau suivant, dans l'ordre o&ugrave; elles apparaissent dans la liste.</p>
+<p>Cette fonction renvoie une liste compos&eacute;e de 9 valeurs, caract&eacute;risant l'image. Ces valeurs sont d&eacute;crites dans le tableau suivant, dans l'ordre o&ugrave; elles apparaissent dans la liste.</p>
 <ul>
   <li>seuil haut. Ce seuil haut est celui calcul&eacute; &agrave; partir des valeurs du fond de ciel, et du bruit du fond de ciel : ce n'est pas forc&eacute;ment le seuil actuel, mais un type de seuil qui correspond bien &agrave; la visualisation du fond d'une image</li>
   <li>seuil bas. C'est le seuil bas correspondant. Ils sont calcul&eacute;s tels que :</li>
@@ -35,10 +35,11 @@
   </ul>
   <li>datamin. C'est la valeur minimale des pixels de l'image</li>
   <li>datamax. C'est la valeur maximale des pixels de l'image</li>
-  <li>moyenne. Moyenne de l'ensemble des pixels</li>
-  <li>ecart-type. Ecart-type de l'ensemble des pixels</li>
+  <li>moyenne. Moyenne de l'ensemble des pixels de l'image</li>
+  <li>ecart-type. Ecart-type de l'ensemble des pixels de l'image</li>
   <li>moyenne du fond de ciel. Moyenne des pixels qui composent uniquement le fond de ciel</li>
   <li>ecart-type du fond de ciel. Ecart-type des pixels qui composent uniquement le fond de ciel</li>
+  <li>contrast. Contraste de l'image</li>
 </ul>
 <h2> <a name="acq" id="acq"></a>acq duree binning</h2>
 <p>Cette fonction effectue une acquisition avec la cam&eacute;ra s&eacute;lectionn&eacute;e dans les r&eacute;glages de AudACE. Les deux param&egrave;tres. Les deux param&egrave;tres de la ligne de commande correspondent respectivement &agrave; la dur&eacute;e de l'image, et au binning (n&eacute;cessairement identique dans les deux directions).</p>

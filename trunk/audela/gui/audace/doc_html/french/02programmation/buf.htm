@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 14 novembre 2006</p>
+<p class="date">Date de mise &agrave; jour : 29 mai 2007</p>
 <h1>Buffer </h1>
 <p>Les commandes qui suivent peuvent &ecirc;tre appel&eacute;es gr&acirc;ce aux commandes <code>buf1</code>, <code>buf2</code>, ... qui sont cr&eacute;&eacute;es par "<code>::buf::create</code>". Ces sous-commandes permettent de formater une image, de manipuler les mots-cl&eacute;s FITS, et de r&eacute;aliser certains traitements sur l'image port&eacute;e par le buffer. Elles sont d&eacute;crites avec la commande <code>buf1</code>, mais sont valables pour toutes les autres commandes de buffer. </p>
 <h2> 1. Gestion du buffer</h2>
@@ -175,7 +175,7 @@
 <h3> <a name="opt" id="opt"></a>buf1 opt <em>noir</em> <em>offset</em></h3>
 <p>Optimise le noir sur le buffer : le noir qui sert &agrave; l'optimisation est le premier argument. C'est un noir qui est directement issu de l'acquisition, &eacute;ventuellement issu d'une synth&egrave;se m&eacute;diane des images de noir acquises. De m&ecirc;me pour l'offset. Il est extr&ecirc;mement important que l'offset soit pr&eacute;sent dans l'image de noir.</p>
 <h3> <a name="stat" id="stat"></a>buf1 stat <em>?fenetre?</em></h3>
-<p>Analyse l'image du buffer, et retourne une liste compos&eacute;e des &eacute;l&eacute;ments suivants :</p>
+<p>Analyse l'image du buffer, et retourne une liste compos&eacute;e des 9 &eacute;l&eacute;ments suivants :</p>
 <ul>
   <li>seuil haut convenant bien &agrave; la visualisation du fond de ciel, </li>
   <li>seuil bas associ&eacute;, </li>
@@ -188,6 +188,7 @@
   <li>contraste de l'image.</li>
 </ul>
 <p>L'argument <em>fen&ecirc;tre</em> est une liste de quatre valeurs num&eacute;riques indiquant les coordonn&eacute;es de deux des coins oppos&eacute;s : [list $x1 $y1 $x2 $y2].</p>
+<p>Lorsque cet argument est pr&eacute;sent, les valeurs des 9 &eacute;l&eacute;ments ci-dessus sont limit&eacute;es &agrave; la fen&ecirc;tre incluse dans l'image.</p>
 <h3> <a name="mirrorx" id="mirrorx"></a>buf1 mirrorx</h3>
 <p>Retourne l'image horizontalement, c'est &agrave; dire que ce sont les colonnes qui sont d&eacute;plac&eacute;es.</p>
 <h3> <a name="mirrory" id="mirrory"></a>buf1 mirrory</h3>
