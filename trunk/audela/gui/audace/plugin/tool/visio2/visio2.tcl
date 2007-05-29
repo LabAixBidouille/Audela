@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.19 2007-05-27 18:48:55 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.20 2007-05-29 20:29:19 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -45,44 +45,35 @@ proc ::visio2::createPluginInstance { { in "" } { visuNo 1 } } {
    #--- je charge le package Tablelist
    package require Tablelist
 
-   set caption(Visio2,genericName) "Nom generique"
-   set caption(Visio2,firstIndex)  "Premier indice"
-   set caption(visio2,rename_file_confirm)  "Etes-vous sûr de vouloir renommer le fichier ?"
-   set caption(Visio2,overwrite)  "Ecraser les fichiers existants"
-   set caption(Visio2,destinationFolder)  "Destination"
-   set caption(Visio2,renameFile)  "Renommer les fichiers"
-   set caption(Visio2,copyFile)  "Copier les fichiers"
-   set caption(Visio2,newName)  "Nouveau nom"
-
    #--- je verifie que les variables de cet outil existent dans $conf(...)
    #--- indicateurs d'affichage des colonnes
-   if {![info exists conf(Visio2,show_column_type)]}    { set conf(Visio2,show_column_type)    "1" }
-   if {![info exists conf(Visio2,show_column_series)]}  { set conf(Visio2,show_column_series)  "0" }
-   if {![info exists conf(Visio2,show_column_date)]}    { set conf(Visio2,show_column_date)    "0" }
-   if {![info exists conf(Visio2,show_column_size)]}    { set conf(Visio2,show_column_size)    "0" }
+   if {![info exists conf(visio2,show_column_type)]}    { set conf(visio2,show_column_type)    "1" }
+   if {![info exists conf(visio2,show_column_series)]}  { set conf(visio2,show_column_series)  "0" }
+   if {![info exists conf(visio2,show_column_date)]}    { set conf(visio2,show_column_date)    "0" }
+   if {![info exists conf(visio2,show_column_size)]}    { set conf(visio2,show_column_size)    "0" }
 
    #--- largeur des colonnes en nombre de caracteres (valeur positive) ou en nombre de pixel (valeur negative)
-   if {![info exists conf(Visio2,width_column_name)]}   { set conf(Visio2,width_column_name)   "-90" }
-   if {![info exists conf(Visio2,width_column_type)]}   { set conf(Visio2,width_column_type)   "-70" }
-   if {![info exists conf(Visio2,width_column_series)]} { set conf(Visio2,width_column_series) "-60" }
-   if {![info exists conf(Visio2,width_column_date)]}   { set conf(Visio2,width_column_date)   "-104" }
-   if {![info exists conf(Visio2,width_column_size)]}   { set conf(Visio2,width_column_size)   "-70" }
+   if {![info exists conf(visio2,width_column_name)]}   { set conf(visio2,width_column_name)   "-90" }
+   if {![info exists conf(visio2,width_column_type)]}   { set conf(visio2,width_column_type)   "-70" }
+   if {![info exists conf(visio2,width_column_series)]} { set conf(visio2,width_column_series) "-60" }
+   if {![info exists conf(visio2,width_column_date)]}   { set conf(visio2,width_column_date)   "-104" }
+   if {![info exists conf(visio2,width_column_size)]}   { set conf(visio2,width_column_size)   "-70" }
 
    #--- extensions des fichiers par defaut
-   if {![info exists conf(Visio2,enableExtension)]} {
-      set conf(Visio2,enableExtension)    [list]
+   if {![info exists conf(visio2,enableExtension)]} {
+      set conf(visio2,enableExtension) [list]
    }
-   if { [lsearch $conf(Visio2,enableExtension) "fit"] == -1 } {
-     lappend conf(Visio2,enableExtension) "fit" "1"
+   if { [lsearch $conf(visio2,enableExtension) "fit"] == -1 } {
+     lappend conf(visio2,enableExtension) "fit" "1"
    }
-   if { [lsearch $conf(Visio2,enableExtension) "jpg"] == -1 } {
-     lappend conf(Visio2,enableExtension) "jpg" "1"
+   if { [lsearch $conf(visio2,enableExtension) "jpg"] == -1 } {
+     lappend conf(visio2,enableExtension) "jpg" "1"
    }
-   if { [lsearch $conf(Visio2,enableExtension) "raw"] == -1 } {
-     lappend conf(Visio2,enableExtension) "raw" "1"
+   if { [lsearch $conf(visio2,enableExtension) "raw"] == -1 } {
+     lappend conf(visio2,enableExtension) "raw" "1"
    }
 
-   if {![info exists conf(Visio2,show_all_files)]} { set conf(Visio2,show_all_files) "0" }
+   if {![info exists conf(visio2,show_all_files)]} { set conf(visio2,show_all_files) "0" }
 
    #--- Types des objets affiches
    #---   bidouille !!! je met un espace au debut de private(parentFolder) et private(folder)
@@ -94,7 +85,7 @@ proc ::visio2::createPluginInstance { { in "" } { visuNo 1 } } {
    set private(file)         "$caption(visio2,file)"
    set private(volume)       "disque"
 
-   #--- j'affiche l'outil
+  #--- j'affiche l'outil
    #--- j'initialise la variable private
    set private($visuNo,This) $in.visio2
    set private($visuNo,ftptbl)        ""
@@ -244,7 +235,7 @@ proc ::visio2::configure { visuNo } {
    global conf
 
    #--- je recupere les extensions autorisees dans un tableau
-   array set enableExtension $conf(Visio2,enableExtension)
+   array set enableExtension $conf(visio2,enableExtension)
 
    #--- raz de la liste
    $tbl delete 0 end
@@ -378,7 +369,7 @@ proc ::visio2::configure { visuNo } {
          lappend item "$name" "$type" "$serie" "$date" "$size"
          #--- j'ajoute une ligne dans la table
          $tbl insert end $item
-      } elseif  { $conf(Visio2,show_all_files)==1 } {
+      } elseif  { $conf(visio2,show_all_files)==1 } {
          #--- cas d'un fichier quelconque
          set item {}
          #--- colonne name
@@ -465,10 +456,10 @@ proc ::visio2::showColumn { visuNo tbl columnIndex } {
 
    switch $columnIndex {
       "0" { set show "1" }
-      "1" { set show $::conf(Visio2,show_column_type) }
-      "2" { set show $::conf(Visio2,show_column_series) }
-      "3" { set show $::conf(Visio2,show_column_date) }
-      "4" { set show $::conf(Visio2,show_column_size) }
+      "1" { set show $::conf(visio2,show_column_type) }
+      "2" { set show $::conf(visio2,show_column_series) }
+      "3" { set show $::conf(visio2,show_column_date) }
+      "4" { set show $::conf(visio2,show_column_size) }
    }
    if { $show == 1 } {
       $tbl columnconfigure $columnIndex -hide 0
@@ -532,11 +523,9 @@ proc ::visio2::cmdFtpConnection { visuNo } {
    }
 }
 
-
-
 #------------------------------------------------------------------------------
-# Visio2BuildIF
-#   affiche l'outil Visio2
+# createPanel
+#   affiche l'outil visio2
 #------------------------------------------------------------------------------
 proc ::visio2::createPanel { visuNo } {
    global audace
@@ -611,11 +600,9 @@ proc ::visio2::createPanel { visuNo } {
 
 ################################################################
 # namespace ::visio2::config
-#    fenetre de configuration de l'outil Visio2
+#    fenetre de configuration de l'outil visio2
 ################################################################
-
 namespace eval ::visio2::config {
-
 }
 
 #------------------------------------------------------------
@@ -647,10 +634,10 @@ proc ::visio2::config::confToWidget { } {
    global conf
 
    #--- je mets les extensions dans un array (de-serialisation)
-   array set widgetEnableExtension $conf(Visio2,enableExtension)
+   array set widgetEnableExtension $conf(visio2,enableExtension)
 
    #--- j'initialise les variables utilisees par le widgets
-   set widget(show_all_files)         $conf(Visio2,show_all_files)
+   set widget(show_all_files) $conf(visio2,show_all_files)
 }
 
 #------------------------------------------------------------
@@ -663,8 +650,8 @@ proc ::visio2::config::apply { visuNo } {
    variable widgetEnableExtension
    global conf
 
-   set conf(Visio2,enableExtension) [array get widgetEnableExtension]
-   set conf(Visio2,show_all_files)  $widget(show_all_files)
+   set conf(visio2,enableExtension) [array get widgetEnableExtension]
+   set conf(visio2,show_all_files)  $widget(show_all_files)
 }
 
 #------------------------------------------------------------
@@ -899,13 +886,11 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
    pack $frm.display.show_all_afiles -anchor w -side top -padx 5 -pady 0
 }
 
-
 ################################################################
 # namespace localTable
 #    gere la table des fichiers du disque local
 ################################################################
 namespace eval ::visio2::localTable {
-
 }
 
 #------------------------------------------------------------------------------
@@ -1185,7 +1170,6 @@ proc ::visio2::localTable::renameFile { visuNo } {
       return
    }
 
-
    #--- je copie les parametres  par defaut pour renameDialog
    ::visio2::renameDialog::setProperty $visuNo "fileList" $fileList
    ::visio2::renameDialog::setProperty $visuNo "genericName" $private($visuNo,genericName)
@@ -1194,7 +1178,6 @@ proc ::visio2::localTable::renameFile { visuNo } {
    ::visio2::renameDialog::setProperty $visuNo "destinationFolder" $private($visuNo,directory)
    ::visio2::renameDialog::setProperty $visuNo "overwrite" $private($visuNo,overwrite)
    ::visio2::renameDialog::setProperty $visuNo "copy" $private($visuNo,copy)
-
 
    #--- j'affiche la fenetre
    set result [::visio2::renameDialog::run $visuNo ]
@@ -1530,7 +1513,6 @@ proc ::visio2::localTable::showNextSlide { visuNo { currentitem "0" } } {
    }
 }
 
-
 #------------------------------------------------------------------------------
 # localTable::saveColumnWidth
 #   sauve la largeur des colonnes dans conf()
@@ -1540,11 +1522,11 @@ proc ::visio2::localTable::saveColumnWidth { visuNo } {
    global conf
 
    #--- save columns width
-   set conf(Visio2,width_column_name)   [$private($visuNo,tbl) columncget 0 -width]
-   set conf(Visio2,width_column_type)   [$private($visuNo,tbl) columncget 1 -width]
-   set conf(Visio2,width_column_series) [$private($visuNo,tbl) columncget 2 -width]
-   set conf(Visio2,width_column_date)   [$private($visuNo,tbl) columncget 3 -width]
-   set conf(Visio2,width_column_size)   [$private($visuNo,tbl) columncget 4 -width]
+   set conf(visio2,width_column_name)   [$private($visuNo,tbl) columncget 0 -width]
+   set conf(visio2,width_column_type)   [$private($visuNo,tbl) columncget 1 -width]
+   set conf(visio2,width_column_series) [$private($visuNo,tbl) columncget 2 -width]
+   set conf(visio2,width_column_date)   [$private($visuNo,tbl) columncget 3 -width]
+   set conf(visio2,width_column_size)   [$private($visuNo,tbl) columncget 4 -width]
 }
 
 #------------------------------------------------------------------------------
@@ -1586,18 +1568,18 @@ proc ::visio2::localTable::createTbl { visuNo frame } {
       -activestyle none
 
    #--- je fixe la largeur des colonnes
-   $tbl columnconfigure 0 -width $conf(Visio2,width_column_name)
-   $tbl columnconfigure 1 -width $conf(Visio2,width_column_type)
-   $tbl columnconfigure 2 -width $conf(Visio2,width_column_series)
-   $tbl columnconfigure 3 -width $conf(Visio2,width_column_date)
-   $tbl columnconfigure 4 -width $conf(Visio2,width_column_size)
+   $tbl columnconfigure 0 -width $conf(visio2,width_column_name)
+   $tbl columnconfigure 1 -width $conf(visio2,width_column_type)
+   $tbl columnconfigure 2 -width $conf(visio2,width_column_series)
+   $tbl columnconfigure 3 -width $conf(visio2,width_column_date)
+   $tbl columnconfigure 4 -width $conf(visio2,width_column_size)
 
    #--- j'affiche ou masque les colonnes (la premiere colonne est toujours visible)
    $tbl columnconfigure 0 -hide 0
-   $tbl columnconfigure 1 -hide [expr !$conf(Visio2,show_column_type) ]
-   $tbl columnconfigure 2 -hide [expr !$conf(Visio2,show_column_series) ]
-   $tbl columnconfigure 3 -hide [expr !$conf(Visio2,show_column_date) ]
-   $tbl columnconfigure 4 -hide [expr !$conf(Visio2,show_column_size) ]
+   $tbl columnconfigure 1 -hide [expr !$conf(visio2,show_column_type) ]
+   $tbl columnconfigure 2 -hide [expr !$conf(visio2,show_column_series) ]
+   $tbl columnconfigure 3 -hide [expr !$conf(visio2,show_column_date) ]
+   $tbl columnconfigure 4 -hide [expr !$conf(visio2,show_column_size) ]
 
    #--- choix de l'ordre aphabetique en fonction de l'OS ( pour ne pas depayser les habitues)
    if { $::tcl_platform(os) == "Linux" } {
@@ -1636,16 +1618,16 @@ proc ::visio2::localTable::createTbl { visuNo frame } {
 
    $menu add separator
    $menu add checkbutton -label $caption(visio2,column_type)   \
-      -variable conf(Visio2,show_column_type)       \
+      -variable conf(visio2,show_column_type)       \
       -command "::visio2::showColumn $visuNo $::visio2::localTable::private($visuNo,tbl) 1"
    $menu add checkbutton -label $caption(visio2,column_series) \
-      -variable conf(Visio2,show_column_series)     \
+      -variable conf(visio2,show_column_series)     \
       -command "::visio2::showColumn $visuNo $::visio2::localTable::private($visuNo,tbl) 2"
    $menu add checkbutton -label $caption(visio2,column_date)   \
-      -variable conf(Visio2,show_column_date)       \
+      -variable conf(visio2,show_column_date)       \
       -command "::visio2::showColumn $visuNo $::visio2::localTable::private($visuNo,tbl) 3"
    $menu add checkbutton -label $caption(visio2,column_size)   \
-      -variable conf(Visio2,show_column_size)       \
+      -variable conf(visio2,show_column_size)       \
       -command "::visio2::showColumn $visuNo $::visio2::localTable::private($visuNo,tbl) 4"
 
    $menu add separator
@@ -1695,14 +1677,11 @@ proc ::visio2::localTable::configureLabelDirectory { visuNo label } {
    }
 }
 
-
-
 ################################################################
-#   namespace ::visio2::ftpTable
+# namespace ::visio2::ftpTable
 #    gere la table des fichiers du serveur FTP
 ################################################################
 namespace eval ::visio2::ftpTable {
-
 }
 
 #------------------------------------------------------------------------------
@@ -1927,14 +1906,14 @@ proc ::visio2::ftpTable::createTbl { visuNo frame } {
    global conf
    variable private
 
-   set private(parentFolder) $::visio2::private(parentFolder)
-   set private(folder)       $::visio2::private(folder)
-   set private(fileImage)    $::visio2::private(fileImage)
-   set private(fileMovie)    $::visio2::private(fileMovie)
-   set private(file)         $::visio2::private(file)
-   set private($visuNo,tbl)          ""
-   set private($visuNo,directory)    "/"
-   set private($visuNo,frame)        ""
+   set private(parentFolder)      $::visio2::private(parentFolder)
+   set private(folder)            $::visio2::private(folder)
+   set private(fileImage)         $::visio2::private(fileImage)
+   set private(fileMovie)         $::visio2::private(fileMovie)
+   set private(file)              $::visio2::private(file)
+   set private($visuNo,tbl)       ""
+   set private($visuNo,directory) "/"
+   set private($visuNo,frame)     ""
 
    #--- quelques raccourcis utiles
    set tbl $frame.tbl
@@ -1962,18 +1941,18 @@ proc ::visio2::ftpTable::createTbl { visuNo frame } {
       -activestyle none
 
    #--- je fixe la largeur des colonnes
-   $tbl columnconfigure 0 -width $conf(Visio2,width_column_name)
-   $tbl columnconfigure 1 -width $conf(Visio2,width_column_type)
-   $tbl columnconfigure 2 -width $conf(Visio2,width_column_series)
-   $tbl columnconfigure 3 -width $conf(Visio2,width_column_date)
-   $tbl columnconfigure 4 -width $conf(Visio2,width_column_size)
+   $tbl columnconfigure 0 -width $conf(visio2,width_column_name)
+   $tbl columnconfigure 1 -width $conf(visio2,width_column_type)
+   $tbl columnconfigure 2 -width $conf(visio2,width_column_series)
+   $tbl columnconfigure 3 -width $conf(visio2,width_column_date)
+   $tbl columnconfigure 4 -width $conf(visio2,width_column_size)
 
    #--- j'affiche ou masque les colonnes (la premiere colonne est toujours visible)
    $tbl columnconfigure 0 -hide 0
-   $tbl columnconfigure 1 -hide [expr !$conf(Visio2,show_column_type) ]
-   $tbl columnconfigure 2 -hide [expr !$conf(Visio2,show_column_series) ]
-   $tbl columnconfigure 3 -hide [expr !$conf(Visio2,show_column_date) ]
-   $tbl columnconfigure 4 -hide [expr !$conf(Visio2,show_column_size) ]
+   $tbl columnconfigure 1 -hide [expr !$conf(visio2,show_column_type) ]
+   $tbl columnconfigure 2 -hide [expr !$conf(visio2,show_column_series) ]
+   $tbl columnconfigure 3 -hide [expr !$conf(visio2,show_column_date) ]
+   $tbl columnconfigure 4 -hide [expr !$conf(visio2,show_column_size) ]
 
    #--- j'adapte la largeur de la liste en fonction des colonnes affichees
    ::visio2::showColumn $visuNo $tbl 0
@@ -2042,7 +2021,7 @@ proc ::visio2::ftpTable::configureLabelDirectory { visuNo label directory} {
 # ========== Namespace de la fenetre de renommage des fichiers ========
 #
 # cette fenetre est modale
-# A la fermeture, Sa procedure run retourne les valeurs
+# A la fermeture, sa procedure run retourne les valeurs
 #   { genericName firstIndex }
 #------------------------------------------------------------
 
@@ -2051,8 +2030,7 @@ namespace eval ::visio2::renameDialog {
 
 #------------------------------------------------------------
 # config::run
-#    affiche la fenetre de
-#
+#   affiche la fenetre de renommage
 #------------------------------------------------------------
 proc ::visio2::renameDialog::run { visuNo } {
    variable private
@@ -2063,12 +2041,12 @@ proc ::visio2::renameDialog::run { visuNo } {
    }
 
    #--- j'affiche la fenetre de configuration
-  if { [winfo exists $private($visuNo,toplevel)] == 0 } {
-     set result [::confGenerique::run $visuNo $private($visuNo,toplevel) "::visio2::renameDialog"  \
-        -modal 1 -resizable 1 -geometry $private($visuNo,geometry)]
+   if { [winfo exists $private($visuNo,toplevel)] == 0 } {
+      set result [::confGenerique::run $visuNo $private($visuNo,toplevel) "::visio2::renameDialog" \
+         -modal 1 -resizable 1 -geometry $private($visuNo,geometry)]
    } else {
-     focus $private($visuNo,toplevel)
-     set result "0"
+      focus $private($visuNo,toplevel)
+      set result "0"
    }
    return $result
 }
@@ -2089,11 +2067,7 @@ proc ::visio2::renameDialog::apply { visuNo } {
 proc ::visio2::renameDialog::closeWindow { visuNo } {
    variable private
 
-   #--- j'enregistre la position de la fenetre de configuration
-   #set geometry [ wm geometry $private($visuNo,toplevel)]
-   #set deb [ expr 1 + [ string first + $geometry ] ]
-   #set fin [ string length $geometry ]
-   #set ::conf(Visio2,renameWindowPosition) "+[ string range $geometry $deb $fin ]"
+   #--- j'enregistre la position et la dimension de la fenetre de configuration
    set private($visuNo,geometry) [ wm geometry $private($visuNo,toplevel)]
 }
 
@@ -2102,7 +2076,6 @@ proc ::visio2::renameDialog::closeWindow { visuNo } {
 #   retourne le nom de la fenetre de configuration
 #------------------------------------------------------------
 proc ::visio2::renameDialog::getLabel { } {
-
    return "[::visio2::getPluginTitle]"
 }
 
@@ -2118,7 +2091,7 @@ proc ::visio2::renameDialog::fillConfigPage { frm visuNo } {
    set private($visuNo,This) $frm
 
    if { [llength $private($visuNo,fileList)] >  1 } {
-      TitleFrame $frm.renameFile -borderwidth 2 -relief ridge -text "$caption(Visio2,renameFile)"
+      TitleFrame $frm.renameFile -borderwidth 2 -relief ridge -text "$caption(visio2,renameFile)"
          listbox $frm.renameFile.list -state normal -height 4 -state  disabled \
             -listvariable ::visio2::renameDialog::private($visuNo,fileList) \
             -xscrollcommand [list $frm.renameFile.hsb set] \
@@ -2134,30 +2107,30 @@ proc ::visio2::renameDialog::fillConfigPage { frm visuNo } {
          grid columnconfigure [$frm.renameFile getframe] 0 -weight 1
       pack $frm.renameFile -anchor w -side top -fill both -expand 1
 
-      LabelEntry $frm.genericName -label "$caption(Visio2,genericName)" \
+      LabelEntry $frm.genericName -label "$caption(visio2,genericName)" \
          -labeljustify left -justify left -labelwidth 12 \
          -textvariable ::visio2::renameDialog::private($visuNo,genericName)
       pack $frm.genericName -side top -anchor w -padx 10 -pady 2 -fill x -expand 0
 
-      LabelEntry $frm.firstIndex -label "$caption(Visio2,firstIndex)" \
+      LabelEntry $frm.firstIndex -label "$caption(visio2,firstIndex)" \
          -labeljustify left -justify right -labelwidth 12 -width 6 \
          -textvariable ::visio2::renameDialog::private($visuNo,firstIndex)
       pack $frm.firstIndex -side top -anchor w -padx 10 -pady 2 -fill none -expand 0
    } else {
-      TitleFrame $frm.renameFile -borderwidth 2 -relief ridge -text "$caption(Visio2,renameFile)"
+      TitleFrame $frm.renameFile -borderwidth 2 -relief ridge -text "$caption(visio2,renameFile)"
          listbox $frm.renameFile.list -state normal -height 1 -state  disabled \
             -listvariable ::visio2::renameDialog::private($visuNo,fileList)
          pack $frm.renameFile.list -in [$frm.renameFile getframe] -side top -anchor w -padx 10 -pady 5 -fill x -expand 0
       pack $frm.renameFile -anchor w -side top -fill x -expand 0
 
-      LabelEntry $frm.newName -label "$caption(Visio2,newName)" \
+      LabelEntry $frm.newName -label "$caption(visio2,newName)" \
          -labeljustify left -justify left -labelwidth 12 \
          -textvariable ::visio2::renameDialog::private($visuNo,newFileName)
       pack $frm.newName -side top -anchor w -padx 10 -pady 2 -fill x -expand 0
    }
 
    frame $frm.destination -borderwidth 1 -relief flat
-      LabelEntry $frm.destination.folder -label "$caption(Visio2,destinationFolder)" \
+      LabelEntry $frm.destination.folder -label "$caption(visio2,destinationFolder)" \
          -labeljustify left -justify left -labelwidth 12 \
          -textvariable ::visio2::renameDialog::private($visuNo,destinationFolder)
       pack $frm.destination.folder -side left -anchor w -padx 10 -pady 2 -fill x -expand 1
@@ -2166,11 +2139,11 @@ proc ::visio2::renameDialog::fillConfigPage { frm visuNo } {
       pack $frm.destination.explore -side left -anchor w -padx 4 -pady 2 -fill none -expand 0
    pack $frm.destination -side top -anchor w -pady 2 -fill x -expand 0
 
-   checkbutton $frm.copy -text "$caption(Visio2,copyFile)" \
+   checkbutton $frm.copy -text "$caption(visio2,copyFile)" \
          -variable ::visio2::renameDialog::private($visuNo,copy)
    pack $frm.copy -side top -anchor w -padx 10 -pady 2 -fill none -expand 0
 
-   checkbutton $frm.overwrite -text "$caption(Visio2,overwrite)" \
+   checkbutton $frm.overwrite -text "$caption(visio2,overwrite)" \
          -variable ::visio2::renameDialog::private($visuNo,overwrite)
    pack $frm.overwrite -side top -anchor w -padx 10 -pady 2 -fill none -expand 0
 
@@ -2183,8 +2156,8 @@ proc ::visio2::renameDialog::fillConfigPage { frm visuNo } {
 proc ::visio2::renameDialog::explore { visuNo } {
    variable private
 
-   set directory [ tk_chooseDirectory -title "[::visio2::getPluginTitle] $::caption(Visio2,destinationFolder)" \
-            -initialdir $private($visuNo,destinationFolder) -parent $private($visuNo,toplevel) ]
+   set directory [ tk_chooseDirectory -title "[::visio2::getPluginTitle] $::caption(visio2,destinationFolder)" \
+      -initialdir $private($visuNo,destinationFolder) -parent $private($visuNo,toplevel) ]
 
    if { $directory != "" } {
       set private($visuNo,destinationFolder) $directory
@@ -2210,7 +2183,6 @@ proc ::visio2::renameDialog::setProperty { visuNo propertyName value } {
 
    set private($visuNo,$propertyName) $value
 }
-
 
 #--- commande pour lancer un serveur FTP local
 #ftpserver::start
