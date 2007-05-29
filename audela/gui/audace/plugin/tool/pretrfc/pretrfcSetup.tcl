@@ -2,7 +2,7 @@
 # Fichier : pretrfcSetup.tcl
 # Description : Choisir l'affichage ou non de messages sur la Console
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.3 2007-04-12 21:57:58 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.tcl,v 1.4 2007-05-29 20:55:20 robertdelmas Exp $
 #
 
 namespace eval pretrfcSetup {
@@ -37,7 +37,7 @@ namespace eval pretrfcSetup {
       global conf_pt_fc panneau
 
       #--- confToWidget
-      set panneau(pretraitFC,messages) $conf_pt_fc(messages)
+      set panneau(pretraitfc,messages) $conf_pt_fc(messages)
    }
 
    #
@@ -140,18 +140,18 @@ namespace eval pretrfcSetup {
       pack $This.lab1 -in $This.frame3 -side top -fill both -expand 1 -padx 5 -pady 2
 
       #--- Cree le label et les radio-boutons de l'outil de pretraitement
-      if { [ info exists panneau(menu_name,pretraitFC) ] == "1" } {
-         label $This.lab4 -text "$panneau(menu_name,pretraitFC)"
+      if { [ info exists panneau(menu_name,pretraitfc) ] == "1" } {
+         label $This.lab4 -text "$panneau(menu_name,pretraitfc)"
          pack $This.lab4 -in $This.frame6 -side left -anchor w -padx 5 -pady 5
 
          radiobutton $This.radio2 -anchor w -highlightthickness 0 \
             -text "$caption(pretrfcSetup,non)" -value 0 \
-            -variable panneau(pretraitFC,messages)
+            -variable panneau(pretraitfc,messages)
          pack $This.radio2 -in $This.frame7 -side right -padx 5 -pady 5 -ipady 0
 
          radiobutton $This.radio3 -anchor w -highlightthickness 0 \
             -text "$caption(pretrfcSetup,oui)" -value 1 \
-            -variable panneau(pretraitFC,messages)
+            -variable panneau(pretraitfc,messages)
          pack $This.radio3 -in $This.frame7 -side right -padx 5 -pady 5 -ipady 0
       } else {
          label $This.lab4 -text ""
@@ -203,7 +203,7 @@ namespace eval pretrfcSetup {
    proc widgetToConf { } {
       global conf_pt_fc panneau
 
-      set conf_pt_fc(messages) $panneau(pretraitFC,messages)
+      set conf_pt_fc(messages) $panneau(pretraitfc,messages)
    }
 }
 
