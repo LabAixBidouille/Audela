@@ -51,8 +51,10 @@ set spcaudace(rep_spccal) [ file join $spcaudace(repspc) data calibration_lambda
 
 
 #--- Répertoire de la calibration-chimie :
-set spcaudace(motsheader) [ list "OBJNAME" "OBSERVER" "ORIGIN" "TELESCOP" "EQUIPMEN" ]
-set spcaudace(motsheaderdef) [ list "Current name of the object" "Observer name" "Origin place of FITS image" "Telescop" "System which created data via the camera" ]
+#set spcaudace(motsheader) [ list "OBJNAME" "OBSERVER" "ORIGIN" "TELESCOP" "EQUIPMEN" ]
+#set spcaudace(motsheaderdef) [ list "Current name of the object" "Observer name" "Origin place of FITS image" "Telescop" "System which created data via the camera" ]
+set spcaudace(motsheader) [ list "OBJNAME" "TELESCOP" "EQUIPMEN" ]
+set spcaudace(motsheaderdef) [ list "Current name of the object" "Telescop" "System which created data via the camera" ]
 
 
 #--- Lieu de la documentation d'SpcAudACE :

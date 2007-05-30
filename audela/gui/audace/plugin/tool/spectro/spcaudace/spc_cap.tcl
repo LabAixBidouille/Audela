@@ -42,7 +42,7 @@ set captionspc(print_on)                           "Print with "
 set captionspc(quitspc)                            "Exit SpcAud'ACE's window"
 
 #--- Menu Géométrie ---#
-set captionspc(spc_geometrie)                      "Géométry"
+set captionspc(spc_geometrie)                      "Geometry"
 set captionspc(spc_pretraitementfc_w)              "2D spectrum processing"
 set captionspc(spc_register_w)                     "Register a 2D spectrum serie"
 set captionspc(spc_rot180_w)                       "Invert left-right (2D/1D)"
@@ -85,8 +85,8 @@ set captionspc(spc_traite2srinstrum_w)             "3) Incorporating calibration
 set captionspc(spc_traite2scalibre_w)              "Incorporating calibration corrections (without RI) to spectra"
 # set captionspc(spc_traitesimple2calibre_w)         "Prétraitement simple -> Calibration"
 # set captionspc(spc_traitesimple2rinstrum_w)        "Prétraitement simple -> Réponse instrumentale"
-set captionspc(spc_geom2calibre_w)                 "Géométrics corrections -> Wavelength calibration"
-set captionspc(spc_geom2rinstrum_w)                "Géométrics corrections -> Intrsunmental reposne correction"
+set captionspc(spc_geom2calibre_w)                 "Geometrics corrections -> Wavelength calibration"
+set captionspc(spc_geom2rinstrum_w)                "Geometrics corrections -> Intrsunmental reposne correction"
 set captionspc(spc_specLhIII_w)                    "LhiresIII spectral preprocessing (empty)"
 
 #--- Menu Astrophysique ---#

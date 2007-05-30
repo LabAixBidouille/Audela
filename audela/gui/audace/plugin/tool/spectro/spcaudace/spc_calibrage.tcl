@@ -1544,6 +1544,72 @@ proc spc_autocalibrehaeau1 { args } {
 
 
 
+
+
+####################################################################
+#  Procédure d'évaluation de la non-linéarité de la dispersion d'un spectre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 23-08-2006
+# Date modification : 8-05-2007
+# Arguments : nom_fichier_profil_de_raies ?liste_de_liste_intervalles_encadrant_raies?
+####################################################################
+
+proc spc_caloverif { args } {
+    global conf
+    global audace
+
+    if { [llength $args]<= 2 } {
+	if { [llength $args]== 2 } {
+	    set spectre [ lindex $args 0 ]
+	    set raylist [ lindex $args 1 ]
+	} elseif { [llength $args]==1 } {
+	    set spectre [ lindex $args 0 ]
+	    set raylist {{6531.781 6532.869 6532.359} {6543.4 6544.5 6543.907} {6548.1 6549.4 6548.622} {6552.1 6553.2 6552.629} {6571.7 6572.8 6572.072} {6574.3 6575.6 6574.847}}
+	} else {
+	    ::console::affiche_erreur "Usage: spc_caloverif nom_fichier_profil_de_raies ?liste_de_liste_intervalles_encadrant_raies?\n\n"
+	    return ""
+	}
+
+
+	#--- Détermine le centre des raies mesurées et calcul la difference avec celles duc atalogue :
+	set chi2 0.
+	set ecart_type 0.
+	foreach ray $raylist {
+	    set xdeb [ lindex $ray 0 ]
+	    set xfin [ lindex $ray 1 ]
+	    set lambda_cat [ lindex $ray 2 ]
+	    #set lambda_mes [ spc_centergaussl $spectre $xdeb $xfin e ]
+	    set lambda_mes [ spc_centergravl $spectre $xdeb $xfin ]
+	    set ldiff [ expr $lambda_mes-$lambda_cat ]
+	    lappend results " [ list $lambda_cat $lambda_mes $ldiff ] \n"
+	    #set chi2 [ expr $chi2+pow($ldiff,2)/$lambda_cat ]
+	    set ecart_type [ expr $ecart_type+pow($ldiff,2) ]
+	}
+	
+
+	#--- Calcul du RMS et ecart-type :
+	set nbraies [ llength $raylist ]
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+	set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	set chi2 [ expr $ecart_type/($nbraies*pow($cdelt1,2)) ]
+	set rms [ expr $cdelt1*sqrt($chi2) ]
+	set ecart_type [ expr sqrt($ecart_type)/$nbraies ]
+
+
+	#--- Affichage des résultats :
+	::console::affiche_resultat "Liste résultats (Lambda_cat Lambda_mes Diff) :\n $results\n"
+	::console::affiche_resultat "Sigma=$ecart_type A\nChi2=$chi2\nRMS=$rms A\n"
+    } else {
+	::console::affiche_erreur "Usage: spc_caloverif nom_fichier_profil_de_raies ?liste_de_liste_intervalles_encadrant_raies?\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+
+
 ##########################################################
 # Procedure de correction de la vitesse héliocentrique de la calibration en longueur d'onde
 #

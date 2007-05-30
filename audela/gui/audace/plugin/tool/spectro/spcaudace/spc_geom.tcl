@@ -722,11 +722,11 @@ proc spc_smilex { args } {
 		    #-- Sauvegarde du spectre corrigé du slant :
 		    # buf$audace(bufNo) setkwd [list "SPC_SLX1" 0 float "ycenter smilex" ""]
 		    # buf$audace(bufNo) setkwd [list "SPC_SLX2" 0 float "adeg2 smilex" ""]
-		    buf$audace(bufNo) setkwd [list "SPC_SLA" $pente float "pente slant" ""]
+		    buf$audace(bufNo) setkwd [ list "SPC_SLA" $pente float "pente slant" "" ]
 		    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
 		    loadima "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
-		    ::console::affiche_resultat "Image sauvée sous ${filenamespc}_slt$conf(extension,defaut). Coéfficents du smilex : $ycenter, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
-		    set results [ list ${filenamespc}_slx $c $b [lindex $coefssmilex 0] $ycenter  ]
+		    ::console::affiche_resultat "Image sauvée sous ${filenamespc}_slt$conf(extension,defaut). Coéfficents du slant : $pente, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
+		    set results [ list ${filenamespc}_slx $c $b [ lindex $coefssmilex 0 ] $pente ]
 		    return $results
 		} else {
 		    ::console::affiche_resultat "Pas de correction du slant nécessaire non plus.\n"
@@ -847,7 +847,7 @@ proc spc_smilex2img { args } {
 	#--- Sauvegarde
 	set filespc [ file rootname $spectre ]
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_slx$conf(extension,defaut)"
-	::console::affiche_resultat "Spectre corrige du smile en x sauvé sous ${spectre}_slx$conf(extension,defaut).\n"
+	::console::affiche_resultat "Spectre corrigé du smile en x sauvé sous ${spectre}_slx$conf(extension,defaut).\n"
 	return ${spectre}_slx
     } else {
 	::console::affiche_erreur "Usage: spc_smilex2img spectre_2D_a_corriger spectre_lampe_calibration\n\n"
