@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.11 2007-05-20 17:38:34 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.12 2007-05-30 17:16:10 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -18,49 +18,45 @@ proc ::webcam::init { } {
 
    #--- Charge le fichier caption
    source [ file join $audace(rep_plugin) camera webcam webcam.cap ]
-   set caption(webcam,framerate) "Images/s"
-   set caption(webcam,shutter) "shutter"
-   set caption(webcam,gain) "gain"
-   set caption(webcam,auto)    "auto"
 
    #--- Initialise les variables de la webcams A
    foreach camItem { A B C } {
-      if { ! [ info exists conf(webcam,$camItem,longuepose) ] }           { set conf(webcam,$camItem,longuepose)           "0" }
-      if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }       { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
-      if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }    { set conf(webcam,$camItem,longueposelinkbit)    "0" }
-      if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] } { set conf(webcam,$camItem,longueposestartvalue) "0" }
-      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                 { set conf(webcam,$camItem,mirh)                 "0" }
-      if { ! [ info exists conf(webcam,$camItem,mirv) ] }                 { set conf(webcam,$camItem,mirv)                 "0" }
-      if { ! [ info exists conf(webcam,$camItem,channel) ] }              { set conf(webcam,$camItem,channel)              "0" }
-      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }              { set conf(webcam,$camItem,ccd_N_B)              "0" }
-      if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }          { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
-      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                  { set conf(webcam,$camItem,ccd)                  "" }
-      if { ! [ info exists conf(webcam,$camItem,videoformat) ] }          { set conf(webcam,$camItem,videoformat)          "QCIF" }
-      if { ! [ info exists conf(webcam,$camItem,port) ] }                 { set conf(webcam,$camItem,port)                 "/dev/video0" }
+      if { ! [ info exists conf(webcam,$camItem,longuepose) ] }            { set conf(webcam,$camItem,longuepose)           "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }        { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
+      if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }     { set conf(webcam,$camItem,longueposelinkbit)    "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] }  { set conf(webcam,$camItem,longueposestartvalue) "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                  { set conf(webcam,$camItem,mirh)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirv) ] }                  { set conf(webcam,$camItem,mirv)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,channel) ] }               { set conf(webcam,$camItem,channel)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }               { set conf(webcam,$camItem,ccd_N_B)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }           { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
+      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                   { set conf(webcam,$camItem,ccd)                  "" }
+      if { ! [ info exists conf(webcam,$camItem,videoformat) ] }           { set conf(webcam,$camItem,videoformat)          "QCIF" }
+      if { ! [ info exists conf(webcam,$camItem,port) ] }                  { set conf(webcam,$camItem,port)                 "/dev/video0" }
 
       if { $::tcl_platform(os) == "Linux" } {
          if { ! [ info exists conf(webcam,$camItem,configWindowPosition)]} { set conf(webcam,$camItem,configWindowPosition) "+0+0"  }
-         if { ! [ info exists conf(webcam,$camItem,framerate) ] }         { set conf(webcam,$camItem,framerate) "5"  }
-         if { ! [ info exists conf(webcam,$camItem,shutter) ] }           { set conf(webcam,$camItem,shutter) "1/25"  }
-         if { ! [ info exists conf(webcam,$camItem,gain) ] }              { set conf(webcam,$camItem,gain) "50"  }
-         if { ! [ info exists conf(webcam,$camItem,autoShutter) ] }       { set conf(webcam,$camItem,autoShutter) "1"  }
-         if { ! [ info exists conf(webcam,$camItem,autoGain) ] }       { set conf(webcam,$camItem,autoGain) "1"  }
+         if { ! [ info exists conf(webcam,$camItem,framerate) ] }          { set conf(webcam,$camItem,framerate)            "5"  }
+         if { ! [ info exists conf(webcam,$camItem,shutter) ] }            { set conf(webcam,$camItem,shutter)              "1/25"  }
+         if { ! [ info exists conf(webcam,$camItem,gain) ] }               { set conf(webcam,$camItem,gain)                 "50"  }
+         if { ! [ info exists conf(webcam,$camItem,autoShutter) ] }        { set conf(webcam,$camItem,autoShutter)          "1"  }
+         if { ! [ info exists conf(webcam,$camItem,autoGain) ] }           { set conf(webcam,$camItem,autoGain)             "1"  }
       }
    }
 
    #--- definition des format video
    #--- Attention : les valeurs de private(videoFormatLabels) et private(videoFormatNames)
-   #---             doivent etre dans le meme ordre.
+   #---             doivent etre dans le meme ordre
    set private(videoFormatLabels) [ list \
-      "VGA - 640 x 480" \
-      "CIF - 352 x 288" \
-      "SIF - 320 x 240" \
+      "VGA - 640 x 480"  \
+      "CIF - 352 x 288"  \
+      "SIF - 320 x 240"  \
       "SSIF - 240 x 176" \
       "QCIF - 176 x 144" \
       "QSIF - 160 x 120" \
       "SQCIF - 128 x 96" \
    ]
-   set private(videoFormatNames)  [ list "VGA" "CIF" "SIF" "SSIF" "QCIF" "QSIF" "SQCIF" ]
+   set private(videoFormatNames) [ list "VGA" "CIF" "SIF" "SSIF" "QCIF" "QSIF" "SQCIF" ]
 
    set private(portList) ""
 }
@@ -88,10 +84,10 @@ proc ::webcam::confToWidget { } {
 
       #--- je copie le port correspondant de la camera
       set private($camItem,port)                 $conf(webcam,$camItem,port)
+
       #--- je copie le label correspondant au format
       set formatIndex [lsearch -exact $private(videoFormatNames) $conf(webcam,$camItem,videoformat)]
       set private($camItem,videoformat) [lindex $private(videoFormatLabels) $formatIndex]
-
    }
 }
 
@@ -115,6 +111,7 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,dim_ccd_N_B)          $private($camItem,dim_ccd_N_B)
    set conf(webcam,$camItem,ccd)                  $private($camItem,ccd)
 
+   #--- je copie la camera correspondant au port
    set conf(webcam,$camItem,port)                 $private($camItem,port)
 
    #--- je copie la format correspondant au label
@@ -128,11 +125,14 @@ proc ::webcam::widgetToConf { camItem } {
 #
 proc ::webcam::fillConfigPage { frm camItem } {
    variable private
-   global audace caption color confCam
+   global audace caption color
 
+   #--- Initialise une variable locale
    set private(frm) $frm
+
    #--- confToWidget
    ::webcam::confToWidget
+
    #--- Supprime tous les widgets de l'onglet
    foreach i [ winfo children $frm ] {
       destroy $i
@@ -141,9 +141,6 @@ proc ::webcam::fillConfigPage { frm camItem } {
    #--- Creation des differents frames
    frame $frm.frame1 -borderwidth 0 -relief raised
    pack $frm.frame1 -side top -fill both -expand 1
-
-   frame $frm.frame2 -borderwidth 0 -relief raised
-   pack $frm.frame2 -side bottom -fill x -pady 2
 
    frame $frm.frame3 -borderwidth 0 -relief raised
    pack $frm.frame3 -in $frm.frame1 -side left -fill x -expand 1 -anchor nw
@@ -337,15 +334,20 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -values $list_combobox
    pack $frm.dim_ccd_N_B -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
 
+   #--- Frame du site web web officiel des WebCams
+   frame $frm.frame2 -borderwidth 0 -relief raised
+
+      label $frm.frame2.lab103 -text "$caption(webcam,titre_site_web)"
+      pack $frm.frame2.lab103 -side top -fill x -pady 2
+
+      set labelName [::confCam::createUrlLabel $frm.frame2 "$caption(webcam,site_web_ref)" \
+         "$caption(webcam,site_web_ref)"]
+      pack $labelName -side top -fill x -pady 2
+
+   pack $frm.frame2 -side bottom -fill x -pady 2
+
    #--- Gestion des widgets actifs/inactifs
    ::webcam::ConfigWebCam $camItem
-
-   #--- Site web officiel des WebCam
-   label $frm.lab103 -text "$caption(webcam,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
-
-   set labelName [::confCam::createUrlLabel $frm.frame2 "$caption(webcam,site_web_ref)" "$caption(webcam,site_web_ref)"]
-   pack $labelName -side top -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -468,8 +470,8 @@ proc ::webcam::stop { camNo camItem } {
 #    Configure les widgets de configuration de la WebCam
 #
 proc ::webcam::ConfigWebCam { camItem } {
-   global audace conf confCam
    variable private
+   global audace conf confCam
 
    if { [ info exists private(frm)] } {
       set frm $private(frm)
@@ -664,19 +666,14 @@ proc ::webcam::hasShutter { } {
    return 0
 }
 
+# ========= Namespace de la fenetre de configuration ========
 
-#------------------------------------------------------------
-# ========== Namespace de la fentre de configuration ========
-#
-#
-#------------------------------------------------------------
 namespace eval ::webcam::config {
 }
 
 #------------------------------------------------------------
-# config::run
+# ::webcam::config::run
 #    affiche la fenetre de configuration de l'autoguidage
-#
 #------------------------------------------------------------
 proc ::webcam::config::run { visuNo camItem } {
    variable private
@@ -686,13 +683,13 @@ proc ::webcam::config::run { visuNo camItem } {
       set private($visuNo,camItem) $camItem
 
       set private(frameRateList) [list "5" "10" "15" "20" "25" "30" "50"]
-      set private(shutterList) [list "1/5" "1/10" "1/15" "1/20" "1/25" "1/33" "1/50" "1/100" "1/250" "1/500" "1/1000" "1/2500" "1/5000" "1/10000"]
+      set private(shutterList)   [list "1/5" "1/10" "1/15" "1/20" "1/25" "1/33" "1/50" "1/100" "1/250" "1/500" "1/1000" "1/2500" "1/5000" "1/10000"]
 
       #--- j'affiche la fenetre de configuration
-     if { [winfo exists $private($visuNo,toplevel)] == 0 } {
-        ::confGenerique::run $private($visuNo,toplevel) "::webcam::config" $visuNo nomodal
-         wm transient $private($visuNo,toplevel) [winfo parent  $private($visuNo,toplevel) ]
-         wm geometry $private($visuNo,toplevel) $::conf(webcam,$camItem,configWindowPosition) 
+      if { [winfo exists $private($visuNo,toplevel)] == 0 } {
+         ::confGenerique::run $visuNo $private($visuNo,toplevel) "::webcam::config" $visuNo nomodal
+         wm transient $private($visuNo,toplevel) [winfo parent $private($visuNo,toplevel) ]
+         wm geometry $private($visuNo,toplevel) $::conf(webcam,$camItem,configWindowPosition)
       } else {
          focus $private($visuNo,toplevel)
       }
@@ -705,7 +702,7 @@ proc ::webcam::config::run { visuNo camItem } {
 
 #------------------------------------------------------------
 # ::webcam::config::closeWindow
-#   ferme la fenetre de configuration
+#    ferme la fenetre de configuration
 #------------------------------------------------------------
 proc ::webcam::config::closeWindow { visuNo } {
    variable private
@@ -719,7 +716,7 @@ proc ::webcam::config::closeWindow { visuNo } {
 
 #------------------------------------------------------------
 # ::webcam::config::getLabel
-#   retourne le nom de la fenetre de configuration
+#    retourne le nom de la fenetre de configuration
 #------------------------------------------------------------
 proc ::webcam::config::getLabel { } {
    global caption
@@ -729,8 +726,8 @@ proc ::webcam::config::getLabel { } {
 
 #------------------------------------------------------------
 # ::webcam::config::fillConfigPage { }
-#   fenetre de configuration de la camera
-#   return rien
+#    fenetre de configuration de la camera
+#    return rien
 #------------------------------------------------------------
 proc ::webcam::config::fillConfigPage { frm visuNo } {
    variable private
@@ -739,11 +736,11 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
    set private($visuNo,This) $frm
 
    #--- j'initialise les variables des widgets
-   set private($visuNo,framerate)  $::conf(webcam,$private($visuNo,camItem),framerate)
-   set private($visuNo,shutter)    $::conf(webcam,$private($visuNo,camItem),shutter)
-   set private($visuNo,gain)       $::conf(webcam,$private($visuNo,camItem),gain)
+   set private($visuNo,framerate)   $::conf(webcam,$private($visuNo,camItem),framerate)
+   set private($visuNo,shutter)     $::conf(webcam,$private($visuNo,camItem),shutter)
+   set private($visuNo,gain)        $::conf(webcam,$private($visuNo,camItem),gain)
    set private($visuNo,autoShutter) $::conf(webcam,$private($visuNo,camItem),autoShutter)
-   set private($visuNo,autoGain)   $::conf(webcam,$private($visuNo,camItem),autoGain)
+   set private($visuNo,autoGain)    $::conf(webcam,$private($visuNo,camItem),autoGain)
 
    TitleFrame $frm.shutter -borderwidth 2 -relief ridge -text "$caption(webcam,shutter)"
       checkbutton $frm.shutter.auto -text "$caption(webcam,auto)" -highlightthickness 0 \
@@ -751,12 +748,11 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
          -command "::webcam::config::onSetAutoShutter $visuNo $frm.shutter.scale"
       pack $frm.shutter.auto -in [$frm.shutter getframe] -anchor w -side top -fill none -expand 0
       #listbox $frm.shutter.list -state normal -width [llength $private(shutterList)] -listvariable ::webcam::config::private(shutterList)
-      scale $frm.shutter.scale -from "0." -to "100."  \
-         -orient vertical -showvalue true -bigincrement 10 -tickinterval 5 -resolution 1  -width 8 \
+      scale $frm.shutter.scale -from "0." -to "100." \
+         -orient vertical -showvalue true -bigincrement 10 -tickinterval 5 -resolution 1 -width 8 \
          -borderwidth 1 -relief groove \
          -variable ::webcam::config::private($visuNo,shutter) \
          -command "::webcam::config::onSelectShutter $visuNo $frm.shutter.scale"
-
       pack $frm.shutter.scale -in [$frm.shutter getframe] -anchor w -side top -fill y -expand 1
       #bind $frm.shutter.list <<ListboxSelect>> "::webcam::config::onSelectShutter $visuNo $frm.shutter.list"
    pack $frm.shutter -anchor w -side left -fill y -expand 0
@@ -766,8 +762,8 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
          -variable ::webcam::config::private($visuNo,autoGain) \
          -command "::webcam::config::onSetAutoGain $visuNo $frm.gain.scale"
       pack $frm.gain.auto -in [$frm.gain getframe] -anchor w -side top -fill none -expand 0
-      scale $frm.gain.scale -from "0" -to "100"  \
-         -orient vertical -showvalue true -tickinterval 1 -resolution 1  -width 8 \
+      scale $frm.gain.scale -from "0" -to "100" \
+         -orient vertical -showvalue true -tickinterval 1 -resolution 1 -width 8 \
          -borderwidth 1 -relief groove \
          -variable ::webcam::config::private($visuNo,gain) \
          -command "::webcam::config::onSelectGain $visuNo $frm.gain.scale"
@@ -780,22 +776,21 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
       bind $frm.framerate.list <<ListboxSelect>> "::webcam::config::onSelectFrameRate $visuNo $frm.framerate.list"
    pack $frm.framerate -anchor w -side left -fill y -expand 0
 
-
    pack $frm -fill y -expand 1
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-   
+
    $frm.framerate.list selection set [lsearch $private(frameRateList) $private($visuNo,framerate)]
-   $frm.shutter.scale set $private($visuNo,shutter) 
-   $frm.gain.scale    set $private($visuNo,gain) 
+   $frm.shutter.scale set $private($visuNo,shutter)
+   $frm.gain.scale    set $private($visuNo,gain)
    ::webcam::config::onSetAutoShutter $visuNo $frm.shutter.scale
    ::webcam::config::onSetAutoGain $visuNo $frm.gain.scale
 }
 
 #------------------------------------------------------------
-#  onSelectFrameRate
-#     selectionne le nombre d'image par seconde
+# ::webcam::config::onSelectFrameRate
+#    selectionne le nombre d'images par seconde
 #
 #  return null
 #------------------------------------------------------------
@@ -807,7 +802,7 @@ proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
    if { $index != "" } {
       set private($visuNo,framerate) [$tklist get $index ]
       set camItem $private($visuNo,camItem)
-      set camNo   $::confCam($camItem,camNo)        
+      set camNo $::confCam($camItem,camNo)
       if { $private($visuNo,framerate) != $::conf(webcam,$camItem,framerate) } {
          set catchResult [ catch { cam$camNo framerate $private($visuNo,framerate) } catchMessage ]
          if { $catchResult == 0 } {
@@ -817,81 +812,77 @@ proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
             set private($visuNo,framerate) $::conf(webcam,$private($visuNo,camItem),framerate)
             $private($visuNo,This).framerate.list selection clear 0 end
             $private($visuNo,This).framerate.list selection set [lsearch $private(frameRateList) $private($visuNo,framerate)]
-
          }
       }
    }
 }
 
 #------------------------------------------------------------
-#  onSelectShutter
-#     selectionne la vitesse d'obturation
+# ::webcam::config::onSelectShutter
+#    selectionne la vitesse d'obturation
 #
-#  A negative value sets the shutter speed to automatic (
-#  controlled by the camera's firmware). 
-#  A value of 0..65535 will set manual mode, where the values 
-#  have been calibrated such that 65535 is the longest possible 
-#  exposure time. It is not a linear scale, where a value of '1' 
-#  is 1/65536th of a second, etc.
+#    A negative value sets the shutter speed to automatic
+#    (controlled by the camera's firmware).
+#    A value of 0..65535 will set manual mode, where the values
+#    have been calibrated such that 65535 is the longest possible
+#    exposure time. It is not a linear scale, where a value of '1'
+#    is 1/65536th of a second, etc.
 #
 #  return null
 #------------------------------------------------------------
-proc ::webcam::config::onSelectShutter { visuNo tklist value} {
+proc ::webcam::config::onSelectShutter { visuNo tklist value } {
    variable private
 
    set camItem $private($visuNo,camItem)
    if { $private($visuNo,shutter) != $::conf(webcam,$camItem,shutter) } {
-      set camNo   $::confCam($camItem,camNo)
+      set camNo $::confCam($camItem,camNo)
       if { $private($visuNo,autoShutter) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
          append value "."
          set value [expr $value]
-         #--- je convertis le pourcentage en fraction de 65535.
-         set value [expr int( $value * 65535. /  100. ) ]
+         #--- je convertis le pourcentage en fraction de 65535
+         set value [expr int( $value * 65535. / 100. ) ]
          cam$camNo setvideoparameter -shutter $value
-         #--- j'attends un peu pour ne pas saturer 
+         #--- j'attends un peu pour ne pas saturer
          after 100
       } else {
-            cam$camNo setvideoparameter -shutter "-1"
+         cam$camNo setvideoparameter -shutter "-1"
       }
-      set ::conf(webcam,$camItem,shutter)     $private($visuNo,shutter)
+      set ::conf(webcam,$camItem,shutter) $private($visuNo,shutter)
    }
-
 }
 
 #------------------------------------------------------------
-#  onSelectGain
-#     selectionne le gain
+# ::webcam::config::onSelectGain
+#    selectionne le gain
 #
 #  return null
 #------------------------------------------------------------
 proc ::webcam::config::onSelectGain { visuNo tkscale value } {
    variable private
 
-
    set camItem $private($visuNo,camItem)
 
    if { $private($visuNo,gain) != $::conf(webcam,$camItem,gain) } {
-      set camNo   $::confCam($camItem,camNo)
+      set camNo $::confCam($camItem,camNo)
       if { $private($visuNo,autoGain) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
          append value "."
-         #--- je convertis en fraction de 65535.
+         #--- je convertis en fraction de 65535
          set value [expr int( 65535. * $value / 100.) ]
          cam$camNo setvideoparameter -gain $value
-         #--- j'attends un peu pour ne pas saturer 
+         #--- j'attends un peu pour ne pas saturer
          after 100
       } else {
          cam$camNo setvideoparameter -gain "-1"
       }
-      set ::conf(webcam,$camItem,gain)      $private($visuNo,gain)
+      set ::conf(webcam,$camItem,gain) $private($visuNo,gain)
    }
-
 }
 
 #------------------------------------------------------------
-#  onSetAutoShutter
-#     change le mode automatique du gain
+# ::webcam::config::onSetAutoShutter
+#    change le mode automatique du gain
 #
 #  return null
 #------------------------------------------------------------
@@ -907,14 +898,14 @@ proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
    set camItem $private($visuNo,camItem)
 
    if { $private($visuNo,autoShutter) != $::conf(webcam,$camItem,autoShutter)  } {
-      set camNo   $::confCam($camItem,camNo)
+      set camNo $::confCam($camItem,camNo)
       if { $private($visuNo,autoShutter) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
-         set value $::conf(webcam,$camItem,shutter) 
+         set value $::conf(webcam,$camItem,shutter)
          append value "."
-         #--- je convertis le pourcentage en fraction de 65535.
+         #--- je convertis le pourcentage en fraction de 65535
          set value [expr $value]
-         set value [expr int( $value * 65535. /  100. ) ]
+         set value [expr int( $value * 65535. / 100. ) ]
          cam$camNo setvideoparameter -shutter $value
       } else {
          cam$camNo setvideoparameter -shutter "-1"
@@ -924,8 +915,8 @@ proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
 }
 
 #------------------------------------------------------------
-#  onSetGainAuto
-#     change le mode automatique du gain
+# ::webcam::config::onSetGainAuto
+#    change le mode automatique du gain
 #
 #  return null
 #------------------------------------------------------------
@@ -941,19 +932,18 @@ proc ::webcam::config::onSetAutoGain { visuNo tkscale } {
    set camItem $private($visuNo,camItem)
 
     if { $private($visuNo,autoGain) != $::conf(webcam,$camItem,autoGain) } {
-      
-      set camNo   $::confCam($camItem,camNo)
+      set camNo $::confCam($camItem,camNo)
       if { $private($visuNo,autoGain) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
          set value $::conf(webcam,$camItem,autoGain)
          append value "."
-         #--- je convertis en fraction de 65535.
+         #--- je convertis en fraction de 65535
          set value [expr int( $value * 65535./ 100.) ]
          cam$camNo setvideoparameter -gain $value
       } else {
          cam$camNo setvideoparameter -gain "-1"
       }
-      set ::conf(webcam,$camItem,autoGain)  $private($visuNo,autoGain)
+      set ::conf(webcam,$camItem,autoGain) $private($visuNo,autoGain)
    }
-
 }
+
