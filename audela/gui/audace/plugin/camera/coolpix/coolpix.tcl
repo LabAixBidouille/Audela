@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.3 2007-05-19 08:39:45 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.4 2007-05-30 17:14:49 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -55,7 +55,11 @@ proc ::coolpix::widgetToConf { } {
 #    Interface de configuration de la camera Nikon CoolPix
 #
 proc ::coolpix::fillConfigPage { frm } {
-   global audace caption color
+   variable private
+   global caption
+
+   #--- Initialisation
+   set private(frm) $frm
 
    #--- confToWidget
    ::coolpix::confToWidget
@@ -65,56 +69,47 @@ proc ::coolpix::fillConfigPage { frm } {
       destroy $i
    }
 
-   #--- Creation des differents frames
+   #--- Frame du commentaire et de la vitesse du port serie
    frame $frm.frame1 -borderwidth 0 -relief raised
+
+      label $frm.frame1.lab1 -text $caption(coolpix,commentaire)
+      pack $frm.frame1.lab1 -anchor nw -side top -padx 10 -pady 10
+
+      #--- Frame de la vitesse du port serie
+      frame $frm.frame1.frame3 -borderwidth 0 -relief raised
+
+         label $frm.frame1.frame3.lab1 -text $caption(coolpix,baud)
+         pack $frm.frame1.frame3.lab1 -anchor nw -side left -padx 10 -pady 10
+
+         set list_combobox [ list 115200 57600 38400 19200 9600 ]
+         ComboBox $frm.frame1.frame3.listeBaud \
+            -width 8                           \
+            -height [ llength $list_combobox ] \
+            -relief sunken                     \
+            -borderwidth 1                     \
+            -editable 0                        \
+            -textvariable confCam(coolpix,baud) \
+            -values $list_combobox
+         pack $frm.frame1.frame3.listeBaud -anchor nw -side left -padx 0 -pady 10
+
+      pack $frm.frame1.frame3 -side top -fill x -expand 0
+
    pack $frm.frame1 -side top -fill both -expand 1
 
+   #--- Frame du site web officiel de PhotoPC (Nikon CoolPix)
    frame $frm.frame2 -borderwidth 0 -relief raised
+
+      label $frm.frame2.lab103 -text "$caption(coolpix,titre_site_web)"
+      pack $frm.frame2.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame2 "$caption(coolpix,site_web_ref)" \
+         "$caption(coolpix,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
    pack $frm.frame2 -side bottom -fill x -pady 2
-
-   frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
-
-   #--- Definition de la vitesse du port serie
-   label $frm.lab1 -text $caption(coolpix,baud)
-   pack $frm.lab1 -in $frm.frame3 -anchor e -side left -padx 10 -pady 10
-
-   set list_combobox [ list 115200 57600 38400 19200 9600 ]
-   ComboBox $frm.listeBaud \
-      -width 8             \
-      -height [ llength $list_combobox ] \
-      -relief sunken       \
-      -borderwidth 1       \
-      -textvariable confCam(coolpix,baud) \
-      -editable 0          \
-      -values $list_combobox
-   pack $frm.listeBaud -in $frm.frame3 -anchor e -side left -padx 0 -pady 10
-
-   #--- Site web officiel de la Nikon CoolPix
-   label $frm.lab103 -text "$caption(coolpix,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
-
-   label $frm.labURL -text "$caption(coolpix,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-
-   #--- Creation du lien avec le navigateur web et changement de sa couleur
-   bind $frm.labURL <ButtonPress-1> {
-      set filename "$caption(coolpix,site_web_ref)"
-      ::audace::Lance_Site_htm $filename
-   }
-   bind $frm.labURL <Enter> {
-      global frmm
-      set frm $frmm(Camera14)
-      $frm.labURL configure -fg $color(purple)
-   }
-   bind $frm.labURL <Leave> {
-      global frmm
-      set frm $frmm(Camera14)
-      $frm.labURL configure -fg $color(blue)
-   }
 }
 
 #
@@ -122,12 +117,71 @@ proc ::coolpix::fillConfigPage { frm } {
 #    Configure la camera Nikon CoolPix en fonction des donnees contenues dans les variables conf(coolpix,...)
 #
 proc ::coolpix::configureCamera { camItem } {
-   global caption conf confCam
+   global confCam
 
-   set camNo "0"
-   ::acqapn::Off
-   ::acqapn::Query
-   set confCam($camItem,camNo) $camNo
+   if { [ ::confVisu::getTool 1 ] == "acqapn" } {
+      set camNo "0"
+      ::acqapn::Off
+      ::acqapn::Query
+      set confCam($camItem,camNo) $camNo
+   } else {
+      set camItem $confCam(currentCamItem)
+      set confCam($camItem,camName) ""
+   }
+}
+
+#
+# ::coolpix::stop
+#    Arrete la camera Nikon CoolPix
+#
+proc ::coolpix::stop { camItem } {
+   if { [ ::confVisu::getTool 1 ] == "acqapn" } {
+      ::acqapn::Off
+   }
+}
+
+#
+# ::coolpix::connect
+#    Procedure appelee pour connecter la camera Nikon CoolPix
+#
+proc ::coolpix::connect { } {
+   variable private
+   global confCam
+
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         ::confCam::appliquer
+      } else {
+         #--- J'arrete la camera
+         ::coolpix::deconnect
+         #--- Je copie les parametres de la nouvelle camera dans conf()
+         ::coolpix::widgetToConf
+         set camItem $confCam(currentCamItem)
+         set confCam($camItem,camName) "coolpix"
+         ::confCam::configureCamera $camItem
+      }
+   } else {
+      #--- J'arrete la camera
+      ::coolpix::deconnect
+      #--- Je copie les parametres de la nouvelle camera dans conf()
+      ::coolpix::widgetToConf
+      set camItem $confCam(currentCamItem)
+      set confCam($camItem,camName) "coolpix"
+      ::confCam::configureCamera $camItem
+   }
+}
+
+#
+# ::coolpix::deconnect
+#    Procedure appelee pour deconnecter la camera Nikon CoolPix
+#
+proc ::coolpix::deconnect { } {
+   global confCam
+
+   set camItem $confCam(currentCamItem)
+   set confCam($camItem,camName) "coolpix"
+   ::confCam::stopItem $camItem
 }
 
 #
@@ -135,8 +189,10 @@ proc ::coolpix::configureCamera { camItem } {
 #    Retourne la liste des binnings disponibles de la camera
 #
 proc ::coolpix::getBinningList { } {
-   set binningList { }
-   return $binningList
+   if { [ ::confVisu::getTool 1 ] == "acqapn" } {
+      set binningList [ ::acqapn::Formats ]
+      return $binningList
+   }
 }
 
 #
@@ -171,7 +227,7 @@ proc ::coolpix::hasLongExposure { } {
 
 #
 # ::coolpix::getLongExposure
-#    Retourne 1 si le mode longue pose est activé
+#    Retourne 1 si le mode longue pose est active
 #    Sinon retourne 0
 #
 proc ::coolpix::getLongExposure { } {
@@ -207,8 +263,6 @@ proc ::coolpix::hasShutter { } {
 #    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
 #
 proc ::coolpix::getShutterOption { } {
-   global caption
-
    set ShutterOptionList { }
    return $ShutterOptionList
 }

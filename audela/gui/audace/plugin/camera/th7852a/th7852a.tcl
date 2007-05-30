@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.3 2007-05-19 08:40:47 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.4 2007-05-30 17:15:35 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -68,63 +68,48 @@ proc ::th7852a::fillConfigPage { frm } {
       destroy $i
    }
 
-   #--- Creation des differents frames
+   #--- Frame du coefficent et des miroirs en x et en y
    frame $frm.frame1 -borderwidth 0 -relief raised
+
+      #--- Frame du coefficient
+      frame $frm.frame1.frame3 -borderwidth 0 -relief raised
+
+         label $frm.frame1.frame3.lab2 -text "$caption(th7852a,coef)"
+         pack $frm.frame1.frame3.lab2 -anchor n -side left -padx 10 -pady 30
+
+         entry $frm.frame1.frame3.coef -textvariable ::th7852a::private(coef) -width 5 -justify center
+         pack $frm.frame1.frame3.coef -anchor n -side left -padx 0 -pady 30
+
+      pack $frm.frame1.frame3 -anchor n -side left -fill x
+
+      #--- Frame des miroirs en x et en y
+      frame $frm.frame1.frame4 -borderwidth 0 -relief raised
+
+         checkbutton $frm.frame1.frame4.mirx -text "$caption(th7852a,miroir_x)" -highlightthickness 0 \
+            -variable ::th7852a::private(mirh)
+         pack $frm.frame1.frame4.mirx -anchor w -side top -padx 20 -pady 10
+
+         checkbutton $frm.frame1.frame4.miry -text "$caption(th7852a,miroir_y)" -highlightthickness 0 \
+            -variable ::th7852a::private(mirv)
+         pack $frm.frame1.frame4.miry -anchor w -side top -padx 20 -pady 10
+
+      pack $frm.frame1.frame4 -anchor n -side left -fill x -padx 20
+
    pack $frm.frame1 -side top -fill both -expand 1
 
+   #--- Frame du site web officiel de la TH7852A d'Yves LATIL (a creer)
    frame $frm.frame2 -borderwidth 0 -relief raised
+
+      label $frm.frame2.lab103 -text "$caption(th7852a,titre_site_web)"
+      pack $frm.frame2.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame2 "$caption(th7852a,site_web_ref)" "" ]
+      pack $labelName -side top -fill x -pady 2
+
    pack $frm.frame2 -side bottom -fill x -pady 2
-
-   frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
-
-   frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame3 -anchor center -side left -fill x
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -padx 20
-
-   #--- Definition du coefficient
-   label $frm.lab2 -text "$caption(th7852a,coef)"
-   pack $frm.lab2 -in $frm.frame4 -anchor n -side left -padx 10 -pady 12
-
-   entry $frm.coef -textvariable ::th7852a::private(coef) -width 5 -justify center
-   pack $frm.coef -in $frm.frame4 -anchor n -side left -padx 0 -pady 12
-
-   #--- Miroir en x et en y
-   checkbutton $frm.mirx -text "$caption(th7852a,miroir_x)" -highlightthickness 0 \
-      -variable ::th7852a::private(mirh)
-   pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
-
-   checkbutton $frm.miry -text "$caption(th7852a,miroir_y)" -highlightthickness 0 \
-      -variable ::th7852a::private(mirv)
-   pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
-
-   #--- Site web officiel de la TH7852A d'Yves LATIL
-   label $frm.lab103 -text "$caption(th7852a,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
-
-   label $frm.labURL -text "$caption(th7852a,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-
-   #--- Creation du lien avec le navigateur web et changement de sa couleur
-  ### bind $frm.labURL <ButtonPress-1> {
-  ###    set filename "$caption(th7852a,site_web_ref)"
-  ###    ::audace::Lance_Site_htm $filename
-  ### }
-   bind $frm.labURL <Enter> {
-      global frmm
-      set frm $frmm(Camera8)
-      $frm.labURL configure -fg $color(purple)
-   }
-   bind $frm.labURL <Leave> {
-      global frmm
-      set frm $frmm(Camera8)
-      $frm.labURL configure -fg $color(blue)
-   }
 }
 
 #
