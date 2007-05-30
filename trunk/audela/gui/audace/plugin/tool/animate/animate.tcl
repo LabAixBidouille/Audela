@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.8 2007-05-15 21:51:10 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.9 2007-05-30 18:51:25 robertdelmas Exp $
 #
 
 #============================================================
@@ -200,7 +200,7 @@ proc ::anim::editNomGenerique { } {
    #--- Ouvre la fenetre de choix des images
    set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
    #--- Extraction du nom generique
-   set filenameAnimation      [ ::pretraitement::nom_generique [ file tail $filename ] ]
+   set filenameAnimation      [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
    set panneau(anim,filename) [ lindex $filenameAnimation 0 ]
    set panneau(anim,nbi)      [ lindex $filenameAnimation 1 ]
 }

@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.31 2007-05-20 14:25:06 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.32 2007-05-30 18:54:43 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1934,7 +1934,7 @@ namespace eval ::pretraitement {
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
          if { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(info_filename_in)  [ ::pretraitement::nom_generique [ file tail $filename ] ]
+            set pretraitement(info_filename_in)  [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
             set pretraitement(in)                [ lindex $pretraitement(info_filename_in) 0 ]
             set pretraitement(nb)                [ lindex $pretraitement(info_filename_in) 1 ]
             set pretraitement(valeur_indice)     [ lindex $pretraitement(info_filename_in) 2 ]
@@ -1943,7 +1943,7 @@ namespace eval ::pretraitement {
          }
       } elseif { $In_Out == "2" } {
          if { $pretraitement(choix_mode) == "2" } {
-            set pretraitement(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
+            set pretraitement(info_filename_out) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
             set pretraitement(out)               [ lindex $pretraitement(info_filename_out) 0 ]
          } else {
             set pretraitement(out)               [ file rootname [ file tail $filename ] ]
@@ -2138,12 +2138,12 @@ namespace eval ::pretraitement {
    }
 
    #
-   # ::pretraitement::nom_generique
+   # ::pretraitement::afficherNomGenerique
    # Affiche le nom generique des fichiers d'une serie si c'en est une, le nombre
    # d'elements de la serie et le premier indice de la serie s'il est different de 1
    # Renumerote la serie s'il y a des trous ou si elle debute par un 0
    #
-   proc nom_generique { filename } {
+   proc afficherNomGenerique { filename } {
       global audace caption conf
 
       #--- Est-ce un nom générique de fichiers ?
@@ -2754,14 +2754,14 @@ namespace eval ::traiteImage {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $traiteImage(operation) == "r+v+b2rvb" && $option == "1" } {
-         set traiteImage(info_filename_out)        [ ::pretraitement::nom_generique [ file tail $filename ] ]
+         set traiteImage(info_filename_out)        [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
          set traiteImage(rvbWindow_r+v+b_filename) [ lindex $traiteImage(info_filename_out) 0 ]
       } elseif { $traiteImage(operation) == "r+v+b2rvb" && $option == "2" } {
          set traiteImage(rvbWindow_rvb_filename) [ file rootname [ file tail $filename ] ]
       } elseif { $traiteImage(operation) == "rvb2r+v+b" && $option == "1" } {
          set traiteImage(rvbWindow_rvb_filename) [ file tail $filename ]
       } elseif { $traiteImage(operation) == "rvb2r+v+b" && $option == "2" } {
-         set traiteImage(info_filename_out)        [ ::pretraitement::nom_generique [ file tail $filename ] ]
+         set traiteImage(info_filename_out)        [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
          set traiteImage(rvbWindow_r+v+b_filename) [ lindex $traiteImage(info_filename_out) 0 ]
       }
    }
@@ -3336,13 +3336,13 @@ namespace eval ::traiteWindow {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set traiteWindow(info_filename_in) [ ::pretraitement::nom_generique [ file tail $filename ] ]
+         set traiteWindow(info_filename_in) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
          set traiteWindow(in)               [ lindex $traiteWindow(info_filename_in) 0 ]
          set traiteWindow(nb)               [ lindex $traiteWindow(info_filename_in) 1 ]
          set traiteWindow(valeur_indice)    [ lindex $traiteWindow(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
          if { $traiteWindow(operation) == "serie_recentrer" } {
-            set traiteWindow(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
+            set traiteWindow(info_filename_out) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
             set traiteWindow(out)               [ lindex $traiteWindow(info_filename_out) 0 ]
          } else {
             set traiteWindow(out)               [ file rootname [ file tail $filename ] ]
@@ -4282,14 +4282,14 @@ namespace eval ::faireImageRef {
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
-         set faireImageRef(info_filename_in)  [ ::pretraitement::nom_generique [ file tail $filename ] ]
+         set faireImageRef(info_filename_in)  [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
          set faireImageRef(in)                [ lindex $faireImageRef(info_filename_in) 0 ]
          set faireImageRef(nb)                [ lindex $faireImageRef(info_filename_in) 1 ]
          set faireImageRef(valeur_indice)     [ lindex $faireImageRef(info_filename_in) 2 ]
       } elseif { $In_Out == "2" } {
 
          if { $faireImageRef(operation) == "pretraitement" } {
-            set faireImageRef(info_filename_out) [ ::pretraitement::nom_generique [ file tail $filename ] ]
+            set faireImageRef(info_filename_out) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
             set faireImageRef(out)               [ lindex $faireImageRef(info_filename_out) 0 ]
          } else {
             set faireImageRef(out)               [ file rootname [ file tail $filename ] ]

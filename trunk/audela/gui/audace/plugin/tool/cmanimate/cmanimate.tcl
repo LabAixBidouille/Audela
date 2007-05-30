@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.8 2007-05-15 21:51:33 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.9 2007-05-30 18:53:54 robertdelmas Exp $
 #
 #****************************************************************
 #
@@ -952,7 +952,7 @@ namespace eval ::cmanim {
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
       #--- Extraction du nom generique
-      set filenameAnimation        [ ::pretraitement::nom_generique [ file tail $filename ] ]
+      set filenameAnimation        [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
       set panneau(cmanim,filename) [ lindex $filenameAnimation 0 ]
       set panneau(cmanim,nbi)      [ lindex $filenameAnimation 1 ]
    }
