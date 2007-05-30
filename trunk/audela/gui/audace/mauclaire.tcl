@@ -2,11 +2,12 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: mauclaire.tcl,v 1.9 2007-05-19 14:01:34 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.10 2007-05-30 21:52:01 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
 #
+# bm_ls                  : Liste les fichiers fits du répertoire de travail
 # bm_sphot               : Extrait le contenu d'un mot clef d'une serie de fichiers
 # bm_ovakwd              : Ajoute et initialise un mot clef et sa valeur pour les spectres LHIRES
 # bm_addmotcleftxt       : Ajoute et initialise un mot clef et sa valeur
@@ -35,6 +36,22 @@
 # bm_zoomima             : Zoom de l'image ou d'une partie selectionnee de l'image chargee
 # bm_exptime             : Calcule la duree totale d'exposition d'une serie
 #-----------------------------------------------------------------------------#
+
+###############################################################################
+# Description : liste les fichiers du repertoire de travail
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-05-2007
+# Date de mise a jour : 03-05-2007
+# Arguments : aucun
+###############################################################################
+
+proc bm_ls {} {
+   global audace conf
+
+   set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+   ::console::affiche_resultat "$fliste\n\n"
+}
+#*****************************************************************************#
 
 ###############################################################################
 # Description : Extrait le contenu d'un mot clef d'une serie de fichiers

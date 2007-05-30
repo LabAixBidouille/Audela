@@ -19,8 +19,9 @@ proc spc_pretraitementfc_w {} {
     global conf
     global audace
 
+    uplevel #0 "source \"[ file join $audace(rep_plugin) tool pretrfc pretrfcSetup.tcl ]\""
     # source $audace(rep_scripts)/../plugin/tool/pretrfc/pretrfc.ini
-    ::pretraitFC::fenetrePretr
+    ::pretraitfc::fenetrePretr
 }
 
 
@@ -49,7 +50,7 @@ proc spc_specLhIII_w {} {
 # Date de création : 09-07-2006
 # Date de modification : 09-07-2006
 # Utilisée par : spc_traitecalibre (meta)
-# Args : 
+# Args :
 ########################################################################
 
 proc spc_calibre2file_w {} {
@@ -85,8 +86,8 @@ proc spc_calibre2file_w {} {
     set type2 $audace(param_spc_audace,calibre2file,config,type2)
     set lambda1 $audace(param_spc_audace,calibre2file,config,lambda1)
     set lambda2 $audace(param_spc_audace,calibre2file,config,lambda2)
-    
-    #--- Effectue la calibration du spectre 2D de la lampe spectrale : 
+
+    #--- Effectue la calibration du spectre 2D de la lampe spectrale :
     set fileout [ spc_calibre2sauto $spectre $xa1 $xa2 $lambda1 $type1 $xb1 $xb2 $lambda2 $type2 ]
     return $fileout
 }
@@ -101,7 +102,7 @@ proc spc_calibre2file_w {} {
 # Date de création : 09-07-2006
 # Date de modification : 09-07-2006
 # Utilisée par : spc_traitecalibre (meta)
-# Args : 
+# Args :
 ########################################################################
 
 proc spc_calibre2loifile_w {} {
@@ -128,7 +129,7 @@ proc spc_calibre2loifile_w {} {
     set audace(param_spc_audace,calibre2loifile,config,type2)
     set audace(param_spc_audace,calibre2loifile,config,lambda1)
     set audace(param_spc_audace,calibre2loifile,config,lambda2)
-    
+
     set spectre $audace(param_spc_audace,calibre2loifile,config,spectre)
     set lampe $audace(param_spc_audace,calibre2loifile,config,lampe)
     set xa1 $audace(param_spc_audace,calibre2loifile,config,xa1)
@@ -139,8 +140,8 @@ proc spc_calibre2loifile_w {} {
     set type2 $audace(param_spc_audace,calibre2loifile,config,type2)
     set lambda1 $audace(param_spc_audace,calibre2loifile,config,lambda1)
     set lambda2 $audace(param_spc_audace,calibre2loifile,config,lambda2)
-    
-    #--- Effectue la calibration du spectre 2D de la lampe spectrale : 
+
+    #--- Effectue la calibration du spectre 2D de la lampe spectrale :
     set lampecalibree [ spc_calibre2sauto $spectre $xa1 $xa2 $lambda1 $type1 $xb1 $xb2 $lambda2 $type2 ]
     ::console::affiche_resultat "\n**** Calibration en longueur d'onde du spectre de l'objet $spectre ****\n\n"
     set fcalibre [ spc_calibreloifile $lampecalibree $spectre ]

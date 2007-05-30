@@ -61,6 +61,9 @@ proc spc_vhelio { args } {
    global audace
    global conf
 
+   set lambda_ref 6562.8
+   set precision 1000.
+
    if { [llength $args] == 1 || [llength $args] == 7 || [llength $args] == 10 } {
        if { [llength $args] == 1 } {
 	   set spectre [ lindex $args 0 ]
@@ -91,7 +94,6 @@ proc spc_vhelio { args } {
        #--- Charge les mots clefs :
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
-
 
        #--- Détermine les paramètres de date et de coordonnées si nécessaire :
        # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
@@ -144,9 +146,18 @@ proc spc_vhelio { args } {
 
        #--- Calcul de la vitesse héliocentrique :
        set vhelio [ lindex [ mc_baryvel $datef $raf $decf J2000.0 ] 0 ]
+       set deltal [ expr round($vhelio*$lambda_ref/300000*$precision)/$precision ]
+       #--- Recherche la dispersion :
+       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	   set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+	   set erreurv [ expr round($precision*$dispersion*300000/$lambda_ref)/$precision ]
+       } else {
+	   set erreurv 0
+       }
+
 
        #--- Formatage du résultat :
-       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut : $vhelio km/s\n"
+       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio±$erreurv km/s=$deltal±$dispersion A\n"
        return $vhelio
    } else {
 	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
@@ -795,9 +806,20 @@ proc spc_ewdirw { args } {
 	foreach fichier $fileliste {
 	    ::console::affiche_resultat "\nTraitement de $fichier\n"
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	    set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
-	    #- Ne tient que des 4 premières décimales du jour julien
-	    set jddate [ expr int($date*10000.)/10000.+2400000.5 ]
+	    set listemotsclef [ buf$audace(bufNo) getkwds ]
+	    if { [ lsearch $listemotsclef "MJD-OBS" ] !=-1 } {
+		set date [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ]
+		#- Ne tient que des 4 premières décimales du jour julien
+		set jddate [ expr int($date*10000.)/10000.+2400000.5 ]
+	    } elseif { [ lsearch $listemotsclef "DATE-OBS" ] !=-1 } {
+		set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+		set date [ mc_date2jd $ladate ]
+		set jddate [ expr int($date*10000.)/10000. ]
+	    } elseif { [ lsearch $listemotsclef "DATE" ] !=-1 } {
+		set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE" ] 1 ]
+		set date [ mc_date2jd $ladate ]
+		set jddate [ expr int($date*10000.)/10000. ]
+	    }
 	    set mesure [ spc_autoew2 $fichier $lambda ]
 	    set ew [ lindex $mesure 0 ]
 	    set sigma_ew [ lindex $mesure 1 ]
@@ -818,6 +840,32 @@ proc spc_ewdirw { args } {
 
 
 
+####################################################################
+# Procédure de calcul de la largeur équivalente d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 26/05/2007
+# Date modification : 26/05/2007
+# Arguments : nom_profil_raies lambda_deb lambda_fin
+####################################################################
+
+proc spc_ew { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 3 } {
+	set filename [ lindex $args 0 ]
+	set xdeb [ lindex $args 1 ]
+	set xfin [ lindex $args 2 ]
+
+	spc_ew3 $filename $xdeb $xfin
+    } else {
+	::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lanmba_debutg lambda_fin\n"
+    }
+}
+#***************************************************************************#
+
+
 
 ##########################################################
 # Procedure de détermination de la largeur équivalente d'une raie spectrale modelisee par une gaussienne. 
@@ -828,7 +876,7 @@ proc spc_ewdirw { args } {
 # Arguments : fichier .fit du profil de raie, l_debut (wavelength), l_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
-proc spc_ew { args } {
+proc spc_ew1 { args } {
 
    global audace
    global conf
@@ -895,7 +943,7 @@ proc spc_ew { args } {
        ::console::affiche_resultat "La largeur équivalente de la raie est : $eqw angstroms\n"
        return $eqw
    } else {
-       ::console::affiche_erreur "Usage: spc_ew nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
+       ::console::affiche_erreur "Usage: spc_ew1 nom_fichier (de type fits et sans extension) x_debut x_fin a/e\n\n"
    }
 }
 #****************************************************************#
@@ -1168,9 +1216,9 @@ proc spc_ew3 { args } {
 
 	#--- Affichage des résultats :
 	::console::affiche_resultat "\n"
-	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
-	::console::affiche_resultat "SNR=$snr_short.\n"
-	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
+	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
+	::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
+	::console::affiche_resultat "SNR=$snr_short.\n\n"
 	return $ew
     } else {
 	::console::affiche_erreur "Usage: spc_ew3 nom_profil_raies_normalisé lanmba_dep lambda_fin\n"
@@ -1266,9 +1314,9 @@ proc spc_autoew { args } {
 
 	#--- Affichage des résultats :
 	::console::affiche_resultat "\n"
-	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
-	::console::affiche_resultat "SNR=$snr_short.\n"
-	::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
+	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
+	::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
+	::console::affiche_resultat "SNR=$snr_short.\n\n"
 	return $ew
     } else {
 	::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie\n"
