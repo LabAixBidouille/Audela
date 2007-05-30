@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.2 2007-05-19 08:40:30 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.3 2007-05-30 17:15:20 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -68,26 +68,6 @@ proc ::scr1300xtc::fillConfigPage { frm } {
       destroy $i
    }
 
-   #--- Creation des differents frames
-   frame $frm.frame1 -borderwidth 0 -relief raised
-   pack $frm.frame1 -side top -fill both -expand 1
-
-   frame $frm.frame2 -borderwidth 0 -relief raised
-   pack $frm.frame2 -side bottom -fill x -pady 2
-
-   frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
-
-   frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame3 -anchor center -side left -fill x
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -padx 20
-
-   #--- Definition du port
-   label $frm.lab1 -text "$caption(scr1300xtc,port)"
-   pack $frm.lab1 -in $frm.frame4 -anchor center -side left -padx 10 -pady 10
-
    #--- Je constitue la liste des liaisons pour l'acquisition des images
    set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
 
@@ -104,60 +84,67 @@ proc ::scr1300xtc::fillConfigPage { frm } {
       #--- si la liste est vide, on continue quand meme
    }
 
-   #--- Bouton de configuration des ports et liaisons
-   button $frm.configure -text "$caption(scr1300xtc,configurer)" -relief raised \
-      -command {
-         ::confLink::run ::scr1300xtc::private(port) \
-            { parallelport } \
-            "- $caption(scr1300xtc,acquisition) - $caption(scr1300xtc,camera)"
-      }
-   pack $frm.configure -in $frm.frame4 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+   #--- Frame de la configuration du port et des miroirs en x et en y
+   frame $frm.frame1 -borderwidth 0 -relief raised
 
-   #--- Choix du port ou de la liaison
-   ComboBox $frm.port \
-      -width 7        \
-      -height [ llength $list_combobox ] \
-      -relief sunken  \
-      -borderwidth 1  \
-      -editable 0     \
-      -textvariable ::scr1300xtc::private(port) \
-      -values $list_combobox
-   pack $frm.port -in $frm.frame4 -anchor center -side left -padx 10 -pady 10
+      #--- Frame de la configuration du port
+      frame $frm.frame1.frame3 -borderwidth 0 -relief raised
 
-   #--- Miroir en x et en y
-   checkbutton $frm.mirx -text "$caption(scr1300xtc,miroir_x)" -highlightthickness 0 \
-      -variable ::scr1300xtc::private(mirh)
-   pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+         #--- Definition du port
+         label $frm.frame1.frame3.lab1 -text "$caption(scr1300xtc,port)"
+         pack $frm.frame1.frame3.lab1 -anchor center -side left -padx 10 -pady 30
 
-   checkbutton $frm.miry -text "$caption(scr1300xtc,miroir_y)" -highlightthickness 0 \
-     -variable ::scr1300xtc::private(mirv)
-   pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+         #--- Bouton de configuration des ports et liaisons
+         button $frm.frame1.frame3.configure -text "$caption(scr1300xtc,configurer)" -relief raised \
+            -command {
+               ::confLink::run ::scr1300xtc::private(port) { parallelport } \
+                  "- $caption(scr1300xtc,acquisition) - $caption(scr1300xtc,camera)"
+            }
+         pack $frm.frame1.frame3.configure -anchor center -side left -pady 28 -ipadx 10 -ipady 1 -expand 0
 
-   #--- Site web officiel de la SCR1300XTC
-   label $frm.lab103 -text "$caption(scr1300xtc,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
+         #--- Choix du port ou de la liaison
+         ComboBox $frm.frame1.frame3.port \
+            -width 7                      \
+            -height [ llength $list_combobox ] \
+            -relief sunken                \
+            -borderwidth 1                \
+            -editable 0                   \
+            -textvariable ::scr1300xtc::private(port) \
+            -values $list_combobox
+         pack $frm.frame1.frame3.port -anchor center -side left -padx 10 -pady 30
 
-   label $frm.labURL -text "$caption(scr1300xtc,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+      pack $frm.frame1.frame3 -anchor nw -side left -fill x
+
+      #--- Frame des miroirs en x et en y
+      frame $frm.frame1.frame4 -borderwidth 0 -relief raised
+
+         #--- Miroir en x et en y
+         checkbutton $frm.frame1.frame4.mirx -text "$caption(scr1300xtc,miroir_x)" -highlightthickness 0 \
+            -variable ::scr1300xtc::private(mirh)
+         pack $frm.frame1.frame4.mirx -anchor w -side top -padx 20 -pady 10
+
+         checkbutton $frm.frame1.frame4.miry -text "$caption(scr1300xtc,miroir_y)" -highlightthickness 0 \
+            -variable ::scr1300xtc::private(mirv)
+         pack $frm.frame1.frame4.miry -anchor w -side top -padx 20 -pady 10
+
+      pack $frm.frame1.frame4 -anchor nw -side left -fill x -padx 20
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Frame du site web officiel de la SCR1300XTC
+   frame $frm.frame2 -borderwidth 0 -relief raised
+
+      label $frm.frame2.lab103 -text "$caption(scr1300xtc,titre_site_web)"
+      pack $frm.frame2.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame2 "$caption(scr1300xtc,site_web_ref)" \
+         "$caption(scr1300xtc,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
+   pack $frm.frame2 -side bottom -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-
-   #--- Creation du lien avec le navigateur web et changement de sa couleur
-   bind $frm.labURL <ButtonPress-1> {
-      set filename "$caption(scr1300xtc,site_web_ref)"
-      ::audace::Lance_Site_htm $filename
-   }
-   bind $frm.labURL <Enter> {
-      global frmm
-      set frm $frmm(Camera9)
-      $frm.labURL configure -fg $color(purple)
-   }
-   bind $frm.labURL <Leave> {
-      global frmm
-      set frm $frmm(Camera9)
-      $frm.labURL configure -fg $color(blue)
-   }
 }
 
 #

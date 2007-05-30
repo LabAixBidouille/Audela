@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.8 2007-05-19 08:39:03 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.9 2007-05-30 17:14:19 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -66,6 +66,9 @@ proc ::cemes::fillConfigPage { frm } {
    variable private
    global audace caption color
 
+   #--- Initialise une variable locale
+   set private(frm) $frm
+
    #--- confToWidget
    ::cemes::confToWidget
 
@@ -74,95 +77,96 @@ proc ::cemes::fillConfigPage { frm } {
       destroy $i
    }
 
-   #--- Creation des differents frames
+   #--- Frame du refroidissement, de la temperature du capteur CCD, des miroirs en x et en y et de l'obturateur
    frame $frm.frame1 -borderwidth 0 -relief raised
+
+      #--- Frame du refroidissement, de la temperature du capteur CCD et des miroirs en x et en y
+      frame $frm.frame1.frame3 -borderwidth 0 -relief raised
+
+         #--- Frame du refroidissement et de la temperature du capteur CCD
+         frame $frm.frame1.frame3.frame4 -borderwidth 0 -relief raised
+
+            #--- Frame du refroidissement
+            frame $frm.frame1.frame3.frame4.frame6 -borderwidth 0 -relief raised
+
+               #--- Definition du refroidissement
+               checkbutton $frm.frame1.frame3.frame4.frame6.cool -text "$caption(cemes,refroidissement)" \
+                  -highlightthickness 0 -variable ::cemes::private(cool)
+               pack $frm.frame1.frame3.frame4.frame6.cool -anchor center -side left -padx 0 -pady 5
+
+               entry $frm.frame1.frame3.frame4.frame6.temp -textvariable ::cemes::private(temp) -width 4 \
+                  -justify center
+               pack $frm.frame1.frame3.frame4.frame6.temp -anchor center -side left -padx 5 -pady 5
+
+               label $frm.frame1.frame3.frame4.frame6.tempdeg \
+                  -text "$caption(cemes,deg_c) $caption(cemes,refroidissement_1)"
+               pack $frm.frame1.frame3.frame4.frame6.tempdeg -side left -fill x -padx 0 -pady 5
+
+            pack $frm.frame1.frame3.frame4.frame6 -side top -fill x -padx 10
+
+            #--- Frame de la temperature du capteur CCD
+            frame $frm.frame1.frame3.frame4.frame7 -borderwidth 0 -relief raised
+
+               #--- Definition de la temperature du capteur CCD
+               label $frm.frame1.frame3.frame4.frame7.temp_ccd -text "$caption(cemes,temperature_CCD)"
+               pack $frm.frame1.frame3.frame4.frame7.temp_ccd -side left -fill x -padx 20 -pady 5
+
+            pack $frm.frame1.frame3.frame4.frame7 -side top -fill x -padx 30
+
+         pack $frm.frame1.frame3.frame4 -side left -fill x -expand 0
+
+         #--- Frame des miroirs en x et en y
+         frame $frm.frame1.frame3.frame5 -borderwidth 0 -relief raised
+
+            #--- Miroirs en x et en y
+            checkbutton $frm.frame1.frame3.frame5.mirx -text "$caption(cemes,miroir_x)" -highlightthickness 0 \
+               -variable ::cemes::private(mirh)
+            pack $frm.frame1.frame3.frame5.mirx -anchor w -side top -padx 20 -pady 10
+
+            checkbutton $frm.frame1.frame3.frame5.miry -text "$caption(cemes,miroir_y)" -highlightthickness 0 \
+               -variable ::cemes::private(mirv)
+            pack $frm.frame1.frame3.frame5.miry -anchor w -side top -padx 20 -pady 10
+
+         pack $frm.frame1.frame3.frame5 -anchor n -side left -fill x -padx 20
+
+      pack $frm.frame1.frame3 -side top -fill x -expand 0
+
+      #--- Frame du mode de fonctionnement de l'obturateur
+      frame $frm.frame1.frame8 -borderwidth 0 -relief raised
+
+         #--- Mode de fonctionnement de l'obturateur
+         label $frm.frame1.frame8.lab3 -text "$caption(cemes,fonc_obtu)"
+         pack $frm.frame1.frame8.lab3 -anchor nw -side left -padx 10 -pady 5
+
+         set list_combobox [ list $caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro) ]
+         ComboBox $frm.frame1.frame8.foncobtu \
+            -width 11           \
+            -height [ llength $list_combobox ] \
+            -relief sunken      \
+            -borderwidth 1      \
+            -editable 0         \
+            -textvariable ::cemes::private(foncobtu) \
+            -values $list_combobox
+         pack $frm.frame1.frame8.foncobtu -anchor nw -side left -padx 0 -pady 5
+
+      pack $frm.frame1.frame8 -side top -fill x -expand 0
+
    pack $frm.frame1 -side top -fill both -expand 1
 
+   #--- Frame du site web officiel de la Cemes
    frame $frm.frame2 -borderwidth 0 -relief raised
+
+      label $frm.frame2.lab103 -text "$caption(cemes,titre_site_web)"
+      pack $frm.frame2.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame2 "$caption(cemes,site_web_ref)" \
+         "$caption(cemes,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
    pack $frm.frame2 -side bottom -fill x -pady 2
-
-   frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
-
-   frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame3 -side left -fill x -expand 0
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -padx 20
-
-   frame $frm.frame6 -borderwidth 0 -relief raised
-   pack $frm.frame6 -in $frm.frame4 -side top -fill x -padx 10
-
-   frame $frm.frame7 -borderwidth 0 -relief raised
-   pack $frm.frame7 -in $frm.frame4 -side top -fill x -padx 30
-
-   frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -in $frm.frame1 -side top -fill x -expand 0
-
-   #--- Definition du refroidissement
-   checkbutton $frm.cool -text "$caption(cemes,refroidissement)" -highlightthickness 0 \
-      -variable ::cemes::private(cool)
-   pack $frm.cool -in $frm.frame6 -anchor center -side left -padx 0 -pady 5
-
-   entry $frm.temp -textvariable ::cemes::private(temp) -width 4 -justify center
-   pack $frm.temp -in $frm.frame6 -anchor center -side left -padx 5 -pady 5
-
-   label $frm.tempdeg -text "$caption(cemes,deg_c) $caption(cemes,refroidissement_1)"
-   pack $frm.tempdeg -in $frm.frame6 -side left -fill x -padx 0 -pady 5
-
-   #--- Definition de la temperature du capteur CCD
-   label $frm.temp_ccd -text "$caption(cemes,temperature_CCD)"
-   pack $frm.temp_ccd -in $frm.frame7 -side left -fill x -padx 20 -pady 5
-
-   #--- Miroir en x et en y
-   checkbutton $frm.mirx -text "$caption(cemes,miroir_x)" -highlightthickness 0 \
-      -variable ::cemes::private(mirh)
-   pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
-
-   checkbutton $frm.miry -text "$caption(cemes,miroir_y)" -highlightthickness 0 \
-      -variable ::cemes::private(mirv)
-   pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
-
-   #--- Fonctionnement de l'obturateur
-   label $frm.lab3 -text "$caption(cemes,fonc_obtu)"
-   pack $frm.lab3 -in $frm.frame8 -anchor nw -side left -padx 10 -pady 5
-
-   set list_combobox [ list $caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro) ]
-   ComboBox $frm.foncobtu \
-      -width 11           \
-      -height [ llength $list_combobox ] \
-      -relief sunken      \
-      -borderwidth 1      \
-      -editable 0         \
-      -textvariable ::cemes::private(foncobtu) \
-      -values $list_combobox
-   pack $frm.foncobtu -in $frm.frame8 -anchor nw -side left -padx 0 -pady 5
-
-   #--- Site web officiel de la Cemes
-   label $frm.lab103 -text "$caption(cemes,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
-
-   label $frm.labURL -text "$caption(cemes,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-
-   #--- Creation du lien avec le navigateur web et changement de sa couleur
-   bind $frm.labURL <ButtonPress-1> {
-      set filename "$caption(cemes,site_web_ref)"
-      ::audace::Lance_Site_htm $filename
-   }
-   bind $frm.labURL <Enter> {
-      global frmm
-      set frm $frmm(Camera13)
-      $frm.labURL configure -fg $color(purple)
-   }
-   bind $frm.labURL <Leave> {
-      global frmm
-      set frm $frmm(Camera13)
-      $frm.labURL configure -fg $color(blue)
-   }
 }
 
 #
@@ -213,14 +217,15 @@ proc ::cemes::configureCamera { camItem } {
 #    Affiche la temperature du CCD
 #
 proc ::cemes::CemesDispTemp { } {
-   global audace caption confCam frmm
+   variable private
+   global audace caption confCam
 
    catch {
-      set frm $frmm(Camera13)
+      set frm $private(frm)
       set camItem $confCam(currentCamItem)
       if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         $frm.temp_ccd configure \
+         $frm.frame1.frame3.frame4.frame7.temp_ccd configure \
             -text "$caption(cemes,temperature_CCD) $temp_ccd $caption(cemes,deg_c)"
          set confCam(cemes,aftertemp) [ after 5000 ::cemes::CemesDispTemp ]
       } else {

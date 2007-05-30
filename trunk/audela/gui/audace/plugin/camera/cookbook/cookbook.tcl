@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.3 2007-05-19 08:39:21 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.4 2007-05-30 17:14:35 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -71,29 +71,6 @@ proc ::cookbook::fillConfigPage { frm } {
       destroy $i
    }
 
-   #--- Creation des differents frames
-   frame $frm.frame1 -borderwidth 0 -relief raised
-   pack $frm.frame1 -side top -fill both -expand 1
-
-   frame $frm.frame2 -borderwidth 0 -relief raised
-   pack $frm.frame2 -side bottom -fill x -pady 2
-
-   frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -in $frm.frame1 -side top -fill x -expand 0
-
-   frame $frm.frame4 -borderwidth 0 -relief raised
-   pack $frm.frame4 -in $frm.frame3 -anchor center -side left -fill x
-
-   frame $frm.frame5 -borderwidth 0 -relief raised
-   pack $frm.frame5 -in $frm.frame3 -anchor n -side left -fill x -padx 20
-
-   frame $frm.frame6 -borderwidth 0 -relief raised
-   pack $frm.frame6 -in $frm.frame1 -side top -fill x -expand 0
-
-   #--- Definition du port
-   label $frm.lab1 -text "$caption(cookbook,port)"
-   pack $frm.lab1 -in $frm.frame4 -anchor center -side left -padx 10 -pady 10
-
    #--- Je constitue la liste des liaisons pour l'acquisition des images
    set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
 
@@ -110,67 +87,79 @@ proc ::cookbook::fillConfigPage { frm } {
       #--- si la liste est vide, on continue quand meme
    }
 
-   #--- Bouton de configuration des ports et liaisons
-   button $frm.configure -text "$caption(cookbook,configurer)" -relief raised \
-      -command {
-         ::confLink::run ::cookbook::private(port) \
-            { parallelport } \
-            "- $caption(cookbook,acquisition) - $caption(cookbook,camera)"
-      }
-   pack $frm.configure -in $frm.frame4 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+   #--- Frame de la configuration du port, des miroirs en x et en y et du parametrage du delai
+   frame $frm.frame1 -borderwidth 0 -relief raised
 
-   #--- Choix du port ou de la liaison
-   ComboBox $frm.port \
-      -width 7        \
-      -height [ llength $list_combobox ] \
-      -relief sunken  \
-      -borderwidth 1  \
-      -editable 0     \
-      -textvariable ::cookbook::private(port) \
-      -values $list_combobox
-   pack $frm.port -in $frm.frame4 -anchor center -side left -padx 10 -pady 10
+      #--- Frame de la configuration du port
+      frame $frm.frame1.frame3 -borderwidth 0 -relief raised
 
-   #--- Miroir en x et en y
-   checkbutton $frm.mirx -text "$caption(cookbook,miroir_x)" -highlightthickness 0 \
-      -variable ::cookbook::private(mirh)
-   pack $frm.mirx -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+         #--- Definition du port
+         label $frm.frame1.frame3.lab1 -text "$caption(cookbook,port)"
+         pack $frm.frame1.frame3.lab1 -anchor center -side left -padx 10 -pady 30
 
-   checkbutton $frm.miry -text "$caption(cookbook,miroir_y)" -highlightthickness 0 \
-     -variable ::cookbook::private(mirv)
-   pack $frm.miry -in $frm.frame5 -anchor w -side top -padx 20 -pady 10
+         #--- Bouton de configuration des ports et liaisons
+         button $frm.frame1.frame3.configure -text "$caption(cookbook,configurer)" -relief raised \
+            -command {
+               ::confLink::run ::cookbook::private(port) { parallelport } \
+                  "- $caption(cookbook,acquisition) - $caption(cookbook,camera)"
+            }
+         pack $frm.frame1.frame3.configure -anchor center -side left -pady 28 -ipadx 10 -ipady 1 -expand 0
 
-   #--- Parametrage du delai
-   label $frm.lab3 -text "$caption(cookbook,delai)"
-   pack $frm.lab3 -in $frm.frame6 -anchor center -side left -padx 10 -pady 4
+         #--- Choix du port ou de la liaison
+         ComboBox $frm.frame1.frame3.port \
+            -width 7                      \
+            -height [ llength $list_combobox ] \
+            -relief sunken                \
+            -borderwidth 1                \
+            -editable 0                   \
+            -textvariable ::cookbook::private(port) \
+            -values $list_combobox
+         pack $frm.frame1.frame3.port -anchor center -side left -padx 10 -pady 30
 
-   entry $frm.delai_a -textvariable ::cookbook::private(delai) -width 7 -justify center
-   pack $frm.delai_a -in $frm.frame6 -anchor center -side left
+      pack $frm.frame1.frame3 -anchor nw -side left -fill x
 
-   #--- Site web officiel de la CB245
-   label $frm.lab103 -text "$caption(cookbook,titre_site_web)"
-   pack $frm.lab103 -in $frm.frame2 -side top -fill x -pady 2
+      #--- Frame des miroirs en x et en y
+      frame $frm.frame1.frame4 -borderwidth 0 -relief raised
 
-   label $frm.labURL -text "$caption(cookbook,site_web_ref)" -font $audace(font,url) -fg $color(blue)
-   pack $frm.labURL -in $frm.frame2 -side top -fill x -pady 2
+         #--- Miroir en x et en y
+         checkbutton $frm.frame1.frame4.mirx -text "$caption(cookbook,miroir_x)" -highlightthickness 0 \
+            -variable ::cookbook::private(mirh)
+         pack $frm.frame1.frame4.mirx -anchor w -side top -padx 20 -pady 10
+
+         checkbutton $frm.frame1.frame4.miry -text "$caption(cookbook,miroir_y)" -highlightthickness 0 \
+            -variable ::cookbook::private(mirv)
+         pack $frm.frame1.frame4.miry -anchor w -side top -padx 20 -pady 10
+
+      pack $frm.frame1.frame4 -anchor nw -side left -fill x -padx 20
+
+      #--- Frame du parametrage du delai
+      frame $frm.frame1.frame5 -borderwidth 0 -relief raised
+
+         #--- Parametrage du delai
+         label $frm.frame1.frame5.lab3 -text "$caption(cookbook,delai)"
+         pack $frm.frame1.frame5.lab3 -anchor center -side left -padx 10 -pady 30
+
+         entry $frm.frame1.frame5.delai_a -textvariable ::cookbook::private(delai) -width 7 -justify center
+         pack $frm.frame1.frame5.delai_a -anchor center -side left -pady 30
+
+      pack $frm.frame1.frame5 -anchor nw -side left -fill x
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Frame du site web officiel de la CB245
+   frame $frm.frame2 -borderwidth 0 -relief raised
+
+      label $frm.frame2.lab103 -text "$caption(cookbook,titre_site_web)"
+      pack $frm.frame2.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame2 "$caption(cookbook,site_web_ref)" \
+         "$caption(cookbook,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
+   pack $frm.frame2 -side bottom -fill x -pady 2
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-
-   #--- Creation du lien avec le navigateur web et changement de sa couleur
-   bind $frm.labURL <ButtonPress-1> {
-      set filename "$caption(cookbook,site_web_ref)"
-      ::audace::Lance_Site_htm $filename
-   }
-   bind $frm.labURL <Enter> {
-      global frmm
-      set frm $frmm(Camera4)
-      $frm.labURL configure -fg $color(purple)
-   }
-   bind $frm.labURL <Leave> {
-      global frmm
-      set frm $frmm(Camera4)
-      $frm.labURL configure -fg $color(blue)
-   }
 }
 
 #
