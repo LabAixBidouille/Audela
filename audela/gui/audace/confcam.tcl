@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.75 2007-05-27 21:30:49 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.76 2007-05-31 17:20:06 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -608,11 +608,11 @@ namespace eval ::confCam {
          #--- declaration de la variable globale mainThreadNo dans la thread de la camera
          thread::send $threadNo "set mainThreadNo [thread::id]"
          #--- je copie la commande de la camera dans la thread de la camera
-         thread::copycommand $threadNo) "cam$camNo"
+         thread::copycommand $threadNo "cam$camNo"
          #--- declaration de la variable globale camNo dans la thread de la camera
          thread::send $threadNo "set camNo $camNo"
          #--- je copie la commande du buffer dans la thread de la camera
-         thread::copycommand $threadNo) buf$bufNo
+         thread::copycommand $threadNo buf$bufNo
       } else {
          set threadNo "0"
       }
@@ -2562,8 +2562,9 @@ namespace eval ::confCam {
       global conf
       global confCam
 
-      set camNo $confCam($camItem,camNo)
-      if { $camNo != 0 } {
+
+      if { $confCam($camItem,camName) != "" } {
+         set camNo $confCam($camItem,camNo)
          #--- Je desassocie la camera de la visu
          if { $confCam($camItem,visuNo) != 0 } {
             ::confVisu::setCamera $confCam($camItem,visuNo) 0
