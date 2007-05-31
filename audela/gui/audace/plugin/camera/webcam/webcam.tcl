@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.12 2007-05-30 17:16:10 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.13 2007-05-31 17:23:31 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -360,70 +360,86 @@ proc ::webcam::fillConfigPage { frm camItem } {
 proc ::webcam::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create webcam "$conf(webcam,$camItem,port)" -channel $conf(webcam,$camItem,channel) \
-      -lpport $conf(webcam,$camItem,longueposeport) -name WEBCAM -ccd $conf(webcam,$camItem,ccd) ]
-   console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
-      $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
-   console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
-      $conf(webcam,$camItem,longuepose)\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(webcam,$camItem,mirh)
-   cam$camNo mirrorv $conf(webcam,$camItem,mirv)
+   set catchResult [ catch {
+      set camNo [ cam::create webcam "$conf(webcam,$camItem,port)" \
+         -channel $conf(webcam,$camItem,channel) \
+         -lpport $conf(webcam,$camItem,longueposeport) \
+         -name WEBCAM \
+         -ccd $conf(webcam,$camItem,ccd) \
+         -sensorcolor [expr $conf(webcam,$camItem,ccd_N_B)==0 ] \
+      ]
+      console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
+         $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
+      console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
+         $conf(webcam,$camItem,longuepose)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(webcam,$camItem,mirh)
+      cam$camNo mirrorv $conf(webcam,$camItem,mirv)
 
-   #--- Je configure le format video (pour Linux uniquement)
-   if { $::tcl_platform(os) == "Linux" } {
-      cam$camNo videoformat $conf(webcam,$camItem,videoformat)
-      cam$camNo framerate $conf(webcam,$camItem,framerate)
-   }
-   #--- Je cree la thread dediee a la camera
-   set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
+      #--- Je configure le format video (pour Linux uniquement)
+      if { $::tcl_platform(os) == "Linux" } {
+         cam$camNo videoformat $conf(webcam,$camItem,videoformat)
+         cam$camNo framerate $conf(webcam,$camItem,framerate)
+      }
+      #--- Je cree la thread dediee a la camera
+      set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
 
-   #--- Parametrage des longues poses
-   if { $conf(webcam,$camItem,longuepose) == "1" } {
-      switch [ ::confLink::getLinkNamespace $conf(webcam,$camItem,longueposeport) ] {
-         parallelport {
-            #--- Je cree la liaison longue pose
-            set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
-            #---
-            cam$camNo longuepose 1
-            cam$camNo longueposelinkno $linkNo
-            cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
-            cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
-            #--- si  longueposestartvalue=0 alors longueposestovalue=1
-            #--- si  longueposestartvalue=1 alors longueposestovalue=0
-            cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
+      #--- Parametrage des longues poses
+      if { $conf(webcam,$camItem,longuepose) == "1" } {
+         switch [ ::confLink::getLinkNamespace $conf(webcam,$camItem,longueposeport) ] {
+            parallelport {
+               #--- Je cree la liaison longue pose
+               set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
+               #---
+               cam$camNo longuepose 1
+               cam$camNo longueposelinkno $linkNo
+               cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
+               cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
+               #--- si  longueposestartvalue=0 alors longueposestovalue=1
+               #--- si  longueposestartvalue=1 alors longueposestovalue=0
+               cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
+            }
+            quickremote {
+               #--- Je cree la liaison longue pose
+               set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
+               #---
+               cam$camNo longuepose 1
+               cam$camNo longueposelinkno $linkNo
+               cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
+               cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
+               #--- si  longueposestartvalue=0 alors longueposestovalue=1
+               #--- si  longueposestartvalue=1 alors longueposestovalue=0
+               cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
+            }
          }
-         quickremote {
-            #--- Je cree la liaison longue pose
-            set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
-            #---
-            cam$camNo longuepose 1
-            cam$camNo longueposelinkno $linkNo
-            cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
-            cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
-            #--- si  longueposestartvalue=0 alors longueposestovalue=1
-            #--- si  longueposestartvalue=1 alors longueposestovalue=0
-            cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
+
+         #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
+         if { $confCam($camItem,threadNo) != 0 && [cam$camNo longueposelinkno] != 0} {
+            thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
          }
+
+      } else {
+         #--- Pas de liaison longue pose
+         cam$camNo longuepose 0
       }
 
-      #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
-      if { $confCam($camItem,threadNo) != 0 && [cam$camNo longueposelinkno] != 0} {
-         thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
-      }
+      #--- je reseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 255 -255
 
-   } else {
-      #--- Pas de liaison longue pose
-      cam$camNo longuepose 0
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- en cas d'erreur, je libere toutes les ressources allouees
+      ::webcam::stop $camItem
+      #--- je transmets l'erreur à la procedure appelante
+      error $::errorInfo
    }
 
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 255 -255
 }
 
 #------------------------------------------------------------
@@ -443,8 +459,8 @@ proc ::webcam::selectPort { camItem tklist } {
 # ::webcam::stop
 #    Arrete la WebCam
 #
-proc ::webcam::stop { camNo camItem } {
-   global conf
+proc ::webcam::stop { camItem } {
+   global conf confCam
    variable private
 
    if { [ info exists private(frm)] } {
@@ -458,10 +474,23 @@ proc ::webcam::stop { camNo camItem } {
             $frm.frame6.format_webcam configure -state disabled
          }
       }
-      #--- Je ferme la liaison longuepose
-      if { $conf(webcam,$camItem,longuepose) == 1 } {
-         ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose"
-      }
+   }
+
+   #--- Je ferme la liaison longuepose
+   if { $conf(webcam,$camItem,longuepose) == 1 } {
+      ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$confCam($camItem,camNo)" "longuepose"
+   }
+
+   #--- J'arrete la thread de la camera
+   if { $confCam($camItem,threadNo) != 0 } {
+      thread::release $confCam($camItem,threadNo)
+      set confCam($camItem,threadNo) 0
+   }
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
    }
 }
 
@@ -687,8 +716,8 @@ proc ::webcam::config::run { visuNo camItem } {
 
       #--- j'affiche la fenetre de configuration
       if { [winfo exists $private($visuNo,toplevel)] == 0 } {
-         ::confGenerique::run $visuNo $private($visuNo,toplevel) "::webcam::config" $visuNo nomodal
-         wm transient $private($visuNo,toplevel) [winfo parent $private($visuNo,toplevel) ]
+         ::confGenerique::run $visuNo $private($visuNo,toplevel) "::webcam::config" -modal 0
+         wm transient $private($visuNo,toplevel) [winfo parent  $private($visuNo,toplevel) ]
          wm geometry $private($visuNo,toplevel) $::conf(webcam,$camItem,configWindowPosition)
       } else {
          focus $private($visuNo,toplevel)
