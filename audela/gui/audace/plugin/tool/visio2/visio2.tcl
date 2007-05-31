@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.20 2007-05-29 20:29:19 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.21 2007-05-31 21:08:58 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -71,6 +71,9 @@ proc ::visio2::createPluginInstance { { in "" } { visuNo 1 } } {
    }
    if { [lsearch $conf(visio2,enableExtension) "raw"] == -1 } {
      lappend conf(visio2,enableExtension) "raw" "1"
+   }
+   if { [lsearch $conf(Visio2,enableExtension) "avi"] == -1 } {
+     lappend conf(Visio2,enableExtension) "avi" "1"
    }
 
    if {![info exists conf(visio2,show_all_files)]} { set conf(visio2,show_all_files) "0" }
