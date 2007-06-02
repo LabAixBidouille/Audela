@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.9 2007-05-30 17:14:19 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.10 2007-06-02 00:15:41 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -177,6 +177,7 @@ proc ::cemes::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create cemes PCI ]
+   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(cemes,port) $caption(cemes,2points) [ cam$camNo port ]\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
@@ -235,85 +236,36 @@ proc ::cemes::CemesDispTemp { } {
 }
 
 #
-# ::cemes::getBinningList
-#    Retourne la liste des binnings disponibles de la camera
+# ::cemes::getPluginProperty
+#    Retourne la valeur de la propriete
 #
-proc ::cemes::getBinningList { } {
-   set binningList { 1x1 2x2 4x4 8x8 }
-   return $binningList
-}
-
+# Parametre :
+#    propertyName : Nom de la propriete
+# return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# ::cemes::getBinningListScan
-#    Retourne la liste des binnings disponibles pour les scans de la camera
+# binningList :     Retourne la liste des binnings disponibles
+# binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
-proc ::cemes::getBinningListScan { } {
-   set binningListScan { }
-   return $binningListScan
-}
-
-# ::cemes::hasCapability
-#    Retourne "la valeur de la propriete"
-#
-#  Parametres :
-#     camNo      : Numero de la camera
-#     capability : Fonctionnalite de la camera
-#
-proc ::cemes::hasCapability { camNo capability } {
-   switch $capability {
-      window { return 1 }
+proc ::cemes::getPluginProperty { camItem propertyName } {
+   switch $propertyName {
+      binningList     { return [ list 1x1 2x2 4x4 8x8 ] }
+      binningListScan { return [ list "" ] }
+      hasLongExposure { return 0 }
+      hasScan         { return 0 }
+      hasShutter      { return 1 }
+      hasVideo        { return 0 }
+      hasWindow       { return 1 }
+      longExposure    { return 1 }
+      multiCamera     { return 0 }
+      shutterList     { return [ list $::caption(cemes,obtu_ouvert) $::caption(cemes,obtu_ferme) $::caption(cemes,obtu_synchro) ] }
    }
-}
-
-#
-# ::cemes::hasLongExposure
-#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
-#
-proc ::cemes::hasLongExposure { } {
-   return 0
-}
-
-#
-# ::cemes::getLongExposure
-#    Retourne 1 si le mode longue pose est activé
-#    Sinon retourne 0
-#
-proc ::cemes::getLongExposure { } {
-   return 0
-}
-
-#
-# ::cemes::hasVideo
-#    Retourne le mode video de la camera (1 : oui , 0 : non)
-#
-proc ::cemes::hasVideo { } {
-   return 0
-}
-
-#
-# ::cemes::hasScan
-#    Retourne le mode scan de la camera (1 : Oui , 0 : Non)
-#
-proc ::cemes::hasScan { } {
-   return 0
-}
-
-#
-# ::cemes::hasShutter
-#    Retourne la presence d'un obturateur (1 : Oui , 0 : Non)
-#
-proc ::cemes::hasShutter { } {
-   return 1
-}
-
-#
-# ::cemes::getShutterOption
-#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
-#
-proc ::cemes::getShutterOption { } {
-   global caption
-
-   set ShutterOptionList { [ list $caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro) ] }
-   return $ShutterOptionList
 }
 

@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele, Audinet et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.28 2007-05-26 17:55:55 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.29 2007-06-02 00:18:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -201,7 +201,8 @@ namespace eval ::dscan {
       global conf panneau
 
       #--- Numero de la camera
-      set camNo [ ::confVisu::getCamNo 1 ]
+      set camNo   [ ::confVisu::getCamNo 1 ]
+      set camItem [ ::confVisu::getCamItem 1 ]
 
       #--- Configuration de l'obturateur
       if { $camNo != "0" } {
@@ -228,7 +229,7 @@ namespace eval ::dscan {
 
       #--- Mise a jour de la liste des binnings disponibles
       $This.fra3.bin.but_bin.menu delete 0 20
-      set list_binning_scan [ ::confCam::getBinningList_Scan $camNo ]
+      set list_binning_scan [ ::confCam::getPluginProperty $camItem binningListScan ]
       foreach valbin $list_binning_scan {
          $This.fra3.bin.but_bin.menu add radiobutton -label "$valbin" \
             -indicatoron "1" \
@@ -387,7 +388,7 @@ namespace eval ::dscan {
       global audace conf panneau
 
       if { [ ::cam::list ] != "" } {
-         if { [ ::confCam::hasScan $audace(camNo) ] == "1" } {
+         if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasScan ] == "1" } {
             #--- Initialisation des variables
             set panneau(dscan,acquisition) "1"
             set panneau(Scan,Stop)         "0"
@@ -860,7 +861,7 @@ proc dscanBuildIF { This } {
             menubutton $This.fra3.bin.but_bin -text $panneau(dscan,bin) -menu $This.fra3.bin.but_bin.menu -relief raised
             pack $This.fra3.bin.but_bin -in $This.fra3.bin -side left -fill none
             set m [ menu $This.fra3.bin.but_bin.menu -tearoff 0 ]
-            foreach valbin [ ::confCam::getBinningList_Scan [ ::confVisu::getCamNo 1 ] ] {
+            foreach valbin [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningListScan ] {
                $m add radiobutton -label "$valbin" \
                   -indicatoron "1" \
                   -value "$valbin" \

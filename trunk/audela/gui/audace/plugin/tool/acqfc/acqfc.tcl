@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.46 2007-05-26 18:04:24 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.47 2007-06-02 00:14:35 robertdelmas Exp $
 #
 
 #==============================================================
@@ -337,7 +337,7 @@ namespace eval ::AcqFC {
       #---
       if { "$camProduct" == "webcam" } {
          #--- C'est une WebCam
-         if { [ ::confCam::getLongExposure $camNo ] == "0" } {
+         if { [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" } {
             #--- Cas d'une WebCam standard
             pack forget $panneau(AcqFC,$visuNo,This).pose.but
             pack forget $panneau(AcqFC,$visuNo,This).pose.lab
@@ -388,7 +388,7 @@ namespace eval ::AcqFC {
          pack forget $panneau(AcqFC,$visuNo,This).obt.dslr
       }
 
-      if { [ ::confCam::hasShutter $camNo ] } {
+      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasShutter ] == "1" } {
          pack forget $panneau(AcqFC,$visuNo,This).obt.lab
          if { ! [ info exists conf($camProduct,foncobtu) ] } {
             set conf($camProduct,foncobtu) "2"
@@ -412,7 +412,7 @@ namespace eval ::AcqFC {
       }
       #---
       $panneau(AcqFC,$visuNo,This).bin.but.menu delete 0 20
-      set list_binning [confCam::getBinningList $camNo]
+      set list_binning [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] binningList ]
       foreach valbin $list_binning {
          $panneau(AcqFC,$visuNo,This).bin.but.menu add radiobutton -label "$valbin" \
             -indicatoron "1" \
@@ -1205,7 +1205,7 @@ namespace eval ::AcqFC {
               set panneau(AcqFC,$visuNo,pose_en_cours) "1"
               #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
               set camNo [ ::confVisu::getCamNo $visuNo ]
-              if { ( [ ::confVisu::getProduct $visuNo ] == "webcam" ) && ( [ ::confCam::getLongExposure $camNo ] == "0" ) } {
+              if { ( [ ::confVisu::getProduct $visuNo ] == "webcam" ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
                  set panneau(AcqFC,$visuNo,pose) "0"
               }
               #--- Branchement selon le mode de prise de vue
@@ -2034,7 +2034,7 @@ namespace eval ::AcqFC {
       }
       #---
       set camNo [ ::confVisu::getCamNo $visuNo ]
-      if { [ ::confCam::hasVideo $camNo ] == "1" } {
+      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasVideo ] == "1" } {
          #--- Arret de la visualisation video
          cam$camNo stopvideoview
          ::confVisu::setVideo $visuNo 0
@@ -3206,14 +3206,13 @@ proc AcqFCBuildIF { visuNo } {
       -command "::AcqFC::webcamConfigure $visuNo"
    pack $panneau(AcqFC,$visuNo,This).pose.conf -fill x -expand true -ipady 3
 
-
    #--- Trame du binning
    frame $panneau(AcqFC,$visuNo,This).bin -borderwidth 2 -relief ridge
       menubutton $panneau(AcqFC,$visuNo,This).bin.but -text $caption(acqfc,bin) \
          -menu $panneau(AcqFC,$visuNo,This).bin.but.menu -relief raised
       pack $panneau(AcqFC,$visuNo,This).bin.but -side left -fill y -expand true -ipady 1
       set m [ menu $panneau(AcqFC,$visuNo,This).bin.but.menu -tearoff 0 ]
-      foreach valbin [confCam::getBinningList [ ::confVisu::getCamNo $visuNo ]] {
+      foreach valbin [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] binningList ] {
         $m add radiobutton -label "$valbin" \
            -indicatoron "1" \
            -value "$valbin" \

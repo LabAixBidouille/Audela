@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.13 2007-05-31 17:23:31 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.14 2007-06-02 00:19:40 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -368,6 +368,7 @@ proc ::webcam::configureCamera { camItem } {
          -ccd $conf(webcam,$camItem,ccd) \
          -sensorcolor [expr $conf(webcam,$camItem,ccd_N_B)==0 ] \
       ]
+      set confCam($camItem,product) [ cam$camNo product ]
       console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
          $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
       console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
@@ -614,85 +615,37 @@ proc ::webcam::configureLinkLonguePose { camItem } {
 }
 
 #
-# ::webcam::getBinningList
-#    Retourne la liste des binnings disponibles de la camera
+# ::webcam::getPluginProperty
+#    Retourne la valeur de la propriete
 #
-proc ::webcam::getBinningList { } {
-   set binningList { 1x1 }
-   return $binningList
-}
-
+# Parametre :
+#    propertyName : Nom de la propriete
+# return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# ::webcam::getBinningListScan
-#    Retourne la liste des binnings disponibles pour les scans de la camera
+# binningList :     Retourne la liste des binnings disponibles
+# binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
-proc ::webcam::getBinningListScan { } {
-   set binningListScan { }
-   return $binningListScan
-}
-
-#
-# ::webcam::getLongExposure
-#    Retourne 1 si le mode longue pose est activ�
-#    Sinon retourne 0
-#
-proc ::webcam::getLongExposure { camItem } {
-   return $::conf(webcam,$camItem,longuepose)
-}
-
-#
-# ::webcam::getShutterOption
-#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
-#
-proc ::webcam::getShutterOption { } {
-   set ShutterOptionList { }
-   return $ShutterOptionList
-}
-
-#
-# ::webcam::hasCapability
-#    Retourne "la valeur de la propriete"
-#
-#  Parametres :
-#     camNo      : Numero de la camera
-#     capability : Fonctionnalite de la camera
-#
-proc ::webcam::hasCapability { camNo capability } {
-   switch $capability {
-      window { return 0 }
+proc ::webcam::getPluginProperty { camItem propertyName } {
+   switch $propertyName {
+      binningList     { return [ list 1x1 ] }
+      binningListScan { return [ list "" ] }
+      hasLongExposure { return 1 }
+      hasScan         { return 0 }
+      hasShutter      { return 0 }
+      hasVideo        { return 1 }
+      hasWindow       { return 0 }
+      longExposure    { return $::conf(webcam,$camItem,longuepose) }
+      multiCamera     { return 1 }
+      shutterList     { return [ list "" ] }
    }
-}
-
-#
-# ::webcam::hasLongExposure
-#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
-#
-proc ::webcam::hasLongExposure { } {
-   return 1
-}
-
-#
-# ::webcam::hasVideo
-#    Retourne le mode video de la camera (1 : oui , 0 : non)
-#
-proc ::webcam::hasVideo { } {
-   return 1
-}
-
-#
-# ::webcam::hasScan
-#    Retourne le mode scan de la camera (1 : Oui , 0 : Non)
-#
-proc ::webcam::hasScan { } {
-   return 0
-}
-
-#
-# ::webcam::hasShutter
-#    Retourne la presence d'un obturateur (1 : Oui , 0 : Non)
-#
-proc ::webcam::hasShutter { } {
-   return 0
 }
 
 # ========= Namespace de la fenetre de configuration ========

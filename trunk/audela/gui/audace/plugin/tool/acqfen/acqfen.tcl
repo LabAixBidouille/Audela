@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.9 2007-05-08 16:39:21 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.10 2007-06-02 00:15:04 robertdelmas Exp $
 #
 
 # =========================================================
@@ -423,7 +423,7 @@ namespace eval ::acqfen {
                } else {
                   #--- Applique le scale si la camera possede bien le binning demande
                   set binningCamera "$panneau(acqfen,bin_centrage)x$panneau(acqfen,bin_centrage)"
-                  if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
+                  if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
                      buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
                   }
                }
@@ -1188,7 +1188,7 @@ namespace eval ::acqfen {
       }
 
       #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
-      if { [ ::confCam::hasCapability $audace(camNo) window ] == "0" } {
+      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] window ] == "0" } {
          buf$audace(bufNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
          $panneau(acqfen,X2) $panneau(acqfen,Y2)]
       }

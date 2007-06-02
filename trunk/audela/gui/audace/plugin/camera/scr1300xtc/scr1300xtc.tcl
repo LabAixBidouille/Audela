@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.3 2007-05-30 17:15:20 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.4 2007-06-02 00:18:53 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -155,6 +155,7 @@ proc ::scr1300xtc::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
+   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
@@ -171,85 +172,36 @@ proc ::scr1300xtc::configureCamera { camItem } {
 }
 
 #
-# ::scr1300xtc::getBinningList
-#    Retourne la liste des binnings disponibles de la camera
+# ::scr1300xtc::getPluginProperty
+#    Retourne la valeur de la propriete
 #
-proc ::scr1300xtc::getBinningList { } {
-   set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 }
-   return $binningList
-}
-
+# Parametre :
+#    propertyName : Nom de la propriete
+# return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# ::scr1300xtc::getBinningListScan
-#    Retourne la liste des binnings disponibles pour les scans de la camera
+# binningList :     Retourne la liste des binnings disponibles
+# binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
-proc ::scr1300xtc::getBinningListScan { } {
-   set binningListScan { }
-   return $binningListScan
-}
-
-# ::scr1300xtc::hasCapability
-#    Retourne "la valeur de la propriete"
-#
-#  Parametres :
-#     camNo      : Numero de la camera
-#     capability : Fonctionnalite de la camera
-#
-proc ::scr1300xtc::hasCapability { camNo capability } {
-   switch $capability {
-      window { return 1 }
+proc ::scr1300xtc::getPluginProperty { camItem propertyName } {
+   switch $propertyName {
+      binningList     { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
+      binningListScan { return [ list "" ] }
+      hasLongExposure { return 0 }
+      hasScan         { return 0 }
+      hasShutter      { return 0 }
+      hasVideo        { return 0 }
+      hasWindow       { return 1 }
+      longExposure    { return 1 }
+      multiCamera     { return 0 }
+      shutterList     { return [ list "" ] }
    }
-}
-
-#
-# ::scr1300xtc::hasLongExposure
-#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
-#
-proc ::scr1300xtc::hasLongExposure { } {
-   return 0
-}
-
-#
-# ::scr1300xtc::getLongExposure
-#    Retourne 1 si le mode longue pose est activé
-#    Sinon retourne 0
-#
-proc ::scr1300xtc::getLongExposure { } {
-   return 0
-}
-
-#
-# ::scr1300xtc::hasVideo
-#    Retourne le mode video de la camera (1 : oui , 0 : non)
-#
-proc ::scr1300xtc::hasVideo { } {
-   return 0
-}
-
-#
-# ::scr1300xtc::hasScan
-#    Retourne le mode scan de la camera (1 : Oui , 0 : Non)
-#
-proc ::scr1300xtc::hasScan { } {
-   return 0
-}
-
-#
-# ::scr1300xtc::hasShutter
-#    Retourne la presence d'un obturateur (1 : Oui , 0 : Non)
-#
-proc ::scr1300xtc::hasShutter { } {
-   return 0
-}
-
-#
-# ::scr1300xtc::getShutterOption
-#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
-#
-proc ::scr1300xtc::getShutterOption { } {
-   global caption
-
-   set ShutterOptionList { }
-   return $ShutterOptionList
 }
 

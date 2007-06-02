@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.61 2007-05-27 18:54:05 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.62 2007-06-02 00:16:57 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -588,12 +588,13 @@ namespace eval ::confVisu {
    #  exemple : setCamera 2 3 "EOS 300D" cree l'association entre visu2 et cam3
    #            setCamera 2 0            supprime l'association
    #------------------------------------------------------------
-   proc setCamera { visuNo camNo { model "" } } {
+   proc setCamera { visuNo camItem camNo { model "" } } {
       variable private
       global caption
       global color
       global confCam
 
+      set private($visuNo,camItem) $camItem
       set private($visuNo,camNo) $camNo
       if { $camNo == 0 } {
          set private($visuNo,camName)        ""
@@ -605,16 +606,6 @@ namespace eval ::confVisu {
       } else {
          set private($visuNo,camName)        [cam$camNo name]
          set private($visuNo,camProductName) [cam$camNo product]
-         #--- Je determine camItem
-         if { $confCam(A,camNo) == $camNo } {
-            set private($visuNo,camItem) "A"
-         } elseif { $confCam(B,camNo) == $camNo } {
-            set private($visuNo,camItem)  "B"
-         } elseif { $confCam(C,camNo) == $camNo } {
-            set private($visuNo,camItem)  "C"
-         } else {
-            set private($visuNo,camItem)  ""
-         }
          #--- J'affiche le nom de la camera
          $private($visuNo,This).fra1.labCam_name_labURL configure \
             -text "$private($visuNo,camItem)  $caption(confVisu,2points) $private($visuNo,camName) $model" -fg $color(blue)

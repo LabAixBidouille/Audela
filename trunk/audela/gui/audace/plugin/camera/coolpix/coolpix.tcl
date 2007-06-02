@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.4 2007-05-30 17:14:49 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.5 2007-06-02 00:17:28 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -121,13 +121,16 @@ proc ::coolpix::configureCamera { camItem } {
 
    if { [ ::confVisu::getTool 1 ] == "acqapn" } {
       set camNo "0"
+      set confCam($camItem,camName) "coolpix"
+      set confCam($camItem,product) "coolpix"
       ::acqapn::Off
       ::acqapn::Query
       set confCam($camItem,camNo) $camNo
    } else {
       set camItem $confCam(currentCamItem)
-      set confCam($camItem,camName) ""
+     ### set confCam($camItem,camName) ""
    }
+   set confCam(coolpix,model)    ""
 }
 
 #
@@ -185,85 +188,36 @@ proc ::coolpix::deconnect { } {
 }
 
 #
-# ::coolpix::getBinningList
-#    Retourne la liste des binnings disponibles de la camera
+# ::coolpix::getPluginProperty
+#    Retourne la valeur de la propriete
 #
-proc ::coolpix::getBinningList { } {
-   if { [ ::confVisu::getTool 1 ] == "acqapn" } {
-      set binningList [ ::acqapn::Formats ]
-      return $binningList
+# Parametre :
+#    propertyName : Nom de la propriete
+# return : Valeur de la propriete ou "" si la propriete n'existe pas
+#
+# binningList :     Retourne la liste des binnings disponibles
+# binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+#
+proc ::coolpix::getPluginProperty { camItem propertyName } {
+   switch $propertyName {
+      binningList     { return [ ::acqapn::Formats ] }
+      binningListScan { return [ list "" ] }
+      hasLongExposure { return 0 }
+      hasScan         { return 0 }
+      hasShutter      { return 0 }
+      hasVideo        { return 1 }
+      hasWindow       { return 0 }
+      longExposure    { return 0 }
+      multiCamera     { return 0 }
+      shutterList     { return [ list "" ] }
    }
-}
-
-#
-# ::coolpix::getBinningListScan
-#    Retourne la liste des binnings disponibles pour les scans de la camera
-#
-proc ::coolpix::getBinningListScan { } {
-   set binningListScan { }
-   return $binningListScan
-}
-
-# ::coolpix::hasCapability
-#    Retourne "la valeur de la propriete"
-#
-#  Parametres :
-#     camNo      : Numero de la camera
-#     capability : Fonctionnalite de la camera
-#
-proc ::coolpix::hasCapability { camNo capability } {
-   switch $capability {
-      window { return 0 }
-   }
-}
-
-#
-# ::coolpix::hasLongExposure
-#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
-#
-proc ::coolpix::hasLongExposure { } {
-   return 0
-}
-
-#
-# ::coolpix::getLongExposure
-#    Retourne 1 si le mode longue pose est active
-#    Sinon retourne 0
-#
-proc ::coolpix::getLongExposure { } {
-   return 0
-}
-
-#
-# ::coolpix::hasVideo
-#    Retourne le mode video de la camera (1 : oui , 0 : non)
-#
-proc ::coolpix::hasVideo { } {
-   return 1
-}
-
-#
-# ::coolpix::hasScan
-#    Retourne le mode scan de la camera (1 : Oui , 0 : Non)
-#
-proc ::coolpix::hasScan { } {
-   return 0
-}
-
-#
-# ::coolpix::hasShutter
-#    Retourne la presence d'un obturateur (1 : Oui , 0 : Non)
-#
-proc ::coolpix::hasShutter { } {
-   return 0
-}
-
-#
-# ::coolpix::getShutterOption
-#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
-#
-proc ::coolpix::getShutterOption { } {
-   set ShutterOptionList { }
-   return $ShutterOptionList
 }
 
