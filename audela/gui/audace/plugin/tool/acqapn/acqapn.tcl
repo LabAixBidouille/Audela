@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.18 2007-05-30 17:16:44 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.19 2007-06-02 00:14:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -146,7 +146,7 @@ namespace eval ::acqapn {
 
       #--- Texte du bouton 'Video'
       set panneau(acqapn,showvideo)       "0"
-      if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { set panneau(acqapn,showvideo) "1" }
+      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "1" } { set panneau(acqapn,showvideo) "1" }
       set panneau(acqapn,initstate)       "0"
 
       #--- Initialisation des radio et checkbutton
@@ -265,7 +265,7 @@ namespace eval ::acqapn {
 
          #--- Message si ce n'est pas un apn ou une webcam
          if { $audace(camNo) != "0" } {
-            if { [ ::confCam::hasVideo $audace(camNo) ] == "0" } {
+            if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "0" } {
                ::acqapn::ErrComm 8
                $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
             } else {
@@ -312,7 +312,7 @@ namespace eval ::acqapn {
    proc MajVideo { g } {
       global audace
 
-      if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } {
+      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "1" } {
          ::acqapn::StopPreview
          ::acqapn::ShowVideo
       }
@@ -327,7 +327,7 @@ namespace eval ::acqapn {
       global audace caption confCam panneau
 
       #--- On stoppe la video
-      if { [ ::confCam::hasVideo $audace(camNo) ] == "1" } { ::acqapn::StopPreview }
+      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "1" } { ::acqapn::StopPreview }
 
       #--- Desactivation des boutons 'Connecter' et 'Video'
       $This.fra4.connect configure -text $caption(acqapn,sw,encours) -command {}
@@ -340,7 +340,7 @@ namespace eval ::acqapn {
          console::affiche_erreur "$confCam(coolpix,model) $caption(acqapn,msg,connect) $port\n"
          console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(coolpix,baud)\n"
          console::affiche_saut "\n"
-         ::confVisu::setCamera "$audace(visuNo)" "$audace(camNo)" "$confCam(coolpix,model)"
+         ::confVisu::setCamera "$audace(visuNo)" [ ::confVisu::getCamItem 1 ] "$audace(camNo)" "$confCam(coolpix,model)"
       } else {
          $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::coolpix::connect }
          if { $port=="not found" } { set msg 1 } else { set msg 2 }

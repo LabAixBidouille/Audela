@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.19 2007-05-20 17:38:34 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.20 2007-06-02 00:15:26 robertdelmas Exp $
 #
 
 #==============================================================
@@ -273,7 +273,7 @@ proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2
    }
 
    #--- j'adapte les boutons de selection de pose et de binning
-   if { [confCam::getLongExposure $camNo] == "1" } {
+   if { [confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure] == "1" } {
       #--- cameras autre que webcam, ou webcam avec la longue pose
       pack $This.pose.lab1 -anchor center -side left -padx 5
       pack $This.pose.combo -anchor center -side left -fill x -expand 1
@@ -1130,7 +1130,7 @@ proc ::autoguider::selectBinning { visuNo } {
 
    set camNo [::confVisu::getCamNo $visuNo ]
 
-   if { [confCam::getLongExposure $camNo] == "0" } {
+   if { [confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure] == "0" } {
          #--- j'affiche la fentre de choix de binning de la webcam
          set result [ catch { cam$camNo videoformat } ]
          if { $result == "1" } {

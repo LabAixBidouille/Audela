@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.3 2007-05-30 17:15:07 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.4 2007-06-02 00:17:42 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -178,6 +178,7 @@ proc ::fingerlakes::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create fingerlakes USB ]
+   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(fingerlakes,port) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
@@ -236,85 +237,39 @@ proc ::fingerlakes::FLIDispTemp { } {
 }
 
 #
-# ::fingerlakes::getBinningList
-#    Retourne la liste des binnings disponibles de la camera
+# ::fingerlakes::getPluginProperty
+#    Retourne la valeur de la propriete
 #
-proc ::fingerlakes::getBinningList { } {
-   set binningList { 1x1 2x2 3x3 4x4 5x5 6x6 7x7 8x8 }
-   return $binningList
-}
-
+# Parametre :
+#    propertyName : Nom de la propriete
+# return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# ::fingerlakes::getBinningListScan
-#    Retourne la liste des binnings disponibles pour les scans de la camera
+# binningList :     Retourne la liste des binnings disponibles
+# binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
-proc ::fingerlakes::getBinningListScan { } {
-   set binningListScan { }
-   return $binningListScan
-}
-
-# ::fingerlakes::hasCapability
-#    Retourne "la valeur de la propriete"
-#
-#  Parametres :
-#     camNo      : Numero de la camera
-#     capability : Fonctionnalite de la camera
-#
-proc ::fingerlakes::hasCapability { camNo capability } {
-   switch $capability {
-      window { return 1 }
+proc ::fingerlakes::getPluginProperty { camItem propertyName } {
+   switch $propertyName {
+      binningList     { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 7x7 8x8 ] }
+      binningListScan { return [ list "" ] }
+      hasLongExposure { return 0 }
+      hasScan         { return 0 }
+      hasShutter      { return 1 }
+      hasVideo        { return 0 }
+      hasWindow       { return 1 }
+      longExposure    { return 1 }
+      multiCamera     { return 0 }
+      shutterList     {
+         #--- O + F + S - A confirmer avec le materiel
+         return [ list $::caption(fingerlakes,obtu_ouvert) $::caption(fingerlakes,obtu_ferme) $::caption(fingerlakes,obtu_synchro) ]
+      }
    }
-}
-
-#
-# ::fingerlakes::hasLongExposure
-#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
-#
-proc ::fingerlakes::hasLongExposure { } {
-   return 0
-}
-
-#
-# ::fingerlakes::getLongExposure
-#    Retourne 1 si le mode longue pose est activé
-#    Sinon retourne 0
-#
-proc ::fingerlakes::getLongExposure { } {
-   return 0
-}
-
-#
-# ::fingerlakes::hasVideo
-#    Retourne le mode video de la camera (1 : oui , 0 : non)
-#
-proc ::fingerlakes::hasVideo { } {
-   return 0
-}
-
-#
-# ::fingerlakes::hasScan
-#    Retourne le mode scan de la camera (1 : Oui , 0 : Non)
-#
-proc ::fingerlakes::hasScan { } {
-   return 0
-}
-
-#
-# ::fingerlakes::hasShutter
-#    Retourne la presence d'un obturateur (1 : Oui , 0 : Non)
-#
-proc ::fingerlakes::hasShutter { } {
-   return 1
-}
-
-#
-# ::fingerlakes::getShutterOption
-#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
-#
-proc ::fingerlakes::getShutterOption { } {
-   global caption
-
-   set ShutterOptionList { [ list $caption(fingerlakes,obtu_ouvert) $caption(fingerlakes,obtu_ferme) $caption(fingerlakes,obtu_synchro) ] }
-   return $ShutterOptionList
 }
 

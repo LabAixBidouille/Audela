@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.12 2007-05-08 16:43:49 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.13 2007-06-02 00:17:57 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -194,7 +194,7 @@ namespace eval ::focs {
          update
          #--- Applique le binning demande si la camera possede bien ce binning
          set binningCamera "2x2"
-         if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
+         if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
             set panneau(focs,bin) "2"
          } else {
             set panneau(focs,bin) "1"
@@ -208,7 +208,7 @@ namespace eval ::focs {
          if { $panneau(focs,menu) == "$caption(foc,centrage)" } {
             #--- Applique le binning demande si la camera possede bien ce binning
             set binningCamera "2x2"
-            if { [ lsearch [ ::confCam::getBinningList $audace(camNo) ] $binningCamera ] != "-1" } {
+            if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
                set panneau(focs,bin) "2"
             } else {
                set panneau(focs,bin) "1"
@@ -291,7 +291,7 @@ namespace eval ::focs {
       ::camera::gestionPose $panneau(focs,exptime) 1 $camera $buffer
 
       #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
-      if { [ ::confCam::hasCapability $audace(camNo) window ] == "0" } {
+      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] window ] == "0" } {
          buf$audace(bufNo) window $panneau(focs,window)
       }
 

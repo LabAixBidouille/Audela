@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.15 2007-03-17 09:24:37 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.16 2007-06-02 00:16:35 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -720,9 +720,11 @@ namespace eval ::confOptic {
 
       #--- Recherche du numero de la camera A connectee
       if { $confCam(A,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam(A,visuNo) ]
+         set camNo   [ ::confVisu::getCamNo $confCam(A,visuNo) ]
+         set camItem [ ::confVisu::getCamItem $confCam(A,visuNo) ]
       } else {
-         set camNo ""
+         set camNo   ""
+         set camItem ""
       }
 
       #--- Je memorise la reference de la frame
@@ -873,7 +875,7 @@ namespace eval ::confOptic {
       label $widget(frm).labBinning -text "$caption(confoptic,binning)" -relief flat
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      set confOptic::widget(list_combobox) [ ::confCam::getBinningList $camNo ]
+      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
          -height [ llength $confOptic::widget(list_combobox) ] \
@@ -933,9 +935,11 @@ namespace eval ::confOptic {
 
       #--- Recherche du numero de la camera B connectee
       if { $confCam(B,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam(B,visuNo) ]
+         set camNo   [ ::confVisu::getCamNo $confCam(B,visuNo) ]
+         set camItem [ ::confVisu::getCamItem $confCam(B,visuNo) ]
       } else {
-         set camNo ""
+         set camNo   ""
+         set camItem ""
       }
 
       #--- Je memorise la reference de la frame
@@ -1086,7 +1090,7 @@ namespace eval ::confOptic {
       label $widget(frm).labBinning -text "$caption(confoptic,binning)" -relief flat
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      set confOptic::widget(list_combobox) [ ::confCam::getBinningList $camNo ]
+      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
          -height [ llength $confOptic::widget(list_combobox) ] \
@@ -1146,9 +1150,11 @@ namespace eval ::confOptic {
 
       #--- Recherche du numero de la camera C connectee
       if { $confCam(C,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam(C,visuNo) ]
+         set camNo   [ ::confVisu::getCamNo $confCam(C,visuNo) ]
+         set camItem [ ::confVisu::getCamItem $confCam(C,visuNo) ]
       } else {
-         set camNo ""
+         set camNo   ""
+         set camItem ""
       }
 
       #--- Je memorise la reference de la frame
@@ -1299,7 +1305,7 @@ namespace eval ::confOptic {
       label $widget(frm).labBinning -text "$caption(confoptic,binning)" -relief flat
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      set confOptic::widget(list_combobox) [ ::confCam::getBinningList $camNo ]
+      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
          -height [ llength $confOptic::widget(list_combobox) ] \
@@ -1367,7 +1373,7 @@ namespace eval ::confOptic {
       } else {
          set camNo ""
       }
-      set confOptic::widget(list_combobox) [ ::confCam::getBinningList $camNo ]
+      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       #--- Mise a jour des parametres dependant du binning
       if { $camNo != "" && $camNo != "0" } {
          #--- Mise a jour de la combobox du binning

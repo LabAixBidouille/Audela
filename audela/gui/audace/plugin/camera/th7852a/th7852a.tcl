@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.4 2007-05-30 17:15:35 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.5 2007-06-02 00:19:11 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -120,6 +120,7 @@ proc ::th7852a::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create camth "unknown" -name TH7852A ]
+   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(th7852a,port) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
@@ -136,85 +137,36 @@ proc ::th7852a::configureCamera { camItem } {
 }
 
 #
-# ::th7852a::getBinningList
-#    Retourne la liste des binnings disponibles de la camera
+# ::th7852a::getPluginProperty
+#    Retourne la valeur de la propriete
 #
-proc ::th7852a::getBinningList { } {
-   set binningList { 1x1 2x2 3x3 4x4 }
-   return $binningList
-}
-
+# Parametre :
+#    propertyName : Nom de la propriete
+# return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# ::th7852a::getBinningListScan
-#    Retourne la liste des binnings disponibles pour les scans de la camera
+# binningList :     Retourne la liste des binnings disponibles
+# binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
-proc ::th7852a::getBinningListScan { } {
-   set binningListScan { }
-   return $binningListScan
-}
-
-# ::th7852a::hasCapability
-#    Retourne "la valeur de la propriete"
-#
-#  Parametres :
-#     camNo      : Numero de la camera
-#     capability : Fonctionnalite de la camera
-#
-proc ::th7852a::hasCapability { camNo capability } {
-   switch $capability {
-      window { return 1 }
+proc ::th7852a::getPluginProperty { camItem propertyName } {
+   switch $propertyName {
+      binningList     { return [ list 1x1 2x2 3x3 4x4 ] }
+      binningListScan { return [ list "" ] }
+      hasLongExposure { return 0 }
+      hasScan         { return 0 }
+      hasShutter      { return 0 }
+      hasVideo        { return 0 }
+      hasWindow       { return 1 }
+      longExposure    { return 1 }
+      multiCamera     { return 0 }
+      shutterList     { return [ list "" ] }
    }
-}
-
-#
-# ::th7852a::hasLongExposure
-#    Retourne le mode longue pose de la camera (1 : oui , 0 : non)
-#
-proc ::th7852a::hasLongExposure { } {
-   return 0
-}
-
-#
-# ::th7852a::getLongExposure
-#    Retourne 1 si le mode longue pose est activé
-#    Sinon retourne 0
-#
-proc ::th7852a::getLongExposure { } {
-   return 0
-}
-
-#
-# ::th7852a::hasVideo
-#    Retourne le mode video de la camera (1 : oui , 0 : non)
-#
-proc ::th7852a::hasVideo { } {
-   return 0
-}
-
-#
-# ::th7852a::hasScan
-#    Retourne le mode scan de la camera (1 : Oui , 0 : Non)
-#
-proc ::th7852a::hasScan { } {
-   return 0
-}
-
-#
-# ::th7852a::hasShutter
-#    Retourne la presence d'un obturateur (1 : Oui , 0 : Non)
-#
-proc ::th7852a::hasShutter { } {
-   return 0
-}
-
-#
-# ::th7852a::getShutterOption
-#    Retourne le mode de fonctionnement de l'obturateur (O : Ouvert , F : Ferme , S : Synchro)
-#
-proc ::th7852a::getShutterOption { } {
-   global caption
-
-   set ShutterOptionList { }
-   return $ShutterOptionList
 }
 
