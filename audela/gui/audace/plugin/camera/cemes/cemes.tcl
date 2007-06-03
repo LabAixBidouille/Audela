@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.12 2007-06-03 14:34:28 michelpujol Exp $
+# Mise a jour $Id: cemes.tcl,v 1.13 2007-06-03 16:28:50 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -244,6 +244,7 @@ proc ::cemes::CemesDispTemp { } {
 #
 # binningList :     Retourne la liste des binnings disponibles
 # binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasBinning :      Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
