@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.14 2007-06-02 00:19:40 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.15 2007-06-03 09:21:16 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -368,7 +368,6 @@ proc ::webcam::configureCamera { camItem } {
          -ccd $conf(webcam,$camItem,ccd) \
          -sensorcolor [expr $conf(webcam,$camItem,ccd_N_B)==0 ] \
       ]
-      set confCam($camItem,product) [ cam$camNo product ]
       console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
          $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
       console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
