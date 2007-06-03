@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.47 2007-06-02 00:14:35 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.48 2007-06-03 14:45:03 michelpujol Exp $
 #
 
 #==============================================================
@@ -27,6 +27,9 @@ namespace eval ::AcqFC {
       #---
       set panneau(AcqFC,$visuNo,base) "$in"
       set panneau(AcqFC,$visuNo,This) "$in.acqFC"
+
+      set panneau(AcqFC,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
+      set panneau(AcqFC,$visuNo,camNo)   [::confCam::getCamNo $panneau(AcqFC,$visuNo,camItem)]
 
       #--- Recuperation de la derniere configuration de prise de vue
       ::AcqFC::Chargement_Var $visuNo
@@ -323,6 +326,9 @@ namespace eval ::AcqFC {
 #***** Procedure Adapt_Panneau_AcqFC ***************************
    proc Adapt_Panneau_AcqFC { visuNo { a "" } { b "" } { c "" } } {
       global audace conf panneau
+
+      set panneau(AcqFC,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
+      set panneau(AcqFC,$visuNo,camNo)   [::confCam::getCamNo $panneau(AcqFC,$visuNo,camItem)]
 
       #--- Decoche le checkbutton Apercu des modes Video
       set panneau(AcqFC,$visuNo,showvideopreview) "0"
@@ -1869,10 +1875,12 @@ namespace eval ::AcqFC {
       #--- La commande exptime permet de fixer le temps de pose de l'image
       cam$camNo exptime $exptime
 
-      if { [cam$camNo product] != "dslr" } {
+      if { [::confCam::getPluginProperty $panneau(AcqFC,$visuNo,camItem) hasBinning] == "1"   } {
          #--- je selectionne le binning
          cam$camNo bin [list [string range $binning 0 0] [string range $binning 2 2]]
-      } else {
+      }
+
+      if { [::confCam::getPluginProperty $panneau(AcqFC,$visuNo,camItem) hasFormat] == "1"   } {
          #--- je selectionne la qualite
          cam$camNo quality $binning
       }
