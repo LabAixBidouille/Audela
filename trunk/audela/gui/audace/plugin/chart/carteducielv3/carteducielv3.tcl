@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.14 2007-05-23 16:31:47 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.15 2007-06-03 16:05:36 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -586,7 +586,7 @@ namespace eval carteducielv3 {
 
       #--- Mise en forme de objName
       if { $objType=="" || $objType=="port:" } {
-         console::affiche_erreur "$caption(carteducielv3,no_object_select)\n"
+         console::affiche_erreur "$caption(carteducielv3,no_object_select)\n\n"
          return ""
       } else {
          #--- j'extrait les coordonnees du detail de la ligne2
@@ -786,6 +786,7 @@ namespace eval carteducielv3 {
       if [catch $a_effectuer input] {
          #--- Affichage du message d'erreur sur la console
          ::console::affiche_erreur "$caption(carteducielv3,rate)\n"
+         ::console::affiche_saut "\n"
          #--- Ouvre la fenetre de configuration des editeurs
          set conf(confCat) "::carteducielv3"
          ::confCat::run
@@ -797,7 +798,6 @@ namespace eval carteducielv3 {
          set a_effectuer "exec \"$filename\" &"
          #--- Affichage sur la console
          set filename $conf(carteducielv3,binarypath)
-         ::console::affiche_saut "\n"
          ::console::disp $filename
          ::console::affiche_saut "\n"
          if [catch $a_effectuer input] {
@@ -845,7 +845,7 @@ namespace eval carteducielv3 {
             }
             #--- nouvelle tentative
             if { [ openConnection ] == 1 } {
-               console::affiche_erreur "$caption(carteducielv3,no_connect)\n"
+               console::affiche_erreur "$caption(carteducielv3,no_connect)\n\n"
                tk_messageBox -message "$caption(carteducielv3,no_connect)" -icon info
                return ""
             }

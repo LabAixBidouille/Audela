@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.12 2007-05-23 16:31:07 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.13 2007-06-03 16:05:10 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -445,12 +445,12 @@ namespace eval carteducielv2 {
       }
 
       if { $catid == "0" } {
-         console::affiche_erreur "selectObject unknown catalog for $objectName"
+         console::affiche_erreur "selectObject unknown catalog for $objectName\n\n"
          return 1
       }
 
       if { $objectid == "0" } {
-         console::affiche_erreur "selectObject unknown object id for $objectName"
+         console::affiche_erreur "selectObject unknown object id for $objectName\n\n"
          return 1
       }
 
@@ -615,7 +615,7 @@ namespace eval carteducielv2 {
       global caption
 
       if { [isReady] != 0 } {
-         console::affiche_erreur "$caption(carteducielv2,no_connect)\n"
+         console::affiche_erreur "$caption(carteducielv2,no_connect)\n\n"
          tk_messageBox -message "$caption(carteducielv2,no_connect)" -icon info
          return ""
       } else {
@@ -634,7 +634,7 @@ namespace eval carteducielv2 {
                #--- nouvelle tentative
                set erreur [catch {dde request ciel DdeSkyChart DdeData } result ]
                if { $erreur == 1 } {
-                  console::affiche_erreur "$caption(carteducielv2,no_connect)\n"
+                  console::affiche_erreur "$caption(carteducielv2,no_connect)\n\n"
                   tk_messageBox -message "$caption(carteducielv2,no_connect)" -icon info
                   return ""
                }
@@ -684,7 +684,7 @@ namespace eval carteducielv2 {
          set ligne1 [lindex $ligneList 1]
          scan $ligne1 "RA: %s DEC:%s" ra dec
          if { $ra== "" || $dec =="" } {
-            console::affiche_erreur "$caption(carteducielv2,coord_no_found)\n"
+            console::affiche_erreur "$caption(carteducielv2,coord_no_found)\n\n"
             return
          }
          set objName "centre cdc"
@@ -864,7 +864,7 @@ namespace eval carteducielv2 {
       global caption
 
       if { [catch {dde request ciel DdeSkyChart DdeData } result ] } {
-         console::affiche_erreur "$caption(carteducielv2,no_connect)\n"
+         console::affiche_erreur "$caption(carteducielv2,no_connect)\n\n"
          tk_messageBox -message "$caption(carteducielv2,no_connect)\n $result" -icon info
          return ""
       }
@@ -922,7 +922,7 @@ namespace eval carteducielv2 {
 
       #--- encodage de la command  (desactive le codage UTF8)
       set command [encoding convertfrom identity $command]
-      #console::disp "carteducielv2::sendDDECommand command=$command \n"
+     # console::disp "carteducielv2::sendDDECommand command=$command \n"
       #--- envoi la commande a Cartes du Ciel
       set erreur [catch {dde poke ciel DdeSkyChart DdeData $command } result ]
       if { $erreur } {
@@ -940,7 +940,7 @@ namespace eval carteducielv2 {
             set erreur [catch {dde poke ciel DdeSkyChart DdeData $command } result ]
 
             if { $erreur == 1 } {
-               console::affiche_erreur "$caption(carteducielv2,no_connect)\n"
+               console::affiche_erreur "$caption(carteducielv2,no_connect)\n\n"
                tk_messageBox -message "$caption(carteducielv2,no_connect)" -icon info
                set result ""
             }
@@ -981,6 +981,7 @@ namespace eval carteducielv2 {
       if [catch $a_effectuer input] {
          #--- Affichage du message d'erreur sur la console
          ::console::affiche_erreur "$caption(carteducielv2,rate)\n"
+         ::console::affiche_saut "\n"
          #--- Ouvre la fenetre de configuration des editeurs
          set conf(confCat) "::carteducielv2"
          ::confCat::run
@@ -992,7 +993,6 @@ namespace eval carteducielv2 {
          set a_effectuer "exec \"$conf(carteducielv2,binarypath)\" \"$filename\" &"
          #--- Affichage sur la console
          set filename $conf(carteducielv2,binarypath)
-         ::console::affiche_saut "\n"
          ::console::disp $filename
          ::console::affiche_saut "\n"
          if [catch $a_effectuer input] {
