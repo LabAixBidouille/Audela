@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.6 2007-06-03 09:22:38 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.7 2007-06-03 14:34:30 michelpujol Exp $
 #
 
 namespace eval ::coolpix {
@@ -205,6 +205,7 @@ proc ::coolpix::getPluginProperty { camItem propertyName } {
    switch $propertyName {
       binningList     { return [ ::acqapn::Formats ] }
       binningListScan { return [ list "" ] }
+      hasBinning      { return 0 }
       hasLongExposure { return 0 }
       hasScan         { return 0 }
       hasShutter      { return 0 }

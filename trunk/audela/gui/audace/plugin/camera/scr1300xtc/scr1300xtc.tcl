@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.5 2007-06-03 09:20:39 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.6 2007-06-03 14:34:32 michelpujol Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -193,6 +193,7 @@ proc ::scr1300xtc::getPluginProperty { camItem propertyName } {
    switch $propertyName {
       binningList     { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
       binningListScan { return [ list "" ] }
+      hasBinning      { return 1 }
       hasLongExposure { return 0 }
       hasScan         { return 0 }
       hasShutter      { return 0 }

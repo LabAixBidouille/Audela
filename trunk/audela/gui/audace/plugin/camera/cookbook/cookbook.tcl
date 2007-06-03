@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.6 2007-06-03 09:19:52 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.7 2007-06-03 14:34:28 michelpujol Exp $
 #
 
 namespace eval ::cookbook {
@@ -210,6 +210,7 @@ proc ::cookbook::getPluginProperty { camItem propertyName } {
    switch $propertyName {
       binningList     { return [ list 1x1 ] }
       binningListScan { return [ list "" ] }
+      hasBinning      { return 1 }
       hasLongExposure { return 0 }
       hasScan         { return 0 }
       hasShutter      { return 0 }
