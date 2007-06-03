@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.5 2007-06-02 00:17:28 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.6 2007-06-03 09:22:38 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -19,7 +19,8 @@ proc ::coolpix::init { } {
    source [ file join $audace(rep_plugin) camera coolpix coolpix.cap ]
 
    #--- Initialise la variable de la camera Nikon CoolPix
-   if { ! [ info exists conf(coolpix,baud) ] } { set conf(coolpix,baud) "115200" }
+   if { ! [ info exists conf(coolpix,baud) ] }  { set conf(coolpix,baud)  "115200" }
+   if { ! [ info exists conf(coolpix,model) ] } { set conf(coolpix,model) "Coolpix-5700" }
 }
 
 #
@@ -30,7 +31,8 @@ proc ::coolpix::confToWidget { } {
    global conf confCam
 
    #--- Recupere la configuration de la camera Nikon CoolPix dans le tableau confCam(coolpix,...)
-   set confCam(coolpix,baud) $conf(coolpix,baud)
+   set confCam(coolpix,baud)  $conf(coolpix,baud)
+   set confCam(coolpix,model) $conf(coolpix,model)
 }
 
 #
@@ -41,13 +43,8 @@ proc ::coolpix::widgetToConf { } {
    global conf confCam
 
    #--- Memorise la configuration de la camera Nikon CoolPix dans le tableau conf(coolpix,...)
-   set conf(coolpix,baud) $confCam(coolpix,baud)
-   #---
-   if { [ info exists confCam(coolpix,model) ] } {
-      set conf(coolpix,model) $confCam(coolpix,model)
-   } else {
-      catch { unset conf(coolpix,model) }
-   }
+   set conf(coolpix,baud)  $confCam(coolpix,baud)
+   set conf(coolpix,model) $confCam(coolpix,model)
 }
 
 #
@@ -122,15 +119,13 @@ proc ::coolpix::configureCamera { camItem } {
    if { [ ::confVisu::getTool 1 ] == "acqapn" } {
       set camNo "0"
       set confCam($camItem,camName) "coolpix"
-      set confCam($camItem,product) "coolpix"
       ::acqapn::Off
       ::acqapn::Query
       set confCam($camItem,camNo) $camNo
    } else {
       set camItem $confCam(currentCamItem)
-     ### set confCam($camItem,camName) ""
+      set confCam($camItem,camName) ""
    }
-   set confCam(coolpix,model)    ""
 }
 
 #
