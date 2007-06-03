@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.78 2007-06-03 09:24:41 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.79 2007-06-03 14:38:43 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -213,7 +213,7 @@ namespace eval ::confCam {
       } else {
          select $camItem audine
       }
-      catch { tkwait visibility $This }
+      ###catch { tkwait visibility $This }
    }
 
    #
@@ -2705,22 +2705,30 @@ namespace eval ::confCam {
    proc getPluginProperty { camItem propertyName } {
       global caption conf confCam
 
-      set result ""
-      if { $camItem == "" } {
-         switch $propertyName {
-            binningList     { set result [ list "" ] }
-            binningListScan { set result [ list "" ] }
-            hasLongExposure { set result 0 }
-            hasScan         { set result 0 }
-            hasShutter      { set result 0 }
-            hasVideo        { set result 0 }
-            hasWindow       { set result 0 }
-            longExposure    { set result 0 }
-            multiCamera     { set result 0 }
-            shutterList     { set result [ list "" ] }
-         }
+      #--- je recherche la valeur par defaut de la propriete
+      #--- si la valeur par defaut de la propriete n'existe pas , je retourne une chaine vide
+      switch $propertyName {
+         binningList     { set result [ list "" ] }
+         binningListScan { set result [ list "" ] }
+         hasBinning      { set result 0 }
+         hasFormat       { set result 0 }
+         hasLongExposure { set result 0 }
+         hasScan         { set result 0 }
+         hasShutter      { set result 0 }
+         hasVideo        { set result 0 }
+         hasWindow       { set result 0 }
+         longExposure    { set result 1 }
+         multiCamera     { set result 0 }
+         shutterList     { set result [ list "" ] }
+         default         { set result "" }
+      }
+
+      #--- si aucune camera n'est selectionnee, je retourne la valeur par defaut
+      if { $camItem == "" || $confCam($camItem,camName)==""} {
          return $result
       }
+
+      #--- si une camera est selectionnee, je recherche la valeur propre a la camera
       set camNo $confCam($camItem,camNo)
       #--- Je verifie si la camera a un nom de famille
       if { $confCam($camItem,camName) == "" } {
@@ -2745,6 +2753,8 @@ namespace eval ::confCam {
                      "ethernaude"   { set result [ list 1x1 2x2 ] }
                   }
                }
+               hasBinning      { set result 1 }
+               hasFormat       { set result 0 }
                hasLongExposure { return 0 }
                hasScan         {
                   switch -exact [ ::confLink::getLinkNamespace $conf(audine,port) ] {
@@ -2790,6 +2800,8 @@ namespace eval ::confCam {
             switch $propertyName {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
+               hasBinning      { set result 1 }
+               hasFormat       { set result 0 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      {
@@ -2817,6 +2829,7 @@ namespace eval ::confCam {
             switch $propertyName {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
+               hasBinning      { set result 1 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 1 }
@@ -2831,6 +2844,7 @@ namespace eval ::confCam {
             switch $propertyName {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
+               hasBinning      { set result 1 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 1 }
@@ -2848,6 +2862,7 @@ namespace eval ::confCam {
             switch $propertyName {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
+               hasBinning      { set result 1 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 0 }
@@ -2862,6 +2877,7 @@ namespace eval ::confCam {
             switch $propertyName {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
+               hasBinning      { set result 1 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 0 }
@@ -2876,6 +2892,8 @@ namespace eval ::confCam {
             switch $propertyName {
                binningList     { set result [ ::dslr::getBinningList $camNo ] }
                binningListScan { set result [ list "" ] }
+               hasBinning      { set result 0 }
+               hasFormat       { set result 1 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 0 }
@@ -2886,8 +2904,33 @@ namespace eval ::confCam {
                shutterList     { set result [ list "" ] }
             }
          }
-         default { set result [ ::$confCam($camItem,camName)::getPluginProperty $camItem $propertyName ] }
+         default {
+            set result2 [ ::$confCam($camItem,camName)::getPluginProperty $camItem $propertyName ]
+            if { $result2 != "" } {
+               set result $result2
+            }
+         }
       }
+      return $result
+   }
+
+   #
+   # confCam::getCamNo
+   #    Retourne le numero de la camera
+   #
+   #  Parametres :
+   #     camItem : intance de la camera
+   #
+   proc getCamNo { camItem } {
+      global confCam
+
+      #--- si aucune camera n'est selectionnee, je retourne la valeur par defaut
+      if { $camItem == "" || $confCam($camItem,camName)==""} {
+         set result "0"
+      } else {
+         set result $confCam($camItem,camNo)
+      }
+
       return $result
    }
 
@@ -2928,6 +2971,23 @@ namespace eval ::confCam {
       } else {
          #--- Camera OK
          return $camProduct
+      }
+   }
+
+   #
+   # confCam::getShutter
+   #    Retourne l'etat de l'obturateur
+   #    Si la camera n'a pas d'obturateur, retourne une chaine vide
+   #  Parametres :
+   #     camItem : Instance de la camera
+   #
+   proc getShutter { camItem  } {
+      global conf confCam
+
+      if { [info exists conf($confCam($camItem,camName),foncobtu) ] } {
+         return $conf($confCam($camItem,camName),foncobtu)
+      } else {
+         return ""
       }
    }
 
