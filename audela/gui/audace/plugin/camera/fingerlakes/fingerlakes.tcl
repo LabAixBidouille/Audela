@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.5 2007-06-03 09:20:17 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.6 2007-06-03 14:34:32 michelpujol Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -258,6 +258,7 @@ proc ::fingerlakes::getPluginProperty { camItem propertyName } {
    switch $propertyName {
       binningList     { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 7x7 8x8 ] }
       binningListScan { return [ list "" ] }
+      hasBinning      { return 1 }
       hasLongExposure { return 0 }
       hasScan         { return 0 }
       hasShutter      { return 1 }

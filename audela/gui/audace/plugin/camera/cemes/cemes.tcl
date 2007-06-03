@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.11 2007-06-03 09:19:36 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.12 2007-06-03 14:34:28 michelpujol Exp $
 #
 
 namespace eval ::cemes {
@@ -257,6 +257,7 @@ proc ::cemes::getPluginProperty { camItem propertyName } {
    switch $propertyName {
       binningList     { return [ list 1x1 2x2 4x4 8x8 ] }
       binningListScan { return [ list "" ] }
+      hasBinning      { return 1 }
       hasLongExposure { return 0 }
       hasScan         { return 0 }
       hasShutter      { return 1 }

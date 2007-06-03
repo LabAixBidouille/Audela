@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.15 2007-06-03 09:21:16 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.16 2007-06-03 14:34:33 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -634,8 +634,9 @@ proc ::webcam::configureLinkLonguePose { camItem } {
 #
 proc ::webcam::getPluginProperty { camItem propertyName } {
    switch $propertyName {
-      binningList     { return [ list 1x1 ] }
+      binningList     { return [ list "" ] }
       binningListScan { return [ list "" ] }
+      hasBinning      { return 0 }
       hasLongExposure { return 1 }
       hasScan         { return 0 }
       hasShutter      { return 0 }
@@ -648,7 +649,6 @@ proc ::webcam::getPluginProperty { camItem propertyName } {
 }
 
 # ========= Namespace de la fenetre de configuration ========
-
 namespace eval ::webcam::config {
 }
 
@@ -676,7 +676,12 @@ proc ::webcam::config::run { visuNo camItem } {
       }
       set result 0
    } else {
-      set result [ catch { after 10 "cam[ ::confVisu::getCamNo $visuNo ] videosource" } ]
+      if { $::confCam($camItem,threadNo) == 0 } {
+         set result [ catch { after 10 "cam$::confCam($camItem,camNo) videosource" } ]
+      } else {
+         thread::send -async $::confCam($camItem,threadNo) "cam$::confCam($camItem,camNo) videosource"
+         return 0
+      }
    }
    return $result
 }
@@ -863,7 +868,7 @@ proc ::webcam::config::onSelectGain { visuNo tkscale value } {
 
 #------------------------------------------------------------
 # ::webcam::config::onSetAutoShutter
-#    change le mode automatique du gain
+#    change le mode automatique du shutter
 #
 #  return null
 #------------------------------------------------------------

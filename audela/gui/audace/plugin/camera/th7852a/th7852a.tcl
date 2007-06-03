@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.6 2007-06-03 09:20:56 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.7 2007-06-03 14:34:33 michelpujol Exp $
 #
 
 namespace eval ::th7852a {
@@ -158,8 +158,9 @@ proc ::th7852a::getPluginProperty { camItem propertyName } {
    switch $propertyName {
       binningList     { return [ list 1x1 2x2 3x3 4x4 ] }
       binningListScan { return [ list "" ] }
+      hasBinning      { return 1 }
       hasLongExposure { return 0 }
-      hasScan         { return 0 }
+     hasScan         { return 0 }
       hasShutter      { return 0 }
       hasVideo        { return 0 }
       hasWindow       { return 1 }
