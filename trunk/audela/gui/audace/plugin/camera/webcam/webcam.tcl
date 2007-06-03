@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.16 2007-06-03 14:34:33 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.17 2007-06-03 16:28:53 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -623,6 +623,7 @@ proc ::webcam::configureLinkLonguePose { camItem } {
 #
 # binningList :     Retourne la liste des binnings disponibles
 # binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasBinning :      Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)

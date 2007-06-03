@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.7 2007-06-03 14:34:33 michelpujol Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.8 2007-06-03 16:28:53 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -145,6 +145,7 @@ proc ::th7852a::configureCamera { camItem } {
 #
 # binningList :     Retourne la liste des binnings disponibles
 # binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasBinning :      Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
@@ -160,7 +161,7 @@ proc ::th7852a::getPluginProperty { camItem propertyName } {
       binningListScan { return [ list "" ] }
       hasBinning      { return 1 }
       hasLongExposure { return 0 }
-     hasScan         { return 0 }
+      hasScan         { return 0 }
       hasShutter      { return 0 }
       hasVideo        { return 0 }
       hasWindow       { return 1 }

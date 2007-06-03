@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.6 2007-06-03 14:34:32 michelpujol Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.7 2007-06-03 16:28:53 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -180,6 +180,7 @@ proc ::scr1300xtc::configureCamera { camItem } {
 #
 # binningList :     Retourne la liste des binnings disponibles
 # binningListScan : Retourne la liste des binnings disponibles en mode scan
+# hasBinning :      Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
