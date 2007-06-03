@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.63 2007-06-03 09:32:41 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.64 2007-06-03 14:41:11 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -87,7 +87,7 @@ namespace eval ::confVisu {
       set private($visuNo,crosshairstate)  $conf(visu,crosshairstate)
       set private($visuNo,menu)            ""
 
-      #--- Initialisation de variables utilisees par les menus
+      #--- Initialisation des variables utilisees par les menus
       set private($visuNo,mirror_x)        "0"
       set private($visuNo,mirror_y)        "0"
       set private($visuNo,window)          "0"
@@ -95,6 +95,11 @@ namespace eval ::confVisu {
       set private($visuNo,zoom)            "1"
       set private($visuNo,currentTool)     ""
       set private($visuNo,pluginInstanceList) [list ]
+
+      #--- Initialisation des variables utilisees par les listener
+      set private($visuNo,listenerMirror)    "0"
+      set private($visuNo,listenerZoom)      $private($visuNo,zoom)
+      set private($visuNo,listenerSubWindow) $private($visuNo,window)
 
       #--- Initialisation de variables pour le trace de repere
       set private($visuNo,boxSize)         ""
@@ -538,6 +543,8 @@ namespace eval ::confVisu {
       #--- Je mets a jour la taille du reticule
       ::confVisu::redrawCrosshair $visuNo
 
+      #--- je met à jour la variable surveillee par le listener
+      set private($visuNo,listenerZoom) $private($visuNo,zoom)
    }
 
    #------------------------------------------------------------
@@ -557,6 +564,9 @@ namespace eval ::confVisu {
       } else {
          set private($visuNo,mirror_x) "0"
       }
+
+      #--- je met à jour la variable surveillee par le listener
+      set private($visuNo,listenerMirror) "0"
    }
 
    #------------------------------------------------------------
@@ -576,6 +586,9 @@ namespace eval ::confVisu {
       } else {
          set private($visuNo,mirror_y) "0"
       }
+
+      #--- je met à jour la variable surveillee par le listener
+      set private($visuNo,listenerMirror) "0"
    }
 
    #------------------------------------------------------------
@@ -674,6 +687,37 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
+   #  getWindow
+   #     retourne les coordonnees du rectangle de l'image visible dans la visu
+   #     (refrentiel buffer)
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
+   proc getWindow { visuNo } {
+      variable private
+
+      set bufNo [visu$visuNo buf]
+      if { [ buf$bufNo imageready ] == "1" } {
+         set windowBox [visu$visuNo window]
+         if {$windowBox=="full"} {
+            set x0 1
+            set y0 1
+            set x1 $private($visuNo,picture_w)
+            set y1 $private($visuNo,picture_h)
+         } else {
+            set x0 [lindex $windowBox 0]
+            set y0 [lindex $windowBox 1]
+            set x1 [lindex $windowBox 2]
+            set y1 [lindex $windowBox 3]
+         }
+         set result [list $x0 $y0 $x1 $y1]
+      } else {
+         set result [list  0 0 0 0 ]
+      }
+      return $result
+
+   }
+   #------------------------------------------------------------
    #  setWindow
    #     affiche une partie de l'image delimitee par private(visuNo,boxSize)
    #  parametres :
@@ -703,6 +747,10 @@ namespace eval ::confVisu {
       } else {
          set private($visuNo,window) "0"
       }
+
+      #--- je met à jour la variable surveillee par le listener
+      set private($visuNo,listenerSubWindow) $private($visuNo,window)
+
    }
 
    #------------------------------------------------------------
@@ -849,32 +897,6 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   # addZoomListener
-   #    ajoute une procedure a appeler si on change de zoom
-   # parametres :
-   #    visuNo: numero de la visu
-   #    cmd : commande TCL a lancer quand le zoom change
-   #------------------------------------------------------------
-   proc addZoomListener { visuNo cmd } {
-      variable private
-
-      trace add variable "::confVisu::private($visuNo,zoom)" write $cmd
-   }
-
-   #------------------------------------------------------------
-   # removeZoomListener
-   #   supprime une procedure a appeler si on change de camera
-   # parametres :
-   #    visuNo: numero de la visu
-   #    cmd : commande TCL a lancer quand le zoom change
-   #------------------------------------------------------------
-   proc removeZoomListener { visuNo cmd } {
-      variable private
-
-      trace remove variable "::confVisu::private($visuNo,zoom)" write $cmd
-   }
-
-   #------------------------------------------------------------
    # addFileNameListener
    #   ajoute une procedure a appeler si on change de nom de fichier image
    # parametres :
@@ -898,6 +920,84 @@ namespace eval ::confVisu {
       variable private
 
       trace remove variable "::confVisu::private($visuNo,lastFileName)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # addMirrorListener
+   #    ajoute une procedure a appeler si on change de mirroir
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le zoom change
+   #------------------------------------------------------------
+   proc addMirrorListener { visuNo cmd } {
+      variable private
+
+      trace add variable "::confVisu::private($visuNo,listenerMirror)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeMirrorListener
+   #   supprime une procedure a appeler si on change de mirroir
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le fichier change
+   #------------------------------------------------------------
+   proc removeMirrorListener { visuNo cmd } {
+      variable private
+
+      trace remove variable "::confVisu::private($visuNo,listenerMirror)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # addSubWindowListener
+   #    ajoute une procedure a appeler si on change le fenetrage
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le zoom change
+   #------------------------------------------------------------
+   proc addSubWindowListener { visuNo cmd } {
+      variable private
+
+      trace add variable "::confVisu::private($visuNo,listenerSubWindow)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeSubWindowListener
+   #   supprime une procedure a appeler si on change le fenetrage
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le zoom change
+   #------------------------------------------------------------
+   proc removeSubWindowListener { visuNo cmd } {
+      variable private
+
+      trace remove variable "::confVisu::private($visuNo,listenerSubWindow)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # addZoomListener
+   #    ajoute une procedure a appeler si on change de zoom
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le zoom change
+   #------------------------------------------------------------
+   proc addZoomListener { visuNo cmd } {
+      variable private
+
+      trace add variable "::confVisu::private($visuNo,listenerZoom)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeZoomListener
+   #   supprime une procedure a appeler si on change de camera
+   # parametres :
+   #    visuNo: numero de la visu
+   #    cmd : commande TCL a lancer quand le zoom change
+   #------------------------------------------------------------
+   proc removeZoomListener { visuNo cmd } {
+      variable private
+
+      trace remove variable "::confVisu::private($visuNo,listenerZoom)" write $cmd
    }
 
    #------------------------------------------------------------
@@ -1504,12 +1604,15 @@ namespace eval ::confVisu {
    # Transforme des coordonnees image en coordonnees canvas
    # L'argument est une liste de deux entiers, et retourne egalement une liste de deux entiers
    #
+   #
    proc picture2Canvas { visuNo coord } {
       variable private
 
       set zoom    $private($visuNo,zoom)
-      set windowBox  [visu$visuNo window]
       set height $private($visuNo,picture_h)
+
+      #--- je prend en compte le fenetrage
+      set windowBox  [visu$visuNo window]
       if {$windowBox=="full"} {
          set x0 1
          set y0 1
@@ -1521,8 +1624,21 @@ namespace eval ::confVisu {
          set x1 [lindex $windowBox 2]
          set y1 [lindex $windowBox 3]
       }
+
+      #--- j'applique le zoom et j'inverse l'axe Y
       set xx [ expr int(( [lindex $coord 0] - $x0)*$zoom) ]
       set yy [ expr int(( $y1 -[lindex $coord 1] )*$zoom) ]
+
+      #--- j'applique le mirroir sur l'axe x
+      if { $private($visuNo,mirror_x) == 1 } {
+         set xx [ expr $private($visuNo,picture_w)*$zoom - 1 - $xx ]
+      }
+
+      #--- j'applique le mirroir sur l'axe y
+      if { $private($visuNo,mirror_y) == 1 } {
+         set yy [ expr $private($visuNo,picture_h)*$zoom - 1 - $yy ]
+      }
+
       return [list $xx $yy]
    }
 
