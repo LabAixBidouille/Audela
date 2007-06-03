@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.62 2007-06-02 00:16:57 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.63 2007-06-03 09:32:41 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -582,11 +582,12 @@ namespace eval ::confVisu {
    #  setCamera
    #     associe une camera a la visu
    #  parametres :
-   #    visuNo: numero de la visu
-   #    camNo : numero de la camera
-   #    model : libelle de la camera a afficher dans la visu
-   #  exemple : setCamera 2 3 "EOS 300D" cree l'association entre visu2 et cam3
-   #            setCamera 2 0            supprime l'association
+   #    visuNo  : numero de la visu
+   #    camItem : instance de la camera
+   #    camNo   : numero de la camera
+   #    model   : libelle de la camera a afficher dans la visu
+   #  exemple : setCamera 2 A 3 "EOS 300D" cree l'association entre visu2 et cam3 pour la camera A
+   #            setCamera 2 A 0            supprime l'association
    #------------------------------------------------------------
    proc setCamera { visuNo camItem camNo { model "" } } {
       variable private
@@ -595,7 +596,7 @@ namespace eval ::confVisu {
       global confCam
 
       set private($visuNo,camItem) $camItem
-      set private($visuNo,camNo) $camNo
+      set private($visuNo,camNo)   $camNo
       if { $camNo == 0 } {
          set private($visuNo,camName)        ""
          set private($visuNo,camProductName) ""
@@ -800,7 +801,7 @@ namespace eval ::confVisu {
          set result [ catch { cam$private($visuNo,camNo) startvideoview $visuNo } msg ]
          visu$visuNo disp
 
-         #---  je desactive le reglage des seuils
+         #--- je desactive le reglage des seuils
          $private($visuNo,This).fra1.sca1 configure -state disabled
          $private($visuNo,This).fra1.sca2 configure -state disabled
 
@@ -809,7 +810,7 @@ namespace eval ::confVisu {
          set result [ catch { cam$private($visuNo,camNo) stopvideoview $visuNo } msg ]
          #--- je desactive le mode video
          visu$visuNo mode photo
-         #---  j'active le reglage des seuils
+         #--- j'active le reglage des seuils
          $private($visuNo,This).fra1.sca1 configure -state normal
          $private($visuNo,This).fra1.sca2 configure -state normal
       }
@@ -2110,7 +2111,7 @@ namespace eval ::confVisu {
 
    }
 }
-#---  namespace end
+#--- namespace end
 
 ::confVisu::init
 
