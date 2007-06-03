@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.14 2007-05-26 16:31:42 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.15 2007-06-03 16:05:59 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -374,6 +374,7 @@ namespace eval guide {
       if [ catch $a_effectuer input ] {
          #--- Affichage du message d'erreur sur la console
          ::console::affiche_erreur "$caption(guide,rate)\n"
+         ::console::affiche_saut "\n"
          #--- Ouvre la fenetre de configuration des editeurs
          set conf(confCat) "::guide"
          ::confCat::run
@@ -385,7 +386,6 @@ namespace eval guide {
          set a_effectuer "exec \"$conf(guide,binarypath)\" \"$filename\" &"
          #--- Affichage sur la console
          set filename $conf(guide,binarypath)
-         ::console::affiche_saut "\n"
          ::console::disp $filename
          ::console::affiche_saut "\n"
          if [ catch $a_effectuer input ] {
