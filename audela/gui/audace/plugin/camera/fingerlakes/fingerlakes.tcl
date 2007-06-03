@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.4 2007-06-02 00:17:42 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.5 2007-06-03 09:20:17 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -178,7 +178,6 @@ proc ::fingerlakes::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create fingerlakes USB ]
-   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(fingerlakes,port) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo

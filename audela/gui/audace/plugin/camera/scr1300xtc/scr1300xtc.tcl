@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.4 2007-06-02 00:18:53 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.5 2007-06-03 09:20:39 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -155,7 +155,6 @@ proc ::scr1300xtc::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
-   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo

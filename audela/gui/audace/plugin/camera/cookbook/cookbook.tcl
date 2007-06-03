@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.5 2007-06-02 00:17:14 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.6 2007-06-03 09:19:52 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -170,7 +170,6 @@ proc ::cookbook::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ]
-   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(cookbook,port_camera) $caption(cookbook,2points) $conf(cookbook,port)\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo

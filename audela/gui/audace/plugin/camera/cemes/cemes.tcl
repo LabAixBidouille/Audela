@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.10 2007-06-02 00:15:41 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.11 2007-06-03 09:19:36 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -177,7 +177,6 @@ proc ::cemes::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create cemes PCI ]
-   set confCam($camItem,product) [ cam$camNo product ]
    console::affiche_erreur "$caption(cemes,port) $caption(cemes,2points) [ cam$camNo port ]\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
