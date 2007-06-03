@@ -390,8 +390,8 @@ void CBuffer::LoadFits(char *filename)
  *   @param init     : =1 initialiser le buffer la premiere fois ou bien =0 pour compléter
  *   @param nbtot    : nombre d'images 
  *   @param index    : index de l'image
- *   @param *naxis10 : valeur de naxis1 de l'image initiale (retourné si init=0, sinon a passer en parametre d'entrée)
- *   @param *naxis20 : valeur de naxis2 de l'image initiale (retourné si init=0, sinon a passer en parametre d'entrée)
+ *   @param *naxis10 : valeur de naxis1 de l'image initiale (retourne si init=0, sinon a passer en parametre d'entrï¿½e)
+ *   @param *naxis20 : valeur de naxis2 de l'image initiale (retourne si init=0, sinon a passer en parametre d'entrï¿½e)
  *   @param errcode  : code erreur (=0 si pas d'erreur)
  *
  */
@@ -446,7 +446,7 @@ void CBuffer::Create3d(char *filename,int init, int nbtot, int index,int *naxis1
          }
       }
    } catch (const CError& e) {
-      // Liberation de la memoire allouée par libtt
+      // Liberation de la memoire allouee par libtt
       Libtt_main(TT_PTR_FREEPTR,1,&ppix);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
       // je transmet l'erreur
@@ -512,7 +512,7 @@ void CBuffer::Load3d(char *filename,int iaxis3)
    try {
       SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
    } catch (const CError& e) {
-      // Liberation de la memoire allouée par libtt
+      // Liberation de la memoire allouee par libtt
       Libtt_main(TT_PTR_FREEPTR,1,&ppix);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
       // je transmet l'erreur
@@ -585,7 +585,7 @@ void CBuffer::SaveFits(char *filename)
    datatype=TFLOAT;
    CFile::saveFits(filename, datatype,this->pix,this->keywords);
 
-   // je restaure les valeur réelles des seuils 
+   // je restaure les valeur reelles des seuils 
    if( saving_type == BYTE_IMG || saving_type == SHORT_IMG || saving_type == USHORT_IMG ) {
       k = keywords->FindKeyword("MIPS-HI");
       if (k!=NULL) {
@@ -1451,7 +1451,7 @@ void CBuffer::SetPix(TColorPlane plane, TYPE_PIXELS val,int x, int y)
 void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat pixelFormat, TPixelCompression compression, void * pixels, long pixelSize, int reverseX, int reverseY) {
    CPixels  * pixTemp = NULL ;   
 
-   // j'efface le fichier temporaire de l'image précedente
+   // j'efface le fichier temporaire de l'image precedente
    if( strlen(temporaryRawFileName) > 0 ) {
       remove(temporaryRawFileName);
       strcpy(temporaryRawFileName, "");
@@ -1530,7 +1530,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             result  = libdcjpeg_decodeBuffer((unsigned char*) pixels, pixelSize, &decodedData, &decodedSize, &width, &height);            
             if (result == 0 )  {
                pixTemp = new CPixelsRgb(width, height, FORMAT_BYTE, decodedData, reverseX, reverseY);
-               // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloué par cette meme librairie.
+               // l'espace memoire decodedData cree par la librairie libdcjpeg doit etre desalloue par cette meme librairie.
                libdcjpeg_freeBuffer(decodedData);
             } else {
                throw CError("libjpeg_decodeBuffer error=%d", result);
@@ -1766,7 +1766,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    double s1, s2, v, tableOffset, pixelOffset;
    int width, height, naxis1, naxis2, y0;
    double gauss[4], ecart;
-   double sumRatio;
+   //double sumRatio;
    
    naxis1 = this->pix->GetWidth();
    naxis2 = this->pix->GetHeight();
@@ -1814,7 +1814,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    //   s2+=table[i];
    }
 
-   // calcul du centre de gravité sur l'axe X
+   // calcul du centre de gravite sur l'axe X
    //if (s2==0) {
    //   *xc=width/2 ;
    //} else {
@@ -1884,6 +1884,7 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
       *yc=(double)y0+4.0;
 */
 
+/*
    if (s1==0.0) s1 = 1.0;
    if (s2==0.0) s2 = 1.0; 
    
@@ -1892,13 +1893,19 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    } else  {
       sumRatio = (s1/s2 - 1.0) ;
    }
-
    // je convertis le ratio des flux en nombre de pixels sur l'axe y
    *yc=(double)y0 +   sumRatio * signalRatio;
 
+ */
+   *yc = (double) y0;
+
+   if ( s1 + s2 != 0.0 ) {
+      *yc += signalRatio * (s1-s2)/(s1+s2); 
+   }
+
    // ecretage des valeurs 
-   if ( *yc < 0 )      *yc = 0;
-   if ( *yc > height ) *yc = height;
+//   if ( *yc < 0.0 )      *yc = 0.0;
+//   if ( *yc > (double)height ) *yc = (double)height;
 
 
    // je change de repere de coordonnees
@@ -1963,11 +1970,11 @@ void CBuffer::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS
 /**
  *----------------------------------------------------------------------
  * GetPixels(TYPE_PIXELS *pixels)
- *    retourne les pixels au format float, non compressé 
+ *    retourne les pixels au format float, non compresse 
  *    (retourne des niveaux de gris si l'image est en couleur)
  *
  * Parameters: 
- *    pixels :  pointeur de l'espace memoire préalablement alloué par l'appelant
+ *    pixels :  pointeur de l'espace memoire prealablement alloue par l'appelant
  * Results:
  *    exception CError
  * Side effects:
@@ -2047,7 +2054,7 @@ void CBuffer::Opt(char *dark, char *offset)
  *----------------------------------------------------------------------
  * RestoreInitialCut
  *    restaure les seuils initiaux 
- *        - soit les seuils initiaux récupérés
+ *        - soit les seuils initiaux recupere
  *
  * Parameters: 
  *    none
@@ -2055,7 +2062,7 @@ void CBuffer::Opt(char *dark, char *offset)
  *    none
  * Side effects:
  *    si les seuils initiaux n'existaien pas, 
- *    ils sont calcules avec la méthode Stat()
+ *    ils sont calcules avec la methode Stat()
  *----------------------------------------------------------------------
  */
 void CBuffer::RestoreInitialCut()
@@ -2270,7 +2277,7 @@ void CBuffer::TtImaSeries(char *s)
       msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);   
       
    } catch (const CError& e) {
-      // je libere la mémoire
+      // je libere la memoire
       if(pixIn) free(pixIn);
       if(newPixels) delete newPixels;
       if(newKeywords) delete newKeywords;
