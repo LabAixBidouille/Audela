@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.79 2007-06-03 14:38:43 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.80 2007-06-04 15:31:42 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -454,6 +454,8 @@ namespace eval ::confCam {
          focus $This
          return
       }
+      #---
+      set confCam(geometry) $conf(camera,geometry)
       #---
       toplevel $This
       wm geometry $This $confCam(geometry)
@@ -2830,6 +2832,7 @@ namespace eval ::confCam {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
                hasBinning      { set result 1 }
+               hasFormat       { set result 0 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 1 }
@@ -2845,6 +2848,7 @@ namespace eval ::confCam {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
                hasBinning      { set result 1 }
+               hasFormat       { set result 0 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 1 }
@@ -2863,6 +2867,7 @@ namespace eval ::confCam {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
                hasBinning      { set result 1 }
+               hasFormat       { set result 0 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 0 }
@@ -2878,6 +2883,7 @@ namespace eval ::confCam {
                binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                binningListScan { set result [ list "" ] }
                hasBinning      { set result 1 }
+               hasFormat       { set result 0 }
                hasLongExposure { set result 0 }
                hasScan         { set result 0 }
                hasShutter      { set result 0 }
