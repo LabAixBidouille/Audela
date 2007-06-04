@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.32 2007-05-30 18:54:43 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.33 2007-06-04 21:35:34 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -844,6 +844,7 @@ namespace eval ::pretraitement {
                   if { $pretraitement(clipWindow_maxi) != "" } {
                      buf$audace(bufNo) clipmax $pretraitement(clipWindow_maxi)
                   }
+                  ::audace::autovisu $audace(visuNo)
                   set pretraitement(avancement) "$caption(pretraitement,fin_traitement)"
                } elseif { $pretraitement(choix_mode) == "1" } {
                   #---
