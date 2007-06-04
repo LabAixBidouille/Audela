@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.80 2007-06-04 15:31:42 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.81 2007-06-04 21:47:35 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -2732,10 +2732,6 @@ namespace eval ::confCam {
 
       #--- si une camera est selectionnee, je recherche la valeur propre a la camera
       set camNo $confCam($camItem,camNo)
-      #--- Je verifie si la camera a un nom de famille
-      if { $confCam($camItem,camName) == "" } {
-         return $result
-      }
       switch $confCam($camItem,camName) {
          audine {
             switch $propertyName {
