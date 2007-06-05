@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.19 2007-06-02 00:14:03 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.20 2007-06-05 16:56:54 robertdelmas Exp $
 #
 
 #============================================================
@@ -128,7 +128,6 @@ namespace eval ::acqapn {
       if {![info exists conf(coolpix,metering)]}     {set conf(coolpix,metering)     "Center"}
       if {![info exists conf(coolpix,mode)]}         {set conf(coolpix,mode)         "Off"}
       if {![info exists conf(coolpix,model)]}        {set conf(coolpix,model)        "Coolpix-5700"}
-      if {![info exists conf(coolpix,video_scale)]}  {set conf(coolpix,video_scale)  "2.0"}
       if {![info exists conf(coolpix,whitebalance)]} {set conf(coolpix,whitebalance) "Auto"}
 
       #--- Initialisation des variables affichees dans la fenetre d'info sur l'APN
@@ -191,7 +190,7 @@ namespace eval ::acqapn {
       global conf confCam
 
       foreach var { baud } { set confCam(coolpix,$var) $conf(coolpix,$var) }
-      foreach var { video_scale model adjust compression flash focus format lens\
+      foreach var { model adjust compression flash focus format lens\
          metering whitebalance exposure mode dzoom } {
          set confCam(coolpix,$var) $conf(coolpix,$var)
       }
@@ -213,7 +212,7 @@ namespace eval ::acqapn {
       if { $confCam(coolpix,resolution) > "0" } {
          #---Les seules variables de configuration sauvegardees
          foreach var { baud } { set conf(coolpix,$var) $confCam(coolpix,$var) }
-         foreach var { video_scale model adjust format compression flash focus format lens\
+         foreach var { model adjust format compression flash focus format lens\
             metering whitebalance exposure mode dzoom} {
             set conf(coolpix,$var) $confCam(coolpix,$var)
          }
@@ -230,15 +229,15 @@ namespace eval ::acqapn {
       global caption confCam
 
       if { $reglages=="" } {
-         console::affiche_saut "$caption(acqapn,msg,edition_selection)\n"
+         ::console::affiche_saut "$caption(acqapn,msg,edition_selection)\n"
       } elseif { $reglages=="_init" } {
-         console::affiche_saut "$caption(acqapn,msg,edition_init)\n"
+         ::console::affiche_saut "$caption(acqapn,msg,edition_init)\n"
       }
       #---Les variables de configuration confCam // conf
       foreach var { lens flash zoom mode format compression focus metering whitebalance adjust exposure } {
-         console::affiche_saut "$var : $confCam(coolpix$reglages,$var)\n"
+         ::console::affiche_saut "$var : $confCam(coolpix$reglages,$var)\n"
       }
-      console::affiche_saut "\n"
+      ::console::affiche_saut "\n"
    }
 
    #
@@ -250,7 +249,7 @@ namespace eval ::acqapn {
    #
    proc ShowVideo { } {
       variable This
-      global audace caption panneau
+      global audace caption conf confCam panneau
 
       if { $panneau(acqapn,showvideo) == "0" } {
 
@@ -259,25 +258,28 @@ namespace eval ::acqapn {
          #--- Si aucune camera n'est connectee, appelle la boite Configuration de la camera
          if { [ ::cam::list ] == "" } {
             ::confCam::run
+            set conf(webcam,A,longuepose) "0"
             ::confCam::select A webcam
             tkwait window $audace(base).confCam
-         }
 
-         #--- Message si ce n'est pas un apn ou une webcam
-         if { $audace(camNo) != "0" } {
-            if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "0" } {
-               ::acqapn::ErrComm 8
-               $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
+            #--- Message si ce n'est pas un apn ou une webcam
+            if { $audace(camNo) != "0" } {
+               if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "0" } {
+                  ::acqapn::ErrComm 8
+                  $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
+               } else {
+                  set panneau(acqapn,showvideo) "1"
+                  $This.fra5.video configure -text $caption(acqapn,sw_video,on) -state normal
+               }
             } else {
-               set panneau(acqapn,showvideo) "1"
-               $This.fra5.video configure -text $caption(acqapn,sw_video,on) -state normal
+               $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
             }
-         } else {
-            $This.fra5.video configure -text $caption(acqapn,sw_video,no) -state normal
+
          }
 
       } elseif { $panneau(acqapn,showvideo) == "1" } {
 
+         #--- Active le mode video
          ::confVisu::setVideo $audace(visuNo) "1"
 
          #--- On prepare l'action suivante
@@ -306,19 +308,6 @@ namespace eval ::acqapn {
    }
 
    #
-   # ::acqapn::MajVideo
-   #--- Fonction appelee pour modifier le taux de grandissement de l'image video
-   #
-   proc MajVideo { g } {
-      global audace
-
-      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "1" } {
-         ::acqapn::StopPreview
-         ::acqapn::ShowVideo
-      }
-   }
-
-   #
    # ::acqapn::Query
    #--- Fonction appelee lors de l'appui sur le bouton 'Connecter'
    #
@@ -330,16 +319,16 @@ namespace eval ::acqapn {
       if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasVideo ] == "1" } { ::acqapn::StopPreview }
 
       #--- Desactivation des boutons 'Connecter' et 'Video'
-      $This.fra4.connect configure -text $caption(acqapn,sw,encours) -command {}
+      $This.fra4.connect configure -text $caption(acqapn,sw,encours) -command { }
       ::acqapn::ConfigEtat disabled
 
       #--- Recherche du port serie sur lequel la camera repond
       set port [::acqapn::IdCom]
       if { $port!="no port" && $port!="not found" } {
          set panneau(acqapn,cmd_usb) "-l$port:"
-         console::affiche_erreur "$confCam(coolpix,model) $caption(acqapn,msg,connect) $port\n"
-         console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(coolpix,baud)\n"
-         console::affiche_saut "\n"
+         ::console::affiche_erreur "$confCam(coolpix,model) $caption(acqapn,msg,connect) $port\n"
+         ::console::affiche_erreur "$caption(acqapn,msg,apn_baud) $confCam(coolpix,baud)\n"
+         ::console::affiche_saut "\n"
          ::confVisu::setCamera "$audace(visuNo)" [ ::confVisu::getCamItem 1 ] "$audace(camNo)" "$confCam(coolpix,model)"
       } else {
          $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::coolpix::connect }
@@ -356,7 +345,7 @@ namespace eval ::acqapn {
          -s $confCam(coolpix,baud) autoshut-host 1800 autoshut-field 1800 id  "NIKON DIGITAL CAMERA" query] } msg
       if {![info exists reponse] || ( [info exists reponse] && $msg!="$reponse" ) } {
          ::acqapn::ErrComm $msg
-         $This.fra4.connect configure -text $caption(acqapn,sw_connect,on)
+         $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::coolpix::connect }
          return $msg
       }
 
@@ -414,7 +403,7 @@ namespace eval ::acqapn {
       }
 
       #--- Modification du bouton 'Connecter' et desactivation du panneau
-      $This.fra4.connect configure -text $caption(acqapn,sw,encours)
+      $This.fra4.connect configure -text $caption(acqapn,sw,encours) -command { }
       ::acqapn::ConfigEtat disabled
 
       #--- Remise en etat des parametres
@@ -437,7 +426,7 @@ namespace eval ::acqapn {
             return
          } else {
             ::acqapn::ErrComm $msg
-            $This.fra4.connect configure -text $caption(acqapn,sw_connect,off)
+            $This.fra4.connect configure -text $caption(acqapn,sw_connect,off) -command { ::coolpix::deconnect }
             set compteur_erreur "1"
             return
          }
@@ -466,8 +455,8 @@ namespace eval ::acqapn {
 
       #--- Impression d'un message
       if { $compteur_erreur == "1" } {
-         console::affiche_erreur "$confCam(coolpix,model) $caption(acqapn,msg,deconnect)\n"
-         console::affiche_saut "\n"
+         ::console::affiche_erreur "$confCam(coolpix,model) $caption(acqapn,msg,deconnect)\n"
+         ::console::affiche_saut "\n"
       }
    }
 
@@ -529,9 +518,9 @@ namespace eval ::acqapn {
          incr time_now -2
          #--- le temps de la prochaine - 10 secondes semblent un temps mini
          set time_next [ expr (1000000*$intervalle+[clock clicks]-11200000) ]
-
+         #---
          if { $msg!="" } {
-            if { $compteur_erreur == "1" } {
+            if { $compteur_erreur != "1" } {
                incr compteur_erreur "1"
                ::acqapn::Expose
             } else {
@@ -571,10 +560,10 @@ namespace eval ::acqapn {
          #--- Reinitialisation des variables specifiques aux images
          set panneau(acqapn,imagelist)     ""
          set confCam(coolpix,nb_images)    "0"
-         #--- MAJ de la liste des images
+         #--- Mise a jour de la liste des images
          ::acqapn::MajList
          ::acqapn::ConfigListeVues
-         console::affiche_saut "# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
+         ::console::affiche_saut "# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
          [clock format $time_now -format "%H:%M:%S" -gmt 1 ].\n\n"
          update
       }
@@ -611,7 +600,7 @@ namespace eval ::acqapn {
          if { $panneau(acqapn,a_effacer)=="all" || ($panneau(acqapn,a_effacer)=="last" && $confCam(coolpix,nb_images)=="1") } {
 
             #--- Message sur la console
-            console::affiche_saut "# $caption(acqapn,msg,carte) $caption(acqapn,msg,effacee)\n\n"
+            ::console::affiche_saut "# $caption(acqapn,msg,carte) $caption(acqapn,msg,effacee)\n\n"
 
             #--- Destruction des boites annexes
             destroy $This.avance
@@ -627,7 +616,7 @@ namespace eval ::acqapn {
          } elseif { $panneau(acqapn,a_effacer)=="last" && $confCam(coolpix,nb_images)>"1" } {
 
             #--- Affichage sur la console de la reference de l'image effacee
-            console::affiche_saut "# $panneau(acqapn,imagename) $caption(acqapn,msg,effacee)\n\n"
+            ::console::affiche_saut "# $panneau(acqapn,imagename) $caption(acqapn,msg,effacee)\n\n"
 
             #--- Mise a jour de la liste des poses
             incr confCam(coolpix,nb_images) -1
@@ -651,7 +640,7 @@ namespace eval ::acqapn {
       variable This
       global audace caption conf confCam panneau
 
-      #--- MAJ du bouton 'Charger' et activation du panneau
+      #--- Mise a jour du bouton 'Charger' et activation du panneau
       $This.avance.charge.load configure -text $caption(acqapn,sw,encours)
       ::acqapn::ConfigEtat disabled
 
@@ -661,7 +650,7 @@ namespace eval ::acqapn {
             "$panneau(acqapn,mini)" $panneau(acqapn,selection) "$panneau(acqapn,imagename)" } msg
          if { $msg=="" } {
             #--- Message sur la console
-            console::affiche_saut "# $caption(acqapn,label,vue) $panneau(acqapn,selection) $panneau(acqapn,imagename) $caption(acqapn,label,chargee)\n\n"
+            ::console::affiche_saut "# $caption(acqapn,label,vue) $panneau(acqapn,selection) $panneau(acqapn,imagename) $caption(acqapn,label,chargee)\n\n"
             #--- Affichage
             if { $panneau(acqapn,affichage)=="1" } {
                cd "$audace(rep_audela)"
@@ -672,7 +661,7 @@ namespace eval ::acqapn {
          }
       }
 
-      #--- MAJ du bouton 'Charger' et activation du panneau
+      #--- Mise a jour du bouton 'Charger' et activation du panneau
       $This.avance.charge.load configure -text $caption(acqapn,but,charger)
       ::acqapn::ConfigEtat normal
    }
@@ -1095,49 +1084,49 @@ namespace eval ::acqapn {
       #--- Le temps de pose
       LabelEntry $This.fra7.duree -borderwidth 1 -relief flat\
          -label $caption(acqapn,poses,duree) -labelfont $audace(font,arial_7_n) \
-         -labelanchor w -labelwidth 6 -padx 4 -width 8 -relief sunken\
+         -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
          -justify right -font $audace(font,arial_8_b) -state normal\
          -textvariable panneau(acqapn,duree_pose) -helptext $caption(acqapn,help,unites)
       pack $audace(base).acqapn.fra7.duree\
-         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 4
+         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 2
       DynamicHelp::add $This.fra7.duree
       $This.fra7.duree bind <Leave> { ::acqapn::TestValeurs $panneau(acqapn,duree_pose) }
 
       #--- Le nombre de poses a prendre
       LabelEntry $This.fra7.poses -borderwidth 1 -relief flat\
          -label $caption(acqapn,poses,nb) -labelfont $audace(font,arial_7_n) \
-         -labelanchor w -labelwidth 11 -padx 4 -width 8 -relief sunken\
+         -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
          -justify right -font $audace(font,arial_8_b) -state normal\
          -textvariable panneau(acqapn,nb_poses)
       pack $audace(base).acqapn.fra7.poses \
-         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 4
+         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 2
       $This.fra7.poses bind <Leave> { ::acqapn::VerifNbPoses }
 
       #--- Le delai avant la premiere pose
       LabelEntry $This.fra7.prog -borderwidth 1 -relief flat\
          -label $caption(acqapn,poses,delai) -labelfont $audace(font,arial_7_n) \
-         -labelanchor w -labelwidth 6 -padx 4 -width 8 -relief sunken\
+         -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
          -justify right -font $audace(font,arial_8_b) -state normal\
          -textvariable panneau(acqapn,delai) -helptext $caption(acqapn,help,unites)
       pack $audace(base).acqapn.fra7.prog\
-         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 4
+         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 2
       DynamicHelp::add $This.fra7.prog
       $This.fra7.prog bind <Leave> { ::acqapn::VerifDelai }
 
-      #--- Le timer
+      #--- L'intervalle entre poses
       set panneau(acqapn,intervalle) $panneau(acqapn,intervalle_mini)
       LabelEntry $This.fra7.timer -borderwidth 1 -relief flat\
          -label $caption(acqapn,poses,intervalle) -labelfont $audace(font,arial_7_n) \
-         -labelanchor w -labelwidth 6 -padx 4 -width 8 -relief sunken\
+         -labelanchor w -labelwidth 8 -padx 4 -width 7 -relief sunken\
          -justify right -state normal\
          -textvariable panneau(acqapn,intervalle) -font $audace(font,arial_8_b)\
          -helptext "$caption(acqapn,help,intervalle1)\n$panneau(acqapn,intervalle_mini) $caption(acqapn,help,unites)\n"
       pack $audace(base).acqapn.fra7.timer\
-         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 4
+         -in $audace(base).acqapn.fra7 -anchor nw -side top -pady 2
       DynamicHelp::add $This.fra7.timer
       $This.fra7.timer bind <Leave> { ::acqapn::VerifIntervalle }
 
-      pack $This.fra4 -side top -fill x
+      pack $This.fra7 -side top -fill x
 
       #--- Mise a jour dynamique de la couleur
       ::confColor::applyColor $This
@@ -1160,7 +1149,7 @@ namespace eval ::acqapn {
       wm title $This.info "$caption(acqapn,titre,info)"
       set posx_PlusInfo [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
       set posy_PlusInfo [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $This.info +[ expr $posx_PlusInfo + 130 ]+[ expr $posy_PlusInfo + 90 ]
+      wm geometry $This.info +[ expr $posx_PlusInfo + 130 ]+[ expr $posy_PlusInfo + 85 ]
       wm protocol $This.info WM_DELETE_WINDOW { destroy $audace(base).acqapn.info }
 
       #--- Indication du constructeur
@@ -1259,7 +1248,7 @@ namespace eval ::acqapn {
       wm title $This.param "$caption(acqapn,titre,parametres)"
       set posx_GesPar [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
       set posy_GesPar [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $This.param +[ expr $posx_GesPar + 130 ]+[ expr $posy_GesPar + 438 ]
+      wm geometry $This.param +[ expr $posx_GesPar + 130 ]+[ expr $posy_GesPar + 360 ]
       wm protocol $This.param WM_DELETE_WINDOW { destroy $audace(base).acqapn.param }
 
       #--- Le bouton 'Adopter' les options dans le fichier conf
@@ -1305,7 +1294,7 @@ namespace eval ::acqapn {
       wm title $this $caption(acqapn,titre,avance)
       set posx_Avance [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
       set posy_Avance [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-      wm geometry $this +[ expr $posx_Avance + 130 ]+[ expr $posy_Avance + 430 ]
+      wm geometry $this +[ expr $posx_Avance + 130 ]+[ expr $posy_Avance + 490 ]
       wm protocol $this WM_DELETE_WINDOW { destroy $audace(base).acqapn.avance }
 
       frame $this.efface -borderwidth 2 -relief ridge
@@ -1435,7 +1424,7 @@ proc acqapnBuildIF { This } {
             -command { ::acqapn::ShowVideo }
          pack $This.fra5.video -in $This.fra5 -anchor center -side top -fill x
 
-         #--- Le Bouton des reglages renvoie vers ConfCam
+         #--- Le Bouton des reglages renvoie vers la configuration des cameras
          button $This.fra5.avance -borderwidth 4 -text $caption(acqapn,label,reglage) \
             -font $audace(font,arial_8_n) -state normal \
             -command {
@@ -1444,16 +1433,6 @@ proc acqapnBuildIF { This } {
                tkwait window $audace(base).confCam
             }
          pack $This.fra5.avance -in $This.fra5 -anchor center -side top -fill x
-
-         #--- Definition de l'echelle de l'image video
-         LabelFrame $This.fra5.scale -borderwidth 0 -relief groove \
-            -text $caption(acqapn,label,scale) -side top -anchor center
-            scale $This.fra5.scale.opt_scale_variant -variable confCam(coolpix,video_scale)\
-               -orient horizontal -from 1 -to 4 -resolution 0.1\
-               -borderwidth 2 -width 5 -length 95 -state normal -relief groove\
-               -command { catch { ::acqapn::MajVideo $confCam(coolpix,video_scale) } }
-            pack $This.fra5.scale.opt_scale_variant -in $This.fra5.scale -anchor w -side right -padx 5
-         pack $This.fra5.scale -in $This.fra5 -anchor center -side top -fill x
 
       pack $This.fra5 -side top -fill x
 
@@ -1469,7 +1448,7 @@ proc acqapnBuildIF { This } {
             -text $caption(acqapn,label,reglage) -side top -anchor center
             #--- Construction du combobox des variables
             ::acqapn::SetComboBoxList $This.fra3.reglage.var "variables"
-            pack $This.fra3.reglage.var -in $This.fra3.reglage -anchor center -side top -padx 2 -pady 4
+            pack $This.fra3.reglage.var -in $This.fra3.reglage -anchor center -side top -padx 2 -pady 2
             $This.fra3.reglage.var configure -modifycmd  {
                set this "$audace(base).acqapn.fra3"
                #--- Capture de la nouvelle variable affichee
@@ -1490,7 +1469,7 @@ proc acqapnBuildIF { This } {
 
                #--- Construction du combobox des valeurs utilisables pour la valeur afichee
                ::acqapn::SetComboBoxList $This.fra3.valeur.val "$panneau(acqapn,variable_affichee)"
-               pack $This.fra3.valeur.val -in $This.fra3.valeur -anchor center -side top -padx 2 -pady 4
+               pack $This.fra3.valeur.val -in $This.fra3.valeur -anchor center -side top -padx 2 -pady 2
                $This.fra3.valeur.val configure -text $confCam(coolpix,$panneau(acqapn,variable_affichee))
                $This.fra3.valeur.val configure -modifycmd {
                   set this "$audace(base).acqapn.fra3"
