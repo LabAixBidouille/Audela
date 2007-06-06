@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.33 2007-06-04 21:35:34 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.34 2007-06-06 17:18:34 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -1926,12 +1926,18 @@ namespace eval ::pretraitement {
    # Ouvre un explorateur pour choisir un fichier
    #
    proc parcourir { In_Out } {
-      global audace pretraitement
+      global audace caption pretraitement
 
       #--- Fenetre parent
       set fenetre "$audace(base).pretraitement"
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
+      if { [ file dirname $filename ] != $audace(rep_images) } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,rep-images)"
+         return
+      }
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
          if { $pretraitement(choix_mode) == "2" } {
@@ -2747,12 +2753,18 @@ namespace eval ::traiteImage {
    # Ouvre un explorateur pour choisir un fichier
    #
    proc parcourir { { option 1 } } {
-      global audace traiteImage
+      global audace caption traiteImage
 
       #--- Fenetre parent
       set fenetre "$audace(base).traiteImage"
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
+      if { [ file dirname $filename ] != $audace(rep_images) } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,rep-images)"
+         return
+      }
       #--- Extraction du nom du fichier
       if { $traiteImage(operation) == "r+v+b2rvb" && $option == "1" } {
          set traiteImage(info_filename_out)        [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
@@ -3329,12 +3341,18 @@ namespace eval ::traiteWindow {
    # Ouvre un explorateur pour choisir un fichier
    #
    proc parcourir { In_Out } {
-      global audace traiteWindow
+      global audace caption traiteWindow
 
       #--- Fenetre parent
       set fenetre "$audace(base).traiteWindow"
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
+      if { [ file dirname $filename ] != $audace(rep_images) } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,rep-images)"
+         return
+      }
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
          set traiteWindow(info_filename_in) [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
@@ -4275,12 +4293,18 @@ namespace eval ::faireImageRef {
    # Ouvre un explorateur pour choisir un fichier
    #
    proc parcourir { In_Out } {
-      global audace faireImageRef
+      global audace caption faireImageRef
 
       #--- Fenetre parent
       set fenetre "$audace(base).faireImageRef"
       #--- Ouvre la fenetre de choix des images
       set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+      #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
+      if { [ file dirname $filename ] != $audace(rep_images) } {
+         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+            -message "$caption(pretraitement,rep-images)"
+         return
+      }
       #--- Extraction du nom du fichier
       if { $In_Out == "1" } {
          set faireImageRef(info_filename_in)  [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
