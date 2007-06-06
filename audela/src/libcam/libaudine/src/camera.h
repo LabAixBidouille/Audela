@@ -83,7 +83,7 @@ void audine_set0(struct camprop *cam);
 void audine_set255(struct camprop *cam);
 void audine_test(struct camprop *cam, int number);
 void audine_test2(struct camprop *cam, int number);
-int audine_read_line(struct camprop *cam, int width, int offset, int bin, unsigned short *buf);
+int audine_read_line(struct camprop *cam, int width, int offset, int binx, int biny, unsigned short *buf);
 
 /* --- obturateur de Pierre Thierry ---*/
 void audine_g_obtu_on(struct camprop *cam);

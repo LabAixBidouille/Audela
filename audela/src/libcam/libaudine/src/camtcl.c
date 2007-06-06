@@ -92,7 +92,8 @@ typedef struct {
     int width;			/* Largeur de l'image */
     int offset;			/* Offset en x (a partir de 1) */
     int height;			/* Hauteur totale de l'image */
-    int bin;			/* binning */
+    int binx;			/* binning en X */
+    int biny;			/* binning en Y */
     float dt;			/* intervalle de temps en millisecondes */
     int y;			/* nombre de lignes deja lues */
     unsigned long t0;		/* instant de depart en microsecondes */
@@ -888,7 +889,8 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 {
     int w;			/* parametre d'appel : largeur */
     int h;			/* parametre d'appel : hauteur */
-    int b;			/* parametre d'appel : binning */
+    int binx;			/* parametre d'appel : binning en x */
+    int biny;			/* parametre d'appel : binning en y */
     double dt;			/* parametre d'appel : intervalle de temps */
     int retour = TCL_OK;
     struct camprop *cam;
@@ -928,7 +930,7 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 		sprintf(ligne, ligne2, argv[0], argv[1]);
 		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 		retour = TCL_ERROR;
-	    } else if (Tcl_GetInt(interp, argv[4], &b) != TCL_OK) {
+	    } else if (Tcl_GetInt(interp, argv[4], &binx) != TCL_OK) {
 		sprintf(ligne2, "%s\nbin : must be an integer >= 1", msgtcl);
 		sprintf(ligne, ligne2, argv[0], argv[1]);
 		Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -942,7 +944,13 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 		for (i = 6; i < argc; i++) {
 		    if ((strcmp(argv[i], "-offset") == 0) || (strcmp(argv[i], "-firstpix") == 0)) {
 			if (Tcl_GetInt(interp, argv[++i], &offset) != TCL_OK) {
-			    sprintf(ligne, "Usage: %s %s width height bin dt ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
+			    sprintf(ligne, "Usage: %s %s width height bin dt ?-biny biny? ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
+			    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+			    ok = 0;
+			}
+		    } else if (strcmp(argv[i], "-biny") == 0) {
+			if (Tcl_GetInt(interp, argv[++i], &biny) != TCL_OK) {
+			    sprintf(ligne, "Usage: %s %s width height bin dt ?-biny biny? ?-firstpix index? ?-blocking? ?-perfo?\nfirstpix index \"%s\" must be an integer", argv[0], argv[1], argv[i]);
 			    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 			    ok = 0;
 			}
@@ -983,10 +991,14 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 		    TheScanStruct->width = w;
 		    TheScanStruct->offset = offset;
 		    TheScanStruct->height = h;
-		    if (b < 1) {
-			b = 1;
+		    if (binx < 1) {
+			binx = 1;
 		    }
-		    TheScanStruct->bin = b;
+		    if (biny < 1) {
+			biny = 1;
+		    }
+		    TheScanStruct->binx = binx;
+		    TheScanStruct->biny = biny;
 		    if (dt < 0) {
 			dt = -dt;
 		    }
@@ -1009,7 +1021,7 @@ int cmdAudineScan(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
 			}
 		    }
 		    if (TheScanStruct->fileima == 0) {
-			TheScanStruct->pix = (unsigned short *) calloc((unsigned int) (w * h / b), sizeof(unsigned short));
+			TheScanStruct->pix = (unsigned short *) calloc((unsigned int) (w * h / binx), sizeof(unsigned short));
 			TheScanStruct->pix2 = TheScanStruct->pix;
 			if (TheScanStruct->pix == NULL) {
 			    TheScanStruct->fileima = 1;
@@ -1120,7 +1132,7 @@ void AudineScanCallback(ClientData clientData)
 	    }
 	}
 	/* Lecture de la ligne */
-	audine_read_line(cam, TheScanStruct->width, TheScanStruct->offset, TheScanStruct->bin, buf);
+	audine_read_line(cam, TheScanStruct->width, TheScanStruct->offset, TheScanStruct->binx, TheScanStruct->biny, buf);
 	/* Debloquage eventuel des interruptions */
 	if (TheScanStruct->blocking == 0) {
 	    if (cam->interrupt == 1) {
@@ -1132,7 +1144,7 @@ void AudineScanCallback(ClientData clientData)
 	}
     }
     /* Stocke la ligne dans le fichier temporaire ou dans la memoire temporaire */
-    w = (TheScanStruct->width / TheScanStruct->bin);
+    w = (TheScanStruct->width / TheScanStruct->binx);
     if (TheScanStruct->fileima == 1) {
 	/*fwrite(buf,sizeof(unsigned short)*TheScanStruct->width,1,TheScanStruct->fima); */
 	fwrite(buf, sizeof(unsigned short) * w, 1, TheScanStruct->fima);
@@ -1233,10 +1245,10 @@ void AudineScanTransfer(ClientData clientData)
    
    cam = (struct camprop *) clientData;
    cam->clockbegin = 0;
-   naxis1 = TheScanStruct->width / TheScanStruct->bin;
+   naxis1 = TheScanStruct->width / TheScanStruct->binx;
    naxis2 = TheScanStruct->y;
-   bin1 = TheScanStruct->bin;
-   bin2 = TheScanStruct->bin;
+   bin1 = TheScanStruct->binx;
+   bin2 = TheScanStruct->biny;
    dt = TheScanStruct->dt / 1000.;
    exptime = -1;
    
