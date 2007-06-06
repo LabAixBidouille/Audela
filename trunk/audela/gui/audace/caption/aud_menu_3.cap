@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.23 2007-05-12 14:56:59 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.24 2007-06-06 17:17:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -114,6 +114,7 @@ set caption(pretraitement,image_dark)                   "Dark Frame:"
 set caption(pretraitement,image_flat-field)             "Flat-Field Frame:"
 set caption(pretraitement,aucune)                       "None"
 set caption(pretraitement,auto)                         "Auto"
+set caption(pretraitement,rep-images)                   "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
 
 set caption(pretraitement,liste_serie)                  "Index List:"
 set caption(pretraitement,nom_generique)                "Generic Name:"
@@ -240,6 +241,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Image de flat-field :"
    set caption(pretraitement,aucune)                    "Aucune"
    set caption(pretraitement,auto)                      "Auto"
+   set caption(pretraitement,rep-images)                "Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
 
    set caption(pretraitement,liste_serie)               "Liste des index :"
    set caption(pretraitement,nom_generique)             "Nom générique :"
@@ -366,6 +368,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Immagine di flat field:"
    set caption(pretraitement,aucune)                    "Nessuna"
    set caption(pretraitement,auto)                      "Auto"
+   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
 
    set caption(pretraitement,liste_serie)               "Elenco indici:"
    set caption(pretraitement,nom_generique)             "Nomi generici:"
@@ -492,6 +495,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Imagen de campo plano:"
    set caption(pretraitement,aucune)                    "Ninguno"
    set caption(pretraitement,auto)                      "Auto"
+   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
 
    set caption(pretraitement,liste_serie)               "Lista de índices:"
    set caption(pretraitement,nom_generique)             "Nombre genérico:"
@@ -618,6 +622,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Flat-Field Bild:"
    set caption(pretraitement,aucune)                    "Keine"
    set caption(pretraitement,auto)                      "Auto"
+   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
 
    set caption(pretraitement,liste_serie)               "Index Liste:"
    set caption(pretraitement,nom_generique)             "Generischen Nahmen:"
@@ -744,6 +749,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Imagem de flat-field:"
    set caption(pretraitement,aucune)                    "Nenhum"
    set caption(pretraitement,auto)                      "Auto"
+   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
 
    set caption(pretraitement,liste_serie)               "Lista de índices:"
    set caption(pretraitement,nom_generique)             "Nome genérico:"
@@ -870,6 +876,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Flat-field frame:"
    set caption(pretraitement,aucune)                    "Ingen"
    set caption(pretraitement,auto)                      "Auto"
+   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
 
    set caption(pretraitement,liste_serie)               "Index-liste:"
    set caption(pretraitement,nom_generique)             "Fællesnavn:"
