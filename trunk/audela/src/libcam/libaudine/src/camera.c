@@ -424,6 +424,7 @@ void cam_update_window(struct camprop *cam)
     int maxx, maxy;
     maxx = cam->nb_photox;
     maxy = cam->nb_photoy;
+    
     if (cam->x1 > cam->x2)
 	libcam_swap(&(cam->x1), &(cam->x2));
     if (cam->x1 < 0)
@@ -442,6 +443,17 @@ void cam_update_window(struct camprop *cam)
     cam->x2 = cam->x1 + cam->w * cam->binx - 1;
     cam->h = (cam->y2 - cam->y1) / cam->biny + 1;
     cam->y2 = cam->y1 + cam->h * cam->biny - 1;
+
+    if (cam->x2 > maxx - 1) {
+        cam->w = cam->w - 1;
+        cam->x2 = cam->x1 + cam->w * cam->binx - 1;
+    }
+
+    if (cam->y2 > maxy - 1) {
+        cam->h = cam->h - 1;
+        cam->y2 = cam->y1 + cam->h * cam->biny - 1;
+    }
+
 }
 
 
@@ -979,7 +991,7 @@ void audine_test2(struct camprop *cam, int number)
    - bin : facteur de binning (identique en x et y)
    - buf : buffer de stockage de la ligne
 */
-int audine_read_line(struct camprop *cam, int width, int offset, int bin, unsigned short *buf)
+int audine_read_line(struct camprop *cam, int width, int offset, int binx, int biny, unsigned short *buf)
 {
     int i, j, l;
     int imax;
@@ -1000,7 +1012,7 @@ int audine_read_line(struct camprop *cam, int width, int offset, int bin, unsign
 
     /* Calcul des coordonnees de la     */
     /* fenetre, et du nombre de pixels  */
-    imax = width / bin;
+    imax = width / binx;
 
 #if defined(READOPTIC)
     cx1 = cam->nb_deadbeginphotox + cam->nb_photox - width - (offset - 1);
@@ -1014,7 +1026,7 @@ int audine_read_line(struct camprop *cam, int width, int offset, int bin, unsign
     audine_fast_line_inv(cam);
 
     /* Cumul vertical */
-    for (i = 0; i < bin; i++) {
+    for (i = 0; i < biny; i++) {
 	audine_zi_zh_inv(cam);
     }
 
@@ -1036,7 +1048,7 @@ int audine_read_line(struct camprop *cam, int width, int offset, int bin, unsign
 
 	libcam_out(port0, cam->bytes[239]);	/* clamp 11101111 */
 
-	for (l = 0; l < bin; l++) {
+	for (l = 0; l < binx; l++) {
 	    libcam_out(port0, cam->bytes[255]);
 	    libcam_out(port0, cam->bytes[251]);	/* palier vidéo 11111011 */
 	}
