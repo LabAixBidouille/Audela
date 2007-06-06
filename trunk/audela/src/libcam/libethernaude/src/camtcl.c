@@ -318,7 +318,7 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    if (offset + w > cam->nb_photox) {
       w = cam->nb_photox - (offset - 1);
    }
-   offset = (offset - 1) / b + 1;
+   offset = offset + cam->nb_deadbeginphotox;
    w = w / b;
    if (b < 1) {
       b = 1;
@@ -337,9 +337,9 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    paramCCD_put(-1, "CCD#=1", &ParamCCDIn, 1);
    sprintf(ligne, "TimePerLineMs=%f", dt);
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
-   sprintf(ligne, "Xd=%d", offset);
+   sprintf(ligne, "Xd=%d", offset); // La position du debut du scan doit etre donnee en photosites
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
-   sprintf(ligne, "DX=%d", w);
+   sprintf(ligne, "DX=%d", w); // La largeur de l'image est en pixels, soit le nombre de photosites divise par le binning
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
    sprintf(ligne, "BinningX=%d", b);
    paramCCD_put(-1, ligne, &ParamCCDIn, 1);
