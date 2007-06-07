@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.34 2007-05-19 23:24:55 michelpujol Exp $
+# Mise a jour $Id: confcam.cap,v 1.35 2007-06-07 16:51:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -819,7 +819,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,dslr_longueposebit)      "Controlo do Número do Bit"
    set caption(confcam,dslr_longueposestart)    "Controlo do Início da Exposição"
    set caption(confcam,dslr_detect_service)     "Parar Automaticamente a Detecção de Câmaras Digitais"
-   set caption(confcam,dslr_telecharger)        "Download da Imagem"
+   set caption(confcam,dslr_telecharger)        "Descarregar a imagem"
 
    set caption(confcam,andor_config)            "Pasta que contém os ficheiros de configuração"
    set caption(confcam,andor_parcourir)         "..."
