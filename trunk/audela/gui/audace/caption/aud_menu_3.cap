@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.24 2007-06-06 17:17:16 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.25 2007-06-08 15:20:51 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -114,7 +114,7 @@ set caption(pretraitement,image_dark)                   "Dark Frame:"
 set caption(pretraitement,image_flat-field)             "Flat-Field Frame:"
 set caption(pretraitement,aucune)                       "None"
 set caption(pretraitement,auto)                         "Auto"
-set caption(pretraitement,rep-images)                   "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+set caption(pretraitement,rep-images)                   "Images must come from the image folder\n(Setup --> Folders)."
 
 set caption(pretraitement,liste_serie)                  "Index List:"
 set caption(pretraitement,nom_generique)                "Generic Name:"
@@ -495,7 +495,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Imagen de campo plano:"
    set caption(pretraitement,aucune)                    "Ninguno"
    set caption(pretraitement,auto)                      "Auto"
-   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+   set caption(pretraitement,rep-images)                "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
 
    set caption(pretraitement,liste_serie)               "Lista de índices:"
    set caption(pretraitement,nom_generique)             "Nombre genérico:"
@@ -876,7 +876,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Flat-field frame:"
    set caption(pretraitement,aucune)                    "Ingen"
    set caption(pretraitement,auto)                      "Auto"
-   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+   set caption(pretraitement,rep-images)                "Billederne skal ligge i billed-folderen\n(Konfiguration --> Mappe)."
 
    set caption(pretraitement,liste_serie)               "Index-liste:"
    set caption(pretraitement,nom_generique)             "Fællesnavn:"
