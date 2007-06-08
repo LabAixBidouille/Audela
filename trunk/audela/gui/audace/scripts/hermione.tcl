@@ -3,7 +3,7 @@
 # Description : Observation d'une occultation en automatique
 # Camera : Script optimise pour une Audine Kaf-0400 pilotee par un port parallele
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: hermione.tcl,v 1.4 2006-08-12 21:00:43 robertdelmas Exp $
+# Mise a jour $Id: hermione.tcl,v 1.5 2007-06-08 14:58:41 robertdelmas Exp $
 #
 
 global audace
@@ -33,9 +33,10 @@ if { $simulation == "yes" } {
    set h "6000"
 }
 
-#--- Fenetre de 250 pixels de large en binning 1x1
-set w   "250"
-set bin "1"
+#--- Fenetre de 250 pixels de large en binning 1x1 (1 en X et 1 en Y)
+set w    "250"
+set binx "1"
+set biny "1"
 
 #--- Parametres definis apres les calibrations avec l'outil Scan rapide
 set dt    "100.0" ; # millisecondes
@@ -63,7 +64,7 @@ set name [ format "%04d%02d%02d%02d%02d" [lindex $name 0] [lindex $name 1] [lind
 
 #--- Acquisition du scan et gestion de l'obturateur
 catch { $camera shutter opened }
-$camera scan $w $h $bin $dt -firstpix $firstpix -fast $speed -tmpfile
+$camera scan $w $h $binx $dt -biny $biny -firstpix $firstpix -fast $speed -tmpfile
 $buffer save "i0_$name"
 bell
 catch { $camera shutter synchro }
