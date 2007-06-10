@@ -81,6 +81,7 @@ typedef struct {
    int kobject2;
    int matched;
    int nouvelledate;
+   char matching_id[16];
 } struct_ligsat ;
 
 
