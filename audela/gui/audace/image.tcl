@@ -2,7 +2,7 @@
 # Fichier : image.tcl
 # Description : Manipulation des images (a deplacer dans aud1.tcl)
 # Auteur : Michel PUJOL
-# Mise a jour $Id: image.tcl,v 1.5 2007-04-07 21:16:48 robertdelmas Exp $
+# Mise a jour $Id: image.tcl,v 1.6 2007-06-10 16:24:00 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -18,24 +18,24 @@ namespace eval ::Image {
    #  loadmovie
    #    charge un film dans la fenetre standard
    #------------------------------------------------------------------------------
-   proc loadmovie { filename } {
-      global audace conf
+   proc loadmovie { visuNo filename } {
+      variable private
 
       #--- je masque la fenetre des images
-      $audace(hCanvas) itemconfigure display -state hidden
+      $::confVisu::private($visuNo,hCanvas) itemconfigure display -state hidden
 
       #--- j'affiche le film
-      #::Movie::open $filename $audace(hCanvas) [getMovieWindow] [visu$audace(visuNo) zoom]
-      set result [::Movie::open $filename $audace(hCanvas) [visu$audace(visuNo) zoom] 0 0 "nw"]
+      set result [::Movie::open $filename $::confVisu::private($visuNo,hCanvas) $::confVisu::private($visuNo,zoom) 0 0 "nw"]
 
       if { $result == 0 } return
+
       #--- j'adapte les scollbars
-      set w_zoomed [$audace(hCanvas) itemcget avi -width]
-      set h_zoomed [$audace(hCanvas) itemcget avi -height]
-      $audace(hCanvas) configure -scrollregion [list 0 0 $w_zoomed $h_zoomed ]
+      set w_zoomed [$::confVisu::private($visuNo,hCanvas) itemcget avi -width]
+      set h_zoomed [$::confVisu::private($visuNo,hCanvas) itemcget avi -height]
+      $::confVisu::private($visuNo,hCanvas) configure -scrollregion [list 0 0 $w_zoomed $h_zoomed ]
 
       #--- je raffraichis l'affichage du reticule
-      ::confVisu::redrawCrosshair $audace(visuNo)
+      ::confVisu::redrawCrosshair $visuNo
    }
 
    array set private {
@@ -78,7 +78,7 @@ namespace eval ::Image {
    #    filename    nom du fichier gif
    #    delay       delai entre deux images (en secondes)
    #------------------------------------------------------------
-   proc startGifAnimation { hImage zoom filename {delay "0.2"} } {
+   proc startGifAnimation { hImage zoom filename { delay "0.2" } } {
       variable private
 
       array set imgPriv { }
@@ -98,10 +98,9 @@ namespace eval ::Image {
    #  Image::nextStep { }
    #
    #------------------------------------------------------------
-   proc nextStep { index option} {
+   proc nextStep { index option } {
       variable private
       variable imgPriv
-      global audace
 
       set filename "$private(filename)"
 

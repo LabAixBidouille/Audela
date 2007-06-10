@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.13 2007-05-27 18:39:58 michelpujol Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.14 2007-06-10 16:24:16 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -190,7 +190,7 @@ namespace eval ::FullScreen {
          }
 
          #--- si un film est en cours, j'arrete le film
-         ::Movie::close $::confVisu::private($visuNo,$visuNo,hCanvas)
+         ::Movie::close $::confVisu::private($visuNo,hCanvas)
 
          #--- je recupere le nom du fichier selectionne
          set index $private($visuNo,currentItemIndex)
@@ -243,7 +243,7 @@ namespace eval ::FullScreen {
          stopAnimation $visuNo
 
          catch {
-            ::Movie::close $::confVisu::private($visuNo,$visuNo,hCanvas)
+            ::Movie::close $::confVisu::private($visuNo,hCanvas)
          }
 
          #--- je deconifie la fenetre Console
@@ -445,11 +445,11 @@ namespace eval ::FullScreen {
       variable private
 
       #--- je masque la fenetre des films
-      ::Movie::close $::confVisu::private($visuNo,$visuNo,hCanvas)
+      ::Movie::close $::confVisu::private($visuNo,hCanvas)
 
       set image   image$visuNo
       set buf     buf[visu$visuNo buf]
-      set hCanvas $::confVisu::private($visuNo,$visuNo,hCanvas)
+      set hCanvas $::confVisu::private($visuNo,hCanvas)
 
       #--- je charge le fichier dans le buffer
       set result [$buf load $filename]
@@ -462,7 +462,7 @@ namespace eval ::FullScreen {
          visu$visuNo zoom $zoom
          ::confVisu::autovisu $visuNo
       }
-      $::confVisu::private($visuNo,$visuNo,hCanvas) itemconfigure display -state normal
+      $::confVisu::private($visuNo,hCanvas) itemconfigure display -state normal
    }
 
    #------------------------------------------------------------------------------
@@ -474,7 +474,7 @@ namespace eval ::FullScreen {
       global audace
 
       #--- je masque la fenetre des images
-      $::confVisu::private($visuNo,$visuNo,hCanvas) itemconfigure display -state hidden
+      $::confVisu::private($visuNo,hCanvas) itemconfigure display -state hidden
 
       #--- je place la fenetre des films dans le canvas
       set maxsize [wm maxsize $audace(base)]
@@ -482,7 +482,7 @@ namespace eval ::FullScreen {
       set yc [expr [lindex $maxsize 1] /2 ]
 
       #--- j'affiche le film
-      ::Movie::open $filename $::confVisu::private($visuNo,$visuNo,hCanvas) $private($visuNo,zoom) $xc $yc "center"
+      ::Movie::open $filename $::confVisu::private($visuNo,hCanvas) $::confVisu::private($visuNo,zoom) $xc $yc "center"
    }
 
    #------------------------------------------------------------------------------
