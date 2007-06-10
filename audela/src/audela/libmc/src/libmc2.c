@@ -4402,3 +4402,348 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
    return TCL_OK;
 }
 
+int Cmd_mctcl_lightmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* Synthetize an image of the earth surface where an object is visible.     */
+/****************************************************************************/
+/* Entrees:							   									    */
+/* method:                                                                  */
+/*  =0: binaire                                                             */
+/*  =1: 1/airmass                                                           */
+/*  =2 elevation                                                            */
+/*
+set res [mc_lightmap 2005-09-04T01:51:44.280 013.6708 +14.1333 J2000.0 "c:/d/gft/test.fit" 1 1 2 10 -13 0] ; loadima test ; set res
+mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 1 2 0 99 0 ; loadima test
+*/
+/* Sorties :																*/
+/****************************************************************************/
+   char **lists=NULL,s[1024],filename[1024];
+   int nelem,n,result,code,k;
+   double *jds,*ras,*decs,*equinoxs;
+   Tcl_DString dsptr;
+   double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
+   double latitude,altitude,longitude;
+   double dlon,dlat;
+   int naxis1,naxis2,methode,otherhome;
+   double minobjelev,maxsunelev,minmoondist;
+   int klon,klat;
+   double lon,lat,cosl,cosb,cosl0,cosb0,sinl,sinb,sinl0,sinb0;
+   double jd,ra,dec,equinox,cosr,sinr,cosd,sind;
+   float *earthmap;
+   double val;
+   double j,t,theta0,tsl,ha,cosh,sinh;
+   double hobj,hsun,hmoon,distmoon,posangle;
+   double delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
+   double rasun,decsun,cosrsun,sinrsun,cosdsun,sindsun,coshsun,sinhsun;
+   double ramoon,decmoon,cosrmoon,sinrmoon,cosdmoon,sindmoon,coshmoon,sinhmoon;
+   double hmax,lonzen,latzen;
+   double hobsotherhome;
+
+   if(argc<12) {
+      sprintf(s,"Usage: %s ListDates ListRa ListDec ListEquinox filename steplon steplat method minobjelev maxsunelev minmoondist ?Home?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+	   return(result);;
+   } else {
+	   result=TCL_OK;
+	   Tcl_DStringInit(&dsptr);
+      /* --- decode les dates ---*/
+		code=Tcl_SplitList(interp,argv[1],&nelem,&lists);
+      if (code==TCL_OK) {
+         jds=(double*)calloc(nelem,sizeof(double));
+	      for (k=0;k<nelem;k++) {
+	  	      mctcl_decode_date(interp,lists[k],&jds[k]);
+		   }
+	   } else {
+         sprintf(s,"problem with ListDates (code=%d)",code);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+	   }
+      if (lists!=NULL) { Tcl_Free((char *) lists); }
+      n=nelem;
+      /* --- decode les ras ---*/
+		code=Tcl_SplitList(interp,argv[2],&nelem,&lists);
+      if (nelem!=n) {
+         free(jds);
+         sprintf(s,"Number of elements of ListRas (%d) is not equal to that of ListDates (%d)",nelem,n);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+      }
+      if (code==TCL_OK) {
+         ras=(double*)calloc(nelem,sizeof(double));
+	      for (k=0;k<nelem;k++) {
+            mctcl_decode_angle(interp,lists[k],&ras[k]);
+            ras[k]*=(DR);
+		   }
+	   } else {
+         sprintf(s,"problem with ListRa (code=%d)",code);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+	   }
+      if (lists!=NULL) { Tcl_Free((char *) lists); }
+      /* --- decode les decs ---*/
+		code=Tcl_SplitList(interp,argv[3],&nelem,&lists);
+      if (nelem!=n) {
+         free(jds);
+         free(ras);
+         sprintf(s,"Number of elements of ListDec (%d) is not equal to that of ListDates (%d)",nelem,n);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+      }
+      if (code==TCL_OK) {
+         decs=(double*)calloc(nelem,sizeof(double));
+	      for (k=0;k<nelem;k++) {
+            mctcl_decode_angle(interp,lists[k],&decs[k]);
+            decs[k]*=(DR);
+		   }
+	   } else {
+         free(jds);
+         free(ras);
+         sprintf(s,"problem with ListDec (code=%d)",code);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+	   }
+      if (lists!=NULL) { Tcl_Free((char *) lists); }
+      /* --- decode les equinoxs ---*/
+		code=Tcl_SplitList(interp,argv[4],&nelem,&lists);
+      if (nelem!=n) {
+         free(jds);
+         free(ras);
+         free(decs);
+         sprintf(s,"Number of elements of ListEquinox (%d) is not equal to that of ListDates (%d)",nelem,n);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+      }
+      if (code==TCL_OK) {
+         equinoxs=(double*)calloc(nelem,sizeof(double));
+	      for (k=0;k<nelem;k++) {
+            mctcl_decode_date(interp,lists[k],&equinoxs[k]);
+		   }
+	   } else {
+         free(jds);
+         free(ras);
+         free(decs);
+         sprintf(s,"problem with ListEquinox (code=%d)",code);
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+	   }
+      if (lists!=NULL) { Tcl_Free((char *) lists); }
+      /* --- decode filename ---*/
+      strcpy(filename,argv[5]);
+      /* --- decode naxis1 ---*/
+      dlon=(int)fabs(atoi(argv[6]));
+      if (dlon==0) { dlon=1.;}
+      naxis1=1+(int)(floor)(360./dlon);
+      /* --- decode naxis2 ---*/
+      dlat=(int)fabs(atoi(argv[7]));
+      if (dlat==0) { dlat=1.;}
+      naxis2=1+(int)(floor)(180./dlat);
+      /* --- decode methode ---*/
+      methode=(int)atoi(argv[8]);
+      /* --- decode minobjelev ---*/
+      minobjelev=(double)atof(argv[9])*(DR);
+      /* --- decode maxsunelev ---*/
+      maxsunelev=(double)atof(argv[10])*(DR);
+      /* --- decode minmoondist ---*/
+      minmoondist=(double)atof(argv[11])*(DR);
+      /* --- decode le Home ---*/
+      otherhome=0;
+      cosl0=1.;
+      sinl0=0.;
+      cosb0=1.;
+      sinb0=0.;
+      if (argc>=13) {
+         otherhome=1;
+         mctcl_decode_topo(interp,argv[12],&longitude,&rhocosphip,&rhosinphip);
+         mc_rhophi2latalt(rhosinphip,rhocosphip,&latitude,&altitude);
+         latitude*=(DR);
+         cosl0=cos(longitude);
+         sinl0=sin(longitude);
+         cosb0=cos(latitude);
+         sinb0=sin(latitude);
+      }
+      /* === CALCULS ===*/
+      earthmap=(float*)calloc(naxis1*naxis2,sizeof(float));
+      if (earthmap==NULL) {
+         free(jds);
+         free(ras);
+         free(decs);
+         free(equinoxs);
+         strcpy(s,"Error : memory allocation for earthmap");
+         Tcl_DStringAppend(&dsptr,s,-1);
+         Tcl_DStringResult(interp,&dsptr);
+         Tcl_DStringFree(&dsptr);
+         return TCL_ERROR;
+      }
+      /* --- Boucle sur les dates ---*/
+      for (k=0;k<n;k++) {
+         jd=jds[k];
+         ra=ras[k];
+         dec=decs[k];
+         equinox=equinoxs[k];
+         cosr=cos(ra);
+         sinr=sin(ra);
+         cosd=cos(dec);
+         sind=sin(dec);
+         mc_adsolap(jd,longitude,rhocosphip,rhosinphip,&rasun, &decsun,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+         cosrsun=cos(rasun);
+         sinrsun=sin(rasun);
+         cosdsun=cos(decsun);
+         sindsun=sin(decsun);
+         mc_adlunap(jd,longitude,rhocosphip,rhosinphip,&ramoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+         cosrmoon=cos(ramoon);
+         sinrmoon=sin(ramoon);
+         cosdmoon=cos(decmoon);
+         sindmoon=sin(decmoon);
+         /* --- distance à la moon ---*/
+         mc_sepangle(ra,ramoon,dec,decmoon,&distmoon,&posangle);
+         /* --- Calcul de la visibilite en home --- */
+         hobsotherhome=-PISUR2;
+         if (otherhome==1) {
+            /* --- calcul du temps sideral local ---*/
+            j=(jd-2451545.0);
+            t=j/36525;
+            theta0=280.46061837+360.98564736629*j+.000387933*t*t-t*t*t/38710000;
+            theta0+=longitude/(DR);
+            theta0=fmod(theta0,360.);
+            tsl=fmod(theta0+720.,360.)*DR;
+            /* --- calcul de l'angle horaire du GRB ---*/
+            ha=tsl-ra;
+            ha=fmod(4*PI+ha,2*PI);
+            cosh=cos(ha);
+            sinh=sin(ha);
+            /* --- calcul de l'angle horaire de sun ---*/
+            ha=tsl-rasun;
+            ha=fmod(4*PI+ha,2*PI);
+            coshsun=cos(ha);
+            sinhsun=sin(ha);
+            /* --- calcul de l'angle horaire de moon ---*/
+            ha=tsl-ramoon;
+            ha=fmod(4*PI+ha,2*PI);
+            coshmoon=cos(ha);
+            sinhmoon=sin(ha);
+            /* */
+            lat=latitude;
+            cosb=cos(lat);
+            sinb=sin(lat);
+            /* --- hauteur du GRB en (lon,lat) ---*/
+            if (dec>=PISUR2) { hobj=lat;}
+            else if (dec<=-PISUR2) { hobj=-lat;}
+            hobj=mc_asin(sinb*sind+cosb*cosd*cosh);
+            /* --- hauteur du sun en (lon,lat) ---*/
+            if (decsun>=PISUR2) { hsun=lat;}
+            else if (decsun<=-PISUR2) { hsun=-lat;}
+            hsun=mc_asin(sinb*sindsun+cosb*cosdsun*coshsun);
+            /* --- hauteur du moon en (lon,lat) ---*/
+            if (decmoon>=PISUR2) { hmoon=lat;}
+            else if (decmoon<=-PISUR2) { hmoon=-lat;}
+            hmoon=mc_asin(sinb*sindmoon+cosb*cosdmoon*coshmoon);
+            /* --- condition pour que GRB soit observable --- */
+            if ((hobj>minobjelev)&&(hsun<maxsunelev)&&((distmoon>=minmoondist)||(hmoon<0))) {
+               hobsotherhome=hobj;
+               /*lon=(dlon*klon)*(DR);*/
+               klon=(int)(longitude/(DR)/dlon);
+               /*lat=(dlat*klat)*(DR)-(PI)/2;*/
+               klat=(int)((latitude+(PI)/2)/(DR)/dlat);
+               val=1.;
+               if (methode==1) {
+                  val=sin(hobj);
+               } else if (methode==2) {
+                  val=hobj/(DR);
+               }
+               earthmap[klat*naxis1+klon]+=(float)val;
+            }
+         }
+         /* --- Boucle sur les (lon,lat) ---*/
+         hmax=0;
+         lonzen=0.;
+         latzen=0.;
+         for (klon=0;klon<naxis1;klon++) {
+            lon=(dlon*klon)*(DR);
+            cosl=cos(lon);
+            sinl=sin(lon);
+            /* --- calcul du temps sideral local ---*/
+            j=(jd-2451545.0);
+            t=j/36525;
+            theta0=280.46061837+360.98564736629*j+.000387933*t*t-t*t*t/38710000;
+            theta0+=lon/(DR);
+            theta0=fmod(theta0,360.);
+            tsl=fmod(theta0+720.,360.)*DR;
+            /* --- calcul de l'angle horaire du GRB ---*/
+            ha=tsl-ra;
+            ha=fmod(4*PI+ha,2*PI);
+            cosh=cos(ha);
+            sinh=sin(ha);
+            /* --- calcul de l'angle horaire de sun ---*/
+            ha=tsl-rasun;
+            ha=fmod(4*PI+ha,2*PI);
+            coshsun=cos(ha);
+            sinhsun=sin(ha);
+            /* --- calcul de l'angle horaire de moon ---*/
+            ha=tsl-ramoon;
+            ha=fmod(4*PI+ha,2*PI);
+            coshmoon=cos(ha);
+            sinhmoon=sin(ha);
+            for (klat=0;klat<naxis2;klat++) {
+               lat=(dlat*klat)*(DR)-(PI)/2;
+               cosb=cos(lat);
+               sinb=sin(lat);
+               /* --- hauteur du GRB en (lon,lat) ---*/
+               if (dec>=PISUR2) { hobj=lat;}
+               else if (dec<=-PISUR2) { hobj=-lat;}
+               hobj=mc_asin(sinb*sind+cosb*cosd*cosh);
+               /* --- hauteur du sun en (lon,lat) ---*/
+               if (decsun>=PISUR2) { hsun=lat;}
+               else if (decsun<=-PISUR2) { hsun=-lat;}
+               hsun=mc_asin(sinb*sindsun+cosb*cosdsun*coshsun);
+               /* --- hauteur du moon en (lon,lat) ---*/
+               if (decmoon>=PISUR2) { hmoon=lat;}
+               else if (decmoon<=-PISUR2) { hmoon=-lat;}
+               hmoon=mc_asin(sinb*sindmoon+cosb*cosdmoon*coshmoon);
+               if (hobj>hmax) {
+                  lonzen=lon;
+                  latzen=lat;
+                  hmax=hobj;
+               }
+               /* --- condition pour que GRB soit observable --- */
+               /*if ((hobj>minobjelev)&&(hsun<maxsunelev)&&((distmoon>=minmoondist)||(hmoon<0))&&(hobj>hobsotherhome)) {*/
+               if ((hobj>minobjelev)&&(hsun<maxsunelev)&&((distmoon>=minmoondist)||(hmoon<0))&&(hobsotherhome<=0)) {
+                  val=1.;
+                  if (methode==1) {
+                     val=sin(hobj);
+                  } else if (methode==2) {
+                     val=hobj/(DR);
+                  }
+                  earthmap[klat*naxis1+klon]+=(float)val;
+               }
+            }
+         }
+      }
+      /* === FIN ===*/
+      mc_savefits(earthmap,naxis1,naxis2,filename,NULL);
+      free(jds);
+      free(ras);
+      free(decs);
+      free(equinoxs);
+      free(earthmap);
+      sprintf(s,"%f %f",lonzen/(DR),latzen/(DR));
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+      return result;     
+   }
+}
