@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.22 2007-06-01 15:33:01 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.23 2007-06-10 16:23:40 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -1029,7 +1029,7 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
 
    if { $private($visuNo,animation) == 1 } {
       #--- j'arrete l'animation
-      stopAnimation
+      stopAnimation $visuNo
    }
 
    set name [string trimleft [$tbl cellcget $index,0 -text]]
@@ -1047,13 +1047,15 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
       } else {
          setAnimationState $visuNo "0"
       }
+
    } elseif { "$type" == "$private(fileMovie)" } {
       #--- j'affiche la premiere image du film
-      ::Image::loadmovie $filename $visuNo
-      setAnimationState "1"
+      ::Image::loadmovie $visuNo $filename
+      setAnimationState $visuNo "1"
       if { $doubleClick == 1 } {
          startAnimation $visuNo
       }
+
    } elseif { "$type" == "$private(folder)" || "$type" == "$private(volume)" } {
       if { $doubleClick == 1 } {
          #--- j'affiche le contenu du sous repertoire
@@ -1644,7 +1646,7 @@ proc ::visio2::localTable::createTbl { visuNo frame } {
    $menu add separator
    $menu add checkbutton -label $caption(visio2,play_movie) \
       -variable ::visio2::localTable::private($visuNo,animation) \
-      -command "::visio2::localTable::toggleAnimation"
+      -command "::visio2::localTable::toggleAnimation $visuNo"
 
    bind [$tbl bodypath] <<Button3>> [list tk_popup $menu %X %Y]
 
