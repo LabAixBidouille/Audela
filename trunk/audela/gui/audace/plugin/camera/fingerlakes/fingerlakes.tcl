@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.7 2007-06-03 16:28:51 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.8 2007-06-10 15:01:24 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -243,30 +243,34 @@ proc ::fingerlakes::FLIDispTemp { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# binningList :     Retourne la liste des binnings disponibles
-# binningListScan : Retourne la liste des binnings disponibles en mode scan
-# hasBinning :      Retourne l'existence d'un binning (1 : Oui, 0 : Non)
-# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
-# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
-# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
-# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
-# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
-# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
-# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
-# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+# binningList :      Retourne la liste des binnings disponibles
+# binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
+# binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
+# hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
+# hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::fingerlakes::getPluginProperty { camItem propertyName } {
    switch $propertyName {
-      binningList     { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 7x7 8x8 ] }
-      binningListScan { return [ list "" ] }
-      hasBinning      { return 1 }
-      hasLongExposure { return 0 }
-      hasScan         { return 0 }
-      hasShutter      { return 1 }
-      hasVideo        { return 0 }
-      hasWindow       { return 1 }
-      longExposure    { return 1 }
-      multiCamera     { return 0 }
+      binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 7x7 8x8 ] }
+      binningXListScan { return [ list "" ] }
+      binningYListScan { return [ list "" ] }
+      hasBinning       { return 1 }
+      hasFormat        { return 0 }
+      hasLongExposure  { return 0 }
+      hasScan          { return 0 }
+      hasShutter       { return 1 }
+      hasVideo         { return 0 }
+      hasWindow        { return 1 }
+      longExposure     { return 1 }
+      multiCamera      { return 0 }
       shutterList     {
          #--- O + F + S - A confirmer avec le materiel
          return [ list $::caption(fingerlakes,obtu_ouvert) $::caption(fingerlakes,obtu_ferme) $::caption(fingerlakes,obtu_synchro) ]

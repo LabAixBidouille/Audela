@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.81 2007-06-04 21:47:35 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.82 2007-06-10 15:07:06 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -751,7 +751,7 @@ namespace eval ::confCam {
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
             ::confLink::run ::confCam(audine,port) \
-               { parallelport ethernaude quickaudine audinet } \
+               { "parallelport" "quickaudine" "ethernaude" "audinet" } \
                "- $caption(confcam,acquisition) - $caption(confcam,audine)"
          }
       pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
@@ -2707,22 +2707,37 @@ namespace eval ::confCam {
    proc getPluginProperty { camItem propertyName } {
       global caption conf confCam
 
+      # binningList :      Retourne la liste des binnings disponibles
+      # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
+      # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+      # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
+      # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
+      # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+      # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+      # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+      # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
+      # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+      # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+      # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+      # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+
       #--- je recherche la valeur par defaut de la propriete
       #--- si la valeur par defaut de la propriete n'existe pas , je retourne une chaine vide
       switch $propertyName {
-         binningList     { set result [ list "" ] }
-         binningListScan { set result [ list "" ] }
-         hasBinning      { set result 0 }
-         hasFormat       { set result 0 }
-         hasLongExposure { set result 0 }
-         hasScan         { set result 0 }
-         hasShutter      { set result 0 }
-         hasVideo        { set result 0 }
-         hasWindow       { set result 0 }
-         longExposure    { set result 1 }
-         multiCamera     { set result 0 }
-         shutterList     { set result [ list "" ] }
-         default         { set result "" }
+         binningList      { set result [ list "" ] }
+         binningXListScan { set result [ list "" ] }
+         binningYListScan { set result [ list "" ] }
+         hasBinning       { set result 0 }
+         hasFormat        { set result 0 }
+         hasLongExposure  { set result 0 }
+         hasScan          { set result 0 }
+         hasShutter       { set result 0 }
+         hasVideo         { set result 0 }
+         hasWindow        { set result 0 }
+         longExposure     { set result 1 }
+         multiCamera      { set result 0 }
+         shutterList      { set result [ list "" ] }
+         default          { set result "" }
       }
 
       #--- si aucune camera n'est selectionnee, je retourne la valeur par defaut
@@ -2735,7 +2750,7 @@ namespace eval ::confCam {
       switch $confCam($camItem,camName) {
          audine {
             switch $propertyName {
-               binningList     {
+               binningList      {
                   switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                      "parallelport" { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                      "quickaudine"  { set result [ list 1x1 2x2 3x3 4x4 ] }
@@ -2743,36 +2758,47 @@ namespace eval ::confCam {
                      "ethernaude"   { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
                   }
                }
-               binningListScan {
+               binningXListScan {
                   switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                     "parallelport" { set result [ list 1x1 2x2 4x4 ] }
-                     "quickaudine"  { set result [ list ] }
-                     "audinet"      { set result [ list 1x1 2x2 4x4 ] }
-                     "ethernaude"   { set result [ list 1x1 2x2 ] }
+                     "parallelport" { set result [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ] }
+                     "quickaudine"  { set result [ list "" ] }
+                     "audinet"      { set result [ list "" ] }
+                     "ethernaude"   { set result [ list 1 2 ] }
                   }
                }
-               hasBinning      { set result 1 }
-               hasFormat       { set result 0 }
-               hasLongExposure { return 0 }
-               hasScan         {
+               binningYListScan {
+                  switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
+                     "parallelport" { set result [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ] }
+                     "quickaudine"  { set result [ list "" ] }
+                     "audinet"      { set result [ list "" ] }
+                     "ethernaude"   { set result [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 \
+                                                        21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 \
+                                                        41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 \
+                                                        61 62 63 64 ] }
+                  }
+               }
+               hasBinning       { set result 1 }
+               hasFormat        { set result 0 }
+               hasLongExposure  { return 0 }
+               hasScan          {
                   switch -exact [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                      "parallelport" { set result 1 }
                      "quickaudine"  { set result 0 }
-                     "audinet"      { set result 1 }
+                     "audinet"      { set result 0 }
                      "ethernaude"   { set result 1 }
                   }
                }
-               hasShutter      { set result 1 }
-               hasVideo        {
+               hasShutter       { set result 1 }
+               hasVideo         {
                   switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                      "ethernaude" { set result 2 }
                      default      { set result 0 }
                   }
                }
-               hasWindow       { set result 1 }
-               longExposure    { set result 1 }
-               multiCamera     { set result 0 }
-               shutterList     {
+               hasWindow        { set result 1 }
+               longExposure     { set result 1 }
+               multiCamera      { set result 0 }
+               shutterList      {
                   switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                      "parallelport" {
                         #--- O + F + S
@@ -2796,24 +2822,25 @@ namespace eval ::confCam {
          }
          hisis {
             switch $propertyName {
-               binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningListScan { set result [ list "" ] }
-               hasBinning      { set result 1 }
-               hasFormat       { set result 0 }
-               hasLongExposure { set result 0 }
-               hasScan         { set result 0 }
-               hasShutter      {
+               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
+               binningXListScan { set result [ list "" ] }
+               binningYListScan { set result [ list "" ] }
+               hasBinning       { set result 1 }
+               hasFormat        { set result 0 }
+               hasLongExposure  { set result 0 }
+               hasScan          { set result 0 }
+               hasShutter       {
                   if { $conf(hisis,modele) == "11" } {
                      set result 0
                   } else {
                      set result 1
                   }
                }
-               hasVideo        { set result 0 }
-               hasWindow       { set result 1 }
-               longExposure    { set result 1 }
-               multiCamera     { set result 0 }
-               shutterList     {
+               hasVideo         { set result 0 }
+               hasWindow        { set result 1 }
+               longExposure     { set result 1 }
+               multiCamera      { set result 0 }
+               shutterList      {
                   if { $conf(hisis,modele) == "11" } {
                      set result { }
                   } else {
@@ -2825,34 +2852,36 @@ namespace eval ::confCam {
          }
          sbig {
             switch $propertyName {
-               binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningListScan { set result [ list "" ] }
-               hasBinning      { set result 1 }
-               hasFormat       { set result 0 }
-               hasLongExposure { set result 0 }
-               hasScan         { set result 0 }
-               hasShutter      { set result 1 }
-               hasVideo        { set result 0 }
-               hasWindow       { set result 1 }
-               longExposure    { set result 1 }
-               multiCamera     { set result 0 }
-               shutterList     { set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ] }
+               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
+               binningXListScan { set result [ list "" ] }
+               binningYListScan { set result [ list "" ] }
+               hasBinning       { set result 1 }
+               hasFormat        { set result 0 }
+               hasLongExposure  { set result 0 }
+               hasScan          { set result 0 }
+               hasShutter       { set result 1 }
+               hasVideo         { set result 0 }
+               hasWindow        { set result 1 }
+               longExposure     { set result 1 }
+               multiCamera      { set result 0 }
+               shutterList      { set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ] }
             }
          }
          andor {
             switch $propertyName {
-               binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningListScan { set result [ list "" ] }
-               hasBinning      { set result 1 }
-               hasFormat       { set result 0 }
-               hasLongExposure { set result 0 }
-               hasScan         { set result 0 }
-               hasShutter      { set result 1 }
-               hasVideo        { set result 0 }
-               hasWindow       { set result 1 }
-               longExposure    { set result 1 }
-               multiCamera     { set result 0 }
-               shutterList     {
+               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
+               binningXListScan { set result [ list "" ] }
+               binningYListScan { set result [ list "" ] }
+               hasBinning       { set result 1 }
+               hasFormat        { set result 0 }
+               hasLongExposure  { set result 0 }
+               hasScan          { set result 0 }
+               hasShutter       { set result 1 }
+               hasVideo         { set result 0 }
+               hasWindow        { set result 1 }
+               longExposure     { set result 1 }
+               multiCamera      { set result 0 }
+               shutterList      {
                   #--- O + F + S - A confirmer avec le materiel
                   set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
                }
@@ -2860,50 +2889,53 @@ namespace eval ::confCam {
          }
          starlight {
             switch $propertyName {
-               binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningListScan { set result [ list "" ] }
-               hasBinning      { set result 1 }
-               hasFormat       { set result 0 }
-               hasLongExposure { set result 0 }
-               hasScan         { set result 0 }
-               hasShutter      { set result 0 }
-               hasVideo        { set result 0 }
-               hasWindow       { set result 1 }
-               longExposure    { set result 1 }
-               multiCamera     { set result 0 }
-               shutterList     { set result [ list "" ] }
+               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
+               binningXListScan { set result [ list "" ] }
+               binningYListScan { set result [ list "" ] }
+               hasBinning       { set result 1 }
+               hasFormat        { set result 0 }
+               hasLongExposure  { set result 0 }
+               hasScan          { set result 0 }
+               hasShutter       { set result 0 }
+               hasVideo         { set result 0 }
+               hasWindow        { set result 1 }
+               longExposure     { set result 1 }
+               multiCamera      { set result 0 }
+               shutterList      { set result [ list "" ] }
             }
          }
          kitty {
             switch $propertyName {
-               binningList     { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningListScan { set result [ list "" ] }
-               hasBinning      { set result 1 }
-               hasFormat       { set result 0 }
-               hasLongExposure { set result 0 }
-               hasScan         { set result 0 }
-               hasShutter      { set result 0 }
-               hasVideo        { set result 0 }
-               hasWindow       { set result 1 }
-               longExposure    { set result 1 }
-               multiCamera     { set result 0 }
-               shutterList     { set result [ list "" ] }
+               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
+               binningXListScan { set result [ list "" ] }
+               binningYListScan { set result [ list "" ] }
+               hasBinning       { set result 1 }
+               hasFormat        { set result 0 }
+               hasLongExposure  { set result 0 }
+               hasScan          { set result 0 }
+               hasShutter       { set result 0 }
+               hasVideo         { set result 0 }
+               hasWindow        { set result 1 }
+               longExposure     { set result 1 }
+               multiCamera      { set result 0 }
+               shutterList      { set result [ list "" ] }
             }
          }
          dslr {
             switch $propertyName {
-               binningList     { set result [ ::dslr::getBinningList $camNo ] }
-               binningListScan { set result [ list "" ] }
-               hasBinning      { set result 0 }
-               hasFormat       { set result 1 }
-               hasLongExposure { set result 0 }
-               hasScan         { set result 0 }
-               hasShutter      { set result 0 }
-               hasVideo        { set result 0 }
-               hasWindow       { set result 0 }
-               longExposure    { set result 1 }
-               multiCamera     { set result 0 }
-               shutterList     { set result [ list "" ] }
+               binningList      { set result [ ::dslr::getBinningList $camNo ] }
+               binningXListScan { set result [ list "" ] }
+               binningYListScan { set result [ list "" ] }
+               hasBinning       { set result 0 }
+               hasFormat        { set result 1 }
+               hasLongExposure  { set result 0 }
+               hasScan          { set result 0 }
+               hasShutter       { set result 0 }
+               hasVideo         { set result 0 }
+               hasWindow        { set result 0 }
+               longExposure     { set result 1 }
+               multiCamera      { set result 0 }
+               shutterList      { set result [ list "" ] }
             }
          }
          default {
@@ -3713,7 +3745,7 @@ namespace eval ::confCam {
                }
 
                #--- je parametre le fonctionnement de l'ampli du CCD
-               #--- (sans effet sur l'EthernAude et l'AudiNet)
+               #--- (uniquement pour le port parallele et la QuickAudine)
                if { [ ::confLink::getLinkNamespace $conf(audine,port) ] == "parallelport" } {
                   switch -exact -- $conf(audine,ampli_ccd) {
                      0 { cam$camNo ampli "synchro" }

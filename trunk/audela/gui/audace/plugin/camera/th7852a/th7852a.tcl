@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.8 2007-06-03 16:28:53 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.9 2007-06-10 15:02:11 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -143,31 +143,35 @@ proc ::th7852a::configureCamera { camItem } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# binningList :     Retourne la liste des binnings disponibles
-# binningListScan : Retourne la liste des binnings disponibles en mode scan
-# hasBinning :      Retourne l'existence d'un binning (1 : Oui, 0 : Non)
-# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
-# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
-# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
-# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
-# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
-# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
-# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
-# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+# binningList :      Retourne la liste des binnings disponibles
+# binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
+# binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
+# hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
+# hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::th7852a::getPluginProperty { camItem propertyName } {
    switch $propertyName {
-      binningList     { return [ list 1x1 2x2 3x3 4x4 ] }
-      binningListScan { return [ list "" ] }
-      hasBinning      { return 1 }
-      hasLongExposure { return 0 }
-      hasScan         { return 0 }
-      hasShutter      { return 0 }
-      hasVideo        { return 0 }
-      hasWindow       { return 1 }
-      longExposure    { return 1 }
-      multiCamera     { return 0 }
-      shutterList     { return [ list "" ] }
+      binningList      { return [ list 1x1 2x2 3x3 4x4 ] }
+      binningXListScan { return [ list "" ] }
+      binningYListScan { return [ list "" ] }
+      hasBinning       { return 1 }
+      hasFormat        { return 0 }
+      hasLongExposure  { return 0 }
+      hasScan          { return 0 }
+      hasShutter       { return 0 }
+      hasVideo         { return 0 }
+      hasWindow        { return 1 }
+      longExposure     { return 1 }
+      multiCamera      { return 0 }
+      shutterList      { return [ list "" ] }
    }
 }
 
