@@ -139,6 +139,8 @@
  int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
  int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
+ int Cmd_mctcl_lightmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+
 /*--- Point d'entree de la DLL */
 #ifdef LIBRARY_DLL
    __declspec(dllexport) int __cdecl Mc_Init(Tcl_Interp *interp);
