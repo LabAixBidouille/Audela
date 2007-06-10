@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.8 2007-06-03 16:28:51 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.9 2007-06-10 15:01:06 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -190,31 +190,35 @@ proc ::coolpix::deconnect { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# binningList :     Retourne la liste des binnings disponibles
-# binningListScan : Retourne la liste des binnings disponibles en mode scan
-# hasBinning :      Retourne l'existence d'un binning (1 : Oui, 0 : Non)
-# hasLongExposure : Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
-# hasScan :         Retourne l'existence du mode scan (1 : Oui, 0 : Non)
-# hasShutter :      Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
-# hasVideo :        Retourne l'existence du mode video (1 : Oui, 0 : Non)
-# hasWindow :       Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
-# longExposure :    Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
-# multiCamera :     Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
-# shutterList :     Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+# binningList :      Retourne la liste des binnings disponibles
+# binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
+# binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
+# hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
+# hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
+# hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
+# hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
+# hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
+# longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
+# multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::coolpix::getPluginProperty { camItem propertyName } {
    switch $propertyName {
-      binningList     { return [ ::acqapn::Formats ] }
-      binningListScan { return [ list "" ] }
-      hasBinning      { return 0 }
-      hasLongExposure { return 0 }
-      hasScan         { return 0 }
-      hasShutter      { return 0 }
-      hasVideo        { return 1 }
-      hasWindow       { return 0 }
-      longExposure    { return 0 }
-      multiCamera     { return 0 }
-      shutterList     { return [ list "" ] }
+      binningList      { return [ ::acqapn::Formats ] }
+      binningXListScan { return [ list "" ] }
+      binningYListScan { return [ list "" ] }
+      hasBinning       { return 0 }
+      hasFormat        { return 1 }
+      hasLongExposure  { return 0 }
+      hasScan          { return 0 }
+      hasShutter       { return 0 }
+      hasVideo         { return 1 }
+      hasWindow        { return 0 }
+      longExposure     { return 0 }
+      multiCamera      { return 0 }
+      shutterList      { return [ list "" ] }
    }
 }
 
