@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.82 2007-06-10 15:07:06 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.83 2007-06-11 17:25:53 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -3656,6 +3656,8 @@ namespace eval ::confCam {
                   }
                   quickaudine {
                      set camNo [cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
+                     cam$camNo delayshutter $conf(quickaudine,delayshutter)
+                     cam$camNo speed $conf(quickaudine,canspeed)
                      #--- je cree la liaison utilisee par la camera pour l'acquisition
                      set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
@@ -3747,6 +3749,12 @@ namespace eval ::confCam {
                #--- je parametre le fonctionnement de l'ampli du CCD
                #--- (uniquement pour le port parallele et la QuickAudine)
                if { [ ::confLink::getLinkNamespace $conf(audine,port) ] == "parallelport" } {
+                  switch -exact -- $conf(audine,ampli_ccd) {
+                     0 { cam$camNo ampli "synchro" }
+                     1 { cam$camNo ampli "on" }
+                     2 { cam$camNo ampli "off" }
+                  }
+               } elseif { [ ::confLink::getLinkNamespace $conf(audine,port) ] == "quickaudine" } {
                   switch -exact -- $conf(audine,ampli_ccd) {
                      0 { cam$camNo ampli "synchro" }
                      1 { cam$camNo ampli "on" }
