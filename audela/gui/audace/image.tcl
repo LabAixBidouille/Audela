@@ -2,7 +2,7 @@
 # Fichier : image.tcl
 # Description : Manipulation des images (a deplacer dans aud1.tcl)
 # Auteur : Michel PUJOL
-# Mise a jour $Id: image.tcl,v 1.6 2007-06-10 16:24:00 robertdelmas Exp $
+# Mise a jour $Id: image.tcl,v 1.7 2007-06-11 21:47:19 michelpujol Exp $
 #
 
 ##############################################################################
@@ -25,7 +25,7 @@ namespace eval ::Image {
       $::confVisu::private($visuNo,hCanvas) itemconfigure display -state hidden
 
       #--- j'affiche le film
-      set result [::Movie::open $filename $::confVisu::private($visuNo,hCanvas) $::confVisu::private($visuNo,zoom) 0 0 "nw"]
+      set result [::Movie::open $visuNo $filename 0 0 "nw"]
 
       if { $result == 0 } return
 
