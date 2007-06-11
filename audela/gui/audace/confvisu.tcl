@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.64 2007-06-03 14:41:11 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.65 2007-06-11 17:02:05 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -373,7 +373,7 @@ namespace eval ::confVisu {
       ::Movie::deleteMovieWindow $private($visuNo,hCanvas)
 
       catch { ::astrometry::quit }
-      catch { ::AcqFC::stopPreview }
+      catch { ::AcqFC::spreviousTopiew }
 
       #--- Suppression de la fenetre a l'ecran
       deleteBox $visuNo
@@ -443,11 +443,11 @@ namespace eval ::confVisu {
    proc getCanvasCenter { visuNo } {
       variable private
 
-      set box [grid bbox .audace.can1 0 0]
+      set box [grid bbox $private($visuNo,This).can1 0 0]
       set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]
       set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
 
-      set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
+      return [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
    }
 
    #------------------------------------------------------------
@@ -497,48 +497,51 @@ namespace eval ::confVisu {
          ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
       }
 
-      #--- je recupere les coordonnees du centre du canvas
-      set box [grid bbox .audace.can1 0 0]
-      set xScreenCenter [expr ([lindex $box 2] - [lindex $box 0])/2 ]
-      set yScreenCenter [expr ([lindex $box 3] - [lindex $box 1])/2 ]
+      #--- je calcule les coordonnées du centre de l'image
+      set canvasCenterPrev [getCanvasCenter $visuNo]
+      set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
 
-      #--- je convertis les dimensions du canvas en coordonnees image
-      set canvasCenter  [::confVisu::screen2Canvas $visuNo [list $xScreenCenter $yScreenCenter]]
-      set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenter ]
+      #--- je calcule la position du bord gauche et du bord haut
+      set previousLeft [expr [lindex $canvasCenterPrev 0] - [lindex [$private($visuNo,hCanvas) xview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 2] ]
+      set previousTop  [expr [lindex $canvasCenterPrev 1] - [lindex [$private($visuNo,hCanvas) yview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 3] ]
+      set zoomPrev [visu$visuNo zoom]
 
+      #--- j'applique le nouveau zoom
       visu$visuNo zoom $private($visuNo,zoom)
+
       #--- rafraichissement de l'image avec le nouveau zoom
       visu$visuNo clear
       visu$visuNo disp
 
+      #--- mise a jour du parametre scrollposition du canvas
+      setScrollbarSize $visuNo
+
       #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
       set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
 
-      set xFactor [.audace.can1.canvas xview]
-      set yFactor [.audace.can1.canvas yview]
-      set scrollRegion [.audace.can1.canvas cget -scrollregion]
-
-      set xmin [expr  [lindex $xFactor 0] * [lindex $scrollRegion 2] ]
-      set ymin [expr  [lindex $yFactor 0] * [lindex $scrollRegion 3] ]
-      set xmax [expr  [lindex $xFactor 1] * [lindex $scrollRegion 2] ]
-      set ymax [expr  [lindex $yFactor 1] * [lindex $scrollRegion 3] ]
-      set deltax [expr [lindex $canvasCenter 0] -($xmax-$xmin)/2 ]
-      set deltay [expr [lindex $canvasCenter 1] -($ymax-$ymin)/2 ]
+      #--- je calcule la nouvelle position du bord gauche et du haut pour garder le centre de l'image au meme endroit
+      set newleft [expr [lindex $canvasCenter 0] - $previousLeft ]
+      set newtop  [expr [lindex $canvasCenter 1] - $previousTop  ]
 
       #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible
-      if { $deltax < 0 } { set deltax 0 }
-      if { $deltay < 0 } { set deltay 0 }
+      if { $newleft < 0 } { set newleft 0 }
+      if { $newtop  < 0 } { set newtop  0 }
 
       #--- je centre le canvas
-      if { [lindex $scrollRegion 2] != "0" } {
-         .audace.can1.canvas xview moveto [expr 1.0*$deltax / [lindex $scrollRegion 2] ]
-      }
-      if { [lindex $scrollRegion 3] != "0" } {
-         .audace.can1.canvas yview moveto [expr 1.0*$deltay / [lindex $scrollRegion 3] ]
+      set scrollRegion [$private($visuNo,hCanvas) cget -scrollregion]
+      set leftRegion   [lindex $scrollRegion 0]
+      set topRegion    [lindex $scrollRegion 1]
+      set rightRegion  [lindex $scrollRegion 2]
+      set bottomRegion [lindex $scrollRegion 3]
+
+      if { $rightRegion != 0 } {
+         $private($visuNo,hCanvas) xview moveto [expr $newleft / ($rightRegion - $leftRegion) ]
       }
 
-      #--- mise a jour des scrollbars
-      setScrollbarSize $visuNo
+      if { $bottomRegion != 0 } {
+         $private($visuNo,hCanvas) yview moveto [expr $newtop/ ($bottomRegion- $topRegion)]
+      }
+
 
       #--- Je mets a jour la taille du reticule
       ::confVisu::redrawCrosshair $visuNo
@@ -819,10 +822,30 @@ namespace eval ::confVisu {
       set y0 [expr $y0 - 1 ]
       set coord0 [ picture2Canvas $visuNo [list $x0 $y0 ] ]
       set coord1 [ picture2Canvas $visuNo [list $x1 $y1 ] ]
+      
+      if { [lindex $coord0 0] < [lindex $coord1 0] } {
+         set left  [lindex $coord0 0]
+         set right [lindex $coord1 0]
+      } else {
+         set left  [lindex $coord1 0]
+         set right [lindex $coord0 0]
+      }
 
       #--- attention : il faut inverser y0 et y1 car l'origine de l'axe y est en haut dans le repere canvas
-      $private($visuNo,hCanvas) configure \
-         -scrollregion [list [lindex $coord0 0] [lindex $coord1 1] [lindex $coord1 0] [lindex $coord0 1]]
+      if { [lindex $coord0 1] < [lindex $coord1 1] } {
+         set top    [lindex $coord0 1]
+         set bottom [lindex $coord1 1]
+      } else {
+         set top    [lindex $coord1 1]
+         set bottom [lindex $coord0 1]
+      }
+   
+      #--- j'eleimine les erreur d'arrondi quand zoom <1
+      if { $left < 0 } { set left 0 }
+      if { $top < 0 }  { set top 0 }
+
+
+      $private($visuNo,hCanvas) configure -scrollregion [list $left $top $right $bottom]
    }
 
    #------------------------------------------------------------
@@ -1100,9 +1123,12 @@ namespace eval ::confVisu {
    #  getVisuNo
    #     retourne le numero de visu contenant le canvas
    #  parametres
-   #     hCanvas : nom du canvas, exemple : .audace.can1.canvas
+   #     hCanvas : nom du canvas
    #  return :
    #    numero de la visu contenant le canvas
+   #  Exemple :
+   #    ::confVisu::getVisuNo ".audace.can1.canvas"
+   #    1
    #------------------------------------------------------------
    proc getVisuNo { hCanvas } {
       #-- le numero de la visu se trouve dans le parametre "class de la toplevel
@@ -1284,21 +1310,17 @@ namespace eval ::confVisu {
       #--- bind pour l'ouverture de la boite de configuration des cameras
       bind $This.fra1.labCam_labURL <ButtonPress-1> {
          ::confCam::run
-         ###tkwait window $audace(base).confCam
-      }
+     }
       bind $This.fra1.labCam_name_labURL <ButtonPress-1> {
          ::confCam::run
-         ###tkwait window $audace(base).confCam
       }
 
       #--- bind pour l'ouverture de la boite de configuration des montures
       bind $This.fra1.labTel_labURL <ButtonPress-1> {
          ::confTel::run
-         ###tkwait window $audace(base).confTel
       }
       bind $This.fra1.labTel_name_labURL <ButtonPress-1> {
          ::confTel::run
-         ###tkwait window $audace(base).confTel
       }
 
    }
@@ -1576,10 +1598,10 @@ namespace eval ::confVisu {
       }
 
       if { $private($visuNo,mirror_x) == 1 } {
-         lset coord 0 [ expr $private($visuNo,picture_w)*$zoom - 1 - [lindex $coord 0] ]
+         lset coord 0 [ expr ($x1 - $x0)*$zoom - [lindex $coord 0] ]
       }
       if { $private($visuNo,mirror_y) == 1 } {
-         lset coord 1 [ expr $private($visuNo,picture_h)*$zoom - 1 - [lindex $coord 1] ]
+         lset coord 1 [ expr ($y1 - $y0 )*$zoom - [lindex $coord 1] ]
       }
 
       if {$zoom >= 1} {
@@ -1608,7 +1630,7 @@ namespace eval ::confVisu {
    proc picture2Canvas { visuNo coord } {
       variable private
 
-      set zoom    $private($visuNo,zoom)
+      set zoom   [visu$visuNo zoom]
       set height $private($visuNo,picture_h)
 
       #--- je prend en compte le fenetrage
@@ -1631,17 +1653,24 @@ namespace eval ::confVisu {
 
       #--- j'applique le mirroir sur l'axe x
       if { $private($visuNo,mirror_x) == 1 } {
-         set xx [ expr $private($visuNo,picture_w)*$zoom - 1 - $xx ]
+         set xx [ expr ($x1 -$x0 +1)*$zoom - $xx ]
       }
 
       #--- j'applique le mirroir sur l'axe y
       if { $private($visuNo,mirror_y) == 1 } {
-         set yy [ expr $private($visuNo,picture_h)*$zoom - 1 - $yy ]
+         set yy [ expr ($y1 -$y0+1)*$zoom - $yy ]
       }
 
       return [list $xx $yy]
    }
 
+   #------------------------------------------------------------
+   #  onPressButton1
+   #     demarre le trace de la boite
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    x y : coordonnees de la souris (referentiel ecran)
+   #------------------------------------------------------------
    proc onPressButton1 { visuNo x y } {
       variable private
       global caption
@@ -1668,6 +1697,13 @@ namespace eval ::confVisu {
       }
    }
 
+   #------------------------------------------------------------
+   #  onMotionButton1
+   #     redessine la boite en suivant le deplacement de la souris
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    x y : coordonnees de la souris (referentiel ecran)
+   #------------------------------------------------------------
    proc onMotionButton1 { visuNo x y } {
       variable private
 
@@ -1710,16 +1746,30 @@ namespace eval ::confVisu {
       }
    }
 
+   #------------------------------------------------------------
+   #  onMotionMouse
+   #     affiche les cordonnees et l'intensite du pixel pointe par la souris
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    x y : coordonnees de la souris (referentiel ecran)
+   #------------------------------------------------------------
    proc onMotionMouse { visuNo x y } {
       #--- Affichage des coordonnees
       ::confVisu::displayCursorCoord $visuNo [list $x $y]
    }
 
+   #------------------------------------------------------------
+   #  displayCursorCoord
+   #     affiche les cordonnees et l'intensite du pixel pointe par la souris
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    x y : coordonnees de la souris (referentiel ecran)
+   #------------------------------------------------------------
    proc displayCursorCoord { visuNo coord } {
       variable private
       global caption
 
-      #--- Transformation des coordonnees ecran en coordonnees image (pour tenir compte du retournement de l'image)
+      #--- Transformation des coordonnees ecran en coordonnees image
       set coord [ ::confVisu::canvas2Picture $visuNo [ ::confVisu::screen2Canvas $visuNo $coord ] ]
       set xc [lindex $coord 0 ]
       set yc [lindex $coord 1 ]
@@ -1747,8 +1797,8 @@ namespace eval ::confVisu {
          set intensite "$caption(confVisu,I) $caption(confVisu,egale) $caption(confVisu,tiret)"
       } else {
          #--- xi et yi sont des 'coordonnees-buffer'
-         set xi [ lindex $coord 0 ]
-         set yi [ lindex $coord 1 ]
+         set xi $xc
+         set yi $yc
          #--- si le buffer ne contient qu'une ligne , j'affiche l'intensite de
          #--- cette ligne quelque soit la position verticale du curseur de la
          #--- souris dans l'image car c'est la meme valeur sur toute la colonne
@@ -1776,8 +1826,9 @@ namespace eval ::confVisu {
                }
             }
          } else {
-            #--- je traite le cas ou la taille de l'image a ete changee avant de mettre
-            #--- a jour les parametres confisu (par exemple acquition en cours avec une camera)
+            #--- je traite le cas ou la taille de l'image a ete changee dans le buffer et que
+            #--- et que les variables private($visuNo,picture_w) et private($visuNo,picture_w)
+            #--- ne sont pas enore à jour (par exemple acquisition en cours avec une camera)
             set xi "$caption(confVisu,tiret)"
             set yi "$caption(confVisu,tiret)"
             set intensite "$caption(confVisu,I) $caption(confVisu,egale) $caption(confVisu,tiret)"
@@ -1831,9 +1882,14 @@ namespace eval ::confVisu {
       return $private($visuNo,hCanvas)
    }
 
-   #
-   # Attention : Les coordonnees coord sont des coordonnees canvas et non ecran
-   #
+   #------------------------------------------------------------
+   #  boxDrag
+   #     demarre le trace de la boite
+   #     et memorise les coordonnees de la souris dans private($visuNo,box_1)
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    x y : coordonnees de la souris (referentiel ecran)
+   #------------------------------------------------------------
    proc boxBegin { visuNo coord } {
       variable private
 
@@ -1841,9 +1897,14 @@ namespace eval ::confVisu {
       deleteBox $visuNo
    }
 
-   #
-   # Attention : Les coordonnees x et y sont des coordonnees canvas et non ecran
-   #
+   #------------------------------------------------------------
+   #  boxEnd
+   #     redessine la boite en suivant le deplacement de la souris
+   #     et enregistre les coordonnees de la boite dans private($visuNo,boxSize)
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    x y : coordonnees de la souris (referentiel ecran)
+   #------------------------------------------------------------
    proc boxEnd { visuNo coord } {
       variable private
       global audace
@@ -1869,10 +1930,22 @@ namespace eval ::confVisu {
          }
          set coord1 [::confVisu::canvas2Picture $visuNo [list $x1 $y1]]
          set coord2 [::confVisu::canvas2Picture $visuNo [list $x2 $y2] -right ]
-         set x1 [lindex $coord1 0]
-         set y1 [lindex $coord1 1]
-         set x2 [lindex $coord2 0]
-         set y2 [lindex $coord2 1]
+
+         if {[lindex $coord1 0] < [lindex $coord2 0]} {
+            set x1 [lindex $coord1 0]
+            set x2 [lindex $coord2 0]
+         } else {
+            set x1 [lindex $coord2 0]
+            set x2 [lindex $coord1 0]
+         }
+
+         if {[lindex $coord1 1] < [lindex $coord2 1]} {
+            set y1 [lindex $coord1 1]
+            set y2 [lindex $coord2 1]
+         } else {
+            set y1 [lindex $coord2 1]
+            set y2 [lindex $coord1 1]
+         }
          set private($visuNo,boxSize) [list $x1 $y1 $x2 $y2]
          if { $visuNo == 1 } {
             set ::audace(box) $private($visuNo,boxSize)
@@ -1880,9 +1953,14 @@ namespace eval ::confVisu {
       }
    }
 
-   #
-   # Attention : Les coordonnees x et y sont des coordonnees canvas et non ecran
-   #
+   #------------------------------------------------------------
+   #  boxDrag
+   #     redessine la boite en suivant le deplacement de la souris
+   #     et memorise les coordonnees de la souris dans private($visuNo,box_2)
+   #  parametres :
+   #    visuNo: numero de la visu
+   #    x y : coordonnees de la souris (referentiel ecran)
+   #------------------------------------------------------------
    proc boxDrag { visuNo coord } {
       variable private
       global audace
@@ -1913,6 +1991,12 @@ namespace eval ::confVisu {
       $private($visuNo,box_2) -outline $audace(color,drag_rectangle) -tag selBox]
    }
 
+   #------------------------------------------------------------
+   #  deleteBox
+   #     efface la boite
+   #  parametres :
+   #    visuNo: numero de la visu
+   #------------------------------------------------------------
    proc deleteBox { { visuNo "1" } } {
       variable private
 
@@ -2206,7 +2290,7 @@ namespace eval ::confVisu {
    #------------------------------------------------------------
    #  setFileName
    #    modifie le nom du fichier courant
-   #    et affiche le nom dans le titre
+   #    et affiche le nom dans le titre de la fenetre
    #  parametres :
    #    visuNo : numero de la visu
    #    fileName: nom du fichier
