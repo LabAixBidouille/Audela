@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.65 2007-06-11 17:02:05 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.66 2007-06-11 21:47:19 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -268,7 +268,7 @@ namespace eval ::confVisu {
          set height $private($visuNo,picture_h)
 
          #--- je supprime l'item video s'il existe
-         Movie::deleteMovieWindow $private($visuNo,hCanvas)
+         Movie::deleteMovieWindow $visuNo
          $private($visuNo,hCanvas) itemconfigure display -state normal
 
          #--- je supprime le fenetrage si la fenetre deborde de l'image
@@ -370,7 +370,7 @@ namespace eval ::confVisu {
       variable private
 
       #--- Je masque la fenetre des films
-      ::Movie::deleteMovieWindow $private($visuNo,hCanvas)
+      ::Movie::deleteMovieWindow $visuNo
 
       catch { ::astrometry::quit }
       catch { ::AcqFC::spreviousTopiew }
@@ -822,7 +822,7 @@ namespace eval ::confVisu {
       set y0 [expr $y0 - 1 ]
       set coord0 [ picture2Canvas $visuNo [list $x0 $y0 ] ]
       set coord1 [ picture2Canvas $visuNo [list $x1 $y1 ] ]
-      
+
       if { [lindex $coord0 0] < [lindex $coord1 0] } {
          set left  [lindex $coord0 0]
          set right [lindex $coord1 0]
@@ -839,7 +839,7 @@ namespace eval ::confVisu {
          set top    [lindex $coord1 1]
          set bottom [lindex $coord0 1]
       }
-   
+
       #--- j'eleimine les erreur d'arrondi quand zoom <1
       if { $left < 0 } { set left 0 }
       if { $top < 0 }  { set top 0 }

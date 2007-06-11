@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.14 2007-06-10 16:24:16 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.15 2007-06-11 21:47:19 michelpujol Exp $
 #
 
 ##############################################################################
@@ -190,7 +190,7 @@ namespace eval ::FullScreen {
          }
 
          #--- si un film est en cours, j'arrete le film
-         ::Movie::close $::confVisu::private($visuNo,hCanvas)
+         ::Movie::close $visuNo
 
          #--- je recupere le nom du fichier selectionne
          set index $private($visuNo,currentItemIndex)
@@ -243,7 +243,7 @@ namespace eval ::FullScreen {
          stopAnimation $visuNo
 
          catch {
-            ::Movie::close $::confVisu::private($visuNo,hCanvas)
+            ::Movie::close $visuNo
          }
 
          #--- je deconifie la fenetre Console
@@ -445,7 +445,7 @@ namespace eval ::FullScreen {
       variable private
 
       #--- je masque la fenetre des films
-      ::Movie::close $::confVisu::private($visuNo,hCanvas)
+      ::Movie::close $visuNo
 
       set image   image$visuNo
       set buf     buf[visu$visuNo buf]
@@ -482,7 +482,7 @@ namespace eval ::FullScreen {
       set yc [expr [lindex $maxsize 1] /2 ]
 
       #--- j'affiche le film
-      ::Movie::open $filename $::confVisu::private($visuNo,hCanvas) $::confVisu::private($visuNo,zoom) $xc $yc "center"
+      ::Movie::open $visuNo $filename $xc $yc "center"
    }
 
    #------------------------------------------------------------------------------
@@ -535,7 +535,7 @@ namespace eval ::FullScreen {
       if { "$type" == "$private($visuNo,fileImage)" } {
          ::Image::startGifAnimation image$visuNo $private($visuNo,zoom) "$filename"
       } elseif { "$type" == "$private($visuNo,fileMovie)" } {
-         ::Movie::start
+         ::Movie::start $visuNo
       }
       set private($visuNo,animation) "1"
       update
@@ -557,7 +557,7 @@ namespace eval ::FullScreen {
       if { "$type" == "$private($visuNo,fileImage)" } {
          ::Image::stopGifAnimation
       } elseif { "$type" == "$private($visuNo,fileMovie)" } {
-         ::Movie::stop
+         ::Movie::stop $visuNo
       }
       set private($visuNo,animation) "0"
       update
