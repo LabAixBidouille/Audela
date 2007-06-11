@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.13 2007-05-19 10:40:20 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.14 2007-06-11 17:24:29 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
@@ -41,6 +41,8 @@ proc ::quickaudine::confToWidget { } {
    variable widget
    global conf
 
+   set widget(quickaudine,delayshutter) $conf(quickaudine,delayshutter)
+   set widget(quickaudine,canspeed)     $conf(quickaudine,canspeed)
 }
 
 #------------------------------------------------------------
@@ -110,20 +112,43 @@ proc ::quickaudine::fillConfigPage { frm } {
 
    #--- j'afffiche la liste des link
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickaudine,available)
-      listbox $frm.available.list
+      listbox $frm.available.list -height 4
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickaudine,refresh)" -command { ::quickaudine::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
-   pack $frm.available -side top -fill both -expand true
+   pack $frm.available -side top -fill both
 
-   frame $frm.statusMessage -borderwidth 0 -relief ridge
+   #--- label et entry pour le delai avant la lecture du CCD
+   frame $frm.delayshutter -borderwidth 0 -relief raised
+      label $frm.delayshutter.lab1 -text "$caption(quickaudine,delayshutter)"
+      pack $frm.delayshutter.lab1 -in $frm.delayshutter -anchor center -side left -padx 10 -pady 10
+      entry $frm.delayshutter.entry -width 5 -textvariable ::quickaudine::widget(quickaudine,delayshutter) -justify center
+      pack $frm.delayshutter.entry -in $frm.delayshutter -anchor center -side left -pady 10
+      label $frm.delayshutter.lab2 -text "$caption(quickaudine,unite)"
+      pack $frm.delayshutter.lab2 -in $frm.delayshutter -anchor center -side left -padx 2 -pady 10
+   pack $frm.delayshutter -side top -fill x
+
+   #--- label et scale pour la vitesse de lecture de chaque pixel
+   frame $frm.speed -borderwidth 0 -relief raised
+      label $frm.speed.lab3 -text "$caption(quickaudine,lecture_pixel)"
+      pack $frm.speed.lab3 -in $frm.speed -anchor center -side left -padx 10 -pady 2
+      scale $frm.speed.lecture_pixel_variant -from "1.0" -to "15.0" -length 300 \
+         -orient horizontal -showvalue true -tickinterval 1 -resolution 1 \
+         -borderwidth 2 -relief groove -variable ::quickaudine::widget(quickaudine,canspeed) -width 10
+      pack $frm.speed.lecture_pixel_variant -in $frm.speed -anchor center -side left -pady 0
+      label $frm.speed.lab4 -text "$caption(quickaudine,micro_sec)"
+      pack $frm.speed.lab4 -in $frm.speed -anchor center -side left -padx 2 -pady 2
+   pack $frm.speed -side top -fill x
+
+   #--- j'affiche l'eventuel message d'erreur
+   frame $frm.statusMessage -borderwidth 2 -relief ridge
       label $frm.statusMessage.statusMessage_lab -text "$caption(quickaudine,error)"
       pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 5
       Label $frm.statusMessage.status -textvariable ::quickaudine::private(statusMessage) -width 60 -height 4 \
          -wraplength 400 -justify left
       pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
-   pack $frm.statusMessage -side top -fill x
+   pack $frm.statusMessage -side top -fill both
 
    #--- je mets a jour la liste
    refreshAvailableList
@@ -249,6 +274,9 @@ proc ::quickaudine::initPlugin { } {
 proc ::quickaudine::initConf { } {
    global conf
 
+   if { ! [ info exists conf(quickaudine,delayshutter) ] } { set conf(quickaudine,delayshutter) "0" }
+   if { ! [ info exists conf(quickaudine,canspeed) ] }     { set conf(quickaudine,canspeed)     "2" }
+
    return
 }
 
@@ -339,5 +367,7 @@ proc ::quickaudine::widgetToConf { } {
    variable widget
    global conf
 
+   set conf(quickaudine,delayshutter) $widget(quickaudine,delayshutter)
+   set conf(quickaudine,canspeed)     $widget(quickaudine,canspeed)
 }
 
