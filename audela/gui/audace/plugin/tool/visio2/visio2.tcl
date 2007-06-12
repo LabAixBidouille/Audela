@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.23 2007-06-10 16:23:40 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.24 2007-06-12 19:23:02 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -1410,7 +1410,7 @@ proc ::visio2::localTable::toggleAnimation { visuNo } {
 # localTable::startAnimation
 #   Lance une animation (film ou GIF anime)
 #------------------------------------------------------------------------------
-proc ::visio2::localTable::startAnimation { visuNo} {
+proc ::visio2::localTable::startAnimation { visuNo } {
    variable private
 
    #--- je recupere le nom du fichier selectionne
@@ -1421,7 +1421,7 @@ proc ::visio2::localTable::startAnimation { visuNo} {
    if { "$private($visuNo,previousType)" == "$private(fileImage)" } {
       ::Image::startGifAnimation image[visu$visuNo image] $::confVisu::private($visuNo,zoom) $filename
    } elseif { "$private($visuNo,previousType)" == "$private(fileMovie)" } {
-      ::Movie::start
+      ::Movie::start $visuNo
    }
    set private($visuNo,animation) 1
    update
@@ -1437,7 +1437,7 @@ proc ::visio2::localTable::stopAnimation { visuNo } {
    if { "$private($visuNo,previousType)" == "$private(fileImage)" } {
       ::Image::stopGifAnimation
    } elseif { "$private($visuNo,previousType)" == "$private(fileMovie)" } {
-      ::Movie::stop
+      ::Movie::stop $visuNo
    }
    set private($visuNo,animation) 0
    update
