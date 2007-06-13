@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.24 2007-06-12 19:23:02 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.25 2007-06-13 17:33:30 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -172,7 +172,6 @@ proc ::visio2::startTool { visuNo } {
 proc ::visio2::stopTool { visuNo } {
    variable private
    global conf
-   global audace
 
    #--- j'arrete le diaporama
    set ::visio2::localTable::private($visuNo,slideShowState) "0"
@@ -180,7 +179,7 @@ proc ::visio2::stopTool { visuNo } {
    #--- j'arrete l'animation
    ::visio2::localTable::stopAnimation $visuNo
    #--- je supprime le canvas des films
-   ::Movie::close $audace(hCanvas)
+   ::Movie::close $visuNo
    #--- je copie la largeur des colonnes dans conf()
    ::visio2::localTable::saveColumnWidth $visuNo
    #--- je ferme la connexion ftp
@@ -195,10 +194,9 @@ proc ::visio2::stopTool { visuNo } {
 #------------------------------------------------------------------------------
 proc ::visio2::configure { visuNo } {
    variable private
-   global audace
 
    #--- j'affiche la fenetre de configuration
-   ::confGenerique::run $visuNo "$audace(base).confvisio2" "::visio2::config"
+   ::confGenerique::run $visuNo "$private($visuNo,This).confvisio2" "::visio2::config"
 
    #--- je refraichis les tables pour prendre en compte la nouvelle config
    localTable::refresh $visuNo
@@ -481,7 +479,8 @@ proc ::visio2::showColumn { visuNo tbl columnIndex } {
    $tbl configure -width $width
 
    #--- je fais pareil pour la table ftpTable si elle est affichee
-   if { [info exists ::visio2::ftpTable::private($visuNo,tbl)] } {
+   if { [info exists ::visio2::ftpTable::private($visuNo,tbl)]
+       && [winfo exists ::visio2::ftpTable::private($visuNo,tbl)] } {
       if { "$::visio2::ftpTable::private($visuNo,tbl)" != "" } {
          set tbl $::visio2::ftpTable::private($visuNo,tbl)
          if { $show == 1 } {
@@ -531,7 +530,6 @@ proc ::visio2::cmdFtpConnection { visuNo } {
 #   affiche l'outil visio2
 #------------------------------------------------------------------------------
 proc ::visio2::createPanel { visuNo } {
-   global audace
    global caption
    global conf
    variable private
@@ -942,7 +940,7 @@ proc ::visio2::localTable::getDirectory { visuNo } {
 }
 
 #------------------------------------------------------------------------------
-# localTable::fillTable  .audace.visio2.locallist.tbl
+# localTable::fillTable
 #   affiche les fichiers et sous repertoires dans la table
 #   et affiche le nom du repertoire courant dans le titre de la fenetre principale
 #------------------------------------------------------------------------------
@@ -1145,7 +1143,6 @@ proc ::visio2::localTable::selectAll { $visuNo } {
 proc ::visio2::localTable::renameFile { visuNo } {
    variable private
    global caption
-   global audace
 
    #--- j'arrete le diaporama
    set private($visuNo,slideShowState) "0"
@@ -1153,7 +1150,7 @@ proc ::visio2::localTable::renameFile { visuNo } {
    #--- j'arrete l'animation
    stopAnimation $visuNo
    #--- je ferme le film
-   ::Movie::close $audace(hCanvas)
+   ::Movie::close $visuNo
 
    set tbl $private($visuNo,tbl)
    set selection [$tbl curselection]
@@ -1259,7 +1256,6 @@ proc ::visio2::localTable::renameFile { visuNo } {
 proc ::visio2::localTable::deleteFile { visuNo } {
    variable private
    global caption
-   global audace
 
    #--- j'arrete le diaporama
    set private($visuNo,slideShowState) "0"
@@ -1267,7 +1263,7 @@ proc ::visio2::localTable::deleteFile { visuNo } {
    #--- j'arrete l'animation
    stopAnimation $visuNo
    #--- je ferme le film
-   ::Movie::close $audace(hCanvas)
+   ::Movie::close $visuNo
 
    set tbl $private($visuNo,tbl)
    set selection [$tbl curselection]
@@ -1310,7 +1306,7 @@ proc ::visio2::localTable::deleteFile { visuNo } {
          if { $choice == 0 || $choice == 1} {
             #--- je ferme le fichier
             if { "$type" == "$private(fileMovie)" } {
-               ::Movie::close $audace(hCanvas)
+               ::Movie::close $visuNo
             }
             #--- je supprime le fichier
             file delete "$filename"
@@ -1340,7 +1336,7 @@ proc ::visio2::localTable::toggleFullScreen { visuNo } {
 
    if { $::confVisu::private($visuNo,fullscreen) == "1" } {
       #--- je ferme les films
-      ::Movie::close [::confVisu::getCanvas $visuNo]
+      ::Movie::close $visuNo
 
       #--- je recupere la selection courante
       set tbl $private($visuNo,tbl)
