@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.70 2007-05-26 23:07:28 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.71 2007-06-13 21:43:29 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -22,7 +22,6 @@ source aud_menu_6.tcl
 source aud_menu_7.tcl
 source aud_menu_8.tcl
 source aud_proc.tcl
-source audnet.tcl
 source console.tcl
 source confgene.tcl
 source surchaud.tcl
