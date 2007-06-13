@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.13 2007-05-18 16:28:51 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.14 2007-06-13 21:44:28 robertdelmas Exp $
 #
 
 #============================================================
@@ -54,7 +54,10 @@ namespace eval ::rmctrl {
    #    initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { tkbase } {
+      global audace
 
+      #--- Chargement des fonctions de communication par reseau
+      uplevel #0 "source \"[ file join $audace(rep_gui) audace audnet.tcl ]\""
    }
 
    #------------------------------------------------------------
