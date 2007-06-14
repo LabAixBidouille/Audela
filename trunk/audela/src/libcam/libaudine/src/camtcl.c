@@ -1303,10 +1303,10 @@ void AudineScanTransfer(ClientData clientData)
    }
    
    
-   
-   //sprintf(s, "buf%d bitpix ushort", cam->bufno);
-   //Tcl_Eval(interp, s);
-   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) pp);
+   // si cam->mirrorv vaut 0 , j'enregistre l'image tel quelle
+   // si cam->mirrorv vaut 1 , je redresse l'image  en inversant l'axe X
+   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d -reverse_x %d", 
+      cam->bufno, naxis1, naxis2, (int) pp, cam->mirrorv );
    Tcl_Eval(interp, s);
    
    free(pp);
