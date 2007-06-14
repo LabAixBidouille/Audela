@@ -1,9 +1,9 @@
 #
 # Fichier : scan.tcl
 # Description : Outil pour l'acquisition en mode drift scan
-# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele, Audinet et EthernAude)
+# Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.29 2007-06-02 00:18:15 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.30 2007-06-14 20:18:15 robertdelmas Exp $
 #
 
 #============================================================
@@ -129,6 +129,8 @@ namespace eval ::dscan {
       set panneau(dscan,fichier_existe)  "$caption(scan,fichier_existe)"
 
       #--- Initialisation des variables
+      set panneau(dscan,listBinningX)    [ list "" ]
+      set panneau(dscan,listBinningY)    [ list "" ]
       set panneau(dscan,nom_image)       ""
       set panneau(dscan,extension_image) "$conf(extension,defaut)"
       set panneau(dscan,indexer)         "0"
@@ -155,7 +157,6 @@ namespace eval ::dscan {
       if { ! [ info exists parametres(dscan,col2) ] }     { set parametres(dscan,col2)     "768" }
       if { ! [ info exists parametres(dscan,lig1) ] }     { set parametres(dscan,lig1)     "1500" }
       if { ! [ info exists parametres(dscan,dimpix) ] }   { set parametres(dscan,dimpix)   "9.0" }
-      if { ! [ info exists parametres(dscan,binning) ] }  { set parametres(dscan,binning)  "2x2" }
       if { ! [ info exists parametres(dscan,binningX) ] } { set parametres(dscan,binningX) "2" }
       if { ! [ info exists parametres(dscan,binningY) ] } { set parametres(dscan,binningY) "2" }
       if { ! [ info exists parametres(dscan,foc) ] }      { set parametres(dscan,foc)      ".85" }
@@ -175,7 +176,6 @@ namespace eval ::dscan {
       set parametres(dscan,col2)     $panneau(dscan,col2)
       set parametres(dscan,lig1)     $panneau(dscan,lig1)
       set parametres(dscan,dimpix)   $panneau(dscan,pix)
-      set parametres(dscan,binning)  $panneau(dscan,binning)
       set parametres(dscan,binningX) $panneau(dscan,binningX)
       set parametres(dscan,binningY) $panneau(dscan,binningY)
       set parametres(dscan,foc)      $panneau(dscan,foc)
@@ -227,63 +227,54 @@ namespace eval ::dscan {
          pack $This.fra4.obt.lab2 -side top -fill x -ipady 3
       }
 
-      #--- Mise a jour de la liste des binnings disponibles
-      $This.fra3.bin.but_bin.menu delete 0 20
-      set list_binning_scan [ ::confCam::getPluginProperty $camItem binningListScan ]
-      foreach valbin $list_binning_scan {
-         $This.fra3.bin.but_bin.menu add radiobutton -label "$valbin" \
-            -indicatoron "1" \
-            -value "$valbin" \
-            -variable panneau(dscan,binning) \
-            -command "::dscan::cmdCalcul"
+      #--- Mise a jour du binning X en fonction de la liaison
+      set panneau(dscan,listBinningX) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningXListScan ]
+      if { $panneau(dscan,listBinningX) == "{}" } {
+         $This.fra3.bin.binX configure -height 1
+         $This.fra3.bin.binX configure -values "2"
+      } else {
+         $This.fra3.bin.binX configure -height [ llength $panneau(dscan,listBinningX) ]
+         $This.fra3.bin.binX configure -values $panneau(dscan,listBinningX)
+      }
+
+      #--- Mise a jour du binning Y en fonction de la liaison
+      set panneau(dscan,listBinningY) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningYListScan ]
+      if { $panneau(dscan,listBinningY) == "{}" } {
+         $This.fra3.bin.binY configure -height 1
+         $This.fra3.bin.binY configure -values "2"
+      } else {
+         set height [ llength $panneau(dscan,listBinningY) ]
+         if { $height > "16" } {
+            set height "16"
+         }
+         $This.fra3.bin.binY configure -height $height
+         $This.fra3.bin.binY configure -values $panneau(dscan,listBinningY)
       }
 
       #--- Binnings associes aux liaisons
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
-            #--- Mise en forme de la frame
-            pack $This.fra3.lab1 -in $This.fra3 -anchor center -fill none
-            pack forget $This.fra3.bin
-            pack $This.fra3.binEthernAude -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
-            pack $This.fra3.fra2 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.fra3 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 1 -ipadx 13
-            pack $This.fra3.fra1 -in $This.fra3 -anchor center -fill none
-            #--- C'est bon, on ne fait rien pour le binning
-         }
-         audinet {
-            #--- Mise en forme de la frame
-            pack $This.fra3.lab1 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.bin -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
-            pack forget $This.fra3.binEthernAude
-            pack $This.fra3.fra2 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.fra3 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 1 -ipadx 13
-            pack $This.fra3.fra1 -in $This.fra3 -anchor center -fill none
-            #--- C'est bon, on ne fait rien pour le binning
+            #--- Adaptation des binnings extremes
+            if { $panneau(dscan,binningX) > "2" } {
+               set panneau(dscan,binningX) "2"
+            }
+            #--- Etat des boutons
+            $This.fra3.but1 configure -state normal
+            $This.fra3.fra3.but2 configure -state normal
          }
          parallelport {
-            #--- Mise en forme de la frame
-            pack $This.fra3.lab1 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.bin -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
-            pack forget $This.fra3.binEthernAude
-            pack $This.fra3.fra2 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.fra3 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 1 -ipadx 13
-            pack $This.fra3.fra1 -in $This.fra3 -anchor center -fill none
-            #--- C'est bon, on ne fait rien pour le binning
+            #--- Adaptation des binnings extremes
+            if { $panneau(dscan,binningY) > "16" } {
+               set panneau(dscan,binningY) "2"
+            }
+            #--- Etat des boutons
+            $This.fra3.but1 configure -state normal
+            $This.fra3.fra3.but2 configure -state normal
          }
          default {
-            #--- Mise en forme de la frame
-            pack $This.fra3.lab1 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.bin -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
-            pack forget $This.fra3.binEthernAude
-            pack $This.fra3.fra2 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.fra3 -in $This.fra3 -anchor center -fill none
-            pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 1 -ipadx 13
-            pack $This.fra3.fra1 -in $This.fra3 -anchor center -fill none
-            #--- Initialisation du binning
-            set panneau(dscan,binning) "1x1"
+            #--- Etat des boutons
+            $This.fra3.but1 configure -state disabled
+            $This.fra3.fra3.but2 configure -state disabled
          }
       }
    }
@@ -317,7 +308,6 @@ namespace eval ::dscan {
       set panneau(dscan,col2)     "$parametres(dscan,col2)"
       set panneau(dscan,lig1)     "$parametres(dscan,lig1)"
       set panneau(dscan,pix)      "$parametres(dscan,dimpix)"
-      set panneau(dscan,binning)  "$parametres(dscan,binning)"
       set panneau(dscan,binningX) "$parametres(dscan,binningX)"
       set panneau(dscan,binningY) "$parametres(dscan,binningY)"
       set panneau(dscan,foc)      "$parametres(dscan,foc)"
@@ -406,17 +396,18 @@ namespace eval ::dscan {
             update
 
             #--- Definition du binning
-            set bin 4
             switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                ethernaude {
                   set bin  "$panneau(dscan,binningX)"
                   set binY "$panneau(dscan,binningY)"
                }
+               parallelport {
+                  set bin  "$panneau(dscan,binningX)"
+                  set binY "$panneau(dscan,binningY)"
+               }
                default {
-                  if { $panneau(dscan,binning) == "4x4" } { set bin 4 }
-                  if { $panneau(dscan,binning) == "2x2" } { set bin 2 }
-                  if { $panneau(dscan,binning) == "1x1" } { set bin 1 }
-                  set binY "$bin"
+                  set bin  "1"
+                  set binY "1"
                }
             }
 
@@ -496,7 +487,7 @@ namespace eval ::dscan {
       if { $f == "0" } {
          cam$audace(camNo) scan $w $h $bin $dt -biny $binY
       } else {
-         cam$audace(camNo) scan $w $h $bin $dt -firstpix $f -biny $binY
+         cam$audace(camNo) scan $w $h $bin $dt -biny $binY -firstpix $f
       }
 
       #--- Alarme sonore de fin de pose
@@ -571,11 +562,13 @@ namespace eval ::dscan {
             set bin  "$panneau(dscan,binningX)"
             set binY "$panneau(dscan,binningY)"
          }
+         parallelport {
+            set bin  "$panneau(dscan,binningX)"
+            set binY "$panneau(dscan,binningY)"
+         }
          default {
-            if { $panneau(dscan,binning) == "4x4" } { set bin 4 }
-            if { $panneau(dscan,binning) == "2x2" } { set bin 2 }
-            if { $panneau(dscan,binning) == "1x1" } { set bin 1 }
-            set binY "$bin"
+            set bin  "1"
+            set binY "1"
          }
       }
       set panneau(dscan,interlig1) [ expr $binY*86164*2*atan($panneau(dscan,pix)/2./($panneau(dscan,foc)*1e6))/360.*180/3.1415926*1000./cos( [ mc_angle2rad $panneau(dscan,dec) ] ) ]
@@ -854,71 +847,46 @@ proc dscanBuildIF { This } {
          label $This.fra3.lab1 -text $panneau(dscan,interlig) -relief flat
          pack $This.fra3.lab1 -in $This.fra3 -anchor center -fill none
 
-         #--- Frame pour binning (sauf EthernAude)
+         #--- Frame pour binning (seulement port parallele et EthernAude)
          frame $This.fra3.bin -borderwidth 0 -relief groove
 
-            #--- Menu pour binning
-            menubutton $This.fra3.bin.but_bin -text $panneau(dscan,bin) -menu $This.fra3.bin.but_bin.menu -relief raised
-            pack $This.fra3.bin.but_bin -in $This.fra3.bin -side left -fill none
-            set m [ menu $This.fra3.bin.but_bin.menu -tearoff 0 ]
-            foreach valbin [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningListScan ] {
-               $m add radiobutton -label "$valbin" \
-                  -indicatoron "1" \
-                  -value "$valbin" \
-                  -variable panneau(dscan,binning) \
-                  -command "::dscan::cmdCalcul"
-            }
-
-            #--- Entry pour binning
-            entry $This.fra3.bin.lab_bin -width 2 -font {arial 10 bold} -relief groove \
-              -textvariable panneau(dscan,binning) -justify center -state disabled
-            pack $This.fra3.bin.lab_bin -in $This.fra3.bin -side left -fill both -expand true
-
-         pack $This.fra3.bin -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
-
-         #--- Frame pour binning (seulement EthernAude)
-         frame $This.fra3.binEthernAude -borderwidth 0 -relief groove
-
-            #--- Label pour binning
-            label $This.fra3.binEthernAude.lab1 -text $panneau(dscan,bin) -relief flat
-            pack $This.fra3.binEthernAude.lab1 -in $This.fra3.binEthernAude -side left -fill none
+            #--- Label pour binning X
+            label $This.fra3.bin.lab1 -text $panneau(dscan,bin) -relief flat
+            pack $This.fra3.bin.lab1 -in $This.fra3.bin -side left -fill none
 
             #--- Combobox pour binning X
-            set listComboboxX [ list 1 2 ]
-            ComboBox $This.fra3.binEthernAude.binX \
-               -width 2        \
+            ComboBox $This.fra3.bin.binX \
+               -width 3        \
                -font $audace(font,arial_8_b) \
                -justify center \
-               -height [ llength $listComboboxX ] \
+               -height [ llength $panneau(dscan,listBinningX) ] \
                -relief sunken  \
                -borderwidth 1  \
                -editable 0     \
                -textvariable panneau(dscan,binningX) \
-               -values $listComboboxX \
+               -values $panneau(dscan,listBinningX) \
                -modifycmd "::dscan::cmdCalcul"
-            pack $This.fra3.binEthernAude.binX -in $This.fra3.binEthernAude -side left -fill none
+            pack $This.fra3.bin.binX -in $This.fra3.bin -side left -fill none
 
-            #--- Label pour X
-            label $This.fra3.binEthernAude.lab2 -text "x" -relief flat -font $audace(font,arial_8_b)
-            pack $This.fra3.binEthernAude.lab2 -in $This.fra3.binEthernAude -side left -fill none
+            #--- Label pour binning Y
+            label $This.fra3.bin.lab2 -text "x" -relief flat -font $audace(font,arial_8_b)
+            pack $This.fra3.bin.lab2 -in $This.fra3.bin -side left -fill none
 
             #--- Combobox pour binning Y
-            set listComboboxY [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 \
-               31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 ]
-            ComboBox $This.fra3.binEthernAude.binY \
+            ComboBox $This.fra3.bin.binY \
                -width 3        \
                -font $audace(font,arial_8_b) \
                -justify center \
-               -height 20      \
+               -height [ llength $panneau(dscan,listBinningY) ] \
                -relief sunken  \
                -borderwidth 1  \
                -editable 0     \
                -textvariable panneau(dscan,binningY) \
-               -values $listComboboxY \
+               -values $panneau(dscan,listBinningY) \
                -modifycmd "::dscan::cmdCalcul"
-            pack $This.fra3.binEthernAude.binY -in $This.fra3.binEthernAude -side left -fill none
+            pack $This.fra3.bin.binY -in $This.fra3.bin -side left -fill none
 
-         pack $This.fra3.binEthernAude -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
+         pack $This.fra3.bin -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
 
          #--- Frame des entry & labels de la focale
          frame $This.fra3.fra2 -borderwidth 1 -relief flat
