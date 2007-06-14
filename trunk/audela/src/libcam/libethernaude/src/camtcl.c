@@ -541,7 +541,11 @@ void EthernaudeScanTransfer(ClientData clientData)
    while (--nbpix >= 0) {
       pp[nbpix] = (float)(TheScanStruct->pix[nbpix] / 256 + (TheScanStruct->pix[nbpix] % 256) * 256);
    }
-   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d", cam->bufno, naxis1, naxis2, (int) pp);
+
+   // si cam->mirrorv vaut 0 , je redresse l'image  en inversant l'axe X
+   // si cam->mirrorv vaut 1 , je laisse l'image inversee
+   sprintf(s, "buf%d setpixels CLASS_GRAY %d %d FORMAT_FLOAT COMPRESS_NONE %d -reverse_x %d", 
+      cam->bufno, naxis1, naxis2, (int) pp, (cam->mirrorv == 0) );
    Tcl_Eval(interp, s);
    free(pp);
 
