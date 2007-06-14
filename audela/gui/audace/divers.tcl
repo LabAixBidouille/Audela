@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.8 2007-03-30 19:59:34 robertdelmas Exp $
+# Mise a jour $Id: divers.tcl,v 1.9 2007-06-14 21:21:21 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.
@@ -263,6 +263,7 @@ proc sauve {args} {
           # 1er cas : on veut sauvegarder sur un numéro de plan couleur
           # supérieur à tous ceux existants : pas de problèmes.
           set dern_num_buf [buf::create]
+          buf$dern_num_buf extension $conf(extension,defaut)
           if [catch {charge $nom_complet -buf $dern_num_buf -polyNo $polyNo}] {
             buf::delete $dern_num_buf
             set result [buf$buf save "$nom_complet;$polyNo"]
@@ -280,6 +281,7 @@ proc sauve {args} {
             set no_plan 1
             while {$continuer==1} {
               set dern_num_buf [buf::create]
+              buf$dern_num_buf extension $conf(extension,defaut)
               if [catch {charge $nom_complet -buf $dern_num_buf -polyNo $no_plan}] {
                 set continuer 0
                 buf::delete $dern_num_buf
@@ -392,6 +394,7 @@ proc sauve_jpeg {args} {
 
           # Création du buffer temporaire
           set num_buf_tmp [buf::create]
+          buf$num_buf_tmp extension $conf(extension,defaut)
           buf$audace(bufNo) copyto $num_buf_tmp
 
           bm_hard2visu $num_buf_tmp [lindex [visu$audace(visuNo) cut] 0] [lindex [visu$audace(visuNo) cut] 1] ${palette_R}
@@ -420,6 +423,7 @@ proc sauve_jpeg {args} {
 
           # Création du buffer temporaire
           set num_buf_tmp [buf::create]
+          buf$num_buf_tmp extension $conf(extension,defaut)
 
           # Création d'un répertoire temporaire
           set rep_tmp [cree_sousrep -nom_base "tmp_sauve_jpeg"]
@@ -562,6 +566,7 @@ proc normalise {args} {
     # Procédure principale
     # Création d'un tampon image temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
     # On charge l'image auxiliaire pour déterminer la moyenne de son fond de ciel
     charge $fichier_aux -buf $num_buf_tmp -rep "$rep" -ext $ext -polyNo $aux_polyNo
     set moy [lindex [buf$num_buf_tmp stat] 6]
@@ -1194,6 +1199,7 @@ proc serie_charge {args} {
     set index_buffers ""
     foreach index $index_serie {
       set num_buf [buf::create]
+      buf$num_buf extension $conf(extension,defaut)
       lappend index_buffers $num_buf
       charge [file join "$rep" $nom_generique$index$ext] -buf $num_buf
       }
@@ -1279,6 +1285,7 @@ proc serie_fenetre {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     # Fenêtrage des fichiers
     foreach index $liste_index {
@@ -1447,6 +1454,7 @@ proc serie_rot {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     # Rotation des fichiers
     foreach index $liste_index {
@@ -1539,6 +1547,7 @@ proc serie_trans {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     # Rotation des fichiers
     foreach index $liste_index {
@@ -1789,6 +1798,7 @@ proc serie_sauvejpeg {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     # Sauvegarde des fichiers
     foreach index $liste_index {
@@ -2026,6 +2036,7 @@ proc serie_soustrait {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     # Soustraction
     foreach index $liste_index {
@@ -2141,6 +2152,7 @@ proc serie_normalise {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     # Soustraction
     foreach index $liste_index {
@@ -2244,6 +2256,7 @@ proc normalise_gain {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     # On enregistre le niveau de fond de ciel de la première image
     set premier_index [lindex $liste_index 0]
@@ -2369,6 +2382,7 @@ proc aligne {args} {
 
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
 
     if {[numerotation_usuelle $in_serie -rep "$in_rep" -ext $in_ext] == "1"} {
       # Registration

@@ -2,7 +2,7 @@
 # Fichier : compute_stellaire.tcl
 # Description : Fonction de prétraitement automatique
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: compute_stellaire.tcl,v 1.5 2007-02-10 18:07:33 robertdelmas Exp $
+# Mise a jour $Id: compute_stellaire.tcl,v 1.6 2007-06-14 21:20:59 robertdelmas Exp $
 #
 
 # Documentation : Voir le fichier compute_stellaire.htm dans le dossier doc_html
@@ -170,6 +170,7 @@ proc compute_stellaire {args} {
 
         # Création du buffer temporaire
         set num_buf_tmp [buf::create]
+        buf$num_buf_tmp extension $conf(extension,defaut)
 
         if {$noirs!="pas_de_noirs"} {
             # Création de l'image de noir (par médiane) dans le buffer temporaire

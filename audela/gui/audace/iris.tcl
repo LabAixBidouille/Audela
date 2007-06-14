@@ -2,7 +2,7 @@
 # Fichier : iris.tcl
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: iris.tcl,v 1.6 2007-04-07 21:16:48 robertdelmas Exp $
+# Mise a jour $Id: iris.tcl,v 1.7 2007-06-14 21:21:38 robertdelmas Exp $
 #
 
 #
@@ -149,6 +149,7 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
    iris "load" "tmp_maitre2_1"
    #--- NB : On ajuste les seuils pour bien la voir
    set num_buf_tmp [buf::create]
+   buf$num_buf_tmp extension $conf(extension,defaut)
    buf$num_buf_tmp load [file join $audace(rep_images) tmp_maitre2_1$conf(extension,defaut)]
    set stats [buf$num_buf_tmp stat]
    buf::delete $num_buf_tmp

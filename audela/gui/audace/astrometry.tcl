@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.16 2007-05-19 20:18:39 michelpujol Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.17 2007-06-14 21:20:39 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -795,9 +795,10 @@ namespace eval ::astrometry {
 
    proc calibrate_from_file { fullfilename } {
       variable astrom
-      global audace
+      global audace conf
 
       set k [::buf::create]
+      buf$k extension $conf(extension,defaut)
       buf$k load $fullfilename
       foreach kwd $astrom(kwds) {
          set d [buf$k getkwd $kwd]
