@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.34 2007-06-06 17:18:34 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.35 2007-06-14 21:24:11 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -867,7 +867,7 @@ namespace eval ::pretraitement {
                   #---
                   for { set index "$first" } { $index <= $end } { incr index } {
                      set buf_clip($index) [ ::buf::create ]
-                     buf$buf_clip extension $conf(extension,defaut)
+                     buf$buf_clip($index) extension $conf(extension,defaut)
                      buf$buf_clip($index) load [ file join $audace(rep_images) $in$index ]
                      if { $pretraitement(clipWindow_mini) != "" } {
                         buf$buf_clip($index) clipmin $pretraitement(clipWindow_mini)
