@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.16 2007-05-16 18:13:04 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.17 2007-06-14 21:22:41 robertdelmas Exp $
 #
 
 global audace
@@ -50,6 +50,7 @@ global rep
 global snvisu
 global snconfvisu
 global color
+global conf
 global audace
 
 #--- Load the captions
@@ -536,9 +537,13 @@ bind $zone(image2) <ButtonPress-1> {
 
 #--- Declare a new buffer in memory to place images
 set num(buffer1) [buf::create]
+buf$num(buffer1) extension $conf(extension,defaut)
 set num(buffer2) [buf::create]
+buf$num(buffer2) extension $conf(extension,defaut)
 set num(buffer1b) [buf::create]
+buf$num(buffer1b) extension $conf(extension,defaut)
 set num(buffer2b) [buf::create]
+buf$num(buffer2b) extension $conf(extension,defaut)
 if {[info exists audace]==1} {
    buf$num(buffer2) compress [buf$audace(bufNo) compress]
 }
@@ -1580,7 +1585,7 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
    #--- Sauve les deux buffers en Jpeg
    global rep
    global num
-   global audace
+   global audace conf
 
    set filename [lindex $rep(x1) $rep(xx1)]
    set shortname [file rootname [file tail $filename]]
@@ -1652,6 +1657,7 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
       #ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
 
       set num(bufDSS) [buf::create]
+      buf$num(bufDSS) extension $conf(extension,defaut)
       visu::create $num(bufDSS) 300
       #if {[info exists audace]==1} {
          #buf$num(bufDSS) compress [buf$num(bufDSS)) compress]

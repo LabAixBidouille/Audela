@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.9 2007-05-17 15:20:22 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.10 2007-06-14 21:22:00 robertdelmas Exp $
 #
 
 #============================================================
@@ -1517,9 +1517,11 @@ namespace eval ::MethKing {
 #--- Fin modif Robert
             # Création des buffers nécessaires aux acquisitions et visualisations
             set numero_buffer_1 [::buf::create]
+            buf$numero_buffer_1 extension $conf(extension,defaut)
             buf$numero_buffer_1 clear
             set numero_visu_1 [::visu::create $numero_buffer_1 $numero_buffer_1]
             set numero_buffer_2 [::buf::create]
+            buf$numero_buffer_2 extension $conf(extension,defaut)
             buf$numero_buffer_2 clear
             set numero_visu_2 [::visu::create $numero_buffer_2 $numero_buffer_2]
 

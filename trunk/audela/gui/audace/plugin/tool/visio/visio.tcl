@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.9 2007-04-14 08:36:06 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.10 2007-06-14 21:23:00 robertdelmas Exp $
 #
 
 # ========================================================
@@ -610,6 +610,7 @@ namespace eval ::visio {
       visio::clear_disket
       #--- Creation du buffer temporaire
       set num_buf_tmp [buf::create]
+      buf$num_buf_tmp extension $conf(extension,defaut)
       set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
       #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
       if [catch [set index_serie [lsort -ascii $index_serie]]] {}
@@ -676,6 +677,7 @@ namespace eval ::visio {
          ::visio::clear_disket
          #--- Creation du buffer temporaire
          set num_buf_tmp [buf::create]
+         buf$num_buf_tmp extension $conf(extension,defaut)
          set rep_courant_nogz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut)]]]
          set rep_courant_gz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut).gz]]]
          set rep_courant [lsort -increasing [concat $rep_courant_nogz $rep_courant_gz]]
@@ -722,6 +724,7 @@ namespace eval ::visio {
       set i [expr [string length $panneau(visio,lecteur_amovible)]+1]
       #--- Creation du buffer temporaire
       set num_buf_tmp [buf::create]
+      buf$num_buf_tmp extension $conf(extension,defaut)
       foreach fichier $panier {
          buf$num_buf_tmp load $fichier
          set fichier [file tail $fichier]

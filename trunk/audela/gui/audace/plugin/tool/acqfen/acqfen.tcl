@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.10 2007-06-02 00:15:04 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.11 2007-06-14 21:20:22 robertdelmas Exp $
 #
 
 # =========================================================
@@ -471,7 +471,7 @@ namespace eval ::acqfen {
    #--- Procedures d'acquisitions fenetrees
    proc GoStop { } {
       variable This
-      global audace caption panneau
+      global audace caption conf panneau
 
       if { [::cam::list] != "" } {
          #--- Enregistrement de l'extension des fichiers
@@ -709,6 +709,7 @@ namespace eval ::acqfen {
                         audace::autovisu $audace(visuNo)
                         #--- Sauvegarde temporaire de l'image
                         set buftmp [buf::create]
+                        buf$buftmp extension $conf(extension,defaut)
                         buf$audace(bufNo) copyto $buftmp
                         lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                         incr panneau(acqfen,index)
@@ -754,6 +755,7 @@ namespace eval ::acqfen {
                         }
                         #--- Sauvegarde temporaire de l'image
                         set buftmp [buf::create]
+                        buf$buftmp extension $conf(extension,defaut)
                         buf$audace(bufNo) copyto $buftmp
                         lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                         incr panneau(acqfen,index)
@@ -791,6 +793,7 @@ namespace eval ::acqfen {
                         acqfen::acq_acqfen
                         #--- Sauvegarde temporaire de l'image
                         set buftmp [buf::create]
+                        buf$buftmp extension $conf(extension,defaut)
                         buf$audace(bufNo) copyto $buftmp
                         lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
                         incr panneau(acqfen,index)
@@ -1014,6 +1017,7 @@ namespace eval ::acqfen {
                         #--- Si demande, sauvegarde temporaire de l'image
                         if {$panneau(acqfen,enregistrer)==1} {
                            set buftmp [buf::create]
+                           buf$buftmp extension $conf(extension,defaut)
                            buf$audace(bufNo) copyto $buftmp
                            lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
                            incr panneau(acqfen,index)
@@ -1057,6 +1061,7 @@ namespace eval ::acqfen {
                         #--- Si demande, sauvegarde temporaire de l'image
                         if {$panneau(acqfen,enregistrer)==1} {
                            set buftmp [buf::create]
+                           buf$buftmp extension $conf(extension,defaut)
                            buf$audace(bufNo) copyto $buftmp
                            lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
                            incr panneau(acqfen,index)
@@ -1092,6 +1097,7 @@ namespace eval ::acqfen {
                         #--- Si demande, sauvegarde temporaire de l'image
                         if {$panneau(acqfen,enregistrer)==1} {
                            set buftmp [buf::create]
+                           buf$buftmp extension $conf(extension,defaut)
                            buf$audace(bufNo) copyto $buftmp
                            lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
                            incr panneau(acqfen,index)

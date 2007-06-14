@@ -2,7 +2,7 @@
 # Fichier : poly.tcl
 # Description : Ce script regroupe des fonctions pour gérer des images FITS polychromes
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: poly.tcl,v 1.4 2007-01-20 10:45:16 robertdelmas Exp $
+# Mise a jour $Id: poly.tcl,v 1.5 2007-06-14 21:22:19 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier poly.htm dans le dossier doc_html.
@@ -17,7 +17,7 @@ proc seriesApoly {args} {
 
     # Configuration des paramètres obligatoires
     set liste_series [lindex $args 0]
-    set nom_poly [lindex $args 1]    
+    set nom_poly [lindex $args 1]
 
     # Configuration des options
     set options [lrange $args 2 [expr [llength $args]-1]]
@@ -53,11 +53,12 @@ proc seriesApoly {args} {
       set ext $conf(extension,defaut).gz
       }
 
-    # Procédure principale  
+    # Procédure principale
     if {[compare_index_series $liste_series -rep $in_rep]==1} {
 
       # Création du buffer temporaire
       set num_buf_tmp [buf::create]
+      buf$num_buf_tmp extension $conf(extension,defaut)
       set index_serie_max [llength $liste_series]
       foreach index [liste_index [lindex $liste_series 0] -rep $in_rep -ext $ext] {
         for {set k 1} {$k<$index_serie_max} {incr k} {
@@ -133,6 +134,7 @@ proc polyAserie {args} {
 
       # Création du buffer temporaire
       set num_buf_tmp [buf::create]
+      buf$num_buf_tmp extension $conf(extension,defaut)
       foreach index [liste_index $nom_poly -rep $in_rep -ext $ext] {
         buf$num_buf_tmp load [file join $in_rep "$nom_poly$index$ext;$plan_couleur"]
         sauve $ex$index -polyNo $ex_polyNo -buf $num_buf_tmp -rep $ex_rep -ext $ext
@@ -207,7 +209,7 @@ proc polyAseries {args} {
   }
 
 
-proc poly_nbcouleurs {args} { 
+proc poly_nbcouleurs {args} {
 #--- Debut Modif Robert
   global audace caption conf
 #--- Fin Modif Robert
@@ -240,7 +242,7 @@ proc poly_nbcouleurs {args} {
     } else {
       set ext $conf(extension,defaut).gz
       }
-      
+
     # Procédure principale
     # On sélectionne le fichier que l'on va tester (le dernier de la série)
     set liste_index [liste_index $serie -rep $rep -ext $ext]
@@ -250,10 +252,11 @@ proc poly_nbcouleurs {args} {
     set continuer 1
     # Création du buffer temporaire
     set num_buf_tmp [buf::create]
+    buf$num_buf_tmp extension $conf(extension,defaut)
     # Tests
     while {$continuer==1} {
       if [catch {buf$num_buf_tmp load "$fichier;[expr $k+1]"}] {
-        set continuer 0 
+        set continuer 0
       } else {
         incr k
         }
@@ -261,7 +264,7 @@ proc poly_nbcouleurs {args} {
 
     # Suppression du buffer temporaire
     buf::delete $num_buf_tmp
- 
+
     return $k
   } else {
     error $caption(poly,syntax,poly_nbcouleurs)
@@ -548,8 +551,8 @@ proc poly_series_traligne {args} {
     copie $serie_ref $ex -in_rep $in_rep -ex_rep $ex_rep -ext $ext
     # Tout au plus on la renumérote.
     renumerote $ex -rep $ex_rep -ext $ext
- 
-    # On garde en mémoire le nom du dernier fichier de cette série, qui servira de 
+
+    # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
     # référence pour recaler la série suivante
     set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
     set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
@@ -563,7 +566,7 @@ proc poly_series_traligne {args} {
 
     foreach serie $series_amodif {
 
-      # On détermine le cadre de référence ;       
+      # On détermine le cadre de référence ;
       console::affiche_resultat "$caption(poly,series_trreg_cadre-ref) $serie\n"
       loadima $fichier_ref
 
@@ -574,7 +577,7 @@ proc poly_series_traligne {args} {
       pack .poly_series_traligne.lab -expand true
       button .poly_series_traligne.but -command {set script(poly_series_traligne,attente) 0} -text "ok"
       pack .poly_series_traligne.but -expand true
-    
+
       # On attend que l'utilisateur ait validé
       vwait script(poly_series_traligne,attente)
 
@@ -611,13 +614,13 @@ proc poly_series_traligne {args} {
       # Rotation
       console::affiche_resultat "$caption(poly,series_trreg_rot) $serie\n"
       poly_rot tmp_trans_$serie tmp_rot_$serie [lindex $modifs 2] [lindex $modifs 3] [lindex $modifs 4] -rep $rep_tmp -ext $ext
-      # Suppression de la série temporaire de translation (si on n'avait pas cette série temporaire, 
+      # Suppression de la série temporaire de translation (si on n'avait pas cette série temporaire,
       # l'auto-écrasement bugge)
       suppr_serie tmp_trans_$serie -rep $rep_tmp -ext $ext
       # On renomme vers la série de destination
       renomme tmp_rot_$serie $ex -in_rep $rep_tmp -ex_rep $ex_rep -ext $ext
 
-      # On garde en mémoire le nom du dernier fichier de cette série, qui servira de 
+      # On garde en mémoire le nom du dernier fichier de cette série, qui servira de
       # référence pour recaler la série suivante
       set liste_index_ref [lsort -integer [liste_index $ex -rep $ex_rep -ext $ext]]
       set index_ref [lindex $liste_index_ref [expr [llength $liste_index_ref]-1]]
