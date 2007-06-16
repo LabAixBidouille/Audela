@@ -1,6 +1,6 @@
 #
 # Fichier : coolpix.cap
-# Mise a jour $Id: coolpix.cap,v 1.3 2007-05-29 20:29:51 robertdelmas Exp $
+# Mise a jour $Id: coolpix.cap,v 1.4 2007-06-16 08:43:46 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -51,7 +51,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(coolpix,baud)                      "Velocidad del Puerto Serie (baudios)"
 
-   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+   set caption(coolpix,commentaire)               "Esta camara solo se puede usar con la herramienta Captura con CoolPix DSLR."
 
    set caption(coolpix,titre_site_web)            "Sitio Web de referencia:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
@@ -63,7 +63,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(coolpix,baud)                      "Seriell Port Geschwindigkeit (Bauds)"
 
-   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+   set caption(coolpix,commentaire)               "Diese Kamera soll nur mit diesem Gerät benutzt werden CoolPix Digital Kamera Belichtung."
 
    set caption(coolpix,titre_site_web)            "Referenz Webseite:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
@@ -75,7 +75,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(coolpix,baud)                      "Velocidade da Porta Série (bauds)"
 
-   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+   set caption(coolpix,commentaire)               "Esta câmara deve ser usada unicamente com a ferramenta Aquisição APN CoolPix."
 
    set caption(coolpix,titre_site_web)            "Site Web de referência:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
