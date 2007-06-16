@@ -2,21 +2,40 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.9 2007-06-10 15:02:11 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.10 2007-06-16 10:38:01 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
+   package provide th7852a 1.0
+
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] th7852a.cap ]
 }
 
 #
-# ::th7852a::init
+# ::th7852a::getPluginType
+#    Retourne le type de driver
+#
+proc ::th7852a::getPluginType { } {
+   return "camera"
+}
+
+#
+# ::th7852a::getPluginTitle
+#    Retourne le label du driver dans la langue de l'utilisateur
+#
+proc ::th7852a::getPluginTitle { } {
+   global caption
+
+   return "$caption(th7852a,camera)"
+}
+
+#
+# ::th7852a::initPlugin
 #    Initialise les variables conf(th7852a,...) et les captions
 #
-proc ::th7852a::init { } {
-   global audace conf
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) camera th7852a th7852a.cap ]
+proc ::th7852a::initPlugin { } {
+   global conf
 
    #--- Initialise la variable de la camera TH7852A
    if { ! [ info exists conf(th7852a,mirh) ] } { set conf(th7852a,mirh) "0" }

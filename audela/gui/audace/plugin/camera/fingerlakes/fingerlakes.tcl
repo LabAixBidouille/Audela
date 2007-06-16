@@ -2,21 +2,40 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.8 2007-06-10 15:01:24 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.9 2007-06-16 10:36:48 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
+   package provide fingerlakes 1.0
+
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] fingerlakes.cap ]
 }
 
 #
-# ::fingerlakes::init
+# ::fingerlakes::getPluginType
+#    Retourne le type de driver
+#
+proc ::fingerlakes::getPluginType { } {
+   return "camera"
+}
+
+#
+# ::fingerlakes::getPluginTitle
+#    Retourne le label du driver dans la langue de l'utilisateur
+#
+proc ::fingerlakes::getPluginTitle { } {
+   global caption
+
+   return "$caption(fingerlakes,camera)"
+}
+
+#
+# ::fingerlakes::initPlugin
 #    Initialise les variables conf(fingerlakes,...) et les captions
 #
-proc ::fingerlakes::init { } {
-   global audace conf
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) camera fingerlakes fingerlakes.cap ]
+proc ::fingerlakes::initPlugin { } {
+   global conf
 
    #--- Initialise les variables de la camera FLI
    if { ! [ info exists conf(fingerlakes,cool) ] }     { set conf(fingerlakes,cool)     "0" }

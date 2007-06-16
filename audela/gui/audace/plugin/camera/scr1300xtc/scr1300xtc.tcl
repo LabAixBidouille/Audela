@@ -2,21 +2,40 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.8 2007-06-10 15:01:54 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.9 2007-06-16 10:37:06 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
+   package provide scr1300xtc 1.0
+
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] scr1300xtc.cap ]
 }
 
 #
-# ::scr1300xtc::init
+# ::scr1300xtc::getPluginType
+#    Retourne le type de driver
+#
+proc ::scr1300xtc::getPluginType { } {
+   return "camera"
+}
+
+#
+# ::scr1300xtc::getPluginTitle
+#    Retourne le label du driver dans la langue de l'utilisateur
+#
+proc ::scr1300xtc::getPluginTitle { } {
+   global caption
+
+   return "$caption(scr1300xtc,camera)"
+}
+
+#
+# ::scr1300xtc::initPlugin
 #    Initialise les variables conf(scr1300xtc,...) et les captions
 #
-proc ::scr1300xtc::init { } {
-   global audace conf
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) camera scr1300xtc scr1300xtc.cap ]
+proc ::scr1300xtc::initPlugin { } {
+   global conf
 
    #--- Initialise les variables de la camera SCR1300XTC
    if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "LPT1:" }

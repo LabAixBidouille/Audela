@@ -2,21 +2,40 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.9 2007-06-10 15:00:45 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.10 2007-06-16 10:36:11 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
+   package provide cookbook 1.0
+
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] cookbook.cap ]
 }
 
 #
-# ::cookbook::init
+# ::cookbook::getPluginType
+#    Retourne le type de driver
+#
+proc ::cookbook::getPluginType { } {
+   return "camera"
+}
+
+#
+# ::cookbook::getPluginTitle
+#    Retourne le label du driver dans la langue de l'utilisateur
+#
+proc ::cookbook::getPluginTitle { } {
+   global caption
+
+   return "$caption(cookbook,camera)"
+}
+
+#
+# ::cookbook::initPlugin
 #    Initialise les variables conf(cookbook,...) et les captions
 #
-proc ::cookbook::init { } {
-   global audace conf
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) camera cookbook cookbook.cap ]
+proc ::cookbook::initPlugin { } {
+   global conf
 
    #--- Initialise les variables de la camera CB245
    if { ! [ info exists conf(cookbook,port) ] }  { set conf(cookbook,port)  "LPT1:" }
