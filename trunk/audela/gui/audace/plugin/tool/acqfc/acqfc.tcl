@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.48 2007-06-03 14:45:03 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.49 2007-06-16 10:43:53 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1875,12 +1875,12 @@ namespace eval ::AcqFC {
       #--- La commande exptime permet de fixer le temps de pose de l'image
       cam$camNo exptime $exptime
 
-      if { [::confCam::getPluginProperty $panneau(AcqFC,$visuNo,camItem) hasBinning] == "1"   } {
+      if { [::confCam::getPluginProperty $panneau(AcqFC,$visuNo,camItem) hasBinning] == "1" } {
          #--- je selectionne le binning
          cam$camNo bin [list [string range $binning 0 0] [string range $binning 2 2]]
       }
 
-      if { [::confCam::getPluginProperty $panneau(AcqFC,$visuNo,camItem) hasFormat] == "1"   } {
+      if { [::confCam::getPluginProperty $panneau(AcqFC,$visuNo,camItem) hasFormat] == "1" } {
          #--- je selectionne la qualite
          cam$camNo quality $binning
       }
