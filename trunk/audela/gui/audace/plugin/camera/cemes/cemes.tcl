@@ -2,21 +2,40 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.14 2007-06-10 15:00:28 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.15 2007-06-16 10:35:51 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
+   package provide cemes 1.0
+
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] cemes.cap ]
 }
 
 #
-# ::cemes::init
+# ::cemes::getPluginType
+#    Retourne le type de driver
+#
+proc ::cemes::getPluginType { } {
+   return "camera"
+}
+
+#
+# ::cemes::getPluginTitle
+#    Retourne le label du driver dans la langue de l'utilisateur
+#
+proc ::cemes::getPluginTitle { } {
+   global caption
+
+   return "$caption(cemes,camera)"
+}
+
+#
+# ::cemes::initPlugin
 #    Initialise les variables conf(cemes,...) et les captions
 #
-proc ::cemes::init { } {
-   global audace conf
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) camera cemes cemes.cap ]
+proc ::cemes::initPlugin { } {
+   global conf
 
    #--- Initialise les variables de la camera Cemes
    if { ! [ info exists conf(cemes,cool) ] }     { set conf(cemes,cool)     "0" }

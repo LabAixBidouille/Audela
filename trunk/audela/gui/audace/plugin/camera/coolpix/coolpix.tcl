@@ -2,21 +2,40 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.9 2007-06-10 15:01:06 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.10 2007-06-16 10:36:30 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
+   package provide coolpix 1.0
+
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] coolpix.cap ]
 }
 
 #
-# ::coolpix::init
+# ::coolpix::getPluginType
+#    Retourne le type de driver
+#
+proc ::coolpix::getPluginType { } {
+   return "camera"
+}
+
+#
+# ::coolpix::getPluginTitle
+#    Retourne le label du driver dans la langue de l'utilisateur
+#
+proc ::coolpix::getPluginTitle { } {
+   global caption
+
+   return "$caption(coolpix,camera)"
+}
+
+#
+# ::coolpix::initPlugin
 #    Initialise les variables conf(coolpix,...) et les captions
 #
-proc ::coolpix::init { } {
-   global audace conf
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) camera coolpix coolpix.cap ]
+proc ::coolpix::initPlugin { } {
+   global conf
 
    #--- Initialise la variable de la camera Nikon CoolPix
    if { ! [ info exists conf(coolpix,baud) ] }  { set conf(coolpix,baud)  "115200" }
