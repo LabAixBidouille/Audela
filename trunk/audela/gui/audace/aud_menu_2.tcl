@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.5 2007-03-03 22:06:03 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.6 2007-06-16 10:48:51 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -450,9 +450,9 @@ namespace eval ::seuilWindow {
    proc initConf { { visuNo 1 } } {
       global conf
 
+      if { ! [ info exists conf(seuils,imageN&BCouleur) ] }  { set conf(seuils,imageN&BCouleur)  "1" }
       if { ! [ info exists conf(seuils,auto_manuel) ] }      { set conf(seuils,auto_manuel)      "1" }
       if { ! [ info exists conf(seuils,%_dynamique) ] }      { set conf(seuils,%_dynamique)      "50" }
-      if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } { set conf(seuils,visu$visuNo,mode) "loadima" }
       if { ! [ info exists conf(seuils,irisautohaut) ] }     { set conf(seuils,irisautohaut)     "1000" }
       if { ! [ info exists conf(seuils,irisautobas) ] }      { set conf(seuils,irisautobas)      "200" }
       if { ! [ info exists conf(seuils,histoautohaut) ] }    { set conf(seuils,histoautohaut)    "99" }
@@ -470,6 +470,8 @@ namespace eval ::seuilWindow {
       set seuilWindow($visuNo,choix_dynamique) "65535 32767 20000 10000 5000 2000 1000 500 200 0 -500 -1000 -32768"
 
       #---
+      set seuilWindow($visuNo,intervalleSHSB)         $::confVisu::private($visuNo,intervalleSHSB)
+      set seuilWindow($visuNo,imageN&BCouleur)        $conf(seuils,imageN&BCouleur)
       set seuilWindow($visuNo,seuilWindowAuto_Manuel) $conf(seuils,auto_manuel)
       set seuilWindow($visuNo,pourcentage_dynamique)  $conf(seuils,%_dynamique)
 
@@ -528,6 +530,48 @@ namespace eval ::seuilWindow {
          pack $seuilWindow($visuNo,This).usr1.affichage_intensites.1 -side top -padx 10 -fill x
 
       pack $seuilWindow($visuNo,This).usr1 -side top -fill both -expand 1 -ipady 5
+
+      frame $seuilWindow($visuNo,This).usr11 -borderwidth 1 -relief raised
+
+         frame $seuilWindow($visuNo,This).usr11.shsb
+
+            label $seuilWindow($visuNo,This).usr11.shsb.lab1 -text "$caption(seuilWindow,intervalle_sh-sb)"
+            pack $seuilWindow($visuNo,This).usr11.shsb.lab1 -side left -padx 10
+
+            entry $seuilWindow($visuNo,This).usr11.shsb.intervalleSHSB -textvariable seuilWindow($visuNo,intervalleSHSB) \
+               -font $audace(font,arial_8_b) -width 8 -justify center
+            pack $seuilWindow($visuNo,This).usr11.shsb.intervalleSHSB -side left -padx 0
+
+         pack $seuilWindow($visuNo,This).usr11.shsb -side left
+
+         frame $seuilWindow($visuNo,This).usr11.label1
+
+            label $seuilWindow($visuNo,This).usr11.label1.lab2 -text "$caption(seuilWindow,exemple>x)"
+            pack $seuilWindow($visuNo,This).usr11.label1.lab2 -side left -padx 0
+
+         pack $seuilWindow($visuNo,This).usr11.label1 -side top -padx 10 -fill x
+
+         frame $seuilWindow($visuNo,This).usr11.label2
+
+            label $seuilWindow($visuNo,This).usr11.label2.lab2 -text "$caption(seuilWindow,exemple<x)"
+            pack $seuilWindow($visuNo,This).usr11.label2.lab2 -side left -padx 0
+
+         pack $seuilWindow($visuNo,This).usr11.label2 -side top -padx 10 -fill x
+
+      pack $seuilWindow($visuNo,This).usr11 -side top -fill both -expand 1
+
+      frame $seuilWindow($visuNo,This).usr12 -borderwidth 1 -relief raised
+
+         label $seuilWindow($visuNo,This).usr12.lab1 -text "$caption(seuilWindow,image)"
+         pack $seuilWindow($visuNo,This).usr12.lab1 -side left -padx 10
+         radiobutton $seuilWindow($visuNo,This).usr12.rad1 -variable seuilWindow($visuNo,imageN&BCouleur) \
+            -text "$caption(seuilWindow,N&B)" -value 1 -command " ::seuilWindow::afficheSeuils $visuNo "
+         pack $seuilWindow($visuNo,This).usr12.rad1 -side left -padx 10
+         radiobutton $seuilWindow($visuNo,This).usr12.rad2 -variable seuilWindow($visuNo,imageN&BCouleur) \
+            -text "$caption(seuilWindow,couleur)" -value 2 -command " ::seuilWindow::afficheSeuils $visuNo "
+         pack $seuilWindow($visuNo,This).usr12.rad2 -side left -padx 10
+
+      pack $seuilWindow($visuNo,This).usr12 -side top -fill both -expand 1
 
       frame $seuilWindow($visuNo,This).usr2 -borderwidth 1 -relief raised
 
@@ -755,8 +799,10 @@ namespace eval ::seuilWindow {
          set ::confVisu::private($visuNo,mindyn) $seuilWindow($visuNo,min)
       }
       #---
-      set conf(seuils,auto_manuel)   $seuilWindow($visuNo,seuilWindowAuto_Manuel)
-      set conf(seuils,%_dynamique)   $seuilWindow($visuNo,pourcentage_dynamique)
+      set ::confVisu::private($visuNo,intervalleSHSB) $seuilWindow($visuNo,intervalleSHSB)
+      set conf(seuils,imageN&BCouleur)                $seuilWindow($visuNo,imageN&BCouleur)
+      set conf(seuils,auto_manuel)                    $seuilWindow($visuNo,seuilWindowAuto_Manuel)
+      set conf(seuils,%_dynamique)                    $seuilWindow($visuNo,pourcentage_dynamique)
       #--- Copie des reglages courants
       set conf(seuils,visu$visuNo,mode) $tmp(seuils,visu$visuNo,mode_)
       set conf(seuils,histoautohaut)    $tmp(seuils,histoautohaut_)
@@ -819,6 +865,31 @@ namespace eval ::seuilWindow {
       set deb [ expr 1 + [ string first + $seuilWindow(seuils,$visuNo,geometry) ] ]
       set fin [ string length $seuilWindow(seuils,$visuNo,geometry) ]
       set conf(seuils,visu$visuNo,position) "+[string range $seuilWindow(seuils,$visuNo,geometry) $deb $fin]"
+   }
+
+   #
+   # ::seuilWindow::afficheSeuils visuNo
+   # Procedure correspondant a l'affichage des seuils pour une image N&B (2 scales)
+   # ou pour une image couleur (3 x 2 scales)
+   #
+   proc afficheSeuils { visuNo } {
+      variable private
+      global seuilWindow
+
+      set This $::confVisu::private($visuNo,This)
+      if { $seuilWindow($visuNo,imageN&BCouleur) == "1" } {
+         #--- Cas des images N&B
+         $This.fra1.sca1 configure -state normal
+         $This.fra1.lab1 configure -state normal
+         $This.fra1.sca2 configure -state normal
+         $This.fra1.lab2 configure -state normal
+      } elseif { $seuilWindow($visuNo,imageN&BCouleur) == "2" } {
+         #--- Cas des images Couleur
+         $This.fra1.sca1 configure -state disabled
+         $This.fra1.lab1 configure -state disabled
+         $This.fra1.sca2 configure -state disabled
+         $This.fra1.lab2 configure -state disabled
+      }
    }
 
 }
