@@ -2,22 +2,41 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.18 2007-06-10 15:02:30 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.19 2007-06-16 10:40:24 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
+   package provide webcam 1.0
+
+   #--- Charge le fichier caption
+   source [ file join [file dirname [info script]] webcam.cap ]
 }
 
 #
-# ::webcam::init
+# ::webcam::getPluginType
+#    Retourne le type de driver
+#
+proc ::webcam::getPluginType { } {
+   return "camera"
+}
+
+#
+# ::webcam::getPluginTitle
+#    Retourne le label du driver dans la langue de l'utilisateur
+#
+proc ::webcam::getPluginTitle { } {
+   global caption
+
+   return "$caption(webcam,camera)"
+}
+
+#
+# ::webcam::initPlugin
 #    Initialise les variables conf(webcam,$camItem,...) et les captions
 #
-proc ::webcam::init { } {
-   global audace conf
+proc ::webcam::initPlugin { } {
    variable private
-
-   #--- Charge le fichier caption
-   source [ file join $audace(rep_plugin) camera webcam webcam.cap ]
+   global conf
 
    #--- Initialise les variables de la webcams A
    foreach camItem { A B C } {
@@ -460,8 +479,8 @@ proc ::webcam::selectPort { camItem tklist } {
 #    Arrete la WebCam
 #
 proc ::webcam::stop { camItem } {
-   global conf confCam
    variable private
+   global conf confCam
 
    if { [ info exists private(frm)] } {
       set frm $private(frm)
@@ -637,7 +656,7 @@ proc ::webcam::configureLinkLonguePose { camItem } {
 #
 proc ::webcam::getPluginProperty { camItem propertyName } {
    switch $propertyName {
-      binningList      { return [ list "" ] }
+      binningList      { return [ list 1x1 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
       hasBinning       { return 0 }
