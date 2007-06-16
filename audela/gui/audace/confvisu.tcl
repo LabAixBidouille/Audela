@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.66 2007-06-11 21:47:19 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.67 2007-06-16 10:50:08 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -46,6 +46,9 @@ namespace eval ::confVisu {
       if { ! [ info exists conf(audace,visu$visuNo,wmgeometry) ] } {
          set conf(audace,visu$visuNo,wmgeometry) "600x400+0+0"
       }
+      if { ! [ info exists conf(seuils,visu$visuNo,intervalleSHSB) ] } {
+         set conf(seuils,visu$visuNo,intervalleSHSB) "1"
+      }
       if { ! [ info exists conf(seuils,visu$visuNo,mode) ] } {
          set conf(seuils,visu$visuNo,mode) "loadima"
       }
@@ -79,6 +82,7 @@ namespace eval ::confVisu {
       set private($visuNo,lastFileName)    "?"
       set private($visuNo,maxdyn)          "32767"
       set private($visuNo,mindyn)          "-32768"
+      set private($visuNo,intervalleSHSB)  "$conf(seuils,visu$visuNo,intervalleSHSB)"
       set private($visuNo,a)               "0"
       set private($visuNo,b)               "1"
       set private($visuNo,hCanvas)         $private($visuNo,This).can1.canvas
@@ -179,13 +183,14 @@ namespace eval ::confVisu {
             }
          }
 
+         #--- je memorise les variables dans conf(..)
+         set conf(audace,visu$visuNo,wmgeometry)     [wm geometry $::confVisu::private($visuNo,This)]
+         set conf(seuils,visu$visuNo,intervalleSHSB) $private($visuNo,intervalleSHSB)
+
          #--- je supprime les bind
          ::confVisu::deleteBindDialog $visuNo
 
-         #--- je memorise la position de la fenetre
-         set conf(audace,visu$visuNo,wmgeometry) "[wm geometry $::confVisu::private($visuNo,This)]"
-
-         #--- je supprime le menubar et toutes ses entree
+         #--- je supprime le menubar et toutes ses entrees
          if { $private($visuNo,menu) != "" } {
             Menubar_Delete $visuNo
          }
@@ -194,6 +199,7 @@ namespace eval ::confVisu {
          if { [getTool $visuNo] != "" } {
             ::[getTool $visuNo]::stopTool $visuNo
          }
+
          #--- je detruis tous les outils
          if { "$private($visuNo,This)" != "$audace(base).select" } {
             foreach pluginInstance $private($visuNo,pluginInstanceList) {
@@ -212,6 +218,7 @@ namespace eval ::confVisu {
 
          #--- je supprime les graphes des coupes
          ::sectiongraph::closeToplevel $visuNo
+
       }
 
       #--- je supprime la fenetre
@@ -2078,7 +2085,7 @@ namespace eval ::confVisu {
 
       set sh [lindex [visu$visuNo cut] 0]
       set sb [lindex [visu$visuNo cut] 1]
-      if { [ expr abs( $sh - $sb ) ] > 100 } {
+      if { [ expr abs( $sh - $sb ) ] > "$private($visuNo,intervalleSHSB)" } {
          $private($visuNo,This).fra1.lab1 configure -text [format %d [expr int($sh)]]
          $private($visuNo,This).fra1.lab2 configure -text [format %d [expr int($sb)]]
       } else {
