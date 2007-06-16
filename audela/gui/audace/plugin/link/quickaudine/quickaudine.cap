@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.13 2007-06-11 17:23:01 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.14 2007-06-16 08:43:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -86,10 +86,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)         "QuickAudine"
    set caption(quickaudine,available)     "QuickAudine disponible"
    set caption(quickaudine,refresh)       "Genindlæs"
-   set caption(quickaudine,delayshutter)  "# Délai avant la lecture du CCD"
+   set caption(quickaudine,delayshutter)  "Forsinkelse før udlæsning af CCD"
    set caption(quickaudine,unite)         "1/100 s"
-   set caption(quickaudine,lecture_pixel) "# Lecture d'un pixel"
-   set caption(quickaudine,micro_sec)     "# microsecondes"
+   set caption(quickaudine,lecture_pixel) "Læsning af én pixel"
+   set caption(quickaudine,micro_sec)     "microsekunder"
    set caption(quickaudine,error)         "Fejlmeddelelse:"
 
 }
