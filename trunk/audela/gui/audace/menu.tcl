@@ -2,7 +2,7 @@
 # Fichier : menu.tcl
 # Description : Package pour gerer facilement les menus
 # Auteur : Denis MARCHAIS d'apres B. Welsh, Practical Programming in Tcl and Tk, Ed. 2, p.319-322
-# Mise a jour $Id: menu.tcl,v 1.6 2007-04-07 21:16:48 robertdelmas Exp $
+# Mise a jour $Id: menu.tcl,v 1.7 2007-06-16 08:39:34 robertdelmas Exp $
 #
 
 proc Menu_Setup { visuNo menubar } {
@@ -40,7 +40,7 @@ proc Menu { visuNo menuName } {
    global menu
 
    if [info exists menu(menu$visuNo,$menuName)] {
-      error "Menu $label already defined"
+      error "Menu $menuName already defined"
    }
    #--- Create the cascade menu
    set menuId $menu(menubar$visuNo).mb$menu(uid)
