@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.14 2007-05-24 17:41:40 michelpujol Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.15 2007-06-16 10:53:11 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -305,6 +305,8 @@ namespace eval ::audace {
             file delete [ file join [ lindex [ decomp $tmp(fichier_palette).pal ] 0 ] [ lindex [ decomp $tmp(fichier_palette).pal ] 1 ][ lindex [ decomp $tmp(fichier_palette).pal ] 2 ][ lindex [ decomp $tmp(fichier_palette).pal ] 3 ] ]
          }
 
+         ::confVisu::close $audace(visuNo)
+
          if {[ini_fileNeedWritten file_conf conf]} {
             set old_focus [focus]
             set choice [tk_messageBox -message "$caption(audace,enregistrer_config_1)\n$caption(audace,enregistrer_config_2)" \
@@ -313,32 +315,33 @@ namespace eval ::audace {
                #--- Enregistrer la configuration
                array set theconf [ini_merge file_conf conf]
                ini_writeIniFile $filename2 theconf
-               ::confVisu::close $audace(visuNo)
                ::audace::shutdown_devices
                exit
             } elseif {$choice=="no"} {
                #--- Pas d'enregistrement
-               wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
-               wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
-               ::confVisu::close $audace(visuNo)
                ::audace::shutdown_devices
                exit
             } else {
-               wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
                wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
+               set visuNo [ ::audace::createDialog ]
+               ::audace::createMenu
+               ::audace::initLastEnv $visuNo
+               ::audace::affiche_Outil_F2
             }
             focus $old_focus
          } else {
             set choice [tk_messageBox -type yesno -icon warning -title "$caption(audace,attention)" \
                   -message "$caption(audace,quitter)"]
             if {$choice=="yes"} {
-               ::confVisu::close $audace(visuNo)
                ::audace::shutdown_devices
                exit
             }
             ::console::affiche_resultat "$caption(audace,enregistrer_config_4)\n\n"
-            wm protocol $audace(base) WM_DELETE_WINDOW " ::audace::quitter "
             wm protocol $audace(Console) WM_DELETE_WINDOW " ::audace::quitter "
+            set visuNo [ ::audace::createDialog ]
+            ::audace::createMenu
+            ::audace::initLastEnv $visuNo
+            ::audace::affiche_Outil_F2
          }
       #---
       } catchMessage ]
@@ -347,7 +350,6 @@ namespace eval ::audace {
          tk_messageBox -message "$catchMessage" -title "$caption(audace,enregistrer_config_3)" -icon error
       }
       menustate normal
-      focus $audace(base)
    }
 
 }
