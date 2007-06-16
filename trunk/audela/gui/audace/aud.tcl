@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.71 2007-06-13 21:43:29 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.72 2007-06-16 10:54:15 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -519,6 +519,8 @@ namespace eval ::audace {
       set visuNo $audace(visuNo)
       set bufNo [ visu$visuNo buf ]
       Menu_Setup $visuNo $This.menubar
+
+      set ::confVisu::private($visuNo,menu) "$This.menubar"
 
       Menu           $visuNo "$caption(audace,menu,fichier)"
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,charger)..." \
