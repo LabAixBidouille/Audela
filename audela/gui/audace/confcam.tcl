@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.83 2007-06-11 17:25:53 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.84 2007-06-16 10:43:12 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -92,7 +92,7 @@ namespace eval ::confCam {
       if { ! [ info exists conf(sbig,temp) ] }     { set conf(sbig,temp)     "0" }
 
       #--- initConf 4
-      ::cookbook::init
+      ::cookbook::initPlugin
 
       #--- initConf 5
       if { ! [ info exists conf(starlight,acc) ] }    { set conf(starlight,acc)    "0" }
@@ -111,13 +111,13 @@ namespace eval ::confCam {
       if { ! [ info exists conf(kitty,on_off) ] }  { set conf(kitty,on_off)  "1" }
 
       #--- initConf 7
-      ::webcam::init
+      ::webcam::initPlugin
 
       #--- initConf 8
-      ::th7852a::init
+      ::th7852a::initPlugin
 
       #--- initConf 9
-      ::scr1300xtc::init
+      ::scr1300xtc::initPlugin
 
       #--- initConf 10
       if { ! [ info exists conf(dslr,longuepose) ] }           { set conf(dslr,longuepose)           "0" }
@@ -140,13 +140,13 @@ namespace eval ::confCam {
       if { ! [ info exists conf(andor,ferm_obtu) ] }   { set conf(andor,ferm_obtu)   "30" }
 
       #--- initConf 12
-      ::fingerlakes::init
+      ::fingerlakes::initPlugin
 
       #--- initConf 13
-      ::cemes::init
+      ::cemes::initPlugin
 
       #--- initConf 14
-      ::coolpix::init
+      ::coolpix::initPlugin
 
       #--- item par defaut
       set confCam(currentCamItem) "A"
