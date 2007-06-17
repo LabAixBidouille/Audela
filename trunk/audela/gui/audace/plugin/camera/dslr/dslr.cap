@@ -1,6 +1,6 @@
 #
 # Fichier : dslr.cap
-# Mise a jour $Id: dslr.cap,v 1.11 2007-01-27 14:42:31 robertdelmas Exp $
+# Mise a jour $Id: dslr.cap,v 1.12 2007-06-17 14:07:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -10,6 +10,8 @@
 global caption langage
 
 # *************** Version anglaise ****************************
+
+set caption(dslr,camera)                    "Digital Camera"
 
 set caption(dslr,telecharger)               "Download Image"
 set caption(dslr,pas_telecharger)           "Do Not Download"
@@ -21,6 +23,8 @@ set caption(dslr,supprimer_image)           "Delete image from Compact Flash mem
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
+   set caption(dslr,camera)                 "APN"
+
    set caption(dslr,telecharger)            "Télécharger l'image"
    set caption(dslr,pas_telecharger)        "Ne pas télécharger"
    set caption(dslr,immediat)               "Immédiatement"
@@ -30,6 +34,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(dslr,camera)                 "Fotocamera digitale"
 
    set caption(dslr,telecharger)            "Scaricare l'immagine"
    set caption(dslr,pas_telecharger)        "Non scaricare"
@@ -41,6 +47,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
+   set caption(dslr,camera)                 "Cámara digital"
+
    set caption(dslr,telecharger)            "Descargar imagen"
    set caption(dslr,pas_telecharger)        "No descargar"
    set caption(dslr,immediat)               "Inmediatamente"
@@ -50,6 +58,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(dslr,camera)                 "Digital Fotoapparat"
 
    set caption(dslr,telecharger)            "Das Bild herunterladen"
    set caption(dslr,pas_telecharger)        "Nicht herunterladen"
@@ -61,6 +71,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
+   set caption(dslr,camera)                 "Digital Câmara"
+
    set caption(dslr,telecharger)            "Descarregar a imagem"
    set caption(dslr,pas_telecharger)        "Não descarregar"
    set caption(dslr,immediat)               "Imediatamente"
@@ -70,6 +82,8 @@ if { [ string compare $langage "french" ] == "0" } {
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(dslr,camera)                 "Digital Camera"
 
    set caption(dslr,telecharger)            "Download Image"
    set caption(dslr,pas_telecharger)        "Do Not Download"
