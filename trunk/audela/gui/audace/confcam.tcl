@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.84 2007-06-16 10:43:12 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.85 2007-06-17 14:09:58 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -30,10 +30,17 @@ namespace eval ::confCam {
       if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "670x430+25+45" }
 
       #--- Charge les plugins des cameras
+      source [ file join $audace(rep_plugin) camera audine audine.tcl ]
+      source [ file join $audace(rep_plugin) camera hisis hisis.tcl ]
+      source [ file join $audace(rep_plugin) camera sbig sbig.tcl ]
       source [ file join $audace(rep_plugin) camera cookbook cookbook.tcl ]
+      source [ file join $audace(rep_plugin) camera starlight starlight.tcl ]
+      source [ file join $audace(rep_plugin) camera kitty kitty.tcl ]
       source [ file join $audace(rep_plugin) camera webcam webcam.tcl ]
       source [ file join $audace(rep_plugin) camera th7852a th7852a.tcl ]
       source [ file join $audace(rep_plugin) camera scr1300xtc scr1300xtc.tcl ]
+      source [ file join $audace(rep_plugin) camera dslr dslr.tcl ]
+      source [ file join $audace(rep_plugin) camera andor andor.tcl ]
       source [ file join $audace(rep_plugin) camera fingerlakes fingerlakes.tcl ]
       source [ file join $audace(rep_plugin) camera cemes cemes.tcl ]
       source [ file join $audace(rep_plugin) camera coolpix coolpix.tcl ]
@@ -41,7 +48,6 @@ namespace eval ::confCam {
       #--- Charge les fichiers auxiliaires
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_plugin) camera dslr dslr.tcl ]\""
 
       #--- Je charge le package Thread  si l'option multitread est activive dans le TCL
       if { [info exists ::tcl_platform(threaded)] } {
@@ -62,53 +68,22 @@ namespace eval ::confCam {
       #--- Intialise les variables de chaque camera
 
       #--- initConf 1
-      if { ! [ info exists conf(audine,ampli_ccd) ] } { set conf(audine,ampli_ccd) "1" }
-      if { ! [ info exists conf(audine,can) ] }       { set conf(audine,can)       "$caption(confcam,can_ad976a)" }
-      if { ! [ info exists conf(audine,ccd) ] }       { set conf(audine,ccd)       "$caption(confcam,kaf400)" }
-      if { ! [ info exists conf(audine,foncobtu) ] }  { set conf(audine,foncobtu)  "2" }
-      if { ! [ info exists conf(audine,mirh) ] }      { set conf(audine,mirh)      "0" }
-      if { ! [ info exists conf(audine,mirv) ] }      { set conf(audine,mirv)      "0" }
-      if { ! [ info exists conf(audine,port) ] }      { set conf(audine,port)      "LPT1:" }
-      if { ! [ info exists conf(audine,typeobtu) ] }  { set conf(audine,typeobtu)  "$caption(confcam,obtu_audine)" }
+      ::audine::initPlugin
 
       #--- initConf 2
-      if { ! [ info exists conf(hisis,delai_a) ] }  { set conf(hisis,delai_a)  "5" }
-      if { ! [ info exists conf(hisis,delai_b) ] }  { set conf(hisis,delai_b)  "2" }
-      if { ! [ info exists conf(hisis,delai_c) ] }  { set conf(hisis,delai_c)  "7" }
-      if { ! [ info exists conf(hisis,foncobtu) ] } { set conf(hisis,foncobtu) "2" }
-      if { ! [ info exists conf(hisis,mirh) ] }     { set conf(hisis,mirh)     "0" }
-      if { ! [ info exists conf(hisis,mirv) ] }     { set conf(hisis,mirv)     "0" }
-      if { ! [ info exists conf(hisis,modele) ] }   { set conf(hisis,modele)   "22" }
-      if { ! [ info exists conf(hisis,port) ] }     { set conf(hisis,port)     "LPT1:" }
-      if { ! [ info exists conf(hisis,res) ] }      { set conf(hisis,res)      "12 bits" }
+      ::hisis::initPlugin
 
       #--- initConf 3
-      if { ! [ info exists conf(sbig,cool) ] }     { set conf(sbig,cool)     "0" }
-      if { ! [ info exists conf(sbig,foncobtu) ] } { set conf(sbig,foncobtu) "2" }
-      if { ! [ info exists conf(sbig,host) ] }     { set conf(sbig,host)     "192.168.0.2" }
-      if { ! [ info exists conf(sbig,mirh) ] }     { set conf(sbig,mirh)     "0" }
-      if { ! [ info exists conf(sbig,mirv) ] }     { set conf(sbig,mirv)     "0" }
-      if { ! [ info exists conf(sbig,port) ] }     { set conf(sbig,port)     "LPT1:" }
-      if { ! [ info exists conf(sbig,temp) ] }     { set conf(sbig,temp)     "0" }
+      ::sbig::initPlugin
 
       #--- initConf 4
       ::cookbook::initPlugin
 
       #--- initConf 5
-      if { ! [ info exists conf(starlight,acc) ] }    { set conf(starlight,acc)    "0" }
-      if { ! [ info exists conf(starlight,mirh) ] }   { set conf(starlight,mirh)   "0" }
-      if { ! [ info exists conf(starlight,mirv) ] }   { set conf(starlight,mirv)   "0" }
-      if { ! [ info exists conf(starlight,modele) ] } { set conf(starlight,modele) "MX516" }
-      if { ! [ info exists conf(starlight,port) ] }   { set conf(starlight,port)   "LPT1:" }
+      ::starlight::initPlugin
 
       #--- initConf 6
-      if { ! [ info exists conf(kitty,captemp) ] } { set conf(kitty,captemp) "0" }
-      if { ! [ info exists conf(kitty,mirh) ] }    { set conf(kitty,mirh)    "0" }
-      if { ! [ info exists conf(kitty,mirv) ] }    { set conf(kitty,mirv)    "0" }
-      if { ! [ info exists conf(kitty,modele) ] }  { set conf(kitty,modele)  "237" }
-      if { ! [ info exists conf(kitty,port) ] }    { set conf(kitty,port)    "LPT1:" }
-      if { ! [ info exists conf(kitty,res) ] }     { set conf(kitty,res)     "12 bits" }
-      if { ! [ info exists conf(kitty,on_off) ] }  { set conf(kitty,on_off)  "1" }
+      ::kitty::initPlugin
 
       #--- initConf 7
       ::webcam::initPlugin
@@ -120,24 +95,10 @@ namespace eval ::confCam {
       ::scr1300xtc::initPlugin
 
       #--- initConf 10
-      if { ! [ info exists conf(dslr,longuepose) ] }           { set conf(dslr,longuepose)           "0" }
-      if { ! [ info exists conf(dslr,longueposeport) ] }       { set conf(dslr,longueposeport)       "LPT1:" }
-      if { ! [ info exists conf(dslr,longueposelinkbit) ] }    { set conf(dslr,longueposelinkbit)    "0" }
-      if { ! [ info exists conf(dslr,longueposestartvalue) ] } { set conf(dslr,longueposestartvalue) "1" }
-      if { ! [ info exists conf(dslr,longueposestopvalue) ] }  { set conf(dslr,longueposestopvalue)  "0" }
-      if { ! [ info exists conf(dslr,statut_service) ] }       { set conf(dslr,statut_service)       "1" }
-      if { ! [ info exists conf(dslr,mirh) ] }                 { set conf(dslr,mirh)                 "0" }
-      if { ! [ info exists conf(dslr,mirv) ] }                 { set conf(dslr,mirv)                 "0" }
+      ::dslr::initPlugin
 
       #--- initConf 11
-      if { ! [ info exists conf(andor,cool) ] }        { set conf(andor,cool)        "0" }
-      if { ! [ info exists conf(andor,foncobtu) ] }    { set conf(andor,foncobtu)    "2" }
-      if { ! [ info exists conf(andor,config) ] }      { set conf(andor,config)      [ file join $audace(rep_install) bin ] }
-      if { ! [ info exists conf(andor,mirh) ] }        { set conf(andor,mirh)        "0" }
-      if { ! [ info exists conf(andor,mirv) ] }        { set conf(andor,mirv)        "0" }
-      if { ! [ info exists conf(andor,temp) ] }        { set conf(andor,temp)        "-50" }
-      if { ! [ info exists conf(andor,ouvert_obtu) ] } { set conf(andor,ouvert_obtu) "0" }
-      if { ! [ info exists conf(andor,ferm_obtu) ] }   { set conf(andor,ferm_obtu)   "30" }
+      ::andor::initPlugin
 
       #--- initConf 12
       ::fingerlakes::initPlugin
@@ -174,7 +135,7 @@ namespace eval ::confCam {
 
       #--- Initalise les listes de cameras
       set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-         TH7852A SCR1300XTC $caption(confcam,dslr) Andor FLI Cemes $caption(coolpix,camera) ]
+         TH7852A SCR1300XTC $caption(dslr,camera) Andor FLI Cemes $caption(coolpix,camera) ]
       set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
          th7852a scr1300xtc dslr andor fingerlakes cemes coolpix ]
    }
@@ -752,7 +713,7 @@ namespace eval ::confCam {
          -command {
             ::confLink::run ::confCam(audine,port) \
                { "parallelport" "quickaudine" "ethernaude" "audinet" } \
-               "- $caption(confcam,acquisition) - $caption(confcam,audine)"
+               "- $caption(confcam,acquisition) - $caption(audine,camera)"
          }
       pack $frm.configure -in $frm.frame10 -side right -pady 10 -ipadx 10 -ipady 1 -expand true
 
@@ -760,7 +721,7 @@ namespace eval ::confCam {
       label $frm.lab2 -text "$caption(confcam,format_ccd)"
       pack $frm.lab2 -in $frm.frame11 -anchor center -side left -padx 10
 
-      set list_combobox [ list $caption(confcam,kaf400) $caption(confcam,kaf1600) $caption(confcam,kaf3200) ]
+      set list_combobox [ list $caption(audine,kaf400) $caption(audine,kaf1600) $caption(audine,kaf3200) ]
       ComboBox $frm.ccd \
          -width 7       \
          -height [ llength $list_combobox ] \
@@ -799,7 +760,7 @@ namespace eval ::confCam {
       label $frm.lab4 -text "$caption(confcam,modele_can)"
       pack $frm.lab4 -in $frm.frame15 -anchor center -side left -padx 10
 
-      set list_combobox [ list $caption(confcam,can_ad976a) $caption(confcam,can_ltc1605) ]
+      set list_combobox [ list $caption(audine,can_ad976a) $caption(audine,can_ltc1605) ]
       ComboBox $frm.can \
          -width 10      \
          -height [ llength $list_combobox ] \
@@ -814,8 +775,8 @@ namespace eval ::confCam {
       label $frm.lab5 -text "$caption(confcam,type_obtu)"
       pack $frm.lab5 -in $frm.frame16 -anchor center -side left -padx 10
 
-      set list_combobox [ list $caption(confcam,obtu_audine) $caption(confcam,obtu_audine-) \
-         $caption(confcam,obtu_i2c) $caption(confcam,obtu_thierry) ]
+      set list_combobox [ list $caption(audine,obtu_audine) $caption(audine,obtu_audine-) \
+         $caption(audine,obtu_i2c) $caption(audine,obtu_thierry) ]
       ComboBox $frm.typeobtu \
          -width 11           \
          -height [ llength $list_combobox ] \
@@ -1271,7 +1232,7 @@ namespace eval ::confCam {
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
             ::confLink::run ::confCam(hisis,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(confcam,hisis)"
+               "- $caption(confcam,acquisition) - $caption(hisis,camera)"
          }
       pack $frm.configure -in $frm.frame11 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1444,7 +1405,7 @@ namespace eval ::confCam {
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
             ::confLink::run ::confCam(sbig,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(confcam,sbig)"
+               "- $caption(confcam,acquisition) - $caption(sbig,camera)"
          }
       pack $frm.configure -in $frm.frame1 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1619,7 +1580,7 @@ namespace eval ::confCam {
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
             ::confLink::run ::confCam(starlight,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(confcam,starlight)"
+               "- $caption(confcam,acquisition) - $caption(starlight,camera)"
          }
       pack $frm.configure -in $frm.frame7 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1883,7 +1844,7 @@ namespace eval ::confCam {
       button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
          -command {
             ::confLink::run ::confCam(kitty,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(confcam,kitty)"
+               "- $caption(confcam,acquisition) - $caption(kitty,camera)"
          }
       pack $frm.configure -in $frm.frame9 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -2113,7 +2074,7 @@ namespace eval ::confCam {
          -command {
             ::confCam::configureAPNLinkLonguePose
             ::confLink::run ::confCam(dslr,longueposeport) { parallelport quickremote external } \
-               "- $caption(confcam,dslr_longuepose) - $caption(confcam,dslr)"
+               "- $caption(confcam,dslr_longuepose) - $caption(dslr,camera)"
          }
       pack $frm.configure_longuepose -in $frm.frame8 -side left -pady 10 -ipadx 10 -ipady 1
 
@@ -2747,204 +2708,7 @@ namespace eval ::confCam {
 
       #--- si une camera est selectionnee, je recherche la valeur propre a la camera
       set camNo $confCam($camItem,camNo)
-      switch $confCam($camItem,camName) {
-         audine {
-            switch $propertyName {
-               binningList      {
-                  switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                     "parallelport" { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-                     "quickaudine"  { set result [ list 1x1 2x2 3x3 4x4 ] }
-                     "audinet"      { set result [ list 1x1 2x2 3x3 4x4 ] }
-                     "ethernaude"   { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-                  }
-               }
-               binningXListScan {
-                  switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                     "parallelport" { set result [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ] }
-                     "quickaudine"  { set result [ list "" ] }
-                     "audinet"      { set result [ list "" ] }
-                     "ethernaude"   { set result [ list 1 2 ] }
-                  }
-               }
-               binningYListScan {
-                  switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                     "parallelport" { set result [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ] }
-                     "quickaudine"  { set result [ list "" ] }
-                     "audinet"      { set result [ list "" ] }
-                     "ethernaude"   { set result [ list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 \
-                                                        21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 \
-                                                        41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 \
-                                                        61 62 63 64 ] }
-                  }
-               }
-               hasBinning       { set result 1 }
-               hasFormat        { set result 0 }
-               hasLongExposure  { return 0 }
-               hasScan          {
-                  switch -exact [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                     "parallelport" { set result 1 }
-                     "quickaudine"  { set result 0 }
-                     "audinet"      { set result 0 }
-                     "ethernaude"   { set result 1 }
-                  }
-               }
-               hasShutter       { set result 1 }
-               hasVideo         {
-                  switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                     "ethernaude" { set result 2 }
-                     default      { set result 0 }
-                  }
-               }
-               hasWindow        { set result 1 }
-               longExposure     { set result 1 }
-               multiCamera      { set result 0 }
-               shutterList      {
-                  switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
-                     "parallelport" {
-                        #--- O + F + S
-                        set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
-                     }
-                     "quickaudine" {
-                        #--- F + S
-                        set result [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
-                     }
-                     "audinet" {
-                        #--- O + F + S
-                        set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
-                     }
-                     "ethernaude" {
-                        #--- F + S
-                        set result [ list $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
-                     }
-                  }
-               }
-            }
-         }
-         hisis {
-            switch $propertyName {
-               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningXListScan { set result [ list "" ] }
-               binningYListScan { set result [ list "" ] }
-               hasBinning       { set result 1 }
-               hasFormat        { set result 0 }
-               hasLongExposure  { set result 0 }
-               hasScan          { set result 0 }
-               hasShutter       {
-                  if { $conf(hisis,modele) == "11" } {
-                     set result 0
-                  } else {
-                     set result 1
-                  }
-               }
-               hasVideo         { set result 0 }
-               hasWindow        { set result 1 }
-               longExposure     { set result 1 }
-               multiCamera      { set result 0 }
-               shutterList      {
-                  if { $conf(hisis,modele) == "11" } {
-                     set result { }
-                  } else {
-                     #--- O + F + S - A confirmer avec le materiel
-                     set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
-                  }
-               }
-            }
-         }
-         sbig {
-            switch $propertyName {
-               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningXListScan { set result [ list "" ] }
-               binningYListScan { set result [ list "" ] }
-               hasBinning       { set result 1 }
-               hasFormat        { set result 0 }
-               hasLongExposure  { set result 0 }
-               hasScan          { set result 0 }
-               hasShutter       { set result 1 }
-               hasVideo         { set result 0 }
-               hasWindow        { set result 1 }
-               longExposure     { set result 1 }
-               multiCamera      { set result 0 }
-               shutterList      { set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ] }
-            }
-         }
-         andor {
-            switch $propertyName {
-               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningXListScan { set result [ list "" ] }
-               binningYListScan { set result [ list "" ] }
-               hasBinning       { set result 1 }
-               hasFormat        { set result 0 }
-               hasLongExposure  { set result 0 }
-               hasScan          { set result 0 }
-               hasShutter       { set result 1 }
-               hasVideo         { set result 0 }
-               hasWindow        { set result 1 }
-               longExposure     { set result 1 }
-               multiCamera      { set result 0 }
-               shutterList      {
-                  #--- O + F + S - A confirmer avec le materiel
-                  set result [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro) ]
-               }
-            }
-         }
-         starlight {
-            switch $propertyName {
-               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningXListScan { set result [ list "" ] }
-               binningYListScan { set result [ list "" ] }
-               hasBinning       { set result 1 }
-               hasFormat        { set result 0 }
-               hasLongExposure  { set result 0 }
-               hasScan          { set result 0 }
-               hasShutter       { set result 0 }
-               hasVideo         { set result 0 }
-               hasWindow        { set result 1 }
-               longExposure     { set result 1 }
-               multiCamera      { set result 0 }
-               shutterList      { set result [ list "" ] }
-            }
-         }
-         kitty {
-            switch $propertyName {
-               binningList      { set result [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
-               binningXListScan { set result [ list "" ] }
-               binningYListScan { set result [ list "" ] }
-               hasBinning       { set result 1 }
-               hasFormat        { set result 0 }
-               hasLongExposure  { set result 0 }
-               hasScan          { set result 0 }
-               hasShutter       { set result 0 }
-               hasVideo         { set result 0 }
-               hasWindow        { set result 1 }
-               longExposure     { set result 1 }
-               multiCamera      { set result 0 }
-               shutterList      { set result [ list "" ] }
-            }
-         }
-         dslr {
-            switch $propertyName {
-               binningList      { set result [ ::dslr::getBinningList $camNo ] }
-               binningXListScan { set result [ list "" ] }
-               binningYListScan { set result [ list "" ] }
-               hasBinning       { set result 0 }
-               hasFormat        { set result 1 }
-               hasLongExposure  { set result 0 }
-               hasScan          { set result 0 }
-               hasShutter       { set result 0 }
-               hasVideo         { set result 0 }
-               hasWindow        { set result 0 }
-               longExposure     { set result 1 }
-               multiCamera      { set result 0 }
-               shutterList      { set result [ list "" ] }
-            }
-         }
-         default {
-            set result2 [ ::$confCam($camItem,camName)::getPluginProperty $camItem $propertyName ]
-            if { $result2 != "" } {
-               set result $result2
-            }
-         }
-      }
+      set result [ ::$confCam($camItem,camName)::getPluginProperty $camItem $propertyName ]
       return $result
    }
 
@@ -3733,13 +3497,13 @@ namespace eval ::confCam {
                #--- je parametre le type de l'obturateur
                #--- (sauf pour l'EthernAude qui est commande par l'option -shutterinvert)
                if { [ ::confLink::getLinkNamespace $conf(audine,port) ] != "ethernaude" } {
-                  if { $conf(audine,typeobtu) == "$caption(confcam,obtu_audine-)" } {
+                  if { $conf(audine,typeobtu) == "$caption(audine,obtu_audine-)" } {
                      cam$camNo shuttertype audine reverse
-                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_audine)" } {
+                  } elseif { $conf(audine,typeobtu) == "$caption(audine,obtu_audine)" } {
                      cam$camNo shuttertype audine
-                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_i2c)" } {
+                  } elseif { $conf(audine,typeobtu) == "$caption(audine,obtu_i2c)" } {
                      cam$camNo shuttertype audine
-                  } elseif { $conf(audine,typeobtu) == "$caption(confcam,obtu_thierry)" } {
+                  } elseif { $conf(audine,typeobtu) == "$caption(audine,obtu_thierry)" } {
                      set confcolor(obtu_pierre) "1"
                      ::Obtu_Pierre::run
                      cam$camNo shuttertype thierry
