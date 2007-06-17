@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.15 2007-06-16 10:35:51 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.16 2007-06-17 13:09:30 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -32,7 +32,7 @@ proc ::cemes::getPluginTitle { } {
 
 #
 # ::cemes::initPlugin
-#    Initialise les variables conf(cemes,...) et les captions
+#    Initialise les variables conf(cemes,...)
 #
 proc ::cemes::initPlugin { } {
    global conf

@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.10 2007-06-16 10:38:01 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.11 2007-06-17 13:11:02 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -32,7 +32,7 @@ proc ::th7852a::getPluginTitle { } {
 
 #
 # ::th7852a::initPlugin
-#    Initialise les variables conf(th7852a,...) et les captions
+#    Initialise les variables conf(th7852a,...)
 #
 proc ::th7852a::initPlugin { } {
    global conf

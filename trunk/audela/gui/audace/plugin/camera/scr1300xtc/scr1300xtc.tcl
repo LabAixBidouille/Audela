@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.9 2007-06-16 10:37:06 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.10 2007-06-17 13:10:47 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -32,7 +32,7 @@ proc ::scr1300xtc::getPluginTitle { } {
 
 #
 # ::scr1300xtc::initPlugin
-#    Initialise les variables conf(scr1300xtc,...) et les captions
+#    Initialise les variables conf(scr1300xtc,...)
 #
 proc ::scr1300xtc::initPlugin { } {
    global conf

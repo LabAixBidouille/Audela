@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.9 2007-06-16 10:36:48 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.10 2007-06-17 13:10:33 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -32,7 +32,7 @@ proc ::fingerlakes::getPluginTitle { } {
 
 #
 # ::fingerlakes::initPlugin
-#    Initialise les variables conf(fingerlakes,...) et les captions
+#    Initialise les variables conf(fingerlakes,...)
 #
 proc ::fingerlakes::initPlugin { } {
    global conf
