@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.19 2007-06-16 10:40:24 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.20 2007-06-17 13:11:20 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -32,7 +32,7 @@ proc ::webcam::getPluginTitle { } {
 
 #
 # ::webcam::initPlugin
-#    Initialise les variables conf(webcam,$camItem,...) et les captions
+#    Initialise les variables conf(webcam,$camItem,...)
 #
 proc ::webcam::initPlugin { } {
    variable private

@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.10 2007-06-16 10:36:11 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.11 2007-06-17 13:09:46 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -32,7 +32,7 @@ proc ::cookbook::getPluginTitle { } {
 
 #
 # ::cookbook::initPlugin
-#    Initialise les variables conf(cookbook,...) et les captions
+#    Initialise les variables conf(cookbook,...)
 #
 proc ::cookbook::initPlugin { } {
    global conf
