@@ -1,0 +1,79 @@
+#
+# Fichier : andor.cap
+# Mise a jour $Id: andor.cap,v 1.1 2007-06-17 14:05:39 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(andor,camera)                       "Andor"
+
+set caption(andor,obtu_ouvert)                  "Open"
+set caption(andor,obtu_ferme)                   "Closed"
+set caption(andor,obtu_synchro)                 "Synchro"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Ouvert"
+   set caption(andor,obtu_ferme)                "Fermé"
+   set caption(andor,obtu_synchro)              "Synchro"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Aperto"
+   set caption(andor,obtu_ferme)                "Chiuso"
+   set caption(andor,obtu_synchro)              "Sincronizza"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Abierto"
+   set caption(andor,obtu_ferme)                "Cerrado"
+   set caption(andor,obtu_synchro)              "Sincro"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Offen"
+   set caption(andor,obtu_ferme)                "Geschlossen"
+   set caption(andor,obtu_synchro)              "Synchro"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Aberto"
+   set caption(andor,obtu_ferme)                "Fechado"
+   set caption(andor,obtu_synchro)              "Sincro"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Open"
+   set caption(andor,obtu_ferme)                "Closed"
+   set caption(andor,obtu_synchro)              "Synchro"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
