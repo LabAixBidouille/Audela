@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.11 2007-06-14 21:20:22 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.12 2007-06-19 20:06:58 robertdelmas Exp $
 #
 
 # =========================================================
@@ -273,11 +273,17 @@ namespace eval ::acqfen {
       global caption panneau
 
       switch -exact -- $panneau(acqfen,bin_centrage) {
+         "1" {
+            set panneau(acqfen,bin_centrage) 2
+         }
+         "2" {
+            set panneau(acqfen,bin_centrage) 3
+         }
          "3" {
             set panneau(acqfen,bin_centrage) 4
          }
          "4" {
-            set panneau(acqfen,bin_centrage) 3
+            set panneau(acqfen,bin_centrage) 1
          }
       }
       $This.acqcent.butbin config -text $caption(acqfen,bin,$panneau(acqfen,bin_centrage))
