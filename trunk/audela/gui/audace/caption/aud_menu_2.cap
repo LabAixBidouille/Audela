@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.6 2007-06-16 08:44:15 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.7 2007-06-19 20:07:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -233,7 +233,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,exemple>x)                 "Si UA-UB > X      Umbral: 462"
    set caption(seuilWindow,exemple<x)                 "Si UA-UB <= X    Umbral: 4.62e+002"
    set caption(seuilWindow,image)                     "Imagen:"
-   set caption(seuilWindow,N&B)                       "# Noir & Blanc"
+   set caption(seuilWindow,N&B)                       "Blanco y Negro"
    set caption(seuilWindow,couleur)                   "Color"
    set caption(seuilWindow,dynamique)                 "Rango:"
    set caption(seuilWindow,dynamique_max)             "Rango maximo:"
@@ -294,7 +294,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,exemple>x)                 "Wenn SH-ST > X      Schwelle: 462"
    set caption(seuilWindow,exemple<x)                 "Wenn SH-ST <= X    Schwelle: 4.62e+002"
    set caption(seuilWindow,image)                     "Bild:"
-   set caption(seuilWindow,N&B)                       "# Noir & Blanc"
+   set caption(seuilWindow,N&B)                       "Schwarz auf weiß"
    set caption(seuilWindow,couleur)                   "Farbe"
    set caption(seuilWindow,dynamique)                 "Dynamik:"
    set caption(seuilWindow,dynamique_max)             "Maximale Dynamik:"
