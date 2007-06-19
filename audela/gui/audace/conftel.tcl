@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.29 2007-04-12 21:43:31 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.30 2007-06-19 20:18:04 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -21,24 +21,35 @@ namespace eval ::confTel {
    # Demarre le driver selectionne par defaut
    #
    proc init { } {
-      global audace conf
+      global audace conf confTel
 
       #--- initConf
       if { ! [ info exists conf(raquette) ] }           { set conf(raquette)           "1" }
       if { ! [ info exists conf(telescope) ] }          { set conf(telescope)          "lx200" }
       if { ! [ info exists conf(telescope,start) ] }    { set conf(telescope,start)    "0" }
-      if { ! [ info exists conf(telescope,position) ] } { set conf(telescope,position) "+110+20" }
+      if { ! [ info exists conf(telescope,geometry) ] } { set conf(telescope,geometry) "540x480+110+20" }
 
       #--- Charge le fichier caption
       source [ file join $audace(rep_caption) conftel.cap ]
 
+      #--- Charge les plugins des montures
+      source [ file join $audace(rep_plugin) mount lx200 lx200.tcl ]
+      source [ file join $audace(rep_plugin) mount ouranos ouranos.tcl ]
+      source [ file join $audace(rep_plugin) mount audecom audecom.tcl ]
+      source [ file join $audace(rep_plugin) mount temma temma.tcl ]
+      source [ file join $audace(rep_plugin) mount ascom ascom.tcl ]
+      source [ file join $audace(rep_plugin) mount celestron celestron.tcl ]
+
       #--- Charge les fichiers auxiliaires
-      uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecom.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) mount ouranos ouranoscom.tcl ]\""
-      uplevel #0 "source \"[ file join $audace(rep_plugin) mount temma temma.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecomconfig.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_plugin) mount temma temmaconfig.tcl ]\""
 
       #--- Initalise le numero de telescope a nul
       set audace(telNo) "0"
+
+      #--- Initialisation des variables
+      set confTel(geometry) $conf(telescope,geometry)
    }
 
    #
@@ -122,8 +133,7 @@ namespace eval ::confTel {
    #
    proc afficherAide { } {
       variable This
-      global confTel
-      global help
+      global confTel help
 
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -state disabled
@@ -143,7 +153,7 @@ namespace eval ::confTel {
    proc fermer { } {
       variable This
 
-      ::confTel::recup_position
+      ::confTel::recupPosDim
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -state disabled
       $This.cmd.aide configure -state disabled
@@ -559,19 +569,15 @@ namespace eval ::confTel {
    }
 
    #
-   # confTel::recup_position
+   # confTel::recupPosDim
    # Permet de recuperer et de sauvegarder la position de la fenetre de configuration du telescope
    #
-   proc recup_position { } {
+   proc recupPosDim { } {
       variable This
       global conf confTel
 
-      set confTel(telescope,geometry) [ wm geometry $This ]
-      set deb [ expr 1 + [ string first + $confTel(telescope,geometry) ] ]
-      set fin [ string length $confTel(telescope,geometry) ]
-      set confTel(telescope,position) "+[ string range $confTel(telescope,geometry) $deb $fin ]"
-      #---
-      set conf(telescope,position) $confTel(telescope,position)
+      set confTel(geometry) [ wm geometry $This ]
+      set conf(telescope,geometry) $confTel(geometry)
    }
 
    proc createDialog { } {
@@ -586,23 +592,10 @@ namespace eval ::confTel {
          return
       }
       #---
-      set confTel(telescope,position) $conf(telescope,position)
-      #---
-      if { [ info exists confTel(telescope,geometry) ] } {
-         set deb [ expr 1 + [ string first + $confTel(telescope,geometry) ] ]
-         set fin [ string length $confTel(telescope,geometry) ]
-         set confTel(telescope,position) "+[ string range $confTel(telescope,geometry) $deb $fin ]"
-      }
-      #---
       toplevel $This
-      if { $::tcl_platform(os) == "Linux" } {
-         wm geometry $This 640x445$confTel(telescope,position)
-         wm minsize $This 640 445
-      } else {
-         wm geometry $This 510x445$confTel(telescope,position)
-         wm minsize $This 510 445
-      }
-      wm resizable $This 1 0
+      wm geometry $This $confTel(geometry)
+      wm minsize $This 540 480
+      wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(conftel,config)"
       wm protocol $This WM_DELETE_WINDOW ::confTel::fermer
@@ -652,6 +645,37 @@ namespace eval ::confTel {
    }
 
    #
+   # Cree un widget "label" avec une URL du site WEB
+   #
+   proc createUrlLabel { tkparent title url } {
+      global audace color
+
+      label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+      if { $url != "" } {
+         bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
+      }
+      bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
+      bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
+      return  $tkparent.labURL
+   }
+
+   #
+   # Cree un widget "label" pour un document pdf
+   #
+   proc createPdfLabel { tkparent title pdf } {
+      global audace color
+
+      set filename [ file join $audace(rep_plugin) mount audecom french $pdf ]
+      label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+      if { $pdf != "" } {
+         bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Notice_pdf \"$filename\""
+      }
+      bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
+      bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
+      return  $tkparent.labURL
+   }
+
+   #
    # Onglet de configuration du LX200
    #
    proc fillPage1 { nn } {
@@ -661,10 +685,7 @@ namespace eval ::confTel {
       set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
 
       #--- initConf
-      if { ! [ info exists conf(lx200,port) ] }            { set conf(lx200,port)            [ lindex $list_connexion 0 ] }
-      if { ! [ info exists conf(lx200,modele) ] }          { set conf(lx200,modele)          "LX200" }
-      if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
-      if { ! [ info exists conf(lx200,ite-lente_tempo) ] } { set conf(lx200,ite-lente_tempo) "300" }
+      ::lx200::initPlugin
 
       #--- confToWidget
       set confTel(lx200,port)            $conf(lx200,port)
@@ -729,7 +750,7 @@ namespace eval ::confTel {
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
          -command {
             ::confLink::run ::confTel(lx200,port) { serialport audinet } \
-               "- $caption(conftel,controle) - $caption(conftel,lx200)"
+               "- $caption(conftel,controle) - $caption(lx200,monture)"
          }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -812,24 +833,9 @@ namespace eval ::confTel {
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
       pack $frm.lab103 -in $frm.frame5 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(conftel,site_lx200)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame5 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(conftel,site_lx200)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Telscp1)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Telscp1)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(conftel,site_lx200)" \
+         "$caption(conftel,site_lx200)" ]
+      pack $labelName -side top -fill x -pady 2
 
       bind [ Rnotebook:button $nn 1 ] <Button-1> { global confTel ; set confTel(tel) "lx200" }
    }
@@ -843,20 +849,8 @@ namespace eval ::confTel {
       #--- Prise en compte des liaisons
       set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
-      #--- Initialisation des fenetres d'affichage des coordonnees AD et Dec.
-      if { ! [ info exists conf(ouranos,wmgeometry) ] }     { set conf(ouranos,wmgeometry)     "200x70+640+268" }
-      if { ! [ info exists conf(ouranos,x10,wmgeometry) ] } { set conf(ouranos,x10,wmgeometry) "850x500+0+0" }
-
       #--- initConf
-      if { ! [ info exists conf(ouranos,port) ] }           { set conf(ouranos,port)        [ lindex $list_connexion 0 ] }
-      if { ! [ info exists conf(ouranos,cod_ra) ] }         { set conf(ouranos,cod_ra)      "32768" }
-      if { ! [ info exists conf(ouranos,cod_dec) ] }        { set conf(ouranos,cod_dec)     "32768" }
-      if { ! [ info exists conf(ouranos,freq) ] }           { set conf(ouranos,freq)        "1" }
-      if { ! [ info exists conf(ouranos,init) ] }           { set conf(ouranos,init)        "0" }
-      if { ! [ info exists conf(ouranos,inv_ra) ] }         { set conf(ouranos,inv_ra)      "1" }
-      if { ! [ info exists conf(ouranos,inv_dec) ] }        { set conf(ouranos,inv_dec)     "1" }
-      if { ! [ info exists conf(ouranos,show_coord) ] }     { set conf(ouranos,show_coord)  "1" }
-      if { ! [ info exists conf(ouranos,tjrsvisible) ] }    { set conf(ouranos,tjrsvisible) "0" }
+      ::ouranos::initPlugin
 
       #--- confToWidget
       if { $ouranoscom(lecture) != "1" } {
@@ -939,7 +933,7 @@ namespace eval ::confTel {
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
          -command {
             ::confLink::run ::confTel(ouranos,port) { serialport } \
-               "- $caption(conftel,controle) - $caption(conftel,ouranos)"
+               "- $caption(conftel,controle) - $caption(ouranos,monture)"
          }
       pack $frm.configure -in $frm.frame1 -anchor n -side left -padx 10 -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1132,24 +1126,9 @@ namespace eval ::confTel {
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
       pack $frm.lab103 -in $frm.frame6 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(conftel,site_ouranos)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame6 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(conftel,site_ouranos)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Telscp2)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Telscp2)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confTel::createUrlLabel $frm.frame6 "$caption(conftel,site_ouranos)" \
+         "$caption(conftel,site_ouranos)" ]
+      pack $labelName -side top -fill x -pady 2
 
       #---
       if [ winfo exists $audace(base).tjrsvisible ] {
@@ -1182,64 +1161,8 @@ namespace eval ::confTel {
       #--- Prise en compte des liaisons
       set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
-      #--- Initialisation des parametres de la monture lies a la reduction des axes AD et Dec. (par editeur de texte)
-      if { ! [ info exists conf(audecom,dlimp) ] }        { set conf(audecom,dlimp)        "100" }
-      if { ! [ info exists conf(audecom,dlimpmax) ] }     { set conf(audecom,dlimpmax)     "255" }
-      if { ! [ info exists conf(audecom,dlimpmin) ] }     { set conf(audecom,dlimpmin)     "0" }
-      if { ! [ info exists conf(audecom,dlimprecouv) ] }  { set conf(audecom,dlimprecouv)  "192" }
-      if { ! [ info exists conf(audecom,dmaxad) ] }       { set conf(audecom,dmaxad)       "16" }
-      if { ! [ info exists conf(audecom,dmaxadmax) ] }    { set conf(audecom,dmaxadmax)    "16" }
-      if { ! [ info exists conf(audecom,dmaxadmin) ] }    { set conf(audecom,dmaxadmin)    "4" }
-      if { ! [ info exists conf(audecom,dmaxdec) ] }      { set conf(audecom,dmaxdec)      "16" }
-      if { ! [ info exists conf(audecom,dmaxdecmax) ] }   { set conf(audecom,dmaxdecmax)   "16" }
-      if { ! [ info exists conf(audecom,dmaxdecmin) ] }   { set conf(audecom,dmaxdecmin)   "4" }
-      if { ! [ info exists conf(audecom,dsuividelta) ] }  { set conf(audecom,dsuividelta)  "192" }
-      if { ! [ info exists conf(audecom,dsuivinom) ] }    { set conf(audecom,dsuivinom)    "192" }
-      if { ! [ info exists conf(audecom,dsuivinommax) ] } { set conf(audecom,dsuivinommax) "255" }
-      if { ! [ info exists conf(audecom,dsuivinommin) ] } { set conf(audecom,dsuivinommin) "130" }
-      if { ! [ info exists conf(audecom,dsuivinomxt0) ] } { set conf(audecom,dsuivinomxt0) "37.9159872" }
-      if { ! [ info exists conf(audecom,internom) ] }     { set conf(audecom,internom)     "197.4791" }
-
       #--- initConf
-      if { ! [ info exists conf(audecom,port) ] }         { set conf(audecom,port)         [ lindex $list_connexion 0 ] }
-      if { ! [ info exists conf(audecom,ad) ] }           { set conf(audecom,ad)           "999999" }
-      if { ! [ info exists conf(audecom,dec) ] }          { set conf(audecom,dec)          "999999" }
-      if { ! [ info exists conf(audecom,dep_val) ] }      { set conf(audecom,dep_val)      "250" }
-      if { ! [ info exists conf(audecom,german) ] }       { set conf(audecom,german)       "0" }
-      if { ! [ info exists conf(audecom,intra_extra) ] }  { set conf(audecom,intra_extra)  "0" }
-      if { ! [ info exists conf(audecom,inv_rot) ] }      { set conf(audecom,inv_rot)      "0" }
-      if { ! [ info exists conf(audecom,gotopluslong) ] } { set conf(audecom,gotopluslong) "0" }
-      if { ! [ info exists conf(audecom,king) ] }         { set conf(audecom,king)         "1" }
-      if { ! [ info exists conf(audecom,limp) ] }         { set conf(audecom,limp)         "50" }
-      if { ! [ info exists conf(audecom,maxad) ] }        { set conf(audecom,maxad)        "16" }
-      if { ! [ info exists conf(audecom,maxdec) ] }       { set conf(audecom,maxdec)       "16" }
-      if { ! [ info exists conf(audecom,mobile) ] }       { set conf(audecom,mobile)       "0" }
-      if { ! [ info exists conf(audecom,pec) ] }          { set conf(audecom,pec)          "1" }
-      if { ! [ info exists conf(audecom,rat_ad) ] }       { set conf(audecom,rat_ad)       "0.5" }
-      if { ! [ info exists conf(audecom,rat_dec) ] }      { set conf(audecom,rat_dec)      "0.5" }
-      if { ! [ info exists conf(audecom,rpec) ] }         { set conf(audecom,rpec)         "6" }
-      if { ! [ info exists conf(audecom,type) ] }         { set conf(audecom,type)         "2" }
-      if { ! [ info exists conf(audecom,t0) ] }           { set conf(audecom,t0)           "192" }
-      if { ! [ info exists conf(audecom,t1) ] }           { set conf(audecom,t1)           "192" }
-      if { ! [ info exists conf(audecom,t2) ] }           { set conf(audecom,t2)           "192" }
-      if { ! [ info exists conf(audecom,t3) ] }           { set conf(audecom,t3)           "192" }
-      if { ! [ info exists conf(audecom,t4) ] }           { set conf(audecom,t4)           "192" }
-      if { ! [ info exists conf(audecom,t5) ] }           { set conf(audecom,t5)           "192" }
-      if { ! [ info exists conf(audecom,t6) ] }           { set conf(audecom,t6)           "192" }
-      if { ! [ info exists conf(audecom,t7) ] }           { set conf(audecom,t7)           "192" }
-      if { ! [ info exists conf(audecom,t8) ] }           { set conf(audecom,t8)           "192" }
-      if { ! [ info exists conf(audecom,t9) ] }           { set conf(audecom,t9)           "192" }
-      if { ! [ info exists conf(audecom,t10) ] }          { set conf(audecom,t10)          "192" }
-      if { ! [ info exists conf(audecom,t11) ] }          { set conf(audecom,t11)          "192" }
-      if { ! [ info exists conf(audecom,t12) ] }          { set conf(audecom,t12)          "192" }
-      if { ! [ info exists conf(audecom,t13) ] }          { set conf(audecom,t13)          "192" }
-      if { ! [ info exists conf(audecom,t14) ] }          { set conf(audecom,t14)          "192" }
-      if { ! [ info exists conf(audecom,t15) ] }          { set conf(audecom,t15)          "192" }
-      if { ! [ info exists conf(audecom,t16) ] }          { set conf(audecom,t16)          "192" }
-      if { ! [ info exists conf(audecom,t17) ] }          { set conf(audecom,t17)          "192" }
-      if { ! [ info exists conf(audecom,t18) ] }          { set conf(audecom,t18)          "192" }
-      if { ! [ info exists conf(audecom,t19) ] }          { set conf(audecom,t19)          "192" }
-      if { ! [ info exists conf(audecom,vitesse) ] }      { set conf(audecom,vitesse)      "30" }
+      ::audecom::initPlugin
 
       #--- confToWidget
       set confTel(audecom,port)         $conf(audecom,port)
@@ -1369,7 +1292,7 @@ namespace eval ::confTel {
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
          -command {
             ::confLink::run ::confTel(audecom,port) { serialport } \
-               "- $caption(conftel,controle) - $caption(conftel,audecom)"
+               "- $caption(conftel,controle) - $caption(audecom,monture)"
          }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1480,24 +1403,9 @@ namespace eval ::confTel {
       label $frm.lab103 -text "$caption(conftel,document_ref)"
       pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(conftel,doc_audecom)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame3 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le visualiseur de notice et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "[ file join $audace(rep_plugin) mount audecom french $caption(conftel,doc_audecom) ]"
-         ::audace::Lance_Notice_pdf $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Telscp3)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Telscp3)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confTel::createPdfLabel $frm.frame3 "$caption(conftel,doc_audecom)" \
+         "$caption(conftel,doc_audecom)" ]
+      pack $labelName -side top -fill x -pady 2
 
       bind [ Rnotebook:button $nn 3 ] <Button-1> { global confTel ; set confTel(tel) "audecom" }
    }
@@ -1512,14 +1420,7 @@ namespace eval ::confTel {
       set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
       #--- initConf
-      if { ! [ info exists conf(temma,port) ] }       { set conf(temma,port)       [ lindex $list_connexion 0 ] }
-      if { ! [ info exists conf(temma,correc_AD) ] }  { set conf(temma,correc_AD)  "50" }
-      if { ! [ info exists conf(temma,correc_Dec) ] } { set conf(temma,correc_Dec) "50" }
-      if { ! [ info exists conf(temma,liaison) ] }    { set conf(temma,liaison)    "1" }
-      if { ! [ info exists conf(temma,modele) ] }     { set conf(temma,modele)     "0" }
-      if { ! [ info exists conf(temma,suivi_ad) ] }   { set conf(temma,suivi_ad)   "0" }
-      if { ! [ info exists conf(temma,suivi_dec) ] }  { set conf(temma,suivi_dec)  "0" }
-      if { ! [ info exists conf(temma,type) ] }       { set conf(temma,type)       "0" }
+      ::temma::initPlugin
 
       #--- confToWidget
       set confTel(temma,port)        $conf(temma,port)
@@ -1582,7 +1483,7 @@ namespace eval ::confTel {
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
          -command {
             ::confLink::run ::confTel(temma,port) { serialport } \
-               "- $caption(conftel,controle) - $caption(conftel,temma)"
+               "- $caption(conftel,controle) - $caption(temma,monture)"
          }
       pack $frm.configure -in $frm.frame1 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1718,7 +1619,7 @@ namespace eval ::confTel {
       checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
          -highlightthickness 0 -variable confTel(raquette)
       pack $frm.raquette -in $frm.frame7  -side left -padx 10 -pady 10
-         
+
       #--- Frame raquette
       ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
       pack $frm.nom_raquette -in $frm.frame7 -side left -padx 0 -pady 10
@@ -1727,24 +1628,9 @@ namespace eval ::confTel {
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
       pack $frm.lab103 -in $frm.frame8 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(conftel,site_temma)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame8 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(conftel,site_temma)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Telscp4)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Telscp4)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confTel::createUrlLabel $frm.frame8 "$caption(conftel,site_temma)" \
+         "$caption(conftel,site_temma)" ]
+      pack $labelName -side top -fill x -pady 2
 
       bind [ Rnotebook:button $nn 4 ] <Button-1> { global confTel ; set confTel(tel) "temma" }
    }
@@ -1753,37 +1639,10 @@ namespace eval ::confTel {
    # Onglet de configuration des drivers ASCOM
    #
    proc fillPage5 { nn } {
-      global conf
-      global audace
-      global caption
-      global confTel
-      global color
-      global frmm
-
-      #--- Drivers ASCOM installes sur le PC
-      set confTel(ascom_drivers) ""
-      if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
-         set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" } msg ]
-         if { $erreur == "0" } {
-            foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" ] {
-               if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
-                  lappend confTel(ascom_drivers) [list $r $key]
-               }
-            }
-         } else {
-            set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" } msg ]
-            if { $erreur == "0" } {
-               foreach key [ ::registry keys "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers" ] {
-                  if { [ catch { ::registry get "HKEY_LOCAL_MACHINE\\Software\\ASCOM\\Telescope Drivers\\$key" "" } r ] == 0 } {
-                     lappend confTel(ascom_drivers) [list $r $key]
-                  }
-               }
-            }
-         }
-      }
+      global audace caption color conf confTel frmm
 
       #--- initConf
-      if { ! [ info exists conf(ascom,driver) ] } { set conf(ascom,driver) [ lindex $confTel(ascom_drivers) 0 ] }
+      ::ascom::initPlugin
 
       #--- confToWidget
       set confTel(ascom,driver) $conf(ascom,driver)
@@ -1794,7 +1653,7 @@ namespace eval ::confTel {
       set frm $frmm(Telscp5)
 
       #--- Definition des couleurs
-      set fg  $color(blue)
+      set fg $color(blue)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1824,7 +1683,7 @@ namespace eval ::confTel {
       checkbutton $frm.raquette -text "$caption(conftel,raquette_tel)" \
          -highlightthickness 0 -variable confTel(raquette)
       pack $frm.raquette -in $frm.frame2 -side left -padx 10 -pady 10
-      
+
       #--- Frame raquette
       ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
       pack $frm.nom_raquette -in $frm.frame2 -side left -padx 0 -pady 10
@@ -1833,24 +1692,9 @@ namespace eval ::confTel {
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
       pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(conftel,site_ascom)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame3 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(conftel,site_ascom)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Telscp5)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Telscp5)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confTel::createUrlLabel $frm.frame3 "$caption(conftel,site_ascom)" \
+         "$caption(conftel,site_ascom)" ]
+      pack $labelName -side top -fill x -pady 2
 
       bind [Rnotebook:button $nn 5] <Button-1> { global confTel ; set confTel(tel) "ascom" }
    }
@@ -1865,8 +1709,7 @@ namespace eval ::confTel {
       set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
       #--- initConf
-      if { ! [ info exists conf(celestron,port) ] }   { set conf(celestron,port)   [ lindex $list_connexion 0 ] }
-      if { ! [ info exists conf(celestron,format) ] } { set conf(celestron,format) "1" }
+      ::celestron::initPlugin
 
       #--- confToWidget
       set confTel(celestron,port)   $conf(celestron,port)
@@ -1923,7 +1766,7 @@ namespace eval ::confTel {
       button $frm.configure -text "$caption(conftel,configurer)" -relief raised \
          -command {
             ::confLink::run ::confTel(celestron,port) { serialport } \
-               "- $caption(conftel,controle) - $caption(conftel,celestron)"
+               "- $caption(conftel,controle) - $caption(celestron,monture)"
          }
       pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -1978,24 +1821,9 @@ namespace eval ::confTel {
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
       pack $frm.lab103 -in $frm.frame5 -side top -fill x -pady 2
 
-      label $frm.labURL -text "$caption(conftel,site_celestron)" -font $audace(font,url) -fg $color(blue)
-      pack $frm.labURL -in $frm.frame5 -side top -fill x -pady 2
-
-      #--- Creation du lien avec le navigateur web et changement de sa couleur
-      bind $frm.labURL <ButtonPress-1> {
-         set filename "$caption(conftel,site_celestron)"
-         ::audace::Lance_Site_htm $filename
-      }
-      bind $frm.labURL <Enter> {
-         global frmm
-         set frm $frmm(Telscp6)
-         $frm.labURL configure -fg $color(purple)
-      }
-      bind $frm.labURL <Leave> {
-         global frmm
-         set frm $frmm(Telscp6)
-         $frm.labURL configure -fg $color(blue)
-      }
+      set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(conftel,site_celestron)" \
+         "$caption(conftel,site_celestron)" ]
+      pack $labelName -side top -fill x -pady 2
 
       bind [ Rnotebook:button $nn 6 ] <Button-1> { global confTel ; set confTel(tel) "celestron" }
    }
@@ -2484,7 +2312,7 @@ namespace eval ::confTel {
       }
 
       #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees
-      
+
       if { $conf(raquette) == "1" } {
          #--- je cree la nouvelle raquette
          ::confPad::configureDriver $confTel(nomRaquette)
