@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.25 2007-06-08 15:20:51 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.26 2007-06-19 20:07:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -622,7 +622,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_flat-field)          "Flat-Field Bild:"
    set caption(pretraitement,aucune)                    "Keine"
    set caption(pretraitement,auto)                      "Auto"
-   set caption(pretraitement,rep-images)                "# Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+   set caption(pretraitement,rep-images)                "Die Bilder müssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
 
    set caption(pretraitement,liste_serie)               "Index Liste:"
    set caption(pretraitement,nom_generique)             "Generischen Nahmen:"
