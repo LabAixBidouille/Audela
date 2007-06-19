@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.85 2007-06-17 14:09:58 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.86 2007-06-19 20:10:25 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -12,10 +12,7 @@ namespace eval ::confCam {
    # Demarre le driver selectionne par defaut
    #
    proc init { } {
-      global audace
-      global conf
-      global confCam
-      global caption
+      global audace caption conf confCam
 
       #--- Charge le fichier caption
       source [ file join $audace(rep_caption) confcam.cap ]
@@ -113,6 +110,7 @@ namespace eval ::confCam {
       set confCam(currentCamItem) "A"
 
       #--- Initialisation des variables d'echange avec les widgets
+      set confCam(geometry)   "$conf(camera,geometry)"
       set confCam(A,visuName) "visu1"
       set confCam(B,visuName) "$caption(confcam,nouvelle_visu)"
       set confCam(C,visuName) "$caption(confcam,nouvelle_visu)"
@@ -125,7 +123,6 @@ namespace eval ::confCam {
       set confCam(A,camName)  ""
       set confCam(B,camName)  ""
       set confCam(C,camName)  ""
-      set confCam(geometry)   "$conf(camera,geometry)"
       set confCam(A,threadNo) "0"
       set confCam(B,threadNo) "0"
       set confCam(C,threadNo) "0"
@@ -152,8 +149,7 @@ namespace eval ::confCam {
    #
    proc run { } {
       variable This
-      global audace
-      global confCam
+      global audace confCam
 
       set This "$audace(base).confCam"
       createDialog
@@ -182,8 +178,7 @@ namespace eval ::confCam {
    # Ouvre les cameras
    #
    proc startDriver { } {
-      global conf
-      global confCam
+      global conf confCam
 
       if { $conf(camera,A,start) == "1" } {
          set confCam(A,camName) $conf(camera,A,camName)
@@ -289,10 +284,7 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver le bouton Tests pour la fabrication de la camera Audine
    #
    proc ConfAudine { } {
-      global audace
-      global caption
-      global confCam
-      global frmm
+      global audace caption confCam frmm
 
       set camItem $confCam(currentCamItem)
 
@@ -319,9 +311,7 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver les boutons de configuration de la Kitty K2
    #
    proc ConfKitty { } {
-      global audace
-      global confCam
-      global frmm
+      global audace confCam frmm
 
       set camItem $confCam(currentCamItem)
 
@@ -350,9 +340,7 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver le bouton de configuration des APN (DSLR)
    #
    proc ConfDSLR { } {
-      global audace
-      global confCam
-      global frmm
+      global audace confCam frmm
 
       set camItem $confCam(currentCamItem)
 
@@ -394,7 +382,7 @@ namespace eval ::confCam {
    #
    proc recupPosDim { } {
       variable This
-      global conf
+      global conf confCam
 
       set confCam(geometry) [ wm geometry $This ]
       set conf(camera,geometry) $confCam(geometry)
@@ -402,10 +390,7 @@ namespace eval ::confCam {
 
    proc createDialog { } {
       variable This
-      global audace
-      global conf
-      global confCam
-      global caption
+      global audace caption conf confCam
 
       #---
       if { [ winfo exists $This ] } {
@@ -415,8 +400,6 @@ namespace eval ::confCam {
          focus $This
          return
       }
-      #---
-      set confCam(geometry) $conf(camera,geometry)
       #---
       toplevel $This
       wm geometry $This $confCam(geometry)
@@ -604,12 +587,7 @@ namespace eval ::confCam {
    # Fenetre de configuration de Audine
    #
    proc fillPage1 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
+      global audace caption color conf confCam frmm
 
       #--- confToWidget
       set confCam(audine,ampli_ccd) [ lindex "$caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours)" $conf(audine,ampli_ccd) ]
@@ -825,12 +803,7 @@ namespace eval ::confCam {
    # Fenetre de configuration des Hi-SIS
    #
    proc fillPage2 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
+      global audace caption color conf confCam frmm
 
       #--- confToWidget
       set confCam(hisis,delai_a)  $conf(hisis,delai_a)
@@ -907,7 +880,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio0 -in $frm.frame1 -anchor center -side left -padx 10
+      pack $frm.radio0 -in $frm.frame1 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS22
       radiobutton $frm.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -958,7 +931,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio1 -in $frm.frame1 -anchor center -side left -padx 10
+      pack $frm.radio1 -in $frm.frame1 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS23
       radiobutton $frm.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -989,7 +962,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio2 -in $frm.frame1 -anchor center -side left -padx 10
+      pack $frm.radio2 -in $frm.frame1 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS24
       radiobutton $frm.radio3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -1020,7 +993,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio3 -in $frm.frame1 -anchor center -side left -padx 10
+      pack $frm.radio3 -in $frm.frame1 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS33
       radiobutton $frm.radio4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -1051,7 +1024,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio4 -in $frm.frame1 -anchor center -side left -padx 10
+      pack $frm.radio4 -in $frm.frame1 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS36
       radiobutton $frm.radio5 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -1082,7 +1055,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio5 -in $frm.frame2 -anchor center -side left -padx 10
+      pack $frm.radio5 -in $frm.frame2 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS39
       radiobutton $frm.radio6 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -1113,7 +1086,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio6 -in $frm.frame2 -anchor center -side left -padx 10
+      pack $frm.radio6 -in $frm.frame2 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS43
       radiobutton $frm.radio7 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -1144,7 +1117,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio7 -in $frm.frame2 -anchor center -side left -padx 10
+      pack $frm.radio7 -in $frm.frame2 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS44
       radiobutton $frm.radio8 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -1175,7 +1148,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio8 -in $frm.frame2 -anchor center -side left -padx 10
+      pack $frm.radio8 -in $frm.frame2 -anchor center -side left -padx 10
 
       #--- Bouton radio Hi-SIS48
       radiobutton $frm.radio9 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
@@ -1206,7 +1179,7 @@ namespace eval ::confCam {
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $frm
          }
-         pack $frm.radio9 -in $frm.frame2 -anchor center -side left -padx 10
+      pack $frm.radio9 -in $frm.frame2 -anchor center -side left -padx 10
 
       #--- Definition du port
       label $frm.lab1 -text "$caption(confcam,port)"
@@ -1328,12 +1301,7 @@ namespace eval ::confCam {
    # Fenetre de configuration des SBIG
    #
    proc fillPage3 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
+      global audace caption color conf confCam frmm
 
       #--- confToWidget
       set confCam(sbig,cool)     $conf(sbig,cool)
@@ -1498,12 +1466,7 @@ namespace eval ::confCam {
    # Fenetre de configuration des Starlight
    #
    proc fillPage5 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
+      global audace caption color conf confCam frmm
 
       #--- confToWidget
       set confCam(starlight,acc)    [ lindex "$caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur)" $conf(starlight,acc) ]
@@ -1632,12 +1595,7 @@ namespace eval ::confCam {
    # Fenetre de configuration des Kitty
    #
    proc fillPage6 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
+      global audace caption color conf confCam frmm
 
       #--- confToWidget
       set confCam(kitty,captemp) [ lindex "$caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5)" $conf(kitty,captemp) ]
@@ -1982,12 +1940,7 @@ namespace eval ::confCam {
    # Fenetre de configuration des APN (DSLR)
    #
    proc fillPage10 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
+      global audace caption color conf confCam frmm
 
       #--- confToWidget
       set confCam(dslr,longuepose)           $conf(dslr,longuepose)
@@ -2142,12 +2095,7 @@ namespace eval ::confCam {
    # Fenetre de configuration de la Andor
    #
    proc fillPage11 { nn } {
-      global audace
-      global confCam
-      global conf
-      global caption
-      global color
-      global frmm
+      global audace caption color conf confCam frmm
 
       #--- confToWidget
       set confCam(andor,cool)        $conf(andor,cool)
@@ -2328,9 +2276,7 @@ namespace eval ::confCam {
    #
    proc connectCamera { } {
       variable This
-      global audace
-      global caption
-      global color
+      global audace caption color
 
       if [ winfo exists $audace(base).connectCamera ] {
          destroy $audace(base).connectCamera
@@ -2532,10 +2478,7 @@ namespace eval ::confCam {
    # Arrete la camera camItem
    #----------------------------------------------------------------------------
    proc stopItem { camItem } {
-      global audace
-      global caption
-      global conf
-      global confCam
+      global audace caption conf confCam
 
       if { $confCam($camItem,camName) != "" } {
          set camNo $confCam($camItem,camNo)
@@ -2859,11 +2802,7 @@ namespace eval ::confCam {
    #
    proc configureCamera { camItem } {
       variable This
-      global audace
-      global caption
-      global conf
-      global confcolor
-      global confCam
+      global audace caption conf confCam confcolor
 
       #--- Initialisation de la variable erreur
       set erreur "1"
@@ -3597,9 +3536,7 @@ namespace eval ::confCam {
    #
    proc widgetToConf { camItem } {
       variable This
-      global conf
-      global confCam
-      global caption
+      global caption conf confCam
 
       set nn $This.usr.book
 
@@ -3714,9 +3651,7 @@ namespace eval ::confCam {
 
    proc SbigDispTemp { } {
       variable This
-      global caption
-      global confCam
-      global frmm
+      global caption confCam frmm
 
       catch {
          set frm $frmm(Camera3)
@@ -3740,9 +3675,7 @@ namespace eval ::confCam {
 
    proc KittyDispTemp { } {
       variable This
-      global caption
-      global confCam
-      global frmm
+      global caption confCam frmm
 
       catch {
          set frm $frmm(Camera6)
@@ -3760,9 +3693,7 @@ namespace eval ::confCam {
 
    proc AndorDispTemp { } {
       variable This
-      global caption
-      global confCam
-      global frmm
+      global caption confCam frmm
 
       catch {
          set frm $frmm(Camera11)
