@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.67 2007-06-16 10:50:08 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.68 2007-06-20 21:34:00 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -625,7 +625,7 @@ namespace eval ::confVisu {
          set private($visuNo,camProductName) ""
          if { [winfo exists $private($visuNo,This)] == 1} {
             $private($visuNo,This).fra1.labCam_name_labURL configure \
-               -text "$caption(confVisu,2points) $caption(confVisu,tiret)" -fg $color(blue)
+               -text "$caption(confVisu,2points) $caption(confVisu,non_connecte)" -fg $color(blue)
          }
       } else {
          set private($visuNo,camName)        [cam$camNo name]
@@ -1246,7 +1246,7 @@ namespace eval ::confVisu {
          grid configure $This.fra1.labCam_labURL -column 6 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labCam_name_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(confVisu,2points) $caption(confVisu,tiret)" -fg $color(blue)
+            -text "$caption(confVisu,2points) $caption(confVisu,non_connecte)" -fg $color(blue)
          grid configure $This.fra1.labCam_name_labURL -column 7 -row 0 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labTel_labURL -font $audace(font,arial_8_n) -anchor w \
@@ -1254,7 +1254,7 @@ namespace eval ::confVisu {
          grid configure $This.fra1.labTel_labURL -column 6 -row 1 -sticky we -in $This.fra1 -pady 2
 
          label $This.fra1.labTel_name_labURL -font $audace(font,arial_8_n) -anchor w \
-            -text "$caption(confVisu,2points) $caption(confVisu,tiret)" -fg $color(blue)
+            -text "$caption(confVisu,2points) $caption(confVisu,non_connecte)" -fg $color(blue)
          grid configure $This.fra1.labTel_name_labURL -column 7 -row 1 -sticky we -in $This.fra1 -pady 2
 
       pack $This.fra1 -anchor center -expand 0 -fill x -side bottom
