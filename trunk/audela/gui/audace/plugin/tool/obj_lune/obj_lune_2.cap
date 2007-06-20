@@ -1,6 +1,6 @@
 #
 # Fichier : obj_lune_2.cap
-# Mise a jour $Id: obj_lune_2.cap,v 1.6 2007-01-27 14:47:57 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_2.cap,v 1.7 2007-06-20 19:14:09 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,7 +17,7 @@ set caption(obj_lune2,visible_ombre)         "Site Visible, but in the Shadow."
 set caption(obj_lune2,face_cachee)           "Site Not Visible."
 
 set caption(obj_lune2,manque_cartes_1)       "Please download the Moon maps from:"
-set caption(obj_lune2,manque_cartes_2)       "http://software.audela.free.fr/version_actu_eng.htm#lune"
+set caption(obj_lune2,manque_cartes_2)       "http://www.audela.org/download/atlas_obj_lune.zip"
 set caption(obj_lune2,manque_cartes_3)       "There is a single file for the Windows and Linux systems."
 set caption(obj_lune2,manque_cartes_4)       "This file must be unzipped in the 'gui\\audace\\plugin\\tool\\obj_lune' folder."
 
@@ -30,7 +30,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune2,face_cachee)        "Site inobservable."
 
    set caption(obj_lune2,manque_cartes_1)    "Vous devez télécharger les cartes de la Lune à l'adresse :"
-   set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu.htm#lune"
+   set caption(obj_lune2,manque_cartes_2)    "http://www.audela.org/download/atlas_obj_lune.zip"
    set caption(obj_lune2,manque_cartes_3)    "Il existe un fichier unique pour la version Windows et la version Linux."
    set caption(obj_lune2,manque_cartes_4)    "Ce fichier doit être dézippé dans le répertoire 'gui\\audace\\plugin\\tool\\obj_lune'."
 
@@ -43,7 +43,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune2,face_cachee)        "Sito non osservabile."
 
    set caption(obj_lune2,manque_cartes_1)    "Dovete scaricare le mappe lunari da:"
-   set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu_eng.htm#lune"
+   set caption(obj_lune2,manque_cartes_2)    "http://www.audela.org/download/atlas_obj_lune.zip"
    set caption(obj_lune2,manque_cartes_3)    "Esiste un file unico per la versione Windows e quella Linux."
    set caption(obj_lune2,manque_cartes_4)    "Questo file andra` decompresso nel direttorio 'gui\\audace\\plugin\\tool\\obj_lune'."
 
@@ -56,7 +56,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune2,face_cachee)        "Lugar no visible."
 
    set caption(obj_lune2,manque_cartes_1)    "Por favor, descargue los mapas de la Luna de:"
-   set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu_eng.htm#lune"
+   set caption(obj_lune2,manque_cartes_2)    "http://www.audela.org/download/atlas_obj_lune.zip"
    set caption(obj_lune2,manque_cartes_3)    "Hay un único fihero tanto para la versión Windows como para la versión Linux."
    set caption(obj_lune2,manque_cartes_4)    "Este fichero debe descomprimirse en la carpeta 'gui\\audace\\plugin\\tool\\obj_lune'."
 
@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune2,face_cachee)        "Unbeobachtbar Ort."
 
    set caption(obj_lune2,manque_cartes_1)    "Sie müssen die Monkarten von die Adresse fernladen:"
-   set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu_eng.htm#lune"
+   set caption(obj_lune2,manque_cartes_2)    "http://www.audela.org/download/atlas_obj_lune.zip"
    set caption(obj_lune2,manque_cartes_3)    "Für Linux und Windows Systeme ist eine gemeinsame Datei vorhanden."
    set caption(obj_lune2,manque_cartes_4)    "Diese Datei muß im Ordner 'gui\\audace\\plugin\\tool\\obj_lune' entpackt werden."
 
@@ -82,7 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune2,face_cachee)        "Local não observável."
 
    set caption(obj_lune2,manque_cartes_1)    "Deve descarregar da internet as cartas da lua no endereço :"
-   set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu.htm#lune"
+   set caption(obj_lune2,manque_cartes_2)    "http://www.audela.org/download/atlas_obj_lune.zip"
    set caption(obj_lune2,manque_cartes_3)    "Existe um ficheiro único para a versão Windows e para a versão Linux."
    set caption(obj_lune2,manque_cartes_4)    "Este ficheiro deve ser descomprimido no directório 'gui\\audace\\plugin\\tool\\obj_lune'."
 
@@ -95,7 +95,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(obj_lune2,face_cachee)        "Stedet ikke synligt."
 
    set caption(obj_lune2,manque_cartes_1)    "Vær venlig at downloade Månekort fra:"
-   set caption(obj_lune2,manque_cartes_2)    "http://software.audela.free.fr/version_actu_eng.htm#lune"
+   set caption(obj_lune2,manque_cartes_2)    "http://www.audela.org/download/atlas_obj_lune.zip"
    set caption(obj_lune2,manque_cartes_3)    "Der findes en enkelt fil til Windows og Linux systemerne/operativsystemerne."
    set caption(obj_lune2,manque_cartes_4)    "Denne fil skal unzippes i 'gui\\audace\\plugin\\tool\\obj_lune' mappen."
 

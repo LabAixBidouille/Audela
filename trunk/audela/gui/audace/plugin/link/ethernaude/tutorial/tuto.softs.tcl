@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.softs.tcl,v 1.6 2006-06-20 19:37:08 robertdelmas Exp $
+# Mise a jour $Id: tuto.softs.tcl,v 1.7 2007-06-20 19:13:49 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -15,8 +15,8 @@ if {[string compare $langage french] ==0 } {
    set texte(firstdark_3) "\
 Le boîtier EthernAude est piloté par les logiciels suivants :\n\
 \n\
-Prism : http://www.astrosurf.com/prism\n\
-AudeLA : http://software.audela.free.fr\n\
+Prism    : http://www.astrosurf.com/prism\n\
+AudeLA   : http://www.audela.org\n\
 TeleAuto : http://www.astrosurf.com/teleauto\n\
 \n\
 Ces logiciels vous permettront de profiter d'un véritable\
@@ -34,8 +34,8 @@ http://www.astrosurf.com/ethernaude\
    set texte(firstdark_3) "\
 The EthernAude device is controlled by the following software:\n\
 \n\
-Prism : http://www.astrosurf.com/prism\n\
-AudeLA : http://software.audela.free.fr\n\
+Prism    : http://www.astrosurf.com/prism\n\
+AudeLA   : http://www.audela.org\n\
 TeleAuto : http://www.astrosurf.com/teleauto\n\
 \n\
 These software programs have well designed image acquisition and processing\
