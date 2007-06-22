@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.10 2007-06-17 13:10:47 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.11 2007-06-22 21:16:18 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -187,6 +187,23 @@ proc ::scr1300xtc::configureCamera { camItem } {
    cam$camNo mirrorv $conf(scr1300xtc,mirv)
    #---
    ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
+}
+
+#
+# ::scr1300xtc::stop
+#    Arrete la camera SCR1300XTC
+#
+proc ::scr1300xtc::stop { camItem } {
+   global conf confCam
+
+   #--- Je ferme la liaison d'acquisition de la camera
+   ::confLink::delete $conf(scr1300xtc,port) "cam$confCam($camItem,camNo)" "acquisition"
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
+   }
 }
 
 #

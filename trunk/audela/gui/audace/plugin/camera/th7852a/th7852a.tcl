@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.11 2007-06-17 13:11:02 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.12 2007-06-22 21:16:33 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -152,6 +152,20 @@ proc ::th7852a::configureCamera { camItem } {
    cam$camNo timescale $conf(th7852a,coef)
    #---
    ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+}
+
+#
+# ::th7852a::stop
+#    Arrete la camera TH7852A
+#
+proc ::th7852a::stop { camItem } {
+   global confCam
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
+   }
 }
 
 #
