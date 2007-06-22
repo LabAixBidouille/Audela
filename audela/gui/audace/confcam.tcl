@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.86 2007-06-19 20:10:25 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.87 2007-06-22 21:17:46 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -2499,50 +2499,77 @@ namespace eval ::confCam {
                if { [ winfo exists $audace(base).testAudine ] } {
                   ::testAudine::fermer
                }
+               #--- Gestion des boutons
                ::confCam::ConfAudine
                #--- Je ferme la camera
                if { $confCam($camItem,camNo) != 0 } {
                  cam::delete $confCam($camItem,camNo)
+                 set confCam($camItem,camNo) 0
                }
             }
-            cookbook {
+            hisis {
                #--- Je ferme la liaison d'acquisition de la camera
-               ::confLink::delete $conf(cookbook,port) "cam$camNo" "acquisition"
+               ::confLink::delete $conf(hisis,port) "cam$camNo" "acquisition"
                #--- Je ferme la camera
                if { $confCam($camItem,camNo) != 0 } {
                  cam::delete $confCam($camItem,camNo)
+                 set confCam($camItem,camNo) 0
+               }
+            }
+            sbig {
+               #--- Je ferme la liaison d'acquisition de la camera
+               ::confLink::delete $conf(sbig,port) "cam$camNo" "acquisition"
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+                 set confCam($camItem,camNo) 0
+               }
+            }
+            cookbook {
+               ::cookbook::stop $camItem
+            }
+            starlight {
+               #--- Je ferme la liaison d'acquisition de la camera
+               ::confLink::delete $conf(starlight,port) "cam$camNo" "acquisition"
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+                 set confCam($camItem,camNo) 0
                }
             }
             kitty {
+               #--- Je ferme la liaison d'acquisition de la camera
+               ::confLink::delete $conf(kitty,port) "cam$camNo" "acquisition"
+               #--- Gestion des boutons
                ::confCam::ConfKitty
                #--- Je ferme la camera
                if { $confCam($camItem,camNo) != 0 } {
                  cam::delete $confCam($camItem,camNo)
+                 set confCam($camItem,camNo) 0
                }
             }
             webcam {
                ::webcam::stop $camItem
             }
+            th7852a {
+               ::th7852a::stop $camItem
+            }
             scr1300xtc {
-               #--- Je ferme la liaison d'acquisition de la camera
-               ::confLink::delete $conf(scr1300xtc,port) "cam$camNo" "acquisition"
-               #--- Je ferme la camera
-               if { $confCam($camItem,camNo) != 0 } {
-                 cam::delete $confCam($camItem,camNo)
-               }
+               ::scr1300xtc::stop $camItem
             }
             dslr {
                #--- Si la fenetre Telechargement d'images est affichee, je la ferme
                if { [ winfo exists $audace(base).telecharge_image ] } {
                   destroy $audace(base).telecharge_image
                }
+               #--- Gestion des boutons
                ::confCam::ConfDSLR
                #--- Je ferme la liaison longuepose
                if { $conf(dslr,longuepose) == 1 } {
                   ::confLink::delete $conf(dslr,longueposeport) "cam$camNo" "longuepose"
                }
                #--- Restitue si necessaire l'etat du service WIA sous Windows
-               if {  $::tcl_platform(platform) == "windows" } {
+               if { $::tcl_platform(platform) == "windows" } {
                    if { [ cam$camNo systemservice ] != "$conf(dslr,statut_service)" } {
                       cam$camNo systemservice $conf(dslr,statut_service)
                    }
@@ -2552,6 +2579,19 @@ namespace eval ::confCam {
                  cam::delete $confCam($camItem,camNo)
                  set confCam($camItem,camNo) 0
                }
+            }
+            andor {
+               #--- Je ferme la camera
+               if { $confCam($camItem,camNo) != 0 } {
+                 cam::delete $confCam($camItem,camNo)
+                 set confCam($camItem,camNo) 0
+               }
+            }
+            fli {
+               ::fingerlakes::stop $camItem
+            }
+            cemes {
+               ::cemes::stop $camItem
             }
             coolpix {
                ::coolpix::stop $camItem
@@ -2870,6 +2910,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 4096 0
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "22" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele) ($conf(hisis,res))\
@@ -2893,6 +2935,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorv $conf(hisis,mirv)
                   cam$camNo delayloops $conf(hisis,delai_a) $conf(hisis,delai_b) $conf(hisis,delai_c)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "23" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -2915,6 +2959,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "24" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -2937,6 +2983,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "33" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -2959,6 +3007,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "36" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -2981,6 +3031,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "39" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -3003,6 +3055,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "43" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -3025,6 +3079,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "44" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -3047,6 +3103,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(hisis,modele) == "48" } {
                   set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 ]
                   console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
@@ -3069,6 +3127,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(hisis,mirh)
                   cam$camNo mirrorv $conf(hisis,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                }
             }
             sbig {
@@ -3103,6 +3163,8 @@ namespace eval ::confCam {
                if { [ info exists confCam(sbig,aftertemp) ] == "0" } {
                   ::confCam::SbigDispTemp
                }
+               #--- je cree la liaison utilisee par la camera pour l'acquisition
+               set linkNo [ ::confLink::create $conf(sbig,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
             }
             cookbook {
                ::cookbook::configureCamera $camItem
@@ -3120,6 +3182,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(starlight,mirh)
                   cam$camNo mirrorv $conf(starlight,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(starlight,modele) == "MX916" } {
                   set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
@@ -3131,6 +3195,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(starlight,mirh)
                   cam$camNo mirrorv $conf(starlight,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(starlight,modele) == "HX516" } {
                   set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
                   console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
@@ -3142,6 +3208,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(starlight,mirh)
                   cam$camNo mirrorv $conf(starlight,mirv)
                   ::confVisu::visuDynamix $visuNo 32767 -32768
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                }
             }
             kitty {
@@ -3162,6 +3230,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(kitty,mirh)
                   cam$camNo mirrorv $conf(kitty,mirv)
                   ::confVisu::visuDynamix $visuNo 4096 -4096
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(kitty,modele) == "255" } {
                   set camNo [ cam::create kitty $conf(kitty,port) -name KITTY255 \
                      -canbits [ lindex $conf(kitty,res) 0 ] ]
@@ -3179,6 +3249,8 @@ namespace eval ::confCam {
                   cam$camNo mirrorh $conf(kitty,mirh)
                   cam$camNo mirrorv $conf(kitty,mirv)
                   ::confVisu::visuDynamix $visuNo 4096 -4096
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                } elseif { $conf(kitty,modele) == "K2" } {
                   set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ]
                   console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele)\
@@ -3200,6 +3272,8 @@ namespace eval ::confCam {
                   if { [ info exists confCam(kitty,aftertemp) ] == "0" } {
                      ::confCam::KittyDispTemp
                   }
+                  #--- je cree la liaison utilisee par la camera pour l'acquisition
+                  set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
                }
             }
             webcam {
