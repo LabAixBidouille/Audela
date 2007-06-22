@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.13 2007-06-02 00:17:57 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.14 2007-06-22 19:48:32 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -199,6 +199,7 @@ namespace eval ::focs {
          } else {
             set panneau(focs,bin) "1"
          }
+         set panneau(focs,bin_centrage) $panneau(focs,bin)
          #--- Parametrage de la prise de vue en Centrage ou en Fenetrage
          if { [ info exists panneau(focs,actuel) ] == "0" } {
             set panneau(focs,actuel) "$caption(foc,centrage)"
@@ -213,6 +214,7 @@ namespace eval ::focs {
             } else {
                set panneau(focs,bin) "1"
             }
+            set panneau(focs,bin_centrage) $panneau(focs,bin)
             set dimxy [ cam$audace(camNo) nbcells ]
             set panneau(focs,window) [ list 1 1 [ lindex $dimxy 0 ] [ lindex $dimxy 1 ] ]
             set panneau(focs,actuel) "$caption(foc,centrage)"
@@ -226,7 +228,7 @@ namespace eval ::focs {
                   set b $a
                   #--- Tient compte du binning
                   foreach e $a {
-                     set b [ lreplace $b $kk $kk [ expr $panneau(focs,bin)*$e ] ]
+                     set b [ lreplace $b $kk $kk [ expr $panneau(focs,bin_centrage)*$e ] ]
                      incr kk
                   }
                   set panneau(focs,window) $b
