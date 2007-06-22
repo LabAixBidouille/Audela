@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.11 2007-06-17 13:09:46 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.12 2007-06-22 21:15:48 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -204,6 +204,23 @@ proc ::cookbook::configureCamera { camItem } {
    cam$camNo mirrorv $conf(cookbook,mirv)
    #---
    ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
+}
+
+#
+# ::cookbook::stop
+#    Arrete la camera CB245
+#
+proc ::cookbook::stop { camItem } {
+   global conf confCam
+
+   #--- Je ferme la liaison d'acquisition de la camera
+   ::confLink::delete $conf(cookbook,port) "cam$confCam($camItem,camNo)" "acquisition"
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
+   }
 }
 
 #

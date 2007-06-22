@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.10 2007-06-17 13:10:33 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.11 2007-06-22 21:16:05 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -229,6 +229,20 @@ proc ::fingerlakes::configureCamera { camItem } {
    #---
    if { [ info exists confCam(fingerlakes,aftertemp) ] == "0" } {
       ::fingerlakes::FLIDispTemp
+   }
+}
+
+#
+# ::fingerlakes::stop
+#    Arrete la camera FLI
+#
+proc ::fingerlakes::stop { camItem } {
+   global confCam
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
    }
 }
 

@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.16 2007-06-17 13:09:30 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.17 2007-06-22 21:15:34 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -228,6 +228,20 @@ proc ::cemes::configureCamera { camItem } {
    #---
    if { [ info exists confCam(cemes,aftertemp) ] == "0" } {
       ::cemes::CemesDispTemp
+   }
+}
+
+#
+# ::cemes::stop
+#    Arrete la camera Cemes
+#
+proc ::cemes::stop { camItem } {
+   global confCam
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
    }
 }
 
