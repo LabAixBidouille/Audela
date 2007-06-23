@@ -306,20 +306,9 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    }
    /* --- c'est parti pour l'Ethernaude -- */
    sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> offset=%d, w=%d, cam->nb_photox=%d",__LINE__,offset,w,cam->nb_photox); util_log(ligne,0);
-   if (offset < 1) {
-      offset = 1;
-   }
-   if (offset > cam->nb_photox) {
-      offset = cam->nb_photox;
-   }
    if (w < 1) {
       w = 1;
    }
-   if (offset + w > cam->nb_photox) {
-      w = cam->nb_photox - (offset - 1);
-   }
-   offset = offset + cam->nb_deadbeginphotox;
-   w = w / b;
    if (b < 1) {
       b = 1;
    }
@@ -329,7 +318,26 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    if (dt < 0) {
       dt = -dt;
    }
-   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> offset=%d, w=%d, cam->nb_photox=%d",__LINE__,offset,w,cam->nb_photox); util_log(ligne,0);
+   
+   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d> cam->mirrorv=%d",__LINE__,cam->mirrorv); util_log(ligne,0);
+   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d>   offset=%d, w=%d, cam->nb_photox=%d",__LINE__,offset,w,cam->nb_photox); util_log(ligne,0);
+   if (cam->mirrorv == 0) {
+      // La lecture avec ethernaude est inversee par rapport a
+      // l'audine, donc on teste mirroirv a 0.
+      offset = cam->nb_deadbeginphotox + cam->nb_photox - ( offset - 1 ) - ( w - 1);
+   } else {
+      offset = cam->nb_deadbeginphotox + offset;
+   }
+   sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d>   -> offset=%d",__LINE__,offset); util_log(ligne,0);
+   if (offset < 1) {
+      offset = 1;
+      sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d>   => offset rounded to 1",__LINE__); util_log(ligne,0);
+   }
+   if ( offset + w - 1 > cam->nb_photox + cam->nb_deadbeginphotox + cam->nb_deadendphotox ) {
+      offset = cam->nb_deadbeginphotox + cam->nb_photox + cam->nb_deadendphotox - ( w - 1 );
+      sprintf(ligne,"<LIBETHERNAUDE/cmdEthernaudeScan:%d>   => offset clipped to %d",__LINE__, offset); util_log(ligne,0);
+   }
+   w = w / b;
 
    /* - INIT_TDIMode sur le CCD numero 1 - */
    paramCCD_clearall(&ParamCCDIn, 1);
