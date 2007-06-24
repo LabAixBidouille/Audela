@@ -1438,6 +1438,7 @@ void CPixelsRgb::MirX()
 }
 
 
+/*
 void CPixelsRgb::MirY()
 {
    TYPE_PIXELS_RGB *pixelsR = NULL;
@@ -1494,7 +1495,7 @@ void CPixelsRgb::MirY()
    }
 
 }
-
+*/
 
 void CPixelsRgb::NGain(float gain)
 {

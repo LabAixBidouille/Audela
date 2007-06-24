@@ -2020,6 +2020,7 @@ void CBuffer::Log(float coef, float offset)
    pix->Log(coef, offset);
 }
 
+/*
 void CBuffer::MirX()
 {
    pix->MirX();
@@ -2029,6 +2030,7 @@ void CBuffer::MirY()
 {
    pix->MirY();
 }
+*/
 
 void CBuffer::NGain(float gain)
 {

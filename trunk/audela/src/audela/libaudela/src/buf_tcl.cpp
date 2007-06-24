@@ -3109,7 +3109,7 @@ int cmdPointer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdTtMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;
-   char *ligne;
+   char *ligne,*s;
    int retour = TCL_OK;
 
    ligne = new char[1000];
@@ -3119,17 +3119,20 @@ int cmdTtMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
-      // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
+      s = new char[1000];
+      strcpy(s,"INVERT mirror");
+      // Appel a la methode du buffer
       try {
-         buffer->MirX();
-         ligne[0] = 0;
+         buffer->TtImaSeries(s);
+         strcpy(ligne,"");
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s ",argv[1], e.gets());
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       }
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      delete s;
    }
 
    delete ligne;
@@ -3144,7 +3147,7 @@ int cmdTtMirrorX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 int cmdTtMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;
-   char *ligne;
+   char *ligne,*s;
    int retour = TCL_OK;
 
    ligne = new char[1000];
@@ -3153,17 +3156,20 @@ int cmdTtMirrorY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    } else {
-      // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
+      s = new char[1000];
+      strcpy(s,"INVERT flip");
+      // Appel a la methode du buffer
       try {
-      buffer->MirY();
-         ligne[0] = 0;
+         buffer->TtImaSeries(s);
+         strcpy(ligne,"");
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s ",argv[1], e.gets());
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_ERROR;
       }
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      delete s;
    }
 
    delete ligne;

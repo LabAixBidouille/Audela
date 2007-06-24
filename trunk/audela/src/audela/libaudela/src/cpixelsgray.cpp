@@ -635,7 +635,7 @@ void CPixelsGray::MirX()
    if(msg) throw CErrorLibtt(msg);
 }
 
-
+/*
 void CPixelsGray::MirY()
 {
    int msg, datatype;
@@ -648,6 +648,7 @@ void CPixelsGray::MirY()
    delete s;
    if(msg) throw CErrorLibtt(msg);
 }
+*/
 
 
 void CPixelsGray::NGain(float gain)
