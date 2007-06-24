@@ -36,21 +36,21 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 /****************************************************************************/
 /****************************************************************************/
 /* pour tester dans Audace:*/
-/* ml_geostatident "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd0_20060927.txt" 
+/* ml_geostatident "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd0_20060927.txt"
 "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd_20060927.txt" */
 {
 	int result,retour,diffjour,n_in,n_in1,kimage,nimages,kimage2,nimages2,k,k1,k2,k3,date,temp,nsat;
 	int kmin,kmini,problemetelechargement,pareil;
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
-	char s[1000],ligne[1000],home[35],im[40],lign[1000],toto[1000],valid[4]; 
+	char s[1000],ligne[1000],home[35],im[40],lign[1000],toto[1000],valid[4];
 	char satelname[26],noradname[10],cosparname[10];
-	FILETIME ftCreate, ftAccess, ftWrite; 
+	FILETIME ftCreate, ftAccess, ftWrite;
 	SYSTEMTIME stUTC, stCreateLocal,stWriteLocal;
 	FILE *f_in1, *f_in2;
-	char lpszCreate[20]; 
-	char lpszWrite[20]; 
-	char tempspc[20]; 
+	char lpszCreate[20];
+	char lpszWrite[20];
+	char tempspc[20];
 	SYSTEMTIME St;
 	HANDLE hFile ;
 	struct_ligsat *lignes,*lignes2;
@@ -58,8 +58,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	Tcl_Obj *list2, *list3;
 	int argcc,argc2;
 	char **argvv,**argv2;
-	
-	
+
+
 	if(argc<2) {
       sprintf(s,"Usage: %s file_0 file_ident ?path_geo? ?path_http? ?url?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -73,40 +73,40 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			argv[3] = "c:/audela/audela/ros/src/grenouille/geo.txt";
 			argv[4] = "c:/Program Files/Apache Group/Apache2/htdocs/ros/tle.txt";
 			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
-		} 
+		}
 		if(argc == 3) {
 			argv[4] = "c:/Program Files/Apache Group/Apache2/htdocs/ros/tle.txt";
 			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
-		} 
+		}
 		if(argc == 4) {
 			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
-		} 
+		}
 		problemetelechargement=0;
 		/* récupère la date et heure des modifs du fichier */
-		hFile = CreateFile(argv[3],0,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL); 
+		hFile = CreateFile(argv[3],0,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
 		retour = GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
-		
+
 		/* Converti le temps de creation en temps local */
-		FileTimeToSystemTime(&ftCreate, &stUTC); 
-		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);  
-  
+		FileTimeToSystemTime(&ftCreate, &stUTC);
+		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);
+
 		/* Converti le temps dern.modif en temps local. */
-		FileTimeToSystemTime(&ftWrite, &stUTC); 
-		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal); 
-			
-		wsprintf(lpszCreate, TEXT("%02d/%02d/%d %02d:%02d"), 
-		stCreateLocal.wMonth, stCreateLocal.wDay, stCreateLocal.wYear, 
-        stCreateLocal.wHour, stCreateLocal.wMinute); 
-  
-		wsprintf(lpszWrite, TEXT("%02d/%02d/%d %02d:%02d"), 
-        stWriteLocal.wMonth, stWriteLocal.wDay, stWriteLocal.wYear, 
-        stWriteLocal.wHour, stWriteLocal.wMinute); 
+		FileTimeToSystemTime(&ftWrite, &stUTC);
+		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal);
+
+		wsprintf(lpszCreate, TEXT("%02d/%02d/%d %02d:%02d"),
+		stCreateLocal.wMonth, stCreateLocal.wDay, stCreateLocal.wYear,
+        stCreateLocal.wHour, stCreateLocal.wMinute);
+
+		wsprintf(lpszWrite, TEXT("%02d/%02d/%d %02d:%02d"),
+        stWriteLocal.wMonth, stWriteLocal.wDay, stWriteLocal.wYear,
+        stWriteLocal.wHour, stWriteLocal.wMinute);
 
 		GetLocalTime(&St);
-		wsprintf(tempspc, TEXT("%02d/%02d/%d %02d:%02d"), 
-		St.wMonth, St.wDay, St.wYear, 
-        St.wHour, St.wMinute); 
-			
+		wsprintf(tempspc, TEXT("%02d/%02d/%d %02d:%02d"),
+		St.wMonth, St.wDay, St.wYear,
+        St.wHour, St.wMinute);
+
 		/* --- vérifie si le fichier est vieux d'un jour, si oui il y a un pb lors du telechargement --- */
 		diffjour = ml_differencejour(stWriteLocal.wDay,stWriteLocal.wMonth,stWriteLocal.wYear,St.wDay,St.wMonth,St.wYear);
 		if ( diffjour>1 ){
@@ -118,7 +118,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 		f_in1=fopen(argv[4],"r");
 		if (f_in1==NULL) {
-			sprintf(s,"file %s not found, pas de fichier tle",argv[4]);		
+			sprintf(s,"file %s not found, pas de fichier tle",argv[4]);
 		} else {
 			n_in1=0;
 			while (feof(f_in1)==0) {
@@ -127,10 +127,10 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				}
 			}
 			fclose(f_in1);
-			if (n_in1!=0) {	
+			if (n_in1!=0) {
 				f_in2=fopen("c:/audela/audela/ros/src/grenouille/tle2.txt","a+");
 				if (f_in2==NULL) {
-					sprintf(s,"file %s not found",f_in2);					
+					sprintf(s,"file %s not found",f_in2);
 				}
 				n_in=0;
 				while (feof(f_in2)==0) {
@@ -148,13 +148,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				f_in1=fopen(argv[4],"r");
 				if (f_in1==NULL) {
 					sprintf(s,"file %s not found, pas de fichier tle",argv[4]);
-					Tcl_SetResult(interp,s,TCL_VOLATILE);			
-				}  
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+				}
 				n_in1=0;
 				while (feof(f_in1)==0) {
 					if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
-						strcpy(lignes[n_in1].texte,ligne);					
-						fprintf(f_in2,"%s",lignes[n_in1].texte);				
+						strcpy(lignes[n_in1].texte,ligne);
+						fprintf(f_in2,"%s",lignes[n_in1].texte);
 						n_in1++;
 					}
 				}
@@ -162,10 +162,10 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				fclose(f_in2);
 				free(lignes);
 			}
-		}	
+		}
 		/* est-ce que le fichier bdd exist?*/
 		f_in1=fopen(argv[2],"r");
-		if (f_in1==NULL) {	
+		if (f_in1==NULL) {
 			f_in2=fopen(argv[1],"r");
 			if (f_in2==NULL) {
 				sprintf(s,"FILE: %s DOESN'T EXIST", argv[1]);
@@ -191,7 +191,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
 					n_in++;
 				}
-			}							
+			}
 			lignes=(struct_ligsat*)malloc(n_in*sizeof(struct_ligsat));
 			if (lignes==NULL) {
 				sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in);
@@ -199,7 +199,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				free(lignes);
 				return TCL_ERROR;
 			}
-			
+
 			fclose(f_in1);
 			n_in1=0;
 			/* pour le fichier bdd */
@@ -213,7 +213,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				if (fgets(ligne,sizeof(ligne),f_in2)!=NULL) {
 					n_in1++;
 				}
-			}	
+			}
 			lignes2=(struct_ligsat*)malloc(n_in1*sizeof(struct_ligsat));
 			if (lignes2==NULL) {
 				sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in1);
@@ -246,24 +246,24 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						} else {
 							lignes[n_in].nouvelledate=date;
 						}
-					
-					} else {						
+
+					} else {
 						if (n_in <= 2) {
 							date=0;
 							lignes[n_in].nouvelledate=1;
-						} else {	
+						} else {
 							k++;
 							date=k+1;
 							lignes[n_in].nouvelledate=k;
 						}
 					}
-				}	 
+				}
 				n_in++;
 			}
 			fclose(f_in1);
 			nimages=kimage-2;
 			n_in=n_in-1;
-		
+
 			kimage2=0;
 			k=0;
 			n_in1=0;
@@ -281,14 +281,14 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 							lignes2[n_in1].comment=0;
 						}
 						kimage2++;
-					}	
+					}
 				 }
 				 n_in1++;
 			}
 			fclose(f_in2);
-			nimages2=kimage2-2;	
+			nimages2=kimage2-2;
 			n_in1=n_in1-1;
-			/* --- on cherche les lignes qui manquent dans le fichier de sortie --- */	
+			/* --- on cherche les lignes qui manquent dans le fichier de sortie --- */
 			/*tester*/
 			for (k=0;k<n_in;k++) {
 				if (lignes[k].comment!=0) {
@@ -312,7 +312,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						if (pareil>=120) {
 							lignes[k].kimage1 = 0;
 							lignes2[k2].kimage1 = 0;
-							break;		
+							break;
 						}
 					}
 					if (lignes[k].kimage1 == 0) {
@@ -326,18 +326,18 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				sprintf(s,"file_0 %s not created",argv[1]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				free(lignes);
-				free(lignes2);	
+				free(lignes2);
 				return TCL_ERROR;
 			}
-			temp=0;	
+			temp=0;
 			for (k=0;k<n_in;k++) {
-				if (lignes[k].kimage1 != 0) {	
+				if (lignes[k].kimage1 != 0) {
 					/* on a une nouvelle ligne*/
-					/*il faut copier lignes[k1].ligne dans lignes[nimages2+1]*/	
+					/*il faut copier lignes[k1].ligne dans lignes[nimages2+1]*/
 					if (temp == 0) {
 						fprintf(f_in1,"\n%s",lignes[k].texte);
 					} else {
-						
+
 						if ((lignes[k].nouvelledate != lignes[temp].nouvelledate)&&(temp!=0)) {
 							fprintf(f_in1,"\n%s",lignes[k].texte);
 						} else {
@@ -346,12 +346,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					}
 					temp=k;
 				}
-			}				
+			}
 			fclose(f_in1);
-			free(lignes); 
+			free(lignes);
 			free(lignes2);
 		}
-		
+
 		f_in2=fopen(argv[2],"rt");
 		if (f_in2==NULL) {
 			sprintf(s,"file_0 %s not found",argv[2]);
@@ -398,7 +398,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						if ((ligne[k]=='G')&&(ligne[k+1]=='P')&&(ligne[k+2]=='S')) {
 							for (k2=k+4;k2<145;k2++){
 								if (ligne[k2]== ')') {
-									for (k3=k;k3<k2;k3++) { s[k3-k]=ligne[k3]; } ; s[k3-k]='\0';							
+									for (k3=k;k3<k2;k3++) { s[k3-k]=ligne[k3]; } ; s[k3-k]='\0';
 									strcpy(home,s);
 									break;
 								}
@@ -414,13 +414,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
 						lignes2[n_in1].comment=1;
 						kimage2++;
-					} 	
+					}
 				}
 				if (lignes2[n_in1].comment==1) {
 					k1=146 ; k2=156 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
-					strcpy(lignes2[n_in1].ident,s);	
+					strcpy(lignes2[n_in1].ident,s);
 					result= strlen(lignes2[n_in1].ident);
-					retour = strncmp(lignes2[n_in1].ident,"            \0",7);	
+					retour = strncmp(lignes2[n_in1].ident,"            \0",7);
 					if ((retour==0) || (result<=3)) {
 						/* --- le satellite n'est pas identifiée --- */
 						k1=0; k2=144; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
@@ -432,12 +432,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						k1=93 ; k2=101; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						lignes2[n_in1].ra=atof(s);
 						/* transforme le fichier de tle en ephemeride */
-						strcpy(toto,"c:/audela/audela/ros/src/grenouille/tle2.txt");						
+						strcpy(toto,"c:/audela/audela/ros/src/grenouille/tle2.txt");
 						sprintf(lign,"mc_tle2ephem {%s} %s {%s}",im,toto,home);
 						result = Tcl_Eval(interp,lign);
-						
+
 						if (result==TCL_OK) {
-							list=NULL;		
+							list=NULL;
 							list2 = Tcl_GetObjResult  (interp);
 							list = Tcl_GetString (list2);
 							code = Tcl_SplitList(interp,list,&argcc,&argvv);
@@ -445,7 +445,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 									sprintf(ligne, "Probleme sur le liste des ephemerides");
 									Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 									return TCL_ERROR;
-							}		
+							}
 							kmin=0;
 							kmini=-1;
 							distmin=1e20;
@@ -460,12 +460,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								/* calcul la distance et angle entre les deux coordonnées */
 								sprintf(lign,"mc_anglesep {%14.12f %14.12f %14.12f %14.12f}",ra0,dec0,ra,dec);
 								result = Tcl_Eval(interp,lign);
-						
+
 								if (result==TCL_OK) {
 									list3 = Tcl_GetObjResult  (interp);
 									distang = Tcl_GetString (list3);
 									code = Tcl_SplitList(interp,distang,&argc2,&argv2);
-								}		
+								}
 								k1= 0 ; k2= 12 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
 								dist=atof(s);
 								k1= 14 ; k2= 28 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
@@ -474,7 +474,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 									distmin = dist;
 									kmini=kmin;
 									anglmin=angl;
-								}	
+								}
 								kmin++;
 							}
 							if (distmin<=0.3) {
@@ -491,7 +491,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								}
 								for (k1=k+1;k1<30;k1++){
 									if (argvv[kmini][k1]== '}') {
-										for (k2=k;k2<k1;k2++) { s[k2-k]=argvv[kmini][k2]; } ; s[k2-k]='\0';							
+										for (k2=k;k2<k1;k2++) { s[k2-k]=argvv[kmini][k2]; } ; s[k2-k]='\0';
 										strcpy(satelname,s);
 										break;
 									}
@@ -503,7 +503,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								}
 								for (k1=k+1;k1<60;k1++){
 									if (argvv[kmini][k1]== '}') {
-										for (k2=k;k2<k1;k2++) { s[k2-k]=argvv[kmini][k2]; } ; s[k2-k]='\0';							
+										for (k2=k;k2<k1;k2++) { s[k2-k]=argvv[kmini][k2]; } ; s[k2-k]='\0';
 										strcpy(noradname,s);
 										break;
 									}
@@ -515,23 +515,23 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								}
 								for (k1=k+1;k1<80;k1++){
 									if (argvv[kmini][k1]== ' ') {
-										for (k2=k;k2<k1;k2++) { s[k2-k]=argvv[kmini][k2]; } ; s[k2-k]='\0';							
+										for (k2=k;k2<k1;k2++) { s[k2-k]=argvv[kmini][k2]; } ; s[k2-k]='\0';
 										strcpy(cosparname,s);
 										break;
 									}
 								}
 								k=strlen(satelname);
 								k1=24-k;
-								strcat(lignes2[n_in1].texte,valid);	
+								strcat(lignes2[n_in1].texte,valid);
 								strcat(lignes2[n_in1].texte,satelname);
-						
+
 								for (k2=0;k2<k1;k2++) {
 									strcat(lignes2[n_in1].texte," ");
 								}
-							
+
 								k=strlen(noradname);
 								k1=9-k;
-								
+
 								if (k1>0) {
 									for (k2=0;k2<=k1;k2++) {
 										strcat(noradname," ");
@@ -543,27 +543,27 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								strcat(lignes2[n_in1].ident,cosparname);
 								lignes2[n_in1].distance = distmin;
 								lignes2[n_in1].angle = anglmin;
-								
+
 							} else {
 									/* on rajoute rien à  ligne[].texte*/
 							}
-						} else {							
+						} else {
 							sprintf(ligne, "Probleme avec les tle");
 							Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-							result = TCL_ERROR;							
+							result = TCL_ERROR;
 						}
 					} else {
 						/* --- le satellite est deja identifiée --- */
 						strcpy(lignes2[n_in1].texte,ligne);
 						lignes2[n_in1].kobject=0;
 						nsat++;
-					}	
+					}
 				} else {
 					strcpy(lignes2[n_in1].texte,ligne);
 				}
 				n_in1++;
 			}
-			
+
 		}
 		fclose(f_in1);
 		/* si on en a qui sont pas identifiés */
@@ -578,16 +578,16 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				sprintf(s,"file_0 %s not created",argv[2]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				free(lignes);
-				free(lignes2);	
+				free(lignes2);
 				return TCL_ERROR;
 			}
 			fprintf(f_in1,"%s",lignes2[0].texte);
 			fprintf(f_in1,"%s",lignes2[1].texte);
-			fprintf(f_in1,"%s",lignes2[2].texte);	
+			fprintf(f_in1,"%s",lignes2[2].texte);
 			for (k=3;k<n_in1;k++) {
 				if (lignes2[k].comment==1){
 					if (lignes2[k].kobject!=0) {
-						fprintf(f_in1,"%s %09.5f %07.3f %s\n",lignes2[k].texte,lignes2[k].distance,lignes2[k].angle,lignes2[k].ident);	
+						fprintf(f_in1,"%s %09.5f %07.3f %s\n",lignes2[k].texte,lignes2[k].distance,lignes2[k].angle,lignes2[k].ident);
 					} else {
 						fprintf(f_in1,"%s",lignes2[k].texte);
 					}
@@ -601,7 +601,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		free(lignes);
 		result = TCL_OK;
 	}
-	
+
 	return result;
 }
 
@@ -873,7 +873,7 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
                      for (k3=kdebs[ki3];k3<=kfins[ki3];k3++) {
                         if (lignes[k3].comment!=0) {
                            continue;
-                        } 
+                        }
                         jd3=lignes[k3].jd;
                         if (fabs(jd3-jd2)>jjdifmin) {
                            continue;
@@ -941,7 +941,7 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
                fprintf(f_in,"\n");
             }
             fprintf(f_in,"%s",lignes[k].texte);
-            /*fprintf(f_in," K=%d => matching_id=%s => matched=%d\n",k,lignes[k].matching_id,lignes[k].matched);*/
+            //fprintf(f_in," K=%d => matching_id=%s => matched=%d\n",k,lignes[k].matching_id,lignes[k].matched);
             kimage=lignes[k].kimage;
          }
       }
@@ -1113,7 +1113,7 @@ int mltcl_getinfoimage(Tcl_Interp *interp,int numbuf, ml_image *image)
 //***************************************************************************
 
 TT_STATUS InterruptsCallback (TT_EVENT eEventType,FILETIME* pFileTime,DWORD mot,PVOID pContext)
- 
+
 {
 	SYSTEMTIME_EX	SystemTime;
 	char s[100];
@@ -1122,7 +1122,7 @@ TT_STATUS InterruptsCallback (TT_EVENT eEventType,FILETIME* pFileTime,DWORD mot,
 	if (TT_FileTimeToSystemTimeEx(pFileTime, &SystemTime) != TT_SUCCESS)
 	{
 		sprintf(s,"Error converting time from file time to system time!\n");
-		return TT_SUCCESS;	  
+		return TT_SUCCESS;
 	}
 
 	switch(eEventType)
@@ -1146,13 +1146,13 @@ TT_STATUS InterruptsCallback (TT_EVENT eEventType,FILETIME* pFileTime,DWORD mot,
 		sprintf(s,"\nUNKNOWN Interrupt!!! ");
 		return TT_SUCCESS;
 	}
-		
-	
-	printf("\nTime: %d/%02d/%02d %02d:%02d:%02d.%03d%03d", 
-            SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, 
-            SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, 
+
+
+	printf("\nTime: %d/%02d/%02d %02d:%02d:%02d.%03d%03d",
+            SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay,
+            SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond,
             SystemTime.wMilliseconds, SystemTime.wMicroseconds);
-			
+
 
 	return TT_SUCCESS;
 }
@@ -1186,7 +1186,7 @@ double Cmd_mltcl_savedategps(ClientData clientData, Tcl_Interp *interp, int argc
 		Tcl_SetResult(interp, s, TCL_VOLATILE);
 		return -1;
 	}
-	if (TT_GetDeviceInfo(hDevice, &Model, &dwBus, &dwSlot) != TT_SUCCESS)	
+	if (TT_GetDeviceInfo(hDevice, &Model, &dwBus, &dwSlot) != TT_SUCCESS)
 	{
 		sprintf(s,"Error getting card info!\n");
 		Tcl_SetResult(interp, s, TCL_VOLATILE);
@@ -1197,7 +1197,7 @@ double Cmd_mltcl_savedategps(ClientData clientData, Tcl_Interp *interp, int argc
 		sprintf(s,"PCI %x Stress Test @ Bus: %d @ Slot: %d \n ", Model, dwBus, dwSlot);
 		Tcl_SetResult(interp, s, TCL_VOLATILE);
 	}
-	
+
 	/// Register Callback for interrupts
 	if (TT_RegisterCallback(hDevice, InterruptsCallback, NULL) != TT_SUCCESS)
 	{
@@ -1206,62 +1206,62 @@ double Cmd_mltcl_savedategps(ClientData clientData, Tcl_Interp *interp, int argc
 		TT_CloseDevice(hDevice);
 		return -1;
 	}
-	
+
 	if (TT_ReadGpsInfo(hDevice, &Position, &GpsSignals, &Antenna) == TT_SUCCESS)
 		/* si on a de l'info des satellites */
 	{
 		if (TT_SetExternalEvent(hDevice, TRUE) != TT_SUCCESS)
-		{	
+		{
 			sprintf(s,"Error: ne peut pas recevoir d'evenement exterieur!\n");
 			Tcl_SetResult(interp, s, TCL_VOLATILE);
 			TT_CloseDevice(hDevice);
 			return -1;
 		} else {
-	
+
 			Sleep (2000); /*attend pdt 2 sec un evenement exterieur*/
 
 			TT_SetExternalEvent(hDevice, FALSE);
-			ulRegisterAddress = strtol("0x174",0,16);	
+			ulRegisterAddress = strtol("0x174",0,16);
 			dateok=0;
 			result = TT_GetRegister(hDevice,ulRegisterAddress,&ucRegisterValue);
-			if (result == TT_SUCCESS) {	
+			if (result == TT_SUCCESS) {
 				printf(" %x 10-6 sec \n",ucRegisterValue);
-				secm6=ucRegisterValue;					
+				secm6=ucRegisterValue;
 			} else {
 				dateok=1;
 			}
 			result = TT_GetRegister(hDevice,ulRegisterAddress + 1,&ucRegisterValue);
-			if (result == TT_SUCCESS) {	
+			if (result == TT_SUCCESS) {
 				printf(" %x 10-4 sec \n",ucRegisterValue);
-				secm4=ucRegisterValue;	//secm devient en decimal alors qu'on veut les deux chiffres de l'hexa			
+				secm4=ucRegisterValue;	//secm devient en decimal alors qu'on veut les deux chiffres de l'hexa
 			} else {
 				dateok=1;
-			}	
+			}
 			result = TT_GetRegister(hDevice,ulRegisterAddress + 2,&ucRegisterValue);
-			if (result == TT_SUCCESS) {	
+			if (result == TT_SUCCESS) {
 				printf(" %x 10-2 sec \n",ucRegisterValue);
-				secm2=ucRegisterValue;				
+				secm2=ucRegisterValue;
 			} else {
 				dateok=1;;
 			}
 			result = TT_GetRegister(hDevice,ulRegisterAddress + 3,&ucRegisterValue);
-			if (result == TT_SUCCESS) {	
+			if (result == TT_SUCCESS) {
 				printf(" %x sec \n",ucRegisterValue);
-				sec=ucRegisterValue;				
+				sec=ucRegisterValue;
 			} else {
 				dateok=1;
 			}
 			result = TT_GetRegister(hDevice,ulRegisterAddress + 4,&ucRegisterValue);
-			if (result == TT_SUCCESS) {	
+			if (result == TT_SUCCESS) {
 				printf(" %x min \n",ucRegisterValue);
-				min=ucRegisterValue;				
+				min=ucRegisterValue;
 			} else {
 				dateok=1;
 			}
 			result = TT_GetRegister(hDevice,ulRegisterAddress + 5,&ucRegisterValue);
-			if (result == TT_SUCCESS) {	
+			if (result == TT_SUCCESS) {
 				printf(" %x heure \n",ucRegisterValue);
-				heu=ucRegisterValue;				
+				heu=ucRegisterValue;
 			} else {
 				dateok=1;
 			}
@@ -1269,7 +1269,7 @@ double Cmd_mltcl_savedategps(ClientData clientData, Tcl_Interp *interp, int argc
 			if (dateok==1){
 				return -1;
 			}
-		
+
 			//la il faut trouver une fonction qui convertise secm6,secm4.... de double decimal à double hexa
 			secm6h=ml_conversiondecTohexa(secm6);
 			secm4h=ml_conversiondecTohexa(secm4);
@@ -1282,7 +1282,7 @@ double Cmd_mltcl_savedategps(ClientData clientData, Tcl_Interp *interp, int argc
 			secm2h=secm2h*0.01;
 			minh=minh*60;
 			heuh=heuh*60*60;
-		
+
 			date=heuh+minh+sech+secm6h+secm4h+secm2h; /*l'heure en seconde à comparer avec celle de date_obs,
 													  si trop différentes  (>3 secondes) ne pas en tenir compte!!
 														si la fonction ml_savevent retourne -1, c'est qu'il y a un pb avec la carte*/
