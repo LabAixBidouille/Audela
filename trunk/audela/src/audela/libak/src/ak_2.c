@@ -89,6 +89,8 @@
 /* These data can be accepted as the following formats:                    */
 /* filetype=1 : custom ASCII format : ra dec J dJ H dH K dK                */
 /* filetype=2 : 2MASS  ASCII format : ra dec - - - - J dJ - - H dH - - K dK - - ... */
+/* filetype=3 : GCS    ASCII format : ra dec z Y J H K dz dY dJ dH dK...   */
+/* filetype=4 : GPS    ASCII format : ra dec J H K dJ dH dK...             */
 /*                                                                         */
 /* 2) Generate the (Av,DM) couples for each HTM                            */
 /* ============================================                            */
@@ -114,6 +116,9 @@
  * @param path contains the folder name where the input file lie.
  * @param ascii_star contains the input filename (without the path).
  * @param filetype is the type of ascii_star file (see function ak_photometric_parallax_inputs).
+ * @param rac is the RA center (degrees) of the map (=-1 if not needed)
+ * @param decc is the DEC center (degrees) of the map (rac=-1 if not needed)
+ * @param radius is the radius (degrees) form RA,DEC center of the map (rac=-1 if not needed)
  * @param htmlevel is the level of the HTM slicing (=11 for 2MASS)
  * @param savetmpfiles is a flag to generate temporary files (=0 by default)
  * @param ascii_htmav is the output file.
@@ -149,7 +154,7 @@
  * nStar is the number of stars used to compute (Av,MD)
 */
 /***************************************************************************/
-char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, int htmlevel, int savetmpfiles, char *ascii_htmav, char *ascii_colcol,char *ascii_colmag,int colcolmagtype)
+char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, double rac, double decc, double radius, int htmlevel, int savetmpfiles, char *ascii_htmav, char *ascii_colcol,char *ascii_colmag,int colcolmagtype)
 {
    static char stringresult[1024];
    char fullname[1024];
@@ -184,6 +189,8 @@ char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, int html
    double magjj,maghh,magkk;
    int makeconv=1;
    int khtm1,khtm2;
+   double cosrac,sinrac,cosdecc,sindecc;
+   double ra,dec,c;
 
    strcpy(stringresult,"");
    if (strcmp(path,"")==0) {
@@ -220,7 +227,7 @@ char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, int html
       if (strcmp(stringresult,"")!=0) {
          return stringresult;
       }
-      /* --- colcol ---*/
+      /* --- colmag ---*/
       sprintf(fullname,"%s/%s",path,ascii_colmag);
       strcpy(stringresult,ak_photometric_parallax_loaddiagram(fullname,&diags[1]));
       if (strcmp(stringresult,"")!=0) {
@@ -391,9 +398,29 @@ char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, int html
       return stringresult;
    }
    deg2rad=(AK_PI)/180.;
+   if (rac>=0) {
+      cosrac=cos(rac*deg2rad);
+      sinrac=sin(rac*deg2rad);
+      cosdecc=cos(decc*deg2rad);
+      sindecc=sin(decc*deg2rad);
+      radius*=deg2rad;
+   }
    for (kstar=0;kstar<n_star;kstar++) {
-      /* --- compute the hierachical triangular mesh code --- */
-      ak_photometric_parallax_radec2htm(mags[kstar].ra*deg2rad,mags[kstar].dec*deg2rad,level,htm);
+      /* --- check if the star is in the valid area ---*/
+      ra=mags[kstar].ra*deg2rad;
+      dec=mags[kstar].dec*deg2rad;
+      htmsort[kstar].index=-1;
+      if (rac>=0) {
+         c=sindecc*sin(dec)+cosdecc*cos(dec)*cos(rac*deg2rad-ra);
+         if (c<-1.) {c=-1.;}
+         if (c>1.) {c=1.;}
+         c=acos(c);
+         if (c>radius) {
+            continue;
+         }
+      }
+      /* --- compute the hierarchical triangular mesh code --- */
+      ak_photometric_parallax_radec2htm(ra,dec,level,htm);
       /* --- add an element to the vector of HTM codes --- */
       strcpy(htmsort[kstar].htm,htm);
       htmsort[kstar].index=kstar;
@@ -412,6 +439,9 @@ char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, int html
    fstar=fopen(fullname,"wt");
    for (khtm=0;khtm<n_star;khtm++) {
       kstar=htmsort[khtm].index;
+      if (kstar<0) {
+         continue;
+      }
       strcpy(htm,htmsort[khtm].htm);
       if (strcmp(htm,htm0)!=0) {
          /* --- save the current AVDM_htm0.fit image ---*/
@@ -443,6 +473,9 @@ char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, int html
             md=mdmax;
             for (khtmm=khtm1;khtmm<=khtm2;khtmm++) {
                kstarr=htmsort[khtmm].index;
+               if (kstarr<0) {
+                  continue;
+               }
                /* --- apparent magnitudes ---*/
                magj=mags[kstarr].magj;
                magh=mags[kstarr].magh;
@@ -1462,6 +1495,8 @@ char *ak_photometric_parallax_diagram(char *ascii_diagram,char *tmpfile,double s
 /* Read the mags structure data from an ASCII file */
 /* filetype=1 : custom ASCII format : ra dec J dJ H dH K dK */
 /* filetype=2 : 2MASS  ASCII format : ra dec - - - - J dJ - - H dH - - K dK - - ... */
+/* filetype=3 : GCS    ASCII format : ra dec z Y J H K dz dY dJ dH dK...   */
+/* filetype=4 : GPS    ASCII format : ra dec J H K dJ dH dK...             */
 /***************************************************************************/
 char *ak_photometric_parallax_inputs(char *inputfile,int filetype, ak_phot_par_mag **mags,int *n_stars)
 {
@@ -1518,7 +1553,7 @@ char *ak_photometric_parallax_inputs(char *inputfile,int filetype, ak_phot_par_m
                   &mag0s[n].magh,&mag0s[n].sigmagh,
                   &mag0s[n].magk,&mag0s[n].sigmagk);
             }
-            if (filetype==2) {
+            else if (filetype==2) {
    	         sscanf(ligne," %lf %lf %lf %lf %d %s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %s %d %d %s %d %lf %d",
                   &mag0s[n].ra,&mag0s[n].dec,
                   &rienf,&rienf,&riend,&riens,
@@ -1530,6 +1565,37 @@ char *ak_photometric_parallax_inputs(char *inputfile,int filetype, ak_phot_par_m
                   &rienf,&rienf,
                   &riens,&riend,&riend,&riens,&riend,&rienf,&riend);
             }
+            else if (filetype==3) {
+               if (ligne[0]=='#') {
+                  continue;
+               }
+   	         sscanf(ligne," %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                  &mag0s[n].ra,&mag0s[n].dec,
+                  &rienf,
+                  &rienf,
+                  &mag0s[n].magj,
+                  &mag0s[n].magh,                  
+                  &mag0s[n].magk,
+                  &rienf,
+                  &rienf,
+                  &mag0s[n].sigmagj,
+                  &mag0s[n].sigmagh,                  
+                  &mag0s[n].sigmagk);
+            }
+            else if (filetype==4) {
+               if (ligne[0]=='#') {
+                  continue;
+               }
+   	         sscanf(ligne," %lf %lf %lf %lf %lf %lf %lf %lf",
+                  &mag0s[n].ra,&mag0s[n].dec,
+                  &mag0s[n].magj,
+                  &mag0s[n].magh,                  
+                  &mag0s[n].magk,
+                  &mag0s[n].sigmagj,
+                  &mag0s[n].sigmagh,                  
+                  &mag0s[n].sigmagk);
+            }
+            mag0s[n].flag_valid=1;
             n++;
          }
       }
