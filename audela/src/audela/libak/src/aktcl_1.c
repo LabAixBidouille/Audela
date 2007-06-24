@@ -2517,12 +2517,6 @@ int Cmd_aktcl_photometric_parallax(ClientData clientData, Tcl_Interp *interp, in
 /* Fichier texte : 1 etoile/ligne, format ...*/
 /* Fichier texte : couples (H-K,J-H)                                        */
 /* Fichier texte : couples (H-K,K)                                          */
-/*
-load libak; ak_photometric_parallax stars.txt colcol.txt colmag.txt ; buf1 load colcol1.fit ; mult 10 ;visu {1 0}
-load libak; ak_photometric_parallax stars.txt colcol.txt colmag.txt ; buf1 load avmd1.fit ; visu {1 0}
-load libak; ak_photometric_parallax stars.txt colcol.txt colmag.txt ; buf1 load colmag.fit ; visu {1 0}
-load libak; ak_photometric_parallax twomass.txt colcol.txt colmag.txt
-*/
 /****************************************************************************/
 {
    char stringresult[1024];
@@ -2530,8 +2524,9 @@ load libak; ak_photometric_parallax twomass.txt colcol.txt colmag.txt
    char ascii_star[1024],ascii_htmav[1024],ascii_colcol[1024],ascii_colmag[1024],path[1024];
    int filetype=1,htmlevel=10,savetmpfiles=0,colcolmagtype=0;
    int result=TCL_ERROR;
+   double rac=-1.,decc=0.,radius=0.;
    if(argc<10) {
-      sprintf(s,"Usage: %s path magfile magfiletype HTMLevel createTMPFiles ascii_out(HTM,Av) colcol_(H-K,J-H) colmag_(H-K,K) colcolmag_type", argv[0]);
+      sprintf(s,"Usage: %s path magfile magfiletype Ra_degrees Dec_degrees Radius_degrees HTMLevel createTMPFiles ascii_out(HTM,Av) colcol_(H-K,J-H) colmag_(H-K,K) colcolmag_type", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
    } else {
@@ -2539,13 +2534,22 @@ load libak; ak_photometric_parallax twomass.txt colcol.txt colmag.txt
       strcpy(path,argv[1]);
       strcpy(ascii_star,argv[2]);
       filetype=(int)atoi(argv[3]);
-      htmlevel=(int)atoi(argv[4]);
-      savetmpfiles=(int)atoi(argv[5]);
-      strcpy(ascii_htmav,argv[6]);
-      strcpy(ascii_colcol,argv[7]);
-      strcpy(ascii_colmag,argv[8]);
-      colcolmagtype=(int)atoi(argv[9]);
-      strcpy(stringresult,ak_photometric_parallax(path,ascii_star,filetype,htmlevel,savetmpfiles,ascii_htmav,ascii_colcol,ascii_colmag,colcolmagtype));
+      if (argv[4]!="") {
+         rac=(double)atof(argv[4]);
+      }
+      if (argv[5]!="") {
+         decc=(double)atof(argv[5]);
+      }
+      if (argv[6]!="") {
+         radius=(double)atof(argv[6]);
+      }
+      htmlevel=(int)atoi(argv[7]);
+      savetmpfiles=(int)atoi(argv[8]);
+      strcpy(ascii_htmav,argv[9]);
+      strcpy(ascii_colcol,argv[10]);
+      strcpy(ascii_colmag,argv[11]);
+      colcolmagtype=(int)atoi(argv[12]);
+      strcpy(stringresult,ak_photometric_parallax(path,ascii_star,filetype,rac,decc,radius,htmlevel,savetmpfiles,ascii_htmav,ascii_colcol,ascii_colmag,colcolmagtype));
       if (strcmp(stringresult,"")==0) {
          result=0;
       } else {

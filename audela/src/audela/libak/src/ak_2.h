@@ -57,10 +57,13 @@ typedef struct {
 typedef struct {
    double ra;
    double dec;
+   int flag_valid;
    double magb;
    double magv;
    double magr;
    double magi;
+   double magz;
+   double magy;
    double magj;
    double magh;
    double magk;
@@ -68,6 +71,8 @@ typedef struct {
    double sigmagv;
    double sigmagr;
    double sigmagi;
+   double sigmagz;
+   double sigmagy;
    double sigmagj;
    double sigmagh;
    double sigmagk;
@@ -112,7 +117,7 @@ typedef struct {
 /***************************************************************************/
 /***************************************************************************/
 
-char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, int htmlevel, int savetmpfiles, char *ascii_htmav, char *ascii_colcol,char *ascii_colmag,int colcolmagtype);
+char *ak_photometric_parallax(char *path,char *ascii_star,int filetype, double rac, double decc, double radius, int htmlevel, int savetmpfiles, char *ascii_htmav, char *ascii_colcol,char *ascii_colmag,int colcolmagtype);
 char *ak_photometric_parallax_avmap(char *path,char *ascii_htmav, char *fitsnameav, char *fitsnamemd,int naxis1,int naxis2);
 
 char *ak_photometric_parallax_convgauss(ak_phot_par_diag *diags,double sigmagx, double sigmagy);
