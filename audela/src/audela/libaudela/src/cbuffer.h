@@ -182,8 +182,10 @@ public:
    void Unsmear(float coef);
    void MedX(int x1, int x2, int width);
    void MedY(int y1, int y2, int height);
+   /*
    void MirX();
    void MirY();
+   */
    void Offset(TYPE_PIXELS offset);
    void Opt(char *dark, char *offset);
    void RestoreInitialCut();

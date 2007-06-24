@@ -73,7 +73,7 @@ public:
    void Log(float coef, float offset);
    void MergePixels(TColorPlane plane, int pixels);
    void MirX();
-   void MirY();
+   /*void MirY();*/
    void NGain(float gain);
    void NOffset(float offset);
    void Offset(float offset);

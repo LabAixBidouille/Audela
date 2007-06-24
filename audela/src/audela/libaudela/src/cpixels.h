@@ -88,7 +88,7 @@ public:
    virtual void Log(float coef, float offset)=0;
    virtual void MergePixels(TColorPlane plane, int pixels)=0;
    virtual void MirX()=0;
-   virtual void MirY()=0;
+   /*virtual void MirY()=0;*/
    virtual void NGain(float gain)=0;
    virtual void NOffset(float offset)=0;
    virtual void Offset(float offset)=0;
