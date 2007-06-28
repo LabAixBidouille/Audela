@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_2.cap
-# Mise a jour $Id: aud_menu_2.cap,v 1.8 2007-06-28 17:52:26 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.cap,v 1.9 2007-06-28 18:12:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -394,9 +394,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(seuilWindow,intensite)                 "Intensitet:"
    set caption(seuilWindow,intensite_avec_zero)       "104.000000 - R:104.000000 V:175.000000 B:179.000000"
    set caption(seuilWindow,intensite_sans_zero)       "104 - R:104 V:175 B:179"
-   set caption(seuilWindow,intervalle_sh-sb)          "# Seuil Haut - Seuil Bas (X):"
-   set caption(seuilWindow,exemple>x)                 "# Hvis SH-SB > X      Tærskel: 462"
-   set caption(seuilWindow,exemple<x)                 "# Hvis SH-SB <= X    Tærskel: 4.62e+002"
+   set caption(seuilWindow,intervalle_sh-sb)          "Øvre tærskelværdi - Nedre tærskelværdi (X):"
+   set caption(seuilWindow,exemple>x)                 "Hvis ØT-NT > X      Tærskelværdier: 462"
+   set caption(seuilWindow,exemple<x)                 "Hvis ØT-NT <= X    Tærskelværdier: 4.62e+002"
    set caption(seuilWindow,dynamique)                 "Dynamik:"
    set caption(seuilWindow,dynamique_max)             "Maximum Dynamik:"
    set caption(seuilWindow,dynamique_min)             "Minimum Dynamik:"
