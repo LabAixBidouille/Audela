@@ -2,7 +2,7 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: mauclaire.tcl,v 1.10 2007-05-30 21:52:01 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.11 2007-06-28 21:04:27 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -406,7 +406,7 @@ proc bm_datefrac { args } {
    if { [llength $args] == 1 } {
       set fichier [lindex $args 0]
 
-      #--- CApture la date de l'entete fits
+      #--- Capture la date de l'entete fits
       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
       set ladate [lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1]
       #-- Exemple de date : 2006-08-22T01:37:34.46
@@ -458,7 +458,7 @@ proc bm_datefile { args } {
    if { [llength $args] == 1 } {
       set fichier [lindex $args 0]
 
-      #--- CApture la date de l'entete fits
+      #--- Capture la date de l'entete fits
       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
       set ladate [lindex [buf$audace(bufNo) getkwd "DATE-OBS"] 1]
       #-- Exemple de date : 2006-08-22T01:37:34.46
@@ -471,9 +471,16 @@ proc bm_datefile { args } {
       set h [ lindex $ldate 3 ]
       set mi [ lindex $ldate 4 ]
       set s [ lindex $ldate 5 ]
+
+      #--- Gestion des valeurs <=9 :
       if { [ expr $d/10. ] < 1. } {
          set d "0$d"
       }
+      if { $mo<10 } {
+         set mo "0$mo"
+      }
+
+      #--- Concatenation :
       set madate "$y$mo$d"
 
       #--- Affichage du resultat :
@@ -1252,6 +1259,11 @@ proc bm_sadd { args } {
       set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ]
       set nb_file [ llength $liste_fichiers ]
 
+      #--- Gestion de la durée totale d'exposition :
+      buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
+      set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+      set exposure [ expr $unit_exposure*$nb_file ]
+
       #--- Somme :
       ::console::affiche_resultat "Somme de $nb_file images...\n"
       sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
@@ -1260,6 +1272,7 @@ proc bm_sadd { args } {
       set exptime [ bm_exptime $nom_generique ]
       buf$audace(bufNo) load "$audace(rep_images)/${nom_generique}-s$nb_file"
       buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
+      buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "s" ]
       buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
 
       #--- Traitement du resultat :
