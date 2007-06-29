@@ -218,28 +218,30 @@ proc spc_winini { } {
       .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $captionspc(spc_pipelines) -underline 0
       menu .spc.menuBar.pipelines -tearoff 0
       # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-7"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-4"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-5"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-2"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-3"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traitestellaire) -command "::param_spc_audace_traitestellaire::run" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-5"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-2"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-3"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-6"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-7"
       #.spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       #.spc.menuBar.pipelines add command -label $captionspc(spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
-      bind .spc <Control-0> ::param_spc_audace_traitesimple2calibre::run
-      bind .spc <Control-1> ::param_spc_audace_traitesimple2rinstrum::run
-      bind .spc <Control-2> ::param_spc_audace_geom2calibre::run
-      bind .spc <Control-3> ::param_spc_audace_geom2rinstrum::run
+      #bind .spc <Control-0> ::param_spc_audace_traitesimple2calibre::run
+      #bind .spc <Control-1> ::param_spc_audace_traitesimple2rinstrum::run
+      #bind .spc <Control-2> ::param_spc_audace_geom2calibre::run
+      bind .spc <Control-2> ::param_spc_audace_geom2rinstrum::run
       bind .spc <Control-4> ::param_spc_audace_traite2calibre::run
-      bind .spc <Control-5> ::param_spc_audace_traite2srinstrum::run
-      bind .spc <Control-6> ::param_spc_audace_traite2rinstrum::run
-      bind .spc <Control-7> ::spcmfc::Demarragespbmfc
+      bind .spc <Control-3> ::param_spc_audace_traite2srinstrum::run
+      bind .spc <Control-1> ::param_spc_audace_traite2rinstrum::run
+      #bind .spc <Control-7> ::spcmfc::Demarragespbmfc
 
       #--- Menu Astrophysique ---#
       .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0

@@ -61,7 +61,7 @@ proc spc_vhelio { args } {
    global audace
    global conf
 
-   set lambda_ref 6562.8
+   set lambda_ref 6562.82
    set precision 1000.
 
    if { [llength $args] == 1 || [llength $args] == 7 || [llength $args] == 10 } {
@@ -157,7 +157,8 @@ proc spc_vhelio { args } {
 
 
        #--- Formatage du résultat :
-       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio±$erreurv km/s=$deltal±$dispersion A\n"
+       #::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio±$erreurv km/s=$deltal±$dispersion A\n"
+       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio km/s <-> $deltal A\n"
        return $vhelio
    } else {
 	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"

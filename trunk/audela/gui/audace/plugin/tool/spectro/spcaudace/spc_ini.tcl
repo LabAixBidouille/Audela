@@ -31,7 +31,7 @@ proc spc_goodrep {} {
 #**** Fonctions de chargement des des plugins *********
 proc spc_bessmodule {} {
 
-    global audace
+    global audace spcaudace
     global conf
     global audela
 
@@ -39,7 +39,8 @@ proc spc_bessmodule {} {
 	source [ file join $audace(rep_scripts) spcaudace plugins bess_module bess_module.tcl ]
     } else {
 	set repspc [ file join $audace(rep_plugin) tool spectro spcaudace ]
-	source [ file join $repspc plugins bess_module bess_module.tcl ]
+	source [ file join $spcaudace(repspc) plugins bess_module bess_module.tcl ]
+	::bess::Principal ""
     }
 }
 
