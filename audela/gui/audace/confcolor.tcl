@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.15 2007-05-27 18:47:12 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.16 2007-06-29 23:13:22 michelpujol Exp $
 #
 
 namespace eval confColor {
@@ -366,7 +366,8 @@ namespace eval confColor {
 
       switch -exact -- [ winfo class $w ] {
          Canvas {
-            if { "[ winfo class [ winfo parent $w ] ]" == "Tree" } {
+            if { "[ winfo class [ winfo parent $w ] ]" == "Tree"
+              || "[ winfo class [ winfo parent $w ] ]" == "NoteBook" } {
                $w configure -bg $audace(color,backColor)
             } elseif { "[ winfo class [ winfo parent $w ] ]" != "ArrowButton" } {
                if { [ string first color_invariant $w ] == -1 } {
@@ -407,7 +408,9 @@ namespace eval confColor {
          Entry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
-               -disabledforeground $audace(color,disabledTextColor)
+               -disabledforeground $audace(color,disabledTextColor) \
+               -selectbackground SystemHighlight \
+               -selectforeground SystemHighlightText
          }
          LabelEntry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
