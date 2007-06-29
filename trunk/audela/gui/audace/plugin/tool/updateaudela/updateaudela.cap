@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.4 2007-06-19 20:08:36 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.5 2007-06-29 22:42:39 michelpujol Exp $
 #
 
 #=========================================================================
@@ -27,6 +27,7 @@ set caption(updateaudela,directoryNotExits)    "Plug-in cannot be deleted. Folde
 set caption(updateaudela,directory)            "Folder %s already exists.\nUpdate it?"
 set caption(updateaudela,confirmDelete)        "Are you sure you want to delete %s?"
 set caption(updateaudela,makeKitOk)            "File %s is created."
+set caption(updateaudela,confirmInstall)       "#Do you want to replace %s by %s ?"
 set caption(updateaudela,installPluginOk)      "Plug-in %s is installed in folder \n %s \n (%s file(s) created or updated)."
 set caption(updateaudela,restart)              "Please run AudeLA again to enable these modifications."
 
@@ -34,7 +35,7 @@ set caption(updateaudela,restart)              "Please run AudeLA again to enabl
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(updateaudela,title)             "Mise à jour d'AudeLA"
-   set caption(updateaudela,pluginFrame)       "Liste des plug-ins"
+   set caption(updateaudela,pluginFrame)       "Mise à jour installées"
    set caption(updateaudela,kitFrame)          "Liste des kits"
    set caption(updateaudela,rep_plugin)        "Répertoire"
    set caption(updateaudela,refresh)           "Actualiser"
@@ -49,6 +50,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,directory)         "Le répertoire %s existe déjà.\nVoulez-vous le mettre à jour ?"
    set caption(updateaudela,confirmDelete)     "Etes vous sûr de vouloir supprimer %s ?"
    set caption(updateaudela,makeKitOk)         "Le fichier %s est créé."
+   set caption(updateaudela,confirmInstall)    "Voulez vous remplacer %s par %s ?"
+   set caption(updateaudela,confirmInstallNew) "Voulez vous installer ce nouveau plugin %s ?"
    set caption(updateaudela,installPluginOk)   "Le plug-in %s est installé dans le répertoire \n %s \n (%s fichier(s) créé(s) ou mis à jour)."
    set caption(updateaudela,restart)           "Veuillez redémarrer AudeLA pour prendre en compte ces modifications."
 
