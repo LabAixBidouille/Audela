@@ -2330,7 +2330,7 @@ proc spc_autofit2png { args } {
 	} else {
 	    set nom_sans_espaces "$nom_objet_lower"
 	}
-	if { [ regexp {.+(\.[a-zA-Z]{3})} "fileout" match extimg ] } {
+	if { [ regexp {.+(\.[a-zA-Z]{3})} "$fileout" match extimg ] } {
 	    file rename -force "$audace(rep_images)/$fileout" "$audace(rep_images)/${nom_sans_espaces}_$datefile$extimg"
 	} else {
 	    set extimg ".png"
@@ -2666,7 +2666,8 @@ proc spc_export2png { args } {
        }
 
        #--- Traitement du résultat :
-       return $nomprofilpng
+       set nom_profil [ file rootname $nomprofilpng ]
+       return "$nom_profil"
    } else {
        ::console::affiche_erreur "Usage: spc_export2png ?profil_de_raies_fits?\n\n"
    }

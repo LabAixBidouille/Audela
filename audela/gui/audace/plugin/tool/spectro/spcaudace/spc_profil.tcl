@@ -556,7 +556,7 @@ proc spc_binlopt { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de creation : 26-02-2006
-# Date de modification : 05-07-2006
+# Date de modification : 05-07-2006/07-06-19
 # Arguments : fichier fits du spectre spatial ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add)?
 ###############################################################
 
@@ -630,8 +630,20 @@ proc spc_profil { args } {
 	    set yepaisseur [ expr $ylargeur-3 ]
 	    if { $yepaisseur<=4. } {
 		#set ylargeur 5.
-		::console::affiche_resultat "Épaisseur de binning de Roberval trop faible. Fin de procédure.\n"
-		return ""
+		::console::affiche_resultat "\nÉpaisseur de binning de Roberval trop faible.\nSélection large du spectre\n"
+		set gauss_params [ spc_detect $spectre2d ]
+		set ycenter [ lindex $gauss_params 0 ]
+		set hauteur [ lindex $gauss_params 1 ]
+		#-- Algo : set coords_zone [list 1 [expr int($ycenter-0.5*$largeur)] $naxis1 [expr int($ycenter+0.5*$largeur)]]
+		set spectre_zone_fc [ spc_subsky $spectre2d $ycenter $hauteur $methodefc ]
+		buf$audace(bufNo) load "$audace(rep_images)/$spectre_zone_fc"
+		set ylargeur [ expr [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]-1 ]
+		#-- Bizarement, lopt ne peut prendre la dimension totale d'une image :
+		set yepaisseur [ expr $ylargeur-3 ]
+		if { $yepaisseur<=4. } {
+		    ::console::affiche_resultat "\nÉpaisseur de binning de Roberval trop faible. \nFin de procédure.\n"
+		    return ""
+		}
 	    }
 	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
 	    buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]

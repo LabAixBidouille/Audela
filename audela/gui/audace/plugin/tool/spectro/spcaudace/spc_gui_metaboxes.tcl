@@ -4431,3 +4431,481 @@ if { 1==0 } {
   
 }
 #****************************************************************************#
+
+
+
+########################################################################
+# Boîte graphique de saisie de s paramètres pour la metafonction spc_traitestellaire
+# Intitulé : Réduction spectrale de spectres stellaires
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 15-07-2007
+# Date de modification : 15-07-2007
+# Utilisée par : spc_traitestellaire
+# Args : 
+########################################################################
+
+namespace eval ::param_spc_audace_traitestellaire {
+
+   proc run { {positionxy 20+20} } {
+      global conf
+      global audace
+      global captionspc
+      global color
+
+      set liste_methcos [ list "o" "n" ]
+      set liste_methinv [ list "o" "n" ]
+      set liste_norma [ list "o" "e" "a" "n" ]
+      set liste_on [ list "o" "n" ]
+
+      if { [ string length [ info commands .param_spc_audace_traitestellaire.* ] ] != "0" } {
+         destroy .param_spc_audace_traitestellaire
+      }
+
+       #-- Options prédéfinies (déclarées dans procédure GO) :
+       #set methreg "spc"
+       #set methsky "med"
+       #set methsel "serre"
+       #set methbin "rober"
+       #set methsmo "n"
+       #set methejbad "n"
+       #set methejtilt "n"
+       #set rmfpretrait "o"
+
+
+      # === Initialisation des variables qui seront changées
+      set audace(param_spc_audace,traitestellaire,config,rinstrum) "none"
+      set audace(param_spc_audace,traitestellaire,config,methinv) "n"
+      set audace(param_spc_audace,traitestellaire,config,methraie) "n"
+      set audace(param_spc_audace,traitestellaire,config,methcos) "n"
+      set audace(param_spc_audace,traitestellaire,config,norma) "n"
+      set audace(param_spc_audace,traitestellaire,config,offset) "none"
+      set audace(param_spc_audace,traitestellaire,config,cal_eau) "n"
+      set audace(param_spc_audace,traitestellaire,config,export_png) "n"
+      set audace(param_spc_audace,traitestellaire,config,export_bess) "n"
+
+
+      # === Variables d'environnement
+      # backpad : #F0F0FF
+      set audace(param_spc_audace,traitestellaire,color,textkey) $color(blue_pad)
+      set audace(param_spc_audace,traitestellaire,color,backpad) #ECE9D8
+      set audace(param_spc_audace,traitestellaire,color,backdisp) $color(white)
+      set audace(param_spc_audace,traitestellaire,color,textdisp) #FF0000
+      set audace(param_spc_audace,traitestellaire,font,c12b) [ list {Arial} 10 bold ]
+      set audace(param_spc_audace,traitestellaire,font,c10b) [ list {Arial} 10 bold ]
+      
+
+      # === Captions
+      set caption(param_spc_audace,traitestellaire,titre2) "Réduction de spectres stellaires"
+      set caption(param_spc_audace,traitestellaire,titre) "Réduction de spectres"
+      set caption(param_spc_audace,traitestellaire,stop_button) "Annuler"
+      set caption(param_spc_audace,traitestellaire,return_button) "OK"
+      set caption(param_spc_audace,traitestellaire,config,lampe) "Nom du spectre 2D de la lampe de calibration"
+      set caption(param_spc_audace,traitestellaire,config,brut) "Nom générique des spectres bruts"
+      set caption(param_spc_audace,traitestellaire,config,noir) "Nom générique des noirs"
+      set caption(param_spc_audace,traitestellaire,config,plu) "Nom générique des plu(s)"
+      set caption(param_spc_audace,traitestellaire,config,noirplu) "Nom générique des noirs de plu"
+      set caption(param_spc_audace,traitestellaire,config,offset) "Nom générique des offset(s)"
+      set caption(param_spc_audace,traitestellaire,config,rinstrum) "Spectre 1D de la réponse intrumentale"
+
+      set caption(param_spc_audace,traitestellaire,config,methraie) "Sélection manuelle d'une raie pour la géométrie (o/n)"
+      set caption(param_spc_audace,traitestellaire,config,methcos) "Retrait des cosmics de la lampe (o/n)"
+      set caption(param_spc_audace,traitestellaire,config,methinv) "Inversion gauche-droite des profils de raies (o/n)"
+      set caption(param_spc_audace,traitestellaire,config,norma) "Normalisation (oui/émission/absorption/non)"
+      set caption(param_spc_audace,traitestellaire,config,cal_eau) "Calibration supplémentaire avec raies telluriques  (o/n)"
+      set caption(param_spc_audace,traitestellaire,config,export_png) "Export vers un graphique au format PNG (o/n)"
+      set caption(param_spc_audace,traitestellaire,config,export_bess) "Export au format de la base Bess (o/n)"
+      
+      # === Met en place l'interface graphique
+      
+      #--- Cree la fenetre .param_spc_audace_traitestellaire de niveau le plus haut
+      toplevel .param_spc_audace_traitestellaire -class Toplevel -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      #wm geometry .param_spc_audace_traitestellaire 450x558+10+10
+      wm geometry .param_spc_audace_traitestellaire 486x485+146-25
+      wm resizable .param_spc_audace_traitestellaire 1 1
+      wm title .param_spc_audace_traitestellaire $caption(param_spc_audace,traitestellaire,titre)
+      wm protocol .param_spc_audace_traitestellaire WM_DELETE_WINDOW "::param_spc_audace_traitestellaire::annuler"
+      
+      #--- Create the title
+      #--- Cree le titre
+      label .param_spc_audace_traitestellaire.title \
+	      -font [ list {Arial} 16 bold ] -text $caption(param_spc_audace,traitestellaire,titre2) \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey)
+      pack .param_spc_audace_traitestellaire.title \
+	      -in .param_spc_audace_traitestellaire -fill x -side top -pady 15
+      
+      # --- Boutons du bas
+      frame .param_spc_audace_traitestellaire.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      #-- Bouton Annuler
+      button .param_spc_audace_traitestellaire.stop_button  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,stop_button)" \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) \
+	      -command {::param_spc_audace_traitestellaire::annuler}
+      pack  .param_spc_audace_traitestellaire.stop_button -in .param_spc_audace_traitestellaire.buttons -side left -fill none -padx 3 -pady 3
+      #-- Bouton OK
+      button .param_spc_audace_traitestellaire.return_button  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,return_button)" \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) \
+	      -command {::param_spc_audace_traitestellaire::go}
+      pack  .param_spc_audace_traitestellaire.return_button -in .param_spc_audace_traitestellaire.buttons -side right -fill none -padx 3 -pady 3
+      pack .param_spc_audace_traitestellaire.buttons -in .param_spc_audace_traitestellaire -fill x -pady 0 -padx 0 -anchor s -side bottom
+
+      #--- Label + Entry pour lampe
+      frame .param_spc_audace_traitestellaire.lampe -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.lampe.label -text "$caption(param_spc_audace,traitestellaire,config,lampe)" -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b)
+      pack  .param_spc_audace_traitestellaire.lampe.label -in .param_spc_audace_traitestellaire.lampe -side left -fill none
+      button .param_spc_audace_traitestellaire.lampe.explore -text "$captionspc(parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -command { set audace(param_spc_audace,traitestellaire,config,lampe) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_traitestellaire.lampe.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_traitestellaire.lampe.entry  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -textvariable audace(param_spc_audace,traitestellaire,config,lampe) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_traitestellaire.lampe.entry -in .param_spc_audace_traitestellaire.lampe -side left -fill none
+      pack .param_spc_audace_traitestellaire.lampe -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour brut
+      frame .param_spc_audace_traitestellaire.brut -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.brut.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,brut) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.brut.label -in .param_spc_audace_traitestellaire.brut -side left -fill none
+      entry  .param_spc_audace_traitestellaire.brut.entry  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -textvariable audace(param_spc_audace,traitestellaire,config,brut) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_traitestellaire.brut.entry -in .param_spc_audace_traitestellaire.brut -side left -fill none
+      pack .param_spc_audace_traitestellaire.brut -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+
+      #--- Label + Entry pour noir
+      frame .param_spc_audace_traitestellaire.noir -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.noir.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,noir) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.noir.label -in .param_spc_audace_traitestellaire.noir -side left -fill none
+      entry  .param_spc_audace_traitestellaire.noir.entry  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -textvariable audace(param_spc_audace,traitestellaire,config,noir) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_traitestellaire.noir.entry -in .param_spc_audace_traitestellaire.noir -side left -fill none
+      pack .param_spc_audace_traitestellaire.noir -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour plu
+      frame .param_spc_audace_traitestellaire.plu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.plu.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,plu) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.plu.label -in .param_spc_audace_traitestellaire.plu -side left -fill none
+      entry  .param_spc_audace_traitestellaire.plu.entry  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -textvariable audace(param_spc_audace,traitestellaire,config,plu) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_traitestellaire.plu.entry -in .param_spc_audace_traitestellaire.plu -side left -fill none
+      pack .param_spc_audace_traitestellaire.plu -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour noirplu
+      frame .param_spc_audace_traitestellaire.noirplu -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.noirplu.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,noirplu) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.noirplu.label -in .param_spc_audace_traitestellaire.noirplu -side left -fill none
+      entry  .param_spc_audace_traitestellaire.noirplu.entry  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -textvariable audace(param_spc_audace,traitestellaire,config,noirplu) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_traitestellaire.noirplu.entry -in .param_spc_audace_traitestellaire.noirplu -side left -fill none
+      pack .param_spc_audace_traitestellaire.noirplu -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+
+
+      if {1==1} {
+      #--- Label + Entry pour offset
+      frame .param_spc_audace_traitestellaire.offset -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.offset.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,offset) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.offset.label -in .param_spc_audace_traitestellaire.offset -side left -fill none
+      entry  .param_spc_audace_traitestellaire.offset.entry  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -textvariable audace(param_spc_audace,traitestellaire,config,offset) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_traitestellaire.offset.entry -in .param_spc_audace_traitestellaire.offset -side left -fill none
+      pack .param_spc_audace_traitestellaire.offset -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+      }
+
+
+
+      #--- Label + Entry pour rinstrum
+      frame .param_spc_audace_traitestellaire.rinstrum -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.rinstrum.label -text "$caption(param_spc_audace,traitestellaire,config,rinstrum)" -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b)
+      pack  .param_spc_audace_traitestellaire.rinstrum.label -in .param_spc_audace_traitestellaire.rinstrum -side left -fill none
+      button .param_spc_audace_traitestellaire.rinstrum.explore -text "$captionspc(parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -command { set audace(param_spc_audace,traitestellaire,config,rinstrum) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_traitestellaire.rinstrum.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_traitestellaire.rinstrum.entry  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -textvariable audace(param_spc_audace,traitestellaire,config,rinstrum) -bg $audace(param_spc_audace,traitestellaire,color,backdisp) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_traitestellaire.rinstrum.entry -in .param_spc_audace_traitestellaire.rinstrum -side left -fill none
+      pack .param_spc_audace_traitestellaire.rinstrum -in .param_spc_audace_traitestellaire -fill none -pady 1 -padx 12
+
+
+
+      #--- Label + Entry pour methraie
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.methraie -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.methraie.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,methraie) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.methraie.label -in .param_spc_audace_traitestellaire.methraie -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.methraie.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,methraie) \
+         -values $liste_on
+      pack  .param_spc_audace_traitestellaire.methraie.combobox -in .param_spc_audace_traitestellaire.methraie -side right -fill none
+      pack .param_spc_audace_traitestellaire.methraie -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+
+
+      #--- Label + Entry pour methinv
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.methinv -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.methinv.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,methinv) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.methinv.label -in .param_spc_audace_traitestellaire.methinv -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.methinv.combobox \
+         -width 7          \
+         -height [ llength $liste_methinv ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,methinv) \
+         -values $liste_methinv
+      pack  .param_spc_audace_traitestellaire.methinv.combobox -in .param_spc_audace_traitestellaire.methinv -side right -fill none
+      pack .param_spc_audace_traitestellaire.methinv -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+
+
+
+      #--- Label + Entry pour methcos
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.methcos -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.methcos.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,methcos) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.methcos.label -in .param_spc_audace_traitestellaire.methcos -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.methcos.combobox \
+         -width 7          \
+         -height [ llength $liste_methcos ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,methcos) \
+         -values $liste_methcos
+      pack  .param_spc_audace_traitestellaire.methcos.combobox -in .param_spc_audace_traitestellaire.methcos -side right -fill none
+      pack .param_spc_audace_traitestellaire.methcos -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+
+
+      #--- Label + Entry pour norma
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.norma -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.norma.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,norma) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.norma.label -in .param_spc_audace_traitestellaire.norma -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.norma.combobox \
+         -width 7          \
+         -height [ llength $liste_norma ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,norma) \
+         -values $liste_norma
+      pack  .param_spc_audace_traitestellaire.norma.combobox -in .param_spc_audace_traitestellaire.norma -side right -fill none
+      pack .param_spc_audace_traitestellaire.norma -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour cal_eau
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.cal_eau -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.cal_eau.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,cal_eau) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.cal_eau.label -in .param_spc_audace_traitestellaire.cal_eau -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.cal_eau.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,cal_eau) \
+         -values $liste_on
+      pack  .param_spc_audace_traitestellaire.cal_eau.combobox -in .param_spc_audace_traitestellaire.cal_eau -side right -fill none
+      pack .param_spc_audace_traitestellaire.cal_eau -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+
+      #--- Label + Entry pour export_bess
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.export_bess -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.export_bess.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,export_bess) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.export_bess.label -in .param_spc_audace_traitestellaire.export_bess -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.export_bess.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,export_bess) \
+         -values $liste_on
+      pack  .param_spc_audace_traitestellaire.export_bess.combobox -in .param_spc_audace_traitestellaire.export_bess -side right -fill none
+      pack .param_spc_audace_traitestellaire.export_bess -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+      
+
+
+      #--- Label + Entry pour export_png
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.export_png -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.export_png.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(param_spc_audace,traitestellaire,config,export_png) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.export_png.label -in .param_spc_audace_traitestellaire.export_png -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.export_png.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,export_png) \
+         -values $liste_on
+      pack  .param_spc_audace_traitestellaire.export_png.combobox -in .param_spc_audace_traitestellaire.export_png -side right -fill none
+      pack .param_spc_audace_traitestellaire.export_png -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
+  }
+  
+  
+  proc go {} {
+      global audace conf
+      global caption
+      global lampe2calibre_fileout
+
+      #-- Options prédéfinies :
+      set methreg "spc"
+      set methsel "serre"
+      set methsky "med"
+      set methbin "rober"
+      set methsmo "n"
+      set ejbad "n"
+      set ejtilt "n"
+      set rmfpretrait "o"
+
+      ::param_spc_audace_traitestellaire::recup_conf
+      set lampe $audace(param_spc_audace,traitestellaire,config,lampe)
+      set brut $audace(param_spc_audace,traitestellaire,config,brut)
+      set noir $audace(param_spc_audace,traitestellaire,config,noir)
+      set plu $audace(param_spc_audace,traitestellaire,config,plu)
+      set noirplu $audace(param_spc_audace,traitestellaire,config,noirplu)
+      set offset $audace(param_spc_audace,traitestellaire,config,offset)
+      set rinstrum $audace(param_spc_audace,traitestellaire,config,rinstrum)
+      set methraie $audace(param_spc_audace,traitestellaire,config,methraie)
+      set methcos $audace(param_spc_audace,traitestellaire,config,methcos)
+      set methinv $audace(param_spc_audace,traitestellaire,config,methinv)
+      set methnorma $audace(param_spc_audace,traitestellaire,config,norma)
+      set cal_eau $audace(param_spc_audace,traitestellaire,config,cal_eau)
+      set export_png $audace(param_spc_audace,traitestellaire,config,export_png)
+      set export_bess $audace(param_spc_audace,traitestellaire,config,export_bess)
+      if { $rinstrum=="" } {
+	  set rinstrum "none"
+      }
+      set listeargs [ list $lampe $brut $noir $plu $noirplu $offset $rinstrum $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $rmfpretrait $cal_eau $export_png $export_bess ]
+
+
+      #--- Test si le fichier "lampe" est bien calibré :
+      buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "NAXIS2" ] ==-1 } {
+	  set naxis2 1
+      } else {
+	  set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
+      }
+      if { $naxis2<2 } {
+	  ::console::affiche_resultat "\n Le fichier de la lampe de calibration n'est pas un spectre 2D.\nVeuillez choisir le bon fichier.\n"
+	  tk_messageBox -title "Erreur de saisie" -icon error -message "Le fichier de la lampe de calibration n'est pas un spectre 2D.\nVeuillez choisir le bon fichier."
+      }
+
+      #--- Lancement de la fonction spcaudace :
+      #-- Si tous les champs sont /= "" on execute le calcul :
+      if { [ spc_testguiargs $listeargs ] == 1 } {
+	  set fileout [ spc_traitestellaire $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait ]
+	  destroy .param_spc_audace_traitestellaire
+	  return $fileout
+      }
+  }
+
+  proc annuler {} {
+      global audace
+      global caption
+      ::param_spc_audace_traitestellaire::recup_conf
+      destroy .param_spc_audace_traitestellaire
+  }
+
+
+  proc recup_conf {} {
+      global conf
+      global audace
+      
+      if { [ winfo exists .param_spc_audace_traitestellaire ] } {
+	  #--- Enregistre la position de la fenetre
+	  set geom [ wm geometry .param_spc_audace_traitestellaire ]
+	  set deb [ expr 1+[string first + $geom ] ]
+	  set fin [ string length $geom ]
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
+      }
+  }
+
+  
+}
+#****************************************************************************#
