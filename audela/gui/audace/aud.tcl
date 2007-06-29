@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.72 2007-06-16 10:54:15 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.73 2007-06-29 22:49:54 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -495,13 +495,19 @@ namespace eval ::audace {
       #--- Chargement des differents outils
       foreach pkgIndexFileName [ glob -nocomplain [ file join $audace(rep_plugin) tool * pkgIndex.tcl ] ] {
          if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo] == 0 } {
-            set result [package require $pluginInfo(name)]
-            if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
+            #--- je charge le plugin
+            set catchResult [catch { package require $pluginInfo(name)} ]
+            if { $catchResult == 1 } {
+               #--- j'affiche l'erreur dans la console
+               ::console::affiche_erreur "$::errorInfo\n"
+            } else {
                #--- j'execute la procedure initPlugin si elle existe
-               $pluginInfo(namespace)::initPlugin $audace(base)
+               if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
+                  $pluginInfo(namespace)::initPlugin $audace(base)
+               }
+               set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
+               ::console::affiche_prompt "#Outil : $pluginInfo(title) v$pluginInfo(version)\n"
             }
-            set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
-            ::console::affiche_prompt "#Outil : $pluginInfo(title) v$pluginInfo(version)\n"
          } else {
             ::console::affiche_erreur "Error loading plugin in safe interpreter from\n$pkgIndexFileName \n$::errorInfo\n\n"
          }
@@ -1271,54 +1277,67 @@ namespace eval ::audace {
    #     0 si pas d'erreur, le resultat est dans le tableau donné en paramètre.
    #    -1 si une erreur, le libellé de l'erreur est dans ::::errorInfo
    #
-   # Exemple d'utilisation avec le fichier
-   #        audace/gui/plugin/equipment/focuserjmi/pkgIndex.tcl
-   #    qui contient
-   #        package ifneeded focuserjmi 1.0 [ list source [ file join $dir focuserjmi.tcl ] ]
-   #
-   #    Les commandes :
-   #       set fileName "$audace(rep_plugin)equipment/focuserjmi/pkgIndex.tcl"
-   #       ::audace::getPluginInfo $fileName pluginInfo
-   #       ::console::disp "plugin name     =$pluginInfo(name)      \n"
-   #       ::console::disp "plugin version  =$pluginInfo(version)   \n"
-   #       ::console::disp "plugin command  =$pluginInfo(command)   \n"
-   #       ::console::disp "plugin namespace=$pluginInfo(namespace) \n"
-   #       ::console::disp "plugin title    =$pluginInfo(title)      \n"
-   #       ::console::disp "plugin type     =$pluginInfo(type)      \n"
-   #    affichent :
-   #       plugin name     =focuserjmi
-   #       plugin version  =1.0
-   #       plugin command  =source c:/audela/gui/audace/plugin/equipment/focuserjmi/focuserjmi.tcl
-   #       plugin namespace=focuserjmi
-   #       plugin title    =Focaliseur JMI
-   #       plugin type     =focuser
+   # Exemple d'utilisation
+   #    ::audace::getPluginInfo "$audace(rep_plugin)/equipment/focuserjmi/pkgIndex.tcl" pluginInfo
+   #    retourne dans pluginInfo :
+   #       pluginInfo(name)     =focuserjmi
+   #       pluginInfo(version)  =1.0
+   #       pluginInfo(command)  =source c:/audela/gui/audace/plugin/equipment/focuserjmi/focuserjmi.tcl
+   #       pluginInfo(namespace)=focuserjmi
+   #       pluginInfo(title)    =Focaliseur JMI
+   #       pluginInfo(type)     =focuser
    #------------------------------------------------------------
    proc getPluginInfo { pkgIndexFileName pluginInfo } {
       upvar $pluginInfo pinfo
 
       #--- je cree un interpreteur temporaire pour charger le package sans pertuber Audela
-      #--- j'utilise le meme principe que la
       set interpTemp [interp create -safe ]
       set catchResult [ catch {
+         #--- j'autorise les commandes source et file pour pouvoir charger le plugin dans l'interpreteur temporaire
          interp expose $interpTemp source
          interp expose $interpTemp file
+         #--- je transfere des variables globales a l'interpreteur temporaire
          $interpTemp eval  [ list set langage $::langage]
          $interpTemp eval  [ list set pkgIndexFileName "$pkgIndexFileName"]
-         $interpTemp eval  { set dir "[file dirname $pkgIndexFileName]" }
-         $interpTemp eval  { source  "$pkgIndexFileName" }
-         set pinfo(name)    [$interpTemp eval { set pluginName [lindex [package names ] 0] }]
-         set pinfo(version) [$interpTemp eval { set pluginVersion [package versions $pluginName] } ]
-         set pinfo(command) [$interpTemp eval { set sourceFile [package ifneeded $pluginName $pluginVersion] } ]
-         set namespaceList2 [$interpTemp eval { global caption; set caption(test) ""; eval "$sourceFile" ; set pluginNamspace [lindex [namespace children ::] 0] } ]
+
+         #--- je teste le plugin dans l'interpreteur temporaire
+         $interpTemp eval  {
+            proc processUnknownRequiredPackage { packageName packageVersion } {
+               if { $packageName == "audela" } {
+                  set ::audelaRequiredVersion $packageVersion
+               }
+            }
+            global caption
+            set caption(test) ""
+            set audelaRequiredVersion ""
+
+            set dir "[file dirname $pkgIndexFileName]"
+            source  "$pkgIndexFileName"
+            set pluginName [lindex [package names ] 0]
+            set pluginVersion [package versions $pluginName]
+            package unknown processUnknownRequiredPackage
+            set sourceFile [package ifneeded $pluginName $pluginVersion]
+            catch { eval "$sourceFile" }
+            if { $audelaRequiredVersion != "" } {
+               package provide "audela" "$audelaRequiredVersion"
+               eval "$sourceFile"
+            }
+            set pluginNamespace [lindex [namespace children ::] 0]
+         }
+
+         #--- je recupere les informations du plugin
+         set pinfo(name)    [$interpTemp eval { set pluginName    } ]
+         set pinfo(version) [$interpTemp eval { set pluginVersion } ]
+         set pinfo(command) [$interpTemp eval { set sourceFile    } ]
+         set pinfo(audelaVersion) [$interpTemp eval { set audelaRequiredVersion } ]
+         set pinfo(type)    [$interpTemp eval { $pluginNamespace\::getPluginType } ]
+         set pinfo(title)   [$interpTemp eval { $pluginNamespace\::getPluginTitle } ]
+         set namespaceList2 [$interpTemp eval { set pluginNamespace } ]
          if { [llength $namespaceList2 ] > 0 } {
             set pinfo(namespace)  [lindex $namespaceList2 0]
          } else {
             error "Namespace not found in plugin $pinfo(name)"
          }
-         #--- je recupere le type du plugin
-         set pinfo(type) [$interpTemp eval { $pluginNamspace\::getPluginType } ]
-         #--- je recupere le titre du plugin
-         set pinfo(title) [$interpTemp eval { $pluginNamspace\::getPluginTitle } ]
       } ]
       #--- je supprime l'interpreteur temporaire
       interp delete $interpTemp
@@ -1329,7 +1348,27 @@ namespace eval ::audace {
          return "0"
       }
    }
+
+   #------------------------------------------------------------
+   #  ::audace::getPluginTypeDirectory
+   #  retourne le repertoire du plugin en fonction de son type
+   #  Actuellement les types de plugin sont dans un repertoire dont le nom est
+   #  identique au type, sauf  le type "focuser" qui est dans le repertoire "equipement"
+   #------------------------------------------------------------
+   proc ::audace::getPluginTypeDirectory { pluginType} {
+      global audace
+
+      if { $pluginType  == "focuser" } {
+         set typeDirectory "equipment"
+      } else {
+         set typeDirectory $pluginType
+      }
+      return $typeDirectory
+   }
+
+
 }
+
 
 ########################## Fin du namespace audace ##########################
 
@@ -1478,6 +1517,7 @@ proc startdebug { } {
 #--- On cache la fenetre mere
 wm focusmodel . passive
 wm withdraw .
+
 
 ::audace::run
 focus -force $audace(Console)
