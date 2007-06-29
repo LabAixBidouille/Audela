@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.25 2007-06-13 17:33:30 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.26 2007-06-29 22:44:39 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -444,7 +444,6 @@ proc ::visio2::cmdSortColumn { visuNo tbl col } {
    variable private
    set private($visuNo,sortedColumn) $col
    set sens [tablelist::sortByColumn $tbl $col]
-console::disp "sens=$sens\n"
 }
 
 #------------------------------------------------------------------------------
