@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.30 2007-05-27 18:41:48 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.31 2007-06-29 23:32:55 michelpujol Exp $
 #
 
 #
@@ -2349,6 +2349,7 @@ proc ::confGenerique::createDialog { visuNo NameSpace This} {
    wm geometry $This $private($visuNo,$NameSpace,geometry)
    wm resizable $This $private($visuNo,$NameSpace,resizable) $private($visuNo,$NameSpace,resizable)
    wm title $This "[$NameSpace\:\:getLabel] (visu$visuNo)"
+   wm protocol $This WM_DELETE_WINDOW "::confGenerique::closeWindow $visuNo $NameSpace $This"
 
    #--- Frame des parametres a configurer
    frame $This.frame1 -borderwidth 1 -relief raised
