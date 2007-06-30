@@ -1,29 +1,17 @@
 #
 # Fichier : updateaudela.tcl
-# Description : outil de fabrication des fichier Kit et de deploiement des plugin
+# Description : Outil de fabrication des fichiers Kit et de deploiement des plug-ins
 # Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.5 2007-06-29 22:42:39 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.6 2007-06-30 07:48:02 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
-   global caption
    package provide updateaudela 1.1
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] updateaudela.cap ]
 
    #package require audela 1.4.0
-
-   set caption(updateaudela,pluginDetail) "Information du plug-in"
-   set caption(updateaudela,availableUpdate) "Mises à jour téléchargées"
-   set caption(updateaudela,moreInfo) "Plus d'information"
-   set caption(updateaudela,connect) "Connecter"
-   set caption(updateaudela,developperOption) "Option développeur"
-   set caption(updateaudela,downloadAndInstall)  "Installer immediatement après le téléchargement"
-   set caption(updateaudela,address)  "Adresse"
-   set caption(updateaudela,audelaAddress) "Site AudeLA"
-   set caption(updateaudela,badAudelaVersion) "Cette mise à jour necessite AudeLA %s"
-   set caption(updateaudela,otherAddress)  "Autre site"
 }
 
 #------------------------------------------------------------
@@ -104,13 +92,12 @@ proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
    package require starkit
    starkit::startup
 
-
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists conf(updateaudela,position) ] }          { set conf(updateaudela,position)     "300x200+250+75" }
    if { ! [ info exists conf(updateaudela,kitDirectory) ] }      { set conf(updateaudela,kitDirectory) "$::audace(rep_install)" }
    if { ! [ info exists conf(updateaudela,downloadAndInstall ] } { set conf(updateaudela,downloadAndInstall) "1" }
-   if { ! [ info exists conf(updateaudela,addressList) ] }      {
-       set conf(updateaudela,addressList) [list "http://perso.orange.fr/michel.pujol/audela" "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/index.php#download"]
+   if { ! [ info exists conf(updateaudela,addressList) ] }       {
+      set conf(updateaudela,addressList) [list "http://perso.orange.fr/michel.pujol/audela" "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/index.php#download"]
    }
 
    set private(base)            $in
@@ -215,7 +202,7 @@ proc ::updateaudela::fillConfigPage { frm visuNo } {
    global caption
 
    #--- Je memorise la reference de la frame
-   set private(frm)      $frm
+   set private(frm) $frm
 
    #--- J'initialise les variables des widgets
 
@@ -235,8 +222,6 @@ proc ::updateaudela::fillConfigPage { frm visuNo } {
    ##$notebook compute_size
    pack $notebook -fill both -expand yes -padx 4 -pady 4
    $notebook raise [$notebook page 0]
-
-
 }
 
 #------------------------------------------------------------
@@ -513,15 +498,13 @@ proc ::updateaudela::showKitContent { kitFileName } {
    }
 }
 
-
-
 #------------------------------------------------------------
 
 ################################################################################
 # Synchronize two directory trees, VFS-aware
 #
 # Copyright (c) 1999 Matt Newman, Jean-Claude Wippler and Equi4 Software.
-
+#
 #
 # Recursively sync two directory structures
 #
@@ -855,7 +838,6 @@ proc ::updateaudela::kit::deleteKit { } {
    }
 }
 
-
 #------------------------------------------------------------
 #  ::updateaudela::kit::fillConfigPage { }
 #  fenetre de configuration
@@ -868,7 +850,6 @@ proc ::updateaudela::kit::fillConfigPage { frm visuNo } {
    set private(frm)      $frm
 
    #--- J'initialise les variables des widgets
-
 
    #--- frame de fichiers kit
    TitleFrame $frm.kit -borderwidth 2 -text $caption(updateaudela,availableUpdate)
@@ -885,7 +866,7 @@ proc ::updateaudela::kit::fillConfigPage { frm visuNo } {
       #---   l'option setfocus est necessaire pour activer la molette de la souris
       tablelist::tablelist $private(kitTable) \
          -columns [ list \
-            20 "File" left  \
+            20 "File" left \
             7  "Version\nPlugin" center \
             7  "Version\nAudela\nrequise" center \
             ] \
@@ -898,7 +879,7 @@ proc ::updateaudela::kit::fillConfigPage { frm visuNo } {
          -setfocus 1 \
          -activestyle none
 
-      bind $private(kitTable) <<ListboxSelect>>  [list ::updateaudela::kit::onSelectKitFile ]
+      bind $private(kitTable) <<ListboxSelect>> [list ::updateaudela::kit::onSelectKitFile ]
 
       grid $private(kitTable)          -row 0 -column 0 -sticky ewns
       grid $frm.kit.info.ysb           -row 0 -column 1 -sticky nsew
@@ -912,7 +893,7 @@ proc ::updateaudela::kit::fillConfigPage { frm visuNo } {
             -command "::updateaudela::kit::installKit"
          Button $frm.kit.button.delete -text "$caption(updateaudela,delete)" \
             -command "::updateaudela::kit::deleteKit"
-         Button $frm.kit.button.show -text "$caption(updateaudela,show)"  \
+         Button $frm.kit.button.show -text "$caption(updateaudela,show)" \
             -command "::updateaudela::kit::showKitContent"
          grid $frm.kit.button.install  -row 0 -column 0 -columnspan 3
          grid $frm.kit.button.delete   -row 1 -column 0 -sticky ewns
@@ -978,7 +959,7 @@ proc ::updateaudela::kit::installKit { } {
 #  ::updateaudela::kit::onSelectKitFile { }
 #     affiche les informations du plugin
 #------------------------------------------------------------
-proc ::updateaudela::kit::onSelectKitFile {  } {
+proc ::updateaudela::kit::onSelectKitFile { } {
    variable private
 
    set rowIndex [$private(kitTable) curselection]
@@ -1000,7 +981,7 @@ proc ::updateaudela::kit::onSelectKitFile {  } {
 #  ::updateaudela::kit::showKitContent { }
 #   extrait le plugin du fichier kit
 #------------------------------------------------------------
-proc ::updateaudela::kit::showKitContent {  } {
+proc ::updateaudela::kit::showKitContent { } {
    variable private
 
    set selectedRow [$private(kitTable) curselection]
@@ -1011,8 +992,6 @@ proc ::updateaudela::kit::showKitContent {  } {
    set kitFileName [$private(kitTable) cellcget $selectedRow,0 -text]
    ::updateaudela::showKitContent $kitFileName
 }
-
-
 
 namespace eval ::updateaudela::download {
 
@@ -1030,7 +1009,6 @@ proc ::updateaudela::download::connectAudela { } {
    $private(frm).address.list.e configure -text "http://www.audela.org/test2.php"
    ::updateaudela::download::connect
 }
-
 
 #------------------------------------------------------------
 #  :updateaudela::download::connect
@@ -1061,8 +1039,6 @@ proc ::updateaudela::download::connect { } {
          }
       }
    }
-
-
 }
 
 #------------------------------------------------------------
@@ -1083,8 +1059,6 @@ proc ::updateaudela::download::postcommand { } {
 
   ::console::disp "postcommand [$private(frm).address.list get] \n"
 }
-
-
 
 #------------------------------------------------------------
 #  ::updateaudela::download::fillConfigPage { }
@@ -1107,7 +1081,6 @@ proc ::updateaudela::download::fillConfigPage { frm visuNo } {
 
       Button  $frm.address.go -text "GO" -command "::updateaudela::download::connect"
       Button  $frm.address.goAudela -text "GO Audela" -command "::updateaudela::download::connectAudela"
-
 
       ComboBox $frm.address.list -relief sunken -borderwidth 1 -editable 1 \
          -height 10 \
@@ -1136,7 +1109,6 @@ proc ::updateaudela::download::fillConfigPage { frm visuNo } {
       grid $frm.website.xsb           -in [$frm.website getframe] -row 1 -column 0 -sticky ew
       grid rowconfig    [$frm.website getframe] 0 -weight 1
       grid columnconfig [$frm.website getframe] 0 -weight 1
-
 
    #--- frame de boutons
    frame $frm.button -borderwidth 2
@@ -1203,7 +1175,6 @@ proc ::updateaudela::download::processHyperlink {x y} {
       }
     }
 }
-
 
 proc ::updateaudela::download::onMouseMotion {x y} {
    variable private
@@ -1297,7 +1268,7 @@ proc ::updateaudela::download::loadUrl { url } {
       http::reset $private(token)
    }]
    if { $catchError != 0 } {
-      tk_messageBox -message "$::errorInfo  \nURL=$url" -icon error
+      tk_messageBox -message "$::errorInfo \nURL=$url" -icon error
       return 1
    }
 
@@ -1336,9 +1307,6 @@ proc ::updateaudela::download::stopDownload { args } {
       destroy $private(frm).downloadProgress
    }
 }
-
-
-
 
 #------------------------------------------------------------
 #------------------------------------------------------------
@@ -1380,7 +1348,6 @@ proc ::updateaudela::plugin::deletePlugin {} {
    }
 }
 
-
 #------------------------------------------------------------
 #  ::updateaudela::kit::fillConfigPage { }
 #  fenetre de configuration
@@ -1400,8 +1367,8 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
       scrollbar $frm.plugin.xsb -command "$frm.plugin.table xview" -orient horizontal
       tablelist::tablelist $frm.plugin.table \
          -columns [ list \
-            8 "Type" left  \
-            12 "Name" left  \
+            8 "Type" left \
+            12 "Name" left \
             10 "Title" center \
             8  "Version" center \
             ] \
@@ -1414,7 +1381,7 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
          -setfocus 1 \
          -activestyle none
 
-      bind $frm.plugin.table <<ListboxSelect>>  [list ::updateaudela::plugin::onSelectPlugin  ]
+      bind $frm.plugin.table <<ListboxSelect>> [list ::updateaudela::plugin::onSelectPlugin ]
 
       #--- frame des boutons
       frame $frm.plugin.button -borderwidth 0
@@ -1422,11 +1389,11 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
       #   -command "::updateaudela::download::run $frm $visuNo"
          Button $frm.plugin.button.refresh -text "$caption(updateaudela,refresh)" \
             -command "::updateaudela::plugin::fillPluginTable"
-         Button $frm.plugin.button.delete  -text "$caption(updateaudela,delete)"  \
+         Button $frm.plugin.button.delete  -text "$caption(updateaudela,delete)" \
             -command "::updateaudela::plugin::deletePlugin"
          Button $frm.plugin.button.moreInfo -text $::caption(updateaudela,moreInfo) \
             -command "::updateaudela::plugin::showPluginHelp"
-         Button $frm.plugin.button.makeKit -text "$caption(updateaudela,makeKit)"  \
+         Button $frm.plugin.button.makeKit -text "$caption(updateaudela,makeKit)" \
             -command "::updateaudela::plugin::makeKit"
          #grid $frm.plugin.button.download  -row 0 -column 0 -sticky ewns
          grid $frm.plugin.button.delete    -row 0 -column 1
@@ -1460,7 +1427,6 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
 proc ::updateaudela::plugin::fillPluginTable { } {
    variable private
 
-
    #--- je vide la table
    $private(pluginTable) delete 0 end
 
@@ -1484,12 +1450,11 @@ proc ::updateaudela::plugin::fillPluginTable { } {
 
 }
 
-
 #------------------------------------------------------------
 #  ::updateaudela::plugin::onSelectPlugin { }
 #     affiche les informations du plugin
 #------------------------------------------------------------
-proc ::updateaudela::plugin::onSelectPlugin {  } {
+proc ::updateaudela::plugin::onSelectPlugin { } {
    variable private
 
    set rowIndex [$private(pluginTable) curselection]
@@ -1560,7 +1525,7 @@ proc ::updateaudela::plugin::makeKit { } {
 #  ::updateaudela::showPluginHelp
 #     affiche l'aide d'un plugin
 #------------------------------------------------------------
-proc ::updateaudela::plugin::showPluginHelp {  } {
+proc ::updateaudela::plugin::showPluginHelp { } {
    variable private
 
    set rowIndex [$private(pluginTable) curselection]
@@ -1574,5 +1539,4 @@ proc ::updateaudela::plugin::showPluginHelp {  } {
 
    ::audace::showHelpPlugin [::updateaudela::getTypeDirectory $pluginType] $pluginName [ $pluginName\::getPluginHelp ]
 }
-
 
