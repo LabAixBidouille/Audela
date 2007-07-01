@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.6 2007-06-30 07:47:01 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.7 2007-07-01 21:40:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -186,26 +186,26 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(updateaudela,title)              "# Mise à jour d'AudeLA"
-   set caption(updateaudela,pluginFrame)        "# Liste des plug-ins"
-   set caption(updateaudela,kitFrame)           "# Liste des kits"
+   set caption(updateaudela,title)              "Actualização do AudeLA"
+   set caption(updateaudela,pluginFrame)        "Lista de plug-ins"
+   set caption(updateaudela,kitFrame)           "Lista de kits"
    set caption(updateaudela,rep_plugin)         "Pasta"
    set caption(updateaudela,refresh)            "Actualizar"
    set caption(updateaudela,delete)             "Eliminar"
    set caption(updateaudela,download)           "Descarregar"
-   set caption(updateaudela,show)               "# Voir"
-   set caption(updateaudela,makeKit)            "# Faire un kit"
-   set caption(updateaudela,installPlugin)      "# Installer un plug-in"
-   set caption(updateaudela,fileExists)         "# Le fichier %s existe déjà.\nVoulez-vous le mettre à jour ?"
-   set caption(updateaudela,directoryExists)    "# Le répertoire %s existe déjà.\nVoulez-vous le mettre à jour ?"
-   set caption(updateaudela,directoryNotExits)  "# Impossible d'effacer le plug-in, le répertoire %s n'existe pas."
-   set caption(updateaudela,directory)          "# Le répertoire %s existe déjà.\nVoulez-vous le mettre à jour ?"
-   set caption(updateaudela,confirmDelete)      "# Etes vous sûr de vouloir supprimer %s ?"
-   set caption(updateaudela,makeKitOk)          "# Le fichier %s est créé."
+   set caption(updateaudela,show)               "Mostrar"
+   set caption(updateaudela,makeKit)            "Fazer um kit"
+   set caption(updateaudela,installPlugin)      "Instalar um plug-in"
+   set caption(updateaudela,fileExists)         "O ficheiro %s já existe.\nDeseja actualizá-lo?"
+   set caption(updateaudela,directoryExists)    "A pasta %s já existe.\nDeseja actualizá-lo?"
+   set caption(updateaudela,directoryNotExits)  "Impossível eliminar plug-in, pasta %s não existe."
+   set caption(updateaudela,directory)          "A pasta %s já existe.\nDeseja actualizá-lo?"
+   set caption(updateaudela,confirmDelete)      "Tem a certeza que deseja eliminar %s?"
+   set caption(updateaudela,makeKitOk)          "Ficheiro %s criado."
    set caption(updateaudela,confirmInstall)     "# Voulez vous remplacer %s par %s ?"
    set caption(updateaudela,confirmInstallNew)  "# Voulez vous installer ce nouveau plugin %s ?"
-   set caption(updateaudela,installPluginOk)    "# Le plug-in %s est installé dans le répertoire \n %s \n (%s fichier(s) créé(s) ou mis à jour)."
-   set caption(updateaudela,restart)            "# Veuillez redémarrer AudeLA pour prendre en compte ces modifications."
+   set caption(updateaudela,installPluginOk)    "O plug-in %s está instalado na pasta \n %s \n (%s ficheiro(s) criado(s) ou actualizado(s))."
+   set caption(updateaudela,restart)            "Por favor reinicie AudeLA para activar estas modificações."
 
    set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
    set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
