@@ -1,4 +1,4 @@
-AudeLA-1.4.0-BETA2 (20070322)
+AudeLA-1.4.0 (20070703)
 
 
 1. Sources
@@ -147,12 +147,11 @@ mode release.
 4.1 Compilation et installation de AudeLA
 -----------------------------------------
 
--> Pour linux, il vous faut telecharger et extraire les sources de audela.
-	$ wget http://software.audela.free.fr/13/audela-1.4.0-beta2-src.tar.gz
-	$ tar -xf audela-1.4.0-beta2-src.tar.gz
+-> Pour linux, il vous faut extraire les sources de audela a partir de l'archive :
+	$ tar -xf audela-1.4.0-src.tar.gz
 
 -> Configurez le paquetage AudeLA :
-	$ cd audela-1.4.0-beta2/src
+	$ cd audela-1.4.0/src
 	$ ./configure
 
 	Par defaut, configure devrait detecter correctement les parametres de 

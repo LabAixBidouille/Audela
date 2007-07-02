@@ -1,4 +1,4 @@
-AudeLA-1.4.0-BETA2 (20070513)
+AudeLA-1.4.0 (20070703)
 
 
 1. Introduction
@@ -358,7 +358,7 @@ le desordre :
    conversion d'images au format FITS.
  - Jerome BERTHIER <berthier@imcce.fr> : Outil pour l'Observatoire Virtuel.
  - Sylvain GIRARD <zesly@wanadoo.fr> : Driver libk2 de la camera Kitty2.
- - Jim CADIEN <jcadien1@gmail.com> : Support pour la camera Cookbook.
+ - Jim CADIEN <jcadien1@gmail.com> : Support pour la camera Cookbook et SBIG (linux).
  - Dark VADOR <vador@darkstar.com> : Inspiration permanente.
  - Christian JASINSKI, Dez FUTAK, Dan HOLLER : Traduction anglaise.
  - Fausto MANENTI : Traduction italienne.
@@ -404,8 +404,7 @@ Bonne Utilisation !!
 Les Auteurs.
 
 
-AudeLA, page d'accueil : http://audela.ccdaude.com
-                    ou : http://software.audela.free.fr/
+AudeLA, page d'accueil : http://www.audela.org
 
 Copyright (C)1999-2007, The AudeLA Core Team.
 
