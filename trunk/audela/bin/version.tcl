@@ -26,9 +26,9 @@ global audela
 set audela(major) "1"
 set audela(minor) "4"
 set audela(patch) "0"
-set audela(extra) "-beta2"
+set audela(extra) ""
 
-set audela(version) "1.4.0-beta2"
+set audela(version) "1.4.0"
 
-set audela(date)    "22/03/2007"
+set audela(date)    "03/07/2007"
 

@@ -1714,8 +1714,8 @@ DEV_ROOT=`pwd`
 MAJOR=1
 MINOR=4
 PATCH=0
-EXTRA=-beta2
-REL_DATE=22/03/2007
+EXTRA=
+REL_DATE=03/07/2007
 
 
 
@@ -6159,6 +6159,12 @@ fi
 echo $ECHO_N "checking whether ${CC} accepts -fno-stack-protector... $ECHO_C" >&6; }
     ssp_old_cflags="$CFLAGS"
     CFLAGS="$CFLAGS -fno-stack-protector"
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
     cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -6217,11 +6223,18 @@ sed 's/^/| /' conftest.$ac_ext >&5
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
     echo $ssp_cc
     if test "X$ssp_cc" = "Xno"; then
       CFLAGS="$ssp_old_cflags"
     fi
   fi
+
 
 
   ssp_cxx=yes
@@ -6230,6 +6243,12 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 echo $ECHO_N "checking whether ${CXX} accepts -fno-stack-protector... $ECHO_C" >&6; }
     ssp_old_cxxflags="$CXXFLAGS"
     CXXFLAGS="$CXXFLAGS -fno-stack-protector"
+    ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
     cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -6259,7 +6278,7 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
   cat conftest.err >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag" || test ! -s conftest.err'
+	 { ac_try='test -z "$ac_cxx_werror_flag" || test ! -s conftest.err'
   { (case "(($ac_try" in
   *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
   *) ac_try_echo=$ac_try;;
@@ -6288,6 +6307,12 @@ sed 's/^/| /' conftest.$ac_ext >&5
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
     echo $ssp_cxx
     if test "X$ssp_cxx" = "Xno"; then
 	CXXFLAGS="$ssp_old_cxxflags"
