@@ -3,11 +3,11 @@
 # Fichier : listfiles.tcl
 # Description : genere un fichier texte pour Inno setup
 # Auteur : Alain KLOTZ
-# Date de MAJ : 16 juillet 2006
+# Date de MAJ : 2 juillet 2007
 #
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
-set version 1.4.0-beta2
+set version 1.4.0
 
    proc analdir { base } {
       global tab result resultfile f base0
@@ -127,10 +127,10 @@ append result "\[Setup\]\n"
 append result "AppName=AudeLA\n"
 append result "AppVerName=Audela-${version}\n"
 append result "AppPublisher=My Company, Inc.\n"
-append result "AppPublisherURL=http://software.audela.free.fr\n"
-append result "AppSupportURL=http://software.audela.free.fr\n"
-append result "AppUpdatesURL=http://software.audela.free.fr\n"
-append result "DefaultDirName=C:\\audela-${version}\n"
+append result "AppPublisherURL=http://www.audela.org\n"
+append result "AppSupportURL=http://www.audela.org\n"
+append result "AppUpdatesURL=http://www.audela.org\n"
+append result "DefaultDirName={commonprograms}\\audela-${version}\n"
 append result "DefaultGroupName=Audela\n"
 append result "LicenseFile=licence.txt\n"
 append result "InfoBeforeFile=before.txt\n"
