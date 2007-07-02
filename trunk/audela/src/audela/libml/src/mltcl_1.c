@@ -59,7 +59,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int argcc,argc2;
 	char **argvv,**argv2;
 
-
 	if(argc<2) {
       sprintf(s,"Usage: %s file_0 file_ident ?path_geo? ?path_http? ?url?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -70,7 +69,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		/* --- decode les parametres facultatifs ---*/
 		 /* default: path= "C:\audela\audela\ros\src\grenouille" */
 		if(argc == 2) {
-			argv[3] = "c:/audela/audela/ros/src/grenouille/geo.txt";
+			argv[3] = "./geo.txt";
 			argv[4] = "c:/Program Files/Apache Group/Apache2/htdocs/ros/tle.txt";
 			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
 		}
@@ -113,8 +112,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			problemetelechargement = 1;
 		}
 
-		/* --- on fabrique un fichier_tle2=geo2.txt derriere lequel on ajoute les TLE personels --- */
-		ml_file_copy ("c:/audela/audela/ros/src/grenouille/geo.txt","c:/audela/audela/ros/src/grenouille/tle2.txt");
+		/* --- on fabrique un fichier_tle2=geo.txt derriere lequel on ajoute les TLE personels --- */
+		ml_file_copy ("./geo.txt","./tle2.txt");
 
 		f_in1=fopen(argv[4],"r");
 		if (f_in1==NULL) {
@@ -128,7 +127,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 			fclose(f_in1);
 			if (n_in1!=0) {
-				f_in2=fopen("c:/audela/audela/ros/src/grenouille/tle2.txt","a+");
+				f_in2=fopen("./tle2.txt","a+");
 				if (f_in2==NULL) {
 					sprintf(s,"file %s not found",f_in2);
 				}
@@ -150,12 +149,10 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					sprintf(s,"file %s not found, pas de fichier tle",argv[4]);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
 				}
-				n_in1=0;
 				while (feof(f_in1)==0) {
 					if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
 						strcpy(lignes[n_in1].texte,ligne);
 						fprintf(f_in2,"%s",lignes[n_in1].texte);
-						n_in1++;
 					}
 				}
 				fclose(f_in1);
@@ -290,67 +287,71 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			n_in1=n_in1-1;
 			/* --- on cherche les lignes qui manquent dans le fichier de sortie --- */
 			/*tester*/
-			for (k=0;k<n_in;k++) {
-				if (lignes[k].comment!=0) {
-					lignes[k].kimage1 = 0;
-					continue;
-				}
-				for (k2=0;k2<n_in1;k2++) {
-					if (lignes2[k2].comment!=0) {
+			if (nimages2!=nimages) {
+			
+				for (k=0;k<n_in;k++) {
+					if (lignes[k].comment!=0) {
+						lignes[k].kimage1 = 0;
 						continue;
 					}
-					if (lignes2[k2].kimage1 == 0) {
-						continue;
-					}
-					pareil=0;
-					for (k1=0; k1<140;k1++) {
-						if (lignes2[k2].texte [k1] == lignes[k].texte [k1]) {
-							pareil++;
-						} else {
-							break;
+					for (k2=0;k2<n_in1;k2++) {
+						if (lignes2[k2].comment!=0) {
+							continue;
 						}
-						if (pareil>=120) {
-							lignes[k].kimage1 = 0;
-							lignes2[k2].kimage1 = 0;
-							break;
+						if (lignes2[k2].kimage1 == 0) {
+							continue;
 						}
-					}
-					if (lignes[k].kimage1 == 0) {
-					break;
+						pareil=0;
+						for (k1=0; k1<140;k1++) {
+							if (lignes2[k2].texte [k1] == lignes[k].texte [k1]) {
+								pareil++;
+							} else {
+								break;
+							}
+							if (pareil>=120) {
+								lignes[k].kimage1 = 0;
+								lignes2[k2].kimage1 = 0;
+								break;
+							}
+						}
+						if (lignes[k].kimage1 == 0) {
+						break;
+						}
 					}
 				}
-			}
-			/* --- on sauve le resultat dans le fichier de sortie ---*/
-			f_in1=fopen(argv[2],"a+");
-			if (f_in1==NULL) {
-				sprintf(s,"file_0 %s not created",argv[1]);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				free(lignes);
-				free(lignes2);
-				return TCL_ERROR;
-			}
-			temp=0;
-			for (k=0;k<n_in;k++) {
-				if (lignes[k].kimage1 != 0) {
-					/* on a une nouvelle ligne*/
-					/*il faut copier lignes[k1].ligne dans lignes[nimages2+1]*/
-					if (temp == 0) {
-						fprintf(f_in1,"\n%s",lignes[k].texte);
-					} else {
-
-						if ((lignes[k].nouvelledate != lignes[temp].nouvelledate)&&(temp!=0)) {
+				/* --- on sauve le resultat dans le fichier de sortie ---*/
+				f_in1=fopen(argv[2],"a+");
+				if (f_in1==NULL) {
+					sprintf(s,"file_0 %s not created",argv[1]);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					free(lignes);
+					free(lignes2);
+					return TCL_ERROR;
+				}
+				temp=0;
+				for (k=0;k<n_in;k++) {
+					if (lignes[k].kimage1 != 0) {
+						/* on a une nouvelle ligne*/
+						/*il faut copier lignes[k1].ligne dans lignes[nimages2+1]*/
+						if (temp == 0) {
 							fprintf(f_in1,"\n%s",lignes[k].texte);
 						} else {
-							fprintf(f_in1,"%s",lignes[k].texte);
+
+							if ((lignes[k].nouvelledate != lignes[temp].nouvelledate)&&(temp!=0)) {
+								fprintf(f_in1,"\n%s",lignes[k].texte);
+							} else {
+								fprintf(f_in1,"%s",lignes[k].texte);
+							}
 						}
+						temp=k;
 					}
-					temp=k;
 				}
+				fclose(f_in1);	
 			}
-			fclose(f_in1);
 			free(lignes);
 			free(lignes2);
 		}
+		
 
 		f_in2=fopen(argv[2],"rt");
 		if (f_in2==NULL) {
@@ -407,9 +408,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						}
 					}
 				}
-				if (n_in1==1){
+				/*if (n_in1==1){
 					strcpy(lignes2[n_in1].texte,ligne);
-				}
+				}*/
 				if (strlen(ligne)>=3) {
 					if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
 						lignes2[n_in1].comment=1;
@@ -432,7 +433,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						k1=93 ; k2=101; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						lignes2[n_in1].ra=atof(s);
 						/* transforme le fichier de tle en ephemeride */
-						strcpy(toto,"c:/audela/audela/ros/src/grenouille/tle2.txt");
+						strcpy(toto,"./tle2.txt");
 						sprintf(lign,"mc_tle2ephem {%s} %s {%s}",im,toto,home);
 						result = Tcl_Eval(interp,lign);
 
@@ -545,7 +546,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								lignes2[n_in1].angle = anglmin;
 
 							} else {
-									/* on rajoute rien à  ligne[].texte*/
+								/* on rajoute rien à  ligne[].texte*/
+								lignes2[n_in1].kobject=0;
 							}
 						} else {
 							sprintf(ligne, "Probleme avec les tle");
@@ -589,7 +591,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					if (lignes2[k].kobject!=0) {
 						fprintf(f_in1,"%s %09.5f %07.3f %s\n",lignes2[k].texte,lignes2[k].distance,lignes2[k].angle,lignes2[k].ident);
 					} else {
-						fprintf(f_in1,"%s",lignes2[k].texte);
+						fprintf(f_in1,"%s\n",lignes2[k].texte);
 					}
 				} else {
 					fprintf(f_in1,"\n");
