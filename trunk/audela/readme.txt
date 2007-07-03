@@ -1,4 +1,4 @@
-AudeLA-1.4.0 (20070703)
+AudeLA-1.4.0 (20070706)
 
 
 1. Introduction
@@ -49,7 +49,7 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - AndorTech,
 - Finger Lakes Instruments,
 - CEMES,
-- Nikon CoolPix (port série).
+- Nikon CoolPix (port sï¿½rie).
 
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
@@ -202,7 +202,7 @@ a l'adresse suivante: ftp://ftp.sbig.com/pub/SetupDriverChecker.exe
 Note aux utilisateurs d'APN (Appareil Photo Numerique) :
    La liaison USB entre AudeLA et les APN requiert libusb-win32 qui est disponible 
    sur le site  http://libusb-win32.sourceforge.net
-   Télécharger le fichier libusb-win32-filter-bin-0.1.10.1.exe 
+   Tï¿½lï¿½charger le fichier libusb-win32-filter-bin-0.1.10.1.exe 
    Puis installer libusb-win32 en executant ce fichier.
 
 Note aux utilisateurs de Quickaudine et de Quickremote : 
@@ -210,15 +210,15 @@ Note aux utilisateurs de Quickaudine et de Quickremote :
    qui est disponible sur le site http://www.ftdichip.com/
    (menu Drivers->D2XX)
    
-   Pour Windows XP 64 bits , télécharger le fichier 
+   Pour Windows XP 64 bits , tï¿½lï¿½charger le fichier 
         http://www.ftdichip.com/Drivers/CDM/WinXPx64/CDM%202.00.00%20x64.zip
-   Pour Windows XP 32 bits , télécharger le fichier 
+   Pour Windows XP 32 bits , tï¿½lï¿½charger le fichier 
         http://www.ftdichip.com/Drivers/CDM/Win2000/CDM%202.00.00.zip
-   Pour Windows 98 ou Me , télécharger le fichier    
+   Pour Windows 98 ou Me , tï¿½lï¿½charger le fichier    
         http://www.ftdichip.com/Drivers/D2XX/Win98/D30104.zip
 
-   Puis dézipper le fichier dans un répertoire temporaire et lancer l'installation 
-   en suivant la précédure décrite dans 
+   Puis dï¿½zipper le fichier dans un rï¿½pertoire temporaire et lancer l'installation 
+   en suivant la prï¿½cï¿½dure dï¿½crite dans 
    http://www.ftdichip.com/Documents/InstallGuides.htm
 
 5.2 Linux

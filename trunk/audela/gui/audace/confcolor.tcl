@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.16 2007-06-29 23:13:22 michelpujol Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.17 2007-07-03 19:50:27 denismarchais Exp $
 #
 
 namespace eval confColor {
@@ -408,9 +408,10 @@ namespace eval confColor {
          Entry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
-               -disabledforeground $audace(color,disabledTextColor) \
-               -selectbackground SystemHighlight \
-               -selectforeground SystemHighlightText
+               -disabledforeground $audace(color,disabledTextColor)
+            if { $::tcl_platform(os) != "Linux" } {
+               $w configure -selectbackground SystemHighlight -selectforeground SystemHighlightText
+            }
          }
          LabelEntry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
