@@ -330,6 +330,7 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->longuepose = 0;
    cam->longueposestart = 0;
    cam->longueposestop = 1;
+   cam->sensorColor = 1;
 
    /* default settings */
 
@@ -362,7 +363,16 @@ int cam_init(struct camprop *cam, int argc, char **argv)
                return 1;
             }
          }
-
+         if (strcmp(argv[kk], "-sensorcolor") == 0) {
+            if ( strcmp(argv[kk + 1],"0")==0 || strcmp(argv[kk + 1],"1")==0 ) {
+               cam->sensorColor = atoi(argv[kk + 1]);
+            } else {
+               //--- je copie le message d'erreur dans la varable TCL
+               strcpy(cam->msg,
+                      "-sensorcolor invalide parameter, must be : 1=color or 0=black and white");
+               return 1;
+            }
+         }
       }
    }
 
@@ -696,31 +706,58 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       }
    }
 
-   /* Charge l'image 24 bits */
-   strcpy(cam->pixels_classe, "CLASS_RGB");
-   strcpy(cam->pixels_format, "FORMAT_BYTE");
-   strcpy(cam->pixels_compression, "COMPRESS_NONE");
-   cam->pixels_reverse_y = 1;
-   cam->pixel_data = (char*)malloc(cam->imax*cam->jmax*3);
-   if( cam->pixel_data != NULL) {
-      // copy rgbBuffer into cam->pixel_data
-      // convert color order  BGR -> RGB
-      if( cam->rgbBuffer != NULL ) {
-         tempRgbBuffer = (unsigned char *) cam->pixel_data  ;
-         unsigned char *ptr = cam->rgbBuffer ;
-         for(int y = cam->jmax -1; y >= 0; y-- ) {
-            ptr = cam->rgbBuffer + y * cam->imax *3 ;
-            for(int x=0; x <cam->imax; x++) {
-               *(tempRgbBuffer++)= *(ptr + x*3 +2);
-               *(tempRgbBuffer++)= *(ptr + x*3 +1);
-               *(tempRgbBuffer++)= *(ptr + x*3 +0);
+   if ( cam->sensorColor == 1 ) {
+      // Charge l'image 24 bits 
+      strcpy(cam->pixels_classe, "CLASS_RGB");
+      strcpy(cam->pixels_format, "FORMAT_BYTE");
+      strcpy(cam->pixels_compression, "COMPRESS_NONE");
+      cam->pixels_reverse_y = 1;
+      cam->pixel_data = (char*)malloc(cam->imax*cam->jmax*3);
+      if( cam->pixel_data != NULL) {
+         // copy rgbBuffer into cam->pixel_data
+         // convert color order  BGR -> RGB
+         if( cam->rgbBuffer != NULL ) {
+            tempRgbBuffer = (unsigned char *) cam->pixel_data  ;
+            unsigned char *ptr = cam->rgbBuffer ;
+            for(int y = cam->jmax -1; y >= 0; y-- ) {
+               ptr = cam->rgbBuffer + y * cam->imax *3 ;
+               for(int x=0; x <cam->imax; x++) {
+                  *(tempRgbBuffer++)= *(ptr + x*3 +2);
+                  *(tempRgbBuffer++)= *(ptr + x*3 +1);
+                  *(tempRgbBuffer++)= *(ptr + x*3 +0);
+               }
             }
+         } else {
+            // je retourne un message d'erreur
+            sprintf(cam->msg, "cam_read_ccd: Not enougt memory");
          }
-      } else {
-         // je retourne un message d'erreur
-         sprintf(cam->msg, "cam_read_ccd: Not enougt memory");
       }
-   }
+   } else {
+     // Charge l'image 8 bits 
+      strcpy(cam->pixels_classe, "CLASS_GRAY");
+      strcpy(cam->pixels_format, "FORMAT_BYTE");
+      strcpy(cam->pixels_compression, "COMPRESS_NONE");
+      cam->pixels_reverse_y = 1;
+      cam->pixel_data = (char*)malloc(cam->imax*cam->jmax);
+      if( cam->pixel_data != NULL) {
+         // copy rgbBuffer into cam->pixel_data
+         // convert color order  BGR -> RGB
+         if( cam->rgbBuffer != NULL ) {
+            tempRgbBuffer = (unsigned char *) cam->pixel_data  ;
+            unsigned char *ptr = cam->rgbBuffer ;
+            for(int y = cam->jmax -1; y >= 0; y-- ) {
+               ptr = cam->rgbBuffer + y * cam->imax *3 ;
+               for(int x=0; x <cam->imax; x++) {
+                  *(tempRgbBuffer++)= *(ptr + x*3 );
+               }
+            }
+         } else {
+            // je retourne un message d'erreur
+            sprintf(cam->msg, "cam_read_ccd: Not enougt memory");
+         }
+      }
+
+   } 
 
    if (cam->rgbBuffer != NULL) {
       free(cam->rgbBuffer);

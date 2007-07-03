@@ -205,7 +205,7 @@ extern "C" {         /* Assume C declarations for C++ */
 /**
  * webcam device (only for Linux). uses pwc and pwcx modules
  * - default: /dev/video0
-*/
+ */
    char webcamDevice[128];
 
 /**
@@ -213,8 +213,8 @@ extern "C" {         /* Assume C declarations for C++ */
  * default:
  * - Linux - "/dev/parport0"
  * - Windows - "lpt1"
-*/
-   char longExposureDevice[128];
+ */
+ //  char longExposureDevice[128];
 
 /**
  * Valid image number (used under Linux).
@@ -226,17 +226,17 @@ extern "C" {         /* Assume C declarations for C++ */
  * (how many read() calls you need), if is 0
  * auto detection is performed (less then 20 read() calls).
  * - dafault: 3
-*/
+ */
    int validFrame;
 
 /**
  * cam_fd, webcam device file descriptor.
-*/
+ */
    int cam_fd;
 
 /**
  * long_fd, long exposure device file descriptor.
-*/
+ */
    int long_fd;
 
 /**
@@ -248,23 +248,23 @@ extern "C" {         /* Assume C declarations for C++ */
  * in cmdCamClose, also video format functions
  * change buffers sizes and allocates new memory
  * for them.
-*/
+ */
    unsigned char *rgbBuffer;
 
 /**
  * rgbBufferSize is size in bytes of rgbBuffer.
-*/
+ */
    int rgbBufferSize;
 
 /**
  * Buffer for yuv frame.
  * Used under Linux for keeping yuv frame
-*/
+ */
    unsigned char *yuvBuffer;
 
 /**
  * yuvBufferSize is size in bytes of yuvBuffer.
-*/
+ */
    int yuvBufferSize;
 
 /**
@@ -278,11 +278,17 @@ extern "C" {         /* Assume C declarations for C++ */
  * scale, where a value of '1' is 1/65536th of a second, etc.
  *
  * Used under Linux.
-*/
+ */
    int shutterSpeed;
 
+/**
+ * sensorColor : color=1 , black and white= 0
+ */
+   int sensorColor;
+
+
 /******************************************************************/
-/*  varaible  d'acces direct a la memoire video LINUX (M. Pujol)  */
+/*  variable  d'acces direct a la memoire video LINUX (M. Pujol)  */
 /*                                                                */
 /*  Pour LINUX uniquement                                         */
 /******************************************************************/
