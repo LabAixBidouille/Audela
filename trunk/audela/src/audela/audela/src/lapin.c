@@ -207,6 +207,24 @@ char* audela_join_filename(char *root, char *tail)
    return root;
 }
 
+/*
+ * audela_installPatch
+ *    intalls a patch if the file  intallpatch.tcl is present in current directory
+ */
+void audela_installPatch(Tcl_Interp *interp)
+{
+   char * installPatch = "installpatch.tcl";
+   char s[256];
+   FILE *f;
+   if((f=fopen(installPatch,"r"))!=NULL) {
+      fclose(f) ;
+      sprintf(s,"source installpatch.tcl");
+      LOGDEBUG("installPatch = %s\n",s);
+      Tcl_Eval(interp,s);
+   }
+}
+
+
 
 /*
  * void log_write(char *fmt,...)
@@ -480,6 +498,9 @@ int Tk_AppInit(Tcl_Interp *interp)
    /* Log filename available in the interp, through variable "audelog_filename" */
    Tcl_SetVar(interp,"audelog_filename",log_filename,TCL_GLOBAL_ONLY);
 
+   /* install a patch */
+   audela_installPatch(interp);
+
    LOGDEBUG("will load libraries\n");
 
    /* Standard libraries for AudeLA */
@@ -532,6 +553,10 @@ int Tcl_AppInit(Tcl_Interp *interp)
    Tcl_CreateExitHandler(AppInitExitHandler, interp);
 #endif   
    
+   // install a patch 
+   audela_installPatch(interp);
+
+   // load standard libraries for AudeLA
    load_library(interp,"libak");      // Misc. from Alain Klotz
    load_library(interp,"libaudela");  // Acquisition, and preprocssing
    load_library(interp,"libgsltcl");  // Gnu Scientific Library extension for Tcl
