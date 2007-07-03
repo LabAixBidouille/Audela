@@ -46,6 +46,8 @@ struct camprop {
     /* --- parametres standards, ne pas changer --- */
     COMMON_CAMSTRUCT;
     /* Ajoutez ici les variables necessaires a votre camera (mode d'obturateur, etc). */
+    /* --- pour Hisis 11 --- */
+    int nb_vidages;
     /* --- pour Hisis 24 --- */
     int typeport;
     int portnum;

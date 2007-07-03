@@ -433,6 +433,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 #endif
    
    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+
+   /* specifique HISIS11 */
+   cam->nb_vidages = 4;
    
    /* specifique HISIS22 */
    cam->hisis22_paramloops = 6;
@@ -521,7 +524,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
     char ligne[1024];
     short i;
-    short nb_vidages;
+    
     int result = 0;
 
     if (cam->authorized == 1) {
@@ -532,8 +535,8 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 	}
 	/* rincage */
 	if (strcmp(ligne, "Hi-SIS11") == 0) {
-	    nb_vidages = 4;
-	    for (i = 0; i < nb_vidages; i++) {
+	    cam->nb_vidages = 4;
+	    for (i = 0; i < cam->nb_vidages; i++) {
 		hisis11_fast_vidage(cam);
 	    }
 	}

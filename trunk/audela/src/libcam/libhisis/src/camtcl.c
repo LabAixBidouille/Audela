@@ -530,3 +530,28 @@ int cmdHisisGainAmpli(ClientData clientData, Tcl_Interp * interp, int argc,
     Tcl_SetResult(interp, ligne, TCL_VOLATILE);
     return TCL_ERROR;
 }
+
+int cmdHisisNbVidage(ClientData clientData, Tcl_Interp * interp, int argc,
+		      char *argv[])
+{
+   char ligne[256];
+   struct camprop *cam;
+   int tcl_return = TCL_OK;
+   
+   cam = (struct camprop *) clientData;
+   if (argc == 2) {
+      sprintf(ligne, "%d", cam->nb_vidages);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      tcl_return = TCL_OK;
+   } else if (argc == 3) {
+      tcl_return = Tcl_GetInt(interp, argv[2], &cam->nb_vidages);
+      // je retoune la valeur, quelle soit modifiéee ou pas
+      sprintf(ligne, "%d", cam->nb_vidages);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+   } else {
+      sprintf(ligne, "%s %s ", argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      tcl_return = TCL_ERROR;
+   }   
+   return tcl_return;
+}
