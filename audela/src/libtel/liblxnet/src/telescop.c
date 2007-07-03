@@ -28,7 +28,7 @@
  * La structure "telprop" peut etre adaptee
  * dans le fichier telescop.h
  *
- * $Id: telescop.c,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
+ * $Id: telescop.c,v 1.3 2007-07-03 20:40:20 michelpujol Exp $
  *
  */
 
@@ -77,11 +77,13 @@
 struct telini tel_ini[] = {
    {"LXNET",    /* telescope name */
     "Lxnet",    /* protocol name */
+    "lxnet",    /* product */
      1.         /* default focal lenght of optic system */
    },
-   {"",       /* telescope name */
-    "",       /* protocol name */
-	1.        /* default focal lenght of optic system */
+   {"",         /* telescope name */
+    "",         /* protocol name */
+    "",         /* product */
+	1.           /* default focal lenght of optic system */
    },
 };
 
