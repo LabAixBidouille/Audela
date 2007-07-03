@@ -45,7 +45,7 @@ static char  *license_msg[] = {
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: gzip.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: gzip.c,v 1.2 2007-07-03 18:13:34 michelpujol Exp $";
 #endif
 
 #include <ctype.h>
@@ -298,7 +298,7 @@ local void copy_stat    OF((struct stat *ifstat));
 /*local void do_exit      OF((int exitcode)); modif Alain*/
 local int do_exit      OF((int exitcode));
       int gzipmain          OF((int argc, char **argv));
-int (*work) OF((int infile, int outfile)) = zip; /* function to call */
+int (*work) OF((int infile, int outfile)) = zip_audela; /* function to call */
 
 #ifndef NO_DIR
 local void treat_dir    OF((char *dir));
@@ -435,7 +435,7 @@ int gzipmain (int argc, char **argv)
     int optc;           /* current option */
 
     /* les lignes ci dessous ont ete rajoutees pour faire une librairie */
-    work=zip;
+    work=zip_audela;
     ascii = 0;        /* convert end-of-lines to local OS conventions */
     to_stdout = 0;    /* output to stdout (-c) */
     decompress = 0;   /* decompress (-d) */
@@ -456,7 +456,6 @@ int gzipmain (int argc, char **argv)
     total_out = 0;        /* output bytes for all files */
     remove_ofname = 0;	   /* remove output file on error */
 
-
     EXPAND(argc, argv); /* wild card expansion if necessary */
 
     progname = basename(argv[0]);
@@ -473,16 +472,16 @@ int gzipmain (int argc, char **argv)
 
     foreground = signal(SIGINT, SIG_IGN) != SIG_IGN;
     if (foreground) {
-	(void) signal (SIGINT, (sig_type)abort_gzip);
+	(void) signal (SIGINT, (sig_type)abort_gzip_audela );
     }
 #ifdef SIGTERM
     if (signal(SIGTERM, SIG_IGN) != SIG_IGN) {
-	(void) signal(SIGTERM, (sig_type)abort_gzip);
+	(void) signal(SIGTERM, (sig_type)abort_gzip_audela );
     }
 #endif
-#ifdef SIGHUP
+#ifdef SIGHUP 
     if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
-	(void) signal(SIGHUP,  (sig_type)abort_gzip);
+	(void) signal(SIGHUP,  (sig_type)abort_gzip_audela );
     }
 #endif
 
@@ -598,7 +597,7 @@ int gzipmain (int argc, char **argv)
                 progname, optarg);
         do_exit(ERROR);
     }
-    if (do_lzw && !decompress) work = lzw;
+    if (do_lzw && !decompress) work = lzw_audela;
 
     /* Allocate all global buffers (for DYN_ALLOC option) */
     ALLOC(uch, inbuf,  INBUFSIZ +INBUF_EXTRA);
@@ -1210,7 +1209,7 @@ local int get_method(int in)
 	    exit_code = ERROR;
 	    return -1;
 	}
-	work = unzip;
+	work = unzip_audela;
 	flags  = (uch)get_byte();
 
 	if ((flags & ENCRYPTED) != 0) {
@@ -1300,22 +1299,22 @@ local int get_method(int in)
          * We are thus guaranteed that the entire local header fits in inbuf.
          */
         inptr = 0;
-	work = unzip;
+	work = unzip_audela;
 	if (check_zipfile(in) != OK) return -1;
 	/* check_zipfile may get ofname from the local header */
 	last_member = 1;
 
     } else if (memcmp(magic, PACK_MAGIC, 2) == 0) {
-	work = unpack;
+	work = unpack_audela;
 	method = PACKED;
 
     } else if (memcmp(magic, LZW_MAGIC, 2) == 0) {
-	work = unlzw;
+	work = unlzw_audela;
 	method = COMPRESSED;
 	last_member = 1;
 
     } else if (memcmp(magic, LZH_MAGIC, 2) == 0) {
-	work = unlzh;
+	work = unlzh_audela;
 	method = LZHED;
 	last_member = 1;
 
@@ -1764,7 +1763,7 @@ local int do_exit(int exitcode)
 /* ========================================================================
  * Signal and error handler.
  */
-RETSIGTYPE abort_gzip()
+RETSIGTYPE abort_gzip_audela()
 {
    if (remove_ofname) {
        close(ofd);

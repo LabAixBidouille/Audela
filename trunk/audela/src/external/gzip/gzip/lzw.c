@@ -3,7 +3,7 @@
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: lzw.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: lzw.c,v 1.2 2007-07-03 18:13:34 michelpujol Exp $";
 #endif
 
 #include "tailor.h"
@@ -13,7 +13,7 @@ static char rcsid[] = "$Id: lzw.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $"
 static int msg_done = 0;
 
 /* Compress in to out with lzw method. */
-int lzw(int in, int out)
+int lzw_audela(int in, int out)
 /*    int in, out;*/
 {
     if (msg_done) return ERROR;

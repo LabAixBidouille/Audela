@@ -4,7 +4,7 @@
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: unlzh.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: unlzh.c,v 1.2 2007-07-03 18:13:35 michelpujol Exp $";
 #endif
 
 #include <stdio.h>
@@ -382,7 +382,7 @@ local unsigned decode(unsigned count, uch buffer[])
 /* ===========================================================================
  * Unlzh in to out. Return OK or ERROR.
  */
-int unlzh(int in, int out)
+int unlzh_audela(int in, int out)
     /* int in; */
     /* int out; */
 {

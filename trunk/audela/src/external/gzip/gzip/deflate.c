@@ -68,7 +68,7 @@
 #include "lzw.h" /* just for consistency checking */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: deflate.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: deflate.c,v 1.2 2007-07-03 18:13:34 michelpujol Exp $";
 #endif
 
 /* ===========================================================================
@@ -283,7 +283,7 @@ local  void check_match OF((IPos start, IPos match, int length));
 /* ===========================================================================
  * Initialize the "longest match" routines for a new file
  */
-void lm_init (int pack_level, ush* flags)
+void lm_init_audela (int pack_level, ush* flags)
     /* int pack_level;  0: store, 1: best speed, 9: best compression */
     /* ush *flags;      general purpose bit flag */
 {
@@ -658,7 +658,7 @@ local ulg deflate_fast()
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
-ulg deflate()
+ulg deflate_audela()
 {
     IPos hash_head;          /* head of hash chain */
     IPos prev_match;         /* previous match */

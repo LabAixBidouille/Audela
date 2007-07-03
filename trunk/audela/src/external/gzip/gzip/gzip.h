@@ -259,25 +259,25 @@ extern int save_orig_name; /* set if original name must be saved */
 		   if (exit_code == OK) exit_code = WARNING;}
 
 	/* in zip.c: */
-extern int zip        OF((int in, int out));
+extern int zip_audela        OF((int in, int out));
 extern int file_read  OF((char *buf,  unsigned size));
 
 	/* in unzip.c */
-extern int unzip      OF((int in, int out));
+extern int unzip_audela      OF((int in, int out));
 extern int check_zipfile OF((int in));
 
 	/* in unpack.c */
-extern int unpack     OF((int in, int out));
+extern int unpack_audela     OF((int in, int out));
 
 	/* in unlzh.c */
-extern int unlzh      OF((int in, int out));
+extern int unlzh_audela      OF((int in, int out));
 
 	/* in gzip.c */
-RETSIGTYPE abort_gzip OF((void));
+RETSIGTYPE abort_gzip_audela OF((void));
 
         /* in deflate.c */
-void lm_init OF((int pack_level, ush *flags));
-ulg  deflate OF((void));
+void lm_init_audela OF((int pack_level, ush *flags));
+ulg  deflate_audela OF((void));
 
         /* in trees.c */
 void ct_init     OF((ush *attr, int *method));
@@ -312,4 +312,4 @@ extern void display_ratio OF((long num, long den, FILE *file));
 extern voidp xmalloc      OF((unsigned int size));
 
 	/* in inflate.c */
-extern int inflate OF((void));
+extern int inflate_audela OF((void));
