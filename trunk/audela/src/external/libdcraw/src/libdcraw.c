@@ -68,7 +68,7 @@ void scale_color_cb ()
          image[row*width+col][0] = image[row*width+col][0] + image[row*width+col][1] +image[row*width+col][2] + +image[row*width+col][3]; 
          image[row*width+col][1] = image[row*width+col][0];  
          image[row*width+col][2] = image[row*width+col][0];  
-         image[row*width+col][3] = 0;  
+         image[row*width+col][3] = image[row*width+col][0];  
       }
    }
 }
@@ -534,6 +534,7 @@ int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct libdcraw_DataInfo *d
    // je copie les data dans la zone de travail
    // en faisant un mirroir Y
    // comme le fait scale_color_cb()
+   
    for (row=0; row < height; row++) {
       row2 = (height-row-1)*width;
       for (col=0; col < width; col++) {
@@ -542,13 +543,16 @@ int libdcraw_bufferCfa2Rgb (unsigned short * dataIn, struct libdcraw_DataInfo *d
          image[row2+col][0] = *(dataIn + row*width  +  col );
          image[row2+col][1] = *(dataIn + row*width  +  col );
          image[row2+col][2] = *(dataIn + row*width  +  col );
-         image[row2+col][3] = 0;
+         image[row2+col][3] = *(dataIn + row*width  +  col );
       }
    }
 
    //bad_pixels();
    //scale_colors();
    //cam_to_cielab (NULL,NULL);   
+
+   // 
+   pre_interpolate();
 
    switch( method) {
    case LINEAR :
