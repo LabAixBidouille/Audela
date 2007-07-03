@@ -5,7 +5,7 @@
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: zip.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: zip.c,v 1.2 2007-07-03 18:13:36 michelpujol Exp $";
 #endif
 
 #include <ctype.h>
@@ -34,7 +34,7 @@ long header_bytes;   /* number of bytes in gzip header */
  * IN assertions: the input and output buffers are cleared.
  *   The variables time_stamp and save_orig_name are initialized.
  */
-int zip(int in, int out)
+int zip_audela(int in, int out)
     /* int in, out;             input and output file descriptors */
 {
     uch  flags = 0;         /* general purpose bit flags */
@@ -63,7 +63,7 @@ int zip(int in, int out)
 
     bi_init(out);
     ct_init(&attr, &method);
-    lm_init(level, &deflate_flags);
+    lm_init_audela(level, &deflate_flags);
 
     put_byte((uch)deflate_flags); /* extra flags */
     put_byte(OS_CODE);            /* OS identifier */
@@ -76,7 +76,7 @@ int zip(int in, int out)
     }
     header_bytes = (long)outcnt;
 
-    (void)deflate();
+    (void)deflate_audela();
 
 #if !defined(NO_SIZE_CHECK) && !defined(RECORD_IO)
   /* Check input size (but not in VMS -- variable record lengths mess it up)

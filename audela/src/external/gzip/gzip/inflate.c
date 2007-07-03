@@ -97,7 +97,7 @@
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: inflate.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: inflate.c,v 1.2 2007-07-03 18:13:34 michelpujol Exp $";
 #endif
 
 #include <sys/types.h>
@@ -137,7 +137,7 @@ int inflate_stored OF((void));
 int inflate_fixed OF((void));
 int inflate_dynamic OF((void));
 int inflate_block OF((int *));
-int inflate OF((void));
+int inflate_audela OF((void));
 
 
 /* The inflate algorithm uses a sliding 32K byte window on the uncompressed
@@ -910,7 +910,7 @@ int inflate_block(int* e)
 
 
 
-int inflate()
+int inflate_audela()
 /* decompress an inflated entry */
 {
   int e;                /* last block flag */

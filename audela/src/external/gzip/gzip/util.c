@@ -5,7 +5,7 @@
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: util.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: util.c,v 1.2 2007-07-03 18:13:36 michelpujol Exp $";
 #endif
 
 #include <ctype.h>
@@ -342,7 +342,7 @@ void error(char* m)
     /* char *m; */
 {
     fprintf(stderr, "\n%s: %s: %s\n", progname, ifname, m);
-    abort_gzip();
+    abort_gzip_audela();
 }
 
 void warn(char* a, char* b)
@@ -359,14 +359,14 @@ void read_error()
     } else {
 	fprintf(stderr, "%s: unexpected end of file\n", ifname);
     }
-    abort_gzip();
+    abort_gzip_audela();
 }
 
 void write_error()
 {
     fprintf(stderr, "\n%s: ", progname);
     perror(ofname);
-    abort_gzip();
+    abort_gzip_audela();
 }
 
 /* ========================================================================

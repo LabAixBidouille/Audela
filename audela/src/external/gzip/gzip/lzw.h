@@ -38,5 +38,5 @@
 extern int maxbits;      /* max bits per code for LZW */
 extern int block_mode;   /* block compress mode -C compatible with 2.0 */
 
-extern int lzw    OF((int in, int out));
-extern int unlzw  OF((int in, int out));
+extern int lzw_audela    OF((int in, int out));
+extern int unlzw_audela  OF((int in, int out));

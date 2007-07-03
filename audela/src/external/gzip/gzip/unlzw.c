@@ -8,7 +8,7 @@
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: unlzw.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: unlzw.c,v 1.2 2007-07-03 18:13:35 michelpujol Exp $";
 #endif
 
 #include <sys/types.h>
@@ -193,7 +193,7 @@ int block_mode = BLOCK_MODE; /* block compress mode -C compatible with 2.0 */
  *   The magic header has already been checked and skipped.
  *   bytes_in and bytes_out have been initialized.
  */
-int unlzw(int in, int out)
+int unlzw_audela(int in, int out)
     /* int in, out;     input and output file descriptors */
 {
     REG2   char_type  *stackp;

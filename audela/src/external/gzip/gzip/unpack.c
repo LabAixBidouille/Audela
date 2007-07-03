@@ -5,7 +5,7 @@
  */
 
 #ifdef RCSID
-static char rcsid[] = "$Id: unpack.c,v 1.1 2005-12-07 21:43:13 denismarchais Exp $";
+static char rcsid[] = "$Id: unpack.c,v 1.2 2007-07-03 18:13:35 michelpujol Exp $";
 #endif
 
 #include "tailor.h"
@@ -182,7 +182,7 @@ local void build_tree()
  *   the compressed data, from offsets inptr to insize-1 included.
  *   The magic header has already been checked. The output buffer is cleared.
  */
-int unpack(int in, int out)
+int unpack_audela(int in, int out)
     /* int in, out;             input and output file descriptors */
 {
     int len;                /* Bit length of current code */
