@@ -552,21 +552,10 @@ int CVisu::SetWindow(int xx1, int yy1, int xx2, int yy2)
       return ELIBSTD_SUB_WINDOW_ALREADY_EXIST;
    }
 
-   if (mirrorX == 0) {
       x1 = xx1;
       x2 = xx2;
-   } else {      
-      x1 = buffer->GetW() - xx2 -1;
-      x2 = buffer->GetW() - xx1 -1;
-   }
-
-   if (mirrorY == 0) {
       y1 = yy1;
       y2 = yy2;
-   } else {      
-      y1 = buffer->GetH() - yy2 -1 ;
-      y2 = buffer->GetH() - yy1 -1;
-   }
 
    full = 0;
 
@@ -721,7 +710,7 @@ int CVisu::UpdateDisplay()
    } else if( zoom > 1) {
       Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), (int) zoom, (int) zoom, 1, 1);
    } else {
-      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), 1, 1, (int) (1./zoom), (int) (1./zoom));
+      Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom+1), (int) (orgwh*zoom+1), 1, 1, (int) (1./zoom), (int) (1./zoom));
    }
 
 
