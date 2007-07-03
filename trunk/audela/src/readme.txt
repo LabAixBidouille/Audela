@@ -57,9 +57,15 @@ Effectuez les operations suivantes dans une console "Invite de commande",
   - Repertoire src\external\andor,
     lancer make.bat puis install.bat
 
+  - Repertoire src\external\cemes,
+    lancer make.bat puis install.bat
+
   - Repertoire src\external\cfitsio,
     lancer vars.bat (regler les chemins si besoin), make.bat puis install.bat
 
+  - Repertoire src\external\etel,
+    extraire lib.zip dans ce repertoire, et lancer install.bat
+    
   - Ouvrir et compiler avec visual c++, en mode release :
        src\external\fli\libfli\lib\windows\libfli.dsw
     Repertoire src\external\fli, lancer install.bat.
@@ -71,21 +77,21 @@ Effectuez les operations suivantes dans une console "Invite de commande",
     lancer vars.bat (regler les chemins si besoin), make.bat puis install.bat
 
   - Repertoire src\external\libdcjpeg
-    ouvrir visual c++  vc60\libdcjpeg.dsw et compiler en mode Release
+    (inclus dans la procedure ci-apres pour compiler AudeLA)
 
   - Repertoire src\external\libdcraw
-    ouvrir visual c++  vc60\libdcraw.dsw et compiler en mode Release
+    (inclus dans la procedure ci-apres pour compiler AudeLA)
 
   - Repertoire src\external\libftd2xx
     lancer make.bat puis install.bat
 
-  - Repertoire src\external\libgphoto2
-    lancer make.bat puis install.bat
-
   - Repertoire src\external\libusb
-    lancer make.bat puis install.bat
+    (inclus dans la procedure ci-apres pour compiler AudeLA)
     telecharger libusb-win32-filter-bin-0.1.10.1.exe depuis le site web de 
     sourceforge puis lancer libusb-win32-filter-bin-0.1.10.1.exe
+
+  - Repertoire src\external\libgphoto2
+    (Inclus dans la procedure ci-apres pour compiler AudeLA)
 
   - Repertoire src\external\porttalk,
     lancer make.bat puis install.bat
@@ -98,6 +104,9 @@ Effectuez les operations suivantes dans une console "Invite de commande",
           (sex.exe est mis directement dans audela/bin)
 
   - Repertoire src\external\tcl,
+    lancer make.bat puis install.bat
+
+  - Repertoire src\external\truetime,
     lancer make.bat puis install.bat
 
   - Repertoire src\external\utils,
