@@ -30,6 +30,6 @@ set audela(extra) ""
 
 set audela(version) "1.4.0"
 
-set audela(date)    "05/07/2007"
+set audela(date)    "06/07/2007"
 
 package provide audela "$audela(major).$audela(minor).$audela(patch)"
