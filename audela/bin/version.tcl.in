@@ -32,3 +32,4 @@ set audela(version) "@MAJOR@.@MINOR@.@PATCH@@EXTRA@"
 
 set audela(date)    "@REL_DATE@"
 
+package provide audela "$audela(major).$audela(minor).$audela(patch)"
