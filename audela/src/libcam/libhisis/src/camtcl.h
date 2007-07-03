@@ -33,7 +33,8 @@
    {"reset",        (Tcl_CmdProc *)cmdHisisReset}, \
    {"shutterdelay", (Tcl_CmdProc *)cmdHisisShutterDelay}, \
    {"status",       (Tcl_CmdProc *)cmdHisisStatus}, \
-   {"gainampli",    (Tcl_CmdProc *)cmdHisisGainAmpli},
+   {"gainampli",    (Tcl_CmdProc *)cmdHisisGainAmpli}, \
+   {"nbvidage",     (Tcl_CmdProc *)cmdHisisNbVidage},
 
 /* === Specific commands for that camera ===*/
 int cmdHisisOutTime(ClientData clientData, Tcl_Interp * interp, int argc,
@@ -55,6 +56,8 @@ int cmdHisisShutterDelay(ClientData clientData, Tcl_Interp * interp,
 int cmdHisisStatus(ClientData clientData, Tcl_Interp * interp, int argc,
 		   char *argv[]);
 int cmdHisisGainAmpli(ClientData clientData, Tcl_Interp * interp, int argc,
+		      char *argv[]);
+int cmdHisisNbVidage(ClientData clientData, Tcl_Interp * interp, int argc,
 		      char *argv[]);
 
 #endif
