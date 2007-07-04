@@ -38,6 +38,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 /* pour tester dans Audace:*/
 /* ml_geostatident "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd0_20060927.txt"
 "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd_20060927.txt" */
+
 {
 	int result,retour,diffjour,n_in,n_in1,kimage,nimages,kimage2,nimages2,k,k1,k2,k3,date,temp,nsat;
 	int kmin,kmini,problemetelechargement,pareil;
@@ -233,6 +234,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			while (feof(f_in1)==0) {
 				 if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
 					strcpy(lignes[n_in].texte,ligne);
+					lignes[n_in].comment=-12;
+					lignes[n_in].nouvelledate=-12;
 					if (strlen(ligne)>=3) {
 						if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
 							lignes[n_in].comment=0;
@@ -254,12 +257,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 							lignes[n_in].nouvelledate=k;
 						}
 					}
+					n_in++;
 				}
-				n_in++;
 			}
 			fclose(f_in1);
 			nimages=kimage-2;
-			n_in=n_in-1;
 
 			kimage2=0;
 			k=0;
@@ -273,28 +275,29 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			while (feof(f_in2)==0) {
 				 if (fgets(ligne,sizeof(ligne),f_in2)!=NULL) {
 					strcpy(lignes2[n_in1].texte,ligne);
+					lignes2[n_in1].comment=-12;
 					if (strlen(ligne)>=3) {
 						if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
 							lignes2[n_in1].comment=0;
 						}
 						kimage2++;
 					}
-				 }
-				 n_in1++;
+					n_in1++;
+				 }	 
 			}
 			fclose(f_in2);
 			nimages2=kimage2-2;
-			n_in1=n_in1-1;
 			/* --- on cherche les lignes qui manquent dans le fichier de sortie --- */
 			/*tester*/
-			if (nimages2!=nimages) {
-			
+			if (nimages2!=nimages) {	
 				for (k=0;k<n_in;k++) {
+					lignes[k].kimage1 = -12;
 					if (lignes[k].comment!=0) {
 						lignes[k].kimage1 = 0;
 						continue;
 					}
 					for (k2=0;k2<n_in1;k2++) {
+						lignes2[k2].kimage1 = -12;
 						if (lignes2[k2].comment!=0) {
 							continue;
 						}
@@ -334,7 +337,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						/* on a une nouvelle ligne*/
 						/*il faut copier lignes[k1].ligne dans lignes[nimages2+1]*/
 						if (temp == 0) {
-							fprintf(f_in1,"\n%s",lignes[k].texte);
+							if (k==3) {
+								fprintf(f_in1,"%s",lignes[k].texte);
+							} else {
+								fprintf(f_in1,"\n%s",lignes[k].texte);
+							}
 						} else {
 
 							if ((lignes[k].nouvelledate != lignes[temp].nouvelledate)&&(temp!=0)) {
@@ -380,6 +387,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			return TCL_ERROR;
 		}
 		n_in1=0;
+		n_in=0;
 		kimage2=0;
 		nsat=0;
 		strcpy(s,"");
@@ -392,9 +400,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 		while (feof(f_in1)==0) {
 			if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
+				lignes2[n_in1].comment=-12;
+				lignes2[n_in1].kobject=-12;
 				if (n_in1==0) {
 					strcpy(lignes2[n_in1].texte,ligne);
-					for (k=90;k<130;k++){
+					for (k=100;k<130;k++){
 						/* on recupère les coordonnées GPS du lieu*/
 						if ((ligne[k]=='G')&&(ligne[k+1]=='P')&&(ligne[k+2]=='S')) {
 							for (k2=k+4;k2<145;k2++){
@@ -467,9 +477,17 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 									distang = Tcl_GetString (list3);
 									code = Tcl_SplitList(interp,distang,&argc2,&argv2);
 								}
-								k1= 0 ; k2= 12 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
+								k2=0;
+								for (k1=0;k1<40;k1++){
+									if (distang[k1]== ' ') {
+										k2=k1;
+										break;
+									}
+								}
+
+								k1= 0; for (k3=k1;k3<=12;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
 								dist=atof(s);
-								k1= 14 ; k2= 28 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
+								k1= k2+1; for (k3=k1;k3<=k2+13;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
 								angl=atof(s);
 								if (dist <= distmin) {
 									distmin = dist;
@@ -560,12 +578,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						lignes2[n_in1].kobject=0;
 						nsat++;
 					}
+					
 				} else {
-					strcpy(lignes2[n_in1].texte,ligne);
+					strcpy(lignes2[n_in1].texte,ligne);	
 				}
 				n_in1++;
 			}
-
+			
 		}
 		fclose(f_in1);
 		/* si on en a qui sont pas identifiés */
@@ -591,7 +610,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					if (lignes2[k].kobject!=0) {
 						fprintf(f_in1,"%s %09.5f %07.3f %s\n",lignes2[k].texte,lignes2[k].distance,lignes2[k].angle,lignes2[k].ident);
 					} else {
-						fprintf(f_in1,"%s\n",lignes2[k].texte);
+						fprintf(f_in1,"%s",lignes2[k].texte);
 					}
 				} else {
 					fprintf(f_in1,"\n");
@@ -606,6 +625,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 	return result;
 }
+
+
 
 
 int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
