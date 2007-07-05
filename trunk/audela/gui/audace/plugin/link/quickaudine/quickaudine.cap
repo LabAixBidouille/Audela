@@ -1,6 +1,6 @@
 #
 # Fichier : quickaudine.cap
-# Mise a jour $Id: quickaudine.cap,v 1.16 2007-07-01 21:39:42 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.cap,v 1.17 2007-07-05 22:14:24 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -38,7 +38,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(quickaudine,titre)         "QuickAudine"
    set caption(quickaudine,available)     "QuickAudine disponibile"
    set caption(quickaudine,refresh)       "Rinfresca"
-   set caption(quickaudine,delayshutter)  "# Délai avant la lecture du CCD"
+   set caption(quickaudine,delayshutter)  "Ritardo prima della lettura CCD"
    set caption(quickaudine,unite)         "1/100 s"
    set caption(quickaudine,lecture_pixel) "Lettura di un pixel"
    set caption(quickaudine,micro_sec)     "microsecondi"
