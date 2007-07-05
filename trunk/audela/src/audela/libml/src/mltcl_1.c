@@ -119,6 +119,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		f_in1=fopen(argv[4],"r");
 		if (f_in1==NULL) {
 			sprintf(s,"file %s not found, pas de fichier tle",argv[4]);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
 		} else {
 			n_in1=0;
 			while (feof(f_in1)==0) {
@@ -128,16 +129,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 			fclose(f_in1);
 			if (n_in1!=0) {
-				f_in2=fopen("./tle2.txt","a+");
-				if (f_in2==NULL) {
-					sprintf(s,"file %s not found",f_in2);
-				}
-				n_in=0;
-				while (feof(f_in2)==0) {
-					if (fgets(ligne,sizeof(ligne),f_in2)!=NULL) {
-						n_in++;
-					}
-				}
 				/* --- dimensionne la structure des donnees d'entree ---*/
 				lignes=(struct_ligsat*)malloc(n_in1*sizeof(struct_ligsat));
 				if (lignes==NULL) {
@@ -150,12 +141,22 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					sprintf(s,"file %s not found, pas de fichier tle",argv[4]);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
 				}
+				n_in = 0;
 				while (feof(f_in1)==0) {
 					if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
-						strcpy(lignes[n_in1].texte,ligne);
-						fprintf(f_in2,"%s",lignes[n_in1].texte);
+						strcpy(lignes[n_in].texte,ligne);
+						n_in++;
 					}
 				}
+				f_in2=fopen("./tle2.txt","a+");
+				if (f_in2==NULL) {
+					sprintf(s,"file %s not found",f_in2);
+				} else {
+					for (k=0;k<n_in;k++) {
+						fprintf(f_in2,"%s",lignes[k].texte);
+					}
+				}
+				
 				fclose(f_in1);
 				fclose(f_in2);
 				free(lignes);
