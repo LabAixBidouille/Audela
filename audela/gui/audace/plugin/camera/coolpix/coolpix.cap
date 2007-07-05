@@ -1,6 +1,6 @@
 #
 # Fichier : coolpix.cap
-# Mise a jour $Id: coolpix.cap,v 1.4 2007-06-16 08:43:46 robertdelmas Exp $
+# Mise a jour $Id: coolpix.cap,v 1.5 2007-07-05 22:14:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -39,7 +39,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(coolpix,baud)                      "Velocita' porta seriale (bauds)"
 
-   set caption(coolpix,commentaire)               "# Cette caméra doit être utilisée uniquement avec l'outil Acquisition APN CoolPix."
+   set caption(coolpix,commentaire)               "Questa camera andra` utilizzata solamente con il tool Acquisizione APN CoolPix."
 
    set caption(coolpix,titre_site_web)            "Sito Web di riferimento:"
    set caption(coolpix,site_web_ref)              "http://photopc.sourceforge.net/"
