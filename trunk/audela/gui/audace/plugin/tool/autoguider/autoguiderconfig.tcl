@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.9 2007-05-27 18:47:12 michelpujol Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.10 2007-07-06 22:29:49 michelpujol Exp $
 #
 
 ################################################################
@@ -69,7 +69,7 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,angle)             $widget($visuNo,angle)
    set conf(autoguider,declinaisonEnabled) $widget($visuNo,declinaisonEnabled)
    set conf(autoguider,targetBoxSize)     $widget($visuNo,targetBoxSize)
-   set conf(autoguider,cumulEnabled)      $widget($visuNo,cumulEnabled)
+#   set conf(autoguider,cumulEnabled)      $widget($visuNo,cumulEnabled)
    set conf(autoguider,cumulNb)           $widget($visuNo,cumulNb)
    set conf(autoguider,darkEnabled)       $widget($visuNo,darkEnabled)
    set conf(autoguider,darkFileName)      $widget($visuNo,darkFileName)
@@ -85,6 +85,12 @@ proc ::autoguider::config::apply { visuNo } {
    if {  $pendingUpdateAxis } {
       autoguider::createAlphaDeltaAxis $visuNo $::autoguider::private($visuNo,originCoord) $conf(autoguider,angle)
    }
+   #--- je change le c
+   if {  $widget($visuNo,cumulEnabled) != $conf(autoguider,cumulEnabled) } {
+      set conf(autoguider,cumulEnabled) $widget($visuNo,cumulEnabled)
+      ::autoguider::setCumul $visuNo $conf(autoguider,cumulEnabled)
+   }
+
    update
 
 }
@@ -191,8 +197,8 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -textvariable ::autoguider::config::widget($visuNo,slitWidth)
       grid $frm.detection.slitWidth -in [$frm.detection getframe] -row 2 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.slitRatio -label "$caption(autoguider,slitRatio)" \
-         -labeljustify left -labelwidth 22 -width 3 -justify right \
-         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
+         -labeljustify left -labelwidth 22 -width 5 -justify right \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 9999} \
          -textvariable ::autoguider::config::widget($visuNo,slitRatio)
       grid $frm.detection.slitRatio -in [$frm.detection getframe] -row 3 -column 0 -columnspan 2 -sticky ewns
       LabelEntry $frm.detection.lipWidth -label "$caption(autoguider,lipWidth)" \
@@ -220,7 +226,6 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    TitleFrame $frm.alpha -borderwidth 2 -relief ridge -text "$caption(autoguider,AD)"
       LabelEntry $frm.alpha.gainprop -label "$caption(autoguider,vitesse)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
-         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -999 999} \
          -textvariable ::autoguider::config::widget($visuNo,alphaSpeed)
       pack $frm.alpha.gainprop -in [$frm.alpha getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.alpha.seuil -label "$caption(autoguider,seuil)" \
@@ -237,7 +242,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    TitleFrame $frm.delta -borderwidth 2 -text "$caption(autoguider,declinaison)"
       LabelEntry $frm.delta.gainprop -label "$caption(autoguider,vitesse)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
-         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -999 999} \
+         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -9999 9999} \
          -textvariable ::autoguider::config::widget($visuNo,deltaSpeed)
       pack $frm.delta.gainprop -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.delta.seuil -label "$caption(autoguider,seuil)" \
@@ -631,12 +636,13 @@ proc ::autoguider::config::startLearn { visuNo } {
       acq $visuNo
    }
    if { $private($visuNo,learnPendingStop) == 0 } {
-      #--- je calcule la vitesse de deplacement sur l'axe alpha
+      #--- je calcule la vitesse de deplacement sur l'axe alpha (en milliseconde/pixel)
       set dxAlpha [expr  [lindex $private($visuNo,learn,coords,west) 0] - [lindex $private($visuNo,learn,coords,est) 0]]
       set dyAlpha [expr  [lindex $private($visuNo,learn,coords,west) 1] - [lindex $private($visuNo,learn,coords,est) 1]]
       set dAlpha [expr sqrt($dxAlpha*$dxAlpha + $dyAlpha*$dyAlpha) ]
       set penteAlpha [expr $dyAlpha / $dxAlpha ]
-      set widget($visuNo,alphaSpeed) [expr $dAlpha / $widget($visuNo,learn,delay) / 2 ]
+      #set widget($visuNo,alphaSpeed) [expr $dAlpha / $widget($visuNo,learn,delay) / 2 ]
+      set widget($visuNo,alphaSpeed) [expr 1000.0 * 2.0 *$widget($visuNo,learn,delay) / $dAlpha ]
       set widget($visuNo,alphaSpeed) [format "%0.1f" $widget($visuNo,alphaSpeed)]
 
       #--- je calcule la vitesse de deplacement sur l'axe delta
@@ -644,7 +650,8 @@ proc ::autoguider::config::startLearn { visuNo } {
       set dyDelta [expr  [lindex $private($visuNo,learn,coords,north) 1] - [lindex $private($visuNo,learn,coords,south) 1]]
       set dDelta [expr sqrt($dxDelta*$dxDelta + $dyDelta*$dyDelta) ]
       set penteDelta [expr $dyDelta / $dxDelta ]
-      set widget($visuNo,deltaSpeed) [expr $dDelta / $widget($visuNo,learn,delay) / 2 ]
+      #set widget($visuNo,deltaSpeed) [expr $dDelta / $widget($visuNo,learn,delay) / 2 ]
+      set widget($visuNo,deltaSpeed) [expr 1000.0 * 2.0 * $widget($visuNo,learn,delay) / $dDelta ]
       set widget($visuNo,deltaSpeed) [format "%0.1f" $widget($visuNo,deltaSpeed)]
 
       #--- je calcule l'angle d'inclinaison de la camera
