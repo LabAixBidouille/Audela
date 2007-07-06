@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.22 2007-05-12 15:01:32 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.23 2007-07-06 22:29:49 michelpujol Exp $
 #
 
 #=========================================================================
@@ -34,7 +34,7 @@ set caption(autoguider,STOP)                     "STOP\nCCD"
 set caption(autoguider,seuil)                    "Threshold (pixels)"
 set caption(autoguider,detection)                "Star Detection"
 set caption(autoguider,apprenti)                 "Learning"
-set caption(autoguider,vitesse)                  "Speed (pixels/ms)"
+set caption(autoguider,vitesse)                  "Speed (ms/pixel)"
 set caption(autoguider,detection_psf)            "Star"
 set caption(autoguider,detection_fente)          "Slit"
 
@@ -88,7 +88,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,seuil)                 "Seuil (pixels)"
    set caption(autoguider,detection)             "Détection étoile"
    set caption(autoguider,apprenti)              "Apprentissage"
-   set caption(autoguider,vitesse)               "Vitesse (pixels/ms)"
+   set caption(autoguider,vitesse)               "Vitesse (ms/pixel)"
    set caption(autoguider,detection_psf)         "Etoile"
    set caption(autoguider,detection_fente)       "Fente"
 
@@ -142,7 +142,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,seuil)                 "Soglia (pixels)"
    set caption(autoguider,detection)             "Detezione stella"
    set caption(autoguider,apprenti)              "Apprendimento"
-   set caption(autoguider,vitesse)               "Velocita` (pixels/ms)"
+   set caption(autoguider,vitesse)               "Velocita` (ms/pixel)"
    set caption(autoguider,detection_psf)         "Stella"
    set caption(autoguider,detection_fente)       "Fenditura"
 
@@ -196,7 +196,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,seuil)                 "Nivel (pixels)"
    set caption(autoguider,detection)             "Detección de estrella"
    set caption(autoguider,apprenti)              "Aprendizaje"
-   set caption(autoguider,vitesse)               "Velocidad (pixels/ms)"
+   set caption(autoguider,vitesse)               "Velocidad (ms/pixel)"
    set caption(autoguider,detection_psf)         "Estrella"
    set caption(autoguider,detection_fente)       "Rendija"
 
@@ -250,7 +250,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,seuil)                 "Schwelle(Pixels)"
    set caption(autoguider,detection)             "Stern Entdeckung"
    set caption(autoguider,apprenti)              "Lernen"
-   set caption(autoguider,vitesse)               "Geschwindigkeit (Pixels/ms)"
+   set caption(autoguider,vitesse)               "Geschwindigkeit (ms/Pixel)"
    set caption(autoguider,detection_psf)         "Stern"
    set caption(autoguider,detection_fente)       "Schlitz"
 
@@ -304,7 +304,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,seuil)                 "Limiar (pixels)"
    set caption(autoguider,detection)             "Detecção estrela"
    set caption(autoguider,apprenti)              "Aprendizagem"
-   set caption(autoguider,vitesse)               "Velocidade (pixels/ms)"
+   set caption(autoguider,vitesse)               "Velocidade (ms/pixel)"
    set caption(autoguider,detection_psf)         "Estrela"
    set caption(autoguider,detection_fente)       "Fenda"
 
@@ -358,7 +358,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,seuil)                 "Threshold (pixels)"
    set caption(autoguider,detection)             "Star Detection"
    set caption(autoguider,apprenti)              "Learning"
-   set caption(autoguider,vitesse)               "Speed (pixels/ms)"
+   set caption(autoguider,vitesse)               "Speed (ms/pixel)"
    set caption(autoguider,detection_psf)         "Star"
    set caption(autoguider,detection_fente)       "Slit"
 
