@@ -151,11 +151,11 @@ append result "\[Files\]\n"
 
 set result    "\n"
 append result "\[Icons\]\n"
-append result "Name: \"{group}\\audela\"; Filename: \"{app}\\bin\\audela.exe\" ; WorkingDir: \"{app}\\bin\" \n"
-append result "Name: \"{userdesktop}\\audela\"; Filename: \"{app}\\bin\\audela.exe\" ; WorkingDir: \"{app}\\bin\" ; MinVersion: 4,4; Tasks: desktopicon\n"
+append result "Name: \"{group}\\AudeLA\"; Filename: \"{app}\\bin\\audela.exe\" ; WorkingDir: \"{app}\\bin\" \n"
+append result "Name: \"{userdesktop}\\AudeLA\"; Filename: \"{app}\\bin\\audela.exe\" ; WorkingDir: \"{app}\\bin\" ; MinVersion: 4,4; Tasks: desktopicon\n"
 append result "\n"
 append result "\[Run\]\n"
-append result "Filename: \"{app}\\bin\\audela.exe\"; WorkingDir: \"{app}\\bin\" ; Description: \"Launch audela\"; Flags: nowait postinstall skipifsilent\n"
+append result "Filename: \"{app}\\bin\\audela.exe\"; WorkingDir: \"{app}\\bin\" ; Description: \"Launch AudeLA\"; Flags: nowait postinstall skipifsilent\n"
 
       set f [open $resultfile a]
       puts -nonewline $f "$result"
