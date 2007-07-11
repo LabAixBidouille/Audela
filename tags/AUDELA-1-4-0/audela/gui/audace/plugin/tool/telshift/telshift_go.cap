@@ -1,0 +1,51 @@
+#
+# Fichier : telshift_go.cap
+# Mise a jour $Id: telshift_go.cap,v 1.7 2007-04-12 20:29:40 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(telshift_go,telshift)         "Shoot and Shift"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Imager & déplacer"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Ripresa & Trasf."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Adq. & Mueve-tel."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Bildieren & versch."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Capturar & deslocar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(telshift_go,telshift)      "Eksponér og flyt"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

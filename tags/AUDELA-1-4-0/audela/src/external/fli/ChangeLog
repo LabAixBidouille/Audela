@@ -1,0 +1,15 @@
+
+2005-03-02  Denis MARCHAIS  <denis.marchais@free.fr>
+	Les modifications suivantes ont ete apportees au driver	libfli-1.13 
+	pour pouvoir compiler sur plusieurs linuxs differents (knoppix, 
+	mandrake, etc) :
+	- lib/Makefile:48: la ligne de commande doc++ a ete rassemblee 
+	  en une seule ligne.
+	- lib/unix/linux/libfli-usb-sys.c: remplacement de l'include usb.h 
+	  par usb_ch9.h pour avoir acces aux structures usb sans etre en 
+	  mode kernel. Suppression de la structure usb_device_descriptor.
+
+2005-03-01  Denis MARCHAIS  <denis.marchais@free.fr>
+	Importation de la librairie FLI v1.13.
+
+

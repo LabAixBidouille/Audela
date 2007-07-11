@@ -1,0 +1,170 @@
+#
+# Fichier : filtrage.cap
+# Mise a jour $Id: filtrage.cap,v 1.8 2007-03-06 21:57:57 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(filtrage,chargement)            "Loading File:"
+set caption(filtrage,fin_traitement)        "End of Processing."
+set caption(filtrage,pas_de_fichier)        "File Does Not Exist.\n"
+set caption(filtrage,charge_image)          "An image must be loaded.\n"
+set caption(filtrage,attention)             "Warning"
+set caption(filtrage,pas_image_memoire)     "No Image in Memory."
+set caption(filtrage,tracer)                "Please draw a square with your mouse."
+
+set caption(filtrage,masque_flou)           "Unsharp Mask"
+set caption(filtrage,filtre_passe-bas)      "Low Pass Filter"
+set caption(filtrage,filtre_passe-haut)     "High Pass Filter"
+set caption(filtrage,filtre_median)         "Median Filter"
+set caption(filtrage,filtre_minimum)        "Minimum Filter"
+set caption(filtrage,filtre_maximum)        "Maximum Filter"
+set caption(filtrage,filtre_gaussien)       "Gaussian Filter"
+set caption(filtrage,ond_morlet)            "Morlet Type Wavelet"
+set caption(filtrage,ond_mexicain)          "Mexican Hat Type Wavelet"
+set caption(filtrage,log)                   "Logarithm"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(filtrage,chargement)         "Chargement du fichier :"
+   set caption(filtrage,fin_traitement)     "Fin du traitement."
+   set caption(filtrage,pas_de_fichier)     "Le fichier n'existe pas.\n"
+   set caption(filtrage,charge_image)       "Il faut charger une image.\n"
+   set caption(filtrage,attention)          "Attention"
+   set caption(filtrage,pas_image_memoire)  "Il n'y a pas d'image actuellement en mémoire."
+   set caption(filtrage,tracer)             "Veuillez tracer un cadre à la souris."
+
+   set caption(filtrage,masque_flou)        "Masque flou"
+   set caption(filtrage,filtre_passe-bas)   "Filtre passe-bas"
+   set caption(filtrage,filtre_passe-haut)  "Filtre passe-haut"
+   set caption(filtrage,filtre_median)      "Filtre médian"
+   set caption(filtrage,filtre_minimum)     "Filtre minimum"
+   set caption(filtrage,filtre_maximum)     "Filtre maximum"
+   set caption(filtrage,filtre_gaussien)    "Filtre gaussien"
+   set caption(filtrage,ond_morlet)         "Ondelette de type Morlet"
+   set caption(filtrage,ond_mexicain)       "Ondelette de type chapeau mexicain"
+   set caption(filtrage,log)                "Logarithme"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(filtrage,chargement)         "Caricamento del file:"
+   set caption(filtrage,fin_traitement)     "Fine del elaborazione."
+   set caption(filtrage,pas_de_fichier)     "Il file non esiste.\n"
+   set caption(filtrage,charge_image)       "Deve essere caricata un'immagine.\n"
+   set caption(filtrage,attention)          "Attenzione"
+   set caption(filtrage,pas_image_memoire)  "Nessuna immagine in memoria."
+   set caption(filtrage,tracer)             "Disegnare un quadrato con il mouse."
+
+   set caption(filtrage,masque_flou)        "Maschera flou"
+   set caption(filtrage,filtre_passe-bas)   "Filtro passa-basso"
+   set caption(filtrage,filtre_passe-haut)  "Filtro passa-alto"
+   set caption(filtrage,filtre_median)      "Filtro mediano"
+   set caption(filtrage,filtre_minimum)     "Filtro minimo"
+   set caption(filtrage,filtre_maximum)     "Filtro massimo"
+   set caption(filtrage,filtre_gaussien)    "Filtro Gausssiano"
+   set caption(filtrage,ond_morlet)         "Filtro di Morlet"
+   set caption(filtrage,ond_mexicain)       "Filtro a 'sombrero'"
+   set caption(filtrage,log)                "Logaritmo"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(filtrage,chargement)         "Cargando fichero:"
+   set caption(filtrage,fin_traitement)     "Fin de procesando."
+   set caption(filtrage,pas_de_fichier)     "El fichero no existe.\n"
+   set caption(filtrage,charge_image)       "Debe cargar una imagen.\n"
+   set caption(filtrage,attention)          "Aviso"
+   set caption(filtrage,pas_image_memoire)  "No existe una imágen cargada en la memoria."
+   set caption(filtrage,tracer)             "Porfavor, dibuje un recuadro con el ratón."
+
+   set caption(filtrage,masque_flou)        "Máscara desenfocada"
+   set caption(filtrage,filtre_passe-bas)   "Filtro paso bajo"
+   set caption(filtrage,filtre_passe-haut)  "Filtro paso alto"
+   set caption(filtrage,filtre_median)      "Filtro de mediana"
+   set caption(filtrage,filtre_minimum)     "Filtro de mínimo"
+   set caption(filtrage,filtre_maximum)     "Filtro de máximo"
+   set caption(filtrage,filtre_gaussien)    "Filtro gausiano"
+   set caption(filtrage,ond_morlet)         "Wavelet de tipo Morlet"
+   set caption(filtrage,ond_mexicain)       "Wavelte de tipo sombrero mejicano"
+   set caption(filtrage,log)                "Logaritmo"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(filtrage,chargement)         "Datei laden:"
+   set caption(filtrage,fin_traitement)     "Aufbereitung Ende."
+   set caption(filtrage,pas_de_fichier)     "Die Datei existiert nicht.\n"
+   set caption(filtrage,charge_image)       "Ein Bild muss geladet sein.\n"
+   set caption(filtrage,attention)          "Achtung"
+   set caption(filtrage,pas_image_memoire)  "Es ist jetzt kein Bild im Speicher."
+   set caption(filtrage,tracer)             "Bitte, einen Rahmen mit der Mause zeichnen."
+
+   set caption(filtrage,masque_flou)        "Unscharf Maske"
+   set caption(filtrage,filtre_passe-bas)   "Niederpaß Filter"
+   set caption(filtrage,filtre_passe-haut)  "Hochpaß Filter"
+   set caption(filtrage,filtre_median)      "Median Filter"
+   set caption(filtrage,filtre_minimum)     "Mindest Filter"
+   set caption(filtrage,filtre_maximum)     "Höchst Filter"
+   set caption(filtrage,filtre_gaussien)    "Gaussich Filter"
+   set caption(filtrage,ond_morlet)         "Morlet Typ Wellche"
+   set caption(filtrage,ond_mexicain)       "Mexican Hut Typ Wellche"
+   set caption(filtrage,log)                "Logarithmus"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(filtrage,chargement)         "A carregar ficheiro:"
+   set caption(filtrage,fin_traitement)     "Fim do tratamento."
+   set caption(filtrage,pas_de_fichier)     "O Ficheiro Não Existe.\n"
+   set caption(filtrage,charge_image)       "É Necessário Carregar Uma Imagem.\n"
+   set caption(filtrage,attention)          "Aviso"
+   set caption(filtrage,pas_image_memoire)  "Sem Imagem em Memória."
+   set caption(filtrage,tracer)             "Por favor desenhe um quadrado com o rato."
+
+   set caption(filtrage,masque_flou)        "Máscara de focagem"
+   set caption(filtrage,filtre_passe-bas)   "Filtro Passa-Baixo"
+   set caption(filtrage,filtre_passe-haut)  "Filtro Passa-Alto"
+   set caption(filtrage,filtre_median)      "Filtro Médio"
+   set caption(filtrage,filtre_minimum)     "Filtro Mínimo"
+   set caption(filtrage,filtre_maximum)     "Filtro Máximo"
+   set caption(filtrage,filtre_gaussien)    "Filtro Gaussiano"
+   set caption(filtrage,ond_morlet)         "Wavelet do Tipo Morlet"
+   set caption(filtrage,ond_mexicain)       "Wavelet do Tipo Chapéu Mexicano"
+   set caption(filtrage,log)                "Logaritmo"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(filtrage,chargement)         "Indlæs fil:"
+   set caption(filtrage,fin_traitement)     "Slut på processing."
+   set caption(filtrage,pas_de_fichier)     "Filen findes ikke.\n"
+   set caption(filtrage,charge_image)       "Et billede må indlæses.\n"
+   set caption(filtrage,attention)          "Advarsel"
+   set caption(filtrage,pas_image_memoire)  "Intet billede i memory."
+   set caption(filtrage,tracer)             "Tegn en ramme med musen."
+
+   set caption(filtrage,masque_flou)        "Uskarp maske"
+   set caption(filtrage,filtre_passe-bas)   "Lav pas filter"
+   set caption(filtrage,filtre_passe-haut)  "Høj pas filter"
+   set caption(filtrage,filtre_median)      "Median filter"
+   set caption(filtrage,filtre_minimum)     "Minimum filter"
+   set caption(filtrage,filtre_maximum)     "Maksimum filter"
+   set caption(filtrage,filtre_gaussien)    "Gauss filter"
+   set caption(filtrage,ond_morlet)         "Bølge af type Morlet"
+   set caption(filtrage,ond_mexicain)       "Mexicansk hat bølgetype"
+   set caption(filtrage,log)                "Logaritme"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

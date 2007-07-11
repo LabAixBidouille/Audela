@@ -1,0 +1,163 @@
+#
+# Fichier : audine.cap
+# Mise a jour $Id: audine.cap,v 1.1 2007-06-17 14:05:39 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(audine,camera)                       "Audine"
+
+set caption(audine,obtu_ouvert)                  "Open"
+set caption(audine,obtu_ferme)                   "Closed"
+set caption(audine,obtu_synchro)                 "Synchro"
+
+set caption(audine,kaf400)                       "kaf400"
+set caption(audine,kaf1600)                      "kaf1600"
+set caption(audine,kaf3200)                      "kaf3200"
+
+set caption(audine,can_ad976a)                   "AD976A"
+set caption(audine,can_ltc1605)                  "LTC1605"
+
+set caption(audine,obtu_audine)                  "audine"
+set caption(audine,obtu_audine-)                 "audine -"
+set caption(audine,obtu_i2c)                     "i2c"
+set caption(audine,obtu_thierry)                 "thierry"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(audine,camera)                    "Audine"
+
+   set caption(audine,obtu_ouvert)               "Ouvert"
+   set caption(audine,obtu_ferme)                "Fermé"
+   set caption(audine,obtu_synchro)              "Synchro"
+
+   set caption(audine,kaf400)                    "kaf400"
+   set caption(audine,kaf1600)                   "kaf1600"
+   set caption(audine,kaf3200)                   "kaf3200"
+
+   set caption(audine,can_ad976a)                "AD976A"
+   set caption(audine,can_ltc1605)               "LTC1605"
+
+   set caption(audine,obtu_audine)               "audine"
+   set caption(audine,obtu_audine-)              "audine -"
+   set caption(audine,obtu_i2c)                  "i2c"
+   set caption(audine,obtu_thierry)              "thierry"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(audine,camera)                    "Audine"
+
+   set caption(audine,obtu_ouvert)               "Aperto"
+   set caption(audine,obtu_ferme)                "Chiuso"
+   set caption(audine,obtu_synchro)              "Sincronizza"
+
+   set caption(audine,kaf400)                    "kaf400"
+   set caption(audine,kaf1600)                   "kaf1600"
+   set caption(audine,kaf3200)                   "kaf3200"
+
+   set caption(audine,can_ad976a)                "AD976A"
+   set caption(audine,can_ltc1605)               "LTC1605"
+
+   set caption(audine,obtu_audine)               "audine"
+   set caption(audine,obtu_audine-)              "audine -"
+   set caption(audine,obtu_i2c)                  "i2c"
+   set caption(audine,obtu_thierry)              "thierry"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(audine,camera)                    "Audine"
+
+   set caption(audine,obtu_ouvert)               "Abierto"
+   set caption(audine,obtu_ferme)                "Cerrado"
+   set caption(audine,obtu_synchro)              "Sincro"
+
+   set caption(audine,kaf400)                    "kaf400"
+   set caption(audine,kaf1600)                   "kaf1600"
+   set caption(audine,kaf3200)                   "kaf3200"
+
+   set caption(audine,can_ad976a)                "AD976A"
+   set caption(audine,can_ltc1605)               "LTC1605"
+
+   set caption(audine,obtu_audine)               "audine"
+   set caption(audine,obtu_audine-)              "audine -"
+   set caption(audine,obtu_i2c)                  "i2c"
+   set caption(audine,obtu_thierry)              "thierry"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(audine,camera)                    "Audine"
+
+   set caption(audine,obtu_ouvert)               "Offen"
+   set caption(audine,obtu_ferme)                "Geschlossen"
+   set caption(audine,obtu_synchro)              "Synchro"
+
+   set caption(audine,kaf400)                    "kaf400"
+   set caption(audine,kaf1600)                   "kaf1600"
+   set caption(audine,kaf3200)                   "kaf3200"
+
+   set caption(audine,can_ad976a)                "AD976A"
+   set caption(audine,can_ltc1605)               "LTC1605"
+
+   set caption(audine,obtu_audine)               "audine"
+   set caption(audine,obtu_audine-)              "audine -"
+   set caption(audine,obtu_i2c)                  "i2c"
+   set caption(audine,obtu_thierry)              "thierry"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(audine,camera)                    "Audine"
+
+   set caption(audine,obtu_ouvert)               "Aberto"
+   set caption(audine,obtu_ferme)                "Fechado"
+   set caption(audine,obtu_synchro)              "Sincro"
+
+   set caption(audine,kaf400)                    "kaf400"
+   set caption(audine,kaf1600)                   "kaf1600"
+   set caption(audine,kaf3200)                   "kaf3200"
+
+   set caption(audine,can_ad976a)                "AD976A"
+   set caption(audine,can_ltc1605)               "LTC1605"
+
+   set caption(audine,obtu_audine)               "audine"
+   set caption(audine,obtu_audine-)              "audine -"
+   set caption(audine,obtu_i2c)                  "i2c"
+   set caption(audine,obtu_thierry)              "thierry"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(audine,camera)                    "Audine"
+
+   set caption(audine,obtu_ouvert)               "Open"
+   set caption(audine,obtu_ferme)                "Closed"
+   set caption(audine,obtu_synchro)              "Synchro"
+
+   set caption(audine,kaf400)                    "kaf400"
+   set caption(audine,kaf1600)                   "kaf1600"
+   set caption(audine,kaf3200)                   "kaf3200"
+
+   set caption(audine,can_ad976a)                "AD976A"
+   set caption(audine,can_ltc1605)               "LTC1605"
+
+   set caption(audine,obtu_audine)               "audine"
+   set caption(audine,obtu_audine-)              "audine -"
+   set caption(audine,obtu_i2c)                  "i2c"
+   set caption(audine,obtu_thierry)              "thierry"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

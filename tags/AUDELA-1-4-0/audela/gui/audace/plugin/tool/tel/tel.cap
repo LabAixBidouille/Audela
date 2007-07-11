@@ -1,0 +1,303 @@
+#
+# Fichier : tel.cap
+# Mise a jour $Id: tel.cap,v 1.7 2007-04-01 20:53:42 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(tel,telescope)             "Telescope"
+set caption(tel,help_titre)            "Help For This Tool"
+set caption(tel,coord)                 "Coord."
+set caption(tel,planete)               "Planets"
+set caption(tel,asteroide)             "Asteroids"
+set caption(tel,zenith)                "Zenith"
+set caption(tel,match)                 "MATCH"
+set caption(tel,goto)                  "GOTO"
+set caption(tel,stop_goto)             "Stop"
+set caption(tel,camera)                "Camera"
+set caption(tel,non_connectee)         "not connected"
+set caption(tel,nord)                  "N"
+set caption(tel,est)                   "E"
+set caption(tel,ouest)                 "W"
+set caption(tel,sud)                   "S"
+set caption(tel,seconde)               "sec."
+set caption(tel,binning)               "Binning"
+set caption(tel,goccd)                 "GO CCD"
+set caption(tel,probleme)              "Problem"
+set caption(tel,entier_positif)        "Exposure time not valid\n(must be a positive integer)"
+
+set caption(tel,coord_catalogue)       "Catalogue Coordinates (J2000):"
+set caption(tel,coord_corrigees)       "Corrected Coordinates (aberration, \nprecession and nutation):"
+set caption(tel,coord_pointees)        "Coordinates aimed at by the telescope:"
+set caption(tel,ad)                    "    RA:"
+set caption(tel,dec)                   "    Dec.:"
+
+set caption(tel,attention)             "Warning"
+set caption(tel,pluslong1)             "You have just chosen this option:"
+set caption(tel,pluslong2)             "The scope takes the longest Right"
+set caption(tel,pluslong3)             "Ascension route to reach its target."
+
+set caption(tel,formataddec1)          "Format for the Right Ascension:"
+set caption(tel,formataddec2)          "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+set caption(tel,formataddec3)          "Format for the Declination:"
+set caption(tel,formataddec4)          "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+set caption(tel,formataddec5)          "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(tel,telescope)          "Télescope"
+   set caption(tel,help_titre)         "Aide pour cet outil"
+   set caption(tel,coord)              "Coord."
+   set caption(tel,planete)            "Planètes"
+   set caption(tel,asteroide)          "Astéroïdes"
+   set caption(tel,zenith)             "Zénith"
+   set caption(tel,match)              "MATCH"
+   set caption(tel,goto)               "GOTO"
+   set caption(tel,stop_goto)          "Stop"
+   set caption(tel,camera)             "Caméra"
+   set caption(tel,non_connectee)      "non connectée"
+   set caption(tel,nord)               "N"
+   set caption(tel,est)                "E"
+   set caption(tel,ouest)              "O"
+   set caption(tel,sud)                "S"
+   set caption(tel,seconde)            "sec."
+   set caption(tel,binning)            "Binning"
+   set caption(tel,goccd)              "GO CCD"
+   set caption(tel,probleme)           "Problème"
+   set caption(tel,entier_positif)     "Temps de pose invalide\n(doit être un nombre positif)"
+
+   set caption(tel,coord_catalogue)    "Coordonnées catalogue (J2000) :"
+   set caption(tel,coord_corrigees)    "Coordonnées corrigées (aberration, \nprécession et nutation) :"
+   set caption(tel,coord_pointees)     "Coordonnées pointées par le télescope :"
+   set caption(tel,ad)                 "    AD :"
+   set caption(tel,dec)                "    Déc. :"
+
+   set caption(tel,attention)          "Attention"
+   set caption(tel,pluslong1)          "Vous venez de sélectionner l'option :"
+   set caption(tel,pluslong2)          "Déplacement du télescope par le parcours"
+   set caption(tel,pluslong3)          "le plus long en ascencion droite."
+
+   set caption(tel,formataddec1)       "Format à utiliser pour l'Ascension Droite :"
+   set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+   set caption(tel,formataddec3)       "Format à utiliser pour la Déclinaison :"
+   set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+   set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(tel,telescope)          "Telescopio"
+   set caption(tel,help_titre)         "Aiuto per questo tool"
+   set caption(tel,coord)              "Coord."
+   set caption(tel,planete)            "Pianeti"
+   set caption(tel,asteroide)          "Asteroidi"
+   set caption(tel,zenith)             "Zenit"
+   set caption(tel,match)              "MATCH"
+   set caption(tel,goto)               "GOTO"
+   set caption(tel,stop_goto)          "Stop"
+   set caption(tel,camera)             "Camera"
+   set caption(tel,non_connectee)      "non connesso"
+   set caption(tel,nord)               "N"
+   set caption(tel,est)                "E"
+   set caption(tel,ouest)              "O"
+   set caption(tel,sud)                "S"
+   set caption(tel,seconde)            "sec."
+   set caption(tel,binning)            "Binning"
+   set caption(tel,goccd)              "GO CCD"
+   set caption(tel,probleme)           "Problema"
+   set caption(tel,entier_positif)     "Tempo di esposizione non valido\n(deve essere un valore positivo)"
+
+   set caption(tel,coord_catalogue)    "Coordinate da catalogo (J2000):"
+   set caption(tel,coord_corrigees)    "Coordinate corrette (aberrazione, \nprecessione e nutazione):"
+   set caption(tel,coord_pointees)     "Coordinate puntate dal telescopio:"
+   set caption(tel,ad)                 "    AR:"
+   set caption(tel,dec)                "    Dec.:"
+
+   set caption(tel,attention)          "Attenzione"
+   set caption(tel,pluslong1)          "Avete scelto questa opzione:"
+   set caption(tel,pluslong2)          "Il telescopio sta seguendo il percorso"
+   set caption(tel,pluslong3)          "piu` lungo in Ascensione Retta."
+
+   set caption(tel,formataddec1)       "Formato impostazione Ascensione Retta:"
+   set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+   set caption(tel,formataddec3)       "Formato impostazione Declinaison:"
+   set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+   set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(tel,telescope)          "Telescopio"
+   set caption(tel,help_titre)         "Ayuda para esta herramienta"
+   set caption(tel,coord)              "Coord."
+   set caption(tel,planete)            "Planetas"
+   set caption(tel,asteroide)          "Asteroides"
+   set caption(tel,zenith)             "Zenit"
+   set caption(tel,match)              "MATCH"
+   set caption(tel,goto)               "GOTO"
+   set caption(tel,stop_goto)          "Stop"
+   set caption(tel,camera)             "Cámara"
+   set caption(tel,non_connectee)      "no connectada"
+   set caption(tel,nord)               "N"
+   set caption(tel,est)                "E"
+   set caption(tel,ouest)              "W"
+   set caption(tel,sud)                "S"
+   set caption(tel,seconde)            "seg."
+   set caption(tel,binning)            "Binning"
+   set caption(tel,goccd)              "GO CCD"
+   set caption(tel,probleme)           "Problema"
+   set caption(tel,entier_positif)     "Tiempo de exposición no valido\n(debe ser un número positivo)"
+
+   set caption(tel,coord_catalogue)    "Coordenadas de catálogo (J2000):"
+   set caption(tel,coord_corrigees)    "Coordenadas corregidas (aberración, \nprecesión y nutación):"
+   set caption(tel,coord_pointees)     "Coordenadas apuntadas por el telescopio:"
+   set caption(tel,ad)                 "    RA:"
+   set caption(tel,dec)                "    Dec.:"
+
+   set caption(tel,attention)          "!Cuidado¡"
+   set caption(tel,pluslong1)          "Has escogido la opción:"
+   set caption(tel,pluslong2)          "Desplazamiento del telescopio por el camino"
+   set caption(tel,pluslong3)          "más largo en Ascensión Recta."
+
+   set caption(tel,formataddec1)       "Formato a usar para la Ascensión Recta:"
+   set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+   set caption(tel,formataddec3)       "Formato a usar para la Declinación:"
+   set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+   set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(tel,telescope)          "Teleskop"
+   set caption(tel,help_titre)         "Hilfe für dieses Gerät"
+   set caption(tel,coord)              "Koord."
+   set caption(tel,planete)            "Planeten"
+   set caption(tel,asteroide)          "Asteroiden"
+   set caption(tel,zenith)             "Zenit"
+   set caption(tel,match)              "MATCH"
+   set caption(tel,goto)               "GOTO"
+   set caption(tel,stop_goto)          "Stop"
+   set caption(tel,camera)             "Kamera"
+   set caption(tel,non_connectee)      "nicht verbun."
+   set caption(tel,nord)               "N"
+   set caption(tel,est)                "O"
+   set caption(tel,ouest)              "W"
+   set caption(tel,sud)                "S"
+   set caption(tel,seconde)            "sek."
+   set caption(tel,binning)            "Binning"
+   set caption(tel,goccd)              "GO CCD"
+   set caption(tel,probleme)           "Problem"
+   set caption(tel,entier_positif)     "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
+
+   set caption(tel,coord_catalogue)    "Katalog Koordinaten (J2000):"
+   set caption(tel,coord_corrigees)    "Korrigierten Koordinaten (Aberration, \nPräzession und Nutation):"
+   set caption(tel,coord_pointees)     "Übergetragten Koordinaten:"
+   set caption(tel,ad)                 "    RA:"
+   set caption(tel,dec)                "    Dek.:"
+
+   set caption(tel,attention)          "Achtung"
+   set caption(tel,pluslong1)          "Sie haben diese Option gewählt:"
+   set caption(tel,pluslong2)          "Teleskop durch die längste Strecke"
+   set caption(tel,pluslong3)          "Bewegung in Rektaszension."
+
+   set caption(tel,formataddec1)       "Format für die Rektaszension zu nützen:"
+   set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+   set caption(tel,formataddec3)       "Format für die Deklination zu nützen:"
+   set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+   set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(tel,telescope)          "Telescópio"
+   set caption(tel,help_titre)         "Ajuda para esta ferramenta"
+   set caption(tel,coord)              "Coord."
+   set caption(tel,planete)            "Planetas"
+   set caption(tel,asteroide)          "Asteróides"
+   set caption(tel,zenith)             "Zénite"
+   set caption(tel,match)              "MATCH"
+   set caption(tel,goto)               "GOTO"
+   set caption(tel,stop_goto)          "Stop"
+   set caption(tel,camera)             "Câmara"
+   set caption(tel,non_connectee)      "não conectado"
+   set caption(tel,nord)               "N"
+   set caption(tel,est)                "E"
+   set caption(tel,ouest)              "O"
+   set caption(tel,sud)                "S"
+   set caption(tel,seconde)            "seg."
+   set caption(tel,binning)            "Binning"
+   set caption(tel,goccd)              "GO CCD"
+   set caption(tel,probleme)           "Problema"
+   set caption(tel,entier_positif)     "Tempo de exposição inválido\n(deve ser um numero positivo)"
+
+   set caption(tel,coord_catalogue)    "Coordenadas catálogo (J2000) :"
+   set caption(tel,coord_corrigees)    "Coordonadas corrigidas (aberração, \nprecessão e nutação) :"
+   set caption(tel,coord_pointees)     "Coordonadas apontadas pelo telescópio :"
+   set caption(tel,ad)                 "    AR :"
+   set caption(tel,dec)                "    Dec. :"
+
+   set caption(tel,attention)          "Atenção"
+   set caption(tel,pluslong1)          "Acabou de escolher a opção :"
+   set caption(tel,pluslong2)          "Mudança do telescópio para o percurso"
+   set caption(tel,pluslong3)          "mais longo em Ascenção Recta."
+
+   set caption(tel,formataddec1)       "Formato a utilizar para a Ascenção recta :"
+   set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+   set caption(tel,formataddec3)       "Formato a utilizar para a Declinação :"
+   set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+   set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+# *************** Version danoise ***************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(tel,telescope)          "Telescope"
+   set caption(tel,help_titre)         "Help For This Tool"
+   set caption(tel,coord)              "Coord."
+   set caption(tel,planete)            "Planets"
+   set caption(tel,asteroide)          "Asteroids"
+   set caption(tel,zenith)             "Zenith"
+   set caption(tel,match)              "MATCH"
+   set caption(tel,goto)               "GOTO"
+   set caption(tel,stop_goto)          "Stop"
+   set caption(tel,camera)             "Camera"
+   set caption(tel,non_connectee)      "not connected"
+   set caption(tel,nord)               "N"
+   set caption(tel,est)                "E"
+   set caption(tel,ouest)              "W"
+   set caption(tel,sud)                "S"
+   set caption(tel,seconde)            "sec."
+   set caption(tel,binning)            "Binning"
+   set caption(tel,goccd)              "GO CCD"
+   set caption(tel,probleme)           "Problem"
+   set caption(tel,entier_positif)     "Exposure time not valid\n(must be a positive integer)"
+
+   set caption(tel,coord_catalogue)    "Catalogue Coordinates (J2000):"
+   set caption(tel,coord_corrigees)    "Corrected Coordinates (aberration, \nprecession and nutation):"
+   set caption(tel,coord_pointees)     "Coordinates aimed at by the telescope:"
+   set caption(tel,ad)                 "    RA:"
+   set caption(tel,dec)                "    Dec.:"
+
+   set caption(tel,attention)          "Warning"
+   set caption(tel,pluslong1)          "You have just chosen this option:"
+   set caption(tel,pluslong2)          "The scope takes the longest Right"
+   set caption(tel,pluslong3)          "Ascension route to reach its target."
+
+   set caption(tel,formataddec1)       "Format for the Right Ascension:"
+   set caption(tel,formataddec2)       "11h23m15   5h3m2   21h5m   0h11m9   0h0m48"
+   set caption(tel,formataddec3)       "Format for the Declination:"
+   set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
+   set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,79 @@
+#
+# Fichier : hisis.cap
+# Mise a jour $Id: hisis.cap,v 1.1 2007-06-17 14:05:39 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(hisis,camera)                       "Hi-SIS"
+
+set caption(hisis,obtu_ouvert)                  "Open"
+set caption(hisis,obtu_ferme)                   "Closed"
+set caption(hisis,obtu_synchro)                 "Synchro"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Ouvert"
+   set caption(hisis,obtu_ferme)                "Fermé"
+   set caption(hisis,obtu_synchro)              "Synchro"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Aperto"
+   set caption(hisis,obtu_ferme)                "Chiuso"
+   set caption(hisis,obtu_synchro)              "Sincronizza"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Abierto"
+   set caption(hisis,obtu_ferme)                "Cerrado"
+   set caption(hisis,obtu_synchro)              "Sincro"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Offen"
+   set caption(hisis,obtu_ferme)                "Geschlossen"
+   set caption(hisis,obtu_synchro)              "Synchro"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Aberto"
+   set caption(hisis,obtu_ferme)                "Fechado"
+   set caption(hisis,obtu_synchro)              "Sincro"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(hisis,camera)                    "Hi-SIS"
+
+   set caption(hisis,obtu_ouvert)               "Open"
+   set caption(hisis,obtu_ferme)                "Closed"
+   set caption(hisis,obtu_synchro)              "Synchro"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

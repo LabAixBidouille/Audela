@@ -1,0 +1,444 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+                                                                        
+   
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+                                                                        
+   
+  <meta name="Author" content="Alain Klotz">
+                                                                        
+   
+  <meta name="GENERATOR"
+ content="Mozilla/4.75 [fr] (Win98; U) [Netscape]">
+  <title>Librairie MC : calendrier des modifications</title>
+</head>
+  <body>
+                                      
+<center><b><font size="+3">LIB MC</font></b> <br>
+                  une librairie d'extension Tcl pour la m&eacute;canique
+c&eacute;leste        <br>
+                  version 20070502                   
+<p><b><font size="+3">Calendrier des modifications</font></b></p>
+                  </center>
+                              
+<h4> </h4>
+       
+<h4>
+<h3> 2007-05-02 :</h3>
+                                         </h4>
+<ul>
+  <li>Ajout des fonctions mc_radec2altalt, mc_hadec2altalt,  mc_altalt2hadec,
+ mc_altalt2radec.</li>
+</ul>
+<h3> 2007-03-14 :</h3>
+                                         
+<ul>
+   <li>Correction d'un bug dans les fonctions Cmd_mctcl_tle2ephem et Cmd_mctcl_tle2xyz 
+dans le fichier libmc2.c.<br>
+    </li>
+ 
+</ul>
+             
+<h4> </h4>
+     
+<h4> </h4>
+   
+<h3> 2006-11-20 :</h3>
+                                         
+<ul>
+       <li>Ajout de la fonction mc_parallaxradec qui corrige les coordonn&eacute;es
+ de l'effet de la parallaxe annuelle.</li>
+    <li>Coorection d'un bug pour l'extrapolation dans le futur dans la fonction
+ mc_tdminusut (mc_time1.c).<br>
+    </li>
+         
+</ul>
+             
+<h4> </h4>
+     
+<h4> </h4>
+   
+<h3> 2006-08-24 :</h3>
+                                         
+<ul>
+    <li>Correction d'un bug de la fonction mc_home2geosys concernant une
+sortie  de boucle while.</li>
+   
+</ul>
+             
+<h4> </h4>
+     
+<h4> </h4>
+   
+<h3> 2006-08-19 :</h3>
+                                         
+<ul>
+     <li>Correction de bugs de la fonction mc_ephem concernant la possibilit&eacute; 
+  de calculer plusieurs astero&iuml;des d&eacute;sign&eacute;s &agrave; la 
+ fois.</li>
+     
+</ul>
+             
+<h4> </h4>
+     
+<h3> 2006-08-17 :</h3>
+                                         
+<ul>
+      <li>Remplacement des fonctions mc_angles2ultima2000 et mc_ultima20002angles
+  par mc_angles2nexstar et mc_nexstar2angles.</li>
+       
+</ul>
+             
+<h3> 2004-02-19 :</h3>
+                                         
+<ul>
+         <li>Ajout de la fonction mc_tt2bary et mc_dates_ut2bary qui permettent
+   de corriger les &eacute;v&eacute;nements observ&eacute;s depuis la Terre,
+   du temps mis pour atteindre le barycentre du syst&egrave;me solaire. Utile
+   pour dater des variations p&eacute;riodiques.</li>
+             
+</ul>
+             
+<h3>2003-10-24 :</h3>
+                                          
+<ul>
+          <li>Modification de la fonction mc_readcat pour corriger un bug 
+li&eacute;    au d&eacute;codage des mots cl&eacute; de l'ent&ecirc;te FITS. 
+Modifications    apport&eacute;es dans libmc2.c et libmc_angle.c.</li>
+               
+</ul>
+               
+<h3> 2003-08-28 :</h3>
+                                        
+<ul>
+           <li>Modification de la conversion TU-&gt;TD faite le 2003-06-28. 
+ D&eacute;sormais,    toutes les dates de calcul d'&eacute;ph&eacute;m&eacute;ride 
+ doivent &ecirc;tre    entr&eacute;es en Temps Terrestre (TT). La fonction 
+ mc_date2tt permet de   transformer une date UTC en la date julienne &nbsp;TT 
+ (&agrave; moins d'une   seconde pr&egrave;s). Des modifications ont &eacute;t&eacute; 
+ approt&eacute;es   dans m_macr1.c, mc_marc2.c, mc_time1.c, libmc_dates.c 
+et mc.h.</li>
+           <li>Les &eacute;ph&eacute;m&eacute;rides des plan&egrave;tes sont
+  maintenant   calcul&eacute;es avec la th&eacute;orie VSOP87. Des modifications
+  ont &eacute;t&eacute;   approt&eacute;es dans les fichiers mc_plnt2.c,
+mc.h,   mc_macr2.c.<br>
+           </li>
+                 
+</ul>
+                 
+<h3>2003-06-28 :</h3>
+                                       
+<ul>
+            <li>Ajout de la conversion TU-&gt;TD (temps dynamique) dans les 
+ fonctions    d'&eacute;ph&eacute;m&eacute;rides du fichier mc_macr2.c. Une 
+ petite modification    a &eacute;t&eacute; ajout&eacute;e dans les fonctions 
+ mc_tu2td et mc_td2tu    du fichier mc_time1.c.<br>
+            </li>
+                   
+</ul>
+                   
+<h3> 2003-06-27 :</h3>
+                                       
+<ul>
+             <li>Modification de l'algorithme de d&eacute;codade des mots 
+cl&eacute;s      FITS pour les fonctions d'astrom&eacute;trie. La fonction 
+mc_util_cd2cdelt_old      a &eacute;t&eacute; ajout&eacute;e au fichier mc_util1.c 
+et elle est appel&eacute;e     deux fois depuis libmc_angles.c. Cela permet 
+de r&eacute;soudre un bug  potentiel   dans les fonctions mc_xy2radec et mc_radec2xy.</li>
+                     
+</ul>
+                       
+<h3> 2003-02-28 :</h3>
+                                       
+<ul>
+              <li>Ajout des fonctions mc_lonlat2xy et&nbsp;mc_xy2lonlat pour
+  la  cartographie   des surfaces plan&eacute;taires. Ajouts dans les fichiers 
+  mc_angles.c (fonctions   Cmd_mctcl_lonlat2xy, Cmd_mctcl_xy2lonlat) et mc_coord1.c 
+  (fonctions mc_map_xy2lonlat,   mc_map_lonlat2xy).<br>
+              </li>
+                       
+</ul>
+                         
+<h3> 2003-02-17 :</h3>
+                                       
+<ul>
+               <li>Ajout des millisecondes de l'option NOW dans la fonction 
+ mctcl_decode_date      pour les compilations Win32 (modification dans libmc_dates.c).</li>
+                         
+</ul>
+                             
+<h3> 2002-11-16 :</h3>
+                                       
+<ul>
+                 <li>Ajout de la fonction mc_radec2galactic pour convertir
+ des   coordonn&eacute;es     &eacute;quatoriales dans le syst&egrave;me
+galactique.    Des modifications    ont &eacute;t&eacute; faites dans libmc.c,
+libmc.h,   libmc_angles.c, mc_cord1.c     et mc.h.</li>
+                 <li>Ajout de la fonction mc_galactic2radec pour convertir
+ des   coordonn&eacute;es      galactiques dans le syst&egrave;me &eacute;quatorial.
+   Des modifications    ont &eacute;t&eacute; faites dans libmc.c, libmc.h,
+  libmc_angles.c, mc_cord1.c     et mc.h.</li>
+                 <li>Ajout de la fonction mc_radec2ecliptic pour convertir
+ des   coordonn&eacute;es      "quatoriales dans le syst&egrave;me &eacute;cliptique.
+   Des modifications     ont &eacute;t&eacute; faites dans libmc.c, libmc.h,
+   libmc_angles.c, mc_cord1.c     et mc.h.</li>
+                 <li>Ajout de la fonction mc_ecliptic2radec pour convertir
+ des   coordonn&eacute;es     &eacute;cliptiques dans le syst&egrave;me &eacute;quatorial.
+   Des modifications     ont &eacute;t&eacute; faites dans libmc.c, libmc.h,
+   libmc_angles.c, mc_cord1.c     et mc.h.</li>
+                 <li>Ajout de la fonction mc_baryvel pour retourner la correction 
+    vitesse    radiale dans le r&eacute;f&eacute;rentiel du barycentre du 
+syst&egrave;me       solaire. Des modifications ont &eacute;t&eacute; faites 
+dans libmc.c,   libmc.h,    libmc2.c, mc_macr2.c,mc_cord1.c et mc.h.</li>
+                 <li>Ajout de la fonction mc_rvcor pour retourner la correction 
+   vitesse    radiale dans un r&eacute;f&eacute;rentiel donn&eacute;. Des 
+modifications      ont &eacute;t&eacute; faites dans libmc.c, libmc.h, libmc2.c, 
+mc_macr2.c,mc_cord1.c      et mc.h.<br>
+                  </li>
+                             
+</ul>
+                               
+<h3> 2002-11-10 :</h3>
+                                       
+<ul>
+                  <li>Ajout de calculs dans mc_ephem. On peut sortir les
+valeurs     des   donn&eacute;es   physiques des plan&egrave;tes : diam&egrave;tres
+  apparents    &eacute;quatoriaux   et polaires, longitudes du m&eacute;ridien
+  central  (syst&egrave;mes  I, II,   III), latitude du point central, angles
+  de position  du nord de la  plan&egrave;te,   angle de position du limbe
+ brillant. Des  modifications ont &eacute;t&eacute;   faites dans mc_util1.c,
+ mc_macr2.c,  libmc2.c et mc.h.</li>
+                               
+</ul>
+                               
+<h3>2002-11-02 :</h3>
+                                       
+<ul>
+                   <li>Ajout de la fonction mc_libration (retourne les param&egrave;tres
+        de libration lunaire g&eacute;ocentrique ou topocentrique).</li>
+                   <li>Augmentation du nombre de d&eacute;cimales sur certaines 
+   sorties     de  fonctions.<br>
+                   </li>
+                                 
+</ul>
+                                   
+<h3> 2002-10-13 :</h3>
+                                       
+<ul>
+                    <li>Correction d'un bug dans l'option -reverse de mc_nutationradec.</li>
+                    <li>Am&eacute;lioration du format de sortie de la fonction
+   mc_angle2dms       dans le cas d'une limite &lt;100.</li>
+                                   
+</ul>
+                                   
+<h3> 2002-10-02 :</h3>
+                                      
+<ul>
+                   <li> Ajout de l'option option -reverse dans les fonctions
+  mc_nutationradec        et mc_aberrationradec qui permet d'effectuer les
+ corrections inverses.</li>
+                                     
+</ul>
+                                      
+<h3> 2002-09-25 :</h3>
+                                      
+<ul>
+                   <li> Ajout de la fonction mc_nutationradec qui permet
+de  corriger     des   coordonn&eacute;es  radec de la nutation (fichiers&nbsp; 
+ libmc_angles.c     et  mc_corc.c).</li>
+                    <li> Ajout de la fonction mc_aberrationradec qui permet 
+ de  corriger     des  coordonn&eacute;es radec de l'aberration annuelle, 
+diurne  ou des termes-E     (fichiers&nbsp; libmc_angles.c et mc_corc.c).</li>
+                                     
+</ul>
+                                      
+<h3> 2002-09-18 :</h3>
+                                      
+<ul>
+                   <li> Correction mineures du code source pour &eacute;liminer 
+   des   warning    suite aux modifications du 2002-09-09 et 2002-09-10. Les
+   corrections   ont   &eacute;t&eacute; faites dans les fichiers mc_macr2.c, 
+   fichier mc_util1.c     et libmc_angles.c.</li>
+                                     
+</ul>
+                                      
+<h3> 2002-09-10 :</h3>
+                                      
+<ul>
+                   <li> Am&eacute;lioration de la fonction C mc_adplaap (fichier
+    mc_macr2.c)      du calcul de la position de Lune. Les corrections permettent
+    le calcul   de   l'angle de phase de fa&ccedil;on plus pr&eacute;cise.
+ Pour   ce faire,   on a cr&eacute;e une nouvelle fonction mc_elonphaslimb
+ (fichier   mc_util1.c)    qui est utilis&eacute;e.</li>
+                                     
+</ul>
+                                      
+<h3> 2002-09-09 :</h3>
+                                      
+<ul>
+                   <li> Am&eacute;lioration de la fonction C mc_rhophi2latalt 
+  du  fichier     mc_corc1.c,  (qui retourne les valeurs de la latitude et 
+ de l'altitude   &agrave;   partir  de rhocosphi' et rhosinphi' ). Jusqu'alors,
+   la fonction   retournait   des valeurs  de latitude nulle. La valeur de
+ l'altitude  est  maintenant op&eacute;rationnelle.</li>
+                    <li> Ajout de l'option -height &agrave; la fonction mc_home2geosys
+       (fichier   libmc_angles.c). Cela permet de retourner la hauteur du
+site     sur  l'ellipse   de r&eacute;f&eacute;rence.</li>
+                                     
+</ul>
+                                      
+<h3> 2002-08-29 :</h3>
+                                      
+<ul>
+                   <li> Le fichier libmc2.c, devenu tr&egrave;s grand, a
+&eacute;t&eacute;          scind&eacute; en trois : libmc_angles.c (pour
+les fonctions sur les    angles),      libmc_dates.c (pour les fonctions
+sur les dates) et libmc2.c    qui garde   les   fonctions restantes (&eacute;ph&eacute;m&eacute;rides,
+  etc.). Le fichier     linux/Makefile a &eacute;t&eacute; modifi&eacute;
+en  cons&eacute;quences.</li>
+                    <li> Ajout de la fonction mc_home2geosys qui permet de
+ transformer       les   coordonn&eacute;es g&eacute;od&eacute;siques d'un
+ syst&egrave;me    vers   un  autre.</li>
+                                     
+</ul>
+                                      
+<h3> 2002-03-29 :</h3>
+                                      
+<ul>
+                   <li> Correction d'un bug dans le mode "roll" de la fonction
+   mc_listradec.       La mosa&iuml;que g&eacute;n&eacute;r&eacute;e &eacute;tait
+   fausse &agrave;       partir du dixi&egrave;me champ. Le bug a &eacute;t&eacute;
+   corrig&eacute;       dans la fonction Cmd_mctcl_listradec du fichier libmc2.c.</li>
+                                     
+</ul>
+                                      
+<h3> 2002-01-10 :</h3>
+                                      
+<ul>
+                   <li> Correction d'un bug dans la mise en forme du r&eacute;sultat
+      des   calcul  d'&eacute;ph&eacute;m&eacute;rides (mc_ephem). Le bug
+a  &eacute;t&eacute;       corrig&eacute; dans la fonction Cmd_mctcl_ephem
+du  fichier libmc2.c (variable      de cha&icirc;ne de caract&egrave;res
+mal dimensionn&eacute;e).</li>
+                                     
+</ul>
+                                      
+<h3> 2002-01-03 :</h3>
+                                      
+<ul>
+                   <li> Correction d'un bug dans le calcul d'&eacute;ph&eacute;m&eacute;rides
+         de Saturne (fichier mc_plnt4.c fonction mc_jd2lbr1e, variable l0).</li>
+                    <li> Correction d'un bug dans le calcul d'&eacute;ph&eacute;m&eacute;rides
+         de Mars (fichier mc_plnt2.c fonction mc_jd2lbr1b, variable r0).</li>
+                    <li> V&eacute;rification de la pr&eacute;cision des plan&egrave;tes 
+       (&lt;=1   arcmin) d'apr&egrave;s le formulaire de Van Flandern &amp; 
+  Pulkkinen     (Ap.J.   SS 41, 391-411, 1979).</li>
+                    <li> Am&eacute;lioration de la pr&eacute;cision pour
+la  plan&egrave;te        Pluton (fichier mc_plnt4.c fonction mc_jd2lbr1h
+et fichier mc_macr2.c    fonction    mc_adplaap) d'apr&egrave;s le formulaire 
+de Meeus (Astronomical    Algorithms    ed 1991).</li>
+                                     
+</ul>
+                                      
+<h3> 2001-11-27 :</h3>
+                                      
+<ul>
+                   <li> Corrections mineures dans divers fichiers afin d'&eacute;liminer
+        tous  les avertissements de compilation sous Linux.</li>
+                    <li> Correction d'une erreur grave dans la fonction mctcl_decode_dates
+         du fichier libmc2.c. Dans le cas d'une date plac&eacute;e sous la
+ forme      de  liste, il y avait deux lib&eacute;rations de pointeurs **argvv.
+ Ce   bug   ne  semblait pas actif sous Windows mais provoquait un arr&ecirc;t
+   du logiciel     sous Linux.</li>
+                                     
+</ul>
+                                      
+<h3> 2001-11-05 :</h3>
+                                      
+<ul>
+                   <li> Ajout des fonctions mc_home2gps et mc_home2mpc pour 
+ convertir      les   types  Home.</li>
+                    <li> Corrections de la documentation pour tenir compte
+ des   deux   nouvelles    fonctions mc_home2gps et mc_home2mpc ainsi pour
+ am&eacute;liorer     la compr&eacute;hension     de certaines fonctions.</li>
+                                     
+</ul>
+                                      
+<h3> 2001-10-28 :</h3>
+                                      
+<ul>
+                   <li> Corrections de la documentation pour tenir compte 
+des   remarques      de  Robert Delmas.</li>
+                                     
+</ul>
+                                      
+<h3> 2001-10-06 :</h3>
+                                      
+<ul>
+                   <li> Ajout des fonctions d'extension <b><tt>mc_hadec2altaz,
+   mc_altaz2radec,       mc_altaz2hadec, mc_refraction</tt></b>, pour calculer
+   les coordonn&eacute;es       topocentriques &agrave; partir des coordonn&eacute;es
+   &eacute;quatoriales.</li>
+                                     
+</ul>
+                                      
+<h3> 2001-07-17 :</h3>
+                                      
+<ul>
+                   <li> Modification des fonctions mc_angle2hms et mc_angle2dms 
+   pour   permettre    une sortie formatt&eacute;e (options : ?limit? ?nozero|zero?
+      ?subsecdigits?    ?auto|+? ?list|string?).</li>
+                    <li> Ajout de l'option -format long|short pour les fonctions
+    mc_angle2lx200ra      et mc_angle2lx200dec.</li>
+                    <li> Correction orthographique du manuel de l'utilisateur 
+  d'apr&egrave;s       les suggestions de Michel Espoto.</li>
+                                     
+</ul>
+                                      
+<h3> 2001-03-03 :</h3>
+                                      
+<ul>
+                   <li> Correction d'une erreur concernant le d&eacute;codage 
+  des   fractions     de secondes d'angles des fonctions mc_angle2* dans la
+  fonction   mctcl_decode_angle      du fichier libmc2.c.</li>
+                    <li> Correction d'une erreur dans la fonction mc_equinoxe_jd
+    du  fichier    mc_time1.c.</li>
+                    <li> Ajout de la fonction d'entension <b><tt>mc_precessradec</tt></b> 
+        pour effectuer des corrections de pr&eacute;cession.</li>
+                                     
+</ul>
+                                      
+<h3> 2000-09-22 :</h3>
+                                      
+<ul>
+                   <li> Correction d'une erreur (cos au lieu de sin) dans 
+la  formule     de  l'azimut   de la fonction mc_hd2ah du fichier mc_cord1.c.</li>
+                    <li> Ajout de la fonction mc_hd2parallactic (fichier
+mc_cord1.c)       pour   calculer  l'angle parallactique &agrave; partir
+de la d&eacute;clinaison,         l'angle horaire et la latitude.</li>
+                    <li> Ajout de la fonction d'extension <b><tt>radec2altaz</tt></b>.</li>
+                                     
+</ul>
+                    <br>
+                  <br>
+                 <br>
+                <br>
+               <br>
+              <br>
+             <br>
+            <br>
+           <br>
+          <br>
+         <br>
+        <br>
+       <br>
+      <br>
+     <br>
+    <br>
+   <br>
+  <br>
+ <br>
+</body>
+</html>

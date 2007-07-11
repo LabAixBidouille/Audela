@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLIListNext</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLIListNext</A></H2><H2>(<!1><A HREF="flidomain_t.html">flidomain_t</A>* domain,  char* filename,<BR>&nbsp; size_t fnlen,  char* name,  size_t namelen)</H2><BLOCKQUOTE>
+ Obtains the next device in the list.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Obtains the next device in the list. Use this function to
+get the next <TT>domain</TT>, <TT>filename</TT> and <TT>name</TT>
+from the list of attached FLI devices created using
+the function <TT>FLICreateList()</TT>.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>domain</B> -  Pointer to where to domain of the device will be placed.
+
+<BR><B>filename</B> -  Pointer to where the filename of the device will be placed.
+
+<BR><B>fnlen</B> -  Length of the supplied buffer to hold the filename.
+
+<BR><B>name</B> -  Pointer to where the name of the device will be placed.
+
+<BR><B>namelen</B> -  Length of the supplied buffer to hold the name.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD><!1><A HREF="FLICreateList.html">FLICreateList</A>
+<BR><!1><A HREF="FLIDeleteList.html">FLIDeleteList</A>
+<BR><!1><A HREF="FLIListFirst.html">FLIListFirst</A>
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

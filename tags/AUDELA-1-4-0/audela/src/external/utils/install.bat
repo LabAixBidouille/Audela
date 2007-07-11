@@ -1,0 +1,1 @@
+copy bin\*.exe ..\..\..\bin

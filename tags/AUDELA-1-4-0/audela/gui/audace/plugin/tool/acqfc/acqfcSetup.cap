@@ -1,0 +1,107 @@
+#
+# Fichier : acqfcSetup.cap
+# Mise a jour $Id: acqfcSetup.cap,v 1.2 2007-05-09 21:41:42 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(acqfcSetup,titre)                     "Acquisition - Console Messages"
+set caption(acqfcSetup,texte)                     "Choose whether you want to display messages in the Console:"
+set caption(acqfcSetup,oui)                       "Yes"
+set caption(acqfcSetup,non)                       "No"
+
+set caption(acqfcSetup,ok)                        "OK"
+set caption(acqfcSetup,appliquer)                 "Apply"
+set caption(acqfcSetup,fermer)                    "Close"
+set caption(acqfcSetup,aide)                      "Help"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Acquisition - Messages sur la Console"
+   set caption(acqfcSetup,texte)                  "Vous pouvez choisir ici l'affichage ou non de messages sur la Console :"
+   set caption(acqfcSetup,oui)                    "Oui"
+   set caption(acqfcSetup,non)                    "Non"
+
+   set caption(acqfcSetup,ok)                     "OK"
+   set caption(acqfcSetup,appliquer)              "Appliquer"
+   set caption(acqfcSetup,fermer)                 "Fermer"
+   set caption(acqfcSetup,aide)                   "Aide"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Acquisizione - Messaggio sulla Console"
+   set caption(acqfcSetup,texte)                  "Scegliere se si vuole far apparire messaggi sulla Console:"
+   set caption(acqfcSetup,oui)                    "Si"
+   set caption(acqfcSetup,non)                    "No"
+
+   set caption(acqfcSetup,ok)                     "OK"
+   set caption(acqfcSetup,appliquer)              "Applica"
+   set caption(acqfcSetup,fermer)                 "Chiudi"
+   set caption(acqfcSetup,aide)                   "Aiuto"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Adquisición - Mensajes de Consola"
+   set caption(acqfcSetup,texte)                  "Elige si prefieres mostrar mensajes en la Consola:"
+   set caption(acqfcSetup,oui)                    "Sí"
+   set caption(acqfcSetup,non)                    "No"
+
+   set caption(acqfcSetup,ok)                     "OK"
+   set caption(acqfcSetup,appliquer)              "Aplicar"
+   set caption(acqfcSetup,fermer)                 "Cerrar"
+   set caption(acqfcSetup,aide)                   "Ayuda"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Belichtung - Auf die Konsole auftragen"
+   set caption(acqfcSetup,texte)                  "Sie können hier die Mitteilungen wählen die sie zeigen oder nicht zeigen wollen:"
+   set caption(acqfcSetup,oui)                    "Ja"
+   set caption(acqfcSetup,non)                    "Nein"
+
+   set caption(acqfcSetup,ok)                     "OK"
+   set caption(acqfcSetup,appliquer)              "Anwenden"
+   set caption(acqfcSetup,fermer)                 "Schließen"
+   set caption(acqfcSetup,aide)                   "Hilfe"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Aquisição - Mensagens de Consola"
+   set caption(acqfcSetup,texte)                  "Indique se prefere mostrar mensagens na Consola:"
+   set caption(acqfcSetup,oui)                    "Sim"
+   set caption(acqfcSetup,non)                    "Não"
+
+   set caption(acqfcSetup,ok)                     "OK"
+   set caption(acqfcSetup,appliquer)              "Aplicar"
+   set caption(acqfcSetup,fermer)                 "Fechar"
+   set caption(acqfcSetup,aide)                   "Ajuda"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Acquisition - Console Messages"
+   set caption(acqfcSetup,texte)                  "Choose whether you want to display messages in the Console:"
+   set caption(acqfcSetup,oui)                    "Yes"
+   set caption(acqfcSetup,non)                    "No"
+
+   set caption(acqfcSetup,ok)                     "OK"
+   set caption(acqfcSetup,appliquer)              "Anvend"
+   set caption(acqfcSetup,fermer)                 "Luk"
+   set caption(acqfcSetup,aide)                   "Hjælp"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

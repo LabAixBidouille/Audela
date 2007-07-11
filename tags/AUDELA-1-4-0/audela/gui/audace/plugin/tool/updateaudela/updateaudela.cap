@@ -1,0 +1,261 @@
+#
+# Fichier : updateaudela.cap
+# Mise a jour $Id: updateaudela.cap,v 1.8 2007-07-05 22:15:01 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(updateaudela,title)                 "AudeLA Update"
+set caption(updateaudela,pluginFrame)           "List of Plug-ins"
+set caption(updateaudela,kitFrame)              "List of Kits"
+set caption(updateaudela,rep_plugin)            "Folder"
+set caption(updateaudela,refresh)               "Refresh"
+set caption(updateaudela,delete)                "Delete"
+set caption(updateaudela,download)              "Download"
+set caption(updateaudela,show)                  "Show"
+set caption(updateaudela,makeKit)               "Make a Kit"
+set caption(updateaudela,installPlugin)         "Install a Plug-in"
+set caption(updateaudela,fileExists)            "File %s already exists.\nUpdate it?"
+set caption(updateaudela,directoryExists)       "Folder %s already exists.\nUpdate it?"
+set caption(updateaudela,directoryNotExits)     "Plug-in cannot be deleted. Folder %s does not exist."
+set caption(updateaudela,directory)             "Folder %s already exists.\nUpdate it?"
+set caption(updateaudela,confirmDelete)         "Are you sure you want to delete %s?"
+set caption(updateaudela,makeKitOk)             "File %s is created."
+set caption(updateaudela,confirmInstall)        "Do you want to replace %s by %s?"
+set caption(updateaudela,confirmInstallNew)     "Do you want install this new plug-in %s?"
+set caption(updateaudela,installPluginOk)       "Plug-in %s is installed in folder \n %s \n (%s file(s) created or updated)."
+set caption(updateaudela,restart)               "Please run AudeLA again to enable these modifications."
+
+set caption(updateaudela,pluginDetail)          "# Informations du plug-in"
+set caption(updateaudela,availableUpdate)       "# Mises à jour téléchargées"
+set caption(updateaudela,moreInfo)              "# Plus d'informations"
+set caption(updateaudela,connect)               "# Connecter"
+set caption(updateaudela,developperOption)      "# Option développeur"
+set caption(updateaudela,downloadAndInstall)    "# Installer immediatement après le téléchargement"
+set caption(updateaudela,address)               "# Adresse"
+set caption(updateaudela,audelaAddress)         "# Site AudeLA"
+set caption(updateaudela,badAudelaVersion)      "# Cette mise à jour nécessite AudeLA %s"
+set caption(updateaudela,otherAddress)          "# Autre site"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(updateaudela,title)              "Mise à jour d'AudeLA"
+   set caption(updateaudela,pluginFrame)        "Mise à jour installées"
+   set caption(updateaudela,kitFrame)           "Liste des kits"
+   set caption(updateaudela,rep_plugin)         "Répertoire"
+   set caption(updateaudela,refresh)            "Actualiser"
+   set caption(updateaudela,delete)             "Supprimer"
+   set caption(updateaudela,download)           "Télécharger"
+   set caption(updateaudela,show)               "Voir"
+   set caption(updateaudela,makeKit)            "Faire un kit"
+   set caption(updateaudela,installPlugin)      "Installer un plug-in"
+   set caption(updateaudela,fileExists)         "Le fichier %s existe déjà.\nVoulez-vous le mettre à jour ?"
+   set caption(updateaudela,directoryExists)    "Le répertoire %s existe déjà.\nVoulez-vous le mettre à jour ?"
+   set caption(updateaudela,directoryNotExits)  "Impossible d'effacer le plug-in, le répertoire %s n'existe pas."
+   set caption(updateaudela,directory)          "Le répertoire %s existe déjà.\nVoulez-vous le mettre à jour ?"
+   set caption(updateaudela,confirmDelete)      "Etes vous sûr de vouloir supprimer %s ?"
+   set caption(updateaudela,makeKitOk)          "Le fichier %s est créé."
+   set caption(updateaudela,confirmInstall)     "Voulez vous remplacer %s par %s ?"
+   set caption(updateaudela,confirmInstallNew)  "Voulez vous installer ce nouveau plugin %s ?"
+   set caption(updateaudela,installPluginOk)    "Le plug-in %s est installé dans le répertoire \n %s \n (%s fichier(s) créé(s) ou mis à jour)."
+   set caption(updateaudela,restart)            "Veuillez redémarrer AudeLA pour prendre en compte ces modifications."
+
+   set caption(updateaudela,pluginDetail)       "Informations du plug-in"
+   set caption(updateaudela,availableUpdate)    "Mises à jour téléchargées"
+   set caption(updateaudela,moreInfo)           "Plus d'informations"
+   set caption(updateaudela,connect)            "Connecter"
+   set caption(updateaudela,developperOption)   "Option développeur"
+   set caption(updateaudela,downloadAndInstall) "Installer immediatement après le téléchargement"
+   set caption(updateaudela,address)            "Adresse"
+   set caption(updateaudela,audelaAddress)      "Site AudeLA"
+   set caption(updateaudela,badAudelaVersion)   "Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,otherAddress)       "Autre site"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(updateaudela,title)              "Aggiornamento AudeLA"
+   set caption(updateaudela,pluginFrame)        "Elenco dei plug-in"
+   set caption(updateaudela,kitFrame)           "Elenco dei kit"
+   set caption(updateaudela,rep_plugin)         "Directory"
+   set caption(updateaudela,refresh)            "Aggiorna"
+   set caption(updateaudela,delete)             "Eliminare"
+   set caption(updateaudela,download)           "Scaricare"
+   set caption(updateaudela,show)               "Visualizza"
+   set caption(updateaudela,makeKit)            "Fare un kit"
+   set caption(updateaudela,installPlugin)      "Installare un plug-in"
+   set caption(updateaudela,fileExists)         "Il file %s e' gia presente.\nAggiornarlo?"
+   set caption(updateaudela,directoryExists)    "La cartella %s e' gia presente.\nAggiornarlo?"
+   set caption(updateaudela,directoryNotExits)  "Non e` possibile cancellare il plug-in, la cartella %s non esiste."
+   set caption(updateaudela,directory)          "La cartella %s e' gia presente.\nAggiornarlo?"
+   set caption(updateaudela,confirmDelete)      "Siete sicuri di voler cancellare %s?"
+   set caption(updateaudela,makeKitOk)          "Il file %s e` stato creato."
+   set caption(updateaudela,confirmInstall)     "# Voulez vous remplacer %s par %s ?"
+   set caption(updateaudela,confirmInstallNew)  "# Voulez vous installer ce nouveau plugin %s ?"
+   set caption(updateaudela,installPluginOk)    "Il plug-in %s e` stato installato nella cartella \n %s \n (%s file creato/i o aggiornato/i)."
+   set caption(updateaudela,restart)            "Eseguire di nuovo AudeLA per abilitare queste modifiche."
+
+   set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
+   set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
+   set caption(updateaudela,moreInfo)           "# Plus d'informations"
+   set caption(updateaudela,connect)            "# Connecter"
+   set caption(updateaudela,developperOption)   "# Option développeur"
+   set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
+   set caption(updateaudela,address)            "# Adresse"
+   set caption(updateaudela,audelaAddress)      "# Site AudeLA"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,otherAddress)       "# Autre site"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(updateaudela,title)              "Actualización AudeLA"
+   set caption(updateaudela,pluginFrame)        "Lista de Plug-ins"
+   set caption(updateaudela,kitFrame)           "Lista de kits"
+   set caption(updateaudela,rep_plugin)         "Directorio"
+   set caption(updateaudela,refresh)            "Actualizar"
+   set caption(updateaudela,delete)             "Suprimir"
+   set caption(updateaudela,download)           "Descargar"
+   set caption(updateaudela,show)               "Mostrar"
+   set caption(updateaudela,makeKit)            "Hacer un kit"
+   set caption(updateaudela,installPlugin)      "Instalar un plug-in"
+   set caption(updateaudela,fileExists)         "El fichero %s ya existe.\nActualizarlo?"
+   set caption(updateaudela,directoryExists)    "La carpeta %s ya existe.\nActualizarla?"
+   set caption(updateaudela,directoryNotExits)  "No se puede actualizar el plug-in. La carpeta %s no existe."
+   set caption(updateaudela,directory)          "La carpeta %s ya existe.\nActualizarla?"
+   set caption(updateaudela,confirmDelete)      "Seguro de que quiere borrar %s?"
+   set caption(updateaudela,makeKitOk)          "Se ha creado el fichero %s."
+   set caption(updateaudela,confirmInstall)     "# Voulez vous remplacer %s par %s ?"
+   set caption(updateaudela,confirmInstallNew)  "# Voulez vous installer ce nouveau plugin %s ?"
+   set caption(updateaudela,installPluginOk)    "El plug-in %s se ha instalado en la carpeta \n %s \n (%s fichero(s) creados o actualizados)."
+   set caption(updateaudela,restart)            "Por favor, ejecute de nuevo AudeLA para que las modificaciones se hagan efectivas."
+
+   set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
+   set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
+   set caption(updateaudela,moreInfo)           "# Plus d'informations"
+   set caption(updateaudela,connect)            "# Connecter"
+   set caption(updateaudela,developperOption)   "# Option développeur"
+   set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
+   set caption(updateaudela,address)            "# Adresse"
+   set caption(updateaudela,audelaAddress)      "# Site AudeLA"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,otherAddress)       "# Autre site"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(updateaudela,title)              "AudeLA aktualisieren"
+   set caption(updateaudela,pluginFrame)        "Plug-in Liste"
+   set caption(updateaudela,kitFrame)           "Kit Liste"
+   set caption(updateaudela,rep_plugin)         "Verzeichnis"
+   set caption(updateaudela,refresh)            "Aktualisieren"
+   set caption(updateaudela,delete)             "Abschaffen"
+   set caption(updateaudela,download)           "Herunterladen"
+   set caption(updateaudela,show)               "Zeigen"
+   set caption(updateaudela,makeKit)            "Ein Kit machen"
+   set caption(updateaudela,installPlugin)      "Ein Plug-in installieren"
+   set caption(updateaudela,fileExists)         "Die Datei %s existiert schon.\nVollen sie es aktualisieren?"
+   set caption(updateaudela,directoryExists)    "Das %s Verzeichnis existiert schon.\nVollen sie es aktualisieren?"
+   set caption(updateaudela,directoryNotExits)  "Das Plug-in kann nicht erlöscht werden, %s Verzeichnis existiert nicht."
+   set caption(updateaudela,directory)          "%s Verzeichnis existiert schon.\nVollen sie es aktualisieren?"
+   set caption(updateaudela,confirmDelete)      "Wollen sie wirklich %s löschen?"
+   set caption(updateaudela,makeKitOk)          "%s Datei ist geschaffen."
+   set caption(updateaudela,confirmInstall)     "# Voulez vous remplacer %s par %s ?"
+   set caption(updateaudela,confirmInstallNew)  "# Voulez vous installer ce nouveau plugin %s ?"
+   set caption(updateaudela,installPluginOk)    "Das %s Plug-in ist in \n %s \n Verzeichnis installiert (%s Datei(en) erschaffen oder aktualisiert)."
+   set caption(updateaudela,restart)            "AudeLA bitte wieder starten um diese Änderungen zu befähigen."
+
+   set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
+   set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
+   set caption(updateaudela,moreInfo)           "# Plus d'informations"
+   set caption(updateaudela,connect)            "# Connecter"
+   set caption(updateaudela,developperOption)   "# Option développeur"
+   set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
+   set caption(updateaudela,address)            "# Adresse"
+   set caption(updateaudela,audelaAddress)      "# Site AudeLA"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,otherAddress)       "# Autre site"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(updateaudela,title)              "Actualização do AudeLA"
+   set caption(updateaudela,pluginFrame)        "Lista de plug-ins"
+   set caption(updateaudela,kitFrame)           "Lista de kits"
+   set caption(updateaudela,rep_plugin)         "Pasta"
+   set caption(updateaudela,refresh)            "Actualizar"
+   set caption(updateaudela,delete)             "Eliminar"
+   set caption(updateaudela,download)           "Descarregar"
+   set caption(updateaudela,show)               "Mostrar"
+   set caption(updateaudela,makeKit)            "Fazer um kit"
+   set caption(updateaudela,installPlugin)      "Instalar um plug-in"
+   set caption(updateaudela,fileExists)         "O ficheiro %s já existe.\nDeseja actualizá-lo?"
+   set caption(updateaudela,directoryExists)    "A pasta %s já existe.\nDeseja actualizá-lo?"
+   set caption(updateaudela,directoryNotExits)  "Impossível eliminar plug-in, pasta %s não existe."
+   set caption(updateaudela,directory)          "A pasta %s já existe.\nDeseja actualizá-lo?"
+   set caption(updateaudela,confirmDelete)      "Tem a certeza que deseja eliminar %s?"
+   set caption(updateaudela,makeKitOk)          "Ficheiro %s criado."
+   set caption(updateaudela,confirmInstall)     "# Voulez vous remplacer %s par %s ?"
+   set caption(updateaudela,confirmInstallNew)  "# Voulez vous installer ce nouveau plugin %s ?"
+   set caption(updateaudela,installPluginOk)    "O plug-in %s está instalado na pasta \n %s \n (%s ficheiro(s) criado(s) ou actualizado(s))."
+   set caption(updateaudela,restart)            "Por favor reinicie AudeLA para activar estas modificações."
+
+   set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
+   set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
+   set caption(updateaudela,moreInfo)           "# Plus d'informations"
+   set caption(updateaudela,connect)            "# Connecter"
+   set caption(updateaudela,developperOption)   "# Option développeur"
+   set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
+   set caption(updateaudela,address)            "# Adresse"
+   set caption(updateaudela,audelaAddress)      "# Site AudeLA"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,otherAddress)       "# Autre site"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(updateaudela,title)              "AudeLA Update"
+   set caption(updateaudela,pluginFrame)        "List of Plug-ins"
+   set caption(updateaudela,kitFrame)           "List of Kits"
+   set caption(updateaudela,rep_plugin)         "Folder"
+   set caption(updateaudela,refresh)            "Refresh"
+   set caption(updateaudela,delete)             "Delete"
+   set caption(updateaudela,download)           "Download"
+   set caption(updateaudela,show)               "Show"
+   set caption(updateaudela,makeKit)            "Make a Kit"
+   set caption(updateaudela,installPlugin)      "Install a Plug-in"
+   set caption(updateaudela,fileExists)         "File %s already exists.\nUpdate it?"
+   set caption(updateaudela,directoryExists)    "Folder %s already exists.\nUpdate it?"
+   set caption(updateaudela,directoryNotExits)  "Plug-in cannot be deleted. Folder %s does not exist."
+   set caption(updateaudela,directory)          "Folder %s already exists.\nUpdate it?"
+   set caption(updateaudela,confirmDelete)      "Are you sure you want to delete %s?"
+   set caption(updateaudela,makeKitOk)          "File %s is created."
+   set caption(updateaudela,confirmInstall)     "Do you want to replace %s by %s?"
+   set caption(updateaudela,confirmInstallNew)  "Do you want install this new plug-in %s?"
+   set caption(updateaudela,installPluginOk)    "Plug-in %s is installed in folder \n %s \n (%s file(s) created or updated)."
+   set caption(updateaudela,restart)            "Please run AudeLA again to enable these modifications."
+
+   set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
+   set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
+   set caption(updateaudela,moreInfo)           "# Plus d'informations"
+   set caption(updateaudela,connect)            "# Connecter"
+   set caption(updateaudela,developperOption)   "# Option développeur"
+   set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
+   set caption(updateaudela,address)            "# Adresse"
+   set caption(updateaudela,audelaAddress)      "# Site AudeLA"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,otherAddress)       "# Autre site"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

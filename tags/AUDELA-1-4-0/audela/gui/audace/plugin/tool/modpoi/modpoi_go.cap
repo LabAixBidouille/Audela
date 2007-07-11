@@ -1,0 +1,86 @@
+#
+# Fichier : modpoi_go.cap
+# Mise a jour $Id: modpoi_go.cap,v 1.8 2007-01-27 14:47:07 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(modpoi_go,modpoi)             "Aiming Model"
+set caption(modpoi_go,help_titre)         "Help For This Tool"
+set caption(modpoi_go,titre)              "TPOINT"
+set caption(modpoi_go,nouveau)            "New"
+set caption(modpoi_go,ouvrir)             "Open"
+set caption(modpoi_go,editer)             "Edit"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(modpoi_go,modpoi)          "Modèle de pointage"
+   set caption(modpoi_go,help_titre)      "Aide pour cet outil"
+   set caption(modpoi_go,titre)           "TPOINT"
+   set caption(modpoi_go,nouveau)         "Nouveau"
+   set caption(modpoi_go,ouvrir)          "Ouvrir"
+   set caption(modpoi_go,editer)          "Editer"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(modpoi_go,modpoi)          "Modello di puntamento"
+   set caption(modpoi_go,help_titre)      "Aiuto per questo tool"
+   set caption(modpoi_go,titre)           "TPOINT"
+   set caption(modpoi_go,nouveau)         "Nuovo"
+   set caption(modpoi_go,ouvrir)          "Aprire"
+   set caption(modpoi_go,editer)          "Edita"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(modpoi_go,modpoi)          "Modelo de apuntado"
+   set caption(modpoi_go,help_titre)      "Ayuda para esta herramienta"
+   set caption(modpoi_go,titre)           "TPOINT"
+   set caption(modpoi_go,nouveau)         "Nuevo"
+   set caption(modpoi_go,ouvrir)          "Abrir"
+   set caption(modpoi_go,editer)          "Editar"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(modpoi_go,modpoi)          "Richtung Modell"
+   set caption(modpoi_go,help_titre)      "Hilfe für dieses Gerät"
+   set caption(modpoi_go,titre)           "TPOINT"
+   set caption(modpoi_go,nouveau)         "Neu"
+   set caption(modpoi_go,ouvrir)          "Öffnen"
+   set caption(modpoi_go,editer)          "Editieren"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(modpoi_go,modpoi)          "Modelo de apontamento"
+   set caption(modpoi_go,help_titre)      "Ajuda para esta ferramenta"
+   set caption(modpoi_go,titre)           "TPOINT"
+   set caption(modpoi_go,nouveau)         "Novo"
+   set caption(modpoi_go,ouvrir)          "Abrir"
+   set caption(modpoi_go,editer)          "Editar"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(modpoi_go,modpoi)          "Model for fejljustering"
+   set caption(modpoi_go,help_titre)      "Hjælp til dette værktøj"
+   set caption(modpoi_go,titre)           "TPOINT"
+   set caption(modpoi_go,nouveau)         "Ny"
+   set caption(modpoi_go,ouvrir)          "Åbn"
+   set caption(modpoi_go,editer)          "Rediger"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,175 @@
+#
+# Fichier : bess.cap
+# Mise a jour $Id: bess_module.cap,v 1.7 2007-06-29 22:13:12 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global text_bess langage
+
+# *************** Version anglaise ****************************
+
+set text_bess(titre_saisie)           "# Edition de l'entête d'un fichier FITS pour la base de spectres BeSS"
+set text_bess(SelecFile)              "..."
+set text_bess(OBJNAME)                "# Nom courant de l'objet"
+set text_bess(BSS_RA)                 "# Ascension Droite"
+set text_bess(BSS_DEC)                "# Déclinaison"
+set text_bess(datedeb)                "# Date du début de la pose"
+set text_bess(heuredeb)               "# Heure du début de la pose"
+set text_bess(EXPTIME)                "# Durée d'acquisition réelle"
+set text_bess(BSS_INST)               "# Instrument"
+set text_bess(BSS_SITE)               "# Site d'observation"
+set text_bess(BSS_VHEL)               "# Vitesse héliocentrique"
+set text_bess(BSS_TELL)               "# Correction raies telluriques"
+set text_bess(BSS_NORM)               "# Normalisation (continuum)"
+set text_bess(BSS_COSM)               "# Correction des cosmiques"
+set text_bess(obs1)                   "# Observateur 1"
+set text_bess(obs2)                   "# Observateur 2"
+set text_bess(obs3)                   "# Observateur 3"
+set text_bess(fich_in)                "# Fichier à éditer : "
+set text_bess(fich_out)               "# Sauvegarder sous : "
+#set text_bess(titrePanneau)          "# Editeur de fichiers BeSS"
+set text_bess(titrePanneau)           "#                        Éditeur de fichiers BeSS"
+set text_bess(ChargeFichier)          "# (re)Charger"
+set text_bess(u_OBJNAME)              "# (nom standard)"
+set text_bess(u_BSS_RA)               "# (* degrés décimaux)"
+set text_bess(u_BSS_DEC)              "# (* degrés décimaux)"
+set text_bess(u_datedeb)              "# (format : 2005-02-24)"
+set text_bess(u_heuredeb)             "# (format : 23:45:32.17)"
+set text_bess(u_EXPTIME)              "# (en secondes)"
+set text_bess(u_BSS_INST)             "# (nom standard)"
+set text_bess(u_BSS_SITE)             "# (nom standard)"
+set text_bess(u_BSS_VHEL)             "(km/s)"
+set text_bess(u_BSS_TELL)             "# (description)"
+set text_bess(u_BSS_NORM)             "# (description)"
+set text_bess(u_BSS_COSM)             "# (description)"
+set text_bess(u_obs1)                 "# (Observateur 1)"
+set text_bess(u_obs2)                 "# (* Observateur 2)"
+set text_bess(u_obs3)                 "# (* Observateur 3)"
+# set text_bess(u_fich_in)             "# .dat ou .spc"
+# set text_bess(u_fich_out)            "# sans extension"
+set text_bess(pb_format_fich_in)      "# Le format du fichier d'entrée est incorrect (.dat ou .spc ou .fit)."
+set text_bess(pb_ra)                  "# L'ascencion droite doit être un nombre réel (degrés décimaux)."
+set text_bess(pb_dec)                 "# La déclinaison doit être un nombre réel (degrés décimaux)."
+set text_bess(pb_coherence_dec_ra)    "# Les champs Ascension Droite et Déclinaison doivent être tous les deux vides ou tous les deux renseignés."
+set text_bess(pb_exptime)             "# Le temps d'exposition doit être un réel positif."
+set text_bess(pb_vhel)                "# La vitesse héliocentrique doit être un réel positif."
+set text_bess(enregistrer)            "# Enregistrer"
+set text_bess(editer)                 "# Editer les configs"
+set text_bess(optionnel)              "# (*) = champs optionnels"
+set text_bess(annuler)                "# Annuler"
+set text_bess(webess)                 "# Web BeSS"
+set text_bess(pb_editweb)             "# Le browser web n'est pas configuré..."
+set text_bess(pb_fichier_absent)      "# Le fichier d'entrée n'existe pas dans le répertoire image."
+set text_bess(pb_format_fich_out)     "# Le nom du fichier de sortie ne doit pas comporter d'extension."
+set text_bess(param_generaux)         "# Paramètres généraux"
+set text_bess(heure_debut)            "# Début à :"
+set text_bess(heure_fin)              "# Fin à :"
+set text_bess(fin_normale)            "# ----------Fin normale du script----------"
+set text_bess(fin_anticipee)          "# ---------Fin anticipée du script---------"
+set text_bess(probleme)               "# Problème"
+set text_bess(champ1)                 "# Le champ "
+set text_bess(champ2)                 "#  doit être saisi."
+set text_bess(FichExiste)             "# Un fichier de ce nom existe déjà\nEtes-vous sur de vouloir l'écraser ?"
+set text_bess(FichOutVide)            "# Le nom de fichier de sortie est vide !"
+
+# *************** Version française ***************************
+if { [string compare $langage "french"] == "0" } {
+
+   set text_bess(titre_saisie)        "Edition de l'entête d'un fichier FITS pour la base de spectres BeSS"
+   set text_bess(SelecFile)           "..."
+   set text_bess(OBJNAME)             "Nom courant de l'objet"
+   set text_bess(BSS_RA)              "Ascension Droite"
+   set text_bess(BSS_DEC)             "Déclinaison"
+   set text_bess(datedeb)             "Date du début de la pose"
+   set text_bess(heuredeb)            "Heure du début de la pose"
+   set text_bess(EXPTIME)             "Durée d'acquisition réelle"
+   set text_bess(BSS_INST)            "Instrument"
+   set text_bess(BSS_SITE)            "Site d'observation"
+   set text_bess(BSS_VHEL)            "Vitesse héliocentrique"
+   set text_bess(BSS_TELL)            "Correction raies telluriques"
+   set text_bess(BSS_NORM)            "Normalisation (continuum)"
+   set text_bess(BSS_COSM)            "Correction des cosmiques"
+   set text_bess(obs1)                "Observateur 1"
+   set text_bess(obs2)                "Observateur 2"
+   set text_bess(obs3)                "Observateur 3"
+   set text_bess(fich_in)             "Fichier à éditer : "
+   set text_bess(fich_out)            "Sauvegarder sous : "
+   #set text_bess(titrePanneau)       "Editeur de fichiers BeSS"
+   set text_bess(titrePanneau)        "                       Éditeur de fichiers BeSS"
+   set text_bess(ChargeFichier)       "(re)Charger"
+   set text_bess(u_OBJNAME)           "(nom standard)"
+   set text_bess(u_BSS_RA)            "(* degrés décimaux)"
+   set text_bess(u_BSS_DEC)           "(* degrés décimaux)"
+   set text_bess(u_datedeb)           "(format : 2005-02-24)"
+   set text_bess(u_heuredeb)          "(format : 23:45:32.17)"
+   set text_bess(u_EXPTIME)           "(en secondes)"
+   set text_bess(u_BSS_INST)          "(nom standard)"
+   set text_bess(u_BSS_SITE)          "(nom standard)"
+   set text_bess(u_BSS_VHEL)          "(km/s)"
+   set text_bess(u_BSS_TELL)          "(description)"
+   set text_bess(u_BSS_NORM)          "(description)"
+   set text_bess(u_BSS_COSM)          "(description)"
+   set text_bess(u_obs1)              "(Observateur 1)"
+   set text_bess(u_obs2)              "(* Observateur 2)"
+   set text_bess(u_obs3)              "(* Observateur 3)"
+  # set text_bess(u_fich_in)          ".dat ou .spc"
+  # set text_bess(u_fich_out)         "sans extension"
+   set text_bess(pb_format_fich_in)   "Le format du fichier d'entrée est incorrect (.dat ou .spc ou .fit)."
+   set text_bess(pb_ra)               "L'ascencion droite doit être un nombre réel (degrés décimaux)."
+   set text_bess(pb_dec)              "La déclinaison doit être un nombre réel (degrés décimaux)."
+   set text_bess(pb_coherence_dec_ra) "Les champs Ascension Droite et Déclinaison doivent être tous les deux vides ou tous les deux renseignés."
+   set text_bess(pb_exptime)          "Le temps d'exposition doit être un réel positif."
+   set text_bess(pb_vhel)             "La vitesse héliocentrique doit être un réel positif."
+   set text_bess(enregistrer)         "Enregistrer"
+   set text_bess(editer)              "Editer les configs"
+   set text_bess(optionnel)           "(*) = champs optionnels"
+   set text_bess(annuler)             "Annuler"
+   set text_bess(webess)              "Web BeSS"
+   set text_bess(pb_editweb)          "Le browser web n'est pas configuré..."
+   set text_bess(pb_fichier_absent)   "Le fichier d'entrée n'existe pas dans le répertoire image."
+   set text_bess(pb_format_fich_out)  "Le nom du fichier de sortie ne doit pas comporter d'extension."
+   set text_bess(param_generaux)      "Paramètres généraux"
+   set text_bess(heure_debut)         "Début à :"
+   set text_bess(heure_fin)           "Fin à :"
+   set text_bess(fin_normale)         "----------Fin normale du script----------"
+   set text_bess(fin_anticipee)       "---------Fin anticipée du script---------"
+   set text_bess(probleme)            "Problème"
+   set text_bess(champ1)              "Le champ "
+   set text_bess(champ2)              " doit être saisi."
+   set text_bess(FichExiste)          "Un fichier de ce nom existe déjà\nEtes-vous sur de vouloir l'écraser ?"
+   set text_bess(FichOutVide)         "Le nom de fichier de sortie est vide !"
+
+# *************** Version italienne ***************************
+} elseif { [string compare $langage "italian"] == "0" } {
+
+
+
+# *************** Version espagnole ***************************
+} elseif { [string compare $langage "spanish"] == "0" } {
+
+
+
+# *************** Version allemande ***************************
+} elseif { [string compare $langage "german"] == "0" } {
+
+
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+
+
+# *************** Version danoise *****************************
+} elseif { [string compare $langage "danish"] == "0" } {
+
+
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
