@@ -7,36 +7,38 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 10 juin 2006</p>
+<p class="date">Date de mise &agrave; jour : 11 juillet 2007</p>
 <h1>Appareil Photo Num&eacute;rique </h1>
-<h2>Description </h2>
 <blockquote> 
-  <p>Pilotage des appareils photo num&eacute;riques via USB.</p>
-  <p>Liste des protocoles support&eacute;s : </p>
-  <ul>
-    <li>Protocole standard PTP : Ce protocole est support&eacute; par la plupart 
-      des appareils num&eacute;riques. Limitation : Certains appareils impl&eacute;mentent 
-      partiellement le protocole PTP . Par exemple le Canon 300D impl&eacute;mente les 
-      fonctions de rapatriement d'image, mais n'impl&eacute;mente pas les fonctions 
-      de d&eacute;clenchement de pose par le cable USB. Dans ce cas, il faut utiliser 
-      le protocole propri&eacute;taire. </li>
-    <li>Protocole propri&eacute;taire CANON : Pour choisir le protocole, il faut 
-      utiliser le menu &quot;communication&quot; de l'appareil (NORMAL = protocole 
-      propri&eacute;taire, PTP = protocole PTP). </li>
-    <li>Protocole propri&eacute;taire NIKON : En chantier, en attendant utiliser 
-      le protocole PTP. </li>
-  </ul>
+  <p>Pilotage des appareils photo num&eacute;riques Canon via USB.</p>
   <p>AudeLA utilise la librairie OpenSource <a href="http://www.gphoto.org/">LIBGPHOTO2 
-    v2.1.6</a> pour piloter les appareils photo num&eacute;riques. Cette librairie 
+    v2.2.0 </a>pour piloter les appareils photo num&eacute;riques. Cette librairie 
     a &eacute;t&eacute; modifi&eacute;e pour supporter les acquisitions en longue 
-    pose (voir installation du patch 2.1.6d ci-dessous).</p>
-  <p>Voir la liste des appareils support&eacute;s : <a href="http://www.gphoto.org/">http://www.gphoto.org/</a> 
-  </p>
-  <p><font color="#990000">Remarque importante : L'&eacute;cran de contr&ocirc;le de 
-    l'appareil doit &ecirc;tre &eacute;teint pendant que AudeLA dialogue avec 
-    l'appareil. On peut manipuler l'appareil entre deux acquisitions quand AudeLA 
-    n'est pas en train de dialoguer avec l'appareil.</font></p>
+    pose et est int&eacute;gr&eacute;e dans AudeLA.</p>
+  <p>&nbsp;</p>
 </blockquote>
+<h1>Manuel d'utilisation </h1>
+<p>Avant la premi&egrave;re utilisation avec AudeLA et WINDOWS, il est n&eacute;cessaire 
+  d'installer le driver &quot;libusb-win32&quot; : </p>
+<blockquote> 
+  <p> T&eacute;l&eacute;charger libusb-win32-filter-bin-0.1.10.1.exe disponible 
+    sur site http://libusb-win32.sourceforge.net , </p>
+  <p>Lien direct : <br>
+    http://downloads.sourceforge.net/libusb-win32/libusb-win32-filter-bin-0.1.10.1.exe<br>
+  </p>
+  <p>Puis installer libusb-win32 en ex&eacute;cutant ce fichier avec les options 
+    par d&eacute;faut.</p>
+  <p>Enfin lancer AudeLA et connecter l'appareil num&eacute;rique avec le panneau 
+    de configuration &quot;APN&quot;</p>
+  <p>Remarque : L'installation de &quot;libusb&quot; avec LINUX n'est pas n&eacute;cessaire 
+    car cette librairie est maintenant fournie en standard dans les distributions 
+    LINUX.</p>
+  <p><font color="#990000">Remarque importante : L'&eacute;cran de contr&ocirc;le 
+    de l'appareil doit &ecirc;tre &eacute;teint quand AudeLA envoie des commandes 
+    &agrave; l'appareil. </font></p>
+  <p>&nbsp;</p>
+</blockquote>
+<h1>Manuel de programmation</h1>
 <h2>Commande de cr&eacute;ation d'une cam&eacute;ra dslr</h2>
 <blockquote> 
   <blockquote> 
@@ -321,22 +323,6 @@ confVisu::autovisu 1
     la valeur courante.</p>
   <p>Exemple d'utilisation : Voir ci-dessus.</p>
 </blockquote>
-<p>&nbsp;</p>
-<h1><b>Installation du patch LIBGPHOTO2 v2.1.6d</b></h1>
-<h3>WINDOWS </h3>
-<p>Le patch est d&eacute;j&agrave; pris en compte dans la version de LIBGPHOTO2 
-  livr&eacute;e avec AudeLA pour Windows.</p>
-<p>Il faut installer <b>&quot;libusb-win32&quot;</b> pour utiliser LIBGPHOTO2 
-  avec WINDOWS (voir le fichier readme.txt).</p>
-<h3><b></b>LINUX</h3>
-<p></p>
-<p>Lors de l'installation de LIBGPHOTO2, il faut remplacer les fichiers *.c et 
-  *.h de LIBGPHOTO2 par ceux founis avec AudeLA dans le r&eacute;pertoire audela/src/external/libgphoto2/src</p>
-<p>La copie des fichiers doit &ecirc;tre effectu&eacute;e apr&egrave;s avoir lanc&eacute; 
-  &quot;./configure&quot; et avant de lancer la compiltation &quot;make&quot; 
-  (voir le fichier readme.txt).</p>
-<p><b></b></p>
-<h3></h3>
 <p>&nbsp;</p>
 </body>
 
