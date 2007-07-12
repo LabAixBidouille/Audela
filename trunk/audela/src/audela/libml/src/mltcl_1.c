@@ -236,7 +236,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			while (feof(f_in1)==0) {
 				 if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
 					strcpy(lignes[n_in].texte,ligne);
-					lignes[n_in].comment=-12;
+					lignes[n_in].comment=12;
 					lignes[n_in].nouvelledate=-12;
 					if (strlen(ligne)>=3) {
 						if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
@@ -277,7 +277,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			while (feof(f_in2)==0) {
 				 if (fgets(ligne,sizeof(ligne),f_in2)!=NULL) {
 					strcpy(lignes2[n_in1].texte,ligne);
-					lignes2[n_in1].comment=-12;
+					lignes2[n_in1].comment=12;
 					if (strlen(ligne)>=3) {
 						if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
 							lignes2[n_in1].comment=0;
@@ -403,8 +403,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 		while (feof(f_in1)==0) {
 			if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
-				lignes2[n_in1].comment=-12;
-				lignes2[n_in1].kobject=-12;
+				lignes2[n_in1].comment=12;
+				lignes2[n_in1].kobject=12;
 				if (n_in1==0) {
 					strcpy(lignes2[n_in1].texte,ligne);
 					for (k=100;k<130;k++){
@@ -426,11 +426,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				}*/
 				if (strlen(ligne)>=3) {
 					if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
-						lignes2[n_in1].comment=1;
+						//lignes2[n_in1].comment=1;
+						lignes2[n_in1].comment=0;
 						kimage2++;
 					}
-				}
-				if (lignes2[n_in1].comment==1) {
+				}//	if (lignes2[n_in1].comment==1) {
+				if (lignes2[n_in1].comment==0) {
 					k1=146 ; k2=156 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes2[n_in1].ident,s);
 					result= strlen(lignes2[n_in1].ident);
@@ -627,8 +628,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			fprintf(f_in1,"%s",lignes2[0].texte);
 			fprintf(f_in1,"%s",lignes2[1].texte);
 			fprintf(f_in1,"%s",lignes2[2].texte);
-			for (k=3;k<n_in1;k++) {
-				if (lignes2[k].comment==1){
+			for (k=3;k<n_in1;k++) {//if (lignes2[k].comment==1){
+				if (lignes2[k].comment==0){
 					if (lignes2[k].kobject!=0) {
 						fprintf(f_in1,"%s %09.5f %07.3f %s\n",lignes2[k].texte,lignes2[k].distance,lignes2[k].angle,lignes2[k].ident);
 					} else {
