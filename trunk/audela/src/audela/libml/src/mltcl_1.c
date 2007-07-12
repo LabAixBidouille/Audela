@@ -40,25 +40,26 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 "C:/Program Files/Apache Group/Apache2/htdocs/ros/geostat/bdd_20060927.txt" */
 
 {
-	int result,retour,diffjour,n_in,n_in1,kimage,nimages,kimage2,nimages2,k,k1,k2,k3,date,temp,nsat;
-	int kmin,kmini,problemetelechargement,pareil;
+	int result,retour,n_in,n_in1,kimage,nimages,kimage2,nimages2,k,k1,k2,k3,k4,date,temp,nsat;
+	int kmin,kmini,pareil;	
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
 	char s[1000],ligne[1000],home[35],im[40],lign[1000],toto[1000],valid[4];
-	char satelname[26],noradname[10],cosparname[10];
-	FILETIME ftCreate, ftAccess, ftWrite;
-	SYSTEMTIME stUTC, stCreateLocal,stWriteLocal;
-	FILE *f_in1, *f_in2;
-	char lpszCreate[20];
-	char lpszWrite[20];
-	char tempspc[20];
-	SYSTEMTIME St;
-	HANDLE hFile ;
+	char satelname[26],noradname[10],cosparname[10];	
+	FILE *f_in1, *f_in2;	
 	struct_ligsat *lignes,*lignes2;
 	char *list, *distang;
 	Tcl_Obj *list2, *list3;
 	int argcc,argc2;
 	char **argvv,**argv2;
+	
+
+	//int problemetelechargement,diffjour;
+	//char lpszWrite[20],tempspc[20],lpszCreate[20];
+	//FILETIME ftCreate, ftAccess, ftWrite;
+	//SYSTEMTIME stUTC, stCreateLocal,stWriteLocal;
+	//SYSTEMTIME St;
+	//HANDLE hFile ;
 
 	if(argc<2) {
       sprintf(s,"Usage: %s file_0 file_ident ?path_geo? ?path_http? ?url?", argv[0]);
@@ -81,37 +82,37 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if(argc == 4) {
 			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
 		}
-		problemetelechargement=0;
+		//problemetelechargement=0;
 		/* récupère la date et heure des modifs du fichier */
-		hFile = CreateFile(argv[3],0,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
-		retour = GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
+		//hFile = CreateFile(argv[3],0,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
+		//retour = GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite);
 
 		/* Converti le temps de creation en temps local */
-		FileTimeToSystemTime(&ftCreate, &stUTC);
-		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);
+		//FileTimeToSystemTime(&ftCreate, &stUTC);
+		//SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stCreateLocal);
 
 		/* Converti le temps dern.modif en temps local. */
-		FileTimeToSystemTime(&ftWrite, &stUTC);
-		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal);
+		//FileTimeToSystemTime(&ftWrite, &stUTC);
+		//SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stWriteLocal);
 
-		wsprintf(lpszCreate, TEXT("%02d/%02d/%d %02d:%02d"),
-		stCreateLocal.wMonth, stCreateLocal.wDay, stCreateLocal.wYear,
-        stCreateLocal.wHour, stCreateLocal.wMinute);
+		//wsprintf(lpszCreate, TEXT("%02d/%02d/%d %02d:%02d"),
+		//stCreateLocal.wMonth, stCreateLocal.wDay, stCreateLocal.wYear,
+        //stCreateLocal.wHour, stCreateLocal.wMinute);
 
-		wsprintf(lpszWrite, TEXT("%02d/%02d/%d %02d:%02d"),
-        stWriteLocal.wMonth, stWriteLocal.wDay, stWriteLocal.wYear,
-        stWriteLocal.wHour, stWriteLocal.wMinute);
+		//wsprintf(lpszWrite, TEXT("%02d/%02d/%d %02d:%02d"),
+        //stWriteLocal.wMonth, stWriteLocal.wDay, stWriteLocal.wYear,
+        //stWriteLocal.wHour, stWriteLocal.wMinute);
 
-		GetLocalTime(&St);
-		wsprintf(tempspc, TEXT("%02d/%02d/%d %02d:%02d"),
-		St.wMonth, St.wDay, St.wYear,
-        St.wHour, St.wMinute);
+		//GetLocalTime(&St);
+		//wsprintf(tempspc, TEXT("%02d/%02d/%d %02d:%02d"),
+		//St.wMonth, St.wDay, St.wYear,
+        //St.wHour, St.wMinute);
 
 		/* --- vérifie si le fichier est vieux d'un jour, si oui il y a un pb lors du telechargement --- */
-		diffjour = ml_differencejour(stWriteLocal.wDay,stWriteLocal.wMonth,stWriteLocal.wYear,St.wDay,St.wMonth,St.wYear);
-		if ( diffjour>1 ){
-			problemetelechargement = 1;
-		}
+		//diffjour = ml_differencejour(stWriteLocal.wDay,stWriteLocal.wMonth,stWriteLocal.wYear,St.wDay,St.wMonth,St.wYear);
+		//if ( diffjour>1 ){
+		//	problemetelechargement = 1;
+		//}
 
 		/* --- on fabrique un fichier_tle2=geo.txt derriere lequel on ajoute les TLE personels --- */
 		ml_file_copy ("./geo.txt","./tle2.txt");
@@ -338,11 +339,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						/* on a une nouvelle ligne*/
 						/*il faut copier lignes[k1].ligne dans lignes[nimages2+1]*/
 						if (temp == 0) {
-							if (k==3) {
-								fprintf(f_in1,"%s",lignes[k].texte);
-							} else {
+							//if (k==3) {
+							//	fprintf(f_in1,"%s",lignes[k].texte);
+							//	nb_ligne = ftell(f_in1);
+						//	} else {
 								fprintf(f_in1,"\n%s",lignes[k].texte);
-							}
+							//}
 						} else {
 
 							if ((lignes[k].nouvelledate != lignes[temp].nouvelledate)&&(temp!=0)) {
@@ -465,10 +467,28 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 							ra0=lignes2[n_in1].ra;
 							dec0=lignes2[n_in1].dec;
 							for (k=0;k<argcc;k++) {
-								k1=63 ; k2=81 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=argvv[k][k3]; } ; s[k3-k1]='\0';
+								//recherche de ra dans la tle
+								for (k1=60;k1<70;k1++){
+									if (argvv[k][k1]== '}') {
+										break;
+									}
+								}
+								for (k2=76;k2<89;k2++){
+									if (argvv[k][k2]== ' ') {
+										break;
+									}
+								}
+								k1= k1+3; for (k3=k1;k3<k2;k3++) { s[k3-k1]=argvv[k][k3]; } ; s[k3-k1]='\0';
 								ra=atof(s);
-								k1= 83 ; k2= 101 ; for (k3=k1;k3<=k2;k3++) { s[k3-k1]=argvv[k][k3]; } ; s[k3-k1]='\0';
+								//recherche de dec dans la tle
+								for (k1=96;k1<111;k1++){
+									if (argvv[k][k1]== ' ') {
+										break;
+									}
+								}	
+								k4=k2+1; for (k3=k4;k3<k1;k3++) { s[k3-k4]=argvv[k][k3]; } ; s[k3-k4]='\0';
 								dec=atof(s);
+
 								/* calcul la distance et angle entre les deux coordonnées */
 								sprintf(lign,"mc_anglesep {%14.12f %14.12f %14.12f %14.12f}",ra0,dec0,ra,dec);
 								result = Tcl_Eval(interp,lign);
@@ -479,6 +499,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 									code = Tcl_SplitList(interp,distang,&argc2,&argv2);
 								}
 								k2=0;
+								k3=0;
 								for (k1=0;k1<40;k1++){
 									if (distang[k1]== ' ') {
 										k2=k1;
