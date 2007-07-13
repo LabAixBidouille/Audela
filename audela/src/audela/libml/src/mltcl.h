@@ -72,7 +72,7 @@ typedef struct {
    double mag;
    double distance;
    double angle;
-   char ident[60];
+   char ident[21];
    int kimage;
    int kimage1;
    int kimage2;
