@@ -44,7 +44,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int kmin,kmini,pareil;	
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
-	char s[1000],ligne[1000],home[35],im[40],lign[1000],toto[1000],valid[4];
+	char s[220],ligne[220],home[35],im[40],lign[220],toto[100],valid[4];
 	char satelname[26],noradname[10],cosparname[10];	
 	FILE *f_in1, *f_in2;	
 	struct_ligsat *lignes,*lignes2;
@@ -403,11 +403,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 		while (feof(f_in1)==0) {
 			if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
+			//if (fgets(ligne,212,f_in1)!=NULL) {
 				lignes2[n_in1].comment=12;
 				lignes2[n_in1].kobject=12;
 				if (n_in1==0) {
 					strcpy(lignes2[n_in1].texte,ligne);
-					for (k=100;k<130;k++){
+					for (k=107;k<130;k++){
 						/* on recupère les coordonnées GPS du lieu*/
 						if ((ligne[k]=='G')&&(ligne[k+1]=='P')&&(ligne[k+2]=='S')) {
 							for (k2=k+4;k2<145;k2++){
@@ -421,9 +422,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						}
 					}
 				}
-				/*if (n_in1==1){
-					strcpy(lignes2[n_in1].texte,ligne);
-				}*/
 				if (strlen(ligne)>=3) {
 					if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
 						//lignes2[n_in1].comment=1;
@@ -501,14 +499,14 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								}
 								k2=0;
 								k3=0;
-								for (k1=0;k1<40;k1++){
+								for (k1=0;k1<20;k1++){
 									if (distang[k1]== ' ') {
 										k2=k1;
 										break;
 									}
 								}
 
-								k1= 0; for (k3=k1;k3<=12;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
+								k1= 0; for (k3=k1;k3<k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
 								dist=atof(s);
 								k1= k2+1; for (k3=k1;k3<=k2+13;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
 								angl=atof(s);
@@ -573,7 +571,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 								k=strlen(noradname);
 								k1=9-k;
-
 								if (k1>0) {
 									for (k2=0;k2<=k1;k2++) {
 										strcat(noradname," ");
@@ -581,7 +578,14 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								}
 								strcpy(lignes2[n_in1].ident,"");
 								strcat(lignes2[n_in1].ident,noradname);
+								
 								k=strlen(cosparname);
+								k1=11-k;
+								if (k1>0) {
+									for (k2=0;k2<=k1;k2++) {
+										strcat(cosparname," ");
+									}
+								}
 								strcat(lignes2[n_in1].ident,cosparname);
 								lignes2[n_in1].distance = distmin;
 								lignes2[n_in1].angle = anglmin;
@@ -628,7 +632,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			fprintf(f_in1,"%s",lignes2[0].texte);
 			fprintf(f_in1,"%s",lignes2[1].texte);
 			fprintf(f_in1,"%s",lignes2[2].texte);
-			for (k=3;k<n_in1;k++) {//if (lignes2[k].comment==1){
+			if (lignes2[3].texte[0]!='I') {
+				k1=4;
+			} else {
+				k1=3;
+			}
+			for (k=k1;k<n_in1;k++) {
 				if (lignes2[k].comment==0){
 					if (lignes2[k].kobject!=0) {
 						fprintf(f_in1,"%s %09.5f %07.3f %s\n",lignes2[k].texte,lignes2[k].distance,lignes2[k].angle,lignes2[k].ident);
