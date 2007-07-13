@@ -2,7 +2,7 @@
 # Fichier : obj_lune_1.tcl
 # Description : Programme de calcul (ephemerides, etc.)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_1.tcl,v 1.3 2007-01-20 10:09:45 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_1.tcl,v 1.4 2007-07-13 20:25:39 robertdelmas Exp $
 #
 
 namespace eval obj_Lune {
@@ -49,9 +49,12 @@ namespace eval obj_Lune {
          set res [lonlat2radec moon $lon $lat $date $audace(posobs,observateur,gps)]
          set obj_lune(ad_site) [mc_angle2hms [lindex $res 0] 360 zero 2 auto string]
          set obj_lune(dec_site) [mc_angle2dms [lindex $res 1] 90 zero 2 + string]
-         if { [info exists obj_lune(long_selene)] } {
-            $frmm(Obj_Lune1).frame17.lab6a configure -text "$obj_lune(ad_site)"
-            $frmm(Obj_Lune1).frame18.lab7a configure -text "$obj_lune(dec_site)"
+         #--- Verifie l'existance du widget
+         if { [ winfo exists $frmm(Obj_Lune1) ] } {
+            if { [ info exists obj_lune(long_selene) ] } {
+               $frmm(Obj_Lune1).frame17.lab6a configure -text "$obj_lune(ad_site)"
+               $frmm(Obj_Lune1).frame18.lab7a configure -text "$obj_lune(dec_site)"
+            }
          }
          #--- Affichage de la hauteur et de l'azimut
          set obj_lune(hauteur) "[format "%05.2f$caption(obj_lune1,degre)" [lindex [lindex $obj_lune(ephemerides) 0] 10] ]"

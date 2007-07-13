@@ -2,7 +2,7 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_2.tcl,v 1.6 2007-04-06 16:09:36 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_2.tcl,v 1.7 2007-07-13 20:26:03 robertdelmas Exp $
 #
 
 namespace eval obj_Lune {
@@ -475,29 +475,32 @@ namespace eval obj_Lune {
       set demi_rev_syno [expr 29.53058868/2.0]
       #--- Calcul du segment definissant le croissant
       set EC [expr (1-2*$obj_lune(fraction_illu))*$EB]
-      #--- Cas particulier de la Nouvelle Lune
-      if { $obj_lune(fraction_illu) == "0.0" } {
-         $frmm(Obj_Lune2).frame23.image2a create oval 12 12 287 287 -outline $color(red) -tags cadres -width 4.0
-      #--- Cas particulier de la Pleine Lune
-      } elseif { $obj_lune(fraction_illu) == "1.0" } {
-         $frmm(Obj_Lune2).frame23.image2a create oval 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0
-      } else {
-         #--- Traitement du croissant ascendant ou descendant
-         #--- Croissant ascendant
-         if { $obj_lune(age_lune) < $demi_rev_syno } {
-            $frmm(Obj_Lune2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent -180 -style arc
-            if { $obj_lune(fraction_illu) < 0.5 } {
-               $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
-            } else {
-               $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
-            }
-         #--- Croissant descendant
+      #--- Verifie l'existance du widget
+      if { [ winfo exists $frmm(Obj_Lune2) ] } {
+         #--- Cas particulier de la Nouvelle Lune
+         if { $obj_lune(fraction_illu) == "0.0" } {
+            $frmm(Obj_Lune2).frame23.image2a create oval 12 12 287 287 -outline $color(red) -tags cadres -width 4.0
+         #--- Cas particulier de la Pleine Lune
+         } elseif { $obj_lune(fraction_illu) == "1.0" } {
+            $frmm(Obj_Lune2).frame23.image2a create oval 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0
          } else {
-            $frmm(Obj_Lune2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent 180 -style arc
-            if { $obj_lune(fraction_illu) > 0.5 } {
-               $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
+            #--- Traitement du croissant ascendant ou descendant
+            #--- Croissant ascendant
+            if { $obj_lune(age_lune) < $demi_rev_syno } {
+               $frmm(Obj_Lune2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent -180 -style arc
+               if { $obj_lune(fraction_illu) < 0.5 } {
+                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
+               } else {
+                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
+               }
+            #--- Croissant descendant
             } else {
-               $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
+               $frmm(Obj_Lune2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent 180 -style arc
+               if { $obj_lune(fraction_illu) > 0.5 } {
+                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
+               } else {
+                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
+               }
             }
          }
       }
