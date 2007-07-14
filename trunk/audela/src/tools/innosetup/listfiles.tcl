@@ -42,9 +42,8 @@ set version 1.4.0
                #   append result " "
                #}
                regsub -all / "$thisfile" \\ name1
-               regsub ${base0} "$dirname" "" temp
-               regsub -all / "$temp" \\ name2
-               set name2 "{app}\\$name2"
+               regsub -all ${base0} "$thisfile" "\{app\}/" name2
+               regsub -all / "[ file dirname $name2 ]" \\ name2
                if {[string range $shortname 0 1]==".#"} {
                   continue
                }
