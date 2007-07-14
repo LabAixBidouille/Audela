@@ -9,115 +9,94 @@
 
 set version 1.4.0
 
-   proc analdir { base } {
-      global tab result resultfile f base0
-      set listfiles ""
-      set a [catch {set listfiles [glob ${base}/*]} msg]
-      if {$a==0} {
-         # --- tri des fichiers dans l'ordre chrono decroissant
-         set listdatefiles ""
-         foreach thisfile $listfiles {
-            set a [file isdirectory $thisfile]
-            if {$a==0} {
-               set datename [file mtime $thisfile]
-               lappend listdatefiles [list $datename $thisfile]
-            }
+proc analdir { base } {
+   global tab result resultfile f base0
+   set listfiles ""
+   set a [catch {set listfiles [glob ${base}/*]} msg]
+   if {$a==0} {
+      # --- tri des fichiers dans l'ordre chrono decroissant
+      set listdatefiles ""
+      foreach thisfile $listfiles {
+         set a [file isdirectory $thisfile]
+         if {$a==0} {
+            set datename [file mtime $thisfile]
+            lappend listdatefiles [list $datename $thisfile]
          }
-         set listdatefiles [lsort -decreasing $listdatefiles]
-         # --- affiche les fichiers
-         foreach thisdatefile $listdatefiles {
-            set thisfile [lindex $thisdatefile 1]
-            set a [file isdirectory $thisfile]
-            if {$a==0} {
-               set shortname [file tail "$thisfile"]
-               set dirname [file dirname "$thisfile"]
-               set sizename [expr 1+int([file size "$thisfile"]/1000)]
-               set datename [file mtime "$thisfile"]
-               if {$datename==-1} {
-                  set datename 0000-00-00T00:00:00
-               } else {
-                  set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
-               }
-               #for {set k 0} {$k<$tab} {incr k} {
-               #   append result " "
-               #}
-               regsub -all / "$thisfile" \\ name1
-               regsub -all ${base0} "$thisfile" "\{app\}/" name2
-               regsub -all / "[ file dirname $name2 ]" \\ name2
-               if {[string range $shortname 0 1]==".#"} {
-                  continue
-               }
-               if {$shortname=="modifications audela-1.4.0-beta1.xls"} {
-                  continue
-               }
-               if {$shortname=="PortTalk.sys"} {
-                  append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
-               }
-               set extension [file extension "$thisfile"]
-               if {($extension==".vxd")||($extension==".VXD")} {
-                  set name2 "{sys}"
-               }
-               if {($extension==".sys")} {
-                  set name2 "{sys}\\drivers"
-               }
+      }
+      set listdatefiles [lsort -decreasing $listdatefiles]
+      # --- affiche les fichiers
+      foreach thisdatefile $listdatefiles {
+         set thisfile [lindex $thisdatefile 1]
+         set a [file isdirectory $thisfile]
+         if {$a==0} {
+            set shortname [file tail "$thisfile"]
+            set dirname [file dirname "$thisfile"]
+            set sizename [expr 1+int([file size "$thisfile"]/1000)]
+            set datename [file mtime "$thisfile"]
+            if {$datename==-1} {
+               set datename 0000-00-00T00:00:00
+            } else {
+               set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
+            }
+            
+            # Formattage du nom du fichier source et repertoire destination pour ISS
+            regsub -all / "$thisfile" \\ name1
+            regsub -all ${base0} "$thisfile" "\{app\}/" name2
+            regsub -all / "[ file dirname $name2 ]" \\ name2
+            
+            # Traitement des cas particuliers
+            if {[string range $shortname 0 1]==".#"} {
+               continue
+            }
+            if {$shortname=="modifications audela-1.4.0-beta1.xls"} {
+               continue
+            }
+            if {$shortname=="PortTalk.sys"} {
                append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
-               #set a [string length $shortname]
-               #set a [expr 20-$a]
-               #if {$a<0} {
-               #   set a 0
-               #}
-               #for {set k 0} {$k<$a} {incr k} {
-               #   append result " "
-               #}
-               #append result "$datename ($sizename Ko)\n"
             }
+            set extension [file extension "$thisfile"]
+            if {($extension==".vxd")||($extension==".VXD")} {
+               set name2 "{sys}"
+            }
+            if {($extension==".sys")} {
+               set name2 "{sys}\\drivers"
+            }
+            append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
          }
-         set f [open $resultfile a]
-         puts -nonewline $f "$result"
-         close $f
-         set result ""
-         foreach thisfile $listfiles {
-            set a [file isdirectory $thisfile]
-            if {$a==1} {
-               incr tab 1
-               set shortname [file tail $thisfile]
-               set datename [file mtime $thisfile]
-               if {$datename==-1} {
-                  set datename 0000-00-00T00:00:00
-               } else {
-                  set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
-               }
-               #append result "\n"
-               #for {set k 0} {$k<$tab} {incr k} {
-               #   append result " "
-               #}
-               #append result "Directory of $thisfile\n"
-				#analdir $thisfile
+      }
+      set f [open $resultfile a]
+      puts -nonewline $f "$result"
+      close $f
+      set result ""
+      foreach thisfile $listfiles {
+         set a [file isdirectory $thisfile]
+         if {$a==1} {
+            incr tab 1
+            set shortname [file tail $thisfile]
+            set datename [file mtime $thisfile]
+            if {$datename==-1} {
+               set datename 0000-00-00T00:00:00
+            } else {
+               set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
+            }
 				if {([file tail $thisfile] != "CVS") && ([file tail $thisfile] != "src") && ([file tail $thisfile] != "dev") && ([file tail $thisfile] != "ros")} {
 					analdir $thisfile
 				}
-               #incr tab -1
-            }
          }
-         #set f [open $resultfile a]
-         #puts -nonewline $f "$result"
-         #close $f
-         #set result ""
       }
    }
+}
 
-   #::console::affiche_resultat "[glob [file dirname [info script]]/../../../* ]\n"
-      #set base c:/d/audela-${version}/audela
-      set base "[file dirname [info script]]/../../../"
-      global tab result resultfile f base0
-      set base0 "$base"
-      set tab 0
-      if {$base=="."} {
-         set base [pwd]
-      }
-      file delete -force "${base}/bin/audela.log"
-      file delete _force "${base}/bin/audace.txt"
-      set resultfile "${base}/src/tools/innosetup/audela-${version}.iss"
+set base "[file dirname [info script]]/../../../"
+global tab result resultfile f base0
+set base0 "$base"
+set tab 0
+if {$base=="."} {
+   set base [pwd]
+}
+file delete -force "${base}/bin/audela.log"
+file delete _force "${base}/bin/audace.txt"
+set resultfile "${base}/src/tools/innosetup/audela-${version}.iss"
 
 set result    "; Script generated by the Inno Setup Script Wizard.\n"
 append result "; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!\n"
@@ -142,11 +121,11 @@ append result "Name: \"desktopicon\"; Description: \"Create a &desktop icon\"; G
 append result "\n"
 append result "\[Files\]\n"
 
-      set f [open $resultfile w]
-      puts -nonewline $f "$result"
-      close $f
-      set result ""
-      analdir $base
+set f [open $resultfile w]
+puts -nonewline $f "$result"
+close $f
+set result ""
+analdir $base
 
 set result    "\n"
 append result "\[Icons\]\n"
@@ -156,6 +135,6 @@ append result "\n"
 append result "\[Run\]\n"
 append result "Filename: \"{app}\\bin\\audela.exe\"; WorkingDir: \"{app}\\bin\" ; Description: \"Launch AudeLA\"; Flags: nowait postinstall skipifsilent\n"
 
-      set f [open $resultfile a]
-      puts -nonewline $f "$result"
-      close $f
+set f [open $resultfile a]
+puts -nonewline $f "$result"
+close $f
