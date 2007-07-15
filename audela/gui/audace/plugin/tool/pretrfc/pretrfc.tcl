@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.12 2007-05-29 20:54:30 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.13 2007-07-15 12:05:12 denismarchais Exp $
 #
 
 #============================================================
@@ -496,9 +496,9 @@ namespace eval ::pretraitfc {
       if {$conf_pt_fc(medFiltree) == 1} {
          Message consolog $caption(pretrfc,filtrage)
          set taille $conf_pt_fc(filtrage)
-         set instr "ttscript2 \"IMA/SERIES \"$audace(rep_images)\" \"$conf_pt_fc(nmPrechRes)\" . . \"$ext\" \
+         set instr "ttscript2 \{IMA/SERIES \"$audace(rep_images)\" \"$conf_pt_fc(nmPrechRes)\" . . \"$ext\" \
             \"$audace(rep_images)\" \"$conf_pt_fc(nmPrechRes)\" . \"$ext\" FILTER threshold=0 type_threshold=0 \
-            kernel_width=$taille kernel_type=fb kernel_coef=0 nullpixel=-5000 \""
+            kernel_width=$taille kernel_type=fb kernel_coef=0 nullpixel=-5000\}"
          Message consolog $instr
          Message consolog "\n"
          eval $instr
