@@ -5,10 +5,14 @@
 #     par Guillaume Spitzer
 #
 # Créer    en  Aout 2005
+#
 # Modifier en Décembre 2005
 #   - Ajout d'une fenetre de dialogue
 #   - Ajout d'un fichier log des objets non téléchargés
 #   - Possibilité de charger/enregistrer des fichiers de paramètres  
+#
+# Modifier en Juillet 2007
+#   - Ajout d'une listebox pour selectionné le catalogue de survey.
 #
 #########################################################################
 
@@ -115,6 +119,19 @@ proc Charge_Objet_SIMBAD {objet} {
 
   # Format de la ligne de la 2eme requete html :
   # http://stdatu.stsci.edu/cgi-bin/dss_search?v=poss2ukstu&r=16+41+41.44&d=%2B36+27+36.9&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
+  # Incident du 13/07/2007 :
+  # Origine :
+  #   Plantage à cause d'un changement du nom de catalogue codé en dur dans le programme
+  # Résolution :
+  # Ajout d'une boite de dialogue permettant le choix du catalogue parmis :
+  #  <option value="poss2ukstu_red" selected>	POSS2/UKSTU Red</option>
+  #  <option value="poss2ukstu_blue" >		POSS2/UKSTU Blue</option>
+  #  <option value="poss2ukstu_ir" >		POSS2/UKSTU IR</option>
+  #  <option value="poss1_red" >		POSS1 Red</option>
+  #  <option value="poss1_blue" >		POSS1 Blue</option>
+  #  <option value="quickv" >			Quick-V</option>
+  #  <option value="phase2_gsc2" >		HST Phase 2 (GSC2)</option>
+  #  <option value="phase2_gsc1" >		HST Phase 2 (GSC1)</option>
 
   # URL de la requète CGI 2
   set BASE_URL http://stdatu.stsci.edu/cgi-bin/dss_search/
@@ -123,14 +140,29 @@ proc Charge_Objet_SIMBAD {objet} {
   # Ici, plusieurs paramètres composent la requète CGI donc le paramètre de ::http::formatQuery
   # comporte plusieurs couple champs - valeur_du_champs
   # Ici, les champs sont : v, r, d, e, h, w, f, c, fov, v3
-  # v=poss2ukstu&r=00+31+45.00&d=-05+09+11.0&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
-  #set query [::http::formatQuery v poss2ukstu r 00+31+45.00 d -05+09+11.0 e J2000 h 15.0 w 15.0 f fits c none fov NONE v3 ""]  
+  # v=poss2ukstu_red&r=00+31+45.00&d=-05+09+11.0&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
+  #set query [::http::formatQuery v poss2ukstu_red r 00+31+45.00 d -05+09+11.0 e J2000 h 15.0 w 15.0 f fits c none fov NONE v3 ""]  
   if { [catch {set a $ra}] } { set ra "" }
   if { [catch {set a $dec}] } { set dec "" }
 
   if { ($ra != "") && ($dec != "") } {
 
-    set query [::http::formatQuery v poss2ukstu r $ra d $dec e J2000 h $param(hauteur) w $param(largeur) f fits c none fov NONE v3 ""]
+    set catalogue [.pre.lb.lb1 get [.pre.lb.lb1 curselection]]
+    
+    switch -exact -- $catalogue {
+    	"POSS2/UKSTU Red" { set catal poss2ukstu_red }
+    	"POSS2/UKSTU Blue" { set catal poss2ukstu_blue } 
+    	"POSS2/UKSTU IR" { set catal poss2ukstu_ir } 
+    	"POSS1 Red" { set catal poss1_red } 
+    	"POSS1 Blue" { set catal poss1_blue } 
+    	"Quick-V" { set catal quickv } 
+    	"HST Phase 2 (GSC2)" { set catal phase2_gsc2 } 
+    	"HST Phase 2 (GSC1)" { set catal phase2_gsc1 }
+    	default { set catal poss2ukstu_red }
+    }
+    
+   
+    set query [::http::formatQuery v $catal r $ra d $dec e J2000 h $param(hauteur) w $param(largeur) f fits c none fov NONE v3 ""]
 
     # Lance la requete 2
     if { $param(proxy) == "yes" } {
@@ -138,6 +170,7 @@ proc Charge_Objet_SIMBAD {objet} {
     } else {
       set token2 [::http::geturl ${BASE_URL} -query $query]
     }
+
 
     # Récupération dans $html de l'image proprement dite.
     set html  [::http::data $token2]
@@ -430,6 +463,44 @@ pack configure .pre.f02 -side top -fill x
 
 label .pre.f02.l1
 pack configure .pre.f02.l1 -side left
+
+
+
+
+
+# Choix du catalogue dans lequel prendre l'image
+#frame .pre.frl borderwidth 5
+#pack configure .pre.frl -side top -fill x
+
+#listbox .pre.frl.lb -listvariable {{POSS2/UKSTU Red}{POSS2/UKSTU Blue}{POSS2/UKSTU IR}{POSS1 Red}{POSS1 Blue}{Quick-V}{HST Phase 2 (GSC2)}{HST Phase 2 (GSC1)}} -state normal -height 3
+#pack configure .pre.frl.lb -side left
+
+  #  <option value="poss2ukstu_red" selected>	POSS2/UKSTU Red</option>
+  #  <option value="poss2ukstu_blue" >		POSS2/UKSTU Blue</option>
+  #  <option value="poss2ukstu_ir" >		POSS2/UKSTU IR</option>
+  #  <option value="poss1_red" >		POSS1 Red</option>
+  #  <option value="poss1_blue" >		POSS1 Blue</option>
+  #  <option value="quickv" >			Quick-V</option>
+  #  <option value="phase2_gsc2" >		HST Phase 2 (GSC2)</option>
+  #  <option value="phase2_gsc1" >		HST Phase 2 (GSC1)</option>
+
+frame       .pre.lb -borderwidth 2 
+# -relief groove
+pack configure .pre.lb -side top -fill x
+listbox     .pre.lb.lb1 -width 25 -height 5 -borderwidth 2 -relief sunken -yscrollcommand [list .pre.lb.scrollbar set]
+pack        .pre.lb.lb1 -side left -anchor nw
+scrollbar   .pre.lb.scrollbar -orient vertical -command [list .pre.lb.lb1 yview]
+pack        .pre.lb.scrollbar -side left -fill y
+
+.pre.lb.lb1 insert end "POSS2/UKSTU Red"
+.pre.lb.lb1 insert end "POSS2/UKSTU Blue"
+.pre.lb.lb1 insert end "POSS2/UKSTU IR"
+.pre.lb.lb1 insert end "POSS1 Red"
+.pre.lb.lb1 insert end "POSS1 Blue"
+.pre.lb.lb1 insert end "Quick-V"
+.pre.lb.lb1 insert end "HST Phase 2 (GSC2)"
+.pre.lb.lb1 insert end "HST Phase 2 (GSC1)"
+
 
 # largeur image
 frame .pre.f1 -borderwidth 5
