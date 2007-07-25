@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.16 2007-07-25 21:09:08 michelpujol Exp $
+# Mise a jour $Id: guide.tcl,v 1.17 2007-07-25 21:28:39 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -303,7 +303,7 @@ namespace eval guide {
       set result "0"
 
       #--- Je mets en forme dec pour GUIDE
-      #--- Je remplace les unites d, m, s par \ï¿½ \' \"
+      #--- Je remplace les unites d, m, s par \° \' \"
       set dec [ string map { m "\'" s "\"" } $dec ]
 
      # console::disp "::guide::gotoObject $nom_objet, $ad, $dec, $zoom_objet, $avant_plan, \n"
