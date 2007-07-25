@@ -1,8 +1,8 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.3 2007-04-11 17:32:42 michelpujol Exp $
+# Mise a jour $Id: pkgIndex.tcl,v 1.4 2007-07-25 21:09:07 michelpujol Exp $
 #
 
-package ifneeded carteducielv2 1.0 [ list source [ file join $dir carteducielv2.tcl ] ]
+package ifneeded carteducielv2 1.1 [ list source [ file join $dir carteducielv2.tcl ] ]
 
