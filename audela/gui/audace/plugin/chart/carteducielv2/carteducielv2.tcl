@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.14 2007-07-25 21:09:07 michelpujol Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.15 2007-07-26 20:45:41 michelpujol Exp $
 #
 
 namespace eval carteducielv2 {
@@ -19,15 +19,9 @@ namespace eval carteducielv2 {
 proc ::carteducielv2::initPlugin { } {
    variable private
 
-   if { $::tcl_platform(os) == "Linux" } {
-      #--- Cartes du Ciel V2 ne fonctionne pas sous Linux
-      #--- Je retourne une chaine vide pour que ce driver n'apparaisse pas dans la fenetre de configuration
-      return ""
-   } else {
-      #--- Charge les variables d'environnement
-      initConf
-      set private(ready) 0
-   }
+   #--- Charge les variables d'environnement
+   initConf
+   set private(ready) 0
 }
 
 #------------------------------------------------------------
@@ -49,12 +43,7 @@ proc ::carteducielv2::getPluginProperty { propertyName } {
 #     retourne le type de plugin
 #------------------------------------------------------------
 proc ::carteducielv2::getPluginType { } {
-   if { [ info sharedlibextension] == ".dll" } {
-      return "chart"
-   } else {
-      #--- je retourne une chaine vide pour empecher l'utilisation sur Linux
-      return ""
-   }
+   return "chart"
 }
 
 #------------------------------------------------------------
