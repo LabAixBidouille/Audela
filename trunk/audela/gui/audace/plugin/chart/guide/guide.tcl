@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.17 2007-07-25 21:28:39 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.18 2007-07-26 20:45:59 michelpujol Exp $
 #
 
 namespace eval guide {
@@ -14,14 +14,8 @@ namespace eval guide {
    #     initialise le plugin
    #------------------------------------------------------------
    proc initPlugin { } {
-      if { $::tcl_platform(os) == "Linux" } {
-         #--- Guide ne fonctionne pas sous Linux
-         #--- Je retourne une chaine vide pour que ce driver n'apparaisse pas dans le fenetre de configuration
-         return ""
-      } else {
-         #--- Je charge les variables d'environnement
-         initConf
-      }
+      #--- Je charge les variables d'environnement
+      initConf
    }
 
    #------------------------------------------------------------
@@ -43,12 +37,7 @@ namespace eval guide {
    #     retourne le type de plugin
    #------------------------------------------------------------
    proc getPluginType { } {
-      if { [ info sharedlibextension] == ".dll" } {
-         return "chart"
-      } else {
-         #--- je retourne une chaine vide pour empecher l'utilisation sur Linux
-         return ""
-      }
+      return "chart"
    }
 
    #------------------------------------------------------------
