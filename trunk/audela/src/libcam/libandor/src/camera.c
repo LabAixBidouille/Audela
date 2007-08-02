@@ -319,6 +319,22 @@ void cam_start_exp(struct camprop *cam,char *amplionoff)
    y2=cam->y2+1;
    binx=cam->binx;
    biny=cam->biny;
+//rajout bug miroir avec focalisation
+   if (cam->mirrorv == 1) {
+      int tmp;
+      x1 = cam->nb_photox - ( x1 - 1 );
+      tmp = cam->nb_photox - ( x2 - 1 );
+      x2 = x1;
+      x1 = tmp;
+   }
+   if (cam->mirrorh == 1) {
+      int tmp;
+      y1 = cam->nb_photoy - ( y1 - 1);
+      tmp = cam->nb_photoy - ( y2 - 1);
+      y2 = y1;
+      y1 = tmp;
+   } 
+//fin rajout bug miroir avec focalisation
    cam->drv_status=SetImage(binx,biny,x1,x2,y1,y2);
    if(cam->drv_status!=DRV_SUCCESS) {
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
