@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.11 2007-08-03 07:59:41 alainklotz Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.12 2007-08-03 08:40:29 alainklotz Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1888,14 +1888,15 @@ proc modpoi_choose_beststar { { h0 0 } { dec0 80 } { date now } } {
    return $thestar
 }
 
-proc modpoi_computecoef { } {
+proc modpoi_computecoef { {fileinp ""} } {
    global audace modpoi
 
    #--- Ouvre la fenetre pour donner un nom au modele de pointage
    set err [catch {run_name_modpoi} msg]
    if {$err==1} {
-	   set modpoi(Filename) manual
+	   set modpoi(Filename) [file tail $fileinp]
    }
+
    #--- Analyse chaque ligne
    set vecY ""
    set matX ""
@@ -2177,7 +2178,13 @@ proc modpoi_recomputecoef { { fileinp "modpoi_inp.txt" } } {
          set modpoi(star$k,h_cal) $modpoi(star$k,ra_cal)
       }
       #--- Calcul du modele de pointage
-      set res [modpoi_computecoef]
+      set k [string last _ $fileinp]
+      if {$k>0} {
+         set fileinp2 [string range $fileinp 0 [expr $k-1]]
+      } else {
+         set fileinp2 manual
+      }
+      set res [modpoi_computecoef $fileinp2]
       set vec   [lindex $res 0]
       set chisq [lindex $res 1]
       set covar [lindex $res 2]
@@ -2212,7 +2219,13 @@ proc modpoi_recomputecoef { { fileinp "modpoi_inp.txt" } } {
             set modpoi(star$k,h_cal) $modpoi(star$k,ra_cal)
          }
          #--- Calcul du modele de pointage
-         set res [modpoi_computecoef]
+         set k [string last _ $fileinp]
+         if {$k>0} {
+            set fileinp2 [string range $fileinp 0 [expr $k-1]]
+         } else {
+            set fileinp2 manual
+         }
+         set res [modpoi_computecoef $fileinp2]
          set vec   [lindex $res 0]
          set chisq [lindex $res 1]
          set covar [lindex $res 2]
