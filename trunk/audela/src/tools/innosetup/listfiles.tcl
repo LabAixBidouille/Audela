@@ -38,14 +38,15 @@ proc analdir { base } {
             } else {
                set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
             }
-            
+
             # Formattage du nom du fichier source et repertoire destination pour ISS
             regsub -all / "$thisfile" \\ name1
             regsub -all ${base0} "$thisfile" "\{app\}/" name2
             regsub -all / "[ file dirname $name2 ]" \\ name2
-            
+
             # Traitement des cas particuliers
             if {[string range $shortname 0 1]==".#"} {
+	            catch {file delete -force -- "$thisfile"}
                continue
             }
             if {$shortname=="modifications audela-1.4.0-beta1.xls"} {
