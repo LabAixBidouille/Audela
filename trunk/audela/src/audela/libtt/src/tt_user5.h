@@ -27,8 +27,7 @@
 #define __TTUSER5H__
 
 /* --- autorized between 5001 and 5999 ---*/
-#define TT_IMASERIES_USER5_OFFSET_TOTO 5001
-
+#define TT_IMASERIES_USER5_TRAINEE     5001
 /* --- autorized between 5001 and 5999 ---*/
 #define TT_IMASTACK_USER5_TUTU 5001
 
