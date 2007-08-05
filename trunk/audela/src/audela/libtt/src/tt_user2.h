@@ -48,6 +48,8 @@ typedef struct {
    int m;
    double wavelengthmin;
    double wavelengthmax;
+   int xmin;
+   int xmax;
 } TT_USER2_IMA_SERIES;
 
 /* --- Ajout de parametres pour la classe ima/stack --- */
