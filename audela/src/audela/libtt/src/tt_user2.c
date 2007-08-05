@@ -65,6 +65,8 @@ int tt_user2_ima_series_builder2(TT_IMA_SERIES *pseries)
    pseries->user2.m =2;
    pseries->user2.wavelengthmin=3800;
    pseries->user2.wavelengthmax=7800;
+   pseries->user2.xmin=-1;
+   pseries->user2.xmax=-1;
    return(OK_DLL);
 }
 
@@ -95,6 +97,10 @@ int tt_user2_ima_series_builder3(char *mot,char *argu,TT_IMA_SERIES *pseries)
       pseries->user2.wavelengthmin=atof(argu);
    } else if (strcmp(mot,"WAVELENGTHMAX")==0) {
       pseries->user2.wavelengthmax=atof(argu);
+   } else if (strcmp(mot,"XMIN")==0) {
+      pseries->user2.xmin=atoi(argu);
+   } else if (strcmp(mot,"XMAX")==0) {
+      pseries->user2.xmax=atoi(argu);
    }
    return(OK_DLL);
 }
@@ -357,7 +363,7 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
    int i,j,k;
    double max,somme,norme;
    double v,w,s;
-   double vv[50]; 
+   double vv[50];
 
    char message[TT_MAXLIGNE];
    int taille,msg;
@@ -432,10 +438,10 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       /* La fonction de poids est rendue strictement positive et normalisée */
       s=0;
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          if (P[k]<0) P[k]=0;
          s=s+P[k];
-      }  
+      }
       k=0;
       for (j=lmin-1;j<lmax;j++,k++) {
          if (s==0) {
@@ -448,11 +454,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       /* Calcul de la norme */
       s=0;
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          s=s+P[k]*P[k];
-      }  
+      }
       norme=s;
- 
+
       /* Calcul du profil optimisé */
       k=0;
       for (j=lmin-1;j<lmax;j++,k++) {
@@ -481,12 +487,12 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       /* La fonction de poids est rendue strictement positive et normalisée*/
       s=0;
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          if (P[k]<0) P[k]=0;
          s=s+P[k];
-      }  
+      }
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          if (s==0) {
             P[k]=0.;
          } else {
@@ -497,11 +503,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       /* Calcul de la norme */
       s=0;
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          s=s+P[k]*P[k];
-      }  
+      }
       norme=s;
-   
+
       /* Calcul du profil optimisé */
       k=0;
       for (j=lmin-1;j<lmax;j++,k++) {
@@ -537,12 +543,12 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       /* La fonction de poids est rendue strictement positive et normalisée */
       s=0;
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          if (P[k]<0) P[k]=0;
          s=s+P[k];
-      }  
+      }
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          if (s==0) {
             P[k]=0.;
          } else {
@@ -553,11 +559,11 @@ int tt_ima_series_lopt(TT_IMA_SERIES *pseries)
       /* Calcul de la norme */
       s=0;
       k=0;
-      for (j=lmin-1;j<lmax;j++,k++) {      
+      for (j=lmin-1;j<lmax;j++,k++) {
          s=s+P[k]*P[k];
-      }  
+      }
       norme=s;
-   
+
       /* Calcul du profil optimisé */
       k=0;
       for (j=lmin-1;j<lmax;j++,k++) {
@@ -614,11 +620,11 @@ void free_intvector(int*v, long nl, long nh);
 /*******************************************************************************/
 /* Fonction smoothsg     (smooth Savitzky-Golay)                               */
 /* arguments possibles :                                                       */
-/*   NL : number of leftward  (past) data points     (default=16)              */                
-/*   NR : number of rightward (future) data points   (default=16)              */                
-/*   LD : order of the derivative desired (defaut=0 for smoothed function)     */                
-/*   M  : order of the smoothing polynomial usual values are m = 2 or m = 4    */   
-/*  example : buf2 imaseries SMOOTHSG "NR=16 NL=16 LD=0 M=2"                            */             
+/*   NL : number of leftward  (past) data points     (default=16)              */
+/*   NR : number of rightward (future) data points   (default=16)              */
+/*   LD : order of the derivative desired (defaut=0 for smoothed function)     */
+/*   M  : order of the smoothing polynomial usual values are m = 2 or m = 4    */
+/*  example : buf2 imaseries SMOOTHSG "NR=16 NL=16 LD=0 M=2"                            */
 /*******************************************************************************/
 int tt_ima_series_smoothsg(TT_IMA_SERIES *pseries)
 {
@@ -628,7 +634,7 @@ int tt_ima_series_smoothsg(TT_IMA_SERIES *pseries)
    int i,j, n, np;
    double *c;
    int *pindex;
-   
+
    /* --- intialisations ---*/
    p_in=pseries->p_in;
    p_out=pseries->p_out;
@@ -653,23 +659,23 @@ int tt_ima_series_smoothsg(TT_IMA_SERIES *pseries)
    pindex = intvector(1, np);
    pindex[1]=0;
    j=3;
-   for (i=2; i<=pseries->user2.nl+1; i++) 
+   for (i=2; i<=pseries->user2.nl+1; i++)
    {
       // index(2)=-1; index(3)=-2; index(4)=-3; index(5)=-4; index(6)=-5
       pindex[i]=i-j;
       j += 2;
    }
    j=2;
-   for (i=pseries->user2.nl+2; i<=np; i++) 
+   for (i=pseries->user2.nl+2; i<=np; i++)
    {
       // index(7)= 5; index(8)= 4; index(9)= 3; index(10)=2; index(11)=1
       pindex[i]=i-j;
       j += 2;
    }
-   
+
    //calculate Savitzky-Golay filter coefficients.
    savgol(c, np, pseries->user2.nl, pseries->user2.nr, pseries->user2.ld, pseries->user2.m);
-   
+
    for (i=0; i<n; i++) {
       // Apply filter to input data.
       p_out->p[i]=0.0;
@@ -681,10 +687,10 @@ int tt_ima_series_smoothsg(TT_IMA_SERIES *pseries)
          }
       }
    }
-   
-   free_vector(c,1,np);   
+
+   free_vector(c,1,np);
    free_intvector(pindex,1,np);
-   
+
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
    pseries->exptime_stack=pseries->exptime[index-1];
@@ -698,70 +704,70 @@ int tt_ima_series_smoothsg(TT_IMA_SERIES *pseries)
 
 
 
-int IMIN(int ia, int ib) 
+int IMIN(int ia, int ib)
 	{
-	if (ia<=ib) 
+	if (ia<=ib)
 		return ia;
-	else 
+	else
 		return ib;
 	}
 
 void savgol(double *c, int np, int nl, int nr, int ld, int m)  {
-/*------------------------------------------------------------------------------------------- 
- USES lubksb,ludcmp given below. 
- Returns in c(np), in wrap-around order (see reference) consistent with the argument respns 
- in routine convlv, a set of Savitzky-Golay filter coefficients. nl is the number of leftward 
- (past) data points used, while nr is the number of rightward (future) data points, making 
- the total number of data points used nl +nr+1. ld is the order of the derivative desired 
- (e.g., ld = 0 for smoothed function). m is the order of the smoothing polynomial, also 
- equal to the highest conserved moment; usual values are m = 2 or m = 4. 
+/*-------------------------------------------------------------------------------------------
+ USES lubksb,ludcmp given below.
+ Returns in c(np), in wrap-around order (see reference) consistent with the argument respns
+ in routine convlv, a set of Savitzky-Golay filter coefficients. nl is the number of leftward
+ (past) data points used, while nr is the number of rightward (future) data points, making
+ the total number of data points used nl +nr+1. ld is the order of the derivative desired
+ (e.g., ld = 0 for smoothed function). m is the order of the smoothing polynomial, also
+ equal to the highest conserved moment; usual values are m = 2 or m = 4.
    -------------------------------------------------------------------------------------------*/
    int imj,ipj,j,k,kk,mm;
    double d,fac,sum,**a,*b;
    int *indx;
-   
+
    if (np < nl+nr+1 || nl < 0 || nr < 0 || ld > m || nl+nr < m)
       nrerror("bad args in savgol");
-   
+
    indx= intvector(1,m+1);
    a=matrix(1,m+1,1,m+1);
    b=vector(1,m+1);
-   for (ipj=0;ipj<=(m << 1);ipj++) 
+   for (ipj=0;ipj<=(m << 1);ipj++)
    {//Set up the normal equations of the desired least-squares fit
-      sum=(ipj ? 0.0 : 1.0); 
-      for (k=1;k<=nr;k++) 
+      sum=(ipj ? 0.0 : 1.0);
+      for (k=1;k<=nr;k++)
          sum += pow((double)k,(double)ipj);
-      for (k=1;k<=nl;k++) 
+      for (k=1;k<=nl;k++)
          sum += pow((double)-k,(double)ipj);
       mm=IMIN(ipj,2*m-ipj);
       for (imj = -mm;imj<=mm;imj+=2)
          a[1+(ipj+imj)/2][1+(ipj-imj)/2]=sum;
    }
-   
+
    ludcmp(a,m+1,indx,&d); //Solve them: LU decomposition.
-   
-   for (j=1;j<=m+1;j++) 
+
+   for (j=1;j<=m+1;j++)
       b[j]=0.0;
-   
+
    b[ld+1]=1.0; //Right-hand side vector is unit vector, depending on which derivative we want.
-   
+
    lubksb(a,m+1,indx,b); //Get one row of the inverse matrix.
-   
-   for (kk=1;kk<=np;kk++) 
+
+   for (kk=1;kk<=np;kk++)
       c[kk]=0.0; //Zero the output array (it may be bigger than number of coefficients).
-   
-   for (k = -nl;k<=nr;k++) 
-   { 
-      sum=b[1];   //Each Savitzky-Golay coefficient is the dot product 
+
+   for (k = -nl;k<=nr;k++)
+   {
+      sum=b[1];   //Each Savitzky-Golay coefficient is the dot product
       //of powers of an integer with the inverse matrix row.
       fac=1.0;
-      for (mm=1;mm<=m;mm++) 
+      for (mm=1;mm<=m;mm++)
          sum += b[mm+1]*(fac *= k);
-      
+
       kk=((np-k) % np)+1; //Store in wrap-around order.
       c[kk]=sum;
    }
-   
+
    free_vector(b,1,m+1);
    free_matrix(a,1,m+1,1,m+1);
    free_intvector(indx,1,m+1);
@@ -782,63 +788,63 @@ void ludcmp(double **a, int n, int *indx, double *d)
    int i,imax,j,k;
    double big,dum,sum,temp;
    double *vv=vector(1,n);
-   *d=1.0; 
+   *d=1.0;
    imax = 0;
 
    for (i=1;i<=n;i++)
    {
       big=0.0;
       for (j=1;j<=n;j++)
-         if ((temp=fabs(a[i][j])) > big) 
+         if ((temp=fabs(a[i][j])) > big)
             big=temp;
-         if (big == 0.0) 
-            nrerror("allocation failure 1 in matrix()");	
-         vv[i]=1.0/big; 
+         if (big == 0.0)
+            nrerror("allocation failure 1 in matrix()");
+         vv[i]=1.0/big;
    }
-   for (j=1;j<=n;j++) 
-   { 
-      for (i=1;i<j;i++) 
-      { 
+   for (j=1;j<=n;j++)
+   {
+      for (i=1;i<j;i++)
+      {
          sum=a[i][j];
-         for (k=1;k<i;k++) 
+         for (k=1;k<i;k++)
             sum -= a[i][k]*a[k][j];
          a[i][j]=sum;
       }
-      big=0.0; 
-      for (i=j;i<=n;i++) 
-      { 
+      big=0.0;
+      for (i=j;i<=n;i++)
+      {
          sum=a[i][j];
          for (k=1;k<j;k++)
             sum -= a[i][k]*a[k][j];
          a[i][j]=sum;
-         if ( (dum=vv[i]*fabs(sum)) >= big) 
+         if ( (dum=vv[i]*fabs(sum)) >= big)
          {
             big=dum;
             imax=i;
          }
       }
-      if (j != imax) 
-      { 
-         for (k=1;k<=n;k++) 
-         { 
+      if (j != imax)
+      {
+         for (k=1;k<=n;k++)
+         {
             dum=a[imax][k];
             a[imax][k]=a[j][k];
             a[j][k]=dum;
          }
-         *d = -(*d); 
-         vv[imax]=vv[j]; 
+         *d = -(*d);
+         vv[imax]=vv[j];
       }
       indx[j]=imax;
-      if (a[j][j] == 0.0) 
+      if (a[j][j] == 0.0)
          a[j][j]=TINY;
-      
-      if (j != n) 
-      { 
+
+      if (j != n)
+      {
          dum=1.0/(a[j][j]);
-         for (i=j+1;i<=n;i++) 
+         for (i=j+1;i<=n;i++)
             a[i][j] *= dum;
       }
-   } 
+   }
    free_vector(vv,1,n);
 }
 
@@ -857,31 +863,31 @@ void lubksb(double **a, int n, int *indx, double b[])
 int i,ii=0,ip,j;
 double sum;
 
-for (i=1;i<=n;i++) 
-	{ 
+for (i=1;i<=n;i++)
+	{
 	ip=indx[i];
 	sum=b[ip];
 	b[ip]=b[i];
 	if (ii)
-		for (j=ii;j<=i-1;j++) 
+		for (j=ii;j<=i-1;j++)
 			sum -= a[i][j]*b[j];
-	else if (sum) 
-		ii=i; 
+	else if (sum)
+		ii=i;
 
 	b[i]=sum;
 	}
-for (i=n;i>=1;i--) 
+for (i=n;i>=1;i--)
 	{
 	sum=b[i];
-	for (j=i+1;j<=n;j++) 
+	for (j=i+1;j<=n;j++)
 		sum -= a[i][j]*b[j];
 
 	b[i]=sum/a[i][i];
-	} 
-} 
+	}
+}
 
 void nrerror(char error_text[])
-{//Numerical Recipes standard error handler 
+{//Numerical Recipes standard error handler
    fprintf(stderr,"Numerical Recipes run-time error...\n");
    fprintf(stderr,"%s\n",error_text);
    fprintf(stderr,"...now exiting to system...\n");
@@ -889,44 +895,44 @@ void nrerror(char error_text[])
 }
 
 double **matrix(long nrl, long nrh, long ncl, long nch)
-{// allocate a double matrix with subscript range m[nrl..nrh][ncl..nch] 
+{// allocate a double matrix with subscript range m[nrl..nrh][ncl..nch]
    long i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
    double **m;
-   
-   //allocate pointers to rows 
+
+   //allocate pointers to rows
    m=(double **) malloc((size_t)((nrow+NR_END)*sizeof(double*)));
    if (!m) nrerror("allocation failure 1 in matrix()");
    m += NR_END;
    m -= nrl;
-   
+
    // allocate rows and set pointers to them
    m[nrl]=(double *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(double)));
    if (!m[nrl]) nrerror("allocation failure 2 in matrix()");
    m[nrl] += NR_END;
    m[nrl] -= ncl;
    for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1]+ncol;
-   
-   // return pointer to array of pointers to rows 
+
+   // return pointer to array of pointers to rows
    return m;
 }
 
 void free_matrix(double **m, long nrl, long nrh, long ncl, long nch)
-{//free a double matrix allocated by matrix() 
+{//free a double matrix allocated by matrix()
    free((FREE_ARG) (m[nrl]+ncl-NR_END));
    free((FREE_ARG) (m+nrl-NR_END));
 }
 
 double *vector(long nl, long nh)
-{//allocate a double vector with subscript range v[nl..nh] 
+{//allocate a double vector with subscript range v[nl..nh]
    double *v;
    v=(double *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(double)));
-   if (!v) 	
+   if (!v)
       nrerror("allocation failure in double vector()");
    return v-nl+NR_END;
 }
 
 void free_vector(double *v, long nl, long nh)
-{// free a double vector allocated with vector() 
+{// free a double vector allocated with vector()
    free((FREE_ARG) (v+nl-NR_END));
 }
 
@@ -957,15 +963,18 @@ void free_intvector(int*v, long nl, long nh)
 }
 
 
-/*******************************************************************************/
-/* Fonction colorspectrum                                                      */
-/*  colorize a spectrum                                                        */
-/* arguments possibles :                                                       */
-/*   WAVELENGTHMIN : pseudo min wavelength    (default=3800)                   */
-/*   WAVELENGTHMIN : pseudo max wavelength    (default=7800)                   */
-/* example :                                                                   */
-/*   buf2 imaseries "COLORSPECTRUM WAVELENGTHMIN=6000 WAVELENGTHMIN=6800"      */
-/*******************************************************************************/
+/************************************************************************************************/
+/* Fonction colorspectrum                                                                       */
+/*  colorize a spectrum                                                                         */
+/* arguments possibles :                                                                        */
+/*   WAVELENGTHMIN : pseudo min wavelength    (default=3800)                                    */
+/*   WAVELENGTHMAX : pseudo max wavelength    (default=7800)                                    */
+/*   XMIN          : abcissse correspondant à la longueur d'onde WAVELENGTHMIN  (default=1)     */
+/*   XMAX          : abcissse correspondant à la longueur d'onde WAVELENGTHMAX  (default=witdh)
+ */
+/* example :                                                                                    */
+/*   buf2 imaseries "COLORSPECTRUM WAVELENGTHMIN=6000 WAVELENGTHMAX=6800 XMIN=1 XMAX=1536"      */
+/************************************************************************************************/
 int tt_ima_series_colorspectrum(TT_IMA_SERIES *pseries)
 {
    TT_IMA *p_in,*p_out;
@@ -980,46 +989,74 @@ int tt_ima_series_colorspectrum(TT_IMA_SERIES *pseries)
    double fluxmax, fluxmin;
    double dw;
    float thershold;
-   
-   //--- intialisations 
+   int xmin, xmax, xwidth;
+
+   //--- intialisations
    p_in=pseries->p_in;
    p_out=pseries->p_out;
    index=pseries->index;
    width=p_in->naxis1;
 
-   //--- verification des donnees 
+
+   //--- verification des parametres
+   if ( pseries->user2.xmin == -1 ) {
+      xmin = 0;
+   } else {
+      if ( pseries->user2.xmin >= 1 || pseries->user2.xmin <= width ) {
+         xmin = pseries->user2.xmin - 1;
+      } else {
+         sprintf(message,"XMIN must be between  1 and %d", width);
+         tt_errlog(TT_ERR_WRONG_VALUE,message);
+         return(TT_ERR_WRONG_VALUE);
+      }
+   }
+
+   if ( pseries->user2.xmax == -1 ) {
+      xmax = width -1;
+   } else {
+      if ( pseries->user2.xmax >= pseries->user2.xmin+1 || pseries->user2.xmax <= width ) {
+         xmax = pseries->user2.xmax - 1;
+      } else {
+         sprintf(message,"XMIN must be between  %d and %d", pseries->user2.xmin +1, width);
+         tt_errlog(TT_ERR_WRONG_VALUE,message);
+         return(TT_ERR_WRONG_VALUE);
+      }
+   }
+
+   xwidth = xmax - xmin +1;
+
+   //--- verification des donnees
    if (p_in->naxis2 > 1) {
       sprintf(message,"must be 1D image");
       tt_errlog(TT_ERR_WRONG_VALUE,message);
       return(TT_ERR_WRONG_VALUE);
    }
 
-   // je cree le tableau des longueur d'onde (abscisses)
-   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&wavelength,&width,&elementSize,"wavelength"))!=0) {
+   // je cree le tableau temporairedes longueur d'onde (abscisses)
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&wavelength,&xwidth,&elementSize,"wavelength"))!=0) {
       tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_colorspectrum for pointer wavelength");
       return(TT_ERR_PB_MALLOC);
    }
 
    // je reserve l'espace memoire de sortie (3 valeurs RGB pour chaque pixels)
-   tt_imacreater(p_out,width*3,1);   
+   tt_imacreater(p_out,xwidth*3,1);
 
-   fluxmin= p_in->p[0];
-   fluxmax= p_in->p[0];
-   dw= (pseries->user2.wavelengthmax - pseries->user2.wavelengthmin)/((double)(width-1));
-   for( i=0 ; i < width ; i++ ) {
-      wavelength[i] = pseries->user2.wavelengthmin + dw * ((double) i);      
-      if( p_in->p[i] > fluxmax)
-      {
-        fluxmax = p_in->p[i];
+   // je recherche les valuers min et max du flux
+   fluxmin= p_in->p[xmin];
+   fluxmax= p_in->p[xmin];
+   dw= (pseries->user2.wavelengthmax - pseries->user2.wavelengthmin)/((double)(xwidth-1));
+   for( i=0 ; i < xwidth ; i++ ) {
+      wavelength[i] = pseries->user2.wavelengthmin + dw * ((double) i);
+      if( p_in->p[i+xmin] > fluxmax) {
+        fluxmax = p_in->p[i+xmin];
       }
-      if( p_in->p[i] < fluxmin)
-      {
-        fluxmin = p_in->p[i];
+      if( p_in->p[i+xmin] < fluxmin) {
+        fluxmin = p_in->p[i+xmin];
       }
    }
 
    // Find color value, icv, of each pixel
-   for( i=0 ; i < width ; i++ ) {
+   for( i=0 ; i < xwidth ; i++ ) {
       double r, g, b;
       double wl, a;
       double rhi,rlo;
@@ -1029,10 +1066,9 @@ int tt_ima_series_colorspectrum(TT_IMA_SERIES *pseries)
       // get background color
       r = 0.;
       g = 0.;
-      b = 0.; 
+      b = 0.;
       if((wl >= 3800.) & (wl <= 7800.)) {
-         // modification pour eclairir l'extreme rouge
-         //rhi=1.0 / (1.+exp(((5400.-wl)/150.)));
+         // modification pour eclaircir l'extreme rouge
          rhi=1.2 / (1.+exp(((5400.-wl)/150.)));
          rhi=rhi / (1.+exp(((wl-6700.)/200.)));
          rlo=0.4 / (1.+exp(((wl-4400.)/300.)));
@@ -1047,19 +1083,21 @@ int tt_ima_series_colorspectrum(TT_IMA_SERIES *pseries)
       }
 
       // get spectrum modulation
-      a=(p_in->p[i] - fluxmin)/(fluxmax-fluxmin);
+      a=(p_in->p[i+xmin] - fluxmin)/(fluxmax-fluxmin);
+
 
       // set output RGB values
       p_out->p[i*3+0] = (TT_PTYPE) (colorDepth * pow( a*r , gamma ));
       p_out->p[i*3+1] = (TT_PTYPE) (colorDepth * pow( a*g , gamma ));
-      p_out->p[i*3+2] = (TT_PTYPE) (colorDepth * pow( a*b , gamma )); 
+      p_out->p[i*3+2] = (TT_PTYPE) (colorDepth * pow( a*b , gamma ));
+
    }
 
-   // free memory   
+   // free memory
    tt_free(wavelength,"wavelength");
 
    p_out->naxis  = 3;
-   p_out->naxis1 = width;
+   p_out->naxis1 = xwidth;
    p_out->naxis2 = 1;
    p_out->naxis3 = 3;
    // j'ajoute le mot cle NAXIS
@@ -1079,12 +1117,13 @@ int tt_ima_series_colorspectrum(TT_IMA_SERIES *pseries)
 
    // je bidouille naxis, naxis1 et naxis2 car libtt ne supporte pas les images 3D
    // Les bonnes valeurs sont dans le tableau des mots cles.
-   // L'utilsateur ne doit surtout pas utiliser ces valeurs au retour de TT_ImaSeries(). 
+   // L'utilsateur ne doit surtout pas utiliser ces variables au retour de TT_ImaSeries()
+   // Il faut utiliser les valeurs des mots cle NAXIS, NAXIS1, NAXIS2 et NAXIS3
    p_out->naxis  = 2;
    p_out->naxis2 = 3;
    p_out->naxis3 = 1 ;
 
-   // --- calcul des temps 
+   // --- calcul des temps
    pseries->jj_stack=pseries->jj[index-1];
    pseries->exptime_stack=pseries->exptime[index-1];
 
