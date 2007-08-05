@@ -1312,20 +1312,57 @@ int CPixelsRgb::IsPixelsReady(void) {
 
 void CPixelsRgb::Log(float coef, float offset)
 {
-   throw CError(ELIBSTD_NOT_IMPLEMENTED);
-   /*
-   int msg,datatype;
-   char *s;
+   TYPE_PIXELS_RGB *pixelsR, *pixelsG, *pixelsB;
+   TYPE_PIXELS_RGB *pixCurR, *pixCurG, *pixCurB;
+   TYPE_PIXELS_RGB *pixCur;
+   int msg, datatype;
+   char s[512];
+   int t;
+   
 
-   //datatype = TFLOAT;
-   datatype = TSHORT;
-   s = new char[512];
-   sprintf(s,"LOG coeff=%f offsetlog=%f",coef,offset);
-   msg = Libtt_main(TT_PTR_IMASERIES,7,&pix,&datatype,&naxis1,&naxis2,&pix,&datatype,s);
+    try {
+      pixelsR = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
+      pixelsG = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
+      pixelsB = (TYPE_PIXELS_RGB *)calloc(naxis1*naxis2,sizeof(TYPE_PIXELS_RGB));
+      
+      // je recupere l'image a traiter en séparant les 3 plans
+      GetPixels( pixelsR, pixelsG, pixelsB); 
+            
+      //datatype = TFLOAT;
+      datatype = TSHORT;
+      sprintf(s,"LOG coeff=%f offsetlog=%f",coef,offset);
 
-   delete s;
-   return msg;
-   */
+      msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsR,&datatype,&naxis1,&naxis2,&pixelsR,&datatype,s);
+      if(msg) throw CErrorLibtt(msg);
+      msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsG,&datatype,&naxis1,&naxis2,&pixelsG,&datatype,s);
+      if(msg) throw CErrorLibtt(msg);
+      msg = Libtt_main(TT_PTR_IMASERIES,7,&pixelsB,&datatype,&naxis1,&naxis2,&pixelsB,&datatype,s);
+      if(msg) throw CErrorLibtt(msg);
+      
+      // j'enregistre la nouvelle image
+      pixCurR = pixelsR;
+      pixCurG = pixelsG;
+      pixCurB = pixelsB;
+      pixCur = pix;
+      t =  naxis1*naxis2;
+      while(--t>0) {
+         *(pixCur++) = *(pixCurR++);
+         *(pixCur++) = *(pixCurG++);
+         *(pixCur++) = *(pixCurB++);
+      }
+      free(pixelsR);
+      free(pixelsG);
+      free(pixelsB);
+
+   } catch (const CError& e) {
+      // je libere la mémoire
+      if(pixelsR) free(pixelsR);
+      if(pixelsG) free(pixelsG);
+      if(pixelsB) free(pixelsB);
+      // je transmets l'exception
+      throw e;
+   }
+
 }
 
 void CPixelsRgb::MergePixels(TColorPlane plane, int pixels)
