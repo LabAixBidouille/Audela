@@ -257,7 +257,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
    int nombre,taille,msg;
    int trainee,k1,k2,kk;
    double detection2=0.;
-   double ra,dec,xcc,ycc,r1,r11,r2,r22,r3,r33,sx,sy,flux,fwhmxy;
+   double ra,dec,xcc,ycc,r1,r11,r2,r22,r3,r33,r4,sx,sy,flux,fwhmxy;
    double dx,dy,dx2,dy2,d2,value,fmoy,fmed,seuilf,f23,sigma;
    int xx1,xx2,yy1,yy2,n23,n23d,n23f,i,j,valid_ast;
    double dx0,dy0,d0;
@@ -293,8 +293,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
       yc=xmax*(y+1);
       dy0=(y-yc0)*(y-yc0);
       for (x=1;x<xmax;x++) {
-		 if(pout->p[yb+x] == 0) { continue; }
-		 if(pout->p[yb+x] == 1) { continue; }
+		 if(pout->p[yb+x+1] == 0) { continue; }
+		 if(pout->p[yb+x+1] == 1) { continue; }
          if ((x>xmax)||(x<0)) { continue; }
          dx0=(x-xc0)*(x-xc0);
          if ((dy0+dx0)>d0) { continue; }
@@ -400,15 +400,16 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 							fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;//on prend la plus grande valeur des 2
 							r1=1.5*fwhmxy;
 							r2=2.0*fwhmxy;
-							r3=2.5*fwhmxy;
+							r3=60;
+							r4=20;
 							r11=r1*r1;
 							r22=r2*r2;
 							r33=r3*r3;
 							/* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
-							xx1=(int)(xcc-r3);
+							xx1=(int)(xcc-r3/6);
 							xx2=(int)(xcc+r3);
-							yy1=(int)(ycc-r3);
-							yy2=(int)(ycc+r3);
+							yy1=(int)(ycc-r4);
+							yy2=(int)(ycc+r4);
 							if (xx1<0) xx1=0;
 							if (xx1>=xmax) xx1=xmax-1;
 							if (xx2<0) xx2=0;
@@ -461,7 +462,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 							}
 							tt_free(vec,"vec");
 							/* --- photocentre (xc,yc) ---*/
-							xx1=(int)(xcc-r1);
+							/*xx1=(int)(xcc-r1);
 							xx2=(int)(xcc+r1);
 							yy1=(int)(ycc-r1);
 							yy2=(int)(ycc+r1);
@@ -472,8 +473,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 							if (yy1<0) yy1=0;
 							if (yy1>=ymax) yy1=ymax-1;
 							if (yy2<0) yy2=0;
-							if (yy2>=ymax) yy2=ymax-1;
-							seuilf=0.2*(v[5]-fmed);
+							if (yy2>=ymax) yy2=ymax-1;*/
+							seuilf=0.2*(v[6]-fmed);
 							sx=0.;
 							sy=0.;
 							flux=0.;
@@ -489,6 +490,9 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 										flux += value;
 										sx += (double)(i * value);
 										sy += (double)(j * value);
+										pout->p[xmax*j+i] == 1;
+									} else {
+										pout->p[xmax*j+i] == 0;
 									}
 								}
 							}
@@ -497,7 +501,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 								ycc = sy / flux ;
 							}
 							/* --- photometrie (flux) ---*/
-							xx1=(int)(xcc-r1);
+							/*xx1=(int)(xcc-r1);
 							xx2=(int)(xcc+r1);
 							yy1=(int)(ycc-r1);
 							yy2=(int)(ycc+r1);
@@ -522,7 +526,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 										flux += value;
 									}
 								}
-							}
+							}*/
 							/* --- astrometrie (ra,dec) ---*/
 							ra=0.;
 							dec=0.;
