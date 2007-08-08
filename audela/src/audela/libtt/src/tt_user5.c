@@ -21,12 +21,14 @@
  */
 
 #include "tt.h"
+#include <math.h>
+
 
 /***** prototypes des fonctions internes du user5 ***********/
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
-
-
+void fittrainee (int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
+void fittrainee2 (int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
 
 /**************************************************************************/
 /**************************************************************************/
@@ -141,31 +143,20 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    int kkk,index;
    double fwhmsat,seuil,seuil0,seuil1;
    double xc,yc,radius;
-   /*
-   char value[FLEN_VALUE];
-   char comment[FLEN_COMMENT];
-   */
    char filenamesat[FLEN_FILENAME];
-   int nbsats;
-	
+   double exposure;	
    double mode,mini,maxi;
-
-
+  
    /* --- intialisations ---*/
    p_in=pseries->p_in;
    p_out=pseries->p_out;
    nelem=pseries->nelements;
    index=pseries->index;
    fwhmsat=pseries->fwhmsat;
-   //xc=pseries->xcenter;
-   //yc=pseries->ycenter;
    radius=pseries->radius;
+   exposure=pseries->exposure;
 
-   //tt_strupr(pseries->keyhicut);
-   //tt_strupr(pseries->keylocut);
-   //tt_strupr(pseries->keytype);
-   
-	 /* --- calcul de la fonction ---*/
+	/* --- calcul de la fonction ---*/
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
    for (kkk=0;kkk<(int)(nelem);kkk++) {
       dvalue=(double)p_in->p[kkk];
@@ -173,21 +164,19 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    }
    /* --- raz des variables a calculer ---*/
    pseries->hicut=1.;
-   pseries->locut=0.;
-   //pseries->lofrac=0.05; //le seuil bas dans l'histogramme                    
-   //pseries->hifrac=0.97; //le seuil haut dans l'histogramme                 
+   pseries->locut=0.;             
    pseries->cutscontrast=1.0; //pour diminuer le contraste       
 
    /* --- Calcul des seuils de visualisation ---*/
    tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode,&maxi,&mini);
 	
    /* seuils prédéfinis pour les pixels noirs et balncs */
-    seuil0 = mode + 0.05*mode;
-	seuil1 = pseries->hicut - 0.1*pseries->hicut;
-// attention il ne faut pas que seuil0 > seuil 1
+    seuil0 = mode + 0.1*mode;
+	seuil1 = pseries->hicut + 0.25*pseries->hicut;
+	// attention il ne faut pas que seuil0 > seuil 1
 	if (seuil0 >= seuil1) {
 		seuil0 = mode ;
-		seuil1 = pseries->hicut;
+		seuil1 = pseries->hicut+ 0.5*pseries->hicut;
 	}
 
    if (radius<=0) {
@@ -200,7 +189,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    }
    //strcpy(filenamesat,pseries->objefile);
    //if (strcmp(filenamesat,"")==0) {
-    strcpy(filenamesat,"trainees.txt");
+    strcpy(filenamesat,"C:/audela-1.4.0-beta1/ros/src/grenouille/trainees.txt");
    //}
    seuil=pseries->threshold; // voir le calcul a faire en fonction du niveau de bruit
    if (seuil<=0) {
@@ -218,17 +207,14 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
 	  } 	  
 	  if ((dvalue > seuil0)&&(dvalue < seuil1)) {
 		 dvalue=dvalue/seuil1;
-		  p_out->p[kkk]=(TT_PTYPE)(dvalue);
+		 p_out->p[kkk]=(TT_PTYPE)(dvalue);
 	  } 
    }
-
+	//Buffer->SaveFits(nom_fichier);
    /* --- raz des variables a calculer ---*/
-   nbsats=0;
-
+   
    /* --- calcul ---*/
-   tt_util_chercher_trainee(p_in,p_out,filenamesat,fwhmsat,seuil,seuil1,xc,yc,radius,&nbsats);
-   //tt_imanewkey(p_out,"NB_SATEL",&(nbsats),TINT,"number of detected satellites","");
-//enregistrer p_out ???!
+   tt_util_chercher_trainee(p_in,p_out,filenamesat,fwhmsat,seuil,seuil1,xc,yc,radius,exposure);
 
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
@@ -237,7 +223,189 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
-int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double xc0, double yc0, double radius, int *nbsats)
+
+int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double xc0, double yc0, double radius, double exposure)
+
+{	
+	int xmax,ymax,ntrainee,sizex,sizey,nb;
+	double d0,lt,fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,dvalue;
+	int k,k2,y,x,ltt,fwhmybi,fwhmyhi,fwhm,nelem;
+	double *matx;
+	FILE *fic;
+	double **mat, *p, *ecart, *temp;
+	
+	
+	nelem=pin->nelements;
+	/* --- calcul de la fonction ---*/
+	temp = (double*)calloc(nelem,sizeof(double));
+    for (k=0;k<(int)(nelem);k++) {
+		dvalue=(double)pout->p[k];
+		if (dvalue == 1.0) {
+			temp[k]=0;
+		} else {
+			temp[k]=-1;
+		}
+    }
+
+	p = (double*)calloc(6,sizeof(double));
+	/* --- chercher les dimensions de l'image ---*/
+	xmax=pin->naxis1;
+	ymax=pin->naxis2;
+	
+	/* --- ouvre le fichier en ecriture ---*/
+	fic=fopen(filename,"wt");
+
+	/* --- longueur des trainees pour la camera Andor de TAROT*/
+	lt=0.004180983*exposure/(9.1441235255136e-4);
+	ltt = (int) lt;
+
+	matx = (double*)calloc((xmax-ltt-3),sizeof(double));
+	
+
+	ecart = (double*)calloc(1,sizeof(double));
+	ntrainee=1;
+
+	/* --- grande boucle sur l'image ---*/
+	d0=radius*radius;
+	seuil=seuil/seuil1;
+	for (y=3;y<ymax-3;y++) {
+		if ((y>ymax)||(y<0)) { continue; }	
+		for (x=3;x<(xmax-ltt-3);x++) {
+			//mat[x-3]=0;
+			if (temp[y*ymax+x]==-1) {continue;}
+			for (k=0;k<ltt;k++) {
+				matx[x]+=pout->p[y*ymax+x+k];
+			}
+			if (matx[x]>=(ltt-1)) {	
+				fwhmyh=0;
+				fwhmyb=0;
+				//rechercche approximative des paramètres de la trainées
+				for (k=0;k<ltt;k++) {
+					for (k2=1;k2<40;k2++) {
+						if ((k2+y)>= ymax) break;
+						if (pout->p[(y+k2)*ymax+x+k]>0.5) {fwhmyh++;}
+						else break;
+					}
+					for (k2=1;k2<40;k2++) {
+						if (k2 < y) break;
+						if (pout->p[(y-k2)*ymax+x+k]>0.5) {fwhmyb++;}
+						else break;
+					}
+				}
+				fwhmyh=fwhmyh/ltt;
+				fwhmyb=fwhmyb/ltt;
+				fwhmyhi =(int) fwhmyh;
+				fwhmybi =(int) fwhmyb;
+				sizex=ltt+fwhmyhi+fwhmybi+8;
+				sizey=fwhmybi+fwhmyhi+8;
+				fwhm= (int) ((fwhmybi+fwhmyhi)/2);
+
+				//pour les bords d'image
+				if (fwhm>x) fwhm=x;
+				if ((fwhm + x) > xmax) fwhm=(xmax-x);
+				if ((sizex + x) > xmax) sizex=(xmax-x);
+				if ((sizex + x) > xmax) sizex=(xmax-x);
+				nb=y-fwhmybi;
+				if (nb > 4) nb = 4;
+				if ((sizey + y) > ymax) sizey=(ymax-y);
+
+				//fixe la taille de la fenêtre de travail: sizex et sizey
+				mat = (double**)calloc(sizex,sizeof(double));
+				for(k=0;k<sizex;k++) {
+					*(mat+k) = (double*)calloc(sizey,sizeof(double));
+				}
+				//--- Mise a zero des deux buffers 
+				for(k=0;k<sizex;k++) {
+				  for(k2=0;k2<sizey;k2++) {
+					 mat[k][k2]=(double)0.;
+				  }
+				}
+				for(k2=0;k2<sizey;k2++) {
+				  for(k=0;k<sizex;k++) {
+					 mat[k][k2] = pin->p[xmax*(y-fwhmybi-nb+k2)+x-fwhm+k];
+					 temp[xmax*(y-fwhmybi-nb+k2)+x-fwhm+k]=-1;// pour ne pas repasser sur la meme etoile
+				  }
+				}
+					
+				fittrainee2 (sizex, sizey, mat, p, ecart, exposure); 
+				posx  = p[1]+x;
+				fwhmx = p[2];
+				//*fondx = p[3];
+				//*fondy = p[3];
+				posy  = p[4]+y;
+				fwhmy = p[5];
+				/* --- sortie du resultat ---*/
+				fprintf(fic,"%d %f %f %f %f\n",
+				ntrainee,posx,posy,fwhmx,fwhmy);
+				ntrainee++;
+				tt_free2((double**)&mat,"mat");
+				x=x+ltt;
+			}
+		}
+	}
+	free(matx);
+	free(p);
+	free(temp);
+	free(ecart);
+	return 1;
+}
+
+void fittrainee (int sizex, int sizey,double **mat,double *p,double *ecart, double exposure) {
+
+	double *matx,*maty, intensite,moyx,*addx,lt,matyy;
+	int jx,jxx,jy,moyjx,ltt,posmaty;
+	
+	p = (double*)calloc(6,sizeof(double));
+
+	//longueur des trainees pour la camera Andor de TAROT
+	lt=0.004180983*exposure/(9.1441235255136e-4);
+	ltt = (int) lt;
+
+	matx = (double*)calloc(sizex,sizeof(double));
+	maty = (double*)calloc((sizex-ltt),sizeof(double));
+	addx = (double*)calloc(sizex,sizeof(double));
+
+	for (jx=0;jx<sizex;jx++) {
+		matx[jx]=0.;
+	}
+	for (jy=0;jy<(sizex-ltt);jy++) {
+		maty[jy]=0.;
+	}
+	for (jx=0;jx<sizex;jx++) {
+		addx[jx]=0.;
+	}
+
+	moyx=0;
+	
+	// recherche du max d'intensité pour chaque colonne
+	for (jx=0;jx<sizex;jx++) {
+		intensite=0.;
+		for (jy=0;jy<sizey;jy++) {
+			if (mat[jx][jy]>intensite) {intensite=mat[jx][jy]; matx[jx]=1.*jy; }
+			moyx+=1.*jy;
+			addx[jx]+=mat[jx][jy];
+		}
+	}
+	moyx=moyx/sizex;
+	moyjx = (int)moyx;
+	matyy=0;
+	//moyxx=0.;
+	for (jx=0;jx<(sizex-ltt);jx++) {
+		for (jxx=0;jxx<ltt;jxx++) {
+			maty[jx]+=mat[jx+jxx][moyjx];
+		}
+		if (maty[jx]>matyy) {
+			matyy=maty[jx];posmaty=jx;
+			 
+		}
+	}
+
+	free(matx);
+	free(maty);
+	free(addx);
+}
+
+int tt_util_chercher_trainee2(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double xc0, double yc0, double radius, double exposure)
 /***************************************************************************/
 /* Analyse des pixels de l'image pour detecter les satellites geostats     */
 /***************************************************************************/
@@ -254,7 +422,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
    int xmax,ymax;
    double *v,*vec,valfond;
    int ntrainee;
-   int nombre,taille,msg;
+   int nombre,nombre2,taille,msg;
    int trainee,k1,k2,kk;
    double detection2=0.;
    double ra,dec,xcc,ycc,r1,r11,r2,r22,r3,r33,r4,sx,sy,flux,fwhmxy;
@@ -263,7 +431,13 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
    double dx0,dy0,d0;
    TT_ASTROM p_ast;
    FILE *fic;
-	
+   int sizex, sizey;
+   double **mat, *p, *ecart;
+   double posx,posy;
+   //double *maxx,*posx,*fwhmxx,*fondx,*maxy,*posy,*fwhmyy,*fondy; 
+   //maxx=NULL; posx=NULL; fwhmxx=NULL; fondx=NULL;  maxy=NULL; posy=NULL; fwhmyy=NULL; fondy=NULL;
+   
+   
    /* --- chercher les dimensions de l'image ---*/
    xmax=pin->naxis1;
    ymax=pin->naxis2;
@@ -275,6 +449,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
    /* --- Calcul du critere de qualite stellaire ---*/
    ntrainee=0;
    nombre=10;
+   nombre2=1;
    taille=sizeof(double);
    v=NULL;
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&v,&nombre,&taille,"v"))!=OK_DLL) {
@@ -294,7 +469,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
       dy0=(y-yc0)*(y-yc0);
       for (x=1;x<xmax;x++) {
 		 if(pout->p[yb+x+1] == 0) { continue; }
-		 if(pout->p[yb+x+1] == 1) { continue; }
+		 //if(pout->p[yb+x+1] == 1) { continue; }
          if ((x>xmax)||(x<0)) { continue; }
          dx0=(x-xc0)*(x-xc0);
          if ((dy0+dx0)>d0) { continue; }
@@ -395,18 +570,20 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 
 // il faut fitter avec la forme d'une trainée, et trouver sa largeur et sa longueur qui doivent être cohérentes:
 // longueur = largeur + trainée
+						
+
 							xcc=(double)x;
 							ycc=(double)y;
 							fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;//on prend la plus grande valeur des 2
 							r1=1.5*fwhmxy;
 							r2=2.0*fwhmxy;
-							r3=60;
-							r4=20;
+							r3=55;
+							r4=14;
 							r11=r1*r1;
 							r22=r2*r2;
 							r33=r3*r3;
 							/* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
-							xx1=(int)(xcc-r3/6);
+							xx1=(int)(xcc-r3/12);
 							xx2=(int)(xcc+r3);
 							yy1=(int)(ycc-r4);
 							yy2=(int)(ycc+r4);
@@ -418,6 +595,44 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 							if (yy1>=ymax) yy1=ymax-1;
 							if (yy2<0) yy2=0;
 							if (yy2>=ymax) yy2=ymax-1;
+							
+							sizex=xx2-xx1;
+							sizey=yy2-yy1;
+							mat=NULL;
+							p=NULL;
+							
+							mat = (double**)calloc(sizex,sizeof(double));
+							for(i=0;i<sizex;i++) {
+								*(mat+i) = (double*)calloc(sizey,sizeof(double));
+							}
+
+							//--- Mise a zero des deux buffers de binning
+						    for(i=0;i<sizex;i++) {
+							  for(j=0;j<sizey;j++) {
+								 mat[i][j]=(double)0.;
+							  }
+							}
+						    for(j=0;j<sizey;j++) {
+							  for(i=0;i<sizex;i++) {
+								 mat[i][j] = pin->p[xmax*(yy1+j)+xx1+i];
+							  }
+							}
+
+						    ecart = (double*)calloc(1,sizeof(double));
+							p = (double*)calloc(6,sizeof(double));
+
+							//on récupère la bonne position en y, mais pas en x, il faut add xx1 et yy1 au valeurs obtenues!!
+							fittrainee2 (sizex, sizey, mat, p, ecart, exposure);
+						    
+							//*maxy  = p[0];
+						    //*maxx  = p[0];
+						    posx  = p[1]+xx1;
+						    fwhmx = p[2];
+						    //*fondx = p[3];
+						    //*fondy = p[3];
+						    posy  = p[4]+yy1;
+						    fwhmy = p[5];
+
 							nombre=(xx2-xx1+1)*(yy2-yy1+1);
 							taille=sizeof(double);
 							vec=NULL;
@@ -490,9 +705,9 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 										flux += value;
 										sx += (double)(i * value);
 										sy += (double)(j * value);
-										pout->p[xmax*j+i] == 1;
+										pout->p[xmax*j+i] = 1;
 									} else {
-										pout->p[xmax*j+i] == 0;
+										pout->p[xmax*j+i] = 0;
 									}
 								}
 							}
@@ -536,9 +751,12 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 							ra*=180./(TT_PI);
 							dec*=180./(TT_PI);
 							/* --- sortie du resultat ---*/
-							fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",
-							ntrainee,xcc+1.,ycc+1.,flux,fmed,ra,dec,fwhmx,fwhmy);
+							fprintf(fic,"%d %f %f %f %f %f %f %f %f %f %f\n",
+							ntrainee,xcc+1.,posx,ycc+1.,posy,flux,fmed,ra,dec,fwhmx,fwhmy);
 // on met à 1 ou 0 les pixels dans pout que l'on a utlisées pour aller plus vite et pas retravaillé dessus
+							tt_free2((double**)&mat,"mat");
+							free(ecart);
+							free(p);
 						}
 					}
                
@@ -549,13 +767,119 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
          }
       }
    }
-   tt_free(v,"v");
+   tt_free(v,"v");  
    fclose(fic);
-   *nbsats=ntrainee;
+ 
    return(OK_DLL);
 }
 
 
+
+
+/***************************************************/
+/* Ajuste une gaussienne 2d:                       */
+/* ENTREES :                                       */
+/*  **y=matrice des points                         */
+/*  sizex=nombre de points sur cote 1 de y         */
+/*  sizey=nombre de points sur cote 2 de y         */
+/* SORTIES                                         */
+/*  p()=tableau des variables:                     */
+/*     p[0]=intensite maximum de la gaussienne     */
+/*     p[1]=indice X du maximum de la gaussienne   */
+/*     p[2]=fwhm X                                 */
+/*     p[3]=fond                                   */
+/*     p[4]=indice Y du maximum de la gaussienne   */
+/*     p[5]=fwhm Y                                 */
+/*  ecart=ecart-type                               */
+/***************************************************/
+void fittrainee2 (int sizex, int sizey,double **mat,double *p,double *ecart,double exposure) {
+
+   int l,nbmax,m;
+   double l1,l2,a0;
+   double e,er1,y0;
+   double m0,m1;
+   double e1[6]; /* ici ajout */
+   int i,jx,jy;
+   double rr2;
+   double xx,yy;
+
+   p[0]=mat[0][0];
+   p[1]=0.;
+   p[3]=mat[0][0];
+   p[4]=0.;
+
+  				
+   for (jx=0;jx<sizex;jx++) {
+      for (jy=0;jy<sizey;jy++) {
+	     if (mat[jx][jy]>p[0]) {p[0]=mat[jx][jy]; p[1]=1.*jx; p[4]=1.*jy; }
+         if (mat[jx][jy]<p[3]) {p[3]=mat[jx][jy]; }
+      }
+   }
+
+   p[0]-=p[3];
+   p[2]=1.;
+   p[5]=1.;
+   *ecart=1.0;
+   l=6;               /* nombre d'inconnues */
+   e=(float).005;     /* erreur maxi. */
+   er1=(float).5;     /* dumping factor */
+   nbmax=250;         /* nombre maximum d'iterations */
+
+   for (i=0;i<l;i++) {
+	 e1[i]=er1;
+   }
+
+   m=0;
+   l1=(double)1e10;
+
+   fitgauss2d_b1:
+
+	for (i=0;i<l;i++) {
+		a0=p[i];
+
+		fitgauss2d_b2:
+
+		l2=0;
+		for (jx=0;jx<sizex;jx++) {
+			xx=(double)jx;
+			for (jy=0;jy<sizey;jy++) {
+				yy=(double)jy;
+				rr2=(xx-p[1])*(xx-p[1])+(yy-p[4])*(yy-p[4]);
+				y0=p[0]*exp(-rr2/p[2]/p[5])+p[3];
+//				y0=y0*Mask[jx][jy];
+				l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+			}
+		}
+
+		m0=l2;
+		p[i]=a0*(1-e1[i]);
+		l2=0;
+
+		for (jx=0;jx<sizex;jx++) {
+			xx=(double)jx;
+			for (jy=0;jy<sizey;jy++) {
+				yy=(double)jy;
+				rr2=(xx-p[1])*(xx-p[1])+(yy-p[4])*(yy-p[4]);
+				y0=p[0]*exp(-rr2/p[2]/p[5])+p[3];
+//				y0=y0*Mask[jx][jy];
+				l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+			}
+		}
+
+		*ecart=sqrt((double)l2/(sizex*sizey-l)); /* ici ajout */
+		m1=l2;
+		if (m1>m0) e1[i]=-e1[i]/2;
+		if (m1<m0) e1[i]=(float)1.2*e1[i];
+		if (m1>m0) p[i]=a0;
+		if (m1>m0) goto fitgauss2d_b2;
+	}
+	m++;
+	if (m==nbmax) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+	if (l2==0) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+	if (fabs((l1-l2)/l2)<e) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+	l1=l2;
+	goto fitgauss2d_b1;
+}
 
 /**************************************************************************/
 /**************************************************************************/
