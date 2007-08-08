@@ -172,11 +172,11 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
 	
    /* seuils prédéfinis pour les pixels noirs et balncs */
     seuil0 = mode + 0.1*mode;
-	seuil1 = pseries->hicut + 0.25*pseries->hicut;
+	seuil1 = pseries->hicut + 0.55*pseries->hicut;
 	// attention il ne faut pas que seuil0 > seuil 1
 	if (seuil0 >= seuil1) {
 		seuil0 = mode ;
-		seuil1 = pseries->hicut+ 0.5*pseries->hicut;
+		seuil1 = pseries->hicut+ 0.55*pseries->hicut;
 	}
 
    if (radius<=0) {
@@ -271,33 +271,34 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	for (y=3;y<ymax-3;y++) {
 		if ((y>ymax)||(y<0)) { continue; }	
 		for (x=3;x<(xmax-ltt-3);x++) {
-			//mat[x-3]=0;
+			
 			if (temp[y*ymax+x]==-1) {continue;}
+			matx[x]=0;
 			for (k=0;k<ltt;k++) {
 				matx[x]+=pout->p[y*ymax+x+k];
 			}
-			if (matx[x]>=(ltt-1)) {	
+			if (matx[x]>=ltt) {	
 				fwhmyh=0;
 				fwhmyb=0;
 				//rechercche approximative des paramètres de la trainées
 				for (k=0;k<ltt;k++) {
 					for (k2=1;k2<40;k2++) {
 						if ((k2+y)>= ymax) break;
-						if (pout->p[(y+k2)*ymax+x+k]>0.5) {fwhmyh++;}
+						if (pout->p[(y+k2)*ymax+x+k]>0.65) {fwhmyh++;}
 						else break;
 					}
 					for (k2=1;k2<40;k2++) {
-						if (k2 < y) break;
-						if (pout->p[(y-k2)*ymax+x+k]>0.5) {fwhmyb++;}
+						if (k2 > y) break;
+						if (pout->p[(y-k2)*ymax+x+k]>0.65) {fwhmyb++;}
 						else break;
 					}
 				}
 				fwhmyh=fwhmyh/ltt;
 				fwhmyb=fwhmyb/ltt;
-				fwhmyhi =(int) fwhmyh;
-				fwhmybi =(int) fwhmyb;
-				sizex=ltt+fwhmyhi+fwhmybi+8;
-				sizey=fwhmybi+fwhmyhi+8;
+				fwhmyhi =(int) fwhmyh+1;
+				fwhmybi =(int) fwhmyb+1;
+				sizex=ltt+fwhmyhi+fwhmybi+10;
+				sizey=fwhmybi+fwhmyhi+10;
 				fwhm= (int) ((fwhmybi+fwhmyhi)/2);
 
 				//pour les bords d'image
@@ -306,7 +307,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				if ((sizex + x) > xmax) sizex=(xmax-x);
 				if ((sizex + x) > xmax) sizex=(xmax-x);
 				nb=y-fwhmybi;
-				if (nb > 4) nb = 4;
+				if (nb > 5) nb = 5;
 				if ((sizey + y) > ymax) sizey=(ymax-y);
 
 				//fixe la taille de la fenêtre de travail: sizex et sizey
@@ -322,8 +323,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				}
 				for(k2=0;k2<sizey;k2++) {
 				  for(k=0;k<sizex;k++) {
-					 mat[k][k2] = pin->p[xmax*(y-fwhmybi-nb+k2)+x-fwhm+k];
-					 temp[xmax*(y-fwhmybi-nb+k2)+x-fwhm+k]=-1;// pour ne pas repasser sur la meme etoile
+					 mat[k][k2] = pin->p[xmax*(y-fwhmybi-nb+k2)+x-fwhm-nb+k];
+					 temp[xmax*(y-fwhmybi-nb+k2)+x-fwhm-nb+k]=-1;// pour ne pas repasser sur la meme etoile
 				  }
 				}
 					
@@ -335,8 +336,9 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				posy  = p[4]+y;
 				fwhmy = p[5];
 				/* --- sortie du resultat ---*/
-				fprintf(fic,"%d %f %f %f %f\n",
-				ntrainee,posx,posy,fwhmx,fwhmy);
+// attention matrice image commence au pixel 1,1 alors que l'analyse se fait avec 0,0 dans cette fonction !!
+				fprintf(fic,"%d %f %f %d %d %f %f\n",
+				ntrainee,posx,posy,x,y,fwhmx,fwhmy);
 				ntrainee++;
 				tt_free2((double**)&mat,"mat");
 				x=x+ltt;
@@ -346,7 +348,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	free(matx);
 	free(p);
 	free(temp);
-	free(ecart);
+	free(ecart);	
+	fclose(fic);
 	return 1;
 }
 
