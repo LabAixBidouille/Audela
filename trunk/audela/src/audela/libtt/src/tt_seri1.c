@@ -563,6 +563,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->xcenter=0.;
    pseries->ycenter=0.;
    pseries->radius=0.;
+   pseries->exposure=0.;
    pseries->angle=0.;
    pseries->binary_yesno=TT_NO;
    pseries->back_kernel=8;
@@ -697,6 +698,11 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       else if (strcmp(mot,"RADIUS")==0) {
 	 if (strcmp(argu,"")!=0) {
 	    pseries->radius=(double)atof(argu);
+	 }
+	 }
+      else if (strcmp(mot,"EXPOSURE")==0) {
+	 if (strcmp(argu,"")!=0) {
+	    pseries->exposure=(double)atof(argu);
 	 }
       }
       else if (strcmp(mot,"ANGLE")==0) {
