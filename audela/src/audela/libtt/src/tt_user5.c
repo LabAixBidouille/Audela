@@ -27,7 +27,7 @@
 /***** prototypes des fonctions internes du user5 ***********/
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
-void fittrainee (int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
+void fittrainee (double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
 void fittrainee2 (int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
 
 /**************************************************************************/
@@ -228,12 +228,11 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 
 {	
 	int xmax,ymax,ntrainee,sizex,sizey,nb;
-	double d0,lt,fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,dvalue;
+	double d0,lt,fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,dvalue,xcc,ycc;
 	int k,k2,y,x,ltt,fwhmybi,fwhmyhi,fwhm,nelem;
 	double *matx;
 	FILE *fic;
 	double **mat, *p, *ecart, *temp;
-	
 	
 	nelem=pin->nelements;
 	/* --- calcul de la fonction ---*/
@@ -327,18 +326,21 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 					 temp[xmax*(y-fwhmybi-nb+k2)+x-fwhm-nb+k]=-1;// pour ne pas repasser sur la meme etoile
 				  }
 				}
-					
-				fittrainee2 (sizex, sizey, mat, p, ecart, exposure); 
-				posx  = p[1]+x;
+				//recherche de la position du photocentre	
+				fittrainee (fwhm,x,sizex, sizey, mat, p, ecart, exposure); 
+				
+				posx  = (p[1]-fwhm-nb+2*x)/2;
 				fwhmx = p[2];
 				//*fondx = p[3];
 				//*fondy = p[3];
-				posy  = p[4]+y;
+				posy  = p[4]-fwhmybi-nb+y;
 				fwhmy = p[5];
+				xcc=(p[0]-fwhm-nb+2*x)/2;
+				ycc=p[3]-fwhmybi-nb+y;
 				/* --- sortie du resultat ---*/
 // attention matrice image commence au pixel 1,1 alors que l'analyse se fait avec 0,0 dans cette fonction !!
-				fprintf(fic,"%d %f %f %d %d %f %f\n",
-				ntrainee,posx,posy,x,y,fwhmx,fwhmy);
+				fprintf(fic,"%d %f %f %f %f %d %d %f %f\n",
+				ntrainee,posx,posy,xcc,ycc,x,y,fwhmx,fwhmy);
 				ntrainee++;
 				tt_free2((double**)&mat,"mat");
 				x=x+ltt;
@@ -353,48 +355,55 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	return 1;
 }
 
-void fittrainee (int sizex, int sizey,double **mat,double *p,double *ecart, double exposure) {
+void fittrainee (double fwhm,int x,int sizex, int sizey,double **mat,double *p,double *ecart, double exposure) {
 
-	double *matx,*maty, intensite,moyx,*addx,lt,matyy;
+	double *matx,*maty, intensite,moyy,*addx,lt,matyy,posx,inten;
 	int jx,jxx,jy,moyjx,ltt,posmaty;
+	int n23;
+	double value,sx,sy,flux,fmoy,fmed,seuilf,f23,a,b,c,xcc,ycc;
+	double *vec;
 	
-	p = (double*)calloc(6,sizeof(double));
 
 	//longueur des trainees pour la camera Andor de TAROT
 	lt=0.004180983*exposure/(9.1441235255136e-4);
 	ltt = (int) lt;
 
 	matx = (double*)calloc(sizex,sizeof(double));
-	maty = (double*)calloc((sizex-ltt),sizeof(double));
+	maty = (double*)calloc((sizex-ltt+7),sizeof(double));
 	addx = (double*)calloc(sizex,sizeof(double));
 
 	for (jx=0;jx<sizex;jx++) {
 		matx[jx]=0.;
 	}
-	for (jy=0;jy<(sizex-ltt);jy++) {
+	for (jy=0;jy<(sizex-ltt+7);jy++) {
 		maty[jy]=0.;
 	}
 	for (jx=0;jx<sizex;jx++) {
 		addx[jx]=0.;
 	}
 
-	moyx=0;
-	
-	// recherche du max d'intensité pour chaque colonne
+	moyy=0;
+	inten=0.;
+	// recherche du max d'intensité pour chaque colonne et ligne pour avoir une valeur approchée du centre de l'etoile
 	for (jx=0;jx<sizex;jx++) {
 		intensite=0.;
 		for (jy=0;jy<sizey;jy++) {
-			if (mat[jx][jy]>intensite) {intensite=mat[jx][jy]; matx[jx]=1.*jy; }
-			moyx+=1.*jy;
-			addx[jx]+=mat[jx][jy];
+			if (mat[jx][jy]>intensite) {
+				intensite=mat[jx][jy]; matx[jx]=1.*jy; 
+				
+			}	
+			if (intensite>inten) {inten=intensite;}
 		}
+		moyy+=matx[jx];
+		addx[jx]+=mat[jx][jy];
 	}
-	moyx=moyx/sizex;
-	moyjx = (int)moyx;
+	moyy=moyy/sizex;
+	moyjx = (int)moyy;
+	if (moyy-moyjx>0.5) {moyjx+=1;}
 	matyy=0;
-	//moyxx=0.;
-	for (jx=0;jx<(sizex-ltt);jx++) {
-		for (jxx=0;jxx<ltt;jxx++) {
+	
+	for (jx=0;jx<(sizex-ltt+6);jx++) {
+		for (jxx=0;jxx<(ltt-6);jxx++) {
 			maty[jx]+=mat[jx+jxx][moyjx];
 		}
 		if (maty[jx]>matyy) {
@@ -402,381 +411,68 @@ void fittrainee (int sizex, int sizey,double **mat,double *p,double *ecart, doub
 			 
 		}
 	}
+	//posx et moyy représentent le pixel d'intensité la plus forte sur la ligne définie par y=moyy
+	//moyy représente la ligne moyenne d'intensité maximale dans la zone 
+	posx=(double)posmaty;
+	p[1]=posx;
+	p[2]=1;//a calculer
+	p[4]=moyy;
+	p[5]=1;//a calculer
 
+
+	vec=NULL;
+	vec = (double*)calloc(sizex*sizey,sizeof(double));
+	n23=0;
+	f23=0.;
+	b=2*fwhm;
+	a=ltt/2;
+	c=1.5*fwhm;
+
+	//definir une ellipse dont un des foyers est def par posmaty et moyx
+	for (jy=0;jy<sizey;jy++) {	
+		for (jx=0;jx<sizex;jx++) {			
+			if (((jx-posx-a)*(jx-posx-a)/(a*a) + (jy-moyy)*(jy-moyy)/(b*b))<=1) {
+				vec[n23]=mat[jx][jy];
+				f23 += mat[jx][jy];
+				n23++;
+			}
+		}
+	}
+
+	tt_util_qsort_double(vec,0,n23,NULL);
+
+	fmoy=vec[0];
+	if (n23!=0) {fmoy=f23/n23;}
+	/* calcule la valeur du fond pour 50 pourcent de l'histogramme*/
+	fmed=(float)vec[(int)(0.5*n23)];
+	free(vec);
+	seuilf=0.2*(inten-fmed);
+	sx=0.;
+	sy=0.;
+	flux=0.;
+	for (jy=0;jy<sizey;jy++) {	
+		for (jx=0;jx<sizex;jx++) {					
+			value=mat[jx][jy]-fmed;
+			if ((((jx-posx-a)*(jx-posx-a)/(a*a) + (jy-moyy)*(jy-moyy)/(c*c))<=1)&&(value>=seuilf)) {
+				flux += value;
+				sx += (double)(jx * value);
+				sy += (double)(jy * value);			
+			} 
+		}
+	}
+	if (flux!=0.) {
+		xcc = sx / flux -ltt/2;
+		ycc = sy / flux ;
+	}
+	
+	p[0]=xcc;
+	p[3]=ycc;
+	
 	free(matx);
 	free(maty);
 	free(addx);
+
 }
-
-int tt_util_chercher_trainee2(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double xc0, double yc0, double radius, double exposure)
-/***************************************************************************/
-/* Analyse des pixels de l'image pour detecter les satellites geostats     */
-/***************************************************************************/
-/* Boucle generale.                                                        */
-/***************************************************************************/
-/*                                                                         */
-/* fwhmsat est la longueur des trainees                                    */
-/* !!!! Les coordonnees pixels commencent en (0,0) !!!!                    */
-/* 31 37 */
-/***************************************************************************/
-{
-   int k,y,x,ya,yb,yc,xxd,yyd,xxf,yyf;
-   double fwhmx,fwhmy,fond[4],detection,intensite;
-   int xmax,ymax;
-   double *v,*vec,valfond;
-   int ntrainee;
-   int nombre,nombre2,taille,msg;
-   int trainee,k1,k2,kk;
-   double detection2=0.;
-   double ra,dec,xcc,ycc,r1,r11,r2,r22,r3,r33,r4,sx,sy,flux,fwhmxy;
-   double dx,dy,dx2,dy2,d2,value,fmoy,fmed,seuilf,f23,sigma;
-   int xx1,xx2,yy1,yy2,n23,n23d,n23f,i,j,valid_ast;
-   double dx0,dy0,d0;
-   TT_ASTROM p_ast;
-   FILE *fic;
-   int sizex, sizey;
-   double **mat, *p, *ecart;
-   double posx,posy;
-   //double *maxx,*posx,*fwhmxx,*fondx,*maxy,*posy,*fwhmyy,*fondy; 
-   //maxx=NULL; posx=NULL; fwhmxx=NULL; fondx=NULL;  maxy=NULL; posy=NULL; fwhmyy=NULL; fondy=NULL;
-   
-   
-   /* --- chercher les dimensions de l'image ---*/
-   xmax=pin->naxis1;
-   ymax=pin->naxis2;
-   /* --- lit les parametres astrometriques de l'image ---*/
-   valid_ast=1;
-   tt_util_getkey0_astrometry(pin,&p_ast,&valid_ast);
-	
-
-   /* --- Calcul du critere de qualite stellaire ---*/
-   ntrainee=0;
-   nombre=10;
-   nombre2=1;
-   taille=sizeof(double);
-   v=NULL;
-   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&v,&nombre,&taille,"v"))!=OK_DLL) {
-      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_util_geostat (pointer v)");
-      return(TT_ERR_PB_MALLOC);
-   }
-   /* --- ouvre le fichier en ecriture ---*/
-   fic=fopen(filename,"wt");
-   /* --- grande boucle sur l'image ---*/
-   d0=radius*radius;
-   seuil=seuil/seuil1;
-   for (y=1;y<ymax-1;y++) {
-      if ((y>ymax)||(y<0)) { continue; }
-      ya=xmax*(y-1);
-      yb=xmax*y;
-      yc=xmax*(y+1);
-      dy0=(y-yc0)*(y-yc0);
-      for (x=1;x<xmax;x++) {
-		 if(pout->p[yb+x+1] == 0) { continue; }
-		 //if(pout->p[yb+x+1] == 1) { continue; }
-         if ((x>xmax)||(x<0)) { continue; }
-         dx0=(x-xc0)*(x-xc0);
-         if ((dy0+dx0)>d0) { continue; }
-	      v[1]=pin->p[ya+x-1];
-	      v[6]=pin->p[yb+x+1 ];
-	      if (v[6]>v[1]) {
-	         v[2]=pin->p[ya+x  ];
-			 v[7]=pin->p[yc+x-1]; 
-	         v[4]=pin->p[yb+x-1];
-	         if ((v[6]>v[2])&&(v[6]>v[7])&&(v[6]>v[4])) {
-				v[8]=pin->p[yc+x  ];
-				v[5]=pin->p[yb+x  ];
-				 if ((v[6]>v[8])&&(v[6]>=v[5])) {	            
-					v[3]=pin->p[ya+x+1];
-					v[9]=pin->p[yc+x+1];
-					if (((v[6]>=v[3])&&(v[6]>=v[9]))||((v[6]>=v[3])&&(v[6]>=0.9*v[9]))||((v[6]>=v[9])&&(v[6]>=0.9*v[3]))||((v[6]>=0.9*v[9])&&(v[6]>=0.9*v[3]))) {
-						/* --- maximum local detecte = pixel au milieu à droite sur matrice 3*3---*/
-  						/* --- recherche le fond local ---*/
-						fwhmx=0;
-						for (k=x;k<=(xmax-2);k++) {
-							if ((pin->p[xmax*y+k]-pin->p[xmax*y+k+1])<=0) break;
-							else fwhmx+=1;
-						}
-						k--;
-           				xxf=k;
-						/*printf("-> %d/%d\n",xmax*y+k+1,longueur);*/
-						fond[0]=pin->p[xmax*y+k+1];
-						for (k=x;k>=1;k--) {
-						if ((pin->p[xmax*y+k]-pin->p[xmax*y+k-1])<=0) break;
-							else fwhmx+=1;
-						}
-						k++;
-						xxd=k;
-						fwhmx/=2.;
-						/*printf("-> %d/%d\n",xmax*y+k-1,longueur);*/
-						fond[1]=pin->p[xmax*y+k-1];
-						fwhmy=0;
-           				for (k=y;k<=(ymax-2);k++) {
-							if ((pin->p[xmax*k+x]-pin->p[xmax*(k+1)+x])<=0) break;
-							else fwhmy+=1;
-						}
-						k--;
-						yyf=k;
-						/*printf("-> %d/%d\n",xmax*(k+1)+x,longueur);*/
-						fond[2]=pin->p[xmax*(k+1)+x];
-						for (k=y;k>=1;k--) {
-							if ((pin->p[xmax*k+x]-pin->p[xmax*(k-1)+x])<=0) break;
-						else fwhmy+=1;
-						}
-						k++;
-						yyd=k;
-						fwhmy/=2.;
-						/*printf("-> %d %d/%d\n",k,xmax*(k-1)+x,longueur);*/
-						fond[3]=pin->p[xmax*(k-1)+x];
-						/* valfond est le fond mini */
-						valfond=fond[0];
-						for (k=1;k<4;k++) {
-							if (fond[k]<valfond) {
-								valfond=fond[k];
-							}
-						}
-						valfond=valfond/seuil1;	  
-						detection=valfond+seuil;
-						/* maximum local>detect ET ce n'est pas un cosmique */
-						if ((v[6]/seuil1>=detection)&&(fwhmx>1.)&&(fwhmy>1.)) {
-							detection2=valfond+0.5*(v[6]/seuil1-valfond);
-							trainee=0;
-						/* on recherche une trainee a gauche */
-						k1=(int)((double)x-0.4*fwhmsat);
-						if (k1<0) {k1=0;}
-						k2=x;
-   						for (kk=0,k=k1;k<=k2;k++) {
-							if (pin->p[xmax*y+k]>=detection2) {
-								kk++;
-							}
-						}
-						if (kk>(int)(0.8*(k2-k1))) {
-							trainee=-1;
-						}
-						/* on recherche une trainee a droite */
-						k1=x;
-						k2=(int)((double)x+0.4*fwhmsat);
-						if (k2>(xmax-1)) {k2=xmax-1;}
-   						for (kk=0,k=k1;k<=k2;k++) {
-							if (pin->p[xmax*y+k]>=detection2) {
-								kk++;
-							}
-						}
-						if (kk>(int)(0.8*(k2-k1))) {
-							trainee=1;
-						}
-
-						if (trainee==1) {
-		                  /* --- une trainée a été détectée ---*/
-							ntrainee++;
-							intensite=v[6]/seuil1-valfond;
-							/* --- parametres de mesure precise ---*/
-
-// il faut fitter avec la forme d'une trainée, et trouver sa largeur et sa longueur qui doivent être cohérentes:
-// longueur = largeur + trainée
-						
-
-							xcc=(double)x;
-							ycc=(double)y;
-							fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;//on prend la plus grande valeur des 2
-							r1=1.5*fwhmxy;
-							r2=2.0*fwhmxy;
-							r3=55;
-							r4=14;
-							r11=r1*r1;
-							r22=r2*r2;
-							r33=r3*r3;
-							/* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
-							xx1=(int)(xcc-r3/12);
-							xx2=(int)(xcc+r3);
-							yy1=(int)(ycc-r4);
-							yy2=(int)(ycc+r4);
-							if (xx1<0) xx1=0;
-							if (xx1>=xmax) xx1=xmax-1;
-							if (xx2<0) xx2=0;
-							if (xx2>=xmax) xx2=xmax-1;
-							if (yy1<0) yy1=0;
-							if (yy1>=ymax) yy1=ymax-1;
-							if (yy2<0) yy2=0;
-							if (yy2>=ymax) yy2=ymax-1;
-							
-							sizex=xx2-xx1;
-							sizey=yy2-yy1;
-							mat=NULL;
-							p=NULL;
-							
-							mat = (double**)calloc(sizex,sizeof(double));
-							for(i=0;i<sizex;i++) {
-								*(mat+i) = (double*)calloc(sizey,sizeof(double));
-							}
-
-							//--- Mise a zero des deux buffers de binning
-						    for(i=0;i<sizex;i++) {
-							  for(j=0;j<sizey;j++) {
-								 mat[i][j]=(double)0.;
-							  }
-							}
-						    for(j=0;j<sizey;j++) {
-							  for(i=0;i<sizex;i++) {
-								 mat[i][j] = pin->p[xmax*(yy1+j)+xx1+i];
-							  }
-							}
-
-						    ecart = (double*)calloc(1,sizeof(double));
-							p = (double*)calloc(6,sizeof(double));
-
-							//on récupère la bonne position en y, mais pas en x, il faut add xx1 et yy1 au valeurs obtenues!!
-							fittrainee2 (sizex, sizey, mat, p, ecart, exposure);
-						    
-							//*maxy  = p[0];
-						    //*maxx  = p[0];
-						    posx  = p[1]+xx1;
-						    fwhmx = p[2];
-						    //*fondx = p[3];
-						    //*fondy = p[3];
-						    posy  = p[4]+yy1;
-						    fwhmy = p[5];
-
-							nombre=(xx2-xx1+1)*(yy2-yy1+1);
-							taille=sizeof(double);
-							vec=NULL;
-							if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&vec,&nombre,&taille,"vf"))!=OK_DLL) {
-								tt_free(v,"v");
-								fclose(fic);
-								tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_util_geostat (pointer vec)");
-								return(TT_ERR_PB_MALLOC);
-							}
-							n23=0;
-							f23=0.;
-							for (j=yy1;j<=yy2;j++) {
-								dy=1.*j-ycc;
-								dy2=dy*dy;
-								for (i=xx1;i<=xx2;i++) {
-									dx=1.*i-xcc;
-									dx2=dx*dx;
-									d2=dx2+dy2;
-									if ((d2>=r22)&&(d2<=r33)) {
-										vec[n23]=(double)pin->p[xmax*j+i];
-										f23 += (double)pin->p[xmax*j+i];
-										n23++;
-									}
-								}
-							}
-							tt_util_qsort_double(vec,0,n23,NULL);
-							fmoy=vec[0];
-							if (n23!=0) {fmoy=f23/n23;}
-							/* calcule la valeur du fond pour 50 pourcent de l'histogramme*/
-							fmed=(float)vec[(int)(0.5*n23)];
-							/*  calcul de l'ecart type du fond de ciel*/
-							/*  en excluant les extremes a +/- 10 %*/
-							sigma=0.;
-							n23d=(int)(0.1*(n23-1));
-							n23f=(int)(0.9*(n23-1));
-							for (i=n23d;i<=n23f;i++) {
-							d2=(vec[i]-fmed);
-							sigma+=(d2*d2);
-							}
-							if ((n23f-n23d)!=0) {
-							sigma=sqrt(sigma/(n23f-n23d));
-							}
-							tt_free(vec,"vec");
-							/* --- photocentre (xc,yc) ---*/
-							/*xx1=(int)(xcc-r1);
-							xx2=(int)(xcc+r1);
-							yy1=(int)(ycc-r1);
-							yy2=(int)(ycc+r1);
-							if (xx1<0) xx1=0;
-							if (xx1>=xmax) xx1=xmax-1;
-							if (xx2<0) xx2=0;
-							if (xx2>=xmax) xx2=xmax-1;
-							if (yy1<0) yy1=0;
-							if (yy1>=ymax) yy1=ymax-1;
-							if (yy2<0) yy2=0;
-							if (yy2>=ymax) yy2=ymax-1;*/
-							seuilf=0.2*(v[6]-fmed);
-							sx=0.;
-							sy=0.;
-							flux=0.;
-							for (j=yy1;j<=yy2;j++) {
-								dy=1.*j-ycc;
-								dy2=dy*dy;
-								for (i=xx1;i<=xx2;i++) {
-									dx=1.*i-xcc;
-									dx2=dx*dx;
-									d2=dx2+dy2;
-									value=(double)pin->p[xmax*j+i]-fmed;
-									if ((d2<=r11)&&(value>=seuilf)) {
-										flux += value;
-										sx += (double)(i * value);
-										sy += (double)(j * value);
-										pout->p[xmax*j+i] = 1;
-									} else {
-										pout->p[xmax*j+i] = 0;
-									}
-								}
-							}
-							if (flux!=0.) {
-								xcc = sx / flux ;
-								ycc = sy / flux ;
-							}
-							/* --- photometrie (flux) ---*/
-							/*xx1=(int)(xcc-r1);
-							xx2=(int)(xcc+r1);
-							yy1=(int)(ycc-r1);
-							yy2=(int)(ycc+r1);
-							if (xx1<0) xx1=0;
-							if (xx1>=xmax) xx1=xmax-1;
-							if (xx2<0) xx2=0;
-							if (xx2>=xmax) xx2=xmax-1;
-							if (yy1<0) yy1=0;
-							if (yy1>=ymax) yy1=ymax-1;
-							if (yy2<0) yy2=0;
-							if (yy2>=ymax) yy2=ymax-1;
-							flux=0.;
-							for (j=yy1;j<=yy2;j++) {
-								dy=1.*j-ycc;
-								dy2=dy*dy;
-								for (i=xx1;i<=xx2;i++) {
-									dx=1.*i-xcc;
-									dx2=dx*dx;
-									d2=dx2+dy2;
-									value=(double)pin->p[xmax*j+i]-fmed;
-									if ((d2<=r11)) {
-										flux += value;
-									}
-								}
-							}*/
-							/* --- astrometrie (ra,dec) ---*/
-							ra=0.;
-							dec=0.;
-							if (valid_ast==TT_YES) {
-								tt_util_astrom_xy2radec(&p_ast,xcc,ycc,&ra,&dec);
-							}
-							ra*=180./(TT_PI);
-							dec*=180./(TT_PI);
-							/* --- sortie du resultat ---*/
-							fprintf(fic,"%d %f %f %f %f %f %f %f %f %f %f\n",
-							ntrainee,xcc+1.,posx,ycc+1.,posy,flux,fmed,ra,dec,fwhmx,fwhmy);
-// on met à 1 ou 0 les pixels dans pout que l'on a utlisées pour aller plus vite et pas retravaillé dessus
-							tt_free2((double**)&mat,"mat");
-							free(ecart);
-							free(p);
-						}
-					}
-               
-				}
-			  }
-
-            }
-         }
-      }
-   }
-   tt_free(v,"v");  
-   fclose(fic);
- 
-   return(OK_DLL);
-}
-
-
 
 
 /***************************************************/
@@ -800,11 +496,14 @@ void fittrainee2 (int sizex, int sizey,double **mat,double *p,double *ecart,doub
    int l,nbmax,m;
    double l1,l2,a0;
    double e,er1,y0;
-   double m0,m1;
+   double m0,m1,vs;
    double e1[6]; /* ici ajout */
    int i,jx,jy;
    double rr2;
    double xx,yy;
+
+   //vitesse sidérale
+   vs = 0.004180983;
 
    p[0]=mat[0][0];
    p[1]=0.;
