@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.21 2007-07-06 22:29:49 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.22 2007-08-11 17:18:08 michelpujol Exp $
 #
 
 #==============================================================
@@ -452,7 +452,7 @@ proc ::autoguider::doAcquisition { visuNo camNo} {
 # ::autoguider::processAcquisition
 #    traite une acquisition
 #------------------------------------------------------------
-proc ::autoguider::processAcquisition { visuNo camNo} {
+proc ::autoguider::processAcquisition { visuNo camNo } {
    variable private
    global conf
    global caption
@@ -555,7 +555,8 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
          #console::disp "result0=$private($visuNo,targetCoord) \n"
       } else {
          set ydelta [expr abs([lindex $private($visuNo,originCoord) 1] - [lindex $private($visuNo,targetCoord) 1]) ]
-         set yslit [expr $::conf(autoguider,lipWidth) + $::conf(autoguider,slitWidth)/2 ]
+         ##set yslit [expr $::conf(autoguider,lipWidth) + $::conf(autoguider,slitWidth)/2 ]
+         set yslit [expr $::conf(autoguider,slitWidth) ]
 
          if { $private($visuNo,dynamicDectection) == "SLIT" } {
              #--- l'etoile est une levre
@@ -569,7 +570,6 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
              set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
              set result [buf$bufNo slitcentro "[list $x1 $y1 $x2 $y2]" $::conf(autoguider,slitWidth) $::conf(autoguider,slitRatio) ]
              set private($visuNo,targetCoord) [lrange $result 0 1]
-             ##console::disp "SLIT=$result \n"
          } else {
              #--- l'etoile n'est pas sur une levre =>
              set x  [lindex $private($visuNo,targetCoord) 0]
@@ -580,7 +580,7 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
              set y2 [expr int($y) + $::conf(autoguider,targetBoxSize)]
              set result [buf$bufNo centro "[list $x1 $y1 $x2 $y2]" ]
              set private($visuNo,targetCoord) [lrange $result 0 1]
-             #console::disp "PSF=$result \n"
+             ##console::disp "PSF=$result \n"
          }
       }
 
@@ -604,12 +604,12 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
       if { $::conf(autoguider,detection)=="SLIT" } {
          if { $private($visuNo,dynamicDectection) == "PSF" } {
 ##console::disp "PSF= [expr abs($dy)] < $yslit = [expr abs($dy) < ($yslit * 0.9)] \n"
-             if {  [expr abs($dy) < ($yslit * 0.9)] } {
+             if {  [expr abs($dy) < ($yslit * 0.7)] } {
                  set private($visuNo,dynamicDectection) "SLIT"
              }
          } else {
-##console::disp "SLIT= [expr abs($dy)] > $yslit = [expr abs($dy) > ($yslit * 1.1) ] \n"
-             if { [expr abs($dy) > ($yslit * 1.1) ] } {
+##console::disp "SLIT= [expr abs($dy)] > $yslit = [expr abs($dy) > ($yslit * 1.0) ] \n"
+             if { [expr abs($dy) > ($yslit * 1) ] } {
                  set private($visuNo,dynamicDectection) "PSF"
              }
          }
@@ -651,7 +651,8 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
          #set deltaDelay [expr int((sin($angle) * $private($visuNo,dx) + cos($angle) *$private($visuNo,dy)) * 1000.0 / $conf(autoguider,deltaSpeed))]
          set alphaDelay [expr int((cos($angle) * $private($visuNo,dx) - sin($angle) *$private($visuNo,dy)) * $conf(autoguider,alphaSpeed))]
          set deltaDelay [expr int((sin($angle) * $private($visuNo,dx) + cos($angle) *$private($visuNo,dy)) * $conf(autoguider,deltaSpeed))]
-
+##console::disp "deltaDelay=$deltaDelay\n"
+##set deltaDelay [expr int($deltaDelay)]
          #--- calcul des seuils minimaux de deplacement alpha et delta (en millisecondes)
          #set seuilAlpha [expr $conf(autoguider,seuilx) * 1000.0 / $conf(autoguider,alphaSpeed)]
          #set seuilDelta [expr $conf(autoguider,seuily) * 1000.0 / $conf(autoguider,deltaSpeed)]
@@ -691,6 +692,7 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
                set deltaDirection "s"
                set deltaDelay [expr -$deltaDelay]
             }
+##console::disp "deltaDelay=$deltaDelay seuilDelta=$seuilDelta\n"
             #--- test anti-turbulence
             if { $deltaDirection != $private(previousDeltaDirection) } {
               set deltaDelay 0
@@ -815,6 +817,8 @@ proc ::autoguider::setTargetCoord { visuNo x y } {
       set centro [buf$bufNo centro [list $x1 $y1 $x2 $y2] ]
       set private($visuNo,targetCoord) $centro
    } else {
+      #--- je force mode PSF
+      set private($visuNo,dynamicDectection) "PSF"
       set private($visuNo,targetCoord) $coord
    }
    #--- je dessine la cible aux nouvelle coordonnee sur la nouvelle origine
@@ -1049,6 +1053,8 @@ proc ::autoguider::drawAxis { visuNo coord angle label1 label2} {
       return
    }
 
+   #--- j'inverse le signe de l'angle
+   ##set angle [expr $angle * (-1) ]
    set margin 8
    set windowCoords [::confVisu::getWindow $visuNo]
    set xmin [expr [lindex $windowCoords 0] + $margin]
@@ -1307,7 +1313,7 @@ proc ::autoguider::moveTelescope { visuNo direction delay} {
 
    #--- je demarre le deplacement
    ##::telescope::move $direction
-   tel$::audace(telNo) radec move $direction
+   tel$::audace(telNo) radec move $direction $::audace(telescope,rate)
 
    #--- j'attend l'expiration du delai par tranche de 1 seconde
    while { $delay > 0 } {
