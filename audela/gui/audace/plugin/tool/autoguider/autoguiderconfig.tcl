@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.10 2007-07-06 22:29:49 michelpujol Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.11 2007-08-11 17:18:08 michelpujol Exp $
 #
 
 ################################################################
@@ -242,8 +242,9 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    TitleFrame $frm.delta -borderwidth 2 -text "$caption(autoguider,declinaison)"
       LabelEntry $frm.delta.gainprop -label "$caption(autoguider,vitesse)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
-         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -9999 9999} \
          -textvariable ::autoguider::config::widget($visuNo,deltaSpeed)
+##         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s -9999 9999}
+
       pack $frm.delta.gainprop -in [$frm.delta getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.delta.seuil -label "$caption(autoguider,seuil)" \
          -labeljustify left -labelwidth 16 -width 5 -justify right \
