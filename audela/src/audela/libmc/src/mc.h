@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -141,7 +141,7 @@
 #define TLOSS -99
 */
 
-#define RV_KLSR 0 
+#define RV_KLSR 0
 #define RV_DLSR 1
 #define RV_GALC 2
 #define RV_LOG  3
@@ -311,7 +311,7 @@ typedef struct {
    short magi; /* mag*100 ou *1000 pour Loneos*/
    float x;   /* en pixels */
    float y;  /* en pixels */
-   char origin; /* 1:TycMicro 2:GscMicro 3:Usno */ 
+   char origin; /* 1:TycMicro 2:GscMicro 3:Usno */
 } objetype;
 
 /* --- Lecture USNO methode Buil */
@@ -478,12 +478,6 @@ typedef struct {
 /***************************************************************************/
 
 /***************************************************************************/
-/* Gestion des choix de calcul de MC                                       */
-/***************************************************************************/
-void mc_entree(struct mcvar *param);
-void mc_paramjj(char *date,char *contrainte, double *jj);
-
-/***************************************************************************/
 /* Menus pour un mode d'utilisation texte                                  */
 /***************************************************************************/
 void mc_main(void);
@@ -529,6 +523,12 @@ void mc_inputdate(char *intitule,char *contrainte, char *date);
 void mc_inputfile(char *intitule, char *nom_fichier);
 void mc_inputnumber(char *intitule,char *contrainte, double *nombre);
 void mc_outputfile(char *intitule, char *nom_fichier);
+
+/***************************************************************************/
+/* Gestion des choix de calcul de MC                                       */
+/***************************************************************************/
+void mc_entree(struct mcvar *param);
+void mc_paramjj(char *date,char *contrainte, double *jj);
 
 /***************************************************************************/
 /* Macro fonctions a appeler de l'exterieur                                */
@@ -748,7 +748,6 @@ void mc_fprfeph21(int flag,struct elemorb elem,double jj,double asd,double dec,d
 void mc_fprfeph2(int flag, double equinoxe, double jj, struct elemorb elem, FILE *fichier_out,int *nblighead);
 void mc_fprfeph22(int flag,struct elemorb elem,double jj,double asd,double dec,double mag,double delta,double r,double elong,double dist,double posangle,double incert,FILE *fichier_out);
 void mc_lec_ele_mpec1(char *nom_fichier_in, struct elemorb *elem,int *concordance,int *ligfin);
-void mc_lec_ele_mpec2(char *texte, int *annee, int *mois, double *jour);
 void mc_mpec_check(struct elemorb *elem,struct elemorb *elemok,int *check);
 void mc_mpec_datesjjjj(char *ligne, char *motcle,char *argument1,char *argument2);
 void mc_mpec_datejj(char *ligne, char *motcle,char *argument);
@@ -769,7 +768,6 @@ void mc_jd2elem1(double jj, int planete, struct elemorb *elempla);
 void mc_jd2lbr1a(double jj, double *l, double *m, double *u);
 
 void mc_jd2lbr1b(double jj, int planete, double *l, double *m, double *u, double *ll, double *bb, double *rr);
-void mc_jd2lbr2b(double jj, int planete, double *l, double *m, double *u, double *ll, double *bb, double *rr);
 void mc_jd2lbr_vsop87_mer(double jj, double *ll, double *bb, double *rr);
 void mc_jd2lbr_vsop87_ven(double jj, double *ll, double *bb, double *rr);
 void mc_jd2lbr_vsop87_ear(double jj, double *ll, double *bb, double *rr);
@@ -778,7 +776,7 @@ void mc_jd2lbr_vsop87_jup(double jj, double *ll, double *bb, double *rr);
 void mc_jd2lbr_vsop87_sat(double jj, double *ll, double *bb, double *rr);
 void mc_jd2lbr_vsop87_ura(double jj, double *ll, double *bb, double *rr);
 void mc_jd2lbr_vsop87_nep(double jj, double *ll, double *bb, double *rr);
-void mc_jd2lbr_vsop87_compute(double jj, 
+void mc_jd2lbr_vsop87_compute(double jj,
    double *l0,double *l1,double *l2,double *l3,double *l4,double *l5, int lmax, int *lalpha,
    double *b0,double *b1,double *b2,double *b3,double *b4,double *b5, int bmax, int *balpha,
    double *r0,double *r1,double *r2,double *r3,double *r4,double *r5, int rmax, int *ralpha,
@@ -832,15 +830,15 @@ void mc_adastrom(double jj, struct elemorb elem, double equinoxe, double *asd, d
    Calcul de l'asd, dec et distance a jj donne rapporte a un equinoxe
    pour un astre defini par ses elements d'orbite.
 void mc_adasaap(double jj,double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr);
-   Calcul de l'asd, dec et distance a jj donne rapporte a un equinoxe      
-   pour un astre defini par ses elements d'orbite.                         
+   Calcul de l'asd, dec et distance a jj donne rapporte a un equinoxe
+   pour un astre defini par ses elements d'orbite.
 void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinphip, struct elemorb elem, int frame, double *xearth,double *yearth,double *zearth,double *xaster,double *yaster,double *zaster, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr)
    Calcul de coord. cartesiennes heliocentriquesa jj donne rapporte a un equinoxe
-   pour un astre defini par ses elements d'orbite.                         
+   pour un astre defini par ses elements d'orbite.
 void mc_adplaap(double jj,double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
    Calcul de l'asd, dec et distance apparentes d'une planete a jj donne.
 void mc_adlunap(double jj,double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
-   Calcul de l'asd, dec et distance apparentes de la Lune a jj donne.      
+   Calcul de l'asd, dec et distance apparentes de la Lune a jj donne.
 void mc_adsolap(double jj,double longmpc,double rhocosphip,double rhosinphip, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
    Calcul de l'asd, dec et distance apparentes du Soleil a jj donne
 void mc_adelemap(double jj,struct elemorb elem, double longmpc,double rhocosphip,double rhosinphip, int planete, double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun);
@@ -867,8 +865,8 @@ void mc_lec_mpc_auto(char *nom_fichier_in,struct observ *obs, int *nbobs);
    Macro destinee a charger la serie de trois dates d'observations du
    premier objet rencontre dans la base *nom_fichier_in au format MPC.
 void mc_typedaster(struct asterident aster, char *ligne);
-  Genere un ligne de mots clairs qui designe le type d'asteroide a partir 
-  des 6 codes de la base de Bowell.                                       
+  Genere un ligne de mots clairs qui designe le type d'asteroide a partir
+  des 6 codes de la base de Bowell.
 void mc_xvxpla(double jj, int planete, double jj_equinoxe, double *x, double *y,double *z, double *vx, double *vy,double *vz);
    Calcul de pos. et vit. cart. equ. heliocent. d'une planete a jj donne.
 MC_MACR3.C
@@ -955,9 +953,9 @@ void mc_orbi_auto(char *nom_fichier_obs,char *nom_fichier_ele);
    des autres au format MPEC.
 void mc_rms_obs(struct elemorb *elem, struct observ *obs, int nbobs);
    calcule les ecarts o-c entre les asd/dec des observations et ceux prevus
-   par les elements d'orbite.                                              
-   complete la valeur du residu RMS en arcsec pour l'ensemble des obs      
-   dans elem.residu_rms.                                                   
+   par les elements d'orbite.
+   complete la valeur du residu RMS en arcsec pour l'ensemble des obs
+   dans elem.residu_rms.
 */
 
 /***************************************************************************/
@@ -974,7 +972,7 @@ void mc_elonphas(double r, double rsol, double delta, double *elong, double *pha
 void mc_magaster(double r, double delta, double phase, double h, double g, double *mag);
    Calcule la magnitude d'un asteroide a partir de H, G et la phase.
 void mc_magplanet(double r,double delta,int planete,double phase,double l,double b,double *mag);
-   Calcule la magnitude d'une planete                                      
+   Calcule la magnitude d'une planete
 void mc_magcomete(double r, double delta, double h0, double n, double *mag);
    Calcule la magnitude d'une comete a partir de h0 et n.
 void mc_sepangle(double a1, double a2, double d1, double d2, double *dist, double *posangle);
@@ -988,14 +986,14 @@ void mc_physephem(double jj,int planete,double xg,double yg,double zg,double x,d
                   double *posangle_sun);
    Cacul des parametres do'bservation physique des planetes
 int mc_util_cd2cdelt_old(double cd11,double cd12,double cd21,double cd22,double *cdelt1,double *cdelt2,double *crota2);
-   Utilitaire qui tranforme les mots wcs de la matrice cd vers les         
-   vieux mots cle cdelt1, cdelt2 et crota2.                                
+   Utilitaire qui tranforme les mots wcs de la matrice cd vers les
+   vieux mots cle cdelt1, cdelt2 et crota2.
 int mc_htm_testin(double *v0, double *v1, double *v2, double *v)
-   Retourne 1 si v est l'interieur du triangle v0,v1,v2.                    
+   Retourne 1 si v est l'interieur du triangle v0,v1,v2.
 int mc_radec2htm(double ra,double dec,int niter,char *htm)
-   Retourne le code Hierarchical Triangle Mesh.                            
+   Retourne le code Hierarchical Triangle Mesh.
 int mc_htm2radec(char *htm,double *ra,double *dec,int *niter,double *ra0,double *dec0,double *ra1,double *dec1,double *ra2,double *dec2)
-   Retourne le ra,dec a paertir du code Hierarchical Triangle Mesh.        
+   Retourne le ra,dec a paertir du code Hierarchical Triangle Mesh.
 */
 
 /***************************************************************************/
@@ -1021,7 +1019,7 @@ void mc_tu2td(double jjtu,double *jjtd);
 void mc_tdminusut(double jj,double *dt);
    Retourne la valeur dt=TT-UT partir de jj en TU
 void mc_jd2dateobs(double jj, char *date);
-   Donne la date Fits (DATE-OBS) correspondant a un jour julien                            
+   Donne la date Fits (DATE-OBS) correspondant a un jour julien
 void mc_dateobs2jd(char *date, double *jj);
    Donne le jour juliene correspondant a la date Fits (DATE-OBS)
 */
@@ -1034,11 +1032,11 @@ MC_CORC1.C
 void mc_parallaxe_stellaire(double jj,double asd1,double dec1,double *asd2,double *dec2,double plx_mas);
    Corrige asd1,dec1 de la parallaxe stellaire et retourne asd2 et dec2
 void mc_aberration_annuelle(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe);
-   Corrige asd1,dec1 de l'aberration annuelle et retourne asd2 et dec2     
+   Corrige asd1,dec1 de l'aberration annuelle et retourne asd2 et dec2
 void mc_aberration_eterms(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe);
-   Corrige asd1,dec1 de l'aberration eterms et retourne asd2 et dec2       
+   Corrige asd1,dec1 de l'aberration eterms et retourne asd2 et dec2
 void mc_aberration_diurne(double jj,double asd1,double dec1, double longuai, double rhocosphip, double rhosinphip,double *asd2,double *dec2,int signe);
-   Corrige asd1,dec1 de l'aberration diurne et retourne asd2 et dec2       
+   Corrige asd1,dec1 de l'aberration diurne et retourne asd2 et dec2
 void mc_aberpla(double jj1, double delta, double *jj2);
    Corrige le jour julien du temps d'aberration planetaire.
 void mc_latalt2rhophi(double latitude,double altitude,double *rhosinphip,double *rhocosphip);
@@ -1047,7 +1045,7 @@ void mc_latalt2rhophi(double latitude,double altitude,double *rhosinphip,double 
 void mc_nutation(double jj, int precision, double *dpsi, double *deps);
    Calcul des corrections de longitude et d'obliquite dus a la nutation.
 void mc_nutradec(double jj,double asd1,double dec1,double *asd2,double *dec2,int signe);
-   Corrige asd1,dec1 de la nutation et retourne asd2 et dec2              
+   Corrige asd1,dec1 de la nutation et retourne asd2 et dec2
 void mc_obliqmoy(double jj, double *eps);
    Calcul la valeur de l'obliquite moyenne a l'equinoxe de la date jj.
 void mc_paraldxyzeq(double jj, double longuai, double rhocosphip, double rhosinphip, double *dxeq, double *dyeq, double *dzeq);
@@ -1064,7 +1062,7 @@ void mc_rhophi2latalt(double rhosinphip,double rhocosphip,double *latitude,doubl
    Retourne les valeurs de la latitude et de l'altitude a partir de
    rhocosphi' et rhosinphi' (en rayons equatorial terrestres)
 void mc_refraction(double h,int inout,double temperature,double pressure,double *refraction);
-   Retourne la valeur de la refraction.                                    
+   Retourne la valeur de la refraction.
 
 */
 
@@ -1100,7 +1098,7 @@ double mc_acos(double x);
 double mc_asin(double x);
    Fonction arcsinus evitant les problemes de depassement
 double mc_atan2(double y, double x);
-   Calcul de atan2 sans 'domain error'.                                    
+   Calcul de atan2 sans 'domain error'.
 double mc_sqrt(double x);
    Fonction sqrt evitant les problemes de negatif
 */
@@ -1168,23 +1166,23 @@ void mc_ad2hd(double jd, double longuai, double asd, double *ha);
 void mc_hd2ad(double jd, double longuai, double ha, double *asd);
    Transforme l'angle horaire en ascension droite
 void mc_hd2parallactic(double ha, double dec, double latitude, double *parallactic);
-   Transforme les coord. sph. equatoriales vers angle parallactic          
+   Transforme les coord. sph. equatoriales vers angle parallactic
 void mc_hd2parallactic_altalt(double ha, double dec, double latitude, double *parallactic);
    Transforme les coord. sph. equatoriales vers angle parallactic altalt
 void mc_hd2ah(double ha, double dec, double latitude, double *az, double *h);
    Transforme les coord. sph. equatoriales vers sph. azinuth hauteur
 void mc_ah2hd(double az, double h, double latitude, double *ha, double *dec);
-   Transforme les coord. sph. azinuth hauteur vers sph. equatoriales       
+   Transforme les coord. sph. azinuth hauteur vers sph. equatoriales
 void mc_hd2rp(double ha, double dec, double latitude, double *az, double *h);
-   Transforme les coord. sph. equatoriales vers sph. roulis assiette      
+   Transforme les coord. sph. equatoriales vers sph. roulis assiette
 void mc_rp2hd(double az, double h, double latitude, double *ha, double *dec);
-   Transforme les coord. sph. roulis assiette vers sph. equatoriales      
+   Transforme les coord. sph. roulis assiette vers sph. equatoriales
 void mc_ad2ah(double jd, double longuai, double latitude, double asd, double dec, double *az,double *h);
    Transforme les coord. sph. equatoriales vers sph. azinuth hauteur
 void mc_radec2galactic(double ra2000, double dec2000, double *lon,double *lat);
    Transforme les coord. sph. equatoriales J2000.0 vers sph. galactiques
 void mc_galactic2radec(double lon,double lat, double *ra2000, double *dec2000);
-   Transforme les coord. sph. galactiques vers sph. equatoriales J2000.0  
+   Transforme les coord. sph. galactiques vers sph. equatoriales J2000.0
 void mc_map_xy2lonlat(double lc, double bc, double p, double f, double xc, double yc, double rc, double ls, double bs, double power,double i,double j,double *lon,double *lat,double *visibility);
    Conversion of a pixel (i,j) towards planetographics coordinates.
 void mc_map_lonlat2xy(double lc, double bc, double p, double f, double xc, double yc, double rc, double ls, double bs, double power,double lon,double lat,double *i,double *j,double *visibility);
@@ -1213,8 +1211,8 @@ int mc_util_astrom_xy2radec(mc_ASTROM *p, double x,double y,double *ra,double *d
 /*
 MC_FILE1.C
 void mc_mpc_dec1(char *ligne, struct asterident *aster);
-   Decode les arguments d'une ligne extraite du fichier de la base de     
-   MPC et stocke les parametres dans la structure asterindent.         
+   Decode les arguments d'une ligne extraite du fichier de la base de
+   MPC et stocke les parametres dans la structure asterindent.
 void mc_bow_dec1(char *ligne, struct asterident *aster);
    Decode les arguments d'une ligne extraite du fichier de la base de
    Bowell et stocke les parametres dans la structure asterindent.
@@ -1282,27 +1280,27 @@ void mc_lec_ele_mpec1(char *nom_fichier_in, struct elemorb *elem,int *concordanc
 void mc_lec_ele_mpec2(char *texte, int *annee, int *mois, double *jour);
    Convertit une date [[a] mmm(.)] jj.jjjj en annee,mois,jour.
 void mc_mpec_check(struct elemorb *elem,struct elemorb *elemok,int *check);
-   Verifie la coherence des elements d'orbites deja lus et retourne un    
+   Verifie la coherence des elements d'orbites deja lus et retourne un
    *check=OK pour arreter la lecture des elements dans le fichier.
 void mc_mpec_datesjjjj(char *ligne, char *motcle,char *argument1,char *argument2);
-   Recherche la chaine "motcle" dans la chaine "ligne" et retourne dans   
-   "argument1" la premiere date trouvee immediatement apres "motcle" et   
-   "argument2" la deuxieme date trouvee immediatement apres la premiere.  
+   Recherche la chaine "motcle" dans la chaine "ligne" et retourne dans
+   "argument1" la premiere date trouvee immediatement apres "motcle" et
+   "argument2" la deuxieme date trouvee immediatement apres la premiere.
 void mc_mpec_datejj(char *ligne, char *motcle,char *argument);
-   Recherche la chaine "motcle" dans la chaine "ligne" et retourne dans 
-  "argument" la premiere date trouvee immediatement apres "motcle".       
+   Recherche la chaine "motcle" dans la chaine "ligne" et retourne dans
+  "argument" la premiere date trouvee immediatement apres "motcle".
 void mc_mpec_argnum(char *ligne, char *motcle,char *argument);
-   Recherche la chaine "motcle" dans la chaine "ligne" et retourne dans    
-   "argument" le premier nombre trouve immediatement apres "motcle".       
+   Recherche la chaine "motcle" dans la chaine "ligne" et retourne dans
+   "argument" le premier nombre trouve immediatement apres "motcle".
 void mc_mpec_argbowell(char *ligne, char *motcle,char *argument);
    Recherche la chaine "motcle" dans la chaine "ligne" et retourne dans
    "argument" les 6 nombres trouve immediatement apres "motcle".
 void mc_mpec_t2amj(char *texte, int *annee, int *mois, double *jour);
-   Convertit une date d'une variable texte en trois composantes A/M/J      
+   Convertit une date d'une variable texte en trois composantes A/M/J
 void mc_mpec_jjjjdates(double jj1, double jj2, char *texte);
-   Convertit un JJ en une variable texte en trois composantes A/M/J MPEC   
+   Convertit un JJ en une variable texte en trois composantes A/M/J MPEC
 void mc_mpec_mois(int mois,char *texte);
-   Convertit un mois en une variable texte MPEC                            
+   Convertit un mois en une variable texte MPEC
 void mc_typedastre(struct elemorb elem,char *astre);
    Retourne la nature d'un astre dans une chaine d'apres la structure elem.
 void mc_wri_ele_mpec1(char *nom_fichier_out, struct elemorb elem,int type_fichier);
@@ -1330,10 +1328,6 @@ void mc_jd2lbr1b(double jj, int planete, double *l, double *m, double *u, double
    en tenant compte des perturbations planetaires importantes pour atteindre
    un precision de +/- environ 4 arcsec sur les angles et +/- 0.0001 ua
    sur le rayon vecteur.
-void mc_jd2lbr2b(double jj, int planete, double *l, double *m, double *u, double *ll, double *bb, double *rr);
-   Retourne les valeurs de longitude *ll, latitude *bb, rayon vecteur *rr
-   pour l'equinoxe moyen de la date. (longitudes vraies)
-   VSOP87
 void mc_jd2lbr_vsop87_mer(double jj, double *ll, double *bb, double *rr);
    VSOP87 for mer
 void mc_jd2lbr_vsop87_ven(double jj, double *ll, double *bb, double *rr);
@@ -1350,7 +1344,7 @@ void mc_jd2lbr_vsop87_ura(double jj, double *ll, double *bb, double *rr);
    VSOP87 for ura
 void mc_jd2lbr_vsop87_nep(double jj, double *ll, double *bb, double *rr);
    VSOP87 for nep
-void mc_jd2lbr_vsop87_compute(double jj, 
+void mc_jd2lbr_vsop87_compute(double jj,
    double *l0,double *l1,double *l2,double *l3,double *l4,double *l5, int lmax, int *lalpha,
    double *b0,double *b1,double *b2,double *b3,double *b4,double *b5, int bmax, int *balpha,
    double *r0,double *r1,double *r2,double *r3,double *r4,double *r5, int rmax, int *ralpha,
@@ -1363,9 +1357,9 @@ void mc_jd2lbr1c(double jj, double *l, double *m, double *u, double *ll0, double
    Fonction de calcul planetaire appelee en interne par mc_jd2lbr1b.
    JUPITER
 void mc_jd2lbr1d(double jj, double *ll0, double *bb0, double *rr0);
-   Retourne les valeurs de longitude *ll, latitude *bb, rayon vecteur *rr  
-   pour l'equinoxe moyen de la date. (longitudes vraies)                   
-   LUNE                                                                    
+   Retourne les valeurs de longitude *ll, latitude *bb, rayon vecteur *rr
+   pour l'equinoxe moyen de la date. (longitudes vraies)
+   LUNE
 MC_PLNT4.C
 void mc_jd2lbr1e(double jj, double *l, double *m, double *u, double *ll0, double *bb0, double *rr0);
    Fonction de calcul planetaire appelee en interne par mc_jd2lbr1b.
