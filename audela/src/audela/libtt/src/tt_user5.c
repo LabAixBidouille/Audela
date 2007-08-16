@@ -28,9 +28,10 @@
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
-void fittrainee2 (double lt,double fwhm,int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
-void fittrainee3 (double lt, double fwhm,int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
+void fittrainee2 (double lt,double xc,double yc,int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
+void fittrainee3 (double lt,double xc,double yc,int sizex, int sizey,double **mat,double *p,double *ecart,double exposure);
 double erf( double x );
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -190,7 +191,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
       fwhmsat=1.;
    }
    
-   strcpy(filenamesat,"C:/audela-1.4.0-beta1/ros/src/grenouille/trainees.txt");
+   strcpy(filenamesat,"../ros/src/grenouille/catalog.cat");
  
    seuil=pseries->threshold; // voir le calcul a faire en fonction du niveau de bruit
    if (seuil<=0) {
@@ -233,7 +234,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 
 {	
 	int xmax,ymax,ntrainee,sizex,sizey,nb;
-	double d0,fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,dvalue,xcc,ycc,lt;
+	double d0,fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,dvalue,lt,xcc,ycc,xc,yc;
 	int k,k2,y,x,ltt,fwhmybi,fwhmyhi,fwhm,nelem;
 	double *matx;
 	FILE *fic;
@@ -252,6 +253,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
     }
 
 	p = (double*)calloc(6,sizeof(double));
+	
 	/* --- chercher les dimensions de l'image ---*/
 	xmax=pin->naxis1;
 	ymax=pin->naxis2;
@@ -331,24 +333,30 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 					 temp[xmax*(y-fwhmybi-nb+k2)+x-fwhm-nb+k]=-1;// pour ne pas repasser sur la meme etoile
 				  }
 				}
-				//recherche de la position du photocentre	
-				fittrainee2 (lt,fwhm,sizex, sizey, mat, p, ecart, exposure); 
-				fittrainee (lt,fwhm,x,sizex, sizey, mat, p, ecart, exposure); 
+				//recherche de la position du photocentre
+				xc=2*fwhm+nb;
+				yc=fwhmybi+nb;
+
+				//fittrainee2 (lt,xc,yc,sizex, sizey, mat, p, ecart, exposure); 				
+				fittrainee3 (lt,xc,yc,sizex, sizey, mat, p, ecart, exposure); 
+				//posx  = p[1]+x-fwhm-nb;
+				posx  = p[1]+x+1;
+				posy  = p[4]-fwhmybi-nb+y;
 				
-				posx  = (p[1]-fwhm-nb+2*x)/2; 
-				//posx  = p[1];
-				fwhmx = p[2];
+				fittrainee (lt,fwhm,x,sizex, sizey, mat, p, ecart, exposure); 
+				xcc  = (p[1]-fwhm-nb+2*x)/2;
+				ycc  = p[4]-fwhmybi-nb+y;
+
+				fwhmx = p[2];						
+				fwhmy = p[5];
 				//*fondx = p[3];
 				//*fondy = p[3];
-				posy  = p[4]-fwhmybi-nb+y;
-				//posy  = p[4];
-				fwhmy = p[5];
-				xcc=(p[0]-fwhm-nb+2*x)/2;
-				ycc=p[3]-fwhmybi-nb+y;
+
 				/* --- sortie du resultat ---*/
 // attention matrice image commence au pixel 1,1 alors que l'analyse se fait avec 0,0 dans cette fonction !!
-				fprintf(fic,"%d %f %f %f %f %d %d %f %f\n",
-				ntrainee,posx,posy,xcc,ycc,x,y,fwhmx,fwhmy);
+// catalog.cat: numero flux_best fluxerr_best magn_best magnerr_best background X Y X2 Y2 XY A B theta FWHM flags class_star
+				fprintf(fic,"%d		%f		%f		%f		%f		%d		%d		%f		%f\n",
+				ntrainee,posx,posy,xcc, ycc,x,y,fwhmx,fwhmy);
 				ntrainee++;
 				tt_free2((double**)&mat,"mat");
 				x=x+ltt;
@@ -383,7 +391,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 /*     p[5]=fwhm Y																			 */
 /*  ecart=ecart-type																		 */
 /*********************************************************************************************/
-void fittrainee (double lt, double fwhm,int x,int sizex, int sizey,double **mat,double *p,double *ecart, double exposure) {
+void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *ecart, double exposure) {
 
 	double *matx,*maty, intensite,moyy,*addx,matyy,posx,inten;
 	int jx,jxx,jy,moyjx,ltt,posmaty;
@@ -490,8 +498,8 @@ void fittrainee (double lt, double fwhm,int x,int sizex, int sizey,double **mat,
 		ycc = sy / flux ;
 	}
 	
-	p[0]=xcc;
-	p[3]=ycc;
+	p[1]=xcc;
+	p[4]=ycc;
 	
 	free(matx);
 	free(maty);
@@ -519,34 +527,33 @@ void fittrainee (double lt, double fwhm,int x,int sizex, int sizey,double **mat,
 /*  ecart=ecart-type																		 */
 /*********************************************************************************************/
 
-void fittrainee2 (double lt, double fwhm,int sizex, int sizey,double **mat,double *p,double *ecart,double exposure) {
+void fittrainee2 (double lt,double xc,double yc, int sizex, int sizey,double **mat,double *p,double *ecart,double exposure) {
 
    int l,nbmax,m,ltt;
-   double l1,l2,a0,f;
+   double l1,l2,a0,f,kk;
    double e,er1,y0;
-   double m0,m1,vs;
+   double m0,m1;
    double e1[6]; /* ici ajout */
    int i,jx,jy,k;
    double rr2;
    double xx,yy;
    double *F;
 
-   //vitesse sidérale
-   vs = 0.004180983;
+  
    ltt = (int) lt;
    
    F = (double*)calloc(sizex,sizeof(double));
    
 
    p[0]=mat[0][0];
-   p[1]=0.;
+   p[1]=xc;
    p[3]=mat[0][0];
-   p[4]=0.;
+   p[4]=yc;
 
   				
    for (jx=0;jx<sizex;jx++) {
       for (jy=0;jy<sizey;jy++) {
-	     if (mat[jx][jy]>p[0]) {p[0]=mat[jx][jy]; p[1]=1.*jx; p[4]=1.*jy; }
+		 if (mat[jx][jy]>p[0]) {p[0]=mat[jx][jy]; }
          if (mat[jx][jy]<p[3]) {p[3]=mat[jx][jy]; }
       }
    }
@@ -584,15 +591,22 @@ void fittrainee2 (double lt, double fwhm,int sizex, int sizey,double **mat,doubl
 			xx=(double)jx;
 			f=0.0;
 			for (k=0; k<=ltt; k++) {
-				if (k==0) f=-0.5*exp(-(jx-k)*(jx-k)/(p[2]*p[5]));
-				if (k==ltt) f+=exp(-(jx-k)*(jx-k)/(p[2]*p[5]));
-				if ((k!=0)&&(k!=ltt)) f+=0.5*exp(-(jx-k)*(jx-k)/(p[2]*p[5]));
+				kk=(double)k;
+				if (k==0) {
+					f=-0.5*exp(-(xx-kk-p[1])*(xx-kk-p[1])/(p[2]*p[5]));
+				}
+				if (k==ltt) {
+					f+=exp(-(xx-kk-p[1])*(xx-kk-p[1])/(p[2]*p[5]));
+				}
+				if ((k!=0)&&(k!=ltt)) {
+					f+=0.5*exp(-(xx-kk-p[1])*(xx-kk-p[1])/(p[2]*p[5]));
+				}
 			}
 			F[jx]=f;
 			for (jy=0;jy<sizey;jy++) {
 				yy=(double)jy;
 				rr2=(yy-p[4])*(yy-p[4]);
-				y0=F[jx]*p[0]*exp(-rr2/p[2]/p[5])+p[3]*lt;
+				y0=F[jx]*p[0]*exp(-rr2/p[2]/p[5])+p[3];
 				l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
 			}
 		}
@@ -606,7 +620,7 @@ void fittrainee2 (double lt, double fwhm,int sizex, int sizey,double **mat,doubl
 			for (jy=0;jy<sizey;jy++) {
 				yy=(double)jy;
 				rr2=(yy-p[4])*(yy-p[4]);
-				y0=F[jx]*p[0]*exp(-rr2/p[2]/p[5])+p[3]*lt;
+				y0=F[jx]*p[0]*exp(-rr2/p[2]/p[5])+p[3];
 				l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
 			}
 		}
@@ -624,7 +638,9 @@ void fittrainee2 (double lt, double fwhm,int sizex, int sizey,double **mat,doubl
 	if (fabs((l1-l2)/l2)<e) {p[2]=p[2]/.601;p[5]=p[5]/.601; free(F);return; }
 	l1=l2;
 	goto fitgauss2d_b1;
+	
 }
+	
 
 /*********************************************************************************************/
 /* fitte les trainées avec une gaussienne convolué avec une un trait (= forme d'une trainée) */
@@ -647,34 +663,30 @@ void fittrainee2 (double lt, double fwhm,int sizex, int sizey,double **mat,doubl
 /*  ecart=ecart-type																		 */
 /*********************************************************************************************/
 
-void fittrainee3 (double lt, double fwhm,int sizex, int sizey,double **mat,double *p,double *ecart,double exposure) {
-
-   int l,nbmax,m,ltt;
-   double l1,l2,a0,f;
+void fittrainee3 (double lt,double xc,double yc,int sizex, int sizey,double **mat,double *p,double *ecart,double exposure) {
+   
+	int l,nbmax,m,ltt;
+   double l1,l2,a0;
    double e,er1,y0;
    double m0,m1,vs;
    double e1[6]; /* ici ajout */
-   int i,jx,jy,k;
+   int i,jx,jy;
    double rr2;
    double xx,yy;
-   double *F;
 
    //vitesse sidérale
    vs = 0.004180983;
    ltt = (int) lt;
-   
-   F = (double*)calloc(sizex,sizeof(double));
-   
 
    p[0]=mat[0][0];
-   p[1]=0.;
+   p[1]=xc;
    p[3]=mat[0][0];
-   p[4]=0.;
+   p[4]=yc;
 
   				
    for (jx=0;jx<sizex;jx++) {
       for (jy=0;jy<sizey;jy++) {
-	     if (mat[jx][jy]>p[0]) {p[0]=mat[jx][jy]; p[1]=1.*jx; p[4]=1.*jy; }
+		 if (mat[jx][jy]>p[0]) {p[0]=mat[jx][jy]; }
          if (mat[jx][jy]<p[3]) {p[3]=mat[jx][jy]; }
       }
    }
@@ -703,25 +715,23 @@ void fittrainee3 (double lt, double fwhm,int sizex, int sizey,double **mat,doubl
 		fitgauss2d_b2:
 
 		l2=0;
-		for (jx=0;jx<sizex;jx++) {
-			F[jx]=0.0;
-		}
 		
-
 		for (jx=0;jx<sizex;jx++) {
 			xx=(double)jx;
-			f=0.0;
-			for (k=0; k<=ltt; k++) {
-				if (k==0) f=-0.5*exp(-(jx-k)*(jx-k)/(p[2]*p[5]));
-				if (k==ltt) f+=exp(-(jx-k)*(jx-k)/(p[2]*p[5]));
-				if ((k!=0)&&(k!=ltt)) f+=0.5*exp(-(jx-k)*(jx-k)/(p[2]*p[5]));
-			}
-			F[jx]=f;
-			for (jy=0;jy<sizey;jy++) {
-				yy=(double)jy;
-				rr2=(yy-p[4])*(yy-p[4]);
-				y0=F[jx]*p[0]*exp(-rr2/p[2]/p[5])+p[3]*lt;
-				l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+			if (xx<=xc) {
+				for (jy=0;jy<sizey;jy++) {
+					yy=(double)jy;
+					rr2=(yy-p[4])*(yy-p[4]);
+					y0=p[0]*exp(-rr2/p[2]/p[5])*(sqrt(p[2]*p[5]*3.1415926535)/2)*(-erf((p[1]-jx)/(p[2]*p[5]))+erf((lt-jx+p[1])/(p[2]*p[5])))+p[3]*lt;
+					l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+				}
+			} else {
+				for (jy=0;jy<sizey;jy++) {
+					yy=(double)jy;
+					rr2=(yy-p[4])*(yy-p[4]);
+					y0=p[0]*exp(-rr2/p[2]/p[5])*(sqrt(p[2]*p[5]*3.1415926535)/2)*(erf((jx-p[1])/(p[2]*p[5]))+erf((lt-jx+p[1])/(p[2]*p[5])))+p[3]*lt;
+					l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+				}
 			}
 		}
 
@@ -731,11 +741,20 @@ void fittrainee3 (double lt, double fwhm,int sizex, int sizey,double **mat,doubl
 
 		for (jx=0;jx<sizex;jx++) {
 			xx=(double)jx;
-			for (jy=0;jy<sizey;jy++) {
-				yy=(double)jy;
-				rr2=(yy-p[4])*(yy-p[4]);
-				y0=F[jx]*p[0]*exp(-rr2/p[2]/p[5])+p[3]*lt;
-				l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+			if (xx<=xc) {
+				for (jy=0;jy<sizey;jy++) {
+					yy=(double)jy;
+					rr2=(yy-p[4])*(yy-p[4]);
+					y0=p[0]*exp(-rr2/p[2]/p[5])*(sqrt(p[2]*p[5]*3.1415926535)/2)*(-erf((p[1]-jx)/(p[2]*p[5]))+erf((lt-jx+p[1])/(p[2]*p[5])))+p[3]*lt;
+					l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+				}
+			} else {
+				for (jy=0;jy<sizey;jy++) {
+					yy=(double)jy;
+					rr2=(yy-p[4])*(yy-p[4]);
+					y0=p[0]*exp(-rr2/p[2]/p[5])*(sqrt(p[2]*p[5]*3.1415926535)/2)*(erf((jx-p[1])/(p[2]*p[5]))+erf((lt-jx+p[1])/(p[2]*p[5])))+p[3]*lt;
+					l2=l2+(mat[jx][jy]-y0)*(mat[jx][jy]-y0);
+				}
 			}
 		}
 
@@ -747,9 +766,9 @@ void fittrainee3 (double lt, double fwhm,int sizex, int sizey,double **mat,doubl
 		if (m1>m0) goto fitgauss2d_b2;
 	}
 	m++;
-	if (m==nbmax) {p[2]=p[2]/.601;p[5]=p[5]/.601; free(F);return; }
-	if (l2==0) {p[2]=p[2]/.601;p[5]=p[5]/.601; free(F);return; }
-	if (fabs((l1-l2)/l2)<e) {p[2]=p[2]/.601;p[5]=p[5]/.601; free(F);return; }
+	if (m==nbmax) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+	if (l2==0) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+	if (fabs((l1-l2)/l2)<e) {p[2]=p[2]/.601;p[5]=p[5]/.601;return; }
 	l1=l2;
 	goto fitgauss2d_b1;
 }
