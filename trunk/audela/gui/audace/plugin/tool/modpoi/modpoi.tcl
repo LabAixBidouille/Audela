@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.12 2007-08-03 08:40:29 alainklotz Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.13 2007-08-19 08:13:43 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1894,7 +1894,7 @@ proc modpoi_computecoef { {fileinp ""} } {
    #--- Ouvre la fenetre pour donner un nom au modele de pointage
    set err [catch {run_name_modpoi} msg]
    if {$err==1} {
-	   set modpoi(Filename) [file tail $fileinp]
+      set modpoi(Filename) [file tail $fileinp]
    }
 
    #--- Analyse chaque ligne

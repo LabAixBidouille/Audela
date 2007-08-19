@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.18 2007-08-19 00:29:38 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.19 2007-08-19 08:14:16 robertdelmas Exp $
 #
 
 global audace
@@ -971,7 +971,7 @@ proc affimages { } {
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
       set user [lindex [buf$num(buffer1) getkwd USER] 1]
       if {$user!=""} {
-	      set user " (user=[string trim ${user}])"
+         set user " (user=[string trim ${user}])"
       }
       $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)] $user"
       $audace(base).snvisu.lst1 yview moveto 1.0
@@ -2145,9 +2145,9 @@ proc snblinkimage { } {
       update
       after $snconfvisu(delai_blink)
       catch {
-      	$zone(image1) itemconfigure display -image image101
-      	update
-	      after $snconfvisu(delai_blink)
+         $zone(image1) itemconfigure display -image image101
+         update
+         after $snconfvisu(delai_blink)
       }
       if { $snvisu(exit_blink) == "0" } {
          break
