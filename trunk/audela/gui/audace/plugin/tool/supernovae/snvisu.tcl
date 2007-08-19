@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.17 2007-06-14 21:22:41 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.18 2007-08-19 00:29:38 alainklotz Exp $
 #
 
 global audace
@@ -58,6 +58,7 @@ global audace
 source [ file join $audace(rep_plugin) tool supernovae snvisu.cap ]
 
 set snvisu(blink_go)       "0"
+set snvisu(auto_blink)     "1"
 set snvisu(exit_blink)     "1"
 set snvisu(ima_rep2_exist) "0"
 set snvisu(ima_rep3_exist) "0"
@@ -860,12 +861,16 @@ proc nextimage { } {
    #--- Variables shared
    global rep
    global zone
+   global snvisu
 
    #---
    set rep(blink,last) ""
    #---
    incr rep(xx1)
    affimages
+   if { $snvisu(auto_blink) == "1" } {
+      snblinkimage
+   }
 }
 
 proc previmage { } {
@@ -964,7 +969,11 @@ proc affimages { } {
          $zone(sh1) set [lindex [get_seuils $num(buffer1b)] 0]
       }
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
-      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)]"
+      set user [lindex [buf$num(buffer1) getkwd USER] 1]
+      if {$user!=""} {
+	      set user " (user=[string trim ${user}])"
+      }
+      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)] $user"
       $audace(base).snvisu.lst1 yview moveto 1.0
       #--- Disparition du sautillement des widgets inferieurs
       pack $audace(base).snvisu.lst1.scr1 \
@@ -1333,6 +1342,22 @@ proc snvisu_configuration { } {
       pack $audace(base).snvisu_3.frame2.command_line_1 \
          -fill x -side left \
          -padx 5 -pady 5
+      #--- Label
+      label $audace(base).snvisu_3.frame2.label2 \
+         -font $audace(font,arial_8_b) -text $caption(snvisu,auto_blink) \
+         -borderwidth 0 -relief flat
+      pack $audace(base).snvisu_3.frame2.label2 \
+         -fill x -side left \
+         -padx 5 -pady 5
+
+      #--- Checkbutton
+      checkbutton $audace(base).snvisu_3.frame2.auto -text "$caption(snvisu,auto_blink)" \
+         -highlightthickness 0 -variable snconfvisu(auto_blink) \
+         -font $audace(font,arial_8_b)
+      pack $audace(base).snvisu_3.frame2.auto \
+        -in $audace(base).snvisu_3.frame2 -anchor center -side left \
+        -padx 5 -pady 5
+
    pack $audace(base).snvisu_3.frame2 -side top -fill both -expand 1
 
    #--- Create the label and the command lines
@@ -2119,9 +2144,11 @@ proc snblinkimage { } {
       $zone(image1) itemconfigure display -image image100
       update
       after $snconfvisu(delai_blink)
-      $zone(image1) itemconfigure display -image image101
-      update
-      after $snconfvisu(delai_blink)
+      catch {
+      	$zone(image1) itemconfigure display -image image101
+      	update
+	      after $snconfvisu(delai_blink)
+      }
       if { $snvisu(exit_blink) == "0" } {
          break
       }

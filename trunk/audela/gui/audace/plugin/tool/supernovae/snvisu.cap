@@ -1,6 +1,6 @@
 #
 # Fichier : snvisu.cap
-# Mise a jour $Id: snvisu.cap,v 1.14 2007-01-27 14:55:15 robertdelmas Exp $
+# Mise a jour $Id: snvisu.cap,v 1.15 2007-08-19 00:29:38 alainklotz Exp $
 #
 
 #=========================================================================
@@ -58,6 +58,7 @@ set caption(snvisu,motion)             "Option 'motion'"
 set caption(snvisu,release)            "Option 'release'"
 set caption(snvisu,blink_delai)        "Blink   -   Delay (ms):"
 set caption(snvisu,blink_nbre)         "Loop Number:"
+set caption(snvisu,auto_blink)         "Auto"
 set caption(snvisu,zoom_normal)        "Zoom:"
 set caption(snvisu,scrollbar)          "Scroll Bar Display:"
 set caption(snvisu,scroollbar_on)      "With"
@@ -131,6 +132,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,release)         "Option 'release'"
    set caption(snvisu,blink_delai)     "Blink   -   Délai (ms) :"
    set caption(snvisu,blink_nbre)      "Nombre de boucles :"
+   set caption(snvisu,auto_blink)      "Auto"
    set caption(snvisu,zoom_normal)     "Zoom :"
    set caption(snvisu,scrollbar)       "Affichage des barres de défilement :"
    set caption(snvisu,scroollbar_on)   "Avec"
@@ -204,6 +206,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,release)         "Opzione 'release'"
    set caption(snvisu,blink_delai)     "Blink   -   Intervallo (ms):"
    set caption(snvisu,blink_nbre)      "Numero ripetizioni:"
+   set caption(snvisu,auto_blink)      "Auto"
    set caption(snvisu,zoom_normal)     "Zoom:"
    set caption(snvisu,scrollbar)       "Visualizzazione barre di scorrimento:"
    set caption(snvisu,scroollbar_on)   "Con"
@@ -277,6 +280,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,release)         "Opción 'release'"
    set caption(snvisu,blink_delai)     "Blinking   -   Retraso (ms):"
    set caption(snvisu,blink_nbre)      "Numero repeticiones:"
+   set caption(snvisu,auto_blink)      "Auto"
    set caption(snvisu,zoom_normal)     "Zoom:"
    set caption(snvisu,scrollbar)       "Barra de desplazamiento de pantalla:"
    set caption(snvisu,scroollbar_on)   "Con"
@@ -350,6 +354,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,release)         "Wahl 'release'"
    set caption(snvisu,blink_delai)     "Blink   -   Zeitraum (ms):"
    set caption(snvisu,blink_nbre)      "Schleifen Zahl:"
+   set caption(snvisu,auto_blink)      "Auto"
    set caption(snvisu,zoom_normal)     "Zoom:"
    set caption(snvisu,scrollbar)       "Rollleisten zeigen:"
    set caption(snvisu,scroollbar_on)   "Mit"
@@ -423,6 +428,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,release)         "Opção 'release'"
    set caption(snvisu,blink_delai)     "Blink   -   Atraso (ms):"
    set caption(snvisu,blink_nbre)      "Número de ciclos:"
+   set caption(snvisu,auto_blink)      "Auto"
    set caption(snvisu,zoom_normal)     "Zoom:"
    set caption(snvisu,scrollbar)       "Mostrar barras de arrastamento:"
    set caption(snvisu,scroollbar_on)   "Com"
@@ -496,6 +502,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(snvisu,release)         "Option 'release'"
    set caption(snvisu,blink_delai)     "Blink   -   Delay (ms):"
    set caption(snvisu,blink_nbre)      "Loop Number:"
+   set caption(snvisu,auto_blink)      "Auto"
    set caption(snvisu,zoom_normal)     "Zoom:"
    set caption(snvisu,scrollbar)       "Scroll Bar Display:"
    set caption(snvisu,scroollbar_on)   "With"

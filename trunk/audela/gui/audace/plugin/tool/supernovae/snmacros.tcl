@@ -2,7 +2,7 @@
 # Fichier : snmacros.tcl
 # Description : Macros des scripts pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snmacros.tcl,v 1.6 2007-02-05 17:05:14 robertdelmas Exp $
+# Mise a jour $Id: snmacros.tcl,v 1.7 2007-08-19 00:29:38 alainklotz Exp $
 #
 
 proc globgalsn { args } {
@@ -660,7 +660,10 @@ proc snconfvisu_verif { } {
       set snconfvisu(delai_blink) "250"
    }
    if { [ info exists snconfvisu(nb_blink) ] == "0" } {
-      set snconfvisu(nb_blink) "20"
+      set snconfvisu(nb_blink) "5"
+   }
+   if { [ info exists snconfvisu(auto_blink) ] == "0" } {
+      set snconfvisu(auto_blink) "0"
    }
    if { [ info exists snconfvisu(scrollbars) ] == "0" } {
       set snconfvisu(scrollbars) "on"
@@ -700,6 +703,8 @@ proc snconfvisu_load { } {
    set snconfvisu(delai_blink)       "$conf(snconfvisu,delai_blink)"
    #--- Choise blink number
    set snconfvisu(nb_blink)          "$conf(snconfvisu,nb_blink)"
+   #--- Choise auto blink
+   set snconfvisu(auto_blink)        "$conf(snconfvisu,auto_blink)"
    #--- Displaying scrollbars
    set snconfvisu(scrollbars)        "$conf(snconfvisu,scrollbars)"
    #--- Choise to save reference images compressed by gzip
@@ -740,6 +745,8 @@ proc snvisuconfiguration_save { } {
    set conf(snconfvisu,delai_blink)  "$snconfvisu(delai_blink)"
    #--- Choise blink number
    set conf(snconfvisu,nb_blink)     "$snconfvisu(nb_blink)"
+   #--- Choise auto blink
+   set conf(snconfvisu,auto_blink)   "$snconfvisu(auto_blink)"
    #--- Displaying scrollbars
    set conf(snconfvisu,scrollbars)   "$snconfvisu(scrollbars)"
    #--- Choise to save reference images compressed by gzip
