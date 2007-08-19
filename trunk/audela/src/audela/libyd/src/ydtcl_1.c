@@ -1044,7 +1044,7 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                if (htmmess[k].codefiltre!=ukfil) {
                   continue;
                }
-			   /*Rajout Yassine : Pour le flag Sextractor*/
+			   /* Condition pour le flag Sextractor */
 			   if (htmmess[k].flag==0) {
 			   /*fin*/
 			       flt_mes[htmmess[k].indexref]+=1.;
@@ -1089,7 +1089,7 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                         if (htmmess[k].codecam!=ukcam) {
                            continue;
                         }
-						/*Rajout Yassine : Pour le flag Sextractor*/
+						/* Condition pour le flag Sextractor */
 						if (htmmess[k].flag==0) {
 						/*fin*/
                             val[kk]=(double)htmmess[k].maginst;
@@ -1125,6 +1125,7 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                }
                if (kk>12) {
                   magmax=val[k];
+                  break;
                }
             }
             /* --- CMAG = valeur mediane de la difference de magnitudes */
@@ -1134,21 +1135,18 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                if (htmzmgs[kkzmg].codefiltre!=ukfil) {
                   continue;
                }
+               if (htmzmgs[kkzmg].codecam!=ukcam) {
+                  continue;
+               }
                kk=0;
 			   /* --- boucle sur les seuls elements de htmmes concernes ---*/
                for (kref=0;kref<n_ref;kref++) {
 				  magmed=flt_mes[n_ref+kref];
-                  /*Modif Yassine
-				  if ((magmed<magsaturated)) {*/
 				  if ((magmed<=magsaturated)) {
-				  /*fin*/
                      /* l'etoile risque de saturer */
                      continue;
                   }
-                  /*Modif Yassine
-				  if ((magmed>magtoofaint)||(magmed>magmax)) {*/
 				  if ((magmed>=magtoofaint)||(magmed>magmax)) {
-			      /*fin*/
                      /* l'etoile est trop faible */
                      continue;
                   }
@@ -1160,7 +1158,7 @@ int Cmd_ydtcl_updatezmg(ClientData clientData, Tcl_Interp *interp, int argc, cha
                      if (htmmess[k].codecam!=ukcam) {
                         continue;
                      }
-					 /*Rajout Yassine : Pour le flag Sextractor*/
+					 /* Condition pour le flag Sextractor */
 			         if (htmmess[k].flag==0) {
 			         /*fin*/
                          val[kk]=(double)(magmed-htmmess[k].maginst);
