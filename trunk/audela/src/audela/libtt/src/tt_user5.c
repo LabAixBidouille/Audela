@@ -28,8 +28,8 @@
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
-void fittrainee2 (double lt, double fwhm,double xc,double yc,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
-void fittrainee3 (double lt,double xc,double yc,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
+void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
+void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 double erf( double x );
 
 
@@ -144,7 +144,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    long nelem;
    double dvalue;
    int kkk,index;
-   double fwhmsat,seuil,seuil0,seuil1;
+   double fwhmsat,seuil,seuil0,seuil1,seuila;
    double xc,yc,radius;
    char filenamesat[FLEN_FILENAME];
    double exposure;	
@@ -177,9 +177,9 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
     seuil0 = mode + 0.1*mode;
 	seuil1 = pseries->hicut + 0.06*pseries->hicut;
 	// attention il ne faut pas que seuil0 > seuil 1
-	if (seuil0 >= seuil1) {
+	if ((seuil0 >= seuil1)||(seuil1<=seuil0+100)) {
 		seuil0 = mode ;
-		seuil1 = pseries->hicut+ 0.2*pseries->hicut;
+		seuil1 = pseries->hicut+ 0.1*pseries->hicut;
 	}
 
    if (radius<=0) {
@@ -198,7 +198,8 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    if (seuil<=0) {
       seuil=100.;
    }
-
+   seuila = seuil;
+   seuil = seuil+mode;
    
    for (kkk=0;kkk<(int)(nelem);kkk++) {
       dvalue=(double)p_in->p[kkk];
@@ -215,7 +216,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    }
 	
    /* --- calcul ---*/
-   tt_util_chercher_trainee(p_in,p_out,filenamesat,fwhmsat,seuil,seuil1,xc,yc,radius,exposure);
+   tt_util_chercher_trainee(p_in,p_out,filenamesat,fwhmsat,seuil,seuil1,seuila,xc,yc,exposure);
 
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
@@ -231,11 +232,11 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
 /* 																		   */
 /***************************************************************************/
 
-int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double xc0, double yc0, double radius, double exposure)
+int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double seuila, double xc0, double yc0, double exposure)
 
 {	
 	int xmax,ymax,ntrainee,sizex,sizey,nb,background,flags;
-	double d0,fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,dvalue,lt,xc,yc,flux,fluxerr,fwhmd,a,b;
+	double fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,dvalue,lt,xc,yc,flux,fluxerr,fwhmd,a,b;
 	double magnitude, magnitudeerr,theta,classstar;
 	int k,k2,y,x,ltt,fwhmybi,fwhmyhi,fwhm,nelem;
 	double *matx;
@@ -277,8 +278,11 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	ntrainee=1;
 
 	/* --- grande boucle sur l'image ---*/
-	d0=radius*radius;
-	seuil=seuil/seuil1;
+	if (seuil>=seuil1) {
+		seuil=1.0;
+	} else {
+		seuil=seuil/seuil1;
+	}
 	for (y=3;y<ymax-3;y++) {
 		if ((y>ymax)||(y<0)) { continue; }	
 		for (x=3;x<(xmax-ltt-3);x++) {
@@ -291,16 +295,16 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 			if (matx[x]>=ltt) {	
 				fwhmyh=0;
 				fwhmyb=0;
-				//rechercche approximative des paramètres de la trainées
+				//recherche approximative des paramètres de la trainées
 				for (k=0;k<ltt;k++) {
 					for (k2=1;k2<40;k2++) {
 						if ((k2+y)>= ymax) break;
-						if (pout->p[(y+k2)*ymax+x+k]>0.65) {fwhmyh++;}
+						if (pout->p[(y+k2)*ymax+x+k]>seuil) {fwhmyh++;}
 						else break;
 					}
 					for (k2=1;k2<40;k2++) {
 						if (k2 > y) break;
-						if (pout->p[(y-k2)*ymax+x+k]>0.65) {fwhmyb++;}
+						if (pout->p[(y-k2)*ymax+x+k]>seuil) {fwhmyb++;}
 						else break;
 					}
 				}
@@ -345,8 +349,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				yc=fwhmybi+nb;
 				flux=0.0;
 
-				fittrainee2 (lt,fwhm,xc,yc,sizex, sizey, mat, p, carac, exposure); 				
-				//fittrainee3 (lt,xc,yc,sizex, sizey, mat, p, carac, exposure); 
+				fittrainee2 (seuila,lt,fwhm,xc,yc,nb,sizex, sizey, mat, p, carac, exposure); 				
+				//fittrainee3 (seuila,lt,xc,yc,nb,sizex, sizey, mat, p, carac, exposure); 
 				//posx  = p[1]+x-fwhm-nb;
 				posx  = p[1]+1.0*x+1.0;
 				posy  = p[4]-fwhmybi-1.0*nb+1.0*y;
@@ -562,7 +566,7 @@ void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat
 /*  carac[4]=XY																				 */
 /*********************************************************************************************/
 
-void fittrainee2 (double lt, double fwhm,double xc,double yc, int sizex, int sizey,double **mat,double *p,double *carac,double exposure) {
+void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb, int sizex, int sizey,double **mat,double *p,double *carac,double exposure) {
 
    int l,nbmax,m,ltt;
    double l1,l2,a0,f,kk;
@@ -575,7 +579,7 @@ void fittrainee2 (double lt, double fwhm,double xc,double yc, int sizex, int siz
    double *F;
 
    int n23;
-   double value,fmoy,fmed,seuilf,f23,a,b,c;
+   double value,fmoy,fmed,f23,a,b,c;
    double *vec;
 
    ltt = (int) lt;
@@ -680,14 +684,14 @@ void fittrainee2 (double lt, double fwhm,double xc,double yc, int sizex, int siz
 		vec = (double*)calloc(sizex*sizey,sizeof(double));
 		n23=0;
 		f23=0.;
-		b=2*fwhm;
-		a=ltt/2;
-		c=1.5*fwhm;
+		b=2*(fwhm+1);
+		a=ltt/2+2*(fwhm+1);
+		c=1.5*(fwhm+1);
 
 		//definir une ellipse dont un des foyers est def par posmaty et moyx
 		for (jy=0;jy<sizey;jy++) {	
 			for (jx=0;jx<sizex;jx++) {			
-				if (((jx-p[1]-a)*(jx-p[1]-a)/(a*a) + (jy-p[4])*(jy-p[4])/(b*b))>1) {
+				if (((jx-a)*(jx-a)/(a*a) + (jy-p[4])*(jy-p[4])/(b*b))>1) {
 					vec[n23]=mat[jx][jy];
 					f23 += mat[jx][jy];
 					n23++;
@@ -702,14 +706,14 @@ void fittrainee2 (double lt, double fwhm,double xc,double yc, int sizex, int siz
 		/* calcule la valeur du fond pour 50 pourcent de l'histogramme*/
 		fmed=(float)vec[(int)(0.5*n23)];
 		free(vec);
-		seuilf=0.2*(p[0]+p[3]-fmed);
+		//seuilf=0.2*(p[0]+p[3]-fmed);
 		n23=0;xxx=0;yyy=0;
 		x2=0.0; y2=0.0;
 		flux=0.;
 		for (jy=0;jy<sizey;jy++) {	
-			for (jx=0;jx<sizex;jx++) {					
-				value=mat[jx][jy]-fmed;
-				if ((((jx-p[1])*(jx-p[1]) + (jy-p[4])*(jy-p[4]))<=c*c)&&(value>=seuilf)) {
+			for (jx=0;jx<(int)(sizex/3);jx++) {					
+				value=mat[jx][jy]-fmoy;
+				if ((((jx-p[1]-fwhm-nb)*(jx-p[1]-fwhm-nb) + (jy-p[4])*(jy-p[4]))<=c*c)&&(value>=seuil/2)) {
 					flux += value;
 					x2+=value*(jx-p[1])*(jx-p[1]);
 					y2+=value*(jy-p[4])*(jy-p[4]);
@@ -735,7 +739,7 @@ void fittrainee2 (double lt, double fwhm,double xc,double yc, int sizex, int siz
 			for (jy=0;jy<sizey;jy++) {	
 				for (jx=0;jx<sizex;jx++) {					
 					value=mat[jx][jy]-fmed;
-					if ((((jx-p[1])*(jx-p[1]) + (jy-p[4])*(jy-p[4]))<=b*b)&&(value>=0)) {
+					if ((((jx-p[1]-fwhm-nb)*(jx-p[1]-fwhm-nb) + (jy-p[4])*(jy-p[4]))<=b*b)&&(value>=0)) {
 						flux += value;
 						x2+=value*(jx-p[1])*(jx-p[1]);
 						y2+=value*(jy-p[4])*(jy-p[4]);
@@ -793,7 +797,7 @@ void fittrainee2 (double lt, double fwhm,double xc,double yc, int sizex, int siz
 /*  ecart=ecart-type																		 */
 /*********************************************************************************************/
 
-void fittrainee3 (double lt,double xc,double yc,int sizex, int sizey,double **mat,double *p,double *carac,double exposure) {
+void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure) {
    
 	int l,nbmax,m,ltt;
    double l1,l2,a0;

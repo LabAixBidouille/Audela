@@ -975,7 +975,7 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
 int tt_util_qsort_double(double *x,int kdeb,int n,int *index);
 int tt_util_qsort_verif(int index);
 int tt_util_meansigma(double *x,int kdeb,int n,double *mean,double *sigma);
-int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double xc0, double yc0, double radius,double exposure);
+int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuil1,double seuila,double xc0, double yc0,double exposure);
 
 int tt_util_putnewkey_astrometry(TT_IMA *p_ima,TT_ASTROM *p_ast);
 int tt_util_getkey_astrometry(TT_IMA *p_ima,TT_ASTROM *p_ast);
