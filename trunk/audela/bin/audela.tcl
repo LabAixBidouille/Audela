@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.10 2006-10-27 20:37:58 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.11 2007-08-21 13:53:34 alainklotz Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -19,8 +19,8 @@
 #
 
 set nameofexecutable [file tail [file rootname [info nameofexecutable]]]
-if {$nameofexecutable!="audela"} {
-   catch {source roc.tcl}
+if {($nameofexecutable!="audela")&&([file exists ../ros]==1)} {
+   catch {source ros.tcl}
 }
 
 source "version.tcl"
