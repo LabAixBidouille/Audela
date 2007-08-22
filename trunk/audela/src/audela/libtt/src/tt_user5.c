@@ -359,7 +359,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				flux=carac[1];
 				fluxerr=0.2*flux;
 				if (flux<=50.0) { flux = 50;}
-				magnitude = -2.5*log10(flux) + 22.92;
+				magnitude = -2.5*log10(flux) + 23.92;
 				magnitudeerr = 0.2*magnitude;
 				background = 2;
 				theta =0.0;
@@ -380,7 +380,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				/* --- sortie du resultat ---*/
 // attention matrice image commence au pixel 1,1 alors que l'analyse se fait avec 0,0 dans cette fonction !!
 // catalog.cat: numero flux_best fluxerr_best magn_best magnerr_best background X Y X2 Y2 XY A B theta FWHM flags class_star
-				fprintf(fic,"		%d		%9.1f	%9.1f	%9.1f	%9.1f	%d	%9f		%9f		%8e	%8e	%8e	%f	%5.3f	%5.3f	%4.1f %d	%4.2f\n",
+				fprintf(fic,"	%-d			%-9.1f		%-9.1f		%-9.1f		%-9.1f	%d	%9f		%9f		%8e	%8e	%8e	%f	%5.3f	%5.3f	%4.1f %d	%4.2f\n",
 				ntrainee,flux,fluxerr,magnitude,magnitudeerr,background,posx,posy,carac[2],carac[3],carac[4],
 				a,b,theta,fwhmd,flags, classstar);
 				ntrainee++;
