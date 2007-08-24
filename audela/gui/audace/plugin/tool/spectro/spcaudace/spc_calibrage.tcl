@@ -51,6 +51,24 @@ proc spc_calibre2 { args } {
     set lambda1 [ lindex $args 2 ]
     set pixel2 [ lindex $args 3 ]
     set lambda2 [ lindex $args 4 ]
+
+      #--- Tri des raies par ordre coissant des abscisses :
+      set coords [ list $pixel1 $lambda1 $pixel2 $lambda2 ]
+      set couples [ list  ]
+      set len 4
+      for {set i 0} {$i<[expr $len-1]} { set i [ expr $i+2 ] } {
+	  lappend couples [ list [ lindex $coords $i ] [ lindex $coords [ expr $i+1 ] ] ]
+      }
+      set couples [ lsort -index 0 -increasing -real $couples ]
+
+      #--- Réaffecte les couples pixels,lambda :
+      set i 1
+      foreach element $couples {
+	  set pixel$i [ lindex $element 0 ]
+	  set lambda$i [ lindex $element 1 ]
+	  incr i
+      }
+
     
     #--- Récupère la liste "spectre" contenant 2 listes : pixels et intensites
     #set spectre [ openspcncal "$filespc" ]
@@ -551,15 +569,24 @@ proc spc_calibren { args } {
     set erreur 0.01
 
     set len [expr [ llength $args ]-1 ]
-    if { [ expr $len+1 ] >= 1 } {
+    if { [ expr $len+1 ] >= 2 } {
 	set filename [ lindex $args 0 ]
 	set coords [ lrange $args 1 $len ]
 	#::console::affiche_resultat "$len Coords : $coords\n"
 
-	#--- Préparation des listes de données :
+	#--- Tri des raies par ordre coissant des abscisses :
 	for {set i 0} {$i<[expr $len-1]} { set i [ expr $i+2 ]} {
-	    lappend xvals [ lindex $coords $i ]
-	    lappend lambdas [ lindex $coords [ expr $i+1 ] ]
+	    lappend couples [ list [ lindex $coords $i ] [ lindex $coords [ expr $i+1 ] ] ]
+	}
+	set couples [ lsort -index 0 -increasing -real $couples ]
+	set lencouples [ llength $couples ]
+
+#::console::affiche_resultat "Couples : $couples\n"
+
+	#--- Préparation des listes de données :
+	for {set i 0} {$i<$lencouples} {incr i} {
+	    lappend xvals [ lindex [ lindex $couples $i ] 0 ]
+	    lappend lambdas [ lindex [ lindex $couples $i ] 1 ]
 	    lappend errors $erreur
 	}
 	set nbraies [ llength $lambdas ]
@@ -1673,9 +1700,91 @@ proc spc_corrvhelio { args } {
        return 0
    }
 }
+#****************************************************************#
 
 
 
+
+
+##########################################################
+# Procedure de test si un spectre est un PROFIL qui est CALIBRE
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 03-08-2007
+# Date de mise à jour : 03-08-2007
+# Arguments : spectre
+# Sortie : retourne 1 si c'est un profil de raies calibré, sinon 0, si spectre 2D -1
+##########################################################
+
+proc spc_testcalibre { args } {
+
+   global audace
+   global conf
+
+   if { [llength $args] == 1 } { 
+      set lampe [ lindex $args 0 ]
+      set flag_calibration 0
+
+      buf$audace(bufNo) load "$audace(rep_images)/$lampe"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      #--- NAXIS2 n'existe pas :
+      if { [ lsearch $listemotsclef "NAXIS2" ] ==-1 } {
+	  if { [ lsearch $listemotsclef "CUNIT1" ] != -1 } {
+	      set cunit1 [ lindex [ buf$audace(bufNo) getkwd "CUNIT1" ] 1 ]
+	      if { $cunit1=="angstrom" || $cunit1=="Angstrom" || $cunit1=="angstroms" || $cunit1=="Angstroms" } {
+		  set flag_calibration 1
+	      } else {
+		  ::console::affiche_resultat "\n Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier.\n"
+		  tk_messageBox -title "Erreur de saisie" -icon error -message "Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier."
+		  set flag_calibration -1
+	      }
+	  } else {
+	  #-- CUNIT1 n'existe pas, donc test sur CRVAL1 :
+	      if { [ lsearch $listemotsclef "CRVAL1" ] != -1 } {
+		  set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+		  if { $crval1 != 1. } {
+		      set flag_calibration 1
+		  } else {
+		      ::console::affiche_resultat "\n Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier.\n"
+		      tk_messageBox -title "Erreur de saisie" -icon error -message "Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier."
+		      set flag_calibration -1
+		  }
+	      } else {
+		  ::console::affiche_resultat "\n Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier.\n"
+		  tk_messageBox -title "Erreur de saisie" -icon error -message "Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier."
+		  set flag_calibration -1
+	      }
+	  }
+      } else {
+      #--- NAXIS2 existe :
+	  set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
+	  #-- NAXIS2 est égale à 1 :
+	  if { $naxis2==1 } {
+	      if { [ lsearch $listemotsclef "CUNIT1" ] != -1 } {
+		  set cunit1 [ lindex [ buf$audace(bufNo) getkwd "CUNIT1" ] 1 ]
+		  if { $cunit1=="angstrom" || $cunit1=="Angstrom" || $cunit1=="angstroms" || $cunit1=="Angstroms" } {
+		      set flag_calibration 1
+		  } else {
+		      ::console::affiche_resultat "\n Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier.\n"
+		      tk_messageBox -title "Erreur de saisie" -icon error -message "Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier."
+		      set flag_calibration -1
+		  }
+	      } else {
+		      ::console::affiche_resultat "\n Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier.\n"
+		      tk_messageBox -title "Erreur de saisie" -icon error -message "Le fichier de la lampe de calibration n'est pas un spectre 2D ou 1D calibré.\nVeuillez choisir le bon fichier."
+		      set flag_calibration -1
+	      }
+	  } else {
+	  #-- NAXIS2 est différent de 1 : ce spectre est à traiter.
+	      set flag_calibration 0
+	  }
+      }
+
+      return $flag_calibration
+   } else {
+      ::console::affiche_erreur "Usage: spc_testcalibre spectre_fits_à_tester\n\n"   
+   }
+}
 
 
 
@@ -1700,131 +1809,28 @@ proc spc_corrvhelio { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 02-09-2005
-# Date de mise à jour : 20-03-06/26-08-06
+# Date de mise à jour : 20-03-06/26-08-06/23-07-2007
 # Arguments : fichier .fit du profil de raie, profil de raie de référence
 # Remarque : effectue le découpage, rééchantillonnage puis la division 
 ##########################################################
 
 proc spc_rinstrum { args } {
 
-   global audace
+   global audace spcaudace
    global conf
    set precision 0.0001
 
-   if { [llength $args] == 2 } {
+   set nbargs [ llength $args ]
+   if { $nbargs==2 } {
        set fichier_mes [ file tail [ file rootname [ lindex $args 0 ] ] ]
        set fichier_ref [ file rootname [ lindex $args 1 ] ]
-
-     #===================================================================#
-     if { 1==0 } {
-       #--- Vérifie s'il faut rééchantilonner ou non
-       if { [ spc_compare $fichier_mes $fichier_ref ] == 0 } {
-	   #-- Détermine le spectre de dispersion la plus précise
-	   set carac1 [ spc_info $fichier_mes ]
-	   set carac2 [ spc_info $fichier_ref ]
-	   set disp1 [ lindex $carac1 5 ]
-	   set ldeb1 [ lindex $carac1 3 ]
-	   set lfin1 [ lindex $carac1 4 ]
-	   set disp2 [ lindex $carac2 5 ]
-	   set ldeb2 [ lindex $carac2 3 ]
-	   set lfin2 [ lindex $carac2 4 ]
-	   if { $disp1!=$disp2 && $ldeb2<=$ldeb1 && $lfin1<=$lfin2 } {
-	       #-- Rééchantillonnage et crop du spectre de référence fichier_ref
-	       ::console::affiche_resultat "\nRééchantillonnage et crop du spectre de référence...\n\n"
-	       #- Dans cet ordre, permet d'obtenir un continuum avec les raies de l'eau et oscillations d'interférence, mais le continuum possède la dispersion du sepctre de référence :
-	       #set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
-	       #set fref_sel_ech [ spc_echant $fref_sel $fichier_mes ]
-	       #set fref_sortie $fref_sel_ech
-	       #set fmes_sortie $fichier_mes
-
-	       #- Dans cet ordre, permet d'obtenir le vertiable continuum :
-	       set fref_ech [ spc_echant $fichier_ref $fichier_mes ]
-	       set fref_ech_sel [ spc_select $fref_ech $ldeb1 $lfin1 ]
-	       set fref_sortie $fref_ech_sel
-	       set fmes_sortie $fichier_mes
-	   } elseif { $disp2<$disp1 && $ldeb2>$ldeb1 && $lfin1>$lfin2 } {
-	       #-- Rééchantillonnage du spectre de référence fichier_ref et crop du spectre de mesure
-	       ::console::affiche_resultat "\nRééchantillonnage du spectre mesuré fichier_mes et crop du spectre de référence...\n\n"
-	       set fmes_sel [ spc_select $fichier_mes $ldeb2 $lfin2 ]
-	       set fref_ech [ spc_echant $fichier_ref $fichier_mes ]
-	       set fref_sortie $fref_ech
-	       set fmes_sortie $fmes_sel
-	   } elseif { [expr abs($disp2-$disp1)]<=$precision && $ldeb2<=$ldeb1 && $lfin1<=$lfin2 } {
-	       #-- Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence
-	       ::console::affiche_resultat "\nAucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence...\n\n"
-	       set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
-	       set fref_sortie $fref_sel
-	       set fmes_sortie $fichier_mes
-	   } elseif { [expr abs($disp2-$disp1)]<=$precision && $ldeb2>$ldeb1 && $lfin1>$lfin2 } {
-	       #-- Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de mesures
-	       ::console::affiche_resultat "\nAucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de mesures...\n\n"
-	       set fmes_sel [ spc_select $fichier_mes $ldeb2 $lfin2 ]
-	       set fref_sortie $fichier_ref
-	       set fmes_sortie $fmes_sel
-	   } else {
-	       #-- Le spectre de référence ne recouvre pas les longueurs d'onde du spectre mesuré
-	       ::console::affiche_resultat "\nLe spectre de référence ne recouvre aucune plage de longueurs d'onde du spectre mesuré.\n\n"
-	   }
-       } else {
-	   #-- Aucun rééchantillonnage ni redécoupage nécessaire
-	   ::console::affiche_resultat "\nAucun rééchantillonnage ni redécoupage nécessaire.\n\n"
-	   set fref_sortie $fichier_ref
-	   set fmes_sortie $fichier_mes
-       }
-    }
-    #======================================================================#
+   
 
        #--- Rééchanetillonnage du profil du catalogue :
        #set fref_sortie $fichier_ref
        set fmes_sortie $fichier_mes
        ::console::affiche_resultat "\nRééchantillonnage du spectre de référence...\n"
        set fref_sortie [ spc_echant $fichier_ref $fichier_mes ]
-
-    if {1==0} {
-       #--- Recalage du profil de catalogue sur le pixel central du capteur :
-       buf$audace(bufNo) load "$audace(rep_images)/$fichier_mes"
-       set listemotsclef [ buf$audace(bufNo) getkwds ]
-       set naxis1m [ expr int(0.5*[ lindex [buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]) ]
-       set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-       set lambdam_mes [ expr $lambda0+$cdelt1*$naxis1m ]
-       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	   set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
-	   set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
-	   set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
-	   if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-	       set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
-	   } else {
-	       set spc_d 0.0
-	   }
-	   set lambdam_mes [ expr $spc_a+$spc_b*$naxis1m+$spc_c*pow($naxis1m,2)+$spc_d*pow($naxis1m,3) ]
-       } else {
-	   set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-	   set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-	   set lambdam_mes [ expr $lambda0+$cdelt1*$naxis1m ]
-       }
-       buf$audace(bufNo) load "$audace(rep_images)/$fref_sortie"
-       set naxis1m [ expr int(0.5*[ lindex [buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]) ]
-       set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-       set lambdam_ref [ expr $lambda0+$cdelt1*$naxis1m ]
-       set deltal [ expr $lambdam_mes-$lambdam_ref ]
-       if { $deltal>[ expr $cdelt1/10.] } {
-	   ::console::affiche_resultat "Décalage de $deltal angstroms entre les 2 profils, recalage du profil de l'étoile du catalogue...\n"
-	   buf$audace(bufNo) load "$audace(rep_images)/$fmes_sortie"
-	   set listemotsclef [ buf$audace(bufNo) getkwds ]
-	   set lambda0dec [ expr $lambda0+$deltal ]
-	   buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda0dec float "" "angstrom" ]
-	   if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	        buf$audace(bufNo) setkwd [list "SPC_A" $lambda0dec float "" "angstrom"]
-	   }
-	   buf$audace(bufNo) bitpix float
-	   buf$audace(bufNo) save "$audace(rep_images)/${fmes_sortie}_dec"
-	   buf$audace(bufNo) bitpix short
-	   set fref_sortie [ spc_echant ${fmes_sortie}_dec $fichier_ref ]
-	   #file delete -force "$audace(rep_images)/${fmes_sortie}_dec"
-       }
-   }
        
        #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
        ::console::affiche_resultat "\nDivison des deux profils de raies pour obtention de la réponse intrumentale...\n"
@@ -1854,17 +1860,142 @@ proc spc_rinstrum { args } {
        # file delete "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
        #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale_br$conf(extension,defaut)"
 
+       #--- Test si c'est un cas de basse réolution :
+       buf$audace(bufNo) load "$audace(rep_images)/$result_division"
+       set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       if { $dispersion>=$spcaudace(dmax) } {
+	   set flag_br 1
+       } else {
+	   set flag_br 0
+       }
 
-       #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1 
-       set rinstrum [ spc_ajustrid1 $result_division ]
-       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale1$conf(extension,defaut)"
-       #-- Meth 4 : interpolation polynomiale de 2 -> RI 2
-       set rinstrum [ spc_ajustrid2 $result_division ]
-       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale2$conf(extension,defaut)"
+       #--- Lissage du résultat de la division :
+       if { $flag_br==0 } {
+	   #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1 
+	   set rinstrum [ spc_ajustrid1 $result_division ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-1$conf(extension,defaut)"
+	   #-- Meth 4 : interpolation polynomiale de 2 -> RI 2
+	   set rinstrum [ spc_ajustrid2 $result_division ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-2$conf(extension,defaut)"
+	   
+	   #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
+	   set rinstrum [ spc_ajustripbas $result_division ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
+       } elseif { $flag_br==1 } {
+	   set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-br$conf(extension,defaut)"
+       }
 
-       #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
-       set rinstrum [ spc_ajustripbas $result_division ]
-       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale3$conf(extension,defaut)"
+
+       #--- Nettoyage des fichiers temporaires :
+       file rename -force "$audace(rep_images)/$result_division$conf(extension,defaut)" "$audace(rep_images)/resultat_division$conf(extension,defaut)"
+       #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       
+       if { $fmes_sortie != $fichier_mes } {
+	   file delete -force "$audace(rep_images)/${fmes_sortie}$conf(extension,defaut)"
+       }
+       if { $fref_sortie != $fichier_ref } {
+	   #- A decommenter :
+	   #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       }
+       if { $rinstrum == 0 } {
+	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
+	   return 0
+       } else {
+	   #-- Résultat de la division :
+	   ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+	   ::console::affiche_resultat "Réponse instrumentale sauvée sous reponse_instrumentale3$conf(extension,defaut)\n"
+	   return reponse_instrumentale-
+       }
+   } else {
+       ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence ?option basse résolution >800A (o/n)?\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+##########################################################
+# Calcul la réponse intrumentale et l'enregistre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 02-09-2005
+# Date de mise à jour : 20-03-06/26-08-06/23-07-2007
+# Arguments : fichier .fit du profil de raie, profil de raie de référence
+# Remarque : effectue le découpage, rééchantillonnage puis la division 
+##########################################################
+
+proc spc_rinstrum2 { args } {
+
+   global audace
+   global conf
+   set precision 0.0001
+
+   set nbargs [ llength $args ]
+   if { $nbargs<=3 } {
+       if { $nbargs==2 } {
+	   set fichier_mes [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	   set fichier_ref [ file rootname [ lindex $args 1 ] ]
+	   set ribr "n"
+       } elseif { $nbargs==3 } {
+	   set fichier_mes [ file tail [ file rootname [ lindex $args 0 ] ] ]
+	   set fichier_ref [ file rootname [ lindex $args 1 ] ]
+	   set ribr [ lindex $args 2 ]
+       } else {
+	   ::console::affiche_erreur "Usage: spc_rinstrum2 profil_de_raies_mesuré profil_de_raies_de_référence ?option basse résolution >800A (o/n)?\n\n"
+	   return 0
+       }
+
+
+       #--- Rééchanetillonnage du profil du catalogue :
+       #set fref_sortie $fichier_ref
+       set fmes_sortie $fichier_mes
+       ::console::affiche_resultat "\nRééchantillonnage du spectre de référence...\n"
+       set fref_sortie [ spc_echant $fichier_ref $fichier_mes ]
+       
+       #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
+       ::console::affiche_resultat "\nDivison des deux profils de raies pour obtention de la réponse intrumentale...\n"
+       #set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_div $fmes_sortie $fref_sortie ]
+       set result_division [ spc_divbrut $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_divri $fmes_sortie $fref_sortie ]
+
+
+       #--- Lissage de la reponse instrumentale :
+       ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"
+       #-- Meth 1 :
+       #set rinstrum1 [ spc_smooth2 $rinstrum0 ]
+       #set rinstrum2 [ spc_passebas $rinstrum1 ]
+       #set rinstrum3 [ spc_passebas $rinstrum2 ]
+       #set rinstrum [ spc_passebas $rinstrum3 ]
+
+       #-- Meth2 pour 2400 t/mm : 3 passebas (110, 35, 10) + spc_smooth2.
+       #set rinstrum1 [ spc_passebas $rinstrum0 110 ]
+       #set rinstrum2 [ spc_passebas $rinstrum1 35 ]
+       #set rinstrum3 [ spc_passebas $rinstrum2 10 ]
+       #set rinstrum [ spc_smooth2 $rinstrum3 ]
+
+       #-- Meth 6 : filtrage linéaire par morçeaux -> RI 0 spéciale basse résulution
+       #set rinstrum0 [ spc_ajust_piecewiselinear $result_division 60 30 ]
+       #set rinstrum [ spc_passebas $rinstrum0 31 ]
+       # file delete "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+       #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale_br$conf(extension,defaut)"
+
+       if { $ribr=="n" } {
+	   #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1 
+	   set rinstrum [ spc_ajustrid1 $result_division ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale1$conf(extension,defaut)"
+	   #-- Meth 4 : interpolation polynomiale de 2 -> RI 2
+	   set rinstrum [ spc_ajustrid2 $result_division ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale2$conf(extension,defaut)"
+	   
+	   #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
+	   set rinstrum [ spc_ajustripbas $result_division ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale3$conf(extension,defaut)"
+       } elseif { $ribr=="o" } {
+	   set rinstrum [ spc_pwlfilter $result_division 50 o 11 51 70 50 100 ]
+	   file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale_br$conf(extension,defaut)"
+       }
 
 
        #--- Nettoyage des fichiers temporaires :
@@ -1888,7 +2019,7 @@ proc spc_rinstrum { args } {
 	   return reponse_instrumentale3
        }
    } else {
-       ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence\n\n"
+       ::console::affiche_erreur "Usage: spc_rinstrum2 profil_de_raies_mesuré profil_de_raies_de_référence ?option basse résolution >800A (o/n)?\n\n"
    }
 }
 #****************************************************************#
@@ -2106,24 +2237,27 @@ proc spc_ajustrid1 { args } {
 	#--- Initialisation des paramètres et des données :
 	set erreur 1.
 	set contenu [ spc_fits2data $filenamespc ]
-	set abscisses [lindex $contenu 0]
-	set ordonnees [lindex $contenu 1]
-	set len [llength $ordonnees]
+	set abscisses [ lindex $contenu 0 ]
+	set ordonnees [ lindex $contenu 1 ]
+	set len [ llength $ordonnees ]
+	set limits [ spc_findnnul $ordonnees ]
+	set i_inf [ lindex $limits 0 ]
+	set i_sup [ lindex $limits 1 ]
 
 	#--- Calcul des coefficients du polynôme d'ajustement :
 	# - calcul de la matrice X 
-	set n [llength $abscisses]
-	set x ""
+	set ordonnees_cut [ list ]
 	set X "" 
-	for {set i 0} {$i<$n} {incr i} { 
-	    set xi [lindex $abscisses $i] 
+	for {set i $i_inf} {$i<$i_sup} {incr i} { 
+	    set xi [ lindex $abscisses $i ] 
 	    set ligne_i 1
+	    lappend ordonnees_cut [ lindex $ordonnees $i ]
 	    lappend erreurs $erreur
 	    lappend ligne_i $xi 
 	    lappend X $ligne_i 
 	} 
 	#-- calcul de l'ajustement 
-	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
+	set result [ gsl_mfitmultilin $ordonnees_cut $X $erreurs ] 
 	#-- extrait le resultat 
 	set coeffs [lindex $result 0] 
 	set chi2 [lindex $result 1] 
@@ -2131,22 +2265,8 @@ proc spc_ajustrid1 { args } {
 
 	set a [lindex $coeffs 0]
 	set b [lindex $coeffs 1]
-	::console::affiche_resultat "Coefficients : $a+$b*x\n"
+	::console::affiche_resultat "Coefficients de la droite d'interpolation : $a+$b*x\n"
 
-	#--- Calcul la valeur a retrancher : basée sur la difference moyenne y_deb et y_fin calculee par rapport aux mesures :
-	set ecart 30
-	set xdeb [ lindex $abscisses $ecart ]
-	set xfin [ lindex $abscisses [ expr $len-$ecart-1 ] ]
-	set ycalc_deb [ expr $a+$b*$xdeb ]
-	set ycalc_fin [ expr $a+$b*$xfin ]
-	set ymes_deb [ lindex $ordonnees $ecart ]
-	set ymes_fin [ lindex $ordonnees [ expr $len-$ecart-1 ] ]
-	#::console::affiche_resultat "$ycalc_deb ; $ycalc_fin ; $ymes_deb ; $ymes_fin\n"
-	## set dy_moy [ expr 0.5*(abs($ycalc_deb-$ymes_deb)+abs($ycalc_fin-$ymes_fin)) ]
-	set dy_moy [ expr 0.5*($ycalc_deb-$ymes_deb+$ycalc_fin-$ymes_fin) ]
-	#::console::affiche_resultat "Offset à retrancher : $dy_moy\n"
-	set aadj [ expr $a-$dy_moy ]
-	#set aadj $a
 
 	#--- Met a jour les nouvelles intensités :
 	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
@@ -2157,7 +2277,7 @@ proc spc_ajustrid1 { args } {
 	    if { $y==0 } {
 		set yadj 0.
 	    } else {
-		set yadj [ expr $aadj+$b*$x ]
+		set yadj [ expr $a+$b*$x ]
 	    }
 	    lappend yadjs $yadj
 	    buf$audace(bufNo) setpix [list $k 1] $yadj
@@ -2211,22 +2331,26 @@ proc spc_ajustrid2 { args } {
 	set abscisses [lindex $contenu 0]
 	set ordonnees [lindex $contenu 1]
 	set len [llength $ordonnees]
+	set limits [ spc_findnnul $ordonnees ]
+	set i_inf [ lindex $limits 0 ]
+	set i_sup [ lindex $limits 1 ]
 
 	#--- Calcul des coefficients du polynôme d'ajustement :
 	# - calcul de la matrice X 
 	set n [llength $abscisses]
-	set x ""
+	set ordonnees_cut [ list ]
 	set X "" 
-	for {set i 0} {$i<$n} {incr i} { 
+	for {set i $i_inf} {$i<$i_sup} {incr i} { 
 	    set xi [lindex $abscisses $i] 
 	    set ligne_i 1
+	    lappend ordonnees_cut [ lindex $ordonnees $i ]
 	    lappend erreurs $erreur
 	    lappend ligne_i $xi 
 	    lappend ligne_i [expr $xi*$xi]
 	    lappend X $ligne_i 
 	} 
 	#-- calcul de l'ajustement 
-	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
+	set result [ gsl_mfitmultilin $ordonnees_cut $X $erreurs ] 
 	#-- extrait le resultat 
 	set coeffs [lindex $result 0] 
 	set chi2 [lindex $result 1] 
@@ -2237,20 +2361,6 @@ proc spc_ajustrid2 { args } {
 	set c [lindex $coeffs 2]
 	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
 
-	#--- Calcul la valeur a retrancher : basée sur la difference moyenne y_deb et y_fin calculee par rapport aux mesures :
-	set ecart 30
-	set xdeb [ lindex $abscisses $ecart ]
-	set xfin [ lindex $abscisses [ expr $len-$ecart-1 ] ]
-	set ycalc_deb [ expr $a+$b*$xdeb+$c*$xdeb*$xdeb ]
-	set ycalc_fin [ expr $a+$b*$xfin+$c*$xfin*$xfin ]
-	set ymes_deb [ lindex $ordonnees $ecart ]
-	set ymes_fin [ lindex $ordonnees [ expr $len-$ecart-1 ] ]
-	#::console::affiche_resultat "$ycalc_deb ; $ycalc_fin ; $ymes_deb ; $ymes_fin\n"
-	## set dy_moy [ expr 0.5*(abs($ycalc_deb-$ymes_deb)+abs($ycalc_fin-$ymes_fin)) ]
-	set dy_moy [ expr 0.5*($ycalc_deb-$ymes_deb+$ycalc_fin-$ymes_fin) ]
-	#::console::affiche_resultat "Offset à retrancher : $dy_moy\n"
-	set aadj [ expr $a-$dy_moy ]
-	#set aadj $a
 
 	#--- Met a jour les nouvelles intensités :
 	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
@@ -2261,7 +2371,7 @@ proc spc_ajustrid2 { args } {
 	    if { $y==0 } {
 		set yadj 0.
 	    } else {
-		set yadj [ expr $aadj+$b*$x+$c*$x*$x ]
+		set yadj [ expr $a+$b*$x+$c*$x*$x ]
 	    }
 	    lappend yadjs $yadj
 	    buf$audace(bufNo) setpix [list $k 1] $yadj
@@ -2320,8 +2430,8 @@ proc spc_ajustripbas { args } {
 
 	#--- Extraction des données :
 	set contenu [ spc_fits2data $filenamespc ]
-	set abscisses [lindex $contenu 0]
-	set ordonnees [lindex $contenu 1]
+	set abscisses [ lindex $contenu 0 ]
+	set ordonnees [ lindex $contenu 1 ]
 	set yadjs [ lindex [ spc_fits2data $rinstrum ] 1 ]
 
 	#--- Affichage du graphe
@@ -2346,389 +2456,6 @@ proc spc_ajustripbas { args } {
 
 
 
-
-####################################################################
-# Procedure d'ajustement d'un nuage de points 
-#
-# Auteur : Benjamin MAUCLAIRE
-# Date creation : 28-02-2007
-# Date modification : 28-02-2007
-# Arguments : fichier .fit du profil de raie
-####################################################################
-
-proc spc_ajustd5 { args } {
-    global conf
-    global audace
-
-    if { [ llength $args ]==1 } {
-	set filenamespc [ lindex $args 0 ]
-	set erreur 1.
-	set contenu [ spc_fits2data $filenamespc ]
-	set abscisses [ lindex $contenu 0 ]
-	set ordonnees [ lindex $contenu 1 ]
-	set len [llength $ordonnees ]
-
-	#--- Calcul des coefficients du polynôme d'ajustement
-	# - calcul de la matrice X 
-	#set n [llength $abscisses]
-	set x ""
-	set X "" 
-	for {set i 0} {$i<$len} {incr i} { 
-	    set xi [lindex $abscisses $i] 
-	    set ligne_i 1
-	    lappend erreurs $erreur
-	    lappend ligne_i $xi 
-	    lappend ligne_i [ expr $xi*$xi ]
-	    lappend ligne_i [ expr $xi*$xi*$xi ]
-	    lappend ligne_i [ expr $xi*$xi*$xi*$xi ]
-	    lappend ligne_i [ expr $xi*$xi*$xi*$xi*$xi ]
-	    lappend X $ligne_i 
-	} 
-	#-- calcul de l'ajustement 
-	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ]
-	#-- extrait le resultat 
-	set coeffs [lindex $result 0] 
-	set chi2 [lindex $result 1] 
-	set covar [lindex $result 2]
-
-	set a [lindex $coeffs 0]
-	set b [lindex $coeffs 1]
-	set c [lindex $coeffs 2]
-	set d [lindex $coeffs 3]
-	set e [lindex $coeffs 4]
-	set f [lindex $coeffs 5]
-	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2+$d*x^3+$e*x^4+$f*x^5\n"
-
-	#--- Crée le fichier fits de sortie
-	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
-	#set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	set k 1
-	foreach x $abscisses {
-	    set y_lin [ expr $a+$b*$x+$c*$x*$x+$d*$x*$x*$x+$e*pow($x,4)+$f*pow($x,5) ]
-	    lappend yadj $y_lin
-	    buf$audace(bufNo) setpix [list $k 1] $y_lin
-	    incr k
-	}
-
-	#--- Affichage du graphe
-	#--- Meth1
-	::plotxy::clf
-	::plotxy::plot $abscisses $yadj r 1
-	::plotxy::hold on
-	::plotxy::plot $abscisses $ordonnees ob 0
-	::plotxy::plotbackground #FFFFFF
-	#::plotxy::xlabel "x"
-	#::plotxy::ylabel "y"
-	::plotxy::title "bleu : orginal ; rouge : interpolation deg 5"
-
-
-        #--- Sauvegarde du résultat :
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
-	buf$audace(bufNo) bitpix short
-	::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
-	return ${filenamespc}_lin
-    } else {
-	::console::affiche_erreur "Usage: spc_ajustd5 fichier_profil.fit\n\n"
-    }
-}
-#****************************************************************#
-
-
-
-####################################################################
-# Procedure d'ajustement d'un nuage de points 
-#
-# Auteur : Benjamin MAUCLAIRE/PL
-# Date creation : 28-02-2007
-# Date modification : 28-02-2007
-# Arguments : fichier .fit du profil de raie
-####################################################################
-
-proc spc_ajustd5pl { args } {
-    global conf
-    global audace
-    if { [ llength $args ]==1 } {
-	set filenamespc [ lindex $args 0 ]
-	set erreur 1.
-	set contenu [ spc_fits2data $filenamespc ]
-	set abscisses [ lindex $contenu 0 ]
-	set ordonnees [ lindex $contenu 1 ]
-	set len [llength $ordonnees ]
-	set x0  [lindex $abscisses 0]
-	set xend  [lindex $abscisses [expr $len -1]]
-	#set xnorm [expr 2/([ lindex $abscisses 0]+[ lindex $abscisses $len])]
- 	set xmed [ expr ($x0+$xend)*.5 ]
-	set contract [ expr 30000./($xend-$x0) ]
-
-	#--- Calcul des coefficients du polynôme d'ajustement
-	# - calcul de la matrice X 
-	#set n [llength $abscisses]
-	set x ""
-	set X "" 
-	for {set i 0} {$i<$len} {incr i} {
-	    set xi [lindex $abscisses $i]
-	    set erreuri $erreur
-	    set xi [expr ($xi-$xmed)*$contract]
-	    set yi [lindex $ordonnees $i]
-	    if {$yi==0.} {set erreuri 0}
-	    set ligne_i 1
-	    lappend erreurs $erreuri
-	    lappend ligne_i $xi 
-	    lappend ligne_i [ expr $xi*$xi ]
-	    lappend ligne_i [ expr $xi*$xi*$xi ]
-	    lappend ligne_i [ expr $xi*$xi*$xi*$xi ]
-	    lappend ligne_i [ expr $xi*$xi*$xi*$xi*$xi ]
-	    lappend X $ligne_i 
-	} 
-	#-- calcul de l'ajustement 
-	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ]
-	#-- extrait le resultat 
-	set coeffs [lindex $result 0] 
-	set chi2 [lindex $result 1] 
-	set covar [lindex $result 2]
-
-	set a [lindex $coeffs 0]
-	set b [lindex $coeffs 1]
-	set c [lindex $coeffs 2]
-	set d [lindex $coeffs 3]
-	set e [lindex $coeffs 4]
-	set f [lindex $coeffs 5]
-	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2+$d*x^3+$e*x^4+$f*x^5\n"
-
-	#--- Crée le fichier fits de sortie
-	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
-	#set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	set k 1
-	foreach x $abscisses {
-	    set y_lin [ expr $a+$b*$x+$c*$x*$x+$d*$x*$x*$x+$e*pow($x,4)+$f*pow($x,5) ]
-	    lappend yadj $y_lin
-	    buf$audace(bufNo) setpix [list $k 1] $y_lin
-	    incr k
-	}
-
-	#--- Affichage du graphe
-	#--- Meth1
-	::plotxy::clf
-	::plotxy::plot $abscisses $yadj r 1
-	::plotxy::hold on
-	::plotxy::plot $abscisses $ordonnees ob 0
-	::plotxy::plotbackground #FFFFFF
-	#::plotxy::xlabel "x"
-	#::plotxy::ylabel "y"
-	::plotxy::title "bleu : orginal ; rouge : interpolation deg 5"
-
-
-        #--- Sauvegarde du résultat :
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
-	buf$audace(bufNo) bitpix short
-	::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
-	return ${filenamespc}_lin
-    } else {
-	::console::affiche_erreur "Usage: spc_ajustd5pl fichier_profil.fit\n\n"
-    }
-}
-#****************************************************************#
-
-
-####################################################################
-# Procedure d'ajustement d'un nuage de points
-#
-# Auteur : Patrick LAILLY
-# Date creation : 07-03-2007
-# Date modification : 11-03-2007
-# Arguments : fichier .fit du profil de raie
-####################################################################
-
-proc spc_ajust_piecewiselinear { args } {
-    global conf
-    global audace
-    #- nechant est le nombre d'intervalles contenus dans un macro intervalle
-
-    if { [ llength $args ]==1 || [ llength $args ]==2 } {
-	if { [ llength $args ]==1 } {
-	    set filenamespc [ lindex $args 0 ]
-	    set nechant 80
-	} elseif { [ llength $args ]==2 } {
-	    set filenamespc [ lindex $args 0 ]
-	    set nechant [ lindex $args 1 ]
-	} else {
-	    ::console::affiche_erreur "Usage: spc_ajust_piecewiselinear fichier_profil.fit ?largeur?\n\n"
-	    return 0
-	}
-
-	#-- Initialisation des paramètres :
-	set erreur 1.
-	set contenu [ spc_fits2data $filenamespc ]
-	set abscisses [ lindex $contenu 0 ]
-	set ordonnees [ lindex $contenu 1 ]
-	set len [llength $ordonnees ]
-
-	#-- Paramètre d'ajustement :
-	set ninter [expr int($len/$nechant)+1]
-	set nbase [expr $ninter+1]
-
-	#extension du nombre de points de mesure
-	set n [expr $nechant*$ninter+1]
-	set abscissesorig $abscisses
-	set ordonneesorig $ordonnees
-	#if {$len<$n}
-	for {set i $len} {$i<$n} {incr i} {
-	    lappend abscisses 0.
-	    lappend ordonnees 0.
-	}
-
-	#definition des poids
-	set poids [ list ]
-	for {set i 0} {$i<$n} {incr i} {
-	    set poidsi 1.
-	    if {[lindex $ordonnees $i]==0.} {set poidsi 0.}
-	    lappend poids $poidsi
-	}
-
-	#-- calcul du vecteur v definissant la fonction generatrice
-	set v [ list ]
-	set nechant1 [ expr $nechant-1 ]
-	for {set i 0} {$i<$nechant1} {incr i} {
-	    lappend v [ expr 1.*$i/$nechant ]
-	}
-
-	set nechant2 [ expr 2*$nechant+1 ]
-	for {set i $nechant} {$i<$nechant2} {incr i} {
-	    lappend v [ expr 1.-1.*($i-$nechant)/$nechant ]
-	}
-	#::console::affiche_resultat "v=$v\n"
-
-
-	#-- calcul de la matrice B
-	set B ""
-	#-- Meth 1 : marche mais lente
-	if { 1==0 } {
-	set nechant3 [ expr $nechant+1 ]
-	for {set i 0} {$i<$n} {incr i} {
-	    set lignei ""
-	    for {set j 0} {$j<$nechant3} {incr j} {
-		set elemj 0.
-		if { [ expr abs($i-$j*$nechant) ]<=$nechant } {
-		    set elemj [ lindex $v [ expr $i-($j+1)*$nechant ] ] 
-		}
-		lappend lignei $elemj
-	    }
-	    lappend B $lignei
-	}
-	}
-	#-- Meth2 :
-	if { 1==0 } {
-	set nechant3 [ expr $nechant+1 ]
-	set lignei [ list ]
-	set lignezeros [ list ]
-	for {set i 0} {$i<$nechant3} {incr i} {
-	    lappend lignezeros 0.
-	}
-	for {set i 0} {$i<$n} {incr i} {
-	    set lignei $lignezeros
-	    #- jmin=max de 2 nombres :
-	    set jmin [ expr [ lindex [ lsort -integer -decreasing [ list 0 [ expr $i-$nechant1 ] ] ] 0 ]+0 ]
-	    #- jmax=min de 2 nombres-1 :
-	    set jmax [ expr [ lindex [ lsort -integer -increasing [ list $nechant3 [ expr $i-$nechant+2 ] ] ] 0 ] -1 ]
-	    for {set j $jmin} {$j<=$jmax} {incr j} {
-		::console::affiche_resultat "v$j=[ lindex $v [ expr $i-$j*$nechant+$nechant ] ]\n"
-		set lignei [ lreplace $lignei $j $j [ lindex $v [ expr $i-($j+1)*$nechant ] ] ]
-	    }
-	    lappend B $lignei
-	}
-	}
-
-	#-- Meth3 :
-	set nechant3 [ expr $nechant+1 ]
-	#set lignei [ list ]
-	#creation d'un ligne de zeros de largeur nechant + 1
-	set lignezeros [ list ]
-	for {set j 0} {$j<$nechant3} {incr j} {
-		lappend lignezeros 0.
-	}
-
-	for {set i 0} {$i<$n} {incr i} {
-	    set lignei $lignezeros
-	    #- jmin=max de 2 nombres :
-	    # set jmin [ expr [ lindex [ lsort -integer -decreasing [ list 0 [ expr $i/$nechant + 1 ] ] ] 0 ]+0 ]
-	    set jmin [ expr [ lindex [ lsort -integer -decreasing [ list 0 [ expr $i/$nechant-1 ] ] ] 0 ]+0 ]
-	    #- jmax=min de 2 nombres-1 :
-	    set jmax [ expr [ lindex [ lsort -integer -increasing [ list $nechant3 [ expr ($i+1)/$nechant+1 ] ] ] 0 ] +0 ]
-	    for {set j $jmin} {$j<=$jmax} {incr j} {
-		#::console::affiche_resultat "v$j=[ lindex $v [ expr $i-($j-1)*$nechant ] ]\n"
-		set lignei [ lreplace $lignei $j $j [ lindex $v [ expr $i-($j-1)*$nechant ] ] ]
-	    }
-	    lappend B $lignei
-	}
-
-	
-
-	
-	#-- calcul de l'ajustement
-	set result [ gsl_mfitmultilin $ordonnees $B $poids ]
-	#-- extrait le resultat
-	set coeffs [ lindex $result 0 ]
-	set chi2 [ lindex $result 1 ]
-	set covar [ lindex $result 2 ]
-
-	set riliss [ gsl_mmult $B $coeffs ]
-	::console::affiche_resultat "longueur B : [llength $B]\n"
-	::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
-	::console::affiche_resultat "longueur Coefficients : [llength $coeffs]\n"
-	#::console::affiche_resultat "Coefficients : $coeffs\n"
-
-	#--- On rameène riliss et poids aux dumensions de départ de l'image FITS :
-	set riliss [ lrange $riliss 0 [ expr $len-1] ]
-	set poids [ lrange $poids 0 [ expr $len-1] ]
-	::console::affiche_resultat "longueur riliss : [llength $riliss] - longueur poids=[ llength $poids ]\n"
-
-
-	#--- Mise à zéro des valeurs négatives de riliss et celle correspondant aux intensités initialies nulles (poids(i)==0) :
-	set i 0
-	foreach valriliss $riliss valpoids $poids {
-	    if { $valriliss<0. || $valpoids==0. } {
-		set riliss [ lreplace $riliss $i $i 0. ]
-	    }
-	    incr i
-	}
-
-
-	#--- Crée le fichier fits de sortie
-	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
-	#set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	#set k 1
-	#foreach x $abscisses {
-	#    set y_lin [ expr $a+$b*$x+$c*$x*$x+$d*$x*$x*$x+$e*pow($x,4)+$f*pow($x,5) ]
-	#    lappend yadj $y_lin
-	#    buf$audace(bufNo) setpix [list $k 1] $y_lin
-	 #   incr k
-	#}
-
-	#--- Affichage du graphe
-	#--- Meth1
-	::plotxy::clf
-	::plotxy::plot $abscissesorig $riliss r 1
-        ::plotxy::hold on
-	::plotxy::plot $abscissesorig $ordonnees ob 0
-	::plotxy::plotbackground #FFFFFF
-	##::plotxy::xlabel "x"
-	##::plotxy::ylabel "y"
-	::plotxy::title "bleu : orginal ; rouge : interpolation deg 5 de largeur $nechant"
-
-
-        #--- Sauvegarde du résultat :
-	#buf$audace(bufNo) bitpix float
-	#buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
-	#buf$audace(bufNo) bitpix short
-	#::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
-	#return ${filenamespc}_lin
-    } else {
-	::console::affiche_erreur "Usage: spc_ajust_piecewiselinear fichier_profil.fit ?largeur?\n\n"
-    }
-}
-#****************************************************************#
 
 
 
@@ -2761,6 +2488,210 @@ proc spc_ajust_piecewiselinear { args } {
 ####################################################################################
 
 
+
+if {1==0} {
+
+
+##########################################################
+# Calcul la réponse intrumentale et l'enregistre
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 02-09-2005
+# Date de mise à jour : 20-03-06/26-08-06
+# Arguments : fichier .fit du profil de raie, profil de raie de référence
+# Remarque : effectue le découpage, rééchantillonnage puis la division 
+##########################################################
+
+proc spc_rinstrum_23-07-2007 { args } {
+
+   global audace
+   global conf
+   set precision 0.0001
+
+   if { [llength $args] == 2 } {
+       set fichier_mes [ file tail [ file rootname [ lindex $args 0 ] ] ]
+       set fichier_ref [ file rootname [ lindex $args 1 ] ]
+
+     #===================================================================#
+     if { 1==0 } {
+       #--- Vérifie s'il faut rééchantilonner ou non
+       if { [ spc_compare $fichier_mes $fichier_ref ] == 0 } {
+	   #-- Détermine le spectre de dispersion la plus précise
+	   set carac1 [ spc_info $fichier_mes ]
+	   set carac2 [ spc_info $fichier_ref ]
+	   set disp1 [ lindex $carac1 5 ]
+	   set ldeb1 [ lindex $carac1 3 ]
+	   set lfin1 [ lindex $carac1 4 ]
+	   set disp2 [ lindex $carac2 5 ]
+	   set ldeb2 [ lindex $carac2 3 ]
+	   set lfin2 [ lindex $carac2 4 ]
+	   if { $disp1!=$disp2 && $ldeb2<=$ldeb1 && $lfin1<=$lfin2 } {
+	       #-- Rééchantillonnage et crop du spectre de référence fichier_ref
+	       ::console::affiche_resultat "\nRééchantillonnage et crop du spectre de référence...\n\n"
+	       #- Dans cet ordre, permet d'obtenir un continuum avec les raies de l'eau et oscillations d'interférence, mais le continuum possède la dispersion du sepctre de référence :
+	       #set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
+	       #set fref_sel_ech [ spc_echant $fref_sel $fichier_mes ]
+	       #set fref_sortie $fref_sel_ech
+	       #set fmes_sortie $fichier_mes
+
+	       #- Dans cet ordre, permet d'obtenir le vertiable continuum :
+	       set fref_ech [ spc_echant $fichier_ref $fichier_mes ]
+	       set fref_ech_sel [ spc_select $fref_ech $ldeb1 $lfin1 ]
+	       set fref_sortie $fref_ech_sel
+	       set fmes_sortie $fichier_mes
+	   } elseif { $disp2<$disp1 && $ldeb2>$ldeb1 && $lfin1>$lfin2 } {
+	       #-- Rééchantillonnage du spectre de référence fichier_ref et crop du spectre de mesure
+	       ::console::affiche_resultat "\nRééchantillonnage du spectre mesuré fichier_mes et crop du spectre de référence...\n\n"
+	       set fmes_sel [ spc_select $fichier_mes $ldeb2 $lfin2 ]
+	       set fref_ech [ spc_echant $fichier_ref $fichier_mes ]
+	       set fref_sortie $fref_ech
+	       set fmes_sortie $fmes_sel
+	   } elseif { [expr abs($disp2-$disp1)]<=$precision && $ldeb2<=$ldeb1 && $lfin1<=$lfin2 } {
+	       #-- Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence
+	       ::console::affiche_resultat "\nAucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de référence...\n\n"
+	       set fref_sel [ spc_select $fichier_ref $ldeb1 $lfin1 ]
+	       set fref_sortie $fref_sel
+	       set fmes_sortie $fichier_mes
+	   } elseif { [expr abs($disp2-$disp1)]<=$precision && $ldeb2>$ldeb1 && $lfin1>$lfin2 } {
+	       #-- Aucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de mesures
+	       ::console::affiche_resultat "\nAucun rééchantillonnage nécessaire mais un redécoupage (crop) nécessaire du spectre de mesures...\n\n"
+	       set fmes_sel [ spc_select $fichier_mes $ldeb2 $lfin2 ]
+	       set fref_sortie $fichier_ref
+	       set fmes_sortie $fmes_sel
+	   } else {
+	       #-- Le spectre de référence ne recouvre pas les longueurs d'onde du spectre mesuré
+	       ::console::affiche_resultat "\nLe spectre de référence ne recouvre aucune plage de longueurs d'onde du spectre mesuré.\n\n"
+	   }
+       } else {
+	   #-- Aucun rééchantillonnage ni redécoupage nécessaire
+	   ::console::affiche_resultat "\nAucun rééchantillonnage ni redécoupage nécessaire.\n\n"
+	   set fref_sortie $fichier_ref
+	   set fmes_sortie $fichier_mes
+       }
+    }
+    #======================================================================#
+
+       #--- Rééchanetillonnage du profil du catalogue :
+       #set fref_sortie $fichier_ref
+       set fmes_sortie $fichier_mes
+       ::console::affiche_resultat "\nRééchantillonnage du spectre de référence...\n"
+       set fref_sortie [ spc_echant $fichier_ref $fichier_mes ]
+
+    if {1==0} {
+       #--- Recalage du profil de catalogue sur le pixel central du capteur :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_mes"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       set naxis1m [ expr int(0.5*[ lindex [buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]) ]
+       set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       set lambdam_mes [ expr $lambda0+$cdelt1*$naxis1m ]
+       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	   set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+	   set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+	   set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+	   if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+	       set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+	   } else {
+	       set spc_d 0.0
+	   }
+	   set lambdam_mes [ expr $spc_a+$spc_b*$naxis1m+$spc_c*pow($naxis1m,2)+$spc_d*pow($naxis1m,3) ]
+       } else {
+	   set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	   set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	   set lambdam_mes [ expr $lambda0+$cdelt1*$naxis1m ]
+       }
+       buf$audace(bufNo) load "$audace(rep_images)/$fref_sortie"
+       set naxis1m [ expr int(0.5*[ lindex [buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]) ]
+       set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       set lambdam_ref [ expr $lambda0+$cdelt1*$naxis1m ]
+       set deltal [ expr $lambdam_mes-$lambdam_ref ]
+       if { $deltal>[ expr $cdelt1/10.] } {
+	   ::console::affiche_resultat "Décalage de $deltal angstroms entre les 2 profils, recalage du profil de l'étoile du catalogue...\n"
+	   buf$audace(bufNo) load "$audace(rep_images)/$fmes_sortie"
+	   set listemotsclef [ buf$audace(bufNo) getkwds ]
+	   set lambda0dec [ expr $lambda0+$deltal ]
+	   buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda0dec float "" "angstrom" ]
+	   if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	        buf$audace(bufNo) setkwd [list "SPC_A" $lambda0dec float "" "angstrom"]
+	   }
+	   buf$audace(bufNo) bitpix float
+	   buf$audace(bufNo) save "$audace(rep_images)/${fmes_sortie}_dec"
+	   buf$audace(bufNo) bitpix short
+	   set fref_sortie [ spc_echant ${fmes_sortie}_dec $fichier_ref ]
+	   #file delete -force "$audace(rep_images)/${fmes_sortie}_dec"
+       }
+   }
+       
+       #--- Divison des deux profils de raies pour obtention de la réponse intrumentale :
+       ::console::affiche_resultat "\nDivison des deux profils de raies pour obtention de la réponse intrumentale...\n"
+       #set rinstrum0 [ spc_div $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_div $fmes_sortie $fref_sortie ]
+       set result_division [ spc_divbrut $fmes_sortie $fref_sortie ]
+       #set result_division [ spc_divri $fmes_sortie $fref_sortie ]
+
+
+       #--- Lissage de la reponse instrumentale :
+       ::console::affiche_resultat "\nLissage de la réponse instrumentale...\n"
+       #-- Meth 1 :
+       #set rinstrum1 [ spc_smooth2 $rinstrum0 ]
+       #set rinstrum2 [ spc_passebas $rinstrum1 ]
+       #set rinstrum3 [ spc_passebas $rinstrum2 ]
+       #set rinstrum [ spc_passebas $rinstrum3 ]
+
+       #-- Meth2 pour 2400 t/mm : 3 passebas (110, 35, 10) + spc_smooth2.
+       #set rinstrum1 [ spc_passebas $rinstrum0 110 ]
+       #set rinstrum2 [ spc_passebas $rinstrum1 35 ]
+       #set rinstrum3 [ spc_passebas $rinstrum2 10 ]
+       #set rinstrum [ spc_smooth2 $rinstrum3 ]
+
+       #-- Meth 6 : filtrage linéaire par morçeaux -> RI 0 spéciale basse résulution
+       #set rinstrum0 [ spc_ajust_piecewiselinear $result_division 60 30 ]
+       #set rinstrum [ spc_passebas $rinstrum0 31 ]
+       # file delete "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+       #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale_br$conf(extension,defaut)"
+
+
+       #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1 
+       set rinstrum [ spc_ajustrid1 $result_division ]
+       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale1$conf(extension,defaut)"
+       #-- Meth 4 : interpolation polynomiale de 2 -> RI 2
+       set rinstrum [ spc_ajustrid2 $result_division ]
+       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale2$conf(extension,defaut)"
+
+       #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
+       set rinstrum [ spc_ajustripbas $result_division ]
+       file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale3$conf(extension,defaut)"
+
+
+       #--- Nettoyage des fichiers temporaires :
+       file rename -force "$audace(rep_images)/$result_division$conf(extension,defaut)" "$audace(rep_images)/resultat_division$conf(extension,defaut)"
+       #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       
+       if { $fmes_sortie != $fichier_mes } {
+	   file delete -force "$audace(rep_images)/${fmes_sortie}$conf(extension,defaut)"
+       }
+       if { $fref_sortie != $fichier_ref } {
+	   #- A decommenter :
+	   #file delete -force "$audace(rep_images)/${fref_sortie}$conf(extension,defaut)"
+       }
+       if { $rinstrum == 0 } {
+	   ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
+	   return 0
+       } else {
+	   #-- Résultat de la division :
+	   ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+	   ::console::affiche_resultat "Réponse instrumentale sauvée sous reponse_instrumentale3$conf(extension,defaut)\n"
+	   return reponse_instrumentale3
+       }
+   } else {
+       ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence\n\n"
+   }
+}
+#****************************************************************#
+
+
+
 ####################################################################
 # Procédure de calibration par un polynôme de degré 2 (au moins 3 raies nécessaires)
 #
@@ -2770,8 +2701,6 @@ proc spc_ajust_piecewiselinear { args } {
 # Arguments : nom_profil_raies x1 lambda1 x2 lamda2 x3 lambda3 ... x_n lambda_n
 ####################################################################
 
-
-if {1==0} {
 proc spc_rinstrum_020905 { args } {
 
    global audace

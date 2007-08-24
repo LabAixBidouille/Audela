@@ -533,15 +533,15 @@ proc spc_smilex { args } {
 
     if {[llength $args] <= 2} {
 	if {[llength $args] == 1} {
-	    set filenamespc [ file rootname [ lindex $args 0 ] ]
+	    set filenamespc [ file rootname [ file tail [ lindex $args 0 ] ] ]
 	    set flagmanuel "n"
 	} elseif {[llength $args] == 2} {
-	    set filenamespc [ file rootname [ lindex $args 0 ] ]
+	    set filenamespc [ file rootname [ file tail [ lindex $args 0 ] ] ]
 	    set flagmanuel [ lindex $args 1 ]
 	} elseif { [llength $args] == 0 } {
-	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	    set spctrouve [ file rootname [ file tail [ tk_getOpenFile  -filetypes [ list [ list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension ] [ buf$audace(bufNo) extension].gz" ] ] -initialdir $audace(rep_images) ] ] ]
 	    if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
-		set filenamespc $spctrouve
+		set filenamespc "$spctrouve"
 		set flagmanuel "n"
 	    } else {
 		::console::affiche_erreur "Usage: spc_smilex spectre_lampe_calibration ?sélection_manuelle (o/n)?\n\n"
@@ -557,9 +557,11 @@ proc spc_smilex { args } {
 	#set xfin [ lindex $args 3 ]
 	#set yfin [ lindex $args 4 ]
 
-	#--- Initialisation de variables liées aux dimensions du spectre de la lampe de calibration
-	#buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
-	loadima "$audace(rep_images)/$filenamespc"
+	#--- Initialisation de variables liées aux dimensions du spectre de la lampe de calibration :
+	#loadima "$audace(rep_images)/$filenamespc"
+	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+	::confVisu::autovisu 1
+
 	set naxis2i [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
 	# set pas [ expr $naxis2i/200 ]
 	set pas [ expr int($pourcentimg*$naxis2i) ]
@@ -726,7 +728,7 @@ proc spc_smilex { args } {
 		    buf$audace(bufNo) save "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
 		    loadima "$audace(rep_images)/${filenamespc}_slt$conf(extension,defaut)"
 		    ::console::affiche_resultat "Image sauvée sous ${filenamespc}_slt$conf(extension,defaut). Coéfficents du slant : $pente, $c.\n Il faudra peut-être aussi corriger l'inclinaison du spectre.\n"
-		    set results [ list ${filenamespc}_slx $c $b [ lindex $coefssmilex 0 ] $pente ]
+		    set results [ list ${filenamespc}_slt $c $b [ lindex $coefssmilex 0 ] $pente ]
 		    return $results
 		} else {
 		    ::console::affiche_resultat "Pas de correction du slant nécessaire non plus.\n"
@@ -1238,7 +1240,7 @@ proc spc_slant2imgs { args } {
 proc spc_findtilt { args } {
    global audace caption
    global conf
-   set pi [expr acos(-1.0)]
+   set pi [ expr acos(-1.0) ]
 
    if {[llength $args] <= 1} {
        if {[llength $args] == 1} {
@@ -1368,10 +1370,10 @@ proc spc_tiltautoimgs { args } {
 	    #--- Détermination de l'angle de tilt :
 	    ::console::affiche_resultat "Régistration verticale prélimiaire et somme...\n"
 	    set freg [ spc_register $filename ]
-	    set somme [ bm_sadd $freg ]
+	    set fsomme [ bm_sadd $freg ]
 	    delete2 $freg $nbsp
-	    set results [ spc_findtilt $somme ]
-	    file delete -force "$audace(rep_images)/$somme$conf(extension,defaut)"
+	    set results [ spc_findtilt $fsomme ]
+	    file delete -force "$audace(rep_images)/$fsomme$conf(extension,defaut)"
 	    set angle [ lindex $results 0 ]
 	    set xrot [ lindex $results 1 ]
 	    if { abs($angle)>$spcaudace(tilt_limit) } {

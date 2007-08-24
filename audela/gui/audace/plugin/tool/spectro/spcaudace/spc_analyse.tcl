@@ -76,7 +76,7 @@ proc spc_centergauss { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
-# Date de mise à jour : 21-12-2005/2007-04-27
+# Date de mise à jour : 21-12-2005/2007-04-27/2007-08-07
 # Arguments : fichier .fit du profil de raie, x_debut (wavelength), x_fin (wavelength), a/e (renseigne sur raie emission ou absorption)
 ##########################################################
 
@@ -91,29 +91,50 @@ proc spc_centergaussl { args } {
      set lfin [ lindex $args 2 ]
      set type [ lindex $args 3 ]
 
+     #--- Récupère les mots clef de la calibration :
      buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-     #buf$audace(bufNo) load $fichier
-     set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-     set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+     set crval [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+     set cdelt [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+     set listemotsclef [ buf$audace(bufNo) getkwds ]
+     if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	 set flag_nonlin 1
+	 set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+	 set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+	 set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+	 set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+     } else {
+	 set flag_nonlin 0
+     }
+
+     #--- Détermine les valaurs d'encadrement :
      #- 2007-04-27 : int -> round
      set xdeb [ expr round(($ldeb-$crval)/$cdelt) ]
      set xfin [ expr round(($lfin-$crval)/$cdelt) ]
 
+     #--- Mesure le centre de la raie modéilsée par une gaussienne :
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
 	 #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
 	 buf$audace(bufNo) mult -1.0
 	 # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords ]
+	 set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
      } elseif { [string compare $type "e"] == 0 } {
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+	 set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
      }
-     # Le second element de la liste reponse est le centre X de la gaussienne
+     #-- Le second element de la liste reponse est le centre X de la gaussienne :
      set xcentre [lindex $lreponse 1]
-     set centre [ expr $xcentre*$cdelt+$crval ]
+
+
+     #--- Converti le pixel en longueur d'onde :
+     if { $flag_nonlin==1 } {
+	 set centre [ expr $spc_a+$spc_b*$xcentre+$spc_c*pow($xcentre,2)+$spc_d*pow($xcentre,3) ]
+     } else {
+	 set centre [ expr $xcentre*$cdelt+$crval ]
+     }
+
+     #--- TRaitement du résultat :
      ::console::affiche_resultat "Le centre de la raie est : $centre Angstroms\n"
      return $centre
-
    } else {
      ::console::affiche_erreur "Usage: spc_centergaussl nom_profil_calibré_fits lambda_debut lambda_fin type_raie (a/e)\n\n"
    }
@@ -162,7 +183,7 @@ proc spc_centergrav { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 30-08-2005
-# Date de mise à jour : 21-12-2005/21-08-2006/2007-04-27
+# Date de mise à jour : 21-12-2005/21-08-2006/2007-04-27/2007-08-07
 # Arguments : fichier .fit du profil de raie, x_debut (pixel), x_fin (pixel)
 ##########################################################
 
@@ -855,7 +876,7 @@ proc spc_snr { args } {
 	   set SNR [ expr $S/$N ]
        } else {
 	   ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
-	   set SNR O
+	   set SNR 0
        }
 
        #--- Affichage des résultats :
@@ -1097,7 +1118,7 @@ proc spc_imax { args } {
 	set lambda [ lindex $args 1 ]
 	set largeur [ lindex $args 2 ]
 
-	#--- Calcul de xdeb et xfin  en pixels :
+	#--- Détermine les paramètres de calibration :
 	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 	set listemotsclef [ buf$audace(bufNo) getkwds ]
 	if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
@@ -1110,6 +1131,16 @@ proc spc_imax { args } {
 	} else {
 	    set lambda 1.
 	}
+	if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	    set flag_nonlin 1
+	    set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+	    set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+	    set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+	    set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+	} else {
+	    set flag_nonlin 0
+	}
+
 	#-- Calcul des limites de l'ajustement pour une dispersion linéaire :
 	set xdeb [ expr round(($lambda-0.5*$largeur-$lambda0)/$disp) ]
 	set xfin [ expr round(($lambda+0.5*$largeur-$lambda0)/$disp) ]
@@ -1118,7 +1149,13 @@ proc spc_imax { args } {
 	set gaussparams [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ]
 	set imax [ lindex $gaussparams 0 ]
 	set xcentre [ lindex $gaussparams 1 ]
-	set lcentre [ expr $disp*$xcentre+$lambda0 ]
+
+	#--- Converti le pixel en longueur d'onde :
+	if { $flag_nonlin==1 } {
+	    set lcentre [ expr $spc_a+$spc_b*$xcentre+$spc_c*pow($xcentre,2)+$spc_d*pow($xcentre,3) ]
+	} else {
+	    set lcentre [ expr $disp*$xcentre+$lambda0 ]
+	}
 
 	#--- Affichage des résultats :
         ::console::affiche_resultat "L'amplitude de la raie centrée en $lcentre vaut $imax ADU\n"
@@ -1211,6 +1248,10 @@ proc spc_icontinuum { args } {
 
 	#--- Calcul des paramètres de l'image :
 	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+
+	#--- Détermine les limites gauche et droite d'etude (valeurs != 0) :
+	set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
+	buf$audace(bufNo) window [ list [ lindex $limits 0 ] 1 [ lindex $limits 1 ] 1 ]
 	set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	set largeur [ expr int($naxis1/$nbtranches) ]
 
@@ -1235,6 +1276,55 @@ proc spc_icontinuum { args } {
 	return $icontinuum
     } else {
 	::console::affiche_erreur "Usage: spc_icontinuum nom_profil_raies\n"
+    }
+}
+#***************************************************************************#
+
+
+
+####################################################################
+# Procedure déterminant les bornes (indice) inf et sup d'un ensemble de valeurs où elles sont différentes de 0
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 14-07-2007
+# Date modification : 14-07-2007
+# Arguments : liste valeurs
+# Sortie : les indices inf et sup de la liste
+####################################################################
+
+proc spc_findnnul { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 1 } {
+	set liste_intentites [ lindex $args 0 ]
+
+	#--- Initialisations :
+	set len [ llength $liste_intentites ]
+	set i_inf 0
+	set i_sup [ expr $len-1 ]
+
+	#--- Recherche de i_inf :
+	for {set i 0} {$i<$len} {incr i} { 
+	    if { [ lindex $liste_intentites $i ]!=0 } {
+		set i_inf $i
+		break
+	    }
+	}
+
+	#--- Recherche de i_sup :
+	for {set i [ expr $len-1 ]} {$i>=0} {incr i -1} {
+	    if { [ lindex $liste_intentites $i ]!=0 } {
+		set i_sup $i
+		break
+	    }
+	}
+
+	#--- Traitement des résultats :
+	set results [ list $i_inf $i_sup ]
+	return $results
+    } else {
+	::console::affiche_erreur "Usage: spc_findnnul liste_intensites\n"
     }
 }
 #***************************************************************************#

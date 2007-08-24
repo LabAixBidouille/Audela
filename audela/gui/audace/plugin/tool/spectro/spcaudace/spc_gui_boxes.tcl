@@ -337,3 +337,266 @@ namespace eval ::param_spc_audace_export2png {
   
 }
 #****************************************************************************#
+
+
+
+
+
+########################################################################
+# Boîte graphique de saisie des paramètres pour la fonction spc_traitenebula
+# Intitulé : Coordonnées de la zone du spectre
+#
+# Auteurs : Benjamin Mauclaire
+# Date de création : 31-07-2007
+# Date de modification : 31-07-2007
+# Utilisée par : spc_traitenebula
+# Args : spectre_2D liste_coordonnees_initiales_zone 
+########################################################################
+
+namespace eval ::param_spc_audace_selectzone {
+
+   proc run { args {positionxy 20+20} } {
+      global conf
+      global audace spcaudace
+      global captionspc
+      global color
+
+
+      set audace(param_spc_audace,selectzone,config,spectre) [ lindex $args 0 ]
+      loadima "$audace(rep_images)/$audace(param_spc_audace,selectzone,config,spectre)"
+      ::confVisu::autovisu 1
+      set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
+      set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
+      set spc_windowcoords [ list 1 1 $naxis1 $naxis2 ]
+
+
+      if { [ string length [ info commands .param_spc_audace_selectzone.* ] ] != "0" } {
+         destroy .param_spc_audace_selectzone
+      }
+
+
+      #--- Initialisation des champs :
+      set audace(param_spc_audace,selectzone,config,xinf) 1
+      set audace(param_spc_audace,selectzone,config,yinf) 1
+      set audace(param_spc_audace,selectzone,config,xsup) $naxis1
+      set audace(param_spc_audace,selectzone,config,ysup) $naxis2
+
+
+      # === Variables d'environnement
+      # backpad : #F0F0FF
+      set audace(param_spc_audace,selectzone,color,textkey) $color(blue_pad)
+      set audace(param_spc_audace,selectzone,color,backpad) #ECE9D8
+      set audace(param_spc_audace,selectzone,color,backdisp) $color(white)
+      set audace(param_spc_audace,selectzone,color,textdisp) #FF0000
+      set audace(param_spc_audace,selectzone,font,c12b) [ list {Arial} 10 bold ]
+      set audace(param_spc_audace,selectzone,font,c10b) [ list {Arial} 10 bold ]
+      
+      # === Captions
+      set caption(param_spc_audace,selectzone,titre2) "Coordonnées de la zone\n du spectre à utiliser"
+      set caption(param_spc_audace,selectzone,titre) "Sélection de la zone du spectre"
+      set caption(param_spc_audace,selectzone,stop_button) "Annuler"
+      set caption(param_spc_audace,selectzone,return_button) "OK"
+      set caption(param_spc_audace,selectzone,config,spectre) "Spectre 2D"
+      set caption(param_spc_audace,selectzone,config,xinf) "X inférieur gauche : "
+      set caption(param_spc_audace,selectzone,config,yinf) "Y inférieur gauche : "
+      set caption(param_spc_audace,selectzone,config,xsup) "X supérieur droit : "
+       set caption(param_spc_audace,selectzone,config,ysup) "Y supérieur droit : "
+      
+      
+      # === Met en place l'interface graphique
+      
+      #--- Cree la fenetre .param_spc_audace_selectzone de niveau le plus haut
+      toplevel .param_spc_audace_selectzone -class Toplevel -bg $audace(param_spc_audace,selectzone,color,backpad)
+      wm geometry .param_spc_audace_selectzone 408x372-35-15
+      wm resizable .param_spc_audace_selectzone 1 1
+      wm title .param_spc_audace_selectzone $caption(param_spc_audace,selectzone,titre)
+      wm protocol .param_spc_audace_selectzone WM_DELETE_WINDOW "::param_spc_audace_selectzone::annuler"
+      
+      #--- Create the title
+      #--- Cree le titre
+      label .param_spc_audace_selectzone.title \
+	      -font [ list {Arial} 16 bold ] -text $caption(param_spc_audace,selectzone,titre2) \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey)
+      pack .param_spc_audace_selectzone.title \
+	      -in .param_spc_audace_selectzone -fill x -side top -pady 15
+      
+      # --- Boutons du bas
+      frame .param_spc_audace_selectzone.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,selectzone,color,backpad)
+      #-- Bouton Annuler
+      button .param_spc_audace_selectzone.stop_button  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -text "$caption(param_spc_audace,selectzone,stop_button)" \
+	      -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) \
+	      -command {::param_spc_audace_selectzone::annuler}
+      pack  .param_spc_audace_selectzone.stop_button -in .param_spc_audace_selectzone.buttons -side left -fill none -padx 3 -pady 3
+      #-- Bouton OK
+      button .param_spc_audace_selectzone.return_button  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -text "$caption(param_spc_audace,selectzone,return_button)" \
+	      -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) \
+	      -command {::param_spc_audace_selectzone::go}
+      pack  .param_spc_audace_selectzone.return_button -in .param_spc_audace_selectzone.buttons -side right -fill none -padx 3 -pady 3
+      pack .param_spc_audace_selectzone.buttons -in .param_spc_audace_selectzone -fill x -pady 0 -padx 0 -anchor s -side bottom
+
+
+      #--- Message sur les caractères non autorisés :
+      label .param_spc_audace_selectzone.message1 \
+	      -font [ list {Arial} 12 bold ] -text "Utiliser la souris pour choisir les coordonnées\ndes points inférieur gauche et surpérieur droit \nde la zone à étudier." \
+	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey)
+      pack .param_spc_audace_selectzone.message1 \
+	      -in .param_spc_audace_selectzone -fill x -side top -pady 15
+
+
+      #--- Label + Entry pour spectre
+      frame .param_spc_audace_selectzone.spectre -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
+      label .param_spc_audace_selectzone.spectre.label -text "$caption(param_spc_audace,selectzone,config,spectre)" -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat \
+	      -font $audace(param_spc_audace,selectzone,font,c12b)
+      pack  .param_spc_audace_selectzone.spectre.label -in .param_spc_audace_selectzone.spectre -side left -fill none
+      button .param_spc_audace_selectzone.spectre.explore -text "$captionspc(parcourir)" -width 1 \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief raised \
+	      -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -command { set audace(param_spc_audace,selectzone,config,spectre) [ file tail [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] }
+      pack .param_spc_audace_selectzone.spectre.explore -side left -padx 7 -pady 3 -ipady 0
+      entry  .param_spc_audace_selectzone.spectre.entry  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -textvariable audace(param_spc_audace,selectzone,config,spectre) -bg $audace(param_spc_audace,selectzone,color,backdisp) \
+	      -fg $audace(param_spc_audace,selectzone,color,textdisp) -relief flat -width 100
+      pack  .param_spc_audace_selectzone.spectre.entry -in .param_spc_audace_selectzone.spectre -side left -fill none
+      pack .param_spc_audace_selectzone.spectre -in .param_spc_audace_selectzone -fill none -pady 1 -padx 12
+
+       if { 1== 0 } {
+      #--- Label + Entry pour nom_objet
+      frame .param_spc_audace_selectzone.nom_objet -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
+      label .param_spc_audace_selectzone.nom_objet.label  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -text "$caption(param_spc_audace,selectzone,config,nom_objet) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
+      pack  .param_spc_audace_selectzone.nom_objet.label -in .param_spc_audace_selectzone.nom_objet -side left -fill none
+      entry  .param_spc_audace_selectzone.nom_objet.entry  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -textvariable audace(param_spc_audace,selectzone,config,nom_objet) -bg $audace(param_spc_audace,selectzone,color,backdisp) \
+	      -fg $audace(param_spc_audace,selectzone,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_selectzone.nom_objet.entry -in .param_spc_audace_selectzone.nom_objet -side left -fill none
+      pack .param_spc_audace_selectzone.nom_objet -in .param_spc_audace_selectzone -fill none -pady 1 -padx 12
+      }
+
+      #--- Label + Entry pour xinf
+      frame .param_spc_audace_selectzone.xinf -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
+      label .param_spc_audace_selectzone.xinf.label  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -text "$caption(param_spc_audace,selectzone,config,xinf) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
+      pack  .param_spc_audace_selectzone.xinf.label -in .param_spc_audace_selectzone.xinf -side left -fill none
+      entry  .param_spc_audace_selectzone.xinf.entry  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -textvariable audace(param_spc_audace,selectzone,config,xinf) -bg $audace(param_spc_audace,selectzone,color,backdisp) \
+	      -fg $audace(param_spc_audace,selectzone,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_selectzone.xinf.entry -in .param_spc_audace_selectzone.xinf -side left -fill none
+      pack .param_spc_audace_selectzone.xinf -in .param_spc_audace_selectzone -fill none -pady 1 -padx 12
+
+       #--- Label + Entry pour yinf
+      frame .param_spc_audace_selectzone.yinf -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
+      label .param_spc_audace_selectzone.yinf.label  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -text "$caption(param_spc_audace,selectzone,config,yinf) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
+      pack  .param_spc_audace_selectzone.yinf.label -in .param_spc_audace_selectzone.yinf -side left -fill none
+      entry  .param_spc_audace_selectzone.yinf.entry  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -textvariable audace(param_spc_audace,selectzone,config,yinf) -bg $audace(param_spc_audace,selectzone,color,backdisp) \
+	      -fg $audace(param_spc_audace,selectzone,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_selectzone.yinf.entry -in .param_spc_audace_selectzone.yinf -side left -fill none
+      pack .param_spc_audace_selectzone.yinf -in .param_spc_audace_selectzone -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour xsup
+      frame .param_spc_audace_selectzone.xsup -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
+      label .param_spc_audace_selectzone.xsup.label  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -text "$caption(param_spc_audace,selectzone,config,xsup) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
+      pack  .param_spc_audace_selectzone.xsup.label -in .param_spc_audace_selectzone.xsup -side left -fill none
+      entry  .param_spc_audace_selectzone.xsup.entry  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -textvariable audace(param_spc_audace,selectzone,config,xsup) -bg $audace(param_spc_audace,selectzone,color,backdisp) \
+	      -fg $audace(param_spc_audace,selectzone,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_selectzone.xsup.entry -in .param_spc_audace_selectzone.xsup -side left -fill none
+      pack .param_spc_audace_selectzone.xsup -in .param_spc_audace_selectzone -fill none -pady 1 -padx 12
+
+
+      #--- Label + Entry pour ysup
+      frame .param_spc_audace_selectzone.ysup -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
+      label .param_spc_audace_selectzone.ysup.label  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -text "$caption(param_spc_audace,selectzone,config,ysup) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
+      pack  .param_spc_audace_selectzone.ysup.label -in .param_spc_audace_selectzone.ysup -side left -fill none
+      entry  .param_spc_audace_selectzone.ysup.entry  \
+	      -font $audace(param_spc_audace,selectzone,font,c12b) \
+	      -textvariable audace(param_spc_audace,selectzone,config,ysup) -bg $audace(param_spc_audace,selectzone,color,backdisp) \
+	      -fg $audace(param_spc_audace,selectzone,color,textdisp) -relief flat -width 70
+      pack  .param_spc_audace_selectzone.ysup.entry -in .param_spc_audace_selectzone.ysup -side left -fill none
+      pack .param_spc_audace_selectzone.ysup -in .param_spc_audace_selectzone -fill none -pady 1 -padx 12
+
+  }
+  
+  
+  proc go {} {
+      global audace spcaudace
+      global caption
+
+      global spc_windowcoords
+
+      ::param_spc_audace_selectzone::recup_conf
+      set spectre $audace(param_spc_audace,selectzone,config,spectre)
+      set xinf $audace(param_spc_audace,selectzone,config,xinf)
+      set yinf $audace(param_spc_audace,selectzone,config,yinf)
+      set xsup $audace(param_spc_audace,selectzone,config,xsup)
+      set ysup $audace(param_spc_audace,selectzone,config,ysup)
+      set listevalmots [ list $spectre $xinf $yinf $xsup $ysup ]
+
+      #--- Mise à jour des mots clef et création du graphique :
+      if { $spectre!="" && $xinf!="" && $yinf!=""  && $xsup!="" && $ysup!="" } {
+	  set spc_windowcoords [ list $xinf $yinf $xsup $ysup ]
+	  destroy .param_spc_audace_selectzone
+	  return $spc_windowcoords
+      } else {
+	  tk_messageBox -title "Erreur de saisie" -icon error -message "Certains champ sont restés vides"
+	  return 0
+      }
+  }
+
+  proc annuler {} {
+      global audace
+      global caption
+      global nomprofilpng
+
+      ::param_spc_audace_selectzone::recup_conf
+      destroy .param_spc_audace_selectzone
+      set nomprofilpng ""
+      return 0
+  }
+
+
+  proc recup_conf {} {
+      global conf
+      global audace
+      
+      if { [ winfo exists .param_spc_audace_selectzone ] } {
+	  #--- Enregistre la position de la fenetre
+	  set geom [ wm geometry .param_spc_audace_selectzone ]
+	  set deb [ expr 1+[string first + $geom ] ]
+	  set fin [ string length $geom ]
+	  set conf(param_spc_audace,position) "[string range  $geom $deb $fin]"
+      }
+  }
+
+  
+}
+#****************************************************************************#

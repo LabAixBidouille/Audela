@@ -73,13 +73,15 @@ proc spc_winini { } {
    global printernames
    global captionspc
    global colorspc
+   global spcaudace
 
    # === On cree une nouvelle fenetre ===
    wm withdraw .
    if {[info command .spc] == "" } {
       toplevel .spc -class Toplevel
    }
-   wm title .spc "$captionspc(main_title) - $profilspc(initialfile)"   
+   # wm title .spc "$captionspc(main_title) - $profilspc(initialfile)"   
+   wm title .spc "$captionspc(main_title) $spcaudace(version)"   
    #wm geometry .spc 640x480+0+100
    wm geometry .spc 640x513+0-68
    wm maxsize .spc [winfo screenwidth .spc] [winfo screenheight .spc]
@@ -108,9 +110,9 @@ proc spc_winini { } {
 
 
       #--- Menu Fichier ---#
-      menu .spc.menuBar -tearoff 0
+      menu .spc.menuBar -tearoff 0 -bg $colorspc(backmenu)
       .spc.menuBar add cascade -menu .spc.menuBar.file -label $captionspc(file) -underline 0
-      menu .spc.menuBar.file -tearoff 0
+      menu .spc.menuBar.file -tearoff 0 -bg $colorspc(backmenu)
       .spc.menuBar.file add command -label $captionspc(loadspcfit) -command "spc_loadfit" -underline 0 -accelerator "Ctrl-O"
       .spc.menuBar.file add command -label $captionspc(loadspctxt) -command "spc_loaddat" -underline 0 -accelerator "Ctrl-T"
       .spc.menuBar.file add command -label $captionspc(spc_file_space)
@@ -156,8 +158,8 @@ proc spc_winini { } {
 
 
       #--- Menu Géométrie ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.geometrie -label $captionspc(spc_geometrie) -underline 0
-      menu .spc.menuBar.geometrie -tearoff 0
+      .spc.menuBar add cascade -menu .spc.menuBar.geometrie -label $captionspc(spc_geometrie) -underline 0 -background $colorspc(backmenu)
+      menu .spc.menuBar.geometrie -tearoff 0 -background $colorspc(backmenu)
       # .spc configure -menu .spc.menuBar
       .spc.menuBar.geometrie add command -label $captionspc(spc_pretraitementfc_w) -command "spc_pretraitementfc_w" -underline 0
       .spc.menuBar.geometrie add command -label $captionspc(spc_register_w) -command "spc_register" -underline 0
@@ -170,8 +172,8 @@ proc spc_winini { } {
 
 
       #--- Menu Profil de raies ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.profil -label $captionspc(spc_profil) -underline 0
-      menu .spc.menuBar.profil -tearoff 0
+      .spc.menuBar add cascade -menu .spc.menuBar.profil -label $captionspc(spc_profil) -underline 0 -background $colorspc(backmenu)
+      menu .spc.menuBar.profil -tearoff 0 -background $colorspc(backmenu)
       # .spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
       .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
       .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
@@ -185,8 +187,8 @@ proc spc_winini { } {
 
 
       #--- Menu Mesures ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.mesures -label $captionspc(spc_mesures) -underline 0
-      menu .spc.menuBar.mesures -tearoff 0
+      .spc.menuBar add cascade -menu .spc.menuBar.mesures -label $captionspc(spc_mesures) -underline 0 -background $colorspc(backmenu)
+      menu .spc.menuBar.mesures -tearoff 0 -background $colorspc(backmenu)
       # .spc configure -menu .spc.menuBar
       .spc.menuBar.mesures add command -label $captionspc(spc_centergrav_w) -command "spc_centergrav" -underline 0
       .spc.menuBar.mesures add command -label $captionspc(spc_centergauss_w) -command "spc_centergauss" -underline 0
@@ -196,8 +198,8 @@ proc spc_winini { } {
 
 
       #--- Menu Calibration ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $captionspc(spc_calibration) -underline 0
-      menu .spc.menuBar.calibration -tearoff 0
+      .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $captionspc(spc_calibration) -underline 0 -background $colorspc(backmenu)
+      menu .spc.menuBar.calibration -tearoff 0 -background $colorspc(backmenu)
       # .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
       .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre" -underline 0 -accelerator "Ctrl-L"
       #.spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
@@ -215,21 +217,22 @@ proc spc_winini { } {
       bind .spc <Control-f> cali_flux
 
       #--- Menu Pipelines ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $captionspc(spc_pipelines) -underline 0
-      menu .spc.menuBar.pipelines -tearoff 0
+      .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $captionspc(spc_pipelines) -underline 0 -background $colorspc(backmenu)
+      menu .spc.menuBar.pipelines -tearoff 0 -background $colorspc(backmenu)
       # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
       .spc.menuBar.pipelines add command -label $captionspc(spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-2"
       .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-3"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $captionspc(spc_traitestellaire) -command "::param_spc_audace_traitestellaire::run" -underline 0 -accelerator "Ctrl-4"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traitenebula) -command "::param_spc_audace_traitenebula::run" -underline 0 -accelerator "Ctrl-5"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-5"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-6"
       .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
       # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-6"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-7"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-7"
+      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-8"
       #.spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
       #.spc.menuBar.pipelines add command -label $captionspc(spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc configure -menu .spc.menuBar
@@ -244,8 +247,8 @@ proc spc_winini { } {
       #bind .spc <Control-7> ::spcmfc::Demarragespbmfc
 
       #--- Menu Astrophysique ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0
-      menu .spc.menuBar.analyse -tearoff 0
+      .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0 -background $colorspc(backmenu)
+      menu .spc.menuBar.analyse -tearoff 0 -background $colorspc(backmenu)
       #.spc.menuBar.analyse add command -label $captionspc(spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-A"
       .spc.menuBar.analyse add command -label $captionspc(spc_surveys) -command "spc_surveys" -underline 0
       .spc.menuBar.analyse add command -label $captionspc(spc_bebuil) -command "spc_bebuil" -underline 0
@@ -272,8 +275,8 @@ proc spc_winini { } {
 
 
       #--- Menu À propos/Aide ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.aide -label $captionspc(spc_aide) -underline 0
-      menu .spc.menuBar.aide -tearoff 0
+      .spc.menuBar add cascade -menu .spc.menuBar.aide -label $captionspc(spc_aide) -underline 0 -background $colorspc(backmenu)
+      menu .spc.menuBar.aide -tearoff 0 -background $colorspc(backmenu)
       # .spc.menuBar.aide add command -label $captionspc(spc_version_w) -command "spc_version" -underline 0
       .spc.menuBar.aide add command -label $captionspc(spc_version_w)
       .spc.menuBar.aide add command -label $captionspc(spc_help) -command "spc_help"
@@ -414,7 +417,7 @@ proc pvisu { } {
       set profilspc(xunit) $captionspc(pixel)
    } else {
       .spc.g axis configure x -title $captionspc(angstroms)
-      set profilspc(xunit) $captionspc(angstroms)
+      set profilspc(xunit) $captionspc(angstrom)
    }
 
    #--- Affichage du graphique :
