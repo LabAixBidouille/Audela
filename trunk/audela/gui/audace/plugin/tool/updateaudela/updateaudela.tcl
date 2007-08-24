@@ -2,27 +2,16 @@
 # Fichier : updateaudela.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.7 2007-07-03 20:22:34 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.8 2007-08-24 22:15:15 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
-   global caption
    package provide updateaudela 1.1
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] updateaudela.cap ]
 
    package require audela 1.4.0
-
-   set caption(updateaudela,pluginDetail) "Information du plug-in"
-   set caption(updateaudela,availableUpdate) "Mises à jour téléchargées"
-   set caption(updateaudela,moreInfo) "Plus d'information"
-   set caption(updateaudela,connect) "Connecter"
-   set caption(updateaudela,developperOption) "Option développeur"
-   set caption(updateaudela,downloadAndInstall)  "Installer immediatement après le téléchargement"
-   set caption(updateaudela,address)  "Adresse"
-   set caption(updateaudela,audelaAddress) "Site AudeLA"
-   set caption(updateaudela,otherAddress)  "Autre site"
 }
 
 #------------------------------------------------------------
@@ -90,7 +79,6 @@ proc ::updateaudela::deletePluginInstance { visuNo } {
 proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
    global conf
    global audace
-   global caption
    variable private
 
    package require Tkhtml 3.0
@@ -103,14 +91,11 @@ proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
    package require starkit
    starkit::startup
 
-
    #--- Creation des variables si elles n'existaient pas
    if { ! [ info exists conf(updateaudela,position) ] }          { set conf(updateaudela,position)     "300x200+250+75" }
    if { ! [ info exists conf(updateaudela,kitDirectory) ] }      { set conf(updateaudela,kitDirectory) "$::audace(rep_install)" }
    if { ! [ info exists conf(updateaudela,downloadAndInstall ] } { set conf(updateaudela,downloadAndInstall) "1" }
-   if { ! [ info exists conf(updateaudela,addressList) ] }      {
-       set conf(updateaudela,addressList) [list "http://perso.orange.fr/michel.pujol/audela/index.htm" "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/index.php#download"]
-   }
+   if { ! [ info exists conf(updateaudela,addressList) ] }       { set conf(updateaudela,addressList) [list "http://perso.orange.fr/michel.pujol/audela/index.htm" "http://bmauclaire.free.fr/astronomie/softs/audela/spcaudace/index.php#download"] }
 
    set private(base)            $in
    set private(kitDirectory)    "$::audace(rep_install)"
@@ -235,12 +220,11 @@ proc ::updateaudela::fillConfigPage { frm visuNo } {
    pack $notebook -fill both -expand yes -padx 4 -pady 4
    $notebook raise [$notebook page 0]
 
-
 }
 
 #------------------------------------------------------------
 #  ::updateaudela::getTypeDirectory
-#  retourne le repertoire du plugin en focntion de son type
+#  retourne le repertoire du plugin en fonction de son type
 #  Actuellement les types de plugin sont dans un repertoire dont le nom est
 #  identique au type, sauf  le type "focuser" qui est dans le repertoire "equipement"
 #------------------------------------------------------------
@@ -272,7 +256,7 @@ proc ::updateaudela::showHelp { } {
 proc ::updateaudela::closeWindow { visuNo } {
    variable private
 
-   #--- je sauve la taille etvla position de la fenetre
+   #--- je sauve la taille et la position de la fenetre
    set ::conf(updateaudela,position) [winfo geometry [winfo toplevel $private(frm) ]]
 }
 
@@ -838,7 +822,7 @@ proc ::updateaudela::kit::deleteKit { } {
 
    set selectedRow [$private(kitTable) curselection]
    if { $selectedRow == "" } {
-      tk_messageBox -message "Error : no file selected" -icon error
+      tk_messageBox -message "Error: No file selected." -icon error
       return
    }
    set kitFileName [$private(kitTable) cellcget $selectedRow,0 -text]
@@ -961,7 +945,7 @@ proc ::updateaudela::kit::installKit { } {
 
    set selectedRow [$private(kitTable) curselection]
    if { $selectedRow == "" } {
-      tk_messageBox -message "Error : no file selected" -icon error
+      tk_messageBox -message "Error: No file selected." -icon error
       return
    }
    set kitFileName [$private(kitTable) cellcget $selectedRow,0 -text]
@@ -1000,7 +984,7 @@ proc ::updateaudela::kit::showKitContent {  } {
 
    set selectedRow [$private(kitTable) curselection]
    if { $selectedRow == "" } {
-      tk_messageBox -message "Error : no file selected" -icon error
+      tk_messageBox -message "Error: No file selected." -icon error
       return
    }
    set kitFileName [$private(kitTable) cellcget $selectedRow,0 -text]
@@ -1130,8 +1114,8 @@ proc ::updateaudela::download::fillConfigPage { frm visuNo } {
 
       #Button $frm.button.refresh -text "$::caption(updateaudela,refresh)"
       #   -command "::updateaudela::download::connect"
-      ##Button $frm.button.makeKit -text " << $caption(updateaudela,makeKit)"  -command "::updateaudela::makeKit"
-      ##$frm.button.makeKit configure -font "[$frm.button.makeKit cget -font] bold"
+      #Button $frm.button.makeKit -text " << $caption(updateaudela,makeKit)"  -command "::updateaudela::makeKit"
+      #$frm.button.makeKit configure -font "[$frm.button.makeKit cget -font] bold"
       checkbutton $frm.button.install -text "$caption(updateaudela,downloadAndInstall)" \
          -variable ::conf(updateaudela,downloadAndInstall)
       #grid $frm.button.install  -row 0 -column 0   -padx 4 -pady 2 -sticky w
@@ -1338,7 +1322,7 @@ proc ::updateaudela::plugin::deletePlugin {} {
 
    set rowIndex [$private(pluginTable) curselection]
    if { $rowIndex == "" } {
-      tk_messageBox -message "Error : no plugin selected" -icon error
+      tk_messageBox -message "Error: No plugin selected." -icon error
       return
    }
    set pluginName [$private(pluginTable) cellcget $rowIndex,1 -text]
@@ -1403,11 +1387,11 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
       #   -command "::updateaudela::download::run $frm $visuNo"
          Button $frm.plugin.button.refresh -text "$caption(updateaudela,refresh)" \
             -command "::updateaudela::plugin::fillPluginTable"
-         Button $frm.plugin.button.delete  -text "$caption(updateaudela,delete)"  \
+         Button $frm.plugin.button.delete  -text "$caption(updateaudela,delete)" \
             -command "::updateaudela::plugin::deletePlugin"
          Button $frm.plugin.button.moreInfo -text $::caption(updateaudela,moreInfo) \
             -command "::updateaudela::plugin::showPluginHelp"
-         Button $frm.plugin.button.makeKit -text "$caption(updateaudela,makeKit)"  \
+         Button $frm.plugin.button.makeKit -text "$caption(updateaudela,makeKit)" \
             -command "::updateaudela::plugin::makeKit"
          #grid $frm.plugin.button.download  -row 0 -column 0 -sticky ewns
          grid $frm.plugin.button.delete    -row 0 -column 1
@@ -1457,7 +1441,7 @@ proc ::updateaudela::plugin::fillPluginTable { } {
             set pluginType
             $private(pluginTable) insert end [list "$pluginInfo(type)" "$pluginInfo(name)" "$pluginInfo(title)" "$pluginInfo(version)" "" ]
          } else {
-            ::console::affiche_erreur "Error reading $pkgIndexFileName :\n$::errorInfo\n\n"
+            ::console::affiche_erreur "Error reading $pkgIndexFileName:\n$::errorInfo\n\n"
          }
       }
    }
@@ -1473,7 +1457,7 @@ proc ::updateaudela::plugin::onSelectPlugin {  } {
 
    set rowIndex [$private(pluginTable) curselection]
    if { $rowIndex == "" } {
-      tk_messageBox -message "Error : no plugin selected" -icon error
+      tk_messageBox -message "Error: No plugin selected." -icon error
       return
    }
    set pluginName [$private(pluginTable) cellcget $rowIndex,1 -text]
@@ -1503,7 +1487,7 @@ proc ::updateaudela::plugin::makeKit { } {
 
    set rowIndex [$private(pluginTable) curselection]
       if { $rowIndex == "" } {
-         tk_messageBox -message "Error : no plugin selected" -icon error
+         tk_messageBox -message "Error: No plugin selected." -icon error
          return
       }
    set pluginName [$private(pluginTable) cellcget $rowIndex,1 -text]
@@ -1529,22 +1513,22 @@ proc ::updateaudela::plugin::makeKit { } {
 
       #--- j'affiche un message OK
       set message [format $::caption(updateaudela,makeKitOk) $kitFileName]
-      tk_messageBox -message $message -type ok -icon info  -title $::caption(updateaudela,title)
-   } else {
+      tk_messageBox -message $message -type ok -icon info -title $::caption(updateaudela,title)
+  } else {
      tk_messageBox -message "$::errorInfo. See console" -icon error
    }
 }
 
 #------------------------------------------------------------
-#  ::updateaudela::showPluginHelp
+#  ::updateaudela::plugin::showPluginHelp
 #     affiche l'aide d'un plugin
 #------------------------------------------------------------
-proc ::updateaudela::plugin::showPluginHelp {  } {
+proc ::updateaudela::plugin::showPluginHelp { } {
    variable private
 
    set rowIndex [$private(pluginTable) curselection]
    if { $rowIndex == "" } {
-      tk_messageBox -message "Error : no plugin selected" -icon error
+      tk_messageBox -message "Error: No plugin selected." -icon error
       return
    }
 
