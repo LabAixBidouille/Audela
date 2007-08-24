@@ -2,14 +2,14 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.9 2007-05-30 18:51:25 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.10 2007-08-24 22:16:54 robertdelmas Exp $
 #
 
 #============================================================
 # Declaration du namespace anim
 #    initialise le namespace
 #============================================================
-namespace eval ::anim {
+namespace eval ::animate {
    package provide animate 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -17,32 +17,40 @@ namespace eval ::anim {
 }
 
 #------------------------------------------------------------
-# ::anim::getPluginTitle
+# ::animate::getPluginTitle
 #    retourne le titre du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
-proc ::anim::getPluginTitle { } {
+proc ::animate::getPluginTitle { } {
    global caption
 
    return "$caption(animate,animation)"
 }
 
 #------------------------------------------------------------
-# ::anim::getPluginType
+#  ::animate::getPluginHelp
+#     retourne le nom du fichier d'aide principal
+#------------------------------------------------------------
+proc ::animate::getPluginHelp { } {
+   return "animate.htm"
+}
+
+#------------------------------------------------------------
+# ::animate::getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
-proc ::anim::getPluginType { } {
+proc ::animate::getPluginType { } {
    return "tool"
 }
 
 #------------------------------------------------------------
-# ::anim::getPluginProperty
+# ::animate::getPluginProperty
 #    retourne la valeur de la propriete
 #
 # parametre :
 #    propertyName : nom de la propriete
 # return : valeur de la propriete ou "" si la propriete n'existe pas
 #------------------------------------------------------------
-proc ::anim::getPluginProperty { propertyName } {
+proc ::animate::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "utility" }
       subfunction1 { return "animate" }
@@ -51,34 +59,34 @@ proc ::anim::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::anim::initPlugin
+# ::animate::initPlugin
 #    initialise le plugin
 #------------------------------------------------------------
-proc ::anim::initPlugin { tkbase } {
+proc ::animate::initPlugin { tkbase } {
 
 }
 
 #------------------------------------------------------------
-# ::anim::createPluginInstance
+# ::animate::createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
-proc ::anim::createPluginInstance { { in "" } { visuNo 1 } } {
-   ::anim::createPanel $in.anim
+proc ::animate::createPluginInstance { { in "" } { visuNo 1 } } {
+   ::animate::createPanel $in.anim
 }
 
 #------------------------------------------------------------
-# ::anim::deletePluginInstance
+# ::animate::deletePluginInstance
 #    suppprime l'instance du plugin
 #------------------------------------------------------------
-proc ::anim::deletePluginInstance { visuNo } {
+proc ::animate::deletePluginInstance { visuNo } {
 
 }
 
 #------------------------------------------------------------
-# ::anim::createPanel
+# ::animate::createPanel
 #    prepare la creation de la fenetre de l'outil
 #------------------------------------------------------------
-proc ::anim::createPanel { this } {
+proc ::animate::createPanel { this } {
    variable This
    global caption panneau
 
@@ -99,24 +107,24 @@ proc ::anim::createPanel { this } {
    if { [info exists panneau(anim,ms)] == "0" }       { set panneau(anim,ms)       "300" }
    if { [info exists panneau(anim,nbl)] == "0" }      { set panneau(anim,nbl)      "5" }
    #--- Construction de l'interface
-   ::anim::animBuildIF $This
+   ::animate::animBuildIF $This
 }
 
 #------------------------------------------------------------
-# ::anim::startTool
+# ::animate::startTool
 #    affiche la fenetre de l'outil
 #------------------------------------------------------------
-proc ::anim::startTool { visuNo } {
+proc ::animate::startTool { visuNo } {
    variable This
 
    pack $This -side left -fill y
 }
 
 #------------------------------------------------------------
-# ::anim::stopTool
+# ::animate::stopTool
 #    masque la fenetre de l'outil
 #------------------------------------------------------------
-proc ::anim::stopTool { visuNo } {
+proc ::animate::stopTool { visuNo } {
    variable This
    global audace
 
@@ -127,10 +135,10 @@ proc ::anim::stopTool { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::anim::cmdGo
+# ::animate::cmdGo
 #    lance l'animation
 #------------------------------------------------------------
-proc ::anim::cmdGo { } {
+proc ::animate::cmdGo { } {
    variable This
    global audace panneau
 
@@ -148,7 +156,7 @@ proc ::anim::cmdGo { } {
       #--- supportee par la variable error retournee par la procedure animate du script aud1.tcl
       set error [ animate $panneau(anim,filename) $panneau(anim,nbi) $panneau(anim,ms) $panneau(anim,nbl) ]
       if { $error == "1" } {
-         ::anim::erreurFichier
+         ::animate::erreurFichier
          }
       #--- Gestion du bouton Go Animation
       $This.fra6.but1 configure -relief raised -state normal
@@ -156,10 +164,10 @@ proc ::anim::cmdGo { } {
 }
 
 #------------------------------------------------------------
-# ::anim::erreurFichier
+# ::animate::erreurFichier
 #    affiche un message d'erreur
 #------------------------------------------------------------
-proc ::anim::erreurFichier { } {
+proc ::animate::erreurFichier { } {
    global audace caption
 
    if { [ winfo exists $audace(base).erreurfichier ] } {
@@ -189,10 +197,10 @@ proc ::anim::erreurFichier { } {
 }
 
 #------------------------------------------------------------
-# ::anim::editNomGenerique
+# ::animate::editNomGenerique
 #    edite le nom generique du fichier
 #------------------------------------------------------------
-proc ::anim::editNomGenerique { } {
+proc ::animate::editNomGenerique { } {
    global audace panneau
 
    #--- Fenetre parent
@@ -206,10 +214,10 @@ proc ::anim::editNomGenerique { } {
 }
 
 #------------------------------------------------------------
-# ::anim::animBuildIF
+# ::animate::animBuildIF
 #    cree la fenetre de l'outil
 #------------------------------------------------------------
-proc ::anim::animBuildIF { This } {
+proc ::animate::animBuildIF { This } {
    global audace panneau
 
    #--- Frame de l'outil
@@ -220,7 +228,7 @@ proc ::anim::animBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(anim,titre) \
-            -command "::audace::showHelpPlugin tool animate animate.htm"
+            -command "::audace::showHelpPlugin tool animate [ ::animate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(anim,aide)
 
@@ -240,7 +248,7 @@ proc ::anim::animBuildIF { This } {
 
          #--- Bouton parcourir
          button $This.fra2.but1 -borderwidth 2 -text $panneau(anim,parcourir) \
-            -command { ::anim::editNomGenerique }
+            -command { ::animate::editNomGenerique }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
 
       pack $This.fra2 -side top -fill x
@@ -292,7 +300,7 @@ proc ::anim::animBuildIF { This } {
 
          #--- Bouton GO Animation
          button $This.fra6.but1 -borderwidth 2 -text $panneau(anim,go) \
-            -command { ::anim::cmdGo }
+            -command { ::animate::cmdGo }
          pack $This.fra6.but1 -in $This.fra6 -anchor center -fill x -padx 5 -pady 5 -ipadx 5 -ipady 8
 
       pack $This.fra6 -side top -fill x
