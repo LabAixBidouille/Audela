@@ -648,7 +648,7 @@ int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack)
 	 }
          delta=s*sxx-sx*sx;
          covb=0.;
-         if (delta==0.) {
+         if (fabs(delta)<=TT_EPS_DOUBLE) {
             a=0.;
             b=0.;
          } else {
@@ -657,7 +657,7 @@ int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack)
             covb=sqrt(fabs(sxx/delta));
          }
 	 /*poids[index[k]]+=(poids_pondere/nbima0);*/
-         if (a==0) {
+         if (fabs(a)<=TT_EPS_DOUBLE) {
             value=pstack->nullpix_value;
          } else {
             value=b;

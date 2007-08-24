@@ -1208,7 +1208,7 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
       }
    }
    sigma=fabs(sigma);
-   if (sigma==0) { sigma=1.; }
+   if (sigma<=TT_EPS_DOUBLE) { sigma=1.; }
    sigma2=sigma*sigma;
 
    /* ==== cree les images de calcul===*/
