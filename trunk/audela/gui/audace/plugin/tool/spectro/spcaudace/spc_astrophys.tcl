@@ -616,7 +616,7 @@ proc spc_ne2 { args } {
 
 
 ##########################################################
-# Procedure de tracer de largeur équivalente pour une série de spectres
+# Procedure de tracer de largeur équivalente pour une série de spectres dans le répertoire de travail
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 04-08-2005
@@ -644,28 +644,41 @@ proc spc_ewcourbe { args } {
 	foreach fichier $fileliste {
 	    ::console::affiche_resultat "\nTraitement de $fichier\n"
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	    set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
-	    # Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
-	    lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
-	    # lappend ldates [ expr $date-50000. ]
-	    #lappend list_ew [ expr -1.*[ spc_autoew $fichier $lambda ] ]
-	    lappend list_ew [ spc_autoew $fichier $lambda ]
+	    #set date [ lindex [buf$audace(bufNo) getkwd "MJD-OBS"] 1 ]
+	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+	    if { [ string length $ladate ]<=10 } {
+		set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE" ] 1 ]
+	    }
+	    set date [ mc_date2jd $ladate ]
+	    #- Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
+	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
+	    #lappend ldates [ expr round($date*10000.)/10000.-2450000. ]
+	    lappend ldates [ expr int(($date-2450000.)*10000.)/10000. ]
+	    set results [ spc_autoew2 $fichier $lambda ]
+	    lappend list_ew [ lindex $results 0 ]
+	    lappend list_sigmaew [ lindex $results 1 ]
 	}
 
 	#--- Création du fichier de données
 	# ::console::affiche_resultat "$ldates \n $list_ew\n"
 	set file_id1 [open "$audace(rep_images)/${ewfile}.dat" w+]
-	foreach sdate $ldates ew $list_ew {
-	    puts $file_id1 "$sdate\t$ew"
+	foreach sdate $ldates ew $list_ew sew $list_sigmaew {
+	    puts $file_id1 "$sdate\t$ew\t$sew"
 	}
 	close $file_id1
 
-	#--- Création du script de tracage avec gnuplot
-	set titre "Evolution de la largeur equivalente au cours du temps"
-	set legendey "Largeur equivalente (A)"
+	#--- Création du script de tracage avec gnuplot :
+	set ew0 [ lindex $list_ew 0 ]
+	if { $ew0<0 } {
+	    set invert_opt "reverse"
+	} else {
+	    set invert_opt "noreverse"
+	}
+	set titre "Evolution de la largeur equivalente EW au cours du temps"
+	set legendey "Largeur equivalente EW (A)"
 	set legendex "Date (JD-2450000)"
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
-	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * * \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
 	close $file_id2
 	if { $tcl_platform(os)=="Linux" } {	
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
@@ -694,7 +707,7 @@ proc spc_ewcourbe { args } {
 
 
 ##########################################################
-# Procedure de tracer de largeur équivalente pour une série de spectres
+# Procedure de tracer de largeur équivalente pour une série de spectres dans le répertoire de travail
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 04-08-2005
@@ -725,9 +738,11 @@ proc spc_ewcourbe_opt { args } {
 	    set fichier [ file tail $fichier ]
 	    ::console::affiche_resultat "\nTraitement de $fichier\n"
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	    set date [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ]
+	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+	    set date [ mc_date2jd $ladate ]
 	    # Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
-	    lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
+	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
+	    lappend ldates [ expr int(($date-2450000.)*10000.)/10000. ]
 	    # lappend ldates [ expr $date-50000. ]
 	    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	    set ldeb [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
@@ -745,12 +760,18 @@ proc spc_ewcourbe_opt { args } {
 	}
 	close $file_id1
 
-	#--- Création du script de tracage avec gnuplot
+	#--- Création du script de tracage avec gnuplot :
+	set ew0 [ lindex $list_ew 0 ]
+	if { $ew0<0 } {
+	    set invert_opt "reverse"
+	} else {
+	    set invert_opt "noreverse"
+	}
 	set titre "Evolution de la largeur equivalente au cours du temps"
 	set legendey "Largeur equivalente (A)"
 	set legendex "Date (JD-2450000)"
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
-	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * * \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
+	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
 	close $file_id2
 	if { $tcl_platform(os)=="Linux" } {	
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
@@ -771,7 +792,7 @@ proc spc_ewcourbe_opt { args } {
 	#--- Traitement du résultat :
 	return "ew_courbe.png"
     } else {
-	::console::affiche_erreur "Usage: spc_ewcourbe_opt nom_générique_profils_normalisés_fits lambda_raie largeur_raie\n\n"
+	::console::affiche_erreur "Usage: spc_ewcourbe_opt nom_générique_profils_fits lambda_raie largeur_raie\n\n"
     }
 }
 #*******************************************************************************#
@@ -807,6 +828,7 @@ proc spc_ewdirw { args } {
 	foreach fichier $fileliste {
 	    ::console::affiche_resultat "\nTraitement de $fichier\n"
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	    if { 1==0 } {
 	    set listemotsclef [ buf$audace(bufNo) getkwds ]
 	    if { [ lsearch $listemotsclef "MJD-OBS" ] !=-1 } {
 		set date [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ]
@@ -821,11 +843,18 @@ proc spc_ewdirw { args } {
 		set date [ mc_date2jd $ladate ]
 		set jddate [ expr int($date*10000.)/10000. ]
 	    }
+	    }
+	    #- 070707 :
+	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+	    set date [ mc_date2jd $ladate ]
+	    set jddate [ expr int(($date-2450000.)*10000.)/10000. ]
+	    #--
 	    set mesure [ spc_autoew2 $fichier $lambda ]
 	    set ew [ lindex $mesure 0 ]
 	    set sigma_ew [ lindex $mesure 1 ]
 	    set snr [ lindex $mesure 2 ]
-	    puts $file_id1 "$fichier\t$jddate\t$ew\t$sigma_ew\t$snr\r"
+	    set largeur_mes [ lindex $mesure 3 ]
+	    puts $file_id1 "$fichier\t$jddate\t$largeur_mes=$ew A\t$sigma_ew A\t$snr\r"
 	}
 	close $file_id1
 
@@ -1318,6 +1347,8 @@ proc spc_autoew { args } {
 	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
 	::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
 	::console::affiche_resultat "SNR=$snr_short.\n\n"
+	set resultats [ list $ew $sigma_ew ]
+	#return $resultats
 	return $ew
     } else {
 	::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie\n"
@@ -1420,7 +1451,7 @@ proc spc_autoew2 { args } {
 	#::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short anstrom(s).\n"
 	#::console::affiche_resultat "SNR=$snr_short.\n"
 	#::console::affiche_resultat "Sigma(EW)=$sigma_ew angstrom.\n\n"
-	set results [ list "EW($delta_l=$l_deb-$l_fin)=$ew_short A" "$sigma_ew A" $snr_short ]
+	set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
 	return $results
     } else {
 	::console::affiche_erreur "Usage: spc_autoew2 nom_profil_raies_normalisé lambda_raie\n"

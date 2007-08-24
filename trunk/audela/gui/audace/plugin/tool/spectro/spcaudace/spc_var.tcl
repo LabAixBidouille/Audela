@@ -10,7 +10,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.0.4 - 27/06/2007"
+set spcaudace(version) "1.1.0 - 6/08/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -71,6 +71,11 @@ set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
 
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
+#-- Fraction des bords ignorés dans certains calculs (divri...) :
+set spcaudace(pourcent_bord) 0.15
+
+#-- Dispersion maximale pour un spectre haute résolution (extraction continuum) :
+set spcaudace(dmax) 0.5
 #-- Hauteur max d'un spectre 2D pour ne considérer que du slant :
 set spcaudace(hmax) 300
 
@@ -84,9 +89,12 @@ set spcaudace(tilt_limit) 2.
 #--- definition of colors
 #--- definition des couleurs
 set colorspc(back) #123456
+#-- Ancien fond des menus : #D9D9D9
+set colorspc(backmenu) #ECE9D8
 set colorspc(back_infos) #FFCCDD
 set colorspc(fore_infos) #000000
-set colorspc(back_graphborder) #CCCCCC
+#-- Ancien fond du contour graphe : #CCCCCC, #DCDAD5
+set colorspc(back_graphborder) #DCDAD5
 set colorspc(plotbackground) #FFFFFF
 set colorspc(profile) #000088
 

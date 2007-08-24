@@ -682,7 +682,7 @@ proc spc_fits2dat { args } {
 
  
      buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
-     set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+     set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
      set listemotsclef [ buf$audace(bufNo) getkwds ]
      if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
 	 set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
@@ -724,6 +724,10 @@ proc spc_fits2dat { args } {
 	 return 0
      }
 
+     #--- configure le fichier de sortie avec les fin de ligne "xODx0A" 
+     #-- independamment du systeme LINUX ou WINDOWS
+     fconfigure $file_id -translation crlf
+
      if { [regexp {1.3.0} $audela(version) match resu ] } {
 	 #--- Lecture pixels Audela 130 :
 	 if { $lambda0 != 1 } {
@@ -734,13 +738,13 @@ proc spc_fits2dat { args } {
 			 #- Ancienne formulation < 070104 :
 			 set lambda [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
 			 set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
-			 puts $file_id "$lambda\t$intensite\r"
+			 puts $file_id "$lambda\t$intensite"
 		     }
 		 } else {
 		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 set lambda [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
 			 set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
-			 puts $file_id "$lambda\t$intensite\r"
+			 puts $file_id "$lambda\t$intensite"
 		     }
 		 }
 	     } else {
@@ -753,7 +757,7 @@ proc spc_fits2dat { args } {
 		     set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
 		     ##lappend profilspc(intensite) $intensite
 		     #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
-		     puts $file_id "$lambda\t$intensite\r"
+		     puts $file_id "$lambda\t$intensite"
 		 }
 	     }
 	 } else {
@@ -761,7 +765,7 @@ proc spc_fits2dat { args } {
 	     for {set k 1} {$k<=$naxis1} {incr k} {
 		 set pixel $k
 		 set intensite [ buf$audace(bufNo) getpix [list $k 1] ]
-		 puts $file_id "$pixel\t$intensite\r"
+		 puts $file_id "$pixel\t$intensite"
 	     }
 	 }
      } else {
@@ -774,13 +778,14 @@ proc spc_fits2dat { args } {
 			 #- Ancienne formulation < 070104 :
 			 set lambda [ expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
 			 set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
-			 puts $file_id "$lambda\t$intensite\r"
+			 puts $file_id "$lambda\t$intensite"
 		     }
 		 } else {
 		     for {set k 1} {$k<=$naxis1} {incr k} {
 			 set lambda [ expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
 			 set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
-			 puts $file_id "$lambda\t$intensite\r"
+			 #puts $file_id "$lambda\t$intensite\r"
+			 puts $file_id "$lambda\t$intensite"
 		     }
 		 }
 	     } else {
@@ -793,7 +798,7 @@ proc spc_fits2dat { args } {
 		     set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1 ] ] 1 ]
 		     ##lappend profilspc(intensite) $intensite
 		     #-- Ecrit les couples "Lambda Intensite" dans le fichier de sortie
-		     puts $file_id "$lambda\t$intensite\r"
+		     puts $file_id "$lambda\t$intensite"
 		 }
 	     }
 	 } else {
@@ -801,7 +806,7 @@ proc spc_fits2dat { args } {
 	     for {set k 1} {$k<=$naxis1} {incr k} {
 		 set pixel $k
 		 set intensite [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
-		 puts $file_id "$pixel\t$intensite\r"
+		 puts $file_id "$pixel\t$intensite"
 	     }
 	 }
      }
@@ -1332,7 +1337,7 @@ proc spc_fit2pngopt { args } {
 	    set ydeb [ lindex $args 6 ]
 	    set yfin [ lindex $args 7 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_fit2pngopt fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin?\n\n"
+	    ::console::affiche_erreur "Usage: spc_fit2pngopt fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
 	    return 0
 	}       
 
@@ -1363,7 +1368,7 @@ proc spc_fit2pngopt { args } {
 	::console::affiche_resultat "Profil de raie exporté sous ${spcfile}.png\n"
 	return "${spcfile}.png"
     } else {
-	::console::affiche_erreur "Usage: spc_fit2pngopt fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin?\n\n"
+	::console::affiche_erreur "Usage: spc_fit2pngopt fichier_fits \"Titre\" ?legende_x lende_y? ?xdeb xfin? ?ydeb yfin?\n\n"
     }
 }
 ####################################################################
@@ -1389,7 +1394,7 @@ proc spc_multifit2png { args } {
 
     if { [llength $args] != 0 } {
 
-	set len [ llength $args ]
+	set nbfiles [ llength $args ]
 	#--- Creation d'une liste de fichier sans extension :
 	set listefile ""
 	set i 1
@@ -1397,7 +1402,8 @@ proc spc_multifit2png { args } {
 	    #if { $i==1 } {
 		#set verticaloffset [ lindex $args 0 ]
 	    #} else {
-		lappend listefile [ file rootname $fichier ]
+	    lappend listefile [ file rootname $fichier ]
+	    spc_fits2dat $fichier
 	    #}
 	    incr i
 	}
@@ -1424,9 +1430,9 @@ proc spc_multifit2png { args } {
 	set listedat ""
 	set plotcmd ""
 	foreach fichier $listefile {
-	    set filedat [ spc_fits2dat $fichier ]
+	    set filedat [ spc_fits2dat "$fichier" ]
 	    lappend listedat $filedat
-	    if { $i != $naxis1 } {
+	    if { $i != $nbfiles } {
 		#append plotcmd "'$audace(rep_images)/$filedat' w l, "
 		append plotcmd "'$filedat' w l, "
 		#append plotcmd "'$filedat' using 1:($2+$i) w l, "
@@ -1447,19 +1453,19 @@ proc spc_multifit2png { args } {
 	puts $file_id "call \"$spcaudace(repgp)/gp_multi.cfg\" \"$plotcmd\" \"$titre\" * * $xdeb $xfin * \"$audace(rep_images)/multiplot.png\" \"$legendex\" "
 	close $file_id
 
-	#===================
+	#=================== Gestion d'echelles differentes selon l'abscisse :
 	if { 0>1 } {
 	    set fichier [ file rootname [ lindex $args 0 ] ]
 	    set titre [ lindex $args 1 ]
 	    #set xdeb "*"
 	    #set xfin "*"
 	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+	    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	    #-- Demarre et fini le graphe en deçca de 3% des limites pour l'esthetique
 	    set largeur [ expr $lpart*$naxis1 ]
-	    set xdeb0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	    set xdeb0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
 	    set xdeb [ expr $xdeb0+$largeur ]
-	    set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+	    set xincr [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
 	    set xfin [ expr $naxis1*$xincr+$xdeb-2*$largeur ]
 	#} elseif { [llength $args] == 4 } {
 	    set fichier [ file rootname [ lindex $args 0 ] ]
@@ -2525,15 +2531,11 @@ proc spc_fit2colors { args } {
     global audace
     global conf
 
-    if { [llength $args] == 1 || [llength $args] == 3 } {
-	if { [llength $args] == 1 } {
+    set nbargs [ llength $args ]
+    if { $nbargs == 1 || $nbargs == 3 } {
+	if { $nbargs == 1 } {
 	    set fichier [ file tail [ file rootname [ lindex $args 0 ] ] ]
-	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	    set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-	    set ldeb [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
-	    set xincr [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-	    set lfin [ expr $naxis1*$xincr+$ldeb ]
-	} elseif { [llength $args] == 3 } {
+	} elseif { $nbargs == 3 } {
 	    set fichier [ file tail [ file rootname [ lindex $args 0 ] ] ]
 	    set ldeb [ lindex $args 1 ]
 	    set lfin [ lindex $args 2 ]
@@ -2542,22 +2544,53 @@ proc spc_fit2colors { args } {
 	    return 0
 	}
 
+
+	#--- Rééchantillonnage linéaire du spectre :
+	set spectre_lin [ spc_echantlin "$fichier" ]
+
+	#--- Extraction des mots clés :
+	buf$audace(bufNo) load "$audace(rep_images)/$spectre_lin"
+	set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+	set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	set cdelt1 [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+
+	#--- Calcul des paramètres du spectre :
+	if { $nbargs==1 } {
+	    set lfin [ expr $naxis1*$cdelt1+$crval1 ]
+	    set ldeb $crval1
+	    set xdeb 1
+	    set xfin $naxis1
+	} elseif { $nbargs==3 } {
+	    set xdeb [ expr round(($ldeb-$crval1)/$cdelt1) ]
+	    set xfin [ expr round(($lfin-$crval1)/$cdelt1) ]
+	    #-- Gestion de mauvais paramètres ldeb, lfin :
+	    if { $xdeb<=0 || $xfin<=0 } {
+		::console::affiche_resultat "Mauvaises longueurs d'onde données.\n"
+		return 0
+	    }
+	}
+
+	#--- Découpage de la zone du spectre :
+	buf$audace(bufNo) window [ list $xdeb 1 $xfin 1 ]
+
 	#--- Colorisation du spectre :
-	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	buf$audace(bufNo) imaseries "COLORSPECTRUM wavelengthmin=$ldeb wavelengthmax=$lfin"
-	buf$audace(bufNo) scale {1 40} 1
+	# buf$audace(bufNo) imaseries "COLORSPECTRUM wavelengthmin=$ldeb wavelengthmax=$lfin"
+	buf$audace(bufNo) imaseries "COLORSPECTRUM wavelengthmin=$ldeb wavelengthmax=$lfin xmin=$xdeb xmax=$xfin"
+	# buf$audace(bufNo) scale {1 40} 1
+	buf$audace(bufNo) scale {0.6 40} 1
 	visu1 thickness 80
 	#- Seuils -3 ; 70 fcontionne bien.
-	#::confVisu::autovisu 1
-	visu1 disp {70 -3}
-	#visu1 cut {90 -10 90 -10 90 -10}
-	#::audace::changeHiCut 70
-	#::audace::changeLoCut -3
+	::confVisu::autovisu 1
+	#visu1 disp {70 -3}
+	##visu1 cut {90 -10 90 -10 90 -10}
+	##::audace::changeHiCut 70
+	##::audace::changeLoCut -3
 	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_color.jpg"
 	buf$audace(bufNo) bitpix short
 
 	#--- Retour du résultat :
+	file delete "$audace(rep_images)/$spectre_lin$conf(extension,defaut)"
 	::console::affiche_resultat "Profil de raies exporté sous ${fichier}_color.jpg\n"
 	return "${fichier}_color.jpg"
     } else {
