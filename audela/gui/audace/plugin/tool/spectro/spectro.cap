@@ -1,6 +1,6 @@
 #
 # Fichier : spectro.cap
-# Mise a jour $Id: spectro.cap,v 1.12 2007-04-12 17:43:26 robertdelmas Exp $
+# Mise a jour $Id: spectro.cap,v 1.13 2007-08-24 17:12:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(spectro,spc_audace)                         "SpcAud'ACE"
+set caption(spectro,spc_audace)                         "Spectroscopy: SpcAud'ACE"
 
 set caption(spectro,configure)                          "Set up"
 set caption(spectro,configure,titre)                    "Spectroscopy: Setup"
@@ -36,7 +36,7 @@ set caption(spectro,configure,config,comment)           "Comments"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+   set caption(spectro,spc_audace)                      "Spectroscopie : SpcAud'ACE"
 
    set caption(spectro,configure)                       "Configurer"
    set caption(spectro,configure,titre)                 "Spectroscopie : Configuration"
@@ -61,7 +61,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+   set caption(spectro,spc_audace)                      "Spettroscopia: SpcAud'ACE"
 
    set caption(spectro,configure)                       "Configurare"
    set caption(spectro,configure,titre)                 "Spettroscopia: Configurazione"
@@ -86,7 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+   set caption(spectro,spc_audace)                      "Espectroscopia: SpcAud'ACE"
 
    set caption(spectro,configure)                       "Configurar"
    set caption(spectro,configure,titre)                 "Espectroscopia: Configuración"
@@ -111,7 +111,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+   set caption(spectro,spc_audace)                      "Spektroskopie: SpcAud'ACE"
 
    set caption(spectro,configure)                       "Konfigurieren"
    set caption(spectro,configure,titre)                 "Spektroskopie: Konfiguration"
@@ -136,11 +136,11 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+   set caption(spectro,spc_audace)                      "Espectroscopia: SpcAud'ACE"
 
    set caption(spectro,configure)                       "Configurar"
-   set caption(spectro,configure,titre)                 "Espectroscopia : Configuração"
-   set caption(spectro,configure,titre2)                "Espectroscopia : Configuração"
+   set caption(spectro,configure,titre)                 "Espectroscopia: Configuração"
+   set caption(spectro,configure,titre2)                "Espectroscopia: Configuração"
    set caption(spectro,configure,load_button)           "Carregar a configuração"
    set caption(spectro,configure,save_button)           "Guardar a configuração"
    set caption(spectro,configure,return_button)         "OK"
@@ -161,7 +161,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(spectro,spc_audace)                      "SpcAud'ACE"
+   set caption(spectro,spc_audace)                      "Spectroscopy: SpcAud'ACE"
 
    set caption(spectro,configure)                       "Set up"
    set caption(spectro,configure,titre)                 "Spectroscopy: Setup"
