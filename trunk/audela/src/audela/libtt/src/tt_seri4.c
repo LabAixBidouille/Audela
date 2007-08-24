@@ -509,7 +509,7 @@ int tt_ima_series_resample_1(TT_IMA_SERIES *pseries)
          }
          /* --- on effectue la transformation inverse ---*/
          delta=b[1]*b[3]-b[0]*b[4];
-         if (delta==0) {
+         if (fabs(delta)<=TT_EPS_DOUBLE) {
             /* --- le deteminant est nul ---*/
             tt_util_free_ptrptr((void**)keys,"keys");
 	    strcpy(message,"Not a regular transformation. Determinant is zero.");
@@ -1029,8 +1029,8 @@ int tt_ima_series_normgain_1(TT_IMA_SERIES *pseries)
    }
    */
    tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
-   if (pseries->mean==0) {
-      mult=1;
+   if (fabs(pseries->mean)<=TT_EPS_DOUBLE) {
+      mult=0.0;
    } else {
       mult=(normgain_value)/(pseries->mean);
    }

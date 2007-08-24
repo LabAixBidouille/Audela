@@ -462,7 +462,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    tt_util_astrom_xy2radec(&p,0.5*naxis1,0.5*naxis2,&a0,&d0);
    a0=a0*180./TT_PI;
    d0=d0*180./TT_PI;
-   if (p.foclen==0.) {
+   if (fabs(p.foclen)<=TT_EPS_DOUBLE) {
       p.px=10e-6; /* 10 microns arbitraire */
       p.py=p.px*fabs(p.cdelta2/p.cdelta1);
       p.foclen=fabs(p.px/2./tan(p.cdelta1/2.));
@@ -1379,11 +1379,11 @@ char buf2[4];
 sprintf(buf,"%010ld",labs(magL));
 strncpy(buf2,buf+4,3); *(buf2+3)='\0';
 mag = (double)atof(buf2)/10.0;
-if (mag==0.0)
+if (mag<=TT_EPS_DOUBLE)
    {
    strncpy(buf2,buf+1,3);
    *(buf2+3)='\0';
-   if ((double)atof(buf2)==0.0)
+   if ((double)atof(buf2)<=TT_EPS_DOUBLE)
       {
       strncpy(buf2,buf+7,3); *(buf2+3) = '\0';
       mag = (double)atof(buf2)/10.0;
