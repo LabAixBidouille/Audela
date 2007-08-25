@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.31 2007-06-29 23:32:55 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.32 2007-08-25 16:08:40 robertdelmas Exp $
 #
 
 #
@@ -2219,7 +2219,7 @@ namespace eval confGenerique {
    # confGenerique::run
    #   Cree la fenetre de configuration generique
    #
-   # parametres
+   # Parametres :
    #  visuNo    : numero de la visu courante
    #  tkName    : chemin TK de la fenetre
    #  namespace : namespace des fonctions specifiques
@@ -2232,12 +2232,13 @@ namespace eval confGenerique {
    # return
    #  si mode=modal
    #     retourne 1 si la fenetre est fermee avec le bouton OK
-   #     retourne 0 si la fenetre est fermee avec le bouton FERMER
+   #     retourne 0 si la fenetre est fermee avec le bouton Fermer
    #  si mode=nomodal
    #     retourne 0
    #
 
- }
+}
+
 proc ::confGenerique::run { args } {
    variable private
 
@@ -2247,8 +2248,8 @@ proc ::confGenerique::run { args } {
    set options  [lrange $args 3 end]
 
    #--- valeur par defaut des options
-   set private($visuNo,$NameSpace,modal) "1"
-   set private($visuNo,$NameSpace,geometry) "+180+50"
+   set private($visuNo,$NameSpace,modal)     "1"
+   set private($visuNo,$NameSpace,geometry)  "+180+50"
    set private($visuNo,$NameSpace,resizable) "0"
 
    #--- je traite les options
@@ -2400,11 +2401,9 @@ proc ::confGenerique::createDialog { visuNo NameSpace This} {
    focus $This
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-   ###bind $This <Key-F1> { ::console::GiveFocus }
-
+   bind $This <Key-F1> { ::console::GiveFocus }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $This
 }
-
 
