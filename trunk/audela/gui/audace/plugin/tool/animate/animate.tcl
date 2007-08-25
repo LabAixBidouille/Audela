@@ -2,11 +2,11 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.10 2007-08-24 22:16:54 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.11 2007-08-25 16:08:15 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace anim
+# Declaration du namespace animate
 #    initialise le namespace
 #============================================================
 namespace eval ::animate {
@@ -71,7 +71,7 @@ proc ::animate::initPlugin { tkbase } {
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
 proc ::animate::createPluginInstance { { in "" } { visuNo 1 } } {
-   ::animate::createPanel $in.anim
+   ::animate::createPanel $in.animate
 }
 
 #------------------------------------------------------------
@@ -93,19 +93,19 @@ proc ::animate::createPanel { this } {
    #--- Initialisation du nom de la fenetre
    set This $this
    #--- Initialisation des captions
-   set panneau(anim,titre)           "$caption(animate,animation)"
-   set panneau(anim,aide)            "$caption(animate,help_titre)"
-   set panneau(anim,parcourir)       "$caption(animate,parcourir)"
-   set panneau(anim,genericfilename) "$caption(animate,nom_generique)"
-   set panneau(anim,nbimages)        "$caption(animate,nb_images)"
-   set panneau(anim,delayms)         "$caption(animate,delai_ms)"
-   set panneau(anim,nbloops)         "$caption(animate,nb_boucles)"
-   set panneau(anim,go)              "$caption(animate,go_animation)"
+   set panneau(animate,titre)           "$caption(animate,animation)"
+   set panneau(animate,aide)            "$caption(animate,help_titre)"
+   set panneau(animate,parcourir)       "$caption(animate,parcourir)"
+   set panneau(animate,genericfilename) "$caption(animate,nom_generique)"
+   set panneau(animate,nbimages)        "$caption(animate,nb_images)"
+   set panneau(animate,delayms)         "$caption(animate,delai_ms)"
+   set panneau(animate,nbloops)         "$caption(animate,nb_boucles)"
+   set panneau(animate,go)              "$caption(animate,go_animation)"
    #--- Initialisation de variables
-   if { [info exists panneau(anim,filename)] == "0" } { set panneau(anim,filename) "" }
-   if { [info exists panneau(anim,nbi)] == "0" }      { set panneau(anim,nbi)      "3" }
-   if { [info exists panneau(anim,ms)] == "0" }       { set panneau(anim,ms)       "300" }
-   if { [info exists panneau(anim,nbl)] == "0" }      { set panneau(anim,nbl)      "5" }
+   if { [info exists panneau(animate,filename)] == "0" } { set panneau(animate,filename) "" }
+   if { [info exists panneau(animate,nbi)] == "0" }      { set panneau(animate,nbi)      "3" }
+   if { [info exists panneau(animate,ms)] == "0" }       { set panneau(animate,ms)       "300" }
+   if { [info exists panneau(animate,nbl)] == "0" }      { set panneau(animate,nbl)      "5" }
    #--- Construction de l'interface
    ::animate::animBuildIF $This
 }
@@ -149,12 +149,12 @@ proc ::animate::cmdGo { } {
    #--- Nettoyage de la visualisation
    visu$audace(visuNo) clear
    #--- Lancement de l'animation
-   if { $panneau(anim,filename) != "" } {
+   if { $panneau(animate,filename) != "" } {
       #--- Gestion du bouton Go Animation
       $This.fra6.but1 configure -relief groove -state disabled
       #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
       #--- supportee par la variable error retournee par la procedure animate du script aud1.tcl
-      set error [ animate $panneau(anim,filename) $panneau(anim,nbi) $panneau(anim,ms) $panneau(anim,nbl) ]
+      set error [ animate $panneau(animate,filename) $panneau(animate,nbi) $panneau(animate,ms) $panneau(animate,nbl) ]
       if { $error == "1" } {
          ::animate::erreurFichier
          }
@@ -208,9 +208,9 @@ proc ::animate::editNomGenerique { } {
    #--- Ouvre la fenetre de choix des images
    set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
    #--- Extraction du nom generique
-   set filenameAnimation      [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
-   set panneau(anim,filename) [ lindex $filenameAnimation 0 ]
-   set panneau(anim,nbi)      [ lindex $filenameAnimation 1 ]
+   set filenameAnimation         [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
+   set panneau(animate,filename) [ lindex $filenameAnimation 0 ]
+   set panneau(animate,nbi)      [ lindex $filenameAnimation 1 ]
 }
 
 #------------------------------------------------------------
@@ -227,10 +227,10 @@ proc ::animate::animBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra1.but -borderwidth 1 -text $panneau(anim,titre) \
+         Button $This.fra1.but -borderwidth 1 -text $panneau(animate,titre) \
             -command "::audace::showHelpPlugin tool animate [ ::animate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra1.but -text $panneau(anim,aide)
+         DynamicHelp::add $This.fra1.but -text $panneau(animate,aide)
 
       pack $This.fra1 -side top -fill x
 
@@ -238,16 +238,16 @@ proc ::animate::animBuildIF { This } {
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Label pour le nom generique
-         label $This.fra2.lab1 -text $panneau(anim,genericfilename) -relief flat
+         label $This.fra2.lab1 -text $panneau(animate,genericfilename) -relief flat
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
          #--- Entry pour le nom generique
-         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(anim,filename) \
+         entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,filename) \
             -width 14 -relief groove
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -side left
 
          #--- Bouton parcourir
-         button $This.fra2.but1 -borderwidth 2 -text $panneau(anim,parcourir) \
+         button $This.fra2.but1 -borderwidth 2 -text $panneau(animate,parcourir) \
             -command { ::animate::editNomGenerique }
          pack $This.fra2.but1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -ipady 3 -side left
 
@@ -257,11 +257,11 @@ proc ::animate::animBuildIF { This } {
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Label pour le nombre d'images
-         label $This.fra3.lab1 -text $panneau(anim,nbimages) -relief flat
+         label $This.fra3.lab1 -text $panneau(animate,nbimages) -relief flat
          pack $This.fra3.lab1 -in $This.fra3 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le nombre d'images
-         entry $This.fra3.ent1 -font $audace(font,arial_8_b) -textvariable panneau(anim,nbi) -relief groove \
+         entry $This.fra3.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,nbi) -relief groove \
             -width 4 -justify center
          pack $This.fra3.ent1 -in $This.fra3 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
@@ -271,11 +271,11 @@ proc ::animate::animBuildIF { This } {
       frame $This.fra4 -borderwidth 1 -relief groove
 
          #--- Label pour le delai
-         label $This.fra4.lab1 -text $panneau(anim,delayms) -relief flat
+         label $This.fra4.lab1 -text $panneau(animate,delayms) -relief flat
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le delai
-         entry $This.fra4.ent1 -font $audace(font,arial_8_b) -textvariable panneau(anim,ms) -relief groove \
+         entry $This.fra4.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,ms) -relief groove \
             -width 5 -justify center
          pack $This.fra4.ent1 -in $This.fra4 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
@@ -285,11 +285,11 @@ proc ::animate::animBuildIF { This } {
       frame $This.fra5 -borderwidth 1 -relief groove
 
          #--- Label pour le nb de boucles
-         label $This.fra5.lab1 -text $panneau(anim,nbloops) -relief flat
+         label $This.fra5.lab1 -text $panneau(animate,nbloops) -relief flat
          pack $This.fra5.lab1 -in $This.fra5 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
          #--- Entry pour le nb de boucles
-         entry $This.fra5.ent1 -font $audace(font,arial_8_b) -textvariable panneau(anim,nbl) -relief groove \
+         entry $This.fra5.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,nbl) -relief groove \
             -width 4 -justify center
          pack $This.fra5.ent1 -in $This.fra5 -anchor center -expand true -fill none -padx 2 -pady 5 -side left
 
@@ -299,7 +299,7 @@ proc ::animate::animBuildIF { This } {
       frame $This.fra6 -borderwidth 1 -relief groove
 
          #--- Bouton GO Animation
-         button $This.fra6.but1 -borderwidth 2 -text $panneau(anim,go) \
+         button $This.fra6.but1 -borderwidth 2 -text $panneau(animate,go) \
             -command { ::animate::cmdGo }
          pack $This.fra6.but1 -in $This.fra6 -anchor center -fill x -padx 5 -pady 5 -ipadx 5 -ipady 8
 
