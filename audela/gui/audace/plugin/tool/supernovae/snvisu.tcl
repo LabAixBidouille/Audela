@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.19 2007-08-19 08:14:16 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.20 2007-08-26 06:32:30 alainklotz Exp $
 #
 
 global audace
@@ -964,16 +964,47 @@ proc affimages { } {
       # ---
       visu$num(visu_1) disp
       if {$afflog==0} {
-         $zone(sh1) set [lindex [get_seuils $num(buffer1)] 0]
+         set nume $num(buffer1)
       } else {
-         $zone(sh1) set [lindex [get_seuils $num(buffer1b)] 0]
+         set nume $num(buffer1b)
       }
+      set scalecut [lindex [get_seuils $nume] 0]
+      set s [ buf$nume stat ]
+      set scalemax [lindex $s 2]
+      set scalemin [lindex $s 3]
+      if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+         set ds1 [expr $scalemax-$scalecut]
+         set ds2 [expr $scalecut-$scalemin]
+         if {$ds1>$ds2} {
+            set scalemin [expr $scalecut-$ds1]
+         } else {
+            set scalemax [expr $scalecut+$ds2]
+         }
+      }
+      $zone(sh1) set $scalecut
+      $zone(sh1) configure -to $scalemax -from $scalemin
+      #set ds1 [expr $scalemax-$scalecut]
+      #   set ds2 [expr $scalecut-$scalemin]
+      #::console::affiche_resultat "$scalemin <($ds2)< $scalecut <($ds1)< $scalemax\n"
+      # ---
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
       set user [lindex [buf$num(buffer1) getkwd USER] 1]
       if {$user!=""} {
          set user " (user=[string trim ${user}])"
       }
-      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)] $user"
+      set name [lindex [buf$num(buffer1) getkwd NAME] 1]
+      if {$name!=""} {
+         set name " (name=[string trim ${name}])"
+      }
+      set gren_ha [lindex [buf$num(buffer1) getkwd GREN_HA] 1]
+      set gren_dec [lindex [buf$num(buffer1) getkwd DEC] 1]
+      set gren_alt [lindex [buf$num(buffer1) getkwd GREN_ALT] 1]
+      set fwhm [lindex [buf$num(buffer1) getkwd FWHM] 1]
+      set complus ""
+      if {($gren_ha!="")&&($gren_dec!="")&&($gren_alt!="")&&($fwhm!="")} {
+         set complus " (ha=[string trim ${gren_ha}] dec=[string trim ${gren_dec}] elev=[string trim ${gren_alt}] fwhm=[string trim ${fwhm}])"
+      }
+      $audace(base).snvisu.lst1 insert end "$caption(snvisu,image1) -> $filename $result [sn_center_radec $num(buffer1)] $user $name $complus"
       $audace(base).snvisu.lst1 yview moveto 1.0
       #--- Disparition du sautillement des widgets inferieurs
       pack $audace(base).snvisu.lst1.scr1 \
@@ -1131,14 +1162,29 @@ proc affimages { } {
          visu$num(visu_2) cut [sn_buflog $num(buffer2) $num(buffer2b)]
       }
       if {$result==""} {
+         # ---
          visu$num(visu_2) disp
          if {$afflog==0} {
-            $zone(sh2) set [lindex [get_seuils $num(buffer2)] 0]
+            set nume $num(buffer2)
          } else {
-            $zone(sh2) set [lindex [get_seuils $num(buffer2b)] 0]
+            set nume $num(buffer2b)
          }
-         $zone(labelh2) configure -text "$caption(snvisu,reference) : [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]"
-         #---
+         set scalecut [lindex [get_seuils $nume] 0]
+         set s [ buf$nume stat ]
+         set scalemax [lindex $s 2]
+         set scalemin [lindex $s 3]
+         if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+            set ds1 [expr $scalemax-$scalecut]
+            set ds2 [expr $scalecut-$scalemin]
+            if {$ds1>$ds2} {
+               set scalemin [expr $scalecut-$ds1]
+            } else {
+               set scalemax [expr $scalecut+$ds2]
+            }
+         }
+         $zone(sh2) set $scalecut
+         $zone(sh2) configure -to $scalemax -from $scalemin
+         # ---
          set zone(naxis1_2) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
          set zone(naxis2_2) [lindex [buf$num(buffer2) getkwd NAXIS2] 1]
          catch { $zone(image2) configure -scrollregion [list 0 0 $zone(naxis1_2) $zone(naxis2_2)] }
