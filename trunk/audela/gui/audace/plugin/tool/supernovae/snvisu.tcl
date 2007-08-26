@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.20 2007-08-26 06:32:30 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.21 2007-08-26 06:51:49 alainklotz Exp $
 #
 
 global audace
@@ -1170,20 +1170,23 @@ proc affimages { } {
             set nume $num(buffer2b)
          }
          set scalecut [lindex [get_seuils $nume] 0]
-         set s [ buf$nume stat ]
-         set scalemax [lindex $s 2]
-         set scalemin [lindex $s 3]
-         if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
-            set ds1 [expr $scalemax-$scalecut]
-            set ds2 [expr $scalecut-$scalemin]
-            if {$ds1>$ds2} {
-               set scalemin [expr $scalecut-$ds1]
-            } else {
-               set scalemax [expr $scalecut+$ds2]
+         set err [catch {buf$nume stat} s]
+         if {$err==0} {
+            set s [ buf$nume stat ]
+            set scalemax [lindex $s 2]
+            set scalemin [lindex $s 3]
+            if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+               set ds1 [expr $scalemax-$scalecut]
+               set ds2 [expr $scalecut-$scalemin]
+               if {$ds1>$ds2} {
+                  set scalemin [expr $scalecut-$ds1]
+               } else {
+                  set scalemax [expr $scalecut+$ds2]
+               }
             }
+            $zone(sh2) configure -to $scalemax -from $scalemin
          }
          $zone(sh2) set $scalecut
-         $zone(sh2) configure -to $scalemax -from $scalemin
          # ---
          set zone(naxis1_2) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
          set zone(naxis2_2) [lindex [buf$num(buffer2) getkwd NAXIS2] 1]
