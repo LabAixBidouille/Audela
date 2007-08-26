@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.21 2007-08-26 06:51:49 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.22 2007-08-26 21:30:40 alainklotz Exp $
 #
 
 global audace
@@ -1143,6 +1143,7 @@ proc affimages { } {
             }
          }
          $audace(base).snvisu.lst1 yview moveto 1.0
+         $zone(labelh2) configure -text [lindex [buf$num(buffer2) getkwd DATE-OBS] 1]
          #--- Disparition du sautillement des widgets inferieurs
          pack $audace(base).snvisu.lst1.scr1 \
             -in $audace(base).snvisu.lst1 -fill y -side right -anchor ne
