@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.22 2007-08-26 21:30:40 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.23 2007-08-27 00:49:12 alainklotz Exp $
 #
 
 global audace
@@ -193,7 +193,7 @@ pack $audace(base).snvisu.frame7.but_next \
 #--- Cree le bouton 'Fond du ciel'
 button $audace(base).snvisu.frame7.but_sky_back \
    -text $caption(snvisu,background) -borderwidth 2 \
-   -command { subsky }
+   -command { sn_subsky }
 pack $audace(base).snvisu.frame7.but_sky_back \
    -in $audace(base).snvisu.frame7 -side left -anchor center \
    -expand true -ipadx 5 -ipady 5
@@ -468,7 +468,7 @@ bind $audace(base).snvisu <Key-F1> {
 }
 
 bind $audace(base).snvisu <Key-F2> {
-   subsky
+   sn_subsky
 }
 
 bind $audace(base).snvisu <Key-F3> {
@@ -734,7 +734,7 @@ proc no_cosmic { } {
    }
 }
 
-proc subsky { } {
+proc sn_subsky { } {
    global audace
    global caption
    global rep
