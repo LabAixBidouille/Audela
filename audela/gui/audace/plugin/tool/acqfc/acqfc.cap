@@ -1,6 +1,6 @@
 #
 # Fichier : acqfc.cap
-# Mise a jour $Id: acqfc.cap,v 1.26 2007-05-19 23:24:54 michelpujol Exp $
+# Mise a jour $Id: acqfc.cap,v 1.27 2007-08-30 18:14:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -60,7 +60,7 @@ set caption(acqfc,attention)                 "Warning"
 set caption(acqfc,pb)                        "Problem"
 set caption(acqfc,pbouvfich)                 "Unable to open the log file.\n \
    Change the tool now and check\nyou can access the image folder."
-set caption(acqfc,ouvsess)                   "----- Opening a New Acquisition Session (rev %s)\n"
+set caption(acqfc,ouvsess)                   "----- Opening a New Acquisition Session\n"
 set caption(acqfc,affheure)                  "%s, %s UT (All time values in this file are expressed in UT)\n"
 set caption(acqfc,finsess)                   "\n----- Session ends at %s UT\n\n"
 set caption(acqfc,pbfermfichcons)            "Problem when closing log file.\n"
@@ -192,7 +192,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pbouvfich)              "Impossible d'ouvrir le fichier \
       log.\nChangez immédiatement d'outil, puis vérifiez\nque \
       le répertoire des images est accessible."
-   set caption(acqfc,ouvsess)                "----- Ouverture d'une session d'acquisition (rev %s)\n"
+   set caption(acqfc,ouvsess)                "----- Ouverture d'une session d'acquisition\n"
    set caption(acqfc,affheure)               "%s, %s TU (Toutes les heures de ce fichier sont en TU).\n"
    set caption(acqfc,finsess)                "\n----- Fin de session à %s TU\n\n"
    set caption(acqfc,pbfermfichcons)         "Problème durant la fermeture du fichier log.\n"
@@ -324,7 +324,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pbouvfich)              "Impossibile aprire il file di \
       log.\nCambiare l'accessorio e verificare\nche \
       la cartella delle immagini sia accessibile."
-   set caption(acqfc,ouvsess)                "----- Apertura di una sessione di acquisizione (rev %s)\n"
+   set caption(acqfc,ouvsess)                "----- Apertura di una sessione di acquisizione\n"
    set caption(acqfc,affheure)               "%s, %s TU (Tutti gli orari dei file di questa sessione sono in TU)\n"
    set caption(acqfc,finsess)                "\n----- Termine della sessione a %s TU\n\n"
    set caption(acqfc,pbfermfichcons)         "Problema durante la chiusura del file di log\n"
@@ -456,7 +456,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pbouvfich)              "No se puede abrir el fichero \
       de log.\nCambie la herramienta ahora y compruebe\nque \
       se puede acceder a la carpeta de imágenes."
-   set caption(acqfc,ouvsess)                "----- Apertura de una sesión de adquisición (rev %s)\n"
+   set caption(acqfc,ouvsess)                "----- Apertura de una sesión de adquisición\n"
    set caption(acqfc,affheure)               "%s, %s TU (Todas las horas de este fichero son en TU)\n"
    set caption(acqfc,finsess)                "\n----- Fin de sesión %s TU\n\n"
    set caption(acqfc,pbfermfichcons)         "Problema durante el cierre del fichero log\n"
@@ -588,7 +588,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pbouvfich)              "Log. Datei unmöglich zu \
       öffnen.\nErst das Gerät wechseln, und dann kontrollieren\ndass \
       das Bild Register zugänglich ist."
-   set caption(acqfc,ouvsess)                "----- Eine Belichtung Session öffnen (rev %s)\n"
+   set caption(acqfc,ouvsess)                "----- Eine Belichtung Session öffnen\n"
    set caption(acqfc,affheure)               "%s, %s WZ (Alle Zeiten in diese Datei sind in WZ)\n"
    set caption(acqfc,finsess)                "\n----- Ende der Session um %s WZ\n\n"
    set caption(acqfc,pbfermfichcons)         "Problem während der Verschluss der Datei log\n"
@@ -720,7 +720,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pbouvfich)              "Impossível abrir o ficheiro \
       log.\nSubstitua imediatamente a ferramenta e depois verifique\nque \
       o directório das imagens está acessível."
-   set caption(acqfc,ouvsess)                "----- Abertura de uma sessão de aquisição (rev %s)\n"
+   set caption(acqfc,ouvsess)                "----- Abertura de uma sessão de aquisição\n"
    set caption(acqfc,affheure)               "%s, %s TU (Todas as horas do ficheiro estao em TU).\n"
    set caption(acqfc,finsess)                "\n----- Fim de sessão às %s TU\n\n"
    set caption(acqfc,pbfermfichcons)         "Problema durante o encerramento do ficheiro log.\n"
@@ -851,7 +851,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqfc,pb)                     "Problem"
    set caption(acqfc,pbouvfich)              "Unable to open the log file.\n \
       Change the tool now and check\nyou can access the image folder."
-   set caption(acqfc,ouvsess)                "----- Opening a New Acquisition Session (rev %s)\n"
+   set caption(acqfc,ouvsess)                "----- Opening a New Acquisition Session\n"
    set caption(acqfc,affheure)               "%s, %s UT (All time values in this file are expressed in UT)\n"
    set caption(acqfc,finsess)     "\n----- Session ends at %s UT\n\n"
    set caption(acqfc,pbfermfichcons)         "Problem when closing log file.\n"
