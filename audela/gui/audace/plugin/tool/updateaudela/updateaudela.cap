@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.8 2007-07-05 22:15:01 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.9 2007-08-30 18:13:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -32,16 +32,16 @@ set caption(updateaudela,confirmInstallNew)     "Do you want install this new pl
 set caption(updateaudela,installPluginOk)       "Plug-in %s is installed in folder \n %s \n (%s file(s) created or updated)."
 set caption(updateaudela,restart)               "Please run AudeLA again to enable these modifications."
 
-set caption(updateaudela,pluginDetail)          "# Informations du plug-in"
-set caption(updateaudela,availableUpdate)       "# Mises à jour téléchargées"
-set caption(updateaudela,moreInfo)              "# Plus d'informations"
-set caption(updateaudela,connect)               "# Connecter"
-set caption(updateaudela,developperOption)      "# Option développeur"
-set caption(updateaudela,downloadAndInstall)    "# Installer immediatement après le téléchargement"
-set caption(updateaudela,address)               "# Adresse"
-set caption(updateaudela,audelaAddress)         "# Site AudeLA"
-set caption(updateaudela,badAudelaVersion)      "# Cette mise à jour nécessite AudeLA %s"
-set caption(updateaudela,otherAddress)          "# Autre site"
+set caption(updateaudela,pluginDetail)          "Plug-in Information"
+set caption(updateaudela,availableUpdate)       "Downloaded Updates"
+set caption(updateaudela,moreInfo)              "More Info"
+set caption(updateaudela,connect)               "Connect"
+set caption(updateaudela,developperOption)      "Developer Option"
+set caption(updateaudela,downloadAndInstall)    "Download and install right away"
+set caption(updateaudela,address)               "Address"
+set caption(updateaudela,audelaAddress)         "Audela Website"
+set caption(updateaudela,badAudelaVersion)      "This update requires Audela %s"
+set caption(updateaudela,otherAddress)          "Other website"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -242,16 +242,16 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,installPluginOk)    "Plug-in %s is installed in folder \n %s \n (%s file(s) created or updated)."
    set caption(updateaudela,restart)            "Please run AudeLA again to enable these modifications."
 
-   set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
-   set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
-   set caption(updateaudela,moreInfo)           "# Plus d'informations"
-   set caption(updateaudela,connect)            "# Connecter"
-   set caption(updateaudela,developperOption)   "# Option développeur"
-   set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
-   set caption(updateaudela,address)            "# Adresse"
-   set caption(updateaudela,audelaAddress)      "# Site AudeLA"
-   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
-   set caption(updateaudela,otherAddress)       "# Autre site"
+   set caption(updateaudela,pluginDetail)       "Plug-in Information"
+   set caption(updateaudela,availableUpdate)    "Downloaded Updates"
+   set caption(updateaudela,moreInfo)           "More Info"
+   set caption(updateaudela,connect)            "Connect"
+   set caption(updateaudela,developperOption)   "Developer Option"
+   set caption(updateaudela,downloadAndInstall) "Download and install right away"
+   set caption(updateaudela,address)            "Address"
+   set caption(updateaudela,audelaAddress)      "Audela Website"
+   set caption(updateaudela,badAudelaVersion)   "This update requires Audela %s"
+   set caption(updateaudela,otherAddress)       "Other website"
 
 }
 
