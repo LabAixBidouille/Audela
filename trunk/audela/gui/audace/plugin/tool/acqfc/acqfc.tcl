@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.49 2007-06-16 10:43:53 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.50 2007-08-30 18:20:02 robertdelmas Exp $
 #
 
 #==============================================================
@@ -31,8 +31,11 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
       set panneau(AcqFC,$visuNo,camNo)   [::confCam::getCamNo $panneau(AcqFC,$visuNo,camItem)]
 
-      #--- Recuperation de la derniere configuration de prise de vue
+      #--- Recuperation de la derniere configuration de l'outil
       ::AcqFC::Chargement_Var $visuNo
+
+      #--- Initialisation des variables de la boite de configuration
+      ::acqfcSetup::confToWidget $visuNo
 
       #--- Initialisation de la variable conf()
       if { ! [info exists conf(acqfc,avancement,position)] } { set conf(acqfc,avancement,position) "+120+315" }
@@ -42,15 +45,10 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,simulation_deja_faite) "0"
       set panneau(AcqFC,$visuNo,attente_pose)          "0"
       set panneau(AcqFC,$visuNo,pose_en_cours)         "0"
-      set panneau(AcqFC,$visuNo,avancement,position)   $conf(acqfc,avancement,position)
-      if { $visuNo == "1" } {
-         set panneau(AcqFC,$visuNo,avancement_acq)     "1"
-      } else {
-         set panneau(AcqFC,$visuNo,avancement_acq)     "0"
-      }
+      set panneau(AcqFC,$visuNo,avancement,position)   "$conf(acqfc,avancement,position)"
 
       #--- Entrer ici les valeurs de temps de pose a afficher dans le menu "pose"
-      set panneau(AcqFC,$visuNo,temps_pose) {0 0.1 0.3 0.5 1 2 3 5 10 15 20 30 60 90 120 180 300 600}
+      set panneau(AcqFC,$visuNo,temps_pose) { 0 0.1 0.3 0.5 1 2 3 5 10 15 20 30 60 90 120 180 300 600 }
       #--- Valeur par defaut du temps de pose
       if { ! [ info exists panneau(AcqFC,$visuNo,pose) ] } {
          set panneau(AcqFC,$visuNo,pose) "$parametres(acqFC,$visuNo,pose)"
@@ -62,9 +60,9 @@ namespace eval ::AcqFC {
       }
 
       #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
-      set panneau(AcqFC,$visuNo,obt,0) $caption(acqfc,ouv)
-      set panneau(AcqFC,$visuNo,obt,1) $caption(acqfc,ferme)
-      set panneau(AcqFC,$visuNo,obt,2) $caption(acqfc,auto)
+      set panneau(AcqFC,$visuNo,obt,0) "$caption(acqfc,ouv)"
+      set panneau(AcqFC,$visuNo,obt,1) "$caption(acqfc,ferme)"
+      set panneau(AcqFC,$visuNo,obt,2) "$caption(acqfc,auto)"
       #--- Obturateur par defaut : Synchro
       if { ! [ info exists panneau(AcqFC,$visuNo,obt) ] } {
          set panneau(AcqFC,$visuNo,obt) "$parametres(acqFC,$visuNo,obt)"
@@ -93,9 +91,10 @@ namespace eval ::AcqFC {
       set panneau(AcqFC,$visuNo,nom_image)         ""
       set panneau(AcqFC,$visuNo,extension)         "$conf(extension,defaut)"
       set panneau(AcqFC,$visuNo,indexer)           "0"
-      set panneau(AcqFC,$visuNo,enregistrer)       "1"
       set panneau(AcqFC,$visuNo,nb_images)         "1"
       set panneau(AcqFC,$visuNo,session_ouverture) "1"
+      set panneau(AcqFC,$visuNo,avancement_acq)    "$parametres(acqFC,$visuNo,avancement_acq)"
+      set panneau(AcqFC,$visuNo,enregistrer)       "$parametres(acqFC,$visuNo,enregistrer)"
 
       #--- Initialisation de variables pour l'acquisition video fenetree
       set panneau(AcqFC,$visuNo,fenetre)           "0"
@@ -108,8 +107,8 @@ namespace eval ::AcqFC {
 
       #--- Initialisation pour le mode video
       set panneau(AcqFC,$visuNo,showvideopreview) "0"
-      set panneau(AcqFC,$visuNo,ratelist)  {5 10 15 20 25 30}
-      set panneau(AcqFC,$visuNo,status)    "                              "
+      set panneau(AcqFC,$visuNo,ratelist)         { 5 10 15 20 25 30 }
+      set panneau(AcqFC,$visuNo,status)           "                              "
       #--- Frequence images par defaut : 5 images/sec.
       if { ! [ info exists panneau(AcqFC,$visuNo,rate) ] } {
          set panneau(AcqFC,$visuNo,rate) "$parametres(acqFC,$visuNo,rate)"
@@ -160,9 +159,6 @@ namespace eval ::AcqFC {
       destroy $panneau(AcqFC,$visuNo,base).status_video.rate.cb.menu
       destroy $panneau(AcqFC,$visuNo,This).pose.but.menu
       destroy $panneau(AcqFC,$visuNo,This).bin.but.menu
-
-      #---
-      ArretAcqFC $visuNo
    }
 
    #------------------------------------------------------------
@@ -228,7 +224,7 @@ namespace eval ::AcqFC {
       set ::AcqFC::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
 
       #--- Ouverture
-      if { [ catch { open $::AcqFC::fichier_log a } ::AcqFC::log_id ] } {
+      if { [ catch { open $::AcqFC::fichier_log a } ::AcqFC::log_id($visuNo) ] } {
          Message $visuNo console $caption(acqfc,pbouvfichcons)
          tk_messageBox -title $caption(acqfc,pb) -type ok \
             -message $caption(acqfc,pbouvfich)
@@ -252,15 +248,15 @@ namespace eval ::AcqFC {
       global audace caption panneau
 
       #--- Fermeture du fichier de log
-      if { [ info exists ::AcqFC::log_id ] } {
+      if { [ info exists ::AcqFC::log_id($visuNo) ] } {
          set heure $audace(tu,format,hmsint)
          #--- Je m'assure que le fichier se termine correctement, en particulier pour le cas ou il y
          #--- a eu un probleme a l'ouverture (c'est un peu une rustine...)
          if { [ catch { Message $visuNo log $caption(acqfc,finsess) $heure } bug ] } {
             Message $visuNo console $caption(acqfc,pbfermfichcons)
          } else {
-            close $::AcqFC::log_id
-            unset ::AcqFC::log_id
+            close $::AcqFC::log_id($visuNo)
+            unset ::AcqFC::log_id($visuNo)
          }
       }
       #--- Re-initialisation de la session
@@ -449,16 +445,24 @@ namespace eval ::AcqFC {
       }
 
       #--- Creation des variables si elles n'existent pas
-      if { ! [ info exists parametres(acqFC,$visuNo,pose) ] }    { set parametres(acqFC,$visuNo,pose)    "5" }   ; #--- Temps de pose : 5s
-      if { ! [ info exists parametres(acqFC,$visuNo,bin) ] }     { set parametres(acqFC,$visuNo,bin)     "2x2" } ; #--- Binning : 2x2
-      if { ! [ info exists parametres(acqFC,$visuNo,obt) ] }     { set parametres(acqFC,$visuNo,obt)     "2" }   ; #--- Obturateur : Synchro
-      if { ! [ info exists parametres(acqFC,$visuNo,mode) ] }    { set parametres(acqFC,$visuNo,mode)    "1" }   ; #--- Mode : Une image
-      if { ! [ info exists parametres(acqFC,$visuNo,lg_film) ] } { set parametres(acqFC,$visuNo,lg_film) "10" }  ; #--- Duree de la video : 10s
-      if { ! [ info exists parametres(acqFC,$visuNo,rate) ] }    { set parametres(acqFC,$visuNo,rate)    "5" }   ; #--- Images/sec. : 5
-      if { ! [ info exists parametres(acqFC,$visuNo,x1) ] }      { set parametres(acqFC,$visuNo,x1)      "100" } ; #--- Video fenetree : x1
-      if { ! [ info exists parametres(acqFC,$visuNo,y1) ] }      { set parametres(acqFC,$visuNo,y1)      "100" } ; #--- Video fenetree : y1
-      if { ! [ info exists parametres(acqFC,$visuNo,x2) ] }      { set parametres(acqFC,$visuNo,x2)      "350" } ; #--- Video fenetree : x2
-      if { ! [ info exists parametres(acqFC,$visuNo,y2) ] }      { set parametres(acqFC,$visuNo,y2)      "250" } ; #--- Video fenetree : y2
+      if { ! [ info exists parametres(acqFC,$visuNo,pose) ] }           { set parametres(acqFC,$visuNo,pose)        "5" }   ; #--- Temps de pose : 5s
+      if { ! [ info exists parametres(acqFC,$visuNo,bin) ] }            { set parametres(acqFC,$visuNo,bin)         "2x2" } ; #--- Binning : 2x2
+      if { ! [ info exists parametres(acqFC,$visuNo,obt) ] }            { set parametres(acqFC,$visuNo,obt)         "2" }   ; #--- Obturateur : Synchro
+      if { ! [ info exists parametres(acqFC,$visuNo,mode) ] }           { set parametres(acqFC,$visuNo,mode)        "1" }   ; #--- Mode : Une image
+      if { ! [ info exists parametres(acqFC,$visuNo,lg_film) ] }        { set parametres(acqFC,$visuNo,lg_film)     "10" }  ; #--- Duree de la video : 10s
+      if { ! [ info exists parametres(acqFC,$visuNo,rate) ] }           { set parametres(acqFC,$visuNo,rate)        "5" }   ; #--- Images/sec. : 5
+      if { ! [ info exists parametres(acqFC,$visuNo,x1) ] }             { set parametres(acqFC,$visuNo,x1)          "100" } ; #--- Video fenetree : x1
+      if { ! [ info exists parametres(acqFC,$visuNo,y1) ] }             { set parametres(acqFC,$visuNo,y1)          "100" } ; #--- Video fenetree : y1
+      if { ! [ info exists parametres(acqFC,$visuNo,x2) ] }             { set parametres(acqFC,$visuNo,x2)          "350" } ; #--- Video fenetree : x2
+      if { ! [ info exists parametres(acqFC,$visuNo,y2) ] }             { set parametres(acqFC,$visuNo,y2)          "250" } ; #--- Video fenetree : y2
+      if { ! [ info exists parametres(acqFC,$visuNo,avancement_acq) ] } {
+         if { $visuNo == "1" } {
+            set parametres(acqFC,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
+         } else {
+            set parametres(acqFC,$visuNo,avancement_acq) "0" ; #--- Barre de progression de la pose : Non
+         }
+      }
+      if { ! [ info exists parametres(acqFC,$visuNo,enregistrer) ] }    { set parametres(acqFC,$visuNo,enregistrer) "1" }   ; #--- Sauvegarde des images : Oui
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       ::acqfcSetup::initToConf $visuNo
@@ -471,18 +475,20 @@ namespace eval ::AcqFC {
       global audace panneau
 
       #---
-      set panneau(AcqFC,$visuNo,mode)       [ expr [ lsearch "$panneau(AcqFC,$visuNo,list_mode)" "$panneau(AcqFC,$visuNo,mode_en_cours)" ] + 1 ]
+      set panneau(AcqFC,$visuNo,mode)              [ expr [ lsearch "$panneau(AcqFC,$visuNo,list_mode)" "$panneau(AcqFC,$visuNo,mode_en_cours)" ] + 1 ]
       #---
-      set parametres(acqFC,$visuNo,pose)    $panneau(AcqFC,$visuNo,pose)
-      set parametres(acqFC,$visuNo,bin)     $panneau(AcqFC,$visuNo,bin)
-      set parametres(acqFC,$visuNo,obt)     $panneau(AcqFC,$visuNo,obt)
-      set parametres(acqFC,$visuNo,mode)    $panneau(AcqFC,$visuNo,mode)
-      set parametres(acqFC,$visuNo,lg_film) $panneau(AcqFC,$visuNo,lg_film)
-      set parametres(acqFC,$visuNo,rate)    $panneau(AcqFC,$visuNo,rate)
-      set parametres(acqFC,$visuNo,x1)      $panneau(AcqFC,$visuNo,x1)
-      set parametres(acqFC,$visuNo,y1)      $panneau(AcqFC,$visuNo,y1)
-      set parametres(acqFC,$visuNo,x2)      $panneau(AcqFC,$visuNo,x2)
-      set parametres(acqFC,$visuNo,y2)      $panneau(AcqFC,$visuNo,y2)
+      set parametres(acqFC,$visuNo,pose)           $panneau(AcqFC,$visuNo,pose)
+      set parametres(acqFC,$visuNo,bin)            $panneau(AcqFC,$visuNo,bin)
+      set parametres(acqFC,$visuNo,obt)            $panneau(AcqFC,$visuNo,obt)
+      set parametres(acqFC,$visuNo,mode)           $panneau(AcqFC,$visuNo,mode)
+      set parametres(acqFC,$visuNo,lg_film)        $panneau(AcqFC,$visuNo,lg_film)
+      set parametres(acqFC,$visuNo,rate)           $panneau(AcqFC,$visuNo,rate)
+      set parametres(acqFC,$visuNo,x1)             $panneau(AcqFC,$visuNo,x1)
+      set parametres(acqFC,$visuNo,y1)             $panneau(AcqFC,$visuNo,y1)
+      set parametres(acqFC,$visuNo,x2)             $panneau(AcqFC,$visuNo,x2)
+      set parametres(acqFC,$visuNo,y2)             $panneau(AcqFC,$visuNo,y2)
+      set parametres(acqFC,$visuNo,avancement_acq) $panneau(AcqFC,$visuNo,avancement_acq)
+      set parametres(acqFC,$visuNo,enregistrer)    $panneau(AcqFC,$visuNo,enregistrer)
       #--- Sauvegarde des parametres
       catch {
         set nom_fichier [ file join $audace(rep_plugin) tool acqfc acqfc.ini ]
@@ -501,9 +507,6 @@ namespace eval ::AcqFC {
 #***** Procedure startTool *************************************
    proc startTool { { visuNo 1 } } {
       global conf panneau
-
-      #--- Initialisation des variables de la boite de configuration
-      ::acqfcSetup::confToWidget $visuNo
 
       #--- Creation des fenetres auxiliaires si necessaire
       if { $panneau(AcqFC,$visuNo,mode) == "4" } {
@@ -643,9 +646,11 @@ namespace eval ::AcqFC {
       global audace caption conf panneau
 
       #--- Ouverture du fichier historique
-      if { $panneau(AcqFC,$visuNo,session_ouverture) == "1" } {
-         DemarrageAcqFC $visuNo
-         set panneau(AcqFC,$visuNo,session_ouverture) "0"
+      if { $panneau(AcqFC,$visuNo,save_file_log) == "1" } {
+         if { $panneau(AcqFC,$visuNo,session_ouverture) == "1" } {
+            DemarrageAcqFC $visuNo
+            set panneau(AcqFC,$visuNo,session_ouverture) "0"
+         }
       }
 
       #--- Recopie de l'extension des fichiers image
@@ -2337,10 +2342,10 @@ namespace eval ::AcqFC {
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
             catch {
-                puts -nonewline $::AcqFC::log_id [eval [concat {format} $args]]
+                puts -nonewline $::AcqFC::log_id($visuNo) [eval [concat {format} $args]]
                 #--- Force l'ecriture immediate sur le disque
-                flush $::AcqFC::log_id
-             }
+                flush $::AcqFC::log_id($visuNo)
+            }
          }
          consolog {
             if { $panneau(AcqFC,$visuNo,messages) == "1" } {
@@ -2350,9 +2355,9 @@ namespace eval ::AcqFC {
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
             catch {
-                puts -nonewline $::AcqFC::log_id [eval [concat {format} $args]]
+                puts -nonewline $::AcqFC::log_id($visuNo) [eval [concat {format} $args]]
                 #--- Force l'ecriture immediate sur le disque
-                flush $::AcqFC::log_id
+                flush $::AcqFC::log_id($visuNo)
             }
          }
          default {
