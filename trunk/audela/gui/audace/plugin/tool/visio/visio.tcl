@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.10 2007-06-14 21:23:00 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.11 2007-08-31 17:35:34 robertdelmas Exp $
 #
 
 # ========================================================
@@ -27,6 +27,14 @@ namespace eval ::visio {
       global caption
 
       return "$caption(visio,titre)"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginHelp
+   #     retourne le nom du fichier d'aide principal
+   #------------------------------------------------------------
+   proc getPluginHelp { } {
+      return "visio.htm"
    }
 
    #------------------------------------------------------------
@@ -761,9 +769,7 @@ proc visioBuildIF { This } {
    pack $This.titre -side top -fill x
 
    Button $This.titre.but -borderwidth 1 -text $caption(visio,titre) \
-      -command {
-         ::audace::showHelpPlugin tool visio visio.htm
-      }
+      -command "::audace::showHelpPlugin [ ::visio::getPluginType ] visio [ ::visio::getPluginHelp ]"
    pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
    DynamicHelp::add $This.titre.but -text $caption(visio,help_titre)
 
