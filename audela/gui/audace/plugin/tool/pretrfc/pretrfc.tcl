@@ -2,14 +2,14 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.13 2007-07-15 12:05:12 denismarchais Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.14 2007-08-31 17:51:20 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace pretraitfc
+# Declaration du namespace pretrfc
 #    initialise le namespace
 #============================================================
-namespace eval ::pretraitfc {
+namespace eval ::pretrfc {
    variable numero_version
 
    #--- Chargement du package
@@ -29,7 +29,7 @@ namespace eval ::pretraitfc {
       global audace caption
 
       # Lecture du fichier de configuration
-      ::pretraitfc::RecuperationParametres
+      ::pretrfc::RecuperationParametres
 
       # Initialisation des variables de la boite de configuration
       ::pretrfcSetup::confToWidget
@@ -88,10 +88,10 @@ namespace eval ::pretraitfc {
       }
 
       # Recuperation de la position de la fenetre de reglages
-      ::pretraitfc::recup_position
-      set conf_pt_fc(position) $panneau(pretraitfc,position)
+      ::pretrfc::recup_position
+      set conf_pt_fc(position) $panneau(pretrfc,position)
       # Sauvegarde des parametres dans le fichier de config
-      ::pretraitfc::SauvegardeParametres
+      ::pretrfc::SauvegardeParametres
       # Fermeture de la fenetre de pretraitement
       destroy $audace(base).fenetrePretr
    }
@@ -104,6 +104,12 @@ namespace eval ::pretraitfc {
       return "$caption(pretrfc,menu)"
    }
 #***** Fin de la procedure getPluginTitle ****************************
+
+#***** Procedure getPluginHelp****************************************
+proc getPluginHelp { } {
+   return "pretrfc.htm"
+}
+#***** Fin de la procedure getPluginHelp *****************************
 
 #***** Procedure getPluginType****************************************
    proc getPluginType { } {
@@ -145,7 +151,7 @@ namespace eval ::pretraitfc {
 #***** Procedure startTool *******************************************
    proc startTool { visuNo } {
       #--- J'ouvre la fenetre
-      ::pretraitfc::fenetrePretr
+      ::pretrfc::fenetrePretr
    }
 #***** Fin de la procedure startTool *********************************
 
@@ -159,10 +165,10 @@ namespace eval ::pretraitfc {
    proc recup_position { } {
       global audace panneau
 
-      set panneau(pretraitfc,geometry) [ wm geometry $audace(base).fenetrePretr ]
-      set deb [ expr 1 + [ string first + $panneau(pretraitfc,geometry) ] ]
-      set fin [ string length $panneau(pretraitfc,geometry) ]
-      set panneau(pretraitfc,position) "+[string range $panneau(pretraitfc,geometry) $deb $fin]"
+      set panneau(pretrfc,geometry) [ wm geometry $audace(base).fenetrePretr ]
+      set deb [ expr 1 + [ string first + $panneau(pretrfc,geometry) ] ]
+      set fin [ string length $panneau(pretrfc,geometry) ]
+      set panneau(pretrfc,position) "+[string range $panneau(pretrfc,geometry) $deb $fin]"
    }
 #***** Fin de la procedure recup_position ****************************
 
@@ -176,21 +182,21 @@ namespace eval ::pretraitfc {
          #---
          if { ! [ info exists conf_pt_fc(position) ] } { set conf_pt_fc(position) "+100+5" }
 
-         set panneau(pretraitfc,position) $conf_pt_fc(position)
+         set panneau(pretrfc,position) $conf_pt_fc(position)
 
-         if { [ info exists panneau(pretraitfc,geometry) ] } {
-            set deb [ expr 1 + [ string first + $panneau(pretraitfc,geometry) ] ]
-            set fin [ string length $panneau(pretraitfc,geometry) ]
-            set panneau(pretraitfc,position) "+[string range $panneau(pretraitfc,geometry) $deb $fin]"
+         if { [ info exists panneau(pretrfc,geometry) ] } {
+            set deb [ expr 1 + [ string first + $panneau(pretrfc,geometry) ] ]
+            set fin [ string length $panneau(pretrfc,geometry) ]
+            set panneau(pretrfc,position) "+[string range $panneau(pretrfc,geometry) $deb $fin]"
          }
 
          #---
          toplevel $audace(base).fenetrePretr -class Toplevel -borderwidth 2 -relief groove
-         wm geometry $audace(base).fenetrePretr $panneau(pretraitfc,position)
+         wm geometry $audace(base).fenetrePretr $panneau(pretrfc,position)
          wm resizable $audace(base).fenetrePretr 1 1
          wm title $audace(base).fenetrePretr $caption(pretrfc,titrelong)
 
-         wm protocol $audace(base).fenetrePretr WM_DELETE_WINDOW ::pretraitfc::ArretPretraitFC
+         wm protocol $audace(base).fenetrePretr WM_DELETE_WINDOW ::pretrfc:ArretPretraitFC
 
          creeFenetrePrFC
       } else {
@@ -1779,20 +1785,20 @@ namespace eval ::pretraitfc {
          log {
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
-            catch { puts -nonewline $::pretraitfc::log_id [eval [concat {format} $args]] }
+            catch { puts -nonewline $::pretrfc::log_id [eval [concat {format} $args]] }
             #--- Force l'ecriture immediate sur le disque
-            flush $::pretraitfc::log_id
+            flush $::pretrfc::log_id
          }
          consolog {
-            if { $panneau(pretraitfc,messages) == "1" } {
+            if { $panneau(pretrfc,messages) == "1" } {
                ::console::disp [eval [concat {format} $args]]
                update idletasks
             }
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
-            catch { puts -nonewline $::pretraitfc::log_id [eval [concat {format} $args]] }
+            catch { puts -nonewline $::pretrfc::log_id [eval [concat {format} $args]] }
             #--- Force l'ecriture immediate sur le disque
-            flush $::pretraitfc::log_id
+            flush $::pretrfc::log_id
          }
          default {
             set b [ list "%s\n" $caption(pretrfc,pbmesserr) ]
@@ -1805,7 +1811,7 @@ namespace eval ::pretraitfc {
 
 }
 #=====================================================================
-#   Fin de la declaration du Namespace pretraitfc
+#   Fin de la declaration du Namespace pretrfc
 #=====================================================================
 
 #---------------------------------------------------------------------------------------------
@@ -1828,18 +1834,18 @@ proc creeFenetrePrFC { } {
       button $audace(base).fenetrePretr.et1.test -borderwidth 2 -width 4 -text $caption(pretrfc,test) \
          -font $audace(font,arial_12_n) -command {
             # Sauvegarde des parametres dans le fichier de config
-            ::pretraitfc::SauvegardeParametres
+            ::pretrfc::SauvegardeParametres
             # Traitement etape 1
-            ::pretraitfc::goCosm
+            ::pretrfc::goCosm
          }
       pack $audace(base).fenetrePretr.et1.test -side right -anchor sw -in $audace(base).fenetrePretr.et1
       #--- Bouton Recharge
       button $audace(base).fenetrePretr.et1.recharge -borderwidth 2 -text $caption(pretrfc,recharge) \
          -font $audace(font,arial_12_n) -command {
             # Sauvegarde des parametres dans le fichier de config
-            ::pretraitfc::SauvegardeParametres
+            ::pretrfc::SauvegardeParametres
             # Traitement etape 1
-            ::pretraitfc::rechargeCosm
+            ::pretrfc::rechargeCosm
          }
       pack $audace(base).fenetrePretr.et1.recharge -side right -anchor sw -in $audace(base).fenetrePretr.et1
       #--- Premiere ligne de l'etape 1
@@ -1883,9 +1889,9 @@ proc creeFenetrePrFC { } {
       button $audace(base).fenetrePretr.et2.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
             # Sauvegarde des parametres dans le fichier de config
-            ::pretraitfc::SauvegardeParametres
+            ::pretrfc::SauvegardeParametres
             # Traitement etape 2
-            ::pretraitfc::goPrecharge
+            ::pretrfc::goPrecharge
          }
       pack $audace(base).fenetrePretr.et2.go -side right -anchor sw -in $audace(base).fenetrePretr.et2
       #--- Premiere ligne de l'etape 2
@@ -1944,9 +1950,9 @@ proc creeFenetrePrFC { } {
       button $audace(base).fenetrePretr.et3.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
             # Sauvegarde des parametres dans le fichier de config
-            ::pretraitfc::SauvegardeParametres
+            ::pretrfc::SauvegardeParametres
             # Traitement etape 3
-            ::pretraitfc::goNoir
+            ::pretrfc::goNoir
          }
       pack $audace(base).fenetrePretr.et3.go -side right -anchor sw -in $audace(base).fenetrePretr.et3
       #--- Premiere ligne de l'etape 3
@@ -2001,9 +2007,9 @@ proc creeFenetrePrFC { } {
       button $audace(base).fenetrePretr.et4.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
             # Sauvegarde des parametres dans le fichier de config
-            ::pretraitfc::SauvegardeParametres
+            ::pretrfc::SauvegardeParametres
             # Traitement etape 4
-            ::pretraitfc::goNoirDePLU
+            ::pretrfc::goNoirDePLU
          }
       pack $audace(base).fenetrePretr.et4.go -side right -anchor sw -in $audace(base).fenetrePretr.et4
       #--- Premiere ligne de l'etape 4
@@ -2055,9 +2061,9 @@ proc creeFenetrePrFC { } {
       button $audace(base).fenetrePretr.et5.go -borderwidth 2 -width 4 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_12_n) -command {
             # Sauvegarde des parametres dans le fichier de config
-            ::pretraitfc::SauvegardeParametres
+            ::pretrfc::SauvegardeParametres
             # Traitement etape 5
-            ::pretraitfc::goPLU
+            ::pretrfc::goPLU
          }
       pack $audace(base).fenetrePretr.et5.go -side right -anchor sw -in $audace(base).fenetrePretr.et5
       #--- Premiere ligne de l'etape 5
@@ -2123,9 +2129,9 @@ proc creeFenetrePrFC { } {
       button $audace(base).fenetrePretr.et6.go -borderwidth 2 -width 5 -text $caption(pretrfc,goet) \
          -font $audace(font,arial_15_b) -command {
             # Sauvegarde des parametres dans le fichier de config
-            ::pretraitfc::SauvegardeParametres
+            ::pretrfc::SauvegardeParametres
             # Traitement etape 6
-            ::pretraitfc::goBrut
+            ::pretrfc::goBrut
          }
       pack $audace(base).fenetrePretr.et6.go -side right -anchor sw -in $audace(base).fenetrePretr.et6
       #--- Premiere ligne de l'etape 6
@@ -2183,9 +2189,8 @@ proc creeFenetrePrFC { } {
       pack $audace(base).fenetrePretr.but.config -side left -anchor sw -in $audace(base).fenetrePretr.but
       #--- Bouton Aide
       button $audace(base).fenetrePretr.but.aide -borderwidth 2 -width 5 -text $caption(pretrfc,aide) \
-         -font $audace(font,arial_10_n) -command {
-            ::audace::showHelpPlugin tool pretrfc pretrfc.htm
-         }
+         -font $audace(font,arial_10_n) \
+         -command "::audace::showHelpPlugin [ ::pretrfc::getPluginType ] pretrfc [ ::pretrfc::getPluginHelp ]"
       pack $audace(base).fenetrePretr.but.aide -side right -anchor sw -in $audace(base).fenetrePretr.but
    pack $audace(base).fenetrePretr.but -side top -fill x
 
