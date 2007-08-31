@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.12 2007-06-19 20:06:58 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.13 2007-08-31 17:33:43 robertdelmas Exp $
 #
 
 # =========================================================
@@ -27,6 +27,14 @@ namespace eval ::acqfen {
       global caption
 
       return "$caption(acqfen,titre)"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginHelp
+   #     retourne le nom du fichier d'aide principal
+   #------------------------------------------------------------
+   proc getPluginHelp { } {
+      return "acqfen.htm"
    }
 
    #------------------------------------------------------------
@@ -1468,7 +1476,7 @@ frame $This -borderwidth 2 -relief groove
    pack $This.titre -side top -fill x
 
       Button $This.titre.but -borderwidth 1 -text $caption(acqfen,titre_fenetrees) \
-         -command "::audace::showHelpPlugin tool acqfen acqfen.htm"
+         -command "::audace::showHelpPlugin [ ::acqfen::getPluginType ] acqfen [ ::acqfen::getPluginHelp ]"
       pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
       DynamicHelp::add $This.titre.but -text $caption(acqfen,help_titre)
 

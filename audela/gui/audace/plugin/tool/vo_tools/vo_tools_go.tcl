@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.8 2007-05-06 14:29:27 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.9 2007-08-31 17:36:14 robertdelmas Exp $
 #
 
 #============================================================
@@ -24,6 +24,14 @@ proc ::vo_tools::getPluginTitle { } {
    global caption
 
    return "$caption(vo_tools_go,titre)"
+}
+
+#------------------------------------------------------------
+#  ::vo_tools::getPluginHelp
+#     retourne le nom du fichier d'aide principal
+#------------------------------------------------------------
+proc ::vo_tools::getPluginHelp { } {
+   return "vo_tools.htm"
 }
 
 #------------------------------------------------------------
@@ -139,7 +147,7 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(vo_tools,titre) \
-            -command "::audace::showHelpPlugin tool vo_tools vo_tools.htm"
+            -command "::audace::showHelpPlugin [ ::vo_tools::getPluginType ] vo_tools [ ::vo_tools::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(vo_tools,aide)
 
