@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.20 2007-06-05 16:56:54 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.21 2007-08-31 15:50:57 robertdelmas Exp $
 #
 
 #============================================================
@@ -23,6 +23,14 @@ namespace eval ::acqapn {
       global caption
 
       return "$caption(acqapn,titre,panneau)"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginHelp
+   #     retourne le nom du fichier d'aide principal
+   #------------------------------------------------------------
+   proc getPluginHelp { } {
+      return "acqapn.htm"
    }
 
    #------------------------------------------------------------
@@ -106,7 +114,7 @@ namespace eval ::acqapn {
       set panneau(acqapn,saveconf) [ file join $audace(rep_plugin) tool acqapn saveconf.log ]
       set panneau(acqapn,saverep)  [ file join $audace(rep_plugin) tool acqapn saverep.log ]
       set panneau(acqapn,savecmd)  [ file join $audace(rep_plugin) tool acqapn savecmd.log ]
-      set panneau(acqapn,photopc)  [ file join $audace(rep_install) bin photopc.exe ]
+      set panneau(acqapn,photopc)  [ file join $audace(rep_plugin) tool acqapn photopc.exe ]
 
       #--- Chargement de la base de donnees des apn
       set fichier [ file join $audace(rep_plugin) tool acqapn apnbase.tcl ]
@@ -1384,9 +1392,7 @@ proc acqapnBuildIF { This } {
 
          #--- Titre de l'outil et bouton de l'aide
          button $This.fra1.but1 -borderwidth 2 -text $panneau(acqapn,titre) \
-            -command {
-               ::audace::showHelpPlugin tool acqapn acqapn.htm
-            }
+            -command "::audace::showHelpPlugin [ ::acqapn::getPluginType ] acqapn [ ::acqapn::getPluginHelp ]"
          pack $This.fra1.but1 -in $This.fra1 -anchor center -expand 1 -fill both -side top
          DynamicHelp::add $This.fra1.but1 -text $caption(acqapn,help,titre)
 
