@@ -1,4 +1,10 @@
-# Robotic Observatory Control
+#
+# File : roc.tcl
+# Description : Robotic Observatory Control
+# Author : Alain KLOTZ
+# Update $Id: roc.tcl,v 1.3 2007-08-31 16:11:19 robertdelmas Exp $
+#
+
 set err [catch {wm withdraw .} msg]
 set ros(withtk) 1
 if {$err==1} {
