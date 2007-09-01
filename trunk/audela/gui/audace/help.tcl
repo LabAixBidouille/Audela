@@ -2,7 +2,7 @@
 # Fichier : help.tcl
 # Description : Aide d'Aud'ACE
 # Auteur : Michel PUJOL
-# Mise a jour $Id: help.tcl,v 1.4 2007-04-07 21:16:48 robertdelmas Exp $
+# Mise a jour $Id: help.tcl,v 1.5 2007-09-01 11:13:42 robertdelmas Exp $
 #
 
 ###########################################################################################
@@ -112,7 +112,7 @@ namespace eval ::audace {
    #     relativeFileName : repertoire du fichier d'aide
    #     tag              : balise anchor dans la page HTML (optionel)
    #
-   #  exemple : ::audace::showHelpPlugin tool supernovae supernovae_go.htm
+   #  exemple : ::audace::showHelpPlugin tool supernovae supernovae.htm
    #----------------------------------------------------------------------------------------
    proc ::audace::showHelpPlugin { { pluginType } { pluginName } { relativeFileName "" } { tag "" } } {
       global audace help
