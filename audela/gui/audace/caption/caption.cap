@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.48 2007-06-20 21:32:09 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.49 2007-09-01 17:16:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,7 +21,7 @@ set caption(audace,pas_port_com)                      "No Port"
 
 set caption(audace,titre)                             "Aud'ACE"
 
-set caption(console,titre)                            "Console"
+set caption(console,titre)                            "Terminal"
 set caption(console,debug)                            "Debug"
 
 set caption(audace,ok)                                "OK"
