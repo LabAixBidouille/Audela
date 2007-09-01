@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.50 2007-08-30 18:20:02 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.51 2007-09-01 09:13:50 robertdelmas Exp $
 #
 
 #==============================================================
@@ -233,7 +233,7 @@ namespace eval ::AcqFC {
          #--- Tout ce que je fais, c'est inviter l'utilisateur a changer d'outil !
       } else {
          #--- En-tete du fichier
-         Message $visuNo log $caption(acqfc,ouvsess)
+         Message $visuNo log $caption(acqfc,ouvsess) [ package version acqfc ]
          set date [clock format [clock seconds] -format "%A %d %B %Y"]
          set heure $audace(tu,format,hmsint)
          Message $visuNo console $caption(acqfc,affheure) $date $heure
