@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.23 2007-08-27 00:49:12 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.24 2007-09-01 09:43:26 alainklotz Exp $
 #
 
 global audace
@@ -2191,10 +2191,10 @@ proc snblinkimage { } {
 
    #--- Animation
    for { set t 1 } { $t <= $snconfvisu(nb_blink) } { incr t } {
-      $zone(image1) itemconfigure display -image image100
-      update
-      after $snconfvisu(delai_blink)
       catch {
+	      $zone(image1) itemconfigure display -image image100
+         update
+         after $snconfvisu(delai_blink)
          $zone(image1) itemconfigure display -image image101
          update
          after $snconfvisu(delai_blink)
@@ -2222,7 +2222,7 @@ proc snblinkimage { } {
    file delete [ file join [pwd] xy.lst ]
 
    #--- Reconfigure pour Aud'ACE normal
-   $zone(image1) itemconfigure display -image image100
+   catch {$zone(image1) itemconfigure display -image image100}
    update
 
    #--- Gestion du bouton 'blink'
