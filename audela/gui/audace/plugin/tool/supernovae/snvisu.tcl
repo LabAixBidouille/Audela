@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.24 2007-09-01 09:43:26 alainklotz Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.25 2007-09-01 11:17:07 robertdelmas Exp $
 #
 
 global audace
@@ -263,7 +263,7 @@ pack $audace(base).snvisu.frame8.but_config \
 #--- Bouton de configuration
 button $audace(base).snvisu.frame8.but_raccourcis \
    -text "$caption(snvisu,raccourcis)" -borderwidth 2 \
-   -command { ::audace::showHelpPlugin tool supernovae supernovae_go.htm sn_raccourcis }
+   -command { ::audace::showHelpPlugin tool supernovae supernovae.htm sn_raccourcis }
 pack $audace(base).snvisu.frame8.but_raccourcis \
    -in $audace(base).snvisu.frame8 -side left -anchor center \
    -padx 10 -ipadx 5 -ipady 5
@@ -932,7 +932,6 @@ proc affimages { } {
       visu$num(visu_1) buf $num(buffer1b)
       visu$num(visu_2) buf $num(buffer2b)
    }
-   #
 
    #--- Traitement des limites
    set total [llength $rep(x1)]
@@ -961,7 +960,7 @@ proc affimages { } {
       if {$afflog==1} {
          visu$num(visu_1) cut [sn_buflog $num(buffer1) $num(buffer1b)]
       }
-      # ---
+      #---
       visu$num(visu_1) disp
       if {$afflog==0} {
          set nume $num(buffer1)
@@ -986,7 +985,7 @@ proc affimages { } {
       #set ds1 [expr $scalemax-$scalecut]
       #   set ds2 [expr $scalecut-$scalemin]
       #::console::affiche_resultat "$scalemin <($ds2)< $scalecut <($ds1)< $scalemax\n"
-      # ---
+      #---
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
       set user [lindex [buf$num(buffer1) getkwd USER] 1]
       if {$user!=""} {
@@ -1163,7 +1162,7 @@ proc affimages { } {
          visu$num(visu_2) cut [sn_buflog $num(buffer2) $num(buffer2b)]
       }
       if {$result==""} {
-         # ---
+         #---
          visu$num(visu_2) disp
          if {$afflog==0} {
             set nume $num(buffer2)
@@ -1188,7 +1187,7 @@ proc affimages { } {
             $zone(sh2) configure -to $scalemax -from $scalemin
          }
          $zone(sh2) set $scalecut
-         # ---
+         #---
          set zone(naxis1_2) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
          set zone(naxis2_2) [lindex [buf$num(buffer2) getkwd NAXIS2] 1]
          catch { $zone(image2) configure -scrollregion [list 0 0 $zone(naxis1_2) $zone(naxis2_2)] }
@@ -1553,7 +1552,7 @@ proc snvisu_configuration { } {
    button $audace(base).snvisu_3.but_help \
       -text $caption(snvisu,aide) -borderwidth 2 \
       -command {
-         ::audace::showHelpPlugin tool supernovae supernovae_go.htm sn_config
+         ::audace::showHelpPlugin tool supernovae supernovae.htm sn_config
       }
    pack $audace(base).snvisu_3.but_help \
       -in $audace(base).snvisu_3 -side right -anchor w \
@@ -2106,7 +2105,7 @@ proc snblinkimage { } {
    #--- Initialisation
    set rep(blink,last) ""
 
-   #
+   #---
    set afflog $snvisu(afflog)
    if {$afflog==0} {
       visu$num(visu_1) buf $num(buffer1)
@@ -2165,7 +2164,7 @@ proc snblinkimage { } {
       } else {
          set shsb [sn_buflog $b $b]
       }
-      # ---
+      #---
       set text0 "[buf$b getkwd MIPS-LO]"
       set text0 [lreplace $text0 1 1 [lindex $shsb 1]]
       buf$b setkwd $text0
@@ -2192,7 +2191,7 @@ proc snblinkimage { } {
    #--- Animation
    for { set t 1 } { $t <= $snconfvisu(nb_blink) } { incr t } {
       catch {
-	      $zone(image1) itemconfigure display -image image100
+         $zone(image1) itemconfigure display -image image100
          update
          after $snconfvisu(delai_blink)
          $zone(image1) itemconfigure display -image image101
