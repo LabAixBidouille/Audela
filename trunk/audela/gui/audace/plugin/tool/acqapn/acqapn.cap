@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.9 2007-05-16 20:48:32 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.10 2007-09-01 17:15:55 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -28,7 +28,7 @@ set caption(acqapn,sw_video,off)             "Video Off"
 set caption(acqapn,help,titre)               "Help For This Tool"
 set caption(acqapn,help,adopt)               "The new settings"
 set caption(acqapn,help,charge)              "Record Label"
-set caption(acqapn,help,edit)                "On the Console"
+set caption(acqapn,help,edit)                "On the Terminal"
 set caption(acqapn,help,intervalle1)         "The interval must be\nat least"
 set caption(acqapn,help,restaure)            "The initial settings"
 set caption(acqapn,help,unites)              "seconds"
@@ -526,7 +526,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,help,titre)            "Help For This Tool"
    set caption(acqapn,help,adopt)            "The new settings"
    set caption(acqapn,help,charge)           "Record Label"
-   set caption(acqapn,help,edit)             "On the Console"
+   set caption(acqapn,help,edit)             "On the Terminal"
    set caption(acqapn,help,intervalle1)      "The interval must be\nat least"
    set caption(acqapn,help,restaure)         "The initial settings"
    set caption(acqapn,help,unites)           "seconds"

@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfcSetup.cap
-# Mise a jour $Id: pretrfcSetup.cap,v 1.1 2007-04-11 18:04:43 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.cap,v 1.2 2007-09-01 17:16:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,8 +11,8 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(pretrfcSetup,titre)                     "Preprocessing - Console Messages"
-set caption(pretrfcSetup,texte)                     "Choose whether you want to display messages in the Console:"
+set caption(pretrfcSetup,titre)                     "Preprocessing - Terminal Messages"
+set caption(pretrfcSetup,texte)                     "Choose whether you want to display messages on the Terminal:"
 set caption(pretrfcSetup,oui)                       "Yes"
 set caption(pretrfcSetup,non)                       "No"
 
@@ -89,8 +89,8 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(pretrfcSetup,titre)                  "Preprocessing - Console Messages"
-   set caption(pretrfcSetup,texte)                  "Choose whether you want to display messages in the Console:"
+   set caption(pretrfcSetup,titre)                  "Preprocessing - Terminal Messages"
+   set caption(pretrfcSetup,texte)                  "Choose whether you want to display messages on the Terminal:"
    set caption(pretrfcSetup,oui)                    "Yes"
    set caption(pretrfcSetup,non)                    "No"
 
