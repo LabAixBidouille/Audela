@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.8 2007-04-14 08:42:13 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.9 2007-09-01 12:24:09 robertdelmas Exp $
 #
 
 global audace
@@ -13,7 +13,7 @@ source [ file join $audace(rep_plugin) tool obj_lune obj_lune_1.tcl ]
 #--- Chargement du programme pour la partie graphique de l'outil Objectif Lune
 source [ file join $audace(rep_plugin) tool obj_lune obj_lune_2.tcl ]
 
-namespace eval obj_Lune {
+namespace eval obj_lune {
    global audace
 
    #--- Chargement des legendes et des textes pour differentes langues
@@ -22,7 +22,7 @@ namespace eval obj_Lune {
    source [ file join $audace(rep_plugin) tool obj_lune obj_lune_2.cap ]
 
    #
-   # obj_Lune::run
+   # obj_lune::run
    # Cree la fenetre de choix des onglets
    # This = chemin de la fenetre
    #
@@ -31,13 +31,13 @@ namespace eval obj_Lune {
       global audace
       global obj_lune
 
-      set This "$audace(base).obj_Lune"
+      set This "$audace(base).obj_lune"
       createDialog
       catch { tkwait visibility $This }
    }
 
    #
-   # obj_Lune::goto_lune
+   # obj_lune::goto_lune
    # Fonction appellee lors de l'appui sur le bouton 'GOTO' pour realiser le GOTO du telescope
    # sur le site lunaire choisi
    #
@@ -67,7 +67,7 @@ namespace eval obj_Lune {
    }
 
    #
-   # obj_Lune::match_lune
+   # obj_lune::match_lune
    # Fonction appellee lors de l'appui sur le bouton 'Match' pour realiser le Match du telescope sur
    # le site lunaire choisi
    #
@@ -106,7 +106,7 @@ namespace eval obj_Lune {
    }
 
    #
-   # obj_Lune::fermer
+   # obj_lune::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc fermer { } {
@@ -156,7 +156,7 @@ namespace eval obj_Lune {
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(obj_lune,titre)"
-      wm protocol $This WM_DELETE_WINDOW ::obj_Lune::fermer
+      wm protocol $This WM_DELETE_WINDOW ::obj_lune::fermer
       set obj_lune(espion) "0"
 
       frame $This.usr -borderwidth 0 -relief raised
@@ -174,13 +174,13 @@ namespace eval obj_Lune {
       pack $This.usr -side top -fill both -expand 1
       frame $This.cmd -borderwidth 1 -relief raised
          button $This.cmd.goto -text "$caption(obj_lune,goto)" -relief raised -state normal \
-            -command { ::obj_Lune::goto_lune }
+            -command { ::obj_lune::goto_lune }
          pack $This.cmd.goto -side left -padx 5 -pady 5 -ipadx 5 -ipady 5
          button $This.cmd.match -text "$caption(obj_lune,match)" -relief raised -state normal \
-            -command { ::obj_Lune::match_lune }
+            -command { ::obj_lune::match_lune }
          pack $This.cmd.match -side left -padx 5 -pady 5 -ipadx 5 -ipady 5
          button $This.cmd.fermer -text "$caption(obj_lune,fermer)" -relief raised -state normal \
-            -command { ::obj_Lune::fermer }
+            -command { ::obj_lune::fermer }
          pack $This.cmd.fermer -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
          button $This.cmd.aide -text "$caption(obj_lune,aide)" -relief raised -state normal \
             -command { ::audace::showHelpPlugin tool obj_lune obj_lune.htm }
@@ -268,93 +268,93 @@ namespace eval obj_Lune {
       set obj_lune(goto) "23"
       radiobutton $frm.frame1.rad1 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,reference)" -value 1 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad1 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad2 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,crateres)" -value 2 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad2 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad3 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,chaines_crateres)" -value 3 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad3 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad4 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,montagnes_isolees)" -value 4 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad4 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad5 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,chaines_montagnes)" -value 5 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad5 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad6 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,vallees)" -value 6 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad6 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad7 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,rainures)" -value 7 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad7 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad8 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,systemes_rainures)" -value 8 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad8 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad9 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,failles)" -value 9 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad9 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad10 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,dorsales)" -value 10 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad10 -side top -fill x -pady 2
       radiobutton $frm.frame1.rad11 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,systemes_dorsales)" -value 11 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame1.rad11 -side top -fill x -pady 2
 
       #--- Cree l'affichage des differents types de sites lunaires remarquables - Colonne de droite
       radiobutton $frm.frame2.rad12 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,domes)" -value 12 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad12 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad13 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,caps)" -value 13 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad13 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad14 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,marais)" -value 14 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad14 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad15 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,lacs)" -value 15 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad15 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad16 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,golfes)" -value 16 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad16 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad17 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,mers)" -value 17 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad17 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad18 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,ocean)" -value 18 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad18 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad19 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,plaine_basse)" -value 19 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad19 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad20 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,sites_alunissage)" -value 20 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad20 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad21 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,zone_albedo)" -value 21 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad21 -side top -fill x -pady 2
       radiobutton $frm.frame2.rad22 -anchor nw -width 25 -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(obj_lune,pheno_transitoires)" -value 22 -variable obj_lune(goto) \
-         -command { ::obj_Lune::affiche_cata_choisi ; obj_Lune::AfficheInfoSite }
+         -command { ::obj_lune::affiche_cata_choisi ; obj_lune::AfficheInfoSite }
       pack $frm.frame2.rad22 -side top -fill x -pady 2
 
       #--- Cree l'affichage des sites lunaires du type choisi
@@ -417,8 +417,8 @@ namespace eval obj_Lune {
       #--- Initialisation du numero de la carte courante
       bind [Rnotebook:button $nn 1] <Button-1> {
          #--- Reaffiche les rectangles bleus uniquement
-         ::obj_Lune::AfficheRepereSite
-         ::obj_Lune::AfficheRepereSite_lib
+         ::obj_lune::AfficheRepereSite
+         ::obj_lune::AfficheRepereSite_lib
          #--- Efface les numeros des cartes choisies et de la carte courante
          $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
          $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
@@ -437,10 +437,10 @@ namespace eval obj_Lune {
                   } else {
                      set obj_lune(carte_choisie) "ar$obj_lune(n1)$obj_lune(extension_cartes)"
                   }
-                  ::obj_Lune::EffaceRectangleBleu_Rouge_Carto
-                  ::obj_Lune::AfficheRepereSite
-                  ::obj_Lune::AfficheCarteChoisie
-                  ::obj_Lune::AfficheRepereSite_Bind
+                  ::obj_lune::EffaceRectangleBleu_Rouge_Carto
+                  ::obj_lune::AfficheRepereSite
+                  ::obj_lune::AfficheCarteChoisie
+                  ::obj_lune::AfficheRepereSite_Bind
                }
             } else {
                if { $obj_lune(lib_n1) == "$i" } {
@@ -448,10 +448,10 @@ namespace eval obj_Lune {
                   set nn "$This.usr.book"
                   switch -exact -- $num_onglet { 4 { Rnotebook:raise $nn 4 } }
                   set obj_lune(carte_choisie_lib) "lib$obj_lune(lib_n1)$obj_lune(extension_cartes)"
-                  ::obj_Lune::EffaceRectangleBleu_Rouge_Lib
-                  ::obj_Lune::AfficheRepereSite_lib
-                  ::obj_Lune::AfficheCarte_libChoisie
-                  ::obj_Lune::AfficheRepereSite_lib_Bind
+                  ::obj_lune::EffaceRectangleBleu_Rouge_Lib
+                  ::obj_lune::AfficheRepereSite_lib
+                  ::obj_lune::AfficheCarte_libChoisie
+                  ::obj_lune::AfficheRepereSite_lib_Bind
                }
             }
          }
@@ -694,11 +694,11 @@ namespace eval obj_Lune {
       pack $frm.frame28.lab24a -side left -padx 0 -pady 0
 
       button $frm.frame30.plus -text "+" -relief raised -state normal -width 3 \
-         -command { set obj_lune(change_mois) "+" ; ::obj_Lune::precedant_suivant }
+         -command { set obj_lune(change_mois) "+" ; ::obj_lune::precedant_suivant }
       pack $frm.frame30.plus -side left -padx 12 -pady 8 -fill x
 
       button $frm.frame31.moins -text "-" -relief raised -state normal -width 3 \
-         -command { set obj_lune(change_mois) "-" ; ::obj_Lune::precedant_suivant }
+         -command { set obj_lune(change_mois) "-" ; ::obj_lune::precedant_suivant }
       pack $frm.frame31.moins -side left -padx 12 -pady 8 -fill x
 
       #--- Initialisation du numero de la carte courante
@@ -708,8 +708,8 @@ namespace eval obj_Lune {
       }
 
       #--- Calcul et affichage des ephemerides et des dates des phases de la Lune
-      ::obj_Lune::Lune_Ephemerides
-      ::obj_Lune::Lune_Phases
+      ::obj_lune::Lune_Ephemerides
+      ::obj_lune::Lune_Phases
    }
 
    proc fillPage3 {nn} {
@@ -787,7 +787,7 @@ namespace eval obj_Lune {
       pack $frm.frame8.labURL7 -side left -padx 0 -pady 0
 
       #--- Cree le canevas pour l'image
-      ::obj_Lune::Lune_Scrolled_Canvas $frm.frame2.image1 -borderwidth 0 -relief flat \
+      ::obj_lune::Lune_Scrolled_Canvas $frm.frame2.image1 -borderwidth 0 -relief flat \
          -width 1000 -height 1000 -scrollregion {0 0 0 0} -cursor crosshair
       $frm.frame2.image1.canvas configure -borderwidth 0
       $frm.frame2.image1.canvas configure -relief flat
@@ -799,7 +799,7 @@ namespace eval obj_Lune {
       image create photo imageflag2
 
       #--- Affichage du rectangle rouge de la carte courante choisie
-      ::obj_Lune::AfficheRectangleCarteChoisie
+      ::obj_lune::AfficheRectangleCarteChoisie
 
       #--- Initialisation du numero de la carte courante
       bind [Rnotebook:button $nn 3] <Button-1> {
@@ -883,7 +883,7 @@ namespace eval obj_Lune {
       pack $frm.frame8.labURL7 -side left -padx 0 -pady 0
 
       #--- Cree le canevas pour l'image
-      ::obj_Lune::Lune_Scrolled_Canvas $frm.frame2.image4b -borderwidth 0 -relief flat \
+      ::obj_lune::Lune_Scrolled_Canvas $frm.frame2.image4b -borderwidth 0 -relief flat \
          -width 1000 -height 1000 -scrollregion {0 0 0 0} -cursor crosshair
       $frm.frame2.image4b.canvas configure -borderwidth 0
       $frm.frame2.image4b.canvas configure -relief flat
@@ -895,7 +895,7 @@ namespace eval obj_Lune {
       image create photo imageflag4b
 
       #--- Affichage du contour rouge de la carte courante choisie
-      ::obj_Lune::AffichePolygoneCarteChoisie
+      ::obj_lune::AffichePolygoneCarteChoisie
 
       #--- Initialisation du numero de la carte courante
       bind [Rnotebook:button $nn 4] <Button-1> {
@@ -1010,7 +1010,7 @@ namespace eval obj_Lune {
       pack $frm.frame6.lab3a -side left -padx 0 -pady 0
 
       button $frm.frame7.calcul -text "$caption(obj_lune,calculer)" -relief raised -state disabled \
-         -width 15 -command { catch { ::obj_Lune::Meilleures_Dates } }
+         -width 15 -command { catch { ::obj_lune::Meilleures_Dates } }
       pack $frm.frame7.calcul -side top -padx 0 -pady 5 -ipady 5
 
       label $frm.frame8.lab4 -text "$caption(obj_lune,date)"
