@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.13 2007-08-19 08:13:43 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.14 2007-09-01 12:30:09 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -195,7 +195,7 @@ proc modpoi_wiz { { mode new } } {
          set modpoi(wm_geometry) "440x500$modpoi(toplevel,position)"
       }
    }
-   set modpoi(g,base) $audace(base).modpoi
+   set modpoi(g,base) $audace(base).modpoi_fntr
 
    if {$mode=="edit"} {
       modpoi_wiz5b
@@ -2484,7 +2484,7 @@ proc run_name_modpoi { } {
    global audace modpoi
 
    #---
-   set This "$audace(base).modpoi.name_modpoi"
+   set This "$audace(base).modpoi_fntr.name_modpoi"
    #---
    createDialog_name_modpoi
    if { [ info exists modpoi(geometry,name_modpoi) ] } {
@@ -2510,7 +2510,7 @@ proc createDialog_name_modpoi { } {
    wm deiconify $This
    wm title $This "$caption(modpoi,define_mame_modpoi)"
    wm geometry $This +180+50
-   wm transient $This $audace(base).modpoi
+   wm transient $This $audace(base).modpoi_fntr
    wm protocol $This WM_DELETE_WINDOW cmdClose_name_modpoi
 
    #--- Cree un frame pour y mettre le bouton et la zone a renseigner
@@ -2522,7 +2522,7 @@ proc createDialog_name_modpoi { } {
       pack $This.frame1.ent1 -side left -padx 5 -pady 5
       button $This.frame1.explore -text "$caption(modpoi,parcourir)" -width 1 -command {
          #--- Fenetre parent
-         set fenetre "$audace(base).modpoi"
+         set fenetre "$audace(base).modpoi_fntr"
          #--- Repertoire contenant les modeles de pointage
          set initialdir [ file join $audace(rep_plugin) tool modpoi model_modpoi ]
          #--- Ouvre la fenetre de choix des modeles de pointage
