@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.87 2007-06-22 21:17:46 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.88 2007-09-01 09:04:36 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -3598,7 +3598,7 @@ namespace eval ::confCam {
 
       #--- Desactive le blocage pendant l'acquisition (cli/sti)
       catch {
-         cam$camNo interrupt 0
+         cam$confCam($camItem,camNo) interrupt 0
       }
 
    }
