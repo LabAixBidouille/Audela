@@ -1,11 +1,11 @@
 #
 # Fichier : gps.tcl
-# Description : Panneau de synchronisation GPS
+# Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.6 2007-04-14 08:31:28 robertdelmas Exp $
+# Mise a jour $Id: gps.tcl,v 1.7 2007-09-02 09:17:01 robertdelmas Exp $
 #
 
-namespace eval ::Gps {
+namespace eval ::gps {
     variable This
     variable parametres
     variable numero_version
@@ -271,7 +271,7 @@ namespace eval ::Gps {
         bind all <Key-Next> {}
 
         EtatBouton normal normal disabled disabled disabled normal disabled disabled disabled normal disabled
-        vwait ::Gps::horloge(confirmation_arret)
+        vwait ::gps::horloge(confirmation_arret)
         Message infos ""
         Message consolog "%s %d ms\n" $caption(gps,decalage_horloge) $horloge(decalage_total)
         set etat repos
@@ -306,7 +306,7 @@ namespace eval ::Gps {
         set heure_pc [string range $temps_pc 11 end]
         Message infos "%s:%s:%s.%s" [string range $heure_pc 0 1] [string range $heure_pc 3 4] [string range $heure_pc 6 7] [string range $heure_pc 9 end]
         if {$horloge(demande_arret) != 1} {
-            after 950 ::Gps::BoucleBip
+            after 950 ::gps::BoucleBip
         } else {
             set horloge(confirmation_arret) 1
         }
@@ -330,7 +330,7 @@ namespace eval ::Gps {
        } ]
        if { $catchResult == "1" } {
           tk_messageBox -title $caption(gps,ecoute_horloge) -type ok -icon warning -message "$::errorInfo"
-          ::Gps::ArretHorloge
+          ::gps::ArretHorloge
           return "55"
        }
     }
@@ -339,7 +339,7 @@ namespace eval ::Gps {
     ### createPanel ##############################################
     ##############################################################
     proc createPanel {this} {
-        global panneau caption conf audace color
+        global caption conf audace color
         variable This
         variable parametres
         variable couleur
@@ -396,7 +396,7 @@ namespace eval ::Gps {
         wm geometry $tb +150+50
         wm title $tb $caption(gps,titre_fenetre_gps)
         wm transient $tb $base
-        wm protocol $tb WM_DELETE_WINDOW ::Gps::Suppression
+        wm protocol $tb WM_DELETE_WINDOW ::gps::Suppression
 
         # Trame des champs heure
         frame $tb.trame1
@@ -441,7 +441,6 @@ namespace eval ::Gps {
     ##############################################################
     proc CreationPanneauGPS {This} {
         global audace
-        global panneau
         global caption
         variable couleur
         variable police
@@ -453,9 +452,7 @@ namespace eval ::Gps {
         frame $This.fra1 -borderwidth 2 -height 75 -relief groove -width 92
         #--- Label du titre
         Button $This.fra1.but -borderwidth 2 -text $caption(gps,titre) -font $police(gras) \
-           -command {
-              ::audace::showHelpPlugin tool gps gps.htm
-           }
+            -command "::audace::showHelpPlugin [ ::gps::getPluginType ] gps [ ::gps::getPluginHelp ]"
         ::pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
         DynamicHelp::add $This.fra1.but -text $caption(gps,help,titre)
         place $This.fra1 -x 4 -y 4 -width 92 -height 22 -anchor nw -bordermode ignore
@@ -471,7 +468,7 @@ namespace eval ::Gps {
         $m1 add separator
         $m1 add cascade -label $caption(gps,port) -menu $m1.sm1
         $m1 add cascade -label $caption(gps,intervalle_synchro) -menu $m1.sm2
-        $m1 add command -label $caption(gps,divers) -command {::Gps::EditionsDiverses}
+        $m1 add command -label $caption(gps,divers) -command {::gps::EditionsDiverses}
         set sm1 [menu $m1.sm1 -tearoff 0]
         set sm2 [menu $m1.sm2 -tearoff 0]
         # Les sous-menus des ports et des intervalles de synchro sont créés plus tard pour tenir compte des paramétres initialisés ultérieurement
@@ -488,10 +485,10 @@ namespace eval ::Gps {
         label $t21.l -text $caption(gps,titre_gps) -font $police(gras)
         ::pack $t21.l -fill x -side top
         # Génération des boutons
-        set commande(lancement_gps) ::Gps::LancementGPS
-        set commande(arret_gps) ::Gps::ArretGPS
-        set commande(synchro_temps) ::Gps::SynchroTempsGPS
-        set commande(synchro_position) ::Gps::SynchroPositionGPS
+        set commande(lancement_gps) ::gps::LancementGPS
+        set commande(arret_gps) ::gps::ArretGPS
+        set commande(synchro_temps) ::gps::SynchroTempsGPS
+        set commande(synchro_position) ::gps::SynchroPositionGPS
         set place(lancement_gps) 20
         set place(arret_gps) 20
         set place(synchro_temps) 47
@@ -508,10 +505,10 @@ namespace eval ::Gps {
         set t22 [frame $t2.freg -borderwidth 1 -relief groove -width 125]
         label $t22.l -text $caption(gps,titre_reglage_fin) -font $police(gras)
         ::pack $t22.l -fill x -side top
-        set commande(ecoute_horloge) ::Gps::EcouteHorloge
-        set commande(arret_horloge) ::Gps::ArretHorloge
-        set commande(avance) {::Gps::AvanceHorloge}
-        set commande(retard) {::Gps::RetardHorloge }
+        set commande(ecoute_horloge) ::gps::EcouteHorloge
+        set commande(arret_horloge) ::gps::ArretHorloge
+        set commande(avance) {::gps::AvanceHorloge}
+        set commande(retard) {::gps::RetardHorloge }
         set place(ecoute_horloge) 20
         set place(arret_horloge) 20
         set place(avance) 47
@@ -531,8 +528,8 @@ namespace eval ::Gps {
         ::pack $t3.l -fill x -side top
 
         set t31 [frame $t3.fautobis -borderwidth 1 -relief groove -width 120]
-        set commande(demarrage_auto) ::Gps::DemarrageAuto
-        set commande(arret_auto) ::Gps::ArretAuto
+        set commande(demarrage_auto) ::gps::DemarrageAuto
+        set commande(arret_auto) ::gps::ArretAuto
         set place(demarrage_auto) 4
         set place(arret_auto) 4
         foreach champ {demarrage_auto arret_auto} {
@@ -611,7 +608,7 @@ namespace eval ::Gps {
         set gps(erreur_lecture) 0
         set gps_reveil_synchro 0
         # Gestion de la liaison série par filevent
-        fileevent $serie readable [list ::Gps::TraitementLigneMuet $serie]
+        fileevent $serie readable [list ::gps::TraitementLigneMuet $serie]
 
         # Début de la boucle de synchro automatique
         SynchronisationAutomatique
@@ -632,8 +629,8 @@ namespace eval ::Gps {
         update idletasks
         EtatBouton disabled disabled disabled disabled disabled disabled normal normal normal disabled disabled
 
-        bind all <Key-Prior> {::Gps::AvanceHorloge}
-        bind all <Key-Next> {::Gps::RetardHorloge}
+        bind all <Key-Prior> {::gps::AvanceHorloge}
+        bind all <Key-Next> {::gps::RetardHorloge}
 
         set horloge(demande_arret) 0
         set horloge(decalage_total) 0
@@ -657,17 +654,17 @@ namespace eval ::Gps {
         wm geometry $d +150+50
         wm title $d $caption(gps,titre_parametres)
         wm transient $d $base
-        wm protocol $d WM_DELETE_WINDOW ::Gps::Suppression
+        wm protocol $d WM_DELETE_WINDOW ::gps::Suppression
 
         set t1 [frame $d.trame1]
         foreach champ {decalage seuil_ok reglage} {
             label $t1.l$champ -text $caption(gps,$champ) -font $police(normal)
-            entry $t1.e$champ -textvariable ::Gps::parametres($champ) -font $police(normal) -relief sunken -width 4
+            entry $t1.e$champ -textvariable ::gps::parametres($champ) -font $police(normal) -relief sunken -width 4
             grid $t1.l$champ $t1.e$champ -sticky news
         }
 
         set t2 [frame $d.trame2 -borderwidth 2 -relief groove]
-        button $t2.b1 -text $caption(gps,valider) -command {::Gps::ValideSaisie} -font $police(gras) -height 1
+        button $t2.b1 -text $caption(gps,valider) -command {::gps::ValideSaisie} -font $police(gras) -height 1
         ::pack $t2.b1 -side top -padx 10 -pady 10
 
         ::pack $t1 $t2 -fill x
@@ -702,6 +699,13 @@ namespace eval ::Gps {
         global caption
 
         return "$caption(gps,titre)"
+    }
+
+    ##############################################################
+    ### getPluginHelp ############################################
+    ##############################################################
+    proc getPluginHelp { } {
+        return "gps.htm"
     }
 
     ##############################################################
@@ -813,15 +817,15 @@ namespace eval ::Gps {
 
         # Sous-menu des ports
         foreach port $audace(list_com) {
-            $This.fparametre.mb.menu.sm1 add radio -label $port -variable ::Gps::parametres(port_serie) -value $port
+            $This.fparametre.mb.menu.sm1 add radio -label $port -variable ::gps::parametres(port_serie) -value $port
         }
         # Sous-menu des intervalles de synchro
         foreach intervalle $parametres(choix_synchro) {
-            $This.fparametre.mb.menu.sm2 add radio -label $intervalle -variable ::Gps::parametres(intervalle_synchro) -value $intervalle
+            $This.fparametre.mb.menu.sm2 add radio -label $intervalle -variable ::gps::parametres(intervalle_synchro) -value $intervalle
         }
 
 
-        Message consolog "----------%s %s ----------\n" $caption(gps,bienvenue) $numero_version
+        Message consolog "---------- %s %s ----------\n" $caption(gps,bienvenue) $numero_version
         Message consolog "%s\n" $caption(gps,copyright)
         set etat repos
     }
@@ -897,7 +901,7 @@ namespace eval ::Gps {
         set gps(erreur_lecture) 0
 
         # Gestion par filevent
-        fileevent $serie readable [list ::Gps::TraitementLigne $serie]
+        fileevent $serie readable [list ::gps::TraitementLigne $serie]
     }
 
     ##############################################################
@@ -1122,7 +1126,7 @@ namespace eval ::Gps {
         if {$etat == "gps"} {ArretGPS}
         if {$etat == "horloge"} {ArretHorloge}
 
-        Message consolog "----------%s -------------\n" $caption(gps,tchao)
+        Message consolog "---------- %s -------------\n" $caption(gps,tchao)
 
         # Sauvegarde des paramètres
         set nom_fichier [file join $audace(rep_plugin) tool gps gps.ini]
