@@ -2,14 +2,14 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.10 2007-06-14 21:22:00 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.11 2007-09-02 09:19:42 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace MethKing
+# Declaration du namespace methking
 #    initialise le namespace
 #============================================================
-namespace eval ::MethKing {
+namespace eval ::methking {
     package provide methking 1.15
 
     # Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -47,7 +47,7 @@ namespace eval ::MethKing {
 
     # Ouverture du fichier de config
     if ![file exists $fichier] {
-        Message erreur "%s %s %s\n" $caption(king,fichier) $fichier $caption(king,non_existence)
+        Message erreur "%s %s %s\n" $caption(methking,fichier) $fichier $caption(methking,non_existence)
         return
     }
     set file_id [open $fichier r]
@@ -64,11 +64,11 @@ namespace eval ::MethKing {
         # Repérage des différents champs dans la ligne
         set resultat [BalayageLigne $ligne]
         if {$resultat == -1} {
-        Message erreur "%s %02d : %s\n" $caption(king,ligne) $numero_ligne $caption(king,ecr_mot_cle)
+        Message erreur "%s %02d : %s\n" $caption(methking,ligne) $numero_ligne $caption(methking,ecr_mot_cle)
         #    } elseif {$resultat == -2} {      ;# Cas de la ligne vide
         #        Message log "Ligne %02d OK : ligne de commentaires\n" $numero_ligne
         } elseif {$resultat == -3} {
-        Message erreur "%s %02d : %s\n" $caption(king,ligne) $numero_ligne $caption(king,pas_valeur)
+        Message erreur "%s %02d : %s\n" $caption(methking,ligne) $numero_ligne $caption(methking,pas_valeur)
         } else { ;# Cas 'normal'
 
         # Verification de la syntaxe des commandes
@@ -76,15 +76,15 @@ namespace eval ::MethKing {
 
         # Cas d'erreurs ou la ligne ne sera pas traitee
         if {$resultat == -1} {
-            Message erreur "%s %02d : %s\n" $caption(king,ligne) $numero_ligne caption(king,mot_cle_invalide)
+            Message erreur "%s %02d : %s\n" $caption(methking,ligne) $numero_ligne caption(methking,mot_cle_invalide)
         } elseif {$resultat == -2} {
-            Message erreur "%s %02d : %s\n" $caption(king,ligne) $numero_ligne $caption(king,valeur_non_entiere)
+            Message erreur "%s %02d : %s\n" $caption(methking,ligne) $numero_ligne $caption(methking,valeur_non_entiere)
         } else { ;# Cas 'normal' ou la ligne sera effectivement traitee
             if {$resultat == -3} {
             # Ce n'est qu'un warning
-            Message avertissement "%s %02d : %s %d\n" $caption(king,ligne) $numero_ligne $caption(king,recalage_min) $valeur
+            Message avertissement "%s %02d : %s %d\n" $caption(methking,ligne) $numero_ligne $caption(methking,recalage_min) $valeur
             } elseif {$resultat == -4} {  ;# Ce n'est qu'un warning
-            Message avertissement "%s %02d : %s %d\n" $caption(king,ligne) $numero_ligne $caption(king,recalage_max) $valeur
+            Message avertissement "%s %02d : %s %d\n" $caption(methking,ligne) $numero_ligne $caption(methking,recalage_max) $valeur
             }
                     # Le mot clé et sa valeur associée sont déclarés corrects
                     # Recherche du mot clé 'Config'
@@ -93,8 +93,8 @@ namespace eval ::MethKing {
                             incr numero_config
                             set tableauConfig($motcle,$numero_config) $valeur
                         }
-                        configdefaut {set panneau(meth_king,config_defaut) $valeur}
-                        nomking {set panneau(meth_king,nom_image_temp) $valeur}
+                        configdefaut {set panneau(methking,config_defaut) $valeur}
+                        nomking {set panneau(methking,nom_image_temp) $valeur}
                         default {
                             # Tant que le premier mot clé [Config] n'a pas été trouvé rien ne se passe
                             if {$numero_config >= 0} {
@@ -108,15 +108,15 @@ namespace eval ::MethKing {
         incr numero_ligne
         #    Message test "\n"
     }
-    set panneau(meth_king,nombre_config) [expr $numero_config + 1]
+    set panneau(methking,nombre_config) [expr $numero_config + 1]
     close $file_id
 
     # Vérification
-    Message log "%s\n" $caption(king,recap_config)
-    for {set i 0} {$i < $panneau(meth_king,nombre_config)} {incr i} {
-        for {set j 0} {$j < [llength $::MethKing::liste_motcle]} {incr j} {
-        set cle [lindex $::MethKing::liste_motcle $j]
-        Message log "%s : %02d | %s : %s / %s : %s\n" $caption(king,config) $i $caption(king,mot_cle) $cle $caption(king,valeur) $tableauConfig($cle,$i)
+    Message log "%s\n" $caption(methking,recap_config)
+    for {set i 0} {$i < $panneau(methking,nombre_config)} {incr i} {
+        for {set j 0} {$j < [llength $::methking::liste_motcle]} {incr j} {
+        set cle [lindex $::methking::liste_motcle $j]
+        Message log "%s : %02d | %s : %s / %s : %s\n" $caption(methking,config) $i $caption(methking,mot_cle) $cle $caption(methking,valeur) $tableauConfig($cle,$i)
         #        Message console "Config : %02d | Mot cle : %s / Valeur : %s\n" $i $cle $tableauConfig($cle,$i)
         }
         Message log "---------------------------------------------------------\n"
@@ -131,24 +131,24 @@ namespace eval ::MethKing {
         #    Message test "Motcle = %s  Valeur = %s\n" $motcle $valeur
 
         # Recherche si le mot clé est défini dans la liste
-        set indice [lsearch $::MethKing::liste_motcle $motcle]
+        set indice [lsearch $::methking::liste_motcle $motcle]
         if {$indice<0} {
             return -1
         }
 
         # Si la valeur n'est pas un entier, les tests sont finis.
-        if {[lindex $::MethKing::liste_valeur_type $indice]==0} {
+        if {[lindex $::methking::liste_valeur_type $indice]==0} {
             return 0
         }
 
-        if {[lindex $::MethKing::liste_valeur_type $indice]==1} {
+        if {[lindex $::methking::liste_valeur_type $indice]==1} {
             # Détection des valeurs entières
             if {![TestEntier $valeur]} {
                 return -2
             }
         }
 
-        if {[lindex $::MethKing::liste_valeur_type $indice]==2} {
+        if {[lindex $::methking::liste_valeur_type $indice]==2} {
             # Détection des valeurs flottantes
             if {![string is double $valeur]} {
                 return -2
@@ -156,16 +156,16 @@ namespace eval ::MethKing {
         }
 
         # Recalage de la valeur min
-        if {[lindex $::MethKing::liste_valeur_min $indice] != "null"} {
-            if {$valeur < [lindex $::MethKing::liste_valeur_min $indice]} {
-                set valeur [lindex $::MethKing::liste_valeur_min $indice]
+        if {[lindex $::methking::liste_valeur_min $indice] != "null"} {
+            if {$valeur < [lindex $::methking::liste_valeur_min $indice]} {
+                set valeur [lindex $::methking::liste_valeur_min $indice]
                 return -3
             }
         }
         # Recalage de la valeur max
-        if {[lindex $::MethKing::liste_valeur_max $indice] != "null"} {
-            if {$valeur > [lindex $::MethKing::liste_valeur_max $indice]} {
-                set valeur [lindex $::MethKing::liste_valeur_max $indice]
+        if {[lindex $::methking::liste_valeur_max $indice] != "null"} {
+            if {$valeur > [lindex $::methking::liste_valeur_max $indice]} {
+                set valeur [lindex $::methking::liste_valeur_max $indice]
                 return -4
             }
         }
@@ -249,7 +249,7 @@ namespace eval ::MethKing {
 
         # Lance le fichier fichiertest.tcl si le parametre Test est valide dans la config active
         # (Test est un parametre du fichier methking.ini)
-        if {$king_config(test,$panneau(meth_king,config_active)) != 0} {
+        if {$king_config(test,$panneau(methking,config_active)) != 0} {
             if {[file exists [file join $audace(rep_plugin) tool methking fichiertest.tcl]] == 1} {
                 source [file join $audace(rep_audela) tool methking fichiertest.tcl]
             } else {
@@ -259,21 +259,21 @@ namespace eval ::MethKing {
         }
 
         # Initialisation des variables
-        set panneau(meth_king,nbboites) 0
-        set nom $panneau(meth_king,nom_image)
+        set panneau(methking,nbboites) 0
+        set nom $panneau(methking,nom_image)
         set nom_reg ${nom}reg
-        set nb_im_par_seq $panneau(meth_king,nb_im_par_seq)
+        set nb_im_par_seq $panneau(methking,nb_im_par_seq)
         set nb_images [expr $nb_im_par_seq * 2]
 
         # Etape 1: Registration de toutes les images.
-        Message consolog $caption(king,etape_1)
-        Message status $caption(king,status_reg)
+        Message consolog $caption(methking,etape_1)
+        Message status $caption(methking,status_reg)
 
         register [file tail $nom] [file tail $nom_reg] $nb_images
-        Message consolog $caption(king,fin_etape_1)
+        Message consolog $caption(methking,fin_etape_1)
 
         # Etape 2: Recherche du décalage entre premiere et derniere image.
-        Message consolog $caption(king,etape_2)
+        Message consolog $caption(methking,etape_2)
         loadima $nom_reg$nb_images
         ::audace::autovisu $audace(visuNo)
         set dec [decalage]
@@ -303,23 +303,23 @@ namespace eval ::MethKing {
         }
         # Je mémorise le cadre dans panneau, pour pouvoir vérifier plus tard que les étoiles
         # sélectionnées sont bien dans ce cadre.
-        set panneau(meth_king,cadre_x1) $cadre_x1
-        set panneau(meth_king,cadre_y1) $cadre_y1
-        set panneau(meth_king,cadre_x2) $cadre_x2
-        set panneau(meth_king,cadre_y2) $cadre_y2
-        Message consolog $caption(king,cadre) $cadre_x1 $cadre_y1 $cadre_x2 $cadre_y2
-        Message consolog $caption(king,fin_etape_2)
+        set panneau(methking,cadre_x1) $cadre_x1
+        set panneau(methking,cadre_y1) $cadre_y1
+        set panneau(methking,cadre_x2) $cadre_x2
+        set panneau(methking,cadre_y2) $cadre_y2
+        Message consolog $caption(methking,cadre) $cadre_x1 $cadre_y1 $cadre_x2 $cadre_y2
+        Message consolog $caption(methking,fin_etape_2)
 
         # Etape 3: Chargement de la première image de la série.
-        Message consolog $caption(king,etape_3)
-        Message status $caption(king,status_selection)
+        Message consolog $caption(methking,etape_3)
+        Message status $caption(methking,status_selection)
         append nom 1
         loadima $nom
         ::audace::autovisu $audace(visuNo)
 
         # Affichage du cadre delimitant la zone acceptable pour la selection d'etoiles
         DessineRectangle [list $cadre_x1 $cadre_y1 $cadre_x2 $cadre_y2] $color(green)
-        Message consolog $caption(king,fin_etape_3) $nom
+        Message consolog $caption(methking,fin_etape_3) $nom
     }
     #----- Fin dela procedure KingPreparation ----------------------------
 
@@ -344,21 +344,21 @@ namespace eval ::MethKing {
         if {([info exists audace(box)]) || ([info exists audace(clickxy)])} {
         # Je teste si l'étoile sélectionnee est bien dans le cadre
             set hors_cadre 0
-            if {$x1 < $panneau(meth_king,cadre_x1)} {set hors_cadre 1}
-            if {$x2 < $panneau(meth_king,cadre_x1)} {set hors_cadre 1}
-            if {$x1 > $panneau(meth_king,cadre_x2)} {set hors_cadre 1}
-            if {$x2 > $panneau(meth_king,cadre_x2)} {set hors_cadre 1}
-            if {$y1 < $panneau(meth_king,cadre_y1)} {set hors_cadre 1}
-            if {$y2 < $panneau(meth_king,cadre_y1)} {set hors_cadre 1}
-            if {$y1 > $panneau(meth_king,cadre_y2)} {set hors_cadre 1}
-            if {$y2 > $panneau(meth_king,cadre_y2)} {set hors_cadre 1}
+            if {$x1 < $panneau(methking,cadre_x1)} {set hors_cadre 1}
+            if {$x2 < $panneau(methking,cadre_x1)} {set hors_cadre 1}
+            if {$x1 > $panneau(methking,cadre_x2)} {set hors_cadre 1}
+            if {$x2 > $panneau(methking,cadre_x2)} {set hors_cadre 1}
+            if {$y1 < $panneau(methking,cadre_y1)} {set hors_cadre 1}
+            if {$y2 < $panneau(methking,cadre_y1)} {set hors_cadre 1}
+            if {$y1 > $panneau(methking,cadre_y2)} {set hors_cadre 1}
+            if {$y2 > $panneau(methking,cadre_y2)} {set hors_cadre 1}
             if {$hors_cadre == 1} {
-                tk_messageBox -message $caption(king,hors_cadre) -icon error -title $caption(king,pb)
+                tk_messageBox -message $caption(methking,hors_cadre) -icon error -title $caption(methking,pb)
             } else {
-                incr panneau(meth_king,nbboites)
-                set i $panneau(meth_king,nbboites)
-#        set panneau(meth_king,boite$i) $audace(box)
-                set panneau(meth_king,boite$i) $rect
+                incr panneau(methking,nbboites)
+                set i $panneau(methking,nbboites)
+#        set panneau(methking,boite$i) $audace(box)
+                set panneau(methking,boite$i) $rect
             # Je teste la validite de l'etoile...
                 set valide [Centroide $x1 $y1 $x2 $y2]
                 set code_erreur [lindex $valide 2]
@@ -371,14 +371,14 @@ namespace eval ::MethKing {
                     set y2 [expr round([lindex $xy 1] + 7)]
                     # Tracé du rectangle
                     DessineRectangle [list $x1 $y1 $x2 $y2] $color(yellow)
-                    Message consolog $caption(king,etoile) $i [lindex $valide 0] [lindex $valide 1]
+                    Message consolog $caption(methking,etoile) $i [lindex $valide 0] [lindex $valide 1]
                 } else {
-                    set err(-1) $caption(king,sb_insuffisant)
-                    set err(-2) $caption(king,et_non_isolee)
-                    set err(-3) $caption(king,pixel_chaud)
-                    tk_messageBox -message "$caption(king,et_non_valide)\n$err($code_erreur)" \
-                    -icon error -title caption(king,pb)
-                    incr panneau(meth_king,nbboites) -1
+                    set err(-1) $caption(methking,sb_insuffisant)
+                    set err(-2) $caption(methking,et_non_isolee)
+                    set err(-3) $caption(methking,pixel_chaud)
+                    tk_messageBox -message "$caption(methking,et_non_valide)\n$err($code_erreur)" \
+                    -icon error -title caption(methking,pb)
+                    incr panneau(methking,nbboites) -1
                 }
             }
         }
@@ -389,40 +389,40 @@ namespace eval ::MethKing {
     proc KingProcess {} {
     global audace panneau caption conf
     # Pour ameliorer la lisibilite...
-    set nom $panneau(meth_king,nom_image)
+    set nom $panneau(methking,nom_image)
     set nom_reg ${nom}reg
-    set nb_im_par_seq $panneau(meth_king,nb_im_par_seq)
+    set nb_im_par_seq $panneau(methking,nb_im_par_seq)
     set nb_images [expr $nb_im_par_seq * 2]
-    set nb_etoiles $panneau(meth_king,nbboites)
+    set nb_etoiles $panneau(methking,nbboites)
     buf$audace(bufNo) extension "$conf(extension,defaut)"
     set ext_fichier [buf$audace(bufNo) extension]
 
     if {$nb_etoiles == 0} {
-        tk_messageBox -message $caption(king,pas_selectionne) \
-            -icon error -title caption(king,pb)
+        tk_messageBox -message $caption(methking,pas_selectionne) \
+            -icon error -title caption(methking,pb)
         # Interruption du calcul !
         return
     } else {
         # J'efface les differents cadres (reperes par le tag "cadres")
         $audace(hCanvas) delete cadres
 
-        Message consolog $caption(king,et_selectionnees) $nb_etoiles
-        Message consolog $caption(king,fin_etape_4)
+        Message consolog $caption(methking,et_selectionnees) $nb_etoiles
+        Message consolog $caption(methking,fin_etape_4)
 
         # Etape 5: Epluchage de chaque image
-        Message consolog $caption(king,etape_5) $nb_images
-        Message status $caption(king,status_analyse)
+        Message consolog $caption(methking,etape_5) $nb_images
+        Message status $caption(methking,status_analyse)
         for {set image 1} {$image <= $nb_images} {incr image} {
         # Je charge l'image registree
         loadima $nom_reg$image
         ::audace::autovisu $audace(visuNo)
-        Message consolog $caption(king,image_no) $image
+        Message consolog $caption(methking,image_no) $image
 
         # Lecture dans l'entete fi..chuut du decalage de l'image...
         set dec [decalage]
         set dec_im_x [lindex $dec 0]
         set dec_im_y [lindex $dec 1]
-        Message consolog $caption(king,decalage) $dec_im_x $dec_im_y
+        Message consolog $caption(methking,decalage) $dec_im_x $dec_im_y
 
         # J'efface du disque l'image registrée, qui ne sert plus à rien.
         set a_effacer $nom_reg$image
@@ -435,11 +435,11 @@ namespace eval ::MethKing {
         # Extraction des date et heure de l'image
         set quand [DateHeureImage]
         set mesure(im_$image,date) $quand
-        Message consolog $caption(king,jj) $quand [mc_date2ymdhms $quand]
+        Message consolog $caption(methking,jj) $quand [mc_date2ymdhms $quand]
 
         # Pour chaque etoile selectionnee:
         for {set etoile 1} {$etoile <= $nb_etoiles} {incr etoile} {
-            set uneetoile $panneau(meth_king,boite$etoile)
+            set uneetoile $panneau(methking,boite$etoile)
             # J'applique le decalage de l'image sur chaque boite, pour encadrer l'etoile:
             set x1 [expr int([lindex $uneetoile 0] + $dec_im_x)]
             set y1 [expr int([lindex $uneetoile 1] + $dec_im_y)]
@@ -450,13 +450,13 @@ namespace eval ::MethKing {
             set mesure(im_$image,et$etoile,centre_x) [lindex $centre 0]
             set mesure(im_$image,et$etoile,centre_y) [lindex $centre 1]
             set mesure(im_$image,et$etoile,code_erreur) [lindex $centre 2]
-            Message consolog $caption(king,centre_etoile) $etoile [lindex $centre 0] [lindex $centre 1]
+            Message consolog $caption(methking,centre_etoile) $etoile [lindex $centre 0] [lindex $centre 1]
             if {[lindex $centre 2] != 1} {
-            Message consolog $caption(king,non_val,[lindex $centre 2])
+            Message consolog $caption(methking,non_val,[lindex $centre 2])
             }
         }
         }
-        Message consolog $caption(king,fin_etape_5)
+        Message consolog $caption(methking,fin_etape_5)
 
         # Etape 6: Pour chaque couple d'images...
         # J'initialise les variables contenant les corrections a apporter sur la monture
@@ -468,8 +468,8 @@ namespace eval ::MethKing {
         # J'initialise le nombre de couple d'images valides
         set nb_couple_valide_par_seq $nb_im_par_seq
         # Pour chaque couple d'image, donc...
-        Message consolog $caption(king,etape_6) $nb_im_par_seq
-        Message status $caption(king,status_couple)
+        Message consolog $caption(methking,etape_6) $nb_im_par_seq
+        Message status $caption(methking,status_couple)
         for {set i 1} {$i <= $nb_im_par_seq} {incr i} {
         # k est l'indice de la ieme image dans la seconde sequence
         set k [expr $i + $nb_im_par_seq]
@@ -497,23 +497,23 @@ namespace eval ::MethKing {
         if {$nb_etoiles_valides == 0} {
             # Le couple n'est pas valide: Aucune etoile n'est exploitable.
             incr nb_couple_valide_par_seq -1
-            Message consolog $caption(king,couple_aucune) $i $k
+            Message consolog $caption(methking,couple_aucune) $i $k
         } else {
             # Dans le cas ou le couple est valide.
             set mesure(im_$i,dec_x) [expr $dec_x / $nb_etoiles_valides]
             set mesure(im_$i,dec_y) [expr $dec_y / $nb_etoiles_valides]
-            Message consolog $caption(king,couple_no) $i $k \
+            Message consolog $caption(methking,couple_no) $i $k \
                 $mesure(im_$i,dec_x) $mesure(im_$i,dec_y) $nb_etoiles_valides
 
             # Je calcule le temps écoule entre les deux images
             set dt [expr $mesure(im_$k,date) - $mesure(im_$i,date)]
             # Je convertis cette duree en secondes
             set dt [expr $dt * 86400.0]
-            Message consolog $caption(king,tps_entre) $dt
+            Message consolog $caption(methking,tps_entre) $dt
 
             # Je fais le calcul de King proprement dit (correction a apporter sur la monture)
             set king [KingBase $mesure(im_$i,dec_x) $mesure(im_$i,dec_y) $dt]
-            Message consolog $caption(king,correction) [lindex $king 0] [lindex $king 1]
+            Message consolog $caption(methking,correction) [lindex $king 0] [lindex $king 1]
 
             # Je calcule le temps ecoule entre l'image k (celle en cours de traitement, et
             # appartenant a la seconde sequence) et la derniere image de la sequence.
@@ -525,7 +525,7 @@ namespace eval ::MethKing {
             set king_x [lindex $king 0]
             set king_y [lindex $king 1]
             set king_corrige [KingRattrapage $king_x $king_y $dt ]
-            Message consolog $caption(king,correction_der) [lindex $king_corrige 0] [lindex $king_corrige 1]
+            Message consolog $caption(methking,correction_der) [lindex $king_corrige 0] [lindex $king_corrige 1]
             # Je cumule ces valeurs
             set corr_king_x [expr $corr_king_x + [lindex $king_corrige 0]]
             set corr_king_y [expr $corr_king_y + [lindex $king_corrige 1]]
@@ -533,40 +533,40 @@ namespace eval ::MethKing {
             set corr2_king_y [expr $corr2_king_y + ([lindex $king_corrige 1] * [lindex $king_corrige 1])]
         }
         }
-        Message consolog $caption(king,fin_etape_6)
+        Message consolog $caption(methking,fin_etape_6)
 
-        Message consolog $caption(king,etape_7)
-        Message status $caption(king,status_calc_king)
+        Message consolog $caption(methking,etape_7)
+        Message status $caption(methking,status_calc_king)
         # Dans le cas o aucun couple n'est valide:
         if {$nb_couple_valide_par_seq == 0} {
-        tk_messageBox -message $caption(king,aucun_couple_ok) -icon error -title $caption(king,pb)
-        Message consolog $caption(king,aucun_couple)
-        set panneau(meth_king,status) 211
+        tk_messageBox -message $caption(methking,aucun_couple_ok) -icon error -title $caption(methking,pb)
+        Message consolog $caption(methking,aucun_couple)
+        set panneau(methking,status) 211
         } else {
         # Je divise maintenant par le nombre d'images, pour avoir la moyenne:
         set corr_king_x [expr +($corr_king_x / $nb_couple_valide_par_seq)]
         set corr_king_y [expr +($corr_king_y / $nb_couple_valide_par_seq)]
 
         #Et voila, j'ai mes valeurs de correction a apporter sur la monture:
-        Message consolog $caption(king,corr_king) $corr_king_x $corr_king_y
+        Message consolog $caption(methking,corr_king) $corr_king_x $corr_king_y
 
         set corr2_king_x [expr +($corr2_king_x / $nb_couple_valide_par_seq)]
         set corr2_king_y [expr +($corr2_king_y / $nb_couple_valide_par_seq)]
         set sigma2_dx [expr $corr2_king_x - (($corr_king_x) * ($corr_king_x))]
         set sigma2_dy [expr $corr2_king_y - (($corr_king_y) * ($corr_king_y))]
         if {($sigma2_dx >= 0) && ($sigma2_dy >= 0)} {
-            set panneau(meth_king,sigma_dx) [expr sqrt($sigma2_dx)]
-            set panneau(meth_king,sigma_dy) [expr sqrt($sigma2_dy)]
-            Message consolog $caption(king,ecart_type) $panneau(meth_king,sigma_dx) $panneau(meth_king,sigma_dy)
+            set panneau(methking,sigma_dx) [expr sqrt($sigma2_dx)]
+            set panneau(methking,sigma_dy) [expr sqrt($sigma2_dy)]
+            Message consolog $caption(methking,ecart_type) $panneau(methking,sigma_dx) $panneau(methking,sigma_dy)
         }
 
         # Je stocke ces valeurs dans la variable globale "panneau".
-        set panneau(meth_king,monture_dx) $corr_king_x
-        set panneau(meth_king,monture_dy) $corr_king_y
-        Message consolog $caption(king,fin_etape_7)
+        set panneau(methking,monture_dx) $corr_king_x
+        set panneau(methking,monture_dy) $corr_king_y
+        Message consolog $caption(methking,fin_etape_7)
 
         # Je valide le tout, en positionnant la variable status à 200 (= calcul termine OK)
-        set panneau(meth_king,status) 200
+        set panneau(methking,status) 200
         }
     }
     }
@@ -860,7 +860,7 @@ namespace eval ::MethKing {
 
     # Lance la procedure FichierTest si le parametre Test est valide dans la config active
     #   (Test est un parametre du fichier methking.ini)
-    if {$king_config(test,$panneau(meth_king,config_active)) != 0} {
+    if {$king_config(test,$panneau(methking,config_active)) != 0} {
         if {[file exists [file join $audace(rep_plugin) tool methking fichiertest.tcl]] == 1} {
            source [file join $audace(rep_audela) tool methking fichiertest.tcl]
         } else {
@@ -869,27 +869,27 @@ namespace eval ::MethKing {
         }
     }
 
-    set nom $panneau(meth_king,nom_image)
+    set nom $panneau(methking,nom_image)
     set nom_reg ${nom}reg
-    set nb_im_par_seq $panneau(meth_king,nb_im_par_seq)
+    set nb_im_par_seq $panneau(methking,nb_im_par_seq)
     set nb_images [expr $nb_im_par_seq * 2]
     buf$audace(bufNo) extension "$conf(extension,defaut)"
     set ext_fichier [buf$audace(bufNo) extension]
 
     # Etape 1: Registration de toutes les images.
-    Message consolog "%s\n" $caption(king,recalage)
-    Message status $caption(king,recalage)
+    Message consolog "%s\n" $caption(methking,recalage)
+    Message status $caption(methking,recalage)
         register [file tail $nom] [file tail $nom_reg] $nb_images
 
-    Message consolog "%s\n" $caption(king,status_analyse)
-    Message status $caption(king,status_analyse)
+    Message consolog "%s\n" $caption(methking,status_analyse)
+    Message status $caption(methking,status_analyse)
     for {set image 1} {$image <= $nb_images} {incr image} {
-        Message consolog "\t%s %s\n" $caption(king,image) $image
+        Message consolog "\t%s %s\n" $caption(methking,image) $image
         buf$audace(bufNo) load "$nom$image"
 
         # Extraction des date et heure de l'image
         set mesure(im_$image,date) [DateHeureImage]
-        Message consolog "\t\t%s %s (%s)\n" $caption(king,date) [mc_date2ymdhms $mesure(im_$image,date)] $mesure(im_$image,date)
+        Message consolog "\t\t%s %s (%s)\n" $caption(methking,date) [mc_date2ymdhms $mesure(im_$image,date)] $mesure(im_$image,date)
     }
 
     set corr_king_x 0.0
@@ -898,13 +898,13 @@ namespace eval ::MethKing {
     set corr2_king_y 0.0
 
     # Pour chaque couple d'image, donc...
-    Message consolog $caption(king,status_couple)
-    Message status $caption(king,status_couple)
+    Message consolog $caption(methking,status_couple)
+    Message status $caption(methking,status_couple)
     for {set i 1} {$i <= $nb_im_par_seq} {incr i} {
         # k est l'indice de la ieme image dans la seconde sequence
         set k [expr $i + $nb_im_par_seq]
 
-        Message consolog "\t%s %d / %d\n" $caption(king,couple) $i $k
+        Message consolog "\t%s %d / %d\n" $caption(methking,couple) $i $k
 
         # Mesure du décalage
         set dec_x 0.0
@@ -928,7 +928,7 @@ namespace eval ::MethKing {
 
         # Calcul de King proprement dit (correction a apporter sur la monture)
         set king [KingBase $decal_x $decal_y $dt]
-        Message consolog "\t\t%s x=%5.2f / y=%5.2f\n" $caption(king,correction_brute) [lindex $king 0] [lindex $king 1]
+        Message consolog "\t\t%s x=%5.2f / y=%5.2f\n" $caption(methking,correction_brute) [lindex $king 0] [lindex $king 1]
 
         # Calcul du temps ecoule entre l'image k (celle en cours de traitement, et
         # appartenant a la seconde sequence) et la derniere image de la sequence.
@@ -939,7 +939,7 @@ namespace eval ::MethKing {
         set king_x [lindex $king 0]
         set king_y [lindex $king 1]
         set king_corrige [KingRattrapage $king_x $king_y $dt ]
-        Message consolog "\t\t%s x=%5.2f / y=%5.2f\n" $caption(king,corr_compensee) [lindex $king_corrige 0] [lindex $king_corrige 1]
+        Message consolog "\t\t%s x=%5.2f / y=%5.2f\n" $caption(methking,corr_compensee) [lindex $king_corrige 0] [lindex $king_corrige 1]
         # Cumul des valeurs
         set corr_king_x [expr $corr_king_x + [lindex $king_corrige 0]]
         set corr_king_y [expr $corr_king_y + [lindex $king_corrige 1]]
@@ -955,13 +955,13 @@ namespace eval ::MethKing {
         file delete $a_effacer
     }
 
-    Message consolog "%s \n" $caption(king,status_calc_king)
-    Message status $caption(king,status_calc_king)
+    Message consolog "%s \n" $caption(methking,status_calc_king)
+    Message status $caption(methking,status_calc_king)
 
     set corr_king_x [expr +($corr_king_x / $nb_im_par_seq)]
     set corr_king_y [expr +($corr_king_y / $nb_im_par_seq)]
 
-    Message consolog "\t%s dx=%5.2f /  dy=%5.2f\n" $caption(king,corr_king_2) $corr_king_x $corr_king_y
+    Message consolog "\t%s dx=%5.2f /  dy=%5.2f\n" $caption(methking,corr_king_2) $corr_king_x $corr_king_y
 
     set corr2_king_x [expr +($corr2_king_x / $nb_im_par_seq)]
     set corr2_king_y [expr +($corr2_king_y / $nb_im_par_seq)]
@@ -969,21 +969,21 @@ namespace eval ::MethKing {
     set sigma2_dx [expr $corr2_king_x - (($corr_king_x) * ($corr_king_x))]
     set sigma2_dy [expr $corr2_king_y - (($corr_king_y) * ($corr_king_y))]
     if {($sigma2_dx >= 0) && ($sigma2_dy >= 0)} {
-        set panneau(meth_king,sigma_dx) [expr sqrt($sigma2_dx)]
-        set panneau(meth_king,sigma_dy) [expr sqrt($sigma2_dy)]
-        Message consolog "\t%s       sx = %5.2f /  sy = %5.2f\n" $caption(king,sigma_king) $panneau(meth_king,sigma_dx) $panneau(meth_king,sigma_dy)
+        set panneau(methking,sigma_dx) [expr sqrt($sigma2_dx)]
+        set panneau(methking,sigma_dy) [expr sqrt($sigma2_dy)]
+        Message consolog "\t%s       sx = %5.2f /  sy = %5.2f\n" $caption(methking,sigma_king) $panneau(methking,sigma_dx) $panneau(methking,sigma_dy)
     }
     # Stockage de ces valeurs dans la variable globale "panneau".
-    set panneau(meth_king,monture_dx) $corr_king_x
-    set panneau(meth_king,monture_dy) $corr_king_y
-    Message consolog "%s\n\n" $caption(king,fin_calcul)
+    set panneau(methking,monture_dx) $corr_king_x
+    set panneau(methking,monture_dy) $corr_king_y
+    Message consolog "%s\n\n" $caption(methking,fin_calcul)
 
     #   Validation
-    set panneau(meth_king,status) 200
+    set panneau(methking,status) 200
     }
     #----- Procedure KingAuto ----------------------------------------
 
-# --------------Partie MethKing.tcl
+# --------------Partie methking.tcl
     #--------------------------------------------------------------------------#
     proc DemarrageKing {This} {
         variable fichier_config
@@ -1002,17 +1002,17 @@ namespace eval ::MethKing {
 
         # Ouverture
         if [catch {open $fichier_log w} log_id] {
-            Message console "%s \n" $caption(king,erreur_fichier_log)
+            Message console "%s \n" $caption(methking,erreur_fichier_log)
             stopTool
             return
         }
 
         # Entête du fichier
-        Message consolog "%s\n" $caption(king,titre_console_1)
-        Message consolog "%s %s\n" $caption(king,titre_console_2) $numero_version
-        Message consolog "%s\n" $caption(king,copyright)
+        Message consolog "%s\n" $caption(methking,titre_console_1)
+        Message consolog "%s %s\n" $caption(methking,titre_console_2) $numero_version
+        Message consolog "%s\n" $caption(methking,copyright)
         set temps [clock format [clock seconds] -format %Y%m%d]
-        Message log "%s : %s\n" $caption(king,date) $temps
+        Message log "%s : %s\n" $caption(methking,date) $temps
 
         # Prise en compte du mode de compression des fichiers
         if {$conf(fichier,compres)==1} {
@@ -1022,11 +1022,11 @@ namespace eval ::MethKing {
         }
 
         # Création et initialisation de quelques variables
-        set panneau(meth_king,status) 0
+        set panneau(methking,status) 0
 
         for {set i 0} {$i < 10} {incr i} {
             for {set j 0} {$j < [llength $liste_motcle]} {incr j} {
-                set king_config([lindex $::MethKing::liste_motcle $j],$i) [lindex $::MethKing::liste_valeur_defaut $j]
+                set king_config([lindex $::methking::liste_motcle $j],$i) [lindex $::methking::liste_valeur_defaut $j]
             }
         }
         set king_config(nombre_config) 1
@@ -1034,18 +1034,18 @@ namespace eval ::MethKing {
         set fichier_config [file join $audace(rep_plugin) tool methking methking.ini]
 
         # Lecture du fichier de configuration
-        Message log "%s\n" $caption(king,lecture_config)
+        Message log "%s\n" $caption(methking,lecture_config)
         GetConfig $fichier_config king_config
-        Message log "%s\n" $caption(king,fin_lecture_config)
+        Message log "%s\n" $caption(methking,fin_lecture_config)
         Message log "---------------------------------------------\n"
-        set panneau(meth_king,config_active) $panneau(meth_king,config_defaut)
-        set panneau(meth_king,nom_image) [file join $audace(rep_images) $panneau(meth_king,nom_image_temp)]
+        set panneau(methking,config_active) $panneau(methking,config_defaut)
+        set panneau(methking,nom_image) [file join $audace(rep_images) $panneau(methking,nom_image_temp)]
 
         # Création et initialisation de la fenêtre des paramètres
         CreeFenetreParametres
         ModifieFenetreParametres
-        for {set i 0} {$i < $panneau(meth_king,nombre_config)} {incr i} {
-            $audace(base).methking.flisteconfig.configmb.menu insert $i radiobutton -label $king_config(config,$i) -variable panneau(meth_king,config_active) -value $i -command ::MethKing::ModifieFenetreParametres
+        for {set i 0} {$i < $panneau(methking,nombre_config)} {incr i} {
+            $audace(base).methking.flisteconfig.configmb.menu insert $i radiobutton -label $king_config(config,$i) -variable panneau(methking,config_active) -value $i -command ::methking::ModifieFenetreParametres
         }
     }
 
@@ -1055,10 +1055,10 @@ namespace eval ::MethKing {
         variable log_id
 
         # Effacement des entrées du menu Paramètre
-        $audace(base).methking.flisteconfig.configmb.menu delete 0 [expr $panneau(meth_king,nombre_config) - 1]
+        $audace(base).methking.flisteconfig.configmb.menu delete 0 [expr $panneau(methking,nombre_config) - 1]
 
         # Fermeture du fichier de log
-        Message log "%s\n" $caption(king,fin_session)
+        Message log "%s\n" $caption(methking,fin_session)
         close $log_id
 
         # Fermeture de la fenetre des parametres
@@ -1069,7 +1069,12 @@ namespace eval ::MethKing {
     proc getPluginTitle { } {
        global caption
 
-       return "$caption(king,titre)"
+       return "$caption(methking,titre)"
+    }
+
+    #------------------------------------------------------------
+    proc getPluginHelp { } {
+       return "methking.htm"
     }
 
     #--------------------------------------------------------------------------#
@@ -1111,12 +1116,12 @@ namespace eval ::MethKing {
 
         set This $this
 
-        set panneau(meth_king,status) ""
-        set panneau(meth_king,infos) ""
-        set panneau(meth_king,selection_cercle) -1
-        set panneau(meth_king,nom_image_temp) "king_"
+        set panneau(methking,status) ""
+        set panneau(methking,infos) ""
+        set panneau(methking,selection_cercle) -1
+        set panneau(methking,nom_image_temp) "king_"
 
-        MethKingBuildIF $This tableau
+        methkingBuildIF $This tableau
     }
 
     #--------------------------------------------------------------------------#
@@ -1146,15 +1151,15 @@ namespace eval ::MethKing {
     variable camera
 
     # Initialisations
-    set image_noire [file join [file dirname $panneau(meth_king,nom_image)] king_noir_]
+    set image_noire [file join [file dirname $panneau(methking,nom_image)] king_noir_]
 
     # Definitions pour alléger l' écriture du source
-    set nom $panneau(meth_king,nom_image)
-    set config_active $panneau(meth_king,config_active)
+    set nom $panneau(methking,nom_image)
+    set config_active $panneau(methking,config_active)
 
     if {[::cam::list]!=""} {
         # Mise en oeuvre du bouton d'arrêt
-        $This.stop.b configure -command {::MethKing::ArretAcquisition} -state normal
+        $This.stop.b configure -command {::methking::ArretAcquisition} -state normal
         # Blocage de tous les boutons
         EtatBoutons disabled
 
@@ -1164,25 +1169,25 @@ namespace eval ::MethKing {
 #--- Fin modif Robert
 
         #1ère séquence
-        Message consolog "%s\n" $caption(king,sequence_1)
-        set panneau(meth_king,demande_arret_acq) 0
+        Message consolog "%s\n" $caption(methking,sequence_1)
+        set panneau(methking,demande_arret_acq) 0
         set t1 [clock second]
         cam$audace(camNo) buf 1
         cam$audace(camNo) shutter synchro
         for {set image 1} {$image <= $king_config(poseparseq,$config_active)} {incr image} {
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
+        if {$panneau(methking,demande_arret_acq) == 0} {
             # Acquisition
-            Message status "%s %d" $caption(king,acq_image) $image
-            Message consolog "\t%s %d\n" $caption(king,acq_image_bis) $image
-            set panneau(meth_king,status_acq) 1
-            Message infos "%s" $caption(king,vidange)
+            Message status "%s %d" $caption(methking,acq_image) $image
+            Message consolog "\t%s %d\n" $caption(methking,acq_image_bis) $image
+            set panneau(methking,status_acq) 1
+            Message infos "%s" $caption(methking,vidange)
             cam$audace(camNo) exptime $king_config(tempspose,$config_active)
             cam$audace(camNo) bin [list $king_config(binning,$config_active) $king_config(binning,$config_active)]
             cam$audace(camNo) acq
-            ::MethKing::AfficheTimerAcq
+            ::methking::AfficheTimerAcq
             vwait status_cam$audace(camNo)
             Message infos ""
-            set panneau(meth_king,status_acq) 0
+            set panneau(methking,status_acq) 0
 #--- Debut modif Robert
            ### if {$conf($camera,mirx)==1} {
            ### buf$audace(bufNo) mirrorx
@@ -1192,10 +1197,10 @@ namespace eval ::MethKing {
            ### }
             ::audace::autovisu $audace(visuNo)
 #--- Fin modif Robert
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
+            if {$panneau(methking,demande_arret_acq) == 0} {
             # --- sauvegarde de l'image sur le disque
-            Message status "%s %s" $caption(king,sauv_image) [file tail ${nom}${image}]
-            Message consolog "\t%s %s\n" $caption(king,sauv_image_bis) ${nom}${image}
+            Message status "%s %s" $caption(methking,sauv_image) [file tail ${nom}${image}]
+            Message consolog "\t%s %s\n" $caption(methking,sauv_image_bis) ${nom}${image}
             buf$audace(bufNo) save ${nom}${image}
             }
         }
@@ -1203,25 +1208,25 @@ namespace eval ::MethKing {
 
         #séquence des noirs
         if {$king_config(noir,$config_active) != 0} {
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
-            Message consolog "%s\n" $caption(king,sequence_noirs)
+        if {$panneau(methking,demande_arret_acq) == 0} {
+            Message consolog "%s\n" $caption(methking,sequence_noirs)
             cam$audace(camNo) shutter closed
         }
         for {set image 1} {$image <= 3} {incr image} {
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
+            if {$panneau(methking,demande_arret_acq) == 0} {
             # Acquisition
-            Message status "%s %d" $caption(king,acq_noir) $image
-            Message consolog "\t%s %d\n" $caption(king,acq_noir_bis) $image
+            Message status "%s %d" $caption(methking,acq_noir) $image
+            Message consolog "\t%s %d\n" $caption(methking,acq_noir_bis) $image
 
-            set panneau(meth_king,status_acq) 1
-            Message infos "%s" $caption(king,vidange)
+            set panneau(methking,status_acq) 1
+            Message infos "%s" $caption(methking,vidange)
             cam$audace(camNo) exptime $king_config(tempspose,$config_active)
             cam$audace(camNo) bin [list $king_config(binning,$config_active) $king_config(binning,$config_active)]
             cam$audace(camNo) acq
-            ::MethKing::AfficheTimerAcq
+            ::methking::AfficheTimerAcq
             vwait status_cam$audace(camNo)
             Message infos ""
-            set panneau(meth_king,status_acq) 0
+            set panneau(methking,status_acq) 0
 
 #--- Debut modif Robert
            ### if {$conf($camera,mirx)==1} {
@@ -1232,49 +1237,49 @@ namespace eval ::MethKing {
            ### }
             ::audace::autovisu $audace(visuNo)
 #--- Fin modif Robert
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
+            if {$panneau(methking,demande_arret_acq) == 0} {
                 # --- sauvegarde de l'image sur le disque
-                Message status "%s %s" $caption(king,sauv_noir) ${image_noire}${image}
-                Message consolog "\t%s %s\n" $caption(king,sauv_noir_bis) ${image_noire}${image}
+                Message status "%s %s" $caption(methking,sauv_noir) ${image_noire}${image}
+                Message consolog "\t%s %s\n" $caption(methking,sauv_noir_bis) ${image_noire}${image}
                 buf$audace(bufNo) save "${image_noire}${image}"
             }
             }
         }
         }
 
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
+        if {$panneau(methking,demande_arret_acq) == 0} {
         # Attente entre les poses
         set t2 [clock second]
         set t3 [expr ($king_config(interpose,$config_active) - ($t2 - $t1) - 1)]
         if {$t3 > 0} {
-            Message status "%s \n %d s" $caption(king,attente) $t3
-            Message consolog "%s %d s\n" $caption(king,attente) $t3
-            set panneau(meth_king,timer) $t3
+            Message status "%s \n %d s" $caption(methking,attente) $t3
+            Message consolog "%s %d s\n" $caption(methking,attente) $t3
+            set panneau(methking,timer) $t3
             AfficheTimer
-            vwait panneau(meth_king,timer_fin)
+            vwait panneau(methking,timer_fin)
         }
         }
 
         # 2èm séquence
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
-        Message consolog "%s\n" $caption(king,sequence_2)
+        if {$panneau(methking,demande_arret_acq) == 0} {
+        Message consolog "%s\n" $caption(methking,sequence_2)
         cam$audace(camNo) shutter synchro
         }
         for {set image [expr $king_config(poseparseq,$config_active) + 1]} {$image <= [expr 2*$king_config(poseparseq,$config_active)]} {incr image} {
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
+        if {$panneau(methking,demande_arret_acq) == 0} {
             # Acquisition
-            Message status "%s %d" $caption(king,acq_image) $image
-            Message consolog "\t%s %d\n" $caption(king,acq_image_bis) $image
+            Message status "%s %d" $caption(methking,acq_image) $image
+            Message consolog "\t%s %d\n" $caption(methking,acq_image_bis) $image
 
-            set panneau(meth_king,status_acq) 1
-            Message infos "%s" $caption(king,vidange)
+            set panneau(methking,status_acq) 1
+            Message infos "%s" $caption(methking,vidange)
             cam$audace(camNo) exptime $king_config(tempspose,$config_active)
             cam$audace(camNo) bin [list $king_config(binning,$config_active) $king_config(binning,$config_active)]
             cam$audace(camNo) acq
-            ::MethKing::AfficheTimerAcq
+            ::methking::AfficheTimerAcq
             vwait status_cam$audace(camNo)
             Message infos ""
-            set panneau(meth_king,status_acq) 0
+            set panneau(methking,status_acq) 0
 
 #--- Debut modif Robert
            ### if {$conf($camera,mirx)==1} {
@@ -1287,19 +1292,19 @@ namespace eval ::MethKing {
 #--- Fin modif Robert
 
             # --- sauvegarde de l'image sur le disque
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
-            Message status "%s %s" $caption(king,sauv_image) [file tail ${nom}${image}]
-            Message consolog "\t%s %s\n" $caption(king,sauv_image_bis) ${nom}${image}
+            if {$panneau(methking,demande_arret_acq) == 0} {
+            Message status "%s %s" $caption(methking,sauv_image) [file tail ${nom}${image}]
+            Message consolog "\t%s %s\n" $caption(methking,sauv_image_bis) ${nom}${image}
             buf$audace(bufNo) save "${nom}${image}"
             }
         }
         }
 
         if {$king_config(noir,$config_active) != 0} {
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
+        if {$panneau(methking,demande_arret_acq) == 0} {
             # Calcul du noir médian
-            Message status "%s" $caption(king,noir_median)
-            Message consolog "%s\n" $caption(king,noir_median_bis)
+            Message status "%s" $caption(methking,noir_median)
+            Message consolog "%s\n" $caption(methking,noir_median_bis)
             smedian [file tail $image_noire] [file tail $image_noire] 3
 
             # Destruction des fichiers de noir
@@ -1314,9 +1319,9 @@ namespace eval ::MethKing {
             }
 
             # Soustraction du noir à toutes les images acquises
-            Message status "%s" $caption(king,soust_noir)
+            Message status "%s" $caption(methking,soust_noir)
             for {set image 1} {$image <= [expr 2*$king_config(poseparseq,$config_active)]} {incr image} {
-            Message consolog "%s %d\n" $caption(king,soust_noir_bis) $image
+            Message consolog "%s %d\n" $caption(methking,soust_noir_bis) $image
             buf$audace(bufNo) load "${nom}${image}"
             buf$audace(bufNo) sub "$image_noire" 0
             buf$audace(bufNo) save "${nom}${image}"
@@ -1331,9 +1336,9 @@ namespace eval ::MethKing {
         }
         }
 
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
-        Message status "%s" $caption(king,fin_acquisition)
-        Message consolog "%s\n" $caption(king,fin_acquisition)
+        if {$panneau(methking,demande_arret_acq) == 0} {
+        Message status "%s" $caption(methking,fin_acquisition)
+        Message consolog "%s\n" $caption(methking,fin_acquisition)
         }
 
         # Bip pour réveiller l'observateur
@@ -1345,9 +1350,9 @@ namespace eval ::MethKing {
         # Déblocage de tous les boutons
         EtatBoutons normal
     } else {
-        Message status "%s" $caption(king,pas_camera)
-        Message erreur "%s\n" $caption(king,pas_camera)
-        BoiteMessage $caption(king,erreur) $caption(king,pas_camera)
+        Message status "%s" $caption(methking,pas_camera)
+        Message erreur "%s\n" $caption(methking,pas_camera)
+        BoiteMessage $caption(methking,erreur) $caption(methking,pas_camera)
     }
     }
 
@@ -1359,16 +1364,16 @@ namespace eval ::MethKing {
         # Bloque le bouton pour éviter de relancer ce binding
         $This.stop.b configure -state disabled
 
-        Message status "%s" $caption(king,arret_acquisition)
-        Message consolog "%s\n" $caption(king,arret_acquisition)
-        set panneau(meth_king,demande_arret_acq) 1
-        if {$panneau(meth_king,status_acq) == 1} {
-            Message infos "%s" $caption(king,lecture_ccd)
+        Message status "%s" $caption(methking,arret_acquisition)
+        Message consolog "%s\n" $caption(methking,arret_acquisition)
+        set panneau(methking,demande_arret_acq) 1
+        if {$panneau(methking,status_acq) == 1} {
+            Message infos "%s" $caption(methking,lecture_ccd)
             vwait status_cam$audace(camNo)
         }
         Message infos ""
-        set panneau(meth_king,timer_fin) -1
-        set panneau(meth_king,timer) 0
+        set panneau(methking,timer_fin) -1
+        set panneau(methking,timer) 0
 
         # Débloque le bouton
         $This.stop.b configure -state normal
@@ -1383,11 +1388,11 @@ namespace eval ::MethKing {
 
     set t "[cam$audace(camNo) timer -1]"
     if {$t>1} {
-        Message infos "%s\n%d / %d" $caption(king,integration) $t [expr int([cam$audace(camNo) exptime])]
-        after 1000 ::MethKing::AfficheTimerAcq
+        Message infos "%s\n%d / %d" $caption(methking,integration) $t [expr int([cam$audace(camNo) exptime])]
+        after 1000 ::methking::AfficheTimerAcq
     } else {
-        if {$panneau(meth_king,demande_arret_acq) == 0} {
-        Message infos "%s" $caption(king,lecture_ccd)
+        if {$panneau(methking,demande_arret_acq) == 0} {
+        Message infos "%s" $caption(methking,lecture_ccd)
         }
     }
     }
@@ -1402,9 +1407,9 @@ namespace eval ::MethKing {
        EtatBoutons disabled
 
        # Simplification des écritures
-       set config_active $panneau(meth_king,config_active)
-       set panneau(meth_king,nb_im_par_seq) $king_config(poseparseq,$config_active)
-       set nom $panneau(meth_king,nom_image)
+       set config_active $panneau(methking,config_active)
+       set panneau(methking,nb_im_par_seq) $king_config(poseparseq,$config_active)
+       set nom $panneau(methking,nom_image)
 
        # Vérification de la présence des fichiers
        buf$audace(bufNo) extension "$conf(extension,defaut)"
@@ -1416,52 +1421,52 @@ namespace eval ::MethKing {
           }
 
           if {(![file exists $nom_fichier])} {
-             set message $caption(king,fichier)
-             append message " " $nom_fichier " " $caption(king,non_existence)
+             set message $caption(methking,fichier)
+             append message " " $nom_fichier " " $caption(methking,non_existence)
              Message erreur "%s\n" $message
-             BoiteMessage $caption(king,erreur) $message
+             BoiteMessage $caption(methking,erreur) $message
              EtatBoutons normal
              return
           }
        }
 
       # Sélection du mode de calcul
-      set mode_calcul [tk_dialog .calcul $caption(king,mode_calcul_1) $caption(king,mode_calcul_2) {} 0 $caption(king,bouton_auto) $caption(king,bouton_manuel)]
+      set mode_calcul [tk_dialog .calcul $caption(methking,mode_calcul_1) $caption(methking,mode_calcul_2) {} 0 $caption(methking,bouton_auto) $caption(methking,bouton_manuel)]
       Message infos ""
       if {$mode_calcul == 1} {
-         Message consolog "\n\n%s\n" $caption(king,king_manuel)
+         Message consolog "\n\n%s\n" $caption(methking,king_manuel)
          # Procédure manuelle
          KingPreparation
 
          # Sélection manuelle des etoiles.
-         Message consolog "%s\n" $caption(king,selection_etoile)
+         Message consolog "%s\n" $caption(methking,selection_etoile)
          CreeFenetreSelection
 
          # Attente de la fin des calculs
-         vwait panneau(meth_king,status)
+         vwait panneau(methking,status)
          destroy $audace(base).selectetoile
       } else {
-         Message consolog "\n\n%s\n" $caption(king,king_auto)
+         Message consolog "\n\n%s\n" $caption(methking,king_auto)
          KingAuto
       }
 
-      if {$panneau(meth_king,status) == 200} {
+      if {$panneau(methking,status) == 200} {
          if {[expr $king_config(focale,$config_active) * $king_config(pixel_x,$config_active)] != 0} {
-            set ecart_pole [CalculeEcartPole $panneau(meth_king,monture_dx) $panneau(meth_king,monture_dy) $king_config(pixel_x,$config_active) $king_config(focale,$config_active) $king_config(binning,$config_active)]
-            Message consolog "%s: %3.1f '\n" $caption(king,ecart_pole) $ecart_pole
+            set ecart_pole [CalculeEcartPole $panneau(methking,monture_dx) $panneau(methking,monture_dy) $king_config(pixel_x,$config_active) $king_config(focale,$config_active) $king_config(binning,$config_active)]
+            Message consolog "%s: %3.1f '\n" $caption(methking,ecart_pole) $ecart_pole
          } else {
             set ecart_pole -1
          }
 
          # Isolation de la partie entière de Dx et Dy
-         set panneau(meth_king,monture_dx) [expr round($panneau(meth_king,monture_dx))]
-         set panneau(meth_king,monture_dy) [expr round($panneau(meth_king,monture_dy))]
+         set panneau(methking,monture_dx) [expr round($panneau(methking,monture_dx))]
+         set panneau(methking,monture_dy) [expr round($panneau(methking,monture_dy))]
 
          # Affichage du DX et DY
-         set resultat $caption(king,resultat_dx)
-         append resultat ": " $panneau(meth_king,monture_dx) "\n" $caption(king,resultat_dy) ": " $panneau(meth_king,monture_dy)
+         set resultat $caption(methking,resultat_dx)
+         append resultat ": " $panneau(methking,monture_dx) "\n" $caption(methking,resultat_dy) ": " $panneau(methking,monture_dy)
          Message status $resultat
-         set resultat $caption(king,ecart_pole_bis)
+         set resultat $caption(methking,ecart_pole_bis)
          if {$ecart_pole >= 0} {
             append resultat " " $ecart_pole "'"
             Message infos $resultat
@@ -1469,14 +1474,14 @@ namespace eval ::MethKing {
 
          #Les réglages se feront en binning 2x2, il faut donc diviser dx et dy par 2 si les images de calcul ont été faites en binning 1x1. De plus, le temps de pose doit être divisé par 4
          if {$king_config(binning,$config_active) == 1} {
-            set panneau(meth_king,monture_dx) [expr $panneau(meth_king,monture_dx) / 2]
-            set panneau(meth_king,monture_dy) [expr $panneau(meth_king,monture_dy) / 2]
-            set panneau(meth_king,monture_dx) [expr int($panneau(meth_king,monture_dx))]
-            set panneau(meth_king,monture_dy) [expr int($panneau(meth_king,monture_dy))]
+            set panneau(methking,monture_dx) [expr $panneau(methking,monture_dx) / 2]
+            set panneau(methking,monture_dy) [expr $panneau(methking,monture_dy) / 2]
+            set panneau(methking,monture_dx) [expr int($panneau(methking,monture_dx))]
+            set panneau(methking,monture_dy) [expr int($panneau(methking,monture_dy))]
          }
 
          # Récupération de la date et de l'heure de la dernière image valide
-         set panneau(meth_king,dateheure) [DateHeureImage]
+         set panneau(methking,dateheure) [DateHeureImage]
       }
 
       # Déblocage de tous les boutons
@@ -1490,7 +1495,7 @@ namespace eval ::MethKing {
         variable This
 
         # Définitions pour alléger l' écriture du source
-        set config_active $panneau(meth_king,config_active)
+        set config_active $panneau(methking,config_active)
 
         # Les réglages se feront en binning 2x2, il faut donc diviser le temps de pose par 4 si les images de calcul ont été faites en binning 1x1.
         if {$king_config(binning,$config_active) == 1} {
@@ -1499,13 +1504,13 @@ namespace eval ::MethKing {
             set temps_pose_reglage $king_config(tempspose,$config_active)
         }
 
-        if {![info exists panneau(meth_king,monture_dx)]} {
-            Message erreur "%s\n" $caption(king,calcul_pas_fait)
-            set choix [tk_messageBox -icon error -title $caption(king,erreur) -message "$caption(king,calcul_pas_fait)\n$caption(king,prop_valeur)" -type yesno]
+        if {![info exists panneau(methking,monture_dx)]} {
+            Message erreur "%s\n" $caption(methking,calcul_pas_fait)
+            set choix [tk_messageBox -icon error -title $caption(methking,erreur) -message "$caption(methking,calcul_pas_fait)\n$caption(methking,prop_valeur)" -type yesno]
             update idletasks
             if {$choix == "yes"} {
                 EntreeDxDy
-                set panneau(meth_king,dateheure) [mc_date2jd now]
+                set panneau(methking,dateheure) [mc_date2jd now]
                 tkwait window $audace(base).dxdy
             } else {return}
         }
@@ -1530,55 +1535,55 @@ namespace eval ::MethKing {
             visu$numero_visu_2 disp
 
             # Mise en mémoire de ces infos (pour que ArretReglages puisse y accéder)
-            set panneau(meth_king,numero_buffer_1) $numero_buffer_1
-            set panneau(meth_king,numero_visu_1) $numero_visu_1
-            set panneau(meth_king,numero_buffer_2) $numero_buffer_2
-            set panneau(meth_king,numero_visu_2) $numero_visu_2
+            set panneau(methking,numero_buffer_1) $numero_buffer_1
+            set panneau(methking,numero_visu_1) $numero_visu_1
+            set panneau(methking,numero_buffer_2) $numero_buffer_2
+            set panneau(methking,numero_visu_2) $numero_visu_2
 
             # Mise en oeuvre du bouton d'arrêt
-            $This.stop.b configure -command {::MethKing::ArretReglages}  -state normal
+            $This.stop.b configure -command {::methking::ArretReglages}  -state normal
             # Blocage de tous les boutons
             EtatBoutons disabled
 
-            Message status $caption(king,acq_im_ref)
-            Message consolog "%s\n" $caption(king,acq_im_ref_bis)
-            set panneau(meth_king,demande_arret_acq) 0
-            set panneau(meth_king,attente_cercle) 0
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
+            Message status $caption(methking,acq_im_ref)
+            Message consolog "%s\n" $caption(methking,acq_im_ref_bis)
+            set panneau(methking,demande_arret_acq) 0
+            set panneau(methking,attente_cercle) 0
+            if {$panneau(methking,demande_arret_acq) == 0} {
                 CreePremiereFenetreReglages $numero_buffer_1 $numero_visu_1 2
             }
 
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
-                set panneau(meth_king,status_regl) 1
+            if {$panneau(methking,demande_arret_acq) == 0} {
+                set panneau(methking,status_regl) 1
 
-                Message infos $caption(king,vidange)
+                Message infos $caption(methking,vidange)
                 cam$audace(camNo) buf $numero_buffer_1
                 cam$audace(camNo) exptime $temps_pose_reglage
                 cam$audace(camNo) bin {2 2}
                 cam$audace(camNo) acq
-                ::MethKing::AfficheTimerAcq
+                ::methking::AfficheTimerAcq
                 vwait status_cam$audace(camNo)
                 Message infos ""
-                set panneau(meth_king,status_regl) 0
+                set panneau(methking,status_regl) 0
             }
 
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
-                Message consolog "%s\n" $caption(king,calcul_correction)
+            if {$panneau(methking,demande_arret_acq) == 0} {
+                Message consolog "%s\n" $caption(methking,calcul_correction)
                 set date [buf$numero_buffer_1 getkwd DATE-OBS]
                 set date [lindex $date 1]
                 set t2 [mc_date2jd $date]
-                set dt [expr [expr $t2 - $panneau(meth_king,dateheure)] * 86400.0]
-                set ultime_correction [KingRattrapage $panneau(meth_king,monture_dx) $panneau(meth_king,monture_dy) $dt]
-                set panneau(meth_king,monture_dx) [lindex $ultime_correction 0]
-                set panneau(meth_king,monture_dy) [lindex $ultime_correction 1]
-                set panneau(meth_king,monture_dx) [expr int($panneau(meth_king,monture_dx))]
-                set panneau(meth_king,monture_dy) [expr int($panneau(meth_king,monture_dy))]
-                Message consolog "%s %4.2f\n" $caption(king,nouveau_dx) $panneau(meth_king,monture_dx)
-                Message consolog "%s %4.2f\n" $caption(king,nouveau_dy) $panneau(meth_king,monture_dy)
+                set dt [expr [expr $t2 - $panneau(methking,dateheure)] * 86400.0]
+                set ultime_correction [KingRattrapage $panneau(methking,monture_dx) $panneau(methking,monture_dy) $dt]
+                set panneau(methking,monture_dx) [lindex $ultime_correction 0]
+                set panneau(methking,monture_dy) [lindex $ultime_correction 1]
+                set panneau(methking,monture_dx) [expr int($panneau(methking,monture_dx))]
+                set panneau(methking,monture_dy) [expr int($panneau(methking,monture_dy))]
+                Message consolog "%s %4.2f\n" $caption(methking,nouveau_dx) $panneau(methking,monture_dx)
+                Message consolog "%s %4.2f\n" $caption(methking,nouveau_dy) $panneau(methking,monture_dy)
                 CreeCurseurPremiereFenetre
             }
 
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
+            if {$panneau(methking,demande_arret_acq) == 0} {
 #--- Debut modif Robert
                ### if {$conf($camera,mirx)==1} {
                ###     buf$numero_buffer_1 mirrorx
@@ -1592,31 +1597,31 @@ namespace eval ::MethKing {
                 ValidationBindingsPremiereFenetre
             }
 
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
-                Message status $caption(king,selection_etoile)
-                set panneau(meth_king,attente_cercle) 1
-                vwait panneau(meth_king,selection_cercle)
-                set panneau(meth_king,attente_cercle) 0
+            if {$panneau(methking,demande_arret_acq) == 0} {
+                Message status $caption(methking,selection_etoile)
+                set panneau(methking,attente_cercle) 1
+                vwait panneau(methking,selection_cercle)
+                set panneau(methking,attente_cercle) 0
             }
 
-            if {$panneau(meth_king,demande_arret_acq) == 0} {
+            if {$panneau(methking,demande_arret_acq) == 0} {
                 CreeDeuxiemeFenetreReglages $numero_buffer_2 $numero_visu_2 2
             }
 
             cam$audace(camNo) buf $numero_buffer_2
             cam$audace(camNo) exptime $temps_pose_reglage
             cam$audace(camNo) bin {2 2}
-            Message consolog "%s\n" $caption(king,acq_continue_bis)
-            while {$panneau(meth_king,demande_arret_acq) == 0} {
-                Message status $caption(king,acq_continue)
-                set panneau(meth_king,status_regl) 1
-                Message infos $caption(king,vidange)
+            Message consolog "%s\n" $caption(methking,acq_continue_bis)
+            while {$panneau(methking,demande_arret_acq) == 0} {
+                Message status $caption(methking,acq_continue)
+                set panneau(methking,status_regl) 1
+                Message infos $caption(methking,vidange)
                 cam$audace(camNo) acq
-                ::MethKing::AfficheTimerAcq
+                ::methking::AfficheTimerAcq
                 vwait status_cam$audace(camNo)
                 Message infos ""
-                set panneau(meth_king,status_regl) 0
-                if {$panneau(meth_king,demande_arret_acq) == 0} {
+                set panneau(methking,status_regl) 0
+                if {$panneau(methking,demande_arret_acq) == 0} {
 #--- Debut modif Robert
                    ### if {$conf($camera,mirx)==1} {
                    ###     buf$numero_buffer_2 mirrorx
@@ -1635,9 +1640,9 @@ namespace eval ::MethKing {
             # Déblocage de tous les boutons
             EtatBoutons normal
         } else {
-            Message status $caption(king,pas_de_camera)
-            Message erreur "%s\n" $caption(king,pas_de_camera)
-            BoiteMessage $caption(king,erreur) $caption(king,pas_de_camera)
+            Message status $caption(methking,pas_de_camera)
+            Message erreur "%s\n" $caption(methking,pas_de_camera)
+            BoiteMessage $caption(methking,erreur) $caption(methking,pas_de_camera)
         }
     }
 
@@ -1649,32 +1654,32 @@ namespace eval ::MethKing {
         # Bloque le bouton pour éviter de relancer ce binding
         $This.stop.b configure -state disabled
 
-        Message status $caption(king,arret_reglage)
+        Message status $caption(methking,arret_reglage)
         #  Si l'utilisateur était en train de sélectionner une étoile, position-
         #  ner la variable indiquent que cette saisie est finie (qui va permettre
         #  au binding de regalge d'arrêter d'attendre cette sélection)
-        if {$panneau(meth_king,attente_cercle) == 1} {
-            set panneau(meth_king,selection_cercle) 1
+        if {$panneau(methking,attente_cercle) == 1} {
+            set panneau(methking,selection_cercle) 1
         }
         #  Si l'utilisateur était en train de faire une acquisition d'image,
         #  attendre la fin de l'acquisition
-        if {$panneau(meth_king,status_regl) == 1} {
-            Message infos $caption(king,lecture_ccd)
+        if {$panneau(methking,status_regl) == 1} {
+            Message infos $caption(methking,lecture_ccd)
             vwait status_cam$audace(camNo)
         }
         Message infos ""
 
         #  Faire la même chose pour le timer
-        set panneau(meth_king,timer_fin) -1
-        set panneau(meth_king,timer) 0
+        set panneau(methking,timer_fin) -1
+        set panneau(methking,timer) 0
         #  Détruire les fenêtres de saisie
         destroy $audace(base).fenreglages
         destroy $audace(base).fenreglages2
         #  Libérer les ressources allouées (buffer et visu)
-        ::buf::delete $panneau(meth_king,numero_buffer_1)
-        ::buf::delete $panneau(meth_king,numero_buffer_2)
-        ::visu::delete $panneau(meth_king,numero_visu_1)
-        ::visu::delete $panneau(meth_king,numero_visu_2)
+        ::buf::delete $panneau(methking,numero_buffer_1)
+        ::buf::delete $panneau(methking,numero_buffer_2)
+        ::visu::delete $panneau(methking,numero_visu_1)
+        ::visu::delete $panneau(methking,numero_visu_2)
         #  Rétablir le buffer où pointe la caméra (1 par défaut)
         cam$audace(camNo) buf 1
 
@@ -1683,7 +1688,7 @@ namespace eval ::MethKing {
 
         #  Positionner une variable indiquant le mode arret (qui va permettre
         #  au binding de reglage d'arrêter les traitements en cours)
-        set panneau(meth_king,demande_arret_acq) 1
+        set panneau(methking,demande_arret_acq) 1
     }
 
     #--------------------------------------------------------------------------#
@@ -1693,20 +1698,20 @@ namespace eval ::MethKing {
 
         toplevel $audace(base).dxdy -borderwidth 2 -relief groove
         wm geometry $audace(base).dxdy +150+50
-        wm title $audace(base).dxdy $caption(king,entreedxdy)
+        wm title $audace(base).dxdy $caption(methking,entreedxdy)
         wm transient $audace(base).dxdy $audace(base)
-        wm protocol $audace(base).dxdy WM_DELETE_WINDOW ::MethKing::Suppression
+        wm protocol $audace(base).dxdy WM_DELETE_WINDOW ::methking::Suppression
 
         set t1 [frame $audace(base).dxdy.trame1]
 
         foreach champ {dx dy} {
-            label $t1.l$champ -text $caption(king,entree$champ)
-            entry $t1.e$champ -textvariable panneau(meth_king,monture_$champ) -relief sunken -width 4
+            label $t1.l$champ -text $caption(methking,entree$champ)
+            entry $t1.e$champ -textvariable panneau(methking,monture_$champ) -relief sunken -width 4
             grid $t1.l$champ $t1.e$champ -sticky news
         }
 
         set t2 [frame $audace(base).dxdy.trame2 -borderwidth 2 -relief groove]
-        button $t2.b1 -text $caption(king,valider) -command {::MethKing::ValideEntreeDxDy} -height 1
+        button $t2.b1 -text $caption(methking,valider) -command {::methking::ValideEntreeDxDy} -height 1
         ::pack $t2.b1 -side top -padx 10 -pady 10
 
         ::pack $t1 $t2 -fill x
@@ -1719,8 +1724,8 @@ namespace eval ::MethKing {
     proc ValideEntreeDxDy {} {
         global panneau caption audace
 
-        if {([TestEntierSigne $panneau(meth_king,monture_dx)] == 0) || ([TestEntierSigne $panneau(meth_king,monture_dy)] == 0)} {
-            tk_messageBox -type ok -icon error -title $caption(king,erreur) -message $caption(king,valeur_illegale)
+        if {([TestEntierSigne $panneau(methking,monture_dx)] == 0) || ([TestEntierSigne $panneau(methking,monture_dy)] == 0)} {
+            tk_messageBox -type ok -icon error -title $caption(methking,erreur) -message $caption(methking,valeur_illegale)
         } else {
             destroy $audace(base).dxdy
         }
@@ -1735,9 +1740,9 @@ namespace eval ::MethKing {
         toplevel $audace(base).fenparam -borderwidth 2 -relief groove
 
         wm geometry $audace(base).fenparam +638+0
-        wm title $audace(base).fenparam $caption(king,parametres)
+        wm title $audace(base).fenparam $caption(methking,parametres)
         wm transient $audace(base).fenparam $audace(base)
-        wm protocol $audace(base).fenparam WM_DELETE_WINDOW ::MethKing::Suppression
+        wm protocol $audace(base).fenparam WM_DELETE_WINDOW ::methking::Suppression
 
         set valeur "    "
         set unite(binning) ""
@@ -1748,7 +1753,7 @@ namespace eval ::MethKing {
         set unite(auto) ""
 
         foreach champ {binning tempspose poseparseq entrepose noir} {
-            label $audace(base).fenparam.l1$champ -text $caption(king,$champ) -padx 0
+            label $audace(base).fenparam.l1$champ -text $caption(methking,$champ) -padx 0
             label $audace(base).fenparam.l2$champ -text "    " -relief sunken
             label $audace(base).fenparam.l3$champ -text $unite($champ)
             grid $audace(base).fenparam.l1$champ $audace(base).fenparam.l2$champ $audace(base).fenparam.l3$champ -sticky news
@@ -1763,27 +1768,27 @@ namespace eval ::MethKing {
         global panneau caption audace
         variable This
 
-        set config $panneau(meth_king,config_active)
+        set config $panneau(methking,config_active)
 
         if {[winfo exists $audace(base).fenparam] == 0} {
             CreeFenetreParametres
         }
 
-        wm title $audace(base).fenparam $::MethKing::king_config(config,$config)
+        wm title $audace(base).fenparam $::methking::king_config(config,$config)
 
-        switch -exact -- $::MethKing::king_config(binning,$config) {
+        switch -exact -- $::methking::king_config(binning,$config) {
             1 {set binning 1x1}
             2 {set binning 2x2}
             3 {set binning 3x3}
         }
         $audace(base).fenparam.l2binning configure -text $binning
-        $audace(base).fenparam.l2tempspose configure -text $::MethKing::king_config(tempspose,$config)
-        $audace(base).fenparam.l2poseparseq configure -text $::MethKing::king_config(poseparseq,$config)
-        $audace(base).fenparam.l2entrepose configure -text $::MethKing::king_config(interpose,$config)
-        if {$::MethKing::king_config(noir,$config) != 0} {
-            set texte $caption(king,oui)
+        $audace(base).fenparam.l2tempspose configure -text $::methking::king_config(tempspose,$config)
+        $audace(base).fenparam.l2poseparseq configure -text $::methking::king_config(poseparseq,$config)
+        $audace(base).fenparam.l2entrepose configure -text $::methking::king_config(interpose,$config)
+        if {$::methking::king_config(noir,$config) != 0} {
+            set texte $caption(methking,oui)
         } else {
-            set texte $caption(king,non)
+            set texte $caption(methking,non)
         }
         $audace(base).fenparam.l2noir configure -text $texte
 
@@ -1792,7 +1797,7 @@ namespace eval ::MethKing {
 
         update
 
-        Message log "%s : %d %s\n" $caption(king,config_active) $config $::MethKing::king_config(config,$config)
+        Message log "%s : %d %s\n" $caption(methking,config_active) $config $::methking::king_config(config,$config)
     }
 
     #--------------------------------------------------------------------------#
@@ -1801,7 +1806,7 @@ namespace eval ::MethKing {
         variable This
 
         # Suppression de toutes les entrées de config du menu, puisque l'utilisateur peut en modifier le nombre et l'intitule
-        $This.flisteconfig.configmb.menu delete 0 [expr $panneau(meth_king,nombre_config) - 1]
+        $This.flisteconfig.configmb.menu delete 0 [expr $panneau(methking,nombre_config) - 1]
 
         # Edition
         set fichier_config [file join $audace(rep_plugin) tool methking methking.ini]
@@ -1810,23 +1815,23 @@ namespace eval ::MethKing {
 
         # Gestion des cas d'erreurs
         if {$resultat == ""} {
-            Message log "%s\n" $caption(king,edite_config)
+            Message log "%s\n" $caption(methking,edite_config)
         } else {
-            BoiteMessage $caption(king,pas_editeur) $caption(king,conseil_editeur)
-            Message erreur "%s\n" $caption(king,pas_editeur)
+            BoiteMessage $caption(methking,pas_editeur) $caption(methking,conseil_editeur)
+            Message erreur "%s\n" $caption(methking,pas_editeur)
         }
-        Message log "%s\n" $caption(king,nouv_lect_config)
+        Message log "%s\n" $caption(methking,nouv_lect_config)
 
         # Nouvelle lecture du fichier
-        GetConfig $fichier_config ::MethKing::king_config
-        set panneau(meth_king,config_active) $panneau(meth_king,config_defaut)
+        GetConfig $fichier_config ::methking::king_config
+        set panneau(methking,config_active) $panneau(methking,config_defaut)
         #affichage des modifications dans la fenetre de parametres
         ModifieFenetreParametres
 
-        set panneau(meth_king,config_active) $panneau(meth_king,config_defaut)
+        set panneau(methking,config_active) $panneau(methking,config_defaut)
         # Actualisation des entrées du menu
-        for {set i 0} {$i < $panneau(meth_king,nombre_config)} {incr i} {
-            $This.flisteconfig.configmb.menu insert $i radiobutton -label $::MethKing::king_config(config,$i) -variable panneau(meth_king,config_active) -value $i -command ::MethKing::ModifieFenetreParametres
+        for {set i 0} {$i < $panneau(methking,nombre_config)} {incr i} {
+            $This.flisteconfig.configmb.menu insert $i radiobutton -label $::methking::king_config(config,$i) -variable panneau(methking,config_active) -value $i -command ::methking::ModifieFenetreParametres
         }
     }
 
@@ -1838,17 +1843,17 @@ namespace eval ::MethKing {
         toplevel $audace(base).selectetoile -class Toplevel -borderwidth 2 -relief groove
         wm geometry $audace(base).selectetoile +638+130
         wm resizable $audace(base).selectetoile 0 0
-        wm title $audace(base).selectetoile $caption(king,selection)
+        wm title $audace(base).selectetoile $caption(methking,selection)
         wm transient $audace(base).selectetoile $audace(base)
-        wm protocol $audace(base).selectetoile WM_DELETE_WINDOW ::MethKing::Suppression
+        wm protocol $audace(base).selectetoile WM_DELETE_WINDOW ::methking::Suppression
 
-        set texte_bouton(selection) $caption(king,validation_etoile)
-        set texte_bouton(lancement) $caption(king,lancement_calcul)
-        set texte_bouton(annulation) $caption(king,annulation_calcul)
+        set texte_bouton(selection) $caption(methking,validation_etoile)
+        set texte_bouton(lancement) $caption(methking,lancement_calcul)
+        set texte_bouton(annulation) $caption(methking,annulation_calcul)
 
-        set command_bouton(selection) ::MethKing::SelectionneEtoiles
-        set command_bouton(lancement) ::MethKing::KingProcess
-        set command_bouton(annulation) ::MethKing::AnnuleKing
+        set command_bouton(selection) ::methking::SelectionneEtoiles
+        set command_bouton(lancement) ::methking::KingProcess
+        set command_bouton(annulation) ::methking::AnnuleKing
 
         #----- Creation du contenu de la fenetre
         foreach champ {selection lancement annulation} {
@@ -1864,8 +1869,8 @@ namespace eval ::MethKing {
         global panneau audace caption
 
         $audace(hCanvas) delete cadres
-        set panneau(meth_king,status) 230
-        Message console "%s\n" $caption(king,arret_calcul_king)
+        set panneau(methking,status) 230
+        Message console "%s\n" $caption(methking,arret_calcul_king)
     }
 
     #--------------------------------------------------------------------------#
@@ -1881,9 +1886,9 @@ namespace eval ::MethKing {
             # normalement, la fenêtre a une taille de 386x272
             wm geometry $audace(base).fenreglages 386x356+120+50
         }
-        wm title $audace(base).fenreglages $caption(king,fenetre_reglages_1)
+        wm title $audace(base).fenreglages $caption(methking,fenetre_reglages_1)
         wm transient $audace(base).fenreglages $audace(base)
-        wm protocol $audace(base).fenreglages WM_DELETE_WINDOW ::MethKing::Suppression
+        wm protocol $audace(base).fenreglages WM_DELETE_WINDOW ::methking::Suppression
 
 
         # Explications et conseils
@@ -1908,48 +1913,48 @@ namespace eval ::MethKing {
         variable This
 
         # Définitions pour alléger l' écriture du source
-        set config_active $panneau(meth_king,config_active)
-        set dx $panneau(meth_king,monture_dx)
-        set dy $panneau(meth_king,monture_dy)
+        set config_active $panneau(methking,config_active)
+        set dx $panneau(methking,monture_dx)
+        set dy $panneau(methking,monture_dy)
 
-        set panneau(meth_king,cercle_cx) -200 ;# Pour le premier tracé on le met à l'extérieur de la fenêtre
-        set panneau(meth_king,cercle_cy) -200 ;# idem
+        set panneau(methking,cercle_cx) -200 ;# Pour le premier tracé on le met à l'extérieur de la fenêtre
+        set panneau(methking,cercle_cy) -200 ;# idem
 
         #  Récupération des dimensions de la fenetre
         set largeur [$audace(base).fenreglages.image1 cget -width]
         set hauteur [$audace(base).fenreglages.image1 cget -height]
 
         if {([expr abs($dx)] < $largeur) && ([expr abs($dy)] < $hauteur)} {
-            set texte $caption(king,explication_1)
+            set texte $caption(methking,explication_1)
         } else {
-            set texte $caption(king,explication_2)
+            set texte $caption(methking,explication_2)
         }
         $audace(base).fenreglages.explication configure -text $texte
         if {$dx > 0} {
             if {$dy > 0} {
-                set texte $caption(king,conseilx+y+)
+                set texte $caption(methking,conseilx+y+)
             } else {
-                set texte $caption(king,conseilx+y-)
+                set texte $caption(methking,conseilx+y-)
             }
         } else {
             if {$dy > 0} {
-                set texte $caption(king,conseilx-y+)
+                set texte $caption(methking,conseilx-y+)
             } else {
-                set texte $caption(king,conseilx-y-)
+                set texte $caption(methking,conseilx-y-)
             }
         }
         $audace(base).fenreglages.conseil configure -text $texte
 
         # Pour alléger l'écriture
-        set cx $panneau(meth_king,cercle_cx)
-        set cy $panneau(meth_king,cercle_cy)
+        set cx $panneau(methking,cercle_cx)
+        set cy $panneau(methking,cercle_cy)
 
         #Tracé du premier cercle autour du curseur
         $audace(base).fenreglages.image1 create oval [expr $cx-15] [expr $cy-15] [expr $cx+16] [expr $cy+16] -outline $color(red) -width 2 -tag cercle_1 -tag cercle
         $audace(base).fenreglages.image1 create oval [expr $cx-5] [expr $cy-5] [expr $cx+6] [expr $cy+6] -outline $color(red) -width 2 -tag cercle_2 -tag cercle
 
         #Tracé des curseurs "esclave"
-        # Le signe - pour $panneau(meth_king,monture_dy) est du à l'inversion du sens des y entre le canvas et l'image
+        # Le signe - pour $panneau(methking,monture_dy) est du à l'inversion du sens des y entre le canvas et l'image
         if {([expr abs($dx)] < $largeur) && ([expr abs($dy)] < $hauteur)} {
             $audace(base).fenreglages.image1 create rect [expr $dx + $cx - 15] [expr $cy - 15 - $dy] [expr $dx + $cx + 16] [expr $cy + 16 - $dy] -outline $color(green) -width 2 -tag cercle_3 -tag cercle
             $audace(base).fenreglages.image1 create rect [expr $dx + $cx - 5] [expr $cy - 5 - $dy] [expr $dx + $cx + 6] [expr $cy + 6 - $dy] -outline $color(green) -width 1 -tag cercle_4 -tag cercle
@@ -1965,11 +1970,11 @@ namespace eval ::MethKing {
     proc TraceCurseur {cx cy} {
         global panneau audace
 
-        set dx [expr $cx - $panneau(meth_king,cercle_cx)]
-        set dy [expr $cy - $panneau(meth_king,cercle_cy)]
+        set dx [expr $cx - $panneau(methking,cercle_cx)]
+        set dy [expr $cy - $panneau(methking,cercle_cy)]
         $audace(base).fenreglages.image1 move cercle $dx $dy
-        set panneau(meth_king,cercle_cx) $cx
-        set panneau(meth_king,cercle_cy) $cy
+        set panneau(methking,cercle_cx) $cx
+        set panneau(methking,cercle_cy) $cy
     }
 
     #--------------------------------------------------------------------------#
@@ -1977,8 +1982,8 @@ namespace eval ::MethKing {
         global panneau caption audace
 
         # Definitions pour alléger l' écriture du source
-        set dx $panneau(meth_king,monture_dx)
-        set dy $panneau(meth_king,monture_dy)
+        set dx $panneau(methking,monture_dx)
+        set dy $panneau(methking,monture_dy)
 
         #  Bloquer tout animation souris
         bind $audace(base).fenreglages.image1 <Motion> {}
@@ -1997,29 +2002,29 @@ namespace eval ::MethKing {
         if {([expr abs($dx)] < $largeur) && ([expr abs($dy)] < $hauteur)} {
             if {($position_x < 0) || ($position_y < 0) || ($position_x > $largeur) || ($position_y > $hauteur)} {
             #  Alors le signaler , rétablir l'animation souris et sortir
-                ::MethKing::BoiteMessage $caption(king,etoile_fenetre) $caption(king,refaire_selection)
-                bind $audace(base).fenreglages.image1 <Motion> {::MethKing::TraceCurseur %x %y}
-                bind $audace(base).fenreglages.image1 <ButtonRelease-1> {::MethKing::MemoriseCurseur %x %y}
+                ::methking::BoiteMessage $caption(methking,etoile_fenetre) $caption(methking,refaire_selection)
+                bind $audace(base).fenreglages.image1 <Motion> {::methking::TraceCurseur %x %y}
+                bind $audace(base).fenreglages.image1 <ButtonRelease-1> {::methking::MemoriseCurseur %x %y}
                 return
             }
         }
 
         #  Sinon demander confirmation du choix de l'étoile
-        set choix [tk_messageBox -type yesno -default yes -message $caption(king,valide_clic_1) -icon question -title $caption(king,valide_clic_2)]
+        set choix [tk_messageBox -type yesno -default yes -message $caption(methking,valide_clic_1) -icon question -title $caption(methking,valide_clic_2)]
 
         #  Si ce choix est confirmé
         if {$choix == "yes"} {
             #  Alors mettre les coordonnées en mémoire,
-            set panneau(meth_king,cercle_cx) $cx
-            set panneau(meth_king,cercle_cy) $cy
+            set panneau(methking,cercle_cx) $cx
+            set panneau(methking,cercle_cy) $cy
             # rétablir le curseur normal
             $audace(base).fenreglages configure -cursor crosshair
             # indiquer que la sélection est faite  et sortir
-            set panneau(meth_king,selection_cercle) [expr -$panneau(meth_king,selection_cercle)]
+            set panneau(methking,selection_cercle) [expr -$panneau(methking,selection_cercle)]
         } else {
             #  Sinon rétablir l'animation souris et sortir                             #
-            bind $audace(base).fenreglages.image1 <Motion> {::MethKing::TraceCurseur %x %y}
-            bind $audace(base).fenreglages.image1 <ButtonRelease-1> {::MethKing::MemoriseCurseur %x %y}
+            bind $audace(base).fenreglages.image1 <Motion> {::methking::TraceCurseur %x %y}
+            bind $audace(base).fenreglages.image1 <ButtonRelease-1> {::methking::MemoriseCurseur %x %y}
         }
     }
 
@@ -2028,8 +2033,8 @@ namespace eval ::MethKing {
         global audace
 
         $audace(base).fenreglages configure -cursor circle
-        bind $audace(base).fenreglages.image1 <Motion> {::MethKing::TraceCurseur %x %y}
-        bind $audace(base).fenreglages.image1 <ButtonRelease-1> {::MethKing::MemoriseCurseur %x %y}
+        bind $audace(base).fenreglages.image1 <Motion> {::methking::TraceCurseur %x %y}
+        bind $audace(base).fenreglages.image1 <ButtonRelease-1> {::methking::MemoriseCurseur %x %y}
     }
 
 
@@ -2039,17 +2044,17 @@ namespace eval ::MethKing {
         variable This
 
         # Definitions pour alléger l' écriture du source
-        set config_active $panneau(meth_king,config_active)
-        set dx $panneau(meth_king,monture_dx)
-        set dy $panneau(meth_king,monture_dy)
-        set cx $panneau(meth_king,cercle_cx)
-        set cy $panneau(meth_king,cercle_cy)
+        set config_active $panneau(methking,config_active)
+        set dx $panneau(methking,monture_dx)
+        set dy $panneau(methking,monture_dy)
+        set cx $panneau(methking,cercle_cx)
+        set cy $panneau(methking,cercle_cy)
 
         toplevel $audace(base).fenreglages2 -borderwidth 2 -relief groove -cursor crosshair
 
-        wm title $audace(base).fenreglages2 $caption(king,fenetre_reglages_2)
+        wm title $audace(base).fenreglages2 $caption(methking,fenetre_reglages_2)
         wm transient $audace(base).fenreglages2 $audace(base)
-        wm protocol $audace(base).fenreglages2 WM_DELETE_WINDOW ::MethKing::Suppression
+        wm protocol $audace(base).fenreglages2 WM_DELETE_WINDOW ::methking::Suppression
 
         if {$binning == 1} {
             set position_x [expr 0.9*[winfo screenwidth $audace(base).fenreglages2] - 768]
@@ -2081,16 +2086,16 @@ namespace eval ::MethKing {
         label $audace(base).fenreglages2.texte_y -height 1 -justify left
         set texte "Axe X :"
         if {$dx > 0} {
-            append texte $::MethKing::king_config(textex+,$config_active)
+            append texte $::methking::king_config(textex+,$config_active)
         } else {
-            append texte $::MethKing::king_config(textex-,$config_active)
+            append texte $::methking::king_config(textex-,$config_active)
         }
         $audace(base).fenreglages2.texte_x configure -text $texte
         set texte "Axe Y :"
         if {$dy > 0} {
-            append texte $::MethKing::king_config(textey+,$config_active)
+            append texte $::methking::king_config(textey+,$config_active)
         } else {
-            append texte $::MethKing::king_config(textey-,$config_active)
+            append texte $::methking::king_config(textey-,$config_active)
         }
         $audace(base).fenreglages2.texte_y configure -text $texte
         pack $audace(base).fenreglages2.texte_x $audace(base).fenreglages2.texte_y -side top -fill x -anchor nw
@@ -2113,7 +2118,7 @@ namespace eval ::MethKing {
         $audace(base).fenreglages2.image1 create oval [expr $cx-5] [expr $cy-5] [expr $cx+6] [expr $cy+6] -outline $color(red) -width 2 -tag cercle_2
 
         #Tracé des curseurs "esclave"
-        # Le signe - pour $panneau(meth_king,monture_dy) est du à l'inversion du sens y entre le canvas et l'image
+        # Le signe - pour $panneau(methking,monture_dy) est du à l'inversion du sens y entre le canvas et l'image
         if {([expr abs($dx)] < $largeur) && ([expr abs($dy)] < $hauteur)} {
             $audace(base).fenreglages2.image1 create rect [expr $dx + $cx - 15] [expr $cy - 15 - $dy] [expr $dx + $cx + 16] [expr $cy + 16 - $dy] -outline $color(green) -width 2 -tag cercle_3
             $audace(base).fenreglages2.image1 create rect [expr $dx + $cx - 5] [expr $cy - 5 - $dy] [expr $dx + $cx + 6] [expr $cy + 6 - $dy] -outline $color(green) -width 1 -tag cercle_4
@@ -2147,7 +2152,7 @@ namespace eval ::MethKing {
 
             $audace(base).fenreglages2.image1 create line $cx $cy $ax $ay -fill $color(green) -width 2 -arrow last -arrowshape {16 20 6}
         }
-        set panneau(meth_king,pare_au_reglages) 23
+        set panneau(methking,pare_au_reglages) 23
 
         #--- Mise a jour dynamique des couleurs
         ::confColor::applyColor $This
@@ -2158,18 +2163,18 @@ namespace eval ::MethKing {
     global panneau
     variable king_config
 
-    Message infos "%d s" $panneau(meth_king,timer)
-    incr panneau(meth_king,timer) -1
-    if {$king_config(son,$panneau(meth_king,config_active)) != 0} {
-        if {$panneau(meth_king,timer) == $king_config(son,$panneau(meth_king,config_active))} {
+    Message infos "%d s" $panneau(methking,timer)
+    incr panneau(methking,timer) -1
+    if {$king_config(son,$panneau(methking,config_active)) != 0} {
+        if {$panneau(methking,timer) == $king_config(son,$panneau(methking,config_active))} {
         bell
         }
     }
-    if {$panneau(meth_king,timer) >0} {
-        after 960 ::MethKing::AfficheTimer
+    if {$panneau(methking,timer) >0} {
+        after 960 ::methking::AfficheTimer
     } else {
         Message infos ""
-        set panneau(meth_king,timer_fin) -1
+        set panneau(methking,timer_fin) -1
     }
     }
 
@@ -2223,70 +2228,70 @@ namespace eval ::MethKing {
             log {
                 set temps $audace(tu,format,dmyhmsint)
                 append temps " "
-                puts -nonewline $::MethKing::log_id $temps
-                puts -nonewline $::MethKing::log_id [eval [concat {format} $args]]
+                puts -nonewline $::methking::log_id $temps
+                puts -nonewline $::methking::log_id [eval [concat {format} $args]]
             }
             consolog {
                 ::console::disp [eval [concat {format} $args]]
                 update idletasks
                 set temps $audace(tu,format,dmyhmsint)
                 append temps " "
-                puts -nonewline $::MethKing::log_id $temps
-                puts -nonewline $::MethKing::log_id [eval [concat {format} $args]]
+                puts -nonewline $::methking::log_id $temps
+                puts -nonewline $::methking::log_id [eval [concat {format} $args]]
             }
             avertissement {
-                ::console::disp $caption(king,attention)
+                ::console::disp $caption(methking,attention)
                 ::console::disp " : "
                 ::console::disp [eval [concat {format} $args]]
                 update idletasks
-                puts -nonewline $::MethKing::log_id $caption(king,attention)
-                puts -nonewline $::MethKing::log_id  " : "
-                puts -nonewline $::MethKing::log_id [eval [concat {format} $args]]
+                puts -nonewline $::methking::log_id $caption(methking,attention)
+                puts -nonewline $::methking::log_id  " : "
+                puts -nonewline $::methking::log_id [eval [concat {format} $args]]
             }
             erreur {
-                ::console::disp $caption(king,erreur)
+                ::console::disp $caption(methking,erreur)
                 ::console::disp " : "
                 ::console::disp [eval [concat {format} $args]]
                 update idletasks
-                puts -nonewline $::MethKing::log_id $caption(king,erreur)
-                puts -nonewline $::MethKing::log_id " : "
-                puts -nonewline $::MethKing::log_id [eval [concat {format} $args]]
+                puts -nonewline $::methking::log_id $caption(methking,erreur)
+                puts -nonewline $::methking::log_id " : "
+                puts -nonewline $::methking::log_id [eval [concat {format} $args]]
             }
             test {
-                ::console::disp $caption(king,test)
+                ::console::disp $caption(methking,test)
                 ::console::disp " : "
                 ::console::disp [eval [concat {format} $args]]
                 update idletasks
-                puts -nonewline $::MethKing::log_id $caption(king,test)
-                puts -nonewline $::MethKing::log_id " : "
+                puts -nonewline $::methking::log_id $caption(methking,test)
+                puts -nonewline $::methking::log_id " : "
                 set temps $audace(tu,format,dmyhmsint)
                 append temps " "
-                puts -nonewline $::MethKing::log_id $temps
-                puts -no newline $::MethKing::log_id [eval [concat {format} $args]]
+                puts -nonewline $::methking::log_id $temps
+                puts -no newline $::methking::log_id [eval [concat {format} $args]]
             }
             status {
-                set panneau(meth_king,status) [eval [concat {format} $args]]
-                $This.fstatus.m configure -text $panneau(meth_king,status)
+                set panneau(methking,status) [eval [concat {format} $args]]
+                $This.fstatus.m configure -text $panneau(methking,status)
                 update
             }
             infos {
-                set panneau(meth_king,infos) [eval [concat {format} $args]]
-                $This.finfos.m configure -text $panneau(meth_king,infos)
+                set panneau(methking,infos) [eval [concat {format} $args]]
+                $This.finfos.m configure -text $panneau(methking,infos)
                 update idletasks
             }
             default {
-                ::console::disp $caption(king,erreur_message)
+                ::console::disp $caption(methking,erreur_message)
                 ::console::disp "\n"
                 update idletasks
             }
         }
     }
 }
-#-----Fin du namespace MethKing--------------------------------------------#
+#-----Fin du namespace methking--------------------------------------------#
 
 
 #--------------------------------------------------------------------------#
-proc MethKingBuildIF {This tableau} {
+proc methkingBuildIF {This tableau} {
     # ============================
     # === graphisme du panneau ===
     # ============================
@@ -2299,54 +2304,54 @@ proc MethKingBuildIF {This tableau} {
     frame $This.ftitre -borderwidth 2 -height 75 -relief groove -width 92
 
     #--- Label du titre
-    Button $This.ftitre.l -borderwidth 2 -text $caption(king,titre) \
-       -command "::audace::showHelpPlugin tool methking methking.htm"
+    Button $This.ftitre.l -borderwidth 2 -text $caption(methking,titre) \
+       -command "::audace::showHelpPlugin [ ::methking::getPluginType ] methking [ ::methking::getPluginHelp ]"
     pack $This.ftitre.l -in $This.ftitre -anchor center -expand 1 -fill both -side top
-    DynamicHelp::add $This.ftitre.l -text $caption(king,help,titre)
+    DynamicHelp::add $This.ftitre.l -text $caption(methking,help,titre)
     place $This.ftitre -x 4 -y 4 -width 92 -height 22 -anchor nw -bordermode ignore
 
     #Trame d'affichage des paramètres
     set t1 [frame $This.flisteconfig -borderwidth 1 -height 100 -relief groove]
 
-    menubutton $t1.configmb -text $caption(king,parametres) -menu $t1.configmb.menu -height 1 -relief raised
-    bind $t1.configmb <Button-1> {+ ::MethKing::ModifieFenetreParametres}
+    menubutton $t1.configmb -text $caption(methking,parametres) -menu $t1.configmb.menu -height 1 -relief raised
+    bind $t1.configmb <Button-1> {+ ::methking::ModifieFenetreParametres}
     pack $t1.configmb -in $t1 -pady 4
 
     set mc [menu $t1.configmb.menu -tearoff 0]
     $mc add separator
-    $mc add command -label $caption(king,edition) -command ::MethKing::EditeConfig
+    $mc add command -label $caption(methking,edition) -command ::methking::EditeConfig
 
     place $t1 -x 4 -y 32 -width 92 -anchor nw -bordermode ignore
 
     # Trame des boutons
     set t2 [frame $This.boutons -borderwidth 1 -relief groove]
-    set commande(acquisition) ::MethKing::CmdAcquisition
-    set commande(calcul) ::MethKing::CmdCalcul
-    set commande(reglage) ::MethKing::CmdReglage
+    set commande(acquisition) ::methking::CmdAcquisition
+    set commande(calcul) ::methking::CmdCalcul
+    set commande(reglage) ::methking::CmdReglage
 
     foreach champ {acquisition calcul reglage} {
-    button $t2.b$champ -borderwidth 1 -text $caption(king,$champ) -command $commande($champ) -width 10 -relief raised
+    button $t2.b$champ -borderwidth 1 -text $caption(methking,$champ) -command $commande($champ) -width 10 -relief raised
     pack $t2.b$champ -in $t2 -anchor center -fill none -pady 4 -ipady 4
     }
     place $t2 -x 4 -y 74 -width 92  -anchor nw -bordermode ignore
 
     # Bouton d'arrêt
     frame $audace(base).methking.stop -borderwidth 1 -relief groove
-    button $audace(base).methking.stop.b -borderwidth 1 -text $caption(king,arret) -state disabled -width 10
+    button $audace(base).methking.stop.b -borderwidth 1 -text $caption(methking,arret) -state disabled -width 10
     pack $audace(base).methking.stop.b -in $audace(base).methking.stop -anchor center -fill none -pady 4 -ipady 4
     place $audace(base).methking.stop -x 4 -y 209 -width 92  -anchor nw -bordermode ignore
 
     # Affichage des status
     frame $This.fstatus -borderwidth 1 -height 77 -relief groove
-    label  $This.fstatus.l1 -text $caption(king,label_status) -font {times 12 bold} -relief flat -height 1
+    label  $This.fstatus.l1 -text $caption(methking,label_status) -font {times 12 bold} -relief flat -height 1
     pack   $This.fstatus.l1 -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
-    label  $This.fstatus.m -text $panneau(meth_king,status) -font {times 12 bold} -justify center -padx 0 -pady 0 -relief flat -width 11 -height 3 -wraplength 88
+    label  $This.fstatus.m -text $panneau(methking,status) -font {times 12 bold} -justify center -padx 0 -pady 0 -relief flat -width 11 -height 3 -wraplength 88
     pack   $This.fstatus.m -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
     place $This.fstatus -x 4 -y 259 -width 92 -anchor nw -bordermode ignore
 
     # Affichage des infos
     frame $This.finfos -borderwidth 1 -relief groove
-    label  $This.finfos.m -text $panneau(meth_king,infos) -justify center -padx 0 -pady 0 -relief flat -font {times 12 bold} -width 11 -height 2 -wraplength 88
+    label  $This.finfos.m -text $panneau(methking,infos) -justify center -padx 0 -pady 0 -relief flat -font {times 12 bold} -width 11 -height 2 -wraplength 88
     pack   $This.finfos.m -in $This.finfos -anchor center -fill both -padx 0 -pady 0
     place $This.finfos -x 4 -y 360 -width 92 -anchor nw -bordermode ignore
 }
