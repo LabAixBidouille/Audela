@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.16 2007-04-07 00:39:00 michelpujol Exp $
+# Mise a jour $Id: conflink.tcl,v 1.17 2007-09-03 20:45:17 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -31,7 +31,7 @@ proc ::confLink::init { } {
 
    #--- charge le fichier caption
    source [ file join $audace(rep_caption) conflink.cap ]
-   #--- j'ajoute le repetoire des equipements dans la liste des 
+   #--- j'ajoute le repetoire des equipements dans la liste des
    #--- repertoire pouvant contenir des plugins
    lappend ::auto_path [file join "$::audace(rep_plugin)" link]
    #--- je charge la liste des plugins
@@ -49,27 +49,21 @@ proc ::confLink::init { } {
 #------------------------------------------------------------
 proc ::confLink::afficheAide { } {
    variable private
-   global conf
-   global help
 
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -state disabled
    $private(frm).cmd.fermer configure -state disabled
    $private(frm).cmd.aide configure -relief groove -state disabled
 
-   #--- je recupere le label de l'onglet selectionne
-   set private(conf_confLink) [Rnotebook:currentName $private(frm).usr.book ]
-   #--- je recupere le namespace correspondant au label
-   set label "[Rnotebook:currentName $private(frm).usr.book ]"
-   set index [lsearch -exact $private(pluginTitleList) $label ]
+   #--- je recupere l'index de l'onglet selectionne
+   set index [Rnotebook:currentIndex $private(frm).usr.book ]
    if { $index != -1 } {
-      set private(conf_confLink) [lindex $private(namespaceList) $index]
-   } else {
-      set private(conf_confLink) ""
+      set pluginName [lindex $private(namespaceList) [expr $index -1]]
+      set pluginFolderType [ $pluginName\::getPluginType ]
+      #--- j'affiche la documentation
+      set pluginHelp [ $pluginName\::getPluginHelp ]
+      ::audace::showHelpPlugin $pluginFolderType $pluginName "$pluginHelp"
    }
-   #--- j'affiche la documentation
-   set driver_doc [ $private(conf_confLink)::getHelp ]
-   ::audace::showHelpPlugin link $private(conf_confLink) "$driver_doc"
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -state normal
@@ -207,7 +201,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
       destroy $private(frm)
    }
 
-   if { [llength $private(namespaceList)] <1 } { 
+   if { [llength $private(namespaceList)] <1 } {
       tk_messageBox -message "No plugin available" \
             -title "$caption(conflink,config) $configurationTitle              " -icon error
        return 1
@@ -438,7 +432,7 @@ proc ::confLink::findPlugin { } {
                ::console::affiche_prompt "#$caption(conflink,liaison) $pluginlabel v$pluginInfo(version)\n"
             }
          } else {
-            ::console::affiche_erreur "Error loading link $pkgIndexFileName \n$::errorInfo\n\n" 
+            ::console::affiche_erreur "Error loading link $pkgIndexFileName \n$::errorInfo\n\n"
          }
       } catchMessage]
       #--- j'affiche le message d'erreur et je continu la recherche des plugins

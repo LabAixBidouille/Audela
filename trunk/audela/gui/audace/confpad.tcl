@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.13 2007-05-26 23:37:44 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.14 2007-09-03 20:45:35 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -157,9 +157,10 @@ proc ::confPad::afficheAide { } {
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
    if { $index != -1 } {
       set pluginName [lindex $private(pluginList) [expr $index -1]]
+      set pluginFolderType [ $pluginName\::getPluginType ]
       #--- j'affiche la documentation
-      set pluginHelp [ $pluginName\::getHelp ]
-      ::audace::showHelpPlugin pad $pluginName "$pluginHelp"
+      set pluginHelp [ $pluginName\::getPluginHelp ]
+      ::audace::showHelpPlugin $pluginFolderType $pluginName "$pluginHelp"
    }
 }
 
