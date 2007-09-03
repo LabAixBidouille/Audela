@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.10 2007-05-26 23:36:59 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.11 2007-09-03 20:44:47 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -142,9 +142,10 @@ namespace eval ::confCat {
       set index [Rnotebook:currentIndex $private(frm).usr.book ]
       if { $index != -1 } {
          set pluginName [lindex $private(pluginList) [expr $index -1]]
+         set pluginFolderType [ $pluginName\::getPluginType ]
          #--- j'affiche la documentation
-         set pluginHelp [ $pluginName\::getHelp ]
-         ::audace::showHelpPlugin chart $pluginName "$pluginHelp"
+         set pluginHelp [ $pluginName\::getPluginHelp ]
+         ::audace::showHelpPlugin $pluginFolderType $pluginName "$pluginHelp"
       }
    }
 
