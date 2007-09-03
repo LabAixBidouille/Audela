@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.14 2007-06-11 17:24:29 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.15 2007-09-03 20:39:17 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
@@ -98,6 +98,34 @@ proc ::quickaudine::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::quickaudine::getPluginTitle { } {
+   global caption
+
+   return "$caption(quickaudine,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::quickaudine::getPluginHelp { } {
+   return "quickaudine.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de driver
+#------------------------------------------------------------
+proc ::quickaudine::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
 #
@@ -155,34 +183,6 @@ proc ::quickaudine::fillConfigPage { frm } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-}
-
-#------------------------------------------------------------
-#  getPluginType
-#     retourne le type de driver
-#------------------------------------------------------------
-proc ::quickaudine::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::quickaudine::getHelp { } {
-   return "quickaudine.htm"
-}
-
-#------------------------------------------------------------
-#  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
-#------------------------------------------------------------
-proc ::quickaudine::getPluginTitle { } {
-   global caption
-
-   return "$caption(quickaudine,titre)"
 }
 
 #------------------------------------------------------------

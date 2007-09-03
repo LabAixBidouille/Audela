@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.15 2007-06-03 16:05:36 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.16 2007-09-03 20:41:56 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -35,14 +35,6 @@ namespace eval carteducielv3 {
    }
 
    #------------------------------------------------------------
-   #  getPluginType
-   #     retourne le type de plugin
-   #------------------------------------------------------------
-   proc getPluginType { } {
-      return "chart"
-   }
-
-   #------------------------------------------------------------
    #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
@@ -53,13 +45,21 @@ namespace eval carteducielv3 {
    }
 
    #------------------------------------------------------------
-   #  getHelp
+   #  getPluginHelp
    #     retourne la documentation du driver
    #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
-   proc getHelp { } {
+   proc getPluginHelp { } {
       return "carteducielv3.htm"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "chart"
    }
 
    #------------------------------------------------------------

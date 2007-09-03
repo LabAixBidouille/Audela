@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.13 2007-05-19 10:40:58 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.14 2007-09-03 20:39:55 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -108,6 +108,34 @@ proc ::serialport::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::serialport::getPluginTitle { } {
+   global caption
+
+   return "$caption(serialport,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::serialport::getPluginHelp { } {
+   return "serialport.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de driver
+#------------------------------------------------------------
+proc ::serialport::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
 #
@@ -145,24 +173,6 @@ proc ::serialport::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getPluginType
-#     retourne le type de driver
-#------------------------------------------------------------
-proc ::serialport::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::serialport::getHelp { } {
-   return "serialport.htm"
-}
-
-#------------------------------------------------------------
 #  initConf
 #     initialise les parametres dans le tableau conf()
 #
@@ -174,16 +184,6 @@ proc ::serialport::initConf { } {
    if { ! [ info exists conf(serial,port_exclus) ] } { set conf(serial,port_exclus) "COM3" }
 
    return
-}
-
-#------------------------------------------------------------
-#  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
-#------------------------------------------------------------
-proc ::serialport::getPluginTitle { } {
-   global caption
-
-   return "$caption(serialport,titre)"
 }
 
 #------------------------------------------------------------

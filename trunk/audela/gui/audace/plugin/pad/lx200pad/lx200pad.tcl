@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.11 2007-05-23 16:33:21 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.12 2007-09-03 20:42:37 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -35,14 +35,6 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  getPluginType
-   #     retourne le type de plugin
-   #------------------------------------------------------------
-   proc getPluginType { } {
-      return "pad"
-   }
-
-   #------------------------------------------------------------
    #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
@@ -53,13 +45,21 @@ namespace eval ::lx200pad {
    }
 
    #------------------------------------------------------------
-   #  getHelp
+   #  getPluginHelp
    #     retourne la documentation du driver
    #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
-   proc getHelp { } {
+   proc getPluginHelp { } {
       return "lx200pad.htm"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "pad"
    }
 
    #------------------------------------------------------------

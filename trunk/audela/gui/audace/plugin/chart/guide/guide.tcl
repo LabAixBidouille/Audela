@@ -2,7 +2,7 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.18 2007-07-26 20:45:59 michelpujol Exp $
+# Mise a jour $Id: guide.tcl,v 1.19 2007-09-03 20:42:18 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -33,14 +33,6 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  getPluginType
-   #     retourne le type de plugin
-   #------------------------------------------------------------
-   proc getPluginType { } {
-      return "chart"
-   }
-
-   #------------------------------------------------------------
    #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
@@ -51,13 +43,21 @@ namespace eval guide {
    }
 
    #------------------------------------------------------------
-   #  getHelp
+   #  getPluginHelp
    #     retourne la documentation du driver
    #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
-   proc getHelp { } {
+   proc getPluginHelp { } {
       return "guide.htm"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "chart"
    }
 
    #------------------------------------------------------------

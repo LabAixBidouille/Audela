@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.11 2007-05-19 10:39:41 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.12 2007-09-03 20:38:47 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -34,6 +34,16 @@ proc ::parallelport::getPluginTitle { } {
    global caption
 
    return "$caption(parallelport,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::parallelport::getPluginHelp { } {
+   return "parallelport.htm"
 }
 
 #------------------------------------------------------------
@@ -177,16 +187,6 @@ proc ::parallelport::fillConfigPage { frm } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::parallelport::getHelp { } {
-   return "parallelport.htm"
 }
 
 #------------------------------------------------------------

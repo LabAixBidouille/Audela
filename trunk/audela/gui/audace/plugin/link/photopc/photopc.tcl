@@ -2,7 +2,7 @@
 # Fichier : photopc.tcl
 # Description : Interface de liaison PhotoPC
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: photopc.tcl,v 1.6 2007-05-19 10:40:01 robertdelmas Exp $
+# Mise a jour $Id: photopc.tcl,v 1.7 2007-09-03 20:39:01 robertdelmas Exp $
 #
 
 namespace eval photopc {
@@ -76,6 +76,34 @@ proc ::photopc::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::photopc::getPluginTitle { } {
+   global caption
+
+   return "$caption(photopc,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::photopc::getPluginHelp { } {
+   return "photopc.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de driver
+#------------------------------------------------------------
+proc ::photopc::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
 #
@@ -89,34 +117,6 @@ proc ::photopc::fillConfigPage { frm } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-}
-
-#------------------------------------------------------------
-#  getPluginType
-#     retourne le type de driver
-#------------------------------------------------------------
-proc ::photopc::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::photopc::getHelp { } {
-   return "photopc.htm"
-}
-
-#------------------------------------------------------------
-#  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
-#------------------------------------------------------------
-proc ::photopc::getPluginTitle { } {
-   global caption
-
-   return "$caption(photopc,titre)"
 }
 
 #------------------------------------------------------------

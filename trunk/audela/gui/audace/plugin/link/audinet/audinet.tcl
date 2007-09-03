@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.10 2007-05-19 10:38:07 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.11 2007-09-03 20:37:33 robertdelmas Exp $
 #
 
 namespace eval audinet {
@@ -93,6 +93,16 @@ proc ::audinet::getPluginTitle { } {
    global caption
 
    return "$caption(audinet,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::audinet::getPluginHelp { } {
+   return "audinet.htm"
 }
 
 #------------------------------------------------------------
@@ -264,16 +274,6 @@ proc ::audinet::fillConfigPage { frm } {
    bind $frm.labURL <Leave> {
       $::audinet::widget(frm).labURL configure -fg $color(blue)
    }
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::audinet::getHelp { } {
-   return "audinet.htm"
 }
 
 #------------------------------------------------------------
