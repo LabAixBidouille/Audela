@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.15 2007-05-23 16:33:38 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.16 2007-09-03 20:42:56 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -35,14 +35,6 @@ namespace eval ::superpad {
    }
 
    #------------------------------------------------------------
-   #  getPluginType
-   #     retourne le type de plugin
-   #------------------------------------------------------------
-   proc getPluginType { } {
-      return "pad"
-   }
-
-   #------------------------------------------------------------
    #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
@@ -53,13 +45,21 @@ namespace eval ::superpad {
    }
 
    #------------------------------------------------------------
-   #  getHelp
+   #  getPluginHelp
    #     retourne la documentation du driver
    #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
-   proc getHelp { } {
+   proc getPluginHelp { } {
       return "superpad.htm"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "pad"
    }
 
    #------------------------------------------------------------

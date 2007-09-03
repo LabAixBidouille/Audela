@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.16 2007-05-19 10:38:34 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.17 2007-09-03 20:37:53 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -212,24 +212,6 @@ proc ::ethernaude::fillConfigPage { frm } {
 }
 
 #------------------------------------------------------------
-#  getPluginType
-#     retourne le type de plugin
-#------------------------------------------------------------
-proc ::ethernaude::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::ethernaude::getHelp { } {
-   return "ethernaude.htm"
-}
-
-#------------------------------------------------------------
 #  getPluginProperty
 #     retourne la valeur de la propriete
 #
@@ -251,6 +233,24 @@ proc ::ethernaude::getPluginTitle { } {
    global caption
 
    return "$caption(ethernaude,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::ethernaude::getPluginHelp { } {
+   return "ethernaude.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de plugin
+#------------------------------------------------------------
+proc ::ethernaude::getPluginType { } {
+   return "link"
 }
 
 #------------------------------------------------------------

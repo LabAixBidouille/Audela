@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.13 2007-05-23 16:33:57 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.14 2007-09-03 20:43:13 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -35,14 +35,6 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
-   #  getPluginType
-   #     retourne le type de plugin
-   #------------------------------------------------------------
-   proc getPluginType { } {
-      return "pad"
-   }
-
-   #------------------------------------------------------------
    #  getPluginTitle
    #     retourne le label du driver dans la langue de l'utilisateur
    #------------------------------------------------------------
@@ -53,13 +45,21 @@ namespace eval telpad {
    }
 
    #------------------------------------------------------------
-   #  getHelp
+   #  getPluginHelp
    #     retourne la documentation du driver
    #
    #  return "nom_driver.htm"
    #------------------------------------------------------------
-   proc getHelp { } {
+   proc getPluginHelp { } {
       return "telpad.htm"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginType
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginType { } {
+      return "pad"
    }
 
    #------------------------------------------------------------

@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.13 2007-05-19 10:40:40 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.14 2007-09-03 20:39:38 robertdelmas Exp $
 #
 
 namespace eval quickremote {
@@ -119,6 +119,34 @@ proc ::quickremote::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::quickremote::getPluginTitle { } {
+   global caption
+
+   return "$caption(quickremote,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::quickremote::getPluginHelp { } {
+   return "quickremote.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de driver
+#------------------------------------------------------------
+proc ::quickremote::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
 #
@@ -153,34 +181,6 @@ proc ::quickremote::fillConfigPage { frm } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-}
-
-#------------------------------------------------------------
-#  getPluginType
-#     retourne le type de driver
-#------------------------------------------------------------
-proc ::quickremote::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::quickremote::getHelp { } {
-   return "quickremote.htm"
-}
-
-#------------------------------------------------------------
-#  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
-#------------------------------------------------------------
-proc ::quickremote::getPluginTitle { } {
-   global caption
-
-   return "$caption(quickremote,titre)"
 }
 
 #------------------------------------------------------------

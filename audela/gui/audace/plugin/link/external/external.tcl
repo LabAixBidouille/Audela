@@ -2,7 +2,7 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.5 2007-05-19 10:38:57 robertdelmas Exp $
+# Mise a jour $Id: external.tcl,v 1.6 2007-09-03 20:38:09 robertdelmas Exp $
 #
 
 namespace eval external {
@@ -76,6 +76,34 @@ proc ::external::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::external::getPluginTitle { } {
+   global caption
+
+   return "$caption(external,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::external::getPluginHelp { } {
+   return "external.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de driver
+#------------------------------------------------------------
+proc ::external::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
 #
@@ -90,34 +118,6 @@ proc ::external::fillConfigPage { frm } {
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
 }
-#------------------------------------------------------------
-#  getPluginType
-#     retourne le type de driver
-#------------------------------------------------------------
-proc ::external::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::external::getHelp { } {
-   return "external.htm"
-}
-
-#------------------------------------------------------------
-#  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
-#------------------------------------------------------------
-proc ::external::getPluginTitle { } {
-   global caption
-
-   return "$caption(external,titre)"
-}
-
 #------------------------------------------------------------
 # getLinkIndex
 #  retourne l'index du link

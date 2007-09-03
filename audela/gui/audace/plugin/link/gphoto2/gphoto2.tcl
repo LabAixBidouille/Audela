@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.7 2007-05-19 10:39:17 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.8 2007-09-03 20:38:28 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {
@@ -77,6 +77,34 @@ proc ::gphoto2::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::gphoto2::getPluginTitle { } {
+   global caption
+
+   return "$caption(gphoto2,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::gphoto2::getPluginHelp { } {
+   return "gphoto2.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de driver
+#------------------------------------------------------------
+proc ::gphoto2::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
 #
@@ -96,34 +124,6 @@ proc ::gphoto2::fillConfigPage { frm } {
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
-}
-
-#------------------------------------------------------------
-#  getPluginType
-#     retourne le type de driver
-#------------------------------------------------------------
-proc ::gphoto2::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::gphoto2::getHelp { } {
-   return "gphoto2.htm"
-}
-
-#------------------------------------------------------------
-#  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
-#------------------------------------------------------------
-proc ::gphoto2::getPluginTitle { } {
-   global caption
-
-   return "$caption(gphoto2,titre)"
 }
 
 #------------------------------------------------------------
