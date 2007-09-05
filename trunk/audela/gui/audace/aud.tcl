@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.73 2007-06-29 22:49:54 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.74 2007-09-05 18:03:32 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1261,7 +1261,7 @@ namespace eval ::audace {
    }
 
    #------------------------------------------------------------
-   # ::audace::getPluginInfo
+   #  getPluginInfo
    #    retourne les informations sur un plugin dans le tableau passe en parametre
    #      pluginInfo(name)      nom du plugin
    #      pluginInfo(version)   version du plugin
@@ -1350,15 +1350,18 @@ namespace eval ::audace {
    }
 
    #------------------------------------------------------------
-   #  ::audace::getPluginTypeDirectory
-   #  retourne le repertoire du plugin en fonction de son type
-   #  Actuellement les types de plugin sont dans un repertoire dont le nom est
-   #  identique au type, sauf  le type "focuser" qui est dans le repertoire "equipement"
+   #  getPluginTypeDirectory
+   #    retourne le repertoire du plugin en fonction de son type
+   #    Actuellement les types de plugins sont dans un repertoire
+   #    dont le nom est identique au type, sauf le type "focuser"
+   #    ou "spectroscope" qui est dans le repertoire "equipement"
    #------------------------------------------------------------
-   proc ::audace::getPluginTypeDirectory { pluginType} {
+   proc getPluginTypeDirectory { pluginType } {
       global audace
 
-      if { $pluginType  == "focuser" } {
+      if { $pluginType == "focuser" } {
+         set typeDirectory "equipment"
+      } elseif { $pluginType == "spectroscope" } {
          set typeDirectory "equipment"
       } else {
          set typeDirectory $pluginType
@@ -1366,9 +1369,7 @@ namespace eval ::audace {
       return $typeDirectory
    }
 
-
 }
-
 
 ########################## Fin du namespace audace ##########################
 
