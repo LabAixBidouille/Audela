@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.20 2007-05-26 23:37:29 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.21 2007-09-05 19:25:57 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -181,8 +181,9 @@ proc ::confEqt::afficheAide { } {
    set selectedPluginName [lindex $private(notebookNameList) $index]
 
    #--- j'affiche la documentation
-   set pluginHelp [ $selectedPluginName\::getHelp ]
-   ::audace::showHelpPlugin equipment $selectedPluginName "$pluginHelp"
+   set pluginHelp [ $selectedPluginName\::getPluginHelp ]
+   set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+   ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -state normal
