@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.11 2007-09-02 09:19:42 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.12 2007-09-05 17:26:58 robertdelmas Exp $
 #
 
 #============================================================
@@ -2298,62 +2298,72 @@ proc methkingBuildIF {This tableau} {
     global audace panneau caption
 
     #--- Trame du panneau
-    frame $This -borderwidth 2 -height 75 -width 101 -borderwidth 2 -relief groove
+    frame $This -borderwidth 2 -relief groove
 
-    #--- Trame du titre du panneau
-    frame $This.ftitre -borderwidth 2 -height 75 -relief groove -width 92
+       #--- Trame du titre du panneau
+       frame $This.ftitre -borderwidth 2 -relief groove
 
-    #--- Label du titre
-    Button $This.ftitre.l -borderwidth 2 -text $caption(methking,titre) \
-       -command "::audace::showHelpPlugin [ ::methking::getPluginType ] methking [ ::methking::getPluginHelp ]"
-    pack $This.ftitre.l -in $This.ftitre -anchor center -expand 1 -fill both -side top
-    DynamicHelp::add $This.ftitre.l -text $caption(methking,help,titre)
-    place $This.ftitre -x 4 -y 4 -width 92 -height 22 -anchor nw -bordermode ignore
+          #--- Label du titre
+          Button $This.ftitre.l -borderwidth 2 -text $caption(methking,titre) \
+             -command "::audace::showHelpPlugin [ ::methking::getPluginType ] methking [ ::methking::getPluginHelp ]"
+          pack $This.ftitre.l -in $This.ftitre -anchor center -expand 1 -fill both -side top
+          DynamicHelp::add $This.ftitre.l -text $caption(methking,help,titre)
 
-    #Trame d'affichage des paramètres
-    set t1 [frame $This.flisteconfig -borderwidth 1 -height 100 -relief groove]
+       pack $This.ftitre -side top -fill x
 
-    menubutton $t1.configmb -text $caption(methking,parametres) -menu $t1.configmb.menu -height 1 -relief raised
-    bind $t1.configmb <Button-1> {+ ::methking::ModifieFenetreParametres}
-    pack $t1.configmb -in $t1 -pady 4
+       #--- Trame d'affichage des paramètres
+       set t1 [frame $This.flisteconfig -borderwidth 1 -relief groove]
 
-    set mc [menu $t1.configmb.menu -tearoff 0]
-    $mc add separator
-    $mc add command -label $caption(methking,edition) -command ::methking::EditeConfig
+          menubutton $t1.configmb -text $caption(methking,parametres) -menu $t1.configmb.menu -height 1 -relief raised
+          bind $t1.configmb <Button-1> {+ ::methking::ModifieFenetreParametres}
+          pack $t1.configmb -in $t1 -pady 4
 
-    place $t1 -x 4 -y 32 -width 92 -anchor nw -bordermode ignore
+          set mc [menu $t1.configmb.menu -tearoff 0]
+          $mc add separator
+          $mc add command -label $caption(methking,edition) -command ::methking::EditeConfig
 
-    # Trame des boutons
-    set t2 [frame $This.boutons -borderwidth 1 -relief groove]
-    set commande(acquisition) ::methking::CmdAcquisition
-    set commande(calcul) ::methking::CmdCalcul
-    set commande(reglage) ::methking::CmdReglage
+       pack $t1 -side top -fill x -padx 3 -pady 3
 
-    foreach champ {acquisition calcul reglage} {
-    button $t2.b$champ -borderwidth 1 -text $caption(methking,$champ) -command $commande($champ) -width 10 -relief raised
-    pack $t2.b$champ -in $t2 -anchor center -fill none -pady 4 -ipady 4
-    }
-    place $t2 -x 4 -y 74 -width 92  -anchor nw -bordermode ignore
+       #--- Trame des boutons
+       set t2 [frame $This.boutons -borderwidth 1 -relief groove]
 
-    # Bouton d'arrêt
-    frame $audace(base).methking.stop -borderwidth 1 -relief groove
-    button $audace(base).methking.stop.b -borderwidth 1 -text $caption(methking,arret) -state disabled -width 10
-    pack $audace(base).methking.stop.b -in $audace(base).methking.stop -anchor center -fill none -pady 4 -ipady 4
-    place $audace(base).methking.stop -x 4 -y 209 -width 92  -anchor nw -bordermode ignore
+          set commande(acquisition) ::methking::CmdAcquisition
+          set commande(calcul)      ::methking::CmdCalcul
+          set commande(reglage)     ::methking::CmdReglage
 
-    # Affichage des status
-    frame $This.fstatus -borderwidth 1 -height 77 -relief groove
-    label  $This.fstatus.l1 -text $caption(methking,label_status) -font {times 12 bold} -relief flat -height 1
-    pack   $This.fstatus.l1 -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
-    label  $This.fstatus.m -text $panneau(methking,status) -font {times 12 bold} -justify center -padx 0 -pady 0 -relief flat -width 11 -height 3 -wraplength 88
-    pack   $This.fstatus.m -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
-    place $This.fstatus -x 4 -y 259 -width 92 -anchor nw -bordermode ignore
+          foreach champ {acquisition calcul reglage} {
+             button $t2.b$champ -borderwidth 1 -text $caption(methking,$champ) -command $commande($champ) -width 10 -relief raised
+             pack $t2.b$champ -in $t2 -anchor center -fill none -pady 3 -ipady 4
+          }
 
-    # Affichage des infos
-    frame $This.finfos -borderwidth 1 -relief groove
-    label  $This.finfos.m -text $panneau(methking,infos) -justify center -padx 0 -pady 0 -relief flat -font {times 12 bold} -width 11 -height 2 -wraplength 88
-    pack   $This.finfos.m -in $This.finfos -anchor center -fill both -padx 0 -pady 0
-    place $This.finfos -x 4 -y 360 -width 92 -anchor nw -bordermode ignore
+       pack $t2 -side top -fill x -padx 3 -pady 3
+
+       #--- Bouton d'arrêt
+       frame $audace(base).methking.stop -borderwidth 1 -relief groove
+
+          button $audace(base).methking.stop.b -borderwidth 1 -text $caption(methking,arret) -state disabled -width 10
+          pack $audace(base).methking.stop.b -in $audace(base).methking.stop -anchor center -fill none -pady 4 -ipady 4
+
+       pack $audace(base).methking.stop -side top -fill x -padx 3 -pady 10
+
+       #--- Affichage des status
+       frame $This.fstatus -borderwidth 1 -relief groove
+
+          label  $This.fstatus.l1 -text $caption(methking,label_status) -font {times 12 bold} -relief flat -height 1
+          pack   $This.fstatus.l1 -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
+
+          label  $This.fstatus.m -text $panneau(methking,status) -font {times 12 bold} -justify center -padx 0 -pady 0 -relief flat -width 11 -height 3 -wraplength 88
+          pack   $This.fstatus.m -in $This.fstatus -anchor center -fill both -padx 0 -pady 0
+
+       pack $This.fstatus -side top -fill x -padx 3 -pady 10
+
+       #--- Affichage des infos
+       frame $This.finfos -borderwidth 1 -relief groove
+
+          label  $This.finfos.m -text $panneau(methking,infos) -justify center -padx 0 -pady 0 -relief flat -font {times 12 bold} -width 11 -height 2 -wraplength 88
+          pack   $This.finfos.m -in $This.finfos -anchor center -fill both -padx 0 -pady 0
+
+       pack $This.finfos -side top -fill x -padx 3 -pady 10
 }
 
 # === fin du fichier methking.tcl ===
