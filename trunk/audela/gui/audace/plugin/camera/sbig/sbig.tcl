@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.1 2007-06-17 14:05:40 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.2 2007-09-05 21:07:55 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -13,14 +13,6 @@ namespace eval ::sbig {
 }
 
 #
-# ::sbig::getPluginType
-#    Retourne le type de driver
-#
-proc ::sbig::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::sbig::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::sbig::getPluginTitle { } {
    global caption
 
    return "$caption(sbig,camera)"
+}
+
+#
+#  ::sbig::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::sbig::getPluginHelp { } {
+   return "sbig.htm"
+}
+
+#
+# ::sbig::getPluginType
+#    Retourne le type de driver
+#
+proc ::sbig::getPluginType { } {
+   return "camera"
 }
 
 #

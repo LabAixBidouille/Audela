@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.20 2007-06-17 13:11:20 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.21 2007-09-05 21:09:03 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -13,14 +13,6 @@ namespace eval ::webcam {
 }
 
 #
-# ::webcam::getPluginType
-#    Retourne le type de driver
-#
-proc ::webcam::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::webcam::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::webcam::getPluginTitle { } {
    global caption
 
    return "$caption(webcam,camera)"
+}
+
+#
+#  ::webcam::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::webcam::getPluginHelp { } {
+   return "webcam.htm"
+}
+
+#
+# ::webcam::getPluginType
+#    Retourne le type de driver
+#
+proc ::webcam::getPluginType { } {
+   return "camera"
 }
 
 #

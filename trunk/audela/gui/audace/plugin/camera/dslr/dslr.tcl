@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.12 2007-06-17 14:07:01 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.13 2007-09-05 21:06:43 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -13,14 +13,6 @@ namespace eval ::dslr {
 }
 
 #
-# ::dslr::getPluginType
-#    Retourne le type de driver
-#
-proc ::dslr::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::dslr::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::dslr::getPluginTitle { } {
    global caption
 
    return "$caption(dslr,camera)"
+}
+
+#
+#  ::dslr::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::dslr::getPluginHelp { } {
+   return "dslr.htm"
+}
+
+#
+# ::dslr::getPluginType
+#    Retourne le type de driver
+#
+proc ::dslr::getPluginType { } {
+   return "camera"
 }
 
 #

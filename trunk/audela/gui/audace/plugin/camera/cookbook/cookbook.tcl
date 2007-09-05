@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.12 2007-06-22 21:15:48 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.13 2007-09-05 21:06:03 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -13,14 +13,6 @@ namespace eval ::cookbook {
 }
 
 #
-# ::cookbook::getPluginType
-#    Retourne le type de driver
-#
-proc ::cookbook::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::cookbook::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::cookbook::getPluginTitle { } {
    global caption
 
    return "$caption(cookbook,camera)"
+}
+
+#
+#  ::cookbook::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::cookbook::getPluginHelp { } {
+   return "cookbook.htm"
+}
+
+#
+# ::cookbook::getPluginType
+#    Retourne le type de driver
+#
+proc ::cookbook::getPluginType { } {
+   return "camera"
 }
 
 #
