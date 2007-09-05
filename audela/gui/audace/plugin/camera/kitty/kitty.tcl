@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.1 2007-06-17 14:05:40 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.2 2007-09-05 21:07:42 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -13,14 +13,6 @@ namespace eval ::kitty {
 }
 
 #
-# ::kitty::getPluginType
-#    Retourne le type de driver
-#
-proc ::kitty::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::kitty::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::kitty::getPluginTitle { } {
    global caption
 
    return "$caption(kitty,camera)"
+}
+
+#
+#  ::kitty::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::kitty::getPluginHelp { } {
+   return "kitty.htm"
+}
+
+#
+# ::kitty::getPluginType
+#    Retourne le type de driver
+#
+proc ::kitty::getPluginType { } {
+   return "camera"
 }
 
 #

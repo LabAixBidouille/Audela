@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.11 2007-06-22 21:16:05 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.12 2007-09-05 21:07:01 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -13,14 +13,6 @@ namespace eval ::fingerlakes {
 }
 
 #
-# ::fingerlakes::getPluginType
-#    Retourne le type de driver
-#
-proc ::fingerlakes::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::fingerlakes::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::fingerlakes::getPluginTitle { } {
    global caption
 
    return "$caption(fingerlakes,camera)"
+}
+
+#
+#  ::fingerlakes::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::fingerlakes::getPluginHelp { } {
+   return "fingerlakes.htm"
+}
+
+#
+# ::fingerlakes::getPluginType
+#    Retourne le type de driver
+#
+proc ::fingerlakes::getPluginType { } {
+   return "camera"
 }
 
 #

@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.11 2007-06-17 13:10:10 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.12 2007-09-05 21:06:24 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -13,14 +13,6 @@ namespace eval ::coolpix {
 }
 
 #
-# ::coolpix::getPluginType
-#    Retourne le type de driver
-#
-proc ::coolpix::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::coolpix::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::coolpix::getPluginTitle { } {
    global caption
 
    return "$caption(coolpix,camera)"
+}
+
+#
+#  ::coolpix::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::coolpix::getPluginHelp { } {
+   return "coolpix.htm"
+}
+
+#
+# ::coolpix::getPluginType
+#    Retourne le type de driver
+#
+proc ::coolpix::getPluginType { } {
+   return "camera"
 }
 
 #

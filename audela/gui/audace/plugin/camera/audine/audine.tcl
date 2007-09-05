@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.1 2007-06-17 14:05:39 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.2 2007-09-05 21:05:32 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -13,14 +13,6 @@ namespace eval ::audine {
 }
 
 #
-# ::audine::getPluginType
-#    Retourne le type de driver
-#
-proc ::audine::getPluginType { } {
-   return "camera"
-}
-
-#
 # ::audine::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::audine::getPluginTitle { } {
    global caption
 
    return "$caption(audine,camera)"
+}
+
+#
+#  ::audine::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::audine::getPluginHelp { } {
+   return "audine.htm"
+}
+
+#
+# ::audine::getPluginType
+#    Retourne le type de driver
+#
+proc ::audine::getPluginType { } {
+   return "camera"
 }
 
 #
