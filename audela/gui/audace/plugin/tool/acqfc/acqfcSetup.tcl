@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.2 2007-08-30 18:17:14 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.3 2007-09-05 17:29:19 robertdelmas Exp $
 #
 
 namespace eval acqfcSetup {
@@ -169,7 +169,7 @@ namespace eval acqfcSetup {
       pack $panneau(AcqFC,$visuNo,acqfcSetup).lab2 -in $panneau(AcqFC,$visuNo,acqfcSetup).frame7 \
          -side left -fill both -expand 0 -padx 5 -pady 5
 
-      #--- Cree le checkbutton pour le commentaire 1
+      #--- Cree le checkbutton pour le commentaire 2
       checkbutton $panneau(AcqFC,$visuNo,acqfcSetup).check2 -highlightthickness 0 \
          -variable panneau(AcqFC,$visuNo,save_file_log)
       pack $panneau(AcqFC,$visuNo,acqfcSetup).check2 -in $panneau(AcqFC,$visuNo,acqfcSetup).frame8 \
