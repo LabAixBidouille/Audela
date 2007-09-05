@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.51 2007-09-01 09:13:50 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.52 2007-09-05 17:28:39 robertdelmas Exp $
 #
 
 #==============================================================
@@ -236,7 +236,7 @@ namespace eval ::AcqFC {
          Message $visuNo log $caption(acqfc,ouvsess) [ package version acqfc ]
          set date [clock format [clock seconds] -format "%A %d %B %Y"]
          set heure $audace(tu,format,hmsint)
-         Message $visuNo console $caption(acqfc,affheure) $date $heure
+         Message $visuNo consolog $caption(acqfc,affheure) $date $heure
          #--- Definition du binding pour declencher l'acquisition (ou l'arret) par Echap.
          bind all <Key-Escape> "::AcqFC::GoStop $visuNo"
       }
@@ -2342,9 +2342,9 @@ namespace eval ::AcqFC {
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
             catch {
-                puts -nonewline $::AcqFC::log_id($visuNo) [eval [concat {format} $args]]
-                #--- Force l'ecriture immediate sur le disque
-                flush $::AcqFC::log_id($visuNo)
+               puts -nonewline $::AcqFC::log_id($visuNo) [eval [concat {format} $args]]
+               #--- Force l'ecriture immediate sur le disque
+               flush $::AcqFC::log_id($visuNo)
             }
          }
          consolog {
@@ -2355,9 +2355,9 @@ namespace eval ::AcqFC {
             set temps [clock format [clock seconds] -format %H:%M:%S]
             append temps " "
             catch {
-                puts -nonewline $::AcqFC::log_id($visuNo) [eval [concat {format} $args]]
-                #--- Force l'ecriture immediate sur le disque
-                flush $::AcqFC::log_id($visuNo)
+               puts -nonewline $::AcqFC::log_id($visuNo) [eval [concat {format} $args]]
+               #--- Force l'ecriture immediate sur le disque
+               flush $::AcqFC::log_id($visuNo)
             }
          }
          default {
