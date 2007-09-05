@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.17 2007-09-03 20:45:17 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.18 2007-09-05 19:55:13 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -58,11 +58,11 @@ proc ::confLink::afficheAide { } {
    #--- je recupere l'index de l'onglet selectionne
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
    if { $index != -1 } {
-      set pluginName [lindex $private(namespaceList) [expr $index -1]]
-      set pluginFolderType [ $pluginName\::getPluginType ]
+      set selectedPluginName [lindex $private(namespaceList) [expr $index -1]]
       #--- j'affiche la documentation
-      set pluginHelp [ $pluginName\::getPluginHelp ]
-      ::audace::showHelpPlugin $pluginFolderType $pluginName "$pluginHelp"
+      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
+      set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+      ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
    }
 
    $private(frm).cmd.ok configure -state normal
