@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.88 2007-09-01 09:04:36 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.89 2007-09-05 21:04:18 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -256,8 +256,10 @@ namespace eval ::confCam {
       $This.cmd.appliquer configure -state disabled
       $This.cmd.aide configure -relief groove -state disabled
       $This.cmd.fermer configure -state disabled
-      set camName [lindex $confCam(names) [expr [Rnotebook:currentIndex $This.usr.book ] -1 ] ]
-      ::audace::showHelpPlugin camera $camName "$camName.htm"
+      set selectedPluginName [lindex $confCam(names) [expr [Rnotebook:currentIndex $This.usr.book ] -1 ] ]
+      set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
+      ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -state normal
       $This.cmd.aide configure -relief raised -state normal
