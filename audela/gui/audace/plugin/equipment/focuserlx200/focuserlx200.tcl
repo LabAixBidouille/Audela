@@ -2,14 +2,14 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.10 2007-06-16 08:42:25 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.11 2007-09-05 19:25:14 robertdelmas Exp $
 #
 
 #
 # Procedures generiques obligatoires (pour configurer tous les plugins camera, monture, equipement) :
 #     initPlugin        : Initialise le namespace (appelee pendant le chargement de ce source)
 #     getLabel          : Retourne le nom affichable du plugin
-#     getHelp           : Retourne la documentation htm associee
+#     getPluginHelp     : Retourne la documentation htm associee
 #     getPluginType     : Retourne le type de plugin (pour classer le plugin dans le menu principal)
 #     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
 #     configurePlugin   : Configure le plugin
@@ -62,12 +62,12 @@ proc ::focuserlx200::getPluginType { } {
 }
 
 #------------------------------------------------------------
-#  ::focuserlx200::getHelp
+#  ::focuserlx200::getPluginHelp
 #     retourne la documentation du equipement
 #
 #  return "nom_equipement.htm"
 #------------------------------------------------------------
-proc ::focuserlx200::getHelp { } {
+proc ::focuserlx200::getPluginHelp { } {
    return "focuserlx200.htm"
 }
 

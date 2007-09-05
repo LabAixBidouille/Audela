@@ -2,7 +2,21 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.9 2007-05-23 16:32:45 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.10 2007-09-05 19:24:58 robertdelmas Exp $
+#
+
+#
+# Procedures generiques obligatoires (pour configurer tous les plugins camera, monture, equipement) :
+#     initPlugin        : Initialise le namespace (appelee pendant le chargement de ce source)
+#     getLabel          : Retourne le nom affichable du plugin
+#     getPluginHelp     : Retourne la documentation htm associee
+#     getPluginType     : Retourne le type de plugin (pour classer le plugin dans le menu principal)
+#     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
+#     configurePlugin   : Configure le plugin
+#     stopPlugin        : Arrete le plugin et libere les ressources occupees
+#     isReady           : Informe de l'etat de fonctionnement du plugin
+#
+# Procedures specifiques a ce plugin :
 #
 
 namespace eval ::focuserjmi {
@@ -11,6 +25,10 @@ namespace eval ::focuserjmi {
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] focuserjmi.cap ]
 }
+
+#==============================================================
+# Procedures generiques de configuration des equipements
+#==============================================================
 
 #------------------------------------------------------------
 #  ::focuserjmi::getPluginTitle
@@ -67,12 +85,12 @@ proc ::focuserjmi::initPlugin { } {
 }
 
 #------------------------------------------------------------
-#  ::focuserjmi::getHelp
+#  ::focuserjmi::getPluginHelp
 #     retourne la documentation du equipement
 #
 #  return "nom_equipement.htm"
 #------------------------------------------------------------
-proc ::focuserjmi::getHelp { } {
+proc ::focuserjmi::getPluginHelp { } {
    return "focuserjmi.htm"
 }
 
