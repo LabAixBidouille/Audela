@@ -2,7 +2,7 @@
 # Fichier : pretrfcSetup.tcl
 # Description : Choisir l'affichage ou non de messages sur la Console
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.5 2007-08-31 17:51:52 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.tcl,v 1.6 2007-09-05 17:30:53 robertdelmas Exp $
 #
 
 namespace eval pretrfcSetup {
@@ -26,7 +26,8 @@ namespace eval pretrfcSetup {
       global conf_pt_fc
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists conf_pt_fc(messages) ] } { set conf_pt_fc(messages) "1" }
+      if { ! [ info exists conf_pt_fc(messages) ] }      { set conf_pt_fc(messages)      "1" }
+      if { ! [ info exists conf_pt_fc(save_file_log) ] } { set conf_pt_fc(save_file_log) "1" }
    }
 
    #
@@ -37,7 +38,8 @@ namespace eval pretrfcSetup {
       global conf_pt_fc panneau
 
       #--- confToWidget
-      set panneau(pretrfc,messages) $conf_pt_fc(messages)
+      set panneau(pretrfc,messages)      $conf_pt_fc(messages)
+      set panneau(pretrfc,save_file_log) $conf_pt_fc(save_file_log)
    }
 
    #
@@ -124,41 +126,35 @@ namespace eval pretrfcSetup {
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame4 -borderwidth 0
-      pack $This.frame4 -in $This.frame1 -side left -fill both -expand 1
+      pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
 
       frame $This.frame5 -borderwidth 0
-      pack $This.frame5 -in $This.frame1 -side right -fill both -expand 1
+      pack $This.frame5 -in $This.frame3 -side left -fill both -expand 1
 
       frame $This.frame6 -borderwidth 0
-      pack $This.frame6 -in $This.frame4 -side top -fill both -expand 1
+      pack $This.frame6 -in $This.frame3 -side right -fill both -expand 1
 
       frame $This.frame7 -borderwidth 0
-      pack $This.frame7 -in $This.frame5 -side top -fill both -expand 1
+      pack $This.frame7 -in $This.frame4 -side left -fill both -expand 1
 
-      #--- Cree le label pour les commentaires
-      label $This.lab1 -text "$caption(pretrfcSetup,texte)"
-      pack $This.lab1 -in $This.frame3 -side top -fill both -expand 1 -padx 5 -pady 2
+      frame $This.frame8 -borderwidth 0
+      pack $This.frame8 -in $This.frame4 -side right -fill both -expand 1
 
-      #--- Cree le label et les radio-boutons de l'outil de pretraitement
-      if { [ info exists panneau(menu_name,pretrfc) ] == "1" } {
-         label $This.lab4 -text "$panneau(menu_name,pretrfc)"
-         pack $This.lab4 -in $This.frame6 -side left -anchor w -padx 5 -pady 5
+      #--- Cree le label pour le commentaire 1
+      label $This.lab1 -text "$caption(pretrfcSetup,texte1)"
+      pack $This.lab1 -in $This.frame5 -side left -fill both -expand 0 -padx 5 -pady 5
 
-         radiobutton $This.radio2 -anchor w -highlightthickness 0 \
-            -text "$caption(pretrfcSetup,non)" -value 0 \
-            -variable panneau(pretrfc,messages)
-         pack $This.radio2 -in $This.frame7 -side right -padx 5 -pady 5 -ipady 0
+      #--- Cree le checkbutton pour le commentaire 1
+      checkbutton $This.check1 -highlightthickness 0 -variable panneau(pretrfc,messages)
+      pack $This.check1 -in $This.frame6 -side right -padx 5 -pady 0
 
-         radiobutton $This.radio3 -anchor w -highlightthickness 0 \
-            -text "$caption(pretrfcSetup,oui)" -value 1 \
-            -variable panneau(pretrfc,messages)
-         pack $This.radio3 -in $This.frame7 -side right -padx 5 -pady 5 -ipady 0
-      } else {
-         label $This.lab4 -text ""
-         pack $This.lab4 -in $This.frame6 -side left -anchor w -padx 5 -pady 0
-         label $This.lab4a -text ""
-         pack $This.lab4a -in $This.frame7 -side right -anchor w -padx 5 -pady 0
-      }
+      #--- Cree le label pour le commentaire 2
+      label $This.lab2 -text "$caption(pretrfcSetup,texte2)"
+      pack $This.lab2 -in $This.frame7 -side left -fill both -expand 0 -padx 5 -pady 5
+
+      #--- Cree le checkbutton pour le commentaire 2
+      checkbutton $This.check2 -highlightthickness 0 -variable panneau(pretrfc,save_file_log)
+      pack $This.check2 -in $This.frame8 -side right -padx 5 -pady 0
 
       #--- Cree le bouton 'OK'
       button $This.but_ok -text "$caption(pretrfcSetup,ok)" -width 7 -borderwidth 2 \
@@ -173,7 +169,7 @@ namespace eval pretrfcSetup {
       pack $This.but_appliquer -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree un label 'Invisible' pour simuler un espacement
-      label $This.lab_invisible -width 10
+      label $This.lab_invisible -width 7
       pack $This.lab_invisible -in $This.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Fermer'
@@ -203,7 +199,8 @@ namespace eval pretrfcSetup {
    proc widgetToConf { } {
       global conf_pt_fc panneau
 
-      set conf_pt_fc(messages) $panneau(pretrfc,messages)
+      set conf_pt_fc(messages)      $panneau(pretrfc,messages)
+      set conf_pt_fc(save_file_log) $panneau(pretrfc,save_file_log)
    }
 }
 
