@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.31 2007-06-20 21:34:24 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.32 2007-09-06 17:10:14 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -48,8 +48,12 @@ namespace eval ::confTel {
       #--- Initalise le numero de telescope a nul
       set audace(telNo) "0"
 
-      #--- Initialisation des variables
+      #--- Initialisation de variables
       set confTel(geometry) $conf(telescope,geometry)
+
+      #--- Initalise les listes de montures
+      set confTel(labels) [ list LX200 Ouranos AudeCom Temma ASCOM Celestron ]
+      set confTel(names)  [ list lx200 ouranos audecom temma ascom celestron ]
    }
 
    #
@@ -133,13 +137,16 @@ namespace eval ::confTel {
    #
    proc afficherAide { } {
       variable This
-      global confTel help
+      global confTel
 
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -state disabled
       $This.cmd.aide configure -relief groove -state disabled
       $This.cmd.fermer configure -state disabled
-      ::audace::showHelpPlugin mount $confTel(tel) "$confTel(tel).htm"
+      set selectedPluginName [lindex $confTel(names) [expr [Rnotebook:currentIndex $This.usr.book ] -1 ] ]
+      set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
+      ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -state normal
       $This.cmd.aide configure -relief raised -state normal
