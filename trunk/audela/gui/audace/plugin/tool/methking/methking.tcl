@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.12 2007-09-05 17:26:58 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.13 2007-09-06 17:52:54 robertdelmas Exp $
 #
 
 #============================================================
@@ -10,7 +10,7 @@
 #    initialise le namespace
 #============================================================
 namespace eval ::methking {
-    package provide methking 1.15
+    package provide methking 1.16
 
     # Chargement des captions pour recuperer le titre utilise par getPluginLabel
     source [ file join [file dirname [info script]] methking.cap ]
@@ -20,10 +20,6 @@ namespace eval ::methking {
     variable king_config
     variable fichier_log
     variable omega
-    variable numero_version
-
-    # Numéro de la version du logiciel
-    set numero_version v1.15
 
     # Vitesse de rotation de la Terre (2*pi/86164.0905 rd/s)
     set omega 7.2921159e-5
@@ -991,7 +987,6 @@ namespace eval ::methking {
         variable king_config
         variable liste_motcle
         variable log_id
-        variable numero_version
         global panneau audace caption conf
 
         # Gestion du fichier de log
@@ -1009,7 +1004,7 @@ namespace eval ::methking {
 
         # Entête du fichier
         Message consolog "%s\n" $caption(methking,titre_console_1)
-        Message consolog "%s %s\n" $caption(methking,titre_console_2) $numero_version
+        Message consolog "%s %s\n" $caption(methking,titre_console_2) [ package version methking ]
         Message consolog "%s\n" $caption(methking,copyright)
         set temps [clock format [clock seconds] -format %Y%m%d]
         Message log "%s : %s\n" $caption(methking,date) $temps
@@ -1058,7 +1053,7 @@ namespace eval ::methking {
         $audace(base).methking.flisteconfig.configmb.menu delete 0 [expr $panneau(methking,nombre_config) - 1]
 
         # Fermeture du fichier de log
-        Message log "%s\n" $caption(methking,fin_session)
+        Message log "%s\n\n" $caption(methking,fin_session)
         close $log_id
 
         # Fermeture de la fenetre des parametres
