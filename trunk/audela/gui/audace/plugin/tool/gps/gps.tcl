@@ -2,19 +2,17 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.7 2007-09-02 09:17:01 robertdelmas Exp $
+# Mise a jour $Id: gps.tcl,v 1.8 2007-09-06 17:41:11 robertdelmas Exp $
 #
 
 namespace eval ::gps {
     variable This
     variable parametres
-    variable numero_version
     variable base
 
-    package provide gps 3.3
+    package provide gps 3.4
 
     source [file join [file dirname [info script]] gps.cap]
-    set numero_version v3.3
 
     ##############################################################
     ### AffichageAltitude ########################################
@@ -172,8 +170,8 @@ namespace eval ::gps {
         variable serie
         global caption
 
-        place forget $This.fautomatique.fautobis.barret_auto
-        place $This.fautomatique.fautobis.bdemarrage_auto -x 4 -y 4 -width 76 -height 23 -anchor nw -bordermode ignore
+        pack forget $This.fautomatique.fautobis.barret_auto
+        pack $This.fautomatique.fautobis.bdemarrage_auto -side top -fill x -padx 3 -pady 3
         update idletasks
 
         set gps(confirmation_arret) 0
@@ -216,8 +214,8 @@ namespace eval ::gps {
         variable serie
         global caption
 
-        place forget $This.fmanuel.fgps.barret_gps
-        place $This.fmanuel.fgps.blancement_gps -x 4 -y 20 -width 76 -height 23 -anchor nw -bordermode ignore
+        pack forget $This.fmanuel.fgps.barret_gps
+        pack $This.fmanuel.fgps.blancement_gps -side top -fill x -padx 3 -pady 3
         update idletasks
 
         set gps(confirmation_arret) 0
@@ -263,8 +261,8 @@ namespace eval ::gps {
         set horloge(confirmation_arret) 0
         set horloge(demande_arret) 1
 
-        place forget $This.fmanuel.freg.barret_horloge
-        place $This.fmanuel.freg.becoute_horloge -x 4 -y 20 -width 76 -height 23 -anchor nw -bordermode ignore
+        pack forget $This.fmanuel.freg.barret_horloge
+        pack $This.fmanuel.freg.becoute_horloge -side top -fill x -padx 3 -pady 3
         update idletasks
 
         bind all <Key-Prior> {}
@@ -447,19 +445,19 @@ namespace eval ::gps {
         variable parametres
 
         # Partie graphique
-        frame $This -borderwidth 2 -height 75 -width 101 -borderwidth 2 -relief groove
+        frame $This -borderwidth 2 -relief groove
         #--- Frame du titre
-        frame $This.fra1 -borderwidth 2 -height 75 -relief groove -width 92
+        frame $This.fra1 -borderwidth 2 -relief groove
         #--- Label du titre
         Button $This.fra1.but -borderwidth 2 -text $caption(gps,titre) -font $police(gras) \
             -command "::audace::showHelpPlugin [ ::gps::getPluginType ] gps [ ::gps::getPluginHelp ]"
         ::pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
         DynamicHelp::add $This.fra1.but -text $caption(gps,help,titre)
-        place $This.fra1 -x 4 -y 4 -width 92 -height 22 -anchor nw -bordermode ignore
+        pack $This.fra1 -side top -fill x
 
         #Trame d'affichage des paramètres
         # Construction de la trame
-        set t1 [frame $This.fparametre -borderwidth 1 -width 125 -relief groove]
+        set t1 [frame $This.fparametre -borderwidth 1 -relief groove]
         # Définition des menus
         menubutton $t1.mb -text $caption(gps,parametre) -menu $t1.mb.menu -height 1 -relief raised -font $police(gras)
         ::pack $t1.mb -in $t1 -pady 4
@@ -473,15 +471,15 @@ namespace eval ::gps {
         set sm2 [menu $m1.sm2 -tearoff 0]
         # Les sous-menus des ports et des intervalles de synchro sont créés plus tard pour tenir compte des paramétres initialisés ultérieurement
         # Positionnement de la trame
-        place $t1 -x 4 -y 32 -width 92 -anchor nw -bordermode ignore
+        pack $t1 -side top -fill x -padx 3 -pady 3
 
         #Trame Commande Manuel (t2)
-        set t2 [frame $This.fmanuel -borderwidth 1 -relief groove -width 125]
+        set t2 [frame $This.fmanuel -borderwidth 1 -relief groove]
         label $t2.l -text $caption(gps,manuel) -font $police(gras)
-       ::pack $t2.l -fill x -side top
+        ::pack $t2.l -fill x -side top
 
         #Trame du GPS (t21)
-        set t21 [frame $t2.fgps -borderwidth 1 -relief groove -width 120]
+        set t21 [frame $t2.fgps -borderwidth 1 -relief groove]
         label $t21.l -text $caption(gps,titre_gps) -font $police(gras)
         ::pack $t21.l -fill x -side top
         # Génération des boutons
@@ -489,66 +487,56 @@ namespace eval ::gps {
         set commande(arret_gps) ::gps::ArretGPS
         set commande(synchro_temps) ::gps::SynchroTempsGPS
         set commande(synchro_position) ::gps::SynchroPositionGPS
-        set place(lancement_gps) 20
-        set place(arret_gps) 20
-        set place(synchro_temps) 47
-        set place(synchro_position) 74
 
-        foreach champ {lancement_gps arret_gps synchro_temps synchro_position} {
+        foreach champ {synchro_position synchro_temps arret_gps lancement_gps} {
             button $t21.b$champ -text $caption(gps,$champ) -command $commande($champ) -font $police(gras)
-            place $t21.b$champ -x 4 -y $place($champ) -width 76 -height 23 -anchor nw -bordermode ignore
+            pack $t21.b$champ -in $t21 -pady 2 -side bottom
         }
-        place $t21 -x 4 -y 20 -width 84 -height 101 -anchor nw -bordermode ignore
-        place forget $t21.barret_gps
+        pack $t21 -side top -fill x -padx 3 -pady 3
+        pack forget $t21.barret_gps
 
         # Trame du réglage fin (t22)
-        set t22 [frame $t2.freg -borderwidth 1 -relief groove -width 125]
+        set t22 [frame $t2.freg -borderwidth 1 -relief groove]
         label $t22.l -text $caption(gps,titre_reglage_fin) -font $police(gras)
         ::pack $t22.l -fill x -side top
         set commande(ecoute_horloge) ::gps::EcouteHorloge
         set commande(arret_horloge) ::gps::ArretHorloge
         set commande(avance) {::gps::AvanceHorloge}
         set commande(retard) {::gps::RetardHorloge }
-        set place(ecoute_horloge) 20
-        set place(arret_horloge) 20
-        set place(avance) 47
-        set place(retard) 74
-        foreach champ {ecoute_horloge arret_horloge avance retard} {
+        foreach champ {retard avance arret_horloge ecoute_horloge} {
             button $t22.b$champ -text $caption(gps,$champ) -command $commande($champ) -font $police(gras)
-            place $t22.b$champ -x 4 -y $place($champ) -width 76 -height 23 -anchor nw -bordermode ignore
+            pack $t22.b$champ -in $t22 -pady 2 -side bottom
         }
-        place $t22 -x 4 -y 128 -width 84 -height 101 -anchor nw -bordermode ignore
-        place forget $t22.barret_horloge
+        pack $t22 -side top -fill x -padx 3 -pady 3
+        pack forget $t22.barret_horloge
 
-        place $t2 -x 4 -y 74 -width 92 -height 233 -anchor nw -bordermode ignore
+        pack $t2 -side top -fill x -padx 3 -pady 3
 
         #Trame Commande Automatique (t3)
-        set t3 [frame $This.fautomatique -borderwidth 1 -relief groove -width 125]
+        set t3 [frame $This.fautomatique -borderwidth 1 -relief groove]
         label $t3.l -text $caption(gps,automatique) -font $police(gras)
         ::pack $t3.l -fill x -side top
 
-        set t31 [frame $t3.fautobis -borderwidth 1 -relief groove -width 120]
+        set t31 [frame $t3.fautobis -borderwidth 1 -relief groove]
         set commande(demarrage_auto) ::gps::DemarrageAuto
         set commande(arret_auto) ::gps::ArretAuto
-        set place(demarrage_auto) 4
-        set place(arret_auto) 4
         foreach champ {demarrage_auto arret_auto} {
             button $t31.b$champ -text $caption(gps,$champ) -command $commande($champ) -font $police(gras)
-            place $t31.b$champ -x 4 -y $place($champ) -width 76 -height 23 -anchor nw -bordermode ignore
+            pack $t31.b$champ -in $t31 -pady 2
         }
-        place $t31 -x 4 -y 20 -width 84 -height 31 -anchor nw -bordermode ignore
-        place forget $t31.barret_auto
+        pack $t31 -side top -fill x -padx 3 -pady 3
+        pack forget $t31.barret_auto
 
-        place $t3 -x 4 -y 315 -width 92 -height 55 -anchor nw -bordermode ignore
+        pack $t3 -side top -fill x -padx 3 -pady 3
 
         # Etats d'activation des boutons
         EtatBouton normal normal disabled disabled disabled normal disabled disabled disabled normal disabled
 
         # Trame des infos (couleurs fixes)
-        set t4 [frame $This.finfos -borderwidth 1 -relief groove -width 125]
+        set t4 [frame $This.finfos -borderwidth 1 -relief groove]
         label $t4.color_invariant -bg $couleur(fond,entree) -fg $couleur(donnee,valide) -font $police(gras)
         ::pack $t4.color_invariant -fill both -side top
-        place $t4 -x 4 -y 380 -width 92 -height 20 -anchor nw -bordermode ignore
+        pack $t4 -side top -fill x -padx 3 -pady 3
 
         #--- Mise a jour dynamique des couleurs
         ::confColor::applyColor $This
@@ -574,8 +562,8 @@ namespace eval ::gps {
 
         set etat automatique
 
-        place forget $This.fautomatique.fautobis.bdemarrage_auto
-        place $This.fautomatique.fautobis.barret_auto -x 4 -y 4 -width 76 -height 23 -anchor nw -bordermode ignore
+        pack forget $This.fautomatique.fautobis.bdemarrage_auto
+        pack $This.fautomatique.fautobis.barret_auto -side top -fill x -padx 3 -pady 3
         update idletasks
 
         EtatBouton disabled disabled disabled disabled disabled disabled disabled disabled disabled disabled normal
@@ -624,8 +612,8 @@ namespace eval ::gps {
 
         set etat horloge
 
-        place forget $This.fmanuel.freg.becoute_horloge
-        place $This.fmanuel.freg.barret_horloge -x 4 -y 20 -width 76 -height 23 -anchor nw -bordermode ignore
+        pack forget $This.fmanuel.freg.becoute_horloge
+        pack $This.fmanuel.freg.barret_horloge -side top -fill x -padx 3 -pady 3
         update idletasks
         EtatBouton disabled disabled disabled disabled disabled disabled normal normal normal disabled disabled
 
@@ -759,7 +747,6 @@ namespace eval ::gps {
         global caption
         variable position
         variable parametres
-        variable numero_version
         variable etat
 
         if {[info exists etat]} {
@@ -825,7 +812,7 @@ namespace eval ::gps {
         }
 
 
-        Message consolog "---------- %s %s ----------\n" $caption(gps,bienvenue) $numero_version
+        Message consolog "---------- %s %s ----------\n" $caption(gps,bienvenue) [ package version gps ]
         Message consolog "%s\n" $caption(gps,copyright)
         set etat repos
     }
@@ -871,8 +858,8 @@ namespace eval ::gps {
 
         set etat gps
 
-        place forget $This.fmanuel.fgps.blancement_gps
-        place $This.fmanuel.fgps.barret_gps -x 4 -y 20 -width 76 -height 23 -anchor nw -bordermode ignore
+        pack forget $This.fmanuel.fgps.blancement_gps
+        pack $This.fmanuel.fgps.barret_gps -side top -fill x -padx 3 -pady 3
         update idletasks
 
         EtatBouton disabled disabled normal disabled disabled disabled disabled disabled disabled disabled disabled
@@ -916,7 +903,7 @@ namespace eval ::gps {
                 ::console::disp [eval [concat {format} $args]]
                 update idletasks
             }
-           test {
+            test {
                 ::console::disp "Test : "
                 ::console::disp [eval [concat {format} $args]]
             }
@@ -1126,7 +1113,7 @@ namespace eval ::gps {
         if {$etat == "gps"} {ArretGPS}
         if {$etat == "horloge"} {ArretHorloge}
 
-        Message consolog "---------- %s -------------\n" $caption(gps,tchao)
+        Message consolog "---------- %s -------------\n\n" $caption(gps,tchao)
 
         # Sauvegarde des paramètres
         set nom_fichier [file join $audace(rep_plugin) tool gps gps.ini]
@@ -1144,7 +1131,7 @@ namespace eval ::gps {
     }
 
     ##############################################################
-    ### TestEntier #############################################
+    ### TestEntier ###############################################
     ##############################################################
     proc TestEntier {valeur} {
         set test 0
@@ -1182,7 +1169,7 @@ namespace eval ::gps {
     }
 
     ##############################################################
-    ### TraitementHeure ###########################################
+    ### TraitementHeure ##########################################
     ##############################################################
     proc TraitementHeure {ligne temps_pc} {
         global gps_synchro_temps
@@ -1336,7 +1323,7 @@ namespace eval ::gps {
     }
 
     ##############################################################
-    ### TraitementPosition ########################################
+    ### TraitementPosition #######################################
     ##############################################################
     proc TraitementPosition {ligne} {
         variable gps
