@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.15 2007-09-03 20:39:17 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.16 2007-09-06 17:11:13 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
@@ -145,7 +145,7 @@ proc ::quickaudine::fillConfigPage { frm } {
       Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickaudine,refresh)" -command { ::quickaudine::refreshAvailableList }
       pack $frm.available.refresh -in [$frm.available getframe] -side left
-   pack $frm.available -side top -fill both
+   pack $frm.available -side top -fill both -expand true
 
    #--- label et entry pour le delai avant la lecture du CCD
    frame $frm.delayshutter -borderwidth 0 -relief raised
@@ -172,8 +172,8 @@ proc ::quickaudine::fillConfigPage { frm } {
    #--- j'affiche l'eventuel message d'erreur
    frame $frm.statusMessage -borderwidth 2 -relief ridge
       label $frm.statusMessage.statusMessage_lab -text "$caption(quickaudine,error)"
-      pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 5
-      Label $frm.statusMessage.status -textvariable ::quickaudine::private(statusMessage) -width 60 -height 4 \
+      pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 2
+      Label $frm.statusMessage.status -textvariable ::quickaudine::private(statusMessage) -height 4 \
          -wraplength 400 -justify left
       pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
    pack $frm.statusMessage -side top -fill both
