@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.74 2007-09-05 18:03:32 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.75 2007-09-06 17:12:39 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -1357,8 +1357,6 @@ namespace eval ::audace {
    #    ou "spectroscope" qui est dans le repertoire "equipement"
    #------------------------------------------------------------
    proc getPluginTypeDirectory { pluginType } {
-      global audace
-
       if { $pluginType == "focuser" } {
          set typeDirectory "equipment"
       } elseif { $pluginType == "spectroscope" } {
