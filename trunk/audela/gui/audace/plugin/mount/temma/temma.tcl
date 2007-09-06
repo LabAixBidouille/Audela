@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.8 2007-06-19 20:15:44 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.9 2007-09-06 17:08:10 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -13,14 +13,6 @@ namespace eval ::temma {
 }
 
 #
-# ::temma::getPluginType
-#    Retourne le type de driver
-#
-proc ::temma::getPluginType { } {
-   return "mount"
-}
-
-#
 # ::temma::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::temma::getPluginTitle { } {
    global caption
 
    return "$caption(temma,monture)"
+}
+
+#
+#  ::temma::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::temma::getPluginHelp { } {
+   return "temma.htm"
+}
+
+#
+# ::temma::getPluginType
+#    Retourne le type de driver
+#
+proc ::temma::getPluginType { } {
+   return "mount"
 }
 
 #

@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.1 2007-06-19 20:14:27 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.2 2007-09-06 17:07:41 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -13,14 +13,6 @@ namespace eval ::lx200 {
 }
 
 #
-# ::lx200::getPluginType
-#    Retourne le type de driver
-#
-proc ::lx200::getPluginType { } {
-   return "mount"
-}
-
-#
 # ::lx200::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::lx200::getPluginTitle { } {
    global caption
 
    return "$caption(lx200,monture)"
+}
+
+#
+#  ::lx200::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::lx200::getPluginHelp { } {
+   return "lx200.htm"
+}
+
+#
+# ::lx200::getPluginType
+#    Retourne le type de driver
+#
+proc ::lx200::getPluginType { } {
+   return "mount"
 }
 
 #

@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.1 2007-06-19 20:14:56 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.2 2007-09-06 17:07:54 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -13,14 +13,6 @@ namespace eval ::ouranos {
 }
 
 #
-# ::ouranos::getPluginType
-#    Retourne le type de driver
-#
-proc ::ouranos::getPluginType { } {
-   return "mount"
-}
-
-#
 # ::ouranos::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::ouranos::getPluginTitle { } {
    global caption
 
    return "$caption(ouranos,monture)"
+}
+
+#
+#  ::ouranos::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::ouranos::getPluginHelp { } {
+   return "ouranos.htm"
+}
+
+#
+# ::ouranos::getPluginType
+#    Retourne le type de driver
+#
+proc ::ouranos::getPluginType { } {
+   return "mount"
 }
 
 #
