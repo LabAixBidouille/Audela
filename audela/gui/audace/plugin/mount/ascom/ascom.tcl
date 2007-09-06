@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.1 2007-06-19 20:11:50 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.2 2007-09-06 17:06:54 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -13,14 +13,6 @@ namespace eval ::ascom {
 }
 
 #
-# ::ascom::getPluginType
-#    Retourne le type de driver
-#
-proc ::ascom::getPluginType { } {
-   return "mount"
-}
-
-#
 # ::ascom::getPluginTitle
 #    Retourne le label du driver dans la langue de l'utilisateur
 #
@@ -28,6 +20,22 @@ proc ::ascom::getPluginTitle { } {
    global caption
 
    return "$caption(ascom,monture)"
+}
+
+#
+#  ::ascom::getPluginHelp
+#     Retourne la documentation du driver
+#
+proc ::ascom::getPluginHelp { } {
+   return "ascom.htm"
+}
+
+#
+# ::ascom::getPluginType
+#    Retourne le type de driver
+#
+proc ::ascom::getPluginType { } {
+   return "mount"
 }
 
 #
