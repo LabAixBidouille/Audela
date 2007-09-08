@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.32 2007-08-25 16:08:40 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.33 2007-09-08 16:54:13 robertdelmas Exp $
 #
 
 #
@@ -1239,11 +1239,11 @@ namespace eval confFichierIma {
       foreach visuNo [ ::visu::list ] {
          if { $conf(fichier,compres) == "1" } {
             set panneau(AcqFC,$visuNo,extension)  $conf(extension,new).gz
-            set panneau(dscan,extension_image)    $conf(extension,new).gz
+            set panneau(scan,extension_image)     $conf(extension,new).gz
             set panneau(scanfast,extension_image) $conf(extension,new).gz
          } else {
             set panneau(AcqFC,$visuNo,extension)  $conf(extension,new)
-            set panneau(dscan,extension_image)    $conf(extension,new)
+            set panneau(scan,extension_image)     $conf(extension,new)
             set panneau(scanfast,extension_image) $conf(extension,new)
          }
       }
@@ -2205,7 +2205,7 @@ namespace eval confVersion {
 # confGenerique
 # Description : Configuration generique
 #  Cree une fenetre de configuration generique
-#  Cette fenetre appelle les fonction specifiques du namespace passe en parametre
+#  Cette fenetre appelle les fonctions specifiques du namespace passe en parametre
 #     namespace::apply            pour le bouton appliquer ou ok
 #     namespace::closeWindow      pour le bouton fermer ou ok
 #     namespace::getLabel         retourne le titre de la fenetre
@@ -2214,31 +2214,29 @@ namespace eval confVersion {
 #
 
 namespace eval confGenerique {
-
-   #
-   # confGenerique::run
-   #   Cree la fenetre de configuration generique
-   #
-   # Parametres :
-   #  visuNo    : numero de la visu courante
-   #  tkName    : chemin TK de la fenetre
-   #  namespace : namespace des fonctions specifiques
-   #  -modal 0|1 : 1=modal (attend la fermeture de la fenetre) ou 0=nomodal (retourne immediatement)
-   #              valeur par defaut = 1
-   #  -geometry 200x100+180+50 : taille et position relative de la fenetre
-   #              valeur par defaut = 200x100+180+50
-   #  -resizable 0|1 : 1=redimmensionnement possible ou 0=redimensionnement interdit
-   #              valeur par defaut = 1
-   # return
-   #  si mode=modal
-   #     retourne 1 si la fenetre est fermee avec le bouton OK
-   #     retourne 0 si la fenetre est fermee avec le bouton Fermer
-   #  si mode=nomodal
-   #     retourne 0
-   #
-
 }
 
+#
+# confGenerique::run
+#   Cree la fenetre de configuration generique
+#
+# Parametres :
+#  visuNo    : numero de la visu courante
+#  tkName    : chemin TK de la fenetre
+#  namespace : namespace des fonctions specifiques
+#  -modal 0|1 : 1=modal (attend la fermeture de la fenetre) ou 0=nomodal (retourne immediatement)
+#              valeur par defaut = 1
+#  -geometry 200x100+180+50 : taille et position relative de la fenetre
+#              valeur par defaut = 200x100+180+50
+#  -resizable 0|1 : 1=redimmensionnement possible ou 0=redimensionnement interdit
+#              valeur par defaut = 1
+# return
+#  si mode=modal
+#     retourne 1 si la fenetre est fermee avec le bouton OK
+#     retourne 0 si la fenetre est fermee avec le bouton Fermer
+#  si mode=nomodal
+#     retourne 0
+#
 proc ::confGenerique::run { args } {
    variable private
 
@@ -2321,6 +2319,7 @@ proc ::confGenerique::showHelp { visuNo NameSpace } {
 # Fonction appellee lors de l'appui sur le bouton 'Fermer'
 # Ferme la fenetre si la procedure namepace::closeWindow retourne une valeur
 # differente de "0"
+#
 proc ::confGenerique::closeWindow { visuNo NameSpace This } {
    if { [info procs $NameSpace\:\:closeWindow ] != "" } {
       #--- appelle la procedure "closeWindow"
