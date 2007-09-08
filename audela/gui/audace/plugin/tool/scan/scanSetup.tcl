@@ -2,7 +2,7 @@
 # Fichier : scanSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scanSetup.tcl,v 1.2 2007-05-06 21:27:54 robertdelmas Exp $
+# Mise a jour $Id: scanSetup.tcl,v 1.3 2007-09-08 16:59:52 robertdelmas Exp $
 #
 
 namespace eval scanSetup {
@@ -26,8 +26,8 @@ namespace eval scanSetup {
       variable parametres
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
-      if { ! [ info exists ::dscan::parametres(dscan,delai) ] }  { set ::dscan::parametres(dscan,delai)   "3" }
-      if { ! [ info exists ::dscan::parametres(dscan,active) ] } { set ::dscan::parametres(dscan,active)  "1" }
+      if { ! [ info exists ::scan::parametres(scan,delai) ] }  { set ::scan::parametres(scan,delai)   "3" }
+      if { ! [ info exists ::scan::parametres(scan,active) ] } { set ::scan::parametres(scan,active)  "1" }
    }
 
    #
@@ -39,8 +39,8 @@ namespace eval scanSetup {
       global panneau
 
       #--- confToWidget
-      set panneau(dscan,delai)  $::dscan::parametres(dscan,delai)
-      set panneau(dscan,active) $::dscan::parametres(dscan,active)
+      set panneau(scan,delai)  $::scan::parametres(scan,delai)
+      set panneau(scan,active) $::scan::parametres(scan,active)
    }
 
    #
@@ -138,19 +138,19 @@ namespace eval scanSetup {
 
       #--- Radio-bouton 'sans temporisation'
       radiobutton $This.rad1 -anchor nw -highlightthickness 0 \
-         -text "$caption(scanSetup,sans_scan)" -value 0 -variable panneau(dscan,active)
+         -text "$caption(scanSetup,sans_scan)" -value 0 -variable panneau(scan,active)
       pack $This.rad1 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
       #--- Radio-bouton 'avec temporisation'
       radiobutton $This.rad2 -anchor nw -highlightthickness 0 \
-         -text "$caption(scanSetup,avec_scan)" -value 1 -variable panneau(dscan,active)
+         -text "$caption(scanSetup,avec_scan)" -value 1 -variable panneau(scan,active)
       pack $This.rad2 -in $This.frame4 -anchor w -side top -padx 30 -pady 3
 
       #--- Cree la zone a renseigner du delai entre l'arret du moteur d'A.D. et le debut de la pose
       label $This.lab3 -text "$caption(scanSetup,delai)"
       pack $This.lab3 -in $This.frame5 -anchor w -side left -padx 10 -pady 3
 
-      entry $This.delai -textvariable panneau(dscan,delai) -width 3 -justify center
+      entry $This.delai -textvariable panneau(scan,delai) -width 3 -justify center
       pack $This.delai -in $This.frame5 -anchor w -side left -padx 0 -pady 2
 
       label $This.lab4 -text "$caption(scanSetup,seconde)"
@@ -196,8 +196,8 @@ namespace eval scanSetup {
       variable parametres
       global panneau
 
-      set ::dscan::parametres(dscan,delai)  $panneau(dscan,delai)
-      set ::dscan::parametres(dscan,active) $panneau(dscan,active)
+      set ::scan::parametres(scan,delai)  $panneau(scan,delai)
+      set ::scan::parametres(scan,active) $panneau(scan,active)
    }
 
 }
