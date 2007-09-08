@@ -3,14 +3,14 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.30 2007-06-14 20:18:15 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.31 2007-09-08 17:10:26 robertdelmas Exp $
 #
 
 #============================================================
-# Declaration du namespace dscan
+# Declaration du namespace scan
 #    initialise le namespace
 #============================================================
-namespace eval ::dscan {
+namespace eval ::scan {
    package provide scan 1.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginTitle
@@ -24,6 +24,14 @@ namespace eval ::dscan {
       global caption
 
       return "$caption(scan,drift_scan)"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginHelp
+   #     retourne le nom du fichier d'aide principal
+   #------------------------------------------------------------
+   proc getPluginHelp { } {
+      return "scan.htm"
    }
 
    #------------------------------------------------------------
@@ -69,7 +77,7 @@ namespace eval ::dscan {
       uplevel #0 "source \"[ file join $audace(rep_plugin) tool scan scanSetup.tcl ]\""
 
       #--- Mise en place de l'interface graphique
-      createPanel $in.dscan
+      createPanel $in.scan
    }
 
    #------------------------------------------------------------
@@ -92,54 +100,54 @@ namespace eval ::dscan {
       set This $this
 
       #--- Initialisation des captions
-      set panneau(dscan,titre)           "$caption(scan,drift_scan)"
-      set panneau(dscan,aide)            "$caption(scan,help_titre)"
-      set panneau(dscan,configuration)   "$caption(scan,configuration)"
-      set panneau(dscan,col)             "$caption(scan,colonnes)"
-      set panneau(dscan,lig)             "$caption(scan,lignes)"
-      set panneau(dscan,pixel)           "$caption(scan,pixel)"
-      set panneau(dscan,unite)           "$caption(scan,micron)"
-      set panneau(dscan,interlig)        "$caption(scan,interligne)"
-      set panneau(dscan,bin)             "$caption(scan,binning)"
-      set panneau(dscan,focale)          "$caption(scan,focale)"
-      set panneau(dscan,metres)          "$caption(scan,metre)"
-      set panneau(dscan,declinaison)     "$caption(scan,declinaison)"
-      set panneau(dscan,calcul)          "$caption(scan,calcul)"
-      set panneau(dscan,ms)              "$caption(scan,milliseconde)"
-      set panneau(dscan,obturateur)      "$caption(scan,obt)"
-      set panneau(dscan,acq)             "$caption(scan,acquisition)"
-      set panneau(dscan,go0)             "$caption(scan,goccd)"
-      set panneau(dscan,stop)            "$caption(scan,stop)"
-      set panneau(dscan,go1)             "$caption(scan,en_cours)"
-      set panneau(dscan,go2)             "$caption(scan,visu)"
-      set panneau(dscan,go)              "$panneau(dscan,go0)"
-      set panneau(dscan,attention)       "$caption(scan,attention)"
-      set panneau(dscan,msg)             "$caption(scan,message)"
-      set panneau(dscan,nom)             "$caption(scan,nom)"
-      set panneau(dscan,extension)       "$caption(scan,extension)"
-      set panneau(dscan,index)           "$caption(scan,index)"
-      set panneau(dscan,sauvegarde)      "$caption(scan,sauvegarde)"
-      set panneau(dscan,pb)              "$caption(scan,pb)"
-      set panneau(dscan,nom_fichier)     "$caption(scan,nom_fichier)"
-      set panneau(dscan,nom_blanc)       "$caption(scan,nom_blanc)"
-      set panneau(dscan,mauvais_car)     "$caption(scan,mauvais_car)"
-      set panneau(dscan,saisir_indice)   "$caption(scan,saisir_indice)"
-      set panneau(dscan,indice_entier)   "$caption(scan,indice_entier)"
-      set panneau(dscan,confirmation)    "$caption(scan,confirmation)"
-      set panneau(dscan,fichier_existe)  "$caption(scan,fichier_existe)"
+      set panneau(scan,titre)           "$caption(scan,drift_scan)"
+      set panneau(scan,aide)            "$caption(scan,help_titre)"
+      set panneau(scan,configuration)   "$caption(scan,configuration)"
+      set panneau(scan,col)             "$caption(scan,colonnes)"
+      set panneau(scan,lig)             "$caption(scan,lignes)"
+      set panneau(scan,pixel)           "$caption(scan,pixel)"
+      set panneau(scan,unite)           "$caption(scan,micron)"
+      set panneau(scan,interlig)        "$caption(scan,interligne)"
+      set panneau(scan,bin)             "$caption(scan,binning)"
+      set panneau(scan,focale)          "$caption(scan,focale)"
+      set panneau(scan,metres)          "$caption(scan,metre)"
+      set panneau(scan,declinaison)     "$caption(scan,declinaison)"
+      set panneau(scan,calcul)          "$caption(scan,calcul)"
+      set panneau(scan,ms)              "$caption(scan,milliseconde)"
+      set panneau(scan,obturateur)      "$caption(scan,obt)"
+      set panneau(scan,acq)             "$caption(scan,acquisition)"
+      set panneau(scan,go0)             "$caption(scan,goccd)"
+      set panneau(scan,stop)            "$caption(scan,stop)"
+      set panneau(scan,go1)             "$caption(scan,en_cours)"
+      set panneau(scan,go2)             "$caption(scan,visu)"
+      set panneau(scan,go)              "$panneau(scan,go0)"
+      set panneau(scan,attention)       "$caption(scan,attention)"
+      set panneau(scan,msg)             "$caption(scan,message)"
+      set panneau(scan,nom)             "$caption(scan,nom)"
+      set panneau(scan,extension)       "$caption(scan,extension)"
+      set panneau(scan,index)           "$caption(scan,index)"
+      set panneau(scan,sauvegarde)      "$caption(scan,sauvegarde)"
+      set panneau(scan,pb)              "$caption(scan,pb)"
+      set panneau(scan,nom_fichier)     "$caption(scan,nom_fichier)"
+      set panneau(scan,nom_blanc)       "$caption(scan,nom_blanc)"
+      set panneau(scan,mauvais_car)     "$caption(scan,mauvais_car)"
+      set panneau(scan,saisir_indice)   "$caption(scan,saisir_indice)"
+      set panneau(scan,indice_entier)   "$caption(scan,indice_entier)"
+      set panneau(scan,confirmation)    "$caption(scan,confirmation)"
+      set panneau(scan,fichier_existe)  "$caption(scan,fichier_existe)"
 
       #--- Initialisation des variables
-      set panneau(dscan,listBinningX)    [ list "" ]
-      set panneau(dscan,listBinningY)    [ list "" ]
-      set panneau(dscan,nom_image)       ""
-      set panneau(dscan,extension_image) "$conf(extension,defaut)"
-      set panneau(dscan,indexer)         "0"
-      set panneau(dscan,indice)          "1"
-      set panneau(dscan,acquisition)     "0"
-      set panneau(Scan,Stop)             "0"
+      set panneau(scan,listBinningX)    [ list "" ]
+      set panneau(scan,listBinningY)    [ list "" ]
+      set panneau(scan,nom_image)       ""
+      set panneau(scan,extension_image) "$conf(extension,defaut)"
+      set panneau(scan,indexer)         "0"
+      set panneau(scan,indice)          "1"
+      set panneau(scan,acquisition)     "0"
+      set panneau(Scan,Stop)            "0"
 
       #--- Construction de l'interface
-      dscanBuildIF $This
+      scanBuildIF $This
    }
 
    proc chargementVar { } {
@@ -153,15 +161,15 @@ namespace eval ::dscan {
       }
 
       #--- Creation des variables si elles n'existent pas
-      if { ! [ info exists parametres(dscan,col1) ] }     { set parametres(dscan,col1)     "1" }
-      if { ! [ info exists parametres(dscan,col2) ] }     { set parametres(dscan,col2)     "768" }
-      if { ! [ info exists parametres(dscan,lig1) ] }     { set parametres(dscan,lig1)     "1500" }
-      if { ! [ info exists parametres(dscan,dimpix) ] }   { set parametres(dscan,dimpix)   "9.0" }
-      if { ! [ info exists parametres(dscan,binningX) ] } { set parametres(dscan,binningX) "2" }
-      if { ! [ info exists parametres(dscan,binningY) ] } { set parametres(dscan,binningY) "2" }
-      if { ! [ info exists parametres(dscan,foc) ] }      { set parametres(dscan,foc)      ".85" }
-      if { ! [ info exists parametres(dscan,dec) ] }      { set parametres(dscan,dec)      "0d" }
-      if { ! [ info exists parametres(dscan,obt) ] }      { set parametres(dscan,obt)      "2" }
+      if { ! [ info exists parametres(scan,col1) ] }     { set parametres(scan,col1)     "1" }
+      if { ! [ info exists parametres(scan,col2) ] }     { set parametres(scan,col2)     "768" }
+      if { ! [ info exists parametres(scan,lig1) ] }     { set parametres(scan,lig1)     "1500" }
+      if { ! [ info exists parametres(scan,dimpix) ] }   { set parametres(scan,dimpix)   "9.0" }
+      if { ! [ info exists parametres(scan,binningX) ] } { set parametres(scan,binningX) "2" }
+      if { ! [ info exists parametres(scan,binningY) ] } { set parametres(scan,binningY) "2" }
+      if { ! [ info exists parametres(scan,foc) ] }      { set parametres(scan,foc)      ".85" }
+      if { ! [ info exists parametres(scan,dec) ] }      { set parametres(scan,dec)      "0d" }
+      if { ! [ info exists parametres(scan,obt) ] }      { set parametres(scan,obt)      "2" }
 
       #--- Creation des variables de la boite de configuration si elles n'existent pas
       ::scanSetup::initToConf
@@ -172,15 +180,15 @@ namespace eval ::dscan {
       global audace panneau
 
       #--- Changement de variables
-      set parametres(dscan,col1)     $panneau(dscan,col1)
-      set parametres(dscan,col2)     $panneau(dscan,col2)
-      set parametres(dscan,lig1)     $panneau(dscan,lig1)
-      set parametres(dscan,dimpix)   $panneau(dscan,pix)
-      set parametres(dscan,binningX) $panneau(dscan,binningX)
-      set parametres(dscan,binningY) $panneau(dscan,binningY)
-      set parametres(dscan,foc)      $panneau(dscan,foc)
-      set parametres(dscan,dec)      $panneau(dscan,dec)
-      set parametres(dscan,obt)      $panneau(dscan,obt)
+      set parametres(scan,col1)     $panneau(scan,col1)
+      set parametres(scan,col2)     $panneau(scan,col2)
+      set parametres(scan,lig1)     $panneau(scan,lig1)
+      set parametres(scan,dimpix)   $panneau(scan,pix)
+      set parametres(scan,binningX) $panneau(scan,binningX)
+      set parametres(scan,binningY) $panneau(scan,binningY)
+      set parametres(scan,foc)      $panneau(scan,foc)
+      set parametres(scan,dec)      $panneau(scan,dec)
+      set parametres(scan,obt)      $panneau(scan,obt)
 
       #--- Sauvegarde des parametres
       catch {
@@ -210,17 +218,17 @@ namespace eval ::dscan {
             set conf(audine,foncobtu) "2"
          } else {
             if { $conf(audine,foncobtu) == "0" } {
-               set panneau(dscan,obt) "0"
+               set panneau(scan,obt) "0"
             } elseif { $conf(audine,foncobtu) == "1" } {
-               set panneau(dscan,obt) "1"
+               set panneau(scan,obt) "1"
             } elseif { $conf(audine,foncobtu) == "2" } {
-               set panneau(dscan,obt) "2"
+               set panneau(scan,obt) "2"
             }
          }
          pack $This.fra4.obt.but -side left -ipady 3
          pack $This.fra4.obt.lab1 -side left -fill x -expand true -ipady 3
          pack forget $This.fra4.obt.lab2
-         $This.fra4.obt.lab1 configure -text $panneau(dscan,obt,$panneau(dscan,obt))
+         $This.fra4.obt.lab1 configure -text $panneau(scan,obt,$panneau(scan,obt))
       } else {
          pack forget $This.fra4.obt.but
          pack forget $This.fra4.obt.lab1
@@ -228,35 +236,35 @@ namespace eval ::dscan {
       }
 
       #--- Mise a jour du binning X en fonction de la liaison
-      set panneau(dscan,listBinningX) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningXListScan ]
-      if { $panneau(dscan,listBinningX) == "{}" } {
+      set panneau(scan,listBinningX) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningXListScan ]
+      if { $panneau(scan,listBinningX) == "{}" } {
          $This.fra3.bin.binX configure -height 1
          $This.fra3.bin.binX configure -values "2"
       } else {
-         $This.fra3.bin.binX configure -height [ llength $panneau(dscan,listBinningX) ]
-         $This.fra3.bin.binX configure -values $panneau(dscan,listBinningX)
+         $This.fra3.bin.binX configure -height [ llength $panneau(scan,listBinningX) ]
+         $This.fra3.bin.binX configure -values $panneau(scan,listBinningX)
       }
 
       #--- Mise a jour du binning Y en fonction de la liaison
-      set panneau(dscan,listBinningY) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningYListScan ]
-      if { $panneau(dscan,listBinningY) == "{}" } {
+      set panneau(scan,listBinningY) [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningYListScan ]
+      if { $panneau(scan,listBinningY) == "{}" } {
          $This.fra3.bin.binY configure -height 1
          $This.fra3.bin.binY configure -values "2"
       } else {
-         set height [ llength $panneau(dscan,listBinningY) ]
+         set height [ llength $panneau(scan,listBinningY) ]
          if { $height > "16" } {
             set height "16"
          }
          $This.fra3.bin.binY configure -height $height
-         $This.fra3.bin.binY configure -values $panneau(dscan,listBinningY)
+         $This.fra3.bin.binY configure -values $panneau(scan,listBinningY)
       }
 
       #--- Binnings associes aux liaisons
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
             #--- Adaptation des binnings extremes
-            if { $panneau(dscan,binningX) > "2" } {
-               set panneau(dscan,binningX) "2"
+            if { $panneau(scan,binningX) > "2" } {
+               set panneau(scan,binningX) "2"
             }
             #--- Etat des boutons
             $This.fra3.but1 configure -state normal
@@ -264,8 +272,8 @@ namespace eval ::dscan {
          }
          parallelport {
             #--- Adaptation des binnings extremes
-            if { $panneau(dscan,binningY) > "16" } {
-               set panneau(dscan,binningY) "2"
+            if { $panneau(scan,binningY) > "16" } {
+               set panneau(scan,binningY) "2"
             }
             #--- Etat des boutons
             $This.fra3.but1 configure -state normal
@@ -285,9 +293,9 @@ namespace eval ::dscan {
 
       #--- Mise à jour de la dimension du photosite
       if { [ ::cam::list ] != "" } {
-         set panneau(dscan,pix) "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e006]"
+         set panneau(scan,pix) "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e006]"
       } else {
-         set panneau(dscan,pix) "$parametres(dscan,dimpix)"
+         set panneau(scan,pix) "$parametres(scan,dimpix)"
       }
    }
 
@@ -301,40 +309,40 @@ namespace eval ::dscan {
       global caption panneau
 
       #--- Chargement de la configuration
-      ::dscan::chargementVar
+      ::scan::chargementVar
 
       #--- Initialisation des variables de l'outil
-      set panneau(dscan,col1)     "$parametres(dscan,col1)"
-      set panneau(dscan,col2)     "$parametres(dscan,col2)"
-      set panneau(dscan,lig1)     "$parametres(dscan,lig1)"
-      set panneau(dscan,pix)      "$parametres(dscan,dimpix)"
-      set panneau(dscan,binningX) "$parametres(dscan,binningX)"
-      set panneau(dscan,binningY) "$parametres(dscan,binningY)"
-      set panneau(dscan,foc)      "$parametres(dscan,foc)"
-      set panneau(dscan,dec)      "$parametres(dscan,dec)"
-      set panneau(dscan,obt)      "$parametres(dscan,obt)"
+      set panneau(scan,col1)     "$parametres(scan,col1)"
+      set panneau(scan,col2)     "$parametres(scan,col2)"
+      set panneau(scan,lig1)     "$parametres(scan,lig1)"
+      set panneau(scan,pix)      "$parametres(scan,dimpix)"
+      set panneau(scan,binningX) "$parametres(scan,binningX)"
+      set panneau(scan,binningY) "$parametres(scan,binningY)"
+      set panneau(scan,foc)      "$parametres(scan,foc)"
+      set panneau(scan,dec)      "$parametres(scan,dec)"
+      set panneau(scan,obt)      "$parametres(scan,obt)"
 
       #--- Initialisation des variables de la boite de configuration
       ::scanSetup::confToWidget
 
       #--- Entrer ici les valeurs pour l'obturateur a afficher dans le menu "obt"
-      set panneau(dscan,obt,0) "$caption(scan,obtu_ouvert)"
-      set panneau(dscan,obt,1) "$caption(scan,obtu_ferme)"
-      set panneau(dscan,obt,2) "$caption(scan,obtu_synchro)"
+      set panneau(scan,obt,0) "$caption(scan,obtu_ouvert)"
+      set panneau(scan,obt,1) "$caption(scan,obtu_ferme)"
+      set panneau(scan,obt,2) "$caption(scan,obtu_synchro)"
 
       #--- Calcul de dt en fonction des parametres initialises
-      ::dscan::cmdCalcul
+      ::scan::cmdCalcul
 
       #--- Configuration dynamique de l'outil en fonction de la liaison
-      ::dscan::adaptOutilScan
-      ::confVisu::addCameraListener 1 ::dscan::adaptOutilScan
-      trace add variable ::conf(audine,port) write ::dscan::adaptOutilScan
+      ::scan::adaptOutilScan
+      ::confVisu::addCameraListener 1 ::scan::adaptOutilScan
+      trace add variable ::conf(audine,port) write ::scan::adaptOutilScan
 
       #--- Mise a jour de la dimension du pixel a la connexion d'une camera
-      ::dscan::updateCellDim
-      trace add variable ::confCam(A,super_camNo) write ::dscan::updateCellDim
-      trace add variable ::confCam(B,super_camNo) write ::dscan::updateCellDim
-      trace add variable ::confCam(C,super_camNo) write ::dscan::updateCellDim
+      ::scan::updateCellDim
+      trace add variable ::confCam(A,super_camNo) write ::scan::updateCellDim
+      trace add variable ::confCam(B,super_camNo) write ::scan::updateCellDim
+      trace add variable ::confCam(C,super_camNo) write ::scan::updateCellDim
 
       #---
       pack $This -side left -fill y
@@ -348,16 +356,16 @@ namespace eval ::dscan {
       variable This
 
       #--- Sauvegarde de la configuration
-      ::dscan::enregistrementVar
+      ::scan::enregistrementVar
 
       #--- Arret de la surveillance
-      ::confVisu::removeCameraListener 1 ::dscan::adaptOutilScan
-      trace remove variable ::conf(audine,port) write ::dscan::adaptOutilScan
+      ::confVisu::removeCameraListener 1 ::scan::adaptOutilScan
+      trace remove variable ::conf(audine,port) write ::scan::adaptOutilScan
 
       #--- Supprime la procedure de surveillance de la connexion d'une camera
-      trace remove variable ::confCam(A,super_camNo) write ::dscan::updateCellDim
-      trace remove variable ::confCam(B,super_camNo) write ::dscan::updateCellDim
-      trace remove variable ::confCam(C,super_camNo) write ::dscan::updateCellDim
+      trace remove variable ::confCam(A,super_camNo) write ::scan::updateCellDim
+      trace remove variable ::confCam(B,super_camNo) write ::scan::updateCellDim
+      trace remove variable ::confCam(C,super_camNo) write ::scan::updateCellDim
 
       #---
       pack forget $This
@@ -380,30 +388,30 @@ namespace eval ::dscan {
       if { [ ::cam::list ] != "" } {
          if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] hasScan ] == "1" } {
             #--- Initialisation des variables
-            set panneau(dscan,acquisition) "1"
-            set panneau(Scan,Stop)         "0"
+            set panneau(scan,acquisition) "1"
+            set panneau(Scan,Stop)        "0"
 
             #--- La premiere colonne ne peut pas etre inferieure a 1
-            if { $panneau(dscan,col1) < "1" } {
-               set panneau(dscan,col1) "1"
+            if { $panneau(scan,col1) < "1" } {
+               set panneau(scan,col1) "1"
             }
 
             #--- Gestion graphique du bouton GO CCD
-            $This.fra4.but1 configure -relief groove -text $panneau(dscan,go1) -state disabled
+            $This.fra4.but1 configure -relief groove -text $panneau(scan,go1) -state disabled
 
             #--- Gestion graphique du bouton STOP - Inactif avant le debut du scan
-            $This.fra4.but2 configure -relief groove -text $panneau(dscan,stop) -state disabled
+            $This.fra4.but2 configure -relief groove -text $panneau(scan,stop) -state disabled
             update
 
             #--- Definition du binning
             switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
                ethernaude {
-                  set bin  "$panneau(dscan,binningX)"
-                  set binY "$panneau(dscan,binningY)"
+                  set bin  "$panneau(scan,binningX)"
+                  set binY "$panneau(scan,binningY)"
                }
                parallelport {
-                  set bin  "$panneau(dscan,binningX)"
-                  set binY "$panneau(dscan,binningY)"
+                  set bin  "$panneau(scan,binningX)"
+                  set binY "$panneau(scan,binningY)"
                }
                default {
                   set bin  "1"
@@ -412,9 +420,9 @@ namespace eval ::dscan {
             }
 
             #--- Definition des parametres du scan (w : largeur - h : hauteur - f : firstpix)
-            set w [ ::dscan::int [ expr $panneau(dscan,col2) - $panneau(dscan,col1) + 1 ] ]
-            set h [ ::dscan::int $panneau(dscan,lig1) ]
-            set f [ ::dscan::int $panneau(dscan,col1) ]
+            set w [ ::scan::int [ expr $panneau(scan,col2) - $panneau(scan,col1) + 1 ] ]
+            set h [ ::scan::int $panneau(scan,lig1) ]
+            set f [ ::scan::int $panneau(scan,col1) ]
 
             #--- Gestion du moteur d'A.D.
             if { $motor == "motoroff" } {
@@ -425,32 +433,32 @@ namespace eval ::dscan {
             }
 
             #--- Attente du demarrage du scan
-            if { $panneau(dscan,active) == "1" } {
+            if { $panneau(scan,active) == "1" } {
                #--- Decompte du temps d'attente
-               set attente $panneau(dscan,delai)
-               if { $panneau(dscan,delai) > "0" } {
-                  while { $panneau(dscan,delai) > "0" } {
-                     ::camera::Avancement_scan "-10" $panneau(dscan,lig1) $panneau(dscan,delai)
+               set attente $panneau(scan,delai)
+               if { $panneau(scan,delai) > "0" } {
+                  while { $panneau(scan,delai) > "0" } {
+                     ::camera::Avancement_scan "-10" $panneau(scan,lig1) $panneau(scan,delai)
                      update
                      after 1000
-                     incr panneau(dscan,delai) "-1"
+                     incr panneau(scan,delai) "-1"
                   }
                }
-               set panneau(dscan,delai) $attente
+               set panneau(scan,delai) $attente
             }
 
             #--- Gestion graphique du bouton STOP - Devient actif avec le debut du scan
-            $This.fra4.but2 configure -relief raised -text $panneau(dscan,stop) -state normal
+            $This.fra4.but2 configure -relief raised -text $panneau(scan,stop) -state normal
             update
 
             #--- Changement de variable
-            set dt $panneau(dscan,interlig1)
+            set dt $panneau(scan,interlig1)
 
             #--- Appel a la fonction d'acquisition
-            ::dscan::scan $w $h $bin $binY $dt $f
+            ::scan::scan $w $h $bin $binY $dt $f
 
             #--- Gestion graphique du bouton GO CCD
-            $This.fra4.but1 configure -relief groove -text $panneau(dscan,go2) -state disabled
+            $This.fra4.but1 configure -relief groove -text $panneau(scan,go2) -state disabled
             update
 
             #--- Visualisation de l'image
@@ -465,11 +473,11 @@ namespace eval ::dscan {
             }
 
             #--- Gestion graphique du bouton GO CCD
-            set panneau(dscan,acquisition) "0"
-            $This.fra4.but1 configure -relief raised -text $panneau(dscan,go0) -state normal
+            set panneau(scan,acquisition) "0"
+            $This.fra4.but1 configure -relief raised -text $panneau(scan,go0) -state normal
             update
          } else {
-            tk_messageBox -title $panneau(dscan,attention) -type ok -message $panneau(dscan,msg)
+            tk_messageBox -title $panneau(scan,attention) -type ok -message $panneau(scan,msg)
          }
       } else {
          ::confCam::run
@@ -481,7 +489,7 @@ namespace eval ::dscan {
       global audace panneau
 
       #--- Calcul du nombre de lignes par seconde
-      set panneau(dscan,nblg1) [ expr 1000./$dt ]
+      set panneau(scan,nblg1) [ expr 1000./$dt ]
 
       #--- Declenchement de l'acquisition
       if { $f == "0" } {
@@ -491,13 +499,13 @@ namespace eval ::dscan {
       }
 
       #--- Alarme sonore de fin de pose
-      set pseudoexptime [ expr $panneau(dscan,lig1) / $panneau(dscan,nblg1) ]
+      set pseudoexptime [ expr $panneau(scan,lig1) / $panneau(scan,nblg1) ]
       ::camera::alarme_sonore $pseudoexptime
 
       #--- Appel du timer
-      if { $panneau(dscan,lig1) > "$panneau(dscan,nblg1)" } {
-         set t [ expr $panneau(dscan,lig1) / $panneau(dscan,nblg1) ]
-         ::camera::dispLine $t $panneau(dscan,nblg1) $panneau(dscan,lig1) $panneau(dscan,delai)
+      if { $panneau(scan,lig1) > "$panneau(scan,nblg1)" } {
+         set t [ expr $panneau(scan,lig1) / $panneau(scan,nblg1) ]
+         ::camera::dispLine $t $panneau(scan,nblg1) $panneau(scan,lig1) $panneau(scan,delai)
       }
 
       #--- Attente de la fin de la pose
@@ -515,7 +523,7 @@ namespace eval ::dscan {
       global audace panneau
 
       if { [ ::cam::list ] != "" } {
-         if { $panneau(dscan,acquisition) == "1" } {
+         if { $panneau(scan,acquisition) == "1" } {
             catch {
                #--- Changement de la valeur de la variable
                set panneau(Scan,Stop) "1"
@@ -537,7 +545,7 @@ namespace eval ::dscan {
                }
 
                #--- Gestion du graphisme du bouton
-               $This.fra4.but1 configure -relief raised -text $panneau(dscan,go1) -state disabled
+               $This.fra4.but1 configure -relief raised -text $panneau(scan,go1) -state disabled
                update
             }
          }
@@ -552,27 +560,27 @@ namespace eval ::dscan {
       global conf panneau
 
       #--- La premiere colonne ne peut pas etre inferieure a 1
-      if { $panneau(dscan,col1) < "1" } {
-         set panneau(dscan,col1) "1"
+      if { $panneau(scan,col1) < "1" } {
+         set panneau(scan,col1) "1"
       }
 
       #--- Calcul de dt
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
-            set bin  "$panneau(dscan,binningX)"
-            set binY "$panneau(dscan,binningY)"
+            set bin  "$panneau(scan,binningX)"
+            set binY "$panneau(scan,binningY)"
          }
          parallelport {
-            set bin  "$panneau(dscan,binningX)"
-            set binY "$panneau(dscan,binningY)"
+            set bin  "$panneau(scan,binningX)"
+            set binY "$panneau(scan,binningY)"
          }
          default {
             set bin  "1"
             set binY "1"
          }
       }
-      set panneau(dscan,interlig1) [ expr $binY*86164*2*atan($panneau(dscan,pix)/2./($panneau(dscan,foc)*1e6))/360.*180/3.1415926*1000./cos( [ mc_angle2rad $panneau(dscan,dec) ] ) ]
-      $This.fra3.fra1.ent1 configure -textvariable panneau(dscan,interlig1)
+      set panneau(scan,interlig1) [ expr $binY*86164*2*atan($panneau(scan,pix)/2./($panneau(scan,foc)*1e6))/360.*180/3.1415926*1000./cos( [ mc_angle2rad $panneau(scan,dec) ] ) ]
+      $This.fra3.fra1.ent1 configure -textvariable panneau(scan,interlig1)
       update
    }
 
@@ -582,17 +590,17 @@ namespace eval ::dscan {
       global audace panneau
 
       if { [ ::cam::list ] != "" } {
-         set parametres(dscan,col2)   "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
-         set parametres(dscan,dimpix) "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e006]"
-         set panneau(dscan,col2)      "$parametres(dscan,col2)"
-         set panneau(dscan,pix)       "$parametres(dscan,dimpix)"
-         $This.fra2.fra1.ent2 configure -textvariable panneau(dscan,col2)
-         $This.fra2.fra3.ent1 configure -textvariable panneau(dscan,pix)
+         set parametres(scan,col2)   "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
+         set parametres(scan,dimpix) "[ expr [ lindex [ cam$audace(camNo) celldim ] 0 ] * 1e006]"
+         set panneau(scan,col2)      "$parametres(scan,col2)"
+         set panneau(scan,pix)       "$parametres(scan,dimpix)"
+         $This.fra2.fra1.ent2 configure -textvariable panneau(scan,col2)
+         $This.fra2.fra3.ent1 configure -textvariable panneau(scan,pix)
          update
       }
 
       #--- Calcul de dt en fonction du changement de parametres
-      ::dscan::cmdCalcul
+      ::scan::cmdCalcul
    }
 
    proc cmdDec { } {
@@ -604,24 +612,24 @@ namespace eval ::dscan {
       if { [ ::tel::list ] != "" } {
          set radec [ tel$audace(telNo) radec coord ]
          if { [ lindex $radec 0 ] == "tel$audace(telNo)" } {
-            set panneau(dscan,dec) "$parametres(dscan,dec)"
+            set panneau(scan,dec) "$parametres(scan,dec)"
          } else {
-            set panneau(dscan,dec) [ lindex $radec 1 ]
+            set panneau(scan,dec) [ lindex $radec 1 ]
          }
       } elseif { ( $conf(telescope) == "ouranos" ) && ( $confTel(ouranos,connect) == "1" ) } {
          if { $conf(ouranos,show_coord) == "1" } {
-            set panneau(dscan,dec) "$confTel(ouranos,coord_dec)"
+            set panneau(scan,dec) "$confTel(ouranos,coord_dec)"
          } else {
-            set panneau(dscan,dec) "$parametres(dscan,dec)"
+            set panneau(scan,dec) "$parametres(scan,dec)"
          }
       } else {
-         set panneau(dscan,dec) "$parametres(dscan,dec)"
+         set panneau(scan,dec) "$parametres(scan,dec)"
       }
-      $This.fra3.fra3.ent2 configure -textvariable panneau(dscan,dec)
+      $This.fra3.fra3.ent2 configure -textvariable panneau(scan,dec)
       update
 
       #--- Calcul de dt en fonction de la declinaison
-      ::dscan::cmdCalcul
+      ::scan::cmdCalcul
    }
 
    proc changeObt { } {
@@ -629,10 +637,10 @@ namespace eval ::dscan {
       global audace caption confCam panneau
 
       if { [ ::cam::list ] != "" } {
-         set result [::confCam::setShutter $audace(camNo) $panneau(dscan,obt)]
+         set result [::confCam::setShutter $audace(camNo) $panneau(scan,obt)]
          if { $result != -1 } {
-            set panneau(dscan,obt) $result
-            $This.fra4.obt.lab1 configure -text $panneau(dscan,obt,$panneau(dscan,obt))
+            set panneau(scan,obt) $result
+            $This.fra4.obt.lab1 configure -text $panneau(scan,obt,$panneau(scan,obt))
          }
       } else {
          ::confCam::run
@@ -676,49 +684,49 @@ namespace eval ::dscan {
       #--- Tests d'integrite de la requete
 
       #--- Verifier qu'il y a bien un nom de fichier
-      if { $panneau(dscan,nom_image) == "" } {
-         tk_messageBox -title $panneau(dscan,pb) -type ok \
-            -message $panneau(dscan,nom_fichier)
+      if { $panneau(scan,nom_image) == "" } {
+         tk_messageBox -title $panneau(scan,pb) -type ok \
+            -message $panneau(scan,nom_fichier)
          return
       }
 
       #--- Verifier que le nom de fichier n'a pas d'espace
-      if { [ llength $panneau(dscan,nom_image) ] > "1" } {
-         tk_messageBox -title $panneau(dscan,pb) -type ok \
-            -message $panneau(dscan,nom_blanc)
+      if { [ llength $panneau(scan,nom_image) ] > "1" } {
+         tk_messageBox -title $panneau(scan,pb) -type ok \
+            -message $panneau(scan,nom_blanc)
          return
       }
 
       #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-      if { [ ::dscan::testChaine $panneau(dscan,nom_image) ] == "0" } {
-         tk_messageBox -title $panneau(dscan,pb) -type ok \
-            -message $panneau(dscan,mauvais_car)
+      if { [ ::scan::testChaine $panneau(scan,nom_image) ] == "0" } {
+         tk_messageBox -title $panneau(scan,pb) -type ok \
+            -message $panneau(scan,mauvais_car)
          return
       }
 
       #--- Si la case index est cochee, verifier qu'il y a bien un index
-      if { $panneau(dscan,indexer) == "1" } {
+      if { $panneau(scan,indexer) == "1" } {
          #--- Verifier que l'index existe
-         if { $panneau(dscan,indice) == "" } {
-            tk_messageBox -title $panneau(dscan,pb) -type ok \
-               -message $panneau(dscan,saisir_indice)
+         if { $panneau(scan,indice) == "" } {
+            tk_messageBox -title $panneau(scan,pb) -type ok \
+               -message $panneau(scan,saisir_indice)
             return
          }
          #--- Verifier que l'index est bien un nombre entier
-         if { [ ::dscan::testEntier $panneau(dscan,indice) ] == "0" } {
-            tk_messageBox -title $panneau(dscan,pb) -type ok \
-               -message $panneau(dscan,indice_entier)
+         if { [ ::scan::testEntier $panneau(scan,indice) ] == "0" } {
+            tk_messageBox -title $panneau(scan,pb) -type ok \
+               -message $panneau(scan,indice_entier)
             return
          }
       }
 
       #--- Generer le nom du fichier
-      set nom $panneau(dscan,nom_image)
+      set nom $panneau(scan,nom_image)
 
       #--- Pour eviter un nom de fichier qui commence par un blanc
       set nom [ lindex $nom 0 ]
-      if { $panneau(dscan,indexer) == "1" } {
-         append nom $panneau(dscan,indice)
+      if { $panneau(scan,indexer) == "1" } {
+         append nom $panneau(scan,indice)
       }
 
       #--- Verifier que le nom du fichier n'existe pas deja
@@ -726,17 +734,17 @@ namespace eval ::dscan {
       append nom1 $ext
       if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
          #--- Dans ce cas, le fichier existe deja
-         set confirmation [ tk_messageBox -title $panneau(dscan,confirmation) -type yesno \
-            -message $panneau(dscan,fichier_existe) ]
+         set confirmation [ tk_messageBox -title $panneau(scan,confirmation) -type yesno \
+            -message $panneau(scan,fichier_existe) ]
          if { $confirmation == "no" } {
             return
          }
       }
 
       #--- Incrementer l'index
-      if { $panneau(dscan,indexer) == "1" } {
+      if { $panneau(scan,indexer) == "1" } {
          if { [ buf$audace(bufNo) imageready ] != "0" } {
-            incr panneau(dscan,indice)
+            incr panneau(scan,indice)
          } else {
             #--- Sortir immediatement s'il n'y a pas d'image dans le buffer
             return
@@ -749,7 +757,7 @@ namespace eval ::dscan {
 
 }
 
-proc dscanBuildIF { This } {
+proc scanBuildIF { This } {
    global audace panneau
 
    #--- Frame de l'outil
@@ -759,10 +767,11 @@ proc dscanBuildIF { This } {
       frame $This.fra0 -borderwidth 2 -relief groove
 
          #--- Label du titre
-         Button $This.fra0.but -borderwidth 1 -text $panneau(dscan,titre) \
-            -command "::audace::showHelpPlugin tool scan scan.htm"
+         Button $This.fra0.but -borderwidth 1 -text $panneau(scan,titre) \
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scan::getPluginType ] ] scan \
+               [ ::scan::getPluginHelp ]"
          pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
-         DynamicHelp::add $This.fra0.but -text $panneau(dscan,aide)
+         DynamicHelp::add $This.fra0.but -text $panneau(scan,aide)
 
       pack $This.fra0 -side top -fill x
 
@@ -770,7 +779,7 @@ proc dscanBuildIF { This } {
       frame $This.fra1 -borderwidth 2 -relief groove
 
          #--- Label du bouton Configuration
-         button $This.fra1.but -borderwidth 1 -text $panneau(dscan,configuration) \
+         button $This.fra1.but -borderwidth 1 -text $panneau(scan,configuration) \
             -command { ::scanSetup::run $audace(base).scanSetup }
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
 
@@ -780,19 +789,19 @@ proc dscanBuildIF { This } {
       frame $This.fra2 -borderwidth 1 -relief groove
 
          #--- Label pour colonnes
-         label $This.fra2.lab1 -text $panneau(dscan,col) -relief flat
+         label $This.fra2.lab1 -text $panneau(scan,col) -relief flat
          pack $This.fra2.lab1 -in $This.fra2 -anchor center -fill none -padx 4 -pady 1
 
          #--- Frame des 2 entries de colonnes
          frame $This.fra2.fra1 -borderwidth 1 -relief flat
 
             #--- Entry pour la colonne de debut
-            entry $This.fra2.fra1.ent1 -textvariable panneau(dscan,col1) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra1.ent1 -textvariable panneau(scan,col1) -font $audace(font,arial_8_b) \
                -relief groove -width 5 -justify center
             pack $This.fra2.fra1.ent1 -in $This.fra2.fra1 -side left -fill none -padx 4 -pady 1
 
             #--- Entry pour la colonne de fin
-            entry $This.fra2.fra1.ent2 -textvariable panneau(dscan,col2) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra1.ent2 -textvariable panneau(scan,col2) -font $audace(font,arial_8_b) \
                -relief groove -width 5 -justify center
             pack $This.fra2.fra1.ent2 -in $This.fra2.fra1 -side right -fill none -padx 4 -pady 1
 
@@ -802,11 +811,11 @@ proc dscanBuildIF { This } {
          frame $This.fra2.fra2 -borderwidth 1 -relief flat
 
             #--- Label pour lignes
-            label $This.fra2.fra2.lab2 -text $panneau(dscan,lig) -relief flat
+            label $This.fra2.fra2.lab2 -text $panneau(scan,lig) -relief flat
             pack $This.fra2.fra2.lab2 -in $This.fra2.fra2 -side left -fill none -padx 2 -pady 1
 
             #--- Entry pour lignes
-            entry $This.fra2.fra2.ent1 -textvariable panneau(dscan,lig1) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra2.ent1 -textvariable panneau(scan,lig1) -font $audace(font,arial_8_b) \
                -relief groove -width 7 -justify center
             pack $This.fra2.fra2.ent1 -in $This.fra2.fra2 -side right -fill none -padx 2 -pady 1
 
@@ -816,16 +825,16 @@ proc dscanBuildIF { This } {
          frame $This.fra2.fra3 -borderwidth 1 -relief flat
 
             #--- Label pour la dimension des pixels
-            label $This.fra2.fra3.lab3 -text $panneau(dscan,pixel) -relief flat
+            label $This.fra2.fra3.lab3 -text $panneau(scan,pixel) -relief flat
             pack $This.fra2.fra3.lab3 -in $This.fra2.fra3 -side left -fill none -padx 2 -pady 1
 
             #--- Entry pour la dimension des pixels
-            entry $This.fra2.fra3.ent1 -textvariable panneau(dscan,pix) -font $audace(font,arial_8_b) \
+            entry $This.fra2.fra3.ent1 -textvariable panneau(scan,pix) -font $audace(font,arial_8_b) \
                -relief groove -width 4 -justify center
             pack $This.fra2.fra3.ent1 -in $This.fra2.fra3 -side left -fill none -padx 2 -pady 1
 
             #--- Label pour l'unite de la dimension des pixels
-            label $This.fra2.fra3.lab4 -text $panneau(dscan,unite) -relief flat
+            label $This.fra2.fra3.lab4 -text $panneau(scan,unite) -relief flat
             pack $This.fra2.fra3.lab4 -in $This.fra2.fra3 -side right -fill none -padx 2 -pady 1
 
          pack $This.fra2.fra3 -in $This.fra2 -anchor center -fill none
@@ -834,24 +843,24 @@ proc dscanBuildIF { This } {
 
       #--- Binding sur la zone des infos de la camera
       set zone(camera) $This.fra2
-      bind $zone(camera) <ButtonPress-1>           { ::dscan::infoCam }
-      bind $zone(camera).lab1 <ButtonPress-1>      { ::dscan::infoCam }
-      bind $zone(camera).fra2.lab2 <ButtonPress-1> { ::dscan::infoCam }
-      bind $zone(camera).fra3.lab3 <ButtonPress-1> { ::dscan::infoCam }
-      bind $zone(camera).fra3.lab4 <ButtonPress-1> { ::dscan::infoCam }
+      bind $zone(camera) <ButtonPress-1>           { ::scan::infoCam }
+      bind $zone(camera).lab1 <ButtonPress-1>      { ::scan::infoCam }
+      bind $zone(camera).fra2.lab2 <ButtonPress-1> { ::scan::infoCam }
+      bind $zone(camera).fra3.lab3 <ButtonPress-1> { ::scan::infoCam }
+      bind $zone(camera).fra3.lab4 <ButtonPress-1> { ::scan::infoCam }
 
       #--- Frame de l'interligne
       frame $This.fra3 -borderwidth 1 -relief groove
 
          #--- Label pour interligne
-         label $This.fra3.lab1 -text $panneau(dscan,interlig) -relief flat
+         label $This.fra3.lab1 -text $panneau(scan,interlig) -relief flat
          pack $This.fra3.lab1 -in $This.fra3 -anchor center -fill none
 
          #--- Frame pour binning (seulement port parallele et EthernAude)
          frame $This.fra3.bin -borderwidth 0 -relief groove
 
             #--- Label pour binning X
-            label $This.fra3.bin.lab1 -text $panneau(dscan,bin) -relief flat
+            label $This.fra3.bin.lab1 -text $panneau(scan,bin) -relief flat
             pack $This.fra3.bin.lab1 -in $This.fra3.bin -side left -fill none
 
             #--- Combobox pour binning X
@@ -859,13 +868,13 @@ proc dscanBuildIF { This } {
                -width 3        \
                -font $audace(font,arial_8_b) \
                -justify center \
-               -height [ llength $panneau(dscan,listBinningX) ] \
+               -height [ llength $panneau(scan,listBinningX) ] \
                -relief sunken  \
                -borderwidth 1  \
                -editable 0     \
-               -textvariable panneau(dscan,binningX) \
-               -values $panneau(dscan,listBinningX) \
-               -modifycmd "::dscan::cmdCalcul"
+               -textvariable panneau(scan,binningX) \
+               -values $panneau(scan,listBinningX) \
+               -modifycmd "::scan::cmdCalcul"
             pack $This.fra3.bin.binX -in $This.fra3.bin -side left -fill none
 
             #--- Label pour binning Y
@@ -877,13 +886,13 @@ proc dscanBuildIF { This } {
                -width 3        \
                -font $audace(font,arial_8_b) \
                -justify center \
-               -height [ llength $panneau(dscan,listBinningY) ] \
+               -height [ llength $panneau(scan,listBinningY) ] \
                -relief sunken  \
                -borderwidth 1  \
                -editable 0     \
-               -textvariable panneau(dscan,binningY) \
-               -values $panneau(dscan,listBinningY) \
-               -modifycmd "::dscan::cmdCalcul"
+               -textvariable panneau(scan,binningY) \
+               -values $panneau(scan,listBinningY) \
+               -modifycmd "::scan::cmdCalcul"
             pack $This.fra3.bin.binY -in $This.fra3.bin -side left -fill none
 
          pack $This.fra3.bin -in $This.fra3 -anchor n -fill x -expand 0 -pady 2
@@ -892,16 +901,16 @@ proc dscanBuildIF { This } {
          frame $This.fra3.fra2 -borderwidth 1 -relief flat
 
             #--- Label pour la focale
-            label $This.fra3.fra2.lab1 -text $panneau(dscan,focale) -relief flat
+            label $This.fra3.fra2.lab1 -text $panneau(scan,focale) -relief flat
             pack $This.fra3.fra2.lab1 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
             #--- Entry pour la focale
-            entry $This.fra3.fra2.ent1 -textvariable panneau(dscan,foc) -font $audace(font,arial_8_b) \
+            entry $This.fra3.fra2.ent1 -textvariable panneau(scan,foc) -font $audace(font,arial_8_b) \
                -relief groove -width 5 -justify center
             pack $This.fra3.fra2.ent1 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
             #--- Label pour l'unite de la focale
-            label $This.fra3.fra2.lab2 -text $panneau(dscan,metres) -relief flat
+            label $This.fra3.fra2.lab2 -text $panneau(scan,metres) -relief flat
             pack $This.fra3.fra2.lab2 -in $This.fra3.fra2 -side left -fill none -padx 1 -pady 2
 
          pack $This.fra3.fra2 -in $This.fra3 -anchor center -fill none
@@ -910,20 +919,20 @@ proc dscanBuildIF { This } {
          frame $This.fra3.fra3 -borderwidth 1 -relief flat
 
             #--- Bouton pour la mise a jour de la dec
-            button $This.fra3.fra3.but2 -borderwidth 2 -text $panneau(dscan,declinaison) \
-               -width 3 -command "::dscan::cmdDec"
+            button $This.fra3.fra3.but2 -borderwidth 2 -text $panneau(scan,declinaison) \
+               -width 3 -command "::scan::cmdDec"
             pack $This.fra3.fra3.but2 -in $This.fra3.fra3 -side left -fill none -pady 1
 
             #--- Entry pour la dec
-            entry $This.fra3.fra3.ent2 -textvariable panneau(dscan,dec) -font $audace(font,arial_8_b) \
+            entry $This.fra3.fra3.ent2 -textvariable panneau(scan,dec) -font $audace(font,arial_8_b) \
                -relief groove -width 10
             pack $This.fra3.fra3.ent2 -in $This.fra3.fra3 -side right -fill none -pady 1
 
          pack $This.fra3.fra3 -in $This.fra3 -anchor center -fill none
 
          #--- Bouton de calcul
-         button $This.fra3.but1 -borderwidth 2 -text $panneau(dscan,calcul) \
-            -command "::dscan::cmdCalcul"
+         button $This.fra3.but1 -borderwidth 2 -text $panneau(scan,calcul) \
+            -command "::scan::cmdCalcul"
          pack $This.fra3.but1 -in $This.fra3 -anchor center -fill none -pady 1 -ipadx 13
 
          #--- Frame des entry & label
@@ -931,11 +940,11 @@ proc dscanBuildIF { This } {
 
             #--- Entry pour les millisecondes
             entry $This.fra3.fra1.ent1 -width 7 -relief groove -font $audace(font,arial_8_b) \
-              -textvariable panneau(dscan,interlig1) -state disabled
+              -textvariable panneau(scan,interlig1) -state disabled
             pack $This.fra3.fra1.ent1 -in $This.fra3.fra1 -side left -fill none -padx 1 -pady 2
 
             #--- Label pour l'unite
-            label $This.fra3.fra1.ent2 -text $panneau(dscan,ms) -relief flat
+            label $This.fra3.fra1.ent2 -text $panneau(scan,ms) -relief flat
             pack $This.fra3.fra1.ent2 -in $This.fra3.fra1 -side left -fill none -padx 1 -pady 2
 
          pack $This.fra3.fra1 -in $This.fra3 -anchor center -fill none
@@ -949,7 +958,7 @@ proc dscanBuildIF { This } {
          frame $This.fra4.obt -borderwidth 2 -relief ridge -width 16
 
             #--- Bouton de changement d'etat de l'obturateur
-            button $This.fra4.obt.but -text $panneau(dscan,obturateur) -command "::dscan::changeObt" \
+            button $This.fra4.obt.but -text $panneau(scan,obturateur) -command "::scan::changeObt" \
                -state normal
             pack $This.fra4.obt.but -side left -ipady 3
 
@@ -964,17 +973,17 @@ proc dscanBuildIF { This } {
          pack $This.fra4.obt -side top -fill x
 
          #--- Label pour l'acquisition
-         label $This.fra4.lab1 -text $panneau(dscan,acq) -relief flat
+         label $This.fra4.lab1 -text $panneau(scan,acq) -relief flat
          pack $This.fra4.lab1 -in $This.fra4 -anchor center -fill none -padx 4 -pady 1
 
          #--- Bouton GO
-         button $This.fra4.but1 -borderwidth 2 -text $panneau(dscan,go) \
-            -command "::dscan::cmdGo motoroff"
+         button $This.fra4.but1 -borderwidth 2 -text $panneau(scan,go) \
+            -command "::scan::cmdGo motoroff"
          pack $This.fra4.but1 -in $This.fra4 -anchor center -fill x -padx 5 -ipadx 10 -ipady 3
 
          #--- Bouton STOP
-         button $This.fra4.but2 -borderwidth 2 -text $panneau(dscan,stop) \
-            -command "::dscan::cmdStop"
+         button $This.fra4.but2 -borderwidth 2 -text $panneau(scan,stop) \
+            -command "::scan::cmdStop"
          pack $This.fra4.but2 -in $This.fra4 -anchor center -fill x -padx 5 -pady 5 -ipadx 15 -ipady 3
 
       pack $This.fra4 -side top -fill x
@@ -986,20 +995,20 @@ proc dscanBuildIF { This } {
         frame $This.fra5.nom -relief ridge -borderwidth 2
 
            #--- Label du nom de l'image
-           label $This.fra5.nom.lab1 -text $panneau(dscan,nom) -pady 0
+           label $This.fra5.nom.lab1 -text $panneau(scan,nom) -pady 0
            pack $This.fra5.nom.lab1 -fill x -side top
 
            #--- Entry du nom de l'image
-           entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(dscan,nom_image) \
+           entry $This.fra5.nom.ent1 -width 10 -textvariable panneau(scan,nom_image) \
               -font $audace(font,arial_10_b) -relief groove
            pack $This.fra5.nom.ent1 -fill x -side top
 
            #--- Label de l'extension
-           label $This.fra5.nom.lab_extension -text $panneau(dscan,extension) -pady 0
+           label $This.fra5.nom.lab_extension -text $panneau(scan,extension) -pady 0
            pack $This.fra5.nom.lab_extension -fill x -side left
 
            #--- Button pour le choix de l'extension
-           button $This.fra5.nom.extension -textvariable panneau(dscan,extension_image) \
+           button $This.fra5.nom.extension -textvariable panneau(scan,extension_image) \
               -width 7 -command "::confFichierIma::run $audace(base).confFichierIma"
            pack $This.fra5.nom.extension -side right -fill x
 
@@ -1009,28 +1018,28 @@ proc dscanBuildIF { This } {
         frame $This.fra5.index -relief ridge -borderwidth 2
 
            #--- Checkbutton pour le choix de l'indexation
-           checkbutton $This.fra5.index.case -pady 0 -text $panneau(dscan,index) -variable panneau(dscan,indexer)
+           checkbutton $This.fra5.index.case -pady 0 -text $panneau(scan,index) -variable panneau(scan,indexer)
            pack $This.fra5.index.case -side top -fill x
 
            #--- Entry de l'index
-           entry $This.fra5.index.ent2 -width 3 -textvariable panneau(dscan,indice) \
+           entry $This.fra5.index.ent2 -width 3 -textvariable panneau(scan,indice) \
               -font $audace(font,arial_10_b) -relief groove -justify center
            pack $This.fra5.index.ent2 -side left -fill x -expand true
 
            #--- Bouton de mise a 1 de l'index
            button $This.fra5.index.but1 -text "1" -width 3 \
-              -command "set panneau(dscan,indice) 1"
+              -command "set panneau(scan,indice) 1"
            pack $This.fra5.index.but1 -side right -fill x
 
         pack $This.fra5.index -side top -fill x
 
         #--- Bouton pour sauvegarder l'image
-        button $This.fra5.but_sauve -text $panneau(dscan,sauvegarde) -command "::dscan::sauveUneImage"
+        button $This.fra5.but_sauve -text $panneau(scan,sauvegarde) -command "::scan::sauveUneImage"
         pack $This.fra5.but_sauve -side top -fill x
 
      pack $This.fra5 -side top -fill x
 
-   bind $This.fra4.but1 <ButtonPress-3> { ::dscan::cmdGo motoron }
+   bind $This.fra4.but1 <ButtonPress-3> { ::scan::cmdGo motoron }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $This
