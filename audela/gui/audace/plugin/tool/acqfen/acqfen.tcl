@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.13 2007-08-31 17:33:43 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.14 2007-09-09 17:02:50 robertdelmas Exp $
 #
 
 # =========================================================
@@ -1319,8 +1319,6 @@ namespace eval ::acqfen {
          -y [expr $panneau(acqfen,mtx_y)*([lindex [cam$audace(camNo) nbcells] 1]-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]-$hauteur]
    }
 
-#--- Procedures reprises depuis acqFC.tcl :
-
 #***** Procedure de sauvegarde de l'image **********************
 #--- Cette routine est largement inspiree de Acq.tcl, livre avec Audela.
 #--- Procedure lancee par appui sur le bouton "enregistrer", uniquement dans le
@@ -1476,7 +1474,8 @@ frame $This -borderwidth 2 -relief groove
    pack $This.titre -side top -fill x
 
       Button $This.titre.but -borderwidth 1 -text $caption(acqfen,titre_fenetrees) \
-         -command "::audace::showHelpPlugin [ ::acqfen::getPluginType ] acqfen [ ::acqfen::getPluginHelp ]"
+         -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfen::getPluginType ] ] acqfen \
+            [ ::acqfen::getPluginHelp ]"
       pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
       DynamicHelp::add $This.titre.but -text $caption(acqfen,help_titre)
 
