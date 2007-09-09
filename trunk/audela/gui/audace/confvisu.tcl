@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.68 2007-06-20 21:34:00 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.69 2007-09-09 16:57:15 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -380,7 +380,6 @@ namespace eval ::confVisu {
       ::Movie::deleteMovieWindow $visuNo
 
       catch { ::astrometry::quit }
-      catch { ::AcqFC::spreviousTopiew }
 
       #--- Suppression de la fenetre a l'ecran
       deleteBox $visuNo
