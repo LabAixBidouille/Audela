@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.32 2007-08-31 17:34:38 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.33 2007-09-09 19:31:15 robertdelmas Exp $
 #
 
 global panneau
@@ -856,7 +856,8 @@ proc scanfastBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra0.but -borderwidth 1 -text $panneau(scanfast,titre) \
-            -command "::audace::showHelpPlugin [ ::scanfast::getPluginType ] scanfast [ ::scanfast::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scanfast::getPluginType ] ] \
+               scanfast [ ::scanfast::getPluginHelp ]"
          pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra0.but -text $panneau(scanfast,aide)
 

@@ -2,7 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.10 2007-09-02 09:16:22 robertdelmas Exp $
+# Mise a jour $Id: cmanimate.tcl,v 1.11 2007-09-09 19:26:00 robertdelmas Exp $
 #
 #****************************************************************
 #
@@ -981,7 +981,8 @@ proc cmanimateBuildIF { This } {
 
          #--- Label for title
          Button $This.fra1.but -borderwidth 1 -text $panneau(cmanimate,titre) \
-            -command "::audace::showHelpPlugin [ ::cmanimate::getPluginType ] cmanimate [ ::cmanimate::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::cmanimate::getPluginType ] ] \
+               cmanimate [ ::cmanimate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(cmanimate,aide)
 

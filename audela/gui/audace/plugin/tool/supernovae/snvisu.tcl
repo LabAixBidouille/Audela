@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.25 2007-09-01 11:17:07 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.26 2007-09-09 19:34:16 robertdelmas Exp $
 #
 
 global audace
@@ -263,7 +263,8 @@ pack $audace(base).snvisu.frame8.but_config \
 #--- Bouton de configuration
 button $audace(base).snvisu.frame8.but_raccourcis \
    -text "$caption(snvisu,raccourcis)" -borderwidth 2 \
-   -command { ::audace::showHelpPlugin tool supernovae supernovae.htm sn_raccourcis }
+   -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] supernovae \
+      [ ::supernovae::getPluginHelp ] sn_raccourcis }
 pack $audace(base).snvisu.frame8.but_raccourcis \
    -in $audace(base).snvisu.frame8 -side left -anchor center \
    -padx 10 -ipadx 5 -ipady 5
@@ -1552,7 +1553,8 @@ proc snvisu_configuration { } {
    button $audace(base).snvisu_3.but_help \
       -text $caption(snvisu,aide) -borderwidth 2 \
       -command {
-         ::audace::showHelpPlugin tool supernovae supernovae.htm sn_config
+         ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] supernovae \
+            [ ::supernovae::getPluginHelp ] sn_config
       }
    pack $audace(base).snvisu_3.but_help \
       -in $audace(base).snvisu_3 -side right -anchor w \

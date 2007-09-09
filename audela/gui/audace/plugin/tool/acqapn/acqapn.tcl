@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.21 2007-08-31 15:50:57 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.22 2007-09-09 19:24:11 robertdelmas Exp $
 #
 
 #============================================================
@@ -1392,7 +1392,8 @@ proc acqapnBuildIF { This } {
 
          #--- Titre de l'outil et bouton de l'aide
          button $This.fra1.but1 -borderwidth 2 -text $panneau(acqapn,titre) \
-            -command "::audace::showHelpPlugin [ ::acqapn::getPluginType ] acqapn [ ::acqapn::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqapn::getPluginType ] ] acqapn \
+               [ ::acqapn::getPluginHelp ]"
          pack $This.fra1.but1 -in $This.fra1 -anchor center -expand 1 -fill both -side top
          DynamicHelp::add $This.fra1.but1 -text $caption(acqapn,help,titre)
 

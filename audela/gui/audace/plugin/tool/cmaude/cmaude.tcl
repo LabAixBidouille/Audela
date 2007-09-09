@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.12 2007-08-31 17:34:01 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.13 2007-09-09 19:26:17 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -671,7 +671,8 @@ global audace color panneau
 
          #--- Label of title
          Button $This.fra1.but1 -borderwidth 1 -text $panneau(cmaude,titre) \
-            -command "::audace::showHelpPlugin [ ::cmaude::getPluginType ] cmaude [ ::cmaude::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::cmaude::getPluginType ] ] cmaude \
+               [ ::cmaude::getPluginHelp ]"
          pack $This.fra1.but1 -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but1 -text $panneau(cmaude,aide)
 
