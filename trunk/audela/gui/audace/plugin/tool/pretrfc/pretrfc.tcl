@@ -2,7 +2,7 @@
 # Fichier : pretrfc.tcl
 # Description : Outil pour le pretraitement automatique
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: pretrfc.tcl,v 1.16 2007-09-05 17:33:13 robertdelmas Exp $
+# Mise a jour $Id: pretrfc.tcl,v 1.17 2007-09-09 19:30:13 robertdelmas Exp $
 #
 
 #============================================================
@@ -2196,7 +2196,8 @@ proc creeFenetrePrFC { } {
       #--- Bouton Aide
       button $audace(base).fenetrePretr.but.aide -borderwidth 2 -width 5 -text $caption(pretrfc,aide) \
          -font $audace(font,arial_10_n) \
-         -command "::audace::showHelpPlugin [ ::pretrfc::getPluginType ] pretrfc [ ::pretrfc::getPluginHelp ]"
+         -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::pretrfc::getPluginType ] ] pretrfc \
+            [ ::pretrfc::getPluginHelp ]"
       pack $audace(base).fenetrePretr.but.aide -side right -anchor sw -in $audace(base).fenetrePretr.but
    pack $audace(base).fenetrePretr.but -side top -fill x
 

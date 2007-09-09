@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.14 2007-04-01 20:52:32 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.15 2007-09-09 19:33:10 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -633,7 +633,7 @@ namespace eval skybot_Search {
         #--- menu aide
         menubutton $This.frame0.aide -text "$caption(search,aide)" -underline 0 -menu $This.frame0.aide.menu
         menu $This.frame0.aide.menu
-          $This.frame0.aide.menu add command -label "$caption(search,aide)" -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
+          $This.frame0.aide.menu add command -label "$caption(search,aide)" -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] vo_tools [ ::vo_tools::getPluginHelp ] field_2 }
           $This.frame0.aide.menu add command -label "$caption(search,aide_skybot)" -command { ::audace::Lance_Site_htm $myurl(skybot_doc) }
           $This.frame0.aide.menu add separator
           $This.frame0.aide.menu add command -label "$caption(search,code_uai)" -command { ::audace::Lance_Site_htm $myurl(iau_codes) }
@@ -1143,7 +1143,8 @@ namespace eval skybot_Search {
         $popupTbl add separator
         # Acces a l'aide
         $popupTbl add command -label $caption(search,aide) \
-           -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
+           -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] \
+              vo_tools [ ::vo_tools::getPluginHelp ] field_2 }
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]
@@ -1417,7 +1418,8 @@ namespace eval skybot_Search {
          #--- Creation du bouton aide
          button $paramwindow.boutons.but_aide \
             -text "$caption(search,aide)" -borderwidth 2 \
-            -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_2 }
+            -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] \
+               vo_tools [ ::vo_tools::getPluginHelp ] field_2 }
          pack $paramwindow.boutons.but_aide \
             -in $paramwindow.boutons -side right -anchor e \
             -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0

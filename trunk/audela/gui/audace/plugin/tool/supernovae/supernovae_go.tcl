@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.11 2007-09-01 10:07:33 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.12 2007-09-09 19:34:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -140,7 +140,8 @@ proc ::supernovae::supernovaeBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(supernovae,titre) \
-            -command "::audace::showHelpPlugin [ ::supernovae::getPluginType ] supernovae [ ::supernovae::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] \
+               supernovae [ ::supernovae::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(supernovae,aide)
 

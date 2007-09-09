@@ -2,7 +2,7 @@
 # Fichier : pretrfcSetup.tcl
 # Description : Choisir l'affichage ou non de messages sur la Console
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.6 2007-09-05 17:30:53 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.tcl,v 1.7 2007-09-09 19:30:36 robertdelmas Exp $
 #
 
 namespace eval pretrfcSetup {
@@ -78,7 +78,7 @@ namespace eval pretrfcSetup {
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc afficheAide { } {
-      ::audace::showHelpPlugin tool pretrfc pretrfcSetup.htm
+      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::pretrfc::getPluginType ] ] pretrfc pretrfcSetup.htm
    }
 
    #

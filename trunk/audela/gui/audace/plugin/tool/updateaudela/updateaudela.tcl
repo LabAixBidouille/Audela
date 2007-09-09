@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.8 2007-08-24 22:15:15 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.9 2007-09-09 19:35:31 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -246,7 +246,8 @@ proc ::updateaudela::getTypeDirectory { pluginType} {
 proc ::updateaudela::showHelp { } {
    variable private
 
-   ::audace::showHelpPlugin [::updateaudela::getPluginType] updateaudela [::updateaudela::getPluginHelp]
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::updateaudela::getPluginType ] ] updateaudela \
+      [ ::updateaudela::getPluginHelp ]
 }
 
 #------------------------------------------------------------

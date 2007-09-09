@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.13 2007-09-06 17:52:54 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.14 2007-09-09 19:27:16 robertdelmas Exp $
 #
 
 #============================================================
@@ -2300,7 +2300,8 @@ proc methkingBuildIF {This tableau} {
 
           #--- Label du titre
           Button $This.ftitre.l -borderwidth 2 -text $caption(methking,titre) \
-             -command "::audace::showHelpPlugin [ ::methking::getPluginType ] methking [ ::methking::getPluginHelp ]"
+             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::methking::getPluginType ] ] \
+                methking [ ::methking::getPluginHelp ]"
           pack $This.ftitre.l -in $This.ftitre -anchor center -expand 1 -fill both -side top
           DynamicHelp::add $This.ftitre.l -text $caption(methking,help,titre)
 

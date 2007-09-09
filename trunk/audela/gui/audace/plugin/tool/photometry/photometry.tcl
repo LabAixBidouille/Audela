@@ -2,7 +2,7 @@
 # Fichier : photometry.tcl
 # Description : Outil de traitement d'images de photometrie
 # Auteur : Alain Klotz
-# Mise a jour $Id: photometry.tcl,v 1.5 2007-08-31 17:34:18 robertdelmas Exp $
+# Mise a jour $Id: photometry.tcl,v 1.6 2007-09-09 19:29:51 robertdelmas Exp $
 #
 
 namespace eval ::photometry {
@@ -135,7 +135,8 @@ proc ::photometry::photometryBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(photometry,titre) \
-            -command "::audace::showHelpPlugin [ ::photometry::getPluginType ] photometry [ ::photometry::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::photometry::getPluginType ] ] \
+               photometry [ ::photometry::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(photometry,aide)
 

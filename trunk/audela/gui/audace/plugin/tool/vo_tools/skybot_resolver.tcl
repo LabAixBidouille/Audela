@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.15 2007-04-01 20:52:03 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.16 2007-09-09 19:32:51 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -575,7 +575,7 @@ namespace eval skybot_Resolver {
         #--- Creation du bouton aide
         button $This.frame6.but_aide \
            -text "$caption(resolver,aide)" -borderwidth 2 \
-           -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_3 }
+           -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] vo_tools [ ::vo_tools::getPluginHelp ] field_3 }
         pack $This.frame6.but_aide \
            -in $This.frame6 -side right -anchor e \
            -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
@@ -631,7 +631,7 @@ namespace eval skybot_Resolver {
       $popupTbl add separator
       #--- Acces a l'aide
       $popupTbl add command -label $caption(resolver,aide) \
-         -command { ::audace::showHelpPlugin tool vo_tools vo_tools.htm field_3 }
+         -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] vo_tools [ ::vo_tools::getPluginHelp ] field_3 }
 
       #--- Gestion des evenements
       bind [$tbl bodypath] <ButtonPress-3> [ list tk_popup $popupTbl %X %Y ]

@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.10 2007-09-01 12:28:26 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.11 2007-09-09 19:27:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -137,7 +137,8 @@ proc ::modpoi::modpoiBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(modpoi,titre) \
-            -command "::audace::showHelpPlugin [ ::modpoi::getPluginType ] modpoi [ ::modpoi::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi::getPluginType ] ] modpoi \
+               [ ::modpoi::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(modpoi,aide)
 

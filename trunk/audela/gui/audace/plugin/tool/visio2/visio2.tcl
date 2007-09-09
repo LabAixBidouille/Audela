@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.27 2007-08-31 17:35:55 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.28 2007-09-09 19:37:35 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -550,7 +550,8 @@ proc ::visio2::createPanel { visuNo } {
 
    #--- Label du titre
    Button $This.titre.but -borderwidth 1 -text $caption(visio2,title) \
-      -command "::audace::showHelpPlugin [ ::visio2::getPluginType ] visio2 [ ::visio2::getPluginHelp ]"
+      -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] visio2 \
+         [ ::visio2::getPluginHelp ]"
    DynamicHelp::add $This.titre.but -text $caption(visio2,help,titre)
    pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill x -side top -ipadx 5
 
@@ -626,7 +627,8 @@ proc ::visio2::config::getLabel { } {
 #   affiche l'aide de cet outil
 #------------------------------------------------------------
 proc ::visio2::config::showHelp { } {
-   ::audace::showHelpPlugin "tool" "visio2" "visio2.htm" "config"
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] visio2 \
+         [ ::visio2::getPluginHelp ] "config"
 }
 
 #------------------------------------------------------------

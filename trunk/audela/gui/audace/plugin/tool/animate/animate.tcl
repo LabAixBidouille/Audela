@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.12 2007-08-31 15:55:07 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.13 2007-09-09 19:25:41 robertdelmas Exp $
 #
 
 #============================================================
@@ -228,7 +228,8 @@ proc ::animate::animBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(animate,titre) \
-            -command "::audace::showHelpPlugin [ ::animate::getPluginType ] animate [ ::animate::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::animate::getPluginType ] ] animate \
+               [ ::animate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(animate,aide)
 

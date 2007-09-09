@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.15 2007-09-01 17:04:09 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.16 2007-09-09 19:26:36 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -714,7 +714,8 @@ proc focBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(foc,titre) \
-            -command "::audace::showHelpPlugin [ ::foc::getPluginType ] foc [ ::foc::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::foc::getPluginType ] ] foc \
+               [ ::foc::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(foc,aide)
 

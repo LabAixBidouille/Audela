@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.17 2007-09-01 16:49:00 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.18 2007-09-09 19:30:56 robertdelmas Exp $
 #
 
 #============================================================
@@ -875,7 +875,8 @@ proc remotectrlBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(remotectrl,titre) \
-            -command "::audace::showHelpPlugin [ ::remotectrl::getPluginType ] remotectrl [ ::remotectrl::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::remotectrl::getPluginType ] ] \
+               remotectrl [ ::remotectrl::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(remotectrl,aide)
 
