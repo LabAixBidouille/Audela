@@ -29,13 +29,16 @@
 /*
  * Donnees propres a chaque telescope.
  */
+#include "dsa20.h"
+#include "etb10.h"
+#include <dmd10.h>
+
 /* --- structure qui accueille les parametres---*/
 struct telprop {
    /* --- parametres standards, ne pas changer ---*/
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
-   char sDecimal;
-   double rateunity; /* deg/s when rate=1 */
+   DSA_DRIVE *drv;
    /*
    int longformatindex;
    int tempo;
@@ -91,6 +94,7 @@ int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
 
 void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
+void mytel_error(struct telprop *tel,int err);
 
 #endif
 

@@ -35,8 +35,6 @@
 #include "telescop.h"
 #include <libtel/util.h>
 #include <libtel/util.h>
-#include "dsa20.h"
-#include "etb10.h"
 
  /*
  *  Definition of different cameras supported by this driver
@@ -78,58 +76,30 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 {
    //char s[1024];
 	int err;
-	DSA_DRIVE *drv = NULL;
-	DSA_STATUS sta = {sizeof(DSA_STATUS)};
-	long i, val;
-	ETB_RTM_AXISMASK axis_mask;	/*Array of axismask for */
-	ETB *etb = NULL;					/*each realtime channel*/
-
+   tel->drv=NULL;
 	/* create drive */
-	if (err = dsa_create_drive(&drv)) {
-		goto _error;
+	if (err = dsa_create_drive(&tel->drv)) {
+		mytel_error(tel,err);
+		return 1;
 	}
-	if (err = dsa_open_u(drv, "etb:DSTEB3:1")) {
-		goto _error;
+	if (err = dsa_open_u(tel->drv, "etb:DSTEB3:0")) {
+		mytel_error(tel,err);
+		tel_close(tel);
+		return 2;
 	}
 	/* Reset error */
-	if (err = dsa_reset_error_s(drv, 1000)) {
-		goto _error;
+	if (err = dsa_reset_error_s(tel->drv, 1000)) {
+		mytel_error(tel,err);
+		tel_close(tel);
+		return 3;
+	}
+	/* power on */
+	if (err = dsa_power_on_s(tel->drv, 10000)) {
+		mytel_error(tel,err);
+		tel_close(tel);
+		return 4;
 	}
 	return 0;
-
-	/* Error handler. */
-_error:
-    /* Is the drive pointer valid ? */
-    if(dsa_is_valid_drive(drv)) {
-
-        /* Is the drive open ? */
-        bool open = 0;
-        dsa_is_open(drv, &open);
-        if (open) {
-
-            /* Close the connection. */
-            dsa_close(drv);
-        }
-
-        /* And finally, release all resources to the OS. */
-        dsa_destroy(&drv);
-    }
-
-    /* Print the first error that occured. */
-    sprintf(tel->msg,"error %d: %s.\n", err, dsa_translate_error(err));
-    return 1;
-
-    /*
-   strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
-   if (Tcl_Eval(tel->interp,s)==TCL_OK) {
-      tel->sDecimal=tel->interp->result[0];
-   } else {
-      tel->sDecimal='.';
-   }
-   strcpy(s,"$telcmd Tracking 1"); mytel_tcleval(tel,s);
-   tel->rateunity=0.1;
-   */
-   return 0;
 }
 
 int tel_testcom(struct telprop *tel)
@@ -137,7 +107,12 @@ int tel_testcom(struct telprop *tel)
 /* --- called by : tel1 testcom --- */
 /* -------------------------------- */
 {
-   return 0;
+    /* Is the drive pointer valid ? */
+    if(dsa_is_valid_drive(tel->drv)) {
+      return 1;
+	} else {
+      return 0;
+	}
 }
 
 int tel_close(struct telprop *tel)
@@ -145,6 +120,21 @@ int tel_close(struct telprop *tel)
 /* --- called by : tel1 close --- */
 /* ------------------------------ */
 {
+	int err;
+	/* power off */
+	if (err = dsa_power_off_s(tel->drv, 10000)) {
+		//mytel_error(tel,err);
+		//return 1;
+	}
+	/* close and destroy */
+	if (err = dsa_close(tel->drv)) {
+		//mytel_error(tel,err);
+		//return 2;
+	}
+	if (err = dsa_destroy(&tel->drv)) {
+		//mytel_error(tel,err);
+		//return 3;
+	}
    return 0;
 }
 
@@ -322,11 +312,32 @@ int mytel_radec_move(struct telprop *tel,char *direction)
 
 int mytel_radec_stop(struct telprop *tel,char *direction)
 {
+	/*
+	int err;
+   if (err = dsa_quick_stop_s(tel->drv, 10000)) {
+	   mytel_error(tel,err);
+		return 1;
+	}
+	*/
    return 0;
 }
 
 int mytel_radec_motor(struct telprop *tel)
 {
+	int err;
+   if (tel->radec_motor==1) {
+      /* stop the motor */
+		if (err = dsa_power_off_s(tel->drv, 10000)) {
+			mytel_error(tel,err);
+			return 1;
+		}
+   } else {
+      /* start the motor */
+		if (err = dsa_power_on_s(tel->drv, 10000)) {
+			mytel_error(tel,err);
+			return 1;
+		}
+   }
    return 0;
 }
 
@@ -428,4 +439,29 @@ void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout)
       strout[k]=car;
    }
    strout[k]='\0';
+}
+
+void mytel_error(struct telprop *tel,int err)
+{
+   DSA_DRIVE *drv;
+   drv=tel->drv;
+	/*
+   // Is the drive pointer valid ?
+   if(dsa_is_valid_drive(drv)) {
+
+      // Is the drive open ?
+      bool open = 0;
+      dsa_is_open(drv, &open);
+      if (open) {
+
+         // Close the connection.
+         dsa_close(drv);
+      }
+
+       // And finally, release all resources to the OS.
+       dsa_destroy(&drv);
+    }
+	*/
+    /* Print the first error that occured. */
+    sprintf(tel->msg,"error %d: %s.\n", err, dsa_translate_error(err));
 }

@@ -24,6 +24,12 @@
 #define __TELTCL_H__
 
 /* ----- defines specifiques aux fonctions de cette camera ----*/
-
+int cmdTelStatus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelHoming(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelTargetPosition(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
