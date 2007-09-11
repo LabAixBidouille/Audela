@@ -1,4 +1,4 @@
-/* libml.h
+/* ml_morpho_math.h
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
@@ -22,51 +22,62 @@
 
 /***************************************************************************/
 /* Ce fichier d'inclusion contient                                         */
-/* - l'interfacage avec Tcl/Tk et initialise                               */
-/* - l'initialisation la librairie                                         */
-/* - les fonctions d'interfacage entre Tcl et le C                         */
+/* - les includes communs a tous les fichiers xx_*.c                       */
+/* - le include de la definition de l'operating system                     */
+/* - les prototype des fonctions C pures (sans Tcl) de la librairie.       */
 /***************************************************************************/
 
-#ifndef __LIBMLH__
-#define __LIBMLH__
+#ifndef __MLMORPHOMATHH__
+#define __MLMORPHOMATHH__
 
 /***************************************************************************/
-/***************************************************************************/
-/* Les prototypes suivants concernent les fonctions du fichier libxx.c     */
-/***************************************************************************/
+/**        includes valides pour tous les fichiers de type xx_*.c         **/
 /***************************************************************************/
 
-/***************************************************************************/
-/*               includes specifiques a l'interfacage C/Tcl                */
-/***************************************************************************/
-#include "ml.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <math.h>
+#include <time.h>
 
-#if defined(LIBRARY_DLL)
-#include <windows.h>
-#include "tcl.h"
+
+
+/***************************************************************************/
+/**             include qui permet de connaitre l'OS utilise              **/
+/***************************************************************************/
+
+#include "sysexp.h"
+
+/***************************************************************************/
+/**                  defines qui dependent de l'OS utilise                **/
+/***************************************************************************/
+
+#if defined(OS_WIN_VCPP_DLL)
+#define FILE_DOS
+#define LIBRARY_DLL
 #endif
 
-#if defined(LIBRARY_SO)
-#include <tcl.h>
+#if defined(OS_LINUX_GCC_SO)
+#define FILE_UNIX
+#define LIBRARY_SO
 #endif
 
-/*--- Point d'entree de la librairie */
-#if defined(LIBRARY_DLL)
-   __declspec(dllexport) int __cdecl ml_Init(Tcl_Interp *interp);
-#endif
-#if defined(LIBRARY_SO)
-   extern int ml_Init(Tcl_Interp *interp);
-#endif
+/***************************************************************************/
+/***************************************************************************/
+/**                DEFINITON DES STRUCTURES DE DONNEES                    **/
+/***************************************************************************/
+/***************************************************************************/
 
 
 /***************************************************************************/
 /***************************************************************************/
-/* Les prototypes suivants concernent les fonctions des fichiers mltcl_*.c */
+/**              DEFINITION DES PROTOTYPES DES FONCTIONS                  **/
 /***************************************************************************/
 /***************************************************************************/
 
-#include "mltcl.h"
 
-#include <io.h> 
+
+
+
+
 #endif
-
