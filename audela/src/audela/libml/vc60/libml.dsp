@@ -106,6 +106,10 @@ SOURCE=..\src\ml_1.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\ml_morpho_math.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\mltcl_1.c
 # End Source File
 # End Group
@@ -119,6 +123,10 @@ SOURCE=..\src\libml.h
 # Begin Source File
 
 SOURCE=..\src\ml.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\ml_morpho_math.h
 # End Source File
 # Begin Source File
 

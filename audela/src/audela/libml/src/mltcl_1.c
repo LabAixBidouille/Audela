@@ -3,7 +3,7 @@
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
- * Initial author : Myrtille LAAS <laas@obs-hp.fr>
+ * Initial author : Myrtille LAAS <Myrtille.Laas@oamp.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int kmin,kmini,pareil;	
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
-	char s[220],ligne[220],home[35],im[40],lign[220],toto[100],valid[4];
+	char s[ML_STAT_LIG_MAX],ligne[ML_STAT_LIG_MAX],home[35],im[40],lign[ML_STAT_LIG_MAX],toto[100],valid[4];
 	char satelname[26],noradname[10],cosparname[10];	
 	FILE *f_in1, *f_in2;	
 	struct_ligsat *lignes,*lignes2;
@@ -430,13 +430,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					}
 				}//	if (lignes2[n_in1].comment==1) {
 				if (lignes2[n_in1].comment==0) {
-					k1=146 ; k2=156 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=146+19 ; k2=156+19 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes2[n_in1].ident,s);
 					result= strlen(lignes2[n_in1].ident);
 					retour = strncmp(lignes2[n_in1].ident,"            \0",7);
 					if ((retour==0) || (result<=3)) {
 						/* --- le satellite n'est pas identifiée --- */
-						k1=0; k2=144; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						k1=0; k2=144+19; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(lignes2[n_in1].texte,s);
 						k1=38; k2=60; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(im,s);
@@ -672,13 +672,13 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
 {
    int result,retour;
    char s[1000],ligne[1000];
-   char im0[40],im[40];
+   char im0[40],im[40],*texte;
    double sepmin; /* minimum de distance pour deux objets dans la meme image (degrés) */
    double sepmax; /* maximum de distance pour deux objets dans la des images différentes (degrés) */
    double jjdifmin=0.014; /* differences de jours pour autoriser la comparaison */
    FILE *f_in;
    int k,k1,k2,k3,kimage,nimages,kobject;
-   int n_in;
+   int n_in,ns;
    struct_ligsat *lignes;
    int *kdebs,*kfins;
    double annee, mois, jour, heure, minute, seconde, jd, pi, dr;
@@ -995,7 +995,14 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
             if ((lignes[k].kimage!=kimage)&&(kimage!=-1)) {
                fprintf(f_in,"\n");
             }
-            fprintf(f_in,"%s",lignes[k].texte);
+			ns=(int)(strlen(lignes[k].texte));
+			texte=lignes[k].texte;
+			if (ns>=2) {
+				texte[ns-1]='\0';
+			}
+			fprintf(f_in,"%s %s\n",lignes[k].texte,lignes[k].matching_id);
+			strcat(lignes[k].texte,lignes[k].matching_id);
+			//fprintf(f_in,"%s",lignes[k].texte);
             //fprintf(f_in," K=%d => matching_id=%s => matched=%d\n",k,lignes[k].matching_id,lignes[k].matched);
             kimage=lignes[k].kimage;
          }

@@ -3,7 +3,7 @@
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
- * Initial author : Myrtille LAAS <laas@obs-hp.fr>
+ * Initial author : Myrtille LAAS <Myrtille.Laas@oamp.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,6 @@
 
 
 
-
-
-
-
-
 /***************************************************************************/
 /***************************************************************************/
 /* Les prototypes suivants concernent les fonctions des fichiers mltcl_*.c */
@@ -62,8 +57,10 @@
 #   define min(a,b) (((a)<(b))?(a):(b))
 #endif
 
+#define ML_STAT_LIG_MAX 400
+
 typedef struct {
-   char texte[220];
+   char texte[ML_STAT_LIG_MAX];
    int comment;
    double ha;
    double ra;
