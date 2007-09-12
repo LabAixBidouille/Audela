@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.16 2007-09-05 19:55:30 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.17 2007-09-12 17:19:52 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -77,7 +77,7 @@ proc ::confPad::run { { variablePluginName "" } } {
 
    set private(variablePluginName) $variablePluginName
 
-   if { [createDialog ]==0 } {
+   if { [createDialog] == 0 } {
       if { $variablePluginName != "" } {
          #--- je recupere le nom du plugin pre-selectionne par l'appelant
          set pluginName [set $variablePluginName]
@@ -86,7 +86,7 @@ proc ::confPad::run { { variablePluginName "" } } {
          set pluginName $conf(confPad)
       }
       if { $pluginName != "" } {
-         #--- je selectionne l'onglet deu plugin
+         #--- je selectionne l'onglet du plugin
          select $pluginName
       }
    }
@@ -198,6 +198,13 @@ proc ::confPad::createDialog { } {
    variable private
    global caption conf
 
+   #--- Je verifie qu'il y a des raquettes
+   if { [ llength $private(pluginList) ] < 1 } {
+      tk_messageBox -title "$caption(confpad,config)" -message "$caption(confpad,pas_raquette)" -icon error
+      return 1
+   }
+
+   #---
    if { [winfo exists $private(frm)] } {
       wm withdraw $private(frm)
       wm deiconify $private(frm)

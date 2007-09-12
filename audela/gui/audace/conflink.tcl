@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.18 2007-09-05 19:55:13 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.19 2007-09-12 17:19:33 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -201,10 +201,11 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
       destroy $private(frm)
    }
 
+   #--- Je verifie qu'il y a des liaisons
    if { [llength $private(namespaceList)] <1 } {
-      tk_messageBox -message "No plugin available" \
-            -title "$caption(conflink,config) $configurationTitle              " -icon error
-       return 1
+      tk_messageBox -title "$caption(conflink,config) $configurationTitle" \
+         -message "$caption(conflink,pas_liaison)" -icon error
+      return 1
    }
 
 
