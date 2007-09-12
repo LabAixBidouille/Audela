@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.12 2007-09-05 19:38:40 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.13 2007-09-12 17:18:54 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -183,6 +183,13 @@ namespace eval ::confCat {
       variable private
       global caption conf
 
+      #--- Je verifie qu'il y a des cartes
+      if { [ llength $private(pluginList) ] < 1 } {
+         tk_messageBox -title "$caption(confcat,config)" -message "$caption(confcat,pas_carte)" -icon error
+         return 1
+      }
+
+      #---
       if { [ winfo exists $private(frm) ] } {
          wm withdraw $private(frm)
          wm deiconify $private(frm)
@@ -333,8 +340,8 @@ namespace eval ::confCat {
       global audace caption
 
       #--- j'initialise les listes vides
-      set private(pluginList) ""
-      set private(pluginTitleList)    ""
+      set private(pluginList)      ""
+      set private(pluginTitleList) ""
 
       #--- je recherche les fichiers link/*/pkgIndex.tcl
       set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" chart * pkgIndex.tcl ]

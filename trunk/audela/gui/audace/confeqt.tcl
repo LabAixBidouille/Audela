@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.21 2007-09-05 19:25:57 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.22 2007-09-12 17:19:20 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -56,6 +56,7 @@ proc ::confEqt::getLabel { } {
 #------------------------------------------------------------
 proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { configurationTitle "" } } {
    variable private
+   global caption
 
    #--- je memorise le nom de la variable contenant le nom du plugin selectionne
    #--- la procedure apply copira le nom du plugin selectionne dans cette variable
@@ -100,7 +101,7 @@ proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { co
          select $selectedPluginName
       }
    } else {
-      console::disp " il n'y a pas de plugin present \n"
+      tk_messageBox -title "$caption(confeqt,config)" -message "$caption(confeqt,pas_equipement)" -icon error
    }
 }
 
