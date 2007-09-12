@@ -1,6 +1,6 @@
 #
 # Fichier : confcat.cap
-# Mise a jour $Id: confcat.cap,v 1.7 2007-01-27 14:38:46 robertdelmas Exp $
+# Mise a jour $Id: confcat.cap,v 1.8 2007-09-12 17:17:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,6 +19,8 @@ set caption(confcat,appliquer)              "Apply"
 set caption(confcat,fermer)                 "Close"
 set caption(confcat,aide)                   "Help"
 
+set caption(confcat,pas_carte)              "# Il n'y a pas de carte présente."
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -29,6 +31,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,appliquer)           "Appliquer"
    set caption(confcat,fermer)              "Fermer"
    set caption(confcat,aide)                "Aide"
+
+   set caption(confcat,pas_carte)           "Il n'y a pas de carte présente."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -41,6 +45,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,fermer)              "Chiudi"
    set caption(confcat,aide)                "Aiuto"
 
+   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -51,6 +57,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,appliquer)           "Aplicar"
    set caption(confcat,fermer)              "Cerrar"
    set caption(confcat,aide)                "Ayuda"
+
+   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -63,6 +71,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,fermer)              "Schließen"
    set caption(confcat,aide)                "Hilfe"
 
+   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
+
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -74,6 +84,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,fermer)              "Fechar"
    set caption(confcat,aide)                "Ajuda"
 
+   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -84,6 +96,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,appliquer)           "Anvend"
    set caption(confcat,fermer)              "Luk"
    set caption(confcat,aide)                "Hjælp"
+
+   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
+
 }
 
 #=========================================================================
