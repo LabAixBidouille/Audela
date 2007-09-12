@@ -1,6 +1,6 @@
 #
 # Fichier : confcat.cap
-# Mise a jour $Id: confcat.cap,v 1.8 2007-09-12 17:17:11 robertdelmas Exp $
+# Mise a jour $Id: confcat.cap,v 1.9 2007-09-12 17:40:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,7 +25,7 @@ set caption(confcat,pas_carte)              "# Il n'y a pas de carte présente."
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcat,carte)               "Carte :"
-   set caption(confcat,config)              "Configuration de cartes"
+   set caption(confcat,config)              "Configuration de la carte"
    set caption(confcat,creer_au_demarrage)  "Connexion automatique de cette carte au prochain démarrage"
    set caption(confcat,ok)                  "OK"
    set caption(confcat,appliquer)           "Appliquer"
