@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.34 2007-09-09 16:58:14 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.35 2007-09-12 17:41:54 robertdelmas Exp $
 #
 
 #
@@ -1545,6 +1545,7 @@ namespace eval confChoixOutil {
       set num     "0"
       set i       "0"
       set colonne "0"
+      set liste   ""
 
       #--- Cree le frame pour les commentaires
       label $This.lab1 -text "$caption(confgene,choix_outils_1)"
