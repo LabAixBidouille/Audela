@@ -42,8 +42,6 @@
 #include <math.h>
 #include <time.h>
 
-
-
 /***************************************************************************/
 /***************************************************************************/
 /* Les prototypes suivants concernent les fonctions des fichiers mltcl_*.c */
@@ -90,7 +88,6 @@ int Cmd_mltcl_julianday(ClientData clientData, Tcl_Interp *interp, int argc, cha
 int Cmd_mltcl_infoimage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_mltcl_geostatreduc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-
 
 /***************************************************************************/
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */
