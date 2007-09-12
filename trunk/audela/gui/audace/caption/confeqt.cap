@@ -1,6 +1,6 @@
 #
 # Fichier : confeqt.cap
-# Mise a jour $Id: confeqt.cap,v 1.7 2007-02-03 19:39:58 robertdelmas Exp $
+# Mise a jour $Id: confeqt.cap,v 1.8 2007-09-12 17:17:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,6 +19,8 @@ set caption(confeqt,fermer)                 "Close"
 set caption(confeqt,aide)                   "Help"
 set caption(confeqt,configurer)             "Set up"
 
+set caption(confeqt,pas_equipement)         "# Il n'y a pas d'équipement présent."
+
 set caption(confeqt,attention)              "Warning"
 set caption(confeqt,connexion_texte1)       "Equipment Connection in Progress..."
 set caption(confeqt,connexion_texte2)       "Please wait a few seconds."
@@ -33,6 +35,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,fermer)              "Fermer"
    set caption(confeqt,aide)                "Aide"
    set caption(confeqt,configurer)          "Configurer"
+
+   set caption(confeqt,pas_equipement)      "Il n'y a pas d'équipement présent."
 
    set caption(confeqt,attention)           "Attention"
    set caption(confeqt,connexion_texte1)    "Veuillez patienter quelques secondes"
@@ -49,6 +53,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,aide)                "Aiuto"
    set caption(confeqt,configurer)          "Configurare"
 
+   set caption(confeqt,pas_equipement)      "# Il n'y a pas d'équipement présent."
+
    set caption(confeqt,attention)           "Attenzione"
    set caption(confeqt,connexion_texte1)    "Attendere qualche secondo per la"
    set caption(confeqt,connexion_texte2)    "connessione del equipaggiamento."
@@ -63,6 +69,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,fermer)              "Cerrar"
    set caption(confeqt,aide)                "Ayuda"
    set caption(confeqt,configurer)          "Configurar"
+
+   set caption(confeqt,pas_equipement)      "# Il n'y a pas d'équipement présent."
 
    set caption(confeqt,attention)           "!Cuidado¡"
    set caption(confeqt,connexion_texte1)    "Conectando con al equipo..."
@@ -79,6 +87,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,aide)                "Hilfe"
    set caption(confeqt,configurer)          "Konfigurieren"
 
+   set caption(confeqt,pas_equipement)      "# Il n'y a pas d'équipement présent."
+
    set caption(confeqt,attention)           "Achtung"
    set caption(confeqt,connexion_texte1)    "Bitte, einige Sekunden warten"
    set caption(confeqt,connexion_texte2)    "während das Ausrüstung Anschluß."
@@ -94,6 +104,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,aide)                "Ajuda"
    set caption(confeqt,configurer)          "Configurar"
 
+   set caption(confeqt,pas_equipement)      "# Il n'y a pas d'équipement présent."
+
    set caption(confeqt,attention)           "Atenção"
    set caption(confeqt,connexion_texte1)    "A conectar-se ao equipamento..."
    set caption(confeqt,connexion_texte2)    "Por favor, aguarde uns segundos."
@@ -108,6 +120,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,fermer)              "Close"
    set caption(confeqt,aide)                "Help"
    set caption(confeqt,configurer)          "Set up"
+
+   set caption(confeqt,pas_equipement)      "# Il n'y a pas d'équipement présent."
 
    set caption(confeqt,attention)           "Warning"
    set caption(confeqt,connexion_texte1)    "Equipment Connection in Progress..."
