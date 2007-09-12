@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.9 2007-03-11 19:14:40 robertdelmas Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.10 2007-09-12 23:21:55 alainklotz Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -98,10 +98,55 @@ proc vo_aladin { args } {
       } else {
          open "|\"${audace(aladin)}/aladin.exe\" \"$fnameajs\" " w+
       }
+   } elseif {$method=="object"} {
+      # vo_aladin object uranus {USNO-B DSS2}
+      if {$argc <= 1} {
+         error "Usage: $method objename ?{catalogs}"
+         return
+      }
+      #
+      set texte "#AJS\n"
+      append texte "#Aladin Java Script created by AudeLA\n"
+      #
+      set fname [lindex $args 1]
+      set ftail [file tail $fname]
+      set fdirname [file dirname $fname]
+      set fextension [file extension $ftail]
+      #::console::affiche_resultat "fdirname=<$fdirname>\n"
+      if {($fdirname=="")||($fdirname==".")} {
+         set fdirname $audace(rep_images)
+      }
+      if {$fextension==""} {
+         set fextension $conf(extension,defaut)
+      }
+      #set fname [file join $fdirname ${ftail}${fextension}]
+      append texte "get SkyBot.IMCCE(now,511,\"120 arcsec\") $fname \n"
+      #
+      set catalogs [lindex $args 2]
+      if {[llength $catalogs]>0} {
+         foreach catalog $catalogs {
+            if {$catalog=="USNO-B1"} { set catalog Vizier(I/284) }
+            if {$catalog=="DSS2"}    { set catalog Aladin(DSS2) }
+            append texte "get $catalog $coords ${fieldarcmin}'\n"
+         }
+      }
+      #
+      set fnameajs [file join $audace(rep_scripts) ${ftail}.ajs]
+      set f [open "$fnameajs" w]
+      puts -nonewline $f $texte
+      close $f
+      #
+      if { $::tcl_platform(os) == "Linux" } {
+         open "|\"${audace(rep_java)}/java\" -jar \"${audace(rep_aladinjar)}/Aladin.jar\" < \"$fnameajs\" " w+
+      } elseif { $::tcl_platform(os) == "Darwin" } {
+         open "|\"${audace(rep_java)}/java\" -jar \"${audace(rep_aladinjar)}/Aladin.jar\" < \"$fnameajs\" " w+
+      } else {
+         open "|\"${audace(aladin)}/aladin.exe\" \"$fnameajs\" " w+
+      }
    } else {
       #--- Exemple : vo_aladin load m57 USNO-B1
       #--- Exemple : vo_aladin load m57 { USNO-B1 DSS2 }
-      error "Usage: load ?parameters?"
+      error "Usage: load|object ?parameters?"
       return
    }
    return $texte
