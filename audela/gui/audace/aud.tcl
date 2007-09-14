@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.75 2007-09-06 17:12:39 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.76 2007-09-14 12:34:46 michelpujol Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -468,7 +468,7 @@ namespace eval ::audace {
       global caption
 
       #---
-      toplevel $This -class 1
+      toplevel $This
       wm geometry $This 631x453+0+0
       wm maxsize $This [winfo screenwidth .] [winfo screenheight .]
       wm minsize $This 631 453
@@ -1292,7 +1292,7 @@ namespace eval ::audace {
 
       #--- je cree un interpreteur temporaire pour charger le package sans pertuber Audela
       set interpTemp [interp create -safe ]
-      set catchResult [ catch {
+      #set catchResult [ catch {
          #--- j'autorise les commandes source et file pour pouvoir charger le plugin dans l'interpreteur temporaire
          interp expose $interpTemp source
          interp expose $interpTemp file
@@ -1313,8 +1313,11 @@ namespace eval ::audace {
 
             set dir "[file dirname $pkgIndexFileName]"
             source  "$pkgIndexFileName"
+            #--- je recupere le nom du plugin
             set pluginName [lindex [package names ] 0]
+            #--- je recupere la version du plugin
             set pluginVersion [package versions $pluginName]
+            #--- je recupere la version de Audela requise par le plugin
             package unknown processUnknownRequiredPackage
             set sourceFile [package ifneeded $pluginName $pluginVersion]
             catch { eval "$sourceFile" }
@@ -1322,7 +1325,20 @@ namespace eval ::audace {
                package provide "audela" "$audelaRequiredVersion"
                eval "$sourceFile"
             }
+            #--- je recupere le namespace principal du plugin
             set pluginNamespace [lindex [namespace children ::] 0]
+            #--- je recupere le type du plugin
+            if { [info commands $pluginNamespace\::getPluginType] != "" } {
+               set pluginType [$pluginNamespace\::getPluginType]
+            } else {
+               set pluginType ""
+            }
+            #--- je recupere le titre du plugin dans la langue de l'utilisateur
+            if { [info commands $pluginNamespace\::getPluginTitle] != "" } {
+               set pluginTitle [$pluginNamespace\::getPluginTitle]
+            } else {
+               set pluginTitle "$pluginNamespace"
+            }
          }
 
          #--- je recupere les informations du plugin
@@ -1330,15 +1346,16 @@ namespace eval ::audace {
          set pinfo(version) [$interpTemp eval { set pluginVersion } ]
          set pinfo(command) [$interpTemp eval { set sourceFile    } ]
          set pinfo(audelaVersion) [$interpTemp eval { set audelaRequiredVersion } ]
-         set pinfo(type)    [$interpTemp eval { $pluginNamespace\::getPluginType } ]
-         set pinfo(title)   [$interpTemp eval { $pluginNamespace\::getPluginTitle } ]
+         set pinfo(type)    [$interpTemp eval { set pluginType } ]
+         set pinfo(title)   [$interpTemp eval { set pluginTitle } ]
          set namespaceList2 [$interpTemp eval { set pluginNamespace } ]
          if { [llength $namespaceList2 ] > 0 } {
             set pinfo(namespace)  [lindex $namespaceList2 0]
          } else {
             error "Namespace not found in plugin $pinfo(name)"
          }
-      } ]
+      #} ]
+      set catchResult 0
       #--- je supprime l'interpreteur temporaire
       interp delete $interpTemp
       #--- Je retourne -1 s'il y a eu une erreur
@@ -1462,20 +1479,6 @@ proc restore_cursor { } {
    foreach w $busy {
       catch {[lindex $w 0] config -cursor [lindex $w 1]}
    }
-}
-
-#------------------------------------------------------------
-#  getVisuNo
-#     retourne le numero de visu associe a un element tk
-#
-#    le numero de visu se trouve dans l'attribut "class"
-#    de la toplevel .audace ou .visu
-#  exemple :
-#    [getVisuNo .audace.menubar.menu.windowseuil]
-#      => retourne "1"
-#------------------------------------------------------------
-proc getVisuNo { tkpath } {
-   return [winfo class [winfo toplevel $tkpath ]]
 }
 
 #------------------------------------------------------------
