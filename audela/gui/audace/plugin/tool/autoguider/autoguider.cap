@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.23 2007-07-06 22:29:49 michelpujol Exp $
+# Mise a jour $Id: autoguider.cap,v 1.24 2007-09-14 15:30:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -58,9 +58,14 @@ set caption(autoguider,darkFileName)             "Dark Frame File"
 set caption(autoguider,darkEnabled)              "Enable Subtraction"
 set caption(autoguider,slitWidth)                "Slit Width (pixels)"
 set caption(autoguider,slitRatio)                "Ratio (% / pixel)"
-set caption(autoguider,lipWidth)                 "Lip Width (pixels)"
 set caption(autoguider,alphaReverse)             "Reverse movement"
 set caption(autoguider,deltaReverse)             "Reverse movement"
+
+set caption(autoguider,searchTitle)              "# Recherche d'étoile"
+set caption(autoguider,searchThreshin)           "# Intensité min."
+set caption(autoguider,searchFwmh)               "# Fwmh min."
+set caption(autoguider,searchRadius)             "# Rayon de recherche"
+set caption(autoguider,searchThreshold)          "# Intensité min.2"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -112,9 +117,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,darkEnabled)           "Activer la soustraction"
    set caption(autoguider,slitWidth)             "Largeur de la fente (pixels)"
    set caption(autoguider,slitRatio)             "Coefficient (%/pixel)"
-   set caption(autoguider,lipWidth)              "Largeur d'une lèvre (pixels)"
    set caption(autoguider,alphaReverse)          "Inverser le sens"
    set caption(autoguider,deltaReverse)          "Inverser le sens"
+
+   set caption(autoguider,searchTitle)           "Recherche d'étoile"
+   set caption(autoguider,searchThreshin)        "Intensité min."
+   set caption(autoguider,searchFwmh)            "Fwmh min."
+   set caption(autoguider,searchRadius)          "Rayon de recherche"
+   set caption(autoguider,searchThreshold)       "Intensité min.2"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -166,9 +176,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,darkEnabled)           "Abilita sottrazione"
    set caption(autoguider,slitWidth)             "Larghezza fenditura (pixels)"
    set caption(autoguider,slitRatio)             "Coefficiente (%/pixel)"
-   set caption(autoguider,lipWidth)              "# Largeur d'une lèvre (pixels)"
    set caption(autoguider,alphaReverse)          "Movimento inverso"
    set caption(autoguider,deltaReverse)          "Movimento inverso"
+
+   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
+   set caption(autoguider,searchThreshin)        "# Intensité min."
+   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchThreshold)       "# Intensité min.2"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -220,9 +235,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,darkEnabled)           "Permitir la resta"
    set caption(autoguider,slitWidth)             "Anchura de la rendija (pixels)"
    set caption(autoguider,slitRatio)             "Coeficiente (%/pixel)"
-   set caption(autoguider,lipWidth)              "Tamaño del labio (pixels)"
    set caption(autoguider,alphaReverse)          "Invertir el movimiento"
    set caption(autoguider,deltaReverse)          "Invertir el movimiento"
+
+   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
+   set caption(autoguider,searchThreshin)        "# Intensité min."
+   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchThreshold)       "# Intensité min.2"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -274,9 +294,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,darkEnabled)           "Abziehung befähigen"
    set caption(autoguider,slitWidth)             "Schlitz Breite (pixels)"
    set caption(autoguider,slitRatio)             "Verhältnis (%/pixel)"
-   set caption(autoguider,lipWidth)              "Lippe Breite (pixels)"
    set caption(autoguider,alphaReverse)          "Richtung umkehren"
    set caption(autoguider,deltaReverse)          "Richtung umkehren"
+
+   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
+   set caption(autoguider,searchThreshin)        "# Intensité min."
+   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchThreshold)       "# Intensité min.2"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -328,9 +353,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,darkEnabled)           "Activar subtracção"
    set caption(autoguider,slitWidth)             "Largura da fenda (pixels)"
    set caption(autoguider,slitRatio)             "Coeficiente (%/pixel)"
-   set caption(autoguider,lipWidth)              "Largura de um lábio (pixels)"
    set caption(autoguider,alphaReverse)          "Inverter sentido"
    set caption(autoguider,deltaReverse)          "Inverter sentido"
+
+   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
+   set caption(autoguider,searchThreshin)        "# Intensité min."
+   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchThreshold)       "# Intensité min.2"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -382,9 +412,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,darkEnabled)           "Enable Subtraction"
    set caption(autoguider,slitWidth)             "Slit Width (pixels)"
    set caption(autoguider,slitRatio)             "Ratio (% / pixel)"
-   set caption(autoguider,lipWidth)              "Lip Width (pixels)"
    set caption(autoguider,alphaReverse)          "Reverse movement"
    set caption(autoguider,deltaReverse)          "Reverse movement"
+
+   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
+   set caption(autoguider,searchThreshin)        "# Intensité min."
+   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchThreshold)       "# Intensité min.2"
 
 }
 
