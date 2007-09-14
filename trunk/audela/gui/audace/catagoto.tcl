@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.16 2007-04-10 17:19:55 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.17 2007-09-14 13:41:26 michelpujol Exp $
 #
 
 namespace eval cataGoto {
@@ -1770,12 +1770,25 @@ namespace eval cataGoto {
          bind $zone(list_objet_utilisateur) <ButtonRelease-1> {
             set thisuser [lindex $objet_utilisateur [%W curselection]]
             #--- Preparation des affichages nom, magnitude, AD et Dec.
-            set catalogue(utilisateur_choisie) "[lindex $thisuser 0]"
-            set catalogue(utilisateur_mag) "[lindex $thisuser 7]"
-            set catalogue(objet_utilisateur_ad) "[lindex $thisuser 1]h[lindex $thisuser 2]m[lindex $thisuser 3]"
-            set catalogue(utilisateur_ad) $catalogue(objet_utilisateur_ad)
-            set catalogue(objet_utilisateur_dec) "[lindex $thisuser 4]d[lindex $thisuser 5]m[lindex $thisuser 6]"
-            set catalogue(utilisateur_dec) $catalogue(objet_utilisateur_dec)
+            if { [string first "\t" $thisuser  ] != -1 } {
+               #--- si la ligne contient au moins une tabulation, alors le séparateur est la tabulation
+               set thisuser [split $thisuser "\t"]
+               #--- je recupere les valeurs
+               set catalogue(utilisateur_choisie)  [lindex $thisuser 0]
+               set catalogue(utilisateur_mag)      [lindex $thisuser 3]
+               set catalogue(objet_utilisateur_ad) [lindex $thisuser 1]
+               set catalogue(utilisateur_ad) $catalogue(objet_utilisateur_ad)
+               set catalogue(objet_utilisateur_dec) [lindex $thisuser 2]
+               set catalogue(utilisateur_dec) $catalogue(objet_utilisateur_dec)
+            } else {
+               #--- si la ligne contient au moins une tabulation, alors le séparateur est la tabulation
+               set catalogue(utilisateur_choisie) "[lindex $thisuser 0]"
+               set catalogue(utilisateur_mag) "[lindex $thisuser 7]"
+               set catalogue(objet_utilisateur_ad) "[lindex $thisuser 1]h[lindex $thisuser 2]m[lindex $thisuser 3]"
+               set catalogue(utilisateur_ad) $catalogue(objet_utilisateur_ad)
+               set catalogue(objet_utilisateur_dec) "[lindex $thisuser 4]d[lindex $thisuser 5]m[lindex $thisuser 6]"
+               set catalogue(utilisateur_dec) $catalogue(objet_utilisateur_dec)
+            }
             if { ($catalogue(objet_utilisateur_ad) == "hm") || ($catalogue(objet_utilisateur_dec) == "dm") } {
                set catalogue(utilisateur_hauteur_°) "-"
                set catalogue(utilisateur_azimut_°) "-"
