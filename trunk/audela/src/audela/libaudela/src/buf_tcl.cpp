@@ -4236,6 +4236,12 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    double threshold = 40 ;
    int border = 20 ;
    int after_gauss = 0;
+   int x1 = -1;
+   int y1 = -1;
+   int x2 = -1;
+   int y2 = -1;
+   char **listArgv;          // Liste des argulents passes a getpix.
+   int listArgc;             // Nombre d'elements dans la liste des coordonnees.
 
    char usage[]="Usage: %s %s threshin ?filename? ?after_gauss? ?fwhm? ?radius? ?border? ?threshold?\n%s";
 
@@ -4268,7 +4274,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    ligne = new char[1024];
    buffer = (CBuffer*)clientData;
 
-   if(argc<3 || argc>9) {
+   if(argc<3 || argc>10) {
       sprintf(ligne,usage,argv[0],argv[1],"bad number of arguments");
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
@@ -4318,7 +4324,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 				   retour = TCL_ERROR;
 			   }
-		   if(argc==9 && retour == TCL_OK)
+		   if(argc>=9 && retour == TCL_OK)
 			   if(Tcl_GetDouble(interp,argv[8],&threshold)!=TCL_OK)
 			   {
 				   sprintf(ligne,usage,argv[0],argv[1],"threshold is not double");
@@ -4326,10 +4332,41 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 				   retour = TCL_ERROR;
 			   }
 
+         if(argc>=10 && retour == TCL_OK) {
+            if(Tcl_SplitList(interp,argv[9],&listArgc,&listArgv)!=TCL_OK) {
+               sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+            } else if(listArgc!=4) {
+               sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+            } else {
+               if(Tcl_GetInt(interp,listArgv[0],&x1)!=TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\nx1 must be an integer",argv[0],argv[1]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  retour = TCL_ERROR;
+               } else if(Tcl_GetInt(interp,listArgv[1],&y1)!=TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\ny1 must be an integer",argv[0],argv[1]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  retour = TCL_ERROR;
+               } else if(Tcl_GetInt(interp,listArgv[2],&x2)!=TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\nx2 must be an integer",argv[0],argv[1]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  retour = TCL_ERROR;
+               } else if(Tcl_GetInt(interp,listArgv[3],&y2)!=TCL_OK) {
+                  sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?-sub? ?-fwhmx value? ?-fwhmy value?\ny2 must be an integer",argv[0],argv[1]);
+                  Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+                  retour = TCL_ERROR;
+               }
+            }
+         }
+
+
 		   if(retour == TCL_OK)
 		   {
             try {
-			   msg = buffer->A_StarList(threshin,filename,fwhm,radius,border,threshold,after_gauss);
+			   msg = buffer->A_StarList(x1,y1,x2,y2,threshin,filename,fwhm,radius,border,threshold,after_gauss);
 				   sprintf(ligne,"%d",msg);
                retour = TCL_OK;
             } catch(const CError& e) {
@@ -4436,16 +4473,8 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             try {
                buffer->Fwhm2d(x1-1,y1-1,x2-1,y2-1,&maxx,&posx,&fwhmx,&fondx,&errx,
                   &maxy,&posy,&fwhmy,&fondy,&erry,fwhmx0,fwhmy0);
-               if (x1<x2) {
-                  posx=posx+x1;
-               } else {
-                  posx=posx+x2;
-               }
-               if (y1<y2) {
-                  posy=posy+y1;
-               } else {
-                  posy=posy+y2;
-               }
+               posx = posx +1;
+               posy = posy +1;
                sprintf(ligne,"%f %f %f %f %f %f %f %f",maxx,posx,fwhmx,fondx,maxy,posy,fwhmy,fondy);
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_OK;
