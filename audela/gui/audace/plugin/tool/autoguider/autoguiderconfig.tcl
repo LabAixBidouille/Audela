@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.12 2007-09-14 13:38:11 michelpujol Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.13 2007-09-14 15:31:45 robertdelmas Exp $
 #
 
 ################################################################
@@ -520,8 +520,7 @@ proc ::autoguider::config::setDetection { visuNo } {
 #   affiche l'aide de cet outil
 #------------------------------------------------------------
 proc ::autoguider::config::showHelp { } {
-  ::audace::showHelpPlugin tool autoguider autoguider.htm
-
+   ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::autoguider::getPluginType]] autoguider [::autoguider::getPluginHelp]
 }
 
 #------------------------------------------------------------
