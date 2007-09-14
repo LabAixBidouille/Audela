@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.17 2007-09-14 13:41:26 michelpujol Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.18 2007-09-14 14:30:09 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -1771,7 +1771,7 @@ namespace eval cataGoto {
             set thisuser [lindex $objet_utilisateur [%W curselection]]
             #--- Preparation des affichages nom, magnitude, AD et Dec.
             if { [string first "\t" $thisuser  ] != -1 } {
-               #--- si la ligne contient au moins une tabulation, alors le séparateur est la tabulation
+               #--- si la ligne contient au moins une tabulation, alors le separateur est la tabulation
                set thisuser [split $thisuser "\t"]
                #--- je recupere les valeurs
                set catalogue(utilisateur_choisie)  [lindex $thisuser 0]
@@ -1781,7 +1781,7 @@ namespace eval cataGoto {
                set catalogue(objet_utilisateur_dec) [lindex $thisuser 2]
                set catalogue(utilisateur_dec) $catalogue(objet_utilisateur_dec)
             } else {
-               #--- si la ligne contient au moins une tabulation, alors le séparateur est la tabulation
+               #--- sinon le séparateur est un espace ou une serie d'espace
                set catalogue(utilisateur_choisie) "[lindex $thisuser 0]"
                set catalogue(utilisateur_mag) "[lindex $thisuser 7]"
                set catalogue(objet_utilisateur_ad) "[lindex $thisuser 1]h[lindex $thisuser 2]m[lindex $thisuser 3]"
