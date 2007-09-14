@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.11 2007-08-11 17:18:08 michelpujol Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.12 2007-09-14 13:38:11 michelpujol Exp $
 #
 
 ################################################################
@@ -46,7 +46,6 @@ proc ::autoguider::config::apply { visuNo } {
    #--- je verifie s'il faut redessiner la cible si le mode de detection a change
    if {  $widget($visuNo,detection)       != $conf(autoguider,detection)
         || $widget($visuNo,slitWidth)     != $conf(autoguider,slitWidth)
-        || $widget($visuNo,lipWidth)      != $conf(autoguider,lipWidth)
         || $widget($visuNo,targetBoxSize) != $conf(autoguider,targetBoxSize) } {
       if { $::conf(autoguider,showTarget) } {
          set pendingUpdateTarget 1
@@ -69,13 +68,17 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,angle)             $widget($visuNo,angle)
    set conf(autoguider,declinaisonEnabled) $widget($visuNo,declinaisonEnabled)
    set conf(autoguider,targetBoxSize)     $widget($visuNo,targetBoxSize)
-#   set conf(autoguider,cumulEnabled)      $widget($visuNo,cumulEnabled)
+   set conf(autoguider,cumulEnabled)      $widget($visuNo,cumulEnabled)
    set conf(autoguider,cumulNb)           $widget($visuNo,cumulNb)
    set conf(autoguider,darkEnabled)       $widget($visuNo,darkEnabled)
    set conf(autoguider,darkFileName)      $widget($visuNo,darkFileName)
    set conf(autoguider,slitWidth)         $widget($visuNo,slitWidth)
    set conf(autoguider,slitRatio)         $widget($visuNo,slitRatio)
-   set conf(autoguider,lipWidth)          $widget($visuNo,lipWidth)
+
+   set conf(autoguider,searchThreshin)   $widget($visuNo,searchThreshin)
+   set conf(autoguider,searchFwmh)       $widget($visuNo,searchFwmh)
+   set conf(autoguider,searchRadius)     $widget($visuNo,searchRadius)
+   set conf(autoguider,searchThreshold)  $widget($visuNo,searchThreshold)
 
    #--- je redessine la cible si le mode de detection a change
    if { $pendingUpdateTarget } {
@@ -108,13 +111,15 @@ proc ::autoguider::config::run { visuNo } {
    set private($visuNo,selectedPoint)    ""
 
    #--- j'affiche la fenetre de configuration
-   ::confGenerique::run  $visuNo "[confVisu::getBase $visuNo].autoguider.config" "::autoguider::config" -modal 0
-   wm geometry [confVisu::getBase $visuNo].autoguider.config $::conf(autoguider,configWindowPosition)
+   ##set This "[confVisu::getBase $visuNo].autoguider.config"
+   set private($visuNo,This) ".autoguiderconfig$visuNo"
+   ::confGenerique::run  $visuNo $private($visuNo,This) "::autoguider::config" -modal 0
+   wm geometry $private($visuNo,This) $::conf(autoguider,configWindowPosition)
 }
 
 #------------------------------------------------------------
 # ::autoguider::config::closeWindow
-#   retourne le nom de la fenetre de configuration
+#   ferme la fenetre de configuration
 #------------------------------------------------------------
 proc ::autoguider::config::closeWindow { visuNo } {
    variable private
@@ -124,7 +129,7 @@ proc ::autoguider::config::closeWindow { visuNo } {
       tk_messageBox -title [getLabel] -type ok -message "$caption(autoguider,running)" -icon warning
       return 0
    }
-   set geometry [ wm geometry [confVisu::getBase $visuNo].autoguider.config ]
+   set geometry [ wm geometry $private($visuNo,This) ]
    set deb [ expr 1 + [ string first + $geometry ] ]
    set fin [ string length $geometry ]
    set ::conf(autoguider,configWindowPosition) "+[ string range $geometry $deb $fin ]"
@@ -158,7 +163,11 @@ proc ::autoguider::config::confToWidget { visuNo } {
    set widget($visuNo,darkFileName)      $conf(autoguider,darkFileName)
    set widget($visuNo,slitWidth)         $conf(autoguider,slitWidth)
    set widget($visuNo,slitRatio)         $conf(autoguider,slitRatio)
-   set widget($visuNo,lipWidth)          $conf(autoguider,lipWidth)
+   set widget($visuNo,searchThreshin)    $conf(autoguider,searchThreshin)
+   set widget($visuNo,searchFwmh)        $conf(autoguider,searchFwmh)
+   set widget($visuNo,searchRadius)      $conf(autoguider,searchRadius)
+   set widget($visuNo,searchThreshold)   $conf(autoguider,searchThreshold)
+
 }
 
 #------------------------------------------------------------
@@ -171,7 +180,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    variable private
    global caption
 
-   set private($visuNo,This) $frm
+   set private($visuNo,frm) $frm
    #--- j'initialise les variables des widgets
    confToWidget $visuNo
 
@@ -201,11 +210,6 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 9999} \
          -textvariable ::autoguider::config::widget($visuNo,slitRatio)
       grid $frm.detection.slitRatio -in [$frm.detection getframe] -row 3 -column 0 -columnspan 2 -sticky ewns
-      LabelEntry $frm.detection.lipWidth -label "$caption(autoguider,lipWidth)" \
-         -labeljustify left -labelwidth 22 -width 3 -justify right \
-         -validate all -validatecommand { ::autoguider::config::validateNumber %W %V %P %s 1 999} \
-         -textvariable ::autoguider::config::widget($visuNo,lipWidth)
-      grid $frm.detection.lipWidth -in [$frm.detection getframe] -row 4 -column 0 -columnspan 2 -sticky ewns
    grid $frm.detection -row 0 -column 0 -columnspan 1 -sticky ewns
 
    #--- Frame apprentissage
@@ -294,6 +298,26 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
       pack $frm.dark.darkEnabled -in [$frm.dark getframe] -anchor w -pady 2 -side top -fill x -expand 0
    grid $frm.dark -row 4 -column 1 -columnspan 1 -rowspan 1 -sticky ewns
 
+   #--- Frame search
+   TitleFrame $frm.search -borderwidth 2 -text "$caption(autoguider,searchTitle)"
+      LabelEntry $frm.search.threshin -label "$caption(autoguider,searchThreshin)" \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
+         -textvariable ::autoguider::config::widget($visuNo,searchThreshin)
+      pack $frm.search.threshin -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
+      LabelEntry $frm.search.fwhm -label "$caption(autoguider,searchFwmh)" \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
+         -textvariable ::autoguider::config::widget($visuNo,searchFwmh)
+      pack $frm.search.fwhm -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
+      LabelEntry $frm.search.radius -label "$caption(autoguider,searchRadius)" \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
+         -textvariable ::autoguider::config::widget($visuNo,searchRadius)
+      pack $frm.search.radius -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
+      LabelEntry $frm.search.threshold -label "$caption(autoguider,searchThreshold)" \
+         -labeljustify left -labelwidth 22 -width 3 -justify right \
+         -textvariable ::autoguider::config::widget($visuNo,searchThreshold)
+      pack $frm.search.threshold -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
+   grid $frm.search -row 4 -column 0 -columnspan 1 -rowspan 1 -sticky ewns
+
 
    grid columnconfigure  $frm 0 -weight 1
    grid columnconfigure  $frm 1 -weight 1
@@ -303,7 +327,7 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
    ::autoguider::config::setDeclinaison $visuNo
    ::autoguider::config::setDetection $visuNo
 
-   pack $frm -fill x -expand 1
+   pack $frm  -side top -fill x
 }
 
 
@@ -432,9 +456,9 @@ proc ::autoguider::config::setCumul { visuNo } {
    variable widget
 
    if { $widget($visuNo,cumulEnabled) == 1 } {
-      $private($visuNo,This).cumul.nb configure -state normal
+      $private($visuNo,frm).cumul.nb configure -state normal
    } else {
-      $private($visuNo,This).cumul.nb configure -state disabled
+      $private($visuNo,frm).cumul.nb configure -state disabled
    }
 }
 
@@ -447,9 +471,9 @@ proc ::autoguider::config::setDark { visuNo } {
    variable widget
 
    if { $widget($visuNo,darkEnabled) == "1" } {
-      $private($visuNo,This).dark.filename configure -state normal
+      $private($visuNo,frm).dark.filename configure -state normal
    } else {
-      $private($visuNo,This).dark.filename configure -state disabled
+      $private($visuNo,frm).dark.filename configure -state disabled
    }
 }
 
@@ -462,13 +486,13 @@ proc ::autoguider::config::setDeclinaison { visuNo } {
    variable private
 
    if { $widget($visuNo,declinaisonEnabled) == 1 } {
-      $private($visuNo,This).delta.gainprop configure -state normal
-      $private($visuNo,This).delta.seuil configure -state normal
-      $private($visuNo,This).delta.reverse configure -state normal
+      $private($visuNo,frm).delta.gainprop configure -state normal
+      $private($visuNo,frm).delta.seuil configure -state normal
+      $private($visuNo,frm).delta.reverse configure -state normal
    } else {
-      $private($visuNo,This).delta.gainprop configure -state disabled
-      $private($visuNo,This).delta.seuil configure -state disabled
-      $private($visuNo,This).delta.reverse configure -state disabled
+      $private($visuNo,frm).delta.gainprop configure -state disabled
+      $private($visuNo,frm).delta.seuil configure -state disabled
+      $private($visuNo,frm).delta.reverse configure -state disabled
    }
 }
 
@@ -482,13 +506,11 @@ proc ::autoguider::config::setDetection { visuNo } {
    variable widget
 
    if { $widget($visuNo,detection) != "SLIT" } {
-      $private($visuNo,This).detection.lipWidth configure -state disabled
-      $private($visuNo,This).detection.slitWidth configure -state disabled
-      $private($visuNo,This).detection.slitRatio configure -state disabled
+      $private($visuNo,frm).detection.slitWidth configure -state disabled
+      $private($visuNo,frm).detection.slitRatio configure -state disabled
    } else {
-      $private($visuNo,This).detection.lipWidth configure -state normal
-      $private($visuNo,This).detection.slitWidth configure -state normal
-      $private($visuNo,This).detection.slitRatio configure -state normal
+      $private($visuNo,frm).detection.slitWidth configure -state normal
+      $private($visuNo,frm).detection.slitRatio configure -state normal
    }
 
 }
@@ -545,7 +567,7 @@ proc ::autoguider::config::startLearn { visuNo } {
    bind [::confVisu::getCanvas $visuNo] <ButtonPress-3> "::autoguider::config::selectStar $visuNo %x %y"
 
    #--- je configure le bouton STOP
-   $private($visuNo,This).apprenti.go configure -text "$::caption(autoguider,stop)" \
+   $private($visuNo,frm).apprenti.go configure -text "$::caption(autoguider,stop)" \
       -command "::autoguider::config::stopLearn $visuNo"
    update
 
@@ -696,7 +718,7 @@ proc ::autoguider::config::startLearn { visuNo } {
    ::confVisu::createBindCanvas $visuNo <ButtonPress-3>  $private($visuNo,previousRightButtonBind)
 
    #--- j'affiche le bouton GO
-   $private($visuNo,This).apprenti.go configure -text "$::caption(autoguider,go)" \
+   $private($visuNo,frm).apprenti.go configure -text "$::caption(autoguider,GO)" \
       -command "::autoguider::config::startLearn $visuNo"
 
    #-- fin de l'arret de l'apprentissage
