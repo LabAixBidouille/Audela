@@ -2707,40 +2707,51 @@ void CBuffer::Window(int x1, int y1, int x2, int y2)
 {
    pix->Window(x1, y1, x2, y2);
 }
-
-int CBuffer::A_StarList(double threshin,char *filename,double fwhm,int radius,
+int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename,double fwhm,int radius,
 						int border,double threshold,int after_gauss)
 {
    int i,retour;
    int gmsize = 2*radius + 1;
    TYPE_PIXELS *temp_pic,*gauss_matrix;
    TYPE_PIXELS *ppix= NULL;
-   int naxis1,naxis2;
-
-   // seulement pour les images non couleur
+   int naxis1,naxis2,width,height;
 
    naxis1 = pix->GetWidth();
    naxis2 = pix->GetHeight();
-   ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
-   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+   if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
+      x1 = 0;
+      y1 = 0;
+      x2 = naxis1-1;
+      y2 = naxis2-1;
+   } else {
+      if((x1<0)||(x2<0)||(x1>naxis1-1)||(x2>naxis1-1)) {throw CError(ELIBSTD_X1X2_NOT_IN_1NAXIS1);}
+      if((y1<0)||(y2<0)||(y1>naxis2-1)||(y2>naxis2-1)) {throw CError(ELIBSTD_Y1Y2_NOT_IN_1NAXIS2);}
+      if(x1>x2) {i = x2; x2 = x1; x1 = i;}
+      if(y1>y2) {i = y2; y2 = y1; y1 = i;}
+   }
+   width  = x2-x1+1;
+   height = y2-y1+1;
+   
+   ppix = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
+   pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
 
-   if((temp_pic = (TYPE_PIXELS *)malloc(sizeof(TYPE_PIXELS)*naxis1*naxis2))==NULL)
+   if((temp_pic = (TYPE_PIXELS *)calloc(width*height,sizeof(TYPE_PIXELS)))==NULL) {
+      free(ppix);
 	   throw CError(ELIBSTD_NO_MEMORY_FOR_KWDS);
+   }
+
    if((gauss_matrix = (TYPE_PIXELS *)malloc(sizeof(TYPE_PIXELS)*gmsize*gmsize))==NULL) {
+      free(ppix);
       free(temp_pic);
       throw CError(ELIBSTD_NO_MEMORY_FOR_KWDS);
    }
-
-   for(i=0; i < (naxis1*naxis2) ; i++)
-		   temp_pic[i] = (float)0.0;
-
+   
    retour = A_filtrGauss ((TYPE_PIXELS)fwhm, radius, (TYPE_PIXELS)threshin,
-	                      (TYPE_PIXELS)threshold, filename,
-	                      ppix,temp_pic,gauss_matrix,
-	                      naxis1,naxis2,gmsize,border);
+      (TYPE_PIXELS)threshold, filename,
+      ppix,temp_pic,gauss_matrix,
+      width,height,gmsize,border);
 
-   if(after_gauss!=0 && retour>=0)
-   {
+   if(after_gauss!=0 && retour>=0) {
       CPixelsGray * newpix;
       newpix = new CPixelsGray(naxis1, naxis2, FORMAT_SHORT, temp_pic, 0, 0);
 
@@ -2748,6 +2759,7 @@ int CBuffer::A_StarList(double threshin,char *filename,double fwhm,int radius,
       pix = newpix;
 
    }
+
 	free(temp_pic);
    free(gauss_matrix);
    free(ppix);
@@ -2755,6 +2767,7 @@ int CBuffer::A_StarList(double threshin,char *filename,double fwhm,int radius,
    return retour;
 
 }
+
 
 int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
 						   TYPE_PIXELS threshold, char *filename,
@@ -2765,7 +2778,6 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
 /*
   Authors: Bogumil and Dorota
 */
-//#if defined (OS_WIN)
 
    int x, y, i;
    int center = radius;

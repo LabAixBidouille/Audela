@@ -114,7 +114,7 @@ public:
 						   TYPE_PIXELS threshold, char *filename,
 						   TYPE_PIXELS *picture,TYPE_PIXELS *temp_pic,TYPE_PIXELS *gauss_matrix,
 						   int size_x,int size_y,int gmsize,int border);
-   int A_StarList(double threshin,char *filename,double fwhm,int radius,
+   int A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename,double fwhm,int radius,
 						int border,double threshold,int after_gauss);
    void Add(char *filename, float offset);
    void AstroFlux(int x1, int y1, int x2, int y2, 
