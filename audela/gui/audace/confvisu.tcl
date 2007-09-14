@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.69 2007-09-09 16:57:15 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.70 2007-09-14 12:38:05 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -78,6 +78,7 @@ namespace eval ::confVisu {
       set private($visuNo,labcoord_type)   "xy"
       set private($visuNo,picture_w)       "0"
       set private($visuNo,picture_h)       "0"
+      set private($visuNo,applyThickness)  "0"
       set private($visuNo,autovisuEnCours) "0"
       set private($visuNo,lastFileName)    "?"
       set private($visuNo,maxdyn)          "32767"
@@ -251,8 +252,8 @@ namespace eval ::confVisu {
       if { [ image type image[visu$visuNo image] ] == "video" } {
          #--- je recupere la largeur et la hauteur de la video
          set videoSize [cam$private($visuNo,camNo) nbpix ]
-         set private($visuNo,picture_w)  [expr [lindex $videoSize 0] * $private($visuNo,zoom) ]
-         set private($visuNo,picture_h)  [expr [lindex $videoSize 1] * $private($visuNo,zoom) ]
+         set private($visuNo,picture_w)  [lindex $videoSize 0]
+         set private($visuNo,picture_h)  [lindex $videoSize 1]
          #--- Je mets a jour la taille les scrollbars
          setScrollbarSize $visuNo
          #--- Je mets a jour la taille du reticule
@@ -265,9 +266,11 @@ namespace eval ::confVisu {
          }
          if { [buf$bufNo getpixelsheight] == 1 } {
             #--- dans le cas d'une image 1D, la hauteur correspond a l'epaisseur affichee par la visu
+            set private($visuNo,applyThickness) "1"
             set private($visuNo,picture_h) [visu$visuNo thickness]
          } else {
             #--- dans le cas d'une image 2D ou plus, la hauteur est la hauteur retournee par le buffer
+            set private($visuNo,applyThickness) "0"
             set private($visuNo,picture_h) [buf$bufNo getpixelsheight]
          }
 
@@ -846,7 +849,7 @@ namespace eval ::confVisu {
          set bottom [lindex $coord0 1]
       }
 
-      #--- j'eleimine les erreur d'arrondi quand zoom <1
+      #--- j'elimine les erreur d'arrondi quand zoom <1
       if { $left < 0 } { set left 0 }
       if { $top < 0 }  { set top 0 }
 
@@ -1126,23 +1129,6 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  getVisuNo
-   #     retourne le numero de visu contenant le canvas
-   #  parametres
-   #     hCanvas : nom du canvas
-   #  return :
-   #    numero de la visu contenant le canvas
-   #  Exemple :
-   #    ::confVisu::getVisuNo ".audace.can1.canvas"
-   #    1
-   #------------------------------------------------------------
-   proc getVisuNo { hCanvas } {
-      #-- le numero de la visu se trouve dans le parametre "class de la toplevel
-      #-- qui contient le canvas
-      return [winfo class [winfo toplevel $hCanvas ] ]
-   }
-
-   #------------------------------------------------------------
    #  getZoom
    #     retourne  la valeur du zoom
    #  parametres :
@@ -1169,7 +1155,7 @@ namespace eval ::confVisu {
       global audace
       global caption
 
-      toplevel $This -class $visuNo
+      toplevel $This
       wm geometry $This $conf(audace,visu$visuNo,wmgeometry)
       wm maxsize $This [winfo screenwidth .] [winfo screenheight .]
       wm minsize $This 320 240
@@ -1624,6 +1610,11 @@ namespace eval ::confVisu {
             set yy [expr int($y1 - [lindex $coord 1] / $zoom )]
          }
       }
+
+      if { $private($visuNo,applyThickness) == 1 } {
+         set yy 1
+      }
+
       return [list $xx $yy]
    }
 
@@ -2249,6 +2240,7 @@ namespace eval ::confVisu {
          set x1 [lindex $windowBox 2]
          set y1 [lindex $windowBox 3]
       }
+##::console::disp "displayCrosshair   x0=$x0 y0=$y0 x1=$x1 y1=$y1 \n"
       set coord0Canvas [ picture2Canvas $visuNo [list $x0 $y0 ] ]
       set coord1Canvas [ picture2Canvas $visuNo [list $x1 $y1 ] ]
       set widthCanvas [expr [lindex $coord1Canvas 0] - [lindex $coord0Canvas 0] + 1]
