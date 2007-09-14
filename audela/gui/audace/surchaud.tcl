@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.22 2007-04-13 15:07:34 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.23 2007-09-14 13:52:35 michelpujol Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -1355,6 +1355,76 @@ proc scale2 {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" RESAMPLE \"paramresample=[lindex $args 3] 0 0 0 [lindex $args 4] 0\" normaflux=1 $options"
    } else {
       error "Usage: scale2 in out number scale_x scale_y ?first_index? ?tt_options?"
+   }
+}
+
+proc subdark2 {args} {
+   #--- in operand out const number ?first_index? ?tt_options?
+   global audace
+
+   set n [llength $args]
+   if {$n>=7} {
+      set in         "[lindex $args 0]"
+      set dark       "[lindex $args 1]"
+      set offset     "[lindex $args 2]"
+      set out        "[lindex $args 3]"
+      set number     "[lindex $args 4]"
+      set exptime    "[lindex $args 5]"
+      set dexptime   "[lindex $args 6]"
+
+      if {$n>=8} {
+         set first "[lindex $args 7]"
+      } else {
+         set first 1
+      }
+
+      if {$n>=9} {
+         set unsmearing "[lindex $args 8]"
+      } else {
+         set unsmearing 1
+      }
+
+
+      if {[file dirname $dark]=="."} {
+         set len [expr [string length $audace(rep_images)]-1]
+         if {$len>=0} {
+            set car [string index $audace(rep_images) $len]
+            if {$car!="/"} {
+               set dark "$audace(rep_images)/$dark"
+            } else {
+               set dark "$audace(rep_images)$dark"
+            }
+         }
+      }
+
+      if {[file dirname $offset]=="."} {
+         set len [expr [string length $audace(rep_images)]-1]
+         if {$len>=0} {
+            set car [string index $audace(rep_images) $len]
+            if {$car!="/"} {
+               set offset "$audace(rep_images)/$offset"
+            } else {
+               set offset "$audace(rep_images)$offset"
+            }
+         }
+      }
+
+
+
+      set ext [file extension "$dark"]
+      if {$ext==""} {
+         set operand "${dark}[buf$audace(bufNo) extension]"
+      }
+
+      set ni [expr [lindex $args 4]+$first-1]
+      set ext [buf$audace(bufNo) extension]
+      ###ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
+      set command "IMA/SERIES \"$audace(rep_images)\" \"$in\" $first $ni \"$ext\" \"$audace(rep_images)\" \"$out\" 1 \"$ext\" SUBDARK \"dark=$dark\" \"bias=$offset\" \"exptime=$exptime\" \"dexptime=$dexptime\" "
+      ::console::disp "subdark2: $command\n"
+      ttscript2 $command
+   } else {
+      #---                    0  1     2     3    4       5      6           7            8
+      error "Usage: subdark2 in dark offset out number exptime dexptime ?first_index?"
    }
 }
 
