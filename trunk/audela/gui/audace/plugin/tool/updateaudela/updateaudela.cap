@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.9 2007-08-30 18:13:30 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.10 2007-09-14 14:59:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,8 +40,20 @@ set caption(updateaudela,developperOption)      "Developer Option"
 set caption(updateaudela,downloadAndInstall)    "Download and install right away"
 set caption(updateaudela,address)               "Address"
 set caption(updateaudela,audelaAddress)         "Audela Website"
-set caption(updateaudela,badAudelaVersion)      "This update requires Audela %s"
 set caption(updateaudela,otherAddress)          "Other website"
+set caption(updateaudela,badAudelaVersion)      "This update requires Audela %s"
+set caption(updateaudela,makeCoreUpdate)        "# Faire une mise à jour de AudeLA"
+set caption(updateaudela,makePluginUpdate)      "# Créer un fichier de mise à jour"
+
+set caption(updateaudela,selectedFiles)         "# Fichiers sélectionnés"
+set caption(updateaudela,addCvs)                "# Ajouter diff CVS"
+set caption(updateaudela,addAllFiles)           "# Ajouter tous les fichiers"
+set caption(updateaudela,addFile)               "# Ajouter à la sélection"
+set caption(updateaudela,removeFile)            "# Supprimer de la sélection"
+set caption(updateaudela,createCoreUpdate)      "# Créer le fichier de mise à jour"
+set caption(updateaudela,previousVersion)       "# Version précédente"
+set caption(updateaudela,currentVersion)        "# Version courante"
+set caption(updateaudela,fileOutside)           "# Fichier hors périmètre"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -75,8 +87,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,downloadAndInstall) "Installer immediatement après le téléchargement"
    set caption(updateaudela,address)            "Adresse"
    set caption(updateaudela,audelaAddress)      "Site AudeLA"
-   set caption(updateaudela,badAudelaVersion)   "Cette mise à jour nécessite AudeLA %s"
    set caption(updateaudela,otherAddress)       "Autre site"
+   set caption(updateaudela,badAudelaVersion)   "Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,makeCoreUpdate)     "Faire une mise à jour de AudeLA"
+   set caption(updateaudela,makePluginUpdate)   "Créer un fichier de mise à jour"
+
+   set caption(updateaudela,selectedFiles)      "Fichiers sélectionnés"
+   set caption(updateaudela,addCvs)             "Ajouter diff CVS"
+   set caption(updateaudela,addAllFiles)        "Ajouter tous les fichiers"
+   set caption(updateaudela,addFile)            "Ajouter à la sélection"
+   set caption(updateaudela,removeFile)         "Supprimer de la sélection"
+   set caption(updateaudela,createCoreUpdate)   "Créer le fichier de mise à jour"
+   set caption(updateaudela,previousVersion)    "Version précédente"
+   set caption(updateaudela,currentVersion)     "Version courante"
+   set caption(updateaudela,fileOutside)        "Fichier hors périmètre"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -110,8 +134,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
    set caption(updateaudela,address)            "# Adresse"
    set caption(updateaudela,audelaAddress)      "# Site AudeLA"
-   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
    set caption(updateaudela,otherAddress)       "# Autre site"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,makeCoreUpdate)     "# Faire une mise à jour de AudeLA"
+   set caption(updateaudela,makePluginUpdate)   "# Créer un fichier de mise à jour"
+
+   set caption(updateaudela,selectedFiles)      "# Fichiers sélectionnés"
+   set caption(updateaudela,addCvs)             "# Ajouter diff CVS"
+   set caption(updateaudela,addAllFiles)        "# Ajouter tous les fichiers"
+   set caption(updateaudela,addFile)            "# Ajouter à la sélection"
+   set caption(updateaudela,removeFile)         "# Supprimer de la sélection"
+   set caption(updateaudela,createCoreUpdate)   "# Créer le fichier de mise à jour"
+   set caption(updateaudela,previousVersion)    "# Version précédente"
+   set caption(updateaudela,currentVersion)     "# Version courante"
+   set caption(updateaudela,fileOutside)        "# Fichier hors périmètre"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -145,8 +181,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
    set caption(updateaudela,address)            "# Adresse"
    set caption(updateaudela,audelaAddress)      "# Site AudeLA"
-   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
    set caption(updateaudela,otherAddress)       "# Autre site"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,makeCoreUpdate)     "# Faire une mise à jour de AudeLA"
+   set caption(updateaudela,makePluginUpdate)   "# Créer un fichier de mise à jour"
+
+   set caption(updateaudela,selectedFiles)      "# Fichiers sélectionnés"
+   set caption(updateaudela,addCvs)             "# Ajouter diff CVS"
+   set caption(updateaudela,addAllFiles)        "# Ajouter tous les fichiers"
+   set caption(updateaudela,addFile)            "# Ajouter à la sélection"
+   set caption(updateaudela,removeFile)         "# Supprimer de la sélection"
+   set caption(updateaudela,createCoreUpdate)   "# Créer le fichier de mise à jour"
+   set caption(updateaudela,previousVersion)    "# Version précédente"
+   set caption(updateaudela,currentVersion)     "# Version courante"
+   set caption(updateaudela,fileOutside)        "# Fichier hors périmètre"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -180,8 +228,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
    set caption(updateaudela,address)            "# Adresse"
    set caption(updateaudela,audelaAddress)      "# Site AudeLA"
-   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
    set caption(updateaudela,otherAddress)       "# Autre site"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,makeCoreUpdate)     "# Faire une mise à jour de AudeLA"
+   set caption(updateaudela,makePluginUpdate)   "# Créer un fichier de mise à jour"
+
+   set caption(updateaudela,selectedFiles)      "# Fichiers sélectionnés"
+   set caption(updateaudela,addCvs)             "# Ajouter diff CVS"
+   set caption(updateaudela,addAllFiles)        "# Ajouter tous les fichiers"
+   set caption(updateaudela,addFile)            "# Ajouter à la sélection"
+   set caption(updateaudela,removeFile)         "# Supprimer de la sélection"
+   set caption(updateaudela,createCoreUpdate)   "# Créer le fichier de mise à jour"
+   set caption(updateaudela,previousVersion)    "# Version précédente"
+   set caption(updateaudela,currentVersion)     "# Version courante"
+   set caption(updateaudela,fileOutside)        "# Fichier hors périmètre"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -215,8 +275,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
    set caption(updateaudela,address)            "# Adresse"
    set caption(updateaudela,audelaAddress)      "# Site AudeLA"
-   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
    set caption(updateaudela,otherAddress)       "# Autre site"
+   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
+   set caption(updateaudela,makeCoreUpdate)     "# Faire une mise à jour de AudeLA"
+   set caption(updateaudela,makePluginUpdate)   "# Créer un fichier de mise à jour"
+
+   set caption(updateaudela,selectedFiles)      "# Fichiers sélectionnés"
+   set caption(updateaudela,addCvs)             "# Ajouter diff CVS"
+   set caption(updateaudela,addAllFiles)        "# Ajouter tous les fichiers"
+   set caption(updateaudela,addFile)            "# Ajouter à la sélection"
+   set caption(updateaudela,removeFile)         "# Supprimer de la sélection"
+   set caption(updateaudela,createCoreUpdate)   "# Créer le fichier de mise à jour"
+   set caption(updateaudela,previousVersion)    "# Version précédente"
+   set caption(updateaudela,currentVersion)     "# Version courante"
+   set caption(updateaudela,fileOutside)        "# Fichier hors périmètre"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -250,8 +322,20 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,downloadAndInstall) "Download and install right away"
    set caption(updateaudela,address)            "Address"
    set caption(updateaudela,audelaAddress)      "Audela Website"
-   set caption(updateaudela,badAudelaVersion)   "This update requires Audela %s"
    set caption(updateaudela,otherAddress)       "Other website"
+   set caption(updateaudela,badAudelaVersion)   "This update requires Audela %s"
+   set caption(updateaudela,makeCoreUpdate)     "# Faire une mise à jour de AudeLA"
+   set caption(updateaudela,makePluginUpdate)   "# Créer un fichier de mise à jour"
+
+   set caption(updateaudela,selectedFiles)      "# Fichiers sélectionnés"
+   set caption(updateaudela,addCvs)             "# Ajouter diff CVS"
+   set caption(updateaudela,addAllFiles)        "# Ajouter tous les fichiers"
+   set caption(updateaudela,addFile)            "# Ajouter à la sélection"
+   set caption(updateaudela,removeFile)         "# Supprimer de la sélection"
+   set caption(updateaudela,createCoreUpdate)   "# Créer le fichier de mise à jour"
+   set caption(updateaudela,previousVersion)    "# Version précédente"
+   set caption(updateaudela,currentVersion)     "# Version courante"
+   set caption(updateaudela,fileOutside)        "# Fichier hors périmètre"
 
 }
 
