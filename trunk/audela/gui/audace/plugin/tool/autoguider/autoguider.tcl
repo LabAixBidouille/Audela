@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.23 2007-09-14 13:38:11 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.24 2007-09-14 15:29:27 robertdelmas Exp $
 #
 
 #==============================================================
@@ -15,12 +15,6 @@ namespace eval ::autoguider {
 
    #--- Je charge le fichier caption pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] autoguider.cap ]
-
-   set caption(autoguider,searchTitle) "Recherche d'étoile"
-   set caption(autoguider,searchThreshin) "Intensité min."
-   set caption(autoguider,searchFwmh)     "Fwmh min."
-   set caption(autoguider,searchRadius)   "Rayon de recherche"
-   set caption(autoguider,searchThreshold) "Intensité min.2"
 
    if { ! [ info exists conf(autoguider,searchThreshin)] }       { set conf(autoguider,searchThreshin)       "10" }
    if { ! [ info exists conf(autoguider,searchFwmh)] }           { set conf(autoguider,searchFwmh)           "3"  }
@@ -78,13 +72,12 @@ proc ::autoguider::getPluginType { } {
 }
 
 #------------------------------------------------------------
-#  getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::autoguider::getPluginHelp { } {
    return "autoguider.htm"
 }
-
 
 #------------------------------------------------------------
 # createPluginInstance
