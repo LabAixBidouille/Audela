@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.23 2007-09-14 13:52:35 michelpujol Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.24 2007-09-14 14:25:43 robertdelmas Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -50,6 +50,7 @@
 # trans2  in out dx dy number ?first_index? ?tt_options?
 # scale1  in out scale_x scale_y ?tt_options?
 # scale2  in out number scale_x scale_y ?first_index? ?tt_options?
+# subdark2  in dark offset out number exptime dexptime ?first_index?
 #
 
 proc offset {args} {
@@ -1359,7 +1360,7 @@ proc scale2 {args} {
 }
 
 proc subdark2 {args} {
-   #--- in operand out const number ?first_index? ?tt_options?
+   #--- in dark offset out number exptime dexptime ?first_index?
    global audace
 
    set n [llength $args]
@@ -1384,7 +1385,6 @@ proc subdark2 {args} {
          set unsmearing 1
       }
 
-
       if {[file dirname $dark]=="."} {
          set len [expr [string length $audace(rep_images)]-1]
          if {$len>=0} {
@@ -1408,8 +1408,6 @@ proc subdark2 {args} {
             }
          }
       }
-
-
 
       set ext [file extension "$dark"]
       if {$ext==""} {
