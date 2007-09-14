@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.14 2007-09-09 19:27:16 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.15 2007-09-14 22:51:04 michelpujol Exp $
 #
 
 #============================================================
@@ -1167,7 +1167,7 @@ namespace eval ::methking {
         Message consolog "%s\n" $caption(methking,sequence_1)
         set panneau(methking,demande_arret_acq) 0
         set t1 [clock second]
-        cam$audace(camNo) buf 1
+        ###cam$audace(camNo) buf 1
         cam$audace(camNo) shutter synchro
         for {set image 1} {$image <= $king_config(poseparseq,$config_active)} {incr image} {
         if {$panneau(methking,demande_arret_acq) == 0} {
@@ -1516,6 +1516,7 @@ namespace eval ::methking {
            ### set camera $conf(camera)
 #--- Fin modif Robert
             # Création des buffers nécessaires aux acquisitions et visualisations
+            set numero_buffer_0 [cam$audace(camNo) buf ]
             set numero_buffer_1 [::buf::create]
             buf$numero_buffer_1 extension $conf(extension,defaut)
             buf$numero_buffer_1 clear
@@ -1639,6 +1640,9 @@ namespace eval ::methking {
             Message erreur "%s\n" $caption(methking,pas_de_camera)
             BoiteMessage $caption(methking,erreur) $caption(methking,pas_de_camera)
         }
+        #  Rétablir le buffer où pointe la caméra
+        cam$audace(camNo) buf $numero_buffer_0
+
     }
 
     #--------------------------------------------------------------------------#
@@ -1675,8 +1679,6 @@ namespace eval ::methking {
         ::buf::delete $panneau(methking,numero_buffer_2)
         ::visu::delete $panneau(methking,numero_visu_1)
         ::visu::delete $panneau(methking,numero_visu_2)
-        #  Rétablir le buffer où pointe la caméra (1 par défaut)
-        cam$audace(camNo) buf 1
 
         # Débloquer le bouton
         $This.stop.b configure -state normal
