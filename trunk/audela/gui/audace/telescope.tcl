@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.10 2007-03-31 15:20:47 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.11 2007-09-14 13:54:47 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -136,6 +136,9 @@ global audace
    #  goto
    #     verifie que le telescope possede la fonction goto
    #     envoi l'ordre au telescope de pointer les cordonnees list_radec en mode blocant ou non
+   #  return
+   #     0 si OK
+   #     -1 si erreur (telescope absent)
    #------------------------------------------------------------
    proc goto { list_radec blocking { But_Goto "" } { But_Match "" } } {
       global conf
@@ -197,12 +200,15 @@ global audace
          #--- Goto
          tel$audace(telNo) radec goto $list_radec -blocking $blocking
          #--- Boucle tant que le telescope n'est pas arrete
+         set audace(telescope,goto) "1"
          set radec0 [ tel$audace(telNo) radec coord ]
          ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
-         set audace(telescope,goto) "0"
+         #--- j'attends que la variable soit remise a zero
+         vwait ::audace(telescope,goto)
+         return 0
       } else {
          ::confTel::run
-         tkwait window $audace(base).confTel
+         return -1
       }
    }
 
@@ -224,6 +230,7 @@ global audace
          if { $But_Match != "" } {
             $But_Match configure -relief raised -state normal
          }
+         set audace(telescope,goto) "0"
          update
       }
    }
@@ -244,8 +251,10 @@ global audace
             $Button_Stop configure -relief raised -state normal
             update
          }
+         set audace(telescope,goto) "0"
       } elseif { [ ::tel::list ] != "" } {
          tel$audace(telNo) radec stop
+         set audace(telescope,goto) "0"
       } else {
          ::confTel::run
          tkwait window $audace(base).confTel
@@ -255,6 +264,41 @@ global audace
          }
       }
       ::telescope::afficheCoord
+   }
+
+   #------------------------------------------------------------
+   #  getSpeedLabelList
+   #     retourne la liste des libelles des  vitesses supportees par le telescope
+   #------------------------------------------------------------
+   proc getSpeedLabelList { } {
+      global conf caption
+
+      if { $conf(telescope) == "audecom" } {
+         set speedList "$caption(telescope,x1) $caption(telescope,x5) $caption(telescope,200)"
+      } elseif { $conf(telescope) == "temma" } {
+         set speedList "$caption(telescope,NS) $caption(telescope,HS)"
+      } else {
+         set speedList "1 2 3 4"
+      }
+      return  $speedList
+   }
+
+
+   #------------------------------------------------------------
+   #  getSpeedValueList
+   #     retourne la liste des valeurs des  vitesses supportees par le telescope
+   #------------------------------------------------------------
+   proc getSpeedValueList { } {
+      global conf caption
+
+      if { $conf(telescope) == "audecom" } {
+         set speedList "1 2 3"
+      } elseif { $conf(telescope) == "temma" } {
+         set speedList "1 2"
+      } else {
+         set speedList "1 2 3 4"
+      }
+      return  $speedList
    }
 
    #------------------------------------------------------------
@@ -286,8 +330,8 @@ global audace
             } elseif { $panneau(DlgShift,shiftSpeed) == "4" } {
                setSpeed "4"
             }
-         } elseif { $panneau(DlgShift,shiftSpeed) == "temma" } {
-            if { $audace(telescope,speed) == "$caption(telescope,NS)" } {
+         } elseif { $conf(telescope) == "temma" } {
+            if { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,NS)" } {
                setSpeed "1"
             } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,HS)" } {
                setSpeed "2"
@@ -573,7 +617,7 @@ global audace
       global conf
       global audace
 
-      if { [ ::tel::list ] != "" } {
+      if { $audace(telNo) != "0" } {
          if { $conf(telescope) == "temma" } {
             set AfterState "1"
             set AfterId [ after 10 ::telescope::nextPulseTemma $direction ]
