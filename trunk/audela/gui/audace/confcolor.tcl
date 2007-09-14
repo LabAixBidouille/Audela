@@ -2,7 +2,7 @@
 # Fichier : confcolor.tcl
 # Description : Selection et mise a jour en direct des couleurs de l'interface Aud'ACE
 # Auteurs : Denis MARCHAIS
-# Mise a jour $Id: confcolor.tcl,v 1.17 2007-07-03 19:50:27 denismarchais Exp $
+# Mise a jour $Id: confcolor.tcl,v 1.18 2007-09-14 12:40:02 michelpujol Exp $
 #
 
 namespace eval confColor {
@@ -408,15 +408,17 @@ namespace eval confColor {
          Entry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
-               -disabledforeground $audace(color,disabledTextColor)
-            if { $::tcl_platform(os) != "Linux" } {
-               $w configure -selectbackground SystemHighlight -selectforeground SystemHighlightText
-            }
+               -disabledforeground $audace(color,disabledTextColor) \
+               -selectbackground $audace(color,activeBackColor)  \
+               -selectforeground $audace(color,activeTextColor)
+
+               ##-selectbackground "SystemHighlight"
+               ##-selectforeground SystemHighlightText
          }
          LabelEntry {
             $w configure -bg $audace(color,entryBackColor) -fg $audace(color,entryTextColor) \
                -disabledbackground $audace(color,entryBackColor2) \
-               -disabledforeground $audace(color,textColor)
+               -disabledforeground $audace(color,disabledTextColor)
          }
          Button {
             if { [ string first color_invariant $w ] == -1 } {
@@ -469,7 +471,7 @@ namespace eval confColor {
                -background $audace(color,backColor) \
                -highlightbackground $audace(color,backColor) \
                -highlightcolor $audace(color,backColor) \
-               -troughcolor $color(green)
+               -troughcolor $audace(color,backColor)
          }
          Tablelist {
             #--- Couleur des lignes selectionnes de cette listbox
