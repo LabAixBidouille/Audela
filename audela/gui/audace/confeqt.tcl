@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.22 2007-09-12 17:19:20 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.23 2007-09-14 13:49:18 michelpujol Exp $
 #
 
 namespace eval ::confEqt {
@@ -373,7 +373,8 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 # recherche les plugins presents
 #
 # conditions :
-#  - le plugin doit avoir une procedure getPluginType qui retourne "equipment" ou "focuser"
+#  - le plugin doit avoir une procedure getPluginType qui retourne
+#     "equipment" ou "focuser" ou "spectroscope"
 #  - le plugin doit avoir une procedure getPluginTitle
 #
 # si le plugin remplit les conditions
@@ -398,7 +399,7 @@ proc ::confEqt::findPlugin { } {
          ##set dir [file dirname $"pkgIndexFileName"]
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type)== "equipment" || $pluginInfo(type)== "focuser"} {
+            if { $pluginInfo(type)== "equipment" || $pluginInfo(type)== "focuser" || $pluginInfo(type)== "spectroscope"} {
                #--- je charge le package
                package require $pluginInfo(name)
                #--- j'initalise le plugin
