@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : outil de fabrication des fichier Kit et de deploiement des plugin
 # Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.10 2007-09-14 13:36:10 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.11 2007-09-14 23:32:19 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
@@ -357,9 +357,11 @@ proc ::updateaudela::installKit { kitFileName } {
          if { [package vcompare $audelaVersion $pluginAudelaVersion] >= 0 } {
          #--- je recupere les informations de la version deja installee
          set currentPkgIndexFileName [file join [getTypeDirectory $pluginInfo(type) $pluginInfo(name)]  pkgIndex.tcl]
-         if { [::audace::getPluginInfo $currentPkgIndexFileName currentPluginInfo ] == 0 } {
-            #--- si le plugin est deja installe , je propose la mise la jour
+         if { [file exists $currentPkgIndexFileName] == 1 } {
+            if { [::audace::getPluginInfo $currentPkgIndexFileName currentPluginInfo ] == 0 } {
+               #--- si le plugin est deja installe , je propose la mise la jour
                set message [format $::caption(updateaudela,confirmInstall) "\"$currentPluginInfo(name) $currentPluginInfo(version)\"" "\"$pluginInfo(name) $pluginInfo(version)\""]
+            }
          } else {
             #--- si le plugin n'est pas installe , je propose l'installation
             set message [format $::caption(updateaudela,confirmInstallNew) "$pluginInfo(name) ($pluginInfo(version))"]
