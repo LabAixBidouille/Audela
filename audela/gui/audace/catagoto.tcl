@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.18 2007-09-14 14:30:09 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.19 2007-09-14 14:35:00 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -1781,7 +1781,7 @@ namespace eval cataGoto {
                set catalogue(objet_utilisateur_dec) [lindex $thisuser 2]
                set catalogue(utilisateur_dec) $catalogue(objet_utilisateur_dec)
             } else {
-               #--- sinon le séparateur est un espace ou une serie d'espace
+               #--- sinon le separateur est un espace ou une serie d'espaces
                set catalogue(utilisateur_choisie) "[lindex $thisuser 0]"
                set catalogue(utilisateur_mag) "[lindex $thisuser 7]"
                set catalogue(objet_utilisateur_ad) "[lindex $thisuser 1]h[lindex $thisuser 2]m[lindex $thisuser 3]"
