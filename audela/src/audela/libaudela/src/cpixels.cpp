@@ -919,23 +919,24 @@ void CPixels::Fwhm2d(int x1, int y1, int x2, int y2,
          iXY[i][j]=(double)0.;
       }
    }
-   for(j=y1;j<=y2;j++) {
-      for(i=x1;i<=x2;i++) {
-         pixel = *(ppixels+naxis1*j+i);
-         iXY[i-x1][j-y1] += (double)pixel;
+   for(j=0;j<height;j++) {
+      for(i=0;i<width;i++) {
+         pixel = *(ppixels+width*j+i);
+         iXY[i][j] += (double)pixel;
       }
    }
+
 
    fitgauss2d(width,height,iXY,pxy,errx);
    erry=errx;
 
    *maxy  = pxy[0];
    *maxx  = pxy[0];
-   *posx  = pxy[1];
+   *posx  = pxy[1] + x1;
    *fwhmx = pxy[2];
    *fondx = pxy[3];
    *fondy = pxy[3];
-   *posy  = pxy[4];
+   *posy  = pxy[4] + y1;
    *fwhmy = pxy[5];
 
    for(i=0;i<width;i++) {
