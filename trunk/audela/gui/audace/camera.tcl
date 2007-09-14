@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.11 2007-05-06 08:46:52 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.12 2007-09-14 13:39:25 michelpujol Exp $
 #
 
 namespace eval camera {
@@ -351,7 +351,6 @@ namespace eval camera {
       global caption
 
       set t "[ $CameraName timer -1 ]"
-
       if { $t > "1" } {
          set $LabelTimeVariable "[ expr $t-1 ] / [ format "%d" [ expr int([ $CameraName exptime ]) ] ]"
          if { $Proc_Avancement_pose != "" } {
@@ -360,9 +359,13 @@ namespace eval camera {
          #--- j'attends une seconde et je  lance l'iteration suivante
          after 1000 "::camera::dispTime_3 $CameraName $LabelTimeVariable $Proc_Avancement_pose $visuNo"
       } else {
-         set $LabelTimeVariable "$caption(camera,numerisation)"
-         if { $Proc_Avancement_pose != "" } {
-            $Proc_Avancement_pose $visuNo $t
+         if { $t == -1 } {
+            set $LabelTimeVariable ""
+         } else {
+            set $LabelTimeVariable "$caption(camera,numerisation)"
+            if { $Proc_Avancement_pose != "" } {
+               $Proc_Avancement_pose $visuNo $t
+            }
          }
          update
       }
