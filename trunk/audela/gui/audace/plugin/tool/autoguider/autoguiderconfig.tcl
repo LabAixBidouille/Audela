@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.13 2007-09-14 15:31:45 robertdelmas Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.14 2007-09-15 09:27:39 robertdelmas Exp $
 #
 
 ################################################################
@@ -76,7 +76,7 @@ proc ::autoguider::config::apply { visuNo } {
    set conf(autoguider,slitRatio)         $widget($visuNo,slitRatio)
 
    set conf(autoguider,searchThreshin)   $widget($visuNo,searchThreshin)
-   set conf(autoguider,searchFwmh)       $widget($visuNo,searchFwmh)
+   set conf(autoguider,searchFwhm)       $widget($visuNo,searchFwhm)
    set conf(autoguider,searchRadius)     $widget($visuNo,searchRadius)
    set conf(autoguider,searchThreshold)  $widget($visuNo,searchThreshold)
 
@@ -164,7 +164,7 @@ proc ::autoguider::config::confToWidget { visuNo } {
    set widget($visuNo,slitWidth)         $conf(autoguider,slitWidth)
    set widget($visuNo,slitRatio)         $conf(autoguider,slitRatio)
    set widget($visuNo,searchThreshin)    $conf(autoguider,searchThreshin)
-   set widget($visuNo,searchFwmh)        $conf(autoguider,searchFwmh)
+   set widget($visuNo,searchFwhm)        $conf(autoguider,searchFwhm)
    set widget($visuNo,searchRadius)      $conf(autoguider,searchRadius)
    set widget($visuNo,searchThreshold)   $conf(autoguider,searchThreshold)
 
@@ -304,9 +304,9 @@ proc ::autoguider::config::fillConfigPage { frm visuNo } {
          -labeljustify left -labelwidth 22 -width 3 -justify right \
          -textvariable ::autoguider::config::widget($visuNo,searchThreshin)
       pack $frm.search.threshin -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
-      LabelEntry $frm.search.fwhm -label "$caption(autoguider,searchFwmh)" \
+      LabelEntry $frm.search.fwhm -label "$caption(autoguider,searchFwhm)" \
          -labeljustify left -labelwidth 22 -width 3 -justify right \
-         -textvariable ::autoguider::config::widget($visuNo,searchFwmh)
+         -textvariable ::autoguider::config::widget($visuNo,searchFwhm)
       pack $frm.search.fwhm -in [$frm.search getframe] -anchor w -side top -fill x -expand 0
       LabelEntry $frm.search.radius -label "$caption(autoguider,searchRadius)" \
          -labeljustify left -labelwidth 22 -width 3 -justify right \

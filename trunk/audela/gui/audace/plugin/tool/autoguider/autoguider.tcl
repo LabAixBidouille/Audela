@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.24 2007-09-14 15:29:27 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.25 2007-09-15 09:27:15 robertdelmas Exp $
 #
 
 #==============================================================
@@ -17,7 +17,7 @@ namespace eval ::autoguider {
    source [ file join [file dirname [info script]] autoguider.cap ]
 
    if { ! [ info exists conf(autoguider,searchThreshin)] }       { set conf(autoguider,searchThreshin)       "10" }
-   if { ! [ info exists conf(autoguider,searchFwmh)] }           { set conf(autoguider,searchFwmh)           "3"  }
+   if { ! [ info exists conf(autoguider,searchFwhm)] }           { set conf(autoguider,searchFwhm)           "3"  }
    if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4"  }
    if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)     "40"  }
 
@@ -115,7 +115,7 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,alphaReverse)] }         { set conf(autoguider,alphaReverse)         "0"  }
    if { ! [ info exists conf(autoguider,deltaReverse)] }         { set conf(autoguider,deltaReverse)         "0"  }
    if { ! [ info exists conf(autoguider,searchThreshin)] }       { set conf(autoguider,searchThreshin)       "10" }
-   if { ! [ info exists conf(autoguider,searchFwmh)] }           { set conf(autoguider,searchFwmh)           "3"  }
+   if { ! [ info exists conf(autoguider,searchFwhm)] }           { set conf(autoguider,searchFwhm)           "3"  }
    if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4"  }
    if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)      "40"  }
 
@@ -1605,7 +1605,7 @@ proc ::autoguider::searchStar { visuNo  } {
    #--- je cherche les étoiles
    set resultFile "$::audace(rep_audela)/autoguider.txt"
    set searchBorder [expr $::conf(autoguider,searchRadius) + 2]
-   buf$bufNo A_starlist $::conf(autoguider,searchThreshin) $resultFile n $::conf(autoguider,searchFwmh) $::conf(autoguider,searchRadius) $searchBorder $::conf(autoguider,searchThreshold)
+   buf$bufNo A_starlist $::conf(autoguider,searchThreshin) $resultFile n $::conf(autoguider,searchFwhm) $::conf(autoguider,searchRadius) $searchBorder $::conf(autoguider,searchThreshold)
 
    # j'ouvre le fichier resultat
    set fresult [open "$resultFile" r]
