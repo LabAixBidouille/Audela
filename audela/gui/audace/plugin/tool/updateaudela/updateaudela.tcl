@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.12 2007-09-15 09:29:57 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.13 2007-09-15 11:54:14 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
@@ -448,6 +448,11 @@ proc ::updateaudela::getPluginInfoFile { kitFileName  pluginInfo } {
 proc ::updateaudela::makeKit { kitFileFullName sourceDirectory { fileList ""} } {
    variable private
 
+   if { [info exists private(base)] == 0 } {
+      #--- s'il n'existe aucune instance du plugin, j'en cree une
+      ::updateaudela::createPluginInstance ".audace" "1" 
+   }
+
    #--- je cree le fichier kit
    set vfsName "makekit.vfs"
    set vfsNo [vfs::mk4::Mount $kitFileFullName $vfsName ]
@@ -485,30 +490,6 @@ proc ::updateaudela::addFileToKit { kitFileFullName fileName lines } {
    close $fileNo
    #--- je ferme le fichier kit
    vfs::mk4::Unmount $vfsNo $vfsName
-}
-
-#------------------------------------------------------------
-#  ::updateaudela::makeKit_old { }
-#  copie un plugin dans un fichier kit
-#------------------------------------------------------------
-proc ::updateaudela::makeKit_old { pluginName pluginType } {
-   variable private
-
-   set pkgIndexFileName [file join [::updateaudela::getTypeDirectory $pluginType $pluginName] pkgIndex.tcl]
-
-   if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo ] == 0 } {
-      set kitFileName  "$pluginInfo(name)-$pluginInfo(version).kit"
-      set kitFileFullName  [file join $private(kitDirectory) $kitFileName]
-      #--- je cree le fichier kit
-      set vfsName "$pluginName.vfs"
-      set vfsNo [vfs::mk4::Mount $kitFileFullName $vfsName ]
-      #--- je copie le plugin dans le fichier kit
-      ::updateaudela::sync [list -compress 1 -verbose 0  -ignore "cvs" -ignore "CVS" -auto 0 -noerror 0 $pluginDirectory $vfsName]
-      #--- je ferme le fichier kit
-      vfs::mk4::Unmount $vfsNo $vfsName
-   } else {
-     tk_messageBox -message "$::errorInfo. See console" -icon error
-   }
 }
 
 #------------------------------------------------------------
@@ -922,6 +903,12 @@ proc ::updateaudela::kit::fillConfigPage { frm visuNo } {
 
    #--- frame de fichiers kit
    TitleFrame $frm.kit -borderwidth 2 -text $caption(updateaudela,availableUpdate)
+
+      LabelEntry $frm.directory -label $caption(updateaudela,rep_plugin) \
+          -labeljustify left -width 0 -padx 2 -justify left -editable 0 \
+          -textvariable ::updateaudela::private(kitDirectory)
+
+
       #--- Information du plugin
       frame $frm.kit.info -borderwidth 0
       #Label $frm.kit.info.title -text ""
@@ -973,9 +960,10 @@ proc ::updateaudela::kit::fillConfigPage { frm visuNo } {
       grid rowconfig    [$frm.kit getframe] 0 -weight 1
       grid columnconfig [$frm.kit getframe] 0 -weight 1
 
-   grid $frm.kit      -row 0 -column 0 -sticky ewns
+   grid $frm.directory  -row 0 -column 0 -sticky ewns
+   grid $frm.kit        -row 1 -column 0 -sticky ewns
 
-   grid rowconfig    $frm 0 -weight 1
+   grid rowconfig    $frm 1 -weight 1
    grid columnconfig $frm 0 -weight 1
 
    set private(kitDirectory) $::updateaudela::private(kitDirectory)
@@ -1182,15 +1170,8 @@ proc ::updateaudela::download::fillConfigPage { frm visuNo } {
    #--- frame de boutons
    frame $frm.button -borderwidth 2
       Label $frm.button.state  -text "test" -relief sunken -width 20 -textvariable ::updateaudela::download::private(downloadProgress)
-
-      #Button $frm.button.refresh -text "$::caption(updateaudela,refresh)"
-      #   -command "::updateaudela::download::connect"
-      #Button $frm.button.makeKit -text " << $caption(updateaudela,makeKit)"  -command "::updateaudela::makeKit"
-      #$frm.button.makeKit configure -font "[$frm.button.makeKit cget -font] bold"
       checkbutton $frm.button.install -text "$caption(updateaudela,downloadAndInstall)" \
          -variable ::conf(updateaudela,downloadAndInstall)
-      #grid $frm.button.install  -row 0 -column 0   -padx 4 -pady 2 -sticky w
-      #grid $frm.button.state    -row 0 -column 1   -padx 4 -pady 2 -sticky e
       pack $frm.button.install  -side left
       pack $frm.button.state    -side right
 
@@ -1326,9 +1307,14 @@ proc ::updateaudela::download::loadUrl { url } {
             #--- je rafraichis la liste des fichiers kit
             ::updateaudela::kit::fillKitTable
 
-            #--- j'installe le plugin immediatement si l'utilsateur l'a demande
+            #--- j'installe le plugin immediatement si l'utilisateur l'a demande
             if { $::conf(updateaudela,downloadAndInstall) == 1 } {
+                #--- j'installe le plugin immediatement
                ::updateaudela::installKit $fileName
+            } else {
+               #--- j'affiche un message pour signaler la fin du chargement
+               set message [format $::caption(updateaudela,downloadOk) $fileName  ]
+               tk_messageBox -message $message -type ok -icon info  -title $::caption(updateaudela,title)
             }
          }
       }
@@ -1455,8 +1441,6 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
 
       #--- frame des boutons
       frame $frm.plugin.button -borderwidth 0
-      #Button $frm.plugin.button.download -text "$caption(updateaudela,download)" \
-      #   -command "::updateaudela::download::run $frm $visuNo"
          Button $frm.plugin.button.refresh -text "$caption(updateaudela,refresh)" \
             -command "::updateaudela::plugin::fillPluginTable"
          Button $frm.plugin.button.delete  -text "$caption(updateaudela,delete)" \
@@ -1465,15 +1449,11 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
             -command "::updateaudela::plugin::showPluginHelp"
          Button $frm.plugin.button.makeKit -text "$caption(updateaudela,makeKit)" \
             -command "::updateaudela::plugin::makeKit"
-         Button $frm.plugin.button.makeCoreUpdate -text "$caption(updateaudela,makeCoreUpdate)"  \
-            -command "::updateaudela::makecore::run $::updateaudela::private(base) $visuNo"
 
-         #grid $frm.plugin.button.download  -row 0 -column 0 -sticky ewns
          grid $frm.plugin.button.delete    -row 0 -column 1
          grid $frm.plugin.button.moreInfo  -row 0 -column 2
          grid $frm.plugin.button.refresh   -row 0 -column 3
          grid $frm.plugin.button.makeKit   -row 0 -column 4   -padx 4 -pady 2
-         grid $frm.plugin.button.makeCoreUpdate   -row 0 -column 5  -padx 4 -pady 2
 
       grid $frm.plugin.table         -in [$frm.plugin getframe] -row 0 -column 0 -sticky nsew
       grid $frm.plugin.ysb           -in [$frm.plugin getframe] -row 0 -column 1 -sticky nsew
@@ -1562,7 +1542,7 @@ proc ::updateaudela::plugin::onSelectPlugin {  } {
 
 #------------------------------------------------------------
 #  ::updateaudela::makeKit { }
-#  copie un plugin dans un fichier kit
+#     affiche la fenetre de fabrication d'un kit
 #------------------------------------------------------------
 proc ::updateaudela::plugin::makeKit { } {
    variable private
@@ -1575,31 +1555,12 @@ proc ::updateaudela::plugin::makeKit { } {
    set pluginName [$private(pluginTable) cellcget $rowIndex,1 -text]
    set pluginType [$private(pluginTable) cellcget $rowIndex,0 -text]
 
-   ::updateaudela::makePluginUpdate::run $::updateaudela::private(base) $private(visuNo) $pluginType $pluginName
-   set pluginDirectory [::updateaudela::getTypeDirectory $pluginType $pluginName]
-   set pkgIndexFileName [file join $pluginDirectory pkgIndex.tcl]
-
-   if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo ] == 0 } {
-      set kitFileName  "$pluginInfo(name)-$pluginInfo(version).kit"
-      set kitFileFullName  [file join $::updateaudela::private(kitDirectory) $kitFileName]
-      if { [file exists $kitFileFullName] == 1 } {
-         set message [format $::caption(updateaudela,fileExists) $kitFileFullName]
-         set answer [tk_messageBox -message $message -type okcancel -icon question -title $::caption(updateaudela,title)]
-         if { $answer == "cancel" } {
-            return
-         }
-      }
-      ::updateaudela::makeKit $kitFileFullName $pluginDirectory
-
-      #--- j'actualise la liste des kits
-      ::updateaudela::kit::fillKitTable
-      ::updateaudela::kit::onSelectKitFile
-
-      #--- j'affiche un message OK
-      set message [format $::caption(updateaudela,makeKitOk) $kitFileName]
-      tk_messageBox -message $message -type ok -icon info -title $::caption(updateaudela,title)
-  } else {
-     tk_messageBox -message "$::errorInfo. See console" -icon error
+   if { $pluginName == "audela" && $pluginType == "audela" } {
+      #--- fabrication d'un kit de mise a jour du coeur de audela
+      ::updateaudela::makecore::run $::updateaudela::private(base) $private(visuNo)"
+   } else {
+      #--- fabrication d'un kit de mise a jour d'un plugin
+      ::updateaudela::makePluginUpdate::run $::updateaudela::private(base) $private(visuNo) $pluginType $pluginName
    }
 }
 
@@ -1924,6 +1885,7 @@ proc ::updateaudela::makePluginUpdate::run { base visuNo pluginType pluginName} 
 
   set private(pluginType) $pluginType
   set private(pluginName) $pluginName
+  set private(pluginDirectory) [::updateaudela::getTypeDirectory $private(pluginType) $private(pluginName)]
   set private(this) "$base.updateaudela.makePluginUpdate"
    if { [winfo exists $private(this) ] == 0 } {
       #--- j'affiche la fenetre
@@ -1944,6 +1906,10 @@ proc ::updateaudela::makePluginUpdate::fillConfigPage { frm visuNo } {
 
    #--- frame de fichiers selectionnes
    TitleFrame $frm.files -borderwidth 2 -text $caption(updateaudela,selectedFiles)
+      LabelEntry $frm.files.directory -label $caption(updateaudela,rep_plugin) \
+          -labeljustify left -width 0 -padx 2 -justify left -editable 0 \
+          -textvariable ::updateaudela::makePluginUpdate::private(pluginDirectory)
+
       set private(fileTable) $frm.files.table
       scrollbar $frm.files.ysb -command "$private(fileTable) yview"
       scrollbar $frm.files.xsb -command "$private(fileTable) xview" -orient horizontal
@@ -1961,10 +1927,11 @@ proc ::updateaudela::makePluginUpdate::fillConfigPage { frm visuNo } {
          -setfocus 1 \
          -activestyle none
 
-      grid $private(fileTable) -in [$frm.files getframe] -row 0 -column 0 -sticky ewns
-      grid $frm.files.ysb      -in [$frm.files getframe] -row 0 -column 1 -sticky ewns
-      grid $frm.files.xsb      -in [$frm.files getframe] -row 1 -column 0 -sticky ew
-      grid rowconfig    [$frm.files getframe]  0 -weight 1
+      grid $frm.files.directory -in [$frm.files getframe] -row 0 -column 0 -columnspan 2 -sticky ewns
+      grid $private(fileTable) -in [$frm.files getframe] -row 1 -column 0 -sticky ewns
+      grid $frm.files.ysb      -in [$frm.files getframe] -row 1 -column 1 -sticky ewns
+      grid $frm.files.xsb      -in [$frm.files getframe] -row 2 -column 0 -sticky ew
+      grid rowconfig    [$frm.files getframe]  1 -weight 1
       grid columnconfig [$frm.files getframe]  0 -weight 1
 
    #--- frame des boutons
@@ -2018,12 +1985,11 @@ proc ::updateaudela::makePluginUpdate::getLabel { } {
 proc ::updateaudela::makePluginUpdate::addFile {  } {
    variable private
 
-   set pluginDirectory [::updateaudela::getTypeDirectory $private(pluginType) $private(pluginName)]
    #--- j'ouvre la fenetre de selecion des fichiers
    set fileList [ tk_getOpenFile \
       -multiple 1 \
       -title $::caption(updateaudela,title) \
-      -initialdir $pluginDirectory \
+      -initialdir $private(pluginDirectory) \
       -parent $private(this) \
    ]
 
@@ -2036,10 +2002,10 @@ proc ::updateaudela::makePluginUpdate::addFile {  } {
    set tableFileList [$private(fileTable) get 0 end]
    #--- j'ajoute les fichiers dans la table
    foreach fullFileName  $fileList {
-      if { [string first "$pluginDirectory/" $fullFileName] == 0 } {
+      if { [string first "$private(pluginDirectory)/" $fullFileName] == 0 } {
          #--- je convertis le chemin absolu en chemin relatif
          set fileDirectory [file dirname $fullFileName]
-         set fileDirectory [string range $fileDirectory [string length "$pluginDirectory/"] end]
+         set fileDirectory [string range $fileDirectory [string length "$private(pluginDirectory)/"] end]
          set fileName [file tail $fullFileName]
          #--- je verifie que la ligne n'existe pas deja
          if { [lsearch $tableFileList [list $fileDirectory $fileName]] == -1 } {
@@ -2060,8 +2026,7 @@ proc ::updateaudela::makePluginUpdate::addFile {  } {
 proc ::updateaudela::makePluginUpdate::addAllFiles {  } {
    variable private
 
-   set pluginDirectory [::updateaudela::getTypeDirectory $private(pluginType) $private(pluginName)]
-   set dirs $pluginDirectory
+   set dirs $private(pluginDirectory)
    set fileList ""
    #--- recherche recusive des fichiers dans le repertoire du plugin
    while {[llength $dirs] > 0} {
@@ -2087,10 +2052,10 @@ proc ::updateaudela::makePluginUpdate::addAllFiles {  } {
    #--- j'ajoute les noms des fichiers
    foreach fullFileName $fileList {
       #--- j'ajoute les fichiers dans la table
-      if { [string first "$pluginDirectory/" $fullFileName] == 0 } {
+      if { [string first "$private(pluginDirectory)/" $fullFileName] == 0 } {
          #--- je convertis le chemin absolu en chemin relatif
          set fileDirectory [file dirname $fullFileName]
-         set fileDirectory [string range $fileDirectory [string length "$pluginDirectory/"] end]
+         set fileDirectory [string range $fileDirectory [string length "$private(pluginDirectory)/"] end]
          set fileName [file tail $fullFileName]
          #--- je verifie que le fichier n'existe pas deja dans la selection
          if { [lsearch $tableFileList [list $fileDirectory $fileName]] == -1 } {
@@ -2133,8 +2098,7 @@ proc ::updateaudela::makePluginUpdate::makeKit { } {
       ##console::disp "file: $ relativeFileName\n"
    }
 
-   set pluginDirectory [::updateaudela::getTypeDirectory $private(pluginType) $private(pluginName)]
-   set pkgIndexFileName [file join $pluginDirectory pkgIndex.tcl]
+   set pkgIndexFileName [file join $private(pluginDirectory) pkgIndex.tcl]
    if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo ] == 0 } {
       set kitFileName  "$pluginInfo(name)-$pluginInfo(version).kit"
       set kitFileFullName  [file join $::updateaudela::private(kitDirectory) $kitFileName]
@@ -2149,7 +2113,7 @@ proc ::updateaudela::makePluginUpdate::makeKit { } {
       }
 
       #--- je fabrique le fichier kit
-      ::updateaudela::makeKit $kitFileFullName $pluginDirectory $fileList
+      ::updateaudela::makeKit $kitFileFullName $private(pluginDirectory) $fileList
       #--- j'actualise la liste des kits
       ::updateaudela::kit::fillKitTable
       ::updateaudela::kit::onSelectKitFile

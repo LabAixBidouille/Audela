@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.10 2007-09-14 14:59:22 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.11 2007-09-15 11:54:14 michelpujol Exp $
 #
 
 #=========================================================================
@@ -18,6 +18,7 @@ set caption(updateaudela,rep_plugin)            "Folder"
 set caption(updateaudela,refresh)               "Refresh"
 set caption(updateaudela,delete)                "Delete"
 set caption(updateaudela,download)              "Download"
+set caption(updateaudela,downloadOk)            "#%s is downloaded sucessfully."
 set caption(updateaudela,show)                  "Show"
 set caption(updateaudela,makeKit)               "Make a Kit"
 set caption(updateaudela,installPlugin)         "Install a Plug-in"
@@ -65,6 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,refresh)            "Actualiser"
    set caption(updateaudela,delete)             "Supprimer"
    set caption(updateaudela,download)           "Télécharger"
+   set caption(updateaudela,downloadOk)         "%s est téléchargé."
    set caption(updateaudela,show)               "Voir"
    set caption(updateaudela,makeKit)            "Faire un kit"
    set caption(updateaudela,installPlugin)      "Installer un plug-in"
@@ -112,6 +114,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,refresh)            "Aggiorna"
    set caption(updateaudela,delete)             "Eliminare"
    set caption(updateaudela,download)           "Scaricare"
+   set caption(updateaudela,downloadOk)         "#%s is downloaded sucessfully"
    set caption(updateaudela,show)               "Visualizza"
    set caption(updateaudela,makeKit)            "Fare un kit"
    set caption(updateaudela,installPlugin)      "Installare un plug-in"
@@ -159,6 +162,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,refresh)            "Actualizar"
    set caption(updateaudela,delete)             "Suprimir"
    set caption(updateaudela,download)           "Descargar"
+   set caption(updateaudela,downloadOk)         "#%s is downloaded sucessfully"
    set caption(updateaudela,show)               "Mostrar"
    set caption(updateaudela,makeKit)            "Hacer un kit"
    set caption(updateaudela,installPlugin)      "Instalar un plug-in"
@@ -206,6 +210,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,refresh)            "Aktualisieren"
    set caption(updateaudela,delete)             "Abschaffen"
    set caption(updateaudela,download)           "Herunterladen"
+   set caption(updateaudela,downloadOk)         "#%s is downloaded sucessfully"
    set caption(updateaudela,show)               "Zeigen"
    set caption(updateaudela,makeKit)            "Ein Kit machen"
    set caption(updateaudela,installPlugin)      "Ein Plug-in installieren"
@@ -253,6 +258,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,refresh)            "Actualizar"
    set caption(updateaudela,delete)             "Eliminar"
    set caption(updateaudela,download)           "Descarregar"
+   set caption(updateaudela,downloadOk)         "#%s is downloaded sucessfully"
    set caption(updateaudela,show)               "Mostrar"
    set caption(updateaudela,makeKit)            "Fazer um kit"
    set caption(updateaudela,installPlugin)      "Instalar um plug-in"
@@ -300,13 +306,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,refresh)            "Refresh"
    set caption(updateaudela,delete)             "Delete"
    set caption(updateaudela,download)           "Download"
+   set caption(updateaudela,downloadOk)         "#%s is downloaded sucessfully"
    set caption(updateaudela,show)               "Show"
    set caption(updateaudela,makeKit)            "Make a Kit"
    set caption(updateaudela,installPlugin)      "Install a Plug-in"
    set caption(updateaudela,fileExists)         "File %s already exists.\nUpdate it?"
    set caption(updateaudela,directoryExists)    "Folder %s already exists.\nUpdate it?"
    set caption(updateaudela,directoryNotExits)  "Plug-in cannot be deleted. Folder %s does not exist."
-   set caption(updateaudela,directory)          "Folder %s already exists.\nUpdate it?"
+  set caption(updateaudela,directory)          "Folder %s already exists.\nUpdate it?"
    set caption(updateaudela,confirmDelete)      "Are you sure you want to delete %s?"
    set caption(updateaudela,makeKitOk)          "File %s is created."
    set caption(updateaudela,confirmInstall)     "Do you want to replace %s by %s?"
