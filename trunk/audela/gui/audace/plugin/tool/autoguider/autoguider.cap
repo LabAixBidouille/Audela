@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.24 2007-09-14 15:30:31 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.25 2007-09-15 09:28:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -61,11 +61,11 @@ set caption(autoguider,slitRatio)                "Ratio (% / pixel)"
 set caption(autoguider,alphaReverse)             "Reverse movement"
 set caption(autoguider,deltaReverse)             "Reverse movement"
 
-set caption(autoguider,searchTitle)              "# Recherche d'étoile"
-set caption(autoguider,searchThreshin)           "# Intensité min."
-set caption(autoguider,searchFwmh)               "# Fwmh min."
-set caption(autoguider,searchRadius)             "# Rayon de recherche"
-set caption(autoguider,searchThreshold)          "# Intensité min.2"
+set caption(autoguider,searchTitle)              "Star Search"
+set caption(autoguider,searchThreshin)           "Min. Luminosity (1)"
+set caption(autoguider,searchFwhm)               "Min. Fwhm"
+set caption(autoguider,searchRadius)             "Search Radius"
+set caption(autoguider,searchThreshold)          "Min. Luminosity (2)"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -121,10 +121,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Inverser le sens"
 
    set caption(autoguider,searchTitle)           "Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "Intensité min."
-   set caption(autoguider,searchFwmh)            "Fwmh min."
+   set caption(autoguider,searchThreshin)        "Intensité mini (1)"
+   set caption(autoguider,searchFwhm)            "Fwhm mini"
    set caption(autoguider,searchRadius)          "Rayon de recherche"
-   set caption(autoguider,searchThreshold)       "Intensité min.2"
+   set caption(autoguider,searchThreshold)       "Intensité mini (2)"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -180,10 +180,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Movimento inverso"
 
    set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité min."
-   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
+   set caption(autoguider,searchFwhm)            "# Fwhm mini"
    set caption(autoguider,searchRadius)          "# Rayon de recherche"
-   set caption(autoguider,searchThreshold)       "# Intensité min.2"
+   set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -239,10 +239,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Invertir el movimiento"
 
    set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité min."
-   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
+   set caption(autoguider,searchFwhm)            "# Fwhm mini"
    set caption(autoguider,searchRadius)          "# Rayon de recherche"
-   set caption(autoguider,searchThreshold)       "# Intensité min.2"
+   set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -298,10 +298,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Richtung umkehren"
 
    set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité min."
-   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
+   set caption(autoguider,searchFwhm)            "# Fwhm mini"
    set caption(autoguider,searchRadius)          "# Rayon de recherche"
-   set caption(autoguider,searchThreshold)       "# Intensité min.2"
+   set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -357,10 +357,10 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,deltaReverse)          "Inverter sentido"
 
    set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité min."
-   set caption(autoguider,searchFwmh)            "# Fwmh min."
+   set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
+   set caption(autoguider,searchFwhm)            "# Fwhm mini"
    set caption(autoguider,searchRadius)          "# Rayon de recherche"
-   set caption(autoguider,searchThreshold)       "# Intensité min.2"
+   set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -415,11 +415,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,alphaReverse)          "Reverse movement"
    set caption(autoguider,deltaReverse)          "Reverse movement"
 
-   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité min."
-   set caption(autoguider,searchFwmh)            "# Fwmh min."
-   set caption(autoguider,searchRadius)          "# Rayon de recherche"
-   set caption(autoguider,searchThreshold)       "# Intensité min.2"
+   set caption(autoguider,searchTitle)           "Star Search"
+   set caption(autoguider,searchThreshin)        "Min. Luminosity (1)"
+   set caption(autoguider,searchFwhm)            "Min. Fwhm"
+   set caption(autoguider,searchRadius)          "Search Radius"
+   set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
 
 }
 
