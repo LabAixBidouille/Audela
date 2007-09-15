@@ -1,8 +1,8 @@
 #
 # Fichier : updateaudela.tcl
-# Description : outil de fabrication des fichier Kit et de deploiement des plugin
-# Auteurs : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.11 2007-09-14 23:32:19 michelpujol Exp $
+# Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
+# Auteur : Michel Pujol
+# Mise a jour $Id: updateaudela.tcl,v 1.12 2007-09-15 09:29:57 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -12,27 +12,6 @@ namespace eval ::updateaudela {
    source [ file join [file dirname [info script]] updateaudela.cap ]
 
    package require audela 1.4.0
-   set caption(updateaudela,pluginDetail) "Information du plug-in"
-   set caption(updateaudela,availableUpdate) "Mises à jour téléchargées"
-   set caption(updateaudela,moreInfo)        "Plus d'information"
-   set caption(updateaudela,connect)         "Connecter"
-   set caption(updateaudela,developperOption) "Option développeur"
-   set caption(updateaudela,downloadAndInstall) "Installer immediatement après le téléchargement"
-   set caption(updateaudela,address)           "Adresse"
-   set caption(updateaudela,audelaAddress) "Site AudeLA"
-   set caption(updateaudela,otherAddress)  "Autre site"
-   set caption(updateaudela,makeCoreUpdate)  "Faire une mise à jour de Audela"
-   set caption(updateaudela,makePluginUpdate)  "Créer un fichier de mise à jour"
-
-   set caption(updateaudela,selectedFiles)   "Fichiers selectionnés"
-   set caption(updateaudela,addCvs)          "Ajouter diff CVS"
-   set caption(updateaudela,addAllFiles)     "Ajouter tous les fichiers"
-   set caption(updateaudela,addFile)         "Ajouter à la sélection"
-   set caption(updateaudela,removeFile)      "Supprimer de la sélection"
-   set caption(updateaudela,createCoreUpdate) "Créer le fichier de mise à jour"
-   set caption(updateaudela,previousVersion) "Version précédente"
-   set caption(updateaudela,currentVersion)  "Version courante"
-   set caption(updateaudela,fileOutside)     "Fichier hors scope"
 }
 
 #------------------------------------------------------------
@@ -1489,7 +1468,6 @@ proc ::updateaudela::plugin::fillConfigPage { frm visuNo } {
          Button $frm.plugin.button.makeCoreUpdate -text "$caption(updateaudela,makeCoreUpdate)"  \
             -command "::updateaudela::makecore::run $::updateaudela::private(base) $visuNo"
 
-
          #grid $frm.plugin.button.download  -row 0 -column 0 -sticky ewns
          grid $frm.plugin.button.delete    -row 0 -column 1
          grid $frm.plugin.button.moreInfo  -row 0 -column 2
@@ -1533,7 +1511,6 @@ proc ::updateaudela::plugin::fillPluginTable { } {
    } else {
       ::console::affiche_erreur "Error reading $pkgIndexFileName :\n$::errorInfo\n\n"
    }
-
 
    #--- je recupere la liste de types de plugin ( noms des sous-repertoires de private(pluginDirectory))
    set pluginTypeList [lsort -dictionary [glob -nocomplain -dir $private(pluginDirectory) -type d "*"]]
@@ -1645,7 +1622,6 @@ proc ::updateaudela::plugin::showPluginHelp { } {
    ::audace::showHelpPlugin [::audace::getPluginTypeDirectory $pluginType] $pluginName [ $pluginName\::getPluginHelp ]
 }
 
-
 #------------------------------------------------------------
 #------------------------------------------------------------
 namespace eval ::updateaudela::makecore {
@@ -1679,7 +1655,6 @@ proc ::updateaudela::makecore::run { base visuNo } {
 proc ::updateaudela::makecore::fillConfigPage { frm visuNo } {
    variable private
    global caption
-
 
    #--- frame de fichiers selectionnes
    TitleFrame $frm.files -borderwidth 2 -text $caption(updateaudela,selectedFiles)
@@ -1726,7 +1701,6 @@ proc ::updateaudela::makecore::fillConfigPage { frm visuNo } {
          grid $frm.button.cvs.previousVersion  -row 0 -column 1 -sticky ewns -padx 4 -pady 2
          grid $frm.button.cvs.currentVersion   -row 1 -column 1 -sticky ewns -padx 4 -pady 2
          grid columnconfig $frm.button.cvs 1 -weight 1
-
 
       Button $frm.button.add -text "$caption(updateaudela,addFile) ..." \
          -command "::updateaudela::makecore::addFile"
@@ -1850,7 +1824,6 @@ proc ::updateaudela::makecore::addCvs { { previousVersion ""} {currentVersion ""
       }
    }
 
-
    #--- je cherche les fichiers modifies dans audela/gui
    set diffModule "audela/gui"
    set catchError [catch {
@@ -1968,7 +1941,6 @@ proc ::updateaudela::makePluginUpdate::run { base visuNo pluginType pluginName} 
 proc ::updateaudela::makePluginUpdate::fillConfigPage { frm visuNo } {
    variable private
    global caption
-
 
    #--- frame de fichiers selectionnes
    TitleFrame $frm.files -borderwidth 2 -text $caption(updateaudela,selectedFiles)
@@ -2189,3 +2161,4 @@ proc ::updateaudela::makePluginUpdate::makeKit { } {
      tk_messageBox -message "$::errorInfo. See console" -icon error
    }
 }
+
