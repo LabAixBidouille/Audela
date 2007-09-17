@@ -53,6 +53,7 @@ namespace eval ::CalaPhot {
         variable mag
         variable courbe
         variable fileId
+        variable fileName
         variable data_image
         variable texte_photo
         variable data_script
@@ -88,10 +89,17 @@ namespace eval ::CalaPhot {
         }
 
         # Affichage de la bannière dans le fichier résultat
-        if {[catch {open [file join $audace(rep_images) $parametres(sortie)] w} fileId]} {
-            Message console $fileId
+        set fileName [file join $audace(rep_images) $parametres(sortie)]
+        if {[catch {open $fileName w} fid]} {
+            Message console $fid
             return
+        } else {
+	        close $fid
         }
+        #if {[catch {open [file join $audace(rep_images) $parametres(sortie)] w} fileId]} {
+        #    Message console $fileId
+        #    return
+        #}
         Message log "---------------calaphot-%s --------------\n" $::CalaPhot::numero_version
         Message log "-- (c)2001-2004 O. Thizy & J. Michelet---\n"
         Message log "-----------------------------------------\n"
@@ -102,7 +110,7 @@ namespace eval ::CalaPhot {
         set erreur [Verification]
         if {$erreur != 0} {
             Message consolog "%s\n" $texte_photo(fin_anticipee)
-            close $fileId
+            #close $fileId
             return
         }
 
@@ -241,6 +249,7 @@ namespace eval ::CalaPhot {
                 }
                 Dessin rectangle $pos_reel($i,$j) [list $parametres(tailleboite) $parametres(tailleboite)] $couleur_etoile etoile_$j
                 # Modélisation
+                #::console::affiche_resultat "--------------------\nAPPEL Modelisation2D i=$i j=$j pos_reel=$pos_reel($i,$j)\n"
                 Modelisation2D $i $j $pos_reel($i,$j)
             }
 
@@ -277,15 +286,20 @@ namespace eval ::CalaPhot {
                 }
             }
 
+            ::console::affiche_resultat "Klotz ------------------------------\n"
+            ::console::affiche_resultat "Klotz FluxReference $i\n"
             FluxReference $i
 
             # Calcul des magnitudes et des incertitudes de tous les astres (astéroïde et étoiles)
+            ::console::affiche_resultat "Klotz MagnitudesEtoiles $i\n"
             MagnitudesEtoiles $i
 
             # Premier filtrage sur les rapports signal à bruit
+            ::console::affiche_resultat "Klotz FiltrageSB $i\n"
             FiltrageSB $i
 
             # Calcul d'incertitude global
+            ::console::affiche_resultat "Klotz CalculErreurGlobal $i\n"
             CalculErreurGlobal $i
 
             # Affiche le résultat dans la console
@@ -303,6 +317,8 @@ namespace eval ::CalaPhot {
          destroy $audace(base).bouton_arret_color_invariant
 
          # Deuxième filtrage sur les images pour filtrer celles douteuses
+         ::console::affiche_resultat "Klotz ===================================\n"
+         ::console::affiche_resultat "Klotz Deuxième filtrage sur les images pour filtrer celles douteuses\n"
          FiltrageConstanteMag
 
          # Statistiques sur les étoiles à partir des images validées
@@ -311,26 +327,26 @@ namespace eval ::CalaPhot {
          Message consolog "%s : %s %07.4f %s %6.4f\n" $texte_photo(asteroide)  $texte_photo(moyenne) $moyenne(0) $texte_photo(ecart_type) $ecart_type(0)
          for {set etoile 1} {$etoile <= $nombre_etoile} {incr etoile 1} {
              Message consolog "%s : %s %07.4f %s %6.4f\n" $texte_photo(etoile)  $texte_photo(moyenne) $moyenne($etoile) $texte_photo(ecart_type) $ecart_type($etoile)
-     }
+         }
 
-     # Sortie standardisée des valeurs
-     if {$parametres(format_sortie) == 1} {
-         AffichageCanopus
-     } else {
-         AffichageCDR
-     }
+         # Sortie standardisée des valeurs
+         ::console::affiche_resultat "Klotz SORTIE DES VALEURS parametres(format_sortie)=$parametres(format_sortie)\n"
+         if {$parametres(format_sortie) == 1} {
+             AffichageCanopus
+         } else {
+             AffichageCDR
+         }
 
-     # Affichage de la courbe de lumière
-     CourbeLumiere
+         # Affichage de la courbe de lumière
+         CourbeLumiere
 
-     # Affiche l'heure de fin de traitement
-     Message consolog "\n\n%s %s\n" $texte_photo(heure_fin) [clock format [clock seconds]]
-     Message consolog "%s\n" $texte_photo(fin_normale)
-
-     # Ferme le fichier de sortie des résultats...
-     close $fileId
-
- }
+         # Affiche l'heure de fin de traitement
+         Message consolog "\n\n%s %s\n" $texte_photo(heure_fin) [clock format [clock seconds]]
+         Message consolog "%s\n" $texte_photo(fin_normale)
+    
+         # Ferme le fichier de sortie des résultats...
+         #close $fileId
+    }
 
     #*************************************************************************#
     #*************  AffichageCanopus  ****************************************#
@@ -379,6 +395,7 @@ namespace eval ::CalaPhot {
         set premier [lindex $liste_image 0]
         set dernier [lindex $liste_image end]
 
+        ::console::affiche_resultat "Klotz CDR 1\n"
         Message consolog "\n\n\n"
         Message consolog "---------------------------------------------------------------------------------------\n"
         Message consolog "Format CDR\n"
@@ -1371,9 +1388,9 @@ namespace eval ::CalaPhot {
         variable texte_photo
         variable nombre_etoile
 
-    if {![info exists nombre_etoile]} {
-        set nombre_etoile 0
-    }
+        if {![info exists nombre_etoile]} {
+            set nombre_etoile 0
+        }
         set pos [Centroide]
         if {([llength $pos] != 0) && ($nombre_etoile > 0)} {
             incr nombre_etoile -1
@@ -1603,6 +1620,7 @@ namespace eval ::CalaPhot {
             }
         }
         # Fin de la boucle sur les images
+        set data_image($image,valide) "Y" ; # Klotz
     }
 
     #*************************************************************************#
@@ -1614,12 +1632,27 @@ namespace eval ::CalaPhot {
         variable data_script
 
         # Algo simplissime : si un seul astre a un s/b < limite, l'image est invalidée
-        set data_image($i,valide) "Y"
-        for {set etoile 0} {$etoile <= $data_script(nombre_etoile)} {incr etoile} {
-            if {$data_image($i,sb_$etoile) < $parametres(signal_bruit)} {
-                set data_image($i,valide) "N"
-                break;
+        #set data_image($i,valide) "Y"
+        #for {set etoile 0} {$etoile <= $data_script(nombre_etoile)} {incr etoile} {
+        #    if {$data_image($i,sb_$etoile) < $parametres(signal_bruit)} {
+        #        set data_image($i,valide) "N"
+        #        break;
+        #    }
+        #}
+        # Algo plus complique : il faut au moins astre + l'asteroide avec a un s/b >= limite, pour aue l'image soit validée
+        set data_image($i,valide) "N"
+        set etoile 0
+        if {$data_image($i,sb_$etoile) < $parametres(signal_bruit)} {
+	        return
+        }
+        set nvalid 0
+        for {set etoile 1} {$etoile <= $data_script(nombre_etoile)} {incr etoile} {
+            if {$data_image($i,sb_$etoile) >= $parametres(signal_bruit)} {
+	            incr nvalid
             }
+        }
+        if {$nvalid>0} {
+           set data_image($i,valide) "Y"
         }
     }
 
@@ -1809,20 +1842,27 @@ namespace eval ::CalaPhot {
     proc Message {niveau args} {
         variable test
         variable fileId
+        variable fileName
         global audace
 
         switch -exact -- $niveau {
             console {
-                ::console::disp [eval [concat {format} $args]]
+                #::console::disp [eval [concat {format} $args]]
+                ::console::affiche_resultat [eval [concat {format} $args]]
                 update idletasks
             }
             log {
+	            set fileId [open $fileName a]
                 puts -nonewline $fileId [eval [concat {format} $args]]
+                close $fileId
             }
             consolog {
-                ::console::disp [eval [concat {format} $args]]
+                #::console::disp [eval [concat {format} $args]]
+                ::console::affiche_resultat [eval [concat {format} $args]]
                 update idletasks
-                catch {puts -nonewline $fileId [eval [concat {format} $args]]}
+	            set fileId [open $fileName a]
+                puts -nonewline $fileId [eval [concat {format} $args]]
+                close $fileId
             }
 
             test {
@@ -1859,7 +1899,9 @@ namespace eval ::CalaPhot {
         set y2 [expr round($y_etoile + $parametres(tailleboite))]
 
         # Modélisation
+        #::console::affiche_resultat "--------------------\nModelisation2D $i $j $coordonnees\n"
         set temp [jm_fitgauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2]]
+        #::console::affiche_resultat "temp=$temp\n-------------------\n"
 
         # Récupération des résultats
         if {[lindex $temp 0] != 0} {
@@ -2496,6 +2538,8 @@ namespace eval ::CalaPhot {
 
         for {set i $parametres(indice_premier)} {$i <= $parametres(indice_dernier)} {incr i 1} {
             loadima $parametres(source)$i
+            after 50
+            update
             DateImage $i
             # Pour éviter les doublons
             if {![info exists tableau_date($data_image($i,date))]} {
