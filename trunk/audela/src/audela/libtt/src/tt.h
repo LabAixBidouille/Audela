@@ -753,6 +753,8 @@ typedef struct {
    double constant;
    double threshold;
    double exposure;
+   char nom_trait[20];
+   char struct_elem[20];
    int type_threshold;
    int kernel_width;
    int kernel_type;

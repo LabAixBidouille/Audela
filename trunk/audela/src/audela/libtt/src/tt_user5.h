@@ -28,6 +28,8 @@
 
 /* --- autorized between 5001 and 5999 ---*/
 #define TT_IMASERIES_USER5_TRAINEE     5001
+#define TT_IMASERIES_USER5_MORPHOMATH  5002
+
 /* --- autorized between 5001 and 5999 ---*/
 #define TT_IMASTACK_USER5_TUTU 5001
 

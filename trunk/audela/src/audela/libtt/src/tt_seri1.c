@@ -517,6 +517,8 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    strcpy(pseries->keyhicut,"MIPS-HI");
    strcpy(pseries->keylocut,"MIPS-LO");
    strcpy(pseries->keytype,"INT");
+   strcpy(pseries->nom_trait,"DILATE");
+   strcpy(pseries->struct_elem,"RECTANGLE");
    pseries->magrlim=99.;
    pseries->magblim=99.;
    pseries->jpeg_qualite=75;
@@ -703,6 +705,15 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       else if (strcmp(mot,"EXPOSURE")==0) {
 	 if (strcmp(argu,"")!=0) {
 	    pseries->exposure=(double)atof(argu);
+	 }
+      }else if (strcmp(mot,"NOM_TRAIT")==0) {
+	 if (strcmp(argu,"")!=0) {
+	    strcpy(pseries->nom_trait,argu);
+	 }
+      }
+	  else if (strcmp(mot,"STRUCT_ELEM")==0) {
+	 if (strcmp(argu,"")!=0) {
+	    strcpy(pseries->struct_elem,argu);
 	 }
       }
       else if (strcmp(mot,"ANGLE")==0) {
