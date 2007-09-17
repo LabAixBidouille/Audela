@@ -253,3 +253,119 @@ int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
    Tcl_SetResult(interp,"",TCL_VOLATILE);
    return result;
 }
+
+int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,err=0;
+   struct telprop *tel;
+   int axisno,val,typ,idx,sidx;
+   char axistype[50];
+   int traits,interpo;
+   long int uc_per_tooth;
+   tel = (struct telprop *)clientData;
+   if (argc>2) {
+      axisno=(int)atoi(argv[2]);
+      if ((axisno<0)||(axisno>2)) {
+      	strcpy(ligne,"axisNo must lie between 0 and 2");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+      }
+   } else {
+    	sprintf(ligne,"usage: %s %s axisNo ha|dec|az|elev|parallactic ?teeth_per_turn?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+   if (argc>3) {
+   	if (strcmp(argv[3],"ha")==0) {
+         tel->axis_param[axisno].type=AXIS_HA;
+      } else if (strcmp(argv[3],"dec")==0) {
+         tel->axis_param[axisno].type=AXIS_DEC;
+      } else if (strcmp(argv[3],"az")==0) {
+         tel->axis_param[axisno].type=AXIS_AZ;
+      } else if (strcmp(argv[3],"elev")==0) {
+         tel->axis_param[axisno].type=AXIS_ELEV;
+      } else if (strcmp(argv[3],"parallactic")==0) {
+         tel->axis_param[axisno].type=AXIS_PARALLACTIC;
+      } else {
+      	strcpy(ligne,"axis_type must be ha|dec|az|elev|parallactic");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+      }
+   }
+   if (argc>4) {
+      val=(int)atoi(argv[4]);
+      if (val<1) {
+      	strcpy(ligne,"teeth_per_turn must be > 1");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+      } else {
+         tel->axis_param[axisno].teeth_per_turn=val;
+      }
+   }
+   if (tel->axis_param[axisno].type=AXIS_HA) {
+      strcpy(axistype,"ha");
+   } else if (tel->axis_param[axisno].type=AXIS_DEC) {
+      strcpy(axistype,"dec");
+   } else if (tel->axis_param[axisno].type=AXIS_AZ) {
+      strcpy(axistype,"az");
+   } else if (tel->axis_param[axisno].type=AXIS_ELEV) {
+      strcpy(axistype,"elev");
+   } else if (tel->axis_param[axisno].type=AXIS_PARALLACTIC) {
+      strcpy(axistype,"parallactic");
+   } else {
+      strcpy(axistype,"notdefined");
+   }
+   typ=3;
+   idx=239;
+   sidx=axisno;
+	if (err = dsa_get_register_s(tel->drv,typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,err);
+   	sprintf(ligne,"%s",tel->msg);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   traits=val;
+   typ=3;
+   idx=241;
+   sidx=axisno;
+	if (err = dsa_get_register_s(tel->drv,typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,err);
+   	sprintf(ligne,"%s",tel->msg);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   interpo=val;
+   uc_per_tooth=traits*interpo;
+ 	sprintf(ligne,"%d %s %d %ld",axisno,axistype,tel->axis_param[axisno].teeth_per_turn,uc_per_tooth);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	return TCL_OK;
+}
+
+int cmdTelTypeMount(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,err=0;
+   struct telprop *tel;
+   char mounttype[50];
+   tel = (struct telprop *)clientData;
+   if (argc>2) {
+   	if (strcmp(argv[2],"equatorial")==0) {
+         tel->type_mount=MOUNT_EQUATORIAL;
+      } else if (strcmp(argv[2],"altaz")==0) {
+         tel->type_mount=MOUNT_ALTAZ;
+      } else {
+      	strcpy(ligne,"mount must be equatorial|altaz");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+      }
+   }
+   if (tel->type_mount=MOUNT_EQUATORIAL) {
+      strcpy(mounttype,"equatorial");
+   } else if (tel->type_mount=MOUNT_ALTAZ) {
+      strcpy(mounttype,"altaz");
+   } else {
+      strcpy(mounttype,"unknown");
+   }
+ 	sprintf(ligne,"%s",mounttype);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	return TCL_OK;
+}
