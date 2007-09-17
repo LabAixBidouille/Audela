@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.12 2007-09-09 19:37:17 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.13 2007-09-17 01:38:02 alainklotz Exp $
 #
 
 # ========================================================
@@ -185,7 +185,7 @@ namespace eval ::visio {
       $panneau(visio,menu_repertoires) add command -label "..            " \
          -command "visio::MAJ_repertoire \"[file dirname $panneau(visio,repertoire)]\""
 
-      set repertoires [lsort [liste_sousreps -rep $panneau(visio,repertoire)]]
+      set repertoires [lsort2 [liste_sousreps -rep $panneau(visio,repertoire)]]
       set panneau(visio,nb_repertoires) [expr [llength $repertoires]+1]
       #--- On ajoute les sous-repertoires
       foreach repertoire $repertoires {
@@ -236,7 +236,7 @@ namespace eval ::visio {
       #--- Creation de la liste des series du repertoire courant
       set series ""
       foreach extension $extensions {
-         foreach serie [lsort [liste_series -rep $panneau(visio,repertoire) -ext $extension]] {
+         foreach serie [lsort2 [liste_series -rep $panneau(visio,repertoire) -ext $extension]] {
             lappend series [list $serie $extension]
          }
       }
@@ -272,7 +272,7 @@ namespace eval ::visio {
       set panneau(visio,nom_generique) $nom_generique
 
       $This.panneau.nom_generique config -text $panneau(visio,nom_generique)
-      set panneau(visio,index) [lindex [lsort -ascii [liste_index "$nom_generique" -rep "$panneau(visio,repertoire)" -ext $extension]] 0]
+      set panneau(visio,index) [lindex [lsort2 -ascii [liste_index "$nom_generique" -rep "$panneau(visio,repertoire)" -ext $extension]] 0]
 
       set panneau(visio,extension) $extension
       visio::upd_nom_generiques
@@ -376,9 +376,9 @@ namespace eval ::visio {
          if {[TestEntier $panneau(visio,index)]==1} {
             #--- Desactive les boutons
             visio::desactive_boutons
-            set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+            set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
             #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-            if [catch [set index_serie [lsort -ascii $index_serie]]] {}
+            if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
             set place_fichier [lsearch -exact $index_serie $panneau(visio,index)]
             if {$place_fichier>0} {
                set panneau(visio,index) [lindex $index_serie [expr $place_fichier-1]]
@@ -405,9 +405,9 @@ namespace eval ::visio {
                #--- Desactive les boutons
                visio::desactive_boutons
 
-               set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+               set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
                #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-               if [catch [set index_serie [lsort -ascii $index_serie]]] {}
+               if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
                #--- On n'affiche un nouveau fichier que si l'on n'est pas deja au debut
                if {$panneau(visio,index)!=[lindex $index_serie 0]} {
                   set panneau(visio,index) [lindex $index_serie 0]
@@ -433,9 +433,9 @@ namespace eval ::visio {
          if {[TestEntier $panneau(visio,index)]==1} {
             #--- Desactive les boutons
             ::visio::desactive_boutons
-            set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+            set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
             #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-            if [catch [set index_serie [lsort -ascii $index_serie]]] {}
+            if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
             set place_fichier [lsearch -exact $index_serie $panneau(visio,index)]
             if {$place_fichier<[expr [llength $index_serie]-1]} {
                set panneau(visio,index) [lindex $index_serie [expr $place_fichier+1]]
@@ -460,9 +460,9 @@ namespace eval ::visio {
          if {[TestEntier $panneau(visio,index)]==1} {
             #--- Desactive les boutons
             visio::desactive_boutons
-            set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+            set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
             #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-            if [catch [set index_serie [lsort -ascii $index_serie]]] {}
+            if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
             set index_dernier [lindex $index_serie [expr [llength $index_serie]-1]]
             #--- On n'affiche un nouveau fichier que si l'on n'est pas deja a la fin
             if {$panneau(visio,index)!=$index_dernier} {
@@ -518,9 +518,9 @@ namespace eval ::visio {
 
          #--- Affichage du premier fichier de la serie
 
-         set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+         set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
          #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-         if [catch [set index_serie [lsort -ascii $index_serie]]] {}
+         if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
          set panneau(visio,index) [lindex $index_serie 0]
          seriego
 
@@ -541,7 +541,7 @@ namespace eval ::visio {
 
          #--- On cherche si le nom de la serie courante existe deja.
          set index_newserie [liste_index $panneau(visio,new_serie) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]
-         set index_oldserie [lsort -ascii [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+         set index_oldserie [lsort2 -ascii [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
          #--- 1er cas : le nom de la serie courante n'existe pas. On renomme sans se poser de questions
          if {[llength $index_newserie]==0} {
             renomme $panneau(visio,nom_generique) $panneau(visio,new_serie) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)
@@ -619,9 +619,9 @@ namespace eval ::visio {
       #--- Creation du buffer temporaire
       set num_buf_tmp [buf::create]
       buf$num_buf_tmp extension $conf(extension,defaut)
-      set index_serie [lsort [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+      set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
       #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-      if [catch [set index_serie [lsort -ascii $index_serie]]] {}
+      if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
          set bits_utilises 0
          set panneau(visio,disquetteNo) 1
          foreach index $index_serie {
@@ -686,9 +686,9 @@ namespace eval ::visio {
          #--- Creation du buffer temporaire
          set num_buf_tmp [buf::create]
          buf$num_buf_tmp extension $conf(extension,defaut)
-         set rep_courant_nogz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut)]]]
-         set rep_courant_gz [lsort -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut).gz]]]
-         set rep_courant [lsort -increasing [concat $rep_courant_nogz $rep_courant_gz]]
+         set rep_courant_nogz [lsort2 -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut)]]]
+         set rep_courant_gz [lsort2 -increasing [glob -nocomplain [file join $panneau(visio,repertoire) *$conf(extension,defaut).gz]]]
+         set rep_courant [lsort2 -increasing [concat $rep_courant_nogz $rep_courant_gz]]
          set bits_utilises 0
          set panneau(visio,disquetteNo) 1
          foreach fichier $rep_courant {
@@ -746,6 +746,46 @@ namespace eval ::visio {
       $This.onglet.zip.copie_fromA configure -state normal
    }
 
+   proc lsort2 { args } {
+	   set elements [lindex $args end]
+	   set n [llength $elements]
+	   set elems ""
+	   set valid 1
+	   #::console::affiche_resultat "====================================================\n"
+	   #::console::affiche_resultat "====================================================\n"
+	   #::console::affiche_resultat "====================================================\n"
+	   #::console::affiche_resultat "AVANT elements=$elements\n"
+	   for {set k 0} {$k<$n} {incr k} {
+		   set element [lindex $elements $k]
+		   set err [catch {expr $element} msg]
+		   if {$err==1} {
+		      set ks1 [string last - $element]
+		      set ks2 [string last . $element]
+		      if {($ks1==-1)||($ks2==-1)} {
+			     set valid 0
+			     break
+	          }
+   		      set indice [string range $element [expr $ks1+1] [expr $ks2-1]]
+           } else {
+		      set indice $element
+	       }
+		   lappend elems [list [format %05d $indice] $element]
+	   }
+	   #::console::affiche_resultat "valid=$valid\n"
+	   if {$valid==1} {
+          #::console::affiche_resultat "AVANT elems=$elems\n"
+		  set elems [lsort -ascii $elems]
+          #::console::affiche_resultat "APRES elems=$elems\n"
+		  set elements ""
+	   	  for {set k 0} {$k<$n} {incr k} {
+		     set elem [lindex $elems $k]
+             #::console::affiche_resultat "k=$k elem=$elem\n"
+		     lappend elements [lindex $elem 1]
+	      }
+       }
+	   #::console::affiche_resultat "APRES elements=$elements\n"
+	   return $elements
+   }
 }
 
 # ==============================
