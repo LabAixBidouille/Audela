@@ -27,10 +27,15 @@
 /***** prototypes des fonctions internes du user5 ***********/
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries);
+
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 double erf( double x );
+
+void dilate (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2);
+void erode (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey, int naxis1,int naxis2);
 
 
 /**************************************************************************/
@@ -45,6 +50,7 @@ int tt_user5_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries)
 /**************************************************************************/
 {
    if (strcmp(keys10,"TRAINEE")==0) { pseries->numfct=TT_IMASERIES_USER5_TRAINEE; }
+   else if (strcmp(keys10,"MORPHOMATH")==0) { pseries->numfct=TT_IMASERIES_USER5_MORPHOMATH;}
    return(OK_DLL);
 }
 
@@ -75,6 +81,9 @@ int tt_user5_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *ms
 {
    if (pseries->numfct==TT_IMASERIES_USER5_TRAINEE) {
       *msg=tt_ima_series_trainee_1(pseries);
+      *fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_USER5_MORPHOMATH){
+	  *msg=tt_ima_series_morphomath_1(pseries);
       *fct_found=TT_YES;
    }
    return(OK_DLL);
@@ -928,6 +937,322 @@ double erf( double x ) {
     
     return 1.0 - retval;
 }
+
+
+//###############################################################################################################################
+//###############################################################################################################################
+//												MORPHO MATHS
+//###############################################################################################################################
+//###############################################################################################################################
+
+
+
+
+int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
+/****************************************************************************/
+/* trait morpho math sur image dans buffer						            */
+/****************************************************************************/
+/****************************************************************************/
+//buf1 load "D:/images/1516_mars_2007/IM_20070315_190018462_070314_14210500.fits.gz" 
+
+//buf1 imaseries "MORPHOMATH nom_trait=ERODE struct_elem=DIAMOND x1=8 y1=5"
+
+//buf1 imaseries "MORPHOMATH nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
+//pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
+
+{
+	TT_IMA *p_in,*p_out, *p_tmp1, *p_tmp2;
+	int result,i,kkk,x,y;
+	int size,sizex,sizey, nelem,index,x1,y1,naxis1,naxis2;
+	int *se = NULL;
+	double dvalue;
+	double mode1,mini1,maxi1,mode2,mini2,maxi2;
+
+
+	/* --- intialisations ---*/
+	p_in=pseries->p_in; 
+	p_out=pseries->p_out;
+	p_tmp1=pseries->p_tmp1;
+	p_tmp2=pseries->p_tmp2;
+	nelem=pseries->nelements;
+	naxis1=p_in->naxis1;
+	naxis2=p_in->naxis2;
+	index=pseries->index;
+	x1=pseries->x1;
+	y1=pseries->y1;
+
+	/* --- calcul de la fonction ---*/
+	tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		dvalue=(double)p_in->p[kkk];
+		p_out->p[kkk]=(TT_PTYPE)(dvalue);	 
+	}
+	tt_imacreater(p_tmp1,p_in->naxis1,p_in->naxis2);
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		dvalue=(double)p_in->p[kkk];
+		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);	 
+	}
+	tt_imacreater(p_tmp2,p_in->naxis1,p_in->naxis2);
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		dvalue=(double)p_in->p[kkk];
+		p_tmp2->p[kkk]=(TT_PTYPE)(dvalue);	 
+	}
+
+	if (x1%2 != 1) {
+		x1=x1+1;
+	}
+	if (y1%2 != 1) {
+		y1=y1+1;
+	}
+
+	//creation de l'élément structurant
+	if (strcmp (pseries->struct_elem,"RECTANGLE")==0) {
+		
+		size=x1*y1;
+		se=calloc(size,sizeof(int));
+	
+		for (i=0; i<size;i++) {
+				se[i]=1;
+		}
+		
+		// attention c'est valable que pour un rectangle mais il faut calculer 
+		//pour cercle ou autre SE pour avoir les dimensions de la matrice SE
+		sizex = x1;
+		sizey = y1;
+		
+	}  else if (strcmp (pseries->struct_elem,"DIAMOND")==0){
+
+		size=x1*y1;
+		se=calloc(size,sizeof(int));
+
+		for (i=0; i<size;i++) {
+			se[i]=0;
+		}
+	
+		for (i=0; i<y1;i++) {	
+			if (i< y1/2) {
+				for (kkk=0;kkk<(2*i+1);kkk++) {
+					se[i*(x1-1)+(x1-1)/2+kkk]=1;
+					
+				}
+			} else if (i== y1/2) {
+				for(kkk=0;kkk<x1;kkk++) {
+					se[i*x1-1+kkk]=1;
+				}
+
+			} else {
+				for (kkk=0;kkk<(2*(y1-i-1)+1);kkk++) {
+					se[i*x1+(x1-1)/2+kkk - i+(y1-1)/2]=1;
+				
+				}
+			}
+			
+		}
+		
+		sizex = x1;
+		sizey = y1;
+		
+	} else {
+		//forme libre à donner
+		//se[0] est en bas à gauche de SE
+
+		x1=13;
+		y1=1;
+		size=x1*y1;
+		se=calloc(size,sizeof(int));
+
+		for (i=0; i<size;i++) {
+			se[i]=1;
+		}
+
+	}
+	
+	//appel de la fonction de traitement de morpho_math
+	i=strcmp (pseries->nom_trait,"DILATE");
+
+	if (i==0) {
+			dilate (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+
+	} 
+
+	i=strcmp (pseries->nom_trait,"ERODE");
+
+	if (i==0) {
+			erode (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+
+	} 
+	
+	i=strcmp (pseries->nom_trait,"OPEN");
+
+	if (i==0) {
+			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+
+
+	} 
+
+	i=strcmp (pseries->nom_trait,"CLOSE");
+
+	if (i==0) {
+			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+
+
+	} 
+
+	i=strcmp (pseries->nom_trait,"TOPHAT");
+
+	if (i==0) {
+			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+
+			/* --- Calcul des seuils de visualisation ---*/
+			//réduction de la dynamique des images
+
+			tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+			tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
+
+			for (y=0;y<naxis2;y++) {
+				for (x=0;x<naxis1;x++) {
+					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*mode1/mode2;
+
+					if (p_out->p[y*naxis1+x]<pseries->locut) {
+						p_out->p[y*naxis1+x]=0;
+						p_tmp2->p[y*naxis1+x]=0;	
+					} else if (p_out->p[y*naxis1+x]>pseries->hicut) {
+						p_out->p[y*naxis1+x]=255;
+						p_tmp2->p[y*naxis1+x]=255;
+					} else {
+						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-255)*255./(pseries->hicut-pseries->locut);
+						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-255)*255./(pseries->hicut-pseries->locut);
+					}
+					
+					if (p_out->p[y*naxis1+x]/mode2<1) {
+						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*maxi1/maxi2;
+					} else if (p_out->p[y*naxis1+x]/mode2>1) {
+						//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*maxi2/maxi1;
+					}
+
+					p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];
+				}
+			}
+
+			//binarisation de l'image en fonction de l'hitogramme
+			tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+			
+			for (y=0;y<naxis2;y++) {
+				for (x=0;x<naxis1;x++) {
+					if (p_out->p[y*naxis1+x]<(pseries->hicut)*2/3) {
+						p_out->p[y*naxis1+x]=0;				
+					} else if (p_out->p[y*naxis1+x]>=(pseries->hicut)*2/3) {
+						p_out->p[y*naxis1+x]=1;
+					}
+				}
+			}
+
+			//filtre médian
+			//tt_ima_series_filter_1("FILTER kernel_type=MED kernel_coef=0.0");
+	} 
+		
+	free(se);
+
+	/* --- calcul des temps ---*/
+	pseries->jj_stack=pseries->jj[index-1];
+	pseries->exptime_stack=pseries->exptime[index-1];
+
+	result=0;
+	return result ;
+}
+
+
+void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
+{	
+	int cx,cy,x,y,xx,yy;
+	double sup;
+
+
+	// définition du centre de l'élément structurant
+	// SE est au milieu du rectangle sizex*sizey
+
+	cx=(sizex-1)/2;
+	cy=(sizey-1)/2;
+
+	
+	//on commence par le coin en bas à gauche de l'image p_out [0][0]
+	for (y=cy;y<(naxis2-cy);y++) {
+		for (x=cx;x<(naxis1-cx);x++) {
+
+			sup=pin->p[y*naxis1+x];
+			//boucle dans la boite englobant le SE
+			for (yy=0;yy<sizey;yy++) {
+				for (xx=0;xx<sizex;xx++) {
+					// si le pixel appartient a SE
+					if ((se[(yy)*dim1+xx]==1)&&(pin->p[(yy+y-cy)*naxis1+xx+x-cx]>sup)) {
+						sup=pin->p[(yy+y-cy)*naxis1+xx+x-cx];
+					}
+				}
+			}
+
+			 pout->p[y*naxis1+x]=(TT_PTYPE)(sup);
+		}
+	}
+			
+}
+
+
+
+void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
+{
+	int cx,cy,x,y,xx,yy;
+	double inf;
+
+
+	// définition du centre de l'élément structurant
+	// SE est au milieu du rectangle sizex*sizey
+
+	cx=(sizex-1)/2;
+	cy=(sizey-1)/2;
+
+	
+	//on commence par le coin en bas à gauche de l'image p_out [0][0]
+	for (y=cy;y<(naxis2-cy);y++) {
+		for (x=cx;x<(naxis1-cx);x++) {
+
+			inf=pin->p[y*naxis1+x];
+			//boucle dans la boite englobant le SE
+			for (yy=0;yy<sizey;yy++) {
+				for (xx=0;xx<sizex;xx++) {
+					// si le pixel appartient a SE
+					if ((se[(yy)*dim1+xx]==1)&&(pin->p[(yy+y-cy)*naxis1+xx+x-cx]<inf)) {
+						inf=pin->p[(yy+y-cy)*naxis1+xx+x-cx];
+					}
+				}
+			}
+
+			 pout->p[y*naxis1+x]=(TT_PTYPE)(inf);
+		}
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /**************************************************************************/
