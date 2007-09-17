@@ -31,5 +31,7 @@ int cmdTelTargetPosition(ClientData clientData, Tcl_Interp *interp, int argc, ch
 int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelTypeMount(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

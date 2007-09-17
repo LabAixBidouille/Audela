@@ -99,6 +99,16 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel_close(tel);
 		return 4;
 	}
+   /* --- type de monture ---*/
+   tel->type_mount=MOUNT_EQUATORIAL;
+   /* --- type des axes ---*/
+   tel->axis_param[0].type=AXIS_HA;
+   tel->axis_param[1].type=AXIS_DEC;
+   tel->axis_param[2].type=AXIS_NOTDEFINED;
+   /* ---  Nombre de dents sur la roue dentee --- */
+   tel->axis_param[0].teeth_per_turn=480;
+   tel->axis_param[1].teeth_per_turn=480;
+   tel->axis_param[2].teeth_per_turn=480;
 	return 0;
 }
 
@@ -445,23 +455,5 @@ void mytel_error(struct telprop *tel,int err)
 {
    DSA_DRIVE *drv;
    drv=tel->drv;
-	/*
-   // Is the drive pointer valid ?
-   if(dsa_is_valid_drive(drv)) {
-
-      // Is the drive open ?
-      bool open = 0;
-      dsa_is_open(drv, &open);
-      if (open) {
-
-         // Close the connection.
-         dsa_close(drv);
-      }
-
-       // And finally, release all resources to the OS.
-       dsa_destroy(&drv);
-    }
-	*/
-    /* Print the first error that occured. */
-    sprintf(tel->msg,"error %d: %s.\n", err, dsa_translate_error(err));
+   sprintf(tel->msg,"error %d: %s.\n", err, dsa_translate_error(err));
 }

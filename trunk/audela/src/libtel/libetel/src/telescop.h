@@ -33,12 +33,30 @@
 #include "etb10.h"
 #include <dmd10.h>
 
+#define MOUNT_UNKNOWN 0
+#define MOUNT_EQUATORIAL 1
+#define MOUNT_ALTAZ 2
+
+#define AXIS_NOTDEFINED 0
+#define AXIS_HA 1
+#define AXIS_DEC 2
+#define AXIS_AZ 3
+#define AXIS_ELEV 4
+#define AXIS_PARALLACTIC 5
+
+typedef struct {
+   int type;
+   int teeth_per_turn;
+} axis_params;
+
 /* --- structure qui accueille les parametres---*/
 struct telprop {
    /* --- parametres standards, ne pas changer ---*/
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
    DSA_DRIVE *drv;
+   int type_mount;
+   axis_params axis_param[3];
    /*
    int longformatindex;
    int tempo;
