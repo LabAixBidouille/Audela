@@ -44,6 +44,10 @@
 #define AXIS_ELEV 4
 #define AXIS_PARALLACTIC 5
 
+#define ETEL_X 1
+#define ETEL_K 2
+#define ETEL_M 3
+
 typedef struct {
    int type;
    int teeth_per_turn;
@@ -57,6 +61,8 @@ struct telprop {
    DSA_DRIVE *drv;
    int type_mount;
    axis_params axis_param[3];
+   char home[50];
+   char home0[50];
    /*
    int longformatindex;
    int tempo;
@@ -113,6 +119,11 @@ int mytel_correct(struct telprop *tel,char *direction, int duration);
 
 void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
 void mytel_error(struct telprop *tel,int err);
+int etel_home(struct telprop *tel, char *home_default);
+double etel_tsl(struct telprop *tel,int *h, int *m,int *sec);
+void etel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
+
+
 
 #endif
 
