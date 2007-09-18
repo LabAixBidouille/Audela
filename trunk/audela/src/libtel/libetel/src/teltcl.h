@@ -33,5 +33,6 @@ int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
 int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTypeMount(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

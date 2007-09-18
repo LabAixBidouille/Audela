@@ -87,7 +87,7 @@ int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
    struct telprop *tel;
    tel = (struct telprop *)clientData;
    /* set register */
-	typ=2; // X=1 K=2 M=3
+	typ=ETEL_K; // X=1 K=2 M=3
 	idx=210; // POS=210
 	sidx=0;
 	value=240000;
@@ -198,11 +198,11 @@ int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
 		return TCL_ERROR;
 	}
 	if (strcmp(argv[2],"X")==0) {
-		typ=1;
+		typ=ETEL_X;
 	} else if (strcmp(argv[2],"K")==0) {
-		typ=2;
+		typ=ETEL_K;
 	} else if (strcmp(argv[2],"M")==0) {
-		typ=3;
+		typ=ETEL_M;
 	} else {
    	typ=atoi(argv[2]);
 	}
@@ -233,11 +233,11 @@ int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
 		return TCL_ERROR;
 	}
 	if (strcmp(argv[2],"X")==0) {
-		typ=1;
+		typ=ETEL_X;
 	} else if (strcmp(argv[2],"K")==0) {
-		typ=2;
+		typ=ETEL_K;
 	} else if (strcmp(argv[2],"M")==0) {
-		typ=3;
+		typ=ETEL_M;
 	} else {
    	typ=atoi(argv[2]);
 	}
@@ -315,7 +315,7 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    } else {
       strcpy(axistype,"notdefined");
    }
-   typ=3;
+   typ=ETEL_M;
    idx=239;
    sidx=axisno;
 	if (err = dsa_get_register_s(tel->drv,typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
@@ -325,7 +325,7 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		return TCL_ERROR;
 	}
    traits=val;
-   typ=3;
+   typ=ETEL_M;
    idx=241;
    sidx=axisno;
 	if (err = dsa_get_register_s(tel->drv,typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
@@ -366,6 +366,80 @@ int cmdTelTypeMount(ClientData clientData, Tcl_Interp *interp, int argc, char *a
       strcpy(mounttype,"unknown");
    }
  	sprintf(ligne,"%s",mounttype);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+	return TCL_OK;
+}
+
+int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char s[1024],ligne[4096];
+   int result = TCL_OK,err=0;
+   struct telprop *tel;
+   int axisno,val;
+   char axistype[50];
+   int traits,interpo,pos,spd,acc;
+   long int uc_per_tooth;
+   tel = (struct telprop *)clientData;
+   /* --- boucle sur les axes valides ---*/
+   strcpy(ligne,"");
+   for (axisno=0;axisno<3;axisno++) {
+      if (tel->axis_param[axisno].type==AXIS_NOTDEFINED) {
+         continue;
+      }
+      if (tel->axis_param[axisno].type=AXIS_HA) {
+         strcpy(axistype,"ha");
+      } else if (tel->axis_param[axisno].type=AXIS_DEC) {
+         strcpy(axistype,"dec");
+      } else if (tel->axis_param[axisno].type=AXIS_AZ) {
+         strcpy(axistype,"az");
+      } else if (tel->axis_param[axisno].type=AXIS_ELEV) {
+         strcpy(axistype,"elev");
+      } else if (tel->axis_param[axisno].type=AXIS_PARALLACTIC) {
+         strcpy(axistype,"parallactic");
+      } else {
+         strcpy(axistype,"notdefined");
+      }
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,239,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,err);
+   	   sprintf(ligne,"%s",tel->msg);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+	   }
+      traits=val;
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,241,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,err);
+   	   sprintf(ligne,"%s",tel->msg);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+   	}
+      interpo=val;
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,7,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,err);
+   	   sprintf(ligne,"%s",tel->msg);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+   	}
+      pos=val;
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,11,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,err);
+   	   sprintf(ligne,"%s",tel->msg);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+   	}
+      spd=val;
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,15,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,err);
+   	   sprintf(ligne,"%s",tel->msg);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		   return TCL_ERROR;
+   	}
+      acc=val;
+      uc_per_tooth=traits*interpo;
+ 	   sprintf(s,"{{axisno %d} {designation %s} {pos %d} {spd %d} {acc %d} {teeth_per_turn %d} {uc_per_tooth %ld}} ",
+         axisno,axistype,
+         pos,spd,acc,
+         tel->axis_param[axisno].teeth_per_turn,uc_per_tooth);
+      strcat(ligne,s);
+   }
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 	return TCL_OK;
 }
