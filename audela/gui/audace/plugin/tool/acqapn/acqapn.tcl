@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.22 2007-09-09 19:24:11 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.23 2007-09-20 19:25:44 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::acqapn {
    package provide acqapn 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqapn.cap ]
@@ -39,6 +40,22 @@ namespace eval ::acqapn {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginDirectory
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "acqapn"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginOS
+   #     retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows ]
    }
 
    #------------------------------------------------------------
@@ -1392,8 +1409,8 @@ proc acqapnBuildIF { This } {
 
          #--- Titre de l'outil et bouton de l'aide
          button $This.fra1.but1 -borderwidth 2 -text $panneau(acqapn,titre) \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqapn::getPluginType ] ] acqapn \
-               [ ::acqapn::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqapn::getPluginType ] ] \
+               [ ::acqapn::getPluginDirectory ] [ ::acqapn::getPluginHelp ]"
          pack $This.fra1.but1 -in $This.fra1 -anchor center -expand 1 -fill both -side top
          DynamicHelp::add $This.fra1.but1 -text $caption(acqapn,help,titre)
 
