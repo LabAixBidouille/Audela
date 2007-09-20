@@ -2,11 +2,12 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.12 2007-09-03 20:42:37 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.13 2007-09-20 19:10:57 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
    package provide lx200pad 1.0
+   package require audela 1.4.0
    source [ file join [file dirname [info script]] lx200pad.cap ]
 
    #------------------------------------------------------------
@@ -60,6 +61,14 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "pad"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginOS
+   #     retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------

@@ -2,11 +2,12 @@
 # Fichier : guide.tcl
 # Description : Driver de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.19 2007-09-03 20:42:18 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.20 2007-09-20 19:06:31 robertdelmas Exp $
 #
 
 namespace eval guide {
    package provide guide 1.1
+   package require audela 1.4.0
    source [ file join [file dirname [info script]] guide.cap ]
 
    #------------------------------------------------------------
@@ -58,6 +59,14 @@ namespace eval guide {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "chart"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginOS
+   #     retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows ]
    }
 
    #------------------------------------------------------------
