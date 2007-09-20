@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.18 2007-09-05 19:24:25 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.19 2007-09-20 19:17:29 robertdelmas Exp $
 #
 
 #
@@ -45,6 +45,7 @@
 
 namespace eval bermasaude {
    package provide bermasaude 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] bermasaude.cap ]
@@ -79,6 +80,16 @@ namespace eval bermasaude {
    }
 
    #------------------------------------------------------------
+   #  getPluginHelp
+   #     retourne la documentation du driver
+   #
+   #  return "nom_driver.htm"
+   #------------------------------------------------------------
+   proc getPluginHelp { } {
+      return "bermasaude.htm"
+   }
+
+   #------------------------------------------------------------
    #  getPluginType
    #     retourne le type de driver
    #
@@ -89,13 +100,11 @@ namespace eval bermasaude {
    }
 
    #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne la documentation du driver
-   #
-   #  return "nom_driver.htm"
+   #  getPluginOS
+   #     retourne le ou les OS de fonctionnement du plugin
    #------------------------------------------------------------
-   proc getPluginHelp { } {
-      return "bermasaude.htm"
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------

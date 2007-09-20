@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.8 2007-09-05 19:24:42 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.9 2007-09-20 19:17:47 robertdelmas Exp $
 #
 
 #
@@ -21,6 +21,7 @@
 
 namespace eval ::focuseraudecom {
    package provide focuseraudecom 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] focuseraudecom.cap ]
@@ -52,6 +53,16 @@ proc ::focuseraudecom::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
+#  ::focuseraudecom::getPluginHelp
+#     retourne la documentation du equipement
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::focuseraudecom::getPluginHelp { } {
+   return "focuseraudecom.htm"
+}
+
+#------------------------------------------------------------
 #  ::focuseraudecom::getPluginType
 #     retourne le type de plugin
 #
@@ -62,13 +73,11 @@ proc ::focuseraudecom::getPluginType { } {
 }
 
 #------------------------------------------------------------
-#  ::focuseraudecom::getPluginHelp
-#     retourne la documentation du equipement
-#
-#  return "nom_equipement.htm"
+#  ::focuseraudecom::getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
 #------------------------------------------------------------
-proc ::focuseraudecom::getPluginHelp { } {
-   return "focuseraudecom.htm"
+proc ::focuseraudecom::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
