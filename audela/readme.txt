@@ -49,7 +49,7 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - AndorTech,
 - Finger Lakes Instruments,
 - CEMES,
-- Nikon CoolPix (port s�rie).
+- Nikon CoolPix (port serie).
 
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
@@ -66,17 +66,18 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 - Manuel,
 - GPhoto2,
 - Port parallele,
-- PhotoPC
+- PhotoPC,
 - QuickAudine (interface USB pour cameras Audine),
 - QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
   mise au point, etc.),
 - Port serie.
 
 AudeLA est capable de piloter les equipements suivants :
-- La roue a filtres developpee dans le cadre de l'association Aude.
-- Focaliseur AudeCom.
-- Focaliseur JMI.
-- Focaliseur LX200.
+- La roue a filtres developpee dans le cadre de l'association Aude,
+- Focaliseur AudeCom,
+- Focaliseur JMI,
+- Focaliseur LX200,
+- Lhires III.
 
 Bien entendu les auteurs ne disposent pas de tout ce materiel cite. Ils les ont 
 integres en fonction des moyens et des connaissances disponibles, n'etant pas a 
@@ -202,7 +203,7 @@ a l'adresse suivante: ftp://ftp.sbig.com/pub/SetupDriverChecker.exe
 Note aux utilisateurs d'APN (Appareil Photo Numerique) :
    La liaison USB entre AudeLA et les APN requiert libusb-win32 qui est disponible 
    sur le site  http://libusb-win32.sourceforge.net
-   T�l�charger le fichier libusb-win32-filter-bin-0.1.10.1.exe 
+   Telecharger le fichier libusb-win32-filter-bin-0.1.10.1.exe 
    Puis installer libusb-win32 en executant ce fichier.
 
 Note aux utilisateurs de Quickaudine et de Quickremote : 
@@ -210,15 +211,15 @@ Note aux utilisateurs de Quickaudine et de Quickremote :
    qui est disponible sur le site http://www.ftdichip.com/
    (menu Drivers->D2XX)
    
-   Pour Windows XP 64 bits , t�l�charger le fichier 
+   Pour Windows XP 64 bits , telecharger le fichier 
         http://www.ftdichip.com/Drivers/CDM/WinXPx64/CDM%202.00.00%20x64.zip
-   Pour Windows XP 32 bits , t�l�charger le fichier 
+   Pour Windows XP 32 bits , telecharger le fichier 
         http://www.ftdichip.com/Drivers/CDM/Win2000/CDM%202.00.00.zip
-   Pour Windows 98 ou Me , t�l�charger le fichier    
+   Pour Windows 98 ou Me , telecharger le fichier    
         http://www.ftdichip.com/Drivers/D2XX/Win98/D30104.zip
 
-   Puis d�zipper le fichier dans un r�pertoire temporaire et lancer l'installation 
-   en suivant la pr�c�dure d�crite dans 
+   Puis dezipper le fichier dans un repertoire temporaire et lancer l'installation 
+   en suivant la procedure decrite dans 
    http://www.ftdichip.com/Documents/InstallGuides.htm
 
 5.2 Linux

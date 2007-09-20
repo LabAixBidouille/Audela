@@ -46,8 +46,8 @@ Autres:
 
 La compilation sous Windows s'effectue en deux temps. D'abord il faut compiler
 et installer tous les modules externes, depuis une ligne de commande (voir 
-�2.2). Ensuite avec Visual C++, compiler tous les modules propres a AudeLA
-(voir �2.3).
+paragraphe 3.2). Ensuite avec Visual C++, compiler tous les modules propres a AudeLA
+(voir paragraphe 3.3).
 
 3.2 Compilation des modules externes pour Windows
 -------------------------------------------------
@@ -126,15 +126,15 @@ mode release.
 3.4.1 Installation ftd2xx 
 -------------------------
 
-   Ce driver est n�cessaire seulement pour les liaisons avec quickremote et 
+   Ce driver est necessaire seulement pour les liaisons avec quickremote et 
    quickaudine.
 
-   t�l�charger D10620.zip
+   Telecharger D10620.zip
    URL:   http://www.ftdichip.com/Drivers/FT232-FT245/D2XX/Win/D10620.zip
    ou URL:   http://www.ftdichip.com/Drivers/D2XX/Win2000/D30104.zip
    dezipper le fichier dans un repertoire temporaire 
-   brancher un quickremote, lorsque Windows demande o� est le repertoire du 
-   driver, pointer le repertoire temporaire o� vient d'etre d�zippe le fichier.
+   brancher un quickremote, lorsque Windows demande ou est le repertoire du 
+   driver, pointer le repertoire temporaire ou vient d'etre dezippe le fichier.
  
    Remarque : 
    Les drivers pour les autres version d'OS sont aussi sur le site 
@@ -143,10 +143,10 @@ mode release.
 3.4.2 Installation libusb-win32 
 -------------------------------
 
-   Ce driver est n�cessaire seulement pour la liaison des appareils
+   Ce driver est necessaire seulement pour la liaison des appareils
    photo numerique USB (librairie libdigicam.dll et libgphoto2.dll).
    
-   t�l�charger libusb-win32-filter-bin-0.1.10.1.exe disponible sur site
+   Telecharger libusb-win32-filter-bin-0.1.10.1.exe disponible sur site
    http://libusb-win32.sourceforge.net , 
    puis installer libusb-win32 en executant ce fichier.
 
