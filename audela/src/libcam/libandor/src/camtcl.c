@@ -116,3 +116,70 @@ int cmdAndorOpeningtime(ClientData clientData, Tcl_Interp *interp, int argc, cha
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    return result;
 }
+
+int cmdAndorDev(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/***************************************************************************************/
+/* fonction de developpement */
+/***************************************************************************************/
+   char ligne[256];
+   int result = TCL_OK;
+   struct camprop *cam;
+   int emgain,emgain0,res,ngains,k;
+   float gain;
+   cam = (struct camprop *)clientData;
+   if (argc<=2) {
+      sprintf(ligne,"Usage: %s %s EMGain",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+   // =================================
+   res=SetEMGainMode(2);
+   if (res==DRV_NOT_INITIALIZED) {
+      sprintf(ligne,"Error EMGain %d: DRV_NOT_INITIALIZED",res);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+   if (res==DRV_ACQUIRING) {
+      sprintf(ligne,"Error EMGain %d: DRV_ACQUIRING",res);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+   if (res==DRV_P1INVALID) {
+      sprintf(ligne,"Error EMGain %d: DRV_P1INVALID",res);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+   // =================================
+   emgain0=1;
+   if (argc>=3) {
+      emgain0=(int)fabs(atoi(argv[2]));
+      if ((emgain0<1)||(emgain0>255)) {
+         strcpy(ligne,"EMGain must lie between 1 and 255");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         return TCL_ERROR;
+      } else {
+         SetEMCCDGain(emgain0);
+      }
+   }
+   GetEMCCDGain(&emgain);
+   // =================================
+   //IsPreAmpGainAvailable
+   GetNumberPreAmpGains(&ngains);
+   for (k=0;k<ngains;k++) {
+      GetPreAmpGain(k,&gain);
+   }
+   SetPreAmpGain(2);
+   // =================================
+   cam->HSSpeed=0;
+   cam->VSSpeed=1;
+   if (emgain0==1) {
+      cam->HSEMult=1;
+   } else {
+      cam->HSEMult=0;
+   }
+   // =================================
+   sprintf(ligne,"%d",emgain);
+   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+   return result;
+}
+

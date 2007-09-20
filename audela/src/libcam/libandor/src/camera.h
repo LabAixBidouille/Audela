@@ -51,6 +51,7 @@ struct camprop {
    int VSSpeed;
    int openingtime;
    int closingtime;
+   int HSEMult;
 };
 
 /*

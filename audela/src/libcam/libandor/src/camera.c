@@ -179,7 +179,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    CAM_INI[cam->index_cam].overscanyend=0;
    CAM_INI[cam->index_cam].celldimx=13.5*1e-6;
    CAM_INI[cam->index_cam].celldimy=13.5*1e-6;
-   CAM_INI[cam->index_cam].gain=(double)(2.0);
+   //CAM_INI[cam->index_cam].gain=(double)(2.0); // 436
+   CAM_INI[cam->index_cam].gain=(double)(4.8); // 888
    CAM_INI[cam->index_cam].maxconvert=pow(2,(double)16)-1.;
 
    /* --- intialisation of elements of the structure cam === */
@@ -219,7 +220,8 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->check_temperature=temperature;
    cam->shutterindex=1;
    cam->HSSpeed=0;
-   cam->VSSpeed=0;
+   cam->VSSpeed=0; // 0=436 1=888
+   cam->HSEMult=1;
    cam->closingtime=0;
    cam->openingtime=30;
    return 0;
@@ -302,7 +304,8 @@ void cam_start_exp(struct camprop *cam,char *amplionoff)
       return;
    }
    /* --- speeds --- */
-   cam->drv_status=SetHSSpeed(0,cam->HSSpeed);
+   /*
+   cam->drv_status=SetHSSpeed(cam->HSEMult,cam->HSSpeed);
    if(cam->drv_status!=DRV_SUCCESS) {
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
       return;
@@ -312,6 +315,7 @@ void cam_start_exp(struct camprop *cam,char *amplionoff)
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
       return;
    }
+   */
    /* --- binning & window --- */
    x1=cam->x1+1;
    y1=cam->y1+1;

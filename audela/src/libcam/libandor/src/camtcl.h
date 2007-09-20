@@ -26,11 +26,13 @@
 #define SPECIFIC_CMDLIST \
    {"speed", (Tcl_CmdProc *)cmdAndorSpeed}, \
    {"closingtime", (Tcl_CmdProc *)cmdAndorClosingtime}, \
-   {"openingtime", (Tcl_CmdProc *)cmdAndorOpeningtime},
+   {"openingtime", (Tcl_CmdProc *)cmdAndorOpeningtime}, \
+   {"dev", (Tcl_CmdProc *)cmdAndorDev},
 
  /* === Specific commands for that camera ===*/
 int cmdAndorSpeed(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdAndorClosingtime(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdAndorOpeningtime(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdAndorDev(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
