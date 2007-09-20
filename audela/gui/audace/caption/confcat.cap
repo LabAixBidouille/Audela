@@ -1,6 +1,6 @@
 #
 # Fichier : confcat.cap
-# Mise a jour $Id: confcat.cap,v 1.9 2007-09-12 17:40:47 robertdelmas Exp $
+# Mise a jour $Id: confcat.cap,v 1.10 2007-09-20 20:23:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,7 +19,7 @@ set caption(confcat,appliquer)              "Apply"
 set caption(confcat,fermer)                 "Close"
 set caption(confcat,aide)                   "Help"
 
-set caption(confcat,pas_carte)              "# Il n'y a pas de carte présente."
+set caption(confcat,pas_carte)              "No Chart."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -58,7 +58,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,fermer)              "Cerrar"
    set caption(confcat,aide)                "Ayuda"
 
-   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
+   set caption(confcat,pas_carte)           "No hay mapa."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -97,7 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,fermer)              "Luk"
    set caption(confcat,aide)                "Hjælp"
 
-   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
+   set caption(confcat,pas_carte)           "Ingen kort."
 
 }
 
