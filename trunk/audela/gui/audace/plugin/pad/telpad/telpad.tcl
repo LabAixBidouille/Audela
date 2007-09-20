@@ -2,12 +2,13 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.14 2007-09-03 20:43:13 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.15 2007-09-20 19:11:38 robertdelmas Exp $
 #
 
 namespace eval telpad {
    package provide telpad 1.0
-   source [ file join [file dirname [info script]]  telpad.cap ]
+   package require audela 1.4.0
+   source [ file join [file dirname [info script]] telpad.cap ]
 
    #------------------------------------------------------------
    #  initPlugin
@@ -60,6 +61,14 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "pad"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginOS
+   #     retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------

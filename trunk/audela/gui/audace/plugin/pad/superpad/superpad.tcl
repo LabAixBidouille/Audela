@@ -2,11 +2,12 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.16 2007-09-03 20:42:56 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.17 2007-09-20 19:11:18 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
    package provide superpad 1.0
+   package require audela 1.4.0
    source [ file join [file dirname [info script]] superpad.cap ]
 
    #------------------------------------------------------------
@@ -60,6 +61,14 @@ namespace eval ::superpad {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "pad"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginOS
+   #     retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
