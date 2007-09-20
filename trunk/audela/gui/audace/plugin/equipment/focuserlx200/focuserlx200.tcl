@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.11 2007-09-05 19:25:14 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.12 2007-09-20 19:18:30 robertdelmas Exp $
 #
 
 #
@@ -21,6 +21,7 @@
 
 namespace eval ::focuserlx200 {
    package provide focuserlx200 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] focuserlx200.cap ]
@@ -52,6 +53,16 @@ proc ::focuserlx200::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
+#  ::focuserlx200::getPluginHelp
+#     retourne la documentation du equipement
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::focuserlx200::getPluginHelp { } {
+   return "focuserlx200.htm"
+}
+
+#------------------------------------------------------------
 #  ::focuserlx200::getPluginType
 #     retourne le type de plugin
 #
@@ -62,13 +73,11 @@ proc ::focuserlx200::getPluginType { } {
 }
 
 #------------------------------------------------------------
-#  ::focuserlx200::getPluginHelp
-#     retourne la documentation du equipement
-#
-#  return "nom_equipement.htm"
+#  ::focuserlx200::getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
 #------------------------------------------------------------
-proc ::focuserlx200::getPluginHelp { } {
-   return "focuserlx200.htm"
+proc ::focuserlx200::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------

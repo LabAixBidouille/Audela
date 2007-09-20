@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.10 2007-09-05 19:24:58 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.11 2007-09-20 19:18:09 robertdelmas Exp $
 #
 
 #
@@ -21,6 +21,7 @@
 
 namespace eval ::focuserjmi {
    package provide focuserjmi 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] focuserjmi.cap ]
@@ -43,6 +44,16 @@ proc ::focuserjmi::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
+#  ::focuserjmi::getPluginHelp
+#     retourne la documentation du equipement
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::focuserjmi::getPluginHelp { } {
+   return "focuserjmi.htm"
+}
+
+#------------------------------------------------------------
 #  ::focuserjmi::getPluginType
 #     retourne le type de plugin
 #
@@ -50,6 +61,14 @@ proc ::focuserjmi::getPluginTitle { } {
 #------------------------------------------------------------
 proc ::focuserjmi::getPluginType { } {
    return "focuser"
+}
+
+#------------------------------------------------------------
+#  ::focuserjmi::getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::focuserjmi::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -82,16 +101,6 @@ proc ::focuserjmi::initPlugin { } {
 
    #--- variables locales
    set private(linkNo) "0"
-}
-
-#------------------------------------------------------------
-#  ::focuserjmi::getPluginHelp
-#     retourne la documentation du equipement
-#
-#  return "nom_equipement.htm"
-#------------------------------------------------------------
-proc ::focuserjmi::getPluginHelp { } {
-   return "focuserjmi.htm"
 }
 
 #------------------------------------------------------------
