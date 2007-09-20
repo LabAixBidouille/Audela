@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.76 2007-09-14 12:34:46 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.77 2007-09-20 20:33:18 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -492,8 +492,10 @@ namespace eval ::audace {
       #--- J'ajoute le repertoire des outils dans le chemin
       lappend ::auto_path [file join $audace(rep_plugin) tool]
 
+      #--- Je recherche les fichiers tool/*/pkgIndex.tcl
+      set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" tool * pkgIndex.tcl ]
       #--- Chargement des differents outils
-      foreach pkgIndexFileName [ glob -nocomplain [ file join $audace(rep_plugin) tool * pkgIndex.tcl ] ] {
+      foreach pkgIndexFileName $filelist {
          if { [::audace::getPluginInfo $pkgIndexFileName pluginInfo] == 0 } {
             #--- je charge le plugin
             set catchResult [catch { package require $pluginInfo(name)} ]
@@ -501,15 +503,19 @@ namespace eval ::audace {
                #--- j'affiche l'erreur dans la console
                ::console::affiche_erreur "$::errorInfo\n"
             } else {
-               #--- j'execute la procedure initPlugin si elle existe
-               if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
-                  $pluginInfo(namespace)::initPlugin $audace(base)
+               foreach os $pluginInfo(os) {
+                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
+                     #--- j'execute la procedure initPlugin si elle existe
+                     if { [info procs $pluginInfo(namespace)::initPlugin] != "" } {
+                        $pluginInfo(namespace)::initPlugin $audace(base)
+                     }
+                     set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
+                     ::console::affiche_prompt "#Outil : $pluginInfo(title) v$pluginInfo(version)\n"
+                  }
                }
-               set ::panneau(menu_name,[ string trimleft $pluginInfo(namespace) "::" ]) $pluginInfo(title)
-               ::console::affiche_prompt "#Outil : $pluginInfo(title) v$pluginInfo(version)\n"
             }
          } else {
-            ::console::affiche_erreur "Error loading plugin in safe interpreter from\n$pkgIndexFileName \n$::errorInfo\n\n"
+            ::console::affiche_erreur "Error loading tool $pkgIndexFileName \n$::errorInfo\n\n"
          }
       }
       ::console::disp "\n"
@@ -1269,39 +1275,41 @@ namespace eval ::audace {
    #      pluginInfo(namespace) namespace principal du plugin
    #      pluginInfo(title)     titre du plugin dans la langue de l'utilisateur
    #      pluginInfo(type)      type du plugin
+   #      pluginInfo(os)        os compatible avec le plugin
    #
    # parametres :
    #    pkgIndexFileName : nom complet du fichier pkgIndex.tcl (avec le repertoire)
    #    pluginInfo : tableau (array) des informations sur le plugin rempli par cette procedure
    # return :
-   #     0 si pas d'erreur, le resultat est dans le tableau donné en paramètre.
-   #    -1 si une erreur, le libellé de l'erreur est dans ::::errorInfo
+   #     0 si pas d'erreur, le resultat est dans le tableau donne en parametre
+   #    -1 si une erreur, le libelle de l'erreur est dans ::::errorInfo
    #
    # Exemple d'utilisation
    #    ::audace::getPluginInfo "$audace(rep_plugin)/equipment/focuserjmi/pkgIndex.tcl" pluginInfo
    #    retourne dans pluginInfo :
-   #       pluginInfo(name)     =focuserjmi
-   #       pluginInfo(version)  =1.0
-   #       pluginInfo(command)  =source c:/audela/gui/audace/plugin/equipment/focuserjmi/focuserjmi.tcl
-   #       pluginInfo(namespace)=focuserjmi
-   #       pluginInfo(title)    =Focaliseur JMI
-   #       pluginInfo(type)     =focuser
+   #       pluginInfo(name)     = focuserjmi
+   #       pluginInfo(version)  = 1.0
+   #       pluginInfo(command)  = source c:/audela/gui/audace/plugin/equipment/focuserjmi/focuserjmi.tcl
+   #       pluginInfo(namespace)= focuserjmi
+   #       pluginInfo(title)    = Focaliseur JMI
+   #       pluginInfo(type)     = focuser
+   #       pluginInfo(os)       = Windows Linux Darwin
    #------------------------------------------------------------
    proc getPluginInfo { pkgIndexFileName pluginInfo } {
       upvar $pluginInfo pinfo
 
-      #--- je cree un interpreteur temporaire pour charger le package sans pertuber Audela
+      #--- je cree un interpreteur temporaire pour charger le package sans pertuber AudeLA
       set interpTemp [interp create -safe ]
-      #set catchResult [ catch {
+      set catchResult [ catch {
          #--- j'autorise les commandes source et file pour pouvoir charger le plugin dans l'interpreteur temporaire
          interp expose $interpTemp source
          interp expose $interpTemp file
          #--- je transfere des variables globales a l'interpreteur temporaire
-         $interpTemp eval  [ list set langage $::langage]
-         $interpTemp eval  [ list set pkgIndexFileName "$pkgIndexFileName"]
+         $interpTemp eval [ list set langage $::langage ]
+         $interpTemp eval [ list set pkgIndexFileName "$pkgIndexFileName" ]
 
          #--- je teste le plugin dans l'interpreteur temporaire
-         $interpTemp eval  {
+         $interpTemp eval {
             proc processUnknownRequiredPackage { packageName packageVersion } {
                if { $packageName == "audela" } {
                   set ::audelaRequiredVersion $packageVersion
@@ -1317,7 +1325,7 @@ namespace eval ::audace {
             set pluginName [lindex [package names ] 0]
             #--- je recupere la version du plugin
             set pluginVersion [package versions $pluginName]
-            #--- je recupere la version de Audela requise par le plugin
+            #--- je recupere la version de AudeLA requise par le plugin
             package unknown processUnknownRequiredPackage
             set sourceFile [package ifneeded $pluginName $pluginVersion]
             catch { eval "$sourceFile" }
@@ -1339,26 +1347,32 @@ namespace eval ::audace {
             } else {
                set pluginTitle "$pluginNamespace"
             }
+           #--- je recupere le ou les OS supporte(s) par le plugin
+            if { [info commands $pluginNamespace\::getPluginOS] != "" } {
+               set pluginOS [$pluginNamespace\::getPluginOS]
+            } else {
+               set pluginOS [ list Windows Linux Darwin ]
+            }
          }
 
          #--- je recupere les informations du plugin
-         set pinfo(name)    [$interpTemp eval { set pluginName    } ]
-         set pinfo(version) [$interpTemp eval { set pluginVersion } ]
-         set pinfo(command) [$interpTemp eval { set sourceFile    } ]
+         set pinfo(name)          [$interpTemp eval { set pluginName } ]
+         set pinfo(version)       [$interpTemp eval { set pluginVersion } ]
+         set pinfo(command)       [$interpTemp eval { set sourceFile } ]
          set pinfo(audelaVersion) [$interpTemp eval { set audelaRequiredVersion } ]
-         set pinfo(type)    [$interpTemp eval { set pluginType } ]
-         set pinfo(title)   [$interpTemp eval { set pluginTitle } ]
+         set pinfo(type)          [$interpTemp eval { set pluginType } ]
+         set pinfo(title)         [$interpTemp eval { set pluginTitle } ]
+         set pinfo(os)            [$interpTemp eval { set pluginOS } ]
          set namespaceList2 [$interpTemp eval { set pluginNamespace } ]
          if { [llength $namespaceList2 ] > 0 } {
-            set pinfo(namespace)  [lindex $namespaceList2 0]
+            set pinfo(namespace) [lindex $namespaceList2 0]
          } else {
             error "Namespace not found in plugin $pinfo(name)"
          }
-      #} ]
-      set catchResult 0
+      } ]
       #--- je supprime l'interpreteur temporaire
       interp delete $interpTemp
-      #--- Je retourne -1 s'il y a eu une erreur
+      #--- je retourne -1 s'il y a eu une erreur
       if { $catchResult == 1 } {
          return "-1"
       } else {
