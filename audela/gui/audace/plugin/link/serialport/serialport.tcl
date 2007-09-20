@@ -2,11 +2,12 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.14 2007-09-03 20:39:55 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.15 2007-09-20 20:17:53 robertdelmas Exp $
 #
 
 namespace eval serialport {
    package provide serialport 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] serialport.cap ]
@@ -134,6 +135,14 @@ proc ::serialport::getPluginHelp { } {
 proc ::serialport::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::serialport::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+   }
 
 #------------------------------------------------------------
 #  fillConfigPage

@@ -2,11 +2,12 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.11 2007-09-03 20:37:33 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.12 2007-09-20 20:13:26 robertdelmas Exp $
 #
 
 namespace eval audinet {
    package provide audinet 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] audinet.cap ]
@@ -112,6 +113,14 @@ proc ::audinet::getPluginHelp { } {
 proc ::audinet::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::audinet::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+   }
 
 #------------------------------------------------------------
 #  fillConfigPage
