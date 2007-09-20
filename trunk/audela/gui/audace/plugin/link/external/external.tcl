@@ -2,11 +2,12 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.6 2007-09-03 20:38:09 robertdelmas Exp $
+# Mise a jour $Id: external.tcl,v 1.7 2007-09-20 20:14:20 robertdelmas Exp $
 #
 
 namespace eval external {
    package provide external 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] external.cap ]
@@ -102,6 +103,14 @@ proc ::external::getPluginHelp { } {
 proc ::external::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::external::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+   }
 
 #------------------------------------------------------------
 #  fillConfigPage

@@ -2,11 +2,12 @@
 # Fichier : photopc.tcl
 # Description : Interface de liaison PhotoPC
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: photopc.tcl,v 1.7 2007-09-03 20:39:01 robertdelmas Exp $
+# Mise a jour $Id: photopc.tcl,v 1.8 2007-09-20 20:16:53 robertdelmas Exp $
 #
 
 namespace eval photopc {
    package provide photopc 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] photopc.cap ]
@@ -102,6 +103,14 @@ proc ::photopc::getPluginHelp { } {
 proc ::photopc::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::photopc::getPluginOS { } {
+   return [ list Windows ]
+   }
 
 #------------------------------------------------------------
 #  fillConfigPage

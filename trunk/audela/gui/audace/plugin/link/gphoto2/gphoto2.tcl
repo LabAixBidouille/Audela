@@ -2,11 +2,12 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.8 2007-09-03 20:38:28 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.9 2007-09-20 20:15:50 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {
    package provide gphoto2 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] gphoto2.cap ]
@@ -103,6 +104,14 @@ proc ::gphoto2::getPluginHelp { } {
 proc ::gphoto2::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::gphoto2::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+   }
 
 #------------------------------------------------------------
 #  fillConfigPage

@@ -2,11 +2,12 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.16 2007-09-06 17:11:13 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.17 2007-09-20 20:17:18 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
    package provide quickaudine 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] quickaudine.cap ]
@@ -124,6 +125,14 @@ proc ::quickaudine::getPluginHelp { } {
 proc ::quickaudine::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::quickaudine::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+   }
 
 #------------------------------------------------------------
 #  fillConfigPage

@@ -2,11 +2,12 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.12 2007-09-03 20:38:47 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.13 2007-09-20 20:16:09 robertdelmas Exp $
 #
 
 namespace eval parallelport {
    package provide parallelport 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] parallelport.cap ]
@@ -53,6 +54,14 @@ proc ::parallelport::getPluginHelp { } {
 proc ::parallelport::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::parallelport::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+   }
 
 #------------------------------------------------------------
 #  initPlugin

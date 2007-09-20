@@ -2,11 +2,12 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.15 2007-09-06 17:11:29 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.16 2007-09-20 20:17:36 robertdelmas Exp $
 #
 
 namespace eval quickremote {
    package provide quickremote 1.1
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] quickremote.cap ]
@@ -145,6 +146,14 @@ proc ::quickremote::getPluginHelp { } {
 proc ::quickremote::getPluginType { } {
    return "link"
 }
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::quickremote::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+   }
 
 #------------------------------------------------------------
 #  fillConfigPage
