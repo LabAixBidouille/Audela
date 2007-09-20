@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.13 2007-09-12 17:18:54 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.14 2007-09-20 20:23:56 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -343,37 +343,41 @@ namespace eval ::confCat {
       set private(pluginList)      ""
       set private(pluginTitleList) ""
 
-      #--- je recherche les fichiers link/*/pkgIndex.tcl
+      #--- je recherche les fichiers chart/*/pkgIndex.tcl
       set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" chart * pkgIndex.tcl ]
-      #--- je recherche les drivers repondant au filtre driverPattern
+      #--- je recherche les plugins repondant au filtre driverPattern
       foreach pkgIndexFileName $filelist {
          set catchResult [catch {
             #--- je recupere le nom du package
             if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-               if { $pluginInfo(type)== "chart"} {
-                  #--- je charge le package
-                  package require $pluginInfo(name)
-                  #--- j'initalise le plugin
-                  $pluginInfo(namespace)::initPlugin
-                  set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-                  #--- je l'ajoute dans la liste des plugins
-                  lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
-                  lappend private(pluginTitleList) $pluginlabel
-                  ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
+               if { $pluginInfo(type) == "chart"} {
+                  foreach os $pluginInfo(os) {
+                     if { $os == [ lindex $::tcl_platform(os) 0 ] } {
+                        #--- je charge le package
+                        package require $pluginInfo(name)
+                        #--- j'initalise le plugin
+                        $pluginInfo(namespace)::initPlugin
+                        set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                        #--- je l'ajoute dans la liste des plugins
+                        lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
+                        lappend private(pluginTitleList) $pluginlabel
+                        ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
+                     }
+                  }
                }
             } else {
-               ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n"
+               ::console::affiche_erreur "Error loading cat $pkgIndexFileName \n$::errorInfo\n\n"
             }
          } catchMessage]
-         #--- j'affiche le message d'erreur et je continu la recherche des plugins
+         #--- j'affiche le message d'erreur et je continue la recherche des plugins
          if { $catchResult !=0 } {
-           console::affiche_erreur "::confCat::findPlugin $::errorInfo\n"
-        }
+            console::affiche_erreur "::confCat::findPlugin $::errorInfo\n"
+         }
       }
       ::console::affiche_prompt "\n"
 
       if { [llength $private(pluginList)] <1 } {
-         #--- aucun driver correct
+         #--- aucun plugin correct
          return 1
       } else {
          #--- tout est ok

@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.17 2007-09-12 17:19:52 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.18 2007-09-20 20:25:00 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -393,37 +393,41 @@ proc ::confPad::findPlugin { } {
    set private(pluginList)      ""
    set private(pluginTitleList) ""
 
-   #--- je recherche les fichiers link/*/pkgIndex.tcl
+   #--- je recherche les fichiers pad/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" pad * pkgIndex.tcl ]
-   #--- je recherche les drivers repondant au filtre driverPattern
+   #--- je recherche les plugins repondant au filtre driverPattern
    foreach pkgIndexFileName $filelist {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
             if { $pluginInfo(type)== "pad"} {
-               #--- je charge le package
-               package require $pluginInfo(name)
-               #--- j'initalise le plugin
-               $pluginInfo(namespace)::initPlugin
-               set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-               #--- je l'ajoute dans la liste des plugins
-               lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
-               lappend private(pluginTitleList) $pluginlabel
-               ::console::affiche_prompt "#$caption(confpad,raquette) $pluginlabel v$pluginInfo(version)\n"
+               foreach os $pluginInfo(os) {
+                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
+                     #--- je charge le package
+                     package require $pluginInfo(name)
+                     #--- j'initalise le plugin
+                     $pluginInfo(namespace)::initPlugin
+                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                     #--- je l'ajoute dans la liste des plugins
+                     lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
+                     lappend private(pluginTitleList) $pluginlabel
+                     ::console::affiche_prompt "#$caption(confpad,raquette) $pluginlabel v$pluginInfo(version)\n"
+                  }
+               }
             }
          } else {
-            ::console::affiche_erreur "Error loading $pkgIndexFileName \n$::errorInfo\n\n"
+            ::console::affiche_erreur "Error loading pad $pkgIndexFileName \n$::errorInfo\n\n"
          }
       } catchMessage]
-      #--- j'affiche le message d'erreur et je continu la recherche des plugins
+      #--- j'affiche le message d'erreur et je continue la recherche des plugins
       if { $catchResult !=0 } {
-        console::affiche_erreur "::confLink::findPlugin $::errorInfo\n"
-     }
+         console::affiche_erreur "::confPad::findPlugin $::errorInfo\n"
+      }
    }
    ::console::affiche_prompt "\n"
 
    if { [llength $private(pluginList)] <1 } {
-      #--- pas driver correct
+      #--- aucun plugin correct
       return 1
    } else {
       #--- tout est ok

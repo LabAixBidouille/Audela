@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.23 2007-09-14 13:49:18 michelpujol Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.24 2007-09-20 20:24:22 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -388,32 +388,34 @@ proc ::confEqt::findPlugin { } {
    global audace caption
 
    #--- j'initialise les listes vides
-   set private(namespaceList)  ""
+   set private(namespaceList) ""
 
-   #--- chargement des differentes fenetres de configuration des plugins
-   set filelist [glob -nocomplain -join "$audace(rep_plugin)" equipment * pkgIndex.tcl ]
-
+   #--- je recherche les fichiers equipment/*/pkgIndex.tcl
+   set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" equipment * pkgIndex.tcl ]
    #--- je recherche les plugins repondant au filtre pluginPattern
    foreach pkgIndexFileName $filelist {
       set catchResult [catch {
-         ##set dir [file dirname $"pkgIndexFileName"]
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type)== "equipment" || $pluginInfo(type)== "focuser" || $pluginInfo(type)== "spectroscope"} {
-               #--- je charge le package
-               package require $pluginInfo(name)
-               #--- j'initalise le plugin
-               $pluginInfo(namespace)::initPlugin
-               set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-               #--- je l'ajoute dans la liste des plugins
-               lappend private(namespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-               ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
+            if { $pluginInfo(type)== "equipment" || $pluginInfo(type)== "focuser" || $pluginInfo(type)== "spectroscope" } {
+               foreach os $pluginInfo(os) {
+                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
+                     #--- je charge le package
+                     package require $pluginInfo(name)
+                     #--- j'initalise le plugin
+                     $pluginInfo(namespace)::initPlugin
+                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                     #--- je l'ajoute dans la liste des plugins
+                     lappend private(namespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                     ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
+                  }
+               }
             }
          } else {
             ::console::affiche_erreur "Error loading equipment $pkgIndexFileName \n$::errorInfo\n\n"
          }
       } catchMessage]
-      #--- j'affiche le message d'erreur et je continu la recherche des plugins
+      #--- j'affiche le message d'erreur et je continue la recherche des plugins
       if { $catchResult !=0 } {
          console::affiche_erreur "::confEqt::findPlugin $::errorInfo\n"
       }
@@ -421,7 +423,7 @@ proc ::confEqt::findPlugin { } {
    ::console::affiche_prompt "\n"
 
    if { [llength $private(namespaceList)] <1 } {
-      #--- pas plugin correct
+      #--- aucun plugin correct
       return 1
    } else {
       #--- tout est ok
