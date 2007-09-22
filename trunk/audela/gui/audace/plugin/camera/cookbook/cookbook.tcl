@@ -2,11 +2,12 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.13 2007-09-05 21:06:03 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.14 2007-09-22 06:39:16 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
    package provide cookbook 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] cookbook.cap ]
@@ -36,6 +37,14 @@ proc ::cookbook::getPluginHelp { } {
 #
 proc ::cookbook::getPluginType { } {
    return "camera"
+}
+
+#
+# ::cookbook::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::cookbook::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

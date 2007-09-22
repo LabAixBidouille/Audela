@@ -2,11 +2,12 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.2 2007-09-06 17:06:54 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.3 2007-09-22 06:43:05 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
    package provide ascom 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ascom.cap ]
@@ -36,6 +37,14 @@ proc ::ascom::getPluginHelp { } {
 #
 proc ::ascom::getPluginType { } {
    return "mount"
+}
+
+#
+# ::ascom::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::ascom::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

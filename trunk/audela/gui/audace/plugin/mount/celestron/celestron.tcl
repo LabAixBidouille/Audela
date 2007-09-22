@@ -2,11 +2,12 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.2 2007-09-06 17:07:22 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.3 2007-09-22 06:43:40 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
    package provide celestron 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] celestron.cap ]
@@ -36,6 +37,14 @@ proc ::celestron::getPluginHelp { } {
 #
 proc ::celestron::getPluginType { } {
    return "mount"
+}
+
+#
+# ::celestron::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::celestron::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

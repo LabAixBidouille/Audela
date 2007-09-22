@@ -2,11 +2,12 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.2 2007-09-05 21:07:27 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.3 2007-09-22 06:40:23 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
    package provide hisis 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] hisis.cap ]
@@ -36,6 +37,14 @@ proc ::hisis::getPluginHelp { } {
 #
 proc ::hisis::getPluginType { } {
    return "camera"
+}
+
+#
+# ::hisis::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::hisis::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

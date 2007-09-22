@@ -2,11 +2,12 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.12 2007-09-05 21:06:24 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.13 2007-09-22 06:39:32 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
    package provide coolpix 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] coolpix.cap ]
@@ -36,6 +37,14 @@ proc ::coolpix::getPluginHelp { } {
 #
 proc ::coolpix::getPluginType { } {
    return "camera"
+}
+
+#
+# ::coolpix::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::coolpix::getPluginOS { } {
+   return [ list Windows ]
 }
 
 #

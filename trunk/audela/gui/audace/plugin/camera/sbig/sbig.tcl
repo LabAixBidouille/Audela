@@ -2,11 +2,12 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.2 2007-09-05 21:07:55 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.3 2007-09-22 06:41:21 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
    package provide sbig 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] sbig.cap ]
@@ -36,6 +37,14 @@ proc ::sbig::getPluginHelp { } {
 #
 proc ::sbig::getPluginType { } {
    return "camera"
+}
+
+#
+# ::sbig::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::sbig::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

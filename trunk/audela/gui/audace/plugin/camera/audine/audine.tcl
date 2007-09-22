@@ -2,11 +2,12 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.2 2007-09-05 21:05:32 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.3 2007-09-22 06:38:41 robertdelmas Exp $
 #
 
 namespace eval ::audine {
    package provide audine 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] audine.cap ]
@@ -36,6 +37,14 @@ proc ::audine::getPluginHelp { } {
 #
 proc ::audine::getPluginType { } {
    return "camera"
+}
+
+#
+# ::audine::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::audine::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

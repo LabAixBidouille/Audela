@@ -2,11 +2,12 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.13 2007-09-05 21:08:46 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.14 2007-09-22 06:42:19 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
    package provide th7852a 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] th7852a.cap ]
@@ -36,6 +37,14 @@ proc ::th7852a::getPluginHelp { } {
 #
 proc ::th7852a::getPluginType { } {
    return "camera"
+}
+
+#
+# ::th7852a::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::th7852a::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

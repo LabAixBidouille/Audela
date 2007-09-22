@@ -2,11 +2,12 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.9 2007-09-06 17:08:10 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.10 2007-09-22 06:44:29 robertdelmas Exp $
 #
 
 namespace eval ::temma {
    package provide temma 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] temma.cap ]
@@ -36,6 +37,14 @@ proc ::temma::getPluginHelp { } {
 #
 proc ::temma::getPluginType { } {
    return "mount"
+}
+
+#
+# ::temma::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::temma::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

@@ -2,11 +2,12 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.2 2007-09-05 21:07:42 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.3 2007-09-22 06:40:45 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
    package provide kitty 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] kitty.cap ]
@@ -36,6 +37,14 @@ proc ::kitty::getPluginHelp { } {
 #
 proc ::kitty::getPluginType { } {
    return "camera"
+}
+
+#
+# ::kitty::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::kitty::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

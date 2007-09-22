@@ -1,12 +1,13 @@
 #
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
-# Auteurs : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.12 2007-09-05 21:07:01 robertdelmas Exp $
+# Auteur : Robert DELMAS
+# Mise a jour $Id: fingerlakes.tcl,v 1.13 2007-09-22 06:40:06 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
    package provide fingerlakes 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] fingerlakes.cap ]
@@ -36,6 +37,14 @@ proc ::fingerlakes::getPluginHelp { } {
 #
 proc ::fingerlakes::getPluginType { } {
    return "camera"
+}
+
+#
+# ::fingerlakes::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::fingerlakes::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

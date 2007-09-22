@@ -2,11 +2,12 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.2 2007-09-06 17:07:41 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.3 2007-09-22 06:43:57 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
    package provide lx200 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] lx200.cap ]
@@ -36,6 +37,14 @@ proc ::lx200::getPluginHelp { } {
 #
 proc ::lx200::getPluginType { } {
    return "mount"
+}
+
+#
+# ::lx200::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::lx200::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #
