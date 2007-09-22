@@ -1,12 +1,13 @@
 #
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
-# Auteurs : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.8 2007-09-06 17:07:08 robertdelmas Exp $
+# Auteur : Robert DELMAS
+# Mise a jour $Id: audecom.tcl,v 1.9 2007-09-22 06:43:23 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
    package provide audecom 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] audecom.cap ]
@@ -36,6 +37,14 @@ proc ::audecom::getPluginHelp { } {
 #
 proc ::audecom::getPluginType { } {
    return "mount"
+}
+
+#
+# ::audecom::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::audecom::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

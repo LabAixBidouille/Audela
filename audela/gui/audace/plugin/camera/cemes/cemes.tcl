@@ -1,12 +1,13 @@
 #
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
-# Auteurs : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.18 2007-09-05 21:05:46 robertdelmas Exp $
+# Auteur : Robert DELMAS
+# Mise a jour $Id: cemes.tcl,v 1.19 2007-09-22 06:38:58 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
    package provide cemes 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] cemes.cap ]
@@ -36,6 +37,14 @@ proc ::cemes::getPluginHelp { } {
 #
 proc ::cemes::getPluginType { } {
    return "camera"
+}
+
+#
+# ::cemes::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::cemes::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

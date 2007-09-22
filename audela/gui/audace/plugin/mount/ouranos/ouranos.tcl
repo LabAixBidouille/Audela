@@ -2,11 +2,12 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.2 2007-09-06 17:07:54 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.3 2007-09-22 06:44:14 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
    package provide ouranos 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] ouranos.cap ]
@@ -36,6 +37,14 @@ proc ::ouranos::getPluginHelp { } {
 #
 proc ::ouranos::getPluginType { } {
    return "mount"
+}
+
+#
+# ::ouranos::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::ouranos::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

@@ -2,11 +2,12 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.13 2007-09-05 21:06:43 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.14 2007-09-22 06:39:48 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
    package provide dslr 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] dslr.cap ]
@@ -36,6 +37,14 @@ proc ::dslr::getPluginHelp { } {
 #
 proc ::dslr::getPluginType { } {
    return "camera"
+}
+
+#
+# ::dslr::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::dslr::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

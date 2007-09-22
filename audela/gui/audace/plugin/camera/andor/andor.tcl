@@ -2,11 +2,12 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.2 2007-09-05 21:05:15 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.3 2007-09-22 06:38:24 robertdelmas Exp $
 #
 
 namespace eval ::andor {
    package provide andor 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] andor.cap ]
@@ -36,6 +37,14 @@ proc ::andor::getPluginHelp { } {
 #
 proc ::andor::getPluginType { } {
    return "camera"
+}
+
+#
+# ::andor::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::andor::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

@@ -2,11 +2,12 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.12 2007-09-05 21:08:10 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.13 2007-09-22 06:41:40 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
    package provide scr1300xtc 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] scr1300xtc.cap ]
@@ -36,6 +37,14 @@ proc ::scr1300xtc::getPluginHelp { } {
 #
 proc ::scr1300xtc::getPluginType { } {
    return "camera"
+}
+
+#
+# ::scr1300xtc::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::scr1300xtc::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #

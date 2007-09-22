@@ -2,11 +2,12 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.21 2007-09-05 21:09:03 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.22 2007-09-22 06:42:37 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
    package provide webcam 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] webcam.cap ]
@@ -36,6 +37,14 @@ proc ::webcam::getPluginHelp { } {
 #
 proc ::webcam::getPluginType { } {
    return "camera"
+}
+
+#
+# ::webcam::getPluginOS
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::webcam::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #
