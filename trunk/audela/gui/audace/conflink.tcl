@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.20 2007-09-20 20:24:41 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.21 2007-09-22 08:13:48 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -11,7 +11,7 @@ namespace eval ::confLink {
 #------------------------------------------------------------
 # ::confLink::init ( est lance automatiquement au chargement de ce fichier tcl)
 #    Initialise les variable conf(..) et caption(..)
-#    Demarre le driver selectionne par defaut
+#    Demarre le plugin selectionne par defaut
 #------------------------------------------------------------
 proc ::confLink::init { } {
    variable private
@@ -37,7 +37,7 @@ proc ::confLink::init { } {
    #--- je charge la liste des plugins
    findPlugin
 
-   #--- configure le driver selectionne par defaut
+   #--- configure le plugin selectionne par defaut
    #if { $conf(confLink,start) == "1" } {
    #   configureDriver
    #}
@@ -103,7 +103,7 @@ proc ::confLink::appliquer { } {
    #--- j'arrete la liaison precedente
    #stopDriver
 
-   #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
+   #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
    foreach name $private(namespaceList) {
       set drivername [ $name\:\:widgetToConf ]
    }
@@ -111,7 +111,7 @@ proc ::confLink::appliquer { } {
    #--- Affichage d'un message d'alerte si necessaire
    #::confLink::displayConnectMessage
 
-   #--- je demarre le driver selectionne
+   #--- je demarre le plugin selectionne
    configureDriver
 
    #--- Effacement du message d'alerte s'il existe
@@ -190,7 +190,7 @@ proc ::confLink::recup_position { } {
 #    authorizedNamespaces : Liste des onglets a afficher
 #      Si la chaine est vide tous les onglets sont affiches
 #    configurationTitle : Titre complementaire de la fenetres de dialogue
-# return 0 = OK , 1 = error (no driver found)
+# return 0 = OK , 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    variable private
@@ -249,7 +249,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    #--- j'affiche les onglets dans la fenetre
    Rnotebook:create $mainFrame -tabs "$linkTypes" -borderwidth 1
 
-   #--- je demande a chaque driver d'afficher sa page de config
+   #--- je demande a chaque plugin d'afficher sa page de config
    set indexOnglet 1
    foreach linkNamespace $authorizedNamespaces {
       #--- j'affiche l'onglet
@@ -362,17 +362,17 @@ proc ::confLink::select { { linkNamespace "" } } {
 
 #------------------------------------------------------------
 # ::confLink::configureDriver
-#    Configure le driver dont le label est dans private(linkLabel)
+#    Configure le plugin dont le label est dans private(linkLabel)
 #------------------------------------------------------------
 proc ::confLink::configureDriver { } {
    variable private
 
    if { $private(linkLabel) == "" } {
-      #--- pas de driver selectionne par defaut
+      #--- pas de plugin selectionne par defaut
       return
    }
 
-   #--- je configure le driver
+   #--- je configure le plugin
    [getLinkNamespace $private(linkLabel)]\::configureDriver
 }
 
@@ -396,15 +396,15 @@ proc ::confLink::stopDriver { { linkLabel "" } } {
 #    Recherche les fichiers .tcl presents dans driverPattern
 #
 #    Conditions :
-#      - Le driver doit retourner un namespace non nul quand on charge son source .tcl
-#      - Le driver doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
-#      - Le driver doit avoir une procedure getPluginTitle
+#      - Le plugin doit retourner un namespace non nul quand on charge son source .tcl
+#      - Le plugin doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
+#      - Le plugin doit avoir une procedure getPluginTitle
 #
-#    Si le driver remplit les conditions :
+#    Si le plugin remplit les conditions :
 #      Son label est ajoute dans la liste pluginTitleList, et son namespace est ajoute dans namespaceList
-#      Sinon le fichier tcl est ignore car ce n'est pas un driver du type souhaite
+#      Sinon le fichier tcl est ignore car ce n'est pas un plugin du type souhaite
 #
-# retrun 0 = OK , 1 = error (no driver found)
+# retrun 0 = OK , 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confLink::findPlugin { } {
    variable private
@@ -646,6 +646,6 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
    }
 }
 
-#--- Connexion au demarrage du driver selectionne par defaut
+#--- Connexion au demarrage du plugin selectionne par defaut
 ::confLink::init
 
