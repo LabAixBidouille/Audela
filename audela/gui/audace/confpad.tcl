@@ -2,16 +2,16 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.18 2007-09-20 20:25:00 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.19 2007-09-22 08:13:24 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
 }
 
 #------------------------------------------------------------
-# ::confPad::init ( est lance automatiquement au chargement de ce fichier tcl)
+# ::confPad::init (est lance automatiquement au chargement de ce fichier tcl)
 # initialise les variable conf(..) et caption(..)
-# demarrer le driver selectionne par defaut
+# demarrer le plugin selectionne par defaut
 #------------------------------------------------------------
 proc ::confPad::init { } {
    variable private
@@ -103,6 +103,7 @@ proc ::confPad::ok { } {
    $private(frm).cmd.ok configure -relief groove -state disabled
    $private(frm).cmd.appliquer configure -state disabled
    $private(frm).cmd.fermer configure -state disabled
+   $private(frm).cmd.aide configure -state disabled
    appliquer
    fermer
 }
@@ -118,6 +119,7 @@ proc ::confPad::appliquer { } {
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
    $private(frm).cmd.fermer configure -state disabled
+   $private(frm).cmd.aide configure -state disabled
 
    #--- je recupere le namespace correspondant au label
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
@@ -128,7 +130,7 @@ proc ::confPad::appliquer { } {
       set padName ""
    }
 
-   #--- je demande a chaque driver de sauver sa config dans le tableau conf(..)
+   #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
    foreach name $private(pluginList) {
       $name\::widgetToConf
    }
@@ -144,6 +146,7 @@ proc ::confPad::appliquer { } {
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
    $private(frm).cmd.fermer configure -state normal
+   $private(frm).cmd.aide configure -state normal
 }
 
 #------------------------------------------------------------
@@ -192,7 +195,7 @@ proc ::confPad::recupPosDim { } {
 # ::confPad::createDialog
 # Affiche la fenetre a onglet
 #
-# retrun 0 = OK, 1 = error (no driver found)
+# retrun 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confPad::createDialog { } {
    variable private
@@ -205,7 +208,7 @@ proc ::confPad::createDialog { } {
    }
 
    #---
-   if { [winfo exists $private(frm)] } {
+   if { [ winfo exists $private(frm) ] } {
       wm withdraw $private(frm)
       wm deiconify $private(frm)
       focus $private(frm)
@@ -317,7 +320,6 @@ proc ::confPad::createFramePad { frm variablePluginName} {
    button $frm.configure -text "$caption(confpad,configurer) ..." \
       -command "::confPad::run $variablePluginName"
    pack $frm.configure -in $frm -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
-
 }
 
 #------------------------------------------------------------
@@ -337,7 +339,7 @@ proc ::confPad::select { { name "" } } {
 
 #------------------------------------------------------------
 # ::confPad::configureDriver
-# configure le driver dont le label est dans $conf(confPad)
+# configure le plugin dont le label est dans $conf(confPad)
 #------------------------------------------------------------
 proc ::confPad::configureDriver { pluginName } {
    variable private
@@ -358,7 +360,7 @@ proc ::confPad::configureDriver { pluginName } {
 
 #------------------------------------------------------------
 # ::confPad::stopDriver
-# arrete le driver selectionne
+# arrete le plugin selectionne
 #
 #  return rien
 #------------------------------------------------------------
@@ -375,15 +377,15 @@ proc ::confPad::stopDriver { } {
 # recherche les plugins de type "pad"
 #
 # conditions :
-#   - le driver doit avoir une procedure getPluginType qui retourne une valeur egale à $driverType
-#   - le driver doit avoir une procedure getPluginTitle
+#   - le plugin doit avoir une procedure getPluginType
+#   - le plugin doit avoir une procedure getPluginTitle
 #
-# si le driver remplit les conditions
+# si le plugin remplit les conditions
 #     son label est ajouté dans la liste pluginList,
 #     et son titre est ajoute dans la liste pluginTitleList
 # sinon le fichier est ignore
 #
-# retrun 0 = OK, 1 = error (no driver found)
+# retrun 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confPad::findPlugin { } {
    variable private
@@ -435,6 +437,6 @@ proc ::confPad::findPlugin { } {
    }
 }
 
-#--- connexion au demarrage du driver selectionne par defaut
+#--- connexion au demarrage du plugin selectionne par defaut
 ::confPad::init
 
