@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
-# Description : Gere des objets 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.89 2007-09-05 21:04:18 robertdelmas Exp $
+# Description : Affiche la fenetre de configuration des plugins du type 'camera'
+# Mise a jour $Id: confcam.tcl,v 1.90 2007-09-23 13:40:33 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -9,7 +9,7 @@ namespace eval ::confCam {
    #
    # confCam::init (est lance automatiquement au chargement de ce fichier tcl)
    # Initialise les variables conf(...) et caption(...)
-   # Demarre le driver selectionne par defaut
+   # Demarre le plugin selectionne par defaut
    #
    proc init { } {
       global audace caption conf confCam
@@ -62,51 +62,18 @@ namespace eval ::confCam {
          set ::tcl_platform(threaded) 0
       }
 
+      #--- Initalise les listes de cameras
+      set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
+         TH7852A SCR1300XTC $caption(dslr,camera) Andor FLI Cemes $caption(coolpix,camera) ]
+      set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
+         th7852a scr1300xtc dslr andor fingerlakes cemes coolpix ]
+
       #--- Intialise les variables de chaque camera
+      for { set i 0 } { $i < [ llength $confCam(names) ] } { incr i } {
+         ::[ lindex $confCam(names) $i ]::initPlugin
+      }
 
-      #--- initConf 1
-      ::audine::initPlugin
-
-      #--- initConf 2
-      ::hisis::initPlugin
-
-      #--- initConf 3
-      ::sbig::initPlugin
-
-      #--- initConf 4
-      ::cookbook::initPlugin
-
-      #--- initConf 5
-      ::starlight::initPlugin
-
-      #--- initConf 6
-      ::kitty::initPlugin
-
-      #--- initConf 7
-      ::webcam::initPlugin
-
-      #--- initConf 8
-      ::th7852a::initPlugin
-
-      #--- initConf 9
-      ::scr1300xtc::initPlugin
-
-      #--- initConf 10
-      ::dslr::initPlugin
-
-      #--- initConf 11
-      ::andor::initPlugin
-
-      #--- initConf 12
-      ::fingerlakes::initPlugin
-
-      #--- initConf 13
-      ::cemes::initPlugin
-
-      #--- initConf 14
-      ::coolpix::initPlugin
-
-      #--- item par defaut
+      #--- Item par defaut
       set confCam(currentCamItem) "A"
 
       #--- Initialisation des variables d'echange avec les widgets
@@ -129,12 +96,6 @@ namespace eval ::confCam {
       set confCam(A,product)  ""
       set confCam(B,product)  ""
       set confCam(C,product)  ""
-
-      #--- Initalise les listes de cameras
-      set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-         TH7852A SCR1300XTC $caption(dslr,camera) Andor FLI Cemes $caption(coolpix,camera) ]
-      set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
-         th7852a scr1300xtc dslr andor fingerlakes cemes coolpix ]
    }
 
    proc dispThreadError { thread_id errorInfo} {
@@ -170,7 +131,6 @@ namespace eval ::confCam {
       } else {
          select $camItem audine
       }
-      ###catch { tkwait visibility $This }
    }
 
    #
@@ -256,7 +216,7 @@ namespace eval ::confCam {
       $This.cmd.appliquer configure -state disabled
       $This.cmd.aide configure -relief groove -state disabled
       $This.cmd.fermer configure -state disabled
-      set selectedPluginName [lindex $confCam(names) [expr [Rnotebook:currentIndex $This.usr.book ] -1 ] ]
+      set selectedPluginName [ $This.usr.onglet raise ]
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
       set pluginHelp [ $selectedPluginName\::getPluginHelp ]
       ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
@@ -286,7 +246,8 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver le bouton Tests pour la fabrication de la camera Audine
    #
    proc ConfAudine { } {
-      global audace caption confCam frmm
+      variable This
+      global audace confCam
 
       set camItem $confCam(currentCamItem)
 
@@ -296,7 +257,7 @@ namespace eval ::confCam {
       }
 
       if { [ winfo exists $audace(base).confCam ] } {
-         set frm $frmm(Camera1)
+         set frm [ $This.usr.onglet getframe audine ]
          if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "audine" && \
             [ ::confLink::getLinkNamespace $confCam(audine,port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera actif
@@ -313,12 +274,13 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver les boutons de configuration de la Kitty K2
    #
    proc ConfKitty { } {
-      global audace confCam frmm
+      variable This
+      global audace confCam
 
       set camItem $confCam(currentCamItem)
 
       if { [ winfo exists $audace(base).confCam ] } {
-         set frm $frmm(Camera6)
+         set frm [ $This.usr.onglet getframe kitty ]
          if { [ winfo exists $frm.radio_on ] } {
             if { [::confCam::getName $confCam($camItem,camNo)] == "KITTYK2" } {
                #--- Boutons de configuration de la Kitty K2 actif
@@ -342,7 +304,8 @@ namespace eval ::confCam {
    # Permet d'activer ou de desactiver le bouton de configuration des APN (DSLR)
    #
    proc ConfDSLR { } {
-      global audace confCam frmm
+      variable This
+      global audace confCam
 
       set camItem $confCam(currentCamItem)
 
@@ -352,7 +315,7 @@ namespace eval ::confCam {
       }
 
       if { [ winfo exists $audace(base).confCam ] } {
-         set frm $frmm(Camera10)
+         set frm [ $This.usr.onglet getframe dslr ]
          if { [ winfo exists $frm.config_telechargement ] } {
             if { [::confCam::getProduct $confCam($camItem,camNo)] == "dslr" } {
                #--- Bouton de configuration des APN (DSLR)
@@ -413,23 +376,12 @@ namespace eval ::confCam {
 
       frame $This.usr -borderwidth 0 -relief raised
          #--- Creation de la fenetre a onglets
-         set nn $This.usr.book
-         Rnotebook:create $nn -tabs "$confCam(labels)" -borderwidth 1
-         fillPage1  $nn
-         fillPage2  $nn
-         fillPage3  $nn
-         fillPage4  $nn
-         fillPage5  $nn
-         fillPage6  $nn
-         fillPage7  $nn
-         fillPage8  $nn
-         fillPage9  $nn
-         fillPage10 $nn
-         fillPage11 $nn
-         fillPage12 $nn
-         fillPage13 $nn
-         fillPage14 $nn
-         pack $nn -fill both -expand 1
+         set notebook [ NoteBook $This.usr.onglet ]
+         for { set i 0 } { $i < [ llength $confCam(names) ] } { incr i } {
+            fillPage[ lindex $confCam(names) $i ] [$notebook insert end [ lindex $confCam(names) $i ] \
+               -text [ lindex $confCam(labels) $i ] ]
+         }
+         pack $notebook -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
 
       #--- Je recupere la liste des visu
@@ -588,8 +540,8 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de Audine
    #
-   proc fillPage1 { nn } {
-      global audace caption color conf confCam frmm
+   proc fillPageaudine { frm } {
+      global audace caption color conf confCam
 
       #--- confToWidget
       set confCam(audine,ampli_ccd) [ lindex "$caption(confcam,ampli_synchro) $caption(confcam,ampli_toujours)" $conf(audine,ampli_ccd) ]
@@ -600,10 +552,6 @@ namespace eval ::confCam {
       set confCam(audine,mirv)      $conf(audine,mirv)
       set confCam(audine,port)      $conf(audine,port)
       set confCam(audine,typeobtu)  $conf(audine,typeobtu)
-
-      #--- Initialisation
-      set frmm(Camera1) [ Rnotebook:frame $nn 1 ]
-      set frm $frmm(Camera1)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -804,8 +752,9 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration des Hi-SIS
    #
-   proc fillPage2 { nn } {
-      global audace caption color conf confCam frmm
+   proc fillPagehisis { frm } {
+      variable This
+      global audace caption color conf confCam
 
       #--- confToWidget
       set confCam(hisis,delai_a)  $conf(hisis,delai_a)
@@ -817,10 +766,6 @@ namespace eval ::confCam {
       set confCam(hisis,modele)   [ lsearch "11 22 23 24 33 36 39 43 44 48" "$conf(hisis,modele)" ]
       set confCam(hisis,port)     $conf(hisis,port)
       set confCam(hisis,res)      $conf(hisis,res)
-
-      #--- Initialisation
-      set frmm(Camera2) [ Rnotebook:frame $nn 2 ]
-      set frm $frmm(Camera2)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -871,7 +816,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS11
       radiobutton $frm.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_11)" -value 0 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab0 ] } {
                destroy $frm.lab0 ; destroy $frm.foncobtu
                destroy $frm.lab2 ; destroy $frm.res
@@ -887,7 +832,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS22
       radiobutton $frm.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_22)" -value 1 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             #--- Choix du fonctionnement de l'obturateur
             if { ! [ winfo exists $frm.lab0 ] } {
                label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
@@ -938,7 +883,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS23
       radiobutton $frm.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_23)" -value 2 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -969,7 +914,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS24
       radiobutton $frm.radio3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_24)" -value 3 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -1000,7 +945,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS33
       radiobutton $frm.radio4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_33)" -value 4 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -1031,7 +976,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS36
       radiobutton $frm.radio5 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_36)" -value 5 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -1062,7 +1007,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS39
       radiobutton $frm.radio6 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_39)" -value 6 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -1093,7 +1038,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS43
       radiobutton $frm.radio7 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_43)" -value 7 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -1124,7 +1069,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS44
       radiobutton $frm.radio8 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_44)" -value 8 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -1155,7 +1100,7 @@ namespace eval ::confCam {
       #--- Bouton radio Hi-SIS48
       radiobutton $frm.radio9 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,hisis_48)" -value 9 -variable confCam(hisis,modele) -command {
-            set frm $frmm(Camera2)
+            set frm [ $::confCam::This.usr.onglet getframe hisis ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.delai_a
@@ -1302,8 +1247,8 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration des SBIG
    #
-   proc fillPage3 { nn } {
-      global audace caption color conf confCam frmm
+   proc fillPagesbig { frm } {
+      global audace caption color conf confCam
 
       #--- confToWidget
       set confCam(sbig,cool)     $conf(sbig,cool)
@@ -1313,10 +1258,6 @@ namespace eval ::confCam {
       set confCam(sbig,mirv)     $conf(sbig,mirv)
       set confCam(sbig,port)     $conf(sbig,port)
       set confCam(sbig,temp)     $conf(sbig,temp)
-
-      #--- Initialisation
-      set frmm(Camera3) [ Rnotebook:frame $nn 3 ]
-      set frm $frmm(Camera3)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1453,13 +1394,7 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de la CB245
    #
-   proc fillPage4 { nn } {
-      global frmm
-
-      #--- Initialisation
-      set frmm(Camera4) [ Rnotebook:frame $nn 4 ]
-      set frm $frmm(Camera4)
-
+   proc fillPagecookbook { frm } {
       #--- Construction de l'interface graphique
       ::cookbook::fillConfigPage $frm
    }
@@ -1467,8 +1402,8 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration des Starlight
    #
-   proc fillPage5 { nn } {
-      global audace caption color conf confCam frmm
+   proc fillPagestarlight { frm } {
+      global audace caption color conf confCam
 
       #--- confToWidget
       set confCam(starlight,acc)    [ lindex "$caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur)" $conf(starlight,acc) ]
@@ -1476,10 +1411,6 @@ namespace eval ::confCam {
       set confCam(starlight,mirv)   $conf(starlight,mirv)
       set confCam(starlight,modele) [ lsearch "MX516 MX916 HX516" "$conf(starlight,modele)" ]
       set confCam(starlight,port)   $conf(starlight,port)
-
-      #--- Initialisation
-      set frmm(Camera5) [ Rnotebook:frame $nn 5 ]
-      set frm $frmm(Camera5)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1596,8 +1527,9 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration des Kitty
    #
-   proc fillPage6 { nn } {
-      global audace caption color conf confCam frmm
+   proc fillPagekitty { frm } {
+      variable This
+      global audace caption color conf confCam
 
       #--- confToWidget
       set confCam(kitty,captemp) [ lindex "$caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5)" $conf(kitty,captemp) ]
@@ -1607,10 +1539,6 @@ namespace eval ::confCam {
       set confCam(kitty,port)    $conf(kitty,port)
       set confCam(kitty,res)     $conf(kitty,res)
       set confCam(kitty,on_off)  $conf(kitty,on_off)
-
-      #--- Initialisation
-      set frmm(Camera6) [ Rnotebook:frame $nn 6 ]
-      set frm $frmm(Camera6)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1658,7 +1586,7 @@ namespace eval ::confCam {
       #--- Bouton radio Kitty-237
       radiobutton $frm.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,kitty_237)" -value 237 -variable confCam(kitty,modele) -command {
-            set frm $frmm(Camera6)
+            set frm [ $::confCam::This.usr.onglet getframe kitty ]
             if { [ winfo exists $frm.lab4 ] } {
                destroy $frm.lab4 ; destroy $frm.radio_on ; destroy $frm.radio_off
                destroy $frm.temp_ccd ; destroy $frm.test
@@ -1703,7 +1631,7 @@ namespace eval ::confCam {
       #--- Bouton radio Kitty-255
       radiobutton $frm.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,kitty_255)" -value 255 -variable confCam(kitty,modele) -state normal -command {
-            set frm $frmm(Camera6)
+            set frm [ $::confCam::This.usr.onglet getframe kitty ]
             if { [ winfo exists $frm.lab4 ] } {
                destroy $frm.lab4 ; destroy $frm.radio_on ; destroy $frm.radio_off
                destroy $frm.temp_ccd ; destroy $frm.test
@@ -1748,7 +1676,7 @@ namespace eval ::confCam {
       #--- Bouton radio Kitty-2
       radiobutton $frm.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(confcam,kitty_2)" -value K2 -variable confCam(kitty,modele) -command {
-            set frm $frmm(Camera6)
+            set frm [ $::confCam::This.usr.onglet getframe kitty ]
             if { [ winfo exists $frm.lab2 ] } {
                destroy $frm.lab2 ; destroy $frm.res
                destroy $frm.lab3 ; destroy $frm.captemp
@@ -1899,12 +1827,8 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration des WebCam
    #
-   proc fillPage7 { nn } {
-      global confCam frmm
-
-      #--- Initialisation
-      set frmm(Camera7) [ Rnotebook:frame $nn 7 ]
-      set frm $frmm(Camera7)
+   proc fillPagewebcam { frm } {
+      global confCam
 
       #--- Construction de l'interface graphique
       ::webcam::fillConfigPage $frm $confCam(currentCamItem)
@@ -1913,13 +1837,7 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de la TH7852A d'Yves LATIL
    #
-   proc fillPage8 { nn } {
-      global frmm
-
-      #--- Initialisation
-      set frmm(Camera8) [ Rnotebook:frame $nn 8 ]
-      set frm $frmm(Camera8)
-
+   proc fillPageth7852a { frm } {
       #--- Construction de l'interface graphique
       ::th7852a::fillConfigPage $frm
    }
@@ -1927,13 +1845,7 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de la SCR1300XTC
    #
-   proc fillPage9 { nn } {
-      global frmm
-
-      #--- Initialisation
-      set frmm(Camera9) [ Rnotebook:frame $nn 9 ]
-      set frm $frmm(Camera9)
-
+   proc fillPagescr1300xtc { frm } {
       #--- Construction de l'interface graphique
       ::scr1300xtc::fillConfigPage $frm
    }
@@ -1941,8 +1853,8 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration des APN (DSLR)
    #
-   proc fillPage10 { nn } {
-      global audace caption color conf confCam frmm
+   proc fillPagedslr { frm } {
+      global audace caption color conf confCam
 
       #--- confToWidget
       set confCam(dslr,longuepose)           $conf(dslr,longuepose)
@@ -1953,10 +1865,6 @@ namespace eval ::confCam {
       set confCam(dslr,statut_service)       $conf(dslr,statut_service)
       set confCam(dslr,mirh)                 $conf(dslr,mirh)
       set confCam(dslr,mirv)                 $conf(dslr,mirv)
-
-      #--- Initialisation
-      set frmm(Camera10) [ Rnotebook:frame $nn 10 ]
-      set frm $frmm(Camera10)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -2096,8 +2004,8 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de la Andor
    #
-   proc fillPage11 { nn } {
-      global audace caption color conf confCam frmm
+   proc fillPageandor { frm } {
+      global audace caption color conf confCam
 
       #--- confToWidget
       set confCam(andor,cool)        $conf(andor,cool)
@@ -2108,10 +2016,6 @@ namespace eval ::confCam {
       set confCam(andor,temp)        $conf(andor,temp)
       set confCam(andor,ouvert_obtu) $conf(andor,ouvert_obtu)
       set confCam(andor,ferm_obtu)   $conf(andor,ferm_obtu)
-
-      #--- Initialisation
-      set frmm(Camera11) [ Rnotebook:frame $nn 11 ]
-      set frm $frmm(Camera11)
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -2233,13 +2137,7 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de la FLI (Finger Lakes Instrumentation)
    #
-   proc fillPage12 { nn } {
-      global frmm
-
-      #--- Initialisation
-      set frmm(Camera12) [ Rnotebook:frame $nn 12 ]
-      set frm $frmm(Camera12)
-
+   proc fillPagefingerlakes { frm } {
       #--- Construction de l'interface graphique
       ::fingerlakes::fillConfigPage $frm
    }
@@ -2247,13 +2145,7 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de la Cemes
    #
-   proc fillPage13 { nn } {
-      global frmm
-
-      #--- Initialisation
-      set frmm(Camera13) [ Rnotebook:frame $nn 13 ]
-      set frm $frmm(Camera13)
-
+   proc fillPagecemes { frm } {
       #--- Construction de l'interface graphique
       ::cemes::fillConfigPage $frm
    }
@@ -2261,13 +2153,7 @@ namespace eval ::confCam {
    #
    # Fenetre de configuration de la Nikon CoolPix
    #
-   proc fillPage14 { nn } {
-      global frmm
-
-      #--- Initialisation
-     set frmm(Camera14) [ Rnotebook:frame $nn 14 ]
-      set frm $frmm(Camera14)
-
+   proc fillPagecoolpix { frm } {
       #--- Construction de l'interface graphique
       ::coolpix::fillConfigPage $frm
    }
@@ -2320,46 +2206,8 @@ namespace eval ::confCam {
    #----------------------------------------------------------------------------
    proc select { camItem { camName "audine" } } {
       variable This
-      global frmm
 
-      set nn $This.usr.book
-      switch -exact -- $camName {
-         audine      { Rnotebook:raise $nn 1 }
-         hisis       { Rnotebook:raise $nn 2 }
-         sbig        { Rnotebook:raise $nn 3 }
-         cookbook    {
-            ::cookbook::fillConfigPage $frmm(Camera4)
-            Rnotebook:raise $nn 4
-         }
-         starlight   { Rnotebook:raise $nn 5 }
-         kitty       { Rnotebook:raise $nn 6 }
-         webcam      {
-            ::webcam::fillConfigPage $frmm(Camera7) $camItem
-            Rnotebook:raise $nn 7
-         }
-         th7852a     {
-            ::th7852a::fillConfigPage $frmm(Camera8)
-            Rnotebook:raise $nn 8
-         }
-         scr1300xtc  {
-            ::scr1300xtc::fillConfigPage $frmm(Camera9)
-            Rnotebook:raise $nn 9
-         }
-         dslr        { Rnotebook:raise $nn 10 }
-         andor       { Rnotebook:raise $nn 11 }
-         fingerlakes {
-            ::fingerlakes::fillConfigPage $frmm(Camera12)
-            Rnotebook:raise $nn 12
-         }
-         cemes       {
-            ::cemes::fillConfigPage $frmm(Camera13)
-            Rnotebook:raise $nn 13
-         }
-         coolpix     {
-            ::coolpix::fillConfigPage $frmm(Camera14)
-            Rnotebook:raise $nn 14
-         }
-      }
+      $This.usr.onglet raise $camName
    }
 
    #----------------------------------------------------------------------------
@@ -2376,11 +2224,8 @@ namespace eval ::confCam {
       #--- je recupere l'item courant
       set camItem $confCam(currentCamItem)
 
-      #--- je recupere le nom de la camera a partir de l'onglet courant
-      set index [expr [Rnotebook:currentIndex $This.usr.book ] - 1 ]
-
       #--- je selectionne l'onglet correspondant a la camera de cet item
-      ::confCam::select $camItem [lindex $confCam(names) $index]
+      ::confCam::select $camItem [ $This.usr.onglet raise ]
    }
 
    #----------------------------------------------------------------------------
@@ -2388,7 +2233,8 @@ namespace eval ::confCam {
    # Procedure de changement de l'obturateur de la camera
    #----------------------------------------------------------------------------
    proc setShutter { camNo shutterState} {
-      global audace caption conf confCam frmm panneau
+      variable This
+      global audace caption conf confCam panneau
 
       #---
       set camProduct [ cam$camNo product ]
@@ -2419,24 +2265,18 @@ namespace eval ::confCam {
             }
             if { "$camProduct" == "audine" } {
                set conf(audine,foncobtu) $shutterState
-               catch { set frm $frmm(Camera1) }
             } elseif { "$camProduct" == "hisis" } {
                set conf(hisis,foncobtu) $shutterState
-               catch { set frm $frmm(Camera2) }
             } elseif { "$camProduct" == "sbig" } {
                set conf(sbig,foncobtu) $shutterState
-               catch { set frm $frmm(Camera3) }
             } elseif { "$camProduct" == "andor" } {
                set conf(andor,foncobtu) $shutterState
-               catch { set frm $frmm(Camera11) }
             } elseif { "$camProduct" == "fingerlakes" } {
                set conf(fingerlakes,foncobtu) $shutterState
-               catch { set frm $frmm(Camera12) }
             } elseif { "$camProduct" == "cemes" } {
-               set conf(andor,foncobtu) $shutterState
-               catch { set frm $frmm(Camera11) }
-               catch { set frm $frmm(Camera13) }
+               set conf(cemes,foncobtu) $shutterState
             }
+            set frm [ $This.usr.onglet getframe $confCam($camItem,camName) ]
             #---
             switch -exact -- $shutterState {
                0  {
@@ -3614,11 +3454,9 @@ namespace eval ::confCam {
       variable This
       global caption conf confCam
 
-      set nn $This.usr.book
-
-      set index                         [ expr [ Rnotebook:currentIndex $nn ] - 1 ]
-      set confCam($camItem,camName)     [ lindex $confCam(names) $index ]
-      set conf(camera,$camItem,camName) [ lindex $confCam(names) $index ]
+      set camName                       [ $This.usr.onglet raise ]
+      set confCam($camItem,camName)     $camName
+      set conf(camera,$camItem,camName) $camName
 
       switch $conf(camera,$camItem,camName) {
          audine {
@@ -3727,10 +3565,10 @@ namespace eval ::confCam {
 
    proc SbigDispTemp { } {
       variable This
-      global caption confCam frmm
+      global caption confCam
 
       catch {
-         set frm $frmm(Camera3)
+         set frm [ $This.usr.onglet getframe sbig ]
          set camItem $confCam(currentCamItem)
          if { [ info exists This ] == "1" && [ catch { set tempstatus [ cam$confCam($camItem,camNo) infotemp ] } ] == "0" } {
             set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
@@ -3751,10 +3589,10 @@ namespace eval ::confCam {
 
    proc KittyDispTemp { } {
       variable This
-      global caption confCam frmm
+      global caption confCam
 
       catch {
-         set frm $frmm(Camera6)
+         set frm [ $This.usr.onglet getframe kitty ]
          set camItem $confCam(currentCamItem)
          if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
             set temp_ccd [ format "%+5.2f" $temp_ccd ]
@@ -3769,10 +3607,10 @@ namespace eval ::confCam {
 
    proc AndorDispTemp { } {
       variable This
-      global caption confCam frmm
+      global caption confCam
 
       catch {
-         set frm $frmm(Camera11)
+         set frm [ $This.usr.onglet getframe andor ]
          set camItem $confCam(currentCamItem)
          if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
             set temp_ccd [ format "%+5.2f" $temp_ccd ]
