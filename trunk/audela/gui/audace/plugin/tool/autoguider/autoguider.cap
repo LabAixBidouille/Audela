@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.25 2007-09-15 09:28:26 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.26 2007-09-23 12:43:59 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,6 +25,9 @@ set caption(autoguider,config_guidage)           "Setup..."
 set caption(autoguider,ecart_origine_etoile)     "Deviation"
 set caption(autoguider,impulsion)                "Pulse"
 set caption(autoguider,intervalle)               "Interval"
+set caption(autoguider,rechercher)               "Search"
+set caption(autoguider,effacer)                  "Remove"
+set caption(autoguider,centrer)                  "Center"
 
 set caption(autoguider,pose)                     "Exp."
 set caption(autoguider,binning)                  "Binning"
@@ -64,7 +67,7 @@ set caption(autoguider,deltaReverse)             "Reverse movement"
 set caption(autoguider,searchTitle)              "Star Search"
 set caption(autoguider,searchThreshin)           "Min. Luminosity (1)"
 set caption(autoguider,searchFwhm)               "Min. Fwhm"
-set caption(autoguider,searchRadius)             "Search Radius"
+set caption(autoguider,searchRadius)             "Search Radius (pixel)"
 set caption(autoguider,searchThreshold)          "Min. Luminosity (2)"
 
 # *************** Version française ***************************
@@ -84,6 +87,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,ecart_origine_etoile)  "Ecart"
    set caption(autoguider,impulsion)             "Impul."
    set caption(autoguider,intervalle)            "Intervalle"
+   set caption(autoguider,rechercher)            "Rechercher"
+   set caption(autoguider,effacer)               "Effacer"
+   set caption(autoguider,centrer)               "Centrer"
 
    set caption(autoguider,pose)                  "Pose"
    set caption(autoguider,binning)               "Binning"
@@ -123,7 +129,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchTitle)           "Recherche d'étoile"
    set caption(autoguider,searchThreshin)        "Intensité mini (1)"
    set caption(autoguider,searchFwhm)            "Fwhm mini"
-   set caption(autoguider,searchRadius)          "Rayon de recherche"
+   set caption(autoguider,searchRadius)          "Rayon de recherche (pixel)"
    set caption(autoguider,searchThreshold)       "Intensité mini (2)"
 
 # *************** Version italienne ***************************
@@ -143,6 +149,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,ecart_origine_etoile)  "Scarto"
    set caption(autoguider,impulsion)             "Impulsi"
    set caption(autoguider,intervalle)            "Intervallo"
+   set caption(autoguider,rechercher)            "Ricercare"
+   set caption(autoguider,effacer)               "Cancella"
+   set caption(autoguider,centrer)               "Centrare"
 
    set caption(autoguider,pose)                  "Posa"
    set caption(autoguider,binning)               "Binning"
@@ -182,7 +191,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchTitle)           "# Recherche d'étoile"
    set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
    set caption(autoguider,searchFwhm)            "# Fwhm mini"
-   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchRadius)          "# Rayon de recherche (pixel)"
    set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
 
 # *************** Version espagnole ***************************
@@ -202,6 +211,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,ecart_origine_etoile)  "Desviación"
    set caption(autoguider,impulsion)             "Impulsos"
    set caption(autoguider,intervalle)            "Intervalo"
+   set caption(autoguider,rechercher)            "Buscar"
+   set caption(autoguider,effacer)               "Eliminar"
+   set caption(autoguider,centrer)               "Centro"
 
    set caption(autoguider,pose)                  "Exp."
    set caption(autoguider,binning)               "Binning"
@@ -238,11 +250,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,alphaReverse)          "Invertir el movimiento"
    set caption(autoguider,deltaReverse)          "Invertir el movimiento"
 
-   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
-   set caption(autoguider,searchFwhm)            "# Fwhm mini"
-   set caption(autoguider,searchRadius)          "# Rayon de recherche"
-   set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
+   set caption(autoguider,searchTitle)           "Busqueda de estrella"
+   set caption(autoguider,searchThreshin)        "Mínima luminosidad (1)"
+   set caption(autoguider,searchFwhm)            "Fwhm minimo"
+   set caption(autoguider,searchRadius)          "Radio de búsqueda (pixel)"
+   set caption(autoguider,searchThreshold)       "Mínima luminosidad (2)"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -261,6 +273,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,ecart_origine_etoile)  "Abweichung"
    set caption(autoguider,impulsion)             "Pulsen"
    set caption(autoguider,intervalle)            "Zeit"
+   set caption(autoguider,rechercher)            "Suchen"
+   set caption(autoguider,effacer)               "Wegradieren"
+   set caption(autoguider,centrer)               "Zentrum"
 
    set caption(autoguider,pose)                  "Bel."
    set caption(autoguider,binning)               "Binning"
@@ -300,7 +315,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchTitle)           "# Recherche d'étoile"
    set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
    set caption(autoguider,searchFwhm)            "# Fwhm mini"
-   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchRadius)          "# Rayon de recherche (Pixel)"
    set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
 
 # *************** Version portugaise **************************
@@ -320,6 +335,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,ecart_origine_etoile)  "Desvio"
    set caption(autoguider,impulsion)             "Impulsos"
    set caption(autoguider,intervalle)            "Intervalo"
+   set caption(autoguider,rechercher)            "Procurar"
+   set caption(autoguider,effacer)               "Remover"
+   set caption(autoguider,centrer)               "Centrar"
 
    set caption(autoguider,pose)                  "Exposição"
    set caption(autoguider,binning)               "Binning"
@@ -350,7 +368,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,cumulNb)               "Número de aquisições"
    set caption(autoguider,darkTitle)             "Subtracção do dark"
    set caption(autoguider,darkFileName)          "Ficheiro dark"
-   set caption(autoguider,darkEnabled)           "Activar subtracção"
+  set caption(autoguider,darkEnabled)           "Activar subtracção"
    set caption(autoguider,slitWidth)             "Largura da fenda (pixels)"
    set caption(autoguider,slitRatio)             "Coeficiente (%/pixel)"
    set caption(autoguider,alphaReverse)          "Inverter sentido"
@@ -359,7 +377,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchTitle)           "# Recherche d'étoile"
    set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
    set caption(autoguider,searchFwhm)            "# Fwhm mini"
-   set caption(autoguider,searchRadius)          "# Rayon de recherche"
+   set caption(autoguider,searchRadius)          "# Rayon de recherche (pixel)"
    set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
 
 # *************** Version danoise *****************************
@@ -379,6 +397,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,ecart_origine_etoile)  "Deviation"
    set caption(autoguider,impulsion)             "Pulse"
    set caption(autoguider,intervalle)            "Interval"
+   set caption(autoguider,rechercher)            "Search"
+   set caption(autoguider,effacer)               "Remove"
+   set caption(autoguider,centrer)               "Center"
 
    set caption(autoguider,pose)                  "Exp."
    set caption(autoguider,binning)               "Binning"
@@ -418,7 +439,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,searchTitle)           "Star Search"
    set caption(autoguider,searchThreshin)        "Min. Luminosity (1)"
    set caption(autoguider,searchFwhm)            "Min. Fwhm"
-   set caption(autoguider,searchRadius)          "Search Radius"
+   set caption(autoguider,searchRadius)          "Search Radius (pixel)"
    set caption(autoguider,searchThreshold)       "Min. Luminosity (2)"
 
 }
