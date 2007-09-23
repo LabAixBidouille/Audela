@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.25 2007-09-15 09:27:15 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.26 2007-09-23 12:47:44 robertdelmas Exp $
 #
 
 #==============================================================
@@ -10,18 +10,11 @@
 #    initialise le namespace
 #==============================================================
 namespace eval ::autoguider {
-   global caption
    package provide autoguider 1.2
+   package require audela 1.4.0
 
    #--- Je charge le fichier caption pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] autoguider.cap ]
-
-   if { ! [ info exists conf(autoguider,searchThreshin)] }       { set conf(autoguider,searchThreshin)       "10" }
-   if { ! [ info exists conf(autoguider,searchFwhm)] }           { set conf(autoguider,searchFwhm)           "3"  }
-   if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4"  }
-   if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)     "40"  }
-
-   package require audela 1.4.0
 }
 
 #------------------------------------------------------------
@@ -80,6 +73,22 @@ proc ::autoguider::getPluginHelp { } {
 }
 
 #------------------------------------------------------------
+# getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::autoguider::getPluginDirectory { } {
+   return "autoguider"
+}
+
+#------------------------------------------------------------
+# getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::autoguider::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+}
+
+#------------------------------------------------------------
 # createPluginInstance
 #    cree une nouvelle instance de l'outil
 #------------------------------------------------------------
@@ -88,7 +97,6 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace caption conf
 
    source [ file join $audace(rep_plugin) tool autoguider autoguiderconfig.tcl ]
-   set ::caption(autguider,darkError) "echec de la soustration du dark "
 
    if { ! [ info exists conf(autoguider,pose) ] }                { set conf(autoguider,pose)                 "0" }
    if { ! [ info exists conf(autoguider,binning) ] }             { set conf(autoguider,binning)              [lindex $audace(list_binning) 1] }
@@ -109,37 +117,37 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(autoguider,cumulEnabled)] }         { set conf(autoguider,cumulEnabled)         "0" }
    if { ! [ info exists conf(autoguider,cumulNb)] }              { set conf(autoguider,cumulNb)              "5" }
    if { ! [ info exists conf(autoguider,darkEnabled)] }          { set conf(autoguider,darkEnabled)          "0" }
-   if { ! [ info exists conf(autoguider,darkFileName)] }         { set conf(autoguider,darkFileName)         "dark.fit"  }
-   if { ! [ info exists conf(autoguider,slitWidth)] }            { set conf(autoguider,slitWidth)            "4"  }
-   if { ! [ info exists conf(autoguider,slitRatio)] }            { set conf(autoguider,slitRatio)            "1.0"  }
-   if { ! [ info exists conf(autoguider,alphaReverse)] }         { set conf(autoguider,alphaReverse)         "0"  }
-   if { ! [ info exists conf(autoguider,deltaReverse)] }         { set conf(autoguider,deltaReverse)         "0"  }
+   if { ! [ info exists conf(autoguider,darkFileName)] }         { set conf(autoguider,darkFileName)         "dark.fit" }
+   if { ! [ info exists conf(autoguider,slitWidth)] }            { set conf(autoguider,slitWidth)            "4" }
+   if { ! [ info exists conf(autoguider,slitRatio)] }            { set conf(autoguider,slitRatio)            "1.0" }
+   if { ! [ info exists conf(autoguider,alphaReverse)] }         { set conf(autoguider,alphaReverse)         "0" }
+   if { ! [ info exists conf(autoguider,deltaReverse)] }         { set conf(autoguider,deltaReverse)         "0" }
    if { ! [ info exists conf(autoguider,searchThreshin)] }       { set conf(autoguider,searchThreshin)       "10" }
-   if { ! [ info exists conf(autoguider,searchFwhm)] }           { set conf(autoguider,searchFwhm)           "3"  }
-   if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4"  }
-   if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)      "40"  }
+   if { ! [ info exists conf(autoguider,searchFwhm)] }           { set conf(autoguider,searchFwhm)           "3" }
+   if { ! [ info exists conf(autoguider,searchRadius)] }         { set conf(autoguider,searchRadius)         "4" }
+   if { ! [ info exists conf(autoguider,searchThreshold)] }      { set conf(autoguider,searchThreshold)      "40" }
 
-   set private($visuNo,base)              $in
-   set private($visuNo,This)              "$in.autoguider"
-   set private($visuNo,hCanvas)           [::confVisu::getCanvas $visuNo]
+   set private($visuNo,base)             $in
+   set private($visuNo,This)             "$in.autoguider"
+   set private($visuNo,hCanvas)          [::confVisu::getCanvas $visuNo]
 
-   set private($visuNo,monture_ok)        0
-   set private($visuNo,acquisitionState)  0
-   set private($visuNo,centerResult)      ""
-   set private($visuNo,searchResult)      ""
-   set private($visuNo,mode)              "guide"
-   set private($visuNo,dx)                "0.00"
-   set private($visuNo,dy)                "0.00"
-   set private($visuNo,delay,alpha)       "0.00"
-   set private($visuNo,delay,delta)       "0.00"
-   set private($visuNo,originCoord)       ""
-   set private($visuNo,targetCoord)       ""
-   set private($visuNo,interval)          ""
-   set private($visuNo,previousClock)     "0"
-   set private($visuNo,updateAxis)        "0"
-   set private($visuNo,camBufNo)          "0"
-   set private($visuNo,cumulCounter)      "0"
-   set private($visuNo,cumulFileName)     "autoguider_cumul_visu$visuNo"
+   set private($visuNo,monture_ok)       0
+   set private($visuNo,acquisitionState) 0
+   set private($visuNo,centerResult)     ""
+   set private($visuNo,searchResult)     ""
+   set private($visuNo,mode)             "guide"
+   set private($visuNo,dx)               "0.00"
+   set private($visuNo,dy)               "0.00"
+   set private($visuNo,delay,alpha)      "0.00"
+   set private($visuNo,delay,delta)      "0.00"
+   set private($visuNo,originCoord)      ""
+   set private($visuNo,targetCoord)      ""
+   set private($visuNo,interval)         ""
+   set private($visuNo,previousClock)    "0"
+   set private($visuNo,updateAxis)       "0"
+   set private($visuNo,camBufNo)         "0"
+   set private($visuNo,cumulCounter)     "0"
+   set private($visuNo,cumulFileName)    "autoguider_cumul_visu$visuNo"
 
    #--- Petit raccourci bien pratique
    set This $private($visuNo,This)
@@ -151,7 +159,8 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
    frame $This.titre -borderwidth 2 -relief groove
       Button $This.titre.but -borderwidth 1 -text "$caption(autoguider,titre)" \
         -command {
-           ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::autoguider::getPluginType]] autoguider [::autoguider::getPluginHelp]
+           ::audace::showHelpPlugin [::audace::getPluginTypeDirectory [::autoguider::getPluginType]] \
+              [::autoguider::getPluginDirectory] [::autoguider::getPluginHelp]
         }
       pack $This.titre.but -side top -fill x
       DynamicHelp::add $This.titre.but -text "$caption(autoguider,help_titre)"
@@ -225,11 +234,11 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       checkbutton $This.suivi.moteur_ok -padx 0 -pady 0 \
          -text "$caption(autoguider,ctrl_monture)" \
          -variable ::autoguider::private($visuNo,monture_ok) -command "::autoguider::initMount $visuNo"
-      button $This.suivi.search -text "Search" -height 1 \
+      button $This.suivi.search -text "$caption(autoguider,rechercher)" -height 1 \
         -borderwidth 1 -padx 2 -pady 2 -command "::autoguider::startSearchStar $visuNo"
-      button $This.suivi.clear -text "Clear" -height 1 \
+      button $This.suivi.clear -text "$caption(autoguider,effacer)" -height 1 \
         -borderwidth 1 -padx 2 -pady 2 -command "::autoguider::clearSearchStar $visuNo"
-      button $This.suivi.center -text "Center" -height 1 \
+      button $This.suivi.center -text "$caption(autoguider,centrer)" -height 1 \
         -borderwidth 1 -pady 2 -command "::autoguider::startCenterStar $visuNo"
 
       label $This.suivi.label_d      -text "$caption(autoguider,ecart_origine_etoile)"
@@ -253,9 +262,9 @@ proc ::autoguider::createPluginInstance { { in "" } { visuNo 1 } } {
       grid $This.suivi.delay_delta    -row 5 -column 2 -sticky w
       grid $This.suivi.label_clock    -row 6 -column 0 -sticky w
       grid $This.suivi.lab_clock      -row 6 -column 1 -columnspan 2
-      grid $This.suivi.search         -row 7 -column 0 -columnspan 1 -sticky ew
-      grid $This.suivi.clear          -row 7 -column 1 -columnspan 1 -sticky ew
-      grid $This.suivi.center         -row 7 -column 2 -columnspan 1 -sticky ew
+      grid $This.suivi.search         -row 7 -column 0 -columnspan 3 -sticky ew
+      grid $This.suivi.clear          -row 8 -column 0 -columnspan 3 -sticky ew
+      grid $This.suivi.center         -row 9 -column 0 -columnspan 3 -sticky ew
    grid $This.suivi -sticky nsew
 
    #--- Mise a jour dynamique des couleurs
@@ -343,7 +352,6 @@ proc ::autoguider::startTool { { visuNo 1 } } {
    #--- j'active la mise a jour automatique de l'affichage quand on change de miroir
    ::confVisu::addMirrorListener $visuNo "::autoguider::onChangeSubWindow $visuNo"
 
-
    #--- j'affiche la cible si necessaire
    if { $::conf(autoguider,showTarget) == "1" } {
       changeShowTarget $visuNo
@@ -374,7 +382,6 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
    #--- je desactive l'adaptation de l'affichage quand on change de miroir
    ::confVisu::removeMirrorListener $visuNo "::autoguider::onChangeSubWindow $visuNo"
 
-
    #--- j'arrete le suivi
    stopAcquisition $visuNo
 
@@ -395,11 +402,11 @@ proc ::autoguider::stopTool { { visuNo 1 } } {
 
 #------------------------------------------------------------
 #  startSearchStar
-#     cherche une l'étoile la plus brillante
+#     cherche l'étoile la plus brillante
 #  parametres
 #     visuNo : numero de visu
 #  return :
-#     - les coordonnes de l'etoile trouvee
+#     - les coordonnees de l'etoile trouvee
 #     - une chaine vide si une etoile n'est pas trouvee
 #------------------------------------------------------------
 proc ::autoguider::startSearchStar { visuNo } {
@@ -431,7 +438,7 @@ proc ::autoguider::startSearchStar { visuNo } {
 
 #------------------------------------------------------------
 #  clearSearchStar
-#     efface les marques de étoiles
+#     efface les marques des étoiles
 #  parametres
 #     visuNo : numero de visu
 #  return :
@@ -443,14 +450,13 @@ proc ::autoguider::clearSearchStar { visuNo } {
    [::confVisu::getCanvas $visuNo] delete autoguiderstar
 }
 
-
 #------------------------------------------------------------
 #  startCenterStar
 #     centre l'étoile
 #  parametres
 #     visuNo : numero de visu
 #  return :
-#     - les coordonnes de l'etoile trouvee si l'etoile est centree
+#     - les coordonnees de l'etoile trouvee si l'etoile est centree
 #     - une chaine vide si l'etoile n'est pas centree
 #------------------------------------------------------------
 proc ::autoguider::startCenterStar { visuNo } {
@@ -586,7 +592,6 @@ proc ::autoguider::startAcquisition { visuNo } {
    return 0
 }
 
-
 #------------------------------------------------------------
 # stopAcquisition
 #    Demande l'arret des acquisitions . L'arret sera effectif apres la fin
@@ -608,7 +613,6 @@ proc ::autoguider::stopAcquisition { visuNo } {
       set private($visuNo,acquisitionState) 0
    }
 }
-
 
 #------------------------------------------------------------
 # processAcquisition
@@ -642,7 +646,6 @@ proc ::autoguider::processAcquisition { visuNo camNo mainThreadNo intervalle } {
       after $afterdDelay [list processAcquisition $visuNo $camNo $mainThreadNo $intervalle]
    }
 }
-
 
 #------------------------------------------------------------
 # processAcquisition
@@ -696,7 +699,6 @@ proc ::autoguider::processAcquisition1 { visuNo } {
       tk_messageBox -message "$catchMessage. See console." -title "$caption(autoguider,titre)" -icon error
       return 1
    }
-
 
    if { $private($visuNo,acquisitionState) == "1"
       && $private($visuNo,continuousAcquisition) == "1"
@@ -800,7 +802,6 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
       } elseif { $private($visuNo,dy) <  -$conf(autoguider,targetBoxSize) } {
          set dy [expr -$conf(autoguider,targetBoxSize) ]
       }
-
 
       if { $::conf(autoguider,detection)=="SLIT" } {
          #--- je calcule la methode de detection pour la prochaine image
@@ -943,7 +944,6 @@ proc ::autoguider::processAcquisition2 { visuNo bufNo } {
       }
 }
 
-
 #------------------------------------------------------------
 # initMount
 #    initialise les parametres de la monture
@@ -1031,6 +1031,7 @@ proc ::autoguider::setTargetCoord { visuNo x y } {
       moveTarget $visuNo $private($visuNo,targetCoord)
    }
 }
+
 #------------------------------------------------------------
 # createTarget
 #    affiche la cible autour du point de coordonnees targetCoord
@@ -1457,7 +1458,6 @@ proc ::autoguider::onChangeSubWindow { visuNo { varname "" } { arrayindex "" } {
    moveTarget $visuNo $private($visuNo,targetCoord)
 }
 
-
 #------------------------------------------------------------
 # selectBinning
 #    affiche la fenetre de selection du format d'image d'une webcam
@@ -1586,7 +1586,6 @@ proc ::autoguider::searchStar { visuNo  } {
    variable private
 
    set bufNo [::confVisu::getBufNo $visuNo ]
-
 
    #--- A_starlist - returns number of stars on image and save stars-list to file
    #
