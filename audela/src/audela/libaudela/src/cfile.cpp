@@ -355,7 +355,7 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
       initialMipsHi = (float)dataInfo.maximum;
       // je recupere la date en temps GMT
       tmtime = gmtime( &dataInfo.timestamp);
-      strftime( gmtDate, 70, "%d/%m/%Y %H:%M:%S", tmtime );
+      strftime( gmtDate, 70, "%Y-%m-%dT%H:%M:%S", tmtime );
       // je recupere le nom de la camera
       sprintf(camera, "%s %s",dataInfo.make,dataInfo.model);  
       // je recupere le filtre 
