@@ -2,16 +2,14 @@
 # Fichier : poly.tcl
 # Description : Ce script regroupe des fonctions pour gérer des images FITS polychromes
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: poly.tcl,v 1.5 2007-06-14 21:22:19 robertdelmas Exp $
+# Mise a jour $Id: poly.tcl,v 1.6 2007-09-23 11:22:56 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier poly.htm dans le dossier doc_html.
 
 
 proc seriesApoly {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -45,9 +43,7 @@ proc seriesApoly {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -78,9 +74,7 @@ proc seriesApoly {args} {
 
 
 proc polyAserie {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep" "-ex_polyNo"]]]=="1"} {
 
@@ -116,9 +110,7 @@ proc polyAserie {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -149,9 +141,7 @@ proc polyAserie {args} {
 
 
 proc polyAseries {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -185,9 +175,7 @@ proc polyAseries {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -210,9 +198,7 @@ proc polyAseries {args} {
 
 
 proc poly_nbcouleurs {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 1 0 [list "" [list "-rep" "-ext"]]]=="1"} {
 
@@ -235,9 +221,7 @@ proc poly_nbcouleurs {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -273,9 +257,7 @@ proc poly_nbcouleurs {args} {
 
 
 proc poly_fenetre {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -310,9 +292,7 @@ proc poly_fenetre {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -329,9 +309,7 @@ proc poly_fenetre {args} {
 
 
 proc poly_souris_fenetre {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 2 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -365,16 +343,15 @@ proc poly_souris_fenetre {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
       }
 
     # Procédure principale
-    poly_fenetre $in $ex $audace(box) -in_rep $in_rep -ex_rep $ex_rep -ext $ext
+    set rect [ ::confVisu::getBox 1 ]
+    poly_fenetre $in $ex $rect -in_rep $in_rep -ex_rep $ex_rep -ext $ext
   } else {
     error $caption(poly,syntax,poly_souris_fenetre)
     }
@@ -382,9 +359,7 @@ proc poly_souris_fenetre {args} {
 
 
 proc poly_rot {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 5 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -421,9 +396,7 @@ proc poly_rot {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -440,9 +413,7 @@ proc poly_rot {args} {
 
 
 proc poly_trans {args} {
-#--- Debut Modif Robert
   global audace caption conf
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 4 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -478,9 +449,7 @@ proc poly_trans {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -497,9 +466,7 @@ proc poly_trans {args} {
 
 
 proc poly_series_traligne {args} {
-#--- Debut Modif Robert
   global audace caption conf script
-#--- Fin Modif Robert
 
   if {[syntaxe_args $args 3 0 [list "" [list "-rep" "-ext" "-in_rep" "-ex_rep"]]]=="1"} {
 
@@ -534,9 +501,7 @@ proc poly_series_traligne {args} {
       }
     if {$ext_index>=0} {
       set ext [lindex [lindex $options_1param $ext_index] 1]
-#--- Debut Modif Robert
     } elseif {$conf(fichier,compres)==0} {
-#--- Fin Modif Robert
       set ext $conf(extension,defaut)
     } else {
       set ext $conf(extension,defaut).gz
@@ -585,7 +550,7 @@ proc poly_series_traligne {args} {
       destroy .poly_series_traligne
 
       # On enregistre les coordonnées du cadre
-      set cadre_ref $audace(box)
+      set cadre_ref [ ::confVisu::getBox 1 ]
 
       console::affiche_resultat "$caption(poly,series_trreg_cadre-a-rec) $serie\n"
       # Chargement du premier fichier de la série courante
@@ -604,7 +569,7 @@ proc poly_series_traligne {args} {
       # On supprime la fenêtre
       destroy .poly_series_traligne
       # On enregistre les coordonnées du cadre
-      set cadre_amodif $audace(box)
+      set cadre_amodif [ ::confVisu::getBox 1 ]
       # Calcul des modifications de translation / rotation
       set modifs [calcul_trzaligne $cadre_ref $cadre_amodif]
 
