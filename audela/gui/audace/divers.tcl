@@ -2,7 +2,7 @@
 # Fichier divers.tcl
 # Description : Ce script regroupe diverses petites fonctions
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: divers.tcl,v 1.9 2007-06-14 21:21:21 robertdelmas Exp $
+# Mise a jour $Id: divers.tcl,v 1.10 2007-09-23 11:17:45 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier divers.htm dans le dossier doc_html.
@@ -1370,7 +1370,8 @@ proc souris_fenetre {args} {
       }
 
     # Procédure principale
-    serie_fenetre $in $ex $audace(box) -in_rep $in_rep -ex_rep $ex_rep -in_ext $in_ext -ex_ext $ex_ext -in_polyNo $in_polyNo -ex_polyNo $ex_polyNo
+    set rect [ ::confVisu::getBox 1 ]
+    serie_fenetre $in $ex $rect -in_rep $in_rep -ex_rep $ex_rep -in_ext $in_ext -ex_ext $ex_ext -in_polyNo $in_polyNo -ex_polyNo $ex_polyNo
   } else {
     error $caption(divers,syntax,souris_fenetre)
     }
@@ -1654,7 +1655,7 @@ proc series_traligne {args} {
       destroy .series_traligne
 
       # On enregistre les coordonnées du cadre
-      set cadre_ref $audace(box)
+      set cadre_ref [ ::confVisu::getBox 1 ]
 
       console::affiche_resultat "$caption(divers,series_trreg_cadre-a-rec) $serie\n"
       # Chargement du premier fichier de la série courante
@@ -1673,7 +1674,7 @@ proc series_traligne {args} {
       # On supprime la fenêtre
       destroy .series_traligne
       # On enregistre les coordonnées du cadre
-      set cadre_amodif $audace(box)
+      set cadre_amodif [ ::confVisu::getBox 1 ]
       # Calcul des modifications de translation / rotation
       set modifs [calcul_trzaligne $cadre_ref $cadre_amodif]
 
