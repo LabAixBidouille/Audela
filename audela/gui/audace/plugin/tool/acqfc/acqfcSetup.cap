@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.3 2007-08-30 18:14:52 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.4 2007-09-27 19:38:07 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,7 +25,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisition - Configuration"
    set caption(acqfcSetup,texte1)                 "Afficher les messages sur la Console :"
-   set caption(acqfcSetup,texte2)                 "Tracer les dates dans le fichier log :"
+   set caption(acqfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
 
    set caption(acqfcSetup,ok)                     "OK"
    set caption(acqfcSetup,appliquer)              "Appliquer"
@@ -36,8 +36,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisizione - Configurazione"
-   set caption(acqfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(acqfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(acqfcSetup,texte1)                 "Mostra messaggio sul terminale:"
+   set caption(acqfcSetup,texte2)                 "Salvataggio date nel file di log:"
 
    set caption(acqfcSetup,ok)                     "OK"
    set caption(acqfcSetup,appliquer)              "Applica"
@@ -48,8 +48,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Adquisición - Configuración"
-   set caption(acqfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(acqfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(acqfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
+   set caption(acqfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
 
    set caption(acqfcSetup,ok)                     "OK"
    set caption(acqfcSetup,appliquer)              "Aplicar"
@@ -61,7 +61,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Belichtung - Konfiguration"
    set caption(acqfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(acqfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(acqfcSetup,texte2)                 "# Enregistrer les dates dans le fichier log :"
 
    set caption(acqfcSetup,ok)                     "OK"
    set caption(acqfcSetup,appliquer)              "Anwenden"
@@ -73,7 +73,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Aquisição - Configuração"
    set caption(acqfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(acqfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(acqfcSetup,texte2)                 "# Enregistrer les dates dans le fichier log :"
 
    set caption(acqfcSetup,ok)                     "OK"
    set caption(acqfcSetup,appliquer)              "Aplicar"

@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfcSetup.cap
-# Mise a jour $Id: pretrfcSetup.cap,v 1.3 2007-09-05 17:24:51 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.cap,v 1.4 2007-09-27 19:38:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,7 +25,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Prétraitement - Configuration"
    set caption(pretrfcSetup,texte1)                 "Afficher les messages sur la Console :"
-   set caption(pretrfcSetup,texte2)                 "Tracer les dates dans le fichier log :"
+   set caption(pretrfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
 
    set caption(pretrfcSetup,ok)                     "OK"
    set caption(pretrfcSetup,appliquer)              "Appliquer"
@@ -36,8 +36,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Pretrattamento - Configurazione"
-   set caption(pretrfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(pretrfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(pretrfcSetup,texte1)                 "Mostra messaggio sul terminale:"
+   set caption(pretrfcSetup,texte2)                 "Salvataggio date nel file di log:"
 
    set caption(pretrfcSetup,ok)                     "OK"
    set caption(pretrfcSetup,appliquer)              "Applica"
@@ -48,8 +48,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Preproceso - Configuración"
-   set caption(pretrfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(pretrfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(pretrfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
+   set caption(pretrfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
 
    set caption(pretrfcSetup,ok)                     "OK"
    set caption(pretrfcSetup,appliquer)              "Aplicar"
@@ -61,7 +61,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Vorhandlung - Konfiguration"
    set caption(pretrfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(pretrfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(pretrfcSetup,texte2)                 "# Enregistrer les dates dans le fichier log :"
 
    set caption(pretrfcSetup,ok)                     "OK"
    set caption(pretrfcSetup,appliquer)              "Anwenden"
@@ -73,7 +73,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Pré-processamento - Configuração"
    set caption(pretrfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(pretrfcSetup,texte2)                 "# Tracer les dates dans le fichier log :"
+   set caption(pretrfcSetup,texte2)                 "# Enregistrer les dates dans le fichier log :"
 
    set caption(pretrfcSetup,ok)                     "OK"
    set caption(pretrfcSetup,appliquer)              "Aplicar"
