@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.14 2007-09-22 06:39:48 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.15 2007-09-27 21:10:19 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -223,7 +223,8 @@ proc ::dslr::changerSelectionTelechargementAPN { visuNo} {
 # ::dslr::getBinningList
 #    Retourne la liste des binnings disponibles de la camera
 #
-proc ::dslr::getBinningList { camNo } {
+proc ::dslr::getBinningList { camItem } {
+   set camNo [::confCam::getCamNo $camItem]
    set binningList [ cam$camNo quality list ]
    return $binningList
 }
@@ -252,7 +253,7 @@ proc ::dslr::getBinningList { camNo } {
 #
 proc ::dslr::getPluginProperty { camItem propertyName } {
    switch $propertyName {
-      binningList      { return [ ::dslr::getBinningList $camNo ] }
+      binningList      { return [ ::dslr::getBinningList $camItem] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
       hasBinning       { return 0 }
