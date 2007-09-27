@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.26 2007-09-23 12:43:59 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.27 2007-09-27 19:47:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -188,11 +188,11 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,alphaReverse)          "Movimento inverso"
    set caption(autoguider,deltaReverse)          "Movimento inverso"
 
-   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
-   set caption(autoguider,searchFwhm)            "# Fwhm mini"
-   set caption(autoguider,searchRadius)          "# Rayon de recherche (pixel)"
-   set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
+   set caption(autoguider,searchTitle)           "Ricerca di stelle"
+   set caption(autoguider,searchThreshin)        "Intensita` minima (1)"
+   set caption(autoguider,searchFwhm)            "Fwhm minima"
+   set caption(autoguider,searchRadius)          "Raggio di ricerca (pixel)"
+   set caption(autoguider,searchThreshold)       "Intensita` minima (2)"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {

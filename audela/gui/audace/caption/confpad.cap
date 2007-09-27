@@ -1,6 +1,6 @@
 #
 # Fichier : confpad.cap
-# Mise a jour $Id: confpad.cap,v 1.9 2007-09-12 17:18:00 robertdelmas Exp $
+# Mise a jour $Id: confpad.cap,v 1.10 2007-09-27 19:47:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,7 +19,7 @@ set caption(confpad,fermer)          "Close"
 set caption(confpad,aide)            "Help"
 set caption(confpad,configurer)      "Set up"
 
-set caption(confpad,pas_raquette)    "# Il n'y a pas de raquette présente."
+set caption(confpad,pas_raquette)    "No Hand Controller."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -45,7 +45,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,aide)         "Aiuto"
    set caption(confpad,configurer)   "Configurare"
 
-   set caption(confpad,pas_raquette) "# Il n'y a pas de raquette présente."
+   set caption(confpad,pas_raquette) "Non e' presente la pulsantiera."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -58,7 +58,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,aide)         "Ayuda"
    set caption(confpad,configurer)   "Configurar"
 
-   set caption(confpad,pas_raquette) "# Il n'y a pas de raquette présente."
+   set caption(confpad,pas_raquette) "No hay controlador de mano."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -69,7 +69,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,appliquer)    "Anwenden"
    set caption(confpad,fermer)       "Schließen"
    set caption(confpad,aide)         "Hilfe"
-   set caption(confpad,configurer)   "Konfigurieren"
+  set caption(confpad,configurer)   "Konfigurieren"
 
    set caption(confpad,pas_raquette) "# Il n'y a pas de raquette présente."
 
@@ -97,7 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,aide)         "Hjælp"
    set caption(confpad,configurer)   "Opsætning"
 
-   set caption(confpad,pas_raquette) "# Il n'y a pas de raquette présente."
+   set caption(confpad,pas_raquette) "Ingen håndkontrol."
 
 }
 
