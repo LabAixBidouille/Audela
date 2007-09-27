@@ -2,7 +2,7 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: mauclaire.tcl,v 1.12 2007-08-24 17:03:52 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.13 2007-09-27 20:07:58 robertdelmas Exp $
 #
 
 #--------------------- Liste des fonctions -----------------------------------#
@@ -118,7 +118,7 @@ proc bm_sphot { args } {
          #-- Attend que la variable $flag_ok change
          vwait flag_ok
          if { $flag_ok==1 } {
-            set coords_zone $audace(box)
+            set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
             set flag_ok 2
             destroy .benji
          } elseif { $flag_ok==2 } {
@@ -283,7 +283,7 @@ proc bm_addmotcleftxt { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 28-11-2006
 # Date de mise a jour : 28-11-2006
-# Arguments : valeur moeynne desiree
+# Arguments : valeur moyenne desiree
 ###############################################################################
 
 proc bm_autoflat { args } {
@@ -709,7 +709,7 @@ proc bm_registerplin { args } {
       #-- Attend que la variable $flag_ok change
       vwait flag_ok
       if { $flag_ok==1 } {
-         set coords_zone $audace(box)
+         set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
          set flag_ok 2
          destroy .benji
       } elseif { $flag_ok==2 } {
@@ -751,7 +751,7 @@ proc bm_registerplin { args } {
       #-- Attend que la variable $flag_ok change
       vwait flag_ok
       if { $flag_ok==1 } {
-         set coords_zone $audace(box)
+         set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
          set flag_ok 2
          destroy .benji
       } elseif { $flag_ok==2 } {
@@ -792,8 +792,8 @@ proc bm_registerplin { args } {
       ::console::affiche_resultat "Déplacement moyen entre chaque image : $deplacement_x ; $deplacement_y\n"
 
       #--- Recalage de chaque image (sauf n°1)
-      #-- le deplacement de l'objet est suppose lineaire
-      #-- Isole le prefixe des noms de fichiers
+      #--- le deplacement de l'objet est suppose lineaire
+      #--- Isole le prefixe des noms de fichiers
       regexp {(.+)\-} $nom_generique match pref_nom_generique
       ::console::affiche_resultat "Appariement de $nbimg images...\n"
       #- trans2 est Bugge !
@@ -844,11 +844,6 @@ proc bm_sflat { args } {
 
       buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 $naxis2 FORMAT_USHORT COMPRESS_NONE 0
       buf$audace(bufNo) offset $intensite
-      #for {set y 1} {$y<=$naxis2} {incr y} {
-         #for {set x 1} {$x<=$naxis1} {incr x} {
-            #buf$audace(bufNo) setpix [ list $x $y ] $intensite
-         #}
-      #}
       buf$audace(bufNo) setkwd [ list NAXIS 2 int "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS1 $naxis1 int "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS2 $naxis2 int "" "" ]
