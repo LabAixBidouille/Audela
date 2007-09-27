@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.17 2007-09-20 19:11:18 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.18 2007-09-27 19:33:36 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -584,9 +584,9 @@ namespace eval ::AlignManager {
       }
 
       #--- get selected box
-      if {[info exists audace(box)]==1} {
+      if { [ ::confVisu::getBox 1 ] != "" } {
          #--- use selected box
-         set box $audace(box)
+         set box [ ::confVisu::getBox 1 ]
       } else {
          #--- else, use all picture
          tk_messageBox -type ok -icon warning -title $caption(superpad,ErrorMessageTitle) \
