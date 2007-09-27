@@ -1,6 +1,6 @@
 #
 # Fichier : conflink.cap
-# Mise a jour $Id: conflink.cap,v 1.9 2007-09-12 17:17:48 robertdelmas Exp $
+# Mise a jour $Id: conflink.cap,v 1.10 2007-09-27 19:47:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -19,7 +19,7 @@ set caption(conflink,appliquer)              "Apply"
 set caption(conflink,fermer)                 "Close"
 set caption(conflink,aide)                   "Help"
 
-set caption(conflink,pas_liaison)            "# Il n'y a pas de liaison présente."
+set caption(conflink,pas_liaison)            "No Link."
 
 set caption(conflink,attention)              "Warning"
 set caption(conflink,connexion_texte1)       "Link Connection in Progress..."
@@ -53,7 +53,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,fermer)              "Chiudi"
    set caption(conflink,aide)                "Aiuto"
 
-   set caption(conflink,pas_liaison)         "# Il n'y a pas de liaison présente."
+   set caption(conflink,pas_liaison)         "Nessun collegamento."
 
    set caption(conflink,attention)           "Attenzione"
    set caption(conflink,connexion_texte1)    "Attendere qualche secondo per la"
@@ -70,7 +70,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,fermer)              "Cerrar"
    set caption(conflink,aide)                "Ayuda"
 
-   set caption(conflink,pas_liaison)         "# Il n'y a pas de liaison présente."
+   set caption(conflink,pas_liaison)         "No hay enlace."
 
    set caption(conflink,attention)           "!Cuidado¡"
    set caption(conflink,connexion_texte1)    "Conectando con el enlace..."
@@ -121,7 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,fermer)              "Close"
    set caption(conflink,aide)                "Help"
 
-   set caption(conflink,pas_liaison)         "# Il n'y a pas de liaison présente."
+   set caption(conflink,pas_liaison)         "No Link."
 
    set caption(conflink,attention)           "Warning"
    set caption(conflink,connexion_texte1)    "Link Connection in Progress..."
