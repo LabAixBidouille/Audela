@@ -343,7 +343,7 @@ namespace eval ::CalaPhot {
          # Affiche l'heure de fin de traitement
          Message consolog "\n\n%s %s\n" $texte_photo(heure_fin) [clock format [clock seconds]]
          Message consolog "%s\n" $texte_photo(fin_normale)
-    
+
          # Ferme le fichier de sortie des résultats...
          #close $fileId
     }
@@ -457,10 +457,6 @@ namespace eval ::CalaPhot {
     proc AffichageMenuAsteroide {indice nom_image} {
         global audace
         variable texte_photo
-
-        # Force l'utilisateur à recliquer
-        catch {unset audace(clickxy)}
-        catch {unset audace(box)}
 
         # Affichage de la première ou de la dernière image de la série
         loadima ${nom_image}${indice}
@@ -992,21 +988,13 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     proc Centroide {} {
         global audace
-        if [info exists audace(clickxy)] {
-            set x1 [expr [lindex $audace(clickxy) 0] - 7]
-            set x2 [expr [lindex $audace(clickxy) 0] + 7]
-            set y1 [expr [lindex $audace(clickxy) 1] - 7]
-            set y2 [expr [lindex $audace(clickxy) 1] + 7]
-        }
-        if [info exists audace(box)] {
+        set rect [ ::confVisu::getBox $audace(visuNo) ]
+        if { $rec != "" } {
             # Récupération des coordonnées de la boite de sélection
-            set rect $audace(box)
             set x1 [lindex $rect 0]
             set y1 [lindex $rect 1]
             set x2 [lindex $rect 2]
             set y2 [lindex $rect 3]
-        }
-        if {([info exists audace(box)]) || ([info exists audace(clickxy)])} {
             # Calcul du centre de l'étoile
             # Selon Alain Klotz, "buf$audace(bufNo) centro" fait les choses suivantes
             # 1. recherche la position du pixel maximal dans la fenetre
