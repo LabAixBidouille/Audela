@@ -394,10 +394,6 @@ namespace eval ::TriFWHM {
         set command_bouton(lancement) ::TriFWHM::ValideSelection
         set command_bouton(annulation) ::TriFWHM::AnnuleSelection
 
-        if [info exists audace(clickxy)] {
-            unset audace(clickxy)
-        }
-
         foreach champ {selection lancement annulation} {
             button $audace(base).selectetoile.b$champ -text $texte_bouton($champ) -command $command_bouton($champ)
             pack $audace(base).selectetoile.b$champ -anchor center -side top -fill x -padx 4 -pady 4 -in $audace(base).selectetoile  -anchor center -expand 1 -fill both -side top
@@ -421,7 +417,8 @@ namespace eval ::TriFWHM {
     #   échéant, met ses coordonnées en mémoire (mode manuel)                  #
     #                                                                          #
     #  Paramètres d'entrée :                                                   #
-    #  - audace(box) coordonnées de la boite tracée par l'utilisateur.         #
+    #  - [ ::confVisu::getBox $audace(visuNo) ] coordonnées de la boite tracée #
+    #    par l'utilisateur.                                                    #
     #                                                                          #
     # Paramètres de sortie :                                                   #
     #  - nombre_boite : nombre de boites et donc d'étoiles valides             #
@@ -449,24 +446,15 @@ namespace eval ::TriFWHM {
         variable boite
         variable cap_tri
 
-        #  Détection de ce que l'utilisateur a bien cliqué
-        if [info exists audace(clickxy)] {
-            set x1 [expr [lindex $audace(clickxy) 0] - 10]
-            set x2 [expr [lindex $audace(clickxy) 0] + 10]
-            set y1 [expr [lindex $audace(clickxy) 1] - 10]
-            set y2 [expr [lindex $audace(clickxy) 1] + 10]
-        }
-
         #  Détection de ce que l'utilisateur a bien tracé une boite                #
-        if [info exists audace(box)] {
+        set rect [ ::confVisu::getBox $audace(visuNo) ]
+        if { $rec != "" } {
             #  Récupération des coordonnées (boite) retournée par la souris            #
-            set x1 [lindex $audace(box) 0]
-            set y1 [lindex $audace(box) 1]
-            set x2 [lindex $audace(box) 2]
-            set y2 [lindex $audace(box) 3]
-        }
+            set x1 [lindex $rect 0]
+            set y1 [lindex $rect 1]
+            set x2 [lindex $rect 2]
+            set y2 [lindex $rect 3]
 
-        if {([info exists audace(box)]) || ([info exists audace(clickxy)])} {
             #  Recalage de la boite
             set xy [buf$audace(bufNo) centro [list $x1 $y1 $x2 $y2]]
             set x1 [expr round([lindex $xy 0] - 10)]
@@ -909,7 +897,15 @@ namespace eval ::TriFWHM {
         set pixel_max_y 0
         for {set hor $x1} {$hor <= $x2} {incr hor} {
             for {set ver $y1} {$ver <= $y2} {incr ver} {
-                set pixel_courant [buf$audace(bufNo) getpix [list $hor $ver]]
+                set pixel_intens [buf$audace(bufNo) getpix [list $hor $ver]]
+                if { [ lindex $pixel_intens 0 ] == "1" } {
+                    set pixel_courant [ lindex $pixel_intens 1 ]
+                } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+                    set intensR [ lindex $pixel_intens 1 ]
+                    set intensV [ lindex $pixel_intens 2 ]
+                    set intensB [ lindex $pixel_intens 3 ]
+                    set pixel_courant [ expr $intensR + $intensV + $intensB ]
+                 }
                 if {$pixel_courant > $pixel_max} {
                     set pixel_max $pixel_courant
                     set pixel_max_x $hor
@@ -937,7 +933,15 @@ namespace eval ::TriFWHM {
             for {set hor [expr $pixel_max_x - $couche]} \
                     {$hor <= [expr $pixel_max_x + $couche]} {incr hor} {
                 set en_haut [expr $pixel_max_y + $couche]
-                set pixel_haut [buf$audace(bufNo) getpix [list $hor $en_haut]]
+                set pixel_intens [buf$audace(bufNo) getpix [list $hor $en_haut]]
+                if { [ lindex $pixel_intens 0 ] == "1" } {
+                    set pixel_haut [ lindex $pixel_intens 1 ]
+                } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+                    set intensR [ lindex $pixel_intens 1 ]
+                    set intensV [ lindex $pixel_intens 2 ]
+                    set intensB [ lindex $pixel_intens 3 ]
+                    set pixel_haut [ expr $intensR + $intensV + $intensB ]
+                 }
                 set matrice($hor,$en_haut) 0
                 if {$pixel_haut > $seuil_mini} {
                     set matrice($hor,$en_haut) [expr $pixel_haut - $fond]
@@ -945,7 +949,15 @@ namespace eval ::TriFWHM {
                     incr nb_pixels_valides
                 }
                 set en_bas [expr $pixel_max_y - $couche]
-                set pixel_bas [buf$audace(bufNo) getpix [list $hor $en_bas]]
+                set pixel_intens [buf$audace(bufNo) getpix [list $hor $en_bas]]
+                if { [ lindex $pixel_intens 0 ] == "1" } {
+                    set pixel_bas [ lindex $pixel_intens 1 ]
+                } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+                    set intensR [ lindex $pixel_intens 1 ]
+                    set intensV [ lindex $pixel_intens 2 ]
+                    set intensB [ lindex $pixel_intens 3 ]
+                    set pixel_bas [ expr $intensR + $intensV + $intensB ]
+                 }
                 set matrice($hor,$en_bas) 0
                 if {$pixel_bas > $seuil_mini} {
                     set matrice($hor,$en_bas) [expr $pixel_bas - $fond]
@@ -956,7 +968,15 @@ namespace eval ::TriFWHM {
             for {set ver [expr $pixel_max_y - $couche + 1]} \
                     {$ver <= [expr $pixel_max_y + $couche - 1]} {incr ver} {
                 set a_droite [expr $pixel_max_x + $couche]
-                set pixel_droit [buf$audace(bufNo) getpix [list $a_droite $ver]]
+                set pixel_intens [buf$audace(bufNo) getpix [list $a_droite $ver]]
+                if { [ lindex $pixel_intens 0 ] == "1" } {
+                    set pixel_droit [ lindex $pixel_intens 1 ]
+                } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+                    set intensR [ lindex $pixel_intens 1 ]
+                    set intensV [ lindex $pixel_intens 2 ]
+                    set intensB [ lindex $pixel_intens 3 ]
+                    set pixel_droit [ expr $intensR + $intensV + $intensB ]
+                 }
                 set matrice($a_droite,$ver) 0
                 if {$pixel_droit > $seuil_mini} {
                     set matrice($a_droite,$ver) [expr $pixel_droit - $fond]
@@ -964,7 +984,15 @@ namespace eval ::TriFWHM {
                     incr nb_pixels_valides
                 }
                 set a_gauche [expr $pixel_max_x - $couche]
-                set pixel_gauche [buf$audace(bufNo) getpix [list $a_gauche $ver]]
+                set pixel_intens [buf$audace(bufNo) getpix [list $a_gauche $ver]]
+                if { [ lindex $pixel_intens 0 ] == "1" } {
+                    set pixel_gauche [ lindex $pixel_intens 1 ]
+                } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+                    set intensR [ lindex $pixel_intens 1 ]
+                    set intensV [ lindex $pixel_intens 2 ]
+                    set intensB [ lindex $pixel_intens 3 ]
+                    set pixel_gauche [ expr $intensR + $intensV + $intensB ]
+                 }
                 set matrice($a_gauche,$ver) 0
                 if {$pixel_gauche > $seuil_mini} {
                     set matrice($a_gauche,$ver) [expr $pixel_gauche - $fond]
@@ -997,7 +1025,15 @@ namespace eval ::TriFWHM {
                 {$hor <= [expr $pixel_max_x + $nb_couches]} {incr hor} {
             for {set ver [expr $pixel_max_y - $nb_couches + 1]} \
                     {$ver <= [expr $pixel_max_y + $nb_couches - 1]} {incr ver} {
-                set pixel [buf$audace(bufNo) getpix [list $hor $ver]]
+                set pixel_intens [buf$audace(bufNo) getpix [list $hor $ver]]
+                if { [ lindex $pixel_intens 0 ] == "1" } {
+                    set pixel [ lindex $pixel_intens 1 ]
+                } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+                    set intensR [ lindex $pixel_intens 1 ]
+                    set intensV [ lindex $pixel_intens 2 ]
+                    set intensB [ lindex $pixel_intens 3 ]
+                    set pixel [ expr $intensR + $intensV + $intensB ]
+                 }
                 set centre_x [expr $centre_x + ($hor * $matrice($hor,$ver))]
                 set centre_y [expr $centre_y + ($ver * $matrice($hor,$ver))]
                 set flux [expr $flux + $matrice($hor,$ver)]

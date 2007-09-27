@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide à la mise en station par la méthode de King.
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.15 2007-09-14 22:51:04 michelpujol Exp $
+# Mise a jour $Id: methking.tcl,v 1.16 2007-09-27 21:56:02 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::methking {
     package provide methking 1.16
+    package require audela 1.4.0
 
     # Chargement des captions pour recuperer le titre utilise par getPluginLabel
     source [ file join [file dirname [info script]] methking.cap ]
@@ -322,23 +323,14 @@ namespace eval ::methking {
     #----- Procedure SelectionneEtoiles ---------------------------------
     proc SelectionneEtoiles {} {
         global audace panneau caption color
-        if [info exists audace(box)] {
+        set rect [ ::confVisu::getBox $audace(visuNo) ]
+        if { $rec != "" } {
             # Je récupere les coordonnées de la boite de selection
-            set rect $audace(box)
             set x1 [lindex $rect 0]
             set y1 [lindex $rect 1]
             set x2 [lindex $rect 2]
             set y2 [lindex $rect 3]
-        }
-        if [info exists audace(clickxy)] {
-            set x1 [expr [lindex $audace(clickxy) 0] - 7]
-            set x2 [expr [lindex $audace(clickxy) 0] + 7]
-            set y1 [expr [lindex $audace(clickxy) 1] - 7]
-            set y2 [expr [lindex $audace(clickxy) 1] + 7]
-            set rect [list $x1 $y1 $x2 $y2]
-        }
-        if {([info exists audace(box)]) || ([info exists audace(clickxy)])} {
-        # Je teste si l'étoile sélectionnee est bien dans le cadre
+            # Je teste si l'étoile sélectionnee est bien dans le cadre
             set hors_cadre 0
             if {$x1 < $panneau(methking,cadre_x1)} {set hors_cadre 1}
             if {$x2 < $panneau(methking,cadre_x1)} {set hors_cadre 1}
@@ -353,7 +345,6 @@ namespace eval ::methking {
             } else {
                 incr panneau(methking,nbboites)
                 set i $panneau(methking,nbboites)
-#        set panneau(methking,boite$i) $audace(box)
                 set panneau(methking,boite$i) $rect
             # Je teste la validite de l'etoile...
                 set valide [Centroide $x1 $y1 $x2 $y2]
@@ -744,7 +735,15 @@ namespace eval ::methking {
     set pixel_max_y 0
     for {set hor $x1} {$hor <= $x2} {incr hor} {
         for {set ver $y1} {$ver <= $y2} {incr ver} {
-        set pixel_courant [buf$audace(bufNo) getpix [list $hor $ver]]
+        set pixel_intens [buf$audace(bufNo) getpix [list $hor $ver]]
+        if { [ lindex $pixel_intens 0 ] == "1" } {
+            set pixel_courant [ lindex $pixel_intens 1 ]
+        } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+            set intensR [ lindex $pixel_intens 1 ]
+            set intensV [ lindex $pixel_intens 2 ]
+            set intensB [ lindex $pixel_intens 3 ]
+            set pixel_courant [ expr $intensR + $intensV + $intensB ]
+        }
         if {$pixel_courant > $pixel_max} {
             set pixel_max $pixel_courant
             set pixel_max_x $hor
@@ -772,7 +771,15 @@ namespace eval ::methking {
         for {set hor [expr $pixel_max_x - $couche]} \
             {$hor <= [expr $pixel_max_x + $couche]} {incr hor} {
         set en_haut [expr $pixel_max_y + $couche]
-        set pixel_haut [buf$audace(bufNo) getpix [list $hor $en_haut]]
+        set pixel_intens [buf$audace(bufNo) getpix [list $hor $en_haut]]
+        if { [ lindex $pixel_intens 0 ] == "1" } {
+            set pixel_haut [ lindex $pixel_intens 1 ]
+        } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+            set intensR [ lindex $pixel_intens 1 ]
+            set intensV [ lindex $pixel_intens 2 ]
+            set intensB [ lindex $pixel_intens 3 ]
+            set pixel_haut [ expr $intensR + $intensV + $intensB ]
+        }
         set matrice($hor,$en_haut) 0
         if {$pixel_haut > $seuil_mini} {
             set matrice($hor,$en_haut) [expr $pixel_haut - $fond]
@@ -780,7 +787,15 @@ namespace eval ::methking {
             incr nb_pixels_valides
         }
         set en_bas [expr $pixel_max_y - $couche]
-        set pixel_bas [buf$audace(bufNo) getpix [list $hor $en_bas]]
+        set pixel_intens [buf$audace(bufNo) getpix [list $hor $en_bas]]
+        if { [ lindex $pixel_intens 0 ] == "1" } {
+            set pixel_bas [ lindex $pixel_intens 1 ]
+        } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+            set intensR [ lindex $pixel_intens 1 ]
+            set intensV [ lindex $pixel_intens 2 ]
+            set intensB [ lindex $pixel_intens 3 ]
+            set pixel_bas [ expr $intensR + $intensV + $intensB ]
+        }
         set matrice($hor,$en_bas) 0
         if {$pixel_bas > $seuil_mini} {
             set matrice($hor,$en_bas) [expr $pixel_bas - $fond]
@@ -791,7 +806,15 @@ namespace eval ::methking {
         for {set ver [expr $pixel_max_y - $couche + 1]} \
             {$ver <= [expr $pixel_max_y + $couche - 1]} {incr ver} {
         set a_droite [expr $pixel_max_x + $couche]
-        set pixel_droit [buf$audace(bufNo) getpix [list $a_droite $ver]]
+        set pixel_intens [buf$audace(bufNo) getpix [list $a_droite $ver]]
+        if { [ lindex $pixel_intens 0 ] == "1" } {
+            set pixel_droit [ lindex $pixel_intens 1 ]
+        } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+            set intensR [ lindex $pixel_intens 1 ]
+            set intensV [ lindex $pixel_intens 2 ]
+            set intensB [ lindex $pixel_intens 3 ]
+            set pixel_droit [ expr $intensR + $intensV + $intensB ]
+        }
         set matrice($a_droite,$ver) 0
         if {$pixel_droit > $seuil_mini} {
             set matrice($a_droite,$ver) [expr $pixel_droit - $fond]
@@ -799,7 +822,15 @@ namespace eval ::methking {
             incr nb_pixels_valides
         }
         set a_gauche [expr $pixel_max_x - $couche]
-        set pixel_gauche [buf$audace(bufNo) getpix [list $a_gauche $ver]]
+        set pixel_intens [buf$audace(bufNo) getpix [list $a_gauche $ver]]
+        if { [ lindex $pixel_intens 0 ] == "1" } {
+            set pixel_gauche [ lindex $pixel_intens 1 ]
+        } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+            set intensR [ lindex $pixel_intens 1 ]
+            set intensV [ lindex $pixel_intens 2 ]
+            set intensB [ lindex $pixel_intens 3 ]
+            set pixel_gauche [ expr $intensR + $intensV + $intensB ]
+        }
         set matrice($a_gauche,$ver) 0
         if {$pixel_gauche > $seuil_mini} {
             set matrice($a_gauche,$ver) [expr $pixel_gauche - $fond]
@@ -832,7 +863,15 @@ namespace eval ::methking {
         {$hor <= [expr $pixel_max_x + $nb_couches]} {incr hor} {
         for {set ver [expr $pixel_max_y - $nb_couches + 1]} \
             {$ver <= [expr $pixel_max_y + $nb_couches - 1]} {incr ver} {
-        set pixel [buf$audace(bufNo) getpix [list $hor $ver]]
+        set pixel_intens [buf$audace(bufNo) getpix [list $hor $ver]]
+        if { [ lindex $pixel_intens 0 ] == "1" } {
+            set pixel [ lindex $pixel_intens 1 ]
+        } elseif { [ lindex $pixel_intens 0 ] == "3" } {
+            set intensR [ lindex $pixel_intens 1 ]
+            set intensV [ lindex $pixel_intens 2 ]
+            set intensB [ lindex $pixel_intens 3 ]
+            set pixel [ expr $intensR + $intensV + $intensB ]
+        }
         set centre_x [expr $centre_x + ($hor * $matrice($hor,$ver))]
         set centre_y [expr $centre_y + ($ver * $matrice($hor,$ver))]
         set flux [expr $flux + $matrice($hor,$ver)]
@@ -1077,6 +1116,16 @@ namespace eval ::methking {
        return "tool"
     }
 
+    #------------------------------------------------------------
+    proc getPluginDirectory { } {
+       return "methking"
+    }
+
+    #------------------------------------------------------------
+    proc getPluginOS { } {
+       return [ list Windows Linux Darwin ]
+    }
+
     #--------------------------------------------------------------------------#
     proc getPluginProperty { propertyName } {
        switch $propertyName {
@@ -1167,7 +1216,6 @@ namespace eval ::methking {
         Message consolog "%s\n" $caption(methking,sequence_1)
         set panneau(methking,demande_arret_acq) 0
         set t1 [clock second]
-        ###cam$audace(camNo) buf 1
         cam$audace(camNo) shutter synchro
         for {set image 1} {$image <= $king_config(poseparseq,$config_active)} {incr image} {
         if {$panneau(methking,demande_arret_acq) == 0} {
@@ -1516,7 +1564,7 @@ namespace eval ::methking {
            ### set camera $conf(camera)
 #--- Fin modif Robert
             # Création des buffers nécessaires aux acquisitions et visualisations
-            set numero_buffer_0 [cam$audace(camNo) buf ]
+            set numero_buffer_0 [cam$audace(camNo) buf]
             set numero_buffer_1 [::buf::create]
             buf$numero_buffer_1 extension $conf(extension,defaut)
             buf$numero_buffer_1 clear
@@ -2303,7 +2351,7 @@ proc methkingBuildIF {This tableau} {
           #--- Label du titre
           Button $This.ftitre.l -borderwidth 2 -text $caption(methking,titre) \
              -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::methking::getPluginType ] ] \
-                methking [ ::methking::getPluginHelp ]"
+                [ ::methking::getPluginDirectory ] [ ::methking::getPluginHelp ]"
           pack $This.ftitre.l -in $This.ftitre -anchor center -expand 1 -fill both -side top
           DynamicHelp::add $This.ftitre.l -text $caption(methking,help,titre)
 
