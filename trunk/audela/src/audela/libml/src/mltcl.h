@@ -77,6 +77,12 @@ typedef struct {
    int matched;
    int nouvelledate;
    char matching_id[16];
+   double sep;
+   double pos;
+   double jour;
+   double minute;
+   double heure;
+   double seconde;
 } struct_ligsat ;
 
 
