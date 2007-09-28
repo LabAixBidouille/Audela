@@ -1,14 +1,14 @@
 #
 # Fichier : tri_fwmh.tcl
-# Description : script pour le tri d'images par le critère de fwhm.
+# Description : Script pour le tri d'images par le critere de fwhm
 # Auteurs : Francois Cochard et Jacques Michelet
-# Date de MAJ : 04 decembre 2005
+# Mise a jour $Id: tri_fwhm.tcl,v 1.4 2007-09-28 15:25:48 robertdelmas Exp $
 #
 
 namespace eval ::TriFWHM {
     source [file join $audace(rep_scripts) tri_fwhm tri_fwhm.cap]
 
-    set numero_version V2.7
+    set numero_version V2.8
     #--------------------------------------------------------------------------#
     #  Message                                                                 #
     #--------------------------------------------------------------------------#
@@ -904,7 +904,7 @@ namespace eval ::TriFWHM {
                     set intensR [ lindex $pixel_intens 1 ]
                     set intensV [ lindex $pixel_intens 2 ]
                     set intensB [ lindex $pixel_intens 3 ]
-                    set pixel_courant [ expr $intensR + $intensV + $intensB ]
+                    set pixel_courant [ expr ( $intensR + $intensV + $intensB ) / 3. ]
                  }
                 if {$pixel_courant > $pixel_max} {
                     set pixel_max $pixel_courant
@@ -940,7 +940,7 @@ namespace eval ::TriFWHM {
                     set intensR [ lindex $pixel_intens 1 ]
                     set intensV [ lindex $pixel_intens 2 ]
                     set intensB [ lindex $pixel_intens 3 ]
-                    set pixel_haut [ expr $intensR + $intensV + $intensB ]
+                    set pixel_haut [ expr ( $intensR + $intensV + $intensB ) / 3. ]
                  }
                 set matrice($hor,$en_haut) 0
                 if {$pixel_haut > $seuil_mini} {
@@ -956,7 +956,7 @@ namespace eval ::TriFWHM {
                     set intensR [ lindex $pixel_intens 1 ]
                     set intensV [ lindex $pixel_intens 2 ]
                     set intensB [ lindex $pixel_intens 3 ]
-                    set pixel_bas [ expr $intensR + $intensV + $intensB ]
+                    set pixel_bas [ expr ( $intensR + $intensV + $intensB ) / 3. ]
                  }
                 set matrice($hor,$en_bas) 0
                 if {$pixel_bas > $seuil_mini} {
@@ -975,7 +975,7 @@ namespace eval ::TriFWHM {
                     set intensR [ lindex $pixel_intens 1 ]
                     set intensV [ lindex $pixel_intens 2 ]
                     set intensB [ lindex $pixel_intens 3 ]
-                    set pixel_droit [ expr $intensR + $intensV + $intensB ]
+                    set pixel_droit [ expr ( $intensR + $intensV + $intensB ) / 3. ]
                  }
                 set matrice($a_droite,$ver) 0
                 if {$pixel_droit > $seuil_mini} {
@@ -991,7 +991,7 @@ namespace eval ::TriFWHM {
                     set intensR [ lindex $pixel_intens 1 ]
                     set intensV [ lindex $pixel_intens 2 ]
                     set intensB [ lindex $pixel_intens 3 ]
-                    set pixel_gauche [ expr $intensR + $intensV + $intensB ]
+                    set pixel_gauche [ expr ( $intensR + $intensV + $intensB ) / 3. ]
                  }
                 set matrice($a_gauche,$ver) 0
                 if {$pixel_gauche > $seuil_mini} {
@@ -1032,7 +1032,7 @@ namespace eval ::TriFWHM {
                     set intensR [ lindex $pixel_intens 1 ]
                     set intensV [ lindex $pixel_intens 2 ]
                     set intensB [ lindex $pixel_intens 3 ]
-                    set pixel [ expr $intensR + $intensV + $intensB ]
+                    set pixel [ expr ( $intensR + $intensV + $intensB ) / 3. ]
                  }
                 set centre_x [expr $centre_x + ($hor * $matrice($hor,$ver))]
                 set centre_y [expr $centre_y + ($ver * $matrice($hor,$ver))]
