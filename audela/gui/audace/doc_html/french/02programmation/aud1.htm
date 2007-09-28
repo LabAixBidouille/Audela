@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 29 mai 2007</p>
+<p class="date">Date de mise &agrave; jour : 28 septembre 2007</p>
 <h1>Fonctions utilitaires </h1>
 <p>Les fonctions qui suivent sont dans le namespace ::</p>
 <p>Elles peuvent &ecirc;tre ex&eacute;cut&eacute;es directement dans la console Aud'ACE.</p>
@@ -44,8 +44,8 @@
 <h2> <a name="acq" id="acq"></a>acq duree binning</h2>
 <p>Cette fonction effectue une acquisition avec la cam&eacute;ra s&eacute;lectionn&eacute;e dans les r&eacute;glages de AudACE. Les deux param&egrave;tres. Les deux param&egrave;tres de la ligne de commande correspondent respectivement &agrave; la dur&eacute;e de l'image, et au binning (n&eacute;cessairement identique dans les deux directions).</p>
 <p>Exemple d'acquisition d'une image de 60s en binning 2x2 : acq 60 2</p>
-<h2><a name="fwhm" id="fwhm"></a> fwhm boite</h2>
-<p>Fonction de traitement d'images. Elle calcule la fwhm d'une &eacute;toile dans un rectangle dont les quatre coordonn&eacute;es des coins sont donn&eacute;es dans l'argument boite sous la forme d'une liste x1 y1 x2 y2. Par exemple fwhm {10 100 25 98}. Pourquoi une &eacute;criture aussi peu naturelle ? Parce que l'interface Aud'ACE met &agrave; disposition une variable audace(box) qui contient les quatre coordonn&eacute;es de la bo&icirc;te trac&eacute;e sur l'image. Par exemple, tracez une bo&icirc;te sur l'image, et entrez dans la console fwhm $audace(box) ...</p>
+<h2><a name="fwhm" id="fwhm"></a> fwhm coord</h2>
+<p>Fonction de traitement d'images. Elle calcule la fwhm d'une &eacute;toile dans un rectangle dont les quatre coordonn&eacute;es des coins sont donn&eacute;es dans l'argument boite sous la forme d'une liste x1 y1 x2 y2. Par exemple fwhm {10 100 25 98}. Pourquoi une &eacute;criture aussi peu naturelle ? Parce que l'interface Aud'ACE met &agrave; disposition une fonction [ ::confVisu::getBox $visu ] qui contient les quatre coordonn&eacute;es de la bo&icirc;te trac&eacute;e sur l'image. Par exemple, tracez une bo&icirc;te sur l'image de la visu 1, et entrez dans la console fwhm [ ::confVisu::getBox 1 ] ...</p>
 <p>Le r&eacute;sultat de cette commande est une liste de deux &eacute;l&eacute;ments: la fwhm suivant l'axe horizontal, et l'axe vertical.</p>
 <h2><a name="offset" id="offset"></a> offset val</h2>
 <p>Fonction de traitement d'images. Elle r&eacute;alise un offset sur l'image actuellement en m&eacute;moire, c'est &agrave; dire un ajout ou retrait d'une constante &agrave; tous les pixels de l'image. La valeur fournie en argument correspond &agrave; la valeur dont on veut d&eacute;caler l'image.</p>
@@ -78,7 +78,7 @@
 <h2> <a name="biny" id="biny"></a>biny y1 y2 ?h?</h2>
 <p>Fonction de traitement d'images. Cr&eacute;&eacute; une nouvelle image dont la largeur est celle de l'image originale et la hauteur h (valeur par d&eacute;faut = 20), et dont les pixels sont d&eacute;finis de la mani&egrave;re suivante : les pixels de chaque colonne de l'image de d&eacute;part, compris entre y1 et y2 sont somm&eacute;s, et stock&eacute;s dans la m&ecirc;me colonne de l'image reconstitu&eacute;e. Ainsi tous les pixels d'une colonne de l'image reconstitu&eacute;e sont &eacute;gaux.</p>
 <h2><a name="window" id="window"></a> window ?coord?</h2>
-<p>Fonction de traitement d'images. Extrait une sous-fen&ecirc;tre de l'image en m&eacute;moire, dont les coordonn&eacute;es sont donn&eacute;es par coord (cf. fwhm). Par exemple pour extraire un objet entour&eacute; par la bo&icirc;te de s&eacute;lection : window $audace(box).</p>
+<p>Fonction de traitement d'images. Extrait une sous-fen&ecirc;tre de l'image affich&eacute;e, dont les coordonn&eacute;es sont renvoy&eacute;es par la fonction [ ::confVisu::getBox $visu ]. Par exemple pour extraire un objet entour&eacute; par la bo&icirc;te de s&eacute;lection dans la visu 1 : window [ ::confVisu::getBox 1 ].</p>
 <h2><a name="mirrorx" id="mirrorx"></a> mirrorx</h2>
 <p>Fonction de traitement d'images. Retourne l'image par un effet de miroir horizontal : les pixels se situent sur une m&ecirc;me ligne avant et apr&egrave;s le traitement.</p>
 <code> mirrorx</code>

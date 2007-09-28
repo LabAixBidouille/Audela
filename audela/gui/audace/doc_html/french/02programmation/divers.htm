@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 21 d&eacute;cembre 2006</p>
+<p class="date">Date de mise &agrave; jour : 28 septembre 2007</p>
 <h1>AudeLA : Petites fonctions d'usage universel </h1>
 <p><strong>Fonctions basiques :</strong></p>
 <h3> <a name="charge" id="charge"></a>charge <em>fichier ?options?</em></h3>
@@ -347,8 +347,8 @@
 <h3> <a name="range_options" id="range_options"></a>range_options <em>liste_options</em></h3>
 <p>Cette fonction permet de trier une liste d'options : elle renvoie une liste compos&eacute;e de plusieurs sous-listes : la premi&egrave;re comprend les arguments optionnels, la seconde les options sans param&egrave;tre, la troisi&egrave;me les options avec un param&egrave;tre (les &eacute;l&eacute;ments sont des sous-listes de longueur 2 (option et param&egrave;tre associ&eacute;)), etc.</p>
 <h3> <a name="calcul_trzaligne" id="calcul_trzaligne"></a>calcul_trzaligne <em>liste1 liste2</em></h3>
-<p>"liste1" et "liste2" sont deux listes &agrave; 4 &eacute;l&eacute;ments comportant chacune les coordonn&eacute;es de 2 points, sous la forme { x1 y1 x2 y2 }. Par exemple les coordonn&eacute;es d'une bo&icirc;te faite &agrave; la souris sur une image sont stock&eacute;es dans la variable "audace(box)" sous cette forme.</p>
-<p>La fonction calcul_rtaligne permet le calcul des param&egrave;tres permettant par translation, rotation et zoom de ramener les points de "liste2" au plus pr&egrave;s des points de "liste1". La fonction renvoie une liste &agrave 6 &eacute;l&eacute;ments qui sont dans l'ordre : la translation &agrave; effectuer en x, la translation &agrave; effectuer en y, l'abscisse et l'ordonn&eacute;e du centre pour la rotation, l'angle de la rotation en degr&eacute;s, le facteur de zoom.</p>
+<p>"liste1" et "liste2" sont deux listes &agrave; 4 &eacute;l&eacute;ments comportant chacune les coordonn&eacute;es de 2 points, sous la forme { x1 y1 x2 y2 }. Par exemple les coordonn&eacute;es d'une bo&icirc;te faite &agrave; la souris sur une image sont renvoy&eacute;es par la fonction [ ::confVisu::getBox $visu ] sous cette forme.</p>
+<p>La fonction calcul_trzaligne permet le calcul des param&egrave;tres permettant par translation, rotation et zoom de ramener les points de "liste2" au plus pr&egrave;s des points de "liste1". La fonction renvoie une liste &agrave 6 &eacute;l&eacute;ments qui sont dans l'ordre : la translation &agrave; effectuer en x, la translation &agrave; effectuer en y, l'abscisse et l'ordonn&eacute;e du centre pour la rotation, l'angle de la rotation en degr&eacute;s, le facteur de zoom.</p>
 <h3> <a name="date_chiffresAlettres" id="date_chiffresAlettres"></a>date_chiffresAlettres <em>date_chiffres</em></h3>
 <p>L'argument est une liste de 3 &eacute;l&eacute;ments sous la forme <em>{ann&eacute;e mois jour}</em>. La fonction renvoie une cha&icirc;ne de caract&egrave;res correspondant &agrave; la date en français, par exemple <em>11 août 1999</em>.</p>
 <h3> <a name="lmin" id="lmin"></a>lmin <em>liste</em></h3>
