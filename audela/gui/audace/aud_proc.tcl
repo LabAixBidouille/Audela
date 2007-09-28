@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.5 2007-05-24 17:42:32 michelpujol Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.6 2007-09-28 23:17:08 robertdelmas Exp $
 #
 
 #
@@ -253,37 +253,6 @@ proc stat { } {
    global audace
 
    buf$audace(bufNo) stat
-}
-
-#
-# acq exptime binning
-# Declenche l'acquisition et affiche l'image une fois l'acquisition terminee
-#
-# Exemple :
-# acq 10 2
-#
-proc acq { exptime binning } {
-   global audace caption
-
-   #--- Petit raccourci
-   set camera cam$audace(camNo)
-
-   #--- La commande exptime permet de fixer le temps de pose de l'image
-   $camera exptime $exptime
-
-   #--- La commande bin permet de fixer le binning
-   $camera bin [list $binning $binning]
-
-   #--- Declenchement l'acquisition
-   $camera acq
-
-   #--- Attente de la fin de la pose
-   vwait status_$camera
-
-   #--- Visualisation de l'image
-   ::audace::autovisu $audace(visuNo)
-
-   wm title $audace(base) "$caption(audace,image_acquisition) $exptime s"
 }
 
 #
