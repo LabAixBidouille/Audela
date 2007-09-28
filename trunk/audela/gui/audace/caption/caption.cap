@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.49 2007-09-01 17:16:38 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.50 2007-09-28 23:18:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -44,7 +44,6 @@ set caption(audace,reseau_du_serveur)                 "of the server"
 set caption(audace,reseau_connexion_client)           "Connection through the client"
 set caption(audace,reseau_reponse_vers)               "Reply to"
 
-set caption(audace,image_acquisition)                 "Aud'ACE - Acquisition of"
 set caption(audace,temps_universel)                   "UT"
 set caption(audace,temps_heurelegale)                 "CT"
 
@@ -114,7 +113,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Connexion par le client"
    set caption(audace,reseau_reponse_vers)            "Réponse vers"
 
-   set caption(audace,image_acquisition)              "Aud'ACE - Acquisition de"
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HL"
 
@@ -184,7 +182,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Connessione tramite client"
    set caption(audace,reseau_reponse_vers)            "Risposta a"
 
-   set caption(audace,image_acquisition)              "Aud'ACE - Acquisizione di"
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "O"
 
@@ -254,7 +251,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Conexion a través del cliente"
    set caption(audace,reseau_reponse_vers)            "Responder a"
 
-   set caption(audace,image_acquisition)              "Aud'ACE - Adquisicion de"
    set caption(audace,temps_universel)                "TU"
    set caption(audace,temps_heurelegale)              "HC"
 
@@ -324,7 +320,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Anschluss durch den Kunden"
    set caption(audace,reseau_reponse_vers)            "Antworten zu"
 
-   set caption(audace,image_acquisition)              "Aud'ACE - Belichtung von"
    set caption(audace,temps_universel)                "WZ"
    set caption(audace,temps_heurelegale)              "UZ"
 
@@ -394,7 +389,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Conexão através do cliente"
    set caption(audace,reseau_reponse_vers)            "Responder a"
 
-   set caption(audace,image_acquisition)              "Aud'ACE - Acquisição de"
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
 
@@ -464,7 +458,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,reseau_connexion_client)        "Forbindelse gennem klienten"
    set caption(audace,reseau_reponse_vers)            "Svar til"
 
-   set caption(audace,image_acquisition)              "Aud'ACE - Eksponering slut"
    set caption(audace,temps_universel)                "UT"
    set caption(audace,temps_heurelegale)              "CT"
 
