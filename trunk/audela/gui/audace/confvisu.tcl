@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.70 2007-09-14 12:38:05 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.71 2007-09-28 23:24:16 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -159,6 +159,9 @@ namespace eval ::confVisu {
 
       #--- je cree les bind
       ::confVisu::createBindDialog $visuNo
+
+      #--- j'affiche le nom de la monture
+      setMount $visuNo
 
       return $visuNo
    }
@@ -635,6 +638,27 @@ namespace eval ::confVisu {
          #--- J'affiche le nom de la camera
          $private($visuNo,This).fra1.labCam_name_labURL configure \
             -text "$private($visuNo,camItem)  $caption(confVisu,2points) $private($visuNo,camName) $model" -fg $color(blue)
+      }
+   }
+
+   #------------------------------------------------------------
+   #  setMount
+   #     associe une monture a la visu
+   #  parametre :
+   #    visuNo  : numero de la visu
+   #------------------------------------------------------------
+   proc setMount { visuNo } {
+      variable private
+      global audace
+      global caption
+      global color
+
+      if { $audace(telNo) == "0" } {
+         $private($visuNo,This).fra1.labTel_name_labURL configure -text "$caption(confVisu,2points) $caption(confVisu,non_connecte)" \
+            -fg $color(blue)
+      } else {
+         $private($visuNo,This).fra1.labTel_name_labURL configure -text "$caption(confVisu,2points) [ tel$audace(telNo) name ]" \
+            -fg $color(blue)
       }
    }
 
@@ -1857,7 +1881,8 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  getBox
-   #     retourne les coordonnees de la boite (coordonnees image)
+   #     retourne les coordonnees de la boite (coordonnees dans le
+   #     buffer) si elle existe, sinon retourne une chaine vide
    #  parametres :
    #     visuNo : numero de la visu
    #------------------------------------------------------------
@@ -1880,7 +1905,7 @@ namespace eval ::confVisu {
    }
 
    #------------------------------------------------------------
-   #  boxDrag
+   #  boxBegin
    #     demarre le trace de la boite
    #     et memorise les coordonnees de la souris dans private($visuNo,box_1)
    #  parametres :
@@ -1944,9 +1969,6 @@ namespace eval ::confVisu {
             set y2 [lindex $coord1 1]
          }
          set private($visuNo,boxSize) [list $x1 $y1 $x2 $y2]
-         if { $visuNo == 1 } {
-            set ::audace(box) $private($visuNo,boxSize)
-         }
       }
    }
 
@@ -2000,9 +2022,6 @@ namespace eval ::confVisu {
       if { $private($visuNo,boxSize) != "" } {
          set private($visuNo,boxSize) ""
          $private($visuNo,hCanvas) delete $private($visuNo,hBox)
-         if { $visuNo == 1 } {
-            set ::audace(box) $private($visuNo,boxSize)
-         }
       }
    }
 
