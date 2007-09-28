@@ -2,16 +2,50 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.12 2007-09-14 13:39:25 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.13 2007-09-28 23:27:20 robertdelmas Exp $
 #
 
 namespace eval camera {
    variable private
-   global audace camera
+   global audace
 
+   #--- Autorise d'exporter la procedure acq
+   namespace export acq
    #--- Chargement des captions
    source [ file join $audace(rep_caption) camera.cap ]
+   #--- Initialisation
    set private(update) "0"
+
+   #
+   # acq exptime binning
+   # Declenche l'acquisition et affiche l'image une fois l'acquisition terminee dans la visu 1
+   #
+   # Exemple :
+   # acq 10 2
+   #
+   proc acq { exptime binning } {
+      global audace caption
+
+      #--- Petit raccourci
+      set camera cam$audace(camNo)
+
+      #--- La commande exptime permet de fixer le temps de pose de l'image
+      $camera exptime $exptime
+
+      #--- La commande bin permet de fixer le binning
+      $camera bin [ list $binning $binning ]
+
+      #--- Declenchement l'acquisition
+      $camera acq
+
+      #--- Attente de la fin de la pose
+      vwait status_$camera
+
+      #--- Visualisation de l'image
+      ::audace::autovisu $audace(visuNo)
+
+      wm title $audace(base) "$caption(camera,image_acquisition) $exptime $caption(camera,sec)"
+   }
 
    #
    # ::camera::alarme_sonore exptime
@@ -225,7 +259,7 @@ namespace eval camera {
 
    #
    # ::camera::Avancement_pose t
-   # Affichage d'une barre de progression qui simule l'avancement de la pose
+   # Affichage d'une barre de progression qui simule l'avancement de la pose dans la visu 1
    #
    proc Avancement_pose { { t } } {
       global audace caption color conf
@@ -371,3 +405,7 @@ namespace eval camera {
       }
    }
 }
+
+#--- Importe la procedure acq dans le namespace global
+namespace import ::camera::acq
+
