@@ -49,11 +49,22 @@ struct camprop {
    int maxTemp;
    int HSSpeed;
    int VSSpeed;
+   int ADChannel;
+   int PreAmpGain;
+	int VSAmplitude;
+	int EMCCDGain;
    int openingtime;
    int closingtime;
    int HSEMult;
+	char headref[10];
+	int acqmode;
+	int nbimages;
+	float cycletime;
+	char spoolname[2048];
 };
 
+void cam_setup_electronic(struct camprop *cam);
+void cam_setup_exposure(struct camprop *cam,float *texptime,float *taccumtime,float *tkinetictime);
 /*
 int cam_init(struct camprop *cam, int argc, char **argv);
 void cam_update_window(struct camprop *cam);

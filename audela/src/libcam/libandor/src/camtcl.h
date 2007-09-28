@@ -24,15 +24,17 @@
 #define __CAMTCL_H__
 
 #define SPECIFIC_CMDLIST \
-   {"speed", (Tcl_CmdProc *)cmdAndorSpeed}, \
    {"closingtime", (Tcl_CmdProc *)cmdAndorClosingtime}, \
    {"openingtime", (Tcl_CmdProc *)cmdAndorOpeningtime}, \
-   {"dev", (Tcl_CmdProc *)cmdAndorDev},
+   {"native", (Tcl_CmdProc *)cmdAndorNative}, \
+   {"acqmode", (Tcl_CmdProc *)cmdAndorAcqmode}, \
+   {"electronic", (Tcl_CmdProc *)cmdAndorElectronic},
 
  /* === Specific commands for that camera ===*/
-int cmdAndorSpeed(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdAndorClosingtime(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdAndorOpeningtime(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdAndorDev(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdAndorNative(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdAndorAcqmode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdAndorElectronic(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
