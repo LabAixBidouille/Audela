@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.32 2007-09-06 17:10:14 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.33 2007-09-28 23:25:04 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -2351,11 +2351,9 @@ namespace eval ::confTel {
          set confTel(temma,connect)     "0"
          set confTel(ascom,connect)     "0"
          set confTel(celestron,connect) "0"
-         $audace(base).fra1.labTel_name_labURL configure -text "$caption(conftel,2points) $caption(confVisu,non_connecte)" \
-            -fg $color(blue)
-      } else {
-         $audace(base).fra1.labTel_name_labURL configure -text "$caption(conftel,2points) $conf(telescope)" \
-            -fg $color(blue)
+      }
+      foreach visuNo [ ::visu::list ] {
+         ::confVisu::setMount $visuNo
       }
 
       #--- Gestion des boutons actifs/inactifs
