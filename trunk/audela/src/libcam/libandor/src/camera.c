@@ -123,8 +123,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    int width,height;
    unsigned int PCB,Flex,dummy1,dummy2,dummy3,dummy4;
    unsigned int eprom,cofFile,vxdRev,vxdVer,dllRev,dllVer;
-   int minTemp,maxTemp,temperature;
-   char aBuffer[256];
+   int minTemp,maxTemp,temperature,k;
+   char aBuffer[256],model[256];
+	float pixsizex,pixsizey;
 
    strcpy(aBuffer,".");
    if (argc>=7) {
@@ -161,27 +162,67 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       return 6;
    }
 
-   /* --- Get Temperature Range Info ---*/
-   cam->drv_status=GetTemperatureRange(&minTemp,&maxTemp);
+   /* --- Get Head Model ---*/
+   cam->drv_status=GetHeadModel(model);
    if(cam->drv_status!=DRV_SUCCESS) {
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
       return 7;
    }
+   cam->index_cam=0;
+   strcpy(CAM_INI[cam->index_cam].name,model);
+   /* --- headref = 5 first letters of Model ---*/
+	for (k=0;k<=4;k++) {
+		cam->headref[k]=model[k];
+	}
+	cam->headref[k]='\0';
+	if (strcmp(cam->headref,"DV436")==0) {
+	   strcpy(CAM_INI[cam->index_cam].ccd,"Marconi 47-40");
+	} else if (strcmp(cam->headref,"DU897")==0) {
+		strcpy(CAM_INI[cam->index_cam].ccd,"Marconi EMCCD");
+	} else if (strcmp(cam->headref,"DU888")==0) {
+		strcpy(CAM_INI[cam->index_cam].ccd,"Marconi EMCCD");
+	} else {
+		strcpy(CAM_INI[cam->index_cam].ccd,"Unknown");
+	}
+
+   /* --- Get Temperature Range Info ---*/
+   cam->drv_status=GetTemperatureRange(&minTemp,&maxTemp);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return 8;
+   }
    cam->minTemp=minTemp;
    cam->maxTemp=maxTemp;
 
-   cam->index_cam=0;
-   strcpy(CAM_INI[cam->index_cam].name,"DW436");
-   strcpy(CAM_INI[cam->index_cam].ccd,"Marconi 47-40");
+   /* --- Get Pixel size Info ---*/
+   cam->drv_status=GetPixelSize(&pixsizex,&pixsizey);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return 8;
+   }
+   CAM_INI[cam->index_cam].celldimx=(double)(pixsizex)*1e-6;
+   CAM_INI[cam->index_cam].celldimy=(double)(pixsizey)*1e-6;
+
    CAM_INI[cam->index_cam].overscanxbeg=0;
    CAM_INI[cam->index_cam].overscanxend=0;
    CAM_INI[cam->index_cam].overscanybeg=0;
    CAM_INI[cam->index_cam].overscanyend=0;
-   CAM_INI[cam->index_cam].celldimx=13.5*1e-6;
-   CAM_INI[cam->index_cam].celldimy=13.5*1e-6;
-   //CAM_INI[cam->index_cam].gain=(double)(2.0); // 436
-   CAM_INI[cam->index_cam].gain=(double)(4.8); // 888
+
+	/* --- preamp Gain ---*/
+	if (strcmp(cam->headref,"DV436")==0) {
+	   CAM_INI[cam->index_cam].gain=(double)(2.0); // 436
+	} else if (strcmp(cam->headref,"DU897")==0) {
+		CAM_INI[cam->index_cam].gain=(double)(4.8); // 888
+	} else if (strcmp(cam->headref,"DU888")==0) {
+	   CAM_INI[cam->index_cam].gain=(double)(4.8); // 888
+	} else {
+	   CAM_INI[cam->index_cam].gain=(double)(2.0); // TODO
+	}
    CAM_INI[cam->index_cam].maxconvert=pow(2,(double)16)-1.;
+	cam->acqmode=1;
+	cam->nbimages=1;
+	cam->cycletime=0.;
+	strcpy(cam->spoolname,"andor");
 
    /* --- intialisation of elements of the structure cam === */
    cam->nb_photox = CAM_INI[cam->index_cam].maxx; /* nombre de photosites sur X */
@@ -212,18 +253,34 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    if(cam->drv_status!=DRV_SUCCESS) {
       if ((cam->drv_status!=DRV_TEMP_OFF)&&(cam->drv_status!=DRV_TEMP_STABILIZED)&&(cam->drv_status!=DRV_TEMP_NOT_REACHED)) {
          sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-         return 8;
+         return 9;
       }
    }
    cam->temperature=temperature;
    cam->coolerindex=0;
    cam->check_temperature=temperature;
+
+	/* --- shutter ---*/
    cam->shutterindex=1;
-   cam->HSSpeed=0;
-   cam->VSSpeed=0; // 0=436 1=888
-   cam->HSEMult=1;
    cam->closingtime=0;
    cam->openingtime=30;
+
+	/* --- electronic ---*/
+   cam->ADChannel=0;
+   cam->PreAmpGain=0;
+   cam->VSSpeed=0;
+   cam->HSSpeed=0;
+   cam->VSAmplitude=0;
+   cam->HSEMult=0;
+   cam->EMCCDGain=1;
+	if (strcmp(cam->headref,"DV436")==0) {
+	   cam->VSSpeed=0; // 0=436
+	} else if (strcmp(cam->headref,"DU897")==0) {
+	   cam->VSSpeed=1; // 1=888
+	} else if (strcmp(cam->headref,"DU888")==0) {
+	   cam->VSSpeed=1; // 1=888
+	}
+
    return 0;
 }
 
@@ -242,115 +299,49 @@ void cam_start_exp(struct camprop *cam,char *amplionoff)
 {
    float exptime,accumtime,kinetictime;
    int type=1,mode=0;
-   int x1,y1,binx,biny,x2,y2;
    exptime = cam->exptime;
 
+   /* --- setup electronic parameters --- */
+	cam_setup_electronic(cam);
+   /* --- setup exposure parameters --- */
+	cam_setup_exposure(cam,&exptime,&accumtime,&kinetictime);
    /* --- shutter --- */
-   if (cam->shutterindex==0) {
-      mode=2;
-   } else if (cam->shutterindex==1) {
-      mode=0;
-   } else if (cam->shutterindex==2) {
-      mode=1;
-   }
+	if (cam->acqmode==1) {
+	   if (cam->shutterindex==0) {
+			mode=2;
+		} else if (cam->shutterindex==1) {
+	      mode=0;
+	   } else if (cam->shutterindex==2) {
+			mode=1;
+		}
+	} else {
+	   if (cam->shutterindex==0) {
+			mode=2;
+		} else if (cam->shutterindex==1) {
+	      mode=1;
+	   } else if (cam->shutterindex==2) {
+			mode=1;
+		}		
+	}
    cam->drv_status=SetShutter(type,mode,cam->closingtime,cam->openingtime);
    if(cam->drv_status!=DRV_SUCCESS) {
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
       return;
    }
-   /* --- exptime --- */
-   exptime=(float)cam->exptime;
-   cam->drv_status=SetExposureTime(exptime);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   cam->drv_status=SetKineticCycleTime(exptime);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   cam->drv_status=SetNumberKinetics(1);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   cam->drv_status=SetAccumulationCycleTime(exptime);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   cam->drv_status=SetNumberAccumulations(1);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   /* --- acquisition mode  --- */
-   cam->drv_status=SetAcquisitionMode(1);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   /* --- read mode  --- */
-   cam->drv_status=SetReadMode(4);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   /* --- trigger mode  --- */
-   cam->drv_status=SetTriggerMode(0);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   /* --- speeds --- */
-   /*
-   cam->drv_status=SetHSSpeed(cam->HSEMult,cam->HSSpeed);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   cam->drv_status=SetVSSpeed(cam->VSSpeed);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   */
-   /* --- binning & window --- */
-   x1=cam->x1+1;
-   y1=cam->y1+1;
-   x2=cam->x2+1;
-   y2=cam->y2+1;
-   binx=cam->binx;
-   biny=cam->biny;
-//rajout bug miroir avec focalisation
-   if (cam->mirrorv == 1) {
-      int tmp;
-      x1 = cam->nb_photox - ( x1 - 1 );
-      tmp = cam->nb_photox - ( x2 - 1 );
-      x2 = x1;
-      x1 = tmp;
-   }
-   if (cam->mirrorh == 1) {
-      int tmp;
-      y1 = cam->nb_photoy - ( y1 - 1);
-      tmp = cam->nb_photoy - ( y2 - 1);
-      y2 = y1;
-      y1 = tmp;
-   } 
-//fin rajout bug miroir avec focalisation
-   cam->drv_status=SetImage(binx,biny,x1,x2,y1,y2);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
-   /* --- verif des temps de pose --- */
-   cam->drv_status=GetAcquisitionTimings(&exptime,&accumtime,&kinetictime);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
    /* --- acquisition --- */
+	if (cam->acqmode==3) {
+		cam->drv_status=SetSpool((int)1,(int)0,cam->spoolname,(int)10);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+	} else {
+		cam->drv_status=SetSpool((int)0,(int)0,cam->spoolname,(int)10);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+	}
    cam->drv_status=StartAcquisition();
    if(cam->drv_status!=DRV_SUCCESS) {
       sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
@@ -361,11 +352,12 @@ void cam_start_exp(struct camprop *cam,char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
+   AbortAcquisition();
 }
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
-   int h,w,status,sortie;
+   int h,w,status,sortie,type=1,mode=2;
    short *pix;
    long size;
 
@@ -380,18 +372,32 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    do {
       GetStatus(&status);
       if (status==DRV_IDLE) {
-	 sortie=1;
+			 sortie=1;
       }
    } while (sortie==0);
 
-   /* --- acquisition --- */
-   size=(long)(w)*(long)(h);
-   cam->drv_status=GetAcquiredData16(pix,size);
-   if(cam->drv_status!=DRV_SUCCESS) {
-      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-      return;
-   }
+   /* --- importation de l'image --- */
+	if (cam->acqmode==3) {
+	} else {
+	   size=(long)(w)*(long)(h);
+	   cam->drv_status=GetAcquiredData16(pix,size);
+	   if(cam->drv_status!=DRV_SUCCESS) {
+			sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+	}
 
+   /* --- shutter --- */
+	if (cam->acqmode!=1) {
+	   if (cam->shutterindex==0) {
+			mode=2;
+		} else if (cam->shutterindex==1) {
+	      mode=2;
+	   } else if (cam->shutterindex==2) {
+			mode=1;
+		}		
+	}
+   SetShutter(type,mode,cam->closingtime,cam->openingtime);
 }
 
 void cam_shutter_on(struct camprop *cam)
@@ -471,7 +477,6 @@ void cam_cooler_check(struct camprop *cam)
 
 void cam_set_binning(int binx, int biny,struct camprop *cam)
 {
-
    if(binx<1) {
       binx=1;
    }
@@ -515,6 +520,155 @@ void cam_update_window(struct camprop *cam)
 /* ================================================================ */
 /* Ces fonctions sont tres specifiques a chaque camera.             */
 /* ================================================================ */
+
+void cam_setup_electronic(struct camprop *cam) {
+	SetADChannel(cam->ADChannel);
+	SetPreAmpGain(cam->PreAmpGain);
+   SetVSSpeed(cam->VSSpeed);
+   SetHSSpeed(cam->HSEMult,cam->HSSpeed);
+	SetVSAmplitude(cam->VSAmplitude);
+	if ((cam->EMCCDGain>1)&&(cam->HSEMult==1)) {
+		SetOutputAmplifier(0); /* 1=CCD 0=EMCCD */
+		SetEMCCDGain(cam->EMCCDGain);
+	} else {
+		SetOutputAmplifier(1); /* 1=CCD 0=EMCCD */
+	}
+}
+
+void cam_setup_exposure(struct camprop *cam,float *texptime,float *taccumtime,float *tkinetictime) {
+   float exptime,accumtime,kinetictime;
+   int type=1,mode=0;
+   int x1,y1,binx,biny,x2,y2;
+   exptime = cam->exptime;
+
+	*texptime=cam->exptime;
+	*taccumtime=cam->cycletime;
+	*tkinetictime=cam->cycletime;
+	/* --- acquisition mode  --- */
+   cam->drv_status=SetAcquisitionMode(cam->acqmode);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return;
+   }
+   /* --- exptime --- */
+   exptime=(float)cam->exptime;
+   cam->drv_status=SetExposureTime(exptime);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return;
+   }
+	if (cam->acqmode==1) {
+	   cam->drv_status=SetKineticCycleTime(cam->exptime);
+	   if(cam->drv_status!=DRV_SUCCESS) {
+			sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetNumberKinetics(1);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetAccumulationCycleTime(cam->exptime);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetNumberAccumulations(1);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+	} else if (cam->acqmode==2) {
+	   cam->drv_status=SetKineticCycleTime(cam->exptime);
+	   if(cam->drv_status!=DRV_SUCCESS) {
+			sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetNumberKinetics(1);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetAccumulationCycleTime(cam->cycletime);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetNumberAccumulations(cam->nbimages);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+	} else if (cam->acqmode==3) {
+	   cam->drv_status=SetKineticCycleTime(cam->cycletime);
+	   if(cam->drv_status!=DRV_SUCCESS) {
+			sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetNumberKinetics(cam->nbimages);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetAccumulationCycleTime(cam->cycletime);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+			return;
+		}
+		cam->drv_status=SetNumberAccumulations(1);
+		if(cam->drv_status!=DRV_SUCCESS) {
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->exptime));
+			return;
+		}
+	}
+   /* --- read mode  --- */
+   cam->drv_status=SetReadMode(4);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return;
+   }
+   /* --- trigger mode  --- */
+   cam->drv_status=SetTriggerMode(0);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return;
+   }
+   /* --- binning & window --- */
+   x1=cam->x1+1;
+   y1=cam->y1+1;
+   x2=cam->x2+1;
+   y2=cam->y2+1;
+   binx=cam->binx;
+   biny=cam->biny;
+   if (cam->mirrorv == 1) {
+      int tmp;
+      x1 = cam->nb_photox - ( x1 - 1 );
+      tmp = cam->nb_photox - ( x2 - 1 );
+      x2 = x1;
+      x1 = tmp;
+   }
+   if (cam->mirrorh == 1) {
+      int tmp;
+      y1 = cam->nb_photoy - ( y1 - 1);
+      tmp = cam->nb_photoy - ( y2 - 1);
+      y2 = y1;
+      y1 = tmp;
+   } 
+   cam->drv_status=SetImage(binx,biny,x1,x2,y1,y2);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return;
+   }
+   /* --- verif des temps de pose --- */
+   cam->drv_status=GetAcquisitionTimings(&exptime,&accumtime,&kinetictime);
+   if(cam->drv_status!=DRV_SUCCESS) {
+      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+      return;
+   }
+	*texptime=exptime;
+	*taccumtime=accumtime;
+	*tkinetictime=kinetictime;
+}
 
 char* get_status(int st)
 {
