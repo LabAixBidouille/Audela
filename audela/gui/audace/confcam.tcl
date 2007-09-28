@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.90 2007-09-23 13:40:33 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.91 2007-09-28 23:32:22 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -378,8 +378,13 @@ namespace eval ::confCam {
          #--- Creation de la fenetre a onglets
          set notebook [ NoteBook $This.usr.onglet ]
          for { set i 0 } { $i < [ llength $confCam(names) ] } { incr i } {
-            fillPage[ lindex $confCam(names) $i ] [$notebook insert end [ lindex $confCam(names) $i ] \
-               -text [ lindex $confCam(labels) $i ] ]
+            set pluginInfo(os) [ ::[ lindex $confCam(names) $i ]::getPluginOS ]
+            foreach os $pluginInfo(os) {
+               if { $os == [ lindex $::tcl_platform(os) 0 ] } {
+                  fillPage[ lindex $confCam(names) $i ] [$notebook insert end [ lindex $confCam(names) $i ] \
+                     -text [ lindex $confCam(labels) $i ] ]
+               }
+            }
          }
          pack $notebook -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
@@ -734,7 +739,7 @@ namespace eval ::confCam {
 
       #--- Bouton de test d'une Audine en fabrication
       button $frm.test -text "$caption(confcam,test_fab_audine)" -relief raised \
-         -command "::testAudine::run $audace(base).testAudine"
+         -command { ::testAudine::run $::audace(base).testAudine $::confCam(currentCamItem) }
       pack $frm.test -in $frm.frame3 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion du bouton actif/inactif
@@ -2454,8 +2459,8 @@ namespace eval ::confCam {
          set confCam($camItem,visuNo) "0"
       }
       #---
-      if { $camItem == "A" } {
-         #--- mise a jour de la variable audace pour compatibilite
+      if { $confCam($camItem,visuNo) == "1" } {
+         #--- Mise a jour de la variable audace pour compatibilite
          set audace(camNo) $confCam($camItem,camNo)
       }
       set confCam($camItem,camName) ""
@@ -3360,7 +3365,7 @@ namespace eval ::confCam {
                      cam$camNo shuttertype audine
                   } elseif { $conf(audine,typeobtu) == "$caption(audine,obtu_thierry)" } {
                      set confcolor(obtu_pierre) "1"
-                     ::Obtu_Pierre::run
+                     ::Obtu_Pierre::run $camNo
                      cam$camNo shuttertype thierry
                  }
                }
@@ -3419,9 +3424,9 @@ namespace eval ::confCam {
          set confCam($camItem,visuNo)  "0"
       }
 
-     if { $camItem == "A" } {
+      if { $confCam($camItem,visuNo) == "1" } {
          #--- Mise a jour de la variable audace pour compatibilite
-         set ::audace(camNo) $confCam($camItem,camNo)
+         set audace(camNo) $confCam($camItem,camNo)
       }
 
       #--- Creation d'une variable qui se met a jour a la fin de la procedure configureCamera
