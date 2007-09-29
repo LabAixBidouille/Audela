@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.softs.tcl,v 1.7 2007-06-20 19:13:49 robertdelmas Exp $
+# Mise a jour $Id: tuto.softs.tcl,v 1.8 2007-09-29 11:21:08 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -81,7 +81,7 @@ set color(back_image) #000000
 #----------------------------------------------------------------
 
 toplevel .second -class Toplevel
-wm title .second "$texte(tuto_1) (visu$num(visu1))"
+wm title .second "$texte(tuto_1) (visu$num(visuNo))"
 set screenwidth [int [expr [winfo screenwidth .second]*.85]]
 set screenheight [int [expr [winfo screenheight .second]*.85]]
 wm geometry .second ${screenwidth}x${screenheight}+0+0
