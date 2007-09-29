@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.9 2007-01-20 10:46:44 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.10 2007-09-29 11:22:30 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -112,19 +112,19 @@ if { [winfo exists .main] } {
 }
 
 #--- declare a new buffer in memory to place images
-set num(buf1) [buf::create]
+set num(bufNo) [buf::create]
 
 #--- declare a new visu space to display the buffer
-set num(visu1) [visu::create $num(buf1) 100 ]
+set num(visuNo) [visu::create $num(bufNo) 100 ]
 
 #--- declare a new image
-set num(imageNo) $num(visu1)
+set num(imageNo) $num(visuNo)
 
 wm withdraw .
 if {[info command .main] == "" } {
    toplevel .main -class Toplevel
 }
-wm title .main "$texte(tuto_1) (visu$num(visu1))"
+wm title .main "$texte(tuto_1) (visu$num(visuNo))"
 set screenwidth [int [expr [winfo screenwidth .main]*.85]]
 set screenheight [int [expr [winfo screenheight .main]*.85]]
 wm geometry .main ${screenwidth}x${screenheight}+0+0
@@ -387,10 +387,12 @@ bind .main <Destroy> {
 }
 
 proc tuto_exit { } {
-   global audace
-   global num
-   ::buf::delete $num(buf1)
-   ::visu::delete $num(visu1)
+   global audace num
+   ::buf::delete $num(bufNo)
+   ::visu::delete $num(visuNo)
+   if { [ info exists num(camNo) ] == "1" } {
+      ::cam::delete $num(camNo)
+   }
    catch {
       image delete image21
       image delete image100

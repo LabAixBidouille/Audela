@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.7 2007-01-20 10:47:00 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.8 2007-09-29 11:18:06 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -20,7 +20,7 @@ proc caption_def_plugcam { langage } {
    set ipeth(ipnum) "[lindex $ip 0].[lindex $ip 1].[lindex $ip 2].[lindex $ip 3]"
    set ipeth(ipnumeth) "[lindex $ip 0].[lindex $ip 1].[lindex $ip 2]"
    set ipeth(ipnumpc) "[lindex $ip 3]"
-   set ipeth(ipnumet) [expr $ipeth(ipnumpc)+10]
+   set ipeth(ipnumet) [expr $ipeth(ipnumpc)+40]
    if {$ipeth(ipnumet)>255} {
       set ipeth(ipnumet) [expr $ipeth(ipnumpc)-10]
    }
@@ -135,10 +135,9 @@ It can be used independently of this software.\
 }
 
 proc connect_ethernaude {} {
-   global audace ipeth caption
-   #ipeth(ipnumethernaude)
+   global audace ipeth caption num
    if { [llength [cam::list] ] == 1 } {
-      if {[lindex [cam1 drivername] 0]=="libethernaude"} {
+      if {[lindex [cam$num(camNo) drivername] 0]=="libethernaude"} {
          tk_messageBox -message "Camera already connected" -icon info
          return
       }
@@ -158,12 +157,11 @@ proc connect_ethernaude {} {
       return
    } else {
       if {[info exists audace]==1} {
-         set audace(camNo) $msg
-         cam$audace(camNo) buf $audace(bufNo)
+         set num(camNo) $msg
+         cam$num(camNo) buf $audace(bufNo)
          ::audace::visuDynamix 32767 -32768
-         ::console::affiche_saut "\n"
          ::console::affiche_erreur "$caption(ethernaude) : $ipeth(ipnumethernaude) \n"
-         ::console::affiche_erreur "[ cam$audace(camNo) name ] ([ cam$audace(camNo) ccd ]) \n"
+         ::console::affiche_erreur "[ cam$num(camNo) name ] ([ cam$num(camNo) ccd ]) \n\n"
       }
    }
    tk_messageBox -message "Camera connected" -icon info
@@ -202,7 +200,7 @@ set color(back_image) #000000
 #----------------------------------------------------------------
 
 toplevel .second -class Toplevel
-wm title .second "$texte(tuto_1) (visu$num(visu1))"
+wm title .second "$texte(tuto_1) (visu$num(visuNo))"
 set screenwidth [int [expr [winfo screenwidth .second]*.85]]
 set screenheight [int [expr [winfo screenheight .second]*.85]]
 wm geometry .second ${screenwidth}x${screenheight}+0+0

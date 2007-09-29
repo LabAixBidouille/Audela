@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstlight.tcl,v 1.8 2006-09-01 22:41:17 robertdelmas Exp $
+# Mise a jour $Id: tuto.firstlight.tcl,v 1.9 2007-09-29 11:17:34 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -87,7 +87,7 @@ set color(back_image) #000000
 catch {image$num(imageNo) blank}
 
 toplevel .second -class Toplevel
-wm title .second "$texte(tuto_1) (visu$num(visu1))"
+wm title .second "$texte(tuto_1) (visu$num(visuNo))"
 set screenwidth [int [expr [winfo screenwidth .second]*.85]]
 set screenheight [int [expr [winfo screenheight .second]*.85]]
 wm geometry .second ${screenwidth}x${screenheight}+0+0
@@ -305,13 +305,7 @@ proc acquisition_firstlight {exposure} {
    global caption
    global zone
 
-   if {[info exists audace]==1} {
-      set num(cam1) $audace(camNo)
-   } else {
-      set num(cam1) 1
-   }
-
-   set errnum [catch {cam1 drivername} msg]
+   set errnum [catch {cam$num(camNo) drivername} msg]
    if {$errnum==1} {
       tk_messageBox -message "Camera not connected" -icon info
       return
@@ -325,28 +319,28 @@ proc acquisition_firstlight {exposure} {
    update
 
    #--- The image from this cam will be transfered to that buffer
-   cam$num(cam1) buf $num(buf1)
+   cam$num(camNo) buf $num(bufNo)
 
    if { [lindex $exposure 0] > "0" } {
-      catch { cam$num(cam1) shutter synchro }
+      catch { cam$num(camNo) shutter synchro }
    }
 
    #--- configure the acquisition
-   cam$num(cam1) exptime [lindex $exposure 0]
-   cam$num(cam1) bin {2 2}
+   cam$num(camNo) exptime [lindex $exposure 0]
+   cam$num(camNo) bin {2 2}
 
    #--- start the acquisition
    #--- and stops the script during the exposure
-   #--- (waits for the variable cam1_status to change)
-   cam$num(cam1) acq
-   vwait status_cam$num(cam1)
+   #--- (waits for the variable cam$num(camNo)_status to change)
+   cam$num(camNo) acq
+   vwait status_cam$num(camNo)
 
    #--- Change the red button text
    $zone(red_button) configure -text $caption(compute) -relief groove
    update
 
    #--- get statistics from the acquired image
-   set myStatistics [buf$num(buf1) stat]
+   set myStatistics [buf$num(bufNo) stat]
 
    #--- and display it with the right thresholds
    set lc [lrange $myStatistics 1 1]
@@ -356,8 +350,8 @@ proc acquisition_firstlight {exposure} {
    if {$hc < 0} { set hc 32767 }
    if {$hc > 32767} { set hc 32767 }
 
-   visu$num(visu1) cut [list $hc $lc]
-   visu$num(visu1) disp
+   visu$num(visuNo) cut [list $hc $lc]
+   visu$num(visuNo) disp
 
    .second.snap.frame1.label1 configure -text "$caption(lowlevel) [expr [lrange $myStatistics 3 3]]"
    .second.snap.frame1.label2 configure -text "$caption(highlevel) [expr [lrange $myStatistics 2 2]]"
