@@ -2,7 +2,7 @@
 # Fichier : ohp.tcl
 # Auteur : Alain KLOTZ
 # Lancement du script : source audace/scripts/ohp.tcl
-# Mise a jour $Id: ohp.tcl,v 1.3 2006-11-01 16:57:08 alainklotz Exp $
+# Mise a jour $Id: ohp.tcl,v 1.4 2007-09-29 14:46:04 alainklotz Exp $
 #
 
 namespace eval ::ohp {
@@ -35,6 +35,7 @@ namespace eval ::ohp {
       set caption(ohp,go_button) "GO"
       set caption(ohp,files_button) "See files"
       set caption(ohp,purge_button) "Delete files"
+      set caption(ohp,getbox_button) "Get box coord."
       set caption(ohp,folder) "Répertoire"
 
       set caption(ohp,save) "Enregistre la configuration actuelle"
@@ -170,6 +171,11 @@ namespace eval ::ohp {
             -text "$caption(ohp,purge_button)" \
             -command {::ohp::files 1}
          pack  .ohp.purge_button -in .ohp.buttons -side left -fill none -padx 3
+         button .ohp.getbox_button  \
+            -font $audace(ohp,font,c12b) \
+            -text "$caption(ohp,getbox_button)" \
+            -command {::ohp::getbox }
+         pack  .ohp.getbox_button -in .ohp.buttons -side left -fill none -padx 3
       pack .ohp.buttons -in .ohp -fill x -pady 3 -padx 3 -anchor s -side bottom
 
       frame .ohp.met -borderwidth 3 -relief sunken -bg $audace(ohp,color,backpad)
@@ -747,6 +753,13 @@ namespace eval ::ohp {
       global caption
       set filename [ tk_getOpenFile -title "$caption(ohp,load)" -filetypes {{configuration *.ohp}} -initialdir "$audace(rep_images)" ]
       source $filename
+   }
+
+   proc getbox {} {
+	   global audace
+      set audace(ohp,box) [::confVisu::getBox 1]
+      .ohp.box.entry configure -textvariable audace(ohp,box)
+      update
    }
 
    proc rename { {purge 0} } {
