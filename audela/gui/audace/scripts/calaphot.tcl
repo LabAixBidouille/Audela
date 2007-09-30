@@ -286,20 +286,15 @@ namespace eval ::CalaPhot {
                 }
             }
 
-            ::console::affiche_resultat "Klotz ------------------------------\n"
-            ::console::affiche_resultat "Klotz FluxReference $i\n"
             FluxReference $i
 
             # Calcul des magnitudes et des incertitudes de tous les astres (astéroïde et étoiles)
-            ::console::affiche_resultat "Klotz MagnitudesEtoiles $i\n"
             MagnitudesEtoiles $i
 
             # Premier filtrage sur les rapports signal à bruit
-            ::console::affiche_resultat "Klotz FiltrageSB $i\n"
             FiltrageSB $i
 
             # Calcul d'incertitude global
-            ::console::affiche_resultat "Klotz CalculErreurGlobal $i\n"
             CalculErreurGlobal $i
 
             # Affiche le résultat dans la console
@@ -317,8 +312,6 @@ namespace eval ::CalaPhot {
          destroy $audace(base).bouton_arret_color_invariant
 
          # Deuxième filtrage sur les images pour filtrer celles douteuses
-         ::console::affiche_resultat "Klotz ===================================\n"
-         ::console::affiche_resultat "Klotz Deuxième filtrage sur les images pour filtrer celles douteuses\n"
          FiltrageConstanteMag
 
          # Statistiques sur les étoiles à partir des images validées
@@ -330,7 +323,6 @@ namespace eval ::CalaPhot {
          }
 
          # Sortie standardisée des valeurs
-         ::console::affiche_resultat "Klotz SORTIE DES VALEURS parametres(format_sortie)=$parametres(format_sortie)\n"
          if {$parametres(format_sortie) == 1} {
              AffichageCanopus
          } else {
@@ -395,7 +387,6 @@ namespace eval ::CalaPhot {
         set premier [lindex $liste_image 0]
         set dernier [lindex $liste_image end]
 
-        ::console::affiche_resultat "Klotz CDR 1\n"
         Message consolog "\n\n\n"
         Message consolog "---------------------------------------------------------------------------------------\n"
         Message consolog "Format CDR\n"
@@ -457,6 +448,10 @@ namespace eval ::CalaPhot {
     proc AffichageMenuAsteroide {indice nom_image} {
         global audace
         variable texte_photo
+
+        # Force l'utilisateur à recliquer
+        catch {unset audace(clickxy)}
+        catch {unset audace(box)}
 
         # Affichage de la première ou de la dernière image de la série
         loadima ${nom_image}${indice}
@@ -988,13 +983,21 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     proc Centroide {} {
         global audace
-        set rect [ ::confVisu::getBox $audace(visuNo) ]
-        if { $rec != "" } {
+        if [info exists audace(clickxy)] {
+            set x1 [expr [lindex $audace(clickxy) 0] - 7]
+            set x2 [expr [lindex $audace(clickxy) 0] + 7]
+            set y1 [expr [lindex $audace(clickxy) 1] - 7]
+            set y2 [expr [lindex $audace(clickxy) 1] + 7]
+        }
+        if [info exists audace(box)] {
             # Récupération des coordonnées de la boite de sélection
+            set rect $audace(box)
             set x1 [lindex $rect 0]
             set y1 [lindex $rect 1]
             set x2 [lindex $rect 2]
             set y2 [lindex $rect 3]
+        }
+        if {([info exists audace(box)]) || ([info exists audace(clickxy)])} {
             # Calcul du centre de l'étoile
             # Selon Alain Klotz, "buf$audace(bufNo) centro" fait les choses suivantes
             # 1. recherche la position du pixel maximal dans la fenetre
@@ -1608,7 +1611,7 @@ namespace eval ::CalaPhot {
             }
         }
         # Fin de la boucle sur les images
-        set data_image($image,valide) "Y" ; # Klotz
+        #set data_image($image,valide) "Y" ; # Klotz
     }
 
     #*************************************************************************#
@@ -1642,6 +1645,61 @@ namespace eval ::CalaPhot {
         if {$nvalid>0} {
            set data_image($i,valide) "Y"
         }
+    }
+
+    #*************************************************************************#
+    #*************  jm_fitgauss2db  ******************************************#
+    #*************************************************************************#
+    # Note de Alain Klotz le 30 septembre 2007:
+    # Fonction pour inhiber les problemes de jm_fitgauss2d
+    # (il faudra un jour analyser finemant le code de jm_fitgauss2d
+    #  pour trouver pourquoi il ne converge pas sur des etoiles tres
+    #  etalées comme celles du T80 de l'OHP).
+    proc jm_fitgauss2db { bufno box } {
+      set valeurs [buf$bufno fitgauss $box]
+      set dif 0.
+      set intx [lindex $valeurs 0]
+      set xc [lindex $valeurs 1]
+      set fwhmx [lindex $valeurs 2]
+      set bgx [lindex $valeurs 3]
+      set inty [lindex $valeurs 4]
+      set yc [lindex $valeurs 5]
+      set fwhmy [lindex $valeurs 6]
+      set bgy [lindex $valeurs 7]
+      set if0 [ expr $fwhmx*$fwhmy*.601*.601*3.14159265 ]
+      set if1 [ expr $intx*$if0 ]
+      set if2 [ expr $inty*$if0 ]
+      set if0 [ expr ($if1+$if2)/2. ]
+      set dif [ expr abs($if1-$if0) ]
+      set inte [expr ($intx+$inty)/2.]
+      set dinte [expr abs($inte-$inty)]
+      set bg [expr ($bgx+$bgy)/2.]
+      set dbg [expr abs($bg-$bgy)]
+      set convergence 1
+      set iterations 1
+      set valeurs_X0 $xc
+      set valeurs_Y0 $yc
+      set valeurs_Signal $inte
+      set valeurs_Fond $bg
+      set valeurs_Sigma_X $fwhmx
+      set valeurs_Sigma_Y $fwhmy
+      set valeurs_Ro 0.
+      set valeurs_Alpha 0.
+      set valeurs_Sigma_1 $fwhmx
+      set valeurs_Sigma_2 $fwhmy
+      set valeurs_Flux $if0
+      set incertitudes_X0 0.1
+      set incertitudes_Y0 0.1
+      set incertitudes_Signal [expr 0.001*$inte]
+      set incertitudes_Fond [expr 0.0001*$bg]
+      set incertitudes_Sigma_X 0.01
+      set incertitudes_Sigma_Y 0.01
+      set incertitudes_Ro 0
+      set incertitudes_Alpha 0
+      set incertitudes_Sigma_1 0.01
+      set incertitudes_Sigma_2 0.01
+      set incertitudes_Flux [expr 0.001*$if0]
+      return [list $convergence $iterations $valeurs_X0 $valeurs_Y0 $valeurs_Signal $valeurs_Fond $valeurs_Sigma_X $valeurs_Sigma_Y $valeurs_Ro $valeurs_Alpha $valeurs_Sigma_1 $valeurs_Sigma_2 $valeurs_Flux $incertitudes_X0 $incertitudes_Y0 $incertitudes_Signal $incertitudes_Fond $incertitudes_Sigma_X $incertitudes_Sigma_Y $incertitudes_Ro $incertitudes_Alpha $incertitudes_Sigma_1 $incertitudes_Sigma_2 $incertitudes_Flux]
     }
 
     #*************************************************************************#
@@ -1835,8 +1893,8 @@ namespace eval ::CalaPhot {
 
         switch -exact -- $niveau {
             console {
-                #::console::disp [eval [concat {format} $args]]
-                ::console::affiche_resultat [eval [concat {format} $args]]
+                ::console::disp [eval [concat {format} $args]]
+                #::console::affiche_resultat [eval [concat {format} $args]]
                 update idletasks
             }
             log {
@@ -1845,8 +1903,8 @@ namespace eval ::CalaPhot {
                 close $fileId
             }
             consolog {
-                #::console::disp [eval [concat {format} $args]]
-                ::console::affiche_resultat [eval [concat {format} $args]]
+                ::console::disp [eval [concat {format} $args]]
+                #::console::affiche_resultat [eval [concat {format} $args]]
                 update idletasks
 	            set fileId [open $fileName a]
                 puts -nonewline $fileId [eval [concat {format} $args]]
@@ -1888,7 +1946,7 @@ namespace eval ::CalaPhot {
 
         # Modélisation
         #::console::affiche_resultat "--------------------\nModelisation2D $i $j $coordonnees\n"
-        set temp [jm_fitgauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2]]
+        set temp [jm_fitgauss2db $audace(bufNo) [list $x1 $y1 $x2 $y2]]
         #::console::affiche_resultat "temp=$temp\n-------------------\n"
 
         # Récupération des résultats
@@ -2314,7 +2372,7 @@ namespace eval ::CalaPhot {
                 # Calcul pour le pré affichage des valeurs de magnitudes
                 set cxx [expr int(round($cx))]
                 set cyy [expr int(round($cy))]
-                set q [jm_fitgauss2d $audace(bufNo) [list [expr $cxx - $boite] [expr $cyy - $boite] [expr $cxx + $boite] [expr $cyy + $boite]]]
+                set q [jm_fitgauss2db $audace(bufNo) [list [expr $cxx - $boite] [expr $cyy - $boite] [expr $cxx + $boite] [expr $cyy + $boite]]]
 #            Message console "q= %s\n" $q
                 if {![info exists flux_premiere_etoile]} {
                     set mag_affichage 13.5
@@ -2484,7 +2542,7 @@ namespace eval ::CalaPhot {
         set x2 [expr round([lindex $pos_reel_indes($image,$j) 0] + $largeur)]
         set y2 [expr round([lindex $pos_reel_indes($image,$j) 1] + $largeur)]
 
-        set t [jm_fitgauss2d $audace(bufNo) [list $x1 $y1 $x2 $y2] -sub]
+        set t [jm_fitgauss2db $audace(bufNo) [list $x1 $y1 $x2 $y2] -sub]
         if {[lindex t 0] == 0} {
             buf$audace(bufNo) fitgauss [list $x1 $y1 $x2 $y2] -sub
         }
