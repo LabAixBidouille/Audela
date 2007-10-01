@@ -4,7 +4,7 @@
 # Description : Script pour la photométrie d'astéroïdes ou d'étoiles variables
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.5 2007-10-01 13:13:05 robertdelmas Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.6 2007-10-01 19:10:51 alainklotz Exp $
 
 # Définition d'un espace réservé à ce script
 catch {namespace delete ::Calaphot}
@@ -1644,6 +1644,12 @@ namespace eval ::CalaPhot {
     # pour trouver pourquoi il ne converge pas sur des etoiles tres
     # etalées comme celles du T80 de l'OHP).
     proc jm_fitgauss2db { bufno box } {
+      set temp [jm_fitgauss2d $bufNo $box]
+      if {[lindex $temp 0] != 0} {
+         # La modélisation est correcte
+         return $temp
+      }
+      # Echec de jm_fitgauss2d. On effectue une modelisation plus grossiere
       set valeurs [buf$bufno fitgauss $box]
       set dif 0.
       set intx [lindex $valeurs 0]
