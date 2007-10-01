@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfcSetup.cap
-# Mise a jour $Id: pretrfcSetup.cap,v 1.4 2007-09-27 19:38:25 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.cap,v 1.5 2007-10-01 13:07:14 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,8 +72,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Pré-processamento - Configuração"
-   set caption(pretrfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(pretrfcSetup,texte2)                 "# Enregistrer les dates dans le fichier log :"
+   set caption(pretrfcSetup,texte1)                 "Mostrar mensagens na Consola:"
+   set caption(pretrfcSetup,texte2)                 "Guardar datas no ficheiro log:"
 
    set caption(pretrfcSetup,ok)                     "OK"
    set caption(pretrfcSetup,appliquer)              "Aplicar"

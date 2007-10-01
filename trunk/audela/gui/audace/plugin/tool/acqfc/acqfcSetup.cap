@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.4 2007-09-27 19:38:07 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.5 2007-10-01 13:06:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -72,8 +72,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Aquisição - Configuração"
-   set caption(acqfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(acqfcSetup,texte2)                 "# Enregistrer les dates dans le fichier log :"
+   set caption(acqfcSetup,texte1)                 "Mostrar mensagens na Consola:"
+   set caption(acqfcSetup,texte2)                 "Guardar datas no ficheiro log:"
 
    set caption(acqfcSetup,ok)                     "OK"
    set caption(acqfcSetup,appliquer)              "Aplicar"
