@@ -1,10 +1,10 @@
 #####################################################################
 #
 # Fichier     : calaphot.tcl
-# Description : Script pour la photométrie d'astéroïdes ou d'étoiles variables.
+# Description : Script pour la photométrie d'astéroïdes ou d'étoiles variables
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise à jour : 13 fevrier 2005 ---> 05 juillet 2005
+# Mise a jour $Id: calaphot.tcl,v 1.5 2007-10-01 13:13:05 robertdelmas Exp $
 
 # Définition d'un espace réservé à ce script
 catch {namespace delete ::Calaphot}
@@ -22,7 +22,7 @@ namespace eval ::CalaPhot {
 # L'existence de test crée le ficher debug.log
 #    set test 0
 
-    set numero_version v3.3
+    set numero_version v3.4
 
     if {$tcl_platform(os)!="Linux"} {
         set police(gras) [font actual .audace]
@@ -94,7 +94,7 @@ namespace eval ::CalaPhot {
             Message console $fid
             return
         } else {
-	        close $fid
+           close $fid
         }
         #if {[catch {open [file join $audace(rep_images) $parametres(sortie)] w} fileId]} {
         #    Message console $fileId
@@ -448,10 +448,6 @@ namespace eval ::CalaPhot {
     proc AffichageMenuAsteroide {indice nom_image} {
         global audace
         variable texte_photo
-
-        # Force l'utilisateur à recliquer
-        catch {unset audace(clickxy)}
-        catch {unset audace(box)}
 
         # Affichage de la première ou de la dernière image de la série
         loadima ${nom_image}${indice}
@@ -983,21 +979,13 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     proc Centroide {} {
         global audace
-        if [info exists audace(clickxy)] {
-            set x1 [expr [lindex $audace(clickxy) 0] - 7]
-            set x2 [expr [lindex $audace(clickxy) 0] + 7]
-            set y1 [expr [lindex $audace(clickxy) 1] - 7]
-            set y2 [expr [lindex $audace(clickxy) 1] + 7]
-        }
-        if [info exists audace(box)] {
+        set rect [ ::confVisu::getBox $audace(visuNo) ]
+        if { $rec != "" } {
             # Récupération des coordonnées de la boite de sélection
-            set rect $audace(box)
             set x1 [lindex $rect 0]
             set y1 [lindex $rect 1]
             set x2 [lindex $rect 2]
             set y2 [lindex $rect 3]
-        }
-        if {([info exists audace(box)]) || ([info exists audace(clickxy)])} {
             # Calcul du centre de l'étoile
             # Selon Alain Klotz, "buf$audace(bufNo) centro" fait les choses suivantes
             # 1. recherche la position du pixel maximal dans la fenetre
@@ -1634,12 +1622,12 @@ namespace eval ::CalaPhot {
         set data_image($i,valide) "N"
         set etoile 0
         if {$data_image($i,sb_$etoile) < $parametres(signal_bruit)} {
-	        return
+           return
         }
         set nvalid 0
         for {set etoile 1} {$etoile <= $data_script(nombre_etoile)} {incr etoile} {
             if {$data_image($i,sb_$etoile) >= $parametres(signal_bruit)} {
-	            incr nvalid
+               incr nvalid
             }
         }
         if {$nvalid>0} {
@@ -1650,11 +1638,11 @@ namespace eval ::CalaPhot {
     #*************************************************************************#
     #*************  jm_fitgauss2db  ******************************************#
     #*************************************************************************#
-    # Note de Alain Klotz le 30 septembre 2007:
+    # Note de Alain Klotz le 30 septembre 2007 :
     # Fonction pour inhiber les problemes de jm_fitgauss2d
-    # (il faudra un jour analyser finemant le code de jm_fitgauss2d
-    #  pour trouver pourquoi il ne converge pas sur des etoiles tres
-    #  etalées comme celles du T80 de l'OHP).
+    # (il faudra un jour analyser finement le code de jm_fitgauss2d
+    # pour trouver pourquoi il ne converge pas sur des etoiles tres
+    # etalées comme celles du T80 de l'OHP).
     proc jm_fitgauss2db { bufno box } {
       set valeurs [buf$bufno fitgauss $box]
       set dif 0.
@@ -1898,7 +1886,7 @@ namespace eval ::CalaPhot {
                 update idletasks
             }
             log {
-	            set fileId [open $fileName a]
+                set fileId [open $fileName a]
                 puts -nonewline $fileId [eval [concat {format} $args]]
                 close $fileId
             }
@@ -1906,7 +1894,7 @@ namespace eval ::CalaPhot {
                 ::console::disp [eval [concat {format} $args]]
                 #::console::affiche_resultat [eval [concat {format} $args]]
                 update idletasks
-	            set fileId [open $fileName a]
+                set fileId [open $fileName a]
                 puts -nonewline $fileId [eval [concat {format} $args]]
                 close $fileId
             }
@@ -2734,3 +2722,4 @@ if {$erreur != "2.4"} {
 }
 
 ::CalaPhot::Principal
+
