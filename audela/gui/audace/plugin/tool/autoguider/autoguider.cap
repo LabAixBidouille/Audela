@@ -1,6 +1,6 @@
 #
 # Fichier : autoguider.cap
-# Mise a jour $Id: autoguider.cap,v 1.27 2007-09-27 19:47:52 robertdelmas Exp $
+# Mise a jour $Id: autoguider.cap,v 1.28 2007-10-01 13:08:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -368,17 +368,17 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(autoguider,cumulNb)               "Número de aquisições"
    set caption(autoguider,darkTitle)             "Subtracção do dark"
    set caption(autoguider,darkFileName)          "Ficheiro dark"
-  set caption(autoguider,darkEnabled)           "Activar subtracção"
+   set caption(autoguider,darkEnabled)           "Activar subtracção"
    set caption(autoguider,slitWidth)             "Largura da fenda (pixels)"
    set caption(autoguider,slitRatio)             "Coeficiente (%/pixel)"
    set caption(autoguider,alphaReverse)          "Inverter sentido"
    set caption(autoguider,deltaReverse)          "Inverter sentido"
 
-   set caption(autoguider,searchTitle)           "# Recherche d'étoile"
-   set caption(autoguider,searchThreshin)        "# Intensité mini (1)"
-   set caption(autoguider,searchFwhm)            "# Fwhm mini"
-   set caption(autoguider,searchRadius)          "# Rayon de recherche (pixel)"
-   set caption(autoguider,searchThreshold)       "# Intensité mini (2)"
+   set caption(autoguider,searchTitle)           "Pesquisa de estrela"
+   set caption(autoguider,searchThreshin)        "Luminosidade min. (1)"
+   set caption(autoguider,searchFwhm)            "Fwhm min."
+   set caption(autoguider,searchRadius)          "Raio de pesquisa (pixel)"
+   set caption(autoguider,searchThreshold)       "Luminosidade min. (2)"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
