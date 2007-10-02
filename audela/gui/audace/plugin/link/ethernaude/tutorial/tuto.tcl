@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.10 2007-09-29 11:22:30 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.11 2007-10-02 17:12:20 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -392,6 +392,7 @@ proc tuto_exit { } {
    ::visu::delete $num(visuNo)
    if { [ info exists num(camNo) ] == "1" } {
       ::cam::delete $num(camNo)
+      unset num(camNo)
    }
    catch {
       image delete image21
@@ -399,9 +400,11 @@ proc tuto_exit { } {
       unset texte
    }
    if { [ info exists audace ] == "1" } {
-      catch {
+      if { [ winfo exists .main ] } {
+         if { [ winfo exists .second ] } {
+            destroy .second
+         }
          destroy .main
-         destroy .second
       }
    } else {
       destroy .

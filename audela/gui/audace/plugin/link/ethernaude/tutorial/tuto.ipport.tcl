@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.8 2007-09-29 11:18:06 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.9 2007-10-02 17:11:59 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -24,7 +24,7 @@ proc caption_def_plugcam { langage } {
    if {$ipeth(ipnumet)>255} {
       set ipeth(ipnumet) [expr $ipeth(ipnumpc)-10]
    }
-   set ipeth(ipnumethernaude) $ipeth(ipnumeth).$ipeth(ipnumet)
+   set ipeth(ipnumethernaude) "$ipeth(ipnumeth).$ipeth(ipnumet)"
    set ipeth(ipnumethernaudeping) [lindex [ping $ipeth(ipnumethernaude)] 0]
 
 if {[string compare $langage french] ==0 } {
@@ -137,21 +137,28 @@ It can be used independently of this software.\
 proc connect_ethernaude {} {
    global audace ipeth caption num
    if { [llength [cam::list] ] == 1 } {
-      if {[lindex [cam$num(camNo) drivername] 0]=="libethernaude"} {
-         tk_messageBox -message "Camera already connected" -icon info
-         return
+      if { [ info exists num(camNo) ] == "1" } {
+         if {[lindex [cam$num(camNo) drivername] 0]=="libethernaude"} {
+            tk_messageBox -message "Camera already connected" -icon info
+            return
+         }
       }
-      catch { cam::delete 1 }
+      catch { cam::delete $num(camNo) }
    }
    if {[info exists audace]==1} {
       set ipsetting_filename [ file join $audace(rep_install) bin IPSetting.exe ]
    } else {
       set ipsetting_filename [ file join .. bin IPSetting.exe ]
    }
+   #--- Si une camera est connectee, j'arrete les plugins camera
+   if { [ ::cam::list ] != "" } {
+      ::confCam::stopDriver
+   }
+   #--- Je connecte l'Audine via la liaison EthernAude
    set eth_canspeed [ expr round((-7.11)/(39.51-7.11)*30.) ]
    set erreur [ catch { cam::create ethernaude udp -ip "$ipeth(ipnumethernaude)" \
       -shutterinvert "1" -canspeed $eth_canspeed \
-      -ipsetting "$ipsetting_filename" } msg ]
+      -ipsetting "$ipsetting_filename" -num 500 } msg ]
    if { $erreur == "1" } {
       tk_messageBox -message "$msg" -icon error
       return
