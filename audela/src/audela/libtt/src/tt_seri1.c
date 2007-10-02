@@ -843,6 +843,11 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
 	    strcpy(pseries->bias,argu);
 	 }
       }
+	  else if (strcmp(mot,"CENTROIDE")==0) {
+	 if (strcmp(argu,"")!=0) {
+	    strcpy(pseries->centroide,argu);
+	 }
+      }
       else if (strcmp(mot,"FLAT")==0) {
 	 if (strcmp(argu,"")!=0) {
 	    strcpy(pseries->flat,argu);
