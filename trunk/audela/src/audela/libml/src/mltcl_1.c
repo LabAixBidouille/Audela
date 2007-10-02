@@ -317,13 +317,11 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 
 				}
 
-
 			}
 			fclose(catusno);
 			fclose(cattycho);
 		}
 	}
-
 	return 0;
 }
 
