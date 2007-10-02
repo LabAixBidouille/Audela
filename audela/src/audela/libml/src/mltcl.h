@@ -85,6 +85,10 @@ typedef struct {
    double seconde;
 } struct_ligsat ;
 
+typedef struct {
+   char texte[ML_STAT_LIG_MAX];
+   int nbligne;
+} struct_texte_fichier;
 
 /***************************************************************************/
 /*      Prototypes des fonctions d'extension C appelables par Tcl          */

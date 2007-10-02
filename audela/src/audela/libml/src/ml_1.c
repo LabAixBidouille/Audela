@@ -215,5 +215,56 @@ int ml_file_copy (const char *source, const char *dest)
 }
 
 
+/*===========================================================*/
+/* Extraction de la magnitude (bleue ou rouge selon l'etat   */
+/* de la variable 'UsnoDisplayBlueMag') a partir de l'entier */
+/* 32 bits brut en provenance du fichier USNO.               */
+/* On prend en compte ici les petites subtilites expliquees  */
+/* dans le fichier README de l'USNO (style mag a 99, ...).   */
+/*===========================================================*/
+double ml_GetUsnoBleueMagnitude(int magL)
+{
+double mag;
+char buf[11];
+char buf2[4];
 
+sprintf(buf,"%010ld",labs(magL));
+strncpy(buf2,buf+4,3); *(buf2+3)='\0';
+mag = (double)atof(buf2)/10.0;
+if (mag==0.0)
+   {
+   strncpy(buf2,buf+1,3);
+   *(buf2+3)='\0';
+   if ((double)atof(buf2)==0.0)
+      {
+      strncpy(buf2,buf+7,3); *(buf2+3) = '\0';
+      mag = (double)atof(buf2)/10.0;
+      }
+   }
+return mag;
+}
+
+/*===========================================================*/
+/* Extraction de la magnitude (bleue ou rouge selon l'etat   */
+/* de la variable 'UsnoDisplayBlueMag') a partir de l'entier */
+/* 32 bits brut en provenance du fichier USNO.               */
+/* On rpend en compte ici les petites subtilites expliquees  */
+/* dans le fichier README de l'USNO (style mag a 99, ...).   */
+/*===========================================================*/
+double ml_GetUsnoRedMagnitude(int magL)
+{
+double mag;
+char buf[11];
+char buf2[4];
+
+sprintf(buf,"%010ld",labs(magL));
+strncpy(buf2,buf+7,3); *(buf2+3) = '\0';
+mag=(double)atof(buf2)/10.0;
+if (mag==999.0)
+   {
+   strncpy(buf2,buf+4,3); *(buf2+3) = '\0';
+   mag=(double)atof(buf2)/10.0;
+   }
+return mag;
+}
 

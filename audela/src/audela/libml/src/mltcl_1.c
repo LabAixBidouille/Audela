@@ -36,21 +36,21 @@ int Cmd_mltcl_residutycho2usno(ClientData clientData, Tcl_Interp *interp, int ar
 /* Troncate the USNO-A1 catalog file to a given R magnitude                 */
 /****************************************************************************/
 /*
-load libml ; ml_residutycho2usno "D:/usno/" "D:/tycho_format_usno/"
+load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 */
 /****************************************************************************/
 {
 	char s[100],pathname_usno[200],pathname_tycho[200],zone[5];
 	char ligne[1024];
-    FILE *catusno,*cattycho,*accusno,*acctycho,*fileout;
-	int k,zonename,n;
-
-	
-   int nin,nout,noutold;
-   int l,raL,deL,magL,raLL,deLL,magLL;
-   double rmaglim,ra,de,mag_red,mag_bleue;
-   double rah,rah0,drah;
-
+    FILE *catusno,*cattycho,*f1;
+	int kk,k,k1,k2,k3,zonename,n,mink2ra,mink2dec,mink2magn;
+	double zonera, nbusno, nbtycho;
+	struct_texte_fichier *accusno,*acctycho;
+	int l,raL,deL,magL,raLL,deLL,magLL;
+    double ratycho,detycho,mag_red_tycho,mag_bleue_tycho,rausno,decusno,mag_red_usno,mag_bleue_usno;
+	double differencera,differencedec,differencemagn,diffminra,minra,diffmindec,mindec,diffminmagn,minmagn;
+	long nbdebutusno, nbdebuttycho;
+  
 	if(argc<3) {
 		sprintf(s,"Usage: %s pathname_usno  pathname_tycho", argv[0]);
 		Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -80,170 +80,253 @@ load libml ; ml_residutycho2usno "D:/usno/" "D:/tycho_format_usno/"
 		strcpy(pathname_tycho,ligne);
 
 		//boucle sur chaque zone
-		for (k=1;k<25;k++) {
+		for (k=0;k<25;k++) {
 			zonename=k*75;
-			zone=printf ("%05s", zonename);
+			sprintf (zone,"%04d", zonename);
 		
-			//ouverture des fichiers
-			sprintf(ligne,"%s%s.CAT",pathname_usno,zone);
+			//ouverture des fichiers ACC
+			sprintf(ligne,"%sZONE%s.ACC",pathname_tycho,zone);
+			if ((f1=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+
+			while (feof(f1)==0) {
+				if (fgets(ligne,sizeof(ligne),f1)!=NULL) {
+					n++;
+				}
+			}
+			acctycho=(struct_texte_fichier*)malloc(n*sizeof(struct_texte_fichier));
+			if (acctycho==NULL) {
+				sprintf(s,"error : lignes pointer out of memory (%d elements)",n);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				free(acctycho);
+				return TCL_ERROR;
+			}
+			acctycho->nbligne=n+1;
+			fclose(f1);
+			n=0;
+			sprintf(ligne,"%sZONE%s.ACC",pathname_tycho,zone);
+			if ((f1=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+
+			while (feof(f1)==0) {
+				if (fgets(ligne,sizeof(ligne),f1)!=NULL) {
+					strcpy(acctycho[n].texte,ligne);
+					n++;
+				}
+			}
+			fclose(f1);
+			n=0;
+
+			sprintf(ligne,"%sZONE%s.ACC",pathname_usno,zone);
+			if ((f1=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+
+			while (feof(f1)==0) {
+				if (fgets(ligne,sizeof(ligne),f1)!=NULL) {
+					n++;
+				}
+			}
+			accusno=(struct_texte_fichier*)malloc(n*sizeof(struct_texte_fichier));
+			if (accusno==NULL) {
+				sprintf(s,"error : lignes pointer out of memory (%d elements)",n);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				free(accusno);
+				return TCL_ERROR;
+			}
+			accusno->nbligne=n+1;
+			fclose(f1);
+			n=0;
+			sprintf(ligne,"%sZONE%s.ACC",pathname_usno,zone);
+			if ((f1=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+
+			while (feof(f1)==0) {
+				if (fgets(ligne,sizeof(ligne),f1)!=NULL) {
+					strcpy(accusno[n].texte,ligne);
+					n++;
+				}
+			}
+			fclose(f1);
+			n=0;
+		
+			 /* -- opens the CAT files ---*/
+			sprintf(ligne,"%sZONE%s.CAT",pathname_usno,zone);
 			if ((catusno=fopen(ligne,"rb"))==NULL) {
 				sprintf(s,"File %s not found\n",ligne);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				fclose(catusno);
 				return TCL_ERROR;
 			}
-			sprintf(ligne,"%s%s.CAT",pathname_tycho,zone);
-			if ((cattycho=fopen(ligne,"rb"))==NULL) {
-				sprintf(s,"File %s not found\n",ligne);
+			sprintf(ligne,"%sZONE%s.CAT",pathname_tycho,zone);
+			if ((cattycho=fopen(ligne,"wb"))==NULL) {
+				sprintf(s,"File %s cannot be created\n",ligne);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
+				fclose(cattycho);
+				 return TCL_ERROR;
 			}
-			sprintf(ligne,"%s%s.ACC",pathname_usno,zone);
-			if ((accusno=fopen(ligne,"rb"))==NULL) {
-				sprintf(s,"File %s not found\n",ligne);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
+			//boucle sur chaque zone RA du fichier acc
+			for (k1=0;k1<97;k1++) {
+				zonera=k1*0.25;
+				
+
+				//recherche nbdebut pour une zone RA de l'usno
+				for (k2=5;k2<18;k2++){
+					if (accusno[k1].texte[k2]!= ' ') {
+						break;
+					}
+				}
+				for (k3=k2;k3<23;k3++){
+					if (accusno[k1].texte[k3]== ' ') {
+						break;
+					}
+				}
+				for (kk=k2;kk<k3;kk++) { s[kk-k2]=accusno[k1].texte[kk]; } ; s[k3-k2]='\0';
+				nbdebutusno=atol(s);
+				
+				for (k2=k3;k2<k3+15;k2++){
+					if (accusno[k1].texte[k2]!= ' ') {
+						break;
+					}
+				}
+				/*for (k3=k2;k3<35;k3++){
+					if (accusno[k1].texte[k3]== ' ') {
+						break;
+					}
+				}*/
+				for (kk=k2;kk<29;kk++) { s[kk-k2]=accusno[k1].texte[kk]; } ; s[29-k2]='\0';
+				nbusno=atof(s);
+
+				//recherche nbdebut pour une zone RA du tycho
+				for (k2=5;k2<18;k2++){
+					if (acctycho[k1].texte[k2]!= ' ') {
+						break;
+					}
+				}
+				for (k3=k2;k3<23;k3++){
+					if (acctycho[k1].texte[k3]== ' ') {
+						break;
+					}
+				}
+				for (kk=k2;kk<k3;kk++) { s[kk-k2]=acctycho[k1].texte[kk]; } ; s[k3-k2]='\0';
+				nbdebuttycho=atol(s);
+				
+				for (k2=k3;k2<k3+15;k2++){
+					if (acctycho[k1].texte[k2]!= ' ') {
+						break;
+					}
+				}
+				/*for (k3=k2;k3<35;k3++){
+					if (acctycho[k1].texte[k2]== ' ') {
+						break;
+					}
+				}*/
+				for (kk=k2;kk<29;kk++) { s[kk-k2]=acctycho[k1].texte[kk]; } ; s[29-k2]='\0';
+				nbtycho=atof(s);
+				
+				//boucle pour chaque fichier de zone, pour chaque petite zone RA 
+				fseek(catusno,(3+4)*nbdebutusno,0);
+				fseek(cattycho,(3+4)*nbdebuttycho,0);
+
+				//init variables
+				diffminra = diffmindec =diffminmagn=0.2;
+				minra=mindec=minmagn=0.00;
+				mink2ra=mink2dec=mink2magn=0;
+
+				for (k2=(int)nbdebuttycho-1;k2<(int)nbdebuttycho+(int)nbtycho;k2++) {
+					if (feof(cattycho)!=0) {continue;}
+					if (fread(&raL,1,4,cattycho)!=4) continue;
+					if (fread(&deL,1,4,cattycho)!=4) continue;
+					if (fread(&magL,1,4,cattycho)!=4) continue;
+					l=raL;
+					raLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+					l=deL;
+					deLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+					l=magL;
+					magLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+					ratycho=(double)raLL/360000.0;
+					detycho=(double)deLL/360000.0-90.0;
+					mag_red_tycho=ml_GetUsnoRedMagnitude(magLL);
+					mag_bleue_tycho=ml_GetUsnoBleueMagnitude(magLL);
+
+					for (k2=(int)nbdebutusno-1;k2<(int)nbdebutusno+(int)nbusno;k2++) {
+						if (feof(catusno)!=0) {continue;}
+						if (fread(&raL,1,4,catusno)!=4) continue;
+						if (fread(&deL,1,4,catusno)!=4) continue;
+						if (fread(&magL,1,4,catusno)!=4) continue;
+						l=raL;
+						raLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+						l=deL;
+						deLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+						l=magL;
+						magLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+						rausno=(double)raLL/360000.0;
+						decusno=(double)deLL/360000.0-90.0;
+						mag_red_usno=ml_GetUsnoRedMagnitude(magLL);
+						mag_bleue_usno=ml_GetUsnoBleueMagnitude(magLL);
+
+						//recherche étoile la plus proche
+						differencera = fabs(rausno-ratycho);
+						differencedec = fabs(decusno-detycho);
+						differencemagn = fabs(mag_bleue_tycho-mag_bleue_usno);
+
+						if (differencera<diffminra) {
+							diffminra=differencera;
+							minra=rausno,
+							mink2ra=k2;
+						}
+
+						if (differencedec<diffmindec) {
+							diffmindec=differencedec;
+							mindec=decusno,
+							mink2dec=k2;
+						}
+						if (differencemagn<diffminmagn) {
+							diffminmagn=differencemagn;
+							minmagn=mag_bleue_usno,
+							mink2magn=k2;
+						}
+
+					}
+
+					if ((mink2ra==mink2dec)&&(mink2dec==mink2magn)) {
+						//il n'y a pas d'ambiguïté sur l'étoile
+						sprintf(ligne,"%sdiff.acc",pathname_usno);
+						f1=fopen(ligne,"a");
+						if (f1==NULL) {
+							sprintf(s,"file_0 %s not created",argv[2]);
+							Tcl_SetResult(interp,s,TCL_VOLATILE);
+							fclose(f1);
+							return TCL_ERROR;
+						}
+						fprintf(f1,"%15.10f %15.10f %15.10f		%15.10f %15.10f %15.10f",diffminra,diffmindec,diffminmagn,minra,mindec,minmagn);
+						fclose(f1);
+		
+					}
+
+				}
+
+
 			}
-			sprintf(ligne,"%s%s.ACC",pathname_tycho,zone);
-			if ((acctycho=fopen(ligne,"rb"))==NULL) {
-				sprintf(s,"File %s not found\n",ligne);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-			sprintf(ligne,"%sresidu.acc",pathname_tycho);
-			if ((fileout=fopen(ligne,"wt"))==NULL) {
-				sprintf(s,"File %s not found\n",ligne);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				return TCL_ERROR;
-			}
-
-			
-
-
-			/* -- loop ---*/
-      nin=nout=0;
-      rah0=0.;
-      drah=0.25;
-      noutold=1;
-      while (feof(catin)==0) {
-         if (fread(&raL,1,4,catin)!=4) break;
-         if (fread(&deL,1,4,catin)!=4) break;
-         if (fread(&magL,1,4,catin)!=4) break;
-         l=raL;
-         raLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
-         l=deL;
-         deLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
-         l=magL;
-         magLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
-         ra=(double)raLL/360000.0;
-         de=(double)deLL/360000.0-90.0;
-         mag_red=yd_GetUsnoRedMagnitude(magLL);
-         mag_bleue=yd_GetUsnoBleueMagnitude(magLL);
-         if (mag_red<=rmaglim) {
-            nout++;
-            fwrite(&raL,sizeof(raL),1,catout);
-            fwrite(&deL,sizeof(deL),1,catout);
-            fwrite(&magL,sizeof(magL),1,catout);
-         }
-         rah=ra/15.;
-         if (rah>rah0+drah) {
-            sprintf(ligne,"%5.2f%12d%12d\n",rah0,noutold,nout);
-            fwrite(ligne,strlen(ligne),1,accout);
-            noutold+=nout;
-            rah0+=drah;
-         }
-         /*
-         if (nin>60000) {
-            break;
-         }
-         */
-         nin++;
-      }
-
-
-
-
 			fclose(catusno);
 			fclose(cattycho);
-			fclose(accusno);
-			fclose(acctycho);
-			fclose(fileout);
 		}
+	}
 
-
-      //strcpy(zonename,argv[3]);
-      //rmaglim=(double)atof(argv[4]);
-      /* -- opens the CAT files ---*/
-      sprintf(ligne,"%s%s.CAT",pathname_in,zonename);
-      if ((catin=fopen(ligne,"rb"))==NULL) {
-         sprintf(s,"File %s not found\n",ligne);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         return TCL_ERROR;
-      }
-      sprintf(ligne,"%s%s.CAT",pathname_out,zonename);
-      if ((catout=fopen(ligne,"wb"))==NULL) {
-         sprintf(s,"File %s cannot be created\n",ligne);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         fclose(catin);
-         return TCL_ERROR;
-      }
-      /* -- opens the CAT files ---*/
-      sprintf(ligne,"%s%s.ACC",pathname_out,zonename);
-      if ((accout=fopen(ligne,"wt"))==NULL) {
-         sprintf(s,"File %s cannot be created\n",ligne);
-         Tcl_SetResult(interp,s,TCL_VOLATILE);
-         fclose(catin);
-         fclose(catout);
-         return TCL_ERROR;
-      }
-      /* -- loop ---*/
-      nin=nout=0;
-      rah0=0.;
-      drah=0.25;
-      noutold=1;
-      while (feof(catin)==0) {
-         if (fread(&raL,1,4,catin)!=4) break;
-         if (fread(&deL,1,4,catin)!=4) break;
-         if (fread(&magL,1,4,catin)!=4) break;
-         l=raL;
-         raLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
-         l=deL;
-         deLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
-         l=magL;
-         magLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
-         ra=(double)raLL/360000.0;
-         de=(double)deLL/360000.0-90.0;
-         mag_red=yd_GetUsnoRedMagnitude(magLL);
-         mag_bleue=yd_GetUsnoBleueMagnitude(magLL);
-         if (mag_red<=rmaglim) {
-            nout++;
-            fwrite(&raL,sizeof(raL),1,catout);
-            fwrite(&deL,sizeof(deL),1,catout);
-            fwrite(&magL,sizeof(magL),1,catout);
-         }
-         rah=ra/15.;
-         if (rah>rah0+drah) {
-            sprintf(ligne,"%5.2f%12d%12d\n",rah0,noutold,nout);
-            fwrite(ligne,strlen(ligne),1,accout);
-            noutold+=nout;
-            rah0+=drah;
-         }
-         /*
-         if (nin>60000) {
-            break;
-         }
-         */
-         nin++;
-      }
-      /* -- close CAT files --*/
-      fclose(catin);
-      fclose(catout);
-      fclose(accout);
-      /* -- opens the catout file and create the ACC file TBD */
-      sprintf(s,"%d %d",nin,nout);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      return TCL_OK;
-   }
+	return 0;
 }
+
 
 
 int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
