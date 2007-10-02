@@ -30,6 +30,222 @@
 /***************************************************************************/
 #include "mltcl.h"
 
+
+int Cmd_mltcl_residutycho2usno(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Troncate the USNO-A1 catalog file to a given R magnitude                 */
+/****************************************************************************/
+/*
+load libml ; ml_residutycho2usno "D:/usno/" "D:/tycho_format_usno/"
+*/
+/****************************************************************************/
+{
+	char s[100],pathname_usno[200],pathname_tycho[200],zone[5];
+	char ligne[1024];
+    FILE *catusno,*cattycho,*accusno,*acctycho,*fileout;
+	int k,zonename,n;
+
+	
+   int nin,nout,noutold;
+   int l,raL,deL,magL,raLL,deLL,magLL;
+   double rmaglim,ra,de,mag_red,mag_bleue;
+   double rah,rah0,drah;
+
+	if(argc<3) {
+		sprintf(s,"Usage: %s pathname_usno  pathname_tycho", argv[0]);
+		Tcl_SetResult(interp,s,TCL_VOLATILE);
+		return TCL_ERROR;
+	} else {
+		/* --- decodage des arguments ---*/
+		strcpy(ligne,argv[1]);
+		n=(int)strlen(ligne);
+		if (n==0) {
+			return TCL_OK;
+		}
+		if ((ligne[n-1]!='/')||(ligne[n-1]!='\\')) {
+			ligne[n]='/';
+			ligne[n+1]='\0';
+		}
+		strcpy(pathname_usno,ligne);
+
+		strcpy(ligne,argv[2]);
+		n=(int)strlen(ligne);
+		if (n==0) {
+			return TCL_OK;
+		}
+		if ((ligne[n-1]!='/')||(ligne[n-1]!='\\')) {
+			ligne[n]='/';
+			ligne[n+1]='\0';
+		}
+		strcpy(pathname_tycho,ligne);
+
+		//boucle sur chaque zone
+		for (k=1;k<25;k++) {
+			zonename=k*75;
+			zone=printf ("%05s", zonename);
+		
+			//ouverture des fichiers
+			sprintf(ligne,"%s%s.CAT",pathname_usno,zone);
+			if ((catusno=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			sprintf(ligne,"%s%s.CAT",pathname_tycho,zone);
+			if ((cattycho=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			sprintf(ligne,"%s%s.ACC",pathname_usno,zone);
+			if ((accusno=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			sprintf(ligne,"%s%s.ACC",pathname_tycho,zone);
+			if ((acctycho=fopen(ligne,"rb"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+			sprintf(ligne,"%sresidu.acc",pathname_tycho);
+			if ((fileout=fopen(ligne,"wt"))==NULL) {
+				sprintf(s,"File %s not found\n",ligne);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				return TCL_ERROR;
+			}
+
+			
+
+
+			/* -- loop ---*/
+      nin=nout=0;
+      rah0=0.;
+      drah=0.25;
+      noutold=1;
+      while (feof(catin)==0) {
+         if (fread(&raL,1,4,catin)!=4) break;
+         if (fread(&deL,1,4,catin)!=4) break;
+         if (fread(&magL,1,4,catin)!=4) break;
+         l=raL;
+         raLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+         l=deL;
+         deLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+         l=magL;
+         magLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+         ra=(double)raLL/360000.0;
+         de=(double)deLL/360000.0-90.0;
+         mag_red=yd_GetUsnoRedMagnitude(magLL);
+         mag_bleue=yd_GetUsnoBleueMagnitude(magLL);
+         if (mag_red<=rmaglim) {
+            nout++;
+            fwrite(&raL,sizeof(raL),1,catout);
+            fwrite(&deL,sizeof(deL),1,catout);
+            fwrite(&magL,sizeof(magL),1,catout);
+         }
+         rah=ra/15.;
+         if (rah>rah0+drah) {
+            sprintf(ligne,"%5.2f%12d%12d\n",rah0,noutold,nout);
+            fwrite(ligne,strlen(ligne),1,accout);
+            noutold+=nout;
+            rah0+=drah;
+         }
+         /*
+         if (nin>60000) {
+            break;
+         }
+         */
+         nin++;
+      }
+
+
+
+
+			fclose(catusno);
+			fclose(cattycho);
+			fclose(accusno);
+			fclose(acctycho);
+			fclose(fileout);
+		}
+
+
+      //strcpy(zonename,argv[3]);
+      //rmaglim=(double)atof(argv[4]);
+      /* -- opens the CAT files ---*/
+      sprintf(ligne,"%s%s.CAT",pathname_in,zonename);
+      if ((catin=fopen(ligne,"rb"))==NULL) {
+         sprintf(s,"File %s not found\n",ligne);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         return TCL_ERROR;
+      }
+      sprintf(ligne,"%s%s.CAT",pathname_out,zonename);
+      if ((catout=fopen(ligne,"wb"))==NULL) {
+         sprintf(s,"File %s cannot be created\n",ligne);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         fclose(catin);
+         return TCL_ERROR;
+      }
+      /* -- opens the CAT files ---*/
+      sprintf(ligne,"%s%s.ACC",pathname_out,zonename);
+      if ((accout=fopen(ligne,"wt"))==NULL) {
+         sprintf(s,"File %s cannot be created\n",ligne);
+         Tcl_SetResult(interp,s,TCL_VOLATILE);
+         fclose(catin);
+         fclose(catout);
+         return TCL_ERROR;
+      }
+      /* -- loop ---*/
+      nin=nout=0;
+      rah0=0.;
+      drah=0.25;
+      noutold=1;
+      while (feof(catin)==0) {
+         if (fread(&raL,1,4,catin)!=4) break;
+         if (fread(&deL,1,4,catin)!=4) break;
+         if (fread(&magL,1,4,catin)!=4) break;
+         l=raL;
+         raLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+         l=deL;
+         deLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+         l=magL;
+         magLL= (l << 24) | ((l << 8) & 0x00FF0000) | ((l >> 8) & 0x0000FF00) | ((l >> 24) & 0x000000FF);
+         ra=(double)raLL/360000.0;
+         de=(double)deLL/360000.0-90.0;
+         mag_red=yd_GetUsnoRedMagnitude(magLL);
+         mag_bleue=yd_GetUsnoBleueMagnitude(magLL);
+         if (mag_red<=rmaglim) {
+            nout++;
+            fwrite(&raL,sizeof(raL),1,catout);
+            fwrite(&deL,sizeof(deL),1,catout);
+            fwrite(&magL,sizeof(magL),1,catout);
+         }
+         rah=ra/15.;
+         if (rah>rah0+drah) {
+            sprintf(ligne,"%5.2f%12d%12d\n",rah0,noutold,nout);
+            fwrite(ligne,strlen(ligne),1,accout);
+            noutold+=nout;
+            rah0+=drah;
+         }
+         /*
+         if (nin>60000) {
+            break;
+         }
+         */
+         nin++;
+      }
+      /* -- close CAT files --*/
+      fclose(catin);
+      fclose(catout);
+      fclose(accout);
+      /* -- opens the catout file and create the ACC file TBD */
+      sprintf(s,"%d %d",nin,nout);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_OK;
+   }
+}
+
+
 int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Identification des satellites en comparant les coordonnees               */
