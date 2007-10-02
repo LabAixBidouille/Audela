@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.18 2007-09-20 20:13:46 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.19 2007-10-02 17:13:29 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -25,7 +25,7 @@ proc ::ethernaude::ConfEthernAude { } {
    if { [info exists widget(frm) ] } {
       set frm $widget(frm)
 
-      if { [winfo exist $frm.coord_gps] } {
+      if { [ winfo exists $frm.coord_gps ] } {
          if { $private(started) == "1" } {
             #--- Boutons actifs
             $frm.coord_gps configure -state normal
@@ -94,14 +94,6 @@ proc ::ethernaude::deletePluginInstance { linkLabel deviceId usage } {
 
    set private(started) "0"
    ConfEthernAude
-   #--- Je ferme le tutorial EthernAude s'il est affiche
-   if { [ winfo exist .main ] } {
-      if { [ winfo exist .second ] } {
-         destroy .second
-      }
-      destroy .main
-   }
-   #---
    return
 }
 
