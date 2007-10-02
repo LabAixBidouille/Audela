@@ -2988,7 +2988,7 @@ int tt_util_regima1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
-int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double xc0, double yc0, double radius, int *nbsats)
+int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double xc0, double yc0, double radius, int *nbsats, char centroide[10])
 /***************************************************************************/
 /* Analyse des pixels de l'image pour detecter les satellites geostats     */
 /***************************************************************************/
@@ -3014,6 +3014,10 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
    double dx0,dy0,d0;
    TT_ASTROM p_ast;
    FILE *fic;
+//pour centroide
+   double **mat, *pp, *ecart;
+   int sizex, sizey;
+
 
    /* --- chercher les dimensions de l'image ---*/
    xmax=p->naxis1;
@@ -3200,42 +3204,90 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
                            sigma=sqrt(sigma/(n23f-n23d));
                         }
                         tt_free(vec,"vec");
-                        /* --- photocentre (xc,yc) ---*/
-                        xx1=(int)(xcc-r1);
-                        xx2=(int)(xcc+r1);
-                        yy1=(int)(ycc-r1);
-                        yy2=(int)(ycc+r1);
-                        if (xx1<0) xx1=0;
-                        if (xx1>=xmax) xx1=xmax-1;
-                        if (xx2<0) xx2=0;
-                        if (xx2>=xmax) xx2=xmax-1;
-                        if (yy1<0) yy1=0;
-                        if (yy1>=ymax) yy1=ymax-1;
-                        if (yy2<0) yy2=0;
-                        if (yy2>=ymax) yy2=ymax-1;
-                        seuilf=0.2*(v[5]-fmed);
-                        sx=0.;
-                        sy=0.;
-                        flux=0.;
-                        for (j=yy1;j<=yy2;j++) {
-                           dy=1.*j-ycc;
-                           dy2=dy*dy;
-                           for (i=xx1;i<=xx2;i++) {
-                              dx=1.*i-xcc;
-                              dx2=dx*dx;
-                              d2=dx2+dy2;
-                              value=(double)p->p[xmax*j+i]-fmed;
-                              if ((d2<=r11)&&(value>=seuilf)) {
-                                 flux += value;
-                                 sx += (double)(i * value);
-                                 sy += (double)(j * value);
-                              }
-                           }
-                        }
-                        if (flux!=0.) {
-                           xcc = sx / flux ;
-                           ycc = sy / flux ;
-                        }
+
+						//test sur le mot centroide
+						if(strcmp (centroide,"gauss\0")==0) {
+							//fitte une gaussienne pour la recherche du centroide
+							pp = (double*)calloc(6,sizeof(double));
+							ecart = (double*)calloc(1,sizeof(double));
+
+							xx1=(int)(xcc-2*r1);
+							xx2=(int)(xcc+2*r1);
+							yy1=(int)(ycc-2*r1);
+							yy2=(int)(ycc+2*r1);
+							if (xx1<0) xx1=0;
+							if (xx1>=xmax) xx1=xmax-1;
+							if (xx2<0) xx2=0;
+							if (xx2>=xmax) xx2=xmax-1;
+							if (yy1<0) yy1=0;
+							if (yy1>=ymax) yy1=ymax-1;
+							if (yy2<0) yy2=0;
+							if (yy2>=ymax) yy2=ymax-1;
+							sizex=xx2-xx1+1;
+							sizey=yy2-yy1+1;
+
+							//fixe la taille de la fenêtre de travail: sizex et sizey
+							mat = (double**)calloc(sizex,sizeof(double));
+							for(k=0;k<sizex;k++) {
+								*(mat+k) = (double*)calloc(sizey,sizeof(double));
+							}
+							//--- Mise a zero des deux buffers 
+							for(k=0;k<sizex;k++) {
+								for(k2=0;k2<sizey;k2++) {
+									mat[k][k2]=(double)0.;
+								}
+							}
+
+							for (j=yy1;j<=yy2;j++) {  
+							   for (i=xx1;i<=xx2;i++) {	  
+								  mat[i][j]=p->p[xmax*j+i];
+							   }
+							}
+
+							tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
+							xcc=pp[1];
+							ycc=pp[4];
+
+						} else {
+							/* --- photocentre (xc,yc) ---*/
+							xx1=(int)(xcc-r1);
+							xx2=(int)(xcc+r1);
+							yy1=(int)(ycc-r1);
+							yy2=(int)(ycc+r1);
+							if (xx1<0) xx1=0;
+							if (xx1>=xmax) xx1=xmax-1;
+							if (xx2<0) xx2=0;
+							if (xx2>=xmax) xx2=xmax-1;
+							if (yy1<0) yy1=0;
+							if (yy1>=ymax) yy1=ymax-1;
+							if (yy2<0) yy2=0;
+							if (yy2>=ymax) yy2=ymax-1;
+							seuilf=0.2*(v[5]-fmed);
+							sx=0.;
+							sy=0.;
+							flux=0.;
+							for (j=yy1;j<=yy2;j++) {
+							   dy=1.*j-ycc;
+							   dy2=dy*dy;
+							   for (i=xx1;i<=xx2;i++) {
+								  dx=1.*i-xcc;
+								  dx2=dx*dx;
+								  d2=dx2+dy2;
+								  value=(double)p->p[xmax*j+i]-fmed;
+								  if ((d2<=r11)&&(value>=seuilf)) {
+									 flux += value;
+									 sx += (double)(i * value);
+									 sy += (double)(j * value);
+								  }
+							   }
+							}
+							if (flux!=0.) {
+							   xcc = sx / flux ;
+							   ycc = sy / flux ;
+							}
+						}
+
+
                         /* --- photometrie (flux) ---*/
                         xx1=(int)(xcc-r1);
                         xx2=(int)(xcc+r1);

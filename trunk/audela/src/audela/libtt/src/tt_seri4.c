@@ -1306,6 +1306,7 @@ int tt_ima_series_geostat_1(TT_IMA_SERIES *pseries)
    xc=pseries->xcenter;
    yc=pseries->ycenter;
    radius=pseries->radius;
+
    if (radius<=0) {
        xc=p_in->naxis1/2;
        yc=p_in->naxis2/2;
@@ -1334,7 +1335,7 @@ int tt_ima_series_geostat_1(TT_IMA_SERIES *pseries)
    nbsats=0;
 
    /* --- calcul ---*/
-   tt_util_geostat(p_in,filenamesat,fwhmsat,seuil,xc,yc,radius,&nbsats);
+   tt_util_geostat(p_in,filenamesat,fwhmsat,seuil,xc,yc,radius,&nbsats,pseries->centroide);
    tt_imanewkey(p_out,"NB_SATEL",&(nbsats),TINT,"number of detected satellites","");
 
    /* --- calcul des temps ---*/

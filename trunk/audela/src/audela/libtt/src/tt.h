@@ -750,6 +750,7 @@ typedef struct {
    char bias[FLEN_FILENAME];
    char flat[FLEN_FILENAME];
    char file_ascii[FLEN_FILENAME];
+   char centroide[10];
    double constant;
    double threshold;
    double exposure;
@@ -863,6 +864,7 @@ typedef struct {
 /* ======================================================================== */
 /* ======================== declaration des fonctions ===================== */
 /* ======================================================================== */
+void tt_fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart);
 
 int tt_ptr_loadima(void *args);
 int tt_ptr_freekeys(void *args);
@@ -975,7 +977,7 @@ int tt_util_cuts2(TT_IMA *p,TT_IMA_SERIES *pseries,double percent_sb,double perc
 int tt_util_cuts2b(TT_IMA *p,TT_IMA_SERIES *pseries,double percent_sb,double percent_sh,double *locut,double *hicut,double *mode);
 int tt_util_bgk(TT_IMA *p,double *bgmean,double *bgsigma);
 int tt_util_statima(TT_IMA *p,double pixelsat_value,double *mean,double *sigma,double *mini,double *maxi,int *nbpixsat);
-int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double xc0, double yc0, double radius, int *nbsats);
+int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double xc0, double yc0, double radius, int *nbsats, char centoide[10]);
 int tt_util_qsort_double(double *x,int kdeb,int n,int *index);
 int tt_util_qsort_verif(int index);
 int tt_util_meansigma(double *x,int kdeb,int n,double *mean,double *sigma);

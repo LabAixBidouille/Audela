@@ -1236,9 +1236,114 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 }
 
 
+//###############################################################################################################################
+//###############################################################################################################################
+//											COPIE DE FOCNTIONS UTILENT DANS CPIXELS.CPP
+//###############################################################################################################################
+//###############################################################################################################################
 
 
 
+
+/***************************************************/
+/* Ajuste une gaussienne 2d:                       */
+/* ENTREES :                                       */
+/*  **y=matrice des points                         */
+/*  sizex=nombre de points sur cote 1 de y         */
+/*  sizey=nombre de points sur cote 2 de y         */
+/* SORTIES                                         */
+/*  p()=tableau des variables:                     */
+/*     p[0]=intensite maximum de la gaussienne     */
+/*     p[1]=indice X du maximum de la gaussienne   */
+/*     p[2]=fwhm X                                 */
+/*     p[3]=fond                                   */
+/*     p[4]=indice Y du maximum de la gaussienne   */
+/*     p[5]=fwhm Y                                 */
+/*  ecart=ecart-type                               */
+/***************************************************/
+void tt_fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart) {
+
+   int l,nbmax,m;
+   double l1,l2,a0;
+   double e,er1,y0;
+   double m0,m1;
+   double e1[6]; /* ici ajout */
+   int i,jx,jy;
+   double rr2;
+   double xx,yy;
+   p[0]=y[0][0];
+   p[1]=0.;
+   p[3]=y[0][0];
+   p[4]=0.;
+
+   for (jx=0;jx<sizex;jx++) {
+      for (jy=0;jy<sizey;jy++) {
+	      if (y[jx][jy]>p[0]) {p[0]=y[jx][jy]; p[1]=1.*jx; p[4]=1.*jy; }
+         if (y[jx][jy]<p[3]) {p[3]=y[jx][jy]; }
+      }
+   }
+
+   p[0]-=p[3];
+   p[2]=1.;
+   p[5]=1.;
+   *ecart=1.0;
+   l=6;               /* nombre d'inconnues */
+   e=(float).005;     /* erreur maxi. */
+   er1=(float).5;     /* dumping factor */
+   nbmax=250;         /* nombre maximum d'iterations */
+
+   for (i=0;i<l;i++) {
+	 e1[i]=er1;
+   }
+
+   m=0;
+   l1=(double)1e10;
+   fitgauss2d_b1:
+
+   for (i=0;i<l;i++) {
+	   a0=p[i];
+      fitgauss2d_b2:
+	   l2=0;
+	   for (jx=0;jx<sizex;jx++) {
+	      xx=(double)jx;
+	      for (jy=0;jy<sizey;jy++) {
+	         yy=(double)jy;
+	         rr2=(xx-p[1])*(xx-p[1])+(yy-p[4])*(yy-p[4]);
+	         y0=p[0]*exp(-rr2/p[2]/p[5])+p[3];
+//	         y0=y0*Mask[jx][jy];
+	         l2=l2+(y[jx][jy]-y0)*(y[jx][jy]-y0);
+         }
+	   }
+
+      m0=l2;
+      p[i]=a0*(1-e1[i]);
+      l2=0;
+
+	   for (jx=0;jx<sizex;jx++) {
+	      xx=(double)jx;
+	      for (jy=0;jy<sizey;jy++) {
+	         yy=(double)jy;
+	         rr2=(xx-p[1])*(xx-p[1])+(yy-p[4])*(yy-p[4]);
+	         y0=p[0]*exp(-rr2/p[2]/p[5])+p[3];
+//	         y0=y0*Mask[jx][jy];
+	         l2=l2+(y[jx][jy]-y0)*(y[jx][jy]-y0);
+         }
+	   }
+
+      *ecart=sqrt((double)l2/(sizex*sizey-l)); /* ici ajout */
+      m1=l2;
+      if (m1>m0) e1[i]=-e1[i]/2;
+      if (m1<m0) e1[i]=(float)1.2*e1[i];
+      if (m1>m0) p[i]=a0;
+      if (m1>m0) goto fitgauss2d_b2;
+   }
+   m++;
+   if (m==nbmax) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+   if (l2==0) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+   if (fabs((l1-l2)/l2)<e) {p[2]=p[2]/.601;p[5]=p[5]/.601; return; }
+   l1=l2;
+   goto fitgauss2d_b1;
+}
 
 
 
