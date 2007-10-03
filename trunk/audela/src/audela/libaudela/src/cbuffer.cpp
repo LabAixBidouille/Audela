@@ -1618,17 +1618,17 @@ void CBuffer::SetKeyword(char *nom, char *data, char *datatype, char *comment, c
 
 void CBuffer::CopyTo(CBuffer*dest)
 {
-   int naxis1, naxis2, naxis;
+   int naxis1, naxis2, plane;
    TYPE_PIXELS *ppix = NULL;
 
 
    if(dest==NULL) throw CError(ELIBSTD_DEST_BUF_NOT_FOUND);
    naxis1 = pix->GetWidth();
    naxis2 = pix->GetHeight();
-   naxis  = pix->GetPlanes();
-   ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * naxis * sizeof(float));
+   plane  = pix->GetPlanes();
+   ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * plane * sizeof(float));
 
-   if(naxis == 1) {
+   if(plane == 1) {
       pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
       dest->CopyFrom(keywords, PLANE_GREY, ppix);
    }else {
