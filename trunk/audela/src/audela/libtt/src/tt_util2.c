@@ -2988,7 +2988,7 @@ int tt_util_regima1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
-int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double xc0, double yc0, double radius, int *nbsats, char centroide[10])
+int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double xc0, double yc0, double radius, int *nbsats, char *centroide)
 /***************************************************************************/
 /* Analyse des pixels de l'image pour detecter les satellites geostats     */
 /***************************************************************************/
@@ -3206,7 +3206,7 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
                         tt_free(vec,"vec");
 
 						//test sur le mot centroide
-						if(strcmp (centroide,"gauss\0")==0) {
+						if(strcmp (centroide,"gauss")==0) {
 							//fitte une gaussienne pour la recherche du centroide
 							pp = (double*)calloc(6,sizeof(double));
 							ecart = (double*)calloc(1,sizeof(double));
@@ -3238,15 +3238,15 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
 								}
 							}
 
-							for (j=yy1;j<=yy2;j++) {  
-							   for (i=xx1;i<=xx2;i++) {	  
-								  mat[i][j]=p->p[xmax*j+i];
+							for (j=0;j<sizey;j++) {  
+							   for (i=0;i<sizex;i++) {	  
+								  mat[i][j]=p->p[xmax*(j+yy1)+i+xx1];
 							   }
 							}
 
 							tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
-							xcc=pp[1];
-							ycc=pp[4];
+							xcc=pp[1]+xx1;
+							ycc=pp[4]+yy1;
 
 						} else {
 							/* --- photocentre (xc,yc) ---*/

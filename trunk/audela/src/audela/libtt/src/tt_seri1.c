@@ -518,6 +518,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    strcpy(pseries->keylocut,"MIPS-LO");
    strcpy(pseries->keytype,"INT");
    strcpy(pseries->nom_trait,"DILATE");
+   strcpy(pseries->centroide,"gauss");
    strcpy(pseries->struct_elem,"RECTANGLE");
    pseries->magrlim=99.;
    pseries->magblim=99.;
