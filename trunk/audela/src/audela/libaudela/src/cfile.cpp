@@ -292,7 +292,7 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
       // je copie les pixels dans la variable de sortie *pixels
       if ( naxis3 == 1 ) {
          *pixels = new CPixelsGray(width, height, FORMAT_BYTE, decodedData, 0, 0);
-         naxis = 1;
+         naxis = 2;
       } else if ( naxis3 == 3 ) {
          *pixels = new CPixelsRgb(width, height, FORMAT_BYTE, decodedData, 0, 0);
          naxis = 3;
