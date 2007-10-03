@@ -750,7 +750,7 @@ typedef struct {
    char bias[FLEN_FILENAME];
    char flat[FLEN_FILENAME];
    char file_ascii[FLEN_FILENAME];
-   char centroide[10];
+   char centroide[20];
    double constant;
    double threshold;
    double exposure;
