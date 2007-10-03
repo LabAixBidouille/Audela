@@ -727,13 +727,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					}
 				}//	if (lignes2[n_in1].comment==1) {
 				if (lignes2[n_in1].comment==0) {
-					k1=146+33 ; k2=156+33 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=146+44 ; k2=156+44 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes2[n_in1].ident,s);
 					result= strlen(lignes2[n_in1].ident);
 					retour = strncmp(lignes2[n_in1].ident,"            \0",7);
 					if ((retour==0) || (result<=3)) {
 						/* --- le satellite n'est pas identifiée --- */
-						k1=0; k2=144+33; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						k1=0; k2=144+44; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(lignes2[n_in1].texte,s);
 						k1=38; k2=60; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(im,s);
