@@ -2,7 +2,7 @@
 # Fichier : telshift_go.tcl
 # Description : Outil pour l'acquisition avec deplacement du telescope entre les poses
 # Auteur : Christian JASINSKI
-# Mise a jour $Id: telshift_go.tcl,v 1.8 2007-08-31 17:35:15 robertdelmas Exp $
+# Mise a jour $Id: telshift_go.tcl,v 1.9 2007-10-05 16:10:08 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::telshift {
    package provide telshift 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] telshift_go.cap ]
@@ -27,8 +28,8 @@ proc ::telshift::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::telshift::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::telshift::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::telshift::getPluginHelp { } {
    return "telshift.htm"
@@ -40,6 +41,22 @@ proc ::telshift::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::telshift::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::telshift::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::telshift::getPluginDirectory { } {
+   return "telshift"
+}
+
+#------------------------------------------------------------
+# ::telshift::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::telshift::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------

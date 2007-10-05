@@ -3,7 +3,7 @@
 # Description : Outil pour le controle de la focalisation
 # Compatibilité : Protocoles LX200 et AudeCom
 # Auteurs : Alain KLOTZ et Robert DELMAS
-# Mise a jour $Id: foc.tcl,v 1.16 2007-09-09 19:26:36 robertdelmas Exp $
+# Mise a jour $Id: foc.tcl,v 1.17 2007-10-05 16:07:17 robertdelmas Exp $
 #
 
 set ::graphik(compteur) {}
@@ -19,6 +19,7 @@ set ::graphik(fichier)  ""
 #============================================================
 namespace eval ::foc {
    package provide foc 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] foc.cap ]
@@ -34,8 +35,8 @@ namespace eval ::foc {
    }
 
    #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne le nom du fichier d'aide principal
+   # getPluginHelp
+   #    retourne le nom du fichier d'aide principal
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "foc.htm"
@@ -47,6 +48,22 @@ namespace eval ::foc {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginDirectory
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "foc"
+   }
+
+   #------------------------------------------------------------
+   # getPluginOS
+   #    retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
@@ -714,8 +731,8 @@ proc focBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(foc,titre) \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::foc::getPluginType ] ] foc \
-               [ ::foc::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::foc::getPluginType ] ] \
+               [ ::foc::getPluginDirectory ] [ ::foc::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(foc,aide)
 

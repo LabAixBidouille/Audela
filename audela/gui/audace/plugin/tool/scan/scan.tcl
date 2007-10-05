@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.31 2007-09-08 17:10:26 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.32 2007-10-05 16:09:49 robertdelmas Exp $
 #
 
 #============================================================
@@ -12,6 +12,7 @@
 #============================================================
 namespace eval ::scan {
    package provide scan 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] scan.cap ]
@@ -27,8 +28,8 @@ namespace eval ::scan {
    }
 
    #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne le nom du fichier d'aide principal
+   # getPluginHelp
+   #    retourne le nom du fichier d'aide principal
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "scan.htm"
@@ -40,6 +41,22 @@ namespace eval ::scan {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginDirectory
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "scan"
+   }
+
+   #------------------------------------------------------------
+   # getPluginOS
+   #    retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
@@ -768,8 +785,8 @@ proc scanBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra0.but -borderwidth 1 -text $panneau(scan,titre) \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scan::getPluginType ] ] scan \
-               [ ::scan::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scan::getPluginType ] ] \
+               [ ::scan::getPluginDirectory ] [ ::scan::getPluginHelp ]"
          pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra0.but -text $panneau(scan,aide)
 

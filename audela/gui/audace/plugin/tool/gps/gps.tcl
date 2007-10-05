@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.9 2007-09-09 19:26:56 robertdelmas Exp $
+# Mise a jour $Id: gps.tcl,v 1.10 2007-10-05 16:07:39 robertdelmas Exp $
 #
 
 namespace eval ::gps {
@@ -11,6 +11,7 @@ namespace eval ::gps {
     variable base
 
     package provide gps 3.4
+    package require audela 1.4.0
 
     source [file join [file dirname [info script]] gps.cap]
 
@@ -450,8 +451,8 @@ namespace eval ::gps {
         frame $This.fra1 -borderwidth 2 -relief groove
         #--- Label du titre
         Button $This.fra1.but -borderwidth 2 -text $caption(gps,titre) -font $police(gras) \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::gps::getPluginType ] ] gps \
-               [ ::gps::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::gps::getPluginType ] ] \
+               [ ::gps::getPluginDirectory ] [ ::gps::getPluginHelp ]"
         ::pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top
         DynamicHelp::add $This.fra1.but -text $caption(gps,help,titre)
         pack $This.fra1 -side top -fill x
@@ -702,6 +703,20 @@ namespace eval ::gps {
     ##############################################################
     proc getPluginType { } {
         return "tool"
+    }
+
+    ##############################################################
+    ### getPluginDirectory #######################################
+    ##############################################################
+    proc getPluginDirectory { } {
+        return "gps"
+    }
+
+    ##############################################################
+    ### getPluginOS ##############################################
+    ##############################################################
+    proc getPluginOS { } {
+        return [ list Windows Linux Darwin ]
     }
 
     ##############################################################
