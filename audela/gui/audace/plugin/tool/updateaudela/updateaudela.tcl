@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.13 2007-09-15 11:54:14 michelpujol Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.14 2007-10-05 16:34:38 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -30,19 +30,11 @@ proc ::updateaudela::getPluginProperty { propertyName } {
 }
 
 #------------------------------------------------------------
-# ::updateaudela::initPlugin
-#    initialise le plugin
+#  ::updateaudela::initPlugin
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::updateaudela::initPlugin { tkbase } {
 
-}
-
-#------------------------------------------------------------
-#  ::updateaudela::getPluginHelp
-#     retourne le nom du fichier d'aide principal
-#------------------------------------------------------------
-proc ::updateaudela::getPluginHelp { } {
-   return "updateaudela.htm"
 }
 
 #------------------------------------------------------------
@@ -56,11 +48,35 @@ proc ::updateaudela::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
+#  ::updateaudela::getPluginHelp
+#     retourne le nom du fichier d'aide principal
+#------------------------------------------------------------
+proc ::updateaudela::getPluginHelp { } {
+   return "updateaudela.htm"
+}
+
+#------------------------------------------------------------
 #  ::updateaudela::getPluginType
 #     retourne le type de plugin
 #------------------------------------------------------------
 proc ::updateaudela::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+#  ::updateaudela::getPluginDirectory
+#     retourne le type de plugin
+#------------------------------------------------------------
+proc ::updateaudela::getPluginDirectory { } {
+   return "updateaudela"
+}
+
+#------------------------------------------------------------
+#  ::updateaudela::getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::updateaudela::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -72,8 +88,8 @@ proc ::updateaudela::deletePluginInstance { visuNo } {
 }
 
 #------------------------------------------------------------
-# ::updateaudela::createPluginInstance
-#    cree une instance l'outil
+#  ::updateaudela::createPluginInstance
+#     cree une instance l'outil
 #
 #------------------------------------------------------------
 proc ::updateaudela::createPluginInstance { {in ""} { visuNo 1 } } {
@@ -270,8 +286,8 @@ proc ::updateaudela::getTypeDirectory { pluginType pluginName } {
 proc ::updateaudela::showHelp { } {
    variable private
 
-   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::updateaudela::getPluginType ] ] updateaudela \
-      [ ::updateaudela::getPluginHelp ]
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::updateaudela::getPluginType ] ] \
+      [ ::updateaudela::getPluginDirectory ] [ ::updateaudela::getPluginHelp ]
 }
 
 #------------------------------------------------------------
@@ -450,7 +466,7 @@ proc ::updateaudela::makeKit { kitFileFullName sourceDirectory { fileList ""} } 
 
    if { [info exists private(base)] == 0 } {
       #--- s'il n'existe aucune instance du plugin, j'en cree une
-      ::updateaudela::createPluginInstance ".audace" "1" 
+      ::updateaudela::createPluginInstance ".audace" "1"
    }
 
    #--- je cree le fichier kit
