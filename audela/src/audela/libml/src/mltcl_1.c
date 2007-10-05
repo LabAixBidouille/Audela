@@ -162,18 +162,19 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 			fclose(f1);
 			n=0;
 		
-			 /* -- opens the CAT files ---*/
-			sprintf(ligne,"%sZONE%s.CAT",pathname_tycho,zone);
-			if ((cattycho=fopen(ligne,"rb"))==NULL) {
-				sprintf(s,"File %s cannot be created\n",ligne);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				fclose(cattycho);
-				 return TCL_ERROR;
-			}
+			 
 			//boucle sur chaque zone RA du fichier acc
 			for (k1=0;k1<97;k1++) {
 				zonera=k1*0.25;
 				
+				/* -- opens the CAT files ---*/
+				sprintf(ligne,"%sZONE%s.CAT",pathname_tycho,zone);
+				if ((cattycho=fopen(ligne,"rb"))==NULL) {
+					sprintf(s,"File %s cannot be created\n",ligne);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					fclose(cattycho);
+					return TCL_ERROR;
+				}
 
 				//recherche nbdebut pour une zone RA de l'usno
 				for (k2=5;k2<18;k2++){
@@ -346,12 +347,9 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 							fclose(f1);
 						}
 					}
-					
-				 }
-	
+					fclose(cattycho);
+				}
 			
-				fclose(cattycho);
-
 			}
 					
 		}
