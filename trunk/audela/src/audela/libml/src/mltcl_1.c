@@ -36,21 +36,22 @@ int Cmd_mltcl_residutycho2usno(ClientData clientData, Tcl_Interp *interp, int ar
 /* Troncate the USNO-A1 catalog file to a given R magnitude                 */
 /****************************************************************************/
 /*
-load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
+load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 */
 /****************************************************************************/
 {
 	char s[100],pathname_usno[200],pathname_tycho[200],zone[5];
 	char ligne[1024];
     FILE *catusno,*cattycho,*f1;
-	int kk,k,k1,k2,k3,zonename,n,mink2ra,mink2dec,mink2magn;
+	int kk,k,k1,k2,k3,zonename,n,mink2ra,mink2dec;
 	double zonera, nbusno, nbtycho;
 	struct_texte_fichier *accusno,*acctycho;
 	int l,raL,deL,magL,raLL,deLL,magLL;
     double ratycho,detycho,mag_red_tycho,mag_bleue_tycho,rausno,decusno,mag_red_usno,mag_bleue_usno;
-	double differencera,differencedec,differencemagn,diffminra,minra,diffmindec,mindec,diffminmagn,minmagn;
+	double differencera,differencedec,differencemagn1,differencemagn2,diffminra,minra,diffmindec,mindec;
 	long nbdebutusno, nbdebuttycho;
-  
+	double minra2,diffra2,mindec2,diffdec2,proche1,proche2;
+
 	if(argc<3) {
 		sprintf(s,"Usage: %s pathname_usno  pathname_tycho", argv[0]);
 		Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -80,7 +81,7 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 		strcpy(pathname_tycho,ligne);
 
 		//boucle sur chaque zone
-		for (k=0;k<25;k++) {
+		for (k=0;k<24;k++) {
 			zonename=k*75;
 			sprintf (zone,"%04d", zonename);
 		
@@ -162,15 +163,8 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 			n=0;
 		
 			 /* -- opens the CAT files ---*/
-			sprintf(ligne,"%sZONE%s.CAT",pathname_usno,zone);
-			if ((catusno=fopen(ligne,"rb"))==NULL) {
-				sprintf(s,"File %s not found\n",ligne);
-				Tcl_SetResult(interp,s,TCL_VOLATILE);
-				fclose(catusno);
-				return TCL_ERROR;
-			}
 			sprintf(ligne,"%sZONE%s.CAT",pathname_tycho,zone);
-			if ((cattycho=fopen(ligne,"wb"))==NULL) {
+			if ((cattycho=fopen(ligne,"rb"))==NULL) {
 				sprintf(s,"File %s cannot be created\n",ligne);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				fclose(cattycho);
@@ -200,11 +194,7 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 						break;
 					}
 				}
-				/*for (k3=k2;k3<35;k3++){
-					if (accusno[k1].texte[k3]== ' ') {
-						break;
-					}
-				}*/
+				
 				for (kk=k2;kk<29;kk++) { s[kk-k2]=accusno[k1].texte[kk]; } ; s[29-k2]='\0';
 				nbusno=atof(s);
 
@@ -227,23 +217,16 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 						break;
 					}
 				}
-				/*for (k3=k2;k3<35;k3++){
-					if (acctycho[k1].texte[k2]== ' ') {
-						break;
-					}
-				}*/
+			
 				for (kk=k2;kk<29;kk++) { s[kk-k2]=acctycho[k1].texte[kk]; } ; s[29-k2]='\0';
 				nbtycho=atof(s);
 				
 				//boucle pour chaque fichier de zone, pour chaque petite zone RA 
-				fseek(catusno,(3+4)*nbdebutusno,0);
-				fseek(cattycho,(3+4)*nbdebuttycho,0);
+			
+				fseek(cattycho,(3+4)*(nbdebuttycho-1),0);
 
-				//init variables
-				diffminra = diffmindec =diffminmagn=0.2;
-				minra=mindec=minmagn=0.00;
-				mink2ra=mink2dec=mink2magn=0;
-
+				
+				 //while (feof(cattycho)==0) {
 				for (k2=(int)nbdebuttycho-1;k2<(int)nbdebuttycho+(int)nbtycho;k2++) {
 					if (feof(cattycho)!=0) {continue;}
 					if (fread(&raL,1,4,cattycho)!=4) continue;
@@ -259,8 +242,25 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 					detycho=(double)deLL/360000.0-90.0;
 					mag_red_tycho=ml_GetUsnoRedMagnitude(magLL);
 					mag_bleue_tycho=ml_GetUsnoBleueMagnitude(magLL);
+					//k2=0;
 
-					for (k2=(int)nbdebutusno-1;k2<(int)nbdebutusno+(int)nbusno;k2++) {
+					sprintf(ligne,"%sZONE%s.CAT",pathname_usno,zone);
+					if ((catusno=fopen(ligne,"rb"))==NULL) {
+						sprintf(s,"File %s not found\n",ligne);
+						Tcl_SetResult(interp,s,TCL_VOLATILE);
+						fclose(catusno);
+						return TCL_ERROR;
+					}
+
+					//init variables
+					fseek(catusno,(3+4)*(nbdebutusno-1),0);
+
+					diffminra = diffmindec =0.02;
+					minra=mindec=0.00;
+					mink2ra=mink2dec=0;
+
+					//while (feof(catusno)==0) {
+					for (k3=(int)nbdebutusno-1;k3<(int)nbdebutusno+(int)nbusno;k3++) {
 						if (feof(catusno)!=0) {continue;}
 						if (fread(&raL,1,4,catusno)!=4) continue;
 						if (fread(&deL,1,4,catusno)!=4) continue;
@@ -279,28 +279,33 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 						//recherche étoile la plus proche
 						differencera = fabs(rausno-ratycho);
 						differencedec = fabs(decusno-detycho);
-						differencemagn = fabs(mag_bleue_tycho-mag_bleue_usno);
+					
 
 						if (differencera<diffminra) {
 							diffminra=differencera;
 							minra=rausno,
-							mink2ra=k2;
+							mink2ra=k3;
+							mindec2=decusno;
+							diffdec2=differencedec;
+							differencemagn1 = fabs(mag_bleue_tycho-mag_bleue_usno);
 						}
 
 						if (differencedec<diffmindec) {
 							diffmindec=differencedec;
 							mindec=decusno,
-							mink2dec=k2;
+							mink2dec=k3;
+							minra2=rausno;
+							diffra2=differencera;
+							differencemagn2 = fabs(mag_bleue_tycho-mag_bleue_usno);
 						}
-						if (differencemagn<diffminmagn) {
-							diffminmagn=differencemagn;
-							minmagn=mag_bleue_usno,
-							mink2magn=k2;
-						}
+						
+						//k2++;
 
 					}
-
-					if ((mink2ra==mink2dec)&&(mink2dec==mink2magn)) {
+					fclose(catusno);
+					
+				//	if ((mink2ra==mink2dec)&&(mink2dec==mink2magn)) {
+					if ((mink2ra==mink2dec)&&(diffminra<0.0005)&&(differencedec<0.0005)) {
 						//il n'y a pas d'ambiguïté sur l'étoile
 						sprintf(ligne,"%sdiff.acc",pathname_usno);
 						f1=fopen(ligne,"a");
@@ -310,16 +315,45 @@ load libml ; ml_residutycho2usno "D:/usno" "D:/tycho_format_usno"
 							fclose(f1);
 							return TCL_ERROR;
 						}
-						fprintf(f1,"%15.10f %15.10f %15.10f		%15.10f %15.10f %15.10f",diffminra,diffmindec,diffminmagn,minra,mindec,minmagn);
+						fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffmindec,minra,mindec,differencemagn1,mink2ra,mink2dec);
 						fclose(f1);
 		
+					} else {
+						//les étoiles les plus proches
+						proche1=sqrt(diffminra*diffminra+diffdec2*diffdec2);
+						proche2=sqrt(diffmindec*diffmindec+diffra2*diffra2);
+						if ((proche1<proche2)&&(proche1<0.283)&&(diffminra<0.0005)&&(differencedec<0.0005)) {
+							sprintf(ligne,"%sdiff.acc",pathname_usno);
+							f1=fopen(ligne,"a");
+							if (f1==NULL) {
+								sprintf(s,"file_0 %s not created",argv[2]);
+								Tcl_SetResult(interp,s,TCL_VOLATILE);
+								fclose(f1);
+								return TCL_ERROR;
+							}
+							fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffdec2,minra,mindec2,differencemagn1,mink2ra,mink2dec);
+							fclose(f1);
+						} else if  ((proche2<proche1)&&(proche2<0.283)&&(diffminra<0.0005)&&(differencedec<0.0005)) {
+							sprintf(ligne,"%sdiff.acc",pathname_usno);
+							f1=fopen(ligne,"a");
+							if (f1==NULL) {
+								sprintf(s,"file_0 %s not created",argv[2]);
+								Tcl_SetResult(interp,s,TCL_VOLATILE);
+								fclose(f1);
+								return TCL_ERROR;
+							}
+							fprintf(f1,"%15.10f %15.10f 	%15.10f %15.10f %15.10f		%d	%d\n",diffra2,diffmindec,minra2,mindec,differencemagn2,mink2ra,mink2dec);
+							fclose(f1);
+						}
 					}
-
-				}
+					
+				 }
+	
+			
+				fclose(cattycho);
 
 			}
-			fclose(catusno);
-			fclose(cattycho);
+					
 		}
 	}
 	return 0;
