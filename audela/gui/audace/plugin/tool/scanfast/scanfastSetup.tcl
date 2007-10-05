@@ -2,7 +2,7 @@
 # Fichier : scanfastSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scanfastSetup.tcl,v 1.3 2007-09-09 19:31:31 robertdelmas Exp $
+# Mise a jour $Id: scanfastSetup.tcl,v 1.4 2007-10-05 16:32:08 robertdelmas Exp $
 #
 
 namespace eval scanfastSetup {
@@ -79,7 +79,8 @@ namespace eval scanfastSetup {
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc afficheAide { } {
-      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scanfast::getPluginType ] ] scanfast scanfastSetup.htm
+      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scanfast::getPluginType ] ] \
+         [ ::scanfast::getPluginDirectory ] scanfastSetup.htm
    }
 
    #
