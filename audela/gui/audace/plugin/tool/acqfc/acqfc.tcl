@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.54 2007-09-09 19:24:56 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.55 2007-10-05 15:31:00 robertdelmas Exp $
 #
 
 #==============================================================
@@ -11,6 +11,7 @@
 
 namespace eval ::acqfc {
    package provide acqfc 2.1
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] acqfc.cap ]
@@ -201,6 +202,22 @@ namespace eval ::acqfc {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginDirectory
+   #     retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "acqfc"
+   }
+
+   #------------------------------------------------------------
+   #  getPluginOS
+   #     retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
@@ -3190,8 +3207,8 @@ proc acqfcBuildIF { visuNo } {
    #--- Trame du titre du panneau
    frame $panneau(acqfc,$visuNo,This).titre -borderwidth 2 -relief groove
       Button $panneau(acqfc,$visuNo,This).titre.but -borderwidth 1 -text $caption(acqfc,titre) \
-         -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfc::getPluginType ] ] acqfc \
-            [ ::acqfc::getPluginHelp ]"
+         -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfc::getPluginType ] ] \
+            [ ::acqfc::getPluginDirectory ] [ ::acqfc::getPluginHelp ]"
       pack $panneau(acqfc,$visuNo,This).titre.but -side top -fill x -in $panneau(acqfc,$visuNo,This).titre -ipadx 5
       DynamicHelp::add $panneau(acqfc,$visuNo,This).titre.but -text $caption(acqfc,help_titre)
    pack $panneau(acqfc,$visuNo,This).titre -side top -fill x

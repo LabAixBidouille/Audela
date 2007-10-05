@@ -2,9 +2,7 @@
 # Fichier : cmanimate.tcl
 # Description : Animation/slides control panel for Cloud Monitor
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmanimate.tcl,v 1.11 2007-09-09 19:26:00 robertdelmas Exp $
-#
-#****************************************************************
+# Mise a jour $Id: cmanimate.tcl,v 1.12 2007-10-05 15:34:12 robertdelmas Exp $
 #
 
 #****************************************************************
@@ -27,6 +25,7 @@
 #============================================================
 namespace eval ::cmanimate {
    package provide cmanimate 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] cmanimate.cap ]
@@ -42,8 +41,8 @@ namespace eval ::cmanimate {
    }
 
    #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne le nom du fichier d'aide principal
+   # getPluginHelp
+   #    retourne le nom du fichier d'aide principal
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "cmanimate.htm"
@@ -55,6 +54,22 @@ namespace eval ::cmanimate {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginDirectory
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "cmanimate"
+   }
+
+   #------------------------------------------------------------
+   # getPluginOS
+   #    retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
@@ -982,7 +997,7 @@ proc cmanimateBuildIF { This } {
          #--- Label for title
          Button $This.fra1.but -borderwidth 1 -text $panneau(cmanimate,titre) \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::cmanimate::getPluginType ] ] \
-               cmanimate [ ::cmanimate::getPluginHelp ]"
+               [ ::cmanimate::getPluginDirectory ] [ ::cmanimate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(cmanimate,aide)
 

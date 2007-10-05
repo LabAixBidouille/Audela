@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.13 2007-09-09 19:25:41 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.14 2007-10-05 15:33:34 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::animate {
    package provide animate 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] animate.cap ]
@@ -27,8 +28,8 @@ proc ::animate::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::animate::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::animate::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::animate::getPluginHelp { } {
    return "animate.htm"
@@ -40,6 +41,22 @@ proc ::animate::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::animate::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::animate::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::animate::getPluginDirectory { } {
+   return "animate"
+}
+
+#------------------------------------------------------------
+# ::animate::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::animate::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -228,8 +245,8 @@ proc ::animate::animBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(animate,titre) \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::animate::getPluginType ] ] animate \
-               [ ::animate::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::animate::getPluginType ] ] \
+               [ ::animate::getPluginDirectory ] [ ::animate::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(animate,aide)
 

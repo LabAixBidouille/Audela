@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition d'images en couleur
 # Compatibilite : Cameras Audine Couleur et SCR1300XTC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: acqcolor_go.tcl,v 1.11 2007-09-09 19:24:31 robertdelmas Exp $
+# Mise a jour $Id: acqcolor_go.tcl,v 1.12 2007-10-05 15:30:35 robertdelmas Exp $
 #
 
 #============================================================
@@ -12,6 +12,7 @@
 #============================================================
 namespace eval ::acqcolor {
    package provide acqcolor 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] acqcolor_go.cap ]
@@ -28,8 +29,8 @@ proc ::acqcolor::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::acqcolor::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::acqcolor::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::acqcolor::getPluginHelp { } {
    return "acqcolor.htm"
@@ -43,6 +44,21 @@ proc ::acqcolor::getPluginType { } {
    return "tool"
 }
 
+#------------------------------------------------------------
+# ::acqcolor::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::acqcolor::getPluginDirectory { } {
+   return "acqcolor"
+}
+
+#------------------------------------------------------------
+# ::acqcolor::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::acqcolor::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+}
 #------------------------------------------------------------
 # ::acqcolor::getPluginProperty
 #    retourne la valeur de la propriete
@@ -148,7 +164,7 @@ proc ::acqcolor::acqcolorBuildIF { This } {
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(acqcolor,titre) \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqcolor::getPluginType ] ] \
-               acqcolor [ ::acqcolor::getPluginHelp ]"
+               [ ::acqcolor::getPluginDirectory ] [ ::acqcolor::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(acqcolor,aide)
 
