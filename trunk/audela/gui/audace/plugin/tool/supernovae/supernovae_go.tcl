@@ -2,7 +2,7 @@
 # Fichier : supernovae_go.tcl
 # Description : Outil pour l'observation des SnAudes
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: supernovae_go.tcl,v 1.12 2007-09-09 19:34:34 robertdelmas Exp $
+# Mise a jour $Id: supernovae_go.tcl,v 1.13 2007-10-05 17:25:48 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::supernovae {
    package provide supernovae 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] supernovae_go.cap ]
@@ -27,8 +28,8 @@ proc ::supernovae::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::supernovae::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::supernovae::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::supernovae::getPluginHelp { } {
    return "supernovae.htm"
@@ -40,6 +41,22 @@ proc ::supernovae::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::supernovae::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::supernovae::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::supernovae::getPluginDirectory { } {
+   return "supernovae"
+}
+
+#------------------------------------------------------------
+# ::supernovae::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::supernovae::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -141,7 +158,7 @@ proc ::supernovae::supernovaeBuildIF { This } {
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(supernovae,titre) \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] \
-               supernovae [ ::supernovae::getPluginHelp ]"
+               [ ::supernovae::getPluginDirectory ] [ ::supernovae::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(supernovae,aide)
 

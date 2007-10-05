@@ -2,11 +2,12 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.28 2007-09-09 19:37:35 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.29 2007-10-05 17:26:46 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
    package provide visio2 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] visio2.cap ]
@@ -148,6 +149,22 @@ proc ::visio2::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::visio2::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+#  getPluginDirectory
+#     retourne le type de plugin
+#------------------------------------------------------------
+proc ::visio2::getPluginDirectory { } {
+   return "visio2"
+}
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::visio2::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -550,8 +567,8 @@ proc ::visio2::createPanel { visuNo } {
 
    #--- Label du titre
    Button $This.titre.but -borderwidth 1 -text $caption(visio2,title) \
-      -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] visio2 \
-         [ ::visio2::getPluginHelp ]"
+      -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] \
+         [ ::visio2::getPluginDirectory ] [ ::visio2::getPluginHelp ]"
    DynamicHelp::add $This.titre.but -text $caption(visio2,help,titre)
    pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill x -side top -ipadx 5
 

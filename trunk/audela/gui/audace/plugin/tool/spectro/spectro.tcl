@@ -2,7 +2,7 @@
 # Fichier : spectro.tcl
 # Description : Outil de traitement d'images de spectro
 # Auteur : Alain Klotz
-# Mise a jour $Id: spectro.tcl,v 1.21 2007-08-31 17:34:54 robertdelmas Exp $
+# Mise a jour $Id: spectro.tcl,v 1.22 2007-10-05 17:25:29 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::spectro {
    package provide spectro 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] spectro.cap ]
@@ -27,8 +28,8 @@ proc ::spectro::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::spectro::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::spectro::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::spectro::getPluginHelp { } {
    return "spectro.htm"
@@ -40,6 +41,22 @@ proc ::spectro::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::spectro::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::spectro::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::spectro::getPluginDirectory { } {
+   return "spectro"
+}
+
+#------------------------------------------------------------
+# ::spectro::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::spectro::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------

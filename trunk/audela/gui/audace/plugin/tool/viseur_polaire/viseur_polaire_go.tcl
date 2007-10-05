@@ -4,7 +4,7 @@
 # Type Takahashi : Viseur polaire à niveau
 # Type EQ6 : Viseur polaire à constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_go.tcl,v 1.8 2007-09-09 19:36:42 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_go.tcl,v 1.9 2007-10-05 17:26:06 robertdelmas Exp $
 #
 
 #============================================================
@@ -13,6 +13,7 @@
 #============================================================
 namespace eval ::viseur_polaire {
    package provide viseur_polaire 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] viseur_polaire_go.cap ]
@@ -29,8 +30,8 @@ proc ::viseur_polaire::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::viseur_polaire::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::viseur_polaire::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::viseur_polaire::getPluginHelp { } {
    return "viseur_polaire.htm"
@@ -42,6 +43,22 @@ proc ::viseur_polaire::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::viseur_polaire::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::viseur_polaire::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::viseur_polaire::getPluginDirectory { } {
+   return "viseur_polaire"
+}
+
+#------------------------------------------------------------
+# ::viseur_polaire::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::viseur_polaire::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -138,7 +155,7 @@ proc ::viseur_polaire::viseur_polaireBuildIF { This } {
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(viseur_polaire,titre) \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::viseur_polaire::getPluginType ] ] \
-               viseur_polaire [ ::viseur_polaire::getPluginHelp ]"
+               [ ::viseur_polaire::getPluginDirectory ] [ ::viseur_polaire::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(viseur_polaire,aide)
 
