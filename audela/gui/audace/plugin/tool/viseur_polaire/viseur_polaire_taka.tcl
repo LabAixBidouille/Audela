@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.6 2007-09-09 19:36:58 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.7 2007-10-05 17:24:25 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireTaka {
@@ -306,7 +306,7 @@ namespace eval viseurPolaireTaka {
       button $This.but_aide -text "$caption(viseur_taka,aide)" -width 7 -borderwidth 2 \
          -command {
             ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::viseur_polaire::getPluginType ] ] \
-                viseur_polaire [ ::viseur_polaire::getPluginHelp ]
+                [ ::viseur_polaire::getPluginDirectory ] [ ::viseur_polaire::getPluginHelp ]
          }
       pack $This.but_aide -in $This.frame3 -side right -anchor w -padx 3 -pady 3 -ipady 5
 

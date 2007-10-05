@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.5 2007-09-09 19:36:24 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.6 2007-10-05 17:24:43 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireEQ6 {
@@ -305,7 +305,7 @@ namespace eval viseurPolaireEQ6 {
       button $This.but_aide -text "$caption(viseur_eq6,aide)" -width 7 -borderwidth 2 \
          -command {
             ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::viseur_polaire::getPluginType ] ] \
-                viseur_polaire [ ::viseur_polaire::getPluginHelp ]
+                [ ::viseur_polaire::getPluginDirectory ] [ ::viseur_polaire::getPluginHelp ]
          }
       pack $This.but_aide -in $This.frame3 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
