@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.13 2007-09-17 01:38:02 alainklotz Exp $
+# Mise a jour $Id: visio.tcl,v 1.14 2007-10-05 17:26:24 robertdelmas Exp $
 #
 
 # ========================================================
@@ -11,6 +11,7 @@
 
 namespace eval ::visio {
    package provide visio 2.6.2
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [file join [file dirname [info script]] visio.cap]
@@ -30,8 +31,8 @@ namespace eval ::visio {
    }
 
    #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne le nom du fichier d'aide principal
+   # getPluginHelp
+   #    retourne le nom du fichier d'aide principal
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "visio.htm"
@@ -43,6 +44,22 @@ namespace eval ::visio {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginDirectory
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "visio"
+   }
+
+   #------------------------------------------------------------
+   # getPluginOS
+   #    retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
@@ -809,8 +826,8 @@ proc visioBuildIF { This } {
    pack $This.titre -side top -fill x
 
    Button $This.titre.but -borderwidth 1 -text $caption(visio,titre) \
-      -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio::getPluginType ] ] visio \
-         [ ::visio::getPluginHelp ]"
+      -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio::getPluginType ] ] \
+         [ ::visio::getPluginDirectory ] [ ::visio::getPluginHelp ]"
    pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
    DynamicHelp::add $This.titre.but -text $caption(visio,help_titre)
 
