@@ -2,7 +2,7 @@
 # Fichier : vo_tools_go.tcl
 # Description : Outil d'appel des fonctionnalites de l'observatoire virtuel
 # Auteur : Robert DELMAS
-# Mise a jour $Id: vo_tools_go.tcl,v 1.10 2007-09-09 19:37:57 robertdelmas Exp $
+# Mise a jour $Id: vo_tools_go.tcl,v 1.11 2007-10-05 16:57:43 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::vo_tools {
    package provide vo_tools 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] vo_tools_go.cap ]
@@ -27,8 +28,8 @@ proc ::vo_tools::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::vo_tools::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::vo_tools::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::vo_tools::getPluginHelp { } {
    return "vo_tools.htm"
@@ -40,6 +41,22 @@ proc ::vo_tools::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::vo_tools::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::vo_tools::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::vo_tools::getPluginDirectory { } {
+   return "vo_tools"
+}
+
+#------------------------------------------------------------
+# ::vo_tools::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::vo_tools::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -148,7 +165,7 @@ proc ::vo_tools::vo_toolsBuildIF { This } {
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(vo_tools,titre) \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] \
-               vo_tools [ ::vo_tools::getPluginHelp ]"
+               [ ::vo_tools::getPluginDirectory ] [ ::vo_tools::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(vo_tools,aide)
 
