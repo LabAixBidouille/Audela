@@ -2,11 +2,12 @@
 # Fichier : photometry.tcl
 # Description : Outil de traitement d'images de photometrie
 # Auteur : Alain Klotz
-# Mise a jour $Id: photometry.tcl,v 1.6 2007-09-09 19:29:51 robertdelmas Exp $
+# Mise a jour $Id: photometry.tcl,v 1.7 2007-10-05 16:33:27 robertdelmas Exp $
 #
 
 namespace eval ::photometry {
    package provide photometry 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] photometry.cap ]
@@ -23,8 +24,8 @@ proc ::photometry::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::photometry::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::photometry::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::photometry::getPluginHelp { } {
    return "photometry.htm"
@@ -36,6 +37,22 @@ proc ::photometry::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::photometry::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::photometry::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::photometry::getPluginDirectory { } {
+   return "photometry"
+}
+
+#------------------------------------------------------------
+# ::photometry::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::photometry::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -136,7 +153,7 @@ proc ::photometry::photometryBuildIF { This } {
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(photometry,titre) \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::photometry::getPluginType ] ] \
-               photometry [ ::photometry::getPluginHelp ]"
+               [ ::photometry::getPluginDirectory ] [ ::photometry::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(photometry,aide)
 

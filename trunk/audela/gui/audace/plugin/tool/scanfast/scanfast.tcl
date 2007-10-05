@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.33 2007-09-09 19:31:15 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.34 2007-10-05 16:34:17 robertdelmas Exp $
 #
 
 global panneau
@@ -86,6 +86,7 @@ proc prescanfast { largpix hautpix dt { firstpix 1 } { bin 1 } } {
 #============================================================
 namespace eval ::scanfast {
    package provide scanfast 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] scanfast.cap ]
@@ -101,8 +102,8 @@ namespace eval ::scanfast {
    }
 
    #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne le nom du fichier d'aide principal
+   # getPluginHelp
+   #    retourne le nom du fichier d'aide principal
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "scanfast.htm"
@@ -114,6 +115,22 @@ namespace eval ::scanfast {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginDirectory
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "scanfast"
+   }
+
+   #------------------------------------------------------------
+   # getPluginOS
+   #    retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
@@ -857,7 +874,7 @@ proc scanfastBuildIF { This } {
          #--- Label du titre
          Button $This.fra0.but -borderwidth 1 -text $panneau(scanfast,titre) \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scanfast::getPluginType ] ] \
-               scanfast [ ::scanfast::getPluginHelp ]"
+               [ ::scanfast::getPluginDirectory ] [ ::scanfast::getPluginHelp ]"
          pack $This.fra0.but -in $This.fra0 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra0.but -text $panneau(scanfast,aide)
 

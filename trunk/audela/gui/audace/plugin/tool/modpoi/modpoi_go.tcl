@@ -2,7 +2,7 @@
 # Fichier : modpoi_go.tcl
 # Description : Outil pour la determination du modele de pointage
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi_go.tcl,v 1.11 2007-09-09 19:27:34 robertdelmas Exp $
+# Mise a jour $Id: modpoi_go.tcl,v 1.12 2007-10-05 16:33:03 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::modpoi {
    package provide modpoi 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] modpoi_go.cap ]
@@ -27,8 +28,8 @@ proc ::modpoi::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::modpoi::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::modpoi::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::modpoi::getPluginHelp { } {
    return "modpoi.htm"
@@ -40,6 +41,22 @@ proc ::modpoi::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::modpoi::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::modpoi::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::modpoi::getPluginDirectory { } {
+   return "modpoi"
+}
+
+#------------------------------------------------------------
+# ::modpoi::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::modpoi::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -137,8 +154,8 @@ proc ::modpoi::modpoiBuildIF { This } {
 
          #--- Label du titre
          Button $This.fra1.but -borderwidth 1 -text $panneau(modpoi,titre) \
-            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi::getPluginType ] ] modpoi \
-               [ ::modpoi::getPluginHelp ]"
+            -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::modpoi::getPluginType ] ] \
+               [ ::modpoi::getPluginDirectory ] [ ::modpoi::getPluginHelp ]"
          pack $This.fra1.but -in $This.fra1 -anchor center -expand 1 -fill both -side top -ipadx 5
          DynamicHelp::add $This.fra1.but -text $panneau(modpoi,aide)
 
