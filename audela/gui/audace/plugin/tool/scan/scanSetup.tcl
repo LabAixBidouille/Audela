@@ -2,7 +2,7 @@
 # Fichier : scanSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scanSetup.tcl,v 1.4 2007-09-09 19:31:50 robertdelmas Exp $
+# Mise a jour $Id: scanSetup.tcl,v 1.5 2007-10-05 16:10:32 robertdelmas Exp $
 #
 
 namespace eval scanSetup {
@@ -79,7 +79,8 @@ namespace eval scanSetup {
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc afficheAide { } {
-      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scan::getPluginType ] ] scan scanSetup.htm
+      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::scan::getPluginType ] ] \
+         [ ::scan::getPluginDirectory ] scanSetup.htm
    }
 
    #
