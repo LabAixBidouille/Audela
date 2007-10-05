@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : François COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.17 2007-09-28 15:25:29 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.18 2007-10-05 15:59:23 robertdelmas Exp $
 #
 
 #============================================================
@@ -1101,38 +1101,38 @@ namespace eval ::methking {
 
     #--------------------------------------------------------------------------#
     proc getPluginTitle { } {
-       global caption
+        global caption
 
-       return "$caption(methking,titre)"
+        return "$caption(methking,titre)"
     }
 
     #------------------------------------------------------------
     proc getPluginHelp { } {
-       return "methking.htm"
+        return "methking.htm"
     }
 
     #--------------------------------------------------------------------------#
     proc getPluginType { } {
-       return "tool"
+        return "tool"
     }
 
     #------------------------------------------------------------
     proc getPluginDirectory { } {
-       return "methking"
+        return "methking"
     }
 
     #------------------------------------------------------------
     proc getPluginOS { } {
-       return [ list Windows Linux Darwin ]
+        return [ list Windows Linux Darwin ]
     }
 
     #--------------------------------------------------------------------------#
     proc getPluginProperty { propertyName } {
-       switch $propertyName {
-          function     { return "utility" }
-          subfunction1 { return "aiming" }
-          display      { return "panel" }
-       }
+        switch $propertyName {
+           function     { return "utility" }
+           subfunction1 { return "aiming" }
+           display      { return "panel" }
+        }
     }
 
     #--------------------------------------------------------------------------#
