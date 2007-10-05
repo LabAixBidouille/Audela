@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.29 2007-10-05 17:26:46 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.30 2007-10-05 17:43:18 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -644,8 +644,8 @@ proc ::visio2::config::getLabel { } {
 #   affiche l'aide de cet outil
 #------------------------------------------------------------
 proc ::visio2::config::showHelp { } {
-   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] visio2 \
-         [ ::visio2::getPluginHelp ] "config"
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] \
+         [ ::visio2::getPluginDirectory ] [ ::visio2::getPluginHelp ] "config"
 }
 
 #------------------------------------------------------------
