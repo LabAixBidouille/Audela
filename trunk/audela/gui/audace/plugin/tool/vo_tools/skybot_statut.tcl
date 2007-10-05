@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.9 2007-09-09 19:33:34 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.10 2007-10-05 16:57:02 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -217,7 +217,7 @@ namespace eval skybot_Statut {
            button $This.frame11.but_aide \
               -text "$caption(statut,aide)" -borderwidth 2 \
               -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::vo_tools::getPluginType ] ] \
-                 vo_tools [ ::vo_tools::getPluginHelp ] }
+                 [ ::vo_tools::getPluginDirectory ] [ ::vo_tools::getPluginHelp ] }
            pack $This.frame11.but_aide \
               -in $This.frame11 -side right -anchor e \
               -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0

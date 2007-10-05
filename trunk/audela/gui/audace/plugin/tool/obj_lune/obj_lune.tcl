@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.10 2007-09-09 19:27:58 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.11 2007-10-05 16:55:26 robertdelmas Exp $
 #
 
 global audace
@@ -184,7 +184,7 @@ namespace eval obj_lune {
          pack $This.cmd.fermer -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
          button $This.cmd.aide -text "$caption(obj_lune,aide)" -relief raised -state normal \
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::obj_lune::getPluginType ] ] \
-               obj_lune [ ::obj_lune::getPluginHelp ]"
+               [ ::obj_lune::getPluginDirectory ] [ ::obj_lune::getPluginHelp ]"
          pack $This.cmd.aide -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
       pack $This.cmd -side top -fill x
 
