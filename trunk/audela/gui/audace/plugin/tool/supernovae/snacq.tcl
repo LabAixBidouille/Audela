@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.9 2007-09-09 19:33:53 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.10 2007-10-05 17:20:05 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -503,8 +503,8 @@ pack $audace(base).snacq.frame2.but_exit \
 
 button $audace(base).snacq.frame2.but_help \
    -text $caption(snacq,help) -borderwidth 2 \
-   -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] supernovae \
-      [ ::supernovae::getPluginHelp ] sn_acq }
+   -command { ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::supernovae::getPluginType ] ] \
+      [ ::supernovae::getPluginDirectory ] [ ::supernovae::getPluginHelp ] sn_acq }
 pack $audace(base).snacq.frame2.but_help \
    -in $audace(base).snacq.frame2 -side right -anchor e \
    -padx 5 -pady 5 -ipadx 5 -ipady 5 -expand 0
