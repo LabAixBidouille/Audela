@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.14 2007-09-09 17:02:50 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.15 2007-10-05 15:32:40 robertdelmas Exp $
 #
 
 # =========================================================
@@ -11,6 +11,7 @@
 
 namespace eval ::acqfen {
    package provide acqfen 1.2.1
+   package require audela 1.4.0
 
    # =======================================================================
    # === definition des fonctions de construction automatique de l'outil ===
@@ -30,8 +31,8 @@ namespace eval ::acqfen {
    }
 
    #------------------------------------------------------------
-   #  getPluginHelp
-   #     retourne le nom du fichier d'aide principal
+   # getPluginHelp
+   #    retourne le nom du fichier d'aide principal
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "acqfen.htm"
@@ -43,6 +44,22 @@ namespace eval ::acqfen {
    #------------------------------------------------------------
    proc getPluginType { } {
       return "tool"
+   }
+
+   #------------------------------------------------------------
+   # getPluginDirectory
+   #    retourne le type de plugin
+   #------------------------------------------------------------
+   proc getPluginDirectory { } {
+      return "acqfen"
+   }
+
+   #------------------------------------------------------------
+   # getPluginOS
+   #    retourne le ou les OS de fonctionnement du plugin
+   #------------------------------------------------------------
+   proc getPluginOS { } {
+      return [ list Windows Linux Darwin ]
    }
 
    #------------------------------------------------------------
@@ -1474,8 +1491,8 @@ frame $This -borderwidth 2 -relief groove
    pack $This.titre -side top -fill x
 
       Button $This.titre.but -borderwidth 1 -text $caption(acqfen,titre_fenetrees) \
-         -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfen::getPluginType ] ] acqfen \
-            [ ::acqfen::getPluginHelp ]"
+         -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfen::getPluginType ] ] \
+            [ ::acqfen::getPluginDirectory ] [ ::acqfen::getPluginHelp ]"
       pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill both -side top -ipadx 5
       DynamicHelp::add $This.titre.but -text $caption(acqfen,help_titre)
 
