@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.5 2007-09-09 19:25:21 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.6 2007-10-05 15:35:04 robertdelmas Exp $
 #
 
 namespace eval acqfcSetup {
@@ -79,7 +79,8 @@ namespace eval acqfcSetup {
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc afficheAide { } {
-      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfc::getPluginType ] ] acqfc acqfcSetup.htm
+      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqfc::getPluginType ] ] \
+         [ ::acqfc::getPluginDirectory ] acqfcSetup.htm
    }
 
    #
