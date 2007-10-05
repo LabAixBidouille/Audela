@@ -2,7 +2,7 @@
 # Fichier : obj_lune_go.tcl
 # Description : Outil pour le lancement d'Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_go.tcl,v 1.11 2007-09-01 12:27:18 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_go.tcl,v 1.12 2007-10-05 16:57:26 robertdelmas Exp $
 #
 
 #============================================================
@@ -11,6 +11,7 @@
 #============================================================
 namespace eval ::obj_lune {
    package provide obj_lune 1.0
+   package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] obj_lune_go.cap ]
@@ -27,8 +28,8 @@ proc ::obj_lune::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
-#  ::obj_lune::getPluginHelp
-#     retourne le nom du fichier d'aide principal
+# ::obj_lune::getPluginHelp
+#    retourne le nom du fichier d'aide principal
 #------------------------------------------------------------
 proc ::obj_lune::getPluginHelp { } {
    return "obj_lune.htm"
@@ -40,6 +41,22 @@ proc ::obj_lune::getPluginHelp { } {
 #------------------------------------------------------------
 proc ::obj_lune::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::obj_lune::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::obj_lune::getPluginDirectory { } {
+   return "obj_lune"
+}
+
+#------------------------------------------------------------
+# ::obj_lune::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::obj_lune::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
