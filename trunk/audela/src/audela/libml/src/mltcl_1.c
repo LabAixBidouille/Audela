@@ -224,11 +224,11 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 				
 				//boucle pour chaque fichier de zone, pour chaque petite zone RA 
 			
-				fseek(cattycho,(3+4)*(nbdebuttycho-1),0);
+				//fseek(cattycho,(12)*(nbdebuttycho-1),0);
 
 				
-				 //while (feof(cattycho)==0) {
-				for (k2=(int)nbdebuttycho-1;k2<(int)nbdebuttycho+(int)nbtycho;k2++) {
+				 while (feof(cattycho)==0) {
+				//for (k2=(int)nbdebuttycho-1;k2<(int)nbdebuttycho+(int)nbtycho;k2++) {
 					if (feof(cattycho)!=0) {continue;}
 					if (fread(&raL,1,4,cattycho)!=4) continue;
 					if (fread(&deL,1,4,cattycho)!=4) continue;
@@ -243,7 +243,7 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 					detycho=(double)deLL/360000.0-90.0;
 					mag_red_tycho=ml_GetUsnoRedMagnitude(magLL);
 					mag_bleue_tycho=ml_GetUsnoBleueMagnitude(magLL);
-					//k2=0;
+					k3=0;
 
 					sprintf(ligne,"%sZONE%s.CAT",pathname_usno,zone);
 					if ((catusno=fopen(ligne,"rb"))==NULL) {
@@ -254,14 +254,14 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 					}
 
 					//init variables
-					fseek(catusno,(3+4)*(nbdebutusno-1),0);
+					//fseek(catusno,(12)*(nbdebutusno-1),0);
 
 					diffminra = diffmindec =0.02;
 					minra=mindec=0.00;
 					mink2ra=mink2dec=0;
 
-					//while (feof(catusno)==0) {
-					for (k3=(int)nbdebutusno-1;k3<(int)nbdebutusno+(int)nbusno;k3++) {
+					while (feof(catusno)==0) {
+					//for (k3=(int)nbdebutusno-1;k3<(int)nbdebutusno+(int)nbusno;k3++) {
 						if (feof(catusno)!=0) {continue;}
 						if (fread(&raL,1,4,catusno)!=4) continue;
 						if (fread(&deL,1,4,catusno)!=4) continue;
@@ -280,7 +280,8 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 						//recherche étoile la plus proche
 						differencera = fabs(rausno-ratycho);
 						differencedec = fabs(decusno-detycho);
-					
+						
+						if (rausno-ratycho>1) {break;}
 
 						if (differencera<diffminra) {
 							diffminra=differencera;
@@ -300,13 +301,13 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 							differencemagn2 = fabs(mag_bleue_tycho-mag_bleue_usno);
 						}
 						
-						//k2++;
+						k3++;
 
 					}
 					fclose(catusno);
 					
 				//	if ((mink2ra==mink2dec)&&(mink2dec==mink2magn)) {
-					if ((mink2ra==mink2dec)&&(diffminra<0.0005)&&(differencedec<0.0005)) {
+					if ((mink2ra==mink2dec)&&(diffminra<0.0004)&&(diffmindec<0.0004)) {
 						//il n'y a pas d'ambiguïté sur l'étoile
 						sprintf(ligne,"%sdiff.acc",pathname_usno);
 						f1=fopen(ligne,"a");
@@ -316,14 +317,14 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 							fclose(f1);
 							return TCL_ERROR;
 						}
-						fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffmindec,minra,mindec,differencemagn1,mink2ra,mink2dec);
+						fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffmindec,minra,mindec,ratycho,detycho, differencemagn1,mink2ra,mink2dec);
 						fclose(f1);
 		
 					} else {
 						//les étoiles les plus proches
 						proche1=sqrt(diffminra*diffminra+diffdec2*diffdec2);
 						proche2=sqrt(diffmindec*diffmindec+diffra2*diffra2);
-						if ((proche1<proche2)&&(proche1<0.283)&&(diffminra<0.0005)&&(differencedec<0.0005)) {
+						if ((proche1<proche2)&&(proche1<0.283)&&(diffminra<0.0004)&&(diffmindec<0.0004)) {
 							sprintf(ligne,"%sdiff.acc",pathname_usno);
 							f1=fopen(ligne,"a");
 							if (f1==NULL) {
@@ -332,9 +333,9 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 								fclose(f1);
 								return TCL_ERROR;
 							}
-							fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffdec2,minra,mindec2,differencemagn1,mink2ra,mink2dec);
+							fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffdec2,minra,mindec2,ratycho,detycho,differencemagn1,mink2ra,mink2dec);
 							fclose(f1);
-						} else if  ((proche2<proche1)&&(proche2<0.283)&&(diffminra<0.0005)&&(differencedec<0.0005)) {
+						} else if  ((proche2<proche1)&&(proche2<0.283)&&(diffminra<0.0004)&&(diffmindec<0.0004)) {
 							sprintf(ligne,"%sdiff.acc",pathname_usno);
 							f1=fopen(ligne,"a");
 							if (f1==NULL) {
@@ -343,20 +344,19 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 								fclose(f1);
 								return TCL_ERROR;
 							}
-							fprintf(f1,"%15.10f %15.10f 	%15.10f %15.10f %15.10f		%d	%d\n",diffra2,diffmindec,minra2,mindec,differencemagn2,mink2ra,mink2dec);
+							fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f %15.10f %15.10f		%d	%d\n",diffra2,diffmindec,minra2,mindec,ratycho,detycho,differencemagn2,mink2ra,mink2dec);
 							fclose(f1);
 						}
 					}
-					fclose(cattycho);
+					
 				}
-			
+				fclose(cattycho);
 			}
 					
 		}
 	}
 	return 0;
 }
-
 
 
 int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
