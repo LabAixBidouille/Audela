@@ -36,20 +36,21 @@ int Cmd_mltcl_residutycho2usno(ClientData clientData, Tcl_Interp *interp, int ar
 /* Troncate the USNO-A1 catalog file to a given R magnitude                 */
 /****************************************************************************/
 /*
-load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
+load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_format_usno"
 */
 /****************************************************************************/
 {
 	char s[100],pathname_usno[200],pathname_tycho[200],zone[5];
 	char ligne[1024];
     FILE *catusno,*cattycho,*f1;
-	int kk,k,k1,k2,k3,zonename,n,mink2ra,mink2dec;
-	double zonera, nbusno, nbtycho;
+	int k,k3,zonename,n,mink2ra,mink2dec;
+//	int kk,k1,k2;
+//	double zonera, nbusno, nbtycho;
 	struct_texte_fichier *accusno,*acctycho;
 	int l,raL,deL,magL,raLL,deLL,magLL;
     double ratycho,detycho,mag_red_tycho,mag_bleue_tycho,rausno,decusno,mag_red_usno,mag_bleue_usno;
 	double differencera,differencedec,differencemagn1,differencemagn2,diffminra,minra,diffmindec,mindec;
-	long nbdebutusno, nbdebuttycho;
+//	long nbdebutusno, nbdebuttycho;
 	double minra2,diffra2,mindec2,diffdec2,proche1,proche2;
 
 	if(argc<3) {
@@ -164,8 +165,8 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 		
 			 
 			//boucle sur chaque zone RA du fichier acc
-			for (k1=0;k1<97;k1++) {
-				zonera=k1*0.25;
+			//for (k1=0;k1<97;k1++) {
+				//zonera=k1*0.25;
 				
 				/* -- opens the CAT files ---*/
 				sprintf(ligne,"%sZONE%s.CAT",pathname_tycho,zone);
@@ -177,7 +178,7 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 				}
 
 				//recherche nbdebut pour une zone RA de l'usno
-				for (k2=5;k2<18;k2++){
+				/*for (k2=5;k2<18;k2++){
 					if (accusno[k1].texte[k2]!= ' ') {
 						break;
 					}
@@ -197,10 +198,10 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 				}
 				
 				for (kk=k2;kk<29;kk++) { s[kk-k2]=accusno[k1].texte[kk]; } ; s[29-k2]='\0';
-				nbusno=atof(s);
+				nbusno=atof(s);*/
 
 				//recherche nbdebut pour une zone RA du tycho
-				for (k2=5;k2<18;k2++){
+				/*for (k2=5;k2<18;k2++){
 					if (acctycho[k1].texte[k2]!= ' ') {
 						break;
 					}
@@ -220,7 +221,7 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 				}
 			
 				for (kk=k2;kk<29;kk++) { s[kk-k2]=acctycho[k1].texte[kk]; } ; s[29-k2]='\0';
-				nbtycho=atof(s);
+				nbtycho=atof(s);*/
 				
 				//boucle pour chaque fichier de zone, pour chaque petite zone RA 
 			
@@ -347,12 +348,10 @@ load libml ; ml_residutycho2usno "D:/usno_coupe" "D:/tycho_format_usno"
 							fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f %15.10f %15.10f		%d	%d\n",diffra2,diffmindec,minra2,mindec,ratycho,detycho,differencemagn2,mink2ra,mink2dec);
 							fclose(f1);
 						}
-					}
-					
+					}	
 				}
 				fclose(cattycho);
-			}
-					
+			//}			
 		}
 	}
 	return 0;
