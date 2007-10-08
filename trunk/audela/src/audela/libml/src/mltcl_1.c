@@ -282,7 +282,7 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 						differencera = fabs(rausno-ratycho);
 						differencedec = fabs(decusno-detycho);
 						
-						if (rausno-ratycho>1) {break;}
+						if (rausno-ratycho>0.5) {break;}
 
 						if (differencera<diffminra) {
 							diffminra=differencera;
@@ -308,9 +308,9 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 					fclose(catusno);
 					
 				//	if ((mink2ra==mink2dec)&&(mink2dec==mink2magn)) {
-					if ((mink2ra==mink2dec)&&(diffminra<0.0004)&&(diffmindec<0.0004)) {
+					if ((mink2ra==mink2dec)&&(diffminra<0.00028)&&(diffmindec<0.00028)) {
 						//il n'y a pas d'ambiguïté sur l'étoile
-						sprintf(ligne,"%sdiff.acc",pathname_usno);
+						sprintf(ligne,"%sdiffZONE%s.acc",pathname_usno,zone);
 						f1=fopen(ligne,"a");
 						if (f1==NULL) {
 							sprintf(s,"file_0 %s not created",argv[2]);
@@ -325,8 +325,8 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 						//les étoiles les plus proches
 						proche1=sqrt(diffminra*diffminra+diffdec2*diffdec2);
 						proche2=sqrt(diffmindec*diffmindec+diffra2*diffra2);
-						if ((proche1<proche2)&&(proche1<0.283)&&(diffminra<0.0004)&&(diffmindec<0.0004)) {
-							sprintf(ligne,"%sdiff.acc",pathname_usno);
+						if ((proche1<proche2)&&(proche1<0.0004)&&(diffminra<0.00028)&&(diffmindec<0.00028)) {
+							sprintf(ligne,"%sdiffZONE%s.acc",pathname_usno,zone);
 							f1=fopen(ligne,"a");
 							if (f1==NULL) {
 								sprintf(s,"file_0 %s not created",argv[2]);
@@ -336,8 +336,8 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 							}
 							fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffdec2,minra,mindec2,ratycho,detycho,differencemagn1,mink2ra,mink2dec);
 							fclose(f1);
-						} else if  ((proche2<proche1)&&(proche2<0.283)&&(diffminra<0.0004)&&(diffmindec<0.0004)) {
-							sprintf(ligne,"%sdiff.acc",pathname_usno);
+						} else if  ((proche2<proche1)&&(proche2<0.0004)&&(diffminra<0.00028)&&(diffmindec<0.00028)) {
+							sprintf(ligne,"%sdiffZONE%s.acc",pathname_usno,zone);
 							f1=fopen(ligne,"a");
 							if (f1==NULL) {
 								sprintf(s,"file_0 %s not created",argv[2]);
