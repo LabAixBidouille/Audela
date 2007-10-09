@@ -352,7 +352,18 @@ void cam_start_exp(struct camprop *cam,char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
+   int type=1,mode=2;
    AbortAcquisition();
+   /* --- shutter --- */
+    if (cam->acqmode!=1) {
+       if (cam->shutterindex==0) {
+            mode=2;
+        } else if (cam->shutterindex==1) {
+          mode=2;
+       } else if (cam->shutterindex==2) {
+            mode=1;
+        }           }
+   SetShutter(type,mode,cam->closingtime,cam->openingtime);
 }
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
