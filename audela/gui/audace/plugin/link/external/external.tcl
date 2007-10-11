@@ -2,16 +2,20 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.7 2007-09-20 20:14:20 robertdelmas Exp $
+# Mise a jour $Id: external.tcl,v 1.8 2007-10-11 19:25:37 robertdelmas Exp $
 #
 
 namespace eval external {
    package provide external 1.0
    package require audela 1.4.0
 
-   #--- Charge le fichier caption
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] external.cap ]
 }
+
+#==============================================================
+# Procedures generiques de configuration des drivers
+#==============================================================
 
 #------------------------------------------------------------
 #  configureDriver
@@ -110,7 +114,7 @@ proc ::external::getPluginType { } {
 #------------------------------------------------------------
 proc ::external::getPluginOS { } {
    return [ list Windows Linux Darwin ]
-   }
+}
 
 #------------------------------------------------------------
 #  fillConfigPage
@@ -125,7 +129,7 @@ proc ::external::fillConfigPage { frm } {
    set widget(frm) $frm
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
+   ::confColor::applyColor $widget(frm)
 }
 #------------------------------------------------------------
 # getLinkIndex

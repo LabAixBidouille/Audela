@@ -2,16 +2,20 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.19 2007-10-02 17:13:29 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.20 2007-10-11 19:25:18 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
    package provide ethernaude 1.0
    package require audela 1.4.0
 
-   #--- Charge le fichier caption
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] ethernaude.cap ]
 }
+
+#==============================================================
+# Procedures generiques de configuration des drivers
+#==============================================================
 
 #------------------------------------------------------------
 #  ConfEthernAude
@@ -252,7 +256,7 @@ proc ::ethernaude::getPluginType { } {
 #------------------------------------------------------------
 proc ::ethernaude::getPluginOS { } {
    return [ list Windows Linux Darwin ]
-   }
+}
 
 #------------------------------------------------------------
 #  getLinkIndex
