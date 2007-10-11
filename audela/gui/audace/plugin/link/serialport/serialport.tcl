@@ -2,20 +2,96 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.15 2007-09-20 20:17:53 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.16 2007-10-11 19:29:03 robertdelmas Exp $
 #
 
 namespace eval serialport {
    package provide serialport 1.0
    package require audela 1.4.0
 
-   #--- Charge le fichier caption
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] serialport.cap ]
 }
 
 #==============================================================
 # Procedures generiques de configuration des drivers
 #==============================================================
+
+#------------------------------------------------------------
+#  getPluginProperty
+#     retourne la valeur de la propriete
+#
+# parametre :
+#    propertyName : nom de la propriete
+# return : valeur de la propriete , ou "" si la propriete n'existe pas
+#------------------------------------------------------------
+proc ::serialport::getPluginProperty { propertyName } {
+   switch $propertyName {
+
+   }
+}
+
+#------------------------------------------------------------
+#  getPluginTitle
+#     retourne le label du driver dans la langue de l'utilisateur
+#------------------------------------------------------------
+proc ::serialport::getPluginTitle { } {
+   global caption
+
+   return "$caption(serialport,titre)"
+}
+
+#------------------------------------------------------------
+#  getPluginHelp
+#     retourne la documentation du driver
+#
+#  return "nom_driver.htm"
+#------------------------------------------------------------
+proc ::serialport::getPluginHelp { } {
+   return "serialport.htm"
+}
+
+#------------------------------------------------------------
+#  getPluginType
+#     retourne le type de driver
+#------------------------------------------------------------
+proc ::serialport::getPluginType { } {
+   return "link"
+}
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::serialport::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
+}
+
+#------------------------------------------------------------
+#  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
+#     initialise le driver
+#
+#  return namespace
+#------------------------------------------------------------
+proc ::serialport::initPlugin { } {
+   variable private
+
+   #--- Je charge les variables d'environnement
+   initConf
+
+   #--- je fixe le nom generique de la liaison
+   if {  $::tcl_platform(os) == "Linux" } {
+      set private(genericName) "/dev/tty"
+   } else {
+      set private(genericName) "COM"
+   }
+
+   #--- Recherche des ports com
+   Recherche_Ports
+
+   #--- J'initialise les variables widget(..)
+   confToWidget
+}
 
 #------------------------------------------------------------
 #  configureDriver
@@ -95,56 +171,6 @@ proc ::serialport::deletePluginInstance { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-#  getPluginProperty
-#     retourne la valeur de la propriete
-#
-# parametre :
-#    propertyName : nom de la propriete
-# return : valeur de la propriete , ou "" si la propriete n'existe pas
-#------------------------------------------------------------
-proc ::serialport::getPluginProperty { propertyName } {
-   switch $propertyName {
-
-   }
-}
-
-#------------------------------------------------------------
-#  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
-#------------------------------------------------------------
-proc ::serialport::getPluginTitle { } {
-   global caption
-
-   return "$caption(serialport,titre)"
-}
-
-#------------------------------------------------------------
-#  getPluginHelp
-#     retourne la documentation du driver
-#
-#  return "nom_driver.htm"
-#------------------------------------------------------------
-proc ::serialport::getPluginHelp { } {
-   return "serialport.htm"
-}
-
-#------------------------------------------------------------
-#  getPluginType
-#     retourne le type de driver
-#------------------------------------------------------------
-proc ::serialport::getPluginType { } {
-   return "link"
-}
-
-#------------------------------------------------------------
-#  getPluginOS
-#     retourne le ou les OS de fonctionnement du plugin
-#------------------------------------------------------------
-proc ::serialport::getPluginOS { } {
-   return [ list Windows Linux Darwin ]
-   }
-
-#------------------------------------------------------------
 #  fillConfigPage
 #     fenetre de configuration du driver
 #
@@ -158,27 +184,44 @@ proc ::serialport::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #---  j'afffiche la liste des link
-   TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(serialport,available)
-      listbox $frm.available.list
-      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
-      Button  $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
-         -text "$caption(serialport,refresh)" -command { ::serialport::refreshAvailableList }
-      pack $frm.available.refresh -in [$frm.available getframe] -side left
-   pack $frm.available -side top -fill both -expand true
+   #--- J'afffiche la liste des links exclus
+   frame $private(frm).port_exclus -borderwidth 0 -relief ridge
 
-   frame $frm.port_exclus -borderwidth 0 -relief ridge
-      label $frm.port_exclus_lab -text "$caption(serialport,port_exclus)"
-      pack $frm.port_exclus_lab -in $frm.port_exclus -side left -padx 5 -pady 5
-      entry $frm.port_exclus_ent -textvariable serialport::widget(serial,port_exclus) -width 25
-      pack $frm.port_exclus_ent -in $frm.port_exclus -side left
-   pack $frm.port_exclus -side top -fill x
+      label $private(frm).port_exclus_lab -text "$caption(serialport,port_exclus)"
+      pack $private(frm).port_exclus_lab -in $private(frm).port_exclus -side left -padx 5 -pady 5
 
-   #--- je mets a jour la liste
+      entry $private(frm).port_exclus_ent -textvariable serialport::widget(serial,port_exclus) -width 25
+      pack $private(frm).port_exclus_ent -in $private(frm).port_exclus -side left
+
+   pack $private(frm).port_exclus -side top -fill x
+
+   #--- J'afffiche la liste des links disponibles et utilisés
+   frame $private(frm).port -borderwidth 0 -relief ridge
+
+      TitleFrame $private(frm).port.available -borderwidth 2 -relief ridge -text $caption(serialport,available)
+         listbox $private(frm).port.available.list -height 6
+         pack $private(frm).port.available.list -in [$private(frm).port.available getframe] \
+            -side left -fill x -expand true
+      pack $private(frm).port.available -side top -fill x
+
+      TitleFrame $private(frm).port.used -borderwidth 2 -relief ridge -text $caption(serialport,used)
+         listbox $private(frm).port.used.list -height 6
+         pack $private(frm).port.used.list -in [$private(frm).port.used getframe] \
+            -side left -fill x -expand true
+      pack $private(frm).port.used -side top -fill x
+
+   pack $private(frm).port -side left -fill x -expand true
+
+   #--- J'afffiche le bouton de rafraichissement
+   Button $private(frm).refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
+      -text "$caption(serialport,refresh)" -command { ::serialport::refreshAvailableList }
+   pack $private(frm).refresh -side left
+
+   #--- Je mets a jour la liste
    refreshAvailableList
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
+   ::confColor::applyColor $private(frm)
 }
 
 #------------------------------------------------------------
@@ -255,38 +298,12 @@ proc ::serialport::getSelectedLinkLabel { } {
    variable private
 
    #--- je memorise le linkLabel selectionne
-   set i [$private(frm).available.list curselection]
+   set i [$private(frm).port.available.list curselection]
    if { $i == "" } {
       set i 0
    }
    #--- je retourne le label du link (premier mot de la ligne )
-   return [lindex [$private(frm).available.list get $i] 0]
-}
-
-#------------------------------------------------------------
-#  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
-#
-#  return namespace
-#------------------------------------------------------------
-proc ::serialport::initPlugin { } {
-   variable private
-
-   #--- Je charge les variables d'environnement
-   initConf
-
-   #--- je fixe le nom generique de la liaison
-   if {  $::tcl_platform(os) == "Linux" } {
-      set private(genericName) "/dev/tty"
-   } else {
-      set private(genericName) "COM"
-   }
-
-   #--- Recherche des ports com
-   Recherche_Ports
-
-   #--- J'initialise les variables widget(..)
-   confToWidget
+   return [lindex [$private(frm).port.available.list get $i] 0]
 }
 
 #------------------------------------------------------------
@@ -299,14 +316,14 @@ proc ::serialport::refreshAvailableList { } {
    variable private
 
    #--- je memorise le linkLabel selectionne
-   set i [$private(frm).available.list curselection]
+   set i [$private(frm).port.available.list curselection]
    if { $i == "" } {
       set i 0
    }
    set selectedLinkLabel [getSelectedLinkLabel]
 
    #--- j'efface le contenu de la liste
-   $private(frm).available.list delete 0 [ $private(frm).available.list size]
+   $private(frm).port.available.list delete 0 [ $private(frm).port.available.list size]
 
    #--- je recupere les linkNo ouverts
    set linkNoList [link::list]
@@ -332,7 +349,7 @@ proc ::serialport::refreshAvailableList { } {
           append linkText " { $deviceId $usage $comment } "
       }
 
-      $private(frm).available.list insert end $linkText
+      $private(frm).port.available.list insert end $linkText
    }
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
@@ -350,18 +367,18 @@ proc ::serialport::refreshAvailableList { } {
 proc ::serialport::selectConfigLink { linkLabel } {
    variable private
 
-   $private(frm).available.list selection clear 0 end
+   $private(frm).port.available.list selection clear 0 end
 
    #--- je recherche linkLabel dans la listbox  (linkLabel est le premier element de chaque ligne)
-   for {set i 0} {$i<[$private(frm).available.list size]} {incr i} {
-      if { [lindex [$private(frm).available.list get $i] 0] == $linkLabel } {
-         $private(frm).available.list selection set $i
+   for {set i 0} {$i<[$private(frm).port.available.list size]} {incr i} {
+      if { [lindex [$private(frm).port.available.list get $i] 0] == $linkLabel } {
+         $private(frm).port.available.list selection set $i
          return
       }
    }
-   if { [$private(frm).available.list size] > 0 } {
+   if { [$private(frm).port.available.list size] > 0 } {
       #--- sinon je selectionne le premier linkLabel
-      $private(frm).available.list selection set 0
+      $private(frm).port.available.list selection set 0
    }
 }
 
