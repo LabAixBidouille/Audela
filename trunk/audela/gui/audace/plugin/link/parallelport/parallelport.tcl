@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.13 2007-09-20 20:16:09 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.14 2007-10-11 19:26:55 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -12,6 +12,10 @@ namespace eval parallelport {
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] parallelport.cap ]
 }
+
+#==============================================================
+# Procedures generiques de configuration des drivers
+#==============================================================
 
 #------------------------------------------------------------
 #  getPluginProperty
@@ -61,7 +65,7 @@ proc ::parallelport::getPluginType { } {
 #------------------------------------------------------------
 proc ::parallelport::getPluginOS { } {
    return [ list Windows Linux Darwin ]
-   }
+}
 
 #------------------------------------------------------------
 #  initPlugin
@@ -182,20 +186,20 @@ proc ::parallelport::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #---  j'afffiche la liste des link
-   TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(parallelport,available)
-      listbox $frm.available.list
-      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
-      Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
-         -text "$caption(parallelport,refresh)" -command { ::parallelport::refreshAvailableList }
-      pack $frm.available.refresh -in [$frm.available getframe] -side left
-   pack $frm.available -side left -fill both -expand true
+   #--- J'afffiche la liste des links
+   TitleFrame $private(frm).available -borderwidth 2 -relief ridge -text $caption(parallelport,available)
+      listbox $private(frm).available.list
+      pack $private(frm).available.list -in [$private(frm).available getframe] -side left -fill both -expand true
+   pack $private(frm).available -side left -fill both -expand true
+   Button $private(frm).refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
+      -text "$caption(parallelport,refresh)" -command { ::parallelport::refreshAvailableList }
+   pack $private(frm).refresh -side left
 
-   #--- je mets a jour la liste
+   #--- Je mets a jour la liste
    refreshAvailableList
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
+   ::confColor::applyColor $private(frm)
 }
 
 #------------------------------------------------------------
