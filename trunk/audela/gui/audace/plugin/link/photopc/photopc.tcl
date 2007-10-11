@@ -2,16 +2,20 @@
 # Fichier : photopc.tcl
 # Description : Interface de liaison PhotoPC
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: photopc.tcl,v 1.8 2007-09-20 20:16:53 robertdelmas Exp $
+# Mise a jour $Id: photopc.tcl,v 1.9 2007-10-11 19:26:11 robertdelmas Exp $
 #
 
 namespace eval photopc {
    package provide photopc 1.0
    package require audela 1.4.0
 
-   #--- Charge le fichier caption
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] photopc.cap ]
 }
+
+#==============================================================
+# Procedures generiques de configuration des drivers
+#==============================================================
 
 #------------------------------------------------------------
 #  configureDriver
@@ -110,7 +114,7 @@ proc ::photopc::getPluginType { } {
 #------------------------------------------------------------
 proc ::photopc::getPluginOS { } {
    return [ list Windows ]
-   }
+}
 
 #------------------------------------------------------------
 #  fillConfigPage
@@ -125,7 +129,7 @@ proc ::photopc::fillConfigPage { frm } {
    set widget(frm) $frm
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
+   ::confColor::applyColor $widget(frm)
 }
 
 #------------------------------------------------------------

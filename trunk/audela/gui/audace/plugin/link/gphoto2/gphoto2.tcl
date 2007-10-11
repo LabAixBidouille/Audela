@@ -2,16 +2,20 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.10 2007-10-10 21:19:40 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.11 2007-10-11 19:25:53 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {
    package provide gphoto2 1.0
    package require audela 1.4.0
 
-   #--- Charge le fichier caption
+   #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] gphoto2.cap ]
 }
+
+#==============================================================
+# Procedures generiques de configuration des drivers
+#==============================================================
 
 #------------------------------------------------------------
 #  configureDriver
@@ -111,7 +115,7 @@ proc ::gphoto2::getPluginType { } {
 #------------------------------------------------------------
 proc ::gphoto2::getPluginOS { } {
    return [ list Windows Linux Darwin ]
-   }
+}
 
 #------------------------------------------------------------
 #  fillConfigPage
@@ -123,13 +127,16 @@ proc ::gphoto2::fillConfigPage { frm } {
    variable widget
    global caption
 
+   #--- Je memorise la reference de la frame
+   set widget(frm) $frm
+
    #--- Mode debug
-   checkbutton $frm.debug -text "$caption(dslr,debug)" -highlightthickness 0 \
+   checkbutton $widget(frm).debug -text "$caption(dslr,debug)" -highlightthickness 0 \
       -variable ::gphoto2::widget(gphoto2,debug)
-   pack $frm.debug -in $frm -anchor center -side left -padx 10 -pady 2
+   pack $widget(frm).debug -in $widget(frm) -anchor center -side left -padx 10 -pady 2
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
+   ::confColor::applyColor $widget(frm)
 }
 
 #------------------------------------------------------------
