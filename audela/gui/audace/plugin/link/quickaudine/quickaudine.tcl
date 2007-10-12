@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.18 2007-10-11 19:27:13 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.19 2007-10-12 21:59:10 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
@@ -56,13 +56,9 @@ proc ::quickaudine::createPluginInstance { linkLabel deviceId usage comment } {
    global audace
 
    #--- je rafraichis la liste
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::quickaudine::refreshAvailableList
-   }
+   ::quickaudine::refreshAvailableList
    #--- je selectionne le link
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::quickaudine::selectConfigLink $linkLabel
-   }
+   ::quickaudine::selectConfigLink $linkLabel
    #--- pour l'instant, la liaison est demarree par le pilote de la camera
    return
 }
@@ -77,9 +73,7 @@ proc ::quickaudine::deletePluginInstance { linkLabel deviceId usage } {
    global audace
 
    #--- je rafraichis la liste
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::quickaudine::refreshAvailableList
-   }
+   ::quickaudine::refreshAvailableList
    #--- pour l'instant, la liaison est arretee par le pilote de la camera
    return
 }
@@ -265,6 +259,9 @@ proc ::quickaudine::getSelectedLinkLabel { } {
 proc ::quickaudine::initPlugin { } {
    variable private
 
+   #--- Initialisation
+   set private(frm) ""
+
    #--- je fixe le nom generique de la liaison
    set private(genericName)   "quickaudine"
    set private(statusMessage) ""
@@ -310,6 +307,11 @@ proc ::quickaudine::isReady { } {
 proc ::quickaudine::refreshAvailableList { } {
    variable private
 
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
+      return
+   }
+
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
    if { $i == "" } {
@@ -352,6 +354,11 @@ proc ::quickaudine::refreshAvailableList { } {
 #------------------------------------------------------------
 proc ::quickaudine::selectConfigLink { linkLabel } {
    variable private
+
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
+      return
+   }
 
    $private(frm).available.list selection clear 0 end
 
