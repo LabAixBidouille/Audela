@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.21 2007-09-22 08:13:48 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.22 2007-10-12 21:55:20 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -31,8 +31,7 @@ proc ::confLink::init { } {
 
    #--- charge le fichier caption
    source [ file join $audace(rep_caption) conflink.cap ]
-   #--- j'ajoute le repetoire des equipements dans la liste des
-   #--- repertoire pouvant contenir des plugins
+   #--- j'ajoute le repertoire pouvant contenir des plugins
    lappend ::auto_path [file join "$::audace(rep_plugin)" link]
    #--- je charge la liste des plugins
    findPlugin
