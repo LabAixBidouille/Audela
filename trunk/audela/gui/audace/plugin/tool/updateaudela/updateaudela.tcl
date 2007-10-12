@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.14 2007-10-05 16:34:38 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.15 2007-10-12 21:54:47 robertdelmas Exp $
 #
 
 namespace eval ::updateaudela {
@@ -1596,7 +1596,11 @@ proc ::updateaudela::plugin::showPluginHelp { } {
    set pluginName [$private(pluginTable) cellcget $rowIndex,1 -text]
    set pluginType [$private(pluginTable) cellcget $rowIndex,0 -text]
 
-   ::audace::showHelpPlugin [::audace::getPluginTypeDirectory $pluginType] $pluginName [ $pluginName\::getPluginHelp ]
+   if { $pluginType != "audela" } {
+      ::audace::showHelpPlugin [::audace::getPluginTypeDirectory $pluginType] $pluginName [ $pluginName\::getPluginHelp ]
+   } else {
+      ::audace::showMain
+   }
 }
 
 #------------------------------------------------------------
