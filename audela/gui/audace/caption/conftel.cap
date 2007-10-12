@@ -1,6 +1,6 @@
 #
 # Fichier : conftel.cap
-# Mise a jour $Id: conftel.cap,v 1.26 2007-06-19 20:16:53 robertdelmas Exp $
+# Mise a jour $Id: conftel.cap,v 1.27 2007-10-12 21:55:58 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,6 +17,7 @@ set caption(conftel,ok)                               "OK"
 set caption(conftel,appliquer)                        "Apply"
 set caption(conftel,fermer)                           "Close"
 set caption(conftel,aide)                             "Help"
+set caption(conftel,arreter)                          "Stop"
 
 set caption(conftel,raquette_tel)                     "Hand controller on screen"
 set caption(conftel,config_raquette)                  "Hand Controller Setup"
@@ -141,6 +142,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,appliquer)                     "Appliquer"
    set caption(conftel,fermer)                        "Fermer"
    set caption(conftel,aide)                          "Aide"
+   set caption(conftel,arreter)                       "Arrêter"
 
    set caption(conftel,raquette_tel)                  "Raquette à l'écran"
    set caption(conftel,config_raquette)               "Configuration de la raquette"
@@ -265,6 +267,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,appliquer)                     "Applica"
    set caption(conftel,fermer)                        "Chiudi"
    set caption(conftel,aide)                          "Aiuto"
+   set caption(conftel,arreter)                       "Ferma"
 
    set caption(conftel,raquette_tel)                  "Pulsantiera a schermo"
    set caption(conftel,config_raquette)               "Configurazione pulsantiera"
@@ -389,6 +392,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,appliquer)                     "Aplicar"
    set caption(conftel,fermer)                        "Cerrar"
    set caption(conftel,aide)                          "Ayuda"
+   set caption(conftel,arreter)                       "Parar"
 
    set caption(conftel,raquette_tel)                  "Controlador virtual"
    set caption(conftel,config_raquette)               "Configuración del controlador de mano"
@@ -513,6 +517,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,appliquer)                     "Anwenden"
    set caption(conftel,fermer)                        "Schließen"
    set caption(conftel,aide)                          "Hilfe"
+   set caption(conftel,arreter)                       "Halten"
 
    set caption(conftel,raquette_tel)                  "Hand Kontroller am Bildschirm"
    set caption(conftel,config_raquette)               "Handsteuerung Konfiguration"
@@ -637,6 +642,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,appliquer)                     "Aplicar"
    set caption(conftel,fermer)                        "Fechar"
    set caption(conftel,aide)                          "Ajuda"
+   set caption(conftel,arreter)                       "Parar"
 
    set caption(conftel,raquette_tel)                  "Controlador de mão no ecrã"
    set caption(conftel,config_raquette)               "Configuração do controlador de mão"
@@ -761,6 +767,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conftel,appliquer)                     "Apply"
    set caption(conftel,fermer)                        "Close"
    set caption(conftel,aide)                          "Help"
+   set caption(conftel,arreter)                       "Stop"
 
    set caption(conftel,raquette_tel)                  "Hand controller on screen"
    set caption(conftel,config_raquette)               "Hand Controller Setup"
