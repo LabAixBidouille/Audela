@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.17 2007-10-11 19:27:33 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.18 2007-10-12 21:59:27 robertdelmas Exp $
 #
 
 namespace eval quickremote {
@@ -69,13 +69,9 @@ proc ::quickremote::createPluginInstance { linkLabel deviceId usage comment } {
    #--- j'ajoute l'utilisation
    link$linkno use add $deviceId $usage $comment
    #--- je rafraichis la liste
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::quickremote::refreshAvailableList
-   }
+   ::quickremote::refreshAvailableList
    #--- je selectionne le link
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::quickremote::selectConfigLink $linkLabel
-   }
+   ::quickremote::selectConfigLink $linkLabel
    #---
    return $linkno
 }
@@ -99,9 +95,7 @@ proc ::quickremote::deletePluginInstance { linkLabel deviceId usage } {
          ::link::delete $linkno
       }
       #--- je rafraichis la liste
-      if { [ winfo exists $audace(base).confLink ] } {
-         ::quickremote::refreshAvailableList
-      }
+      ::quickremote::refreshAvailableList
    }
 }
 
@@ -262,6 +256,9 @@ proc ::quickremote::getSelectedLinkLabel { } {
 proc ::quickremote::initPlugin { } {
    variable private
 
+   #--- Initialisation
+   set private(frm) ""
+
    #--- je fixe le nom generique de la liaison
    set private(genericName)   "quickremote"
    set private(statusMessage) ""
@@ -303,6 +300,11 @@ proc ::quickremote::isReady { } {
 #------------------------------------------------------------
 proc ::quickremote::refreshAvailableList { } {
    variable private
+
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
+      return
+   }
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
@@ -346,6 +348,11 @@ proc ::quickremote::refreshAvailableList { } {
 #------------------------------------------------------------
 proc ::quickremote::selectConfigLink { linkLabel } {
    variable private
+
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
+      return
+   }
 
    $private(frm).available.list selection clear 0 end
 

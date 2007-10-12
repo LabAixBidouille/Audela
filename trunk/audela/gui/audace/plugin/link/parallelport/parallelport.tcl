@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.14 2007-10-11 19:26:55 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.15 2007-10-12 21:58:52 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -76,6 +76,9 @@ proc ::parallelport::getPluginOS { } {
 proc ::parallelport::initPlugin { } {
    variable private
 
+   #--- Initialisation
+   set private(frm) ""
+
    #--- je recupere le nom generique de la liaison
    ##set private(genericName) [link::genericname parallelport]
    if { $::tcl_platform(os) == "Linux" } {
@@ -137,13 +140,9 @@ proc ::parallelport::createPluginInstance { linkLabel deviceId usage comment } {
    #--- j'ajoute l'utilisation
    link$linkno use add $deviceId $usage $comment
    #--- je rafraichis la liste
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::parallelport::refreshAvailableList
-   }
+   ::parallelport::refreshAvailableList
    #--- je selectionne le link
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::parallelport::selectConfigLink $linkLabel
-   }
+   ::parallelport::selectConfigLink $linkLabel
    #---
    return $linkno
 }
@@ -167,9 +166,7 @@ proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
          ::link::delete $linkno
       }
       #--- je rafraichis la liste
-      if { [ winfo exists $audace(base).confLink ] } {
-         ::parallelport::refreshAvailableList
-      }
+      ::parallelport::refreshAvailableList
    }
 }
 
@@ -278,6 +275,11 @@ proc ::parallelport::isReady { } {
 proc ::parallelport::refreshAvailableList { } {
    variable private
 
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
+      return
+   }
+
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).available.list curselection]
    if { $i == "" } {
@@ -323,7 +325,12 @@ proc ::parallelport::refreshAvailableList { } {
 proc ::parallelport::selectConfigLink { linkLabel } {
    variable private
 
-  $private(frm).available.list selection clear 0 end
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
+      return
+   }
+
+   $private(frm).available.list selection clear 0 end
 
    #--- je recherche linkLabel dans la listbox  (linkLabel est le premier element de chaque ligne)
    for {set i 0} {$i<[$private(frm).available.list size]} {incr i} {
