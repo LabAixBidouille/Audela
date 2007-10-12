@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.5 2007-06-29 21:57:31 robertdelmas Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.6 2007-10-12 17:14:49 robertdelmas Exp $
 # Mise à jour FC mars 2007
 # Dernière mise à jour: 24 mars 2007 - 11h00
 #
@@ -229,7 +229,7 @@ namespace eval ::bess {
             set racine [file tail [file rootname $fich_in]]
             set ::bess::fich_in $racine
             set fich_out $racine
-            
+
             switch [file extension $fich_in] {
                ".dat" {
                   spc_dat2fits $racine.dat
@@ -338,33 +338,33 @@ namespace eval ::bess {
   if { 1==0 } {
       frame $t.trame0 -borderwidth 5 -relief groove -bg $bess_export_fg
       label $t.trame0.titre \
-	      -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
-	      -borderwidth 0 -relief flat -bg $bess_export_fg  \
-	      -fg $color(blue_pad)
-#label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg 
+         -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
+         -borderwidth 0 -relief flat -bg $bess_export_fg  \
+         -fg $color(blue_pad)
+#label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
       pack $t.trame0.titre -in $t -fill x -side top -pady 15
       #pack $t.trame0.titre -side top -fill both -expand true
   }
 
       #--------------------------------------------------------------------------------
-      # Trame du nom des fichier à éditer et de sortie            
+      # Trame du nom des fichier à éditer et de sortie
       frame $t.trame1 -borderwidth 5 -relief groove -bg $bess_export_fg
-      
+
       label $t.trame1.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame1.titre -in $t.trame1 -columnspan 2 -sticky w
-      
+
       label $t.trame1.l1 -text $text_bess(fich_in) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       entry $t.trame1.e1 -textvariable ::bess::fich_in -font $police(normal) -relief sunken -bg $bess_entry_fg
       button $t.trame1.b1 -text $text_bess(SelecFile) -command {::bess::SelectFile} -font $police(titre) -bg $bess_export_fg
       button $t.trame1.b2 -text $text_bess(ChargeFichier) -command {::bess::ChargeFichier $::bess::fich_in} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame1.l1 $t.trame1.e1 $t.trame1.b1 $t.trame1.b2
-      
+
       label $t.trame1.l2 -text $text_bess(fich_out) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       entry $t.trame1.e2 -textvariable ::bess::fich_out -font $police(normal) -relief sunken -bg $bess_entry_fg
       grid $t.trame1.l2 $t.trame1.e2
 
       pack $t.trame1 -side top -fill both -expand true
-      
+
 
       #--------------------------------------------------------------------------------
       # Trame des renseignements généraux
@@ -407,7 +407,7 @@ namespace eval ::bess {
       pack $t.trame3.b2 -side left -padx 10 -pady 10
       pack $t.trame3.b3 -side right -padx 10 -pady 10
       pack $t.trame3.b4 -side right -padx 35 -pady 10
-      
+
 
       pack $t.trame3 -side top -fill both -expand true
 
@@ -415,7 +415,7 @@ namespace eval ::bess {
 
       tkwait window $audace(base).saisie
       if { "$::bess::fich_out"!="" } {
-	   return "$::bess::fich_out"
+         return "$::bess::fich_out"
       }
    }
 
@@ -426,14 +426,14 @@ namespace eval ::bess {
 
       global audace conf spcaudace
       variable text_bess
-      
-     if { $conf(editsite_htm)!="" } {
-	      set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" & 
-	      } ]
+
+      if { $conf(editsite_htm)!="" } {
+         set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" &
+            } ]
       } else {
-	      set message_erreur $text_bess(pb_editweb)
-	      tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
-    }
+         set message_erreur $text_bess(pb_editweb)
+         tk_messageBox -message $message_erreur -icon error -title $text_bess(probleme)
+      }
    }
 
    #*************************************************************************#
@@ -454,7 +454,7 @@ namespace eval ::bess {
          }
 
    }
-   
+
    #*************************************************************************#
    #*************  valideMotCle  ********************************************#
    #*************************************************************************#
@@ -630,24 +630,40 @@ namespace eval ::bess {
          set commentaire(BSS_COSM) "Updated by Audela BeSS module"
 
          if {[info exists motCleAModifier]} {
-             foreach motcle $motCleAModifier {
-                 buf$audace(bufNo) setkwd [list $motcle $parametres($motcle) $formatmotcle($motcle) $commentaire($motcle) ""]
-             }
-   #           Et je sauve le fichier... si le nom de fichier n'est pas vide
+            foreach motcle $motCleAModifier {
+                buf$audace(bufNo) setkwd [list $motcle $parametres($motcle) $formatmotcle($motcle) $commentaire($motcle) ""]
+            }
+
+            #--- Complete les mots clefs vides :
+            set listemotsclef [ buf$audace(bufNo) getkwds ]
+            if { [ lsearch $listemotsclef "BSS_VHEL" ] ==-1 } {
+               buf$audace(bufNo) setkwd [ list BSS_VHEL 0.0 float "Heliocentric velocity at data date" "km/s" ]
+            }
+            if { [ lsearch $listemotsclef "BSS_NORM" ] ==-1 } {
+               buf$audace(bufNo) setkwd [ list BSS_NORM "no" string "Yes or no if normalisation has been done" "" ]
+            }
+            if { [ lsearch $listemotsclef "BSS_COSM" ] ==-1 } {
+               buf$audace(bufNo) setkwd [ list BSS_COSM "no" string "Yes or no if cosmics correction has been done" "" ]
+            }
+            if { [ lsearch $listemotsclef "BSS_TELL" ] ==-1 } {
+               buf$audace(bufNo) setkwd [ list BSS_TELL "no" string "Yes or no if telluric lines has been removed" "" ]
+            }
+
+            #---   Et je sauve le fichier... si le nom de fichier n'est pas vide
             if { $fich_out != ""} {
                set fichier [file root $fich_out]
                append fichier ".fit"
                set okpoursauver 0
                if {[file exists [file join $audace(rep_images) $fichier]]} {
-	               set message_erreur $text_bess(FichExiste)
-	               if {[tk_messageBox -message $message_erreur -icon warning -type yesno -title $text_bess(probleme)] == "yes"} {
-	                  set okpoursauver 1
+                  set message_erreur $text_bess(FichExiste)
+                  if {[tk_messageBox -message $message_erreur -icon warning -type yesno -title $text_bess(probleme)] == "yes"} {
+                     set okpoursauver 1
                   }
                } else {
-	               set okpoursauver 1
+                  set okpoursauver 1
                }
                if { $okpoursauver == 1 } {
-	               buf$audace(bufNo) bitpix float
+                  buf$audace(bufNo) bitpix float
                    buf$audace(bufNo) save [file join $audace(rep_images) $fich_out]
                    buf$audace(bufNo) bitpix short
                    ChargeFichier $fich_out
