@@ -59,8 +59,11 @@ proc spc_centergauss { args } {
      } elseif { [string compare $type "e"] == 0 } {
 	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      }
-     # Le second element de la liste reponse est le centre X de la gaussienne
+     #-- Le second element de la liste reponse est le centre X de la gaussienne
      set centre [lindex $lreponse 1]
+     #-- BUG fitgauss :
+     set centre [ expr $centre-1 ]
+
      ::console::affiche_resultat "Le centre de la raie est : $centre (pixels)\n"
      return $centre
 
@@ -123,6 +126,8 @@ proc spc_centergaussl { args } {
      }
      #-- Le second element de la liste reponse est le centre X de la gaussienne :
      set xcentre [lindex $lreponse 1]
+     #-- BUG fitgauss :
+     set xcentre [ expr $xcentre-1 ]
 
 
      #--- Converti le pixel en longueur d'onde :
@@ -169,6 +174,9 @@ proc spc_centergrav { args } {
 	buf$audace(bufNo) scale $listecoefscale 1
 	set lreponse [ buf$audace(bufNo) centro $listcoords ]
 	set centre [lindex $lreponse 0]
+	#-- BUG centro :
+	set centre [ expr $centre-1 ]
+
 	::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
      return $centre
     } else {
@@ -224,11 +232,13 @@ proc spc_centergravl { args } {
 
 
 	#--- Détermination du barycentre de la raie d'absorption :
-	#set listecoefscale [ list 1 3 ]
-	#buf$audace(bufNo) scale $listecoefscale 1
+	##set listecoefscale [ list 1 3 ]
+	## buf$audace(bufNo) scale $listecoefscale 1
 	buf$audace(bufNo) mult -1.0
 	set lreponse [ buf$audace(bufNo) centro $listcoords ]
 	set xcenter [ lindex $lreponse 0 ]
+	#- BUG centro :
+	set xcenter [ expr $xcenter-1 ]
 
 	#--- Traduit la position en longueur d'onde :
 	if { $flag_spccal } {
@@ -238,7 +248,7 @@ proc spc_centergravl { args } {
 	}
 
 	#--- Traitement du resultat :
-	::console::affiche_resultat "Le centre de gravité de la raie est : $lcentre (pixels)\n"
+	::console::affiche_resultat "Le centre de gravité de la raie est : $lcentre A\n"
 	return $lcentre
     } else {
 	::console::affiche_erreur "Usage: spc_centergravl profil_de_raies_calibré lambda_debut lambda_fin\n\n"
@@ -318,6 +328,8 @@ proc spc_autocentergaussl { args } {
        }
        #-- Le second element de la liste reponse est le centre X de la gaussienne
        set xcentre [lindex $lreponse 1]
+       #-- BUG fitgauss :
+       set xcentre [ expr $xcentre-1 ]
        #set lreponse [ buf$audace(bufNo) centro $listcoords ]
        #set xcentre [lindex $lreponse 0]
 
@@ -470,7 +482,8 @@ proc spc_info { args } {
        set disp [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
        set xfin [ expr $xdebut+$disp*$naxis1 ]
 
-       #-- Affichage des renseignements
+       #-- Affichage des renseignements (MUET) :
+       if { 1==0 } {
        ::console::affiche_resultat "Date de prise de vue : $date\n"
        if { $date2 != "" } {
 	   ::console::affiche_resultat "Date de prise de vue 2 : $date2\n"
@@ -480,6 +493,7 @@ proc spc_info { args } {
        ::console::affiche_resultat "Lambda début : $xdebut Angstroms\n"
        ::console::affiche_resultat "Lambda fin : $xfin Angstroms\n"
        ::console::affiche_resultat "Dispersion : $disp Angstroms/pixel\n"
+       }
 
        #--- Création d'une liste de retour des résultats
        set infos [ list $date $duree $naxis1 $xdebut $xfin $disp ]
@@ -1129,7 +1143,7 @@ proc spc_imax { args } {
 	if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
 	    set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
 	} else {
-	    set lambda 1.
+	    set lambda0 1.
 	}
 	if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 	    set flag_nonlin 1

@@ -1,68 +1,7 @@
 
-# Procédures liées à 'linterface graphique et au tracé des profils de raies. 
+# Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
 
-################################################                                           # Ouverture d'un fichier fit 
-# ---------------------------------------------
-# Auteur : Alain KLOTZ
-# Date de creation : 17-08-2003
-# Modification : Benjamin Mauclaire
-# Date de mise à jour : 25-02-2005
-# Argument : fichier fits du spectre spatial
-################################################
-
-
-proc open_fitfile { {filenamespc_spatial ""} } {
-	## Chargement : source $audace(rep_scripts)/profil_raie.tcl
-	## Les var nommees audace_* sont globales
-	global audace
-        global captionspc
-	## flag audace
-	global conf
-	global flag_ok
-	set extsp "dat"
-
-        global caption
-
-   ## === Interfacage de l'ouverture du fichier profil de raie ===
-   if {$filenamespc_spatial==""} {
-      # set idir ./
-      # set ifile *.spc
-      set idir $audace(rep_images)
-      #set conf(extension,defaut) fit
-      # $conf(extension,defaut) contient le point
-      set ifile *$conf(extension,defaut)
-      
-      if {[info exists profilspc(initialdir)] == 1} {
-         set idir "$profilspc(initialdir)"
-      }
-      if {[info exists profilspc(initialfile)] == 1} {
-         set ifile "$profilspc(initialfile)"
-      }
-      ## set filenamespc [tk_getOpenFile -title $captionspc(loadspc) -filetypes [list [list "$captionspc(spc_profile)" {.spc}]] -initialdir $idir -initialfile $ifile ]
-      #set filenamespc_spatial [tk_getOpenFile -title $captionspc(open_fitfile) -filetypes [list [list "$captionspc(spc_profile)" {.fit}]] -initialdir $idir -initialfile $ifile ]
-#--- Debut modif Robert
-      set filenamespc_spacial [tk_getOpenFile -title "$captionspc(spc_open_fitfile)" -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ]
-#--- Fin modif Robert
-
-### Debut modif Robert (supprime le bug de la fermeture par la croix (x) de la fenetre "Charger un profil de raie")
-      if {[string compare $filenamespc_spacial ""] == 0 } {
-         return 0
-      }
-### Fin modif Robert
-
-      #::console::affiche_resultat "Fichier : $filenamespc_spacial\n"
-      #if {[string compare $filenamespc_spatial ""] == 0 } {
-      #   return 0
-      #}
-   }
-   ::console::affiche_resultat "Fichier ouvert : $filenamespc_spacial\n"
-   ::spc_extract_profil_zone $filenamespc_spacial
-   ### Debut modif Robert (affichage immediat du profil cree, evite une seconde manipulation)
-   # ::loadspc [ file rootname $filenamespc_spacial ].dat
-   ### Fin modif Robert
-
-}
 
 
 proc spc_winini { } {
@@ -71,7 +10,7 @@ proc spc_winini { } {
 ############################################################################
    global profilspc
    global printernames
-   global captionspc
+   global caption
    global colorspc
    global spcaudace
 
@@ -80,8 +19,8 @@ proc spc_winini { } {
    if {[info command .spc] == "" } {
       toplevel .spc -class Toplevel
    }
-   # wm title .spc "$captionspc(main_title) - $profilspc(initialfile)"   
-   wm title .spc "$captionspc(main_title) $spcaudace(version)"   
+   # wm title .spc "$caption(spcaudace,gui,main_title) - $profilspc(initialfile)"
+   wm title .spc "$caption(spcaudace,gui,main_title) $spcaudace(version)"
    #wm geometry .spc 640x480+0+100
    wm geometry .spc 640x513+0-68
    wm maxsize .spc [winfo screenwidth .spc] [winfo screenheight .spc]
@@ -90,7 +29,7 @@ proc spc_winini { } {
    # A ameliorer : lorsqu'un graphe est affiche et que la fenetre est elargie, la fenetre du graphe ne prend pas toute la place.
 
    # === On remplit la fenetre ===
-   if {[info command .spc.g] == "" } { 
+   if {[info command .spc.g] == "" } {
       # --- zone d'informations ---
       frame .spc.frame1 \
          -borderwidth 0 -cursor arrow -bg $colorspc(back_infos)
@@ -111,75 +50,92 @@ proc spc_winini { } {
 
       #--- Menu Fichier ---#
       menu .spc.menuBar -tearoff 0 -bg $colorspc(backmenu)
-      .spc.menuBar add cascade -menu .spc.menuBar.file -label $captionspc(file) -underline 0
+      .spc.menuBar add cascade -menu .spc.menuBar.file -label $caption(spcaudace,gui,file) -underline 0
       menu .spc.menuBar.file -tearoff 0 -bg $colorspc(backmenu)
-      .spc.menuBar.file add command -label $captionspc(loadspcfit) -command "spc_loadfit" -underline 0 -accelerator "Ctrl-O"
-      .spc.menuBar.file add command -label $captionspc(loadspctxt) -command "spc_loaddat" -underline 0 -accelerator "Ctrl-T"
-      .spc.menuBar.file add command -label $captionspc(spc_file_space)
-      .spc.menuBar.file add command -label $captionspc(spc_repconf) -command { ::cwdWindow::run "$audace(base).cwdWindow" } -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_file_space)
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png_w) -command "spc_export2png" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
-      .spc.menuBar.file add command -label $captionspc(writeps) -command "spc_postscript" -underline 0 -accelerator "Ctrl-E"
-      .spc.menuBar.file add command -label $captionspc(spc_file_space)
-      .spc.menuBar.file add command -label $captionspc(spc_fits2dat_w) -command "spc_fits2dat" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_file_space)
-      .spc.menuBar.file add command -label $captionspc(spc_dat2fits_w) -command "spc_dat2fits" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spc2fits_w) -command "spc_spc2fits" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_file_space)
-      .spc.menuBar.file add command -label $captionspc(spc_bessmodule_w) -command "spc_bessmodule" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_file_space)
-      .spc.menuBar.file add command -label $captionspc(spc_simbad) -command "spc_simbad" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_bess) -command "spc_bess" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_uves) -command "spc_uves" -underline 0
-      .spc.menuBar.file add command -label $captionspc(spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,loadspcfit) -command "spc_loadfit" -underline 0 -accelerator "Ctrl-O"
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,loadspctxt) -command "spc_loaddat" -underline 0 -accelerator "Ctrl-T"
+      #.spc.menuBar.file add command -label $caption(spcaudace,gui,spc_load) -command "spc_load" -underline 0 -accelerator "Ctrl-O"
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,gloadmore) -command "spc_loadmore" -underline 0 -accelerator "Ctrl-E"
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,gdelete) -command "spc_gdelete" -underline 0 -accelerator "Ctrl-K"
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,gdeleteall) -command "spc_gdeleteall" -underline 0 -accelerator "Ctrl-D"
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_repconf) -command { ::cwdWindow::run "$audace(base).cwdWindow" } -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2png_w) -command "spc_export2png" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_fit2ps) -command "spc_fit2ps" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_fits2dat_w) -command "spc_fits2dat" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_dat2fits_w) -command "spc_dat2fits" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2fits_w) -command "spc_spc2fits" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_bessmodule_w) -command "spc_bessmodule" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_simbad) -command "spc_simbad" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_bess) -command "spc_bess" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_uves) -command "spc_uves" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       if {$nbprinters>0} {
          for {set k 0} {$k<$nbprinters} {incr k} {
-	     # .spc.menuBar.file add command -label "$captionspc(print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P" -state disabled
-	     .spc.menuBar.file add command -label "$captionspc(print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P"
+	     # .spc.menuBar.file add command -label "$caption(spcaudace,gui,print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P" -state disabled
+	     .spc.menuBar.file add command -label "$caption(spcaudace,gui,print_on) [lindex $printernames $k]" -command "spc_print $k" -underline 0 -accelerator "Ctrl-P"
          }
       }
 
-      .spc.menuBar.file add command -label $captionspc(quitspc) -command "destroy .spc" -underline 0 -accelerator "Ctrl-Q"
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,quitspc) -command "destroy .spc" -underline 0 -accelerator "Ctrl-Q"
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       bind .spc <Control-O> spc_loadfit
       bind .spc <Control-T> spc_loaddat
+      bind .spc <Control-E> spc_loadmore
+      bind .spc <Control-K> spc_gdelete
+      bind .spc <Control-D> spc_gdeleteall
       bind .spc <Control-P> spc_print
-      bind .spc <Control-E> spc_postscript
+      bind .spc <Control-L> spc_postscript
       bind .spc <Control-Q> { destroy .spc }
       bind .spc <Control-o> spc_loadfit
       bind .spc <Control-t> spc_loaddat
+      bind .spc <Control-e> spc_loadmore
+      bind .spc <Control-k> spc_gdelete
+      bind .spc <Control-d> spc_gdeleteall
       bind .spc <Control-p> spc_print
-      bind .spc <Control-e> spc_postscript
+      bind .spc <Control-l> spc_postscript
       bind .spc <Control-q> { destroy .spc }
       #bind .spc <F1> aboutBox
 
 
       #--- Menu Géométrie ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.geometrie -label $captionspc(spc_geometrie) -underline 0 -background $colorspc(backmenu)
+      .spc.menuBar add cascade -menu .spc.menuBar.geometrie -label $caption(spcaudace,gui,spc_geometrie) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.geometrie -tearoff 0 -background $colorspc(backmenu)
       # .spc configure -menu .spc.menuBar
-      .spc.menuBar.geometrie add command -label $captionspc(spc_pretraitementfc_w) -command "spc_pretraitementfc_w" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_register_w) -command "spc_register" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_rot180_w) -command "spc_flip" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_tiltauto_w) -command "spc_tiltauto" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_tilt_w) -command "spc_tilt" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_slant_w) -command "spc_slant" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_smilex_w) -command "spc_smilex" -underline 0
-      .spc.menuBar.geometrie add command -label $captionspc(spc_smiley_w) -command "spc_smiley" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_pretraitementfc_w) -command "spc_pretraitementfc_w" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_pretrait) -command "spc_pretrait" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_register_w) -command "spc_register" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_rot180_w) -command "spc_flip" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_tiltauto_w) -command "spc_tiltauto" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_tilt_w) -command "spc_tilt" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_slant_w) -command "spc_slant" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_smilex_w) -command "spc_smilex" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_smiley_w) -command "spc_smiley" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_findtilt) -command "spc_findtilt" -underline 0
+      .spc.menuBar.geometrie add command -label $caption(spcaudace,gui,spc_tilt2) -command "spc_tilt2" -underline 0
 
 
       #--- Menu Profil de raies ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.profil -label $captionspc(spc_profil) -underline 0 -background $colorspc(backmenu)
+      .spc.menuBar add cascade -menu .spc.menuBar.profil -label $caption(spcaudace,gui,spc_profil) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.profil -tearoff 0 -background $colorspc(backmenu)
-      # .spc.menuBar.profil add command -label $captionspc(spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
-      .spc.menuBar.profil add command -label $captionspc(spc_profil_w) -command "spc_profil" -underline 0
-      .spc.menuBar.profil add command -label $captionspc(spc_traitea_w) -command "spc_traitea" -underline 0
-      .spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
-      #.spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_profil_zone" -underline 0
-      #.spc.menuBar.profil add command -label $captionspc(spc_extract_zone_w) -command "spc_profil_zone" -underline 0
+      # .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_open_fitfile) -command "open_fitfile" -underline 0 -accelerator "Ctrl-n"
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_profil_w) -command "spc_profil" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_traitea_w) -command "spc_traitea" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_extract_profil_zone" -underline 0
+      #.spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_profil_zone" -underline 0
+      #.spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extract_zone_w) -command "spc_profil_zone" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_smooth) -command "spc_smooth" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_smooth2) -command "spc_smooth2" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_div) -command "spc_div" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       #bind .spc <Control-N> spc_open_fitfile
@@ -187,101 +143,123 @@ proc spc_winini { } {
 
 
       #--- Menu Mesures ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.mesures -label $captionspc(spc_mesures) -underline 0 -background $colorspc(backmenu)
+      .spc.menuBar add cascade -menu .spc.menuBar.mesures -label $caption(spcaudace,gui,spc_mesures) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.mesures -tearoff 0 -background $colorspc(backmenu)
       # .spc configure -menu .spc.menuBar
-      .spc.menuBar.mesures add command -label $captionspc(spc_centergrav_w) -command "spc_centergrav" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_centergauss_w) -command "spc_centergauss" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_fwhm_w) -command "spc_fwhm" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_ew_w) -command "spc_autoew" -underline 0
-      .spc.menuBar.mesures add command -label $captionspc(spc_intensity_w) -command "spc_intensity" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_centergrav_w) -command "spc_centergrav" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_centergauss_w) -command "spc_centergauss" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_fwhm_w) -command "spc_fwhm" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_ew_w) -command "spc_autoew" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_intensity_w) -command "spc_intensity" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_imax) -command "spc_imax" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_icontinuum) -command "spc_icontinuum" -underline 0
+      .spc.menuBar.mesures add command -label $caption(spcaudace,gui,spc_snr) -command "spc_snr" -underline 0
 
 
       #--- Menu Calibration ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $captionspc(spc_calibration) -underline 0 -background $colorspc(backmenu)
+      .spc.menuBar add cascade -menu .spc.menuBar.calibration -label $caption(spcaudace,gui,spc_calibration) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.calibration -tearoff 0 -background $colorspc(backmenu)
-      # .spc.menuBar.calibration add command -label $captionspc(cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre" -underline 0 -accelerator "Ctrl-L"
-      #.spc.menuBar.calibration add command -label $captionspc(spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
-      .spc.menuBar.calibration add command -label $captionspc(spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
-      .spc.menuBar.calibration add command -label $captionspc(spc_calibre_space)
-      .spc.menuBar.calibration add command -label $captionspc(spc_rinstrum_w) -command "spc_rinstrum" -underline 0
-      .spc.menuBar.calibration add command -label $captionspc(spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
-      .spc.menuBar.calibration add command -label $captionspc(spc_calibre_space)
-      .spc.menuBar.calibration add command -label $captionspc(spc_norma_w) -command "spc_autonorma" -underline 0
+      # .spc.menuBar.calibration add command -label $caption(spcaudace,gui,cali_lambda) -command "cali_lambda" -underline 0 -accelerator "Ctrl-L"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadneon) -command "spc_loadneon" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2file_w) -command "spc_calibre" -underline 0 -accelerator "Ctrl-L"
+      #.spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2file_w) -command "spc_calibre2file_w" -underline 0 -accelerator "Ctrl-L"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre2loifile_w) -command "spc_calibre2loifile_w" -underline 0 -accelerator "Ctrl-M"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibredecal) -command "spc_calibredecal" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_linearcal) -command "spc_linearcal" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_corrvhelio) -command "spc_corrvhelio" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibretelluric) -command "spc_calibretelluric" -underline 0 -accelerator "Ctrl-T"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calobilan) -command "spc_calobilan" -underline 0 -accelerator "Ctrl-B"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_caloverif) -command "spc_caloverif" -underline 0 -accelerator "Ctrl-V"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadh2o) -command "spc_loadh2o" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrum_w) -command "spc_rinstrum" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_norma_w) -command "spc_autonorma" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_divri) -command "spc_divri" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       bind .spc <Control-L> cali_lambda
       bind .spc <Control-l> cali_lambda
       bind .spc <Control-F> cali_flux
       bind .spc <Control-f> cali_flux
+      bind .spc <Control-t> spc_calibretelluric
+      bind .spc <Control-b> spc_calobilan
+      bind .spc <Control-v> spc_caloverif
 
       #--- Menu Pipelines ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $captionspc(spc_pipelines) -underline 0 -background $colorspc(backmenu)
+      .spc.menuBar add cascade -menu .spc.menuBar.pipelines -label $caption(spcaudace,gui,spc_pipelines) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.pipelines -tearoff 0 -background $colorspc(backmenu)
-      # .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-2"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-3"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traitestellaire) -command "::param_spc_audace_traitestellaire::run" -underline 0 -accelerator "Ctrl-4"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traitenebula) -command "::param_spc_audace_traitenebula::run" -underline 0 -accelerator "Ctrl-5"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
-      .spc.menuBar.pipelines add command -label $captionspc(spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-6"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
-      # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
-      # .spc.menuBar.pipelines add command -label $captionspc(spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-7"
-      .spc.menuBar.pipelines add command -label $captionspc(spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-8"
-      #.spc.menuBar.pipelines add command -label $captionspc(spc_pipelines_space)
-      #.spc.menuBar.pipelines add command -label $captionspc(spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
+      # .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-i"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-c"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-a"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitestellaire) -command "::param_spc_audace_traitestellaire::run" -underline 0 -accelerator "Ctrl-s"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitenebula) -command "::param_spc_audace_traitenebula::run" -underline 0 -accelerator "Ctrl-n"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-t-c"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      # .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitesimple2calibre_w) -command "::param_spc_audace_traitesimple2calibre::run" -underline 0 -accelerator "Ctrl-0"
+      # .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitesimple2rinstrum_w) -command "::param_spc_audace_traitesimple2rinstrum::run" -underline 0 -accelerator "Ctrl-1"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2calibre_w) -command "::param_spc_audace_geom2calibre::run" -underline 0 -accelerator "Ctrl-g-c"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2rinstrum_w) -command "::param_spc_audace_geom2rinstrum::run" -underline 0 -accelerator "Ctrl-g-a"
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      #.spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_specLhIII_w) -command "::spbmfc::fenetreSpData" -underline 0 -accelerator "Ctrl-8"
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
-      #bind .spc <Control-0> ::param_spc_audace_traitesimple2calibre::run
-      #bind .spc <Control-1> ::param_spc_audace_traitesimple2rinstrum::run
-      #bind .spc <Control-2> ::param_spc_audace_geom2calibre::run
-      bind .spc <Control-2> ::param_spc_audace_geom2rinstrum::run
-      bind .spc <Control-4> ::param_spc_audace_traite2calibre::run
-      bind .spc <Control-3> ::param_spc_audace_traite2srinstrum::run
-      bind .spc <Control-1> ::param_spc_audace_traite2rinstrum::run
+      bind .spc <Control-i> ::param_spc_audace_traite2rinstrum::run
+      bind .spc <Control-v> ::param_spc_audace_lampe2calibre::run
+      bind .spc <Control-a> ::param_spc_audace_traite2srinstrum::run
+      bind .spc <Control-s> ::param_spc_audace_traitestellaire::run
+      bind .spc <Control-n> ::param_spc_audace_traitenebula::run
+      #bind .spc <Control-t-c> ::param_spc_audace_traite2scalibre::run
+      #bind .spc <Control-g-c> ::param_spc_audace_geom2calibre::run
+      #bind .spc <Control-g-a> ::param_spc_audace_geom2rinstrum::run
       #bind .spc <Control-7> ::spcmfc::Demarragespbmfc
 
       #--- Menu Astrophysique ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $captionspc(spc_analyse) -underline 0 -background $colorspc(backmenu)
+      .spc.menuBar add cascade -menu .spc.menuBar.analyse -label $caption(spcaudace,gui,spc_analyse) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.analyse -tearoff 0 -background $colorspc(backmenu)
-      #.spc.menuBar.analyse add command -label $captionspc(spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-A"
-      .spc.menuBar.analyse add command -label $captionspc(spc_surveys) -command "spc_surveys" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_bebuil) -command "spc_bebuil" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
-      .spc.menuBar.analyse add command -label $captionspc(spc_vradiale_w) -command "spc_vradiale" -underline 0
-      #.spc.menuBar.analyse add command -label $captionspc(spc_vexp_w) -command "spc_vexp" -underline 0
-      #.spc.menuBar.analyse add command -label $captionspc(spc_vrot_w) -command "spc_vrot" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
-      .spc.menuBar.analyse add command -label $captionspc(spc_ew_w) -command "spc_autoew" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
-      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
-      .spc.menuBar.analyse add command -label $captionspc(spc_npte_w) -command "spc_npte" -underline 0 -accelerator "Ctrl-E"
-      .spc.menuBar.analyse add command -label $captionspc(spc_npne_w) -command "spc_npne" -underline 0 -accelerator "Ctrl-D"
-      .spc.menuBar.analyse add command -label $captionspc(spc_file_space)
-      .spc.menuBar.analyse add command -label $captionspc(spc_spectrum) -command "spc_spectrum" -underline 0
+      #.spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_chimie) -command "spc_chimie" -underline 0 -accelerator "Ctrl-A"
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_surveys) -command "spc_surveys" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_bebuil) -command "spc_bebuil" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vradiale_w) -command "spc_vradiale" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vhelio) -command "spc_vhelio" -underline 0
+      #.spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vexp_w) -command "spc_vexp" -underline 0
+      #.spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vrot_w) -command "spc_vrot" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ew_w) -command "spc_autoew" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ewcourbe_w) -command "spc_ewcourbe" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ewdirw) -command "spc_ewdirw" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_te) -command "spc_te" -underline 0 -accelerator "Ctrl-T"
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_ne) -command "spc_ne" -underline 0 -accelerator "Ctrl-N-E"
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_npte_w) -command "spc_npte" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_npne_w) -command "spc_npne" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_normahbeta) -command "spc_normahbeta" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_spectrum) -command "spc_spectrum" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
       bind .spc <Control-A> mes_especes
       bind .spc <Control-a> mes_especes
-      bind .spc <Control-E> spc_npte_w
-      bind .spc <Control-e> spc_npte_w
-      bind .spc <Control-D> spc_npne_w
-      bind .spc <Control-d> spc_npne_w
+      #bind .spc <Control-T> spc_npte
+      #bind .spc <Control-t> spc_npte
+      #bind .spc <Control-N-E> spc_npne
+      #bind .spc <Control-n-e> spc_npne
 
 
       #--- Menu À propos/Aide ---#
-      .spc.menuBar add cascade -menu .spc.menuBar.aide -label $captionspc(spc_aide) -underline 0 -background $colorspc(backmenu)
+      .spc.menuBar add cascade -menu .spc.menuBar.aide -label $caption(spcaudace,gui,spc_aide) -underline 0 -background $colorspc(backmenu)
       menu .spc.menuBar.aide -tearoff 0 -background $colorspc(backmenu)
-      # .spc.menuBar.aide add command -label $captionspc(spc_version_w) -command "spc_version" -underline 0
-      .spc.menuBar.aide add command -label $captionspc(spc_version_w)
-      .spc.menuBar.aide add command -label $captionspc(spc_help) -command "spc_help"
-      .spc.menuBar.aide add command -label $captionspc(spc_about_w)
-      .spc.menuBar.aide add command -label $captionspc(spc_contrib_w)
+      # .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_version_w) -command "spc_version" -underline 0
+      .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_version_w)
+      .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_help) -command "spc_help"
+      .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_about_w)
+      .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_contrib_w)
       .spc configure -menu .spc.menuBar
       #bind .spc <Control-A> spc_about_w
 
@@ -297,13 +275,81 @@ proc spc_winini { } {
       -height 768 \
       -background $colorspc(back_graphborder)
 }
+#*********************************************************************************#
+
+
+
+################################################                                           # Ouverture d'un fichier fit
+# ---------------------------------------------
+# Auteur : Alain KLOTZ
+# Date de creation : 17-08-2003
+# Modification : Benjamin Mauclaire
+# Date de mise à jour : 25-02-2005
+# Argument : fichier fits du spectre spatial
+################################################
+
+
+proc open_fitfile { {filenamespc_spatial ""} } {
+	## Chargement : source $audace(rep_scripts)/profil_raie.tcl
+	## Les var nommees audace_* sont globales
+	global audace
+        global caption
+	## flag audace
+	global conf
+	global flag_ok
+	set extsp "dat"
+
+        global caption
+
+   ## === Interfacage de l'ouverture du fichier profil de raie ===
+   if {$filenamespc_spatial==""} {
+      # set idir ./
+      # set ifile *.spc
+      set idir $audace(rep_images)
+      #set conf(extension,defaut) fit
+      # $conf(extension,defaut) contient le point
+      set ifile *$conf(extension,defaut)
+
+      if {[info exists profilspc(initialdir)] == 1} {
+         set idir "$profilspc(initialdir)"
+      }
+      if {[info exists profilspc(initialfile)] == 1} {
+         set ifile "$profilspc(initialfile)"
+      }
+      ## set filenamespc [tk_getOpenFile -title $caption(spcaudace,gui,loadspc) -filetypes [list [list "$caption(spcaudace,gui,spc_profile)" {.spc}]] -initialdir $idir -initialfile $ifile ]
+      #set filenamespc_spatial [tk_getOpenFile -title $caption(spcaudace,gui,open_fitfile) -filetypes [list [list "$caption(spcaudace,gui,spc_profile)" {.fit}]] -initialdir $idir -initialfile $ifile ]
+#--- Debut modif Robert
+      set filenamespc_spacial [tk_getOpenFile -title "$caption(spcaudace,gui,spc_open_fitfile)" -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ]
+#--- Fin modif Robert
+
+### Debut modif Robert (supprime le bug de la fermeture par la croix (x) de la fenetre "Charger un profil de raie")
+      if {[string compare $filenamespc_spacial ""] == 0 } {
+         return 0
+      }
+### Fin modif Robert
+
+      #::console::affiche_resultat "Fichier : $filenamespc_spacial\n"
+      #if {[string compare $filenamespc_spatial ""] == 0 } {
+      #   return 0
+      #}
+   }
+   ::console::affiche_resultat "Fichier ouvert : $filenamespc_spacial\n"
+   ::spc_extract_profil_zone $filenamespc_spacial
+   ### Debut modif Robert (affichage immediat du profil cree, evite une seconde manipulation)
+   # ::loadspc [ file rootname $filenamespc_spacial ].dat
+   ### Fin modif Robert
+
+}
+#*********************************************************************************#
+
+
 
 proc pvisutools {} {
 ############################################################################
 # Outils d'affichage
 ############################################################################
    global profilspc
-   global captionspc
+   global caption
    global colorspc
 
    #- 060317
@@ -330,7 +376,7 @@ proc pvisutools {} {
       if {$lx>8} { set x [string range $x 0 7] }
       set ly [string length $y]
       if {$ly>8} { set y [string range $y 0 7] }
-      .spc.g crosshairs configure -position @%x,%y 
+      .spc.g crosshairs configure -position @%x,%y
       .spc.frame1.label1 configure -text "$x $profilspc(xunit)   $y $profilspc(yunit)"
    }
 
@@ -347,6 +393,212 @@ proc pvisutools {} {
 }
 
 
+
+
+
+
+#########################################################
+# Superpose un profil supplémentaire dans la fenêtre d'affichage de SpcAudace
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 19-09-2007
+# Date de mise à jour : 19-09-2007
+# Arguments : profil_raies_fits ?color?
+##########################################################
+
+proc spc_loadmore { args } {
+    global profilspc spcaudace conf caption audace
+
+    set nbargs [ llength $args ]
+    if { $nbargs <= 2 } {
+	if { $nbargs == 1 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set lineColor [ lindex $spcaudace(lgcolors) [ spc_setgcolor ] ]
+	    regsub -all {[^a-z0-9]} "$filename" "" lineName
+	    set filedir "$audace(rep_images)"
+	} elseif { $nbargs == 2 } {
+	    set filename [ lindex $args 0 ]
+	    set lineColor [ lindex $args 1 ]
+	    regsub -all {[^a-z0-9]} "$filename" "" lineName
+	    set filedir "$audace(rep_images)"
+	} elseif { $nbargs == 0 } {
+	    if {[info exists profilspc(initialdir)] == 1} {
+		set idir "$profilspc(initialdir)"
+	    }
+	    if {[info exists profilspc(initialfile)] == 1} {
+		set ifile "$profilspc(initialfile)"
+	    }
+	    set rep_et_filename [ tk_getOpenFile -title $caption(spcaudace,gui,loadspcfit) -filetypes [list [list "$caption(spcaudace,gui,spc_profile)" [ list $conf(extension,defaut) ] ]] -initialdir $idir -initialfile $ifile ]
+	    if {[ string compare $rep_et_filename "" ] == 0 } {
+		return 0
+	    } else {
+		set filename [ file rootname [ file tail "$rep_et_filename" ] ]
+		set filedir [ file dirname "$rep_et_filename" ]
+		set profilspc(initialdir) "$filedir"
+		set lineColor [ lindex $spcaudace(lgcolors) [ spc_setgcolor ] ]
+		regsub -all {[^a-z0-9]} "$filename" "" lineName
+	    }
+	} else {
+	    ::console::affiche_erreur "Usage: spc_loadmore profil_raies_fits ?color (green, red,...)?\n\n"
+	    return ""
+	}
+
+	#--- Générere la liste lambda, intensités :
+	if { "$filedir" != "$audace(rep_images)" } {
+	    file copy -force "$rep_et_filename" "$audace(rep_images)/$filename$conf(extension,defaut)"
+	}
+	set spectre_data [ spc_fits2data "$filename" ]
+	if { "$filedir" != "$audace(rep_images)" } {
+	    file delete -force "$audace(rep_images)/$filename$conf(extension,defaut)"
+	}
+	set xlist [ lindex $spectre_data 0 ]
+	set ylist [ lindex $spectre_data 1 ]
+	set ymax [ lindex [ lsort -decreasing -real $ylist ] 0 ]
+	set ymin [ lindex [ lsort -increasing -real $ylist ] 0 ]
+
+	#--- Créee les vecteurs BLT à tracer :
+	set len [ llength $xlist ]
+	blt::vector create gx$lineName
+	blt::vector create gy$lineName
+	
+	#--- je copie les listes dans les vecteurs :
+	gx$lineName set $xlist
+	gy$lineName set $ylist
+	
+	#--- si la courbe existe deja, je la supprime :
+	if { [ .spc.g element exists $lineName ] } {
+	    .spc.g element delete $lineName
+	}
+
+	#--- je dessine la courbe :
+	if { [ llength $spcaudace(gloaded) ] == 0 } {
+	    .spc.g configure -title "$filename"
+	    .spc.g axis configure x2 -min [lindex $xlist 0] -max [ lindex $xlist [ expr $len-1 ] ]
+	    .spc.g axis configure y2 -min $ymin -max $ymax
+	    .spc.g axis configure x -min [lindex $xlist 0] -max [ lindex $xlist [ expr $len-1 ] ]
+	    .spc.g axis configure y -min $ymin -max $ymax
+	}
+	.spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth natural -color $lineColor
+
+	#--- Traitement du résultat :
+	::console::affiche_resultat "Nom du profil affiché : $lineName\n Nom à utiliser avec spc_gdelete.\n"
+	lappend spcaudace(gloaded) "$lineName"
+	return "$lineName"
+    } else {
+	::console::affiche_erreur "Usage: spc_loadmore profil_raies_fits ?color (green, red,...)?\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+#########################################################
+# Efface de l'affichage un profil 
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 19-09-2007
+# Date de mise à jour : 19-09-2007
+# Arguments : nom_profil_raies
+##########################################################
+
+proc spc_gdelete { args } {
+    global profilspc spcaudace
+
+    if { [ llength $args ] == 1 } {
+	set nom_profil [ lindex $args 0 ]
+
+	#--- si la courbe existe deja, je la supprime :
+	if { [ .spc.g element exists $nom_profil ] } {
+	    .spc.g element delete $nom_profil
+	    #-- Gère à défaut, les couleurs comme une lifo : PAS TOP
+	    # set spcaudace(gcolor) [ expr $spcaudace(gcolor)-1 ]
+	    if { $spcaudace(gcolor) < 0 } {
+		set spcaudace(gcolor) 0
+	    }
+	} else {
+	    ::console::affiche_resultat "Ce profil ne correspond à aucun nom de profil tracé.\n"
+	}
+    } else {
+	::console::affiche_erreur "Usage: spc_gdelete nom_profil_raies\n\n"
+    }
+}
+#****************************************************************#
+
+
+###############################################################################
+# Procédure de l'attribution automatique de la coulr des graphes
+# Auteur : Benjamin MAUCLAIRE
+# Date création :  22-09-2007
+# Date de mise à jour : 22-09-2007
+################################################################################
+
+proc spc_setgcolor {} {
+
+    global spcaudace
+    set nbcolors [ expr [ llength $spcaudace(lgcolors) ]-1 ]
+
+    if { [ llength $spcaudace(gloaded) ] == 0 } {
+	set spcaudace(gcolor) 0
+	return $spcaudace(gcolor)
+    } else {
+	if { $spcaudace(gcolor) < $nbcolors } { 
+	    set spcaudace(gcolor) [ expr $spcaudace(gcolor) + 1 ]
+	    return $spcaudace(gcolor)
+	} else {
+	    #-- Couleur sélectionnée est la première :
+	    set spcaudace(gcolor) 0
+	    return $spcaudace(gcolor)
+	}
+    }
+}
+#*********************************************************#
+
+
+
+#########################################################
+# Efface tous les profils de l'affichage
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 21-09-2007
+# Date de mise à jour : 21-09-2007
+# Arguments : AUCUN
+##########################################################
+
+
+proc spc_gdeleteall { args } {
+    global profilspc spcaudace
+
+    if { [ llength $args ] == 0 } {
+	#--- Si aucune courbe tracée, ne fait rien :
+	if { [ llength $spcaudace(gloaded) ] ==  0 } {
+	    return ""
+	}
+	set nb_profils 0
+	foreach nom_profil $spcaudace(gloaded) {
+	    if { [ .spc.g element exists $nom_profil ] } {
+		.spc.g element delete $nom_profil
+		#set spcaudace(gcolor) [ expr $spcaudace(gcolor)-1 ]
+		if { $spcaudace(gcolor) < 0 } {
+		    set spcaudace(gcolor) 0
+		}
+		incr nb_profils
+	    } else {
+		::console::affiche_resultat "Ce profil ne correspond à aucun nom de profil tracé.\n"
+	    }
+	}
+	set spcaudace(gcolor) 0
+	set spcaudace(gloaded) [ list ]
+	.spc.g configure -title ""
+	::console::affiche_resultat "$nb_profils profil(s) effacé(s).\n"
+	return $nb_profils
+    } else {
+	::console::affiche_erreur "Usage: spc_gdeleteall\n\n"
+    }
+}
+#****************************************************************#
+
+
+
 ############################################################################
 # Charge un profil au format .spc et l'affiche dans la fenetre
 #
@@ -358,9 +610,9 @@ proc pvisu { } {
 
    global profilspc
    global printernames
-   global captionspc
+   global caption
    global colorspc
-   global audace
+   global audace spcaudace
 
    set extsp "dat"
 
@@ -413,20 +665,35 @@ proc pvisu { } {
    #--- Preparation des vecteurs :
    set xdepart [lindex $profilspc(pixels) 0]
    if {$xdepart == 0 || $xdepart == 1} {
-      .spc.g axis configure x -title $captionspc(pixel)
-      set profilspc(xunit) $captionspc(pixel)
+      .spc.g axis configure x -title $caption(spcaudace,gui,pixel)
+      set profilspc(xunit) $caption(spcaudace,gui,pixel)
    } else {
-      .spc.g axis configure x -title $captionspc(angstroms)
-      set profilspc(xunit) $captionspc(angstrom)
+      .spc.g axis configure x -title $caption(spcaudace,gui,angstroms)
+      set profilspc(xunit) $caption(spcaudace,gui,angstrom)
    }
 
    #--- Affichage du graphique :
    .spc.g configure -title $profilspc(object)
-   .spc.g axis configure y -title $captionspc(intensity)
-   set profilspc(yunit) $captionspc(adu)
-   .spc.g element delete line1
+   .spc.g axis configure y -title $caption(spcaudace,gui,intensity)
+   set profilspc(yunit) $caption(spcaudace,gui,adu)
+   if { [ .spc.g element exists "line1" ] } {
+       .spc.g element delete line1
+   }
+   #-- Ajoute à la liste des profils tracés le profil chargé avec spc_load (pvisu) s'appelle line1 :
+
+   #-- Trace le profil :
    .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
-   .spc.g element configure line1 -color $colorspc(profile)
+   if { [ llength $spcaudace(gloaded) ] == 0 } {
+       .spc.g element configure line1 -color $colorspc(profile)
+       lappend spcaudace(gloaded) "line1"
+   } elseif { [ llength $spcaudace(gloaded) ] == 1 && [ lindex $spcaudace(gloaded) 0 ] == "line1" } {
+       .spc.g element configure line1 -color $colorspc(profile)
+   } else {
+       #-- Future gestions de plusieurs profils affichés ici ?
+       # .spc.g element configure line1 -color [ lindex $spcaudace(lgcolors) [ spc_setgcolor ] ]
+       .spc.g element configure line1 -color $colorspc(profile)
+
+   }
    .spc.g axis configure x2 y2 -hide no
    set lx [.spc.g axis limits x]
    set ly [.spc.g axis limits y]
@@ -434,10 +701,10 @@ proc pvisu { } {
    .spc.g axis configure y2 -min [lindex $ly 0] -max [lindex $ly 1]
    .spc.g configure -width 7.87i -height 5.51i
    .spc.g legend configure -hide yes
-   pack .spc.g -in .spc 
+   pack .spc.g -in .spc
 
 
-   ### Bogue ICI   
+   ### Bogue ICI
    #.spc.g element create "Profil spatial" -symbol none -xdata vx -ydata vy -smooth natural
 
    set div_x 10
@@ -484,7 +751,7 @@ proc pvisu_050218 { } {
 
    global profilspc
    global printernames
-   global captionspc
+   global caption
    global colorspc
    global audace
 
@@ -536,7 +803,7 @@ proc pvisu_050218 { } {
        # } else {
        #   append yy " $valy"
        #}
-       incr kk         
+       incr kk
    }
    #::console::affiche_resultat "$pp\n"
    blt::vector create vx
@@ -550,16 +817,16 @@ proc pvisu_050218 { } {
    set xdepart [lindex $profilspc(pixels) 0]
    if {$xdepart == 0 || $xdepart == 1} {
       vx set $pp
-      .spc.g axis configure x -title $captionspc(pixel)
-      set profilspc(xunit) $captionspc(pixel)
+      .spc.g axis configure x -title $caption(spcaudace,gui,pixel)
+      set profilspc(xunit) $caption(spcaudace,gui,pixel)
    } else {
       vx set $pp
-      .spc.g axis configure x -title $captionspc(angstroms)
-      set profilspc(xunit) $captionspc(angstroms)
+      .spc.g axis configure x -title $caption(spcaudace,gui,angstroms)
+      set profilspc(xunit) $caption(spcaudace,gui,angstroms)
    }
 
-   .spc.g axis configure y -title $captionspc(intensity)
-   set profilspc(yunit) $captionspc(adu)
+   .spc.g axis configure y -title $caption(spcaudace,gui,intensity)
+   set profilspc(yunit) $caption(spcaudace,gui,adu)
    .spc.g element delete line1
    .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
    .spc.g element configure line1 -color $colorspc(profile)
@@ -571,10 +838,10 @@ proc pvisu_050218 { } {
 
    .spc.g configure -width 7.87i -height 5.51i
    .spc.g legend configure -hide yes
-   pack .spc.g -in .spc 
+   pack .spc.g -in .spc
    vx set $pp
    vy set $yy
-   ### Bogue ICI   
+   ### Bogue ICI
    #.spc.g element create "Profil spatial" -symbol none -xdata vx -ydata vy -smooth natural
 
    set div_x 10
@@ -608,7 +875,7 @@ proc pvisu2 { args } {
 
    global profilspc
    global printernames
-   global captionspc
+   global caption
    global colorspc
    global audace
 
@@ -640,7 +907,7 @@ proc pvisu2 { args } {
        # } else {
        #   append yy " $valy"
        #}
-       incr kk         
+       incr kk
    }
    #::console::affiche_resultat "$pp\n"
    blt::vector create vx($len)
@@ -653,25 +920,25 @@ proc pvisu2 { args } {
    set xdepart [lindex $profilspc(pixels) 0]
    if {$xdepart == 0 || $xdepart == 1} {
       vx set $pp
-      .spc.g axis configure x -title $captionspc(pixel)
-      set profilspc(xunit) $captionspc(pixel)
+      .spc.g axis configure x -title $caption(spcaudace,gui,pixel)
+      set profilspc(xunit) $caption(spcaudace,gui,pixel)
    } else {
       vx set $pp
-      .spc.g axis configure x -title $captionspc(angstroms)
-      set profilspc(xunit) $captionspc(angstroms)
+      .spc.g axis configure x -title $caption(spcaudace,gui,angstroms)
+      set profilspc(xunit) $caption(spcaudace,gui,angstroms)
    }
 
    #vy set $yy
    #vy set $intensites
    #::console::affiche_resultat "$intensites\n"
-   for {set i 0} {$i<$len} {incr i} { 
+   for {set i 0} {$i<$len} {incr i} {
        set vy($i) [ lindex $intensites $i ]
    }
-   
+
 
    #--- Préparation de l'affichage du graphe :
-   .spc.g axis configure y -title $captionspc(intensity)
-   set profilspc(yunit) $captionspc(adu)
+   .spc.g axis configure y -title $caption(spcaudace,gui,intensity)
+   set profilspc(yunit) $caption(spcaudace,gui,adu)
    .spc.g element delete line1
    .spc.g element create line1 -symbol none -xdata vx -ydata vy -smooth natural
    .spc.g element configure line1 -color $colorspc(profile)
@@ -683,10 +950,10 @@ proc pvisu2 { args } {
 
    .spc.g configure -width 7.87i -height 5.51i
    .spc.g legend configure -hide yes
-   pack .spc.g -in .spc 
+   pack .spc.g -in .spc
    vx set $pp
    vy set $yy
-   ### Bogue ICI   
+   ### Bogue ICI
    #.spc.g element create "Profil spatial" -symbol none -xdata vx -ydata vy -smooth natural
    set div_x 10
    set div_y 5
@@ -713,10 +980,10 @@ proc pvisu2 { args } {
 
 
 
-##########################################                                        
-#  Procedures d'oprations geometriques  
-# 
-# Arguments : fichier .dat du profil de raie                                  
+##########################################
+#  Procedures d'oprations geometriques
+#
+# Arguments : fichier .dat du profil de raie
 ##########################################
 
 
@@ -731,11 +998,13 @@ proc spc_Zoom { graph x1 y1 x2 y2 } {
    } elseif { $y1 < $y2 } {
       $graph axis configure y -min $y1 -max $y2
    }
-} 
+}
+#*********************************************************************************#
 
 proc spc_Unzoom { graph } {
    $graph axis configure x y -min {} -max {}
 }
+#*********************************************************************************#
 
 proc spc_RegionStart { graph x y } {
    global x0 y0
@@ -745,6 +1014,7 @@ proc spc_RegionStart { graph x y } {
       -dashes dash -xor yes
    set x0 $x ; set y0 $y
 }
+#*********************************************************************************#
 
 proc spc_RegionMotion { graph x y } {
    global x0 y0
@@ -753,6 +1023,7 @@ proc spc_RegionMotion { graph x y } {
    $graph marker configure myLine -coords \
       "$x0 $y0 $x0 $y $x $y $x $y0 $x0 $y0"
 }
+#*********************************************************************************#
 
 proc spc_RegionEnd { graph x y } {
    global x0 y0
@@ -761,10 +1032,12 @@ proc spc_RegionEnd { graph x y } {
    set y [$graph axis invtransform y $y]
    spc_Zoom $graph $x0 $y0 $x $y
 }
+#*********************************************************************************#
+
 
 proc spc_print { k } {
    global printernames
-   global captionspc
+   global caption
    global colorspc
    set k 0
    set printername [lindex $printernames $k]
@@ -774,22 +1047,30 @@ proc spc_print { k } {
    .spc.g print2 $pid
    printer close $pid
 }
+#*********************************************************************************#
+
 
 proc spc_postscript {} {
    global profilspc
-   global captionspc
+   global caption
    global colorspc
+
+   #.spc.g element configure line1 -linewidth 1
    .spc.g postscript configure -landscape yes -maxpect yes -decorations no
    set ind [string last . $profilspc(initialfile)]
    if {$ind==-1} { set ind end }
-   set filename "$profilspc(initialdir)/"
-   append filename [string range $profilspc(initialfile) 0 $ind]
-   append filename "ps"
+   set filename "$profilspc(initialdir)/screenshot.ps"
+   #append filename [string range $profilspc(initialfile) 0 $ind]
+   #append filename "ps"
    .spc.frame1.label1 configure -text "Post Script : $filename"
    #.spc.g postscript output $filename.ps
    .spc.g postscript output $filename
+   ::console::affiche_resultat "Capture d'écran postscript sauvée sous $filename\n"
 }
+#*********************************************************************************#
 
+
+#---- Démarre l'interface grphisque -----------#
 spc_winini
 
 

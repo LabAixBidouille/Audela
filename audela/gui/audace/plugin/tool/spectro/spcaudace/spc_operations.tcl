@@ -22,7 +22,7 @@
 
 proc spc_pretrait { args } {
 
-   global audace
+   global audace spcaudace
    global conf
 
    set nbargs [ llength $args ]
@@ -90,7 +90,7 @@ proc spc_pretrait { args } {
        #set nb_darkflat [ llength $darkflat_liste ]
        #---------------------------------------------------------------------------------#
        if { 1==0 } {
-       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut)${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut)  ] ]
        set nb_stellaire [ llength $stellaire_liste ]
        #-- Gestion du cas des masters au lieu d'une série de fichier :
        if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
@@ -121,9 +121,9 @@ proc spc_pretrait { args } {
        if { [ file exists "$audace(rep_images)/$nom_stellaire$conf(extension,defaut)" ] } {
 	   set stellaire_liste [ list $nom_stellaire ]
 	   set nb_stellaire 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   renumerote $nom_stellaire
-	   set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_stellaire [ llength $stellaire_liste ]
        } else {
 	   ::console::affiche_resultat "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
@@ -132,9 +132,9 @@ proc spc_pretrait { args } {
        if { [ file exists "$audace(rep_images)/$nom_dark$conf(extension,defaut)" ] } {
 	   set dark_liste [ list $nom_dark ]
 	   set nb_dark 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   renumerote $nom_dark
-	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_dark [ llength $dark_liste ]
        } else {
 	   ::console::affiche_resultat "Le(s) fichier(s) $nom_dark n'existe(nt) pas.\n"
@@ -143,9 +143,9 @@ proc spc_pretrait { args } {
        if { [ file exists "$audace(rep_images)/$nom_flat$conf(extension,defaut)" ] } {
 	   set flat_list [ list $nom_flat ]
 	   set nb_flat 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   renumerote $nom_flat
-	   set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_flat [ llength $flat_list ]
        } else {
 	   ::console::affiche_resultat "Le(s) fichier(s) $nom_flat n'existe(nt) pas.\n"
@@ -154,9 +154,9 @@ proc spc_pretrait { args } {
        if { [ file exists "$audace(rep_images)/$nom_darkflat$conf(extension,defaut)" ] } {
 	   set darkflat_list [ list $nom_darkflat ]
 	   set nb_darkflat 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   renumerote $nom_darkflat
-	   set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	   set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_darkflat [ llength $darkflat_list ]
        } else {
 	   ::console::affiche_resultat "Le(s) fichier(s) $nom_darkflat n'existe(nt) pas.\n"
@@ -166,9 +166,9 @@ proc spc_pretrait { args } {
 	   if { [ file exists "$audace(rep_images)/$nom_offset$conf(extension,defaut)" ] } {
 	       set offset_list [ list $nom_offset ]
 	       set nb_offset 1
-	   } elseif { [ catch { glob -dir $audace(rep_images) ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+	   } elseif { [ catch { glob -dir $audace(rep_images) ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	       renumerote $nom_offset
-	       set offset_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+	       set offset_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	       set nb_offset [ llength $offset_list ]
 	   } else {
 	       ::console::affiche_resultat "Le(s) fichier(s) $nom_offset n'existe(nt) pas.\n"
@@ -306,6 +306,15 @@ proc spc_pretrait { args } {
 	   set spc_params [ spc_detect $fmean ]
 	   set ycenter [ lindex $spc_params 0 ]
 	   set hauteur [ lindex $spc_params 1 ]
+	   if { $hauteur <= $spcaudace(largeur_binning) } {
+	       # set fpretraitbis [ bm_pretrait "$nom_stellaire" "${pref_dark}-smd$nb_dark" "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" ]
+	       # set fsmean [ bm_smean "$fpretraitbis" ]
+	       # set hauteur [ lindex [ spc_detect "$fsmean" ] 1 ]
+	       # delete2 "fpretraitbis" $nb_stellaire
+	       # file delete -force "$audace(rep_images)/$fsmean$conf(extension,defaut)"
+	       #-- Met a 21 pixels la hauteur de binning du flat :
+	       set hauteur [ expr 3*$spcaudace(largeur_binning) ]
+	   }
 	   file delete -force "$audace(rep_images)/$fmean$conf(extension,defaut)"
 	   set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
 	   file rename -force "$audace(rep_images)/$flatnorma$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)"
@@ -350,12 +359,13 @@ proc spc_pretrait { args } {
        loadima "$image_traite_1"
        ::console::affiche_resultat "Affichage de la première image prétraitée\n"
        delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
-       if { $flag_rmmaster == "o" } {
-	   # Le 06/02/19 :
-	   file delete -force "${pref_dark}-smd$nb_dark$conf(extension,defaut)"
-	   file delete -force "${pref_flat}-smd$nb_flat$conf(extension,defaut)"
-	   file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
-       }
+       # if { $flag_rmmaster == "o" } {
+	   #-- Le 06/02/19 :
+	   # file delete -force "${pref_dark}-smd$nb_dark$conf(extension,defaut)"
+	   # file delete -force "${pref_flat}-smd$nb_flat$conf(extension,defaut)"
+	   file rename -force "$audace(rep_images)/${pref_flat}-smd$nb_flat$conf(extension,defaut)" "$audace(rep_images)/${pref_flat}-obtained-smd$nb_flat$conf(extension,defaut)"
+	   # file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
+       # }
 
        #-- Effacement des fichiers copie des masters dark, flat et dflat dus a la copie automatique de pretrait :
        if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_dark}-smd$nb_dark match resul ] } {
@@ -377,6 +387,135 @@ proc spc_pretrait { args } {
 }
 #****************************************************************************#
 
+
+###############################################################################
+# Description : Effectue la somme dédiée spectroscopie d'une serie d'images appariees
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 09-09-2007
+# Date de mise a jour : 09-09-2007
+# Argument : nom_generique_fichier (sans extension)
+###############################################################################
+
+proc spc_somme { args } {
+   global audace
+   global conf
+
+   if {[llength $args] == 1} {
+       set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
+      set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
+      set nb_file [ llength $liste_fichiers ]
+
+      #--- Gestion de la durée totale d'exposition :
+      buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
+         set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+      } elseif { [ lsearch $listemotsclef "EXPTIME" ] !=-1 } {
+         set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
+      } else {
+         set unit_exposure 0
+      }
+      set exposure [ expr $unit_exposure*$nb_file ] 
+
+      #--- Somme :
+      ::console::affiche_resultat "Somme de $nb_file images...\n"
+      renumerote "$nom_generique"
+      # sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+      smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+
+      #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
+      set exptime [ bm_exptime $nom_generique ]
+      buf$audace(bufNo) load "$audace(rep_images)/${nom_generique}-s$nb_file"
+      buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
+      buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "s" ]
+      buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
+
+      #--- Traitement du resultat :
+      ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
+      return "${nom_generique}-s$nb_file"
+   } else {
+      ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier\n\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
+
+###############################################################################
+# Description : Effectue la somme dédiée spectroscopie d'une serie d'images appariees
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 09-09-2007
+# Date de mise a jour : 09-09-2007
+# Argument : nom_generique_fichier (sans extension)
+###############################################################################
+
+proc spc_uncosmic { args } {
+    global audace spcaudace
+    global conf
+    
+    set nbargs [ llength $args ]
+    if { $nbargs <= 2 } {
+	if { $nbargs == 1 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set coefcos $spcaudace(uncosmic)
+	} elseif { $nbargs == 2 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set coefcos [ lindex ârgs 1 ]
+	} else {
+	    ::console::affiche_erreur "Usage: spc_uncosmic image_fits_2D ?coef (0.85)?\n\n"
+	}
+
+	#--- Effectue uncosmic :
+	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	uncosmic $coefcos
+	uncosmic $coefcos
+	buf$audace(bufNo) save "$audace(rep_images)/$filename"
+	return "$filename"
+   } else {
+       ::console::affiche_erreur "Usage: spc_uncosmic image_fits_2D ?coef (0.85)?\n\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
+
+
+####################################################################
+# Procedure de normalisation automatique de profil de raies
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 7-09-2007
+# Date modification : 7-09-2007
+# Arguments : fichier .fit du profil de raies, nombre
+####################################################################
+
+proc spc_mult { args } {
+
+    global audace
+    global conf caption
+
+    if { [llength $args] == 2 } {
+	set fichier [ file rootname [ lindex $args 0 ] ]
+	set coef [ lindex $args 1 ]
+
+	#--- Multiplie les intensités une à une :
+	set intensites [ lindex [ spc_fits2data "$fichier" ] 1 ]
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	set i 1
+	foreach intensite $intensites {
+	    buf$audace(bufNo) setpix [ list $i 1 ] [ expr $intensite*$coef ]
+	    incr i
+	}
+
+	#-- Traitement des résultats :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_mult"
+	buf$audace(bufNo) bitpix short
+	::console::affiche_resultat "Profil multiplié sauvé sous ${fichier}_mult\n"
+	return "${fichier}_mult"
+    } else {
+	::console::affiche_erreur "Usage : spc_mult nom_profil_de_raies nombre\n\n"
+    }
+}
+#*****************************************************************#
 
 
 
@@ -538,18 +677,15 @@ proc spc_autonorma { args } {
        }
 	#--- Détermination de la valeur du continuum :
 	set icont [ spc_icontinuum $fichier ]
-	set coefnorm [ expr 1./$icont ]
-
-	#--- Normalisation par division
-	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	buf$audace(bufNo) mult $coefnorm
-	buf$audace(bufNo) bitpix float
-	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm"
-	buf$audace(bufNo) bitpix short
-
-	#--- Traitement des résultats :
-	::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm\n"
-	return ${fichier}_norm
+	if { $icont == 0 } {
+	    ::console::affiche_resultat "Continuum trouvé égal à 0. Le spectre ne sera pas normalisé.\n"
+	    return "$fichier"
+	} else {
+	    set fsortie [ spc_mult "$fichier" [ expr 1./$icont ] ]
+	    file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
+	    ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm\n"
+	    return "${fichier}_norm"
+	}
     } else {
 	::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
     }
@@ -625,31 +761,36 @@ proc spc_select { args } {
        set xdeb [ lindex $args 1 ]
        set xfin [ lindex $args 2 ]
        set fichier [ file rootname $infichier ]
- 
-       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+
+       #--- Linéarise la calibration avant cette operation :
+       set spectre_lin [ spc_linearcal "$fichier" ]
+
+       #--- Récupére les mots clefs nécessaires au calcul :
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre_lin"
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
-       #--- Valeur minimale de l'abscisse : =0 si profil non étalonné
+       #-- Valeur minimale de l'abscisse : =0 si profil non étalonné
        set xdepart [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-       #--- Dispersion du spectre : =1 si profil non étalonné
+       #-- Dispersion du spectre : =1 si profil non étalonné
        set disper [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
 
+       #--- Extrait les longueurs d'onde et les intensites :
        set abscisses ""
        set intensites ""
-       #---- Audela 130 :
+       #-- Audela 130 :
        if { [regexp {1.3.0} $audela(version) match resu ] } {
 	   for {set k 0} {$k<$naxis1} {incr k} {
-	       #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+	       #- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
 	       lappend abscisses [expr $xdepart+($k)*$disper*1.0]
-	       #--- Lit la valeur des elements du fichier fit
+	       #- Lit la valeur des elements du fichier fit
 	       lappend intensites [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
 	       ##lappend profilspc(intensite) $intensite
 	   }
-       #---- Audela 140 :
+       #-- Audela 140 :
        } else {
 	   for {set k 0} {$k<$naxis1} {incr k} {
-	       #--- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
+	       #- Donne les bonnes valeurs aux abscisses si le spectre est étalonné en longueur d'onde
 	       lappend abscisses [expr $xdepart+($k)*$disper*1.0]
-	       #--- Lit la valeur des elements du fichier fit
+	       #- Lit la valeur des elements du fichier fit
 	       lappend intensites [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1]] 1 ]
 	       ##lappend profilspc(intensite) $intensite
 	   }
@@ -697,7 +838,9 @@ proc spc_select { args } {
        #--- Initialisation à blanc d'un fichier fits :
        #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        ##buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_USHORT COMPRESS_NONE 0
+       buf1 load "$audace(rep_images)/$spectre_lin"
        buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
+       buf$audace(bufNo) copykwd 1
        buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
        buf$audace(bufNo) setkwd [ list "NAXIS1" $len int "" "" ]
 
@@ -973,6 +1116,57 @@ proc spc_echant { args } {
 
 
 ##########################################################
+# Procedure de mise à 0 des bords
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 30-09-2007
+# Date de mise à jour : 30-09-2007
+# Arguments : profil de raies
+# Rermarque : bords gauche 3x moins reduit
+##########################################################
+
+proc spc_bordsnuls { args } {
+
+    global audace spcaudace
+    global conf
+
+    if { [llength $args] == 1 } {
+	set filename [ file rootname [ lindex $args 0 ] ]
+
+	#--- Détermine les limites à mettre à 0 :
+	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	set xinf [ expr round($spcaudace(bordsnuls)*$naxis1/3.) ]
+	set xsup [ expr round((1.-$spcaudace(bordsnuls))*$naxis1) ]
+
+	#--- Met à zero les pixels des bords :
+	#-- Bord gauche :
+	for { set k 1 } { $k<=$naxis1 } { incr k } {
+	    if { $k <= $xinf } {
+		buf$audace(bufNo) setpix [ list $k 1 ] 0.
+	    }
+	}
+	#-- Bord droit :
+	for { set k $naxis1 } { $k>=1 } { incr k -1 } {
+	    if { $k >= $xsup } {
+		buf$audace(bufNo) setpix [ list $k 1 ] 0.
+	    }
+	}
+	
+	#--- Sauvegarde :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${filename}_bn"
+	buf$audace(bufNo) bitpix short
+	return "${filename}_bn"
+    } else {
+	::console::affiche_erreur "Usage: spc_bordsnuls profil_de_raies\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+##########################################################
 # Procedure de division de 2 profils de raies
 #
 # Auteur : Benjamin MAUCLAIRE
@@ -1109,7 +1303,7 @@ proc spc_divri { args } {
     global audace spcaudace
     global conf
 
-    if {[llength $args] == 2} {
+    if { [ llength $args ] == 2 } {
 	set numerateur [ lindex $args 0 ]
 	set denominateur [lindex $args 1 ]
 	set fichier [ file tail [ file rootname $numerateur ] ]
@@ -1130,22 +1324,33 @@ proc spc_divri { args } {
 	    set ordonnees2 [ lindex $contenu2 1 ]
 
 	    #--- Division pour déterminer le maximum :
+	    set lresult_div [ list ]
 	    buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
 		if { $ordo2 <= 0.0 } {
-		    lappend result_div 0.0
+		    lappend lresult_div 0.0
 		} else {
-		    lappend result_div [ expr 1.0*$ordo1/$ordo2 ]
+		    lappend lresult_div [ expr 1.0*$ordo1/$ordo2 ]
 		}
 	    }
+
 	    #-- Détermination de Imax sur la zone découpée des bords à 15% :
 	    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
-	    set xdeb [ expr round($spcaudace(pourcent_bord)*$naxis1) ]
-	    set xfin [ expr round((1.-$spcaudace(pourcent_bord))*$naxis1) ]
-	    set result_div [ lrange $result_div $xdeb $xfin ]
-	    set i_max [ lindex [ lsort -real -decreasing $result_div ] ]
+	    set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	    set xdeb [ expr round($naxis1*$spcaudace(pourcent_bord)) ]
+	    set xfin [ expr round($naxis1*(1.-$spcaudace(pourcent_bord))) ]
+	    set lresult_div_cut [ lrange $lresult_div $xdeb $xfin ]
+	    #-- Calcul la valeur maximale :
+	    set i_max [ lindex [ lsort -real -decreasing $lresult_div_cut ] ]
+
+	    #-- Calcul la valeur moyenne de la zone de travail :
+	    #set windowcoords [ $xdeb 1 $xfin 1 ]
+	    #buf$audace(bufNo) window
+	    #set i_infos [ buf$audace(bufNo) stat ]
+	    
 
 	    #--- Division avec les mises à zéro nécéssaires :
+	    #buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
 	    set i 1
 	    set nbdivz 0
 	    foreach ordo1 $ordonnees1 ordo2 $ordonnees2 {
@@ -1154,8 +1359,16 @@ proc spc_divri { args } {
 		    incr nbdivz
 		} else {
 		    set resultat_div [ expr 1.0*$ordo1/$ordo2 ]
-		    if { $resultat_div >= $i_max } { 
-			buf$audace(bufNo) setpix [list $i 1] 0.
+		    if { $cdelt1>=0.7 } {
+			if { $i<=$xdeb || $i>=$xfin } {
+			    if { $resultat_div >= $i_max*$spcaudace(imax_tolerence) } { 
+				buf$audace(bufNo) setpix [list $i 1] 0.
+			    } else {
+				buf$audace(bufNo) setpix [list $i 1] $resultat_div
+			    }
+			} else {
+			    buf$audace(bufNo) setpix [list $i 1] $resultat_div
+			}
 		    } else {
 			buf$audace(bufNo) setpix [list $i 1] $resultat_div
 		    }
@@ -1357,6 +1570,75 @@ proc spc_derougi { args } {
 #***************************************************************************#
 
 
+
+
+####################################################################
+# Procédure de normalisation d'un profil pour que I(Hbeta)=100
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2007-08-08
+# Date modification : 2007-08-08
+# Arguments : nom_profil_raies largeur_raie
+####################################################################
+
+proc spc_normahbeta { args } {
+    global conf
+    global audace
+
+    set ihbeta_final 100.
+
+    if { [llength $args] == 2 } {
+	set fichier [ file rootname [ file tail [ lindex $args 0 ] ] ]
+	set largeur [ lindex $args 1 ]
+
+	#--- Détermine les paramètres de calibration :
+	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+	set listemotsclef [ buf$audace(bufNo) getkwds ]
+	set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+	set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+	if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	    set flag_nonlin 1
+	    set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+	    set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+	    set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+	    set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+	} else {
+	    set flag_nonlin 0
+	}
+
+	#--- Mesure I_max de la raie H_beta à 4861 A :
+	set lambda 4861.
+	#-- Calcul des limites de l'ajustement pour une dispersion linéaire :
+	set xdeb [ expr round(($lambda-0.5*$largeur-$lambda0)/$disp) ]
+	set xfin [ expr round(($lambda+0.5*$largeur-$lambda0)/$disp) ]
+	#-- Ajustement gaussien:
+	set gaussparams [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ]
+	set xcentre [ lindex $gaussparams 1 ]
+	set imax [ lindex $gaussparams 0 ]
+	set icont [ lindex $gaussparams 3 ]
+	#-- Converti le pixel en longueur d'onde :
+	if { $flag_nonlin==1 } {
+	    set lcentre [ expr $spc_a+$spc_b*$xcentre+$spc_c*pow($xcentre,2)+$spc_d*pow($xcentre,3) ]
+	} else {
+	    set lcentre [ expr $disp*$xcentre+$lambda0 ]
+	}
+	set ihbeta [ expr $imax+$icont ]
+	set coefnorma [ expr $ihbeta_final/$ihbeta ]
+
+	#--- Normalisation du spectre tel que I_max(Hbeta)=100 :
+	buf$audace(bufNo) mult $coefnorma
+
+	#--- Traitement des résultats :
+	buf$audace(bufNo) bitpix float
+	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_normab"
+	buf$audace(bufNo) bitpix short
+        ::console::affiche_resultat "Le profil de raies est normé (x$coefnorma) tel que la raie centrée en $lcentre vallant $imax soit à 100.\n"
+	return ${fichier}_normab
+    } else {
+	::console::affiche_erreur "Usage: spc_normahbeta nom_profil_raies longueur_d_onde_raie largeur\n"
+    }
+}
+#***************************************************************************#
 
 
 

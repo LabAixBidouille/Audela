@@ -269,7 +269,7 @@ proc spc_ajustdeg1 { args } {
 	    lappend X $ligne_i 
 	} 
 	# - calcul de l'ajustement 
-	set result [gsl_mfitmultilin $ordonnees $X $erreurs] 
+	set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
 	# - extrait le resultat 
 	set coeffs [lindex $result 0] 
 	set chi2 [lindex $result 1] 
@@ -621,7 +621,9 @@ proc spc_spline { args } {
 	set ordonnees [ lindex $args 1 ]
 	set nabscisses [ lindex $args 2 ]
 	set gflag [ lindex $args 3 ]
-	set len [llength $ordonnees]
+
+	#--- Nombre d'éléments : 
+	set len [ llength $ordonnees ]
 	set nlen [ llength $nabscisses ]
 
 	if { 1==0 } {
