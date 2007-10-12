@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.16 2007-10-11 19:29:03 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.17 2007-10-12 22:00:19 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -79,6 +79,9 @@ proc ::serialport::initPlugin { } {
    #--- Je charge les variables d'environnement
    initConf
 
+   #--- Initialisation
+   set private(frm) ""
+
    #--- je fixe le nom generique de la liaison
    if {  $::tcl_platform(os) == "Linux" } {
       set private(genericName) "/dev/tty"
@@ -134,15 +137,11 @@ proc ::serialport::createPluginInstance { linkLabel deviceId usage comment } {
    #--- pour l'instant, la liaison est cree par la librairie du peripherique
 
    #--- je stocke le commentaire d'utilisation
-   set private($linkLabel,$deviceId,$usage) "$comment"
+   set private(serialLink,$linkLabel,$deviceId,$usage) "$comment"
    #--- je rafraichis la liste
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::serialport::refreshAvailableList
-   }
+   ::serialport::refreshAvailableList
    #--- je selectionne le link
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::serialport::selectConfigLink $linkLabel
-   }
+   ::serialport::selectConfigLink $linkLabel
    #---
    return
 }
@@ -154,18 +153,17 @@ proc ::serialport::createPluginInstance { linkLabel deviceId usage comment } {
 #  return rien
 #------------------------------------------------------------
 proc ::serialport::deletePluginInstance { linkLabel deviceId usage } {
+   variable private
    global audace
 
    #--- pour l'instant, la liaison est arretee par le pilote du peripherique
 
    #--- je supprime le commentaire d'utilisation
-   if { [info exists private($linklabel,$deviceId,$usage) } {
-      unset private($linklabel,$deviceId,$usage)
+   if { [info exists private(serialLink,$linkLabel,$deviceId,$usage)] } {
+      unset private(serialLink,$linkLabel,$deviceId,$usage)
    }
    #--- je rafraichis la liste
-   if { [ winfo exists $audace(base).confLink ] } {
-      ::serialport::refreshAvailableList
-   }
+   ::serialport::refreshAvailableList
    #---
    return
 }
@@ -199,18 +197,12 @@ proc ::serialport::fillConfigPage { frm } {
    frame $private(frm).port -borderwidth 0 -relief ridge
 
       TitleFrame $private(frm).port.available -borderwidth 2 -relief ridge -text $caption(serialport,available)
-         listbox $private(frm).port.available.list -height 6
+         listbox $private(frm).port.available.list
          pack $private(frm).port.available.list -in [$private(frm).port.available getframe] \
-            -side left -fill x -expand true
-      pack $private(frm).port.available -side top -fill x
+            -side left -fill both -expand true
+      pack $private(frm).port.available -side top -fill both -expand true
 
-      TitleFrame $private(frm).port.used -borderwidth 2 -relief ridge -text $caption(serialport,used)
-         listbox $private(frm).port.used.list -height 6
-         pack $private(frm).port.used.list -in [$private(frm).port.used getframe] \
-            -side left -fill x -expand true
-      pack $private(frm).port.used -side top -fill x
-
-   pack $private(frm).port -side left -fill x -expand true
+   pack $private(frm).port -side left -fill both -expand true
 
    #--- J'afffiche le bouton de rafraichissement
    Button $private(frm).refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
@@ -302,7 +294,7 @@ proc ::serialport::getSelectedLinkLabel { } {
    if { $i == "" } {
       set i 0
    }
-   #--- je retourne le label du link (premier mot de la ligne )
+   #--- je retourne le label du link (premier mot de la ligne)
    return [lindex [$private(frm).port.available.list get $i] 0]
 }
 
@@ -314,6 +306,12 @@ proc ::serialport::getSelectedLinkLabel { } {
 #------------------------------------------------------------
 proc ::serialport::refreshAvailableList { } {
    variable private
+   global audace
+
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).port.available.list ] == "0" } {
+      return
+   }
 
    #--- je memorise le linkLabel selectionne
    set i [$private(frm).port.available.list curselection]
@@ -322,11 +320,8 @@ proc ::serialport::refreshAvailableList { } {
    }
    set selectedLinkLabel [getSelectedLinkLabel]
 
-   #--- j'efface le contenu de la liste
+   #--- j'efface le contenu de la liste des ports disponibles
    $private(frm).port.available.list delete 0 [ $private(frm).port.available.list size]
-
-   #--- je recupere les linkNo ouverts
-   set linkNoList [link::list]
 
    #--- je tiens compte des ports com exclus
    widgetToConf
@@ -334,21 +329,19 @@ proc ::serialport::refreshAvailableList { } {
    #--- je recherche les ports com
    Recherche_Ports
 
-   #--- je remplis la liste
+   #--- je remplis la liste des ports disponibles
    foreach linkLabel [::serialport::getLinkLabels] {
-      set linkText ""
-      #--- si le link est ferme , j'affiche son label seulement
-      if { $linkText == "" } {
-         set linkText "$linkLabel"
-      }
-      #--- je recherche si ce link est ouvert
-      foreach { key value } [array get ::serialport::private $linkLabel,*] {
-          set deviceId [lindex [split $key ","] 1]
-          set usage    [lindex [split $key ","] 2]
-          set comment  $value
-          append linkText " { $deviceId $usage $comment } "
-      }
+      $private(frm).port.available.list insert end $linkLabel
+   }
 
+   #--- je recherche si ce link est ouvert
+   foreach { key value } [array get ::serialport::private serialLink,*] {
+      set linklabel [lindex [split $key ","] 1]
+      set deviceId  [lindex [split $key ","] 2]
+      set usage     [lindex [split $key ","] 3]
+      set comment   $value
+      set linkText "$linklabel { $deviceId $usage $comment }"
+      #--- je renseigne la liste les ports deja utilises
       $private(frm).port.available.list insert end $linkText
    }
 
@@ -366,6 +359,11 @@ proc ::serialport::refreshAvailableList { } {
 #------------------------------------------------------------
 proc ::serialport::selectConfigLink { linkLabel } {
    variable private
+
+   #--- je verifie que la liste existe
+   if { [ winfo exists $private(frm).port.available.list ] == "0" } {
+      return
+   }
 
    $private(frm).port.available.list selection clear 0 end
 
