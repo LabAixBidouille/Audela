@@ -550,6 +550,8 @@ proc spc_pwlri { args } {
 
   global conf
   global audace
+  global spcaudace
+  #set spcaudace(nulpcent) 100
 
   # nechant est le nombre d'echantillons contenus dans un macro intervalle pour les 2 filtrages de  1er niveau
   # ce parametre est modifie de facon a minimiser les effets de bord; il faut eviter la situation ou, apres
@@ -600,12 +602,15 @@ proc spc_pwlri { args } {
 	#-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
 	set abscisses [ list ]
 	set ordonnees [ list ]
+	set intens_moy 0.
 	for { set i $i_inf } { $i<=$i_sup } { incr i } {
   		set xi [ lindex $abscissesorig $i ]
   		set yi [ lindex $ordonneesorig $i ]
   		lappend abscisses $xi
   		lappend ordonnees $yi
+  		set intens_moy [ expr $intens_moy +$yi ]
 	}
+	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
 
 	set len [ llength $ordonnees ]
 	::console::affiche_resultat "longueur profil apres extract part effective $len\n"
@@ -664,14 +669,16 @@ proc spc_pwlri { args } {
 	set nouvpoids1 [ lrange $nouvpoids1 0 [ expr $nmilieu0 - 1 ] ]
 	set nouvpoids2 [ lrange $nouvpoids2 0 [ expr $nmilieu0 - 1 ] ]	
 	
-        #--- mise a zero d'eventuels echantillons negatifs
+        #--- mise a zero d'eventuels echantillons tres petits
 	set zero 0.
+	set seuil_min [ expr $intens_moy*$spcaudace(nulpcent)/100. ]
 	for { set i 0 } {$i<$nmilieu0} {incr i} {
-		if { [ lindex $nordonnees1 $i ] < 0. } { set nordonnees1 [ lreplace $nordonnees1 $i $i $zero ] }
-		if { [ lindex $nordonnees2 $i ] < 0. } { set nordonnees2 [ lreplace $nordonnees2 $i $i $zero ] }
-		if { [ lindex $nordonnees3 $i ] < 0. } { set nordonnees3 [ lreplace $nordonnees3 $i $i $zero ] } 
+		if { [ lindex $nordonnees1 $i ] < $seuil_min } { set nordonnees1 [ lreplace $nordonnees1 $i $i $zero ] }
+		if { [ lindex $nordonnees2 $i ] < $seuil_min } { set nordonnees2 [ lreplace $nordonnees2 $i $i $zero ] }
+		if { [ lindex $nordonnees3 $i ] < $seuil_min } { set nordonnees3 [ lreplace $nordonnees3 $i $i $zero ] } 
 	}
-
+	
+	
         #--- Rajout des valeurs nulles en dbut et en fin pour retrouver la dimension initiale du fichier de dpart :
 	set len_ini $lenorig
 	set len_cut $nmilieu0
@@ -816,6 +823,9 @@ proc spc_pwlfilter { args } {
 
     global conf
     global audace
+    global spcaudace
+    #set spcaudace(nulpcent) 100.
+
 
     # nechant est le nombre d'echantillons contenus dans un macro intervalle; ce parametre est modifie de facon a minimiser les effets de bord; il faut eviter la situation o?, apres modification de ce parametre, la fonction lin?aire par morceaux a un sommet localise dans une raie importante
     # visu (=o ou n) indique si l'on veut ou non une visualisation du resultat
@@ -858,12 +868,18 @@ proc spc_pwlfilter { args } {
 	#-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
 	set abscisses [ list ]
 	set ordonnees [ list ]
+	set intens_moy 0.
 	for { set i $i_inf } { $i<=$i_sup } { incr i } {
   		set xi [ lindex $abscissesorig $i ]
   		set yi [ lindex $ordonneesorig $i ]
   		lappend abscisses $xi
   		lappend ordonnees $yi
+  		set intens_moy [ expr $intens_moy +$yi ]
 	}
+	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
+	# intens_moy est la valeur moyenne de l'intensite
+	::console::affiche_resultat "intensite moyenne : $intens_moy \n"
+
 
 	#-- ajustement de nechant pour minimiser les effets de bord et prolongement "accordingly" du profil 
 	set nechant [ ajust_interv [ expr $nmilieu0-1 ] $nechant ]
@@ -915,10 +931,11 @@ proc spc_pwlfilter { args } {
         }
         #::console::affiche_resultat "longueur result 3 : [llength $nordonnees3]\n"
 	
-	#-- mise a zero d'eventuels echantillons negatifs
+	#-- mise a zero d'eventuels echantillons tres petits
 	set zero 0.
+	set seuil_min [ expr $intens_moy*$spcaudace(nulpcent)/100. ]
 	for { set i 0 } {$i<$nmilieu0} {incr i} {
-		if { [ lindex $riliss1 $i ] < 0. } { set riliss1 [ lreplace $riliss1 $i $i $zero ] }
+		if { [ lindex $nordonnees3 $i ] < $seuil_min } { set nordonnees3 [ lreplace $nordonnees3 $i $i $zero ] }
 	}
 		
 	#--- Rajout des valeurs nulles en début et en fin pour retrouver la dimension initiale du fichier de départ :

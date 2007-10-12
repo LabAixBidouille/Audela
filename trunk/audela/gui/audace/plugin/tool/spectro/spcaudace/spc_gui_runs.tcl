@@ -21,7 +21,7 @@ proc spc_pretraitementfc_w {} {
 
     uplevel #0 "source \"[ file join $audace(rep_plugin) tool pretrfc pretrfcSetup.tcl ]\""
     # source $audace(rep_scripts)/../plugin/tool/pretrfc/pretrfc.ini
-    ::pretrfc::fenetrePretr
+    ::pretraitfc::fenetrePretr
 }
 
 

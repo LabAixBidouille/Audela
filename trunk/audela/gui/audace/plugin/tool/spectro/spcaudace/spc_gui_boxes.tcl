@@ -15,16 +15,16 @@
 # Date de création : 05-03-2007
 # Date de modification : 05-03-2007
 # Utilisée par : spc_export2png
-# Args : nom_profil_de_raies_fits 
+# Args : nom_profil_de_raies_fits
 ########################################################################
 
 namespace eval ::param_spc_audace_export2png {
 
+   source [ file join [file dirname [info script]] spc_gui_boxes.cap ]
+
    proc run { args {positionxy 20+20} } {
-      global conf
-      global audace spcaudace
-      global captionspc
-      global color
+      global conf audace color caption
+      global spcaudace
 
       set audace(param_spc_audace,export2png,config,spectre) [ lindex $args 0 ]
       #set spectre [ lindex $args 0 ]
@@ -67,47 +67,31 @@ namespace eval ::param_spc_audace_export2png {
       set audace(param_spc_audace,export2png,color,textdisp) #FF0000
       set audace(param_spc_audace,export2png,font,c12b) [ list {Arial} 10 bold ]
       set audace(param_spc_audace,export2png,font,c10b) [ list {Arial} 10 bold ]
-      
-      # === Captions
-      set caption(param_spc_audace,export2png,titre2) "Création d'un graphique PNG\ndu profil de raies"
-      set caption(param_spc_audace,export2png,titre) "Création d'un graphique PNG"
-      set caption(param_spc_audace,export2png,stop_button) "Annuler"
-      set caption(param_spc_audace,export2png,return_button) "OK"
-      set caption(param_spc_audace,export2png,config,mot1) "Nom de l'objet"
-      #set caption(param_spc_audace,export2png,config,mot2) "Observateur(s)"
-      #set caption(param_spc_audace,export2png,config,mot3) "Nom de l'observatoire"
-      set caption(param_spc_audace,export2png,config,mot2) "Télecscope"
-      set caption(param_spc_audace,export2png,config,mot3) "Spectrographe"
-      set caption(param_spc_audace,export2png,config,lambda_deb) "Longueur d'onde minimum"
-      set caption(param_spc_audace,export2png,config,lambda_fin) "Longueur d'onde maximum"
-      set caption(param_spc_audace,export2png,config,ydeb) "Intensité minimum"
-      set caption(param_spc_audace,export2png,config,yfin) "Intensite maximum"
-      
-      
+
       # === Met en place l'interface graphique
-      
+
       #--- Cree la fenetre .param_spc_audace_export2png de niveau le plus haut
       toplevel .param_spc_audace_export2png -class Toplevel -bg $audace(param_spc_audace,export2png,color,backpad)
       wm geometry .param_spc_audace_export2png 408x397+10+10
       wm resizable .param_spc_audace_export2png 1 1
-      wm title .param_spc_audace_export2png $caption(param_spc_audace,export2png,titre)
+      wm title .param_spc_audace_export2png $caption(spcaudace,boxes,export2png,titre)
       wm protocol .param_spc_audace_export2png WM_DELETE_WINDOW "::param_spc_audace_export2png::annuler"
-      
+
       #--- Create the title
       #--- Cree le titre
       label .param_spc_audace_export2png.title \
-	      -font [ list {Arial} 16 bold ] -text $caption(param_spc_audace,export2png,titre2) \
+	      -font [ list {Arial} 16 bold ] -text $caption(spcaudace,boxes,export2png,titre2) \
 	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey)
       pack .param_spc_audace_export2png.title \
 	      -in .param_spc_audace_export2png -fill x -side top -pady 15
-      
+
       # --- Boutons du bas
       frame .param_spc_audace_export2png.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,export2png,color,backpad)
       #-- Bouton Annuler
       button .param_spc_audace_export2png.stop_button  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,stop_button)" \
+	      -text "$caption(spcaudace,boxes,export2png,stop_button)" \
 	      -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) \
 	      -command {::param_spc_audace_export2png::annuler}
@@ -115,7 +99,7 @@ namespace eval ::param_spc_audace_export2png {
       #-- Bouton OK
       button .param_spc_audace_export2png.return_button  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,return_button)" \
+	      -text "$caption(spcaudace,boxes,export2png,return_button)" \
 	      -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) \
 	      -command {::param_spc_audace_export2png::go}
@@ -125,7 +109,7 @@ namespace eval ::param_spc_audace_export2png {
 
       #--- Message sur les caractères non autorisés :
       label .param_spc_audace_export2png.message1 \
-	      -font [ list {Arial} 12 bold ] -text "Les caractères \", ' et accentués ne doivent pas\nêtre utilisés dans les champs." \
+	      -font [ list {Arial} 12 bold ] -text $caption(spcaudace,boxes,export2png,caractere)  \
 	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey)
       pack .param_spc_audace_export2png.message1 \
@@ -135,11 +119,11 @@ namespace eval ::param_spc_audace_export2png {
        if { 1== 0 } {
       #--- Label + Entry pour spectre
       frame .param_spc_audace_export2png.spectre -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
-      label .param_spc_audace_export2png.spectre.label -text "$caption(param_spc_audace,export2png,config,spectre)" -bg $audace(param_spc_audace,export2png,color,backpad) \
+      label .param_spc_audace_export2png.spectre.label -text "$caption(spcaudace,boxes,export2png,config,spectre)" -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,export2png,font,c12b)
       pack  .param_spc_audace_export2png.spectre.label -in .param_spc_audace_export2png.spectre -side left -fill none
-      button .param_spc_audace_export2png.spectre.explore -text "$captionspc(parcourir)" -width 1 \
+      button .param_spc_audace_export2png.spectre.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,export2png,color,backpad) \
@@ -152,12 +136,12 @@ namespace eval ::param_spc_audace_export2png {
       pack  .param_spc_audace_export2png.spectre.entry -in .param_spc_audace_export2png.spectre -side left -fill none
       pack .param_spc_audace_export2png.spectre -in .param_spc_audace_export2png -fill none -pady 1 -padx 12
 
-      
+
       #--- Label + Entry pour nom_objet
       frame .param_spc_audace_export2png.nom_objet -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.nom_objet.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,nom_objet) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,nom_objet) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.nom_objet.label -in .param_spc_audace_export2png.nom_objet -side left -fill none
       entry  .param_spc_audace_export2png.nom_objet.entry  \
@@ -172,7 +156,7 @@ namespace eval ::param_spc_audace_export2png {
       frame .param_spc_audace_export2png.mot1 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.mot1.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,mot1) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,mot1) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.mot1.label -in .param_spc_audace_export2png.mot1 -side left -fill none
       entry  .param_spc_audace_export2png.mot1.entry  \
@@ -186,7 +170,7 @@ namespace eval ::param_spc_audace_export2png {
       frame .param_spc_audace_export2png.mot2 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.mot2.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,mot2) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,mot2) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.mot2.label -in .param_spc_audace_export2png.mot2 -side left -fill none
       entry  .param_spc_audace_export2png.mot2.entry  \
@@ -201,7 +185,7 @@ namespace eval ::param_spc_audace_export2png {
       frame .param_spc_audace_export2png.mot3 -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.mot3.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,mot3) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,mot3) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.mot3.label -in .param_spc_audace_export2png.mot3 -side left -fill none
       entry  .param_spc_audace_export2png.mot3.entry  \
@@ -216,7 +200,7 @@ namespace eval ::param_spc_audace_export2png {
       frame .param_spc_audace_export2png.lambda_deb -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.lambda_deb.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,lambda_deb) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,lambda_deb) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.lambda_deb.label -in .param_spc_audace_export2png.lambda_deb -side left -fill none
       entry  .param_spc_audace_export2png.lambda_deb.entry  \
@@ -230,7 +214,7 @@ namespace eval ::param_spc_audace_export2png {
       frame .param_spc_audace_export2png.lambda_fin -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.lambda_fin.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,lambda_fin) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,lambda_fin) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.lambda_fin.label -in .param_spc_audace_export2png.lambda_fin -side left -fill none
       entry  .param_spc_audace_export2png.lambda_fin.entry  \
@@ -244,7 +228,7 @@ namespace eval ::param_spc_audace_export2png {
       frame .param_spc_audace_export2png.ydeb -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.ydeb.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,ydeb) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,ydeb) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.ydeb.label -in .param_spc_audace_export2png.ydeb -side left -fill none
       entry  .param_spc_audace_export2png.ydeb.entry  \
@@ -258,7 +242,7 @@ namespace eval ::param_spc_audace_export2png {
       frame .param_spc_audace_export2png.yfin -borderwidth 0 -relief flat -bg $audace(param_spc_audace,export2png,color,backpad)
       label .param_spc_audace_export2png.yfin.label  \
 	      -font $audace(param_spc_audace,export2png,font,c12b) \
-	      -text "$caption(param_spc_audace,export2png,config,yfin) " -bg $audace(param_spc_audace,export2png,color,backpad) \
+	      -text "$caption(spcaudace,boxes,export2png,config,yfin) " -bg $audace(param_spc_audace,export2png,color,backpad) \
 	      -fg $audace(param_spc_audace,export2png,color,textkey) -relief flat
       pack  .param_spc_audace_export2png.yfin.label -in .param_spc_audace_export2png.yfin -side left -fill none
       entry  .param_spc_audace_export2png.yfin.entry  \
@@ -269,8 +253,8 @@ namespace eval ::param_spc_audace_export2png {
       pack .param_spc_audace_export2png.yfin -in .param_spc_audace_export2png -fill none -pady 1 -padx 12
 
   }
-  
-  
+
+
   proc go {} {
       global audace spcaudace
       global caption
@@ -299,19 +283,18 @@ namespace eval ::param_spc_audace_export2png {
 	  buf$audace(bufNo) bitpix short
 	  set listeargs [ list $spectre $listevalmots ]
 
-	  #-- Conversion en PNG : 
+	  #-- Conversion en PNG :
 	  set nomprofilpng [ spc_autofit2png $spectre "$nom_objet" $lambda_deb $lambda_fin $ydeb $yfin ]
 	  destroy .param_spc_audace_export2png
 	  return $nomprofilpng
       } else {
-	  tk_messageBox -title "Erreur de saisie" -icon error -message "Certains champ sont restés vides"
+	  tk_messageBox -title $caption(spcaudace,boxes,export2png,titre)  -icon error -message $caption(spcaudace,boxes,erreur,saisie)
 	  return 0
       }
   }
 
   proc annuler {} {
       global audace
-      global caption
       global nomprofilpng
 
       ::param_spc_audace_export2png::recup_conf
@@ -324,7 +307,7 @@ namespace eval ::param_spc_audace_export2png {
   proc recup_conf {} {
       global conf
       global audace
-      
+
       if { [ winfo exists .param_spc_audace_export2png ] } {
 	  #--- Enregistre la position de la fenetre
 	  set geom [wm geometry .param_spc_audace_export2png]
@@ -334,7 +317,7 @@ namespace eval ::param_spc_audace_export2png {
       }
   }
 
-  
+
 }
 #****************************************************************************#
 
@@ -350,15 +333,14 @@ namespace eval ::param_spc_audace_export2png {
 # Date de création : 31-07-2007
 # Date de modification : 31-07-2007
 # Utilisée par : spc_traitenebula
-# Args : spectre_2D liste_coordonnees_initiales_zone 
+# Args : spectre_2D liste_coordonnees_initiales_zone
 ########################################################################
 
 namespace eval ::param_spc_audace_selectzone {
 
    proc run { args {positionxy 20+20} } {
-      global conf
-      global audace spcaudace
-      global captionspc
+      global conf caption audace
+      global spcaudace
       global color
 
 
@@ -390,43 +372,31 @@ namespace eval ::param_spc_audace_selectzone {
       set audace(param_spc_audace,selectzone,color,textdisp) #FF0000
       set audace(param_spc_audace,selectzone,font,c12b) [ list {Arial} 10 bold ]
       set audace(param_spc_audace,selectzone,font,c10b) [ list {Arial} 10 bold ]
-      
-      # === Captions
-      set caption(param_spc_audace,selectzone,titre2) "Coordonnées de la zone\n du spectre à utiliser"
-      set caption(param_spc_audace,selectzone,titre) "Sélection de la zone du spectre"
-      set caption(param_spc_audace,selectzone,stop_button) "Annuler"
-      set caption(param_spc_audace,selectzone,return_button) "OK"
-      set caption(param_spc_audace,selectzone,config,spectre) "Spectre 2D"
-      set caption(param_spc_audace,selectzone,config,xinf) "X inférieur gauche : "
-      set caption(param_spc_audace,selectzone,config,yinf) "Y inférieur gauche : "
-      set caption(param_spc_audace,selectzone,config,xsup) "X supérieur droit : "
-       set caption(param_spc_audace,selectzone,config,ysup) "Y supérieur droit : "
-      
-      
+
       # === Met en place l'interface graphique
-      
+
       #--- Cree la fenetre .param_spc_audace_selectzone de niveau le plus haut
       toplevel .param_spc_audace_selectzone -class Toplevel -bg $audace(param_spc_audace,selectzone,color,backpad)
       wm geometry .param_spc_audace_selectzone 408x372-35-15
       wm resizable .param_spc_audace_selectzone 1 1
-      wm title .param_spc_audace_selectzone $caption(param_spc_audace,selectzone,titre)
+      wm title .param_spc_audace_selectzone $caption(spcaudace,boxes,selectzone,titre)
       wm protocol .param_spc_audace_selectzone WM_DELETE_WINDOW "::param_spc_audace_selectzone::annuler"
-      
+
       #--- Create the title
       #--- Cree le titre
       label .param_spc_audace_selectzone.title \
-	      -font [ list {Arial} 16 bold ] -text $caption(param_spc_audace,selectzone,titre2) \
+	      -font [ list {Arial} 16 bold ] -text $caption(spcaudace,boxes,selectzone,titre2) \
 	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey)
       pack .param_spc_audace_selectzone.title \
 	      -in .param_spc_audace_selectzone -fill x -side top -pady 15
-      
+
       # --- Boutons du bas
       frame .param_spc_audace_selectzone.buttons -borderwidth 1 -relief raised -bg $audace(param_spc_audace,selectzone,color,backpad)
       #-- Bouton Annuler
       button .param_spc_audace_selectzone.stop_button  \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
-	      -text "$caption(param_spc_audace,selectzone,stop_button)" \
+	      -text "$caption(spcaudace,boxes,selectzone,stop_button)" \
 	      -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) \
 	      -command {::param_spc_audace_selectzone::annuler}
@@ -434,7 +404,7 @@ namespace eval ::param_spc_audace_selectzone {
       #-- Bouton OK
       button .param_spc_audace_selectzone.return_button  \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
-	      -text "$caption(param_spc_audace,selectzone,return_button)" \
+	      -text "$caption(spcaudace,boxes,selectzone,return_button)" \
 	      -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) \
 	      -command {::param_spc_audace_selectzone::go}
@@ -444,7 +414,7 @@ namespace eval ::param_spc_audace_selectzone {
 
       #--- Message sur les caractères non autorisés :
       label .param_spc_audace_selectzone.message1 \
-	      -font [ list {Arial} 12 bold ] -text "Utiliser la souris pour choisir les coordonnées\ndes points inférieur gauche et surpérieur droit \nde la zone à étudier." \
+	      -font [ list {Arial} 12 bold ] -text $caption(spcaudace,boxes,selectzone,aide) \
 	      -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey)
       pack .param_spc_audace_selectzone.message1 \
@@ -453,11 +423,11 @@ namespace eval ::param_spc_audace_selectzone {
 
       #--- Label + Entry pour spectre
       frame .param_spc_audace_selectzone.spectre -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
-      label .param_spc_audace_selectzone.spectre.label -text "$caption(param_spc_audace,selectzone,config,spectre)" -bg $audace(param_spc_audace,selectzone,color,backpad) \
+      label .param_spc_audace_selectzone.spectre.label -text "$caption(spcaudace,boxes,selectzone,config,spectre)" -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat \
 	      -font $audace(param_spc_audace,selectzone,font,c12b)
       pack  .param_spc_audace_selectzone.spectre.label -in .param_spc_audace_selectzone.spectre -side left -fill none
-      button .param_spc_audace_selectzone.spectre.explore -text "$captionspc(parcourir)" -width 1 \
+      button .param_spc_audace_selectzone.spectre.explore -text "$caption(spcaudace,gui,parcourir)" -width 1 \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief raised \
 	      -bg $audace(param_spc_audace,selectzone,color,backpad) \
@@ -475,7 +445,7 @@ namespace eval ::param_spc_audace_selectzone {
       frame .param_spc_audace_selectzone.nom_objet -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
       label .param_spc_audace_selectzone.nom_objet.label  \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
-	      -text "$caption(param_spc_audace,selectzone,config,nom_objet) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -text "$caption(spcaudace,boxes,selectzone,config,nom_objet) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
       pack  .param_spc_audace_selectzone.nom_objet.label -in .param_spc_audace_selectzone.nom_objet -side left -fill none
       entry  .param_spc_audace_selectzone.nom_objet.entry  \
@@ -490,7 +460,7 @@ namespace eval ::param_spc_audace_selectzone {
       frame .param_spc_audace_selectzone.xinf -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
       label .param_spc_audace_selectzone.xinf.label  \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
-	      -text "$caption(param_spc_audace,selectzone,config,xinf) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -text "$caption(spcaudace,boxes,selectzone,config,xinf) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
       pack  .param_spc_audace_selectzone.xinf.label -in .param_spc_audace_selectzone.xinf -side left -fill none
       entry  .param_spc_audace_selectzone.xinf.entry  \
@@ -504,7 +474,7 @@ namespace eval ::param_spc_audace_selectzone {
       frame .param_spc_audace_selectzone.yinf -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
       label .param_spc_audace_selectzone.yinf.label  \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
-	      -text "$caption(param_spc_audace,selectzone,config,yinf) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -text "$caption(spcaudace,boxes,selectzone,config,yinf) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
       pack  .param_spc_audace_selectzone.yinf.label -in .param_spc_audace_selectzone.yinf -side left -fill none
       entry  .param_spc_audace_selectzone.yinf.entry  \
@@ -519,7 +489,7 @@ namespace eval ::param_spc_audace_selectzone {
       frame .param_spc_audace_selectzone.xsup -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
       label .param_spc_audace_selectzone.xsup.label  \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
-	      -text "$caption(param_spc_audace,selectzone,config,xsup) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -text "$caption(spcaudace,boxes,selectzone,config,xsup) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
       pack  .param_spc_audace_selectzone.xsup.label -in .param_spc_audace_selectzone.xsup -side left -fill none
       entry  .param_spc_audace_selectzone.xsup.entry  \
@@ -534,7 +504,7 @@ namespace eval ::param_spc_audace_selectzone {
       frame .param_spc_audace_selectzone.ysup -borderwidth 0 -relief flat -bg $audace(param_spc_audace,selectzone,color,backpad)
       label .param_spc_audace_selectzone.ysup.label  \
 	      -font $audace(param_spc_audace,selectzone,font,c12b) \
-	      -text "$caption(param_spc_audace,selectzone,config,ysup) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
+	      -text "$caption(spcaudace,boxes,selectzone,config,ysup) " -bg $audace(param_spc_audace,selectzone,color,backpad) \
 	      -fg $audace(param_spc_audace,selectzone,color,textkey) -relief flat
       pack  .param_spc_audace_selectzone.ysup.label -in .param_spc_audace_selectzone.ysup -side left -fill none
       entry  .param_spc_audace_selectzone.ysup.entry  \
@@ -545,8 +515,8 @@ namespace eval ::param_spc_audace_selectzone {
       pack .param_spc_audace_selectzone.ysup -in .param_spc_audace_selectzone -fill none -pady 1 -padx 12
 
   }
-  
-  
+
+
   proc go {} {
       global audace spcaudace
       global caption
@@ -567,7 +537,7 @@ namespace eval ::param_spc_audace_selectzone {
 	  destroy .param_spc_audace_selectzone
 	  return $spc_windowcoords
       } else {
-	  tk_messageBox -title "Erreur de saisie" -icon error -message "Certains champ sont restés vides"
+	  tk_messageBox -title caption(spcaudace,boxes,selectzone,titre) -icon error -message $caption(spcaudace,boxes,erreur,saisie)
 	  return 0
       }
   }
@@ -587,7 +557,7 @@ namespace eval ::param_spc_audace_selectzone {
   proc recup_conf {} {
       global conf
       global audace
-      
+
       if { [ winfo exists .param_spc_audace_selectzone ] } {
 	  #--- Enregistre la position de la fenetre
 	  set geom [ wm geometry .param_spc_audace_selectzone ]
@@ -597,6 +567,6 @@ namespace eval ::param_spc_audace_selectzone {
       }
   }
 
-  
+
 }
 #****************************************************************************#

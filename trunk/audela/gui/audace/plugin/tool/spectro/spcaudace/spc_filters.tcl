@@ -324,6 +324,7 @@ proc spc_smooth0 { args } {
 # Date creation : 11-02-2007
 # Date modification : 11-02-2007
 # Arguments : nom_profil_raies ?largeur_filtre? ?ordre_filtrage?
+# Remarque : NON UTILISEE -> voir spc_smoothsg
 ####################################################################
 
 proc spc_smooth3 { args } {
@@ -466,7 +467,7 @@ proc spc_passebas1 { args } {
 # Auteur : Patrick LAILLY
 # Date creation : 18-3-07
 # Date modification : 22-3-07
-# Arguments : fichier fits, ?demilargeur du motif à gommer?, type de filtre
+# Arguments : fichier fits, ?demi-largeur du motif à gommer?, type de filtre
 # Algo : application (par passage dans l'espace de Fourier) d'un filtre
 # passe-bas de réponse impulsionnelle finie. Deux types de filtres sont
 # proposés : rectangle ou Blackman. Les données filtrées sont calculées
@@ -486,7 +487,7 @@ proc spc_passebas { args } {
 	    set fichier [ file rootname [ lindex $args 0 ] ]
 	    set demilargeur 25
 	} else {
-	    ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?demilargeur motif à gommer(25)?\n\n"
+	    ::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?demi-largeur motif à gommer(25)?\n\n"
 	    return 0
 	}
 
@@ -527,7 +528,7 @@ proc spc_passebas { args } {
 
 	# initialisation du filtre
 	set nlarg [ expr 2*$demilargeur+1 ]
-	::console::affiche_resultat "demilargeur du filtre=$demilargeur\n"
+	::console::affiche_resultat "demi-largeur du filtre=$demilargeur\n"
 	set amplit [ expr 1./$nlarg ]
 	set filtr [ list ]
 	set temps ""
@@ -619,7 +620,7 @@ proc spc_passebas { args } {
 	::console::affiche_resultat "Profil filtré (passe bas) sauvé sous ${fichier}_pbas\n"
 	return $file_out
     } else {
-	::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?demilargeur motif à gommer(25)?\n\n"
+	::console::affiche_erreur "Usage: spc_passebas profil_de_raies.fit ?demi-largeur motif à gommer(25)?\n\n"
     }
 }
 #****************************************************************#
@@ -654,7 +655,7 @@ proc spc_smoothsg { args } {
 	    set demi_largeur [ expr int(0.5*[ lindex $args 1 ]) ]
 	    set degre [ lindex $args 2 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre degre_filtrage (2,1,3)]?\n\n"
+	    ::console::affiche_erreur "Usage: spc_smoothsg profil_de_raies_fits ?largeur_filtre? ?degre_filtrage (2,1,3)]?\n\n"
 	    return ""
 	}
 
@@ -663,7 +664,9 @@ proc spc_smoothsg { args } {
 	buf$audace(bufNo) imaseries "SMOOTHSG NL=$demi_largeur NR=$demi_largeur LD=0 M=$degre"
 
 	#--- Retour du résultat :
+	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${fichier}_linsg"
+	buf$audace(bufNo) bitpix short
 	::console::affiche_resultat "Profil de raies exporté sous ${fichier}_lings\n"
 	return "${fichier}_linsg"
     } else {

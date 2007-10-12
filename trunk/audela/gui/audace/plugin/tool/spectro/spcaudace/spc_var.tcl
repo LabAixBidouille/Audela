@@ -10,7 +10,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.1.0 - 6/08/2007"
+set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
@@ -37,14 +37,14 @@ if { [regexp {1.3.0} $audela(version) match resu ] } {
 set spcaudace(repgp) [ file join $spcaudace(repspc) gp ]
 set spcaudace(spectrum) [ file join $spcaudace(repspc) plugins spectrum ]
 
-
 #--- Répertoire des données chimiques :
 set spcaudace(repchimie) [ file join $spcaudace(repspc) data chimie ]
-
+set spcaudace(reptelluric) [ file join $spcaudace(repspc) data telluric ]
+# set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage_temp.txt"
+set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
 
 #--- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(repspc) data bibliotheque_spectrale ]
-
 
 #--- Répertoire de la calibration-chimie :
 set spcaudace(rep_spccal) [ file join $spcaudace(repspc) data calibration_lambda ]
@@ -71,21 +71,58 @@ set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
 
 
 #--- Valeur de paramètres des euristhiques algorithmiques :
-#-- Fraction des bords ignorés dans certains calculs (divri...) :
+#-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
 set spcaudace(pourcent_bord) 0.15
-
+#-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 5%
+set spcaudace(imax_tolerence) 1.05
+#-- Fraction des bords ignorés dans la détermination de l'angle de TILT :
+set spcaudace(pourcent_bordt) 0.10
+#-- Fraction des bords mis à 0 du résultat de la division avant lissage pour la RI :
+#- 0.0127 - 0.04
+set spcaudace(bordsnuls) 0.04
 #-- Dispersion maximale pour un spectre haute résolution (extraction continuum) :
 set spcaudace(dmax) 0.5
+#-- Bande spectrale considérée comme basse résolution 500 A :
+set spcaudace(bp_br) 500.
 #-- Hauteur max d'un spectre 2D pour ne considérer que du slant :
 set spcaudace(hmax) 300
-
-#-- Angle limit autorisé pour un tilt :
+#-- Pourcentage de l'intensité moyenne en deça de laquelle il y a mise a 0 (spc_pwl*) :
+set spcaudace(nulpcent) 0.6
+#-- Epaisseur de binning en cas de sélection manuelle de raie de calibration :
+set spcaudace(epaisseur_bin) 100.
+#-- Nombde de coupes verticales pour les detections de profil :
+#set spcaudace(nb_coupes) 5
+set spcaudace(nb_coupes) 10
+#-- Epaisseur de detection (verticale, latérale) pour les tranches de détection lors de spc_findtilt, spc_detect (5% de naxis2) :
+set spcaudace(epaisseur_detect) 0.05
+#-- Epaisseur binning par défaut :
+set spcaudace(largeur_binning) 7
+#-- Angle limit en degrès autorisé pour un tilt :
 #set spcaudace(tilt_limit) 0.746
 #set spcaudace(tilt_limit) 1.5
-set spcaudace(tilt_limit) 2.
+#set spcaudace(tilt_limit) 2.
+set spcaudace(tilt_limit) 4.
+#-- Rapport limit de I_moy_fond_de_ciel/I_moy pour détectivité de l'angle... : NON UTILISE
+#set spcaudace(rapport_imoy) 0.97
+#-- Linéarisation automatique de la loi de calibration en longueur d'onde :
+set spcaudace(linear_cal) "o"
+#-- Largeur du filtrage SavGol pour la recherche des raies telluriques :
+set spcaudace(largeur_savgol) 28
+#-- Demi-largeur (anstroms) de plage de recherche des raies telluriques (spc_calibretelluric) :
+set spcaudace(dlargeur_eau) 0.5
+#-- Coefficient de uncosmic
+set spcaudace(uncosmic) 0.85
 
 #----------------------------------------------------------------------------------#
 # Couleurs et répertoires : (pris dans spc_cap.tcl et toujours présent -> migration à terminer)
+#--- Liste des couleurs disponibles pour les graphes :
+set spcaudace(lgcolors) [ list "darkblue" "green" "lightblue" "red" "blue" "yellow" ]
+#-- Indice de la couleur par defaut (darkblue) :
+set spcaudace(gcolor) 0
+#-- Liste de noms des profils affichés :
+set spcaudace(gloaded) [ list ]
+
+
 #--- definition of colors
 #--- definition des couleurs
 set colorspc(back) #123456
