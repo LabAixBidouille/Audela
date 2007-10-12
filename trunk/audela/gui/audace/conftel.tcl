@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.33 2007-09-28 23:25:04 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.34 2007-10-12 21:58:00 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -110,6 +110,7 @@ namespace eval ::confTel {
          $frm.ctlking configure -text "$caption(conftel,audecom_ctl_king)" -state disabled
          update
       }
+      stopTelescope
       widgetToConf
       configureTelescope
       set confTel(fenetre,mobile,valider) "0"
@@ -620,9 +621,11 @@ namespace eval ::confTel {
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
       frame $This.start -borderwidth 1 -relief raised
+         button $This.start.stop -text "$caption(conftel,arreter)" -width 7 -command "::confTel::stopTelescope"
+         pack $This.start.stop -side left -padx 3 -pady 3 -expand true
          checkbutton $This.start.chk -text "$caption(conftel,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(telescope,start)
-         pack $This.start.chk -side top -padx 3 -pady 3 -fill x
+         pack $This.start.chk -side left -padx 3 -pady 3 -expand true
       pack $This.start -side top -fill x
       frame $This.cmd -borderwidth 1 -relief raised
          button $This.cmd.ok -text "$caption(conftel,ok)" -relief raised -state normal -width 7 \
@@ -1972,6 +1975,37 @@ namespace eval ::confTel {
    }
 
    #
+   # confTel::stopTelescope
+   # Arrete le telescope
+   #
+   proc stopTelescope { } {
+      global audace
+
+      #--- Je ferme la liaison
+      if { $audace(telNo) != "0" } {
+         #--- je memorise le port
+         set telPort [ tel$audace(telNo) port ]
+         #--- je ferme la monture
+         tel::delete $audace(telNo)
+         #--- je ferme le link
+         ::confLink::delete $telPort "tel$audace(telNo)" "control"
+         set audace(telNo) "0"
+
+         #--- initialisation
+         set confTel(lx200,connect)     "0"
+         set confTel(ouranos,connect)   "0"
+         set confTel(audecom,connect)   "0"
+         set confTel(temma,connect)     "0"
+         set confTel(ascom,connect)     "0"
+         set confTel(celestron,connect) "0"
+         #--- je supprime le label
+         foreach visuNo [ ::visu::list ] {
+            ::confVisu::setMount $visuNo
+         }
+      }
+   }
+
+   #
    # confTel::configureTelescope
    # Configure le telescope en fonction des donnees contenues dans le tableau conf :
    # conf(telescope) -> type de telescope employe
@@ -2023,7 +2057,7 @@ namespace eval ::confTel {
                         tel$audace(telNo) longformat on
                      }
                      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                     set linkNo [::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
+                     set linkNo [ ::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
                   }
                }
                serialport {
@@ -2055,7 +2089,7 @@ namespace eval ::confTel {
                         tel$audace(telNo) tempo $conf(lx200,ite-lente_tempo)
                      }
                      #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-                     set linkNo [::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" ""]
+                     set linkNo [ ::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
                   }
                }
             }
@@ -2097,7 +2131,7 @@ namespace eval ::confTel {
                #--- Statut du port
                set confTel(ouranos,status) $caption(conftel,ouranos_on)
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-               set linkNo [::confLink::create $conf(ouranos,port) "tel$audace(telNo)" "control" ""]
+               set linkNo [ ::confLink::create $conf(ouranos,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
             }
             #--- Gestion des boutons actifs/inactifs
             ::confTel::MatchOuranos
@@ -2182,7 +2216,7 @@ namespace eval ::confTel {
                #--- Affichage de la position du telescope
               ### ::telescope::monture_allemande
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-               set linkNo [::confLink::create $conf(audecom,port) "tel$audace(telNo)" "control" ""]
+               set linkNo [ ::confLink::create $conf(audecom,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
             }
          }
          temma {
@@ -2260,7 +2294,7 @@ namespace eval ::confTel {
                #--- Affichage de la position du telescope
                ::telescope::monture_allemande
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-               set linkNo [::confLink::create $conf(temma,port) "tel$audace(telNo)" "control" ""]
+               set linkNo [ ::confLink::create $conf(temma,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
             }
             #--- Gestion des boutons actifs/inactifs
             ::confTel::config_correc_Temma
@@ -2313,7 +2347,7 @@ namespace eval ::confTel {
                   tel$audace(telNo) longformat on
                }
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-               set linkNo [::confLink::create $conf(celestron,port) "tel$audace(telNo)" "control" ""]
+               set linkNo [ ::confLink::create $conf(celestron,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
             }
          }
       }
