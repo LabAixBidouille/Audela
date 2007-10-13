@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.34 2007-10-12 21:58:00 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.35 2007-10-13 09:31:45 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -110,7 +110,7 @@ namespace eval ::confTel {
          $frm.ctlking configure -text "$caption(conftel,audecom_ctl_king)" -state disabled
          update
       }
-      stopTelescope
+      stopDriver
       widgetToConf
       configureTelescope
       set confTel(fenetre,mobile,valider) "0"
@@ -246,7 +246,7 @@ namespace eval ::confTel {
          set frm $frmm(Telscp2)
          if { $confTel(ouranos,connect) == "1" } {
             $frm.but_init configure -relief raised -state normal -command { ::OuranosCom::find_res }
-            $frm.but_close configure -relief raised -state normal -command { ::OuranosCom::close_com }
+            $frm.but_close configure -relief raised -state normal -command { ::confTel::stopDriver }
             $frm.but_read configure -relief raised -state normal -command { ::OuranosCom::go_ouranos }
             if { $confTel(ouranos,show_coord) == "1" } {
                $frm.rad0 configure -state normal -command {
@@ -621,7 +621,7 @@ namespace eval ::confTel {
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
       frame $This.start -borderwidth 1 -relief raised
-         button $This.start.stop -text "$caption(conftel,arreter)" -width 7 -command "::confTel::stopTelescope"
+         button $This.start.stop -text "$caption(conftel,arreter)" -width 7 -command "::confTel::stopDriver"
          pack $This.start.stop -side left -padx 3 -pady 3 -expand true
          checkbutton $This.start.chk -text "$caption(conftel,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(telescope,start)
@@ -1029,7 +1029,7 @@ namespace eval ::confTel {
             -command { ::OuranosCom::find_res }
          pack $frm.but_init -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
          button $frm.but_close -text "$caption(conftel,ouranos_stop)" -width 6 -relief raised -state normal \
-            -command { ::OuranosCom::close_com }
+            -command { ::confTel::stopDriver }
          pack $frm.but_close -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
          button $frm.but_read -text "$caption(conftel,ouranos_lire)" -width 6 -relief raised -state normal \
             -command { ::OuranosCom::go_ouranos }
@@ -1975,30 +1975,33 @@ namespace eval ::confTel {
    }
 
    #
-   # confTel::stopTelescope
-   # Arrete le telescope
+   # confTel::stopDriver
+   # Ferme la monture ouverte
    #
-   proc stopTelescope { } {
-      global audace
+   proc stopDriver { } {
+      global audace conf
 
       #--- Je ferme la liaison
       if { $audace(telNo) != "0" } {
-         #--- je memorise le port
+         #--- Cas particulier de la monture Ouranos
+         if { $conf(telescope) == "ouranos" } {
+            ::OuranosCom::close_com
+         }
+         #--- Je memorise le port
          set telPort [ tel$audace(telNo) port ]
-         #--- je ferme la monture
+         #--- Je ferme la monture
          tel::delete $audace(telNo)
-         #--- je ferme le link
+         #--- Je ferme le link
          ::confLink::delete $telPort "tel$audace(telNo)" "control"
          set audace(telNo) "0"
-
-         #--- initialisation
+         #--- Initialisation
          set confTel(lx200,connect)     "0"
          set confTel(ouranos,connect)   "0"
          set confTel(audecom,connect)   "0"
          set confTel(temma,connect)     "0"
          set confTel(ascom,connect)     "0"
          set confTel(celestron,connect) "0"
-         #--- je supprime le label
+         #--- Je supprime le label des visus
          foreach visuNo [ ::visu::list ] {
             ::confVisu::setMount $visuNo
          }
