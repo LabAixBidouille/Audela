@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.71 2007-09-28 23:24:16 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.72 2007-10-13 15:02:29 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -495,71 +495,81 @@ namespace eval ::confVisu {
    #    zoom  : valeur du zoom. Ce parametre est optionnel, le zoom
    #            courant est utilise s'il n'est pas reseigne.
    #  Exemple : afficher la visu 1 avec zoom = 0.5
-   #    ::confVisu 1 0.5
+   #    ::confVisu::setZoom 1 0.5
    #------------------------------------------------------------
    proc setZoom { visuNo { zoom "" } } {
       variable private
 
-      #--- je modifie le zoom si une nouvelle valeur est donnee en parametre
-      if { $zoom == "" } {
-         #--- rien a faire, on prend la valeur de private($visuNo,zoom)
-      } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 } {
-         set private($visuNo,zoom) $zoom
+      set bufNo [visu$visuNo buf]
+
+      if { [ buf$bufNo imageready ] == "1" } {
+
+         #--- je modifie le zoom si une nouvelle valeur est donnee en parametre
+         if { $zoom == "" } {
+            #--- rien a faire, on prend la valeur de private($visuNo,zoom)
+         } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 } {
+            set private($visuNo,zoom) $zoom
+         } else {
+            ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
+         }
+
+         #--- je calcule les coordonnées du centre de l'image
+         set canvasCenterPrev [getCanvasCenter $visuNo]
+         set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
+
+         #--- je calcule la position du bord gauche et du bord haut
+         set previousLeft [expr [lindex $canvasCenterPrev 0] - [lindex [$private($visuNo,hCanvas) xview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 2] ]
+         set previousTop  [expr [lindex $canvasCenterPrev 1] - [lindex [$private($visuNo,hCanvas) yview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 3] ]
+         set zoomPrev [visu$visuNo zoom]
+
+         #--- j'applique le nouveau zoom
+         visu$visuNo zoom $private($visuNo,zoom)
+
+         #--- rafraichissement de l'image avec le nouveau zoom
+         visu$visuNo clear
+         visu$visuNo disp
+
+         #--- mise a jour du parametre scrollposition du canvas
+         setScrollbarSize $visuNo
+
+         #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
+         set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
+
+         #--- je calcule la nouvelle position du bord gauche et du haut pour garder le centre de l'image au meme endroit
+         set newleft [expr [lindex $canvasCenter 0] - $previousLeft ]
+         set newtop  [expr [lindex $canvasCenter 1] - $previousTop  ]
+
+         #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible
+         if { $newleft < 0 } { set newleft 0 }
+         if { $newtop  < 0 } { set newtop  0 }
+
+         #--- je centre le canvas
+         set scrollRegion [$private($visuNo,hCanvas) cget -scrollregion]
+         set leftRegion   [lindex $scrollRegion 0]
+         set topRegion    [lindex $scrollRegion 1]
+         set rightRegion  [lindex $scrollRegion 2]
+         set bottomRegion [lindex $scrollRegion 3]
+
+         if { $rightRegion != 0 } {
+            $private($visuNo,hCanvas) xview moveto [ expr $newleft / ($rightRegion - $leftRegion) ]
+         }
+
+         if { $bottomRegion != 0 } {
+            $private($visuNo,hCanvas) yview moveto [ expr $newtop / ($bottomRegion - $topRegion) ]
+         }
+
+         #--- je mets a jour la taille du reticule
+         ::confVisu::redrawCrosshair $visuNo
+
+         #--- je mets a jour la variable surveillee par le listener
+         set private($visuNo,listenerZoom) $private($visuNo,zoom)
+
       } else {
-         ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
+
+         set private($visuNo,zoom) "1"
+
       }
 
-      #--- je calcule les coordonnées du centre de l'image
-      set canvasCenterPrev [getCanvasCenter $visuNo]
-      set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
-
-      #--- je calcule la position du bord gauche et du bord haut
-      set previousLeft [expr [lindex $canvasCenterPrev 0] - [lindex [$private($visuNo,hCanvas) xview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 2] ]
-      set previousTop  [expr [lindex $canvasCenterPrev 1] - [lindex [$private($visuNo,hCanvas) yview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 3] ]
-      set zoomPrev [visu$visuNo zoom]
-
-      #--- j'applique le nouveau zoom
-      visu$visuNo zoom $private($visuNo,zoom)
-
-      #--- rafraichissement de l'image avec le nouveau zoom
-      visu$visuNo clear
-      visu$visuNo disp
-
-      #--- mise a jour du parametre scrollposition du canvas
-      setScrollbarSize $visuNo
-
-      #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
-      set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
-
-      #--- je calcule la nouvelle position du bord gauche et du haut pour garder le centre de l'image au meme endroit
-      set newleft [expr [lindex $canvasCenter 0] - $previousLeft ]
-      set newtop  [expr [lindex $canvasCenter 1] - $previousTop  ]
-
-      #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible
-      if { $newleft < 0 } { set newleft 0 }
-      if { $newtop  < 0 } { set newtop  0 }
-
-      #--- je centre le canvas
-      set scrollRegion [$private($visuNo,hCanvas) cget -scrollregion]
-      set leftRegion   [lindex $scrollRegion 0]
-      set topRegion    [lindex $scrollRegion 1]
-      set rightRegion  [lindex $scrollRegion 2]
-      set bottomRegion [lindex $scrollRegion 3]
-
-      if { $rightRegion != 0 } {
-         $private($visuNo,hCanvas) xview moveto [expr $newleft / ($rightRegion - $leftRegion) ]
-      }
-
-      if { $bottomRegion != 0 } {
-         $private($visuNo,hCanvas) yview moveto [expr $newtop/ ($bottomRegion- $topRegion)]
-      }
-
-
-      #--- Je mets a jour la taille du reticule
-      ::confVisu::redrawCrosshair $visuNo
-
-      #--- je met à jour la variable surveillee par le listener
-      set private($visuNo,listenerZoom) $private($visuNo,zoom)
    }
 
    #------------------------------------------------------------
