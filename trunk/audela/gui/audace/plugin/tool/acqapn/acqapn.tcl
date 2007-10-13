@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.24 2007-10-03 17:43:48 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.25 2007-10-13 14:41:50 robertdelmas Exp $
 #
 
 #============================================================
@@ -175,7 +175,7 @@ namespace eval ::acqapn {
 
       #--- Initialisation des radio et checkbutton
       set panneau(acqapn,intervalle_mini) "20"
-      set panneau(acqapn,affichage)       "0"
+      set panneau(acqapn,affichage)       "1"
       set panneau(acqapn,mini)            "image"
       set panneau(acqapn,a_effacer)       "last"
 
