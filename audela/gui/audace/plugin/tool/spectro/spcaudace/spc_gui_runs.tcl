@@ -16,12 +16,9 @@
 
 proc spc_pretraitementfc_w {} {
 
-    global conf
     global audace
 
-    uplevel #0 "source \"[ file join $audace(rep_plugin) tool pretrfc pretrfcSetup.tcl ]\""
-    # source $audace(rep_scripts)/../plugin/tool/pretrfc/pretrfc.ini
-    ::pretraitfc::fenetrePretr
+   ::confVisu::selectTool $audace(visuNo) ::pretrfc
 }
 
 
