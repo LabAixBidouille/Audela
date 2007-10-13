@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.17 2007-10-12 22:00:19 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.18 2007-10-13 08:34:18 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -194,15 +194,11 @@ proc ::serialport::fillConfigPage { frm } {
    pack $private(frm).port_exclus -side top -fill x
 
    #--- J'afffiche la liste des links disponibles et utilisés
-   frame $private(frm).port -borderwidth 0 -relief ridge
-
-      TitleFrame $private(frm).port.available -borderwidth 2 -relief ridge -text $caption(serialport,available)
-         listbox $private(frm).port.available.list
-         pack $private(frm).port.available.list -in [$private(frm).port.available getframe] \
-            -side left -fill both -expand true
-      pack $private(frm).port.available -side top -fill both -expand true
-
-   pack $private(frm).port -side left -fill both -expand true
+   TitleFrame $private(frm).available -borderwidth 2 -relief ridge -text $caption(serialport,available)
+      listbox $private(frm).available.list
+      pack $private(frm).available.list -in [$private(frm).available getframe] \
+         -side left -fill both -expand true
+   pack $private(frm).available -side left -fill both -expand true
 
    #--- J'afffiche le bouton de rafraichissement
    Button $private(frm).refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
@@ -290,12 +286,12 @@ proc ::serialport::getSelectedLinkLabel { } {
    variable private
 
    #--- je memorise le linkLabel selectionne
-   set i [$private(frm).port.available.list curselection]
+   set i [$private(frm).available.list curselection]
    if { $i == "" } {
       set i 0
    }
    #--- je retourne le label du link (premier mot de la ligne)
-   return [lindex [$private(frm).port.available.list get $i] 0]
+   return [lindex [$private(frm).available.list get $i] 0]
 }
 
 #------------------------------------------------------------
@@ -309,19 +305,19 @@ proc ::serialport::refreshAvailableList { } {
    global audace
 
    #--- je verifie que la liste existe
-   if { [ winfo exists $private(frm).port.available.list ] == "0" } {
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
       return
    }
 
    #--- je memorise le linkLabel selectionne
-   set i [$private(frm).port.available.list curselection]
+   set i [$private(frm).available.list curselection]
    if { $i == "" } {
       set i 0
    }
    set selectedLinkLabel [getSelectedLinkLabel]
 
    #--- j'efface le contenu de la liste des ports disponibles
-   $private(frm).port.available.list delete 0 [ $private(frm).port.available.list size]
+   $private(frm).available.list delete 0 [ $private(frm).available.list size]
 
    #--- je tiens compte des ports com exclus
    widgetToConf
@@ -331,7 +327,7 @@ proc ::serialport::refreshAvailableList { } {
 
    #--- je remplis la liste des ports disponibles
    foreach linkLabel [::serialport::getLinkLabels] {
-      $private(frm).port.available.list insert end $linkLabel
+      $private(frm).available.list insert end $linkLabel
    }
 
    #--- je recherche si ce link est ouvert
@@ -342,7 +338,7 @@ proc ::serialport::refreshAvailableList { } {
       set comment   $value
       set linkText "$linklabel { $deviceId $usage $comment }"
       #--- je renseigne la liste les ports deja utilises
-      $private(frm).port.available.list insert end $linkText
+      $private(frm).available.list insert end $linkText
    }
 
    #--- je selectionne le linkLabel comme avant le rafraichissement
@@ -361,22 +357,22 @@ proc ::serialport::selectConfigLink { linkLabel } {
    variable private
 
    #--- je verifie que la liste existe
-   if { [ winfo exists $private(frm).port.available.list ] == "0" } {
+   if { [ winfo exists $private(frm).available.list ] == "0" } {
       return
    }
 
-   $private(frm).port.available.list selection clear 0 end
+   $private(frm).available.list selection clear 0 end
 
    #--- je recherche linkLabel dans la listbox  (linkLabel est le premier element de chaque ligne)
-   for {set i 0} {$i<[$private(frm).port.available.list size]} {incr i} {
-      if { [lindex [$private(frm).port.available.list get $i] 0] == $linkLabel } {
-         $private(frm).port.available.list selection set $i
+   for {set i 0} {$i<[$private(frm).available.list size]} {incr i} {
+      if { [lindex [$private(frm).available.list get $i] 0] == $linkLabel } {
+         $private(frm).available.list selection set $i
          return
       }
    }
-   if { [$private(frm).port.available.list size] > 0 } {
+   if { [$private(frm).available.list size] > 0 } {
       #--- sinon je selectionne le premier linkLabel
-      $private(frm).port.available.list selection set 0
+      $private(frm).available.list selection set 0
    }
 }
 
