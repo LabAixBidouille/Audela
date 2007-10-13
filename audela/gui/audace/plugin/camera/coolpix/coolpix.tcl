@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.13 2007-09-22 06:39:32 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.14 2007-10-13 14:43:43 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -152,7 +152,7 @@ proc ::coolpix::fillConfigPage { frm } {
 proc ::coolpix::configureCamera { camItem } {
    global confCam
 
-   if { [ ::confVisu::getTool 1 ] == "acqapn" } {
+   if { [ ::confVisu::getTool $confCam($camItem,visuNo) ] == "acqapn" } {
       set camNo "0"
       set confCam($camItem,camName) "coolpix"
       ::acqapn::Off
@@ -161,6 +161,7 @@ proc ::coolpix::configureCamera { camItem } {
    } else {
       set camItem $confCam(currentCamItem)
       set confCam($camItem,camName) ""
+      set confCam($camItem,camNo)   "0"
    }
 }
 
