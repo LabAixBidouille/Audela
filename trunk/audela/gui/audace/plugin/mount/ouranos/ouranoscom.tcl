@@ -2,10 +2,8 @@
 # Fichier : ouranoscom.tcl
 # Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Mise a jour $Id: ouranoscom.tcl,v 1.6 2007-02-24 13:33:13 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.tcl,v 1.7 2007-10-13 09:32:47 robertdelmas Exp $
 #
-
-global confTel
 
 #--- Initialisation de variables
 #--- Si la trace des communications n'est pas souhaitee, mettre trace_in et trace_out a 0
@@ -18,10 +16,11 @@ array set ouranoscom {
    lecture   "0"
 }
 
+global confTel
+
 set confTel(ouranos,connect) "0"
 
 namespace eval OuranosCom {
-   global ouranoscom
 
    #
    # OuranosCom::init (est lance automatiquement au chargement de ce fichier tcl)
@@ -39,11 +38,7 @@ namespace eval OuranosCom {
    # Lit l'interface Ouranos
    #
    proc go_ouranos { } {
-      global conf
-      global caption
-      global confTel
-      global ouranoscom
-      global frmm
+      global caption conf confTel frmm ouranoscom
 
       catch {
          set frm $frmm(Telscp2)
@@ -77,8 +72,7 @@ namespace eval OuranosCom {
    # MATCH
    #
    proc match_ouranos { } {
-      global audace
-      global confTel
+      global audace confTel
 
       #--- Envoi le Match
       tel$audace(telNo) radec init { $confTel(ouranos,match_ra) $confTel(ouranos,match_dec) }
@@ -90,10 +84,7 @@ namespace eval OuranosCom {
    # Transfert des coordonnees pour le bouton MATCH
    #
    proc match_transfert_ouranos { } {
-      global caption
-      global confTel
-      global catalogue
-      global frmm
+      global caption catalogue confTel frmm
 
       set frm $frmm(Telscp2)
       if { $confTel(ouranos,obj_choisi) == "$caption(ouranoscom,messier)" } {
@@ -126,9 +117,7 @@ namespace eval OuranosCom {
    # Initialisation
    #
    proc init_ouranos { } {
-      global confTel
-      global conf
-      global caption
+      global caption conf confTel
 
       #---
       set confTel(ouranos,status)      $caption(ouranoscom,off)
@@ -169,8 +158,7 @@ namespace eval OuranosCom {
    # Envoie une commande
    #
    proc send_encod { cmd } {
-      global caption
-      global ouranoscom
+      global caption ouranoscom
 
       #--- Lit un eventuel message
       ::OuranosCom::read_com
@@ -196,10 +184,7 @@ namespace eval OuranosCom {
    # Lit les encodeurs Ouranos
    #
    proc read_coord { } {
-      global caption
-      global confTel
-      global ouranoscom
-      global Fenetre
+      global caption confTel Fenetre ouranoscom
 
       if { [ string compare $ouranoscom(tty) "" ] != "0" } {
          #--- Verifie si un message n'est pas en attente, tres rustique mais operationnel
@@ -262,9 +247,7 @@ namespace eval OuranosCom {
    # Selection de l'affichage
    #
    proc show1 { } {
-      global audace
-      global caption
-      global confTel
+      global audace caption confTel
 
       catch {
          if { [ string compare $confTel(ouranos,show_coord) "0" ] == "0" } {
@@ -327,8 +310,7 @@ namespace eval OuranosCom {
    # Emission d'une commande et echo si demande
    #
    proc emis_cmd { cmd } {
-      global caption
-      global ouranoscom
+      global caption ouranoscom
 
       puts $ouranoscom(tty) $cmd
       after 100
@@ -343,8 +325,7 @@ namespace eval OuranosCom {
    # Lit le port serie
    #
    proc read_com { } {
-      global caption
-      global ouranoscom
+      global caption ouranoscom
 
       after [ expr $ouranoscom(delay) ]
       gets $ouranoscom(tty) answer
@@ -359,12 +340,7 @@ namespace eval OuranosCom {
    # Ferme le port serie, s'il n'est pas ferme
    #
    proc close_com { } {
-      global caption
-      global conf
-      global audace
-      global ouranoscom
-      global confTel
-      global frmm
+      global audace caption conf confTel frmm ouranoscom
 
       set frm $frmm(Telscp2)
       catch {
@@ -448,7 +424,7 @@ namespace eval OuranosCom {
       global caption
 
       console::affiche_erreur "$caption(ouranoscom,pas_de_reponse)\n"
-      ::OuranosCom::close_com
+      ::confTel::stopDriver
       return
    }
 
@@ -457,9 +433,7 @@ namespace eval OuranosCom {
    # Find resolution
    #
    proc find_res { } {
-      global confTel
-      global caption
-      global frmm
+      global caption confTel frmm
 
       catch {
          set frm $frmm(Telscp2)
@@ -491,10 +465,7 @@ namespace eval OuranosCom {
    # Affichage visible des coordonnees ou des pas
    #
    proc TjrsVisible { } {
-      global audace
-      global conf
-      global confTel
-      global caption
+      global audace caption conf confTel
 
       catch {
          if { $confTel(ouranos,tjrsvisible) == "0" } {
@@ -550,10 +521,7 @@ namespace eval OuranosCom {
    # Affichage visible des coordonnees ou des pas en tres gros
    #
    proc TjrsVisible_x10 { } {
-      global audace
-      global conf
-      global confTel
-      global caption
+      global audace caption conf confTel
 
       catch {
          if { $confTel(ouranos,tjrsvisible) == "0" } {
