@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.22 2007-09-22 06:42:37 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.23 2007-10-14 15:07:10 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -161,7 +161,7 @@ proc ::webcam::widgetToConf { camItem } {
 #
 proc ::webcam::fillConfigPage { frm camItem } {
    variable private
-   global audace caption color
+   global caption color
 
    #--- Initialise une variable locale
    set private(frm) $frm
@@ -536,7 +536,7 @@ proc ::webcam::stop { camItem } {
 #
 proc ::webcam::ConfigWebCam { camItem } {
    variable private
-   global audace conf confCam
+   global conf confCam
 
    if { [ info exists private(frm)] } {
       set frm $private(frm)
@@ -612,7 +612,6 @@ proc ::webcam::checkConfigLonguePose { camItem } {
 #
 proc ::webcam::checkConfigCCDN&B { camItem } {
    variable private
-   global audace
 
    if { [ info exists private(frm)] } {
       set frm $private(frm)
