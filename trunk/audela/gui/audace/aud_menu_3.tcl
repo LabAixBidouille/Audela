@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.35 2007-06-14 21:24:11 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.36 2007-10-14 15:50:42 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3989,29 +3989,32 @@ namespace eval ::faireImageRef {
                   buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
                   ::buf::delete $buf_pretrait
                   #---
-                  sub2 $in $offset+dark $temp $const $nb $first
+                  sub2 $in offset+dark $temp $const $nb $first
                   noffset2 $temp $tempo $norm $nb $first
                   smedian $tempo $out $nb $first
+                  #--- Suppression des fichiers intermediaires
+                  file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                   delete2 $temp $nb
                   delete2 $tempo $nb
-                  #--- Suppression du fichier intermediaire
-                  file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
-               } else {
-                  if { $faireImageRef(flat-field,no-dark) == "1" } {
-                     #---
-                     sub2 $in $offset $temp $const $nb $first
-                     noffset2 $temp $tempo $norm $nb $first
-                     smedian $tempo $out $nb $first
-                     delete2 $temp $nb
-                     delete2 $tempo $nb
-                  } elseif { $faireImageRef(flat-field,no-offset) == "1" } {
-                     #---
-                     sub2 $in $dark $temp $const $nb $first
-                     noffset2 $temp $tempo $norm $nb $first
-                     smedian $tempo $out $nb $first
-                     delete2 $temp $nb
-                     delete2 $tempo $nb
-                  }
+               } elseif { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "0" } {
+                  #---
+                  sub2 $in $dark $temp $const $nb $first
+                  noffset2 $temp $tempo $norm $nb $first
+                  smedian $tempo $out $nb $first
+                  #--- Suppression des fichiers intermediaires
+                  delete2 $temp $nb
+                  delete2 $tempo $nb
+               } elseif { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "1" } {
+                  #---
+                  sub2 $in $offset $temp $const $nb $first
+                  noffset2 $temp $tempo $norm $nb $first
+                  smedian $tempo $out $nb $first
+                  #--- Suppression des fichiers intermediaires
+                  delete2 $temp $nb
+                  delete2 $tempo $nb
+               } elseif { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "1" } {
+                  #---
+                  smedian $in $out $nb $first
                }
                if { $faireImageRef(disp) == 1 } {
                   loadima $out
@@ -4100,20 +4103,23 @@ namespace eval ::faireImageRef {
                      mult2 $temp $temp1 $norm $nb $first
                      #--- Realisation de Z = Y' / Flat-field
                      div2 $temp1 $flat $out $const_mult $nb $first
-                     #--- Suppression des fichiers temporaires
+                     #--- Suppression des fichiers intermediaires
+                     file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                      delete2 $temp $nb
                      delete2 $temp1 $nb
-                  #--- Sans optimisation du noir - Dark et flat disponibles - Manque les offsets
-                  } elseif { $faireImageRef(option) == "100" } {
-                     #--- Realisation de Y = [ Generique d'entree - Dark ]
-                     sub2 $in $dark $temp $const $nb $first
-                     #--- Realisation de Y' = K * Y
-                     mult2 $temp $temp1 $norm $nb $first
-                     #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp1 $flat $out $const_mult $nb $first
-                     #--- Suppression des fichiers temporaires
-                     delete2 $temp $nb
-                     delete2 $temp1 $nb
+                  #--- Sans optimisation du noir - Offset et dark disponibles - Manque les flats
+                  } elseif { $faireImageRef(option) == "001" } {
+                     #--- Realisation de X = ( Offset + Dark )
+                     set buf_pretrait [ ::buf::create ]
+                     buf$buf_pretrait extension $conf(extension,defaut)
+                     buf$buf_pretrait load [ file join $audace(rep_images) $offset ]
+                     buf$buf_pretrait add [ file join $audace(rep_images) $dark ] $const
+                     buf$buf_pretrait save [ file join $audace(rep_images) offset+dark ]
+                     ::buf::delete $buf_pretrait
+                     #--- Realisation de Z = [ Generique d'entree - ( X ) ]
+                     sub2 $in offset+dark $out $const $nb $first
+                     #--- Suppression du fichier intermediaire
+                     file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                   #--- Sans optimisation du noir - Offset et flat disponibles - Manque les darks
                   } elseif { $faireImageRef(option) == "010" } {
                      #--- Realisation de Y = [ Generique d'entree - Offset ]
@@ -4125,14 +4131,43 @@ namespace eval ::faireImageRef {
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                      delete2 $temp1 $nb
-                  #--- Sans optimisation du noir - Offset et dark disponibles - Manque les flats
-                  } elseif { $faireImageRef(option) == "001" } {
-                     #--- Realisation de Y = [ Generique d'entree - ( X ) ]
-                     sub2 $in offset+dark $out $const $nb $first
+                  #--- Sans optimisation du noir - Offset disponible - Manque les darks et les flats
+                  } elseif { $faireImageRef(option) == "011" } {
+                     #--- Realisation de Z = [ Generique d'entree - Offset ]
+                     sub2 $in $offset $out $const $nb $first
+                  #--- Sans optimisation du noir - Dark et flat disponibles - Manque les offsets
+                  } elseif { $faireImageRef(option) == "100" } {
+                     #--- Realisation de Y = [ Generique d'entree - Dark ]
+                     sub2 $in $dark $temp $const $nb $first
+                     #--- Realisation de Y' = K * Y
+                     mult2 $temp $temp1 $norm $nb $first
+                     #--- Realisation de Z = Y' / Flat-field
+                     div2 $temp1 $flat $out $const_mult $nb $first
+                     #--- Suppression des fichiers temporaires
+                     delete2 $temp $nb
+                     delete2 $temp1 $nb
+                  #--- Sans optimisation du noir - Dark disponible - Manque les offsets et les flats
+                  } elseif { $faireImageRef(option) == "101" } {
+                     #--- Realisation de Z = [ Generique d'entree - Dark ]
+                     sub2 $in $dark $out $const $nb $first
+                  #--- Sans optimisation du noir - Flat disponible - Manque les offsets et les darks
+                  } elseif { $faireImageRef(option) == "110" } {
+                     #--- Realisation de Y' = K * Y
+                     mult2 $in $temp $norm $nb $first
+                     #--- Realisation de Z = Y' / Flat-field
+                     div2 $temp $flat $out $const_mult $nb $first
+                     #--- Suppression des fichiers temporaires
+                     delete2 $temp $nb
+                  #--- Sans optimisation du noir - Aucun - Manque les offsets, les darks et les flats
+                  } elseif { $faireImageRef(option) == "111" } {
+                     #--- Ce cas n'est pas envisageable
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,non_valide)"
+                     ::faireImageRef::degriserActiver
+                     set faireImageRef(avancement) ""
+                     return
                   }
-                  #--- Suppression du fichier intermediaire
-                  file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
-               } else {
+               } elseif { $faireImageRef(opt) == "1" } {
                   #--- Optimisation du noir - Offset, dark et flat disponibles
                   if { $faireImageRef(option) == "000" } {
                      #--- Optimisation du noir
@@ -4144,16 +4179,40 @@ namespace eval ::faireImageRef {
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                      delete2 $temp1 $nb
-                  #--- Optimisation du noir - Dark et flat disponibles - Manque les offsets
-                  } elseif { $faireImageRef(option) == "100" } {
-                     #--- Ce cas n'est pas envisageable
-                  #--- Optimisation du noir - Offset et flat disponibles - Manque les darks
-                  } elseif { $faireImageRef(option) == "010" } {
-                     #--- Ce cas n'est pas envisageable
                   #--- Optimisation du noir - Offset et dark disponibles - Manque les flats
                   } elseif { $faireImageRef(option) == "001" } {
                      #--- Optimisation du noir
                      opt2 $in $dark $offset $out $nb $first
+                  #--- Optimisation du noir - Offset et flat disponibles - Manque les darks
+                  } elseif { $faireImageRef(option) == "010" } {
+                     #--- Ce cas n'est pas envisageable
+                     set faireImageRef(avancement) ""
+                     return
+                  #--- Optimisation du noir - Offset disponible - Manque les darks et les flats
+                  } elseif { $faireImageRef(option) == "011" } {
+                     #--- Ce cas n'est pas envisageable
+                     set faireImageRef(avancement) ""
+                     return
+                  #--- Optimisation du noir - Dark et flat disponibles - Manque les offsets
+                  } elseif { $faireImageRef(option) == "100" } {
+                     #--- Ce cas n'est pas envisageable
+                     set faireImageRef(avancement) ""
+                     return
+                  #--- Optimisation du noir - Dark disponible - Manque les offsets et les flats
+                  } elseif { $faireImageRef(option) == "101" } {
+                     #--- Ce cas n'est pas envisageable
+                     set faireImageRef(avancement) ""
+                     return
+                  #--- Optimisation du noir - Flat disponible - Manque les offsets et les darks
+                  } elseif { $faireImageRef(option) == "110" } {
+                     #--- Ce cas n'est pas envisageable
+                     set faireImageRef(avancement) ""
+                     return
+                  #--- Optimisation du noir - Aucun - Manque les offsets, les darks et les flats
+                  } elseif { $faireImageRef(option) == "111" } {
+                     #--- Ce cas n'est pas envisageable
+                     set faireImageRef(avancement) ""
+                     return
                   }
                }
                #---
@@ -4403,15 +4462,11 @@ namespace eval ::faireImageRef {
       if { $faireImageRef(pretraitement,no-offset) == "0" } {
          $This.usr.7.1.explore configure -state normal
          $This.usr.7.1.ent6 configure -state normal
-         $This.usr.7.2.che1 configure -state normal
          $This.usr.7.3.opt configure -state normal
-         $This.usr.7.4.che1 configure -state normal
       } else {
          $This.usr.7.1.explore configure -state disabled
          $This.usr.7.1.ent6 configure -state disabled
-         $This.usr.7.2.che1 configure -state disabled
          $This.usr.7.3.opt configure -state disabled
-         $This.usr.7.4.che1 configure -state disabled
          set faireImageRef(opt) "0"
       }
    }
@@ -4428,17 +4483,13 @@ namespace eval ::faireImageRef {
       set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
       #--- Modification des widgets
       if { $faireImageRef(pretraitement,no-dark) == "0" } {
-         $This.usr.7.1.che1 configure -state normal
          $This.usr.7.2.explore configure -state normal
          $This.usr.7.2.ent6 configure -state normal
          $This.usr.7.3.opt configure -state normal
-         $This.usr.7.4.che1 configure -state normal
       } else {
-         $This.usr.7.1.che1 configure -state disabled
          $This.usr.7.2.explore configure -state disabled
          $This.usr.7.2.ent6 configure -state disabled
          $This.usr.7.3.opt configure -state disabled
-         $This.usr.7.4.che1 configure -state disabled
          set faireImageRef(opt) "0"
       }
    }
@@ -4455,15 +4506,11 @@ namespace eval ::faireImageRef {
       set faireImageRef(option) "$faireImageRef(pretraitement,no-offset)$faireImageRef(pretraitement,no-dark)$faireImageRef(pretraitement,no-flat-field)"
       #--- Modification des widgets
       if { $faireImageRef(pretraitement,no-flat-field) == "0" } {
-         $This.usr.7.1.che1 configure -state normal
-         $This.usr.7.2.che1 configure -state normal
          $This.usr.7.4.explore configure -state normal
          $This.usr.7.4.ent6 configure -state normal
          $This.usr.7.6.ent6 configure -state normal
          $This.usr.7.6.che1 configure -state normal
       } else {
-         $This.usr.7.1.che1 configure -state disabled
-         $This.usr.7.2.che1 configure -state disabled
          $This.usr.7.4.explore configure -state disabled
          $This.usr.7.4.ent6 configure -state disabled
          $This.usr.7.6.ent6 configure -state disabled
@@ -4536,6 +4583,29 @@ namespace eval ::faireImageRef {
          $This.usr.3.1.explore configure -state disabled
          $This.usr.3.1.ent6 configure -state disabled
       }
+   }
+
+   #
+   # ::faireImageRef::degriserActiver
+   # Fonction destinee a activer l'affichage des champs offset, dark et flat-field de la boite pretraitement
+   #
+   proc degriserActiver { } {
+      variable This
+      global faireImageRef
+
+      set faireImageRef(pretraitement,no-offset)     "0"
+      set faireImageRef(pretraitement,no-dark)       "0"
+      set faireImageRef(pretraitement,no-flat-field) "0"
+      set faireImageRef(option)                      "000"
+      $This.usr.7.1.explore configure -state normal
+      $This.usr.7.1.ent6 configure -state normal
+      $This.usr.7.2.explore configure -state normal
+      $This.usr.7.2.ent6 configure -state normal
+      $This.usr.7.3.opt configure -state normal
+      $This.usr.7.4.explore configure -state normal
+      $This.usr.7.4.ent6 configure -state normal
+      $This.usr.7.6.ent6 configure -state normal
+      $This.usr.7.6.che1 configure -state normal
    }
 
 }
