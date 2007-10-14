@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.91 2007-09-28 23:32:22 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.92 2007-10-14 15:47:23 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -46,7 +46,7 @@ namespace eval ::confCam {
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine obtu_pierre.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_plugin) camera audine testaudine.tcl ]\""
 
-      #--- Je charge le package Thread  si l'option multitread est activive dans le TCL
+      #--- Je charge le package Thread si l'option multitread est activive dans le TCL
       if { [info exists ::tcl_platform(threaded)] } {
          if { $::tcl_platform(threaded)==1 } {
             #--- Je charge le package Thread
@@ -61,6 +61,9 @@ namespace eval ::confCam {
       } else {
          set ::tcl_platform(threaded) 0
       }
+
+      #--- Initalise le numero de camera a nul
+      set audace(camNo) "0"
 
       #--- Initalise les listes de cameras
       set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
@@ -77,25 +80,26 @@ namespace eval ::confCam {
       set confCam(currentCamItem) "A"
 
       #--- Initialisation des variables d'echange avec les widgets
-      set confCam(geometry)   "$conf(camera,geometry)"
-      set confCam(A,visuName) "visu1"
-      set confCam(B,visuName) "$caption(confcam,nouvelle_visu)"
-      set confCam(C,visuName) "$caption(confcam,nouvelle_visu)"
-      set confCam(A,camNo)    "0"
-      set confCam(B,camNo)    "0"
-      set confCam(C,camNo)    "0"
-      set confCam(A,visuNo)   "0"
-      set confCam(B,visuNo)   "0"
-      set confCam(C,visuNo)   "0"
-      set confCam(A,camName)  ""
-      set confCam(B,camName)  ""
-      set confCam(C,camName)  ""
-      set confCam(A,threadNo) "0"
-      set confCam(B,threadNo) "0"
-      set confCam(C,threadNo) "0"
-      set confCam(A,product)  ""
-      set confCam(B,product)  ""
-      set confCam(C,product)  ""
+      set confCam(geometry)     "$conf(camera,geometry)"
+      set confCam(A,visuName)   "visu1"
+      set confCam(B,visuName)   "$caption(confcam,nouvelle_visu)"
+      set confCam(C,visuName)   "$caption(confcam,nouvelle_visu)"
+      set confCam(A,camNo)      "0"
+      set confCam(B,camNo)      "0"
+      set confCam(C,camNo)      "0"
+      set confCam(A,visuNo)     "0"
+      set confCam(B,visuNo)     "0"
+      set confCam(C,visuNo)     "0"
+      set confCam(A,camName)    ""
+      set confCam(B,camName)    ""
+      set confCam(C,camName)    ""
+      set confCam(A,threadNo)   "0"
+      set confCam(B,threadNo)   "0"
+      set confCam(C,threadNo)   "0"
+      set confCam(A,product)    ""
+      set confCam(B,product)    ""
+      set confCam(C,product)    ""
+      set confCam(list_product) ""
    }
 
    proc dispThreadError { thread_id errorInfo} {
@@ -106,7 +110,7 @@ namespace eval ::confCam {
    # confCam::run
    # Cree la fenetre de choix et de configuration des cameras
    # This = chemin de la fenetre
-   # confCam(A,camName) = nom de la camera
+   # confCam($camItem,camName) = nom de la camera
    #
    proc run { } {
       variable This
@@ -118,7 +122,7 @@ namespace eval ::confCam {
       if { $confCam($camItem,camName) != "" } {
          select $camItem $confCam($camItem,camName)
          if { [ string compare $confCam($camItem,camName) sbig ] == "0" } {
-            ::confCam::SbigDispTemp
+            ::sbig::SbigDispTemp
          } elseif { [ string compare $confCam($camItem,camName) kitty ] == "0" } {
             ::confCam::KittyDispTemp
          } elseif { [ string compare $confCam($camItem,camName) andor ] == "0" } {
@@ -504,7 +508,7 @@ namespace eval ::confCam {
 
    #
    #--- Cree une thread dediee a la camera
-   #--- Retourne le numero de la thread place dans la variable confCam(camItem,threadNo)
+   #--- Retourne le numero de la thread placee dans la variable confCam(camItem,threadNo)
    #
    proc createThread { camNo bufNo visuNo } {
       global confCam
@@ -1253,147 +1257,8 @@ namespace eval ::confCam {
    # Fenetre de configuration des SBIG
    #
    proc fillPagesbig { frm } {
-      global audace caption color conf confCam
-
-      #--- confToWidget
-      set confCam(sbig,cool)     $conf(sbig,cool)
-      set confCam(sbig,foncobtu) [ lindex "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" $conf(sbig,foncobtu) ]
-      set confCam(sbig,host)     $conf(sbig,host)
-      set confCam(sbig,mirh)     $conf(sbig,mirh)
-      set confCam(sbig,mirv)     $conf(sbig,mirv)
-      set confCam(sbig,port)     $conf(sbig,port)
-      set confCam(sbig,temp)     $conf(sbig,temp)
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill both -expand 1
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 1
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side top -fill both -expand 1
-
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side bottom -fill x -pady 2
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame2 -side left -fill x -expand 1
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame2 -side left -fill x -expand 1
-
-      frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -in $frm.frame5 -side top -fill x -padx 30
-
-      frame $frm.frame8 -borderwidth 0 -relief raised
-      pack $frm.frame8 -in $frm.frame5 -side top -fill x -padx 30
-
-      frame $frm.frame9 -borderwidth 0 -relief raised
-        pack $frm.frame9 -in $frm.frame5 -side top -fill x -padx 30
-
-      #--- Definition du port
-      label $frm.lab1 -text "$caption(confcam,port)"
-      pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Je constitue la liste des liaisons pour l'acquisition des images
-      if { $::tcl_platform(os) == "Linux" } {
-         set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
-      } else {
-         set list_combobox "[ ::confLink::getLinkLabels { "parallelport" } ] \
-            $caption(confcam,usb) $caption(confcam,ethernet)"
-      }
-
-      #--- Je verifie le contenu de la liste
-      if { [llength $list_combobox ] > 0 } {
-         #--- si la liste n'est pas vide,
-         #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_combobox $confCam(sbig,port)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
-            #--- je la remplace par le premier item de la liste
-            set confCam(sbig,port) [lindex $list_combobox 0]
-         }
-      } else {
-         #--- si la liste est vide, on continue quand meme
-      }
-
-      #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
-         -command {
-            ::confLink::run ::confCam(sbig,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(sbig,camera)"
-         }
-      pack $frm.configure -in $frm.frame1 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
-
-      #--- Choix du port ou de la liaison
-      ComboBox $frm.port \
-         -width 7        \
-         -height [ llength $list_combobox ] \
-         -relief sunken  \
-         -borderwidth 1  \
-         -editable 0     \
-         -textvariable confCam(sbig,port) \
-         -values $list_combobox
-      pack $frm.port -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Definition du host pour une connexion Ethernet
-      if { $::tcl_platform(os) != "Linux" } {
-         entry $frm.host -width 18 -textvariable confCam(sbig,host)
-         pack $frm.host -in $frm.frame1 -anchor center -side right -padx 10
-
-         label $frm.lab2 -text "$caption(confcam,host_sbig)"
-         pack $frm.lab2 -in $frm.frame1 -anchor center -side right -padx 10
-      }
-
-      #--- Definition du refroidissement
-      checkbutton $frm.cool -text "$caption(confcam,refroidissement)" -highlightthickness 0 \
-         -variable confCam(sbig,cool)
-      pack $frm.cool -in $frm.frame7 -anchor center -side left -padx 0 -pady 5
-
-      entry $frm.temp -textvariable confCam(sbig,temp) -width 4 -justify center
-      pack $frm.temp -in $frm.frame7 -anchor center -side left -padx 5 -pady 5
-
-      label $frm.tempdeg -text "$caption(confcam,deg_c) $caption(confcam,refroidissement_1)"
-      pack $frm.tempdeg -in $frm.frame7 -side left -fill x -padx 0 -pady 5
-
-      label $frm.power -text "$caption(confcam,puissance_peltier_-)"
-      pack $frm.power -in $frm.frame8 -side left -fill x -padx 20 -pady 5
-
-      label $frm.ccdtemp -text "$caption(confcam,temp_ext)"
-      pack $frm.ccdtemp -in $frm.frame9 -side left -fill x -padx 20 -pady 5
-
-      #--- Miroir en x et en y
-      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(sbig,mirh)
-      pack $frm.mirx -in $frm.frame6 -anchor w -side top -padx 10 -pady 10
-
-      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(sbig,mirv)
-      pack $frm.miry -in $frm.frame6 -anchor w -side top -padx 10 -pady 10
-
-      #--- Fonctionnement de l'obturateur
-      label $frm.lab3 -text "$caption(confcam,fonc_obtu)"
-      pack $frm.lab3 -in $frm.frame3 -anchor center -side left -padx 10
-
-      set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-         $caption(confcam,obtu_synchro) ]
-      ComboBox $frm.foncobtu \
-         -width 11         \
-         -height [ llength $list_combobox ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable confCam(sbig,foncobtu) \
-         -values $list_combobox
-      pack $frm.foncobtu -in $frm.frame3 -anchor center -side left -padx 10
-
-      #--- Site web officiel de la SBIG
-      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
-
-      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_sbig)" \
-         "$caption(confcam,site_sbig)" ]
-      pack $labelName -side top -fill x -pady 2
+      #--- Construction de l'interface graphique
+      ::sbig::fillConfigPage $frm
    }
 
    #
@@ -2364,13 +2229,7 @@ namespace eval ::confCam {
                }
             }
             sbig {
-               #--- Je ferme la liaison d'acquisition de la camera
-               ::confLink::delete $conf(sbig,port) "cam$camNo" "acquisition"
-               #--- Je ferme la camera
-               if { $confCam($camItem,camNo) != 0 } {
-                 cam::delete $confCam($camItem,camNo)
-                 set confCam($camItem,camNo) 0
-               }
+               ::sbig::stop $camItem
             }
             cookbook {
                ::cookbook::stop $camItem
@@ -2464,6 +2323,9 @@ namespace eval ::confCam {
          set audace(camNo) $confCam($camItem,camNo)
       }
       set confCam($camItem,camName) ""
+      set confCam($camItem,product) ""
+      #--- Je mets a jour la liste des "cam$camNo product" des cameras connectees
+      set confCam(list_product) [ list $confCam(A,product) $confCam(B,product) $confCam(C,product) ]
       #--- Sert a la surveillance du Listener de la configuration optique
       set confCam($camItem,super_camNo) $confCam($camItem,camNo)
    }
@@ -2684,7 +2546,7 @@ namespace eval ::confCam {
    #
    # confCam::configureCamera
    # Configure la camera en fonction des donnees contenues dans le tableau conf :
-   # confCam(A,camName) -> type de camera employe
+   # confCam($camItem,camName) -> type de camera employe
    # conf(cam,A,...) -> proprietes de ce type de camera
    #
    proc configureCamera { camItem } {
@@ -2693,6 +2555,24 @@ namespace eval ::confCam {
 
       #--- Initialisation de la variable erreur
       set erreur "1"
+
+      #--- Je regarde si la camera selectionnee est a connexion multiple, sinon je sors de la procedure
+      for { set i 0 } { $i < [ llength $confCam(list_product) ] } { incr i } {
+         set product [ lindex $confCam(list_product) $i ]
+         if { $product != ""} {
+            if { [ winfo exists $audace(base).confCam ] } {
+               if { [ string compare $product [ $This.usr.onglet raise ] ] == "0" } {
+                  if { $product != "webcam" } {
+                     set confCam($camItem,camNo)   "0"
+                     set confCam($camItem,camName) ""
+                     tk_messageBox -title "$caption(confcam,attention)" -type ok \
+                        -message "$caption(confcam,connexion_texte3)"
+                     return
+                  }
+               }
+            }
+         }
+      }
 
       #--- Affichage d'un message d'alerte si necessaire
       ::confCam::connectCamera
@@ -2979,39 +2859,7 @@ namespace eval ::confCam {
                }
             }
             sbig {
-              ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
-               set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
-               set confCam($camItem,camNo) $camNo
-               console::affiche_erreur "$caption(confcam,port_sbig) ([ cam$camNo name ]) \
-                  $caption(confcam,2points) $conf(sbig,port)\n"
-               console::affiche_saut "\n"
-               set foncobtu $conf(sbig,foncobtu)
-               switch -exact -- $foncobtu {
-                  0 {
-                     cam$camNo shutter "opened"
-                  }
-                  1 {
-                     cam$camNo shutter "closed"
-                  }
-                  2 {
-                     cam$camNo shutter "synchro"
-                  }
-               }
-               if { $conf(sbig,cool) == "1" } {
-                  cam$camNo cooler check $conf(sbig,temp)
-               } else {
-                  cam$camNo cooler off
-               }
-               cam$camNo buf $bufNo
-               cam$camNo mirrorh $conf(sbig,mirh)
-               cam$camNo mirrorv $conf(sbig,mirv)
-               ::confVisu::visuDynamix $visuNo 65535 0
-               #---
-               if { [ info exists confCam(sbig,aftertemp) ] == "0" } {
-                  ::confCam::SbigDispTemp
-               }
-               #--- je cree la liaison utilisee par la camera pour l'acquisition
-               set linkNo [ ::confLink::create $conf(sbig,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+               ::sbig::configureCamera $camItem
             }
             cookbook {
                ::cookbook::configureCamera $camItem
@@ -3286,6 +3134,13 @@ namespace eval ::confCam {
                      set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
                   }
                   ethernaude {
+                     #--- Je verifie si la camera 500 du tutorial EthernAude est connectee, ensuite je la deconnecte
+                     foreach camera [ ::cam::list ] {
+                        if { $camera == "500" } {
+                           tuto_exit
+                        }
+                     }
+                     #---
                      ### set conf(ethernaude,host) [ ::audace::verifip $conf(ethernaude,host) ]
                      set eth_canspeed "0"
                      set eth_canspeed [ expr round(($conf(ethernaude,canspeed)-7.11)/(39.51-7.11)*30.) ]
@@ -3399,6 +3254,33 @@ namespace eval ::confCam {
          }
          #--- <= fin du switch sur les cameras
 
+         #--- Je mets a jour la liste des "cam$camNo product" des cameras connectees
+         #--- En prenant en compte le cas particulier des APN Nikon CoolPix qui n'ont pas de librairie
+         if { $confCam($camItem,camName) != "coolpix" && $confCam($camItem,camName) != "" } {
+            if { $confCam(A,camNo) == $confCam($camItem,camNo) } {
+               set camItem "A"
+               set confCam(A,product) [ cam$confCam(A,camNo) product ]
+            } elseif { $confCam(B,camNo) == $confCam($camItem,camNo) } {
+               set camItem "B"
+               set confCam(B,product) [ cam$confCam(B,camNo) product ]
+            } elseif { $confCam(C,camNo) == $confCam($camItem,camNo) } {
+               set camItem "C"
+               set confCam(C,product) [ cam$confCam(C,camNo) product ]
+            }
+         } elseif { $confCam($camItem,camName) == "coolpix" } {
+            if { $confCam(A,camNo) == $confCam($camItem,camNo) } {
+               set camItem "A"
+               set confCam(A,product) "coolpix"
+            } elseif { $confCam(B,camNo) == $confCam($camItem,camNo) } {
+               set camItem "B"
+               set confCam(B,product) "coolpix"
+            } elseif { $confCam(C,camNo) == $confCam($camItem,camNo) } {
+               set camItem "C"
+               set confCam(C,product) "coolpix"
+            }
+         }
+         set confCam(list_product) [ list $confCam(A,product) $confCam(B,product) $confCam(C,product) ]
+
          #--- J'associe la camera avec la visu
          ::confVisu::setCamera $confCam($camItem,visuNo) $camItem $confCam($camItem,camNo)
 
@@ -3489,13 +3371,7 @@ namespace eval ::confCam {
          }
          sbig {
             #--- Memorise la configuration de la SBIG dans le tableau conf(sbig,...)
-            set conf(sbig,cool)                   $confCam(sbig,cool)
-            set conf(sbig,foncobtu)               [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(sbig,foncobtu)" ]
-            set conf(sbig,host)                   $confCam(sbig,host)
-            set conf(sbig,mirh)                   $confCam(sbig,mirh)
-            set conf(sbig,mirv)                   $confCam(sbig,mirv)
-            set conf(sbig,port)                   $confCam(sbig,port)
-            set conf(sbig,temp)                   $confCam(sbig,temp)
+            ::sbig::widgetToConf
          }
          cookbook {
             #--- Memorise la configuration de la CB245 dans le tableau conf(cookbook,...)
@@ -3564,30 +3440,6 @@ namespace eval ::confCam {
          coolpix {
             #--- Memorise la configuration de la Cemes dans le tableau conf(coolpix,...)
             ::coolpix::widgetToConf
-         }
-      }
-   }
-
-   proc SbigDispTemp { } {
-      variable This
-      global caption confCam
-
-      catch {
-         set frm [ $This.usr.onglet getframe sbig ]
-         set camItem $confCam(currentCamItem)
-         if { [ info exists This ] == "1" && [ catch { set tempstatus [ cam$confCam($camItem,camNo) infotemp ] } ] == "0" } {
-            set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
-            set temp_ccd [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
-            set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
-            set regulation [ lindex $tempstatus 3 ]
-            set power [ format "%3.0f" [ expr 100.*[ lindex $tempstatus 4 ]/255. ] ]
-            $frm.power configure \
-               -text "$caption(confcam,puissance_peltier) $power %"
-            $frm.ccdtemp configure \
-               -text "$caption(confcam,temp_ext) $temp_ccd $caption(confcam,deg_c) / $temp_ambiant $caption(confcam,deg_c)"
-            set confCam(sbig,aftertemp) [ after 5000 ::confCam::SbigDispTemp ]
-         } else {
-            catch { unset confCam(sbig,aftertemp) }
          }
       }
    }
