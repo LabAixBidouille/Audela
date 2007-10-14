@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.15 2007-10-12 21:58:52 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.16 2007-10-14 09:10:24 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -183,20 +183,24 @@ proc ::parallelport::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #--- J'afffiche la liste des links
-   TitleFrame $private(frm).available -borderwidth 2 -relief ridge -text $caption(parallelport,available)
-      listbox $private(frm).available.list
-      pack $private(frm).available.list -in [$private(frm).available getframe] -side left -fill both -expand true
-   pack $private(frm).available -side left -fill both -expand true
-   Button $private(frm).refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
+   #--- J'affiche la liste des links
+   TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(parallelport,available)
+
+      listbox $frm.available.list
+      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
+
+   pack $frm.available -side left -fill both -expand true
+
+   #--- J'affiche le bouton pour rafraichir la liste des links
+   Button $frm.refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
       -text "$caption(parallelport,refresh)" -command { ::parallelport::refreshAvailableList }
-   pack $private(frm).refresh -side left
+   pack $frm.refresh -side left
 
    #--- Je mets a jour la liste
    refreshAvailableList
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $private(frm)
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------

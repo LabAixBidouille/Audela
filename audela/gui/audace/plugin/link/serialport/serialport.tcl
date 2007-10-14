@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.18 2007-10-13 08:34:18 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.19 2007-10-14 09:11:22 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -182,34 +182,35 @@ proc ::serialport::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #--- J'afffiche la liste des links exclus
-   frame $private(frm).port_exclus -borderwidth 0 -relief ridge
+   #--- J'affiche la liste des links exclus
+   frame $frm.port_exclus -borderwidth 0 -relief ridge
 
-      label $private(frm).port_exclus_lab -text "$caption(serialport,port_exclus)"
-      pack $private(frm).port_exclus_lab -in $private(frm).port_exclus -side left -padx 5 -pady 5
+      label $frm.port_exclus_lab -text "$caption(serialport,port_exclus)"
+      pack $frm.port_exclus_lab -in $frm.port_exclus -side left -padx 5 -pady 5
 
-      entry $private(frm).port_exclus_ent -textvariable serialport::widget(serial,port_exclus) -width 25
-      pack $private(frm).port_exclus_ent -in $private(frm).port_exclus -side left
+      entry $frm.port_exclus_ent -textvariable serialport::widget(serial,port_exclus) -width 25
+      pack $frm.port_exclus_ent -in $frm.port_exclus -side left
 
-   pack $private(frm).port_exclus -side top -fill x
+   pack $frm.port_exclus -side top -fill x
 
-   #--- J'afffiche la liste des links disponibles et utilisés
-   TitleFrame $private(frm).available -borderwidth 2 -relief ridge -text $caption(serialport,available)
-      listbox $private(frm).available.list
-      pack $private(frm).available.list -in [$private(frm).available getframe] \
-         -side left -fill both -expand true
-   pack $private(frm).available -side left -fill both -expand true
+   #--- J'affiche la liste des links disponibles et utilisés
+   TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(serialport,available)
 
-   #--- J'afffiche le bouton de rafraichissement
-   Button $private(frm).refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
+      listbox $frm.available.list
+      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
+
+   pack $frm.available -side left -fill both -expand true
+
+   #--- J'affiche le bouton de rafraichissement de la liste des links
+   Button $frm.refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
       -text "$caption(serialport,refresh)" -command { ::serialport::refreshAvailableList }
-   pack $private(frm).refresh -side left
+   pack $frm.refresh -side left
 
    #--- Je mets a jour la liste
    refreshAvailableList
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $private(frm)
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------

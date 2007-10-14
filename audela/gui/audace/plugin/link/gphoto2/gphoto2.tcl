@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.11 2007-10-11 19:25:53 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.12 2007-10-14 09:09:44 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {
@@ -131,12 +131,12 @@ proc ::gphoto2::fillConfigPage { frm } {
    set widget(frm) $frm
 
    #--- Mode debug
-   checkbutton $widget(frm).debug -text "$caption(dslr,debug)" -highlightthickness 0 \
+   checkbutton $frm.debug -text "$caption(dslr,debug)" -highlightthickness 0 \
       -variable ::gphoto2::widget(gphoto2,debug)
-   pack $widget(frm).debug -in $widget(frm) -anchor center -side left -padx 10 -pady 2
+   pack $frm.debug -in $frm -anchor center -side left -padx 10 -pady 2
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $widget(frm)
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------

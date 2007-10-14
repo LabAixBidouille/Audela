@@ -2,7 +2,7 @@
 # Fichier : photopc.tcl
 # Description : Interface de liaison PhotoPC
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: photopc.tcl,v 1.9 2007-10-11 19:26:11 robertdelmas Exp $
+# Mise a jour $Id: photopc.tcl,v 1.10 2007-10-14 09:10:05 robertdelmas Exp $
 #
 
 namespace eval photopc {
@@ -129,7 +129,7 @@ proc ::photopc::fillConfigPage { frm } {
    set widget(frm) $frm
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $widget(frm)
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
