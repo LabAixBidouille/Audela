@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.14 2007-09-22 06:42:19 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.15 2007-10-14 15:43:33 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -156,7 +156,7 @@ proc ::th7852a::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create camth "unknown" -name TH7852A ]
-   console::affiche_erreur "$caption(th7852a,port) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
+   console::affiche_erreur "$caption(th7852a,port_camera) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
    #--- J'associe le buffer de la visu

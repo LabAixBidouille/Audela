@@ -1,6 +1,6 @@
 #
 # Fichier : th7852a.cap
-# Mise a jour $Id: th7852a.cap,v 1.1 2007-05-16 20:45:37 robertdelmas Exp $
+# Mise a jour $Id: th7852a.cap,v 1.2 2007-10-14 15:43:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,7 +17,7 @@ set caption(th7852a,miroir_x)                     "Horizontal Mirror"
 set caption(th7852a,miroir_y)                     "Vertical Mirror"
 set caption(th7852a,coef)                         "Coefficient"
 
-set caption(th7852a,port)                         "TH7852A Port"
+set caption(th7852a,port_camera)                  "TH7852A Port"
 set caption(th7852a,2points)                      ":"
 set caption(th7852a,bus_ISA)                      "Bus ISA"
 
@@ -33,7 +33,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Miroir vertical"
    set caption(th7852a,coef)                      "Coefficient"
 
-   set caption(th7852a,port)                      "Port TH7852A"
+   set caption(th7852a,port_camera)               "Port TH7852A"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
@@ -49,7 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Specchio verticale"
    set caption(th7852a,coef)                      "Coefficiente"
 
-   set caption(th7852a,port)                      "Porta TH7852A"
+   set caption(th7852a,port_camera)               "Porta TH7852A"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
@@ -65,7 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Espejo vertical"
    set caption(th7852a,coef)                      "Coeficiente"
 
-   set caption(th7852a,port)                      "Puerto TH7852A"
+   set caption(th7852a,port_camera)               "Puerto TH7852A"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
@@ -81,7 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Verticale Spiegel"
    set caption(th7852a,coef)                      "Faktor"
 
-   set caption(th7852a,port)                      "TH7852A Port"
+   set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
@@ -97,7 +97,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Espelho Vertical"
    set caption(th7852a,coef)                      "Coeficiente"
 
-   set caption(th7852a,port)                      "Porta TH7852A"
+   set caption(th7852a,port_camera)               "Porta TH7852A"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
@@ -113,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(th7852a,miroir_y)                  "Vertikal spejl"
    set caption(th7852a,coef)                      "Coefficient"
 
-   set caption(th7852a,port)                      "TH7852A Port"
+   set caption(th7852a,port_camera)               "TH7852A Port"
    set caption(th7852a,2points)                   ":"
    set caption(th7852a,bus_ISA)                   "Bus ISA"
 
