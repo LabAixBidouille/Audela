@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.18 2007-10-12 21:59:27 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.19 2007-10-14 09:11:04 robertdelmas Exp $
 #
 
 namespace eval quickremote {
@@ -162,29 +162,35 @@ proc ::quickremote::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #--- j'afffiche la liste des link
-   TitleFrame $private(frm).available -borderwidth 2 -relief ridge -text $caption(quickremote,available)
-      listbox $private(frm).available.list
-      pack $private(frm).available.list -in [$private(frm).available getframe] -side left -fill both -expand true
-      Button $private(frm).available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
-         -text "$caption(quickremote,refresh)" -command { ::quickremote::refreshAvailableList }
-      pack $private(frm).available.refresh -in [$private(frm).available getframe] -side left
-   pack $private(frm).available -side top -fill both -expand true
+   #--- j'affiche la liste des links et le bouton pour rafraichir cette liste
+   TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickremote,available)
 
-   frame $private(frm).statusMessage -borderwidth 2 -relief ridge
-      label $private(frm).statusMessage.statusMessage_lab -text "$caption(quickremote,error)"
-      pack $private(frm).statusMessage.statusMessage_lab -in $private(frm).statusMessage -side top \
-         -anchor nw -padx 5 -pady 2
-      Label $private(frm).statusMessage.status -textvariable ::quickremote::private(statusMessage) -height 4 \
+      listbox $frm.available.list
+      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
+
+      Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
+         -text "$caption(quickremote,refresh)" -command { ::quickremote::refreshAvailableList }
+      pack $frm.available.refresh -in [$frm.available getframe] -side left
+
+   pack $frm.available -side top -fill both -expand true
+
+   #--- j'affiche l'eventuel message d'erreur
+   frame $frm.statusMessage -borderwidth 2 -relief ridge
+
+      label $frm.statusMessage.statusMessage_lab -text "$caption(quickremote,error)"
+      pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 2
+
+      Label $frm.statusMessage.status -textvariable ::quickremote::private(statusMessage) -height 4 \
          -wraplength 400 -justify left
-      pack $private(frm).statusMessage.status -in $private(frm).statusMessage -side top -anchor nw -padx 20
-   pack $private(frm).statusMessage -side top -fill x
+      pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
+
+   pack $frm.statusMessage -side top -fill x
 
    #--- je mets a jour la liste
    refreshAvailableList
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $private(frm)
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------

@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.19 2007-10-12 21:59:10 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.20 2007-10-14 09:10:44 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
@@ -141,53 +141,66 @@ proc ::quickaudine::fillConfigPage { frm } {
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #--- j'afffiche la liste des link
-   TitleFrame $private(frm).available -borderwidth 2 -relief ridge -text $caption(quickaudine,available)
-      listbox $private(frm).available.list -height 4
-      pack $private(frm).available.list -in [$private(frm).available getframe] -side left -fill both -expand true
-      Button $private(frm).available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
+   #--- j'affiche la liste des links et le bouton pour rafraichir cette liste
+   TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(quickaudine,available)
+
+      listbox $frm.available.list -height 4
+      pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
+
+      Button $frm.available.refresh -highlightthickness 0 -padx 3 -pady 3 -state normal \
          -text "$caption(quickaudine,refresh)" -command { ::quickaudine::refreshAvailableList }
-      pack $private(frm).available.refresh -in [$private(frm).available getframe] -side left
-   pack $private(frm).available -side top -fill both -expand true
+      pack $frm.available.refresh -in [$frm.available getframe] -side left
 
-   #--- label et entry pour le delai avant la lecture du CCD
-   frame $private(frm).delayshutter -borderwidth 0 -relief raised
-      label $private(frm).delayshutter.lab1 -text "$caption(quickaudine,delayshutter)"
-      pack $private(frm).delayshutter.lab1 -in $private(frm).delayshutter -anchor center -side left -padx 10 -pady 10
-      entry $private(frm).delayshutter.entry -width 5 -textvariable ::quickaudine::widget(quickaudine,delayshutter) \
+   pack $frm.available -side top -fill both -expand true
+
+   #--- j'affiche les labels et l'entry pour le delai avant la lecture du CCD
+   frame $frm.delayshutter -borderwidth 0 -relief raised
+
+      label $frm.delayshutter.lab1 -text "$caption(quickaudine,delayshutter)"
+      pack $frm.delayshutter.lab1 -in $frm.delayshutter -anchor center -side left -padx 10 -pady 10
+
+      entry $frm.delayshutter.entry -width 5 -textvariable ::quickaudine::widget(quickaudine,delayshutter) \
          -justify center
-      pack $private(frm).delayshutter.entry -in $private(frm).delayshutter -anchor center -side left -pady 10
-      label $private(frm).delayshutter.lab2 -text "$caption(quickaudine,unite)"
-      pack $private(frm).delayshutter.lab2 -in $private(frm).delayshutter -anchor center -side left -padx 2 -pady 10
-   pack $private(frm).delayshutter -side top -fill x
+      pack $frm.delayshutter.entry -in $frm.delayshutter -anchor center -side left -pady 10
 
-   #--- label et scale pour la vitesse de lecture de chaque pixel
-   frame $private(frm).speed -borderwidth 0 -relief raised
-      label $private(frm).speed.lab3 -text "$caption(quickaudine,lecture_pixel)"
-      pack $private(frm).speed.lab3 -in $private(frm).speed -anchor center -side left -padx 10 -pady 2
-      scale $private(frm).speed.lecture_pixel_variant -from "1.0" -to "15.0" -length 300 \
+      label $frm.delayshutter.lab2 -text "$caption(quickaudine,unite)"
+      pack $frm.delayshutter.lab2 -in $frm.delayshutter -anchor center -side left -padx 2 -pady 10
+
+   pack $frm.delayshutter -side top -fill x
+
+   #--- j'affiche les labels et le scale pour la vitesse de lecture de chaque pixel
+   frame $frm.speed -borderwidth 0 -relief raised
+
+      label $frm.speed.lab3 -text "$caption(quickaudine,lecture_pixel)"
+      pack $frm.speed.lab3 -in $frm.speed -anchor center -side left -padx 10 -pady 2
+
+      scale $frm.speed.lecture_pixel_variant -from "1.0" -to "15.0" -length 300 \
          -orient horizontal -showvalue true -tickinterval 1 -resolution 1 \
          -borderwidth 2 -relief groove -variable ::quickaudine::widget(quickaudine,canspeed) -width 10
-      pack $private(frm).speed.lecture_pixel_variant -in $private(frm).speed -anchor center -side left -pady 0
-      label $private(frm).speed.lab4 -text "$caption(quickaudine,micro_sec)"
-      pack $private(frm).speed.lab4 -in $private(frm).speed -anchor center -side left -padx 2 -pady 2
-   pack $private(frm).speed -side top -fill x
+      pack $frm.speed.lecture_pixel_variant -in $frm.speed -anchor center -side left -pady 0
+
+      label $frm.speed.lab4 -text "$caption(quickaudine,micro_sec)"
+      pack $frm.speed.lab4 -in $frm.speed -anchor center -side left -padx 2 -pady 2
+
+   pack $frm.speed -side top -fill x
 
    #--- j'affiche l'eventuel message d'erreur
-   frame $private(frm).statusMessage -borderwidth 2 -relief ridge
-      label $private(frm).statusMessage.statusMessage_lab -text "$caption(quickaudine,error)"
-      pack $private(frm).statusMessage.statusMessage_lab -in $private(frm).statusMessage -side top \
-         -anchor nw -padx 5 -pady 2
-      Label $private(frm).statusMessage.status -textvariable ::quickaudine::private(statusMessage) -height 4 \
+   frame $frm.statusMessage -borderwidth 2 -relief ridge
+
+      label $frm.statusMessage.statusMessage_lab -text "$caption(quickaudine,error)"
+      pack $frm.statusMessage.statusMessage_lab -in $frm.statusMessage -side top -anchor nw -padx 5 -pady 2
+
+      Label $frm.statusMessage.status -textvariable ::quickaudine::private(statusMessage) -height 4 \
          -wraplength 400 -justify left
-      pack $private(frm).statusMessage.status -in $private(frm).statusMessage -side top -anchor nw -padx 20
-   pack $private(frm).statusMessage -side top -fill both
+      pack $frm.statusMessage.status -in $frm.statusMessage -side top -anchor nw -padx 20
+
+   pack $frm.statusMessage -side top -fill both
 
    #--- je mets a jour la liste
    refreshAvailableList
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $private(frm)
+   ::confColor::applyColor $frm
 }
 
 #------------------------------------------------------------
