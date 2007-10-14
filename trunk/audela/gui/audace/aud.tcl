@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.77 2007-09-20 20:33:18 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.78 2007-10-14 15:49:02 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -194,8 +194,6 @@ namespace eval ::audace {
       set confgene(posobs,observateur,gps) $conf(posobs,observateur,gps)
       set audace(posobs,observateur,gps)   $confgene(posobs,observateur,gps)
       set confgene(fichier,compres)        $conf(fichier,compres)
-      #---
-      set audace(camNo) "0"
    }
 
    proc Default_exeutils { } {
