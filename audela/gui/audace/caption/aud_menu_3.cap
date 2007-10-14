@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.28 2007-07-05 22:13:52 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.29 2007-10-14 15:48:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -115,6 +115,7 @@ set caption(pretraitement,image_flat-field)             "Flat-Field Frame:"
 set caption(pretraitement,aucune)                       "None"
 set caption(pretraitement,auto)                         "Auto"
 set caption(pretraitement,rep-images)                   "Images must come from the image folder\n(Setup --> Folders)."
+set caption(pretraitement,non_valide)                   "Preprocessing impossible without bias, dark and flat-field frames."
 
 set caption(pretraitement,liste_serie)                  "Index List:"
 set caption(pretraitement,nom_generique)                "Generic Name:"
@@ -242,6 +243,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Aucune"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+   set caption(pretraitement,non_valide)                "Le prétraitement est impossible sans offset, dark et flat-field."
 
    set caption(pretraitement,liste_serie)               "Liste des index :"
    set caption(pretraitement,nom_generique)             "Nom générique :"
@@ -362,13 +364,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,image_generique_sortie)    "Immagine generica di uscita:"
    set caption(pretraitement,image_generique_entree-)   "Immagine generica d'ingresso"
    set caption(pretraitement,image_generique_sortie-)   "Immagine generica di uscita"
-   set caption(pretraitement,image_offset)              "Frame Bias:"
+   set caption(pretraitement,image_offset)              "Immagine di bias:"
    set caption(pretraitement,valeur_normalisation)      "Valore di normalizzazione:"
    set caption(pretraitement,image_dark)                "Immagine di dark:"
    set caption(pretraitement,image_flat-field)          "Immagine di flat field:"
    set caption(pretraitement,aucune)                    "Nessuna"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "Le immagini devono provenire dalla cartella immagini\n(Configurazione --> Directories)."
+   set caption(pretraitement,non_valide)                "Il pretrattamento e` impossibile senza bias, dark e flat-field."
 
    set caption(pretraitement,liste_serie)               "Elenco indici:"
    set caption(pretraitement,nom_generique)             "Nomi generici:"
@@ -496,6 +499,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Ninguno"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
+   set caption(pretraitement,non_valide)                "Preprocesando imosible sin unas tomas de bias, toma oscura y toma de campo plano."
 
    set caption(pretraitement,liste_serie)               "Lista de índices:"
    set caption(pretraitement,nom_generique)             "Nombre genérico:"
@@ -623,6 +627,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Keine"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "Die Bilder müssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
+   set caption(pretraitement,non_valide)                "# Le prétraitement est impossible sans offset, dark et flat-field."
 
    set caption(pretraitement,liste_serie)               "Index Liste:"
    set caption(pretraitement,nom_generique)             "Generischen Nahmen:"
@@ -750,6 +755,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Nenhum"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "As imagens têm que estar contidas na pasta de imagens\n(Configuração --> Pastas)."
+   set caption(pretraitement,non_valide)                "# Le prétraitement est impossible sans offset, dark et flat-field."
 
    set caption(pretraitement,liste_serie)               "Lista de índices:"
    set caption(pretraitement,nom_generique)             "Nome genérico:"
@@ -877,6 +883,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Ingen"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "Billederne skal ligge i billed-folderen\n(Konfiguration --> Mappe)."
+   set caption(pretraitement,non_valide)                "Preprocessing umuligt uden bias, dark og flat-field."
 
    set caption(pretraitement,liste_serie)               "Index-liste:"
    set caption(pretraitement,nom_generique)             "Fællesnavn:"
