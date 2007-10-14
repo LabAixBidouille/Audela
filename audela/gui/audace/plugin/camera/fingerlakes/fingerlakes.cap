@@ -1,6 +1,6 @@
 #
 # Fichier : fingerlakes.cap
-# Mise a jour $Id: fingerlakes.cap,v 1.1 2007-05-17 20:50:42 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.cap,v 1.2 2007-10-14 15:39:25 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,7 +25,7 @@ set caption(fingerlakes,miroir_x)                     "Horizontal Mirror"
 set caption(fingerlakes,miroir_y)                     "Vertical Mirror"
 set caption(fingerlakes,fonc_obtu)                    "Shutter Operation"
 
-set caption(fingerlakes,port)                         "FLI Port"
+set caption(fingerlakes,port_camera)                  "FLI Port"
 set caption(fingerlakes,2points)                      ":"
 
 set caption(fingerlakes,titre_site_web)               "Reference Web Site:"
@@ -48,7 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Miroir vertical"
    set caption(fingerlakes,fonc_obtu)                 "Fonctionnement de l'obturateur"
 
-   set caption(fingerlakes,port)                      "Port FLI"
+   set caption(fingerlakes,port_camera)               "Port FLI"
    set caption(fingerlakes,2points)                   ":"
 
    set caption(fingerlakes,titre_site_web)            "Site Web de référence :"
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Specchio verticale"
    set caption(fingerlakes,fonc_obtu)                 "Funzionamento otturatore"
 
-   set caption(fingerlakes,port)                      "Porta FLI"
+   set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"
 
    set caption(fingerlakes,titre_site_web)            "Sito Web di riferimento:"
@@ -94,7 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Espejo vertical"
    set caption(fingerlakes,fonc_obtu)                 "Funcionamiento del obturador"
 
-   set caption(fingerlakes,port)                      "Puerto FLI"
+   set caption(fingerlakes,port_camera)               "Puerto FLI"
    set caption(fingerlakes,2points)                   ":"
 
    set caption(fingerlakes,titre_site_web)            "Sitio Web de referencia:"
@@ -117,7 +117,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Verticale Spiegel"
    set caption(fingerlakes,fonc_obtu)                 "Verschluss Arbeiten"
 
-   set caption(fingerlakes,port)                      "FLI Port"
+   set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"
 
    set caption(fingerlakes,titre_site_web)            "Referenz Webseite:"
@@ -140,7 +140,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Espelho Vertical"
    set caption(fingerlakes,fonc_obtu)                 "Operação do obturador"
 
-   set caption(fingerlakes,port)                      "Porta FLI"
+   set caption(fingerlakes,port_camera)               "Porta FLI"
    set caption(fingerlakes,2points)                   ":"
 
    set caption(fingerlakes,titre_site_web)            "Site Web de referência:"
@@ -163,7 +163,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fingerlakes,miroir_y)                  "Vertikal spejl"
    set caption(fingerlakes,fonc_obtu)                 "Shutter Operation"
 
-   set caption(fingerlakes,port)                      "FLI Port"
+   set caption(fingerlakes,port_camera)               "FLI Port"
    set caption(fingerlakes,2points)                   ":"
 
    set caption(fingerlakes,titre_site_web)            "Reference Web Site:"
