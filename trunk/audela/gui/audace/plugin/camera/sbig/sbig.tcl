@@ -1,8 +1,8 @@
 #
 # Fichier : sbig.tcl
-# Description : Configuration de la camera Andor
+# Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.3 2007-09-22 06:41:21 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.4 2007-10-14 15:08:23 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -54,7 +54,7 @@ proc ::sbig::getPluginOS { } {
 proc ::sbig::initPlugin { } {
    global conf
 
-   #--- Initialise les variables de la camera Andor
+   #--- Initialise les variables de la camera SBIG
    if { ! [ info exists conf(sbig,cool) ] }     { set conf(sbig,cool)     "0" }
    if { ! [ info exists conf(sbig,foncobtu) ] } { set conf(sbig,foncobtu) "2" }
    if { ! [ info exists conf(sbig,host) ] }     { set conf(sbig,host)     "192.168.0.2" }
@@ -70,10 +70,16 @@ proc ::sbig::initPlugin { } {
 #
 proc ::sbig::confToWidget { } {
    variable private
-   global conf
+   global caption conf
 
-   #--- Recupere la configuration de la camera Andor dans le tableau private(...)
-
+   #--- Recupere la configuration de la camera SBIG dans le tableau private(...)
+   set private(cool)     $conf(sbig,cool)
+   set private(foncobtu) [ lindex "$caption(sbig,obtu_ouvert) $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" $conf(sbig,foncobtu) ]
+   set private(host)     $conf(sbig,host)
+   set private(mirh)     $conf(sbig,mirh)
+   set private(mirv)     $conf(sbig,mirv)
+   set private(port)     $conf(sbig,port)
+   set private(temp)     $conf(sbig,temp)
 }
 
 #
@@ -82,29 +88,326 @@ proc ::sbig::confToWidget { } {
 #
 proc ::sbig::widgetToConf { } {
    variable private
-   global conf
+   global caption conf
 
-   #--- Memorise la configuration de la camera Andor dans le tableau conf(sbig,...)
-
+   #--- Memorise la configuration de la camera SBIG dans le tableau conf(sbig,...)
+   set conf(sbig,cool)     $private(cool)
+   set conf(sbig,foncobtu) [ lsearch "$caption(sbig,obtu_ouvert) $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" "$private(foncobtu)" ]
+   set conf(sbig,host)     $private(host)
+   set conf(sbig,mirh)     $private(mirh)
+   set conf(sbig,mirv)     $private(mirv)
+   set conf(sbig,port)     $private(port)
+   set conf(sbig,temp)     $private(temp)
 }
 
 #
 # ::sbig::fillConfigPage
-#    Interface de configuration de la camera Andor
+#    Interface de configuration de la camera SBIG
 #
 proc ::sbig::fillConfigPage { frm } {
    variable private
    global audace caption color
 
+   #--- Initialise une variable locale
+   set private(frm) $frm
+
+   #--- confToWidget
+   ::sbig::confToWidget
+
+   #--- Supprime tous les widgets de l'onglet
+   foreach i [ winfo children $frm ] {
+      destroy $i
+   }
+
+   #--- Je constitue la liste des liaisons pour l'acquisition des images
+   if { $::tcl_platform(os) == "Linux" } {
+      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+   } else {
+      set list_combobox "[ ::confLink::getLinkLabels { "parallelport" } ] \
+         $caption(sbig,usb) $caption(sbig,ethernet)"
+   }
+
+   #--- Je verifie le contenu de la liste
+   if { [llength $list_combobox ] > 0 } {
+      #--- si la liste n'est pas vide,
+      #--- je verifie que la valeur par defaut existe dans la liste
+      if { [ lsearch -exact $list_combobox $private(port) ] == -1 } {
+         #--- si la valeur par defaut n'existe pas dans la liste,
+         #--- je la remplace par le premier item de la liste
+         set private(port) [lindex $list_combobox 0]
+      }
+   } else {
+      #--- si la liste est vide, on continue quand meme
+   }
+
+   #--- Frame de la configuration du port
+   frame $frm.frame1 -borderwidth 0 -relief raised
+
+      #--- Definition du port
+      label $frm.frame1.lab1 -text "$caption(sbig,port)"
+      pack $frm.frame1.lab1 -anchor center -side left -padx 10
+
+      #--- Bouton de configuration des ports et liaisons
+      button $frm.frame1.configure -text "$caption(sbig,configurer)" -relief raised \
+         -command {
+            ::confLink::run ::sbig::private(port) { parallelport } \
+               "- $caption(sbig,acquisition) - $caption(sbig,camera)"
+         }
+      pack $frm.frame1.configure -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+      #--- Choix du port ou de la liaison
+      ComboBox $frm.frame1.port \
+         -width 7               \
+         -height [ llength $list_combobox ] \
+         -relief sunken         \
+         -borderwidth 1         \
+         -editable 0            \
+         -textvariable ::sbig::private(port) \
+         -values $list_combobox \
+         -modifycmd "::sbig::configurePort"
+      pack $frm.frame1.port -anchor center -side left -padx 10
+
+      #--- Definition du host pour une connexion Ethernet
+      entry $frm.frame1.host -width 18 -textvariable ::sbig::private(host)
+      pack $frm.frame1.host -anchor center -side right -padx 10
+
+      label $frm.frame1.lab2 -text "$caption(sbig,host)"
+      pack $frm.frame1.lab2 -anchor center -side right -padx 10
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Frame des miroirs en x et en y, du refroidissement et de la temperature (du capteur CCD et exterieure)
+   frame $frm.frame2 -borderwidth 0 -relief raised
+
+      #--- Frame des miroirs en x et en y
+      frame $frm.frame2.frame5 -borderwidth 0 -relief raised
+
+         #--- Miroirs en x et en y
+         checkbutton $frm.frame2.frame5.mirx -text "$caption(sbig,miroir_x)" -highlightthickness 0 \
+            -variable ::sbig::private(mirh)
+         pack $frm.frame2.frame5.mirx -anchor w -side top -padx 10 -pady 10
+
+         checkbutton $frm.frame2.frame5.miry -text "$caption(sbig,miroir_y)" -highlightthickness 0 \
+            -variable ::sbig::private(mirv)
+         pack $frm.frame2.frame5.miry -anchor w -side top -padx 10 -pady 10
+
+      pack $frm.frame2.frame5 -side left -fill x -expand 0
+
+      #--- Frame du refroidissement et de la temperature du capteur CCD
+      frame $frm.frame2.frame6 -borderwidth 0 -relief raised
+
+         #--- Frame du refroidissement
+         frame $frm.frame2.frame6.frame7 -borderwidth 0 -relief raised
+
+            #--- Definition du refroidissement
+            checkbutton $frm.frame2.frame6.frame7.cool -text "$caption(sbig,refroidissement)" -highlightthickness 0 \
+               -variable ::sbig::private(cool) -command "::sbig::checkConfigRefroidissement"
+            pack $frm.frame2.frame6.frame7.cool -anchor center -side left -padx 0 -pady 5
+
+            entry $frm.frame2.frame6.frame7.temp -textvariable ::sbig::private(temp) -width 4 -justify center
+            pack $frm.frame2.frame6.frame7.temp -anchor center -side left -padx 5 -pady 5
+
+            label $frm.frame2.frame6.frame7.tempdeg -text "$caption(sbig,deg_c) $caption(sbig,refroidissement_1)"
+            pack $frm.frame2.frame6.frame7.tempdeg -anchor center -side left -padx 0 -pady 5
+
+         pack $frm.frame2.frame6.frame7 -side top -fill none -padx 30
+
+         #--- Frame de la puissance de refroidissement
+         frame $frm.frame2.frame6.frame8 -borderwidth 0 -relief raised
+
+            label $frm.frame2.frame6.frame8.power -text "$caption(sbig,puissance_peltier_--)"
+            pack $frm.frame2.frame6.frame8.power -side left -fill x -padx 20 -pady 5
+
+         pack $frm.frame2.frame6.frame8 -side top -fill x -padx 30
+
+         #--- Frame de la temperature exterieure
+         frame $frm.frame2.frame6.frame9 -borderwidth 0 -relief raised
+
+            label $frm.frame2.frame6.frame9.ccdtemp -text "$caption(sbig,temp_ext)"
+            pack $frm.frame2.frame6.frame9.ccdtemp -side left -fill x -padx 20 -pady 5
+
+         pack $frm.frame2.frame6.frame9 -side top -fill x -padx 30
+
+      pack $frm.frame2.frame6 -side left -expand 0 -padx 60
+
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   #--- Frame du mode de fonctionnement de l'obturateur
+   frame $frm.frame3 -borderwidth 0 -relief raised
+
+      #--- Mode de fonctionnement de l'obturateur
+      label $frm.frame3.lab3 -text "$caption(sbig,fonc_obtu)"
+      pack $frm.frame3.lab3 -anchor center -side left -padx 10
+
+      set list_combobox [ list $caption(sbig,obtu_ouvert) $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro) ]
+      ComboBox $frm.frame3.foncobtu \
+         -width 11                  \
+         -height [ llength $list_combobox ] \
+         -relief sunken             \
+         -borderwidth 1             \
+         -editable 0                \
+         -textvariable ::sbig::private(foncobtu) \
+         -values $list_combobox
+      pack $frm.frame3.foncobtu -anchor center -side left -padx 10
+
+   pack $frm.frame3 -side top -fill both -expand 1
+
+   #--- Frame du site web officiel de la SBIG
+   frame $frm.frame4 -borderwidth 0 -relief raised
+
+      label $frm.frame4.lab103 -text "$caption(sbig,titre_site_web)"
+      pack $frm.frame4.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(sbig,site_web_ref)" \
+         "$caption(sbig,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
+   pack $frm.frame4 -side bottom -fill x -pady 2
+
+   #--- Gestion des widgets actifs/inactifs
+   ::sbig::configurePort
+   ::sbig::checkConfigRefroidissement
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #
 # ::sbig::configureCamera
-#    Configure la camera Andor en fonction des donnees contenues dans les variables conf(sbig,...)
+#    Configure la camera SBIG en fonction des donnees contenues dans les variables conf(sbig,...)
 #
 proc ::sbig::configureCamera { camItem } {
    global caption conf confCam
 
+  ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
+   set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
+   console::affiche_erreur "$caption(sbig,port_camera) ([ cam$camNo name ]) $caption(sbig,2points) $conf(sbig,port)\n"
+   console::affiche_saut "\n"
+   set confCam($camItem,camNo) $camNo
+   #--- Je cree la liaison utilisee par la camera pour l'acquisition
+   set linkNo [ ::confLink::create $conf(sbig,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+   #--- Je configure l'obturateur
+   set foncobtu $conf(sbig,foncobtu)
+   switch -exact -- $foncobtu {
+      0 {
+         cam$camNo shutter "opened"
+      }
+      1 {
+         cam$camNo shutter "closed"
+      }
+      2 {
+         cam$camNo shutter "synchro"
+      }
+   }
+   if { $conf(sbig,cool) == "1" } {
+      cam$camNo cooler check $conf(sbig,temp)
+   } else {
+      cam$camNo cooler off
+   }
+   #--- J'associe le buffer de la visu
+   set bufNo [visu$confCam($camItem,visuNo) buf]
+   cam$camNo buf $bufNo
+   #--- Je configure l'oriention des miroirs par defaut
+   cam$camNo mirrorh $conf(sbig,mirh)
+   cam$camNo mirrorv $conf(sbig,mirv)
+   #---
+   ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
+   #---
+   if { [ info exists confCam(sbig,aftertemp) ] == "0" } {
+      ::sbig::SbigDispTemp
+   }
+}
+
+#
+# ::sbig::stop
+#    Arrete la camera SBIG
+#
+proc ::sbig::stop { camItem } {
+   global conf confCam
+
+   #--- Je ferme la liaison d'acquisition de la camera
+   ::confLink::delete $conf(sbig,port) "cam$confCam($camItem,camNo)" "acquisition"
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
+   }
+}
+
+#
+# ::sbig::SbigDispTemp
+#    Affiche la temperature du CCD
+#
+proc ::sbig::SbigDispTemp { } {
+   variable private
+   global audace caption confCam
+
+   catch {
+      set frm $private(frm)
+      set camItem $confCam(currentCamItem)
+      if { [ info exists audace(base).confCam ] == "1" && [ catch { set tempstatus [ cam$confCam($camItem,camNo) infotemp ] } ] == "0" } {
+         set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
+         set temp_ccd [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
+         set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
+         set regulation [ lindex $tempstatus 3 ]
+         set power [ format "%3.0f" [ expr 100.*[ lindex $tempstatus 4 ]/255. ] ]
+         $frm.power configure \
+            -text "$caption(sbig,puissance_peltier) $power %"
+         $frm.ccdtemp configure \
+            -text "$caption(sbig,temp_ext) $temp_ccd $caption(sbig,deg_c) / $temp_ambiant $caption(sbig,deg_c)"
+         set confCam(sbig,aftertemp) [ after 5000 ::sbig::SbigDispTemp ]
+      } else {
+         catch { unset confCam(sbig,aftertemp) }
+      }
+   }
+}
+
+#
+# ::sbig::configurePort
+#    Configure le bouton "Configurer" et le host
+#
+proc ::sbig::configurePort { } {
+   variable private
+   global caption
+
+   if { $::tcl_platform(os) != "Linux" } {
+      if { $::sbig::private(port) == "$caption(sbig,usb)" || $::sbig::private(port) == "$caption(sbig,ethernet)" } {
+         $private(frm).frame1.configure configure -state disabled
+      } else {
+         $private(frm).frame1.configure configure -state normal
+      }
+      if { $::sbig::private(port) == "$caption(sbig,ethernet)" } {
+         $private(frm).frame1.host configure -state normal
+      } else {
+         $private(frm).frame1.host configure -state disabled
+      }
+   }
+}
+
+#
+# ::sbig::checkConfigRefroidissement
+#    Configure le widget de la consigne en temperature
+#
+proc ::sbig::checkConfigRefroidissement { } {
+   variable private
+
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $::sbig::private(cool) == "1" } {
+            pack $frm.frame2.frame6.frame7.temp -anchor center -side left -padx 5 -pady 5
+            pack $frm.frame2.frame6.frame7.tempdeg -side left -fill x -padx 0 -pady 5
+            $frm.frame2.frame6.frame8.power configure -state normal
+            $frm.frame2.frame6.frame9.ccdtemp configure -state normal
+         } else {
+            pack forget $frm.frame2.frame6.frame7.temp
+            pack forget $frm.frame2.frame6.frame7.tempdeg
+            $frm.frame2.frame6.frame8.power configure -state disabled
+            $frm.frame2.frame6.frame9.ccdtemp configure -state disabled
+         }
+      }
+   }
 }
 
 #
