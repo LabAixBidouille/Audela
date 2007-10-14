@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.13 2007-09-22 06:40:06 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.14 2007-10-14 15:38:55 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -116,54 +116,55 @@ proc ::fingerlakes::fillConfigPage { frm } {
    #--- Frame du refroidissement, de la temperature du capteur CCD, des miroirs en x et en y et de l'obturateur
    frame $frm.frame1 -borderwidth 0 -relief raised
 
-      #--- Frame du refroidissement, de la temperature du capteur CCD et des miroirs en x et en y
+      #--- Frame des miroirs en x et en y, du refroidissement et de la temperature du capteur CCD
       frame $frm.frame1.frame3 -borderwidth 0 -relief raised
 
-         #--- Frame du refroidissement et de la temperature du capteur CCD
+         #--- Frame des miroirs en x et en y
          frame $frm.frame1.frame3.frame4 -borderwidth 0 -relief raised
 
-            #--- Frame du refroidissement
-            frame $frm.frame1.frame3.frame4.frame6 -borderwidth 0 -relief raised
+            #--- Miroir en x et en y
+            checkbutton $frm.frame1.frame3.frame4.mirx -text "$caption(fingerlakes,miroir_x)" -highlightthickness 0 \
+               -variable ::fingerlakes::private(mirh)
+            pack $frm.frame1.frame3.frame4.mirx -anchor w -side top -padx 20 -pady 10
 
-               #--- Definition du refroidissement
-               checkbutton $frm.frame1.frame3.frame4.frame6.cool -text "$caption(fingerlakes,refroidissement)" \
-                  -highlightthickness 0 -variable ::fingerlakes::private(cool)
-               pack $frm.frame1.frame3.frame4.frame6.cool -anchor center -side left -padx 0 -pady 5
+            checkbutton $frm.frame1.frame3.frame4.miry -text "$caption(fingerlakes,miroir_y)" -highlightthickness 0 \
+               -variable ::fingerlakes::private(mirv)
+            pack $frm.frame1.frame3.frame4.miry -anchor w -side top -padx 20 -pady 10
 
-               entry $frm.frame1.frame3.frame4.frame6.temp -textvariable ::fingerlakes::private(temp) -width 4 \
-                  -justify center
-               pack $frm.frame1.frame3.frame4.frame6.temp -anchor center -side left -padx 5 -pady 5
+         pack $frm.frame1.frame3.frame4 -anchor n -side left -fill x -padx 20
 
-               label $frm.frame1.frame3.frame4.frame6.tempdeg \
-                  -text "$caption(fingerlakes,deg_c) $caption(fingerlakes,refroidissement_1)"
-               pack $frm.frame1.frame3.frame4.frame6.tempdeg -side left -fill x -padx 0 -pady 5
-
-            pack $frm.frame1.frame3.frame4.frame6 -side top -fill x -padx 10
-
-            #--- Frame de la temperature du capteur CCD
-            frame $frm.frame1.frame3.frame4.frame7 -borderwidth 0 -relief raised
-
-               #--- Definition de la temperature du capteur CCD
-               label $frm.frame1.frame3.frame4.frame7.temp_ccd -text "$caption(fingerlakes,temperature_CCD)"
-               pack $frm.frame1.frame3.frame4.frame7.temp_ccd -side left -fill x -padx 20 -pady 5
-
-            pack $frm.frame1.frame3.frame4.frame7 -side top -fill x -padx 30
-
-         pack $frm.frame1.frame3.frame4 -side left -fill x -expand 0
-
-         #--- Frame des miroirs en x et en y
+         #--- Frame du refroidissement et de la temperature du capteur CCD
          frame $frm.frame1.frame3.frame5 -borderwidth 0 -relief raised
 
-            #--- Miroir en x et en y
-            checkbutton $frm.frame1.frame3.frame5.mirx -text "$caption(fingerlakes,miroir_x)" -highlightthickness 0 \
-               -variable ::fingerlakes::private(mirh)
-            pack $frm.frame1.frame3.frame5.mirx -anchor w -side top -padx 20 -pady 10
+            #--- Frame du refroidissement
+            frame $frm.frame1.frame3.frame5.frame6 -borderwidth 0 -relief raised
 
-            checkbutton $frm.frame1.frame3.frame5.miry -text "$caption(fingerlakes,miroir_y)" -highlightthickness 0 \
-               -variable ::fingerlakes::private(mirv)
-            pack $frm.frame1.frame3.frame5.miry -anchor w -side top -padx 20 -pady 10
+               #--- Definition du refroidissement
+               checkbutton $frm.frame1.frame3.frame5.frame6.cool -text "$caption(fingerlakes,refroidissement)" \
+                  -highlightthickness 0 -variable ::fingerlakes::private(cool) \
+                  -command "::fingerlakes::checkConfigRefroidissement"
+               pack $frm.frame1.frame3.frame5.frame6.cool -anchor center -side left -padx 0 -pady 5
 
-         pack $frm.frame1.frame3.frame5 -anchor n -side left -fill x -padx 20
+               entry $frm.frame1.frame3.frame5.frame6.temp -textvariable ::fingerlakes::private(temp) -width 4 \
+                  -justify center
+               pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
+
+               label $frm.frame1.frame3.frame5.frame6.tempdeg \
+                  -text "$caption(fingerlakes,deg_c) $caption(fingerlakes,refroidissement_1)"
+               pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
+
+            pack $frm.frame1.frame3.frame5.frame6 -side top -fill x -padx 10
+
+            #--- Frame de la temperature du capteur CCD
+            frame $frm.frame1.frame3.frame5.frame7 -borderwidth 0 -relief raised
+
+               #--- Definition de la temperature du capteur CCD
+               label $frm.frame1.frame3.frame5.frame7.temp_ccd -text "$caption(fingerlakes,temperature_CCD)"
+               pack $frm.frame1.frame3.frame5.frame7.temp_ccd -side left -fill x -padx 20 -pady 5
+
+            pack $frm.frame1.frame3.frame5.frame7 -side top -fill x -padx 30
+
+         pack $frm.frame1.frame3.frame5 -side left -fill x -expand 0
 
       pack $frm.frame1.frame3 -side top -fill x -expand 0
 
@@ -202,6 +203,9 @@ proc ::fingerlakes::fillConfigPage { frm } {
 
    pack $frm.frame2 -side bottom -fill x -pady 2
 
+   #--- Gestion des widgets actifs/inactifs
+   ::fingerlakes::checkConfigRefroidissement
+
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
 }
@@ -214,7 +218,7 @@ proc ::fingerlakes::configureCamera { camItem } {
    global caption conf confCam
 
    set camNo [ cam::create fingerlakes USB ]
-   console::affiche_erreur "$caption(fingerlakes,port) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
+   console::affiche_erreur "$caption(fingerlakes,port_camera) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
    console::affiche_saut "\n"
    set confCam($camItem,camNo) $camNo
    set foncobtu $conf(fingerlakes,foncobtu)
@@ -276,11 +280,34 @@ proc ::fingerlakes::FLIDispTemp { } {
       set camItem $confCam(currentCamItem)
       if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         $frm.frame1.frame3.frame4.frame7.temp_ccd configure \
+         $frm.frame1.frame3.frame5.frame7.temp_ccd configure \
             -text "$caption(fingerlakes,temperature_CCD) $temp_ccd $caption(fingerlakes,deg_c)"
          set confCam(fingerlakes,aftertemp) [ after 5000 ::fingerlakes::FLIDispTemp ]
       } else {
          catch { unset confCam(fingerlakes,aftertemp) }
+      }
+   }
+}
+
+#
+# ::fingerlakes::checkConfigRefroidissement
+#    Configure le widget de la consigne en temperature
+#
+proc ::fingerlakes::checkConfigRefroidissement { } {
+   variable private
+
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $::fingerlakes::private(cool) == "1" } {
+            pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
+            pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
+            $frm.frame1.frame3.frame5.frame7.temp_ccd configure -state normal
+         } else {
+            pack forget $frm.frame1.frame3.frame5.frame6.temp
+            pack forget $frm.frame1.frame3.frame5.frame6.tempdeg
+            $frm.frame1.frame3.frame5.frame7.temp_ccd configure -state disabled
+         }
       }
    }
 }
