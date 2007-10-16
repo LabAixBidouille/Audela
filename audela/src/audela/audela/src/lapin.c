@@ -41,8 +41,6 @@
 /*
  * Defines
  */
-#define LOG_FILENAME     "audela.log"
-#define DEFAULT_SCRIPT_TK   "audela.tcl"
 #define MAX_STRING       2048
 
 #if defined(OS_WIN)
@@ -53,32 +51,30 @@
 #define PATH_STRING_SEP  "/"
 #endif
 
-
-
 /*
  * Global variables
  */
 static int gVerbose = 0;
 static int gConsole = 0;
 static char log_filename[2048];
+static char tcl_filename[2048];
 static char img_filename[2048];
-void log_write(char *fmt,...);
+static char exe_filename[2048];
 
 #if defined(OS_WIN)
 HINSTANCE ghInstance;
 #endif
 
-
 /*
  * Functions prototypes
  */
 
+void log_write(char *fmt,...);
 void load_library(Tcl_Interp *interp, char *s);
 int Tk_AppInit(Tcl_Interp *interp);
 int Tcl_AppInit(Tcl_Interp *interp);
 
 #if defined(OS_WIN)
-//static BOOL __stdcall   sigHandler (DWORD fdwCtrlType);
 static void AppInitExitHandler(ClientData clientData);
 void createMsdosConsole();
 #endif
@@ -117,10 +113,22 @@ void createMsdosConsole();
 void GetChemin(char *chemin, unsigned long taille,int end)
 {
    char *c;
+   int k,n1,n2;
    c = chemin+strlen(chemin);
+   n1=n2=strlen(chemin);
    while((*c!=PATH_SEP)&&(c>=chemin)) {
       c--;
+      n1--;
    }
+   n1++;
+   for (k=n1;k<=n2;k++) {
+       if (chemin[k]=='.') {
+           break;
+       } else {
+          exe_filename[k-n1]=chemin[k];
+       }
+   }
+   exe_filename[k-n1]='\0';
    if (c<chemin) {
       *chemin=0;
    } else {
@@ -321,6 +329,7 @@ int main(int argc , char **argv)
    char env_var[MAX_STRING];
    int tcl_argc = 1;
    char *tcl_argv[2];
+   FILE *fid;
 
    strcpy(rootpath,argv[0]);
    GetChemin(rootpath,MAX_STRING,0);
@@ -331,11 +340,23 @@ int main(int argc , char **argv)
       }
    }
    strcpy(log_filename,rootpath);
-   audela_join_filename(log_filename,LOG_FILENAME);
+   audela_join_filename(log_filename,exe_filename);
+   strcat(log_filename,".log");
+   strcpy(tcl_filename,rootpath);
+   audela_join_filename(tcl_filename,exe_filename);
+   strcat(tcl_filename,".tcl");
    audela_setcwd(rootpath);
 
    LOG("*******************************************************\n");
 
+   fid=fopen(tcl_filename,"r");
+   if (fid==NULL) {
+      strcpy(tcl_filename,rootpath);
+      audela_join_filename(tcl_filename,"audela");
+      strcat(tcl_filename,".tcl");
+   } else {
+      fclose(fid);
+   }
    /* Parse command line options and create tcl command line */
    /* with the file to source at startup. Under Windows, the */
    /* (argc,argv) are build from the entire command line.    */
@@ -384,7 +405,7 @@ int main(int argc , char **argv)
    if ( tcl_argc==1 ) {
       if (gConsole == 0 ) {
          // set default script for tk GUI
-         tcl_argv[1] = DEFAULT_SCRIPT_TK;
+         tcl_argv[1] = tcl_filename;
          tcl_argc = 2;
       } else {
          // no default script for console GUI
@@ -393,7 +414,7 @@ int main(int argc , char **argv)
    }
 
    if ( tcl_argv[1] != NULL) {
-   LOG("Starting new AudeLA session (initial file=%s).\n",tcl_argv[1]);
+      LOG("Starting new AudeLA session (initial file=%s).\n",tcl_argv[1]);
    } else {
       LOG("Starting new AudeLA session (no initial file).\n");
    }
