@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.3 2007-09-22 06:38:24 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.4 2007-10-18 21:08:41 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -71,10 +71,17 @@ proc ::andor::initPlugin { } {
 #
 proc ::andor::confToWidget { } {
    variable private
-   global conf
+   global caption conf
 
    #--- Recupere la configuration de la camera Andor dans le tableau private(...)
-
+   set private(cool)        $conf(andor,cool)
+   set private(foncobtu)    [ lindex "$caption(andor,obtu_ouvert) $caption(andor,obtu_ferme) $caption(andor,obtu_synchro)" $conf(andor,foncobtu) ]
+   set private(config)      $conf(andor,config)
+   set private(mirh)        $conf(andor,mirh)
+   set private(mirv)        $conf(andor,mirv)
+   set private(temp)        $conf(andor,temp)
+   set private(ouvert_obtu) $conf(andor,ouvert_obtu)
+   set private(ferm_obtu)   $conf(andor,ferm_obtu)
 }
 
 #
@@ -83,10 +90,17 @@ proc ::andor::confToWidget { } {
 #
 proc ::andor::widgetToConf { } {
    variable private
-   global conf
+   global caption conf
 
    #--- Memorise la configuration de la camera Andor dans le tableau conf(andor,...)
-
+   set conf(andor,cool)        $private(cool)
+   set conf(andor,foncobtu)    [ lsearch "$caption(andor,obtu_ouvert) $caption(andor,obtu_ferme) $caption(andor,obtu_synchro)" "$private(foncobtu)" ]
+   set conf(andor,config)      $private(config)
+   set conf(andor,mirh)        $private(mirh)
+   set conf(andor,mirv)        $private(mirv)
+   set conf(andor,temp)        $private(temp)
+   set conf(andor,ouvert_obtu) $private(ouvert_obtu)
+   set conf(andor,ferm_obtu)   $private(ferm_obtu)
 }
 
 #
@@ -97,6 +111,160 @@ proc ::andor::fillConfigPage { frm } {
    variable private
    global audace caption color
 
+   #--- Initialise une variable locale
+   set private(frm) $frm
+
+   #--- confToWidget
+   ::andor::confToWidget
+
+   #--- Supprime tous les widgets de l'onglet
+   foreach i [ winfo children $frm ] {
+      destroy $i
+   }
+
+   #--- Frame du repertoire des fichiers de configuration
+   frame $frm.frame1 -borderwidth 0 -relief raised
+
+      #--- Definition du repertoire des fichiers de configuration
+      label $frm.frame1.lab2 -text "$caption(andor,config)"
+      pack $frm.frame1.lab2 -anchor center -side left -padx 10
+
+      entry $frm.frame1.host -width 40 -textvariable ::andor::private(config)
+      pack $frm.frame1.host -anchor center -side left -padx 10
+
+      button $frm.frame1.explore -text "$caption(andor,parcourir)" -width 1 \
+         -command {
+            set ::andor::private(config) [ tk_chooseDirectory -title "$caption(andor,dossier)" \
+            -initialdir [ file join $audace(rep_install) bin ] -parent $audace(base).confCam ]
+         }
+      pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
+
+   pack $frm.frame1 -side top -fill both -expand 1
+
+   #--- Frame des miroirs en x et en y, du refroidissement, de la temperature du capteur CCD et de l'obturateur
+   frame $frm.frame2 -borderwidth 0 -relief raised
+
+      #--- Frame du mode de fonctionnement, du delai d'ouverture et de fermeture de l'obturateur
+      frame $frm.frame2.frame4 -borderwidth 0 -relief raised
+
+         #--- Frame du mode de fonctionnement de l'obturateur
+         frame $frm.frame2.frame4.frame7 -borderwidth 0 -relief raised
+
+            #--- Mode de fonctionnement de l'obturateur
+            label $frm.frame2.frame4.frame7.lab3 -text "$caption(andor,fonc_obtu)"
+            pack $frm.frame2.frame4.frame7.lab3 -anchor center -side left -padx 10 -pady 5
+
+            set list_combobox [ list $caption(andor,obtu_ouvert) $caption(andor,obtu_ferme) $caption(andor,obtu_synchro) ]
+            ComboBox $frm.frame2.frame4.frame7.foncobtu \
+               -width 11           \
+               -height [ llength $list_combobox ] \
+              -relief sunken       \
+               -borderwidth 1      \
+               -editable 0         \
+               -textvariable ::andor::private(foncobtu) \
+               -values $list_combobox
+            pack $frm.frame2.frame4.frame7.foncobtu -anchor center -side left -padx 10 -pady 5
+
+         pack $frm.frame2.frame4.frame7 -side top -fill x -expand 1
+
+         #--- Frame du delai d'ouverture de l'obturateur
+         frame $frm.frame2.frame4.frame8 -borderwidth 0 -relief raised
+
+            #--- Delai d'ouverture de l'obturateur
+            label $frm.frame2.frame4.frame8.lab4 -text "$caption(andor,ouvert_obtu)"
+            pack $frm.frame2.frame4.frame8.lab4 -anchor center -side left -padx 10 -pady 5
+
+            entry $frm.frame2.frame4.frame8.ouvert_obtu -textvariable ::andor::private(ouvert_obtu) -width 4 -justify center
+            pack $frm.frame2.frame4.frame8.ouvert_obtu -anchor center -side left -padx 5 -pady 5
+
+            label $frm.frame2.frame4.frame8.lab5 -text "$caption(andor,ms)"
+            pack $frm.frame2.frame4.frame8.lab5 -side left -fill x -padx 0 -pady 5
+
+         pack $frm.frame2.frame4.frame8 -side top -fill x -expand 1
+
+         #--- Frame du delai de fermeture de l'obturateur
+         frame $frm.frame2.frame4.frame9 -borderwidth 0 -relief raised
+
+            #--- Delai de fermeture de l'obturateur
+            label $frm.frame2.frame4.frame9.lab6 -text "$caption(andor,ferm_obtu)"
+            pack $frm.frame2.frame4.frame9.lab6 -anchor center -side left -padx 10 -pady 5
+
+            entry $frm.frame2.frame4.frame9.ferm_obtu -textvariable ::andor::private(ferm_obtu) -width 4 -justify center
+            pack $frm.frame2.frame4.frame9.ferm_obtu -anchor center -side left -padx 5 -pady 5
+
+            label $frm.frame2.frame4.frame9.lab7 -text "$caption(andor,ms)"
+            pack $frm.frame2.frame4.frame9.lab7 -side left -fill x -padx 0 -pady 5
+
+         pack $frm.frame2.frame4.frame9 -side top -fill x -expand 1
+
+      pack $frm.frame2.frame4 -side bottom -fill both -expand 1
+
+      #--- Frame des miroirs en x et en y
+      frame $frm.frame2.frame5 -borderwidth 0 -relief raised
+
+         #--- Miroir en x et en y
+         checkbutton $frm.frame2.frame5.mirx -text "$caption(andor,miroir_x)" -highlightthickness 0 \
+            -variable ::andor::private(mirh)
+         pack $frm.frame2.frame5.mirx -anchor w -side top -padx 20 -pady 10
+
+         checkbutton $frm.frame2.frame5.miry -text "$caption(andor,miroir_y)" -highlightthickness 0 \
+            -variable ::andor::private(mirv)
+         pack $frm.frame2.frame5.miry -anchor w -side top -padx 20 -pady 10
+
+      pack $frm.frame2.frame5 -anchor n -side left -fill x -padx 20
+
+      #--- Frame du refroidissement et de la temperature du capteur CCD
+      frame $frm.frame2.frame6 -borderwidth 0 -relief raised
+
+         #--- Frame du refroidissement
+         frame $frm.frame2.frame6.frame10 -borderwidth 0 -relief raised
+
+            #--- Definition du refroidissement
+            checkbutton $frm.frame2.frame6.frame10.cool -text "$caption(andor,refroidissement)" \
+               -highlightthickness 0 -variable ::andor::private(cool) \
+               -command "::andor::checkConfigRefroidissement"
+            pack $frm.frame2.frame6.frame10.cool -anchor center -side left -padx 0 -pady 5
+
+            entry $frm.frame2.frame6.frame10.temp -textvariable ::andor::private(temp) -width 4 \
+               -justify center
+            pack $frm.frame2.frame6.frame10.temp -anchor center -side left -padx 5 -pady 5
+
+            label $frm.frame2.frame6.frame10.tempdeg \
+               -text "$caption(andor,deg_c) $caption(andor,refroidissement_1)"
+            pack $frm.frame2.frame6.frame10.tempdeg -side left -fill x -padx 0 -pady 5
+
+         pack $frm.frame2.frame6.frame10 -side top -fill x -padx 10
+
+         #--- Frame de la temperature du capteur CCD
+         frame $frm.frame2.frame6.frame11 -borderwidth 0 -relief raised
+
+            #--- Definition de la temperature du capteur CCD
+            label $frm.frame2.frame6.frame11.temp_ccd -text "$caption(andor,temperature_CCD)"
+            pack $frm.frame2.frame6.frame11.temp_ccd -side left -fill x -padx 20 -pady 5
+
+         pack $frm.frame2.frame6.frame11 -side top -fill x -padx 30
+
+      pack $frm.frame2.frame6 -side left -fill x -expand 0
+
+   pack $frm.frame2 -side top -fill x -expand 0
+
+   #--- Frame du site web officiel de la Andor
+   frame $frm.frame3 -borderwidth 0 -relief raised
+
+      label $frm.frame3.lab103 -text "$caption(andor,titre_site_web)"
+      pack $frm.frame3.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame3 "$caption(andor,site_web_ref)" \
+         "$caption(andor,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
+   pack $frm.frame3 -side bottom -fill x -pady 2
+
+   #--- Gestion des widgets actifs/inactifs
+   ::andor::checkConfigRefroidissement
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
 }
 
 #
@@ -106,6 +274,103 @@ proc ::andor::fillConfigPage { frm } {
 proc ::andor::configureCamera { camItem } {
    global caption conf confCam
 
+   #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
+   set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
+   console::affiche_erreur "$caption(andor,port_camera) ([ cam$camNo name ]) $caption(andor,2points) $conf(andor,config)\n"
+   console::affiche_saut "\n"
+   set confCam($camItem,camNo) $camNo
+   set foncobtu $conf(andor,foncobtu)
+   switch -exact -- $foncobtu {
+      0 {
+         cam$camNo shutter "opened"
+      }
+      1 {
+         cam$camNo shutter "closed"
+      }
+      2 {
+         cam$camNo shutter "synchro"
+      }
+   }
+   if { $conf(andor,cool) == "1" } {
+      cam$camNo cooler on
+      cam$camNo cooler check $conf(andor,temp)
+   } else {
+      cam$camNo cooler off
+   }
+   #--- J'associe le buffer de la visu
+   set bufNo [visu$confCam($camItem,visuNo) buf]
+   cam$camNo buf $bufNo
+   #--- Je configure l'oriention des miroirs par defaut
+   cam$camNo mirrorh $conf(andor,mirh)
+   cam$camNo mirrorv $conf(andor,mirv)
+   #---
+   ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
+   #--- Delais d'ouverture et de fermeture de l'obturateur
+   cam$camNo openingtime $conf(andor,ouvert_obtu)
+   cam$camNo closingtime $conf(andor,ferm_obtu)
+   #---
+   if { [ info exists confCam(andor,aftertemp) ] == "0" } {
+      ::andor::AndorDispTemp
+   }
+}
+
+#
+# ::andor::stop
+#    Arrete la camera Andor
+#
+proc ::andor::stop { camItem } {
+   global confCam
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
+   }
+}
+
+#
+# ::andor::AndorDispTemp
+#    Affiche la temperature du CCD
+#
+proc ::andor::AndorDispTemp { } {
+   variable private
+   global audace caption confCam
+
+   catch {
+      set frm $private(frm)
+      set camItem $confCam(currentCamItem)
+      if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
+         set temp_ccd [ format "%+5.2f" $temp_ccd ]
+         $frm.frame2.frame6.frame11.temp_ccd configure \
+            -text "$caption(andor,temperature_CCD) $temp_ccd $caption(andor,deg_c)"
+         set confCam(andor,aftertemp) [ after 5000 ::andor::AndorDispTemp ]
+      } else {
+         catch { unset confCam(andor,aftertemp) }
+      }
+   }
+}
+
+#
+# ::andor::checkConfigRefroidissement
+#    Configure le widget de la consigne en temperature
+#
+proc ::andor::checkConfigRefroidissement { } {
+   variable private
+
+   if { [ info exists private(frm)] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $::andor::private(cool) == "1" } {
+            pack $frm.frame2.frame6.frame10.temp -anchor center -side left -padx 5 -pady 5
+            pack $frm.frame2.frame6.frame10.tempdeg -side left -fill x -padx 0 -pady 5
+            $frm.frame2.frame6.frame11.temp_ccd configure -state normal
+         } else {
+            pack forget $frm.frame2.frame6.frame10.temp
+            pack forget $frm.frame2.frame6.frame10.tempdeg
+            $frm.frame2.frame6.frame11.temp_ccd configure -state disabled
+         }
+      }
+   }
 }
 
 #
