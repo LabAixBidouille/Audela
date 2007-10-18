@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.16 2007-10-13 09:34:03 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.17 2007-10-18 21:11:39 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -260,8 +260,6 @@ namespace eval ::audace {
          if {[winfo exists $audace(base).tjrsvisible]==1} {
             set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
          }
-         #--- Arrete les plugins link
-         ::confLink::stopDriver
          #--- Arrete les plugins camera
          ::confCam::stopDriver
          #--- Arrete les plugins monture
@@ -272,6 +270,8 @@ namespace eval ::audace {
          ::confPad::stopDriver
          #--- Arrete les plugins carte
          ::confCat::stopDriver
+         #--- Arrete les plugins link
+         ::confLink::stopDriver
          #--- Arrete les visu sauf la visu1
          foreach visuName [winfo children .] {
             set visuNo ""
