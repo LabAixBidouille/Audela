@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.29 2007-10-14 15:48:15 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.30 2007-10-18 21:09:07 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -755,7 +755,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Nenhum"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "As imagens têm que estar contidas na pasta de imagens\n(Configuração --> Pastas)."
-   set caption(pretraitement,non_valide)                "# Le prétraitement est impossible sans offset, dark et flat-field."
+   set caption(pretraitement,non_valide)                "Pré-tratamento impossível sem offset, dark e flat-field frames."
 
    set caption(pretraitement,liste_serie)               "Lista de índices:"
    set caption(pretraitement,nom_generique)             "Nome genérico:"
