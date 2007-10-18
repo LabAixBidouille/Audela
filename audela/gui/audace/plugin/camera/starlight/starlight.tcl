@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.3 2007-09-22 06:42:01 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.4 2007-10-18 21:07:45 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -68,10 +68,14 @@ proc ::starlight::initPlugin { } {
 #
 proc ::starlight::confToWidget { } {
    variable private
-   global conf
+   global caption conf
 
    #--- Recupere la configuration de la camera Starlight dans le tableau private(...)
-
+   set private(acc)    [ lindex "$caption(starlight,sans_accelerateur) $caption(starlight,avec_accelerateur)" $conf(starlight,acc) ]
+   set private(mirh)   $conf(starlight,mirh)
+   set private(mirv)   $conf(starlight,mirv)
+   set private(modele) [ lsearch "MX516 MX916 HX516" "$conf(starlight,modele)" ]
+   set private(port)   $conf(starlight,port)
 }
 
 #
@@ -80,10 +84,14 @@ proc ::starlight::confToWidget { } {
 #
 proc ::starlight::widgetToConf { } {
    variable private
-   global conf
+   global caption conf
 
    #--- Memorise la configuration de la camera Starlight dans le tableau conf(starlight,...)
-
+   set conf(starlight,acc)    [ lsearch "$caption(starlight,sans_accelerateur) $caption(starlight,avec_accelerateur)" "$private(acc)" ]
+   set conf(starlight,mirh)   $private(mirh)
+   set conf(starlight,mirv)   $private(mirv)
+   set conf(starlight,modele) [ lindex "MX516 MX916 HX516" $private(modele) ]
+   set conf(starlight,port)   $private(port)
 }
 
 #
@@ -94,6 +102,128 @@ proc ::starlight::fillConfigPage { frm } {
    variable private
    global audace caption color
 
+   #--- confToWidget
+   ::starlight::confToWidget
+
+   #--- Supprime tous les widgets de l'onglet
+   foreach i [ winfo children $frm ] {
+      destroy $i
+   }
+
+   #--- Je constitue la liste des liaisons pour l'acquisition des images
+   set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
+
+   #--- Je verifie le contenu de la liste
+   if { [llength $list_combobox ] > 0 } {
+      #--- si la liste n'est pas vide,
+      #--- je verifie que la valeur par defaut existe dans la liste
+      if { [ lsearch -exact $list_combobox $::starlight::private(port) ] == -1 } {
+         #--- si la valeur par defaut n'existe pas dans la liste,
+         #--- je la remplace par le premier item de la liste
+         set ::starlight::private(port) [lindex $list_combobox 0]
+      }
+   } else {
+      #--- si la liste est vide, on continue quand meme
+   }
+
+   #--- Frame du choix du modele de Starlight
+   frame $frm.frame1 -borderwidth 0 -relief raised
+
+      #--- Modele MX516
+      radiobutton $frm.frame1.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -text "$caption(starlight,mx5)" -value 0 -variable ::starlight::private(modele)
+      pack $frm.frame1.radio0 -anchor center -side left -padx 10
+
+      #--- Modele MX916
+      radiobutton $frm.frame1.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -text "$caption(starlight,mx9)" -value 1 -variable ::starlight::private(modele)
+      pack $frm.frame1.radio1 -anchor center -side left -padx 10
+
+      #--- Modele HX516
+      radiobutton $frm.frame1.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
+         -text "$caption(starlight,hx5)" -value 2 -variable ::starlight::private(modele)
+      pack $frm.frame1.radio2 -anchor center -side left -padx 10
+
+   pack $frm.frame1 -side top -fill x -expand 0 -pady 15
+
+   #--- Frame du port, du choix de la liaison et des miroirs en x et en y
+   frame $frm.frame2 -borderwidth 0 -relief raised
+
+      #--- Frame du port et du choix de la liaison
+      frame $frm.frame2.frame5 -borderwidth 0 -relief raised
+
+         #--- Definition du port
+         label $frm.frame2.frame5.lab1 -text "$caption(starlight,port)"
+         pack $frm.frame2.frame5.lab1 -anchor center -side left -padx 10 -pady 30
+
+         #--- Bouton de configuration des ports et liaisons
+         button $frm.frame2.frame5.configure -text "$caption(starlight,configurer)" -relief raised \
+            -command {
+               ::confLink::run ::starlight::private(port) { parallelport } \
+                  "- $caption(starlight,acquisition) - $caption(starlight,camera)"
+            }
+         pack $frm.frame2.frame5.configure -anchor center -side left -pady 28 -ipadx 10 -ipady 1 -expand 0
+
+         #--- Choix du port ou de la liaison
+         ComboBox $frm.frame2.frame5.port \
+            -width 7        \
+            -height [ llength $list_combobox ] \
+            -relief sunken  \
+            -borderwidth 1  \
+            -editable 0     \
+            -textvariable ::starlight::private(port) \
+            -values $list_combobox
+         pack $frm.frame2.frame5.port -anchor center -side left -padx 10 -pady 30
+
+      pack $frm.frame2.frame5 -anchor nw -side left -fill x
+
+      #--- Frame des miroirs en x et en y
+      frame $frm.frame2.frame6 -borderwidth 0 -relief raised
+
+         #--- Miroir en x et en y
+         checkbutton $frm.frame2.frame6.mirx -text "$caption(starlight,miroir_x)" -highlightthickness 0 \
+            -variable ::starlight::private(mirh)
+         pack $frm.frame2.frame6.mirx -anchor w -side top -padx 20 -pady 10
+
+         checkbutton $frm.frame2.frame6.miry -text "$caption(starlight,miroir_y)" -highlightthickness 0 \
+            -variable ::starlight::private(mirv)
+         pack $frm.frame2.frame6.miry -anchor w -side top -padx 20 -pady 10
+
+      pack $frm.frame2.frame6 -anchor nw -side left -fill x -padx 20
+
+   pack $frm.frame2 -side top -fill x -expand 0
+
+   #--- Frame d'accelerateur de port parallele
+   frame $frm.frame3 -borderwidth 0 -relief raised
+
+      #--- Accelerateur de port parallele
+      label $frm.frame3.lab2 -text "$caption(starlight,accelerateur)"
+      pack $frm.frame3.lab2 -anchor n -side left -padx 10 -pady 10
+
+      set list_combobox [ list $caption(starlight,sans_accelerateur) $caption(starlight,avec_accelerateur) ]
+      ComboBox $frm.frame3.acc \
+         -width 7       \
+         -height [ llength $list_combobox ] \
+         -relief sunken \
+         -borderwidth 1 \
+         -editable 0    \
+         -textvariable ::starlight::private(acc) \
+         -values $list_combobox
+      pack $frm.frame3.acc -anchor n -side left -padx 10 -pady 10
+
+   pack $frm.frame3 -side top -fill both -expand 1
+
+   #--- Frame du site web officiel de la CB245
+   frame $frm.frame4 -borderwidth 0 -relief raised
+
+      label $frm.frame4.lab103 -text "$caption(starlight,titre_site_web)"
+      pack $frm.frame4.lab103 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(starlight,site_web_ref)" \
+         "$caption(starlight,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
+   pack $frm.frame4 -side bottom -fill x -pady 2
 }
 
 #
@@ -103,6 +233,78 @@ proc ::starlight::fillConfigPage { frm } {
 proc ::starlight::configureCamera { camItem } {
    global caption conf confCam
 
+   if { $conf(starlight,modele) == "MX516" } {
+      set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]
+      console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+         $caption(starlight,2points) $conf(starlight,port)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition
+      set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+      #--- Je configure l'accelerateur de port parallele
+      cam$camNo accelerator $conf(starlight,acc)
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(starlight,mirh)
+      cam$camNo mirrorv $conf(starlight,mirv)
+      #---
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+   } elseif { $conf(starlight,modele) == "MX916" } {
+      set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
+      console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+         $caption(starlight,2points) $conf(starlight,port)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition
+      set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+      #--- Je configure l'accelerateur de port parallele
+      cam$camNo accelerator $conf(starlight,acc)
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(starlight,mirh)
+      cam$camNo mirrorv $conf(starlight,mirv)
+      #---
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+   } elseif { $conf(starlight,modele) == "HX516" } {
+      set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
+      console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+         $caption(starlight,2points) $conf(starlight,port)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition
+      set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+      #--- Je configure l'accelerateur de port parallele
+      cam$camNo accelerator $conf(starlight,acc)
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(starlight,mirh)
+      cam$camNo mirrorv $conf(starlight,mirv)
+      #---
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+   }
+}
+
+#
+# ::starlight::stop
+#    Arrete la camera Starlight
+#
+proc ::starlight::stop { camItem } {
+   global conf confCam
+
+   #--- Je ferme la liaison d'acquisition de la camera
+   ::confLink::delete $conf(starlight,port) "cam$confCam($camItem,camNo)" "acquisition"
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+      cam::delete $confCam($camItem,camNo)
+      set confCam($camItem,camNo) 0
+   }
 }
 
 #
