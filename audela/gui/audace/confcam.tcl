@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.92 2007-10-14 15:47:23 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.93 2007-10-18 21:10:10 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -124,9 +124,9 @@ namespace eval ::confCam {
          if { [ string compare $confCam($camItem,camName) sbig ] == "0" } {
             ::sbig::SbigDispTemp
          } elseif { [ string compare $confCam($camItem,camName) kitty ] == "0" } {
-            ::confCam::KittyDispTemp
+            ::kitty::KittyDispTemp
          } elseif { [ string compare $confCam($camItem,camName) andor ] == "0" } {
-            ::confCam::AndorDispTemp
+            ::andor::AndorDispTemp
          } elseif { [ string compare $confCam($camItem,camName) fingerlakes ] == "0" } {
             ::fingerlakes::FLIDispTemp
          } elseif { [ string compare $confCam($camItem,camName) cemes ] == "0" } {
@@ -269,36 +269,6 @@ namespace eval ::confCam {
          } else {
             #--- Bouton Tests pour la fabrication de la camera inactif
             $frm.test configure -state disabled
-         }
-      }
-   }
-
-   #
-   # confCam::ConfKitty
-   # Permet d'activer ou de desactiver les boutons de configuration de la Kitty K2
-   #
-   proc ConfKitty { } {
-      variable This
-      global audace confCam
-
-      set camItem $confCam(currentCamItem)
-
-      if { [ winfo exists $audace(base).confCam ] } {
-         set frm [ $This.usr.onglet getframe kitty ]
-         if { [ winfo exists $frm.radio_on ] } {
-            if { [::confCam::getName $confCam($camItem,camNo)] == "KITTYK2" } {
-               #--- Boutons de configuration de la Kitty K2 actif
-               $frm.radio_on configure -state normal
-               $frm.radio_off configure -state normal
-               $frm.temp_ccd configure -state normal
-               $frm.test configure -state normal
-            } else {
-               #--- Boutons de configuration de la Kitty K2 inactif
-               $frm.radio_on configure -state disabled
-               $frm.radio_off configure -state disabled
-               $frm.temp_ccd configure -state disabled
-               $frm.test configure -state disabled
-            }
          }
       }
    }
@@ -1273,425 +1243,16 @@ namespace eval ::confCam {
    # Fenetre de configuration des Starlight
    #
    proc fillPagestarlight { frm } {
-      global audace caption color conf confCam
-
-      #--- confToWidget
-      set confCam(starlight,acc)    [ lindex "$caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur)" $conf(starlight,acc) ]
-      set confCam(starlight,mirh)   $conf(starlight,mirh)
-      set confCam(starlight,mirv)   $conf(starlight,mirv)
-      set confCam(starlight,modele) [ lsearch "MX516 MX916 HX516" "$conf(starlight,modele)" ]
-      set confCam(starlight,port)   $conf(starlight,port)
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill both -expand 1
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 1
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side top -fill both -expand 1
-
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side bottom -fill x -pady 2
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame2 -side left -fill both -expand 1
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame2 -side left -fill both -expand 1 -padx 80
-
-      frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -in $frm.frame5 -side left -fill both -expand 1
-
-      frame $frm.frame8 -borderwidth 0 -relief raised
-      pack $frm.frame8 -in $frm.frame5 -side left -fill both -expand 1
-
-      #--- Bouton radio MX516
-      radiobutton $frm.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,starlight_mx5)" -value 0 -variable confCam(starlight,modele)
-      pack $frm.radio0 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio MX916
-      radiobutton $frm.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,starlight_mx9)" -value 1 -variable confCam(starlight,modele)
-      pack $frm.radio1 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio HX516
-      radiobutton $frm.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,starlight_hx5)" -value 2 -variable confCam(starlight,modele)
-      pack $frm.radio2 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Definition du port
-      label $frm.lab1 -text "$caption(confcam,port)"
-      pack $frm.lab1 -in $frm.frame7 -anchor n -side left -padx 10 -pady 15
-
-      #--- Je constitue la liste des liaisons pour l'acquisition des images
-      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
-
-      #--- Je verifie le contenu de la liste
-      if { [llength $list_combobox ] > 0 } {
-         #--- si la liste n'est pas vide,
-         #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_combobox $confCam(starlight,port)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
-            #--- je la remplace par le premier item de la liste
-            set confCam(starlight,port) [lindex $list_combobox 0]
-         }
-      } else {
-         #--- si la liste est vide, on continue quand meme
-      }
-
-      #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
-         -command {
-            ::confLink::run ::confCam(starlight,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(starlight,camera)"
-         }
-      pack $frm.configure -in $frm.frame7 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
-
-      #--- Choix du port ou de la liaison
-      ComboBox $frm.port \
-         -width 7        \
-         -height [ llength $list_combobox ] \
-         -relief sunken  \
-         -borderwidth 1  \
-         -editable 0     \
-         -textvariable confCam(starlight,port) \
-         -values $list_combobox
-      pack $frm.port -in $frm.frame7 -anchor n -side left -padx 10 -pady 15
-
-      #--- Miroir en x et en y
-      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(starlight,mirh)
-      pack $frm.mirx -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
-
-      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(starlight,mirv)
-      pack $frm.miry -in $frm.frame8 -anchor w -side top -padx 10 -pady 10
-
-      #--- Accelerateur de port parallele
-      label $frm.lab2 -text "$caption(confcam,accelerateur)"
-      pack $frm.lab2 -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-
-      set list_combobox [ list $caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur) ]
-      ComboBox $frm.acc \
-         -width 7       \
-         -height [ llength $list_combobox ] \
-         -relief sunken \
-         -borderwidth 1 \
-         -editable 0    \
-         -textvariable confCam(starlight,acc) \
-         -values $list_combobox
-      pack $frm.acc -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-
-      #--- Site web officiel des Starlight
-      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
-
-      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_starlight)" \
-         "$caption(confcam,site_starlight)" ]
-      pack $labelName -side top -fill x -pady 2
+      #--- Construction de l'interface graphique
+      ::starlight::fillConfigPage $frm
    }
 
    #
    # Fenetre de configuration des Kitty
    #
    proc fillPagekitty { frm } {
-      variable This
-      global audace caption color conf confCam
-
-      #--- confToWidget
-      set confCam(kitty,captemp) [ lindex "$caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5)" $conf(kitty,captemp) ]
-      set confCam(kitty,mirh)    $conf(kitty,mirh)
-      set confCam(kitty,mirv)    $conf(kitty,mirv)
-      set confCam(kitty,modele)  $conf(kitty,modele)
-      set confCam(kitty,port)    $conf(kitty,port)
-      set confCam(kitty,res)     $conf(kitty,res)
-      set confCam(kitty,on_off)  $conf(kitty,on_off)
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill both -expand 1
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 1
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side top -fill both -expand 1
-
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side bottom -fill x -pady 2
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame2 -side left -fill both -expand 1
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame2 -side left -fill both -expand 1 -padx 80
-
-      frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -in $frm.frame5 -side left -fill both -expand 1
-
-      frame $frm.frame8 -borderwidth 0 -relief raised
-      pack $frm.frame8 -in $frm.frame5 -side left -fill both -expand 1
-
-      frame $frm.frame9 -borderwidth 0 -relief raised
-      pack $frm.frame9 -in $frm.frame7 -side top -fill both -expand 1
-
-      frame $frm.frame10 -borderwidth 0 -relief raised
-      pack $frm.frame10 -in $frm.frame7 -side top -fill both -expand 1
-
-      frame $frm.frame11 -borderwidth 0 -relief raised
-      pack $frm.frame11 -in $frm.frame8 -side top -fill both -expand 1
-
-      frame $frm.frame12 -borderwidth 0 -relief raised
-      pack $frm.frame12 -in $frm.frame8 -side top -fill both -expand 1
-
-      frame $frm.frame13 -borderwidth 0 -relief raised
-      pack $frm.frame13 -in $frm.frame3 -side top -fill both -expand 1
-
-      frame $frm.frame14 -borderwidth 0 -relief raised
-      pack $frm.frame14 -in $frm.frame3 -side top -fill both -expand 1
-
-      #--- Bouton radio Kitty-237
-      radiobutton $frm.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,kitty_237)" -value 237 -variable confCam(kitty,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe kitty ]
-            if { [ winfo exists $frm.lab4 ] } {
-               destroy $frm.lab4 ; destroy $frm.radio_on ; destroy $frm.radio_off
-               destroy $frm.temp_ccd ; destroy $frm.test
-            }
-            #--- Definition de la resolution
-            if { ! [ winfo exists $frm.lab2 ] } {
-               label $frm.lab2 -text "$caption(confcam,can_resolution)"
-               pack $frm.lab2 -in $frm.frame10 -anchor center -side left -padx 10
-               #---
-               set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
-               ComboBox $frm.res \
-                  -width 7       \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken \
-                  -borderwidth 1 \
-                  -editable 0    \
-                  -textvariable confCam(kitty,res) \
-                  -values $list_combobox
-               pack $frm.res -in $frm.frame10 -anchor center -side right -padx 10
-               #--- Definition du capteur de temperature
-               label $frm.lab3 -text "$caption(confcam,capteur_temp)"
-               pack $frm.lab3 -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-               #---
-               set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
-               ComboBox $frm.captemp \
-                  -width 12          \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken     \
-                  -borderwidth 1     \
-                  -editable 0        \
-                  -textvariable confCam(kitty,captemp) \
-                  -values $list_combobox
-               pack $frm.captemp -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-            }
-            #--- Gestion des boutons actif/inactif
-            ::confCam::ConfKitty
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-         pack $frm.radio0 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio Kitty-255
-      radiobutton $frm.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,kitty_255)" -value 255 -variable confCam(kitty,modele) -state normal -command {
-            set frm [ $::confCam::This.usr.onglet getframe kitty ]
-            if { [ winfo exists $frm.lab4 ] } {
-               destroy $frm.lab4 ; destroy $frm.radio_on ; destroy $frm.radio_off
-               destroy $frm.temp_ccd ; destroy $frm.test
-            }
-            #--- Definition de la resolution
-            if { ! [ winfo exists $frm.lab2 ] } {
-               label $frm.lab2 -text "$caption(confcam,can_resolution)"
-               pack $frm.lab2 -in $frm.frame10 -anchor center -side left -padx 10
-               #---
-               set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
-               ComboBox $frm.res \
-                  -width 7       \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken \
-                  -borderwidth 1 \
-                  -editable 0    \
-                  -textvariable confCam(kitty,res) \
-                  -values $list_combobox
-               pack $frm.res -in $frm.frame10 -anchor center -side right -padx 10
-               #--- Definition du capteur de temperature
-               label $frm.lab3 -text "$caption(confcam,capteur_temp)"
-               pack $frm.lab3 -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-               #---
-               set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
-               ComboBox $frm.captemp \
-                  -width 12          \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken     \
-                  -borderwidth 1     \
-                  -editable 0        \
-                  -textvariable confCam(kitty,captemp) \
-                  -values $list_combobox
-               pack $frm.captemp -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-            }
-            #--- Gestion des boutons actif/inactif
-            ::confCam::ConfKitty
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-         pack $frm.radio1 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio Kitty-2
-      radiobutton $frm.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,kitty_2)" -value K2 -variable confCam(kitty,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe kitty ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.captemp
-            }
-            #--- Definition du refroidissement
-            label $frm.lab4 -text "$caption(confcam,refroidissement_2)"
-            pack $frm.lab4 -in $frm.frame10 -anchor center -side left -padx 10
-            #--- Refroidissement On
-            radiobutton $frm.radio_on -anchor w -highlightthickness 0 \
-               -text "$caption(confcam,refroidissement_on)" -value 1 \
-               -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler on }
-            pack $frm.radio_on -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
-            #--- Refroidissement Off
-            radiobutton $frm.radio_off -anchor w -highlightthickness 0 \
-               -text "$caption(confcam,refroidissement_off)" -value 0 \
-               -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler off }
-            pack $frm.radio_off -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
-            #--- Definition de la temperature du capteur CCD
-            label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
-            pack $frm.temp_ccd -in $frm.frame13 -side left -fill x -padx 10 -pady 0
-            #--- Bouton de test du microcontrolleur de la carte d'interface
-            button $frm.test -text "$caption(confcam,test)" -relief raised \
-               -command { cam$confCam($confCam(currentCamItem),camNo) sx28test }
-            pack $frm.test -in $frm.frame14 -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
-            #--- Gestion des boutons actif/inactif
-            ::confCam::ConfKitty
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-         pack $frm.radio2 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Definition du port
-      label $frm.lab1 -text "$caption(confcam,port)"
-      pack $frm.lab1 -in $frm.frame9 -anchor center -side left -padx 10
-
-      #--- Je constitue la liste des liaisons pour l'acquisition des images
-      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
-
-      #--- Je verifie le contenu de la liste
-      if { [llength $list_combobox ] > 0 } {
-         #--- si la liste n'est pas vide,
-         #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_combobox $confCam(kitty,port)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
-            #--- je la remplace par le premier item de la liste
-            set confCam(kitty,port) [lindex $list_combobox 0]
-         }
-      } else {
-         #--- si la liste est vide, on continue quand meme
-      }
-
-      #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
-         -command {
-            ::confLink::run ::confCam(kitty,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(kitty,camera)"
-         }
-      pack $frm.configure -in $frm.frame9 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
-
-      #--- Choix du port ou de la liaison
-      ComboBox $frm.port \
-         -width 7        \
-         -height [ llength $list_combobox ] \
-         -relief sunken  \
-         -borderwidth 1  \
-         -editable 0     \
-         -textvariable confCam(kitty,port) \
-         -values $list_combobox
-      pack $frm.port -in $frm.frame9 -anchor center -side right -padx 10
-
-      #--- Definition de la resolution
-      if { $confCam(kitty,modele) != "K2" } {
-         label $frm.lab2 -text "$caption(confcam,can_resolution)"
-         pack $frm.lab2 -in $frm.frame10 -anchor center -side left -padx 10
-
-         set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_8bits) ]
-         ComboBox $frm.res \
-            -width 7       \
-            -height [ llength $list_combobox ] \
-            -relief sunken \
-            -borderwidth 1 \
-            -editable 0    \
-            -textvariable confCam(kitty,res) \
-            -values $list_combobox
-         pack $frm.res -in $frm.frame10 -anchor center -side right -padx 10
-      }
-
-      #--- Miroir en x et en y
-      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(kitty,mirh)
-      pack $frm.mirx -in $frm.frame11 -anchor w -side left -padx 10
-
-      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(kitty,mirv)
-      pack $frm.miry -in $frm.frame12 -anchor w -side left -padx 10
-
-      #--- Definition du capteur de temperature
-      if { $confCam(kitty,modele) != "K2" } {
-         label $frm.lab3 -text "$caption(confcam,capteur_temp)"
-         pack $frm.lab3 -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-
-         set list_combobox [ list $caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5) ]
-         ComboBox $frm.captemp \
-            -width 12          \
-            -height [ llength $list_combobox ] \
-            -relief sunken     \
-            -borderwidth 1     \
-            -editable 0        \
-            -textvariable confCam(kitty,captemp) \
-            -values $list_combobox
-         pack $frm.captemp -in $frm.frame3 -anchor n -side left -padx 10 -pady 10
-      #--- Definition du refroidissement, de la temperature du CCD et du test
-      } else {
-         #--- Definition du refroidissement
-         label $frm.lab4 -text "$caption(confcam,refroidissement_2)"
-         pack $frm.lab4 -in $frm.frame10 -anchor center -side left -padx 10
-         #--- Refroidissement On
-         radiobutton $frm.radio_on -anchor w -highlightthickness 0 \
-            -text "$caption(confcam,refroidissement_on)" -value 1 \
-            -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler on }
-         pack $frm.radio_on -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
-         #--- Refroidissement Off
-         radiobutton $frm.radio_off -anchor w -highlightthickness 0 \
-            -text "$caption(confcam,refroidissement_off)" -value 0 \
-            -variable confCam(kitty,on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler off }
-         pack $frm.radio_off -in $frm.frame10 -side left -padx 5 -pady 5 -ipady 0
-         #--- Definition de la temperature du capteur CCD
-         label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
-         pack $frm.temp_ccd -in $frm.frame13 -side left -fill x -padx 10 -pady 0
-         #--- Bouton de test du microcontrolleur de la carte d'interface
-         button $frm.test -text "$caption(confcam,test)" -relief raised \
-            -command { cam$confCam($confCam(currentCamItem),camNo) sx28test }
-         pack $frm.test -in $frm.frame14 -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
-      }
-
-      #--- Gestion des boutons actif/inactif
-      ::confCam::ConfKitty
-
-      #--- Site web officiel des Kitty
-      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
-
-      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_kitty)" \
-         "$caption(confcam,site_kitty)" ]
-      pack $labelName -side top -fill x -pady 2
+      #--- Construction de l'interface graphique
+      ::kitty::fillConfigPage $frm
    }
 
    #
@@ -1875,133 +1436,8 @@ namespace eval ::confCam {
    # Fenetre de configuration de la Andor
    #
    proc fillPageandor { frm } {
-      global audace caption color conf confCam
-
-      #--- confToWidget
-      set confCam(andor,cool)        $conf(andor,cool)
-      set confCam(andor,foncobtu)    [ lindex "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" $conf(andor,foncobtu) ]
-      set confCam(andor,config)      $conf(andor,config)
-      set confCam(andor,mirh)        $conf(andor,mirh)
-      set confCam(andor,mirv)        $conf(andor,mirv)
-      set confCam(andor,temp)        $conf(andor,temp)
-      set confCam(andor,ouvert_obtu) $conf(andor,ouvert_obtu)
-      set confCam(andor,ferm_obtu)   $conf(andor,ferm_obtu)
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill both -expand 1
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill both -expand 1
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side bottom -fill x -pady 2
-
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -in $frm.frame2 -side bottom -fill both -expand 1
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame2 -side left -fill x -expand 1
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame2 -side left -fill x -expand 1
-
-      frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -in $frm.frame5 -side top -fill x -padx 30
-
-      frame $frm.frame8 -borderwidth 0 -relief raised
-      pack $frm.frame8 -in $frm.frame5 -side top -fill x -padx 30
-
-      frame $frm.frame9 -borderwidth 0 -relief raised
-      pack $frm.frame9 -in $frm.frame4 -side top -fill x -expand 1
-
-      frame $frm.frame10 -borderwidth 0 -relief raised
-      pack $frm.frame10 -in $frm.frame4 -side top -fill x -expand 1
-
-      frame $frm.frame11 -borderwidth 0 -relief raised
-      pack $frm.frame11 -in $frm.frame4 -side top -fill x -expand 1
-
-      #--- Definition du host pour une connexion Ethernet
-      label $frm.lab2 -text "$caption(confcam,andor_config)"
-      pack $frm.lab2 -in $frm.frame1 -anchor center -side left -padx 10
-
-      entry $frm.host -width 40 -textvariable confCam(andor,config)
-      pack $frm.host -in $frm.frame1 -anchor center -side left -padx 10
-
-      button $frm.explore -text "$caption(confcam,andor_parcourir)" -width 1 \
-         -command {
-            set confCam(andor,config) [ tk_chooseDirectory -title "$caption(confcam,andor_dossier)" \
-            -initialdir [ file join $audace(rep_install) bin ] -parent $audace(base).confCam ]
-         }
-      pack $frm.explore -in $frm.frame1 -side left -padx 10 -pady 5 -ipady 5
-
-      #--- Definition du refroidissement
-      checkbutton $frm.cool -text "$caption(confcam,refroidissement)" -highlightthickness 0 \
-         -variable confCam(andor,cool)
-      pack $frm.cool -in $frm.frame7 -anchor center -side left -padx 0 -pady 5
-
-      entry $frm.temp -textvariable confCam(andor,temp) -width 4 -justify center
-      pack $frm.temp -in $frm.frame7 -anchor center -side left -padx 5 -pady 5
-
-      label $frm.tempdeg -text "$caption(confcam,deg_c) $caption(confcam,refroidissement_1)"
-      pack $frm.tempdeg -in $frm.frame7 -side left -fill x -padx 0 -pady 5
-
-      #--- Definition de la temperature du capteur CCD
-      label $frm.temp_ccd -text "$caption(confcam,temperature_CCD)"
-      pack $frm.temp_ccd -in $frm.frame8 -side left -fill x -padx 20 -pady 5
-
-      #--- Miroir en x et en y
-      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(andor,mirh)
-      pack $frm.mirx -in $frm.frame6 -anchor w -side top -padx 10 -pady 10
-
-      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(andor,mirv)
-      pack $frm.miry -in $frm.frame6 -anchor w -side top -padx 10 -pady 10
-
-      #--- Fonctionnement de l'obturateur
-      label $frm.lab3 -text "$caption(confcam,fonc_obtu)"
-      pack $frm.lab3 -in $frm.frame9 -anchor center -side left -padx 10 -pady 5
-
-      set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-         $caption(confcam,obtu_synchro) ]
-      ComboBox $frm.foncobtu \
-         -width 11           \
-         -height [ llength $list_combobox ] \
-         -relief sunken      \
-         -borderwidth 1      \
-         -editable 0         \
-         -textvariable confCam(andor,foncobtu) \
-         -values $list_combobox
-      pack $frm.foncobtu -in $frm.frame9 -anchor center -side left -padx 10 -pady 5
-
-      #--- Delai d'ouverture de l'obturateur
-      label $frm.lab4 -text "$caption(confcam,andor_ouvert_obtu)"
-      pack $frm.lab4 -in $frm.frame10 -anchor center -side left -padx 10 -pady 5
-
-      entry $frm.ouvert_obtu -textvariable confCam(andor,ouvert_obtu) -width 4 -justify center
-      pack $frm.ouvert_obtu -in $frm.frame10 -anchor center -side left -padx 5 -pady 5
-
-      label $frm.lab5 -text "$caption(confcam,andor_ms)"
-      pack $frm.lab5 -in $frm.frame10 -side left -fill x -padx 0 -pady 5
-
-      #--- Delai de fermeture de l'obturateur
-      label $frm.lab6 -text "$caption(confcam,andor_ferm_obtu)"
-      pack $frm.lab6 -in $frm.frame11 -anchor center -side left -padx 10 -pady 5
-
-      entry $frm.ferm_obtu -textvariable confCam(andor,ferm_obtu) -width 4 -justify center
-      pack $frm.ferm_obtu -in $frm.frame11 -anchor center -side left -padx 5 -pady 5
-
-      label $frm.lab7 -text "$caption(confcam,andor_ms)"
-      pack $frm.lab7 -in $frm.frame11 -side left -fill x -padx 0 -pady 5
-
-      #--- Site web officiel de la Andor
-      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
-
-      set labelName [ ::confCam::createUrlLabel $frm.frame3 "$caption(confcam,site_andor)" \
-         "$caption(confcam,site_andor)" ]
-      pack $labelName -side top -fill x -pady 2
+      #--- Construction de l'interface graphique
+      ::andor::fillConfigPage $frm
    }
 
    #
@@ -2104,6 +1540,7 @@ namespace eval ::confCam {
    #----------------------------------------------------------------------------
    proc setShutter { camNo shutterState} {
       variable This
+      variable private
       global audace caption conf confCam panneau
 
       #---
@@ -2150,24 +1587,27 @@ namespace eval ::confCam {
             #---
             switch -exact -- $shutterState {
                0  {
-                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ouvert)
+                  set confCam($camProduct,foncobtu) $caption(confcam,obtu_ouvert)
                   catch {
+                     set ::$camProduct::private(foncobtu) $caption(confcam,obtu_ouvert)
                      $frm.foncobtu configure -height [ llength $ShutterOptionList ]
                      $frm.foncobtu configure -values $ShutterOptionList
                   }
                   cam$camNo shutter "opened"
                }
                1  {
-                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_ferme)
+                  set confCam($camProduct,foncobtu) $caption(confcam,obtu_ferme)
                   catch {
+                     set ::$camProduct::private(foncobtu) $caption(confcam,obtu_ferme)
                      $frm.foncobtu configure -height [ llength $ShutterOptionList ]
                      $frm.foncobtu configure -values $ShutterOptionList
                   }
                   cam$camNo shutter "closed"
                }
                2  {
-                  set confCam($camProduct,foncobtu) $caption(acqfc,obtu_synchro)
+                  set confCam($camProduct,foncobtu) $caption(confcam,obtu_synchro)
                   catch {
+                     set ::$camProduct::private(foncobtu) $caption(confcam,obtu_synchro)
                      $frm.foncobtu configure -height [ llength $ShutterOptionList ]
                      $frm.foncobtu configure -values $ShutterOptionList
                   }
@@ -2235,24 +1675,10 @@ namespace eval ::confCam {
                ::cookbook::stop $camItem
             }
             starlight {
-               #--- Je ferme la liaison d'acquisition de la camera
-               ::confLink::delete $conf(starlight,port) "cam$camNo" "acquisition"
-               #--- Je ferme la camera
-               if { $confCam($camItem,camNo) != 0 } {
-                 cam::delete $confCam($camItem,camNo)
-                 set confCam($camItem,camNo) 0
-               }
+               ::starlight::stop $camItem
             }
             kitty {
-               #--- Je ferme la liaison d'acquisition de la camera
-               ::confLink::delete $conf(kitty,port) "cam$camNo" "acquisition"
-               #--- Gestion des boutons
-               ::confCam::ConfKitty
-               #--- Je ferme la camera
-               if { $confCam($camItem,camNo) != 0 } {
-                 cam::delete $confCam($camItem,camNo)
-                 set confCam($camItem,camNo) 0
-               }
+               ::kitty::stop $camItem
             }
             webcam {
                ::webcam::stop $camItem
@@ -2287,11 +1713,7 @@ namespace eval ::confCam {
                }
             }
             andor {
-               #--- Je ferme la camera
-               if { $confCam($camItem,camNo) != 0 } {
-                 cam::delete $confCam($camItem,camNo)
-                 set confCam($camItem,camNo) 0
-               }
+               ::andor::stop $camItem
             }
             fli {
                ::fingerlakes::stop $camItem
@@ -2865,111 +2287,10 @@ namespace eval ::confCam {
                ::cookbook::configureCamera $camItem
             }
             starlight {
-               set starlight_accelerator $conf(starlight,acc)
-               if { $conf(starlight,modele) == "MX516" } {
-                  set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]
-                  console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
-                     $caption(confcam,2points) $conf(starlight,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  cam$camNo accelerator $starlight_accelerator
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(starlight,mirh)
-                  cam$camNo mirrorv $conf(starlight,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(starlight,modele) == "MX916" } {
-                  set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
-                  console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
-                     $caption(confcam,2points) $conf(starlight,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  cam$camNo accelerator $starlight_accelerator
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(starlight,mirh)
-                  cam$camNo mirrorv $conf(starlight,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(starlight,modele) == "HX516" } {
-                  set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
-                  console::affiche_erreur "$caption(confcam,port_starlight) $conf(starlight,modele)\
-                     $caption(confcam,2points) $conf(starlight,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  cam$camNo accelerator $starlight_accelerator
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(starlight,mirh)
-                  cam$camNo mirrorv $conf(starlight,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               }
+               ::starlight::configureCamera $camItem
             }
             kitty {
-               if { $conf(kitty,modele) == "237" } {
-                  set camNo [ cam::create kitty $conf(kitty,port) -name KITTY237 \
-                     -canbits [ lindex $conf(kitty,res) 0 ] ]
-                  console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
-                     $caption(confcam,2points) $conf(kitty,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  cam$camNo canbits [ lindex $conf(kitty,res) 0 ]
-                  if { $conf(kitty,captemp) == "0" } {
-                     cam$camNo AD7893 AN2
-                  } else {
-                     cam$camNo AD7893 AN5
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(kitty,mirh)
-                  cam$camNo mirrorv $conf(kitty,mirv)
-                  ::confVisu::visuDynamix $visuNo 4096 -4096
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(kitty,modele) == "255" } {
-                  set camNo [ cam::create kitty $conf(kitty,port) -name KITTY255 \
-                     -canbits [ lindex $conf(kitty,res) 0 ] ]
-                  console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele) ($conf(kitty,res))\
-                     $caption(confcam,2points) $conf(kitty,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  cam$camNo canbits [ lindex $conf(kitty,res) 0 ]
-                  if { $conf(kitty,captemp) == "0" } {
-                     cam$camNo AD7893 AN2
-                  } else {
-                     cam$camNo AD7893 AN5
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(kitty,mirh)
-                  cam$camNo mirrorv $conf(kitty,mirv)
-                  ::confVisu::visuDynamix $visuNo 4096 -4096
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(kitty,modele) == "K2" } {
-                  set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ]
-                  console::affiche_erreur "$caption(confcam,port_kitty) $conf(kitty,modele)\
-                     $caption(confcam,2points) $conf(kitty,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(kitty,mirh)
-                  cam$camNo mirrorv $conf(kitty,mirv)
-                  #---
-                  if { $conf(kitty,on_off) == "1" } {
-                     cam$camNo cooler on
-                  } else {
-                     cam$camNo cooler off
-                  }
-                  #---
-                  ::confVisu::visuDynamix $visuNo 4096 -4096
-                  #---
-                  if { [ info exists confCam(kitty,aftertemp) ] == "0" } {
-                     ::confCam::KittyDispTemp
-                  }
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               }
+               ::kitty::configureCamera $camItem
             }
             webcam {
                ::webcam::configureCamera $camItem
@@ -3057,48 +2378,7 @@ namespace eval ::confCam {
                ::confVisu::visuDynamix $visuNo 4096 -4096
             }
             andor {
-               if {$conf(andor,config)=="cemes"} {
-                  set camNo [ cam::create cemes PCI ]
-               } else {
-                  #--- Je mets conf(andor,config) entre guillemets pour le cas ou
-                  #--- le nom du repertoire contient des espaces
-                  set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
-               }
-               set confCam($camItem,camNo) $camNo
-               console::affiche_erreur "$caption(confcam,port_andor) ([ cam$camNo name ]) \
-                  $caption(confcam,2points) $conf(andor,config)\n"
-               console::affiche_saut "\n"
-               set foncobtu $conf(andor,foncobtu)
-               switch -exact -- $foncobtu {
-                  0 {
-                     cam$camNo shutter "opened"
-                  }
-                  1 {
-                     cam$camNo shutter "closed"
-                  }
-                  2 {
-                     cam$camNo shutter "synchro"
-                  }
-               }
-               if { $conf(andor,cool) == "1" } {
-                  cam$camNo cooler on
-                  cam$camNo cooler check $conf(andor,temp)
-               } else {
-                  cam$camNo cooler off
-               }
-               cam$camNo buf $bufNo
-               cam$camNo mirrorh $conf(andor,mirh)
-               cam$camNo mirrorv $conf(andor,mirv)
-               ::confVisu::visuDynamix $visuNo 65535 0
-               #--- Delais d'ouverture et de fermeture de l'obturateur
-               if {$conf(andor,config)!="cemes"} {
-                  cam$camNo openingtime $conf(andor,ouvert_obtu)
-                  cam$camNo closingtime $conf(andor,ferm_obtu)
-               }
-               #---
-               if { [ info exists confCam(andor,aftertemp) ] == "0" } {
-                  ::confCam::AndorDispTemp
-               }
+               ::andor::configureCamera $camItem
             }
             fingerlakes {
                ::fingerlakes::configureCamera $camItem
@@ -3317,7 +2597,7 @@ namespace eval ::confCam {
 
       #--- Gestion des boutons actifs/inactifs
       ::confCam::ConfAudine
-      ::confCam::ConfKitty
+      ::kitty::ConfKitty
       ::webcam::ConfigWebCam $camItem
       ::confCam::ConfDSLR
       #--- Effacement du message d'alerte s'il existe
@@ -3379,21 +2659,11 @@ namespace eval ::confCam {
          }
          starlight {
             #--- Memorise la configuration des Starlight dans le tableau conf(starlight,...)
-            set conf(starlight,acc)               [ lsearch "$caption(confcam,sans_accelerateur) $caption(confcam,avec_accelerateur)" "$confCam(starlight,acc)" ]
-            set conf(starlight,mirh)              $confCam(starlight,mirh)
-            set conf(starlight,mirv)              $confCam(starlight,mirv)
-            set conf(starlight,modele)            [ lindex "MX516 MX916 HX516" $confCam(starlight,modele) ]
-            set conf(starlight,port)              $confCam(starlight,port)
+            ::starlight::widgetToConf
          }
          kitty {
             #--- Memorise la configuration des Kitty dans le tableau conf(kitty,...)
-            set conf(kitty,captemp)               [ lsearch "$caption(confcam,capteur_temp_ad7893an2) $caption(confcam,capteur_temp_ad7893an5)" "$confCam(kitty,captemp)" ]
-            set conf(kitty,mirh)                  $confCam(kitty,mirh)
-            set conf(kitty,mirv)                  $confCam(kitty,mirv)
-            set conf(kitty,modele)                $confCam(kitty,modele)
-            set conf(kitty,port)                  $confCam(kitty,port)
-            set conf(kitty,res)                   $confCam(kitty,res)
-            set conf(kitty,on_off)                $confCam(kitty,on_off)
+            ::kitty::widgetToConf
          }
          webcam {
             #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$camItem,...)
@@ -3420,14 +2690,7 @@ namespace eval ::confCam {
          }
          andor {
             #--- Memorise la configuration de la Andor dans le tableau conf(andor,...)
-            set conf(andor,cool)                  $confCam(andor,cool)
-            set conf(andor,foncobtu)              [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(andor,foncobtu)" ]
-            set conf(andor,config)                $confCam(andor,config)
-            set conf(andor,mirh)                  $confCam(andor,mirh)
-            set conf(andor,mirv)                  $confCam(andor,mirv)
-            set conf(andor,temp)                  $confCam(andor,temp)
-            set conf(andor,ouvert_obtu)           $confCam(andor,ouvert_obtu)
-            set conf(andor,ferm_obtu)             $confCam(andor,ferm_obtu)
+            ::andor::widgetToConf
          }
          fingerlakes {
             #--- Memorise la configuration de la FLI dans le tableau conf(fingerlakes,...)
@@ -3440,42 +2703,6 @@ namespace eval ::confCam {
          coolpix {
             #--- Memorise la configuration de la Cemes dans le tableau conf(coolpix,...)
             ::coolpix::widgetToConf
-         }
-      }
-   }
-
-   proc KittyDispTemp { } {
-      variable This
-      global caption confCam
-
-      catch {
-         set frm [ $This.usr.onglet getframe kitty ]
-         set camItem $confCam(currentCamItem)
-         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
-            set temp_ccd [ format "%+5.2f" $temp_ccd ]
-            $frm.temp_ccd configure \
-               -text "$caption(confcam,temperature_CCD) $temp_ccd $caption(confcam,deg_c)"
-            set confCam(kitty,aftertemp) [ after 5000 ::confCam::KittyDispTemp ]
-         } else {
-            catch { unset confCam(kitty,aftertemp) }
-         }
-      }
-   }
-
-   proc AndorDispTemp { } {
-      variable This
-      global caption confCam
-
-      catch {
-         set frm [ $This.usr.onglet getframe andor ]
-         set camItem $confCam(currentCamItem)
-         if { [ info exists This ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
-            set temp_ccd [ format "%+5.2f" $temp_ccd ]
-            $frm.temp_ccd configure \
-               -text "$caption(confcam,temperature_CCD) $temp_ccd $caption(confcam,deg_c)"
-            set confCam(andor,aftertemp) [ after 5000 ::confCam::AndorDispTemp ]
-         } else {
-            catch { unset confCam(andor,aftertemp) }
          }
       }
    }
