@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.93 2007-10-18 21:10:10 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.94 2007-10-19 22:16:34 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -246,10 +246,10 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::ConfAudine
+   # confCam::confAudine
    # Permet d'activer ou de desactiver le bouton Tests pour la fabrication de la camera Audine
    #
-   proc ConfAudine { } {
+   proc confAudine { } {
       variable This
       global audace confCam
 
@@ -274,10 +274,10 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::ConfDSLR
+   # confCam::confDSLR
    # Permet d'activer ou de desactiver le bouton de configuration des APN (DSLR)
    #
-   proc ConfDSLR { } {
+   proc confDSLR { } {
       variable This
       global audace confCam
 
@@ -717,7 +717,7 @@ namespace eval ::confCam {
       pack $frm.test -in $frm.frame3 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion du bouton actif/inactif
-      ::confCam::ConfAudine
+      ::confCam::confAudine
 
       #--- Site web officiel de l'Audine
       label $frm.lab103 -text "$caption(confcam,site_web_ref)"
@@ -1342,7 +1342,7 @@ namespace eval ::confCam {
 
       #--- Utilisation de la longue pose
       checkbutton $frm.longuepose -text "$caption(confcam,dslr_longuepose)" -highlightthickness 0 \
-         -variable confCam(dslr,longuepose) -command { ::confCam::ConfDSLR }
+         -variable confCam(dslr,longuepose) -command { ::confCam::confDSLR }
       pack $frm.longuepose -in $frm.frame8 -anchor w -side left -padx 10 -pady 10
 
       #--- Je verifie le contenu de la liste
@@ -1421,7 +1421,7 @@ namespace eval ::confCam {
       pack $frm.config_telechargement -in $frm.frame11 -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
       #--- Gestion du bouton actif/inactif
-      ::confCam::ConfDSLR
+      ::confCam::confDSLR
 
       #--- Site web officiel de GPhoto2
       label $frm.lab104 -text "$caption(confcam,site_web_ref)"
@@ -1652,7 +1652,7 @@ namespace eval ::confCam {
                   ::testAudine::fermer
                }
                #--- Gestion des boutons
-               ::confCam::ConfAudine
+               ::confCam::confAudine
                #--- Je ferme la camera
                if { $confCam($camItem,camNo) != 0 } {
                  cam::delete $confCam($camItem,camNo)
@@ -1695,7 +1695,7 @@ namespace eval ::confCam {
                   destroy $audace(base).telecharge_image
                }
                #--- Gestion des boutons
-               ::confCam::ConfDSLR
+               ::confCam::confDSLR
                #--- Je ferme la liaison longuepose
                if { $conf(dslr,longuepose) == 1 } {
                   ::confLink::delete $conf(dslr,longueposeport) "cam$camNo" "longuepose"
@@ -2596,10 +2596,8 @@ namespace eval ::confCam {
       set confCam($camItem,super_camNo) $confCam($camItem,camNo)
 
       #--- Gestion des boutons actifs/inactifs
-      ::confCam::ConfAudine
-      ::kitty::ConfKitty
-      ::webcam::ConfigWebCam $camItem
-      ::confCam::ConfDSLR
+      ::confCam::confAudine
+      ::confCam::confDSLR
       #--- Effacement du message d'alerte s'il existe
       if [ winfo exists $audace(base).connectCamera ] {
          destroy $audace(base).connectCamera

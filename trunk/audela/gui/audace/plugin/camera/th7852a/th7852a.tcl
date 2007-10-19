@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.15 2007-10-14 15:43:33 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.16 2007-10-19 22:15:51 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -155,20 +155,29 @@ proc ::th7852a::fillConfigPage { frm } {
 proc ::th7852a::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create camth "unknown" -name TH7852A ]
-   console::affiche_erreur "$caption(th7852a,port_camera) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(th7852a,mirh)
-   cam$camNo mirrorv $conf(th7852a,mirv)
-   #--- Je configure le coefficient
-   cam$camNo timescale $conf(th7852a,coef)
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+   set catchResult [ catch {
+      set camNo [ cam::create camth "unknown" -name TH7852A ]
+      console::affiche_erreur "$caption(th7852a,port_camera) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(th7852a,mirh)
+      cam$camNo mirrorv $conf(th7852a,mirv)
+      #--- Je configure le coefficient
+      cam$camNo timescale $conf(th7852a,coef)
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::th7852a::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
+   }
 }
 
 #

@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.23 2007-10-14 15:07:10 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.24 2007-10-19 22:16:09 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -57,26 +57,26 @@ proc ::webcam::initPlugin { } {
 
    #--- Initialise les variables de la webcams A
    foreach camItem { A B C } {
-      if { ! [ info exists conf(webcam,$camItem,longuepose) ] }            { set conf(webcam,$camItem,longuepose)           "0" }
-      if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }        { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
-      if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }     { set conf(webcam,$camItem,longueposelinkbit)    "0" }
-      if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] }  { set conf(webcam,$camItem,longueposestartvalue) "0" }
-      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                  { set conf(webcam,$camItem,mirh)                 "0" }
-      if { ! [ info exists conf(webcam,$camItem,mirv) ] }                  { set conf(webcam,$camItem,mirv)                 "0" }
-      if { ! [ info exists conf(webcam,$camItem,channel) ] }               { set conf(webcam,$camItem,channel)              "0" }
-      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }               { set conf(webcam,$camItem,ccd_N_B)              "0" }
-      if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }           { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
-      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                   { set conf(webcam,$camItem,ccd)                  "" }
-      if { ! [ info exists conf(webcam,$camItem,videoformat) ] }           { set conf(webcam,$camItem,videoformat)          "QCIF" }
-      if { ! [ info exists conf(webcam,$camItem,port) ] }                  { set conf(webcam,$camItem,port)                 "/dev/video0" }
+      if { ! [ info exists conf(webcam,$camItem,longuepose) ] }           { set conf(webcam,$camItem,longuepose)           "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }       { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
+      if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }    { set conf(webcam,$camItem,longueposelinkbit)    "0" }
+      if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] } { set conf(webcam,$camItem,longueposestartvalue) "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                 { set conf(webcam,$camItem,mirh)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirv) ] }                 { set conf(webcam,$camItem,mirv)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,channel) ] }              { set conf(webcam,$camItem,channel)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }              { set conf(webcam,$camItem,ccd_N_B)              "0" }
+      if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }          { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
+      if { ! [ info exists conf(webcam,$camItem,ccd) ] }                  { set conf(webcam,$camItem,ccd)                  "" }
+      if { ! [ info exists conf(webcam,$camItem,videoformat) ] }          { set conf(webcam,$camItem,videoformat)          "QCIF" }
+      if { ! [ info exists conf(webcam,$camItem,port) ] }                 { set conf(webcam,$camItem,port)                 "/dev/video0" }
 
       if { $::tcl_platform(os) == "Linux" } {
-         if { ! [ info exists conf(webcam,$camItem,configWindowPosition)]} { set conf(webcam,$camItem,configWindowPosition) "+0+0"  }
-         if { ! [ info exists conf(webcam,$camItem,framerate) ] }          { set conf(webcam,$camItem,framerate)            "5"  }
-         if { ! [ info exists conf(webcam,$camItem,shutter) ] }            { set conf(webcam,$camItem,shutter)              "1/25"  }
-         if { ! [ info exists conf(webcam,$camItem,gain) ] }               { set conf(webcam,$camItem,gain)                 "50"  }
-         if { ! [ info exists conf(webcam,$camItem,autoShutter) ] }        { set conf(webcam,$camItem,autoShutter)          "1"  }
-         if { ! [ info exists conf(webcam,$camItem,autoGain) ] }           { set conf(webcam,$camItem,autoGain)             "1"  }
+         if { ! [ info exists conf(webcam,$camItem,configWindowPosition)]} { set conf(webcam,$camItem,configWindowPosition) "+0+0" }
+         if { ! [ info exists conf(webcam,$camItem,framerate) ] }          { set conf(webcam,$camItem,framerate)            "5" }
+         if { ! [ info exists conf(webcam,$camItem,shutter) ] }            { set conf(webcam,$camItem,shutter)              "1/25" }
+         if { ! [ info exists conf(webcam,$camItem,gain) ] }               { set conf(webcam,$camItem,gain)                 "50" }
+         if { ! [ info exists conf(webcam,$camItem,autoShutter) ] }        { set conf(webcam,$camItem,autoShutter)          "1" }
+         if { ! [ info exists conf(webcam,$camItem,autoGain) ] }           { set conf(webcam,$camItem,autoGain)             "1" }
       }
    }
 
@@ -383,7 +383,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
    pack $frm.frame2 -side bottom -fill x -pady 2
 
    #--- Gestion des widgets actifs/inactifs
-   ::webcam::ConfigWebCam $camItem
+   ::webcam::configWebCam $camItem
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -464,8 +464,11 @@ proc ::webcam::configureCamera { camItem } {
          cam$camNo longuepose 0
       }
 
-      #--- je reseigne la dynamique de la camera
+      #--- je renseigne la dynamique de la camera
       ::confVisu::visuDynamix $confCam($camItem,visuNo) 255 -255
+
+      #--- Gestion des widgets actifs/inactifs
+      ::webcam::configWebCam $camItem
 
    } ]
 
@@ -478,12 +481,10 @@ proc ::webcam::configureCamera { camItem } {
 
 }
 
-#------------------------------------------------------------
-#  selectPort
-#     selectionne un port
 #
-#  return null
-#------------------------------------------------------------
+# selectPort
+#    selectionne un port
+#
 proc ::webcam::selectPort { camItem tklist } {
    variable private
 
@@ -499,18 +500,8 @@ proc ::webcam::stop { camItem } {
    variable private
    global conf confCam
 
-   if { [ info exists private(frm)] } {
-      set frm $private(frm)
-      #--- Boutons de configuration de la WebCam inactif
-      if { [ winfo exists $frm] } {
-         if { $::tcl_platform(os) == "Linux" } {
-            $frm.frame6.videoFormatList configure -state disabled
-         } else {
-            $frm.frame7.conf_webcam configure -state disabled
-            $frm.frame6.format_webcam configure -state disabled
-         }
-      }
-   }
+   #--- Gestion des widgets actifs/inactifs
+   ::webcam::configWebCamInactif
 
    #--- Je ferme la liaison longuepose
    if { $conf(webcam,$camItem,longuepose) == 1 } {
@@ -531,14 +522,14 @@ proc ::webcam::stop { camItem } {
 }
 
 #
-# ::webcam::ConfigWebCam
+# ::webcam::configWebCam
 #    Configure les widgets de configuration de la WebCam
 #
-proc ::webcam::ConfigWebCam { camItem } {
+proc ::webcam::configWebCam { camItem } {
    variable private
-   global conf confCam
+   global confCam
 
-   if { [ info exists private(frm)] } {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "webcam" } {
@@ -580,13 +571,35 @@ proc ::webcam::ConfigWebCam { camItem } {
 }
 
 #
+# ::webcam::configWebCamInactif
+# Permet de desactiver les widgets a l'arret de la WebCam
+#
+proc ::webcam::configWebCamInactif { } {
+   variable private
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Boutons de configuration de la WebCam actif
+         if { $::tcl_platform(os) == "Linux" } {
+            $frm.frame6.videoFormatList configure -state disabled
+         } else {
+            $frm.frame7.conf_webcam configure -state disabled
+            $frm.frame6.format_webcam configure -state disabled
+         }
+      }
+   }
+
+}
+
+#
 # ::webcam::checkConfigLonguePose
 #    Configure les widgets de configuration de la longue pose
 #
 proc ::webcam::checkConfigLonguePose { camItem } {
    variable private
 
-   if { [ info exists private(frm)] } {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { $private($camItem,longuepose) == "1" } {
@@ -613,23 +626,19 @@ proc ::webcam::checkConfigLonguePose { camItem } {
 proc ::webcam::checkConfigCCDN&B { camItem } {
    variable private
 
-   if { [ info exists private(frm)] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { $::webcam::private($camItem,ccd_N_B) == "1" } {
-            if { $::webcam::private($camItem,dim_ccd_N_B) == "1/4''" } {
-               set ::webcam::private($camItem,ccd) "ICX098BL-6"
-            } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/3''" } {
-               set ::webcam::private($camItem,ccd) "ICX424AL-6"
-            } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/2''" } {
-               set ::webcam::private($camItem,ccd) "ICX414AL-6"
-            }
-            pack $frm.frame15 -in $frm.frame14 -side right -fill x -pady 5
-         } else {
-            set ::webcam::private($camItem,ccd) "ICX098BQ-A"
-            pack forget $frm.frame15
-         }
+   set frm $private(frm)
+   if { $::webcam::private($camItem,ccd_N_B) == "1" } {
+      if { $::webcam::private($camItem,dim_ccd_N_B) == "1/4''" } {
+         set ::webcam::private($camItem,ccd) "ICX098BL-6"
+      } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/3''" } {
+         set ::webcam::private($camItem,ccd) "ICX424AL-6"
+      } elseif { $::webcam::private($camItem,dim_ccd_N_B) == "1/2''" } {
+         set ::webcam::private($camItem,ccd) "ICX414AL-6"
       }
+      pack $frm.frame15 -in $frm.frame14 -side right -fill x -pady 5
+   } else {
+      set ::webcam::private($camItem,ccd) "ICX098BQ-A"
+      pack forget $frm.frame15
    }
 }
 
