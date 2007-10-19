@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.14 2007-10-13 14:43:43 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.15 2007-10-19 22:12:21 robertdelmas Exp $
 #
 
 namespace eval ::coolpix {
@@ -152,16 +152,26 @@ proc ::coolpix::fillConfigPage { frm } {
 proc ::coolpix::configureCamera { camItem } {
    global confCam
 
-   if { [ ::confVisu::getTool $confCam($camItem,visuNo) ] == "acqapn" } {
-      set camNo "0"
-      set confCam($camItem,camName) "coolpix"
-      ::acqapn::Off
-      ::acqapn::Query
-      set confCam($camItem,camNo) $camNo
-   } else {
-      set camItem $confCam(currentCamItem)
-      set confCam($camItem,camName) ""
-      set confCam($camItem,camNo)   "0"
+   set catchResult [ catch {
+      if { [ ::confVisu::getTool $confCam($camItem,visuNo) ] == "acqapn" } {
+         #--- La camera se connecte uniquement lorsque l'outil Acquisition APN CoolPix est affiche dans la visu1
+         set camNo "0"
+         set confCam($camItem,camName) "coolpix"
+         ::acqapn::Off
+         ::acqapn::Query
+         set confCam($camItem,camNo) $camNo
+      } else {
+         set camItem $confCam(currentCamItem)
+         set confCam($camItem,camName) ""
+         set confCam($camItem,camNo)   "0"
+      }
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::coolpix::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
    }
 }
 
@@ -183,7 +193,7 @@ proc ::coolpix::connect { } {
    variable private
    global confCam
 
-   if { [ info exists private(frm)] } {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          ::confCam::appliquer

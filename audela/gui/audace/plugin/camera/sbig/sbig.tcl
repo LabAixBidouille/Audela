@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.4 2007-10-14 15:08:23 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.5 2007-10-19 22:14:45 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -279,42 +279,51 @@ proc ::sbig::fillConfigPage { frm } {
 proc ::sbig::configureCamera { camItem } {
    global caption conf confCam
 
-  ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
-   set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
-   console::affiche_erreur "$caption(sbig,port_camera) ([ cam$camNo name ]) $caption(sbig,2points) $conf(sbig,port)\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   #--- Je cree la liaison utilisee par la camera pour l'acquisition
-   set linkNo [ ::confLink::create $conf(sbig,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-   #--- Je configure l'obturateur
-   set foncobtu $conf(sbig,foncobtu)
-   switch -exact -- $foncobtu {
-      0 {
-         cam$camNo shutter "opened"
+   set catchResult [ catch {
+     ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
+      set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
+      console::affiche_erreur "$caption(sbig,port_camera) ([ cam$camNo name ]) $caption(sbig,2points) $conf(sbig,port)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition
+      set linkNo [ ::confLink::create $conf(sbig,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+      #--- Je configure l'obturateur
+      switch -exact -- $conf(sbig,foncobtu) {
+         0 {
+            cam$camNo shutter "opened"
+         }
+         1 {
+            cam$camNo shutter "closed"
+         }
+         2 {
+            cam$camNo shutter "synchro"
+         }
       }
-      1 {
-         cam$camNo shutter "closed"
+      #--- Je configure le refroidissement
+      if { $conf(sbig,cool) == "1" } {
+         cam$camNo cooler check $conf(sbig,temp)
+      } else {
+         cam$camNo cooler off
       }
-      2 {
-         cam$camNo shutter "synchro"
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(sbig,mirh)
+      cam$camNo mirrorv $conf(sbig,mirv)
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
+      #--- Je mesure la temperature du capteur CCD
+      if { [ info exists confCam(sbig,aftertemp) ] == "0" } {
+         ::sbig::SbigDispTemp
       }
-   }
-   if { $conf(sbig,cool) == "1" } {
-      cam$camNo cooler check $conf(sbig,temp)
-   } else {
-      cam$camNo cooler off
-   }
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(sbig,mirh)
-   cam$camNo mirrorv $conf(sbig,mirv)
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
-   #---
-   if { [ info exists confCam(sbig,aftertemp) ] == "0" } {
-      ::sbig::SbigDispTemp
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::sbig::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
    }
 }
 
@@ -371,16 +380,21 @@ proc ::sbig::configurePort { } {
    variable private
    global caption
 
-   if { $::tcl_platform(os) != "Linux" } {
-      if { $::sbig::private(port) == "$caption(sbig,usb)" || $::sbig::private(port) == "$caption(sbig,ethernet)" } {
-         $private(frm).frame1.configure configure -state disabled
-      } else {
-         $private(frm).frame1.configure configure -state normal
-      }
-      if { $::sbig::private(port) == "$caption(sbig,ethernet)" } {
-         $private(frm).frame1.host configure -state normal
-      } else {
-         $private(frm).frame1.host configure -state disabled
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $::tcl_platform(os) != "Linux" } {
+            if { $::sbig::private(port) == "$caption(sbig,usb)" || $::sbig::private(port) == "$caption(sbig,ethernet)" } {
+               $frm.frame1.configure configure -state disabled
+            } else {
+               $frm.frame1.configure configure -state normal
+            }
+            if { $::sbig::private(port) == "$caption(sbig,ethernet)" } {
+               $frm.frame1.host configure -state normal
+            } else {
+               $frm.frame1.host configure -state disabled
+            }
+         }
       }
    }
 }
@@ -392,7 +406,7 @@ proc ::sbig::configurePort { } {
 proc ::sbig::checkConfigRefroidissement { } {
    variable private
 
-   if { [ info exists private(frm)] } {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { $::sbig::private(cool) == "1" } {
@@ -446,7 +460,7 @@ proc ::sbig::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
-      shutterList     {
+      shutterList      {
          #--- O + F + S
          return [ list $::caption(sbig,obtu_ouvert) $::caption(sbig,obtu_ferme) $::caption(sbig,obtu_synchro) ]
       }

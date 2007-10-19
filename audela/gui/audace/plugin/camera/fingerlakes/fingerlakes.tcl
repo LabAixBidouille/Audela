@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.14 2007-10-14 15:38:55 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.15 2007-10-19 22:12:41 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -217,39 +217,49 @@ proc ::fingerlakes::fillConfigPage { frm } {
 proc ::fingerlakes::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create fingerlakes USB ]
-   console::affiche_erreur "$caption(fingerlakes,port_camera) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   set foncobtu $conf(fingerlakes,foncobtu)
-   switch -exact -- $foncobtu {
-      0 {
-         cam$camNo shutter "opened"
+   set catchResult [ catch {
+      set camNo [ cam::create fingerlakes USB ]
+      console::affiche_erreur "$caption(fingerlakes,port_camera) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je configure l'obturateur
+      switch -exact -- $conf(fingerlakes,foncobtu) {
+         0 {
+            cam$camNo shutter "opened"
+         }
+         1 {
+            cam$camNo shutter "closed"
+         }
+         2 {
+            cam$camNo shutter "synchro"
+         }
       }
-      1 {
-         cam$camNo shutter "closed"
+      #--- Je configure le refroidissement
+      if { $conf(fingerlakes,cool) == "1" } {
+         cam$camNo cooler on
+         cam$camNo cooler check $conf(fingerlakes,temp)
+      } else {
+         cam$camNo cooler off
       }
-      2 {
-         cam$camNo shutter "synchro"
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(fingerlakes,mirh)
+      cam$camNo mirrorv $conf(fingerlakes,mirv)
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
+      #--- Je mesure la temperature du capteur CCD
+      if { [ info exists confCam(fingerlakes,aftertemp) ] == "0" } {
+         ::fingerlakes::FLIDispTemp
       }
-   }
-   if { $conf(fingerlakes,cool) == "1" } {
-      cam$camNo cooler on
-      cam$camNo cooler check $conf(fingerlakes,temp)
-   } else {
-      cam$camNo cooler off
-   }
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(fingerlakes,mirh)
-   cam$camNo mirrorv $conf(fingerlakes,mirv)
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
-   #---
-   if { [ info exists confCam(fingerlakes,aftertemp) ] == "0" } {
-      ::fingerlakes::FLIDispTemp
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::fingerlakes::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
    }
 }
 
@@ -296,7 +306,7 @@ proc ::fingerlakes::FLIDispTemp { } {
 proc ::fingerlakes::checkConfigRefroidissement { } {
    variable private
 
-   if { [ info exists private(frm)] } {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { $::fingerlakes::private(cool) == "1" } {
@@ -348,7 +358,7 @@ proc ::fingerlakes::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
-      shutterList     {
+      shutterList      {
          #--- O + F + S - A confirmer avec le materiel
          return [ list $::caption(fingerlakes,obtu_ouvert) $::caption(fingerlakes,obtu_ferme) $::caption(fingerlakes,obtu_synchro) ]
       }

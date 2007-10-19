@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.14 2007-09-22 06:39:16 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.15 2007-10-19 22:12:02 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -205,22 +205,31 @@ proc ::cookbook::fillConfigPage { frm } {
 proc ::cookbook::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ]
-   console::affiche_erreur "$caption(cookbook,port_camera) $caption(cookbook,2points) $conf(cookbook,port)\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   #--- Je cree la liaison utilisee par la camera pour l'acquisition
-   set linkNo [ ::confLink::create $conf(cookbook,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-   #--- Je configure le delai
-   cam$camNo delay $conf(cookbook,delai)
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(cookbook,mirh)
-   cam$camNo mirrorv $conf(cookbook,mirv)
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
+   set catchResult [ catch {
+      set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ]
+      console::affiche_erreur "$caption(cookbook,port_camera) $caption(cookbook,2points) $conf(cookbook,port)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition
+      set linkNo [ ::confLink::create $conf(cookbook,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+      #--- Je configure le delai
+      cam$camNo delay $conf(cookbook,delai)
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(cookbook,mirh)
+      cam$camNo mirrorv $conf(cookbook,mirv)
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::cookbook::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
+   }
 }
 
 #

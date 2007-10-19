@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.4 2007-10-18 21:07:45 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.5 2007-10-19 22:15:33 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -233,60 +233,69 @@ proc ::starlight::fillConfigPage { frm } {
 proc ::starlight::configureCamera { camItem } {
    global caption conf confCam
 
-   if { $conf(starlight,modele) == "MX516" } {
-      set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]
-      console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
-         $caption(starlight,2points) $conf(starlight,port)\n"
-      console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
-      #--- Je cree la liaison utilisee par la camera pour l'acquisition
-      set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-      #--- Je configure l'accelerateur de port parallele
-      cam$camNo accelerator $conf(starlight,acc)
-      #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
-      cam$camNo buf $bufNo
-      #--- Je configure l'oriention des miroirs par defaut
-      cam$camNo mirrorh $conf(starlight,mirh)
-      cam$camNo mirrorv $conf(starlight,mirv)
-      #---
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
-   } elseif { $conf(starlight,modele) == "MX916" } {
-      set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
-      console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
-         $caption(starlight,2points) $conf(starlight,port)\n"
-      console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
-      #--- Je cree la liaison utilisee par la camera pour l'acquisition
-      set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-      #--- Je configure l'accelerateur de port parallele
-      cam$camNo accelerator $conf(starlight,acc)
-      #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
-      cam$camNo buf $bufNo
-      #--- Je configure l'oriention des miroirs par defaut
-      cam$camNo mirrorh $conf(starlight,mirh)
-      cam$camNo mirrorv $conf(starlight,mirv)
-      #---
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
-   } elseif { $conf(starlight,modele) == "HX516" } {
-      set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
-      console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
-         $caption(starlight,2points) $conf(starlight,port)\n"
-      console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
-      #--- Je cree la liaison utilisee par la camera pour l'acquisition
-      set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-      #--- Je configure l'accelerateur de port parallele
-      cam$camNo accelerator $conf(starlight,acc)
-      #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
-      cam$camNo buf $bufNo
-      #--- Je configure l'oriention des miroirs par defaut
-      cam$camNo mirrorh $conf(starlight,mirh)
-      cam$camNo mirrorv $conf(starlight,mirv)
-      #---
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+   set catchResult [ catch {
+      if { $conf(starlight,modele) == "MX516" } {
+         set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]
+         console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+            $caption(starlight,2points) $conf(starlight,port)\n"
+         console::affiche_saut "\n"
+         set confCam($camItem,camNo) $camNo
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition
+         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+         #--- Je configure l'accelerateur de port parallele
+         cam$camNo accelerator $conf(starlight,acc)
+         #--- J'associe le buffer de la visu
+         set bufNo [visu$confCam($camItem,visuNo) buf]
+         cam$camNo buf $bufNo
+         #--- Je configure l'oriention des miroirs par defaut
+         cam$camNo mirrorh $conf(starlight,mirh)
+         cam$camNo mirrorv $conf(starlight,mirv)
+         #--- Je renseigne la dynamique de la camera
+         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+      } elseif { $conf(starlight,modele) == "MX916" } {
+         set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
+         console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+            $caption(starlight,2points) $conf(starlight,port)\n"
+         console::affiche_saut "\n"
+         set confCam($camItem,camNo) $camNo
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition
+         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+         #--- Je configure l'accelerateur de port parallele
+         cam$camNo accelerator $conf(starlight,acc)
+         #--- J'associe le buffer de la visu
+         set bufNo [visu$confCam($camItem,visuNo) buf]
+         cam$camNo buf $bufNo
+         #--- Je configure l'oriention des miroirs par defaut
+         cam$camNo mirrorh $conf(starlight,mirh)
+         cam$camNo mirrorv $conf(starlight,mirv)
+         #--- Je renseigne la dynamique de la camera
+         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+      } elseif { $conf(starlight,modele) == "HX516" } {
+         set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
+         console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
+            $caption(starlight,2points) $conf(starlight,port)\n"
+         console::affiche_saut "\n"
+         set confCam($camItem,camNo) $camNo
+         #--- Je cree la liaison utilisee par la camera pour l'acquisition
+         set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+         #--- Je configure l'accelerateur de port parallele
+         cam$camNo accelerator $conf(starlight,acc)
+         #--- J'associe le buffer de la visu
+         set bufNo [visu$confCam($camItem,visuNo) buf]
+         cam$camNo buf $bufNo
+         #--- Je configure l'oriention des miroirs par defaut
+         cam$camNo mirrorh $conf(starlight,mirh)
+         cam$camNo mirrorv $conf(starlight,mirv)
+         #--- Je renseigne la dynamique de la camera
+         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
+      }
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::starlight::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
    }
 }
 
