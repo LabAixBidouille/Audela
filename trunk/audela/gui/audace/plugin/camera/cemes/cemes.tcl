@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.20 2007-10-14 15:34:28 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.21 2007-10-19 22:11:41 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -215,40 +215,49 @@ proc ::cemes::fillConfigPage { frm } {
 proc ::cemes::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create cemes PCI ]
-   console::affiche_erreur "$caption(cemes,port_camera) $caption(cemes,2points) [ cam$camNo port ]\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   #--- Je configure l'obturateur
-   set foncobtu $conf(cemes,foncobtu)
-   switch -exact -- $foncobtu {
-      0 {
-         cam$camNo shutter "opened"
+   set catchResult [ catch {
+      set camNo [ cam::create cemes PCI ]
+      console::affiche_erreur "$caption(cemes,port_camera) $caption(cemes,2points) [ cam$camNo port ]\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je configure l'obturateur
+      switch -exact -- $conf(cemes,foncobtu) {
+         0 {
+            cam$camNo shutter "opened"
+         }
+         1 {
+            cam$camNo shutter "closed"
+         }
+         2 {
+            cam$camNo shutter "synchro"
+         }
       }
-      1 {
-         cam$camNo shutter "closed"
+      #--- Je configure le refroidissement
+      if { $conf(cemes,cool) == "1" } {
+         cam$camNo cooler on
+         cam$camNo cooler check $conf(cemes,temp)
+      } else {
+         cam$camNo cooler off
       }
-      2 {
-         cam$camNo shutter "synchro"
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(cemes,mirh)
+      cam$camNo mirrorv $conf(cemes,mirv)
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
+      #--- Je mesure la temperature du capteur CCD
+      if { [ info exists confCam(cemes,aftertemp) ] == "0" } {
+         ::cemes::CemesDispTemp
       }
-   }
-   if { $conf(cemes,cool) == "1" } {
-      cam$camNo cooler on
-      cam$camNo cooler check $conf(cemes,temp)
-   } else {
-      cam$camNo cooler off
-   }
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(cemes,mirh)
-   cam$camNo mirrorv $conf(cemes,mirv)
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
-   #---
-   if { [ info exists confCam(cemes,aftertemp) ] == "0" } {
-      ::cemes::CemesDispTemp
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::cemes::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
    }
 }
 
@@ -295,7 +304,7 @@ proc ::cemes::CemesDispTemp { } {
 proc ::cemes::checkConfigRefroidissement { } {
    variable private
 
-   if { [ info exists private(frm)] } {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { $::cemes::private(cool) == "1" } {

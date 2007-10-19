@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.13 2007-09-22 06:41:40 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.14 2007-10-19 22:15:07 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -190,20 +190,29 @@ proc ::scr1300xtc::fillConfigPage { frm } {
 proc ::scr1300xtc::configureCamera { camItem } {
    global caption conf confCam
 
-   set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
-   console::affiche_erreur "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   #--- Je cree la liaison utilisee par la camera pour l'acquisition
-   set linkNo [ ::confLink::create $conf(scr1300xtc,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(scr1300xtc,mirh)
-   cam$camNo mirrorv $conf(scr1300xtc,mirv)
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
+   set catchResult [ catch {
+      set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
+      console::affiche_erreur "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je cree la liaison utilisee par la camera pour l'acquisition
+      set linkNo [ ::confLink::create $conf(scr1300xtc,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(scr1300xtc,mirh)
+      cam$camNo mirrorv $conf(scr1300xtc,mirv)
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::scr1300xtc::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
+   }
 }
 
 #

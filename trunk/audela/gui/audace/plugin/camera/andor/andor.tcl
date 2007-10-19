@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.4 2007-10-18 21:08:41 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.5 2007-10-19 22:11:10 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -274,43 +274,54 @@ proc ::andor::fillConfigPage { frm } {
 proc ::andor::configureCamera { camItem } {
    global caption conf confCam
 
-   #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
-   set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
-   console::affiche_erreur "$caption(andor,port_camera) ([ cam$camNo name ]) $caption(andor,2points) $conf(andor,config)\n"
-   console::affiche_saut "\n"
-   set confCam($camItem,camNo) $camNo
-   set foncobtu $conf(andor,foncobtu)
-   switch -exact -- $foncobtu {
-      0 {
-         cam$camNo shutter "opened"
+   set catchResult [ catch {
+      #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
+      set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
+      console::affiche_erreur "$caption(andor,port_camera) ([ cam$camNo name ]) \
+         $caption(andor,2points) $conf(andor,config)\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- Je configure l'obturateur
+      switch -exact -- $conf(andor,foncobtu) {
+         0 {
+            cam$camNo shutter "opened"
+         }
+         1 {
+            cam$camNo shutter "closed"
+         }
+         2 {
+            cam$camNo shutter "synchro"
+         }
       }
-      1 {
-         cam$camNo shutter "closed"
+      #--- Je configure le refroidissement
+      if { $conf(andor,cool) == "1" } {
+         cam$camNo cooler on
+         cam$camNo cooler check $conf(andor,temp)
+      } else {
+         cam$camNo cooler off
       }
-      2 {
-         cam$camNo shutter "synchro"
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(andor,mirh)
+      cam$camNo mirrorv $conf(andor,mirv)
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
+      #--- Delais d'ouverture et de fermeture de l'obturateur
+      cam$camNo openingtime $conf(andor,ouvert_obtu)
+      cam$camNo closingtime $conf(andor,ferm_obtu)
+      #--- Je mesure la temperature du capteur CCD
+      if { [ info exists confCam(andor,aftertemp) ] == "0" } {
+         ::andor::AndorDispTemp
       }
-   }
-   if { $conf(andor,cool) == "1" } {
-      cam$camNo cooler on
-      cam$camNo cooler check $conf(andor,temp)
-   } else {
-      cam$camNo cooler off
-   }
-   #--- J'associe le buffer de la visu
-   set bufNo [visu$confCam($camItem,visuNo) buf]
-   cam$camNo buf $bufNo
-   #--- Je configure l'oriention des miroirs par defaut
-   cam$camNo mirrorh $conf(andor,mirh)
-   cam$camNo mirrorv $conf(andor,mirv)
-   #---
-   ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
-   #--- Delais d'ouverture et de fermeture de l'obturateur
-   cam$camNo openingtime $conf(andor,ouvert_obtu)
-   cam$camNo closingtime $conf(andor,ferm_obtu)
-   #---
-   if { [ info exists confCam(andor,aftertemp) ] == "0" } {
-      ::andor::AndorDispTemp
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::andor::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
    }
 }
 
@@ -357,7 +368,7 @@ proc ::andor::AndorDispTemp { } {
 proc ::andor::checkConfigRefroidissement { } {
    variable private
 
-   if { [ info exists private(frm)] } {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { $::andor::private(cool) == "1" } {
@@ -409,10 +420,7 @@ proc ::andor::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
-      shutterList     {
-         #--- O + F + S - A confirmer avec le materiel
-         return [ list $::caption(andor,obtu_ouvert) $::caption(andor,obtu_ferme) $::caption(andor,obtu_synchro) ]
-      }
+      shutterList      { return [ list $::caption(andor,obtu_ouvert) $::caption(andor,obtu_ferme) $::caption(andor,obtu_synchro) ] }
    }
 }
 
