@@ -1,6 +1,6 @@
 #
 # Fichier : kitty.cap
-# Mise a jour $Id: kitty.cap,v 1.2 2007-10-18 21:06:46 robertdelmas Exp $
+# Mise a jour $Id: kitty.cap,v 1.3 2007-10-20 15:25:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -231,6 +231,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(kitty,titre_site_web)            "Reference Web Site:"
    set caption(kitty,site_web_ref)              "http://perso.wanadoo.fr/bernard.dalstein/"
+
 }
 
 #=========================================================================
