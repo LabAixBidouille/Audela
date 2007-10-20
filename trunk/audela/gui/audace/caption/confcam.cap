@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.38 2007-10-18 21:10:41 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.39 2007-10-20 15:40:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,23 +40,6 @@ set caption(confcam,obtu_ferme)                 "Closed"
 set caption(confcam,obtu_synchro)               "Synchro"
 set caption(confcam,test_fab_audine)            "Tests to Check Camera Operation"
 
-set caption(confcam,hisis_11)                   "Hi-SIS 11"
-set caption(confcam,hisis_22)                   "Hi-SIS 22"
-set caption(confcam,can_resolution)             "Resolution"
-set caption(confcam,can_12bits)                 "12 bits"
-set caption(confcam,can_14bits)                 "14 bits"
-set caption(confcam,delai_a)                    "Delay a"
-set caption(confcam,delai_b)                    "Delay b"
-set caption(confcam,delai_c)                    "Delay c"
-set caption(confcam,hisis_23)                   "Hi-SIS 23"
-set caption(confcam,hisis_24)                   "Hi-SIS 24"
-set caption(confcam,hisis_33)                   "Hi-SIS 33"
-set caption(confcam,hisis_36)                   "Hi-SIS 36"
-set caption(confcam,hisis_39)                   "Hi-SIS 39"
-set caption(confcam,hisis_43)                   "Hi-SIS 43"
-set caption(confcam,hisis_44)                   "Hi-SIS 44"
-set caption(confcam,hisis_48)                   "Hi-SIS 48"
-
 set caption(confcam,dslr_name)                  "Digital Camera"
 set caption(confcam,dslr_longuepose)            "Long Exposure"
 set caption(confcam,dslr_quickremote)           "QuickRemote"
@@ -73,11 +56,9 @@ set caption(confcam,connexion_texte3)           "Only one of this camera can be 
 
 set caption(confcam,2points)                    ":"
 set caption(confcam,port_audine)                "Audine Port"
-set caption(confcam,port_hisis)                 "Hi-SIS Port - Model"
 
 set caption(confcam,site_web_ref)               "Reference Web Site:"
 set caption(confcam,site_audine)                "http://www.astrosurf.com/audine/English/index_en.htm"
-set caption(confcam,site_hisis)                 "http://www.europixel.it/europixelweb/welcomeframe.htm"
 set caption(confcam,site_dslr)                  "http://gphoto.sourceforge.net/"
 
 set caption(confcam,pb)                         "Problem"
@@ -115,23 +96,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
    set caption(confcam,test_fab_audine)         "Tests pour la fabrication de la caméra"
 
-   set caption(confcam,hisis_11)                "Hi-SIS 11"
-   set caption(confcam,hisis_22)                "Hi-SIS 22"
-   set caption(confcam,can_resolution)          "Résolution"
-   set caption(confcam,can_12bits)              "12 bits"
-   set caption(confcam,can_14bits)              "14 bits"
-   set caption(confcam,delai_a)                 "Délai a"
-   set caption(confcam,delai_b)                 "Délai b"
-   set caption(confcam,delai_c)                 "Délai c"
-   set caption(confcam,hisis_23)                "Hi-SIS 23"
-   set caption(confcam,hisis_24)                "Hi-SIS 24"
-   set caption(confcam,hisis_33)                "Hi-SIS 33"
-   set caption(confcam,hisis_36)                "Hi-SIS 36"
-   set caption(confcam,hisis_39)                "Hi-SIS 39"
-   set caption(confcam,hisis_43)                "Hi-SIS 43"
-   set caption(confcam,hisis_44)                "Hi-SIS 44"
-   set caption(confcam,hisis_48)                "Hi-SIS 48"
-
    set caption(confcam,dslr_name)               "Appareil Photo Numérique"
    set caption(confcam,dslr_longuepose)         "Longue pose"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
@@ -148,11 +112,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,2points)                 ":"
    set caption(confcam,port_audine)             "Port Audine"
-   set caption(confcam,port_hisis)              "Port Hi-SIS"
 
    set caption(confcam,site_web_ref)            "Site Web de référence :"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/index_fr.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
 
    set caption(confcam,pb)                      "Problème"
@@ -190,23 +152,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Sincronizza"
    set caption(confcam,test_fab_audine)         "Rilevamento camera in corso"
 
-   set caption(confcam,hisis_11)                "Hi-SIS 11"
-   set caption(confcam,hisis_22)                "Hi-SIS 22"
-   set caption(confcam,can_resolution)          "Risoluzione"
-   set caption(confcam,can_12bits)              "12 bits"
-   set caption(confcam,can_14bits)              "14 bits"
-   set caption(confcam,delai_a)                 "Intervallo a"
-   set caption(confcam,delai_b)                 "Intervallo b"
-   set caption(confcam,delai_c)                 "Intervallo c"
-   set caption(confcam,hisis_23)                "Hi-SIS 23"
-   set caption(confcam,hisis_24)                "Hi-SIS 24"
-   set caption(confcam,hisis_33)                "Hi-SIS 33"
-   set caption(confcam,hisis_36)                "Hi-SIS 36"
-   set caption(confcam,hisis_39)                "Hi-SIS 39"
-   set caption(confcam,hisis_43)                "Hi-SIS 43"
-   set caption(confcam,hisis_44)                "Hi-SIS 44"
-   set caption(confcam,hisis_48)                "Hi-SIS 48"
-
    set caption(confcam,dslr_name)               "Fotocamera digitale"
    set caption(confcam,dslr_longuepose)         "Lunga posa"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
@@ -223,11 +168,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,2points)                 ":"
    set caption(confcam,port_audine)             "Porta Audine"
-   set caption(confcam,port_hisis)              "Porta Hi-SIS"
 
    set caption(confcam,site_web_ref)            "Sito Web di riferimento:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
 
    set caption(confcam,pb)                      "Problema"
@@ -265,23 +208,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Sincro"
    set caption(confcam,test_fab_audine)         "Tests para la fabricación de la cámara"
 
-   set caption(confcam,hisis_11)                "Hi-SIS 11"
-   set caption(confcam,hisis_22)                "Hi-SIS 22"
-   set caption(confcam,can_resolution)          "Resolución"
-   set caption(confcam,can_12bits)              "12 bits"
-   set caption(confcam,can_14bits)              "14 bits"
-   set caption(confcam,delai_a)                 "Retraso a"
-   set caption(confcam,delai_b)                 "Retraso b"
-   set caption(confcam,delai_c)                 "Retraso c"
-   set caption(confcam,hisis_23)                "Hi-SIS 23"
-   set caption(confcam,hisis_24)                "Hi-SIS 24"
-   set caption(confcam,hisis_33)                "Hi-SIS 33"
-   set caption(confcam,hisis_36)                "Hi-SIS 36"
-   set caption(confcam,hisis_39)                "Hi-SIS 39"
-   set caption(confcam,hisis_43)                "Hi-SIS 43"
-   set caption(confcam,hisis_44)                "Hi-SIS 44"
-   set caption(confcam,hisis_48)                "Hi-SIS 48"
-
    set caption(confcam,dslr_name)               "Cámara digital"
    set caption(confcam,dslr_longuepose)         "Exposición larga"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
@@ -298,11 +224,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,2points)                 ":"
    set caption(confcam,port_audine)             "Puerto Audine"
-   set caption(confcam,port_hisis)              "Puerto Hi-SIS"
 
    set caption(confcam,site_web_ref)            "Sitio Web de referencia:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
 
    set caption(confcam,pb)                      "Problema"
@@ -340,23 +264,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
    set caption(confcam,test_fab_audine)         "Testen für das Kamera Bau"
 
-   set caption(confcam,hisis_11)                "Hi-SIS 11"
-   set caption(confcam,hisis_22)                "Hi-SIS 22"
-   set caption(confcam,can_resolution)          "Auflösung"
-   set caption(confcam,can_12bits)              "12 bit"
-   set caption(confcam,can_14bits)              "14 bit"
-   set caption(confcam,delai_a)                 "Zeitraum a"
-   set caption(confcam,delai_b)                 "Zeitraum b"
-   set caption(confcam,delai_c)                 "Zeitraum c"
-   set caption(confcam,hisis_23)                "Hi-SIS 23"
-   set caption(confcam,hisis_24)                "Hi-SIS 24"
-   set caption(confcam,hisis_33)                "Hi-SIS 33"
-   set caption(confcam,hisis_36)                "Hi-SIS 36"
-   set caption(confcam,hisis_39)                "Hi-SIS 39"
-   set caption(confcam,hisis_43)                "Hi-SIS 43"
-   set caption(confcam,hisis_44)                "Hi-SIS 44"
-   set caption(confcam,hisis_48)                "Hi-SIS 48"
-
    set caption(confcam,dslr_name)               "Digital Fotoapparat"
    set caption(confcam,dslr_longuepose)         "Lange Belichtung"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
@@ -373,11 +280,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,2points)                 ":"
    set caption(confcam,port_audine)             "Audine Port"
-   set caption(confcam,port_hisis)              "Hi-SIS Port"
 
    set caption(confcam,site_web_ref)            "Referenz Webseite:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
 
    set caption(confcam,pb)                      "Problem"
@@ -415,23 +320,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Sincro"
    set caption(confcam,test_fab_audine)         "Testa a operação da câmara"
 
-   set caption(confcam,hisis_11)                "Hi-SIS 11"
-   set caption(confcam,hisis_22)                "Hi-SIS 22"
-   set caption(confcam,can_resolution)          "Resolução"
-   set caption(confcam,can_12bits)              "12 bits"
-   set caption(confcam,can_14bits)              "14 bits"
-   set caption(confcam,delai_a)                 "Atraso a"
-   set caption(confcam,delai_b)                 "Atraso b"
-   set caption(confcam,delai_c)                 "Atraso c"
-   set caption(confcam,hisis_23)                "Hi-SIS 23"
-   set caption(confcam,hisis_24)                "Hi-SIS 24"
-   set caption(confcam,hisis_33)                "Hi-SIS 33"
-   set caption(confcam,hisis_36)                "Hi-SIS 36"
-   set caption(confcam,hisis_39)                "Hi-SIS 39"
-   set caption(confcam,hisis_43)                "Hi-SIS 43"
-   set caption(confcam,hisis_44)                "Hi-SIS 44"
-   set caption(confcam,hisis_48)                "Hi-SIS 48"
-
    set caption(confcam,dslr_name)               "Câmara Digital"
    set caption(confcam,dslr_longuepose)         "Longa Exposição"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
@@ -448,11 +336,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,2points)                 ":"
    set caption(confcam,port_audine)             "Porta Audine"
-   set caption(confcam,port_hisis)              "Porta modelo - Hi-SIS Port"
 
    set caption(confcam,site_web_ref)            "Site Web de referência:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_dsc)                "http://gphoto.sourceforge.net/"
 
    set caption(confcam,pb)                      "Problema"
@@ -490,23 +376,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_synchro)            "Synchro"
    set caption(confcam,test_fab_audine)         "Tests to Check Camera Operation"
 
-   set caption(confcam,hisis_11)                "Hi-SIS 11"
-   set caption(confcam,hisis_22)                "Hi-SIS 22"
-   set caption(confcam,can_resolution)          "Resolution"
-   set caption(confcam,can_12bits)              "12 bits"
-   set caption(confcam,can_14bits)              "14 bits"
-   set caption(confcam,delai_a)                 "Delay a"
-   set caption(confcam,delai_b)                 "Delay b"
-   set caption(confcam,delai_c)                 "Delay c"
-   set caption(confcam,hisis_23)                "Hi-SIS 23"
-   set caption(confcam,hisis_24)                "Hi-SIS 24"
-   set caption(confcam,hisis_33)                "Hi-SIS 33"
-   set caption(confcam,hisis_36)                "Hi-SIS 36"
-   set caption(confcam,hisis_39)                "Hi-SIS 39"
-   set caption(confcam,hisis_43)                "Hi-SIS 43"
-   set caption(confcam,hisis_44)                "Hi-SIS 44"
-   set caption(confcam,hisis_48)                "Hi-SIS 48"
-
    set caption(confcam,dslr_name)               "Digital Camera"
    set caption(confcam,dslr_longuepose)         "Long Exposure"
    set caption(confcam,dslr_quickremote)        "QuickRemote"
@@ -523,11 +392,9 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confcam,2points)                 ":"
    set caption(confcam,port_audine)             "Audine Port"
-   set caption(confcam,port_hisis)              "Hi-SIS Port - Model"
 
    set caption(confcam,site_web_ref)            "Reference Web Site:"
    set caption(confcam,site_audine)             "http://www.astrosurf.com/audine/English/index_en.htm"
-   set caption(confcam,site_hisis)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
    set caption(confcam,site_dslr)               "http://gphoto.sourceforge.net/"
 
    set caption(confcam,pb)                      "Problem"

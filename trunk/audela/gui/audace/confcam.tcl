@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.94 2007-10-19 22:16:34 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.95 2007-10-20 15:41:32 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -732,495 +732,8 @@ namespace eval ::confCam {
    # Fenetre de configuration des Hi-SIS
    #
    proc fillPagehisis { frm } {
-      variable This
-      global audace caption color conf confCam
-
-      #--- confToWidget
-      set confCam(hisis,delai_a)  $conf(hisis,delai_a)
-      set confCam(hisis,delai_b)  $conf(hisis,delai_b)
-      set confCam(hisis,delai_c)  $conf(hisis,delai_c)
-      set confCam(hisis,foncobtu) [ lindex "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" $conf(hisis,foncobtu) ]
-      set confCam(hisis,mirh)     $conf(hisis,mirh)
-      set confCam(hisis,mirv)     $conf(hisis,mirv)
-      set confCam(hisis,modele)   [ lsearch "11 22 23 24 33 36 39 43 44 48" "$conf(hisis,modele)" ]
-      set confCam(hisis,port)     $conf(hisis,port)
-      set confCam(hisis,res)      $conf(hisis,res)
-
-      #--- Creation des differents frames
-      frame $frm.frame1 -borderwidth 0 -relief raised
-      pack $frm.frame1 -side top -fill x -pady 10
-
-      frame $frm.frame2 -borderwidth 0 -relief raised
-      pack $frm.frame2 -side top -fill x -pady 10
-
-      frame $frm.frame3 -borderwidth 0 -relief raised
-      pack $frm.frame3 -side top -fill both -expand 1
-
-      frame $frm.frame4 -borderwidth 0 -relief raised
-      pack $frm.frame4 -side bottom -fill x -pady 2
-
-      frame $frm.frame5 -borderwidth 0 -relief raised
-      pack $frm.frame5 -in $frm.frame3 -side left -fill both -expand 1
-
-      frame $frm.frame6 -borderwidth 0 -relief raised
-      pack $frm.frame6 -in $frm.frame3 -side left -fill both -expand 1
-
-      frame $frm.frame7 -borderwidth 0 -relief raised
-      pack $frm.frame7 -in $frm.frame5 -side top -fill both -expand 1
-
-      frame $frm.frame8 -borderwidth 0 -relief raised
-      pack $frm.frame8 -in $frm.frame5 -side top -fill both -expand 1
-
-      frame $frm.frame9 -borderwidth 0 -relief raised
-      pack $frm.frame9 -in $frm.frame7 -side left -fill both -expand 1
-
-      frame $frm.frame10 -borderwidth 0 -relief raised
-      pack $frm.frame10 -in $frm.frame7 -side left -fill both -expand 1
-
-      frame $frm.frame11 -borderwidth 0 -relief raised
-      pack $frm.frame11 -in $frm.frame9 -side top -fill both -expand 1
-
-      frame $frm.frame12 -borderwidth 0 -relief raised
-      pack $frm.frame12 -in $frm.frame9 -side top -fill both -expand 1
-
-      frame $frm.frame13 -borderwidth 0 -relief raised
-      pack $frm.frame13 -in $frm.frame6 -side top -fill both -expand 1
-
-      frame $frm.frame14 -borderwidth 0 -relief raised
-      pack $frm.frame14 -in $frm.frame6 -side top -fill both -expand 1
-
-      frame $frm.frame15 -borderwidth 0 -relief raised
-      pack $frm.frame15 -in $frm.frame6 -side top -fill both -expand 1
-
-      #--- Bouton radio Hi-SIS11
-      radiobutton $frm.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_11)" -value 0 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab0 ] } {
-               destroy $frm.lab0 ; destroy $frm.foncobtu
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio0 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS22
-      radiobutton $frm.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_22)" -value 1 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11         \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken    \
-                  -borderwidth 1    \
-                  -editable 0       \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-               pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Resolution
-            label $frm.lab2 -text "$caption(confcam,can_resolution)"
-            pack $frm.lab2 -in $frm.frame12 -anchor center -side left -padx 10
-            set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_14bits) ]
-            ComboBox $frm.res \
-               -width 7       \
-               -height [ llength $list_combobox ] \
-               -relief sunken \
-               -borderwidth 1 \
-               -editable 0    \
-               -textvariable confCam(hisis,res) \
-               -values $list_combobox
-            pack $frm.res -in $frm.frame12 -anchor center -side right -padx 20
-            #--- Parametrage des delais
-            label $frm.lab3 -text "$caption(confcam,delai_a)"
-            pack $frm.lab3 -in $frm.frame13 -anchor center -side left -padx 10
-            entry $frm.delai_a -textvariable confCam(hisis,delai_a) -width 3 -justify center
-            pack $frm.delai_a -in $frm.frame13 -anchor center -side left
-            label $frm.lab4 -text "$caption(confcam,delai_b)"
-            pack $frm.lab4 -in $frm.frame14 -anchor center -side left -padx 10
-            entry $frm.delai_b -textvariable confCam(hisis,delai_b) -width 3 -justify center
-            pack $frm.delai_b -in $frm.frame14 -anchor center -side left
-            label $frm.lab5 -text "$caption(confcam,delai_c)"
-            pack $frm.lab5 -in $frm.frame15 -anchor center -side left -padx 10
-            entry $frm.delai_c -textvariable confCam(hisis,delai_c) -width 3 -justify center
-            pack $frm.delai_c -in $frm.frame15 -anchor center -side left
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio1 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS23
-      radiobutton $frm.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_23)" -value 2 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-            pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio2 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS24
-      radiobutton $frm.radio3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_24)" -value 3 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-               pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio3 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS33
-      radiobutton $frm.radio4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_33)" -value 4 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-               pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio4 -in $frm.frame1 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS36
-      radiobutton $frm.radio5 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_36)" -value 5 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-            pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio5 -in $frm.frame2 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS39
-      radiobutton $frm.radio6 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_39)" -value 6 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-               pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio6 -in $frm.frame2 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS43
-      radiobutton $frm.radio7 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_43)" -value 7 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-               pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio7 -in $frm.frame2 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS44
-      radiobutton $frm.radio8 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_44)" -value 8 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-               pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio8 -in $frm.frame2 -anchor center -side left -padx 10
-
-      #--- Bouton radio Hi-SIS48
-      radiobutton $frm.radio9 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
-         -text "$caption(confcam,hisis_48)" -value 9 -variable confCam(hisis,modele) -command {
-            set frm [ $::confCam::This.usr.onglet getframe hisis ]
-            if { [ winfo exists $frm.lab2 ] } {
-               destroy $frm.lab2 ; destroy $frm.res
-               destroy $frm.lab3 ; destroy $frm.delai_a
-               destroy $frm.lab4 ; destroy $frm.delai_b
-               destroy $frm.lab5 ; destroy $frm.delai_c
-            }
-            #--- Choix du fonctionnement de l'obturateur
-            if { ! [ winfo exists $frm.lab0 ] } {
-               label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-               pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 10
-               set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-                  $caption(confcam,obtu_synchro) ]
-               ComboBox $frm.foncobtu \
-                  -width 11           \
-                  -height [ llength $list_combobox ] \
-                  -relief sunken      \
-                  -borderwidth 1      \
-                  -editable 0         \
-                  -textvariable confCam(hisis,foncobtu) \
-                  -values $list_combobox
-               pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-            }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
-         }
-      pack $frm.radio9 -in $frm.frame2 -anchor center -side left -padx 10
-
-      #--- Definition du port
-      label $frm.lab1 -text "$caption(confcam,port)"
-      pack $frm.lab1 -in $frm.frame11 -anchor center -side left -padx 10
-
-      #--- Je constitue la liste des liaisons pour l'acquisition des images
-      set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
-
-      #--- Je verifie le contenu de la liste
-      if { [llength $list_combobox ] > 0 } {
-         #--- si la liste n'est pas vide,
-         #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $list_combobox $confCam(hisis,port)] == -1 } {
-            #--- si la valeur par defaut n'existe pas dans la liste,
-            #--- je la remplace par le premier item de la liste
-            set confCam(hisis,port) [lindex $list_combobox 0]
-         }
-      } else {
-         #--- si la liste est vide, on continue quand meme
-      }
-
-      #--- Bouton de configuration des ports et liaisons
-      button $frm.configure -text "$caption(confcam,configurer)" -relief raised \
-         -command {
-            ::confLink::run ::confCam(hisis,port) { parallelport } \
-               "- $caption(confcam,acquisition) - $caption(hisis,camera)"
-         }
-      pack $frm.configure -in $frm.frame11 -anchor center -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
-
-      #--- Choix du port ou de la liaison
-      ComboBox $frm.port \
-         -width 7        \
-         -height [ llength $list_combobox ] \
-         -relief sunken  \
-         -borderwidth 1  \
-         -editable 0     \
-         -textvariable confCam(hisis,port) \
-         -values $list_combobox
-      pack $frm.port -in $frm.frame11 -anchor center -side left -padx 20
-
-      #--- Choix de la resolution et des delais
-      if { $confCam(hisis,modele) == "1" } {
-         set confCam(hisis,delai_a) $conf(hisis,delai_a)
-         set confCam(hisis,delai_b) $conf(hisis,delai_b)
-         set confCam(hisis,delai_c) $conf(hisis,delai_c)
-         label $frm.lab2 -text "$caption(confcam,can_resolution)"
-         pack $frm.lab2 -in $frm.frame12 -anchor center -side left -padx 10
-         set list_combobox [ list $caption(confcam,can_12bits) $caption(confcam,can_14bits) ]
-         ComboBox $frm.res \
-            -width 7       \
-            -height [ llength $list_combobox ] \
-            -relief sunken \
-            -borderwidth 1 \
-            -editable 0    \
-            -textvariable confCam(hisis,res) \
-            -values $list_combobox
-         pack $frm.res -in $frm.frame12 -anchor center -side right -padx 20
-         label $frm.lab3 -text "$caption(confcam,delai_a)"
-         pack $frm.lab3 -in $frm.frame13 -anchor center -side left -padx 10
-         entry $frm.delai_a -textvariable confCam(hisis,delai_a) -width 3 -justify center
-         pack $frm.delai_a -in $frm.frame13 -anchor center -side left -padx 10
-         label $frm.lab4 -text "$caption(confcam,delai_b)"
-         pack $frm.lab4 -in $frm.frame14 -anchor center -side left -padx 10
-         entry $frm.delai_b -textvariable confCam(hisis,delai_b) -width 3 -justify center
-         pack $frm.delai_b -in $frm.frame14 -anchor center -side left -padx 10
-         label $frm.lab5 -text "$caption(confcam,delai_c)"
-         pack $frm.lab5 -in $frm.frame15 -anchor center -side left -padx 10
-         entry $frm.delai_c -textvariable confCam(hisis,delai_c) -width 3 -justify center
-         pack $frm.delai_c -in $frm.frame15 -anchor center -side left -padx 10
-      } else {
-         destroy $frm.lab2
-         destroy $frm.res
-         destroy $frm.lab3
-         destroy $frm.delai_a
-         destroy $frm.lab4
-         destroy $frm.delai_b
-         destroy $frm.lab5
-         destroy $frm.delai_c
-      }
-
-      #--- Choix des miroir de l'image
-      checkbutton $frm.mirx -text "$caption(confcam,miroir_x)" -highlightthickness 0 \
-         -variable confCam(hisis,mirh)
-      pack $frm.mirx -in $frm.frame10 -anchor w -side top -padx 10 -pady 10
-      checkbutton $frm.miry -text "$caption(confcam,miroir_y)" -highlightthickness 0 \
-         -variable confCam(hisis,mirv)
-      pack $frm.miry -in $frm.frame10 -anchor w -side bottom -padx 10 -pady 10
-
-      #--- Choix du fonctionnement de l'obturateur
-      if { $confCam(hisis,modele) != "0" } {
-         label $frm.lab0 -text "$caption(confcam,fonc_obtu)"
-         pack $frm.lab0 -in $frm.frame8 -anchor center -side left -padx 8
-         set list_combobox [ list $caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) \
-            $caption(confcam,obtu_synchro) ]
-         ComboBox $frm.foncobtu \
-            -width 11           \
-            -height [ llength $list_combobox ] \
-            -relief sunken      \
-            -borderwidth 1      \
-            -textvariable confCam(hisis,foncobtu) \
-            -editable 0         \
-            -values $list_combobox
-         pack $frm.foncobtu -in $frm.frame8 -anchor center -side left -padx 10
-      } else {
-         destroy $frm.lab0
-         destroy $frm.foncobtu
-      }
-
-      #--- Site web officiel des Hi-SIS
-      label $frm.lab103 -text "$caption(confcam,site_web_ref)"
-      pack $frm.lab103 -in $frm.frame4 -side top -fill x -pady 2
-
-      set labelName [ ::confCam::createUrlLabel $frm.frame4 "$caption(confcam,site_hisis)" \
-         "$caption(confcam,site_hisis)" ]
-      pack $labelName -side top -fill x -pady 2
+      #--- Construction de l'interface graphique
+      ::hisis::fillConfigPage $frm
    }
 
    #
@@ -1572,45 +1085,44 @@ namespace eval ::confCam {
             }
             if { "$camProduct" == "audine" } {
                set conf(audine,foncobtu) $shutterState
+               set foncobtu [ $This.usr.onglet getframe $confCam($camItem,camName) ]
             } elseif { "$camProduct" == "hisis" } {
                set conf(hisis,foncobtu) $shutterState
+               set foncobtu $::hisis::private(frm).frame3.frame5.frame8
             } elseif { "$camProduct" == "sbig" } {
                set conf(sbig,foncobtu) $shutterState
+               set foncobtu $::sbig::private(frm).frame3
             } elseif { "$camProduct" == "andor" } {
                set conf(andor,foncobtu) $shutterState
+               set foncobtu $::andor::private(frm).frame2.frame4.frame7
             } elseif { "$camProduct" == "fingerlakes" } {
                set conf(fingerlakes,foncobtu) $shutterState
+               set foncobtu $::fingerlakes::private(frm).frame1.frame8
             } elseif { "$camProduct" == "cemes" } {
                set conf(cemes,foncobtu) $shutterState
+               set foncobtu $::cemes::private(frm).frame1.frame8
             }
-            set frm [ $This.usr.onglet getframe $confCam($camItem,camName) ]
             #---
             switch -exact -- $shutterState {
                0  {
                   set confCam($camProduct,foncobtu) $caption(confcam,obtu_ouvert)
-                  catch {
-                     set ::$camProduct::private(foncobtu) $caption(confcam,obtu_ouvert)
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
+                  set \::$camProduct\::private(foncobtu) $caption(confcam,obtu_ouvert)
+                  $foncobtu.foncobtu configure -height [ llength $ShutterOptionList ]
+                  $foncobtu.foncobtu configure -values $ShutterOptionList
                   cam$camNo shutter "opened"
                }
                1  {
                   set confCam($camProduct,foncobtu) $caption(confcam,obtu_ferme)
-                  catch {
-                     set ::$camProduct::private(foncobtu) $caption(confcam,obtu_ferme)
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
+                  set \::$camProduct\::private(foncobtu) $caption(confcam,obtu_ferme)
+                  $foncobtu.foncobtu configure -height [ llength $ShutterOptionList ]
+                  $foncobtu.foncobtu configure -values $ShutterOptionList
                   cam$camNo shutter "closed"
                }
                2  {
                   set confCam($camProduct,foncobtu) $caption(confcam,obtu_synchro)
-                  catch {
-                     set ::$camProduct::private(foncobtu) $caption(confcam,obtu_synchro)
-                     $frm.foncobtu configure -height [ llength $ShutterOptionList ]
-                     $frm.foncobtu configure -values $ShutterOptionList
-                  }
+                  set \::$camProduct\::private(foncobtu) $caption(confcam,obtu_synchro)
+                  $foncobtu.foncobtu configure -height [ llength $ShutterOptionList ]
+                  $foncobtu.foncobtu configure -values $ShutterOptionList
                   cam$camNo shutter "synchro"
                }
             }
@@ -1660,13 +1172,7 @@ namespace eval ::confCam {
                }
             }
             hisis {
-               #--- Je ferme la liaison d'acquisition de la camera
-               ::confLink::delete $conf(hisis,port) "cam$camNo" "acquisition"
-               #--- Je ferme la camera
-               if { $confCam($camItem,camNo) != 0 } {
-                 cam::delete $confCam($camItem,camNo)
-                 set confCam($camItem,camNo) 0
-               }
+               ::hisis::stop $camItem
             }
             sbig {
                ::sbig::stop $camItem
@@ -1715,7 +1221,7 @@ namespace eval ::confCam {
             andor {
                ::andor::stop $camItem
             }
-            fli {
+            fingerlakes {
                ::fingerlakes::stop $camItem
             }
             cemes {
@@ -2049,236 +1555,7 @@ namespace eval ::confCam {
       set catchResult [ catch {
          switch -exact -- $confCam($camItem,camName) {
             hisis {
-               if { $conf(hisis,modele) == "11" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 4096 0
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "22" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele) ($conf(hisis,res))\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  cam$camNo delayloops $conf(hisis,delai_a) $conf(hisis,delai_b) $conf(hisis,delai_c)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "23" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "24" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "33" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "36" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "39" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "43" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "44" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               } elseif { $conf(hisis,modele) == "48" } {
-                  set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 ]
-                  console::affiche_erreur "$caption(confcam,port_hisis) $conf(hisis,modele)\
-                     $caption(confcam,2points) $conf(hisis,port)\n"
-                  console::affiche_saut "\n"
-                  set confCam($camItem,camNo) $camNo
-                  set foncobtu $conf(hisis,foncobtu)
-                  switch -exact -- $foncobtu {
-                     0 {
-                        cam$camNo shutter "opened"
-                     }
-                     1 {
-                        cam$camNo shutter "closed"
-                     }
-                     2 {
-                        cam$camNo shutter "synchro"
-                     }
-                  }
-                  cam$camNo buf $bufNo
-                  cam$camNo mirrorh $conf(hisis,mirh)
-                  cam$camNo mirrorv $conf(hisis,mirv)
-                  ::confVisu::visuDynamix $visuNo 32767 -32768
-                  #--- je cree la liaison utilisee par la camera pour l'acquisition
-                  set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
-               }
+               ::hisis::configureCamera $camItem
             }
             sbig {
                ::sbig::configureCamera $camItem
@@ -2637,15 +1914,7 @@ namespace eval ::confCam {
          }
          hisis {
             #--- Memorise la configuration des Hi-SIS dans le tableau conf(hisis,...)
-            set conf(hisis,delai_a)               $confCam(hisis,delai_a)
-            set conf(hisis,delai_b)               $confCam(hisis,delai_b)
-            set conf(hisis,delai_c)               $confCam(hisis,delai_c)
-            set conf(hisis,foncobtu)              [ lsearch "$caption(confcam,obtu_ouvert) $caption(confcam,obtu_ferme) $caption(confcam,obtu_synchro)" "$confCam(hisis,foncobtu)" ]
-            set conf(hisis,mirh)                  $confCam(hisis,mirh)
-            set conf(hisis,mirv)                  $confCam(hisis,mirv)
-            set conf(hisis,modele)                [ lindex "11 22 23 24 33 36 39 43 44 48" $confCam(hisis,modele) ]
-            set conf(hisis,port)                  $confCam(hisis,port)
-            set conf(hisis,res)                   $confCam(hisis,res)
+            ::hisis::widgetToConf
          }
          sbig {
             #--- Memorise la configuration de la SBIG dans le tableau conf(sbig,...)
