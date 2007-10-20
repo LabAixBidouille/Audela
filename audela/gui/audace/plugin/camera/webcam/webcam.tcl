@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.24 2007-10-19 22:16:09 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.25 2007-10-20 15:48:37 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -24,8 +24,8 @@ proc ::webcam::getPluginTitle { } {
 }
 
 #
-#  ::webcam::getPluginHelp
-#     Retourne la documentation du driver
+# ::webcam::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::webcam::getPluginHelp { } {
    return "webcam.htm"
@@ -161,7 +161,7 @@ proc ::webcam::widgetToConf { camItem } {
 #
 proc ::webcam::fillConfigPage { frm camItem } {
    variable private
-   global caption color
+   global caption
 
    #--- Initialise une variable locale
    set private(frm) $frm
@@ -482,7 +482,7 @@ proc ::webcam::configureCamera { camItem } {
 }
 
 #
-# selectPort
+# ::webcam::selectPort
 #    selectionne un port
 #
 proc ::webcam::selectPort { camItem tklist } {
@@ -572,7 +572,7 @@ proc ::webcam::configWebCam { camItem } {
 
 #
 # ::webcam::configWebCamInactif
-# Permet de desactiver les widgets a l'arret de la WebCam
+#    Permet de desactiver les widgets a l'arret de la WebCam
 #
 proc ::webcam::configWebCamInactif { } {
    variable private
@@ -762,7 +762,7 @@ proc ::webcam::config::getLabel { } {
 #------------------------------------------------------------
 # ::webcam::config::fillConfigPage { }
 #    fenetre de configuration de la camera
-#    return rien
+# return rien
 #------------------------------------------------------------
 proc ::webcam::config::fillConfigPage { frm visuNo } {
    variable private
@@ -827,7 +827,7 @@ proc ::webcam::config::fillConfigPage { frm visuNo } {
 # ::webcam::config::onSelectFrameRate
 #    selectionne le nombre d'images par seconde
 #
-#  return null
+# return null
 #------------------------------------------------------------
 proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
    variable private
@@ -863,7 +863,7 @@ proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
 #    exposure time. It is not a linear scale, where a value of '1'
 #    is 1/65536th of a second, etc.
 #
-#  return null
+# return null
 #------------------------------------------------------------
 proc ::webcam::config::onSelectShutter { visuNo tklist value } {
    variable private
@@ -891,7 +891,7 @@ proc ::webcam::config::onSelectShutter { visuNo tklist value } {
 # ::webcam::config::onSelectGain
 #    selectionne le gain
 #
-#  return null
+# return null
 #------------------------------------------------------------
 proc ::webcam::config::onSelectGain { visuNo tkscale value } {
    variable private
@@ -919,7 +919,7 @@ proc ::webcam::config::onSelectGain { visuNo tkscale value } {
 # ::webcam::config::onSetAutoShutter
 #    change le mode automatique du shutter
 #
-#  return null
+# return null
 #------------------------------------------------------------
 proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
    variable private
@@ -953,7 +953,7 @@ proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
 # ::webcam::config::onSetGainAuto
 #    change le mode automatique du gain
 #
-#  return null
+# return null
 #------------------------------------------------------------
 proc ::webcam::config::onSetAutoGain { visuNo tkscale } {
    variable private

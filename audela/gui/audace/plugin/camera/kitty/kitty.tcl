@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.6 2007-10-19 22:21:11 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.7 2007-10-20 15:46:23 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -24,8 +24,8 @@ proc ::kitty::getPluginTitle { } {
 }
 
 #
-#  ::kitty::getPluginHelp
-#     Retourne la documentation du driver
+# ::kitty::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::kitty::getPluginHelp { } {
    return "kitty.htm"
@@ -106,7 +106,7 @@ proc ::kitty::widgetToConf { } {
 #
 proc ::kitty::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global caption
 
    #--- Initialise une variable locale
    set private(frm) $frm
@@ -141,19 +141,19 @@ proc ::kitty::fillConfigPage { frm } {
       #--- Bouton radio Kitty-237
       radiobutton $frm.frame1.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(kitty,kitty_237)" -value 237 -variable ::kitty::private(modele) \
-         -command { ::kitty::confKitty_2XX }
+         -command { ::kitty::confKitty }
       pack $frm.frame1.radio0 -anchor center -side left -padx 10
 
       #--- Bouton radio Kitty-255
       radiobutton $frm.frame1.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(kitty,kitty_255)" -value 255 -variable ::kitty::private(modele) \
-         -command { ::kitty::confKitty_2XX }
+         -command { ::kitty::confKitty }
       pack $frm.frame1.radio1 -anchor center -side left -padx 10
 
       #--- Bouton radio Kitty-2
       radiobutton $frm.frame1.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(kitty,kitty_2)" -value K2 -variable ::kitty::private(modele) \
-         -command { ::kitty::confKitty_K2 }
+         -command { ::kitty::confKitty }
       pack $frm.frame1.radio2 -anchor center -side left -padx 10
 
    pack $frm.frame1 -side top -fill x -pady 10
@@ -304,11 +304,6 @@ proc ::kitty::fillConfigPage { frm } {
 
    #--- Gestion des widgets actifs/inactifs
    ::kitty::confKitty
-   if { $::kitty::private(modele) != "K2" } {
-      ::kitty::confKitty_2XX
-   } else {
-      ::kitty::confKitty_K2
-   }
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -457,29 +452,58 @@ proc ::kitty::KittyDispTemp { } {
 
 #
 # ::kitty::confKitty
-# Permet d'activer ou de desactiver les widgets de configuration de la Kitty K2
+#    Permet d'activer ou de desactiver les widgets de configuration de la Kitty K2
 #
 proc ::kitty::confKitty { } {
    variable private
-   global audace confCam
+   global confCam
 
    set camItem $confCam(currentCamItem)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::getName $confCam($camItem,camNo) ] == "KITTYK2" } {
-            #--- Widgets de configuration de la Kitty K2 actif
-            $frm.frame2.frame5.frame9.radio_on configure -state normal
-            $frm.frame2.frame5.frame9.radio_off configure -state normal
-            $frm.frame3.frame10.temp_ccd configure -state normal
-            $frm.frame3.frame11.test configure -state normal
+         if { $::kitty::private(modele) == "K2" } {
+            pack forget $frm.frame2.frame5.frame8
+            pack forget $frm.frame2.frame5.frame8.lab2
+            pack forget $frm.frame2.frame5.frame8.res
+            pack forget $frm.frame3.lab3
+            pack forget $frm.frame3.captemp
+            pack $frm.frame2.frame5.frame9 -side top -fill both -expand 1
+            pack $frm.frame2.frame5.frame9.lab4 -anchor center -side left -padx 10
+            pack $frm.frame2.frame5.frame9.radio_on -side left -padx 5 -pady 5 -ipady 0
+            pack $frm.frame2.frame5.frame9.radio_off -side left -padx 5 -pady 5 -ipady 0
+            pack $frm.frame3.frame10 -side top -fill both -expand 1
+            pack $frm.frame3.frame10.temp_ccd -side left -fill x -padx 10 -pady 0
+            pack $frm.frame3.frame11 -side top -fill both -expand 1
+            pack $frm.frame3.frame11.test -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
+            if { [ ::confCam::getName $confCam($camItem,camNo) ] == "KITTYK2" } {
+               #--- Widgets de configuration de la Kitty K2 actif
+               $frm.frame2.frame5.frame9.radio_on configure -state normal
+               $frm.frame2.frame5.frame9.radio_off configure -state normal
+               $frm.frame3.frame10.temp_ccd configure -state normal
+               $frm.frame3.frame11.test configure -state normal
+            } else {
+               #--- Widgets de configuration de la Kitty K2 inactif
+               $frm.frame2.frame5.frame9.radio_on configure -state disabled
+               $frm.frame2.frame5.frame9.radio_off configure -state disabled
+               $frm.frame3.frame10.temp_ccd configure -state disabled
+               $frm.frame3.frame11.test configure -state disabled
+            }
          } else {
-            #--- Widgets de configuration de la Kitty K2 inactif
-            $frm.frame2.frame5.frame9.radio_on configure -state disabled
-            $frm.frame2.frame5.frame9.radio_off configure -state disabled
-            $frm.frame3.frame10.temp_ccd configure -state disabled
-            $frm.frame3.frame11.test configure -state disabled
+            pack forget $frm.frame2.frame5.frame9
+            pack forget $frm.frame2.frame5.frame9.lab4
+            pack forget $frm.frame2.frame5.frame9.radio_on
+            pack forget $frm.frame2.frame5.frame9.radio_off
+            pack forget $frm.frame3.frame10
+            pack forget $frm.frame3.frame10.temp_ccd
+            pack forget $frm.frame3.frame11
+            pack forget $frm.frame3.frame11.test
+            pack $frm.frame2.frame5.frame8 -side top -fill both -expand 1
+            pack $frm.frame2.frame5.frame8.lab2 -anchor center -side left -padx 10
+            pack $frm.frame2.frame5.frame8.res -anchor center -side right -padx 10
+            pack $frm.frame3.lab3 -anchor n -side left -padx 10 -pady 10
+            pack $frm.frame3.captemp -anchor n -side left -padx 10 -pady 10
          }
       }
    }
@@ -487,11 +511,11 @@ proc ::kitty::confKitty { } {
 
 #
 # ::kitty::confKittyK2Inactif
-# Permet de desactiver les widgets a l'arret de la Kitty K2
+#    Permet de desactiver les widgets a l'arret de la Kitty K2
 #
 proc ::kitty::confKittyK2Inactif { } {
    variable private
-   global audace confCam
+   global confCam
 
    set camItem $confCam(currentCamItem)
 
@@ -507,58 +531,6 @@ proc ::kitty::confKittyK2Inactif { } {
          }
       }
    }
-}
-
-#
-# ::kitty::confKitty_2XX
-# Permet d'activer ou de desactiver les widgets
-#
-proc ::kitty::confKitty_2XX { } {
-   variable private
-
-   set frm $private(frm)
-   #---
-   pack forget $frm.frame2.frame5.frame9
-   pack forget $frm.frame2.frame5.frame9.lab4
-   pack forget $frm.frame2.frame5.frame9.radio_on
-   pack forget $frm.frame2.frame5.frame9.radio_off
-   pack forget $frm.frame3.frame10
-   pack forget $frm.frame3.frame10.temp_ccd
-   pack forget $frm.frame3.frame11
-   pack forget $frm.frame3.frame11.test
-   pack $frm.frame2.frame5.frame8 -side top -fill both -expand 1
-   pack $frm.frame2.frame5.frame8.lab2 -anchor center -side left -padx 10
-   pack $frm.frame2.frame5.frame8.res -anchor center -side right -padx 10
-   pack $frm.frame3.lab3 -anchor n -side left -padx 10 -pady 10
-   pack $frm.frame3.captemp -anchor n -side left -padx 10 -pady 10
-   #--- Gestion des widgets actifs/inactifs
-   ::kitty::confKitty
-}
-
-#
-# ::kitty::confKitty_K2
-# Permet d'activer ou de desactiver les widgets
-#
-proc ::kitty::confKitty_K2 { } {
-   variable private
-
-   set frm $private(frm)
-   #---
-   pack forget $frm.frame2.frame5.frame8
-   pack forget $frm.frame2.frame5.frame8.lab2
-   pack forget $frm.frame2.frame5.frame8.res
-   pack forget $frm.frame3.lab3
-   pack forget $frm.frame3.captemp
-   pack $frm.frame2.frame5.frame9 -side top -fill both -expand 1
-   pack $frm.frame2.frame5.frame9.lab4 -anchor center -side left -padx 10
-   pack $frm.frame2.frame5.frame9.radio_on -side left -padx 5 -pady 5 -ipady 0
-   pack $frm.frame2.frame5.frame9.radio_off -side left -padx 5 -pady 5 -ipady 0
-   pack $frm.frame3.frame10 -side top -fill both -expand 1
-   pack $frm.frame3.frame10.temp_ccd -side left -fill x -padx 10 -pady 0
-   pack $frm.frame3.frame11 -side top -fill both -expand 1
-   pack $frm.frame3.frame11.test -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
-   #--- Gestion des widgets actifs/inactifs
-   ::kitty::confKitty
 }
 
 #

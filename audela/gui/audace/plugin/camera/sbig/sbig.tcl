@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.5 2007-10-19 22:14:45 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.6 2007-10-20 15:46:57 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -24,8 +24,8 @@ proc ::sbig::getPluginTitle { } {
 }
 
 #
-#  ::sbig::getPluginHelp
-#     Retourne la documentation du driver
+# ::sbig::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::sbig::getPluginHelp { } {
    return "sbig.htm"
@@ -106,7 +106,7 @@ proc ::sbig::widgetToConf { } {
 #
 proc ::sbig::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global caption
 
    #--- Initialise une variable locale
    set private(frm) $frm
@@ -461,7 +461,7 @@ proc ::sbig::getPluginProperty { camItem propertyName } {
       longExposure     { return 1 }
       multiCamera      { return 0 }
       shutterList      {
-         #--- O + F + S
+         #--- O + F + S - A confirmer avec le materiel
          return [ list $::caption(sbig,obtu_ouvert) $::caption(sbig,obtu_ferme) $::caption(sbig,obtu_synchro) ]
       }
    }

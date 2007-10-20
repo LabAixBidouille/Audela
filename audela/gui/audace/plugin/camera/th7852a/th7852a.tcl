@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.16 2007-10-19 22:15:51 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.17 2007-10-20 15:48:10 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -24,8 +24,8 @@ proc ::th7852a::getPluginTitle { } {
 }
 
 #
-#  ::th7852a::getPluginHelp
-#     Retourne la documentation du driver
+# ::th7852a::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::th7852a::getPluginHelp { } {
    return "th7852a.htm"
@@ -94,7 +94,7 @@ proc ::th7852a::widgetToConf { } {
 #
 proc ::th7852a::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global caption
 
    #--- confToWidget
    ::th7852a::confToWidget

@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.5 2007-10-19 22:15:33 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.6 2007-10-20 15:47:45 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -24,8 +24,8 @@ proc ::starlight::getPluginTitle { } {
 }
 
 #
-#  ::starlight::getPluginHelp
-#     Retourne la documentation du driver
+# ::starlight::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::starlight::getPluginHelp { } {
    return "starlight.htm"
@@ -100,7 +100,7 @@ proc ::starlight::widgetToConf { } {
 #
 proc ::starlight::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global caption
 
    #--- confToWidget
    ::starlight::confToWidget
