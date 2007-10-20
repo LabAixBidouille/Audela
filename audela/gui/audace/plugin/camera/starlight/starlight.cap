@@ -1,6 +1,6 @@
 #
 # Fichier : starlight.cap
-# Mise a jour $Id: starlight.cap,v 1.2 2007-10-18 21:07:31 robertdelmas Exp $
+# Mise a jour $Id: starlight.cap,v 1.3 2007-10-20 15:25:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -168,6 +168,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(starlight,titre_site_web)            "Reference Web Site:"
    set caption(starlight,site_web_ref)              "http://www.starlight-xpress.co.uk/index.htm"
+
 }
 
 #=========================================================================
