@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.7 2007-10-20 15:46:23 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.8 2007-10-20 18:06:58 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -123,7 +123,7 @@ proc ::kitty::fillConfigPage { frm } {
    set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
 
    #--- Je verifie le contenu de la liste
-   if { [llength $list_combobox ] > 0 } {
+   if { [ llength $list_combobox ] > 0 } {
       #--- si la liste n'est pas vide,
       #--- je verifie que la valeur par defaut existe dans la liste
       if { [ lsearch -exact $list_combobox $::kitty::private(port) ] == -1 } {
@@ -181,11 +181,11 @@ proc ::kitty::fillConfigPage { frm } {
 
             #--- Choix du port ou de la liaison
             ComboBox $frm.frame2.frame5.frame7.port \
-              -width 7         \
+              -width 7        \
                -height [ llength $list_combobox ] \
-               -relief sunken  \
-               -borderwidth 1  \
-               -editable 0     \
+               -relief sunken \
+               -borderwidth 1 \
+               -editable 0    \
                -textvariable ::kitty::private(port) \
                -values $list_combobox
             pack $frm.frame2.frame5.frame7.port -anchor center -side right -padx 10
@@ -260,11 +260,11 @@ proc ::kitty::fillConfigPage { frm } {
 
       set list_combobox [ list $caption(kitty,capteur_temp_ad7893an2) $caption(kitty,capteur_temp_ad7893an5) ]
       ComboBox $frm.frame3.captemp \
-         -width 12          \
+         -width 12      \
          -height [ llength $list_combobox ] \
-         -relief sunken     \
-         -borderwidth 1     \
-         -editable 0        \
+         -relief sunken \
+         -borderwidth 1 \
+         -editable 0    \
          -textvariable ::kitty::private(captemp) \
          -values $list_combobox
       pack $frm.frame3.captemp -anchor n -side left -padx 10 -pady 10

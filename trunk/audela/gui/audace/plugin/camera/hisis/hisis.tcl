@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.4 2007-10-20 15:40:09 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.5 2007-10-20 18:07:17 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
@@ -211,13 +211,16 @@ proc ::hisis::fillConfigPage { frm } {
 
    pack $frm.frame2 -side top -fill x -pady 10
 
+   #--- Frame de la configuration du port et de la resolution, des miroirs en x et en y,  de l'obturateur et des delais
    frame $frm.frame3 -borderwidth 0 -relief raised
 
+      #--- Frame de la configuration du port et de la resolution, des miroirs en x et en y et de l'obturateur
       frame $frm.frame3.frame5 -borderwidth 0 -relief raised
 
-         #--- Choix de la resolution et des delais
+         #--- Frame de la configuration du port et de la resolution, et des miroirs en x et en y
          frame $frm.frame3.frame5.frame7 -borderwidth 0 -relief raised
 
+            #--- Frame de la configuration du port et de la resolution
             frame $frm.frame3.frame5.frame7.frame9 -borderwidth 0 -relief raised
 
                #--- Frame de la configuration du port
@@ -239,20 +242,21 @@ proc ::hisis::fillConfigPage { frm } {
 
                   #--- Choix du port ou de la liaison
                   ComboBox $frm.frame3.frame5.frame7.frame9.frame11.port \
-                     -width 7                \
+                     -width 7       \
                      -height [ llength $list_combobox ] \
-                     -relief sunken          \
-                     -borderwidth 1          \
-                     -editable 0             \
+                     -relief sunken \
+                     -borderwidth 1 \
+                     -editable 0    \
                      -textvariable ::hisis::private(port) \
                      -values $list_combobox
                   pack $frm.frame3.frame5.frame7.frame9.frame11.port -anchor center -side left -padx 20
 
                pack $frm.frame3.frame5.frame7.frame9.frame11 -side top -fill x
 
+               #--- Frame de la configuration de la resolution
                frame $frm.frame3.frame5.frame7.frame9.frame12 -borderwidth 0 -relief raised
 
-                  #--- Frame de la configuration de la resolution
+                  #--- Configuration de la resolution
                   label $frm.frame3.frame5.frame7.frame9.frame12.lab2 -text "$caption(hisis,can_resolution)"
                   pack $frm.frame3.frame5.frame7.frame9.frame12.lab2 -anchor center -side left -padx 10
 
@@ -287,19 +291,21 @@ proc ::hisis::fillConfigPage { frm } {
 
          pack $frm.frame3.frame5.frame7 -side top -fill both -expand 1
 
+         #--- Frame du mode de fonctionnement de l'obturateur
          frame $frm.frame3.frame5.frame8 -borderwidth 0 -relief raised
 
+            #--- Mode de fonctionnement de l'obturateur
             label $frm.frame3.frame5.frame8.lab0 -text "$caption(hisis,fonc_obtu)"
             pack $frm.frame3.frame5.frame8.lab0 -anchor center -side left -padx 8
 
             set list_combobox [ list $caption(hisis,obtu_ouvert) $caption(hisis,obtu_ferme) $caption(hisis,obtu_synchro) ]
             ComboBox $frm.frame3.frame5.frame8.foncobtu \
-               -width 11           \
+               -width 11      \
                -height [ llength $list_combobox ] \
-               -relief sunken      \
-               -borderwidth 1      \
+               -relief sunken \
+               -borderwidth 1 \
                -textvariable ::hisis::private(foncobtu) \
-               -editable 0         \
+               -editable 0    \
                -values $list_combobox
             pack $frm.frame3.frame5.frame8.foncobtu -anchor center -side left -padx 10
 
@@ -307,8 +313,10 @@ proc ::hisis::fillConfigPage { frm } {
 
       pack $frm.frame3.frame5 -side left -fill both -expand 1
 
+      #--- Frame de configuration des delais a, b et c
       frame $frm.frame3.frame6 -borderwidth 0 -relief raised
 
+         #--- Frame de configuration du delai a
          frame $frm.frame3.frame6.frame13 -borderwidth 0 -relief raised
 
             label $frm.frame3.frame6.frame13.lab3 -text "$caption(hisis,delai_a)"
@@ -319,16 +327,18 @@ proc ::hisis::fillConfigPage { frm } {
 
          pack $frm.frame3.frame6.frame13 -side top -fill both -expand 1
 
+         #--- Frame de configuration du delai b
          frame $frm.frame3.frame6.frame14 -borderwidth 0 -relief raised
 
             label $frm.frame3.frame6.frame14.lab4 -text "$caption(hisis,delai_b)"
             pack $frm.frame3.frame6.frame14.lab4 -anchor center -side left -padx 10
 
             entry $frm.frame3.frame6.frame14.delai_b -textvariable ::hisis::private(delai_b) -width 3 -justify center
-            pack $frm.frame3.frame6.frame14.delai_b -anchor center -side left -padx 10
+           pack $frm.frame3.frame6.frame14.delai_b -anchor center -side left -padx 10
 
          pack $frm.frame3.frame6.frame14 -side top -fill both -expand 1
 
+         #--- Frame de configuration du delai c
          frame $frm.frame3.frame6.frame15 -borderwidth 0 -relief raised
 
             label $frm.frame3.frame6.frame15.lab5 -text "$caption(hisis,delai_c)"
