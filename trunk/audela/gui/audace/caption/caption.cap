@@ -1,6 +1,6 @@
 #
 # Fichier : caption.cap
-# Mise a jour $Id: caption.cap,v 1.50 2007-09-28 23:18:34 robertdelmas Exp $
+# Mise a jour $Id: caption.cap,v 1.51 2007-10-20 15:42:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -490,6 +490,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(plotxy,figure)                         "Figur"
 
    set caption(sectiongraph,title)                    "Graf af udsnittet"
+
 }
 
 #=========================================================================
