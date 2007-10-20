@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.15 2007-09-27 21:10:19 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.16 2007-10-20 22:44:19 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -24,8 +24,8 @@ proc ::dslr::getPluginTitle { } {
 }
 
 #
-#  ::dslr::getPluginHelp
-#     Retourne la documentation du driver
+# ::dslr::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::dslr::getPluginHelp { } {
    return "dslr.htm"
@@ -66,6 +66,432 @@ proc ::dslr::initPlugin { } {
    if { ! [ info exists conf(dslr,telecharge_mode) ] }      { set conf(dslr,telecharge_mode)      "2" }
    if { ! [ info exists conf(dslr,utiliser_cf) ] }          { set conf(dslr,utiliser_cf)          "1" }
    if { ! [ info exists conf(dslr,supprimer_image) ] }      { set conf(dslr,supprimer_image)      "0" }
+}
+
+#
+# ::dslr::confToWidget
+#    Copie les variables de configuration dans des variables locales
+#
+proc ::dslr::confToWidget { } {
+   variable private
+   global conf
+
+   #--- Recupere la configuration de la camera APN (DSLR) dans le tableau private(...)
+   set private(longuepose)           $conf(dslr,longuepose)
+   set private(longueposeport)       $conf(dslr,longueposeport)
+   set private(longueposelinkbit)    $conf(dslr,longueposelinkbit)
+   set private(longueposestartvalue) $conf(dslr,longueposestartvalue)
+   set private(longueposestopvalue)  $conf(dslr,longueposestopvalue)
+   set private(statut_service)       $conf(dslr,statut_service)
+   set private(mirh)                 $conf(dslr,mirh)
+   set private(mirv)                 $conf(dslr,mirv)
+}
+
+#
+# ::dslr::widgetToConf
+#    Copie les variables locales dans des variables de configuration
+#
+proc ::dslr::widgetToConf { } {
+   variable private
+   global conf
+
+   #--- Memorise la configuration de la camera APN (DSLR) dans le tableau conf(dslr,...)
+   set conf(dslr,longuepose)           $private(longuepose)
+   set conf(dslr,longueposeport)       $private(longueposeport)
+   set conf(dslr,longueposelinkbit)    $private(longueposelinkbit)
+   set conf(dslr,longueposestartvalue) $private(longueposestartvalue)
+   set conf(dslr,longueposestopvalue)  $private(longueposestopvalue)
+   set conf(dslr,statut_service)       $private(statut_service)
+   set conf(dslr,mirh)                 $private(mirh)
+   set conf(dslr,mirv)                 $private(mirv)
+}
+
+#
+# ::dslr::fillConfigPage
+#    Interface de configuration de la camera APN (DSLR)
+#
+proc ::dslr::fillConfigPage { frm } {
+   variable private
+   global caption
+
+   #--- Initialise une variable locale
+   set private(frm) $frm
+
+   #--- confToWidget
+   ::dslr::confToWidget
+
+   #--- Supprime tous les widgets de l'onglet
+   foreach i [ winfo children $frm ] {
+      destroy $i
+   }
+
+   #--- Je constitue la liste des liaisons pour la longuepose
+   set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" "external" } ]
+
+   #--- Je verifie le contenu de la liste
+   if { [ llength $list_combobox ] > 0 } {
+      #--- Si la liste n'est pas vide,
+      #--- je verifie que la valeur par defaut existe dans la liste
+      if { [ lsearch -exact $list_combobox $::dslr::private(longueposeport) ] == -1 } {
+         #--- Si la valeur par defaut n'existe pas dans la liste,
+         #--- je la remplace par le premier item de la liste
+         set ::dslr::private(longueposeport) [lindex $list_combobox 0]
+      }
+   } else {
+      #--- Si la liste est vide
+      #--- Je desactive l'option longue pose
+      set ::dslr::private(longueposeport) ""
+      set ::dslr::private(longuepose) 0
+      #--- J'empeche de selectionner l'option longue pose
+      $frm.longuepose configure -state disable
+   }
+
+   #--- Frame des miroirs en x et en y et de la configuration de la longue pose
+   frame $frm.frame1 -borderwidth 0 -relief raised
+
+      #--- Frame des miroirs en x et en y
+      frame $frm.frame1.frame6 -borderwidth 0 -relief raised
+
+         #--- Miroir en x et en y
+         checkbutton $frm.frame1.frame6.mirx -text "$caption(dslr,miroir_x)" -highlightthickness 0 \
+            -variable ::dslr::private(mirh)
+         pack $frm.frame1.frame6.mirx -anchor w -side top -padx 20 -pady 10
+
+         checkbutton $frm.frame1.frame6.miry -text "$caption(dslr,miroir_y)" -highlightthickness 0 \
+            -variable ::dslr::private(mirv)
+         pack $frm.frame1.frame6.miry -anchor w -side top -padx 20 -pady 10
+
+      pack $frm.frame1.frame6 -anchor n -side left -fill x
+
+      #--- Frame de la configuration de la longue pose
+      frame $frm.frame1.frame7 -borderwidth 1 -relief solid
+
+         #--- Frame de la configuration de la longue pose
+         frame $frm.frame1.frame7.frame8 -borderwidth 0 -relief raised
+
+            #--- Selection de la longue pose
+            checkbutton $frm.frame1.frame7.frame8.longuepose -text "$caption(dslr,longuepose)" -highlightthickness 0 \
+               -variable ::dslr::private(longuepose) -command { ::dslr::confDSLR }
+            pack $frm.frame1.frame7.frame8.longuepose -anchor w -side left -padx 10 -pady 10
+
+            #--- Bouton de configuration des ports et liaisons
+            button $frm.frame1.frame7.frame8.configure_longuepose -text "$caption(dslr,configurer)" -relief raised \
+               -command {
+                  ::dslr::configureAPNLinkLonguePose
+                  ::confLink::run ::::dslr::private(longueposeport) { parallelport quickremote external } \
+                     "- $caption(dslr,longuepose) - $caption(dslr,camera)"
+               }
+            pack $frm.frame1.frame7.frame8.configure_longuepose -side left -pady 10 -ipadx 10 -ipady 1
+
+            #--- Choix du port ou de la liaison
+            ComboBox $frm.frame1.frame7.frame8.moyen_longuepose \
+               -width 13      \
+               -height [ llength $list_combobox ] \
+               -relief sunken \
+               -borderwidth 1 \
+               -editable 0    \
+               -textvariable ::dslr::private(longueposeport) \
+               -values $list_combobox \
+               -modifycmd {
+                  ::dslr::configureAPNLinkLonguePose
+               }
+            pack $frm.frame1.frame7.frame8.moyen_longuepose -anchor center -side left -padx 20
+
+         pack $frm.frame1.frame7.frame8 -anchor n -side top -fill x
+
+         #--- Frame pour le choix du numero du bit pour la commande de la longue pose
+         frame $frm.frame1.frame7.frame9 -borderwidth 0 -relief raised
+
+            #--- Choix du numero du bit pour la commande de la longue pose
+            label $frm.frame1.frame7.frame9.lab4 -text "$caption(dslr,longueposebit)"
+            pack $frm.frame1.frame7.frame9.lab4 -anchor center -side left -padx 3 -pady 5
+
+            set list_combobox [ list 0 1 2 3 4 5 6 7 ]
+            ComboBox $frm.frame1.frame7.frame9.longueposelinkbit \
+               -width 7       \
+               -height [ llength $list_combobox ] \
+               -relief sunken \
+               -borderwidth 1 \
+               -textvariable ::dslr::private(longueposelinkbit) \
+               -editable 0    \
+               -values $list_combobox
+            pack $frm.frame1.frame7.frame9.longueposelinkbit -anchor center -side right -padx 20 -pady 5
+
+         pack $frm.frame1.frame7.frame9 -anchor n -side top -fill x
+
+         #--- Frame pour le choix du niveau de depart pour la commande de la longue pose
+         frame $frm.frame1.frame7.frame10 -borderwidth 0 -relief raised
+
+            #--- Choix du niveau de depart pour la commande de la longue pose
+            label $frm.frame1.frame7.frame10.lab5 -text "$caption(dslr,longueposestart)"
+            pack $frm.frame1.frame7.frame10.lab5 -anchor center -side left -padx 3 -pady 5
+
+            entry $frm.frame1.frame7.frame10.longueposestartvalue -width 4 -textvariable ::dslr::private(longueposestartvalue) -justify center
+            pack $frm.frame1.frame7.frame10.longueposestartvalue -anchor center -side right -padx 20 -pady 5
+
+         pack $frm.frame1.frame7.frame10 -anchor n -side top -fill x
+
+      pack $frm.frame1.frame7 -anchor n -side right -fill x
+
+   pack $frm.frame1 -side top -fill x
+
+   #--- Frame pour la gestion du Service Windows de detection automatique des APN (DSLR)
+   frame $frm.frame4 -borderwidth 0 -relief raised
+
+      #--- Frame pour la gestion du Service Windows de detection automatique des APN (DSLR)
+      frame $frm.frame4.frame5 -borderwidth 0 -relief raised
+
+         #--- Gestion du Service Windows de detection automatique des APN (DSLR)
+         if { $::tcl_platform(platform) == "windows" } {
+            checkbutton $frm.frame4.frame5.detect_service -text "$caption(dslr,detect_service)" -highlightthickness 0 \
+               -variable ::dslr::private(statut_service)
+            pack $frm.frame4.frame5.detect_service -anchor w -side top -padx 20 -pady 10
+         }
+
+      pack $frm.frame4.frame5 -anchor n -side top -fill x
+
+   pack $frm.frame4 -side top -fill x
+
+   #--- Frame pour le choix du telechargement de l'image
+   frame $frm.frame11 -borderwidth 0 -relief raised
+
+      #--- Bouton du choix du telechargement de l'image
+      button $frm.frame11.config_telechargement -text $caption(dslr,telecharger) -state normal \
+         -command { ::dslr::setLoadParameters $confCam($confCam(currentCamItem),visuNo) }
+      pack $frm.frame11.config_telechargement -side top -pady 10 -ipadx 10 -ipady 5 -expand true
+
+   pack $frm.frame11 -anchor n -side bottom -fill both -expand true
+
+   #--- Frame du site web officiel de la CB245
+   frame $frm.frame12 -borderwidth 0 -relief raised
+
+      label $frm.frame12.lab104 -text "$caption(dslr,titre_site_web)"
+      pack $frm.frame12.lab104 -side top -fill x -pady 2
+
+      set labelName [ ::confCam::createUrlLabel $frm.frame12 "$caption(dslr,site_web_ref)" \
+         "$caption(dslr,site_web_ref)" ]
+      pack $labelName -side top -fill x -pady 2
+
+   pack $frm.frame12 -side bottom -fill x -pady 2
+
+   #--- Gestion du bouton de telechargement actif/inactif
+   ::dslr::confDSLR
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+}
+
+#
+# ::dslr::configureCamera
+#    Configure la camera APN (DSLR) en fonction des donnees contenues dans les variables conf(dslr,...)
+#
+proc ::dslr::configureCamera { camItem } {
+   global caption conf confCam
+
+   set catchResult [ catch {
+      #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
+      set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
+      console::affiche_erreur "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
+      console::affiche_saut "\n"
+      set confCam($camItem,camNo) $camNo
+      #--- J'associe le buffer de la visu
+      set bufNo [visu$confCam($camItem,visuNo) buf]
+      cam$camNo buf $bufNo
+      #--- Je configure l'oriention des miroirs par defaut
+      cam$camNo mirrorh $conf(dslr,mirh)
+      cam$camNo mirrorv $conf(dslr,mirv)
+      #--- J'arrete le service WIA de Windows
+      cam$camNo systemservice 0
+      #--- Je cree la thread dediee a la camera
+      set confCam($camItem,threadNo) [ ::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo) ]
+      #--- Je fais le parametrage des longues poses
+      if { $conf(dslr,longuepose) == "1" } {
+         switch [ ::confLink::getLinkNamespace $conf(dslr,longueposeport) ] {
+            parallelport {
+               #--- Je cree la liaison longue pose
+               set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
+               #---
+               cam$camNo longuepose 1
+               cam$camNo longueposelinkno $linkNo
+               cam$camNo longueposelinkbit $conf(dslr,longueposelinkbit)
+               cam$camNo longueposestartvalue $conf(dslr,longueposestartvalue)
+               cam$camNo longueposestopvalue  $conf(dslr,longueposestopvalue)
+            }
+            quickremote {
+               #--- Je cree la liaison longue pose
+               set linkNo [ ::confLink::create $conf(dslr,longueposeport) "cam$camNo" "longuepose" "bit $conf(dslr,longueposelinkbit)" ]
+               #---
+               cam$camNo longuepose 1
+               cam$camNo longueposelinkno $linkNo
+               cam$camNo longueposelinkbit $conf(dslr,longueposelinkbit)
+               cam$camNo longueposestartvalue $conf(dslr,longueposestartvalue)
+               cam$camNo longueposestopvalue  $conf(dslr,longueposestopvalue)
+            }
+            external {
+               cam$camNo longuepose 2
+            }
+         }
+         #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
+         if { $confCam($camItem,threadNo) != 0 && [ cam$camNo longueposelinkno ] != 0} {
+            thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
+         }
+      } else {
+         #--- Pas de liaison longue pose
+         cam$camNo longuepose 0
+      }
+      #--- Je fais le parametrage du telechargement des images
+      set resultUsecf [ catch { cam$camNo usecf $conf(dslr,utiliser_cf) } messageUseCf ]
+      if { $resultUsecf == 1 } {
+         #--- Si l'appareil n'a pas de carte memoire,
+         #--- je desactive l'utilisation de la carte memoire de l'appareil
+         console::affiche_erreur "$messageUseCf.\nUnset use memory card."
+         set conf(dslr,utiliser_cf) 0
+         cam$camNo usecf $conf(dslr,utiliser_cf)
+      }
+      switch -exact -- $conf(dslr,telecharge_mode) {
+        1  {
+            #--- Ne pas telecharger
+            cam$camNo autoload 0
+         }
+         2  {
+            #--- Telechargement immediat
+            cam$camNo autoload 1
+         }
+         3  {
+            #--- Telechargement pendant la pose suivante
+            cam$camNo autoload 0
+         }
+      }
+      #--- Je renseigne la dynamique de la camera
+      ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
+      #--- Gestion du bouton de telechargement actif/inactif
+      ::dslr::confDSLR
+   } ]
+
+   if { $catchResult == "1" } {
+      #--- En cas d'erreur, je libere toutes les ressources allouees
+      ::dslr::stop $camItem
+      #--- Je transmets l'erreur a la procedure appellante
+      error $::errorInfo
+   }
+}
+
+#
+# ::dslr::stop
+#    Arrete la camera APN (DSLR)
+#
+proc ::dslr::stop { camItem } {
+   global audace conf confCam
+
+   #--- Gestion du bouton de telechargement actif/inactif
+   ::dslr::confDSLRInactif
+
+   #--- Si la fenetre Telechargement d'images est affichee, je la ferme
+   if { [ winfo exists $audace(base).telecharge_image ] } {
+      destroy $audace(base).telecharge_image
+   }
+
+   #--- Je ferme la liaison longuepose de la camera
+   if { $conf(dslr,longuepose) == 1 } {
+      ::confLink::delete $conf(dslr,longueposeport) "cam$confCam($camItem,camNo)" "longuepose"
+   }
+
+   #--- Je restitue si necessaire l'etat du service WIA sous Windows
+   if { $::tcl_platform(platform) == "windows" } {
+       if { [ cam$confCam($camItem,camNo) systemservice ] != "$conf(dslr,statut_service)" } {
+          cam$confCam($camItem,camNo) systemservice $conf(dslr,statut_service)
+       }
+   }
+
+   #--- J'arrete la camera
+   if { $confCam($camItem,camNo) != 0 } {
+     cam::delete $confCam($camItem,camNo)
+     set confCam($camItem,camNo) 0
+   }
+}
+
+#
+# ::dslr::confDSLR
+# Permet d'activer ou de desactiver le bouton de telechargement des images des APN (DSLR)
+#
+proc ::dslr::confDSLR { } {
+   variable private
+   global audace confCam
+
+   set camItem $confCam(currentCamItem)
+
+   #--- Si la fenetre Telecharger l'image pour la fabrication de la camera est affichee, je la ferme
+   if { [ winfo exists $audace(base).telecharge_image ] } {
+      destroy $audace(base).telecharge_image
+   }
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm.frame11.config_telechargement ] } {
+         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "dslr" } {
+            #--- Bouton de configuration de la camera APN (DSLR)
+            $frm.frame11.config_telechargement configure -state normal
+         } else {
+            #--- Bouton de configuration de la camera APN (DSLR)
+            $frm.frame11.config_telechargement configure -state disabled
+         }
+      }
+      if { $private(longuepose) == "1" } {
+         #--- Widgets de configuration de la longue pose actifs
+         $frm.frame1.frame7.frame8.configure_longuepose configure -state normal
+         $frm.frame1.frame7.frame8.moyen_longuepose configure -state normal
+         $frm.frame1.frame7.frame9.longueposelinkbit configure -state normal
+         $frm.frame1.frame7.frame10.longueposestartvalue configure -state normal
+      } else {
+         #--- Widgets de configuration de la longue pose inactifs
+         $frm.frame1.frame7.frame8.configure_longuepose configure -state disabled
+         $frm.frame1.frame7.frame8.moyen_longuepose configure -state disabled
+         $frm.frame1.frame7.frame9.longueposelinkbit configure -state disabled
+         $frm.frame1.frame7.frame10.longueposestartvalue configure -state disabled
+      }
+   }
+}
+
+#
+# ::dslr::confDSLRInactif
+#    Permet de desactiver le bouton de telechargement des images a l'arret de la camera APN (DSLR)
+#
+proc ::dslr::confDSLRInactif { } {
+   variable private
+   global confCam
+
+   set camItem $confCam(currentCamItem)
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "dslr" } {
+            #--- Bouton de configuration de la camera APN (DSLR)
+            $frm.frame11.config_telechargement configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# ::dslr::configureAPNLinkLonguePose
+#    Positionne la liaison sur celle qui vient d'etre selectionnee pour
+#    la longue pose de la camera APN (DSLR)
+#
+proc ::dslr::configureAPNLinkLonguePose { } {
+   variable private
+
+   #--- Je positionne startvalue par defaut en fonction du type de liaison
+   if { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "parallelport" } {
+      set private(longueposestartvalue) "0"
+      set private(longueposestopvalue)  "1"
+   } elseif { [ ::confLink::getLinkNamespace $private(longueposeport) ] == "quickremote" } {
+      set private(longueposestartvalue) "1"
+      set private(longueposestopvalue)  "0"
+   } else {
+      set private(longueposestartvalue) "0"
+      set private(longueposestopvalue)  "1"
+   }
 }
 
 #
