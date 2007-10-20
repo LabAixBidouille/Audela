@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.15 2007-10-19 22:12:02 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.16 2007-10-20 15:44:54 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -24,8 +24,8 @@ proc ::cookbook::getPluginTitle { } {
 }
 
 #
-#  ::cookbook::getPluginHelp
-#     Retourne la documentation du driver
+# ::cookbook::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::cookbook::getPluginHelp { } {
    return "cookbook.htm"
@@ -97,7 +97,7 @@ proc ::cookbook::widgetToConf { } {
 #
 proc ::cookbook::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global caption
 
    #--- confToWidget
    ::cookbook::confToWidget

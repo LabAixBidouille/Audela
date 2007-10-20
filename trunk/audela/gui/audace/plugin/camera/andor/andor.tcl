@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.5 2007-10-19 22:11:10 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.6 2007-10-20 15:43:59 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -24,8 +24,8 @@ proc ::andor::getPluginTitle { } {
 }
 
 #
-#  ::andor::getPluginHelp
-#     Retourne la documentation du driver
+# ::andor::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::andor::getPluginHelp { } {
    return "andor.htm"
@@ -109,7 +109,7 @@ proc ::andor::widgetToConf { } {
 #
 proc ::andor::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global audace caption
 
    #--- Initialise une variable locale
    set private(frm) $frm

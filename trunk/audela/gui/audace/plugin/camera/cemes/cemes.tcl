@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.21 2007-10-19 22:11:41 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.22 2007-10-20 15:44:24 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -24,8 +24,8 @@ proc ::cemes::getPluginTitle { } {
 }
 
 #
-#  ::cemes::getPluginHelp
-#     Retourne la documentation du driver
+# ::cemes::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::cemes::getPluginHelp { } {
    return "cemes.htm"
@@ -100,7 +100,7 @@ proc ::cemes::widgetToConf { } {
 #
 proc ::cemes::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global caption
 
    #--- Initialise une variable locale
    set private(frm) $frm

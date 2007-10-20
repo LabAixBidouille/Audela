@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.15 2007-10-19 22:12:41 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.16 2007-10-20 15:45:40 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -24,8 +24,8 @@ proc ::fingerlakes::getPluginTitle { } {
 }
 
 #
-#  ::fingerlakes::getPluginHelp
-#     Retourne la documentation du driver
+# ::fingerlakes::getPluginHelp
+#    Retourne la documentation du driver
 #
 proc ::fingerlakes::getPluginHelp { } {
    return "fingerlakes.htm"
@@ -100,7 +100,7 @@ proc ::fingerlakes::widgetToConf { } {
 #
 proc ::fingerlakes::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global caption
 
    #--- Initialise une variable locale
    set private(frm) $frm
