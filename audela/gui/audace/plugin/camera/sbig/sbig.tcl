@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.6 2007-10-20 15:46:57 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.7 2007-10-22 21:18:01 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -419,6 +419,44 @@ proc ::sbig::checkConfigRefroidissement { } {
             pack forget $frm.frame2.frame6.frame7.tempdeg
             $frm.frame2.frame6.frame8.power configure -state disabled
             $frm.frame2.frame6.frame9.ccdtemp configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# ::sbig::setShutter
+#    Procedure pour la commande de l'obturateur
+#
+proc ::sbig::setShutter { camNo shutterState ShutterOptionList } {
+   variable private
+   global caption conf
+
+   set conf(sbig,foncobtu) $shutterState
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Gestion du mode de fonctionnement
+         switch -exact -- $shutterState {
+            0  {
+               set private(foncobtu) $caption(sbig,obtu_ouvert)
+               $frm.frame3.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame3.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "opened"
+            }
+            1  {
+               set private(foncobtu) $caption(sbig,obtu_ferme)
+               $frm.frame3.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame3.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "closed"
+            }
+            2  {
+               set private(foncobtu) $caption(sbig,obtu_synchro)
+               $frm.frame3.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame3.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "synchro"
+            }
          }
       }
    }

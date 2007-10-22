@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.22 2007-10-20 15:44:24 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.23 2007-10-22 21:16:26 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -315,6 +315,44 @@ proc ::cemes::checkConfigRefroidissement { } {
             pack forget $frm.frame1.frame3.frame5.frame6.temp
             pack forget $frm.frame1.frame3.frame5.frame6.tempdeg
             $frm.frame1.frame3.frame5.frame7.temp_ccd configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# ::cemes::setShutter
+#    Procedure pour la commande de l'obturateur
+#
+proc ::cemes::setShutter { camNo shutterState ShutterOptionList } {
+   variable private
+   global caption conf
+
+   set conf(cemes,foncobtu) $shutterState
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Gestion du mode de fonctionnement
+         switch -exact -- $shutterState {
+            0  {
+               set private(foncobtu) $caption(cemes,obtu_ouvert)
+               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "opened"
+            }
+            1  {
+               set private(foncobtu) $caption(cemes,obtu_ferme)
+               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "closed"
+            }
+            2  {
+               set private(foncobtu) $caption(cemes,obtu_synchro)
+               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "synchro"
+            }
          }
       }
    }

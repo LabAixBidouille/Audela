@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.96 2007-10-20 22:46:27 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.97 2007-10-22 21:18:23 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -630,13 +630,11 @@ namespace eval ::confCam {
    # confCam::setShutter
    # Procedure de changement de l'obturateur de la camera
    #----------------------------------------------------------------------------
-   proc setShutter { camNo shutterState} {
-      variable This
+   proc setShutter { camNo shutterState } {
       variable private
-      global audace caption conf confCam panneau
+      global caption conf confCam
 
       #---
-      set camProduct [ cam$camNo product ]
       if { $confCam(A,camNo) == $camNo } {
          set camItem "A"
       } elseif { $confCam(B,camNo) == $camNo } {
@@ -650,6 +648,7 @@ namespace eval ::confCam {
       set ShutterOptionList [ ::confCam::getPluginProperty $camItem shutterList ]
       set lg_ShutterOptionList [ llength $ShutterOptionList ]
       #---
+      set camProduct [ cam$camNo product ]
       if { "$camProduct" != "" } {
          if { [ ::confCam::getPluginProperty $camItem hasShutter ] } {
             incr shutterState
@@ -663,47 +662,17 @@ namespace eval ::confCam {
                }
             }
             if { "$camProduct" == "audine" } {
-               set conf(audine,foncobtu) $shutterState
-               set foncobtu $::audine::private(frm).frame2.frame8.frame17
+               ::audine::setShutter $camNo $shutterState $ShutterOptionList
             } elseif { "$camProduct" == "hisis" } {
-               set conf(hisis,foncobtu) $shutterState
-               set foncobtu $::hisis::private(frm).frame3.frame5.frame8
+               ::hisis::setShutter $camNo $shutterState $ShutterOptionList
             } elseif { "$camProduct" == "sbig" } {
-               set conf(sbig,foncobtu) $shutterState
-               set foncobtu $::sbig::private(frm).frame3
+               ::sbig::setShutter $camNo $shutterState $ShutterOptionList
             } elseif { "$camProduct" == "andor" } {
-               set conf(andor,foncobtu) $shutterState
-               set foncobtu $::andor::private(frm).frame2.frame4.frame7
+               ::andor::setShutter $camNo $shutterState $ShutterOptionList
             } elseif { "$camProduct" == "fingerlakes" } {
-               set conf(fingerlakes,foncobtu) $shutterState
-               set foncobtu $::fingerlakes::private(frm).frame1.frame8
+               ::fingerlakes::setShutter $camNo $shutterState $ShutterOptionList
             } elseif { "$camProduct" == "cemes" } {
-               set conf(cemes,foncobtu) $shutterState
-               set foncobtu $::cemes::private(frm).frame1.frame8
-            }
-            #---
-            switch -exact -- $shutterState {
-               0  {
-                  set confCam($camProduct,foncobtu) $caption(confcam,obtu_ouvert)
-                  set \::$camProduct\::private(foncobtu) $caption(confcam,obtu_ouvert)
-                  $foncobtu.foncobtu configure -height [ llength $ShutterOptionList ]
-                  $foncobtu.foncobtu configure -values $ShutterOptionList
-                  cam$camNo shutter "opened"
-               }
-               1  {
-                  set confCam($camProduct,foncobtu) $caption(confcam,obtu_ferme)
-                  set \::$camProduct\::private(foncobtu) $caption(confcam,obtu_ferme)
-                  $foncobtu.foncobtu configure -height [ llength $ShutterOptionList ]
-                  $foncobtu.foncobtu configure -values $ShutterOptionList
-                  cam$camNo shutter "closed"
-               }
-               2  {
-                  set confCam($camProduct,foncobtu) $caption(confcam,obtu_synchro)
-                  set \::$camProduct\::private(foncobtu) $caption(confcam,obtu_synchro)
-                  $foncobtu.foncobtu configure -height [ llength $ShutterOptionList ]
-                  $foncobtu.foncobtu configure -values $ShutterOptionList
-                  cam$camNo shutter "synchro"
-               }
+               ::cemes::setShutter $camNo $shutterState $ShutterOptionList
             }
          } else {
             tk_messageBox -title $caption(confcam,pb) -type ok \

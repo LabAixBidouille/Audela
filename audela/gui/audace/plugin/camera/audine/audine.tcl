@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.4 2007-10-20 22:45:17 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.5 2007-10-22 21:16:03 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -585,6 +585,44 @@ proc ::audine::confAudineInactif { } {
             [ ::confLink::getLinkNamespace $::audine::private(port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera inactif
             $frm.frame3.test configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# ::audine::setShutter
+#    Procedure pour la commande de l'obturateur
+#
+proc ::audine::setShutter { camNo shutterState ShutterOptionList } {
+   variable private
+   global caption conf
+
+   set conf(audine,foncobtu) $shutterState
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Gestion du mode de fonctionnement
+         switch -exact -- $shutterState {
+            0  {
+               set private(foncobtu) $caption(audine,obtu_ouvert)
+               $frm.frame2.frame8.frame17.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame2.frame8.frame17.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "opened"
+            }
+            1  {
+               set private(foncobtu) $caption(audine,obtu_ferme)
+               $frm.frame2.frame8.frame17.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame2.frame8.frame17.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "closed"
+            }
+            2  {
+               set private(foncobtu) $caption(audine,obtu_synchro)
+               $frm.frame2.frame8.frame17.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame2.frame8.frame17.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "synchro"
+            }
          }
       }
    }
