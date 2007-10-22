@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.5 2007-10-20 18:07:17 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.6 2007-10-22 21:17:18 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
@@ -712,6 +712,44 @@ proc ::hisis::confHiSIS { } {
             pack forget $frm.frame3.frame6.frame13
             pack forget $frm.frame3.frame6.frame14
             pack forget $frm.frame3.frame6.frame15
+         }
+      }
+   }
+}
+
+#
+# ::hisis::setShutter
+#    Procedure pour la commande de l'obturateur
+#
+proc ::hisis::setShutter { camNo shutterState ShutterOptionList } {
+   variable private
+   global caption conf
+
+   set conf(hisis,foncobtu) $shutterState
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Gestion du mode de fonctionnement
+         switch -exact -- $shutterState {
+            0  {
+               set private(foncobtu) $caption(hisis,obtu_ouvert)
+               $frm.frame3.frame5.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame3.frame5.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "opened"
+            }
+            1  {
+               set private(foncobtu) $caption(hisis,obtu_ferme)
+               $frm.frame3.frame5.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame3.frame5.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "closed"
+            }
+            2  {
+               set private(foncobtu) $caption(hisis,obtu_synchro)
+               $frm.frame3.frame5.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame3.frame5.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "synchro"
+            }
          }
       }
    }

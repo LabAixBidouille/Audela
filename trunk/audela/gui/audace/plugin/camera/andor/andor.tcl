@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.6 2007-10-20 15:43:59 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.7 2007-10-22 21:15:41 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -379,6 +379,44 @@ proc ::andor::checkConfigRefroidissement { } {
             pack forget $frm.frame2.frame6.frame10.temp
             pack forget $frm.frame2.frame6.frame10.tempdeg
             $frm.frame2.frame6.frame11.temp_ccd configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# ::andor::setShutter
+#    Procedure pour la commande de l'obturateur
+#
+proc ::andor::setShutter { camNo shutterState ShutterOptionList } {
+   variable private
+   global caption conf
+
+   set conf(andor,foncobtu) $shutterState
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Gestion du mode de fonctionnement
+         switch -exact -- $shutterState {
+            0  {
+               set private(foncobtu) $caption(andor,obtu_ouvert)
+               $frm.frame2.frame4.frame7.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame2.frame4.frame7.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "opened"
+            }
+            1  {
+               set private(foncobtu) $caption(andor,obtu_ferme)
+               $frm.frame2.frame4.frame7.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame2.frame4.frame7.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "closed"
+            }
+            2  {
+               set private(foncobtu) $caption(andor,obtu_synchro)
+               $frm.frame2.frame4.frame7.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame2.frame4.frame7.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "synchro"
+            }
          }
       }
    }

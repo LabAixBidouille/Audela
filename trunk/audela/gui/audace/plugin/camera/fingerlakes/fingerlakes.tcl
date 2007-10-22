@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.16 2007-10-20 15:45:40 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.17 2007-10-22 21:16:46 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -317,6 +317,44 @@ proc ::fingerlakes::checkConfigRefroidissement { } {
             pack forget $frm.frame1.frame3.frame5.frame6.temp
             pack forget $frm.frame1.frame3.frame5.frame6.tempdeg
             $frm.frame1.frame3.frame5.frame7.temp_ccd configure -state disabled
+         }
+      }
+   }
+}
+
+#
+# ::fingerlakes::setShutter
+#    Procedure pour la commande de l'obturateur
+#
+proc ::fingerlakes::setShutter { camNo shutterState ShutterOptionList } {
+   variable private
+   global caption conf
+
+   set conf(fingerlakes,foncobtu) $shutterState
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         #--- Gestion du mode de fonctionnement
+         switch -exact -- $shutterState {
+            0  {
+               set private(foncobtu) $caption(fingerlakes,obtu_ouvert)
+               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "opened"
+            }
+            1  {
+               set private(foncobtu) $caption(fingerlakes,obtu_ferme)
+               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "closed"
+            }
+            2  {
+               set private(foncobtu) $caption(fingerlakes,obtu_synchro)
+               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
+               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
+               cam$camNo shutter "synchro"
+            }
          }
       }
    }
