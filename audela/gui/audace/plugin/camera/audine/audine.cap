@@ -1,6 +1,6 @@
 #
 # Fichier : audine.cap
-# Mise a jour $Id: audine.cap,v 1.2 2007-10-20 22:45:34 robertdelmas Exp $
+# Mise a jour $Id: audine.cap,v 1.3 2007-10-23 21:36:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -35,6 +35,7 @@ set caption(audine,obtu_thierry)                 "thierry"
 set caption(audine,port)                         "Port"
 set caption(audine,port_liaison)                 "Port / Link"
 set caption(audine,configurer)                   "Set up"
+set caption(audine,acquisition)                  "Acquisition"
 set caption(audine,miroir_x)                     "Horizontal Mirror"
 set caption(audine,miroir_y)                     "Vertical Mirror"
 set caption(audine,ampli_ccd)                    "CCD Amplifier"
@@ -77,6 +78,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,port)                      "Port"
    set caption(audine,port_liaison)              "Port / Liaison"
    set caption(audine,configurer)                "Configurer"
+   set caption(audine,acquisition)               "Acquisition"
    set caption(audine,miroir_x)                  "Miroir horizontal"
    set caption(audine,miroir_y)                  "Miroir vertical"
    set caption(audine,ampli_ccd)                 "Amplificateur du CCD"
@@ -119,6 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,port)                      "Porte"
    set caption(audine,port_liaison)              "Porte / Collegamento"
    set caption(audine,configurer)                "Configurare"
+   set caption(audine,acquisition)               "Acquisizione"
    set caption(audine,miroir_x)                  "Specchio orizzontale"
    set caption(audine,miroir_y)                  "Specchio verticale"
    set caption(audine,ampli_ccd)                 "Amplificatore del CCD"
@@ -161,6 +164,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,port)                      "Puerto"
    set caption(audine,port_liaison)              "Puerto / Enlace"
    set caption(audine,configurer)                "Configurar"
+   set caption(audine,acquisition)               "Adquisición"
    set caption(audine,miroir_x)                  "Espejo horizontal"
    set caption(audine,miroir_y)                  "Espejo vertical"
    set caption(audine,ampli_ccd)                 "Ampilificador de la CCD"
@@ -203,6 +207,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,port)                      "Port"
    set caption(audine,port_liaison)              "Port / Link"
    set caption(audine,configurer)                "Konfigurieren"
+   set caption(audine,acquisition)               "Belichtung"
    set caption(audine,miroir_x)                  "Horizontale Spiegel"
    set caption(audine,miroir_y)                  "Verticale Spiegel"
    set caption(audine,ampli_ccd)                 "CCD Verstärker"
@@ -245,6 +250,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,port)                      "Porta"
    set caption(audine,port_liaison)              "Porta / Ligação"
    set caption(audine,configurer)                "Configurar"
+   set caption(audine,acquisition)               "Aquisição"
    set caption(audine,miroir_x)                  "Espelho Horizontal"
    set caption(audine,miroir_y)                  "Espelho Vertical"
    set caption(audine,ampli_ccd)                 "Amplificador CCD"
@@ -287,6 +293,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audine,port)                      "Port"
    set caption(audine,port_liaison)              "Port / Link"
    set caption(audine,configurer)                "Set up"
+   set caption(audine,acquisition)               "Acquisition"
    set caption(audine,miroir_x)                  "Horisontal spejl"
    set caption(audine,miroir_y)                  "Vertikal spejl"
    set caption(audine,ampli_ccd)                 "CCD Amplifier"
