@@ -80,7 +80,7 @@ proc analdir { base } {
             } else {
                set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
             }
-				if {([file tail $thisfile] != "CVS") && ([file tail $thisfile] != "src") && ([file tail $thisfile] != "dev") && ([file tail $thisfile] != "ros")} {
+				if {([file tail $thisfile] != "CVS") && ([file tail $thisfile] != "src") && ([file tail $thisfile] != "dev") && ([file tail $thisfile] != "ros") && ([file tail $thisfile] != "controle-telescope")} {
 					analdir $thisfile
 				}
          }
