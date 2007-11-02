@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.26 2007-11-02 23:20:40 michelpujol Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.27 2007-11-02 23:36:06 michelpujol Exp $
 #
 
 #============================================================
@@ -238,7 +238,7 @@ namespace eval ::acqapn {
       #--- Sauvegarde si resolution valide
       if { $private(resolution) > "0" } {
          #---Les seules variables de configuration sauvegardees
-         set conf(coolpix,baud) $private(baud) }
+         set conf(coolpix,baud) $private(baud)
          foreach var { model adjust format compression flash focus format lens\
             metering whitebalance exposure mode dzoom} {
             set conf(coolpix,$var) $private($var)
