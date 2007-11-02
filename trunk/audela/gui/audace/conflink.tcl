@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.22 2007-10-12 21:55:20 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.23 2007-11-02 16:42:56 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -15,25 +15,23 @@ namespace eval ::confLink {
 #------------------------------------------------------------
 proc ::confLink::init { } {
    variable private
-   global audace
-   global conf
+   global audace conf
 
-   #---
-   set private(namespace)     "confLink"
-   set private(frm)           "$audace(base).confLink"
-   set private(driverType)    "link"
-   set private(driverPattern) ""
-   set private(namespaceList) ""
-   set private(pluginTitleList)    ""
+   #--- charge le fichier caption
+   source [ file join "$audace(rep_caption)" conflink.cap ]
+
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confLink,start) ] }    { set conf(confLink,start)    "0" }
    if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+155+100" }
 
-   #--- charge le fichier caption
-   source [ file join $audace(rep_caption) conflink.cap ]
+   #--- Initialise les variables locales
+   set private(pluginNamespaceList) ""
+   set private(pluginTitleList)     ""
+   set private(frm)                 "$audace(base).confLink"
+
    #--- j'ajoute le repertoire pouvant contenir des plugins
    lappend ::auto_path [file join "$::audace(rep_plugin)" link]
-   #--- je charge la liste des plugins
+   #--- je recherche les plugin presents
    findPlugin
 
    #--- configure le plugin selectionne par defaut
@@ -57,7 +55,7 @@ proc ::confLink::afficheAide { } {
    #--- je recupere l'index de l'onglet selectionne
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
    if { $index != -1 } {
-      set selectedPluginName [lindex $private(namespaceList) [expr $index -1]]
+      set selectedPluginName [lindex $private(pluginNamespaceList) [expr $index -1]]
       #--- j'affiche la documentation
       set pluginHelp [ $selectedPluginName\::getPluginHelp ]
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
@@ -88,7 +86,7 @@ proc ::confLink::appliquer { } {
    #--- je recupere le label de l'onglet choisi
    set namespaceLabel "[Rnotebook:currentName $private(frm).usr.book ]"
    #--- je recherche le namespace ayant ce label
-   foreach namespace $private(namespaceList) {
+   foreach namespace $private(pluginNamespaceList) {
       if { [$namespace\:\:getPluginTitle] == $namespaceLabel } {
          set linkNamespace $namespace
          break
@@ -103,7 +101,7 @@ proc ::confLink::appliquer { } {
    #stopDriver
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
-   foreach name $private(namespaceList) {
+   foreach name $private(pluginNamespaceList) {
       set drivername [ $name\:\:widgetToConf ]
    }
 
@@ -201,7 +199,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    }
 
    #--- Je verifie qu'il y a des liaisons
-   if { [llength $private(namespaceList)] <1 } {
+   if { [llength $private(pluginNamespaceList)] <1 } {
       tk_messageBox -title "$caption(conflink,config) $configurationTitle" \
          -message "$caption(conflink,pas_liaison)" -icon error
       return 1
@@ -237,7 +235,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    set mainFrame $private(frm).usr.book
 
    if { $authorizedNamespaces == "" } {
-      set  authorizedNamespaces $private(namespaceList)
+      set  authorizedNamespaces $private(pluginNamespaceList)
    }
 
    set linkTypes [list]
@@ -392,35 +390,34 @@ proc ::confLink::stopDriver { { linkLabel "" } } {
 
 #------------------------------------------------------------
 # ::confLink::findPlugin
-#    Recherche les fichiers .tcl presents dans driverPattern
+#    Recherche les plugins de type "link"
 #
 #    Conditions :
-#      - Le plugin doit retourner un namespace non nul quand on charge son source .tcl
-#      - Le plugin doit avoir une procedure getDriverType qui retourne une valeur egale a private(driverType)
-#      - Le plugin doit avoir une procedure getPluginTitle
+#      - le plugin doit avoir une procedure getPluginType qui retourne "link"
+#      - le plugin doit avoir une procedure getPluginTitle
+#      - etc.
 #
 #    Si le plugin remplit les conditions :
 #      Son label est ajoute dans la liste pluginTitleList, et son namespace est ajoute dans namespaceList
 #      Sinon le fichier tcl est ignore car ce n'est pas un plugin du type souhaite
 #
-# retrun 0 = OK , 1 = error (no plugin found)
+# return 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confLink::findPlugin { } {
    variable private
    global audace caption
 
    #--- j'initialise les listes vides
-   set private(namespaceList)   ""
-   set private(pluginTitleList) ""
+   set private(pluginNamespaceList) ""
+   set private(pluginTitleList)     ""
 
    #--- je recherche les fichiers link/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" link * pkgIndex.tcl ]
-   #--- je recherche les plugins repondant au filtre driverPattern
    foreach pkgIndexFileName $filelist {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type)== "link"} {
+            if { $pluginInfo(type) == "link"} {
                foreach os $pluginInfo(os) {
                   if { $os == [ lindex $::tcl_platform(os) 0 ] } {
                      #--- je charge le package
@@ -429,7 +426,7 @@ proc ::confLink::findPlugin { } {
                      $pluginInfo(namespace)::initPlugin
                      set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
                      #--- je l'ajoute dans la liste des plugins
-                     lappend private(namespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
                      lappend private(pluginTitleList) $pluginlabel
                      ::console::affiche_prompt "#$caption(conflink,liaison) $pluginlabel v$pluginInfo(version)\n"
                   }
@@ -446,7 +443,7 @@ proc ::confLink::findPlugin { } {
    }
    ::console::affiche_prompt "\n"
 
-   if { [llength $private(namespaceList)] <1 } {
+   if { [llength $private(pluginNamespaceList)] < 1 } {
       #--- aucun plugin correct
       return 1
    } else {
@@ -516,7 +513,7 @@ proc ::confLink::getLinkLabels { namespaces } {
 
    foreach namespace $namespaces {
       #--- je verifie que le namespace existe
-      if { [lsearch -exact $private(namespaceList) $namespace] != -1 } {
+      if { [lsearch -exact $private(pluginNamespaceList) $namespace] != -1 } {
          foreach linkLabel [$namespace\:\:getLinkLabels] {
             lappend labels $linkLabel
          }
@@ -539,7 +536,7 @@ proc ::confLink::getNamespaceLabel { namespace } {
    variable private
 
    #--- je verifie que le namespace existe
-   if { [lsearch -exact $private(namespaceList) $namespace] != -1 } {
+   if { [lsearch -exact $private(pluginNamespaceList) $namespace] != -1 } {
       return [$namespace\:\:getPluginTitle]
    } else {
       #--- je retourne une chaine vide
@@ -560,7 +557,7 @@ proc ::confLink::getNamespaceLabel { namespace } {
 proc ::confLink::getLinkNamespace { linkLabel } {
    variable private
 
-   foreach namespace $private(namespaceList) {
+   foreach namespace $private(pluginNamespaceList) {
       #--- je verifie si on peut recuperer l'index
       if { [$namespace\::getLinkIndex $linkLabel] != "" } {
          return $namespace
@@ -625,7 +622,7 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
    #--- je liste les packages qui sont presents parmi ceux qui sont autorises
    set authorizedPresentNamespaces [list ]
    foreach  name $authorizedNamespaces  {
-       if { [lsearch $private(namespaceList) $name ] != -1 } {
+       if { [lsearch $private(pluginNamespaceList) $name ] != -1 } {
          lappend authorizedPresentNamespaces $name
        }
    }

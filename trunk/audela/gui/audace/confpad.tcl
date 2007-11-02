@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.19 2007-09-22 08:13:24 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.20 2007-11-02 16:42:37 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -26,10 +26,10 @@ proc ::confPad::init { } {
    if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x265+155+100" }
 
    #--- Initialise les variables locales
-   set private(pluginList)         ""
-   set private(pluginTitleList)    ""
-   set private(frm)                "$audace(base).confPad"
-   set private(variablePluginName) ""
+   set private(pluginNamespaceList) ""
+   set private(pluginTitleList)     ""
+   set private(frm)                 "$audace(base).confPad"
+   set private(variablePluginName)  ""
 
    #--- j'ajoute le repertoire pouvant contenir des plugins
    lappend ::auto_path [file join "$::audace(rep_plugin)" pad]
@@ -37,7 +37,7 @@ proc ::confPad::init { } {
    findPlugin
 
    #--- je verifie que le plugin par defaut existe dans la liste
-   if { [lsearch $private(pluginList) $conf(confPad)] == -1 } {
+   if { [lsearch $private(pluginNamespaceList) $conf(confPad)] == -1 } {
       #--- s'il n'existe pas, je vide le nom du plugin par defaut
       set conf(confPad) ""
    }
@@ -125,13 +125,13 @@ proc ::confPad::appliquer { } {
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
    set index [lsearch -exact $private(pluginTitleList) $label ]
    if { $index != -1 } {
-      set padName [lindex $private(pluginList) $index]
+      set padName [lindex $private(pluginNamespaceList) $index]
    } else {
       set padName ""
    }
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
-   foreach name $private(pluginList) {
+   foreach name $private(pluginNamespaceList) {
       $name\::widgetToConf
    }
 
@@ -159,7 +159,7 @@ proc ::confPad::afficheAide { } {
    #--- je recupere l'index de l'onglet selectionne
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
    if { $index != -1 } {
-      set selectedPluginName [lindex $private(pluginList) [expr $index -1]]
+      set selectedPluginName [lindex $private(pluginNamespaceList) [expr $index -1]]
       #--- j'affiche la documentation
       set pluginHelp [ $selectedPluginName\::getPluginHelp ]
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
@@ -202,7 +202,7 @@ proc ::confPad::createDialog { } {
    global caption conf
 
    #--- Je verifie qu'il y a des raquettes
-   if { [ llength $private(pluginList) ] < 1 } {
+   if { [ llength $private(pluginNamespaceList) ] < 1 } {
       tk_messageBox -title "$caption(confpad,config)" -message "$caption(confpad,pas_raquette)" -icon error
       return 1
    }
@@ -237,7 +237,7 @@ proc ::confPad::createDialog { } {
 
          #--- Je demande a chaque plugin d'afficher sa page de config
          set indexOnglet 1
-         foreach name $private(pluginList) {
+         foreach name $private(pluginNamespaceList) {
             set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
             incr indexOnglet
          }
@@ -308,12 +308,12 @@ proc ::confPad::createFramePad { frm variablePluginName} {
 
    ComboBox $frm.list \
       -width 15       \
-      -height [llength $private(pluginList)] \
+      -height [llength $private(pluginNamespaceList)] \
       -relief sunken  \
       -borderwidth 1  \
       -textvariable $variablePluginName \
       -editable 0     \
-      -values $private(pluginList)
+      -values $private(pluginNamespaceList)
    pack $frm.list -in $frm -anchor center -side left -padx 0 -pady 10
 
    #--- bouton de configuration de l'equipement
@@ -331,7 +331,7 @@ proc ::confPad::select { { name "" } } {
    variable private
 
    #--- je recupere le label correspondant au namespace
-   set index [ lsearch -exact $private(pluginList) "$name" ]
+   set index [ lsearch -exact $private(pluginNamespaceList) "$name" ]
    if { $index != -1 } {
       Rnotebook:select $private(frm).usr.book [ lindex $private(pluginTitleList) $index ]
    }
@@ -377,32 +377,31 @@ proc ::confPad::stopDriver { } {
 # recherche les plugins de type "pad"
 #
 # conditions :
-#   - le plugin doit avoir une procedure getPluginType
+#   - le plugin doit avoir une procedure getPluginType qui retourne "pad"
 #   - le plugin doit avoir une procedure getPluginTitle
+#   - etc.
 #
-# si le plugin remplit les conditions
-#     son label est ajouté dans la liste pluginList,
-#     et son titre est ajoute dans la liste pluginTitleList
-# sinon le fichier est ignore
+# si le plugin remplit les conditions :
+# son label est ajoute dans la liste pluginTitleList et son namespace est ajoute dans pluginNamespaceList
+# sinon le fichier tcl est ignore car ce n'est pas un plugin
 #
-# retrun 0 = OK, 1 = error (no plugin found)
+# return 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confPad::findPlugin { } {
    variable private
    global audace caption
 
    #--- j'initialise les listes vides
-   set private(pluginList)      ""
-   set private(pluginTitleList) ""
+   set private(pluginNamespaceList) ""
+   set private(pluginTitleList)     ""
 
    #--- je recherche les fichiers pad/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" pad * pkgIndex.tcl ]
-   #--- je recherche les plugins repondant au filtre driverPattern
    foreach pkgIndexFileName $filelist {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type)== "pad"} {
+            if { $pluginInfo(type) == "pad"} {
                foreach os $pluginInfo(os) {
                   if { $os == [ lindex $::tcl_platform(os) 0 ] } {
                      #--- je charge le package
@@ -411,7 +410,7 @@ proc ::confPad::findPlugin { } {
                      $pluginInfo(namespace)::initPlugin
                      set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
                      #--- je l'ajoute dans la liste des plugins
-                     lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
+                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
                      lappend private(pluginTitleList) $pluginlabel
                      ::console::affiche_prompt "#$caption(confpad,raquette) $pluginlabel v$pluginInfo(version)\n"
                   }
@@ -428,7 +427,7 @@ proc ::confPad::findPlugin { } {
    }
    ::console::affiche_prompt "\n"
 
-   if { [llength $private(pluginList)] <1 } {
+   if { [llength $private(pluginNamespaceList)] < 1 } {
       #--- aucun plugin correct
       return 1
    } else {
