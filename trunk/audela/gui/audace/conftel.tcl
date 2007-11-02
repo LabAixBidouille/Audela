@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.35 2007-10-13 09:31:45 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.36 2007-11-02 18:53:42 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -86,7 +86,6 @@ namespace eval ::confTel {
 
       $This.cmd.ok configure -relief groove -state disabled
       $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -state disabled
       $This.cmd.fermer configure -state disabled
       appliquer
       fermer
@@ -104,7 +103,6 @@ namespace eval ::confTel {
       set frm $frmm(Telscp3)
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -relief groove -state disabled
-      $This.cmd.aide configure -state disabled
       $This.cmd.fermer configure -state disabled
       if { [ winfo exists $frm.ctlking ] } {
          $frm.ctlking configure -text "$caption(conftel,audecom_ctl_king)" -state disabled
@@ -116,7 +114,6 @@ namespace eval ::confTel {
       set confTel(fenetre,mobile,valider) "0"
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -relief raised -state normal
-      $This.cmd.aide configure -state normal
       $This.cmd.fermer configure -state normal
       if { $conf(telescope) == "audecom" } {
          if { [ winfo exists $audace(base).confAudecomKing ] } {
@@ -140,18 +137,10 @@ namespace eval ::confTel {
       variable This
       global confTel
 
-      $This.cmd.ok configure -state disabled
-      $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -relief groove -state disabled
-      $This.cmd.fermer configure -state disabled
       set selectedPluginName [lindex $confTel(names) [expr [Rnotebook:currentIndex $This.usr.book ] -1 ] ]
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
       set pluginHelp [ $selectedPluginName\::getPluginHelp ]
       ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
-      $This.cmd.ok configure -state normal
-      $This.cmd.appliquer configure -state normal
-      $This.cmd.aide configure -relief raised -state normal
-      $This.cmd.fermer configure -state normal
    }
 
    #
@@ -162,10 +151,6 @@ namespace eval ::confTel {
       variable This
 
       ::confTel::recupPosDim
-      $This.cmd.ok configure -state disabled
-      $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -state disabled
-      $This.cmd.fermer configure -relief groove -state disabled
       destroy $This
    }
 

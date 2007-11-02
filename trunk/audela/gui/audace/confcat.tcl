@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.16 2007-11-02 16:41:41 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.17 2007-11-02 18:54:38 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -77,7 +77,6 @@ proc ::confCat::ok { } {
    $private(frm).cmd.ok configure -relief groove -state disabled
    $private(frm).cmd.appliquer configure -state disabled
    $private(frm).cmd.fermer configure -state disabled
-   $private(frm).cmd.aide configure -state disabled
    appliquer
    fermer
 }
@@ -94,7 +93,6 @@ proc ::confCat::appliquer { } {
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
    $private(frm).cmd.fermer configure -state disabled
-   $private(frm).cmd.aide configure -state disabled
 
    #--- j'arrete le plugin precedent
    if { "$conf(confCat)" != "" } {
@@ -129,7 +127,6 @@ proc ::confCat::appliquer { } {
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
    $private(frm).cmd.fermer configure -state normal
-   $private(frm).cmd.aide configure -state normal
 }
 
 #------------------------------------------------------------
