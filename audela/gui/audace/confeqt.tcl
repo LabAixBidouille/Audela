@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.25 2007-11-02 16:43:15 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.26 2007-11-02 18:54:23 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -167,11 +167,6 @@ proc ::confEqt::appliquer { } {
 proc ::confEqt::afficheAide { } {
    variable private
 
-   $private(frm).cmd.ok configure -state disabled
-   $private(frm).cmd.appliquer configure -state disabled
-   $private(frm).cmd.fermer configure -state disabled
-   $private(frm).cmd.aide configure -relief groove -state disabled
-
    #--- je recupere le label de l'onglet selectionne
    set private(conf_confEqt) [Rnotebook:currentName $private(frm).usr.book ]
 
@@ -184,11 +179,6 @@ proc ::confEqt::afficheAide { } {
    set pluginHelp [ $selectedPluginName\::getPluginHelp ]
    set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
    ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
-
-   $private(frm).cmd.ok configure -state normal
-   $private(frm).cmd.appliquer configure -state normal
-   $private(frm).cmd.fermer configure -state normal
-   $private(frm).cmd.aide configure -relief raised -state normal
 }
 
 #------------------------------------------------------------
@@ -199,9 +189,6 @@ proc ::confEqt::fermer { } {
    variable private
 
    ::confEqt::recupPosDim
-   $private(frm).cmd.ok configure -state disabled
-   $private(frm).cmd.appliquer configure -state disabled
-   $private(frm).cmd.fermer configure -relief groove -state disabled
    destroy $private(frm)
 
    #--- j'efface le nom de la variable de sortie

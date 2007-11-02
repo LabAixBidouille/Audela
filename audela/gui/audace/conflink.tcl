@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.23 2007-11-02 16:42:56 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.24 2007-11-02 18:54:09 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -47,11 +47,6 @@ proc ::confLink::init { } {
 proc ::confLink::afficheAide { } {
    variable private
 
-   $private(frm).cmd.ok configure -state disabled
-   $private(frm).cmd.appliquer configure -state disabled
-   $private(frm).cmd.fermer configure -state disabled
-   $private(frm).cmd.aide configure -relief groove -state disabled
-
    #--- je recupere l'index de l'onglet selectionne
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
    if { $index != -1 } {
@@ -61,11 +56,6 @@ proc ::confLink::afficheAide { } {
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
       ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
    }
-
-   $private(frm).cmd.ok configure -state normal
-   $private(frm).cmd.appliquer configure -state normal
-   $private(frm).cmd.fermer configure -state normal
-   $private(frm).cmd.aide configure -relief raised -state normal
 }
 
 #------------------------------------------------------------
@@ -156,9 +146,6 @@ proc ::confLink::fermer { } {
    variable private
 
    ::confLink::recup_position
-   $private(frm).cmd.ok configure -state disabled
-   $private(frm).cmd.appliquer configure -state disabled
-   $private(frm).cmd.fermer configure -relief groove -state disabled
    destroy $private(frm)
 }
 

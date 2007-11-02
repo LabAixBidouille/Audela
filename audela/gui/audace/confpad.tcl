@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.20 2007-11-02 16:42:37 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.21 2007-11-02 18:54:53 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -103,7 +103,6 @@ proc ::confPad::ok { } {
    $private(frm).cmd.ok configure -relief groove -state disabled
    $private(frm).cmd.appliquer configure -state disabled
    $private(frm).cmd.fermer configure -state disabled
-   $private(frm).cmd.aide configure -state disabled
    appliquer
    fermer
 }
@@ -119,7 +118,6 @@ proc ::confPad::appliquer { } {
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
    $private(frm).cmd.fermer configure -state disabled
-   $private(frm).cmd.aide configure -state disabled
 
    #--- je recupere le namespace correspondant au label
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
@@ -146,7 +144,6 @@ proc ::confPad::appliquer { } {
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
    $private(frm).cmd.fermer configure -state normal
-   $private(frm).cmd.aide configure -state normal
 }
 
 #------------------------------------------------------------
