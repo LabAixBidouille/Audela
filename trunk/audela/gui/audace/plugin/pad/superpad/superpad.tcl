@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.18 2007-09-27 19:33:36 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.19 2007-11-02 23:20:40 michelpujol Exp $
 #
 
 namespace eval ::superpad {
@@ -622,7 +622,7 @@ namespace eval ::AlignManager {
          set moveTime [expr int($deltax * $conf(superpad,centerspeed) * -1) ]
       }
       set moveTime [expr int($moveTime * $binning / 4 ) ]
-      set camNo $::confCam(A,camNo)
+      set camNo [::confCam::getCamNo "A"]
       set mirx [cam$camNo mirrorx]
       set miry [cam$camNo mirrory]
 

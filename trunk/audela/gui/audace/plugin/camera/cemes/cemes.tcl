@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.23 2007-10-22 21:16:26 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.24 2007-11-02 23:20:33 michelpujol Exp $
 #
 
 namespace eval ::cemes {
@@ -48,10 +48,21 @@ proc ::cemes::getPluginOS { } {
 }
 
 #
+# ::cemes::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::cemes::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::cemes::initPlugin
 #    Initialise les variables conf(cemes,...)
 #
 proc ::cemes::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera Cemes
@@ -60,6 +71,11 @@ proc ::cemes::initPlugin { } {
    if { ! [ info exists conf(cemes,mirh) ] }     { set conf(cemes,mirh)     "0" }
    if { ! [ info exists conf(cemes,mirv) ] }     { set conf(cemes,mirv)     "0" }
    if { ! [ info exists conf(cemes,temp) ] }     { set conf(cemes,temp)     "-50" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -82,7 +98,7 @@ proc ::cemes::confToWidget { } {
 # ::cemes::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::cemes::widgetToConf { } {
+proc ::cemes::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -98,7 +114,7 @@ proc ::cemes::widgetToConf { } {
 # ::cemes::fillConfigPage
 #    Interface de configuration de la camera Cemes
 #
-proc ::cemes::fillConfigPage { frm } {
+proc ::cemes::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -212,14 +228,17 @@ proc ::cemes::fillConfigPage { frm } {
 # ::cemes::configureCamera
 #    Configure la camera Cemes en fonction des donnees contenues dans les variables conf(cemes,...)
 #
-proc ::cemes::configureCamera { camItem } {
-   global caption conf confCam
+proc ::cemes::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
+      #--- Je cree la camera
       set camNo [ cam::create cemes PCI ]
       console::affiche_erreur "$caption(cemes,port_camera) $caption(cemes,2points) [ cam$camNo port ]\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- Je configure l'obturateur
       switch -exact -- $conf(cemes,foncobtu) {
          0 {
@@ -240,16 +259,13 @@ proc ::cemes::configureCamera { camItem } {
          cam$camNo cooler off
       }
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(cemes,mirh)
       cam$camNo mirrorv $conf(cemes,mirv)
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
       #--- Je mesure la temperature du capteur CCD
-      if { [ info exists confCam(cemes,aftertemp) ] == "0" } {
-         ::cemes::CemesDispTemp
+      if { [ info exists private(aftertemp) ] == "0" } {
+         ::cemes::CemesDispTemp $camItem
       }
    } ]
 
@@ -266,12 +282,12 @@ proc ::cemes::configureCamera { camItem } {
 #    Arrete la camera Cemes
 #
 proc ::cemes::stop { camItem } {
-   global confCam
+   variable private
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -279,20 +295,19 @@ proc ::cemes::stop { camItem } {
 # ::cemes::CemesDispTemp
 #    Affiche la temperature du CCD
 #
-proc ::cemes::CemesDispTemp { } {
+proc ::cemes::CemesDispTemp { camItem } {
    variable private
-   global audace caption confCam
+   global audace caption
 
    catch {
       set frm $private(frm)
-      set camItem $confCam(currentCamItem)
-      if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
+      if { [ winfo exists $frm ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
          $frm.frame1.frame3.frame5.frame7.temp_ccd configure \
             -text "$caption(cemes,temperature_CCD) $temp_ccd $caption(cemes,deg_c)"
-         set confCam(cemes,aftertemp) [ after 5000 ::cemes::CemesDispTemp ]
+         set private(aftertemp) [ after 5000 ::cemes::CemesDispTemp $camItem ]
       } else {
-         catch { unset confCam(cemes,aftertemp) }
+         catch { unset private(aftertemp) }
       }
    }
 }
@@ -324,11 +339,12 @@ proc ::cemes::checkConfigRefroidissement { } {
 # ::cemes::setShutter
 #    Procedure pour la commande de l'obturateur
 #
-proc ::cemes::setShutter { camNo shutterState ShutterOptionList } {
+proc ::cemes::setShutter { camItem shutterState ShutterOptionList } {
    variable private
    global caption conf
 
    set conf(cemes,foncobtu) $shutterState
+   set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -369,6 +385,7 @@ proc ::cemes::setShutter { camNo shutterState ShutterOptionList } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -378,13 +395,18 @@ proc ::cemes::setShutter { camNo shutterState ShutterOptionList } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::cemes::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 4x4 8x8 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 65535 0 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -394,6 +416,20 @@ proc ::cemes::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list $::caption(cemes,obtu_ouvert) $::caption(cemes,obtu_ferme) $::caption(cemes,obtu_synchro) ] }
    }
 }

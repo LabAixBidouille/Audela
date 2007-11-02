@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.7 2007-10-22 21:18:01 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.8 2007-11-02 23:20:36 michelpujol Exp $
 #
 
 namespace eval ::sbig {
@@ -48,10 +48,21 @@ proc ::sbig::getPluginOS { } {
 }
 
 #
+# ::sbig::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::sbig::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::sbig::initPlugin
 #    Initialise les variables conf(sbig,...)
 #
 proc ::sbig::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera SBIG
@@ -62,6 +73,11 @@ proc ::sbig::initPlugin { } {
    if { ! [ info exists conf(sbig,mirv) ] }     { set conf(sbig,mirv)     "0" }
    if { ! [ info exists conf(sbig,port) ] }     { set conf(sbig,port)     "LPT1:" }
    if { ! [ info exists conf(sbig,temp) ] }     { set conf(sbig,temp)     "0" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -86,7 +102,7 @@ proc ::sbig::confToWidget { } {
 # ::sbig::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::sbig::widgetToConf { } {
+proc ::sbig::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -104,7 +120,7 @@ proc ::sbig::widgetToConf { } {
 # ::sbig::fillConfigPage
 #    Interface de configuration de la camera SBIG
 #
-proc ::sbig::fillConfigPage { frm } {
+proc ::sbig::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -276,15 +292,18 @@ proc ::sbig::fillConfigPage { frm } {
 # ::sbig::configureCamera
 #    Configure la camera SBIG en fonction des donnees contenues dans les variables conf(sbig,...)
 #
-proc ::sbig::configureCamera { camItem } {
-   global caption conf confCam
+proc ::sbig::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
      ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
+      #--- Je cree la camera
       set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
       console::affiche_erreur "$caption(sbig,port_camera) ([ cam$camNo name ]) $caption(sbig,2points) $conf(sbig,port)\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- Je cree la liaison utilisee par la camera pour l'acquisition
       set linkNo [ ::confLink::create $conf(sbig,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
       #--- Je configure l'obturateur
@@ -306,16 +325,13 @@ proc ::sbig::configureCamera { camItem } {
          cam$camNo cooler off
       }
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(sbig,mirh)
       cam$camNo mirrorv $conf(sbig,mirv)
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
       #--- Je mesure la temperature du capteur CCD
-      if { [ info exists confCam(sbig,aftertemp) ] == "0" } {
-         ::sbig::SbigDispTemp
+      if { [ info exists private(aftertemp) ] == "0" } {
+         ::sbig::SbigDispTemp $camItem
       }
    } ]
 
@@ -332,15 +348,16 @@ proc ::sbig::configureCamera { camItem } {
 #    Arrete la camera SBIG
 #
 proc ::sbig::stop { camItem } {
-   global conf confCam
+   variable private
+   global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(sbig,port) "cam$confCam($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(sbig,port) "cam$private($camItem,camNo)" "acquisition"
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -348,14 +365,13 @@ proc ::sbig::stop { camItem } {
 # ::sbig::SbigDispTemp
 #    Affiche la temperature du CCD
 #
-proc ::sbig::SbigDispTemp { } {
+proc ::sbig::SbigDispTemp { camItem } {
    variable private
-   global audace caption confCam
+   global audace caption
 
    catch {
       set frm $private(frm)
-      set camItem $confCam(currentCamItem)
-      if { [ info exists audace(base).confCam ] == "1" && [ catch { set tempstatus [ cam$confCam($camItem,camNo) infotemp ] } ] == "0" } {
+      if { [ winfo exists $frm ] == "1" && [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
          set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
          set temp_ccd [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
          set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
@@ -365,9 +381,9 @@ proc ::sbig::SbigDispTemp { } {
             -text "$caption(sbig,puissance_peltier) $power %"
          $frm.ccdtemp configure \
             -text "$caption(sbig,temp_ext) $temp_ccd $caption(sbig,deg_c) / $temp_ambiant $caption(sbig,deg_c)"
-         set confCam(sbig,aftertemp) [ after 5000 ::sbig::SbigDispTemp ]
+         set private(aftertemp) [ after 5000 ::sbig::SbigDispTemp $camItem ]
       } else {
-         catch { unset confCam(sbig,aftertemp) }
+         catch { unset private(aftertemp) }
       }
    }
 }
@@ -428,11 +444,12 @@ proc ::sbig::checkConfigRefroidissement { } {
 # ::sbig::setShutter
 #    Procedure pour la commande de l'obturateur
 #
-proc ::sbig::setShutter { camNo shutterState ShutterOptionList } {
+proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
    variable private
    global caption conf
 
    set conf(sbig,foncobtu) $shutterState
+   set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -473,6 +490,7 @@ proc ::sbig::setShutter { camNo shutterState ShutterOptionList } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -482,13 +500,18 @@ proc ::sbig::setShutter { camNo shutterState ShutterOptionList } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::sbig::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 65535 0 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -498,6 +521,20 @@ proc ::sbig::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      {
          #--- O + F + S - A confirmer avec le materiel
          return [ list $::caption(sbig,obtu_ouvert) $::caption(sbig,obtu_ferme) $::caption(sbig,obtu_synchro) ]

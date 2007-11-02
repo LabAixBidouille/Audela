@@ -1,8 +1,8 @@
 #
 # Fichier : pkgIndex.tcl
 # Description : Definition du point d'entree du plugin
-# Mise a jour $Id: pkgIndex.tcl,v 1.3 2007-04-07 00:38:36 robertdelmas Exp $
+# Mise a jour $Id: pkgIndex.tcl,v 1.4 2007-11-02 23:20:49 michelpujol Exp $
 #
 
-package ifneeded tel 1.0 [ list source [ file join $dir tel.tcl ] ]
+package ifneeded tlscp 1.1 [ list source [ file join $dir tel.tcl ] ]
 

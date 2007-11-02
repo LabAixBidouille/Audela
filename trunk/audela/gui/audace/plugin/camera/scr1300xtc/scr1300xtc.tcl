@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.15 2007-10-20 15:47:17 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.16 2007-11-02 23:20:38 michelpujol Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -48,16 +48,32 @@ proc ::scr1300xtc::getPluginOS { } {
 }
 
 #
+# ::scr1300xtc::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::scr1300xtc::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::scr1300xtc::initPlugin
 #    Initialise les variables conf(scr1300xtc,...)
 #
 proc ::scr1300xtc::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera SCR1300XTC
    if { ! [ info exists conf(scr1300xtc,port) ] } { set conf(scr1300xtc,port) "LPT1:" }
    if { ! [ info exists conf(scr1300xtc,mirh) ] } { set conf(scr1300xtc,mirh) "0" }
    if { ! [ info exists conf(scr1300xtc,mirv) ] } { set conf(scr1300xtc,mirv) "0" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -78,7 +94,7 @@ proc ::scr1300xtc::confToWidget { } {
 # ::scr1300xtc::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::scr1300xtc::widgetToConf { } {
+proc ::scr1300xtc::widgetToConf { camItem } {
    variable private
    global conf
 
@@ -92,7 +108,7 @@ proc ::scr1300xtc::widgetToConf { } {
 # ::scr1300xtc::fillConfigPage
 #    Interface de configuration de la camera SCR1300XTC
 #
-proc ::scr1300xtc::fillConfigPage { frm } {
+proc ::scr1300xtc::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -187,24 +203,24 @@ proc ::scr1300xtc::fillConfigPage { frm } {
 # ::scr1300xtc::configureCamera
 #    Configure la camera SCR1300XTC en fonction des donnees contenues dans les variables conf(scr1300xtc,...)
 #
-proc ::scr1300xtc::configureCamera { camItem } {
-   global caption conf confCam
+proc ::scr1300xtc::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
+      #--- Je cree la camera
       set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
       console::affiche_erreur "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- Je cree la liaison utilisee par la camera pour l'acquisition
       set linkNo [ ::confLink::create $conf(scr1300xtc,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(scr1300xtc,mirh)
       cam$camNo mirrorv $conf(scr1300xtc,mirv)
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
    } ]
 
    if { $catchResult == "1" } {
@@ -220,15 +236,16 @@ proc ::scr1300xtc::configureCamera { camItem } {
 #    Arrete la camera SCR1300XTC
 #
 proc ::scr1300xtc::stop { camItem } {
-   global conf confCam
+   variable private
+   global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(scr1300xtc,port) "cam$confCam($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(scr1300xtc,port) "cam$private($camItem,camNo)" "acquisition"
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -243,6 +260,7 @@ proc ::scr1300xtc::stop { camItem } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -252,13 +270,18 @@ proc ::scr1300xtc::stop { camItem } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::scr1300xtc::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 4096 -4096 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -268,6 +291,20 @@ proc ::scr1300xtc::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list "" ] }
    }
 }

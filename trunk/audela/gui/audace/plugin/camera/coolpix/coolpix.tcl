@@ -2,7 +2,7 @@
 # Fichier : coolpix.tcl
 # Description : Configuration de l'appareil photo numerique Nikon CoolPix
 # Auteur : Robert DELMAS
-# Mise a jour $Id: coolpix.tcl,v 1.16 2007-10-20 15:45:16 robertdelmas Exp $
+# Mise a jour $Id: coolpix.tcl,v 1.17 2007-11-02 23:20:34 michelpujol Exp $
 #
 
 namespace eval ::coolpix {
@@ -48,15 +48,31 @@ proc ::coolpix::getPluginOS { } {
 }
 
 #
+# ::coolpix::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::coolpix::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::coolpix::initPlugin
 #    Initialise les variables conf(coolpix,...)
 #
 proc ::coolpix::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise la variable de la camera Nikon CoolPix
    if { ! [ info exists conf(coolpix,baud) ] }  { set conf(coolpix,baud)  "115200" }
    if { ! [ info exists conf(coolpix,model) ] } { set conf(coolpix,model) "Coolpix-5700" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -64,30 +80,32 @@ proc ::coolpix::initPlugin { } {
 #    Copie la variable de configuration dans une variable locale
 #
 proc ::coolpix::confToWidget { } {
-   global conf confCam
+   variable private
+   global conf
 
-   #--- Recupere la configuration de la camera Nikon CoolPix dans le tableau confCam(coolpix,...)
-   set confCam(coolpix,baud)  $conf(coolpix,baud)
-   set confCam(coolpix,model) $conf(coolpix,model)
+   #--- Recupere la configuration de la camera Nikon CoolPix dans le tableau private(...)
+   set private(baud)  $conf(coolpix,baud)
+   set private(model) $conf(coolpix,model)
 }
 
 #
 # ::coolpix::widgetToConf
 #    Copie la variable locale dans une variable de configuration
 #
-proc ::coolpix::widgetToConf { } {
-   global conf confCam
+proc ::coolpix::widgetToConf { camItem } {
+   variable private
+   global conf
 
    #--- Memorise la configuration de la camera Nikon CoolPix dans le tableau conf(coolpix,...)
-   set conf(coolpix,baud)  $confCam(coolpix,baud)
-   set conf(coolpix,model) $confCam(coolpix,model)
+   set conf(coolpix,baud)  $private(baud)
+   set conf(coolpix,model) $private(model)
 }
 
 #
 # ::coolpix::fillConfigPage
 #    Interface de configuration de la camera Nikon CoolPix
 #
-proc ::coolpix::fillConfigPage { frm } {
+proc ::coolpix::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -121,7 +139,7 @@ proc ::coolpix::fillConfigPage { frm } {
             -relief sunken                     \
             -borderwidth 1                     \
             -editable 0                        \
-            -textvariable confCam(coolpix,baud) \
+            -textvariable ::coolpix::private(baud) \
             -values $list_combobox
          pack $frm.frame1.frame3.listeBaud -anchor nw -side left -padx 0 -pady 10
 
@@ -149,21 +167,20 @@ proc ::coolpix::fillConfigPage { frm } {
 # ::coolpix::configureCamera
 #    Configure la camera Nikon CoolPix en fonction des donnees contenues dans les variables conf(coolpix,...)
 #
-proc ::coolpix::configureCamera { camItem } {
+proc ::coolpix::configureCamera { camItem bufNo } {
+   variable private
    global confCam
 
    set catchResult [ catch {
-      if { [ ::confVisu::getTool $confCam($camItem,visuNo) ] == "acqapn" } {
+      if { [ ::confVisu::getTool [::confCam::getVisuNo $camItem] ] == "acqapn" } {
          #--- La camera se connecte uniquement lorsque l'outil Acquisition APN CoolPix est affiche dans la visu1
-         set camNo "0"
-         set confCam($camItem,camName) "coolpix"
+         set private(camName) "coolpix"
          ::acqapn::Off
          ::acqapn::Query
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
       } else {
-         set camItem $confCam(currentCamItem)
-         set confCam($camItem,camName) ""
-         set confCam($camItem,camNo)   "0"
+         set private(camName) ""
       }
    } ]
 
@@ -189,9 +206,8 @@ proc ::coolpix::stop { camItem } {
 # ::coolpix::connect
 #    Procedure appelee pour connecter la camera Nikon CoolPix
 #
-proc ::coolpix::connect { } {
+proc ::coolpix::connect { camItem } {
    variable private
-   global confCam
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -199,20 +215,18 @@ proc ::coolpix::connect { } {
          ::confCam::appliquer
       } else {
          #--- J'arrete la camera
-         ::coolpix::deconnect
+         ::coolpix::deconnect $camItem
          #--- Je copie les parametres de la nouvelle camera dans conf()
          ::coolpix::widgetToConf
-         set camItem $confCam(currentCamItem)
-         set confCam($camItem,camName) "coolpix"
+         set private(camName) "coolpix"
          ::confCam::configureCamera $camItem
       }
    } else {
       #--- J'arrete la camera
-      ::coolpix::deconnect
+      ::coolpix::deconnect $camItem
       #--- Je copie les parametres de la nouvelle camera dans conf()
       ::coolpix::widgetToConf
-      set camItem $confCam(currentCamItem)
-      set confCam($camItem,camName) "coolpix"
+      set private(camName) "coolpix"
       ::confCam::configureCamera $camItem
    }
 }
@@ -221,11 +235,10 @@ proc ::coolpix::connect { } {
 # ::coolpix::deconnect
 #    Procedure appelee pour deconnecter la camera Nikon CoolPix
 #
-proc ::coolpix::deconnect { } {
-   global confCam
+proc ::coolpix::deconnect { camItem } {
+   variable private
 
-   set camItem $confCam(currentCamItem)
-   set confCam($camItem,camName) "coolpix"
+   set private(camName) "coolpix"
    ::confCam::stopItem $camItem
 }
 
@@ -240,6 +253,7 @@ proc ::coolpix::deconnect { } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -249,6 +263,8 @@ proc ::coolpix::deconnect { } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::coolpix::getPluginProperty { camItem propertyName } {
@@ -256,6 +272,7 @@ proc ::coolpix::getPluginProperty { camItem propertyName } {
       binningList      { return [ ::acqapn::Formats ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 4096 0 ] }
       hasBinning       { return 0 }
       hasFormat        { return 1 }
       hasLongExposure  { return 0 }
@@ -265,6 +282,8 @@ proc ::coolpix::getPluginProperty { camItem propertyName } {
       hasWindow        { return 0 }
       longExposure     { return 0 }
       multiCamera      { return 0 }
+      name             { return "Nikon" }
+      product          { return "coolpix" }
       shutterList      { return [ list "" ] }
    }
 }

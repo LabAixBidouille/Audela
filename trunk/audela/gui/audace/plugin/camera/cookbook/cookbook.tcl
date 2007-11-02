@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.16 2007-10-20 15:44:54 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.17 2007-11-02 23:20:34 michelpujol Exp $
 #
 
 namespace eval ::cookbook {
@@ -48,10 +48,21 @@ proc ::cookbook::getPluginOS { } {
 }
 
 #
+# ::cookbook::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::cookbook::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::cookbook::initPlugin
 #    Initialise les variables conf(cookbook,...)
 #
 proc ::cookbook::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera CB245
@@ -59,6 +70,11 @@ proc ::cookbook::initPlugin { } {
    if { ! [ info exists conf(cookbook,mirh) ] }  { set conf(cookbook,mirh)  "0" }
    if { ! [ info exists conf(cookbook,mirv) ] }  { set conf(cookbook,mirv)  "0" }
    if { ! [ info exists conf(cookbook,delai) ] } { set conf(cookbook,delai) "142" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -80,7 +96,7 @@ proc ::cookbook::confToWidget { } {
 # ::cookbook::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::cookbook::widgetToConf { } {
+proc ::cookbook::widgetToConf { camItem } {
    variable private
    global conf
 
@@ -95,7 +111,7 @@ proc ::cookbook::widgetToConf { } {
 # ::cookbook::fillConfigPage
 #    Interface de configuration de la camera CB245
 #
-proc ::cookbook::fillConfigPage { frm } {
+proc ::cookbook::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -202,26 +218,26 @@ proc ::cookbook::fillConfigPage { frm } {
 # ::cookbook::configureCamera
 #    Configure la camera CB245 en fonction des donnees contenues dans les variables conf(cookbook,...)
 #
-proc ::cookbook::configureCamera { camItem } {
-   global caption conf confCam
+proc ::cookbook::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
+      #--- Je cree la camera
       set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ]
       console::affiche_erreur "$caption(cookbook,port_camera) $caption(cookbook,2points) $conf(cookbook,port)\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- Je cree la liaison utilisee par la camera pour l'acquisition
       set linkNo [ ::confLink::create $conf(cookbook,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
       #--- Je configure le delai
       cam$camNo delay $conf(cookbook,delai)
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(cookbook,mirh)
       cam$camNo mirrorv $conf(cookbook,mirv)
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
    } ]
 
    if { $catchResult == "1" } {
@@ -237,15 +253,16 @@ proc ::cookbook::configureCamera { camItem } {
 #    Arrete la camera CB245
 #
 proc ::cookbook::stop { camItem } {
-   global conf confCam
+   variable private
+   global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(cookbook,port) "cam$confCam($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(cookbook,port) "cam$private($camItem,camNo)" "acquisition"
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -260,6 +277,7 @@ proc ::cookbook::stop { camItem } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -269,13 +287,18 @@ proc ::cookbook::stop { camItem } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::cookbook::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 4096 -4096 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -285,6 +308,20 @@ proc ::cookbook::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list "" ] }
    }
 }

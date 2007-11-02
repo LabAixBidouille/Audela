@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.16 2007-06-02 00:16:35 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.17 2007-11-02 23:20:30 michelpujol Exp $
 #
 
 namespace eval ::confOptic {
@@ -28,16 +28,10 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc run { visuNo } {
       variable This
-      global audace conf confCam
+      global audace
 
       set This "$audace(base).confOptic"
       createDialog $visuNo
-      if { $conf(camera,$confCam(currentCamItem),camName) != "" } {
-         select $conf(camera,$confCam(currentCamItem),camName)
-      } else {
-         select A
-      }
-      catch { tkwait visibility $This }
    }
 
    #------------------------------------------------------------
@@ -283,9 +277,9 @@ namespace eval ::confOptic {
       variable This
 
       #--- Supprime la procedure de surveillance de la connexion d'une camera
-      trace remove variable ::confCam(A,super_camNo) write "::confOptic::MAJ_Binning A [ Rnotebook:frame $This.usr.book 1 ]"
-      trace remove variable ::confCam(B,super_camNo) write "::confOptic::MAJ_Binning B [ Rnotebook:frame $This.usr.book 2 ]"
-      trace remove variable ::confCam(C,super_camNo) write "::confOptic::MAJ_Binning C [ Rnotebook:frame $This.usr.book 3 ]"
+      ::confCam::removeCameraListener "A" "::confOptic::MAJ_Binning A [ Rnotebook:frame $This.usr.book 1 ]"
+      ::confCam::removeCameraListener "B" "::confOptic::MAJ_Binning B [ Rnotebook:frame $This.usr.book 2 ]"
+      ::confCam::removeCameraListener "C" "::confOptic::MAJ_Binning C [ Rnotebook:frame $This.usr.book 3 ]"
       #---
       recup_position
       $This.cmd.ok configure -state disabled
@@ -373,9 +367,9 @@ namespace eval ::confOptic {
       pack $This.cmd -side top -fill x
 
       #--- Charge la procedure de surveillance de la connexion d'une camera
-      trace add variable ::confCam(A,super_camNo) write "::confOptic::MAJ_Binning A [ Rnotebook:frame $This.usr.book 1 ]"
-      trace add variable ::confCam(B,super_camNo) write "::confOptic::MAJ_Binning B [ Rnotebook:frame $This.usr.book 2 ]"
-      trace add variable ::confCam(C,super_camNo) write "::confOptic::MAJ_Binning C [ Rnotebook:frame $This.usr.book 3 ]"
+      ::confCam::addCameraListener "A" "::confOptic::MAJ_Binning A [ Rnotebook:frame $This.usr.book 1 ]"
+      ::confCam::addCameraListener "B" "::confOptic::MAJ_Binning B [ Rnotebook:frame $This.usr.book 2 ]"
+      ::confCam::addCameraListener "C" "::confOptic::MAJ_Binning C [ Rnotebook:frame $This.usr.book 3 ]"
 
       #--- La fenetre est active
       focus $This
@@ -719,9 +713,9 @@ namespace eval ::confOptic {
       global audace caption confCam color
 
       #--- Recherche du numero de la camera A connectee
-      if { $confCam(A,visuNo) != "0" } {
-         set camNo   [ ::confVisu::getCamNo $confCam(A,visuNo) ]
-         set camItem [ ::confVisu::getCamItem $confCam(A,visuNo) ]
+      if { [::confCam::isReady "A"] != "0" } {
+         set camItem "A"
+         set camNo   [ ::confCam::getCamNo $camItem ]
       } else {
          set camNo   ""
          set camItem ""
@@ -919,7 +913,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette A $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(currentCamItem) A ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook A"
       bind [ Rnotebook:button $nn 1 ] <Button-1> "::confOptic::MAJ_Conf_Camera A $::confOptic::widget(frm)"
    }
 
@@ -934,9 +928,9 @@ namespace eval ::confOptic {
       global audace caption confCam color
 
       #--- Recherche du numero de la camera B connectee
-      if { $confCam(B,visuNo) != "0" } {
-         set camNo   [ ::confVisu::getCamNo $confCam(B,visuNo) ]
-         set camItem [ ::confVisu::getCamItem $confCam(B,visuNo) ]
+      if { [::confCam::isReady "B"] != "0" } {
+         set camItem "B"
+         set camNo   [ ::confCam::getCamNo $camItem ]
       } else {
          set camNo   ""
          set camItem ""
@@ -1134,7 +1128,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette B $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(currentCamItem) B ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook B"
       bind [ Rnotebook:button $nn 2 ] <Button-1> "::confOptic::MAJ_Conf_Camera B $::confOptic::widget(frm)"
    }
 
@@ -1149,9 +1143,9 @@ namespace eval ::confOptic {
       global audace caption confCam color
 
       #--- Recherche du numero de la camera C connectee
-      if { $confCam(C,visuNo) != "0" } {
-         set camNo   [ ::confVisu::getCamNo $confCam(C,visuNo) ]
-         set camItem [ ::confVisu::getCamItem $confCam(C,visuNo) ]
+      if { [::confCam::isReady "C"] != "0" } {
+         set camItem "C"
+         set camNo   [ ::confCam::getCamNo $camItem ]
       } else {
          set camNo   ""
          set camItem ""
@@ -1349,7 +1343,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette C $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; set ::confCam(currentCamItem) C ; tkwait window $audace(base).confCam"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook C"
       bind [ Rnotebook:button $nn 3 ] <Button-1> "::confOptic::MAJ_Conf_Camera C $::confOptic::widget(frm)"
    }
 
@@ -1368,8 +1362,8 @@ namespace eval ::confOptic {
       global confCam
 
       #--- Recherche du binning associe a la camera selectionnee
-      if { $confCam($camItem,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
+      if { $camItem != "0" } {
+         set camNo [ ::confCam::getCamNo $camItem ]
       } else {
          set camNo ""
       }
@@ -1403,8 +1397,8 @@ namespace eval ::confOptic {
       global audace confCam
 
       #--- Recherche du numero de la camera CCD
-      if { $confCam($camItem,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
+      if { $camItem != "0" } {
+         set camNo [ ::confCam::getCamNo $camItem ]
       } else {
          set camNo ""
       }
@@ -1462,8 +1456,8 @@ namespace eval ::confOptic {
       $frm.labVal_PS configure -text $confOptic::widget($camItem,PS)
 
       #--- Recherche du numero de la camera CCD
-      if { $confCam($camItem,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
+      if { $camItem != "0" } {
+         set camNo [ ::confCam::getCamNo $camItem ]
       } else {
          set camNo ""
       }
@@ -1498,8 +1492,8 @@ namespace eval ::confOptic {
       global audace caption confCam color
 
       #--- Recherche du numero de la camera CCD
-      if { $confCam($camItem,visuNo) != "0" } {
-         set camNo [ ::confVisu::getCamNo $confCam($camItem,visuNo) ]
+      if { $camItem != "" } {
+         set camNo [ ::confCam::getCamNo $camItem ]
       } else {
          set camNo ""
       }

@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.26 2007-09-23 12:47:44 robertdelmas Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.27 2007-11-02 23:20:48 michelpujol Exp $
 #
 
 #==============================================================
@@ -477,10 +477,10 @@ proc ::autoguider::startCenterStar { visuNo } {
 
    #--- J'intialise la liste des deltas
    set private($visuNo,deltaList) ""
-   lappend  private($visuNo,deltaList) [list $::conf(tlscp,targetBoxSize) $::conf(tlscp,targetBoxSize)]
-   lappend  private($visuNo,deltaList) [list $::conf(tlscp,targetBoxSize) $::conf(tlscp,targetBoxSize)]
-   lappend  private($visuNo,deltaList) [list $::conf(tlscp,targetBoxSize) $::conf(tlscp,targetBoxSize)]
-   lappend  private($visuNo,deltaList) [list $::conf(tlscp,targetBoxSize) $::conf(tlscp,targetBoxSize)]
+   lappend  private($visuNo,deltaList) [list $::conf(autoguider,targetBoxSize) $::conf(autoguider,targetBoxSize)]
+   lappend  private($visuNo,deltaList) [list $::conf(autoguider,targetBoxSize) $::conf(autoguider,targetBoxSize)]
+   lappend  private($visuNo,deltaList) [list $::conf(autoguider,targetBoxSize) $::conf(autoguider,targetBoxSize)]
+   lappend  private($visuNo,deltaList) [list $::conf(autoguider,targetBoxSize) $::conf(autoguider,targetBoxSize)]
 
    #--- je lance les acquisitions
    set result [startAcquisition $visuNo]
@@ -533,8 +533,10 @@ proc ::autoguider::startAcquisition { visuNo } {
    global caption conf
 
    #--- Petits raccourcis bien pratiques
-   set camNo [::confVisu::getCamNo $visuNo ]
-   set private($visuNo,camThreadNo) [::confCam::getThreadNo $camNo ]
+   set camItem [::confVisu::getCamItem $visuNo ]
+   set camNo [::confCam::getCamNo $camItem ]
+
+   set private($visuNo,camThreadNo) [::confCam::getThreadNo $camItem ]
 
    if { $private($visuNo,acquisitionState) != 1 } {
       #--- je ne fais rien si une demande d'arret est en cours
@@ -1406,7 +1408,7 @@ proc ::autoguider::webcamConfigure { visuNo } {
 
    set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
    if { $result == "1" } {
-      if { [ ::confVisu::getCamera $visuNo ] == "" } {
+      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
          ::audace::menustate disabled
          set choix [ tk_messageBox -title $caption(autoguider,pb) -type ok \
                 -message $caption(autoguider,selcam) ]
@@ -1465,14 +1467,15 @@ proc ::autoguider::onChangeSubWindow { visuNo { varname "" } { arrayindex "" } {
 proc ::autoguider::selectBinning { visuNo } {
    variable private
 
-   set camNo [::confVisu::getCamNo $visuNo ]
+   set camItem [::confVisu::getCamItem $visuNo]
+   set camNo   [::confCam::getCamNo $camItem ]
 
    #--- si la camera
-   if { [confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure] == "0" } {
+   if { [confCam::getPluginProperty $camItem longExposure] == "0" } {
       #--- j'affiche la fenetre de choix de binning de la webcam
       set result [ catch { cam$camNo videoformat } ]
       if { $result == "1" } {
-         if { [ ::confVisu::getCamera $visuNo ] == "" } {
+         if { [ ::confVisu::getCamItem $visuNo ] == "" } {
             ::audace::menustate disabled
             set choix [ tk_messageBox -title $::caption(autoguider,pb) -type ok \
                   -message $caption(autoguider,selcam) ]
@@ -1548,7 +1551,8 @@ proc ::autoguider::moveTelescope { visuNo direction delay} {
 proc ::autoguider::setCumul { visuNo cumulState } {
    variable private
 
-   set camNo [::confVisu::getCamNo $visuNo ]
+   set camItem [::confVisu::getCamItem $visuNo]
+   set camNo   [::confCam::getCamNo $camItem ]
 
    if { $cumulState == 1 } {
       #--- je cree un nouveau buffer

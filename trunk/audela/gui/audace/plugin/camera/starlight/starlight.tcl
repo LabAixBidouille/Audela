@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.6 2007-10-20 15:47:45 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.7 2007-11-02 23:20:38 michelpujol Exp $
 #
 
 namespace eval ::starlight {
@@ -48,10 +48,21 @@ proc ::starlight::getPluginOS { } {
 }
 
 #
+# ::starlight::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::starlight::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::starlight::initPlugin
 #    Initialise les variables conf(starlight,...)
 #
 proc ::starlight::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera Starlight
@@ -60,6 +71,11 @@ proc ::starlight::initPlugin { } {
    if { ! [ info exists conf(starlight,mirv) ] }   { set conf(starlight,mirv)   "0" }
    if { ! [ info exists conf(starlight,modele) ] } { set conf(starlight,modele) "MX516" }
    if { ! [ info exists conf(starlight,port) ] }   { set conf(starlight,port)   "LPT1:" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -82,7 +98,7 @@ proc ::starlight::confToWidget { } {
 # ::starlight::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::starlight::widgetToConf { } {
+proc ::starlight::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -98,7 +114,7 @@ proc ::starlight::widgetToConf { } {
 # ::starlight::fillConfigPage
 #    Interface de configuration de la camera Starlight
 #
-proc ::starlight::fillConfigPage { frm } {
+proc ::starlight::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -230,64 +246,62 @@ proc ::starlight::fillConfigPage { frm } {
 # ::starlight::configureCamera
 #    Configure la camera Starlight en fonction des donnees contenues dans les variables conf(starlight,...)
 #
-proc ::starlight::configureCamera { camItem } {
-   global caption conf confCam
+proc ::starlight::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
       if { $conf(starlight,modele) == "MX516" } {
+         #--- Je cree la camera
          set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]
          console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'accelerateur de port parallele
          cam$camNo accelerator $conf(starlight,acc)
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(starlight,mirh)
          cam$camNo mirrorv $conf(starlight,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(starlight,modele) == "MX916" } {
+         #--- Je cree la camera
          set camNo [ cam::create starlight $conf(starlight,port) -name MX916 ]
          console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'accelerateur de port parallele
          cam$camNo accelerator $conf(starlight,acc)
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(starlight,mirh)
          cam$camNo mirrorv $conf(starlight,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(starlight,modele) == "HX516" } {
+         #--- Je cree la camera
          set camNo [ cam::create starlight $conf(starlight,port) -name HX516 ]
          console::affiche_erreur "$caption(starlight,port_camera) $conf(starlight,modele)\
             $caption(starlight,2points) $conf(starlight,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(starlight,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'accelerateur de port parallele
          cam$camNo accelerator $conf(starlight,acc)
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(starlight,mirh)
          cam$camNo mirrorv $conf(starlight,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       }
    } ]
 
@@ -304,15 +318,16 @@ proc ::starlight::configureCamera { camItem } {
 #    Arrete la camera Starlight
 #
 proc ::starlight::stop { camItem } {
-   global conf confCam
+   variable private
+   global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(starlight,port) "cam$confCam($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(starlight,port) "cam$private($camItem,camNo)" "acquisition"
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -327,6 +342,7 @@ proc ::starlight::stop { camItem } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -336,13 +352,18 @@ proc ::starlight::stop { camItem } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::starlight::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 32767 -32768 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -352,6 +373,20 @@ proc ::starlight::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list "" ] }
    }
 }

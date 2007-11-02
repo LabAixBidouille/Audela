@@ -2,7 +2,7 @@
 # Fichier : autoguiderconfig.tcl
 # Description : Fenetre de configuration de l'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguiderconfig.tcl,v 1.15 2007-10-05 15:35:26 robertdelmas Exp $
+# Mise a jour $Id: autoguiderconfig.tcl,v 1.16 2007-11-02 23:20:48 michelpujol Exp $
 #
 
 ################################################################
@@ -23,7 +23,7 @@ proc ::autoguider::config::acq { visuNo } {
    variable private
 
    if { $private($visuNo,learnPendingStop) == 0 } {
-      set camNo [::confVisu::getCamNo $visuNo ]
+      set camNo  [::confCam::getCamNo [::confVisu::getCamItem $visuNo] ]
       cam$camNo acq
       if { [set ::status_cam$camNo] == "exp" } {
          vwait ::status_cam$camNo
@@ -536,7 +536,7 @@ proc ::autoguider::config::startLearn { visuNo } {
    variable widget
 
    #--- Petits raccourcis bien pratiques
-   set camNo [::confVisu::getCamNo $visuNo ]
+   set camNo [::confCam::getCamNo [::confVisu::getCamItem $visuNo] ]
 
    #--- je verifie la presence la camera
    if { $camNo == 0 } {

@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.5 2007-10-22 21:16:03 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.6 2007-11-02 23:20:33 michelpujol Exp $
 #
 
 namespace eval ::audine {
@@ -48,10 +48,21 @@ proc ::audine::getPluginOS { } {
 }
 
 #
+# ::audine::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::audine::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::audine::initPlugin
 #    Initialise les variables conf(audine,...)
 #
 proc ::audine::initPlugin { } {
+   variable private
    global audace caption conf
 
    #--- Charge les fichiers auxiliaires
@@ -67,6 +78,11 @@ proc ::audine::initPlugin { } {
    if { ! [ info exists conf(audine,mirv) ] }      { set conf(audine,mirv)      "0" }
    if { ! [ info exists conf(audine,port) ] }      { set conf(audine,port)      "LPT1:" }
    if { ! [ info exists conf(audine,typeobtu) ] }  { set conf(audine,typeobtu)  "$caption(audine,obtu_audine)" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -92,7 +108,7 @@ proc ::audine::confToWidget { } {
 # ::audine::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::audine::widgetToConf { } {
+proc ::audine::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -111,7 +127,7 @@ proc ::audine::widgetToConf { } {
 # ::audine::fillConfigPage
 #    Interface de configuration de la camera Audine
 #
-proc ::audine::fillConfigPage { frm } {
+proc ::audine::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -169,7 +185,7 @@ proc ::audine::fillConfigPage { frm } {
             #--- Bouton de configuration des liaisons
             button $frm.frame1.frame5.frame10.configure -text "$caption(audine,configurer)" -relief raised \
                -command {
-                  ::confLink::run ::::audine::private(port) \
+                  ::confLink::run ::audine::private(port) \
                      { "parallelport" "quickaudine" "ethernaude" "audinet" } \
                      "- $caption(audine,acquisition) - $caption(audine,camera)"
                }
@@ -329,8 +345,7 @@ proc ::audine::fillConfigPage { frm } {
    frame $frm.frame3 -borderwidth 0 -relief raised
 
       #--- Bouton de test d'une Audine en fabrication
-      button $frm.frame3.test -text "$caption(audine,test_fab_audine)" -relief raised \
-         -command { ::testAudine::run $::audace(base).testAudine $::confCam(currentCamItem) }
+      button $frm.frame3.test -text "$caption(audine,test_fab_audine)" -relief raised
       pack $frm.frame3.test -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
    pack $frm.frame3 -side top -fill x
@@ -348,7 +363,7 @@ proc ::audine::fillConfigPage { frm } {
    pack $frm.frame4 -side bottom -fill x -pady 2
 
    #--- Gestion du bouton actif/inactif
-   ::audine::confAudine
+   ::audine::confAudine $camItem
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -358,7 +373,8 @@ proc ::audine::fillConfigPage { frm } {
 # ::audine::configureCamera
 #    Configure la camera Audine en fonction des donnees contenues dans les variables conf(audine,...)
 #
-proc ::audine::configureCamera { camItem } {
+proc ::audine::configureCamera { camItem bufNo } {
+   variable private
    global caption conf confCam
 
    set catchResult [ catch {
@@ -373,14 +389,16 @@ proc ::audine::configureCamera { camItem } {
       #--- Je cree la camera en fonction de la liaison choisie
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          parallelport {
-            set camNo [cam::create audine $conf(audine,port) -name Audine -ccd $ccd ]
+            #--- Je cree la camera
+            set camNo [ cam::create audine $conf(audine,port) -name Audine -ccd $ccd ]
             #--- Je configure le nom du CAN utilise
             cam$camNo cantype $conf(audine,can)
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          }
          quickaudine {
-            set camNo [cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
+            #--- Je cree la camera
+            set camNo [ cam::create quicka $conf(audine,port) -name Audine -ccd $ccd ]
             #--- Je configure le delai avant la lecture du CCD
             cam$camNo delayshutter $conf(quickaudine,delayshutter)
             #--- Je configure la vitesse de lecture de chaque pixel
@@ -416,10 +434,12 @@ proc ::audine::configureCamera { camItem } {
                if { $conf(ethernaude,ipsetting) == "1" } {
                   #--- Je mets le nom du fichier entre guillemets pour le cas ou le nom du
                   #--- repertoire contient des espaces
-                  set camNo [cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
+                  #--- Je cree la camera
+                  set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                      -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
                      -ipsetting \"[ file join $audace(rep_install) bin IPSetting.exe ]\" ]
                } else {
+                  #--- Je cree la camera
                   set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                      -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert ]
                }
@@ -427,10 +447,12 @@ proc ::audine::configureCamera { camItem } {
                if { $conf(ethernaude,ipsetting) == "1" } {
                   #--- Je mets le nom du fichier entre guillemets pour le cas ou le nom du
                   #--- repertoire contient des espaces
-                  set camNo [cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
+                  #--- Je cree la camera
+                  set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                      -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
                      -ipsetting \"[ file join $audace(rep_install) bin IPSetting.exe ]\" -debug_eth ]
                } else {
+                  #--- Je cree la camera
                   set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
                      -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth ]
                }
@@ -439,7 +461,8 @@ proc ::audine::configureCamera { camItem } {
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
          }
          audinet {
-            set camNo [cam::create audinet $conf(audine,port) -ccd $ccd -name Audine \
+            #--- Je cree la camera
+            set camNo [ cam::create audinet $conf(audine,port) -ccd $ccd -name Audine \
                -host $conf(audinet,host) -protocole $conf(audinet,protocole) -udptempo $conf(audinet,udptempo) \
                -ipsetting $conf(audinet,ipsetting) -macaddress $conf(audinet,mac_address) \
                -debug_cam $conf(audinet,debug) ]
@@ -454,15 +477,12 @@ proc ::audine::configureCamera { camItem } {
          $caption(audine,2points) $conf(audine,port)\n"
       console::affiche_saut "\n"
       #--- Je change de variable
-      set confCam($camItem,camNo) $camNo
+      set private($camItem,camNo) $camNo
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(audine,mirh)
       cam$camNo mirrorv $conf(audine,mirv)
-      #--- Je cree la thread dediee a la camera
-      set confCam($camItem,threadNo) [::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo)]
       #--- Je parametre le mode de fonctionnement de l'obturateur
       switch -exact -- $conf(audine,foncobtu) {
          0 { cam$camNo shutter "opened" }
@@ -499,10 +519,8 @@ proc ::audine::configureCamera { camItem } {
             2 { cam$camNo ampli "off" }
          }
       }
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       #--- Gestion du bouton actif/inactif
-      ::audine::confAudine
+      ::audine::confAudine $camItem
    } ]
 
    if { $catchResult == "1" } {
@@ -518,10 +536,11 @@ proc ::audine::configureCamera { camItem } {
 #    Arrete la camera Audine
 #
 proc ::audine::stop { camItem } {
-   global audace conf confCam
+   variable private
+   global audace conf
 
    #--- Gestion du bouton actif/inactif
-   ::audine::confAudineInactif
+   ::audine::confAudineInactif $camItem
 
    #--- Si la fenetre Test pour la fabrication de la camera est affichee, je la ferme
    if { [ winfo exists $audace(base).testAudine ] } {
@@ -529,12 +548,12 @@ proc ::audine::stop { camItem } {
    }
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(audine,port) "cam$confCam($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(audine,port) "cam$private($camItem,camNo)" "acquisition"
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -542,11 +561,9 @@ proc ::audine::stop { camItem } {
 # ::audine::confAudine
 # Permet d'activer ou de desactiver le bouton Tests pour la fabrication de la camera Audine
 #
-proc ::audine::confAudine { } {
+proc ::audine::confAudine { camItem } {
    variable private
-   global audace confCam
-
-   set camItem $confCam(currentCamItem)
+   global audace
 
    #--- Si la fenetre Test pour la fabrication de la camera est affichee, je la ferme
    if { [ winfo exists $audace(base).testAudine ] } {
@@ -556,10 +573,11 @@ proc ::audine::confAudine { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "audine" && \
+         if { [ ::confCam::isReady $camItem] == 1 && \
             [ ::confLink::getLinkNamespace $::audine::private(port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera actif
             $frm.frame3.test configure -state normal
+            $frm.frame3.test configure -command "::testAudine::run $::audace(base).testAudine $camItem"
          } else {
             #--- Bouton Tests pour la fabrication de la camera inactif
             $frm.frame3.test configure -state disabled
@@ -572,16 +590,13 @@ proc ::audine::confAudine { } {
 # ::audine::confAudineInactif
 #    Permet de desactiver le bouton a l'arret de la Audine
 #
-proc ::audine::confAudineInactif { } {
+proc ::audine::confAudineInactif { camItem } {
    variable private
-   global confCam
-
-   set camItem $confCam(currentCamItem)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "audine" && \
+         if { [ ::confCam::isReady $camItem] == 1 && \
             [ ::confLink::getLinkNamespace $::audine::private(port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera inactif
             $frm.frame3.test configure -state disabled
@@ -594,11 +609,12 @@ proc ::audine::confAudineInactif { } {
 # ::audine::setShutter
 #    Procedure pour la commande de l'obturateur
 #
-proc ::audine::setShutter { camNo shutterState ShutterOptionList } {
+proc ::audine::setShutter { camItem shutterState ShutterOptionList } {
    variable private
    global caption conf
 
    set conf(audine,foncobtu) $shutterState
+   set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -639,6 +655,7 @@ proc ::audine::setShutter { camNo shutterState ShutterOptionList } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -648,9 +665,13 @@ proc ::audine::setShutter { camNo shutterState ShutterOptionList } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::audine::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
@@ -679,6 +700,7 @@ proc ::audine::getPluginProperty { camItem propertyName } {
                                                61 62 63 64 ] }
          }
       }
+      dynamic          { return [ list 32767 -32768 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -700,6 +722,20 @@ proc ::audine::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "parallelport" {

@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.34 2007-10-05 16:34:17 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.35 2007-11-02 23:20:49 michelpujol Exp $
 #
 
 global panneau
@@ -298,8 +298,8 @@ namespace eval ::scanfast {
       global conf panneau
 
       #--- Numero de la camera
-      set camNo   [ ::confVisu::getCamNo 1 ]
       set camItem [ ::confVisu::getCamItem 1 ]
+      set camNo   [ ::confCam::getCamNo $camItem ]
 
       #--- Configuration de l'obturateur
       if { $camNo != "0" } {
@@ -738,7 +738,8 @@ namespace eval ::scanfast {
       global audace caption confCam panneau
 
       if { [ ::cam::list ] != "" } {
-         set result [::confCam::setShutter $audace(camNo) $panneau(scanfast,obt)]
+         set camItem [ ::confVisu::getCamItem 1 ]
+         set result [::confCam::setShutter $camItem $panneau(scanfast,obt)]
          if { $result != -1 } {
             set panneau(scanfast,obt) $result
             $This.fra4.obt.lab1 configure -text $panneau(scanfast,obt,$panneau(scanfast,obt))

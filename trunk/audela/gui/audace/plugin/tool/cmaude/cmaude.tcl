@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.14 2007-10-05 15:26:43 robertdelmas Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.15 2007-11-02 23:20:48 michelpujol Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -564,7 +564,7 @@ namespace eval ::cmaude {
       global audace caption numcam panneau
 
       #--- Petit raccourci
-      set numcam [ ::confVisu::getCamNo $audace(visuNo) ]
+      set numcam [ ::confCam::getCamNo [::confVisu::getCamItem $audace(visuNo)] ]
 
       #--- Initialisation du fenetrage
       catch {

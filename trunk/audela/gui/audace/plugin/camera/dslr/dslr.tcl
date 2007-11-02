@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.16 2007-10-20 22:44:19 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.17 2007-11-02 23:20:35 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -48,10 +48,21 @@ proc ::dslr::getPluginOS { } {
 }
 
 #
+# ::dslr::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::dslr::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::dslr::initPlugin
 #    Initialise les variables conf(dslr,...)
 #
 proc ::dslr::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera APN (DSLR)
@@ -66,6 +77,11 @@ proc ::dslr::initPlugin { } {
    if { ! [ info exists conf(dslr,telecharge_mode) ] }      { set conf(dslr,telecharge_mode)      "2" }
    if { ! [ info exists conf(dslr,utiliser_cf) ] }          { set conf(dslr,utiliser_cf)          "1" }
    if { ! [ info exists conf(dslr,supprimer_image) ] }      { set conf(dslr,supprimer_image)      "0" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -91,7 +107,7 @@ proc ::dslr::confToWidget { } {
 # ::dslr::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::dslr::widgetToConf { } {
+proc ::dslr::widgetToConf { camItem } {
    variable private
    global conf
 
@@ -110,7 +126,7 @@ proc ::dslr::widgetToConf { } {
 # ::dslr::fillConfigPage
 #    Interface de configuration de la camera APN (DSLR)
 #
-proc ::dslr::fillConfigPage { frm } {
+proc ::dslr::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -171,14 +187,14 @@ proc ::dslr::fillConfigPage { frm } {
 
             #--- Selection de la longue pose
             checkbutton $frm.frame1.frame7.frame8.longuepose -text "$caption(dslr,longuepose)" -highlightthickness 0 \
-               -variable ::dslr::private(longuepose) -command { ::dslr::confDSLR }
+               -variable ::dslr::private(longuepose) -command "::dslr::confDSLR $camItem"
             pack $frm.frame1.frame7.frame8.longuepose -anchor w -side left -padx 10 -pady 10
 
             #--- Bouton de configuration des ports et liaisons
             button $frm.frame1.frame7.frame8.configure_longuepose -text "$caption(dslr,configurer)" -relief raised \
                -command {
                   ::dslr::configureAPNLinkLonguePose
-                  ::confLink::run ::::dslr::private(longueposeport) { parallelport quickremote external } \
+                  ::confLink::run ::dslr::private(longueposeport) { parallelport quickremote external } \
                      "- $caption(dslr,longuepose) - $caption(dslr,camera)"
                }
             pack $frm.frame1.frame7.frame8.configure_longuepose -side left -pady 10 -ipadx 10 -ipady 1
@@ -257,7 +273,7 @@ proc ::dslr::fillConfigPage { frm } {
 
       #--- Bouton du choix du telechargement de l'image
       button $frm.frame11.config_telechargement -text $caption(dslr,telecharger) -state normal \
-         -command { ::dslr::setLoadParameters $confCam($confCam(currentCamItem),visuNo) }
+         -command " ::dslr::setLoadParameters $camItem"
       pack $frm.frame11.config_telechargement -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
    pack $frm.frame11 -anchor n -side bottom -fill both -expand true
@@ -275,7 +291,7 @@ proc ::dslr::fillConfigPage { frm } {
    pack $frm.frame12 -side bottom -fill x -pady 2
 
    #--- Gestion du bouton de telechargement actif/inactif
-   ::dslr::confDSLR
+   ::dslr::confDSLR $camItem
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -285,25 +301,25 @@ proc ::dslr::fillConfigPage { frm } {
 # ::dslr::configureCamera
 #    Configure la camera APN (DSLR) en fonction des donnees contenues dans les variables conf(dslr,...)
 #
-proc ::dslr::configureCamera { camItem } {
+proc ::dslr::configureCamera { camItem bufNo } {
+   variable private
    global caption conf confCam
 
    set catchResult [ catch {
       #--- Je mets audela_start_dir entre guillemets pour le cas ou le nom du repertoire contient des espaces
+      #--- Je cree la camera
       set camNo [ cam::create digicam USB -name DSLR -debug_cam $conf(dslr,debug) -gphoto2_win_dll_dir \"$::audela_start_dir\" ]
       console::affiche_erreur "$caption(dslr,name) $caption(dslr,2points) [ cam$camNo name ]\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(dslr,mirh)
       cam$camNo mirrorv $conf(dslr,mirv)
       #--- J'arrete le service WIA de Windows
       cam$camNo systemservice 0
-      #--- Je cree la thread dediee a la camera
-      set confCam($camItem,threadNo) [ ::confCam::createThread $camNo $bufNo $confCam($camItem,visuNo) ]
       #--- Je fais le parametrage des longues poses
       if { $conf(dslr,longuepose) == "1" } {
          switch [ ::confLink::getLinkNamespace $conf(dslr,longueposeport) ] {
@@ -330,10 +346,6 @@ proc ::dslr::configureCamera { camItem } {
             external {
                cam$camNo longuepose 2
             }
-         }
-         #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
-         if { $confCam($camItem,threadNo) != 0 && [ cam$camNo longueposelinkno ] != 0} {
-            thread::copycommand $confCam($camItem,threadNo) "link[cam$camNo longueposelinkno]"
          }
       } else {
          #--- Pas de liaison longue pose
@@ -362,10 +374,8 @@ proc ::dslr::configureCamera { camItem } {
             cam$camNo autoload 0
          }
       }
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
       #--- Gestion du bouton de telechargement actif/inactif
-      ::dslr::confDSLR
+      ::dslr::confDSLR $camItem
    } ]
 
    if { $catchResult == "1" } {
@@ -381,10 +391,11 @@ proc ::dslr::configureCamera { camItem } {
 #    Arrete la camera APN (DSLR)
 #
 proc ::dslr::stop { camItem } {
-   global audace conf confCam
+   variable private
+   global audace conf
 
    #--- Gestion du bouton de telechargement actif/inactif
-   ::dslr::confDSLRInactif
+   ::dslr::confDSLRInactif $camItem
 
    #--- Si la fenetre Telechargement d'images est affichee, je la ferme
    if { [ winfo exists $audace(base).telecharge_image ] } {
@@ -393,20 +404,20 @@ proc ::dslr::stop { camItem } {
 
    #--- Je ferme la liaison longuepose de la camera
    if { $conf(dslr,longuepose) == 1 } {
-      ::confLink::delete $conf(dslr,longueposeport) "cam$confCam($camItem,camNo)" "longuepose"
+      ::confLink::delete $conf(dslr,longueposeport) "cam$private($camItem,camNo)" "longuepose"
    }
 
    #--- Je restitue si necessaire l'etat du service WIA sous Windows
    if { $::tcl_platform(platform) == "windows" } {
-       if { [ cam$confCam($camItem,camNo) systemservice ] != "$conf(dslr,statut_service)" } {
-          cam$confCam($camItem,camNo) systemservice $conf(dslr,statut_service)
+       if { [ cam$private($camItem,camNo) systemservice ] != "$conf(dslr,statut_service)" } {
+          cam$private($camItem,camNo) systemservice $conf(dslr,statut_service)
        }
    }
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-     cam::delete $confCam($camItem,camNo)
-     set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+     cam::delete $private($camItem,camNo)
+     set private($camItem,camNo) 0
    }
 }
 
@@ -414,11 +425,9 @@ proc ::dslr::stop { camItem } {
 # ::dslr::confDSLR
 # Permet d'activer ou de desactiver le bouton de telechargement des images des APN (DSLR)
 #
-proc ::dslr::confDSLR { } {
+proc ::dslr::confDSLR { camItem } {
    variable private
-   global audace confCam
-
-   set camItem $confCam(currentCamItem)
+   global audace
 
    #--- Si la fenetre Telecharger l'image pour la fabrication de la camera est affichee, je la ferme
    if { [ winfo exists $audace(base).telecharge_image ] } {
@@ -428,9 +437,10 @@ proc ::dslr::confDSLR { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm.frame11.config_telechargement ] } {
-         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "dslr" } {
+         if { [ ::confCam::isReady $camItem] == 1 } {
             #--- Bouton de configuration de la camera APN (DSLR)
             $frm.frame11.config_telechargement configure -state normal
+            $frm.frame11.config_telechargement configure -command " ::dslr::setLoadParameters $camItem"
          } else {
             #--- Bouton de configuration de la camera APN (DSLR)
             $frm.frame11.config_telechargement configure -state disabled
@@ -439,6 +449,7 @@ proc ::dslr::confDSLR { } {
       if { $private(longuepose) == "1" } {
          #--- Widgets de configuration de la longue pose actifs
          $frm.frame1.frame7.frame8.configure_longuepose configure -state normal
+         $frm.frame1.frame7.frame8.configure_longuepose configure -command "::dslr::confDSLR $camItem"
          $frm.frame1.frame7.frame8.moyen_longuepose configure -state normal
          $frm.frame1.frame7.frame9.longueposelinkbit configure -state normal
          $frm.frame1.frame7.frame10.longueposestartvalue configure -state normal
@@ -456,16 +467,13 @@ proc ::dslr::confDSLR { } {
 # ::dslr::confDSLRInactif
 #    Permet de desactiver le bouton de telechargement des images a l'arret de la camera APN (DSLR)
 #
-proc ::dslr::confDSLRInactif { } {
+proc ::dslr::confDSLRInactif { camItem } {
    variable private
-   global confCam
-
-   set camItem $confCam(currentCamItem)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::getProduct $confCam($camItem,camNo) ] == "dslr" } {
+         if { [ ::confCam::isReady $camItem ] == 1 } {
             #--- Bouton de configuration de la camera APN (DSLR)
             $frm.frame11.config_telechargement configure -state disabled
          }
@@ -498,7 +506,7 @@ proc ::dslr::configureAPNLinkLonguePose { } {
 # ::dslr::setLoadParameters
 #    Cree la boite de telechargement des images
 #
-proc ::dslr::setLoadParameters { visuNo} {
+proc ::dslr::setLoadParameters { camItem } {
    global audace caption conf
 
    #---
@@ -532,32 +540,32 @@ proc ::dslr::setLoadParameters { visuNo} {
    #--- utilise carte memoire CF
    checkbutton $audace(base).telecharge_image.utiliserCF -text "$caption(dslr,utiliser_cf)" \
       -highlightthickness 0 -variable conf(dslr,utiliser_cf) \
-      -command "::dslr::utiliserCF $visuNo"
+      -command "::dslr::utiliserCF $camItem"
    pack $audace(base).telecharge_image.utiliserCF -anchor w -side top -padx 20 -pady 10
 
    radiobutton $audace(base).telecharge_image.rad1 -anchor nw -highlightthickness 1 \
      -padx 0 -pady 0 -state normal \
      -text "$caption(dslr,pas_telecharger)" -value 1 -variable conf(dslr,telecharge_mode) \
-     -command "::dslr::changerSelectionTelechargementAPN $visuNo"
+     -command "::dslr::changerSelectionTelechargementAPN $camItem"
    pack $audace(base).telecharge_image.rad1 -anchor w -expand 1 -fill none \
      -side top -padx 30 -pady 5
    radiobutton $audace(base).telecharge_image.rad2 -anchor nw -highlightthickness 0 \
      -padx 0 -pady 0 -state normal \
      -text "$caption(dslr,immediat)" -value 2 -variable conf(dslr,telecharge_mode)\
-     -command "::dslr::changerSelectionTelechargementAPN $visuNo"
+     -command "::dslr::changerSelectionTelechargementAPN $camItem"
    pack $audace(base).telecharge_image.rad2 -anchor w -expand 1 -fill none \
      -side top -padx 30 -pady 5
    radiobutton $audace(base).telecharge_image.rad3 -anchor nw -highlightthickness 0 \
      -padx 0 -pady 0 -state normal -disabledforeground #999999 \
      -text "$caption(dslr,acq_suivante)" -value 3 -variable conf(dslr,telecharge_mode) \
-     -command "::dslr::changerSelectionTelechargementAPN $visuNo"
+     -command "::dslr::changerSelectionTelechargementAPN $camItem"
    pack $audace(base).telecharge_image.rad3 -anchor w -expand 1 -fill none \
       -side top -padx 30 -pady 5
 
    #--- supprime l'image sur la carte memoire apres le chargement
    checkbutton $audace(base).telecharge_image.supprime_image -text "$caption(dslr,supprimer_image)" \
       -highlightthickness 0 -variable conf(dslr,supprimer_image) \
-      -command "::dslr::supprimerImage $visuNo"
+      -command "::dslr::supprimerImage $camItem"
    pack $audace(base).telecharge_image.supprime_image -anchor w -side top -padx 20 -pady 10
 
    #--- New message window is on
@@ -581,11 +589,12 @@ proc ::dslr::setLoadParameters { visuNo} {
 # ::dslr::utiliserCF
 #    Utilise la carte memoire CF
 #
-proc ::dslr::utiliserCF { visuNo } {
+proc ::dslr::utiliserCF { camItem } {
    global audace conf
+   variable private
 
    #--- je configure la camera
-   set camNo [::confVisu::getCamNo $visuNo]
+   set camNo $private($camItem,camNo)
    set resultUsecf [ catch { cam$camNo usecf $conf(dslr,utiliser_cf) } messageUseCf ]
    if { $resultUsecf == 1 } {
       tk_messageBox -message "$messageUseCf" -icon error
@@ -614,35 +623,38 @@ proc ::dslr::utiliserCF { visuNo } {
 # ::dslr::supprimerImage
 #    Supprime une image
 #
-proc ::dslr::supprimerImage { visuNo } {
+proc ::dslr::supprimerImage { camItem } {
    global conf
+   variable private
 
-   cam[ ::confVisu::getCamNo $visuNo ] delete $conf(dslr,supprimer_image)
+   cam$private($camItem,camNo) delete $conf(dslr,supprimer_image)
 }
 
 #
 # ::dslr::changerSelectionTelechargementAPN
 #    Change le mode de telechargement
 #
-proc ::dslr::changerSelectionTelechargementAPN { visuNo} {
+proc ::dslr::changerSelectionTelechargementAPN { camItem } {
    global conf
+   variable private
+
 
    switch -exact -- $conf(dslr,telecharge_mode) {
       1 {
          #--- Ne pas telecharger
-         cam[ ::confVisu::getCamNo $visuNo ] autoload 0
+         cam$private($camItem,camNo)  autoload 0
       }
       2 {
          #--- Telechargement immediat
-         cam[ ::confVisu::getCamNo $visuNo ] autoload 1
+         cam$private($camItem,camNo)  autoload 1
       }
       3 {
          #--- Telechargement pendant la pose suivante
-         cam[ ::confVisu::getCamNo $visuNo ] autoload 0
+         cam$private($camItem,camNo)  autoload 0
       }
    }
    ::console::affiche_saut "\n"
-   ::console::disp "conf(dslr,telecharge_mode) = $conf(dslr,telecharge_mode) cam[ ::confVisu::getCamNo $visuNo ] autoload=[ cam[ ::confVisu::getCamNo $visuNo ] autoload ] \n"
+   ::console::disp "conf(dslr,telecharge_mode) = $conf(dslr,telecharge_mode) cam$private($camItem,camNo)   autoload=[ cam$private($camItem,camNo)  autoload ] \n"
 }
 
 #
@@ -650,8 +662,9 @@ proc ::dslr::changerSelectionTelechargementAPN { visuNo} {
 #    Retourne la liste des binnings disponibles de la camera
 #
 proc ::dslr::getBinningList { camItem } {
-   set camNo [::confCam::getCamNo $camItem]
-   set binningList [ cam$camNo quality list ]
+   variable private
+
+   set binningList [ cam$private($camItem,camNo) quality list ]
    return $binningList
 }
 
@@ -666,6 +679,7 @@ proc ::dslr::getBinningList { camItem } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -675,22 +689,41 @@ proc ::dslr::getBinningList { camItem } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::dslr::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ ::dslr::getBinningList $camItem] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 4096 -4096 ] }
       hasBinning       { return 0 }
       hasFormat        { return 1 }
-      hasLongExposure  { return 0 }
+      hasLongExposure  { return 1 }
       hasScan          { return 0 }
       hasShutter       { return 0 }
       hasVideo         { return 0 }
       hasWindow        { return 0 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list "" ] }
    }
 }

@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.17 2007-10-20 15:48:10 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.18 2007-11-02 23:20:38 michelpujol Exp $
 #
 
 namespace eval ::th7852a {
@@ -48,16 +48,32 @@ proc ::th7852a::getPluginOS { } {
 }
 
 #
+# ::th7852a::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::th7852a::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::th7852a::initPlugin
 #    Initialise les variables conf(th7852a,...)
 #
 proc ::th7852a::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise la variable de la camera TH7852A
    if { ! [ info exists conf(th7852a,mirh) ] } { set conf(th7852a,mirh) "0" }
    if { ! [ info exists conf(th7852a,mirv) ] } { set conf(th7852a,mirv) "0" }
    if { ! [ info exists conf(th7852a,coef) ] } { set conf(th7852a,coef) "1.0" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -78,7 +94,7 @@ proc ::th7852a::confToWidget { } {
 # ::th7852a::widgetToConf
 #    Copie la variable locale dans une variable de configuration
 #
-proc ::th7852a::widgetToConf { } {
+proc ::th7852a::widgetToConf { camItem } {
    variable private
    global conf
 
@@ -92,7 +108,7 @@ proc ::th7852a::widgetToConf { } {
 # ::th7852a::fillConfigPage
 #    Interface de configuration de la camera TH7852A
 #
-proc ::th7852a::fillConfigPage { frm } {
+proc ::th7852a::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -152,24 +168,24 @@ proc ::th7852a::fillConfigPage { frm } {
 # ::th7852a::configureCamera
 #    Configure la camera TH7852A en fonction des donnees contenues dans les variables conf(th7852a,...)
 #
-proc ::th7852a::configureCamera { camItem } {
-   global caption conf confCam
+proc ::th7852a::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
+      #--- Je cree la camera
       set camNo [ cam::create camth "unknown" -name TH7852A ]
       console::affiche_erreur "$caption(th7852a,port_camera) $caption(th7852a,2points) $caption(th7852a,bus_ISA)\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(th7852a,mirh)
       cam$camNo mirrorv $conf(th7852a,mirv)
       #--- Je configure le coefficient
       cam$camNo timescale $conf(th7852a,coef)
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
    } ]
 
    if { $catchResult == "1" } {
@@ -185,12 +201,12 @@ proc ::th7852a::configureCamera { camItem } {
 #    Arrete la camera TH7852A
 #
 proc ::th7852a::stop { camItem } {
-   global confCam
+   variable private
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -205,6 +221,7 @@ proc ::th7852a::stop { camItem } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -214,13 +231,18 @@ proc ::th7852a::stop { camItem } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::th7852a::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 32767 -32768 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -230,6 +252,20 @@ proc ::th7852a::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list "" ] }
    }
 }
