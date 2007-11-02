@@ -2,7 +2,7 @@
 # Fichier : updateaudela.tcl
 # Description : Outil de fabrication des fichiers Kit et de deploiement des plugins
 # Auteur : Michel Pujol
-# Mise a jour $Id: updateaudela.tcl,v 1.15 2007-10-12 21:54:47 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.tcl,v 1.16 2007-11-02 23:20:50 michelpujol Exp $
 #
 
 namespace eval ::updateaudela {
@@ -473,21 +473,32 @@ proc ::updateaudela::makeKit { kitFileFullName sourceDirectory { fileList ""} } 
    set vfsName "makekit.vfs"
    set vfsNo [vfs::mk4::Mount $kitFileFullName $vfsName ]
    #--- je copie les fichiers dans le kit
-   if { $fileList != "" } {
-      foreach fileName $fileList {
-         set sourceFileName [file join $sourceDirectory $fileName]
-         set destDirectory [file join $vfsName [file dirname $fileName]]
-         set destFileName  [file join $vfsName $fileName]
-         #--- je cree le sous-repertoire
-         file mkdir $destDirectory
-         ::updateaudela::sync [list -compress 1 -verbose 0 -ignore "cvs" -ignore "CVS" -auto 0 -noerror 0 $sourceFileName $destFileName]
+   set catchResult [catch {
+      if { $fileList != "" } {
+         foreach fileName $fileList {
+            set sourceFileName [file join $sourceDirectory $fileName]
+            set destDirectory [file join $vfsName [file dirname $fileName]]
+            set destFileName  [file join $vfsName $fileName]
+            #--- je cree le sous-repertoire
+            file mkdir $destDirectory
+            ::updateaudela::sync [list -compress 1 -verbose 0 -ignore "cvs" -ignore "CVS" -auto 0 -noerror 0 $sourceFileName $destFileName]
+         }
+      } else {
+         ::updateaudela::sync [list -compress 1 -verbose 0  -ignore "cvs" -ignore "CVS" -auto 0 -noerror 0 $sourceDirectory $vfsName]
       }
-   } else {
-      ::updateaudela::sync [list -compress 1 -verbose 0  -ignore "cvs" -ignore "CVS" -auto 0 -noerror 0 $sourceDirectory $vfsName]
-   }
+   } catchMessage ]
 
-   #--- je ferme le fichier kit
-   vfs::mk4::Unmount $vfsNo $vfsName
+   #--- j'intercepte l'erreur pour pouvoir fermer le fichier kit
+   #--- avant de remonter l'erreur a la procedure appelante
+   if { $catchResult == "1" } {
+      #--- je ferme le fichier kit
+      vfs::mk4::Unmount $vfsNo $vfsName
+      #--- je remonte l'erreur a la procedure appelante
+      error $::errorInfo
+   } else {
+      #--- je ferme le fichier kit
+      vfs::mk4::Unmount $vfsNo $vfsName
+   }
 }
 
 #------------------------------------------------------------

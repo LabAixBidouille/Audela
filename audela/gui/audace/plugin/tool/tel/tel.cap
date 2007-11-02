@@ -1,6 +1,6 @@
 #
 # Fichier : tel.cap
-# Mise a jour $Id: tel.cap,v 1.7 2007-04-01 20:53:42 robertdelmas Exp $
+# Mise a jour $Id: tel.cap,v 1.8 2007-11-02 23:20:50 michelpujol Exp $
 #
 
 #=========================================================================
@@ -49,6 +49,9 @@ set caption(tel,formataddec3)          "Format for the Declination:"
 set caption(tel,formataddec4)          "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
 set caption(tel,formataddec5)          "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
 
+set caption(tel,configuration)           "Setup"
+set caption(tel,pose)                     "Exp."
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -69,6 +72,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,sud)                "S"
    set caption(tel,seconde)            "sec."
    set caption(tel,binning)            "Binning"
+   set caption(tel,pose)                  "Pose"
    set caption(tel,goccd)              "GO CCD"
    set caption(tel,probleme)           "Problème"
    set caption(tel,entier_positif)     "Temps de pose invalide\n(doit être un nombre positif)"
@@ -89,6 +93,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,formataddec3)       "Format à utiliser pour la Déclinaison :"
    set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
    set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+   set caption(tel,configuration)        "Configuration"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -110,6 +115,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,sud)                "S"
    set caption(tel,seconde)            "sec."
    set caption(tel,binning)            "Binning"
+   set caption(tel,pose)                  "Posa"
    set caption(tel,goccd)              "GO CCD"
    set caption(tel,probleme)           "Problema"
    set caption(tel,entier_positif)     "Tempo di esposizione non valido\n(deve essere un valore positivo)"
@@ -130,6 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,formataddec3)       "Formato impostazione Declinaison:"
    set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
    set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+   set caption(tel,configuration)        "Settaggio"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -151,6 +158,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,sud)                "S"
    set caption(tel,seconde)            "seg."
    set caption(tel,binning)            "Binning"
+   set caption(tel,pose)                  "Exp."
    set caption(tel,goccd)              "GO CCD"
    set caption(tel,probleme)           "Problema"
    set caption(tel,entier_positif)     "Tiempo de exposición no valido\n(debe ser un número positivo)"
@@ -171,6 +179,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,formataddec3)       "Formato a usar para la Declinación:"
    set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
    set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+   set caption(tel,configuration)        "Configuración"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -192,6 +201,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,sud)                "S"
    set caption(tel,seconde)            "sek."
    set caption(tel,binning)            "Binning"
+   set caption(tel,pose)                  "Bel."
    set caption(tel,goccd)              "GO CCD"
    set caption(tel,probleme)           "Problem"
    set caption(tel,entier_positif)     "Ungültig Bildleuchtung Zeit \n(muss ein positives Wert sein)"
@@ -212,6 +222,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,formataddec3)       "Format für die Deklination zu nützen:"
    set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
    set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+   set caption(tel,configuration)        "Konfiguration"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -233,6 +244,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,sud)                "S"
    set caption(tel,seconde)            "seg."
    set caption(tel,binning)            "Binning"
+   set caption(tel,pose)                  "Exposição"
    set caption(tel,goccd)              "GO CCD"
    set caption(tel,probleme)           "Problema"
    set caption(tel,entier_positif)     "Tempo de exposição inválido\n(deve ser um numero positivo)"
@@ -254,6 +266,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
    set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
 
+   set caption(tel,configuration)        "Configuração"
+
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -274,6 +288,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,sud)                "S"
    set caption(tel,seconde)            "sec."
    set caption(tel,binning)            "Binning"
+   set caption(tel,pose)                  "Exp."
    set caption(tel,goccd)              "GO CCD"
    set caption(tel,probleme)           "Problem"
    set caption(tel,entier_positif)     "Exposure time not valid\n(must be a positive integer)"
@@ -294,6 +309,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tel,formataddec3)       "Format for the Declination:"
    set caption(tel,formataddec4)       "12d28m15   2d5m9   45d9m   0d18m5   0d0m35"
    set caption(tel,formataddec5)       "-12d28m15   -2d5m9   -0d18m5   -0d0m35"
+   set caption(tel,configuration)        "Setup"
 
 }
 

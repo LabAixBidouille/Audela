@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.8 2007-10-20 18:06:58 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.9 2007-11-02 23:20:36 michelpujol Exp $
 #
 
 namespace eval ::kitty {
@@ -48,10 +48,21 @@ proc ::kitty::getPluginOS { } {
 }
 
 #
+# ::kitty::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::kitty::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::kitty::initPlugin
 #    Initialise les variables conf(kitty,...)
 #
 proc ::kitty::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera Kitty
@@ -62,6 +73,11 @@ proc ::kitty::initPlugin { } {
    if { ! [ info exists conf(kitty,port) ] }    { set conf(kitty,port)    "LPT1:" }
    if { ! [ info exists conf(kitty,res) ] }     { set conf(kitty,res)     "12 bits" }
    if { ! [ info exists conf(kitty,on_off) ] }  { set conf(kitty,on_off)  "1" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -86,7 +102,7 @@ proc ::kitty::confToWidget { } {
 # ::kitty::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::kitty::widgetToConf { } {
+proc ::kitty::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -104,7 +120,7 @@ proc ::kitty::widgetToConf { } {
 # ::kitty::fillConfigPage
 #    Interface de configuration de la camera Kitty
 #
-proc ::kitty::fillConfigPage { frm } {
+proc ::kitty::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -141,19 +157,19 @@ proc ::kitty::fillConfigPage { frm } {
       #--- Bouton radio Kitty-237
       radiobutton $frm.frame1.radio0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(kitty,kitty_237)" -value 237 -variable ::kitty::private(modele) \
-         -command { ::kitty::confKitty }
+         -command "::kitty::confKitty $camItem"
       pack $frm.frame1.radio0 -anchor center -side left -padx 10
 
       #--- Bouton radio Kitty-255
       radiobutton $frm.frame1.radio1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(kitty,kitty_255)" -value 255 -variable ::kitty::private(modele) \
-         -command { ::kitty::confKitty }
+         -command "::kitty::confKitty $camItem"
       pack $frm.frame1.radio1 -anchor center -side left -padx 10
 
       #--- Bouton radio Kitty-2
       radiobutton $frm.frame1.radio2 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(kitty,kitty_2)" -value K2 -variable ::kitty::private(modele) \
-         -command { ::kitty::confKitty }
+         -command "::kitty::confKitty $camItem"
       pack $frm.frame1.radio2 -anchor center -side left -padx 10
 
    pack $frm.frame1 -side top -fill x -pady 10
@@ -222,13 +238,13 @@ proc ::kitty::fillConfigPage { frm } {
             #--- Refroidissement On
             radiobutton $frm.frame2.frame5.frame9.radio_on -anchor w -highlightthickness 0 \
                -text "$caption(kitty,refroidissement_on)" -value 1 \
-               -variable ::kitty::private(on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler on }
+               -variable ::kitty::private(on_off) -command { cam$private($camItem,camNo) cooler on }
             pack $frm.frame2.frame5.frame9.radio_on -side left -padx 5 -pady 5 -ipady 0
 
             #--- Refroidissement Off
             radiobutton $frm.frame2.frame5.frame9.radio_off -anchor w -highlightthickness 0 \
                -text "$caption(kitty,refroidissement_off)" -value 0 \
-               -variable ::kitty::private(on_off) -command { cam$confCam($confCam(currentCamItem),camNo) cooler off }
+               -variable ::kitty::private(on_off) -command { cam$private($camItem,camNo) cooler off }
             pack $frm.frame2.frame5.frame9.radio_off -side left -padx 5 -pady 5 -ipady 0
 
          pack $frm.frame2.frame5.frame9 -side top -fill both -expand 1
@@ -283,7 +299,7 @@ proc ::kitty::fillConfigPage { frm } {
 
          #--- Bouton de test du microcontrolleur de la carte d'interface
          button $frm.frame3.frame11.test -text "$caption(kitty,test)" -relief raised \
-            -command { cam$confCam($confCam(currentCamItem),camNo) sx28test }
+            -command "::kitty::testK2 $camItem"
          pack $frm.frame3.frame11.test -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
 
       pack $frm.frame3.frame11 -side top -fill both -expand 1
@@ -303,7 +319,7 @@ proc ::kitty::fillConfigPage { frm } {
    pack $frm.frame4 -side bottom -fill x -pady 2
 
    #--- Gestion des widgets actifs/inactifs
-   ::kitty::confKitty
+   ::kitty::confKitty $camItem
 
    #--- Mise a jour dynamique des couleurs
    ::confColor::applyColor $frm
@@ -313,16 +329,19 @@ proc ::kitty::fillConfigPage { frm } {
 # ::kitty::configureCamera
 #    Configure la camera Kitty en fonction des donnees contenues dans les variables conf(kitty,...)
 #
-proc ::kitty::configureCamera { camItem } {
-   global caption conf confCam
+proc ::kitty::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
       if { $conf(kitty,modele) == "237" } {
+         #--- Je cree la camera
          set camNo [ cam::create kitty $conf(kitty,port) -name KITTY237 -canbits [ lindex $conf(kitty,res) 0 ] ]
          console::affiche_erreur "$caption(kitty,port_camera) $conf(kitty,modele) ($conf(kitty,res))\
             $caption(kitty,2points) $conf(kitty,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure la resolution du CAN
@@ -334,21 +353,20 @@ proc ::kitty::configureCamera { camItem } {
             cam$camNo AD7893 AN5
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(kitty,mirh)
          cam$camNo mirrorv $conf(kitty,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
          #--- Gestion des widgets actifs/inactifs
-         ::kitty::confKitty
+         ::kitty::confKitty $camItem
       } elseif { $conf(kitty,modele) == "255" } {
+         #--- Je cree la camera
          set camNo [ cam::create kitty $conf(kitty,port) -name KITTY255 -canbits [ lindex $conf(kitty,res) 0 ] ]
          console::affiche_erreur "$caption(kitty,port_camera) $conf(kitty,modele) ($conf(kitty,res))\
             $caption(kitty,2points) $conf(kitty,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure la resolution du CAN
@@ -360,25 +378,23 @@ proc ::kitty::configureCamera { camItem } {
             cam$camNo AD7893 AN5
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(kitty,mirh)
          cam$camNo mirrorv $conf(kitty,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
          #--- Gestion des widgets actifs/inactifs
-         ::kitty::confKitty
+         ::kitty::confKitty $camItem
       } elseif { $conf(kitty,modele) == "K2" } {
+         #--- Je cree la camera
          set camNo [ cam::create k2 $conf(kitty,port) -name KITTYK2 ]
          console::affiche_erreur "$caption(kitty,port_camera) $conf(kitty,modele)\
             $caption(kitty,2points) $conf(kitty,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(kitty,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(kitty,mirh)
@@ -389,13 +405,11 @@ proc ::kitty::configureCamera { camItem } {
          } else {
             cam$camNo cooler off
          }
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 -4096
          #--- Gestion des widgets actifs/inactifs
-         ::kitty::confKitty
+         ::kitty::confKitty $camItem
          #--- Je mesure la temperature du capteur CCD
-         if { [ info exists confCam(kitty,aftertemp) ] == "0" } {
-            ::kitty::KittyDispTemp
+         if { [ info exists private(aftertemp) ] == "0" } {
+            ::kitty::KittyDispTemp $camItem
          }
       }
    } ]
@@ -413,18 +427,19 @@ proc ::kitty::configureCamera { camItem } {
 #    Arrete la camera Kitty
 #
 proc ::kitty::stop { camItem } {
-   global conf confCam
+   variable private
+   global conf
 
    #--- Gestion des widgets actifs/inactifs
-   ::kitty::confKittyK2Inactif
+   ::kitty::confKittyK2Inactif $camItem
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(kitty,port) "cam$confCam($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(kitty,port) "cam$private($camItem,camNo)" "acquisition"
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -432,20 +447,19 @@ proc ::kitty::stop { camItem } {
 # ::kitty::KittyDispTemp
 #    Affiche la temperature du CCD
 #
-proc ::kitty::KittyDispTemp { } {
+proc ::kitty::KittyDispTemp { camItem } {
    variable private
-   global audace caption confCam
+   global audace caption
 
    catch {
       set frm $private(frm)
-      set camItem $confCam(currentCamItem)
-      if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
+      if { [ winfo exists $frm] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
          $frm.frame3.frame10.temp_ccd configure \
             -text "$caption(kitty,temperature_CCD) $temp_ccd $caption(kitty,deg_c)"
-         set confCam(kitty,aftertemp) [ after 5000 ::kitty::KittyDispTemp ]
+         set private(aftertemp) [ after 5000 ::kitty::KittyDispTemp $camItem ]
       } else {
-         catch { unset confCam(kitty,aftertemp) }
+         catch { unset private(aftertemp) }
       }
    }
 }
@@ -454,11 +468,8 @@ proc ::kitty::KittyDispTemp { } {
 # ::kitty::confKitty
 #    Permet d'activer ou de desactiver les widgets de configuration de la Kitty K2
 #
-proc ::kitty::confKitty { } {
+proc ::kitty::confKitty { camItem } {
    variable private
-   global confCam
-
-   set camItem $confCam(currentCamItem)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -477,12 +488,13 @@ proc ::kitty::confKitty { } {
             pack $frm.frame3.frame10.temp_ccd -side left -fill x -padx 10 -pady 0
             pack $frm.frame3.frame11 -side top -fill both -expand 1
             pack $frm.frame3.frame11.test -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
-            if { [ ::confCam::getName $confCam($camItem,camNo) ] == "KITTYK2" } {
+            if { [ ::confCam::getPluginProperty $camItem "name" ] == "KITTYK2" } {
                #--- Widgets de configuration de la Kitty K2 actif
                $frm.frame2.frame5.frame9.radio_on configure -state normal
                $frm.frame2.frame5.frame9.radio_off configure -state normal
                $frm.frame3.frame10.temp_ccd configure -state normal
                $frm.frame3.frame11.test configure -state normal
+               $frm.frame3.frame11.test configure -command "::kitty::testK2 $camItem"
             } else {
                #--- Widgets de configuration de la Kitty K2 inactif
                $frm.frame2.frame5.frame9.radio_on configure -state disabled
@@ -506,6 +518,11 @@ proc ::kitty::confKitty { } {
             pack $frm.frame3.captemp -anchor n -side left -padx 10 -pady 10
          }
       }
+
+      #--- je mets a jour camItem dans la commande des widgets
+      $frm.frame1.radio0 configure -command "::kitty::confKitty $camItem"
+      $frm.frame1.radio1 configure -command "::kitty::confKitty $camItem"
+      $frm.frame1.radio2 configure -command "::kitty::confKitty $camItem"
    }
 }
 
@@ -513,16 +530,13 @@ proc ::kitty::confKitty { } {
 # ::kitty::confKittyK2Inactif
 #    Permet de desactiver les widgets a l'arret de la Kitty K2
 #
-proc ::kitty::confKittyK2Inactif { } {
+proc ::kitty::confKittyK2Inactif { camItem } {
    variable private
-   global confCam
-
-   set camItem $confCam(currentCamItem)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::getName $confCam($camItem,camNo) ] == "KITTYK2" } {
+         if { [ ::confCam::getPluginProperty $camItem "name" ] == "KITTYK2" } {
             #--- Widgets de configuration de la Kitty K2 inactif
             $frm.frame2.frame5.frame9.radio_on configure -state disabled
             $frm.frame2.frame5.frame9.radio_off configure -state disabled
@@ -531,6 +545,16 @@ proc ::kitty::confKittyK2Inactif { } {
          }
       }
    }
+}
+
+#
+# ::kitty::testK2
+#    Permet de tester le microcontroleur de la Kitty K2
+#
+proc ::kitty::testK2 { camItem } {
+   variable private
+
+   cam$private($camItem,camNo) sx28test
 }
 
 #
@@ -544,6 +568,7 @@ proc ::kitty::confKittyK2Inactif { } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -553,13 +578,18 @@ proc ::kitty::confKittyK2Inactif { } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::kitty::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 4096 -4096 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -569,6 +599,20 @@ proc ::kitty::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list "" ] }
    }
 }

@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.97 2007-10-22 21:18:23 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.98 2007-11-02 23:20:29 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -12,10 +12,11 @@ namespace eval ::confCam {
    # Demarre le plugin selectionne par defaut
    #
    proc init { } {
+      variable private
       global audace caption conf confCam
 
       #--- Charge le fichier caption
-      source [ file join $audace(rep_caption) confcam.cap ]
+      source [ file join "$audace(rep_caption)" confcam.cap ]
 
       #--- initConf
       if { ! [ info exists conf(camera,A,camName) ] } { set conf(camera,A,camName) "" }
@@ -25,22 +26,6 @@ namespace eval ::confCam {
       if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
       if { ! [ info exists conf(camera,C,start) ] }   { set conf(camera,C,start)   "0" }
       if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "670x430+25+45" }
-
-      #--- Charge les plugins des cameras
-      source [ file join $audace(rep_plugin) camera audine audine.tcl ]
-      source [ file join $audace(rep_plugin) camera hisis hisis.tcl ]
-      source [ file join $audace(rep_plugin) camera sbig sbig.tcl ]
-      source [ file join $audace(rep_plugin) camera cookbook cookbook.tcl ]
-      source [ file join $audace(rep_plugin) camera starlight starlight.tcl ]
-      source [ file join $audace(rep_plugin) camera kitty kitty.tcl ]
-      source [ file join $audace(rep_plugin) camera webcam webcam.tcl ]
-      source [ file join $audace(rep_plugin) camera th7852a th7852a.tcl ]
-      source [ file join $audace(rep_plugin) camera scr1300xtc scr1300xtc.tcl ]
-      source [ file join $audace(rep_plugin) camera dslr dslr.tcl ]
-      source [ file join $audace(rep_plugin) camera andor andor.tcl ]
-      source [ file join $audace(rep_plugin) camera fingerlakes fingerlakes.tcl ]
-      source [ file join $audace(rep_plugin) camera cemes cemes.tcl ]
-      source [ file join $audace(rep_plugin) camera coolpix coolpix.tcl ]
 
       #--- Je charge le package Thread si l'option multitread est activive dans le TCL
       if { [info exists ::tcl_platform(threaded)] } {
@@ -60,17 +45,6 @@ namespace eval ::confCam {
 
       #--- Initalise le numero de camera a nul
       set audace(camNo) "0"
-
-      #--- Initalise les listes de cameras
-      set confCam(labels) [ list Audine Hi-SIS SBIG CB245 Starlight Kitty WebCam \
-         TH7852A SCR1300XTC $caption(dslr,camera) Andor FLI Cemes $caption(coolpix,camera) ]
-      set confCam(names) [ list audine hisis sbig cookbook starlight kitty webcam \
-         th7852a scr1300xtc dslr andor fingerlakes cemes coolpix ]
-
-      #--- Intialise les variables de chaque camera
-      for { set i 0 } { $i < [ llength $confCam(names) ] } { incr i } {
-         ::[ lindex $confCam(names) $i ]::initPlugin
-      }
 
       #--- Item par defaut
       set confCam(currentCamItem) "A"
@@ -96,6 +70,30 @@ namespace eval ::confCam {
       set confCam(B,product)    ""
       set confCam(C,product)    ""
       set confCam(list_product) ""
+
+      #--- Initialise les variables locales
+      set private(pluginNamespaceList) ""
+      set private(pluginLabelList)     ""
+      set private(frm)                 "$audace(base).confCam"
+
+      #--- j'ajoute le repertoire pouvant contenir des plugins
+      lappend ::auto_path [file join "$::audace(rep_plugin)" camera]
+      #--- je recherche les plugin presents
+      findPlugin
+
+      #--- je verifie que le plugin par defaut existe dans la liste
+      if { [lsearch $private(pluginNamespaceList) $conf(camera,A,camName)] == -1 } {
+         #--- s'il n'existe pas, je vide le nom du plugin par defaut
+         set conf(camera,A,camName) ""
+      }
+      if { [lsearch $private(pluginNamespaceList) $conf(camera,B,camName)] == -1 } {
+         #--- s'il n'existe pas, je vide le nom du plugin par defaut
+         set conf(camera,B,camName) ""
+      }
+      if { [lsearch $private(pluginNamespaceList) $conf(camera,C,camName)] == -1 } {
+         #--- s'il n'existe pas, je vide le nom du plugin par defaut
+         set conf(camera,C,camName) ""
+      }
    }
 
    proc dispThreadError { thread_id errorInfo} {
@@ -105,32 +103,14 @@ namespace eval ::confCam {
    #
    # confCam::run
    # Cree la fenetre de choix et de configuration des cameras
-   # This = chemin de la fenetre
+   # private(frm) = chemin de la fenetre
    # confCam($camItem,camName) = nom de la camera
    #
    proc run { } {
-      variable This
-      global audace confCam
+      global confCam
 
-      set This "$audace(base).confCam"
       createDialog
-      set camItem $confCam(currentCamItem)
-      if { $confCam($camItem,camName) != "" } {
-         select $camItem $confCam($camItem,camName)
-         if { [ string compare $confCam($camItem,camName) sbig ] == "0" } {
-            ::sbig::SbigDispTemp
-         } elseif { [ string compare $confCam($camItem,camName) kitty ] == "0" } {
-            ::kitty::KittyDispTemp
-         } elseif { [ string compare $confCam($camItem,camName) andor ] == "0" } {
-            ::andor::AndorDispTemp
-         } elseif { [ string compare $confCam($camItem,camName) fingerlakes ] == "0" } {
-            ::fingerlakes::FLIDispTemp
-         } elseif { [ string compare $confCam($camItem,camName) cemes ] == "0" } {
-            ::cemes::CemesDispTemp
-         }
-      } else {
-         select $camItem audine
-      }
+      selectNotebook $confCam(currentCamItem)
    }
 
    #
@@ -170,12 +150,11 @@ namespace eval ::confCam {
    # la configuration, et fermer la fenetre de reglage de la camera
    #
    proc ok { } {
-      variable This
+      variable private
 
-      $This.cmd.ok configure -relief groove -state disabled
-      $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -state disabled
-      $This.cmd.fermer configure -state disabled
+      $private(frm).cmd.ok configure -relief groove -state disabled
+      $private(frm).cmd.appliquer configure -state disabled
+      $private(frm).cmd.fermer configure -state disabled
       appliquer
       fermer
    }
@@ -186,22 +165,20 @@ namespace eval ::confCam {
    # memoriser et appliquer la configuration
    #
    proc appliquer { } {
-      variable This
+      variable private
       global confCam
 
-      $This.cmd.ok configure -state disabled
-      $This.cmd.appliquer configure -relief groove -state disabled
-      $This.cmd.aide configure -state disabled
-      $This.cmd.fermer configure -state disabled
+      $private(frm).cmd.ok configure -state disabled
+      $private(frm).cmd.appliquer configure -relief groove -state disabled
+      $private(frm).cmd.fermer configure -state disabled
       #--- J'arrete la camera
       stopItem $confCam(currentCamItem)
       #--- je copie les parametres de la nouvelle camera dans conf()
       widgetToConf     $confCam(currentCamItem)
       configureCamera  $confCam(currentCamItem)
-      $This.cmd.ok configure -state normal
-      $This.cmd.appliquer configure -relief raised -state normal
-      $This.cmd.aide configure -state normal
-      $This.cmd.fermer configure -state normal
+      $private(frm).cmd.ok configure -state normal
+      $private(frm).cmd.appliquer configure -relief raised -state normal
+      $private(frm).cmd.fermer configure -state normal
    }
 
    #
@@ -209,21 +186,12 @@ namespace eval ::confCam {
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc afficherAide { } {
-      variable This
-      global confCam
+      variable private
 
-      $This.cmd.ok configure -state disabled
-      $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -relief groove -state disabled
-      $This.cmd.fermer configure -state disabled
-      set selectedPluginName [ $This.usr.onglet raise ]
+      set selectedPluginName [ $private(frm).usr.onglet raise ]
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
       set pluginHelp [ $selectedPluginName\::getPluginHelp ]
       ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
-      $This.cmd.ok configure -state normal
-      $This.cmd.appliquer configure -state normal
-      $This.cmd.aide configure -relief raised -state normal
-      $This.cmd.fermer configure -state normal
    }
 
    #
@@ -231,14 +199,10 @@ namespace eval ::confCam {
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc fermer { } {
-      variable This
+      variable private
 
       ::confCam::recupPosDim
-      $This.cmd.ok configure -state disabled
-      $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -state disabled
-      $This.cmd.fermer configure -relief groove -state disabled
-      destroy $This
+      destroy $private(frm)
    }
 
    #
@@ -246,48 +210,50 @@ namespace eval ::confCam {
    # Permet de recuperer et de sauvegarder la position de la fenetre de configuration de la camera
    #
    proc recupPosDim { } {
-      variable This
+      variable private
       global conf confCam
 
-      set confCam(geometry) [ wm geometry $This ]
+      set confCam(geometry) [ wm geometry $private(frm) ]
       set conf(camera,geometry) $confCam(geometry)
    }
 
    proc createDialog { } {
-      variable This
+      variable private
       global audace caption conf confCam
 
       #---
-      if { [ winfo exists $This ] } {
-         wm withdraw $This
-         wm deiconify $This
-         select $confCam(currentCamItem) $confCam($confCam(currentCamItem),camName)
-         focus $This
+      if { [ winfo exists $private(frm) ] } {
+         wm withdraw $private(frm)
+         wm deiconify $private(frm)
+         selectNotebook $confCam(currentCamItem)
+         focus $private(frm)
          return
       }
       #---
-      toplevel $This
-      wm geometry $This $confCam(geometry)
-      wm minsize $This 670 430
-      wm resizable $This 1 1
-      wm deiconify $This
-      wm title $This "$caption(confcam,config)"
-      wm protocol $This WM_DELETE_WINDOW ::confCam::fermer
+      toplevel $private(frm)
+      wm geometry $private(frm) $confCam(geometry)
+      wm minsize $private(frm) 670 430
+      wm resizable $private(frm) 1 1
+      wm deiconify $private(frm)
+      wm title $private(frm) "$caption(confcam,config)"
+      wm protocol $private(frm) WM_DELETE_WINDOW ::confCam::fermer
 
-      frame $This.usr -borderwidth 0 -relief raised
+      frame $private(frm).usr -borderwidth 0 -relief raised
          #--- Creation de la fenetre a onglets
-         set notebook [ NoteBook $This.usr.onglet ]
-         for { set i 0 } { $i < [ llength $confCam(names) ] } { incr i } {
-            set pluginInfo(os) [ ::[ lindex $confCam(names) $i ]::getPluginOS ]
+         set notebook [ NoteBook $private(frm).usr.onglet ]
+         for { set i 0 } { $i < [ llength $private(pluginNamespaceList) ] } { incr i } {
+            set pluginInfo(os) [ ::[ lindex $private(pluginNamespaceList) $i ]::getPluginOS ]
             foreach os $pluginInfo(os) {
                if { $os == [ lindex $::tcl_platform(os) 0 ] } {
-                  fillPage[ lindex $confCam(names) $i ] [$notebook insert end [ lindex $confCam(names) $i ] \
-                     -text [ lindex $confCam(labels) $i ] ]
+                  set namespace [ lindex $private(pluginNamespaceList) $i ]
+                  set title     [ lindex $private(pluginLabelList) $i ]
+                  set frm [$notebook insert end $namespace -text $title ]
+                  ::$namespace\::fillConfigPage $frm $confCam(currentCamItem)
                }
             }
          }
          pack $notebook -fill both -expand 1
-      pack $This.usr -side top -fill both -expand 1
+      pack $private(frm).usr -side top -fill both -expand 1
 
       #--- Je recupere la liste des visu
       set list_visu [list ]
@@ -298,17 +264,17 @@ namespace eval ::confCam {
       set confCam(list_visu) $list_visu
 
       #--- Parametres de la camera A
-      frame $This.startA -borderwidth 1 -relief raised
-         radiobutton $This.startA.item -anchor w -highlightthickness 0 \
+      frame $private(frm).startA -borderwidth 1 -relief raised
+         radiobutton $private(frm).startA.item -anchor w -highlightthickness 0 \
             -text "A :" -value "A" -variable confCam(currentCamItem) \
-            -command "::confCam::selectCamItem"
-         pack $This.startA.item -side left -padx 3 -pady 3 -fill x
-         label $This.startA.camNo -textvariable confCam(A,camNo)
-         pack $This.startA.camNo -side left -padx 3 -pady 3 -fill x
-         label $This.startA.name -textvariable confCam(A,camName)
-         pack $This.startA.name -side left -padx 3 -pady 3 -fill x
+            -command "::confCam::selectNotebook A"
+         pack $private(frm).startA.item -side left -padx 3 -pady 3 -fill x
+         label $private(frm).startA.camNo -textvariable confCam(A,camNo)
+         pack $private(frm).startA.camNo -side left -padx 3 -pady 3 -fill x
+         label $private(frm).startA.name -textvariable confCam(A,camName)
+         pack $private(frm).startA.name -side left -padx 3 -pady 3 -fill x
 
-         ComboBox $This.startA.visu \
+         ComboBox $private(frm).startA.visu \
             -width 8          \
             -height [ llength $confCam(list_visu) ] \
             -relief sunken    \
@@ -316,26 +282,26 @@ namespace eval ::confCam {
             -editable 0       \
             -textvariable confCam(A,visuName) \
             -values $confCam(list_visu)
-         pack $This.startA.visu -side left -padx 3 -pady 3 -fill x
-         button $This.startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem A"
-         pack $This.startA.stop -side left -padx 3 -pady 3 -expand true
-         checkbutton $This.startA.chk -text "$caption(confcam,creer_au_demarrage)" \
+         pack $private(frm).startA.visu -side left -padx 3 -pady 3 -fill x
+         button $private(frm).startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem A"
+         pack $private(frm).startA.stop -side left -padx 3 -pady 3 -expand true
+         checkbutton $private(frm).startA.chk -text "$caption(confcam,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(camera,A,start)
-         pack $This.startA.chk -side left -padx 3 -pady 3 -expand true
-      pack $This.startA -side top -fill x
+         pack $private(frm).startA.chk -side left -padx 3 -pady 3 -expand true
+      pack $private(frm).startA -side top -fill x
 
       #--- Parametres de la camera B
-      frame $This.startB -borderwidth 1 -relief raised
-         radiobutton $This.startB.item -anchor w -highlightthickness 0 \
+      frame $private(frm).startB -borderwidth 1 -relief raised
+         radiobutton $private(frm).startB.item -anchor w -highlightthickness 0 \
             -text "B :" -value "B" -variable confCam(currentCamItem) \
-            -command "::confCam::selectCamItem"
-         pack $This.startB.item -side left -padx 3 -pady 3 -fill x
-         label $This.startB.camNo -textvariable confCam(B,camNo)
-         pack $This.startB.camNo -side left -padx 3 -pady 3 -fill x
-         label $This.startB.name -textvariable confCam(B,camName)
-         pack $This.startB.name -side left -padx 3 -pady 3 -fill x
+            -command "::confCam::selectNotebook B"
+         pack $private(frm).startB.item -side left -padx 3 -pady 3 -fill x
+         label $private(frm).startB.camNo -textvariable confCam(B,camNo)
+         pack $private(frm).startB.camNo -side left -padx 3 -pady 3 -fill x
+         label $private(frm).startB.name -textvariable confCam(B,camName)
+         pack $private(frm).startB.name -side left -padx 3 -pady 3 -fill x
 
-         ComboBox $This.startB.visu \
+         ComboBox $private(frm).startB.visu \
             -width 8          \
             -height [ llength $confCam(list_visu) ] \
             -relief sunken    \
@@ -343,26 +309,26 @@ namespace eval ::confCam {
             -editable 0       \
             -textvariable confCam(B,visuName) \
             -values $confCam(list_visu)
-         pack $This.startB.visu -side left -padx 3 -pady 3 -fill x
-         button $This.startB.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem B"
-         pack $This.startB.stop -side left -padx 3 -pady 3 -expand true
-         checkbutton $This.startB.chk -text "$caption(confcam,creer_au_demarrage)" \
+         pack $private(frm).startB.visu -side left -padx 3 -pady 3 -fill x
+         button $private(frm).startB.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem B"
+         pack $private(frm).startB.stop -side left -padx 3 -pady 3 -expand true
+         checkbutton $private(frm).startB.chk -text "$caption(confcam,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(camera,B,start)
-         pack $This.startB.chk -side left -padx 3 -pady 3 -expand true
-      pack $This.startB -side top -fill x
+         pack $private(frm).startB.chk -side left -padx 3 -pady 3 -expand true
+      pack $private(frm).startB -side top -fill x
 
       #--- Parametres de la camera C
-      frame $This.startC -borderwidth 1 -relief raised
-         radiobutton $This.startC.item -anchor w -highlightthickness 0 \
+      frame $private(frm).startC -borderwidth 1 -relief raised
+         radiobutton $private(frm).startC.item -anchor w -highlightthickness 0 \
             -text "C :" -value "C" -variable confCam(currentCamItem) \
-            -command "::confCam::selectCamItem"
-         pack $This.startC.item -side left -padx 3 -pady 3 -fill x
-         label $This.startC.camNo -textvariable confCam(C,camNo)
-         pack $This.startC.camNo -side left -padx 3 -pady 3 -fill x
-         label $This.startC.name -textvariable confCam(C,camName)
-         pack $This.startC.name -side left -padx 3 -pady 3 -fill x
+            -command "::confCam::selectNotebook C"
+         pack $private(frm).startC.item -side left -padx 3 -pady 3 -fill x
+         label $private(frm).startC.camNo -textvariable confCam(C,camNo)
+         pack $private(frm).startC.camNo -side left -padx 3 -pady 3 -fill x
+         label $private(frm).startC.name -textvariable confCam(C,camName)
+         pack $private(frm).startC.name -side left -padx 3 -pady 3 -fill x
 
-         ComboBox $This.startC.visu \
+         ComboBox $private(frm).startC.visu \
             -width 8          \
             -height [ llength $confCam(list_visu) ] \
             -relief sunken    \
@@ -370,47 +336,49 @@ namespace eval ::confCam {
             -editable 0       \
             -textvariable confCam(C,visuName) \
             -values $confCam(list_visu)
-         pack $This.startC.visu -side left -padx 3 -pady 3 -fill x
-         button $This.startC.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem C"
-         pack $This.startC.stop -side left -padx 3 -pady 3 -expand true
-         checkbutton $This.startC.chk -text "$caption(confcam,creer_au_demarrage)" \
+         pack $private(frm).startC.visu -side left -padx 3 -pady 3 -fill x
+         button $private(frm).startC.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem C"
+         pack $private(frm).startC.stop -side left -padx 3 -pady 3 -expand true
+         checkbutton $private(frm).startC.chk -text "$caption(confcam,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(camera,C,start)
-         pack $This.startC.chk -side left -padx 3 -pady 3 -expand true
-      pack $This.startC -side top -fill x
+         pack $private(frm).startC.chk -side left -padx 3 -pady 3 -expand true
+      pack $private(frm).startC -side top -fill x
 
       #--- Frame pour les boutons
-      frame $This.cmd -borderwidth 1 -relief raised
-         button $This.cmd.ok -text "$caption(confcam,ok)" -width 7 -command "::confCam::ok"
+      frame $private(frm).cmd -borderwidth 1 -relief raised
+         button $private(frm).cmd.ok -text "$caption(confcam,ok)" -width 7 -command "::confCam::ok"
          if { $conf(ok+appliquer) == "1" } {
-            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+            pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
          }
-         button $This.cmd.appliquer -text "$caption(confcam,appliquer)" -width 8 -command "::confCam::appliquer"
-         pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.fermer -text "$caption(confcam,fermer)" -width 7 -command "::confCam::fermer"
-         pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.aide -text "$caption(confcam,aide)" -width 7 -command "::confCam::afficherAide"
-         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $This.cmd -side top -fill x
+         button $private(frm).cmd.appliquer -text "$caption(confcam,appliquer)" -width 8 -command "::confCam::appliquer"
+         pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+         button $private(frm).cmd.fermer -text "$caption(confcam,fermer)" -width 7 -command "::confCam::fermer"
+         pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+         button $private(frm).cmd.aide -text "$caption(confcam,aide)" -width 7 -command "::confCam::afficherAide"
+         pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+      pack $private(frm).cmd -side top -fill x
 
       #---
-      focus $This
+      focus $private(frm)
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $This <Key-F1> { ::console::GiveFocus }
+      bind $private(frm) <Key-F1> { ::console::GiveFocus }
 
       #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $This
+      ::confColor::applyColor $private(frm)
    }
 
    #
    #--- Cree une thread dediee a la camera
-   #--- Retourne le numero de la thread placee dans la variable confCam(camItem,threadNo)
+   #--- et retourne le numero de la thread
    #
-   proc createThread { camNo bufNo visuNo } {
+   proc createThread { camItem bufNo} {
       global confCam
 
       #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
       if { $::tcl_platform(threaded)==1 } {
+         set camNo $confCam($camItem,camNo)
+
          #--- creation dun nouvelle thread
          set threadNo [thread::create ]
          #--- declaration de la variable globale mainThreadNo dans la thread de la camera
@@ -420,7 +388,14 @@ namespace eval ::confCam {
          #--- declaration de la variable globale camNo dans la thread de la camera
          thread::send $threadNo "set camNo $camNo"
          #--- je copie la commande du buffer dans la thread de la camera
-         thread::copycommand $threadNo buf$bufNo
+         thread::copycommand $threadNo "buf$bufNo"
+
+         #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
+         if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
+            if { [cam$camNo longueposelinkno] != 0} {
+               thread::copycommand $threadNo "link[cam$camNo longueposelinkno]"
+            }
+         }
       } else {
          set threadNo "0"
       }
@@ -443,125 +418,11 @@ namespace eval ::confCam {
    }
 
    #
-   # Fenetre de configuration de Audine
-   #
-   proc fillPageaudine { frm } {
-      #--- Construction de l'interface graphique
-      ::audine::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration des Hi-SIS
-   #
-   proc fillPagehisis { frm } {
-      #--- Construction de l'interface graphique
-      ::hisis::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration des SBIG
-   #
-   proc fillPagesbig { frm } {
-      #--- Construction de l'interface graphique
-      ::sbig::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration de la CB245
-   #
-   proc fillPagecookbook { frm } {
-      #--- Construction de l'interface graphique
-      ::cookbook::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration des Starlight
-   #
-   proc fillPagestarlight { frm } {
-      #--- Construction de l'interface graphique
-      ::starlight::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration des Kitty
-   #
-   proc fillPagekitty { frm } {
-      #--- Construction de l'interface graphique
-      ::kitty::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration des WebCam
-   #
-   proc fillPagewebcam { frm } {
-      global confCam
-
-      #--- Construction de l'interface graphique
-      ::webcam::fillConfigPage $frm $confCam(currentCamItem)
-   }
-
-   #
-   # Fenetre de configuration de la TH7852A d'Yves LATIL
-   #
-   proc fillPageth7852a { frm } {
-      #--- Construction de l'interface graphique
-      ::th7852a::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration de la SCR1300XTC
-   #
-   proc fillPagescr1300xtc { frm } {
-      #--- Construction de l'interface graphique
-      ::scr1300xtc::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration des APN (DSLR)
-   #
-   proc fillPagedslr { frm } {
-      #--- Construction de l'interface graphique
-      ::dslr::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration de la Andor
-   #
-   proc fillPageandor { frm } {
-      #--- Construction de l'interface graphique
-      ::andor::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration de la FLI (Finger Lakes Instrumentation)
-   #
-   proc fillPagefingerlakes { frm } {
-      #--- Construction de l'interface graphique
-      ::fingerlakes::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration de la Cemes
-   #
-   proc fillPagecemes { frm } {
-      #--- Construction de l'interface graphique
-      ::cemes::fillConfigPage $frm
-   }
-
-   #
-   # Fenetre de configuration de la Nikon CoolPix
-   #
-   proc fillPagecoolpix { frm } {
-      #--- Construction de l'interface graphique
-      ::coolpix::fillConfigPage $frm
-   }
-
-   #
    # confCam::connectCamera
    # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
    #
    proc connectCamera { } {
-      variable This
+      variable private
       global audace caption color
 
       if [ winfo exists $audace(base).connectCamera ] {
@@ -571,12 +432,12 @@ namespace eval ::confCam {
       toplevel $audace(base).connectCamera
       wm resizable $audace(base).connectCamera 0 0
       wm title $audace(base).connectCamera "$caption(confcam,attention)"
-      if { [ info exists This ] } {
-         if { [ winfo exists $This ] } {
-            set posx_connectCamera [ lindex [ split [ wm geometry $This ] "+" ] 1 ]
-            set posy_connectCamera [ lindex [ split [ wm geometry $This ] "+" ] 2 ]
+      if { [ info exists private(frm) ] } {
+         if { [ winfo exists $private(frm) ] } {
+            set posx_connectCamera [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
+            set posy_connectCamera [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
             wm geometry $audace(base).connectCamera +[ expr $posx_connectCamera + 50 ]+[ expr $posy_connectCamera + 100 ]
-            wm transient $audace(base).connectCamera $This
+            wm transient $audace(base).connectCamera $private(frm)
          }
       } else {
          wm geometry $audace(base).connectCamera +200+100
@@ -598,88 +459,52 @@ namespace eval ::confCam {
    }
 
    #----------------------------------------------------------------------------
-   # confCam::select
-   # Selectionne un onglet en passant le nom (eventuellement) de
-   # la camera decrite dans l'onglet
+   # confCam::selectNotebook
+   # Selectionne un onglet
    #----------------------------------------------------------------------------
-   proc select { camItem { camName "audine" } } {
-      variable This
-
-      $This.usr.onglet raise $camName
-   }
-
-   #----------------------------------------------------------------------------
-   # confCam::selectCamItem
-   # Selectionne un onglet en passant l'item de la camera
-   #
-   # parametres :
-   #    aucun
-   #----------------------------------------------------------------------------
-   proc selectCamItem { } {
-      variable This
+   proc selectNotebook { camItem } {
+      variable private
       global confCam
 
       #--- je recupere l'item courant
-      set camItem $confCam(currentCamItem)
+      set camName $confCam($camItem,camName)
 
-      #--- je selectionne l'onglet correspondant a la camera de cet item
-      ::confCam::select $camItem [ $This.usr.onglet raise ]
+      if { $camName != "" } {
+         set frm [ $private(frm).usr.onglet getframe $camName ]
+         ::$camName\::fillConfigPage $frm $camItem
+         $private(frm).usr.onglet raise $camName
+      } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
+         $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
+      }
    }
 
    #----------------------------------------------------------------------------
    # confCam::setShutter
    # Procedure de changement de l'obturateur de la camera
    #----------------------------------------------------------------------------
-   proc setShutter { camNo shutterState } {
+   proc setShutter { camItem shutterState } {
       variable private
       global caption conf confCam
 
       #---
-      if { $confCam(A,camNo) == $camNo } {
-         set camItem "A"
-      } elseif { $confCam(B,camNo) == $camNo } {
-         set camItem "B"
-      } elseif { $confCam(C,camNo) == $camNo } {
-         set camItem "C"
-      } else {
-         set camItem ""
-      }
-      #---
-      set ShutterOptionList [ ::confCam::getPluginProperty $camItem shutterList ]
+      set ShutterOptionList    [ ::confCam::getPluginProperty $camItem shutterList ]
       set lg_ShutterOptionList [ llength $ShutterOptionList ]
       #---
-      set camProduct [ cam$camNo product ]
-      if { "$camProduct" != "" } {
-         if { [ ::confCam::getPluginProperty $camItem hasShutter ] } {
-            incr shutterState
-            if { $lg_ShutterOptionList == "3" } {
-               if { $shutterState == "3" } {
-                  set shutterState "0"
-               }
-            } elseif { $lg_ShutterOptionList == "2" } {
-               if { $shutterState == "3" } {
-                  set shutterState "1"
-               }
+      if { [ ::confCam::getPluginProperty $camItem hasShutter ] } {
+         incr shutterState
+         if { $lg_ShutterOptionList == "3" } {
+            if { $shutterState == "3" } {
+               set shutterState "0"
             }
-            if { "$camProduct" == "audine" } {
-               ::audine::setShutter $camNo $shutterState $ShutterOptionList
-            } elseif { "$camProduct" == "hisis" } {
-               ::hisis::setShutter $camNo $shutterState $ShutterOptionList
-            } elseif { "$camProduct" == "sbig" } {
-               ::sbig::setShutter $camNo $shutterState $ShutterOptionList
-            } elseif { "$camProduct" == "andor" } {
-               ::andor::setShutter $camNo $shutterState $ShutterOptionList
-            } elseif { "$camProduct" == "fingerlakes" } {
-               ::fingerlakes::setShutter $camNo $shutterState $ShutterOptionList
-            } elseif { "$camProduct" == "cemes" } {
-               ::cemes::setShutter $camNo $shutterState $ShutterOptionList
+         } elseif { $lg_ShutterOptionList == "2" } {
+            if { $shutterState == "3" } {
+               set shutterState "1"
             }
-         } else {
-            tk_messageBox -title $caption(confcam,pb) -type ok \
-               -message $caption(confcam,onlycam+obt)
-            return -1
          }
+         ::$confCam($camItem,camName)::setShutter $camItem $shutterState $ShutterOptionList
       } else {
+         tk_messageBox -title $caption(confcam,pb) -type ok \
+            -message $caption(confcam,onlycam+obt)
          return -1
       }
       return $shutterState
@@ -692,6 +517,9 @@ namespace eval ::confCam {
    proc stopItem { camItem } {
       global audace caption conf confCam
 
+      if { $camItem == "" } {
+         return
+      }
       if { $confCam($camItem,camName) != "" } {
          set camNo $confCam($camItem,camNo)
 
@@ -703,55 +531,7 @@ namespace eval ::confCam {
          }
 
          #--- Je ferme les ressources specifiques de la camera
-         switch -exact -- $confCam($camItem,camName) {
-            audine {
-               ::audine::stop $camItem
-            }
-            hisis {
-               ::hisis::stop $camItem
-            }
-            sbig {
-               ::sbig::stop $camItem
-            }
-            cookbook {
-               ::cookbook::stop $camItem
-            }
-            starlight {
-               ::starlight::stop $camItem
-            }
-            kitty {
-               ::kitty::stop $camItem
-            }
-            webcam {
-               ::webcam::stop $camItem
-            }
-            th7852a {
-               ::th7852a::stop $camItem
-            }
-            scr1300xtc {
-               ::scr1300xtc::stop $camItem
-            }
-            dslr {
-               ::dslr::stop $camItem
-            }
-            andor {
-               ::andor::stop $camItem
-            }
-            fingerlakes {
-               ::fingerlakes::stop $camItem
-            }
-            cemes {
-               ::cemes::stop $camItem
-            }
-            coolpix {
-               ::coolpix::stop $camItem
-            }
-            default {
-               #--- Supprime la camera
-               set result [ catch { cam::delete $camNo } erreur ]
-               if { $result == "1" } { console::affiche_erreur "$erreur \n" }
-            }
-         }
+         ::$confCam($camItem,camName)::stop $camItem
       }
 
       #--- Raz des parametres de l'item
@@ -771,7 +551,7 @@ namespace eval ::confCam {
       #--- Je mets a jour la liste des "cam$camNo product" des cameras connectees
       set confCam(list_product) [ list $confCam(A,product) $confCam(B,product) $confCam(C,product) ]
       #--- Sert a la surveillance du Listener de la configuration optique
-      set confCam($camItem,super_camNo) $confCam($camItem,camNo)
+      ###set confCam($camItem,super_camNo) $confCam($camItem,camNo)
    }
 
    #
@@ -781,11 +561,10 @@ namespace eval ::confCam {
    #  Parametres :
    #     camNo : Numero de la camera
    #
-   proc isReady { camNo } {
+   proc isReady { camItem } {
       #--- Je verifie si la camera est capable fournir son nom
-      set result [ catch { cam$camNo name } ]
-      if { $result == 1 } {
-         #--- Erreur
+      if { [getPluginProperty $camItem "name"] == "" } {
+         #--- camera KO
          return 0
       } else {
          #--- Camera OK
@@ -807,6 +586,7 @@ namespace eval ::confCam {
       # binningList :      Retourne la liste des binnings disponibles
       # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
       # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+      # dynamic :          Retourne la liste de la dynamique haute et basse
       # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
       # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
       # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -816,6 +596,8 @@ namespace eval ::confCam {
       # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
       # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
       # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+      # name :             Retourne le modele de la camera
+      # product :          Retourne le nom du produit
       # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 
       #--- je recherche la valeur par defaut de la propriete
@@ -824,6 +606,7 @@ namespace eval ::confCam {
          binningList      { set result [ list "" ] }
          binningXListScan { set result [ list "" ] }
          binningYListScan { set result [ list "" ] }
+         dynamic          { set result [ list 32767 -32768 ] }
          hasBinning       { set result 0 }
          hasFormat        { set result 0 }
          hasLongExposure  { set result 0 }
@@ -833,6 +616,8 @@ namespace eval ::confCam {
          hasWindow        { set result 0 }
          longExposure     { set result 1 }
          multiCamera      { set result 0 }
+         name             { set result "" }
+         product          { set result "" }
          shutterList      { set result [ list "" ] }
          default          { set result "" }
       }
@@ -843,7 +628,6 @@ namespace eval ::confCam {
       }
 
       #--- si une camera est selectionnee, je recherche la valeur propre a la camera
-      set camNo $confCam($camItem,camNo)
       set result [ ::$confCam($camItem,camName)::getPluginProperty $camItem $propertyName ]
       return $result
    }
@@ -869,43 +653,16 @@ namespace eval ::confCam {
    }
 
    #
-   # confCam::getName
-   #    Retourne le nom de la camera si la camera est demarree, sinon retourne "0"
+   # confCam::getCurrentCamItem
+   #    Retourne le camItem courant
    #
    #  Parametres :
-   #     camNo : Numero de la camera
+   #     aucun
    #
-   proc getName { camNo } {
-      #--- Je verifie si la camera est capable fournir son nom
-      set result [ catch { cam$camNo name } camName ]
-      #---
-      if { $result == 1 } {
-         #--- Erreur
-         return 0
-      } else {
-         #--- Camera OK
-         return $camName
-      }
-   }
+   proc getCurrentCamItem {  } {
+      global confCam
 
-   #
-   # confCam::getProduct
-   #    Retourne le nom de la famille de la camera si la camera est demarree, sinon retourne "0"
-   #
-   #  Parametres :
-   #     camNo : Numero de la camera
-   #
-   proc getProduct { camNo } {
-      #--- Je verifie si la camera est capable fournir son nom de famille
-      set result [ catch { cam$camNo product } camProduct ]
-      #---
-      if { $result == 1 } {
-         #--- Erreur
-         return 0
-      } else {
-         #--- Camera OK
-         return $camProduct
-      }
+      return $confCam($currentCamItem)
    }
 
    #
@@ -915,7 +672,7 @@ namespace eval ::confCam {
    #  Parametres :
    #     camItem : Instance de la camera
    #
-   proc getShutter { camItem  } {
+   proc getShutter { camItem } {
       global conf confCam
 
       if { [info exists conf($confCam($camItem,camName),foncobtu) ] } {
@@ -932,17 +689,23 @@ namespace eval ::confCam {
    #  Parametres :
    #     camNo : Numero de la camera
    #
-   proc getThreadNo { camNo } {
+   proc getThreadNo { camItem } {
       global confCam
 
-      if { $confCam(A,camNo) == $camNo } {
-         set camItem "A"
-      } elseif { $confCam(B,camNo) == $camNo } {
-         set camItem "B"
-      } elseif { $confCam(C,camNo) == $camNo } {
-         set camItem "C"
-      }
       return $confCam($camItem,threadNo)
+   }
+
+   #
+   # getVisuNo
+   #    Retourne le numero de la visu associee a la  camera
+   #    Si la camera n'a pas de visu associee, la valeur retournee est ""
+   #  Parametres :
+   #     camItem : Numero de la camera
+   #
+   proc ::confCam::getVisuNo { camItem } {
+      global confCam
+
+      return $confCam($camItem,visuNo)
    }
 
    #
@@ -973,7 +736,7 @@ namespace eval ::confCam {
    # conf(cam,A,...) -> proprietes de ce type de camera
    #
    proc configureCamera { camItem } {
-      variable This
+      variable private
       global audace caption conf confCam confcolor
 
       #--- Initialisation de la variable erreur
@@ -984,7 +747,7 @@ namespace eval ::confCam {
          set product [ lindex $confCam(list_product) $i ]
          if { $product != ""} {
             if { [ winfo exists $audace(base).confCam ] } {
-               if { [ string compare $product [ $This.usr.onglet raise ] ] == "0" } {
+               if { [ string compare $product [ $private(frm).usr.onglet raise ] ] == "0" } {
                   if { $product != "webcam" } {
                      set confCam($camItem,camNo)   "0"
                      set confCam($camItem,camName) ""
@@ -1033,14 +796,14 @@ namespace eval ::confCam {
       lappend list_visu $caption(confcam,nouvelle_visu)
       set confCam(list_visu) $list_visu
 
-      if { [ info exists This ] } {
-         if { [ winfo exists $This ] } {
-            $This.startA.visu configure -height [ llength $confCam(list_visu) ]
-            $This.startA.visu configure -values $confCam(list_visu)
-            $This.startB.visu configure -height [ llength $confCam(list_visu) ]
-            $This.startB.visu configure -values $confCam(list_visu)
-            $This.startC.visu configure -height [ llength $confCam(list_visu) ]
-            $This.startC.visu configure -values $confCam(list_visu)
+      if { [ info exists private(frm) ] } {
+         if { [ winfo exists $private(frm) ] } {
+            $private(frm).startA.visu configure -height [ llength $confCam(list_visu) ]
+            $private(frm).startA.visu configure -values $confCam(list_visu)
+            $private(frm).startB.visu configure -height [ llength $confCam(list_visu) ]
+            $private(frm).startB.visu configure -values $confCam(list_visu)
+            $private(frm).startC.visu configure -height [ llength $confCam(list_visu) ]
+            $private(frm).startC.visu configure -values $confCam(list_visu)
          }
       }
 
@@ -1048,75 +811,24 @@ namespace eval ::confCam {
       set bufNo [::confVisu::getBufNo $visuNo]
 
       set catchResult [ catch {
-         switch -exact -- $confCam($camItem,camName) {
-            hisis {
-               ::hisis::configureCamera $camItem
-            }
-            sbig {
-               ::sbig::configureCamera $camItem
-            }
-            cookbook {
-               ::cookbook::configureCamera $camItem
-            }
-            starlight {
-               ::starlight::configureCamera $camItem
-            }
-            kitty {
-               ::kitty::configureCamera $camItem
-            }
-            webcam {
-               ::webcam::configureCamera $camItem
-            }
-            th7852a {
-               ::th7852a::configureCamera $camItem
-            }
-            scr1300xtc {
-               ::scr1300xtc::configureCamera $camItem
-            }
-            dslr {
-               ::dslr::configureCamera $camItem
-            }
-            andor {
-               ::andor::configureCamera $camItem
-            }
-            fingerlakes {
-               ::fingerlakes::configureCamera $camItem
-            }
-            cemes {
-               ::cemes::configureCamera $camItem
-            }
-            coolpix {
-               ::coolpix::configureCamera $camItem
-            }
-            audine {
-               ::audine::configureCamera $camItem
-            }
-         }
-         #--- <= fin du switch sur les cameras
+         #--- je configure la camera
+         ::$confCam($camItem,camName)::configureCamera $camItem $bufNo
+
+         #--- je recupere camNo
+         set confCam($camItem,camNo) [ ::$confCam($camItem,camName)::getCamNo $camItem ]
+
+         #--- Je cree la thread dediee a la camera
+         set confCam($camItem,threadNo) [ ::confCam::createThread $camItem $bufNo]
+
 
          #--- Je mets a jour la liste des "cam$camNo product" des cameras connectees
-         #--- En prenant en compte le cas particulier des APN Nikon CoolPix qui n'ont pas de librairie
-         if { $confCam($camItem,camName) != "coolpix" && $confCam($camItem,camName) != "" } {
+         if { $confCam($camItem,camName) != "" } {
             if { $confCam(A,camNo) == $confCam($camItem,camNo) } {
-               set camItem "A"
-               set confCam(A,product) [ cam$confCam(A,camNo) product ]
+               set confCam(A,product) [ getPluginProperty "A" product ]
             } elseif { $confCam(B,camNo) == $confCam($camItem,camNo) } {
-               set camItem "B"
-               set confCam(B,product) [ cam$confCam(B,camNo) product ]
+               set confCam(B,product) [ getPluginProperty "B" product ]
             } elseif { $confCam(C,camNo) == $confCam($camItem,camNo) } {
-               set camItem "C"
-               set confCam(C,product) [ cam$confCam(C,camNo) product ]
-            }
-         } elseif { $confCam($camItem,camName) == "coolpix" } {
-            if { $confCam(A,camNo) == $confCam($camItem,camNo) } {
-               set camItem "A"
-               set confCam(A,product) "coolpix"
-            } elseif { $confCam(B,camNo) == $confCam($camItem,camNo) } {
-               set camItem "B"
-               set confCam(B,product) "coolpix"
-            } elseif { $confCam(C,camNo) == $confCam($camItem,camNo) } {
-               set camItem "C"
-               set confCam(C,product) "coolpix"
+               set confCam(C,product) [ getPluginProperty "C" product ]
             }
          }
          set confCam(list_product) [ list $confCam(A,product) $confCam(B,product) $confCam(C,product) ]
@@ -1153,7 +865,7 @@ namespace eval ::confCam {
 
       #--- Creation d'une variable qui se met a jour a la fin de la procedure configureCamera
       #--- Sert au Listener de surveillance de la configuration optique
-      set confCam($camItem,super_camNo) $confCam($camItem,camNo)
+      ###set confCam($camItem,super_camNo) $confCam($camItem,camNo)
 
       #--- Effacement du message d'alerte s'il existe
       if [ winfo exists $audace(base).connectCamera ] {
@@ -1173,74 +885,122 @@ namespace eval ::confCam {
    # differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { camItem } {
-      variable This
+      variable private
       global caption conf confCam
 
-      set camName                       [ $This.usr.onglet raise ]
+      set camName                       [ $private(frm).usr.onglet raise ]
       set confCam($camItem,camName)     $camName
       set conf(camera,$camItem,camName) $camName
 
-      switch $conf(camera,$camItem,camName) {
-         audine {
-            #--- Memorise la configuration de Audine dans le tableau conf(audine,...)
-            ::audine::widgetToConf
-         }
-         hisis {
-            #--- Memorise la configuration des Hi-SIS dans le tableau conf(hisis,...)
-            ::hisis::widgetToConf
-         }
-         sbig {
-            #--- Memorise la configuration de la SBIG dans le tableau conf(sbig,...)
-            ::sbig::widgetToConf
-         }
-         cookbook {
-            #--- Memorise la configuration de la CB245 dans le tableau conf(cookbook,...)
-            ::cookbook::widgetToConf
-         }
-         starlight {
-            #--- Memorise la configuration des Starlight dans le tableau conf(starlight,...)
-            ::starlight::widgetToConf
-         }
-         kitty {
-            #--- Memorise la configuration des Kitty dans le tableau conf(kitty,...)
-            ::kitty::widgetToConf
-         }
-         webcam {
-            #--- Memorise la configuration de la WebCam dans le tableau conf(webcam,$camItem,...)
-            ::webcam::widgetToConf $camItem
-         }
-         th7852a {
-            #--- Memorise la configuration de la TH7852A dans le tableau conf(th7852a,...)
-            ::th7852a::widgetToConf
-         }
-         scr1300xtc {
-            #--- Memorise la configuration de la SCR1300XTC dans le tableau conf(scr1300xtc,...)
-            ::scr1300xtc::widgetToConf
-         }
-         dslr {
-            #--- Memorise la configuration de l'APN (DSLR) dans le tableau conf(dslr,...)
-            ::dslr::widgetToConf
-         }
-         andor {
-            #--- Memorise la configuration de la Andor dans le tableau conf(andor,...)
-            ::andor::widgetToConf
-         }
-         fingerlakes {
-            #--- Memorise la configuration de la FLI dans le tableau conf(fingerlakes,...)
-            ::fingerlakes::widgetToConf
-         }
-         cemes {
-            #--- Memorise la configuration de la Cemes dans le tableau conf(cemes,...)
-            ::cemes::widgetToConf
-         }
-         coolpix {
-            #--- Memorise la configuration de la Cemes dans le tableau conf(coolpix,...)
-            ::coolpix::widgetToConf
-         }
-      }
+      ::$confCam($camItem,camName)::widgetToConf $camItem
    }
 
 }
+
+#------------------------------------------------------------
+# ::confCam::findPlugin
+# recherche les plugins de type "camera"
+#
+# conditions :
+#   - le plugin doit avoir une procedure getPluginType qui retourne "camera"
+#   - le plugin doit avoir une procedure getPluginTitle
+#   - etc.
+#
+# si le plugin remplit les conditions :
+# son label est ajoute dans la liste pluginTitleList et son namespace est ajoute dans pluginNamespaceList
+# sinon le fichier tcl est ignore car ce n'est pas un plugin
+#
+# return 0 = OK, 1 = error (no plugin found)
+#------------------------------------------------------------
+proc ::confCam::findPlugin { } {
+   variable private
+   global audace caption
+
+   #--- j'initialise les listes vides
+   set private(pluginNamespaceList)      ""
+   set private(pluginLabelList) ""
+
+   #--- je recherche les fichiers camera/*/pkgIndex.tcl
+   set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" camera * pkgIndex.tcl ]
+   foreach pkgIndexFileName $filelist {
+      set catchResult [catch {
+         #--- je recupere le nom du package
+         if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
+            if { $pluginInfo(type) == "camera"} {
+               foreach os $pluginInfo(os) {
+                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
+                     #--- je charge le package
+                     package require $pluginInfo(name)
+                     #--- j'initalise le plugin
+                     $pluginInfo(namespace)::initPlugin
+                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                     #--- je l'ajoute dans la liste des plugins
+                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                     lappend private(pluginLabelList) $pluginlabel
+                     ::console::affiche_prompt "#$caption(confcam,camera) $pluginlabel v$pluginInfo(version)\n"
+                  }
+               }
+            }
+         } else {
+            ::console::affiche_erreur "Error loading camera $pkgIndexFileName \n$::errorInfo\n\n"
+         }
+      } catchMessage]
+      #--- j'affiche le message d'erreur et je continue la recherche des plugins
+      if { $catchResult !=0 } {
+         console::affiche_erreur "::confCam::findPlugin $::errorInfo\n"
+      }
+   }
+
+   #--- je trie les plugins par ordre alphabétique des libelles
+   set pluginList ""
+   for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
+      lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
+   }
+   set pluginList [lsort -index 0 $pluginList]
+   set private(pluginNamespaceList) ""
+   set private(pluginLabelList) ""
+   foreach plugin $pluginList {
+      lappend private(pluginLabelList)     [lindex $plugin 0]
+      lappend private(pluginNamespaceList) [lindex $plugin 1]
+   }
+
+   ::console::affiche_prompt "\n"
+
+   if { [llength $private(pluginNamespaceList)] <1 } {
+      #--- aucun plugin correct
+      return 1
+   } else {
+      #--- tout est ok
+      return 0
+   }
+}
+
+#------------------------------------------------------------
+# addCameraListener
+#    ajoute une procedure a appeler si on change de camera
+#  parametres :
+#    camItem: numero de la visu
+#    cmd : commande TCL a lancer quand la camera change
+#------------------------------------------------------------
+proc ::confCam::addCameraListener { camItem cmd } {
+   variable private
+
+   trace add variable "::confCam($camItem,camNo)" write $cmd
+}
+
+#------------------------------------------------------------
+# removeCameraListener
+#    supprime une procedure a appeler si on change de camera
+#  parametres :
+#    visuNo: numero de la visu
+#    cmd : commande TCL a lancer quand la camera change
+#------------------------------------------------------------
+proc ::confCam::removeCameraListener { camItem cmd } {
+   variable private
+
+   trace remove variable "::confCam($camItem,camNo)" write $cmd
+}
+
 
 #--- Connexion au demarrage de la camera selectionnee par defaut
 ::confCam::init

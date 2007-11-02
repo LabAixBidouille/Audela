@@ -2,7 +2,7 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.9 2007-03-16 23:48:41 robertdelmas Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.10 2007-11-02 23:20:40 michelpujol Exp $
 #
 
 namespace eval eventAude_GPS {
@@ -67,33 +67,33 @@ namespace eval eventAude_GPS {
    #
    proc recup_position { } {
       variable This
+      variable private
       global conf
-      global confCam
 
-      set confCam(eventaude_gps,geometry) [ wm geometry $This ]
-      set deb [ expr 1 + [ string first + $confCam(eventaude_gps,geometry) ] ]
-      set fin [ string length $confCam(eventaude_gps,geometry) ]
-      set confCam(eventaude_gps,position) "+[ string range $confCam(eventaude_gps,geometry) $deb $fin ]"
+      set private(geometry) [ wm geometry $This ]
+      set deb [ expr 1 + [ string first + $private(geometry) ] ]
+      set fin [ string length $private(geometry) ]
+      set private(position) "+[ string range $private(geometry) $deb $fin ]"
       #---
-      set conf(eventaude_gps,position) $confCam(eventaude_gps,position)
+      set conf(eventaude_gps,position) $private(position)
    }
 
    proc createDialog { } {
       variable This
+      variable private
       global audace
       global caption
       global color
       global conf
-      global confCam
 
       #--- initConf
       if { ! [ info exists conf(eventaude_gps,position) ] } { set conf(eventaude_gps,position) "+600+490" }
 
       #--- Initialisation de variables
-      set confCam(coord_GPS_Observateur) ""
-      set confCam(longi_GPS_Observateur) ""
-      set confCam(lati_GPS_Observateur)  ""
-      set confCam(alti_GPS_Observateur)  ""
+      set private(coord_GPS_Observateur) ""
+      set private(longi_GPS_Observateur) ""
+      set private(lati_GPS_Observateur)  ""
+      set private(alti_GPS_Observateur)  ""
 
       #---
       if { [ winfo exists $This ] } {
@@ -105,12 +105,12 @@ namespace eval eventAude_GPS {
       }
 
       #---
-      set confCam(eventaude_gps,position) $conf(eventaude_gps,position)
+      set private(position) $conf(eventaude_gps,position)
       #---
-      if { [ info exists confCam(eventaude_gps,geometry) ] } {
-         set deb [ expr 1 + [ string first + $confCam(eventaude_gps,geometry) ] ]
-         set fin [ string length $confCam(eventaude_gps,geometry) ]
-         set confCam(eventaude_gps,position) "+[ string range $confCam(eventaude_gps,geometry) $deb $fin ]"
+      if { [ info exists private(geometry) ] } {
+         set deb [ expr 1 + [ string first + $private(geometry) ] ]
+         set fin [ string length $private(geometry) ]
+         set private(position) "+[ string range $private(geometry) $deb $fin ]"
       }
 
       #--- Chargement des captions
@@ -119,7 +119,7 @@ namespace eval eventAude_GPS {
       #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
       wm title $This $caption(eventaude_gps,titre)
-      wm geometry $This $confCam(eventaude_gps,position)
+      wm geometry $This $private(position)
       wm resizable $This 0 0
       wm protocol $This WM_DELETE_WINDOW ::eventAude_GPS::fermer
 
@@ -155,25 +155,25 @@ namespace eval eventAude_GPS {
       #--- Coordonnees du lieu au format GPS
       label $This.lab1 -text "$caption(eventaude_gps,position_gps)"
       pack $This.lab1 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
-      label $This.lab2 -textvariable "confCam(coord_GPS_Observateur)"
+      label $This.lab2 -textvariable "::eventAude_GPS::private(coord_GPS_Observateur)"
       pack $This.lab2 -in $This.frame3 -anchor center -side left -padx 5 -pady 5
 
       #--- Longitude
       label $This.lab3 -text "$caption(eventaude_gps,longitude)"
       pack $This.lab3 -in $This.frame4 -anchor center -side left -padx 5 -pady 5
-      label $This.lab4 -textvariable "confCam(longi_GPS_Observateur)"
+      label $This.lab4 -textvariable "::eventAude_GPS::private(longi_GPS_Observateur)"
       pack $This.lab4 -in $This.frame4 -anchor center -side left -padx 5 -pady 5
 
       #--- Latitude
       label $This.lab5 -text "$caption(eventaude_gps,latitude)"
       pack $This.lab5 -in $This.frame5 -anchor center -side left -padx 5 -pady 5
-      label $This.lab6 -textvariable "confCam(lati_GPS_Observateur)"
+      label $This.lab6 -textvariable "::eventAude_GPS::private(lati_GPS_Observateur)"
       pack $This.lab6 -in $This.frame5 -anchor center -side left -padx 5 -pady 5
 
       #--- Altitude
       label $This.lab7 -text "$caption(eventaude_gps,altitude)"
       pack $This.lab7 -in $This.frame6 -anchor center -side left -padx 5 -pady 5
-      label $This.lab8 -textvariable "confCam(alti_GPS_Observateur)"
+      label $This.lab8 -textvariable "::eventAude_GPS::private(alti_GPS_Observateur)"
       pack $This.lab8 -in $This.frame6 -anchor center -side left -padx 5 -pady 5
 
       #--- Mise a jour de la longitude et de la latitude
@@ -242,8 +242,8 @@ namespace eval eventAude_GPS {
    # differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
+      variable private
       global conf
-      global confCam
 
       #--- Memorise
    }
@@ -253,26 +253,26 @@ namespace eval eventAude_GPS {
    # Permet d'obtenir les coordonnees GPS de l'observateur
    #
    proc coord_GPS { } {
+      variable private
       global caption
-      global confCam
 
       #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-      set camNo $confCam($confCam(currentCamItem),camNo)
+      set camNo [::confCam::getCamNo [::confCam::getCurrentCamItem ]]
       set statusVariableName "::status_cam$camNo"
       if { [set $statusVariableName] != "exp" } {
-         set confCam(coord_GPS_Observateur) [ cam$camNo gps ]
-         set confCam(long_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 1 ] 180 ]
-         set longi_est_ouest [ lindex $confCam(coord_GPS_Observateur) 2 ]
+         set private(coord_GPS_Observateur) [ cam$camNo gps ]
+         set private(long_GPS_Observateur) [ mc_angle2dms [ lindex $private(coord_GPS_Observateur) 1 ] 180 ]
+         set longi_est_ouest [ lindex $private(coord_GPS_Observateur) 2 ]
          if { $longi_est_ouest == "W" } {
             set longi_est_ouest "$caption(eventaude_gps,ouest)"
          } elseif { $longi_est_ouest == "E" } {
             set longi_est_ouest "$caption(eventaude_gps,est)"
          }
-         set confCam(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $confCam(long_GPS_Observateur) 0 ] [ lindex $confCam(long_GPS_Observateur) 1 ] [ lindex $confCam(long_GPS_Observateur) 2 ] ]"
-         set confCam(lat_GPS_Observateur) [ mc_angle2dms [ lindex $confCam(coord_GPS_Observateur) 3 ] 90 ]
-         set confCam(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $confCam(lat_GPS_Observateur) 0 ] [ lindex $confCam(lat_GPS_Observateur) 1 ] [ lindex $confCam(lat_GPS_Observateur) 2 ] ]
-         set confCam(alt_GPS_Observateur) [ lindex $confCam(coord_GPS_Observateur) 4 ]
-         set confCam(alti_GPS_Observateur) [ format "%5.0f m" $confCam(alt_GPS_Observateur) ]
+         set private(longi_GPS_Observateur) "$longi_est_ouest [ format "%2d° %2d' %4.2f''" [ lindex $private(long_GPS_Observateur) 0 ] [ lindex $private(long_GPS_Observateur) 1 ] [ lindex $private(long_GPS_Observateur) 2 ] ]"
+         set private(lat_GPS_Observateur) [ mc_angle2dms [ lindex $private(coord_GPS_Observateur) 3 ] 90 ]
+         set private(lati_GPS_Observateur) [ format "%2d° %2d' %4.2f''" [ lindex $private(lat_GPS_Observateur) 0 ] [ lindex $private(lat_GPS_Observateur) 1 ] [ lindex $private(lat_GPS_Observateur) 2 ] ]
+         set private(alt_GPS_Observateur) [ lindex $private(coord_GPS_Observateur) 4 ]
+         set private(alti_GPS_Observateur) [ format "%5.0f m" $private(alt_GPS_Observateur) ]
       }
    }
 
@@ -281,18 +281,18 @@ namespace eval eventAude_GPS {
    # Confirme la sauvegarde des coordonnees GPS en longitude et en latitude
    #
    proc confirm_save_long_lat { } {
+      variable private
       global audace
       global caption
-      global confCam
       global confgene
 
       set choix [ tk_messageBox -type yesno -icon warning -title "$caption(eventaude_gps,maj_long+lat-)" \
          -message "$caption(eventaude_gps,confirm)" ]
       if { $choix == "yes" } {
          #--- Mise en forme et sauvegarde de la longitude
-         set confgene(posobs,long) [lindex $confCam(coord_GPS_Observateur) 1]
+         set confgene(posobs,long) [lindex $private(coord_GPS_Observateur) 1]
          set confgene(posobs,long) [mc_angle2dms $confgene(posobs,long) 180 nozero 1 auto string]
-         set confgene(posobs,estouest) [lindex $confCam(coord_GPS_Observateur) 2]
+         set confgene(posobs,estouest) [lindex $private(coord_GPS_Observateur) 2]
          if { $confgene(posobs,estouest) == "W" } {
             set confgene(posobs,estouest) "$caption(eventaude_gps,ouest)"
          } elseif { $confgene(posobs,estouest) == "E" } {
@@ -300,7 +300,7 @@ namespace eval eventAude_GPS {
          }
 
          #--- Mise en forme et sauvegarde de la latitude
-         set confgene(posobs,lat) [lindex $confCam(coord_GPS_Observateur) 3]
+         set confgene(posobs,lat) [lindex $private(coord_GPS_Observateur) 3]
          if { $confgene(posobs,lat) < 0 } {
             set confgene(posobs,nordsud) "$caption(eventaude_gps,sud)"
             set confgene(posobs,lat)     "[expr abs($confgene(posobs,lat))]"
@@ -326,16 +326,16 @@ namespace eval eventAude_GPS {
    # Confirme la sauvegarde des coordonnees GPS en altitude
    #
    proc confirm_save_alt { } {
+      variable private
       global audace
       global caption
-      global confCam
       global confgene
 
       set choix [ tk_messageBox -type yesno -icon warning -title "$caption(eventaude_gps,maj_alt-)" \
          -message "$caption(eventaude_gps,confirm)" ]
       if { $choix == "yes" } {
          #--- Mise en forme et sauvegarde de l'altitude
-         set confgene(posobs,altitude)               [ string trimleft [ format "%5.0f" $confCam(alt_GPS_Observateur) ] " " ]
+         set confgene(posobs,altitude)               [ string trimleft [ format "%5.0f" $private(alt_GPS_Observateur) ] " " ]
 
          #--- Mise a jour de champs de la boite Position de l'observateur
          set confgene(posobs,ref_geodesique)         "WGS84"

@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.72 2007-10-13 15:02:29 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.73 2007-11-02 23:20:31 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -110,8 +110,6 @@ namespace eval ::confVisu {
       set private($visuNo,boxSize)         ""
       set private($visuNo,hBox)            ""
 
-      set private($visuNo,camNo)           "0"
-      set private($visuNo,camName)         ""
       set private($visuNo,camItem)         ""
 
       set private($visuNo,intensity)       "1"
@@ -180,12 +178,8 @@ namespace eval ::confVisu {
       if { [info commands "::visu$visuNo" ] == "::visu$visuNo" } {
          set bufNo [visu$visuNo buf]
 
-         #--- si une camera a le meme buffer que la visu, je ferme la camera
-         foreach camNo [::cam::list] {
-            if { [cam$camNo buf] == $bufNo } {
-               ::confCam::closeCamera $camNo
-            }
-         }
+         #--- je ferme la camera associee a la visu
+         ::confCam::stopItem $private($visuNo,camItem)
 
          #--- je memorise les variables dans conf(..)
          set conf(audace,visu$visuNo,wmgeometry)     [wm geometry $::confVisu::private($visuNo,This)]
@@ -251,10 +245,11 @@ namespace eval ::confVisu {
 
       #--- petit raccourci pour la suite
       set bufNo [visu$visuNo buf]
+      set camNo [::confCam::getCamNo $private($visuNo,camItem)]
 
       if { [ image type image[visu$visuNo image] ] == "video" } {
          #--- je recupere la largeur et la hauteur de la video
-         set videoSize [cam$private($visuNo,camNo) nbpix ]
+         set videoSize [cam$camNo nbpix ]
          set private($visuNo,picture_w)  [lindex $videoSize 0]
          set private($visuNo,picture_h)  [lindex $videoSize 1]
          #--- Je mets a jour la taille les scrollbars
@@ -631,23 +626,21 @@ namespace eval ::confVisu {
       variable private
       global caption
       global color
-      global confCam
 
       set private($visuNo,camItem) $camItem
-      set private($visuNo,camNo)   $camNo
       if { $camNo == 0 } {
-         set private($visuNo,camName)        ""
-         set private($visuNo,camProductName) ""
          if { [winfo exists $private($visuNo,This)] == 1} {
             $private($visuNo,This).fra1.labCam_name_labURL configure \
                -text "$caption(confVisu,2points) $caption(confVisu,non_connecte)" -fg $color(blue)
          }
       } else {
-         set private($visuNo,camName)        [cam$camNo name]
-         set private($visuNo,camProductName) [cam$camNo product]
+         set camName        [::confCam::getPluginProperty $camItem "name"]
          #--- J'affiche le nom de la camera
          $private($visuNo,This).fra1.labCam_name_labURL configure \
-            -text "$private($visuNo,camItem)  $caption(confVisu,2points) $private($visuNo,camName) $model" -fg $color(blue)
+            -text "$private($visuNo,camItem)  $caption(confVisu,2points) $camName $model" -fg $color(blue)
+         #--- Je renseigne la dynamique de la camera
+         set dynamic [ ::confCam::getPluginProperty $camItem "dynamic" ]
+         ::confVisu::visuDynamix $visuNo [ lindex $dynamic 0 ] [ lindex $dynamic 1 ]
       }
    }
 
@@ -682,42 +675,6 @@ namespace eval ::confVisu {
       variable private
 
       return $private($visuNo,camItem)
-   }
-
-   #------------------------------------------------------------
-   #  getCamNo
-   #     retourne le numero de camera associee a la visu
-   #  parametres :
-   #    visuNo: numero de la visu
-   #------------------------------------------------------------
-   proc getCamNo { visuNo } {
-      variable private
-
-      return $private($visuNo,camNo)
-   }
-
-   #------------------------------------------------------------
-   #  getCamera
-   #     retourne le nom de camera associee a la visu
-   #  parametres :
-   #    visuNo: numero de la visu
-   #------------------------------------------------------------
-   proc getCamera { visuNo } {
-      variable private
-
-      return $private($visuNo,camName)
-   }
-
-   #------------------------------------------------------------
-   #  getProduct
-   #     retourne le nom de famille de la camera associee a la visu
-   #  parametres :
-   #    visuNo: numero de la visu
-   #------------------------------------------------------------
-   proc getProduct { visuNo } {
-      variable private
-
-      return $private($visuNo,camProductName)
    }
 
    #------------------------------------------------------------
@@ -904,6 +861,7 @@ namespace eval ::confVisu {
       variable private
 
       set imageNo [visu$visuNo image]
+      set camNo   [::confcam::getCamNo $private($visuNo) ]
 
       if { $state == 1 } {
          #--- Je supprime l'image precedente
@@ -912,7 +870,7 @@ namespace eval ::confVisu {
          visu$visuNo mode video
 
          #--- Je connecte la sortie de la camera a l'image
-         set result [ catch { cam$private($visuNo,camNo) startvideoview $visuNo } msg ]
+         set result [ catch { cam$camNo startvideoview $visuNo } msg ]
          visu$visuNo disp
 
          #--- je desactive le reglage des seuils
@@ -921,7 +879,7 @@ namespace eval ::confVisu {
 
       } else {
          #--- Je deconnecte la sortie de la camera
-         set result [ catch { cam$private($visuNo,camNo) stopvideoview $visuNo } msg ]
+         set result [ catch { cam$camNo  stopvideoview $visuNo } msg ]
          #--- je desactive le mode video
          visu$visuNo mode photo
          #--- j'active le reglage des seuils
@@ -946,7 +904,7 @@ namespace eval ::confVisu {
    proc addCameraListener { visuNo cmd } {
       variable private
 
-      trace add variable "::confVisu::private($visuNo,camNo)" write $cmd
+      trace add variable "::confVisu::private($visuNo,camItem)" write $cmd
    }
 
    #------------------------------------------------------------
@@ -959,7 +917,7 @@ namespace eval ::confVisu {
    proc removeCameraListener { visuNo cmd } {
       variable private
 
-      trace remove variable "::confVisu::private($visuNo,camNo)" write $cmd
+      trace remove variable "::confVisu::private($visuNo,camItem)" write $cmd
    }
 
    #------------------------------------------------------------

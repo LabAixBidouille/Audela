@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.6 2007-10-22 21:17:18 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.7 2007-11-02 23:20:36 michelpujol Exp $
 #
 
 namespace eval ::hisis {
@@ -48,10 +48,21 @@ proc ::hisis::getPluginOS { } {
 }
 
 #
+# ::hisis::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::hisis::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::hisis::initPlugin
 #    Initialise les variables conf(hisis,...)
 #
 proc ::hisis::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera Hi-SIS
@@ -64,6 +75,11 @@ proc ::hisis::initPlugin { } {
    if { ! [ info exists conf(hisis,modele) ] }   { set conf(hisis,modele)   "22" }
    if { ! [ info exists conf(hisis,port) ] }     { set conf(hisis,port)     "LPT1:" }
    if { ! [ info exists conf(hisis,res) ] }      { set conf(hisis,res)      "12 bits" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -90,7 +106,7 @@ proc ::hisis::confToWidget { } {
 # ::hisis::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::hisis::widgetToConf { } {
+proc ::hisis::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -110,7 +126,7 @@ proc ::hisis::widgetToConf { } {
 # ::hisis::fillConfigPage
 #    Interface de configuration de la camera Hi-SIS
 #
-proc ::hisis::fillConfigPage { frm } {
+proc ::hisis::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -376,32 +392,34 @@ proc ::hisis::fillConfigPage { frm } {
 # ::hisis::configureCamera
 #    Configure la camera Hi-SIS en fonction des donnees contenues dans les variables conf(hisis,...)
 #
-proc ::hisis::configureCamera { camItem } {
-   global caption conf confCam
+proc ::hisis::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
       if { $conf(hisis,modele) == "11" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 4096 0
       } elseif { $conf(hisis,modele) == "22" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS22-[ lindex $conf(hisis,res) 0 ] ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele) ($conf(hisis,res))\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -417,21 +435,20 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
          #--- Je configure les delais
          cam$camNo delayloops $conf(hisis,delai_a) $conf(hisis,delai_b) $conf(hisis,delai_c)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "23" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS23 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -447,19 +464,18 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "24" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS24 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -475,19 +491,18 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "33" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS33 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -503,19 +518,18 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "36" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS36 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -531,19 +545,18 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "39" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS39 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -559,19 +572,18 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "43" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS43 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -587,19 +599,18 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "44" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS44 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
             $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -615,19 +626,18 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       } elseif { $conf(hisis,modele) == "48" } {
+         #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS48 ]
          console::affiche_erreur "$caption(hisis,port_camera) $conf(hisis,modele)\
            $caption(hisis,2points) $conf(hisis,port)\n"
          console::affiche_saut "\n"
-         set confCam($camItem,camNo) $camNo
+         #--- Je change de variable
+         set private($camItem,camNo) $camNo
          #--- Je cree la liaison utilisee par la camera pour l'acquisition
          set linkNo [ ::confLink::create $conf(hisis,port) "cam$camNo" "acquisition" "bits 1 to 8" ]
          #--- Je configure l'obturateur
@@ -643,13 +653,10 @@ proc ::hisis::configureCamera { camItem } {
             }
          }
          #--- J'associe le buffer de la visu
-         set bufNo [visu$confCam($camItem,visuNo) buf]
          cam$camNo buf $bufNo
          #--- Je configure l'oriention des miroirs par defaut
          cam$camNo mirrorh $conf(hisis,mirh)
          cam$camNo mirrorv $conf(hisis,mirv)
-         #--- Je renseigne la dynamique de la camera
-         ::confVisu::visuDynamix $confCam($camItem,visuNo) 32767 -32768
       }
    } ]
 
@@ -666,15 +673,16 @@ proc ::hisis::configureCamera { camItem } {
 #    Arrete la camera Hi-SIS
 #
 proc ::hisis::stop { camItem } {
-   global conf confCam
+   variable private
+   global conf
 
    #--- Je ferme la liaison d'acquisition de la camera
-   ::confLink::delete $conf(hisis,port) "cam$confCam($camItem,camNo)" "acquisition"
+   ::confLink::delete $conf(hisis,port) "cam$private($camItem,camNo)" "acquisition"
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -684,9 +692,6 @@ proc ::hisis::stop { camItem } {
 #
 proc ::hisis::confHiSIS { } {
    variable private
-   global confCam
-
-   set camItem $confCam(currentCamItem)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -721,11 +726,12 @@ proc ::hisis::confHiSIS { } {
 # ::hisis::setShutter
 #    Procedure pour la commande de l'obturateur
 #
-proc ::hisis::setShutter { camNo shutterState ShutterOptionList } {
+proc ::hisis::setShutter { camItem shutterState ShutterOptionList } {
    variable private
    global caption conf
 
    set conf(hisis,foncobtu) $shutterState
+   set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -766,6 +772,7 @@ proc ::hisis::setShutter { camNo shutterState ShutterOptionList } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -775,13 +782,24 @@ proc ::hisis::setShutter { camNo shutterState ShutterOptionList } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::hisis::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic       {
+         if { $::conf(hisis,modele) == "11" } {
+            return [ list 4096 0 ]
+         } else {
+            return [ list 32767 -32768 ]
+         }
+      }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -797,6 +815,20 @@ proc ::hisis::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      {
          if { $::conf(hisis,modele) == "11" } {
             return 0

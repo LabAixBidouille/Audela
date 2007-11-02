@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.17 2007-10-22 21:16:46 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.18 2007-11-02 23:20:35 michelpujol Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -48,10 +48,21 @@ proc ::fingerlakes::getPluginOS { } {
 }
 
 #
+# ::fingerlakes::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::fingerlakes::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::fingerlakes::initPlugin
 #    Initialise les variables conf(fingerlakes,...)
 #
 proc ::fingerlakes::initPlugin { } {
+   variable private
    global conf
 
    #--- Initialise les variables de la camera FLI
@@ -60,6 +71,11 @@ proc ::fingerlakes::initPlugin { } {
    if { ! [ info exists conf(fingerlakes,mirh) ] }     { set conf(fingerlakes,mirh)     "0" }
    if { ! [ info exists conf(fingerlakes,mirv) ] }     { set conf(fingerlakes,mirv)     "0" }
    if { ! [ info exists conf(fingerlakes,temp) ] }     { set conf(fingerlakes,temp)     "-50" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -82,7 +98,7 @@ proc ::fingerlakes::confToWidget { } {
 # ::fingerlakes::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::fingerlakes::widgetToConf { } {
+proc ::fingerlakes::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -98,7 +114,7 @@ proc ::fingerlakes::widgetToConf { } {
 # ::fingerlakes::fillConfigPage
 #    Interface de configuration de la camera FLI
 #
-proc ::fingerlakes::fillConfigPage { frm } {
+proc ::fingerlakes::fillConfigPage { frm camItem } {
    variable private
    global caption
 
@@ -214,14 +230,17 @@ proc ::fingerlakes::fillConfigPage { frm } {
 # ::fingerlakes::configureCamera
 #    Configure la camera FLI en fonction des donnees contenues dans les variables conf(fingerlakes,...)
 #
-proc ::fingerlakes::configureCamera { camItem } {
-   global caption conf confCam
+proc ::fingerlakes::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
+      #--- Je cree la camera
       set camNo [ cam::create fingerlakes USB ]
       console::affiche_erreur "$caption(fingerlakes,port_camera) ([ cam$camNo name ]) $caption(fingerlakes,2points) USB\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- Je configure l'obturateur
       switch -exact -- $conf(fingerlakes,foncobtu) {
          0 {
@@ -242,16 +261,13 @@ proc ::fingerlakes::configureCamera { camItem } {
          cam$camNo cooler off
       }
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(fingerlakes,mirh)
       cam$camNo mirrorv $conf(fingerlakes,mirv)
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
       #--- Je mesure la temperature du capteur CCD
-      if { [ info exists confCam(fingerlakes,aftertemp) ] == "0" } {
-         ::fingerlakes::FLIDispTemp
+      if { [ info exists private(aftertemp) ] == "0" } {
+         ::fingerlakes::FLIDispTemp $camItem
       }
    } ]
 
@@ -268,12 +284,12 @@ proc ::fingerlakes::configureCamera { camItem } {
 #    Arrete la camera FLI
 #
 proc ::fingerlakes::stop { camItem } {
-   global confCam
+   variable private
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -281,20 +297,19 @@ proc ::fingerlakes::stop { camItem } {
 # ::fingerlakes::FLIDispTemp
 #    Affiche la temperature du CCD
 #
-proc ::fingerlakes::FLIDispTemp { } {
+proc ::fingerlakes::FLIDispTemp { camItem } {
    variable private
-   global audace caption confCam
+   global audace caption
 
    catch {
       set frm $private(frm)
-      set camItem $confCam(currentCamItem)
-      if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
+      if { [ winfo exists $frm ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
          $frm.frame1.frame3.frame5.frame7.temp_ccd configure \
             -text "$caption(fingerlakes,temperature_CCD) $temp_ccd $caption(fingerlakes,deg_c)"
-         set confCam(fingerlakes,aftertemp) [ after 5000 ::fingerlakes::FLIDispTemp ]
+         set private(aftertemp) [ after 5000 ::fingerlakes::FLIDispTemp $camItem ]
       } else {
-         catch { unset confCam(fingerlakes,aftertemp) }
+         catch { unset private(aftertemp) }
       }
    }
 }
@@ -326,11 +341,12 @@ proc ::fingerlakes::checkConfigRefroidissement { } {
 # ::fingerlakes::setShutter
 #    Procedure pour la commande de l'obturateur
 #
-proc ::fingerlakes::setShutter { camNo shutterState ShutterOptionList } {
+proc ::fingerlakes::setShutter { camItem shutterState ShutterOptionList } {
    variable private
    global caption conf
 
    set conf(fingerlakes,foncobtu) $shutterState
+   set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -371,6 +387,7 @@ proc ::fingerlakes::setShutter { camNo shutterState ShutterOptionList } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -380,13 +397,18 @@ proc ::fingerlakes::setShutter { camNo shutterState ShutterOptionList } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::fingerlakes::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 7x7 8x8 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 65535 0 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -396,6 +418,20 @@ proc ::fingerlakes::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      {
          #--- O + F + S - A confirmer avec le materiel
          return [ list $::caption(fingerlakes,obtu_ouvert) $::caption(fingerlakes,obtu_ferme) $::caption(fingerlakes,obtu_synchro) ]

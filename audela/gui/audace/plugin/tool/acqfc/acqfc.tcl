@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.55 2007-10-05 15:31:00 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.56 2007-11-02 23:20:47 michelpujol Exp $
 #
 
 #==============================================================
@@ -354,7 +354,7 @@ namespace eval ::acqfc {
       #--- Decoche le checkbutton Apercu des modes Video
       set panneau(acqfc,$visuNo,showvideopreview) "0"
       #---
-      set camNo [ ::confVisu::getCamNo $visuNo ]
+      set camNo $panneau(acqfc,$visuNo,camNo)
       if { $camNo == "0" } {
          #--- La camera n'a pas ete encore selectionnee
          set camProduct ""
@@ -559,7 +559,7 @@ namespace eval ::acqfc {
       #--- Destruction des fenetres auxiliaires et sauvegarde de leurs positions si elles existent
       ::acqfc::recup_position $visuNo
 
-      if { [ ::confVisu::getCamera $visuNo ] != "" && $panneau(acqfc,$visuNo,showvideopreview) == "1" } {
+      if { [ ::confVisu::getCamItem $visuNo ] != "" && $panneau(acqfc,$visuNo,showvideopreview) == "1" } {
          stopVideoPreview $visuNo
       }
 
@@ -611,8 +611,8 @@ namespace eval ::acqfc {
       global audace caption conf confCam panneau
 
       #---
-      set camNo [ ::confVisu::getCamNo $visuNo ]
-      set result [::confCam::setShutter $camNo $panneau(acqfc,$visuNo,obt) ]
+      set camItem [ ::confVisu::getCamItem $visuNo ]
+      set result [::confCam::setShutter $camItem $panneau(acqfc,$visuNo,obt) ]
       if { $result != -1 } {
          set panneau(acqfc,$visuNo,obt) $result
          $panneau(acqfc,$visuNo,This).obt.lab configure -text $panneau(acqfc,$visuNo,obt,$panneau(acqfc,$visuNo,obt))
@@ -670,6 +670,8 @@ namespace eval ::acqfc {
    proc GoStop { visuNo } {
       global audace caption conf panneau
 
+      set camItem [::confVisu::getCamItem $visuNo]
+
       #--- Ouverture du fichier historique
       if { $panneau(acqfc,$visuNo,save_file_log) == "1" } {
          if { $panneau(acqfc,$visuNo,session_ouverture) == "1" } {
@@ -690,7 +692,7 @@ namespace eval ::acqfc {
 
            set integre oui
            #--- Teste si une camera est bien selectionnee
-           if { [ ::confVisu::getCamera $visuNo ] == "" } {
+           if { [ ::confVisu::getCamItem $visuNo ] == "" } {
               ::audace::menustate disabled
               set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
                  -message $caption(acqfc,selcam) ]
@@ -1088,9 +1090,9 @@ namespace eval ::acqfc {
                  6  {
                     #--- Mode video
                     #--- Verifier qu'il s'agit bien d'une WebCam
-                    if { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+                    if { [::confCam::getPluginProperty $camItem "hasVideo"] != 1 } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)"
+                          -message "$caption(acqfc,pb_camera1) [::confCam::getPluginProperty $camItem "product"] $caption(acqfc,pb_camera2)"
                        set integre non
                     }
                     #--- Verifier qu'il y a bien un nom de fichier
@@ -1150,9 +1152,9 @@ namespace eval ::acqfc {
                  7  {
                     #--- Mode video avec intervalle entre chaque video
                     #--- Verifier qu'il s'agit bien d'une WebCam
-                    if { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+                    if { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [ ::confVisu::getProduct $visuNo ] $caption(acqfc,pb_camera2)"
+                          -message "$caption(acqfc,pb_camera1) [::confCam::getPluginProperty $camItem "product"] $caption(acqfc,pb_camera2)"
                        set integre non
                     }
                     #--- Verifier qu'il y a bien un nom de fichier
@@ -1240,8 +1242,8 @@ namespace eval ::acqfc {
               #--- Pose en cours
               set panneau(acqfc,$visuNo,pose_en_cours) "1"
               #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
-              set camNo [ ::confVisu::getCamNo $visuNo ]
-              if { ( [ ::confVisu::getProduct $visuNo ] == "webcam" ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
+              set camNo $panneau(acqfc,$visuNo,camNo)
+              if { ( [::confCam::getPluginProperty $camItem "hasVideo"] == 1  ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
                  set panneau(acqfc,$visuNo,pose) "0"
               }
               #--- Branchement selon le mode de prise de vue
@@ -1331,7 +1333,7 @@ namespace eval ::acqfc {
                     #--- Cas particulier des cameras APN (DSLR)
                     if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
-                       set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
+                       set result [ catch { cam$panneau(acqfc,$visuNo,camNo) loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::acqfc::GoStop loadlastimage $msg \n"
                        } else {
@@ -1401,7 +1403,7 @@ namespace eval ::acqfc {
                     #--- Cas particulier des cameras APN (DSLR)
                     if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
-                       set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
+                       set result [ catch { cam$panneau(acqfc,$visuNo,camNo) loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::acqfc::GoStop loadlastimage $msg \n"
                        } else {
@@ -1474,7 +1476,7 @@ namespace eval ::acqfc {
                     #--- Cas particulier des cameras APN (DSLR)
                     if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
-                       set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
+                       set result [ catch { cam$panneau(acqfc,$visuNo,camNo) loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::acqfc::GoStop loadlastimage $msg \n"
                        } else {
@@ -1564,7 +1566,7 @@ namespace eval ::acqfc {
                     #--- Cas particulier des cameras APN (DSLR)
                     if { $conf(dslr,telecharge_mode) == "3" } {
                        #--- Chargement de la derniere image
-                       set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] loadlastimage } msg ]
+                       set result [ catch { cam$panneau(acqfc,$visuNo,camNo) loadlastimage } msg ]
                        if { $result == "1" } {
                           ::console::disp "::acqfc::GoStop loadlastimage $msg \n"
                        } else {
@@ -1610,12 +1612,12 @@ namespace eval ::acqfc {
                     }
                     #--- Je positionne la fenetre video
                     if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-                       cam[ ::confVisu::getCamNo $visuNo ] setvideocroprect $panneau(acqfc,$visuNo,x1) \
+                       cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) \
                           $panneau(acqfc,$visuNo,y1) $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
                     }
                     #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                    cam[ ::confVisu::getCamNo $visuNo ] setvideostatusvariable panneau(acqfc,$visuNo,status)
-                    set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] startvideocapture "$nom_rep" "$panneau(acqfc,$visuNo,lg_film)" "$panneau(acqfc,$visuNo,rate)" "1" } msg ]
+                    cam$panneau(acqfc,$visuNo,camNo) setvideostatusvariable panneau(acqfc,$visuNo,status)
+                    set result [ catch { cam$panneau(acqfc,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqfc,$visuNo,lg_film)" "$panneau(acqfc,$visuNo,rate)" "1" } msg ]
                     if { $result == "1" } {
                        #--- En cas d'erreur, j'affiche un message d'erreur
                        #--- Et je passe a la suite sans attendre
@@ -1623,9 +1625,9 @@ namespace eval ::acqfc {
                     } else {
                        #--- J'attends la fin de l'acquisition
                        #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-                       set statusVariableName "::status_cam[ ::confVisu::getCamNo $visuNo ]"
+                       set statusVariableName "::status_cam$panneau(acqfc,$visuNo,camNo)"
                        if { [set $statusVariableName] == "exp" } {
-                          vwait status_cam[ ::confVisu::getCamNo $visuNo ]
+                          vwait status_cam$panneau(acqfc,$visuNo,camNo)
                        }
                     }
                     if { $panneau(acqfc,$visuNo,indexer) == "1" } {
@@ -1672,20 +1674,20 @@ namespace eval ::acqfc {
                        $panneau(acqfc,$visuNo,This).go_stop.but configure -state normal
                        #--- Je positionne la fenetre video
                        if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-                          cam[ ::confVisu::getCamNo $visuNo ] setvideocroprect $panneau(acqfc,$visuNo,x1) \
+                          cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) \
                              $panneau(acqfc,$visuNo,y1) $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
                        }
                        #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                       cam[ ::confVisu::getCamNo $visuNo ] setvideostatusvariable panneau(acqfc,$visuNo,status)
-                       set result [ catch { cam[ ::confVisu::getCamNo $visuNo ] startvideocapture "$nom_rep" "$panneau(acqfc,$visuNo,lg_film)" "$panneau(acqfc,$visuNo,rate)" "1" } msg ]
+                       cam$panneau(acqfc,$visuNo,camNo) setvideostatusvariable panneau(acqfc,$visuNo,status)
+                       set result [ catch { cam$panneau(acqfc,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqfc,$visuNo,lg_film)" "$panneau(acqfc,$visuNo,rate)" "1" } msg ]
                        if { $result == "1" } {
                           ::console::affiche_resultat "$caption(acqfc,start_capture_error) $msg \n"
                        } else {
                           #--- J'attends la fin de l'acquisition
                           #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-                          set statusVariableName "::status_cam[ ::confVisu::getCamNo $visuNo ]"
+                          set statusVariableName "::status_cam$panneau(acqfc,$visuNo,camNo)"
                           if { [set $statusVariableName] == "exp" } {
-                             vwait status_cam[ ::confVisu::getCamNo $visuNo ]
+                             vwait status_cam$panneau(acqfc,$visuNo,camNo)
                           }
                           #--- Je desactive le bouton "STOP"
                           $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
@@ -1879,7 +1881,7 @@ namespace eval ::acqfc {
       global audace caption conf panneau
 
       #--- Petits raccourcis
-      set camNo     [ ::confVisu::getCamNo $visuNo ]
+      set camNo     $panneau(acqfc,$visuNo,camNo)
       set buffer buf[ ::confVisu::getBufNo $visuNo ]
 
       #--- Affichage du status
@@ -2015,7 +2017,9 @@ namespace eval ::acqfc {
    proc startVideoPreview { visuNo } {
       global audace caption conf panneau
 
-      if { [ ::confVisu::getCamera $visuNo ] == "" } {
+      set camItem [::confVisu::getCamItem $visuNo]
+
+      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
          ::confCam::run
          tkwait window $audace(base).confCam
          #--- Je decoche la checkbox
@@ -2027,7 +2031,7 @@ namespace eval ::acqfc {
          }
          #---
          return 1
-      } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1 } {
          tk_messageBox -title $caption(acqfc,pb) -type ok \
             -message $caption(acqfc,no_video_mode)
          #--- Je decoche la checkbox
@@ -2071,7 +2075,7 @@ namespace eval ::acqfc {
          ::acqfc::optionWindowedFenster $visuNo
       }
       #---
-      set camNo [ ::confVisu::getCamNo $visuNo ]
+      set camNo $panneau(acqfc,$visuNo,camNo)
       if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasVideo ] == "1" } {
          #--- Arret de la visualisation video
          cam$camNo stopvideoview
@@ -2114,8 +2118,8 @@ namespace eval ::acqfc {
                      destroy $panneau(acqfc,$visuNo,base).progress
                   } elseif { $t > "1" } {
                      $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "[ expr $t-1 ] $caption(acqfc,sec) /\
-                        [ format "%d" [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ] $caption(acqfc,sec)"
-                     set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ]
+                        [ format "%d" [ expr int( [ cam$panneau(acqfc,$visuNo,camNo) exptime ] ) ] ] $caption(acqfc,sec)"
+                     set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam$panneau(acqfc,$visuNo,camNo) exptime ] ) ] ]
                      set cpt [ expr 100 - $cpt ]
                   } else {
                      $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
@@ -2166,8 +2170,8 @@ namespace eval ::acqfc {
                      destroy $panneau(acqfc,$visuNo,base).progress
                   } elseif { $t > "1" } {
                      $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "[ expr $t-1 ] $caption(acqfc,sec) /\
-                        [ format "%d" [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ] $caption(acqfc,sec)"
-                     set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam[ ::confVisu::getCamNo $visuNo ] exptime ] ) ] ]
+                        [ format "%d" [ expr int( [ cam$panneau(acqfc,$visuNo,camNo) exptime ] ) ] ] $caption(acqfc,sec)"
+                     set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam$panneau(acqfc,$visuNo,camNo) exptime ] ) ] ]
                      set cpt [ expr 100 - $cpt ]
                   } else {
                      $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
@@ -2236,15 +2240,15 @@ namespace eval ::acqfc {
          || ( $panneau(acqfc,$visuNo,mode) == "3" )
          || ( $panneau(acqfc,$visuNo,mode) == "5" ) } {
          #--- J'arrete la capture de l'image
-         catch { cam[ ::confVisu::getCamNo $visuNo ] stop }
+         catch { cam$panneau(acqfc,$visuNo,camNo) stop }
          after 200
       } elseif { ( $panneau(acqfc,$visuNo,mode) == "6" )
          || ( $panneau(acqfc,$visuNo,mode) == "7" ) } {
          #--- J'arrete la capture de la video
-         catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocapture }
+         catch { cam$panneau(acqfc,$visuNo,camNo) stopvideocapture }
          #--- Je positionne la fenetre video
          if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-            cam[ ::confVisu::getCamNo $visuNo ] setvideocroprect $panneau(acqfc,$visuNo,x1) \
+            cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) \
                $panneau(acqfc,$visuNo,y1) $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
          }
       }
@@ -2762,6 +2766,8 @@ namespace eval ::acqfc {
    proc startWindowedFenster { visuNo } {
       global audace caption panneau
 
+      set camItem [::confVisu::getCamItem $visuNo]
+
       #--- Active le mode preview
       if { $panneau(acqfc,$visuNo,showvideopreview) == "0" } {
          set result [ ::acqfc::startVideoPreview $visuNo ]
@@ -2770,7 +2776,7 @@ namespace eval ::acqfc {
       }
       #---
       if { $result == "0" } {
-         if { [ ::confVisu::getCamera $visuNo ] == "" } {
+         if { [ ::confVisu::getCamItem $visuNo ] == "" } {
             ::confCam::run
             tkwait window $audace(base).confCam
             #--- Je decoche la checkbox
@@ -2780,7 +2786,7 @@ namespace eval ::acqfc {
                set panneau(acqfc,$visuNo,fenetre) "0"
                ::acqfc::optionWindowedFenster $visuNo
             }
-         } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+         } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
             tk_messageBox -title $caption(acqfc,pb) -type ok \
                -message $caption(acqfc,no_video_mode)
             #--- Je decoche la checkbox
@@ -2792,7 +2798,7 @@ namespace eval ::acqfc {
             }
          } else {
             #--- Je demarre le mode video fenetree
-            cam[ ::confVisu::getCamNo $visuNo ] startvideocrop
+            cam$panneau(acqfc,$visuNo,camNo) startvideocrop
          }
       } else {
          set panneau(acqfc,$visuNo,fenetre) "0"
@@ -2804,12 +2810,14 @@ namespace eval ::acqfc {
    proc stopWindowedFenster { visuNo } {
       global caption panneau
 
+      set camItem [::confVisu::getCamItem $visuNo]
+
       #---
       if { [ winfo exists $panneau(acqfc,$visuNo,base).selectWindowedFenster ] } {
          ::acqfc::closeWindowedFenster $visuNo
       }
       #---
-      if { [ ::confVisu::getCamera $visuNo ] == "" } {
+      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
          #--- Je decoche la checkbox
          set panneau(acqfc,$visuNo,showvideopreview) "0"
          #--- Je decoche le fenetrage
@@ -2817,7 +2825,7 @@ namespace eval ::acqfc {
             set panneau(acqfc,$visuNo,fenetre) "0"
             ::acqfc::optionWindowedFenster $visuNo
          }
-      } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
          #--- Je decoche la checkbox
          set panneau(acqfc,$visuNo,showvideopreview) "0"
          #--- Je decoche le fenetrage
@@ -2827,7 +2835,7 @@ namespace eval ::acqfc {
          }
       } else {
          #--- J'arrete le mode video fenetree
-         cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop
+         cam$panneau(acqfc,$visuNo,camNo) stopvideocrop
       }
    }
 #***** Fin de la procedure d'arret du fenetrage video ****************************************
@@ -2837,9 +2845,9 @@ namespace eval ::acqfc {
       global audace caption conf panneau zone
 
       #--- Une camera est connectee
-      if { [ ::confVisu::getCamera $visuNo ] == "" } {
+      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
          return
-      } elseif { [ ::confVisu::getProduct $visuNo ] != "webcam" } {
+      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
          return
       }
 
@@ -3007,11 +3015,11 @@ namespace eval ::acqfc {
       global audace zone
 
       #--- J'arrete le mode video fenetree
-      catch { cam[ ::confVisu::getCamNo $visuNo ] stopvideocrop }
+      catch { cam$panneau(acqfc,$visuNo,camNo) stopvideocrop }
 
       #--- Largeur et hauteur de l'image
-      set largeur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 0 ]
-      set hauteur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 1 ]
+      set largeur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 0 ]
+      set hauteur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 1 ]
 
       #--- Effacement de la largeur et la hauteur de la video
       $zone(image1) delete label_nb_pixel_x_y
@@ -3023,7 +3031,7 @@ namespace eval ::acqfc {
          -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y -font $audace(font,arial_8_b)
 
       #--- Je demarre le mode video fenetree
-      catch { cam[ ::confVisu::getCamNo $visuNo ] startvideocrop }
+      catch { cam$panneau(acqfc,$visuNo,camNo) startvideocrop }
    }
 #***** Fin de la procedure de rafraississement du nombre de pixels ***************************
 
@@ -3032,8 +3040,8 @@ namespace eval ::acqfc {
       global panneau
 
       #--- Largeur et hauteur de l'image
-      set largeur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 0 ]
-      set hauteur [ lindex [ cam[ ::confVisu::getCamNo $visuNo ] nbpix ] 1 ]
+      set largeur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 0 ]
+      set hauteur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 1 ]
 
       #--- Controle la coordonnee x1
       if { [ TestReel $panneau(acqfc,$visuNo,x1) ] == "0" } {
@@ -3072,7 +3080,7 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,hauteur) [ expr $panneau(acqfc,$visuNo,x2) - $panneau(acqfc,$visuNo,x1) ]
 
       #--- Je positionne la fenetre video
-      cam[ ::confVisu::getCamNo $visuNo ] setvideocroprect $panneau(acqfc,$visuNo,x1) $panneau(acqfc,$visuNo,y1) \
+      cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) $panneau(acqfc,$visuNo,y1) \
          $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
    }
 #***** Fin de la procedure d'acquisition du fenetrage video **********************************
@@ -3158,7 +3166,7 @@ namespace eval ::acqfc {
 
       set result [::webcam::config::run $visuNo [::confVisu::getCamItem $visuNo]]
       if { $result == "1" } {
-         if { [ ::confVisu::getCamera $visuNo ] == "" } {
+         if { [ ::confVisu::getCamItem $visuNo ] == "" } {
             ::audace::menustate disabled
             set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
                -message $caption(acqfc,selcam) ]
@@ -3181,7 +3189,7 @@ namespace eval ::acqfc {
       if { ( $panneau(acqfc,$visuNo,mode) == "1" ) || ( $panneau(acqfc,$visuNo,mode) == "2" ) || \
          ( $panneau(acqfc,$visuNo,mode) == "3" ) || ( $panneau(acqfc,$visuNo,mode) == "4" ) || \
          ( $panneau(acqfc,$visuNo,mode) == "5" ) } {
-         ::dslr::setLoadParameters $visuNo
+         ::dslr::setLoadParameters $panneau(acqfc,$visuNo,camItem)
       }
    }
 #***** Fin de la configuration du telechargement *********************

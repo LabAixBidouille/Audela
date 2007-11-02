@@ -2,18 +2,18 @@
 # Fichier : apncode.tcl
 # Description : Transcodage des variables de commande des APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: apncode.tcl,v 1.6 2007-05-16 20:50:29 robertdelmas Exp $
+# Mise a jour $Id: apncode.tcl,v 1.7 2007-11-02 23:20:40 michelpujol Exp $
 #
 
 #::acqapn::VerifData
 #--- Vérification des valeurs
 #
 proc VerifData { reglage } {
-   global confCam
+   variable private
 
    switch -exact $reglage {
-      lens        { set confCam(coolpix,dzoom)         [::acqapn::Dzoom $confCam(coolpix,lens)] }
-      metering    { set confCam(coolpix,code_metering) [::acqapn::Metering $confCam(coolpix,metering)] }
+      lens        { set private(dzoom)         [::acqapn::Dzoom $private(lens)] }
+      metering    { set private(code_metering) [::acqapn::Metering $private(metering)] }
       format      { ::acqapn::Resolution }
       compression { ::acqapn::Resolution }
    }
@@ -50,33 +50,33 @@ proc Metering { metering } {
 #--- en fonction du format et de la compression
 #
 proc Resolution { } {
-   global confCam
+   variable private
 
    #--- La combinaison format+compression est vérifiée
-   set cmdresol "$confCam(coolpix,format)-$confCam(coolpix,compression)"
+   set cmdresol "$private(format)-$private(compression)"
    switch -exact $cmdresol {
-      VGA-Basic   { set confCam(coolpix,resolution) "1" }
-      VGA-Normal  { set confCam(coolpix,resolution) "2" }
-      VGA-Fine    { set confCam(coolpix,resolution) "3" }
-      XGA-Basic   { set confCam(coolpix,resolution) "7" }
-      XGA-Normal  { set confCam(coolpix,resolution) "8" }
-      XGA-Fine    { set confCam(coolpix,resolution) "9" }
-      SXGA-Basic  { set confCam(coolpix,resolution) "4" }
-      SXGA-Normal { set confCam(coolpix,resolution) "5" }
-      SXGA-Fine   { set confCam(coolpix,resolution) "6" }
-      UXGA-Basic  { set confCam(coolpix,resolution) "10" }
-      UXGA-Normal { set confCam(coolpix,resolution) "11" }
-      UXGA-Fine   { set confCam(coolpix,resolution) "12" }
-      3:2-Basic   { set confCam(coolpix,resolution) "26" }
-      3:2-Normal  { set confCam(coolpix,resolution) "27" }
-      3:2-Fine    { set confCam(coolpix,resolution) "28" }
-      3:2-Hi      { set confCam(coolpix,resolution) "38" }
-      MAX-Basic   { set confCam(coolpix,resolution) "29" }
-      MAX-Normal  { set confCam(coolpix,resolution) "30" }
-      MAX-Fine    { set confCam(coolpix,resolution) "31" }
-      MAX-Hi      { set confCam(coolpix,resolution) "33" }
-      MAX-Raw     { set confCam(coolpix,resolution) "55" }
-      default     { set confCam(coolpix,resolution) "-1" ; ::acqapn::ErrComm 3 }
+      VGA-Basic   { set private(resolution) "1" }
+      VGA-Normal  { set private(resolution) "2" }
+      VGA-Fine    { set private(resolution) "3" }
+      XGA-Basic   { set private(resolution) "7" }
+      XGA-Normal  { set private(resolution) "8" }
+      XGA-Fine    { set private(resolution) "9" }
+      SXGA-Basic  { set private(resolution) "4" }
+      SXGA-Normal { set private(resolution) "5" }
+      SXGA-Fine   { set private(resolution) "6" }
+      UXGA-Basic  { set private(resolution) "10" }
+      UXGA-Normal { set private(resolution) "11" }
+      UXGA-Fine   { set private(resolution) "12" }
+      3:2-Basic   { set private(resolution) "26" }
+      3:2-Normal  { set private(resolution) "27" }
+      3:2-Fine    { set private(resolution) "28" }
+      3:2-Hi      { set private(resolution) "38" }
+      MAX-Basic   { set private(resolution) "29" }
+      MAX-Normal  { set private(resolution) "30" }
+      MAX-Fine    { set private(resolution) "31" }
+      MAX-Hi      { set private(resolution) "33" }
+      MAX-Raw     { set private(resolution) "55" }
+      default     { set private(resolution) "-1" ; ::acqapn::ErrComm 3 }
    }
 }
 
@@ -85,12 +85,12 @@ proc Resolution { } {
 #--- Décodage du digital zoom en lens
 #
 proc ReverseDzoom { } {
-   global confCam
+   variable private
 
-   switch -exact $confCam(coolpix,dzoom) {
-      0       { set confCam(coolpix,lens) "Telephoto" ; set confCam(coolpix,dzoom) "8" }
-      2       { set confCam(coolpix,lens) "Wide" }
-      4       { set confCam(coolpix,lens) "FishEye" }
+   switch -exact $private(dzoom) {
+      0       { set private(lens) "Telephoto" ; set private(dzoom) "8" }
+      2       { set private(lens) "Wide" }
+      4       { set private(lens) "FishEye" }
       default { ::acqapn::ErrComm 4 }
    }
 }
@@ -100,30 +100,30 @@ proc ReverseDzoom { } {
 #---Définition du format et de la compresion en fonction de la résolution
 #
 proc ReverseResolution { } {
-   global confCam
+   variable private
 
-   switch -exact $confCam(coolpix_init,resolution) {
-      1       { set confCam(coolpix_init,format) "VGA"  ; set confCam(coolpix_init,compression) "Basic" }
-      2       { set confCam(coolpix_init,format) "VGA"  ; set confCam(coolpix_init,compression) "Normal" }
-      3       { set confCam(coolpix_init,format) "VGA"  ; set confCam(coolpix_init,compression) "Fine" }
-      4       { set confCam(coolpix_init,format) "SXGA" ; set confCam(coolpix_init,compression) "Basic" }
-      5       { set confCam(coolpix_init,format) "SXGA" ; set confCam(coolpix_init,compression) "Normal" }
-      6       { set confCam(coolpix_init,format) "SXGA" ; set confCam(coolpix_init,compression) "Fine" }
-      7       { set confCam(coolpix_init,format) "XGA"  ; set confCam(coolpix_init,compression) "Basic" }
-      8       { set confCam(coolpix_init,format) "XGA"  ; set confCam(coolpix_init,compression) "Normal" }
-      9       { set confCam(coolpix_init,format) "XGA"  ; set confCam(coolpix_init,compression) "Fine" }
-      10      { set confCam(coolpix_init,format) "UXGA" ; set confCam(coolpix_init,compression) "Basic" }
-      11      { set confCam(coolpix_init,format) "UXGA" ; set confCam(coolpix_init,compression) "Normal" }
-      12      { set confCam(coolpix_init,format) "UXGA" ; set confCam(coolpix_init,compression) "Fine" }
-      26      { set confCam(coolpix_init,format) "3:2"  ; set confCam(coolpix_init,compression) "Basic" }
-      27      { set confCam(coolpix_init,format) "3:2"  ; set confCam(coolpix_init,compression) "Normal" }
-      28      { set confCam(coolpix_init,format) "3:2"  ; set confCam(coolpix_init,compression) "Fine" }
-      29      { set confCam(coolpix_init,format) "MAX"  ; set confCam(coolpix_init,compression) "Basic" }
-      30      { set confCam(coolpix_init,format) "MAX"  ; set confCam(coolpix_init,compression) "Normal" }
-      31      { set confCam(coolpix_init,format) "MAX"  ; set confCam(coolpix_init,compression) "Fine" }
-      33      { set confCam(coolpix_init,format) "MAX"  ; set confCam(coolpix_init,compression) "Hi" }
-      38      { set confCam(coolpix_init,format) "3:2"  ; set confCam(coolpix_init,compression) "Hi" }
-      55      { set confCam(coolpix_init,format) "MAX"  ; set confCam(coolpix_init,compression) "Raw" }
+   switch -exact $private(init,resolution) {
+      1       { set private(init,format) "VGA"  ; set private(init,compression) "Basic" }
+      2       { set private(init,format) "VGA"  ; set private(init,compression) "Normal" }
+      3       { set private(init,format) "VGA"  ; set private(init,compression) "Fine" }
+      4       { set private(init,format) "SXGA" ; set private(init,compression) "Basic" }
+      5       { set private(init,format) "SXGA" ; set private(init,compression) "Normal" }
+      6       { set private(init,format) "SXGA" ; set private(init,compression) "Fine" }
+      7       { set private(init,format) "XGA"  ; set private(init,compression) "Basic" }
+      8       { set private(init,format) "XGA"  ; set private(init,compression) "Normal" }
+      9       { set private(init,format) "XGA"  ; set private(init,compression) "Fine" }
+      10      { set private(init,format) "UXGA" ; set private(init,compression) "Basic" }
+      11      { set private(init,format) "UXGA" ; set private(init,compression) "Normal" }
+      12      { set private(init,format) "UXGA" ; set private(init,compression) "Fine" }
+      26      { set private(init,format) "3:2"  ; set private(init,compression) "Basic" }
+      27      { set private(init,format) "3:2"  ; set private(init,compression) "Normal" }
+      28      { set private(init,format) "3:2"  ; set private(init,compression) "Fine" }
+      29      { set private(init,format) "MAX"  ; set private(init,compression) "Basic" }
+      30      { set private(init,format) "MAX"  ; set private(init,compression) "Normal" }
+      31      { set private(init,format) "MAX"  ; set private(init,compression) "Fine" }
+      33      { set private(init,format) "MAX"  ; set private(init,compression) "Hi" }
+      38      { set private(init,format) "3:2"  ; set private(init,compression) "Hi" }
+      55      { set private(init,format) "MAX"  ; set private(init,compression) "Raw" }
       default { ::acqapn::ErrComm 5 }
    }
 }
@@ -133,13 +133,14 @@ proc ReverseResolution { } {
 #--- Cette commande est appelée pour définir la comande et la valeur d'exposition
 #
 proc Exposure { var exposure } {
-   global confCam panneau
+   variable private
+   global panneau
 
    set valeur [expr int($exposure*10)]
    set code_exposure [expr abs($valeur)]
    set exposurecmd  "exposure+"
    if { $valeur < "0" } { set exposurecmd "exposure-" }
    set panneau(coolpix$var,exposurecmd) $exposurecmd
-   set confCam(coolpix$var,code_exposure) $code_exposure
+   set private($var,code_exposure) $code_exposure
 }
 

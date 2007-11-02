@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.7 2007-10-22 21:15:41 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.8 2007-11-02 23:20:32 michelpujol Exp $
 #
 
 namespace eval ::andor {
@@ -48,10 +48,21 @@ proc ::andor::getPluginOS { } {
 }
 
 #
+# ::andor::getCamNo
+#    Retourne le ou les OS de fonctionnement du plugin
+#
+proc ::andor::getCamNo { camItem } {
+   variable private
+
+   return $private($camItem,camNo)
+}
+
+#
 # ::andor::initPlugin
 #    Initialise les variables conf(andor,...)
 #
 proc ::andor::initPlugin { } {
+   variable private
    global audace conf
 
    #--- Initialise les variables de la camera Andor
@@ -63,6 +74,11 @@ proc ::andor::initPlugin { } {
    if { ! [ info exists conf(andor,temp) ] }        { set conf(andor,temp)        "-50" }
    if { ! [ info exists conf(andor,ouvert_obtu) ] } { set conf(andor,ouvert_obtu) "0" }
    if { ! [ info exists conf(andor,ferm_obtu) ] }   { set conf(andor,ferm_obtu)   "30" }
+
+   #--- Initialisation
+   set private(A,camNo) "0"
+   set private(B,camNo) "0"
+   set private(C,camNo) "0"
 }
 
 #
@@ -88,7 +104,7 @@ proc ::andor::confToWidget { } {
 # ::andor::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::andor::widgetToConf { } {
+proc ::andor::widgetToConf { camItem } {
    variable private
    global caption conf
 
@@ -107,7 +123,7 @@ proc ::andor::widgetToConf { } {
 # ::andor::fillConfigPage
 #    Interface de configuration de la camera Andor
 #
-proc ::andor::fillConfigPage { frm } {
+proc ::andor::fillConfigPage { frm camItem } {
    variable private
    global audace caption
 
@@ -135,7 +151,7 @@ proc ::andor::fillConfigPage { frm } {
       button $frm.frame1.explore -text "$caption(andor,parcourir)" -width 1 \
          -command {
             set ::andor::private(config) [ tk_chooseDirectory -title "$caption(andor,dossier)" \
-            -initialdir [ file join $audace(rep_install) bin ] -parent $audace(base).confCam ]
+            -initialdir [ file join $audace(rep_install) bin ] -parent [ winfo toplevel $frm ] ]
          }
       pack $frm.frame1.explore -side left -padx 10 -pady 5 -ipady 5
 
@@ -271,16 +287,19 @@ proc ::andor::fillConfigPage { frm } {
 # ::andor::configureCamera
 #    Configure la camera Andor en fonction des donnees contenues dans les variables conf(andor,...)
 #
-proc ::andor::configureCamera { camItem } {
-   global caption conf confCam
+proc ::andor::configureCamera { camItem bufNo } {
+   variable private
+   global caption conf
 
    set catchResult [ catch {
       #--- Je mets conf(andor,config) entre guillemets pour le cas ou le nom du repertoire contient des espaces
+      #--- Je cree la camera
       set camNo [ cam::create andor PCI \"$conf(andor,config)\" ]
       console::affiche_erreur "$caption(andor,port_camera) ([ cam$camNo name ]) \
          $caption(andor,2points) $conf(andor,config)\n"
       console::affiche_saut "\n"
-      set confCam($camItem,camNo) $camNo
+      #--- Je change de variable
+      set private($camItem,camNo) $camNo
       #--- Je configure l'obturateur
       switch -exact -- $conf(andor,foncobtu) {
          0 {
@@ -301,19 +320,16 @@ proc ::andor::configureCamera { camItem } {
          cam$camNo cooler off
       }
       #--- J'associe le buffer de la visu
-      set bufNo [visu$confCam($camItem,visuNo) buf]
       cam$camNo buf $bufNo
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(andor,mirh)
       cam$camNo mirrorv $conf(andor,mirv)
-      #--- Je renseigne la dynamique de la camera
-      ::confVisu::visuDynamix $confCam($camItem,visuNo) 65535 0
       #--- Delais d'ouverture et de fermeture de l'obturateur
       cam$camNo openingtime $conf(andor,ouvert_obtu)
       cam$camNo closingtime $conf(andor,ferm_obtu)
       #--- Je mesure la temperature du capteur CCD
-      if { [ info exists confCam(andor,aftertemp) ] == "0" } {
-         ::andor::AndorDispTemp
+      if { [ info exists private(aftertemp) ] == "0" } {
+         ::andor::AndorDispTemp $camItem
       }
    } ]
 
@@ -330,12 +346,12 @@ proc ::andor::configureCamera { camItem } {
 #    Arrete la camera Andor
 #
 proc ::andor::stop { camItem } {
-   global confCam
+   variable private
 
    #--- J'arrete la camera
-   if { $confCam($camItem,camNo) != 0 } {
-      cam::delete $confCam($camItem,camNo)
-      set confCam($camItem,camNo) 0
+   if { $private($camItem,camNo) != 0 } {
+      cam::delete $private($camItem,camNo)
+      set private($camItem,camNo) 0
    }
 }
 
@@ -343,20 +359,19 @@ proc ::andor::stop { camItem } {
 # ::andor::AndorDispTemp
 #    Affiche la temperature du CCD
 #
-proc ::andor::AndorDispTemp { } {
+proc ::andor::AndorDispTemp { camItem } {
    variable private
-   global audace caption confCam
+   global audace caption
 
    catch {
       set frm $private(frm)
-      set camItem $confCam(currentCamItem)
-      if { [ info exists audace(base).confCam ] == "1" && [ catch { set temp_ccd [ cam$confCam($camItem,camNo) temperature ] } ] == "0" } {
+      if { [ winfo exists $frm ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
          $frm.frame2.frame6.frame11.temp_ccd configure \
             -text "$caption(andor,temperature_CCD) $temp_ccd $caption(andor,deg_c)"
-         set confCam(andor,aftertemp) [ after 5000 ::andor::AndorDispTemp ]
+         set private(aftertemp) [ after 5000 ::andor::AndorDispTemp $camItem ]
       } else {
-         catch { unset confCam(andor,aftertemp) }
+         catch { unset private(aftertemp) }
       }
    }
 }
@@ -388,11 +403,12 @@ proc ::andor::checkConfigRefroidissement { } {
 # ::andor::setShutter
 #    Procedure pour la commande de l'obturateur
 #
-proc ::andor::setShutter { camNo shutterState ShutterOptionList } {
+proc ::andor::setShutter { camItem shutterState ShutterOptionList } {
    variable private
    global caption conf
 
    set conf(andor,foncobtu) $shutterState
+   set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -433,6 +449,7 @@ proc ::andor::setShutter { camNo shutterState ShutterOptionList } {
 # binningList :      Retourne la liste des binnings disponibles
 # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
 # binningYListScan : Retourne la liste des binnings en y disponibles en mode scan
+# dynamic :          Retourne la liste de la dynamique haute et basse
 # hasBinning :       Retourne l'existence d'un binning (1 : Oui, 0 : Non)
 # hasFormat :        Retourne l'existence d'un format (1 : Oui, 0 : Non)
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
@@ -442,13 +459,18 @@ proc ::andor::setShutter { camNo shutterState ShutterOptionList } {
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la camera
+# product :          Retourne le nom du produit
 # shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
 #
 proc ::andor::getPluginProperty { camItem propertyName } {
+   variable private
+
    switch $propertyName {
       binningList      { return [ list 1x1 2x2 3x3 4x4 5x5 6x6 ] }
       binningXListScan { return [ list "" ] }
       binningYListScan { return [ list "" ] }
+      dynamic          { return [ list 65535 0 ] }
       hasBinning       { return 1 }
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
@@ -458,6 +480,20 @@ proc ::andor::getPluginProperty { camItem propertyName } {
       hasWindow        { return 1 }
       longExposure     { return 1 }
       multiCamera      { return 0 }
+      name             {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $private($camItem,camNo) != "0" } {
+            return [ cam$private($camItem,camNo) product ]
+         } else {
+            return ""
+         }
+      }
       shutterList      { return [ list $::caption(andor,obtu_ouvert) $::caption(andor,obtu_ferme) $::caption(andor,obtu_synchro) ] }
    }
 }
