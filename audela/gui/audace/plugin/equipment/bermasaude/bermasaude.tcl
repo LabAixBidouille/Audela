@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.20 2007-11-02 16:45:26 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.21 2007-11-02 18:51:21 robertdelmas Exp $
 #
 
 #
@@ -223,8 +223,6 @@ namespace eval bermasaude {
                button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised \
                   -state normal -command { ::bermasaude::filtre_5 }
                pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-               #--- Representation de la couleur du filtre
-               $zone(image2a) create oval 65 105 115 155 -fill $bermasaude(color_filtre) -tags cadres -width 2.0
             } else {
                button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised \
                   -state disabled
@@ -253,6 +251,11 @@ namespace eval bermasaude {
             pack $frm.frame2.frame5.image2a_color_invariant
             set zone(image2a) $frm.frame2.frame5.image2a_color_invariant
 
+            #--- Representation de la couleur du filtre
+            if { $bermasaude(connect) == "1" } {
+               $zone(image2a) create oval 65 105 115 155 -fill $bermasaude(color_filtre) -tags cadres -width 2.0
+            }
+
          pack $frm.frame2.frame5 -side left -fill both -expand 1
 
       pack $frm.frame2 -side top -fill both -expand 1
@@ -273,15 +276,7 @@ namespace eval bermasaude {
 
             #--- Bouton Arreter
             button $frm.frame3.start.stop -text "$caption(bermasaude,arreter)" -relief raised \
-               -command {
-                  if { [ info exists ttybermasaude ] } {
-                     #--- Je ferme le link
-                     ::confLink::delete $conf(bermasaude,port) "$conf(confEqt)" "control"
-                     #--- Je ferme le port serie
-                     ::bermasaude::bermasaude_delete $ttybermasaude
-                     unset ttybermasaude
-                  }
-               }
+               -command { ::bermasaude::stopDriver }
             pack $frm.frame3.start.stop -side left -padx 10 -pady 3 -ipadx 10 -expand 1
 
             checkbutton $frm.frame3.start.chk -text "$caption(bermasaude,creer_au_demarrage)" \
@@ -653,6 +648,24 @@ namespace eval bermasaude {
       $widget(frm).frame2.frame4.but_$bermasaude(position) configure -relief raised
       for {set i 1} {$i <= 5} {incr i} {
          $widget(frm).frame2.frame4.but_$i configure -state normal
+      }
+   }
+
+   #------------------------------------------------------------
+   # stopDriver
+   #    Arrete la roue a filtres
+   #------------------------------------------------------------
+   proc stopDriver { } {
+      global conf ttybermasaude
+
+      if { [ info exists ttybermasaude ] } {
+         #--- Je memorise le port
+         set eqtPort $conf(bermasaude,port)
+         #--- Je ferme le port serie
+         ::bermasaude::bermasaude_delete $ttybermasaude
+         unset ttybermasaude
+         #--- Je ferme le link
+         ::confLink::delete $eqtPort "$conf(confEqt)" "control"
       }
    }
 
