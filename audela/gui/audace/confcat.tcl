@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.15 2007-09-22 08:14:57 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.16 2007-11-02 16:41:41 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -26,9 +26,9 @@ proc ::confCat::init { } {
    if { ! [ info exists conf(confCat,geometry) ] } { set conf(confCat,geometry) "490x330+130+60" }
 
    #--- Initialise les variables locales
-   set private(pluginList)      ""
-   set private(pluginTitleList) ""
-   set private(frm)             "$audace(base).confcat"
+   set private(pluginNamespaceList) ""
+   set private(pluginTitleList)     ""
+   set private(frm)                 "$audace(base).confcat"
 
    #--- j'ajoute le repertoire pouvant contenir des plugins
    lappend ::auto_path [file join "$::audace(rep_plugin)" chart]
@@ -36,7 +36,7 @@ proc ::confCat::init { } {
    findPlugin
 
    #--- je verifie que le plugin par defaut existe dans la liste
-   if { [lsearch $private(pluginList) $conf(confCat)] == -1 } {
+   if { [lsearch $private(pluginNamespaceList) $conf(confCat)] == -1 } {
       #--- s'il n'existe pas, je vide le nom du plugin par defaut
       set conf(confCat) ""
    }
@@ -111,13 +111,13 @@ proc ::confCat::appliquer { } {
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
    set index [lsearch -exact $private(pluginTitleList) $label ]
    if { $index != -1 } {
-      set conf(confCat) [lindex $private(pluginList) $index]
+      set conf(confCat) [lindex $private(pluginNamespaceList) $index]
    } else {
       set conf(confCat) ""
    }
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
-   foreach name $private(pluginList) {
+   foreach name $private(pluginNamespaceList) {
       $name\::widgetToConf
    }
 
@@ -142,7 +142,7 @@ proc ::confCat::afficheAide { } {
    #--- je recupere l'index de l'onglet selectionne
    set index [Rnotebook:currentIndex $private(frm).usr.book ]
    if { $index != -1 } {
-      set selectedPluginName [lindex $private(pluginList) [expr $index -1]]
+      set selectedPluginName [lindex $private(pluginNamespaceList) [expr $index -1]]
       #--- j'affiche la documentation
       set pluginHelp [ $selectedPluginName\::getPluginHelp ]
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
@@ -185,7 +185,7 @@ proc ::confCat::createDialog { } {
    global caption conf
 
    #--- Je verifie qu'il y a des cartes
-   if { [ llength $private(pluginList) ] < 1 } {
+   if { [ llength $private(pluginNamespaceList) ] < 1 } {
       tk_messageBox -title "$caption(confcat,config)" -message "$caption(confcat,pas_carte)" -icon error
       return 1
    }
@@ -220,7 +220,7 @@ proc ::confCat::createDialog { } {
 
          #--- Je demande a chaque plugin d'afficher sa page de config
          set indexOnglet 1
-         foreach name $private(pluginList) {
+         foreach name $private(pluginNamespaceList) {
             set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
             incr indexOnglet
          }
@@ -282,7 +282,7 @@ proc ::confCat::select { { name "" } } {
    variable private
 
    #--- je recupere le label correspondant au namespace
-   set index [ lsearch -exact $private(pluginList) "$name" ]
+   set index [ lsearch -exact $private(pluginNamespaceList) "$name" ]
    if { $index != -1 } {
       Rnotebook:select $private(frm).usr.book [ lindex $private(pluginTitleList) $index ]
    }
@@ -328,25 +328,29 @@ proc ::confCat::stopDriver { } {
 
 #------------------------------------------------------------
 # ::confCat::findPlugin
-# recherche les fichiers .tcl presents dans plugin/chart
+# recherche les plugins de type "chart"
 #
-# si le plugin remplit les conditions
-#    son label est ajoute dans la liste namespaceList, et son namespace est ajoute dans namespacelist
+# conditions :
+#   - le plugin doit avoir une procedure getPluginType qui retourne "chart"
+#   - le plugin doit avoir une procedure getPluginTitle
+#   - etc.
+#
+# si le plugin remplit les conditions :
+# son label est ajoute dans la liste pluginTitleList et son namespace est ajoute dans pluginNamespaceList
 # sinon le fichier tcl est ignore car ce n'est pas un plugin
 #
-# retrun 0 = OK, 1 = error (no plugin found)
+# return 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confCat::findPlugin { } {
    variable private
    global audace caption
 
    #--- j'initialise les listes vides
-   set private(pluginList)      ""
-   set private(pluginTitleList) ""
+   set private(pluginNamespaceList) ""
+   set private(pluginTitleList)     ""
 
    #--- je recherche les fichiers chart/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" chart * pkgIndex.tcl ]
-   #--- je recherche les plugins repondant au filtre driverPattern
    foreach pkgIndexFileName $filelist {
       set catchResult [catch {
          #--- je recupere le nom du package
@@ -360,7 +364,7 @@ proc ::confCat::findPlugin { } {
                      $pluginInfo(namespace)::initPlugin
                      set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
                      #--- je l'ajoute dans la liste des plugins
-                     lappend private(pluginList) [ string trimleft $pluginInfo(namespace) "::" ]
+                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
                      lappend private(pluginTitleList) $pluginlabel
                      ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
                   }
@@ -377,7 +381,7 @@ proc ::confCat::findPlugin { } {
    }
    ::console::affiche_prompt "\n"
 
-   if { [llength $private(pluginList)] <1 } {
+   if { [llength $private(pluginNamespaceList)] < 1 } {
       #--- aucun plugin correct
       return 1
    } else {
