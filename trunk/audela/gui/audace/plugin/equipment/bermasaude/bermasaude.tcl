@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.19 2007-09-20 19:17:29 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.20 2007-11-02 16:45:26 robertdelmas Exp $
 #
 
 #
@@ -268,14 +268,27 @@ namespace eval bermasaude {
             "$caption(bermasaude,site_web_ref)" ]
          pack $labelName -side top -fill x -pady 2
 
-          #--- Frame du checkbutton creer au demarrage
+         #--- Frame du bouton Arreter et du checkbutton creer au demarrage
          frame $frm.frame3.start -borderwidth 0 -relief flat
+
+            #--- Bouton Arreter
+            button $frm.frame3.start.stop -text "$caption(bermasaude,arreter)" -relief raised \
+               -command {
+                  if { [ info exists ttybermasaude ] } {
+                     #--- Je ferme le link
+                     ::confLink::delete $conf(bermasaude,port) "$conf(confEqt)" "control"
+                     #--- Je ferme le port serie
+                     ::bermasaude::bermasaude_delete $ttybermasaude
+                     unset ttybermasaude
+                  }
+               }
+            pack $frm.frame3.start.stop -side left -padx 10 -pady 3 -ipadx 10 -expand 1
 
             checkbutton $frm.frame3.start.chk -text "$caption(bermasaude,creer_au_demarrage)" \
                -highlightthickness 0 -variable conf(bermasaude,start)
-            pack $frm.frame3.start.chk -side top -padx 3 -pady 3 -fill x
+            pack $frm.frame3.start.chk -side top -padx 10 -pady 3 -expand 1
 
-         pack $frm.frame3.start -side bottom -fill x
+         pack $frm.frame3.start -side left -expand 1
 
       pack $frm.frame3 -side bottom -fill x
 
@@ -331,7 +344,7 @@ namespace eval bermasaude {
       global audace bermasaude caption conf ttybermasaude
 
       #--- Ferme le port comx de communication de la roue a filtres BerMasAude
-      catch {
+      if { [ info exists ttybermasaude ] } {
          ::bermasaude::bermasaude_delete $ttybermasaude
          unset ttybermasaude
       }
@@ -361,7 +374,7 @@ namespace eval bermasaude {
                   $nbr_filtres $caption(bermasaude,bermasaude_nbr_filtres_2)\n\n"
                set bermasaude(connect) "1"
                #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
-               set linkNo [::confLink::create $conf(bermasaude,port) "$conf(confEqt)" "control" ""]
+               set linkNo [ ::confLink::create $conf(bermasaude,port) "$conf(confEqt)" "control" "" ]
             } else {
                set bermasaude(connect) "0"
             }
