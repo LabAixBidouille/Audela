@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.40 2007-10-20 22:46:08 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.41 2007-11-02 23:21:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -23,6 +23,8 @@ set caption(confcam,arreter)                    "Stop"
 set caption(confcam,obtu_ouvert)                "Open"
 set caption(confcam,obtu_ferme)                 "Closed"
 set caption(confcam,obtu_synchro)               "Synchro"
+
+set caption(confcam,camera)                     "Camera:"
 
 set caption(confcam,attention)                  "Warning"
 set caption(confcam,connexion_texte1)           "Camera Connection in Progress..."
@@ -48,6 +50,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ferme)              "Fermé"
    set caption(confcam,obtu_synchro)            "Synchro"
 
+   set caption(confcam,camera)                  "Caméra :"
+
    set caption(confcam,attention)               "Attention"
    set caption(confcam,connexion_texte1)        "Veuillez patienter quelques secondes"
    set caption(confcam,connexion_texte2)        "pendant la connexion de votre caméra."
@@ -71,6 +75,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ouvert)             "Aperto"
    set caption(confcam,obtu_ferme)              "Chiuso"
    set caption(confcam,obtu_synchro)            "Sincronizza"
+
+   set caption(confcam,camera)                  "Camera:"
 
    set caption(confcam,attention)               "Attenzione"
    set caption(confcam,connexion_texte1)        "Attendere qualche secondo per"
@@ -96,6 +102,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ferme)              "Cerrado"
    set caption(confcam,obtu_synchro)            "Sincro"
 
+   set caption(confcam,camera)                  "Cámara:"
+
    set caption(confcam,attention)               "!Cuidado¡"
    set caption(confcam,connexion_texte1)        "Conectando con la cámara..."
    set caption(confcam,connexion_texte2)        "Por favor, espere unos segundos."
@@ -119,6 +127,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ouvert)             "Offen"
    set caption(confcam,obtu_ferme)              "Geschlossen"
    set caption(confcam,obtu_synchro)            "Synchro"
+
+   set caption(confcam,camera)                  "Kamera:"
 
    set caption(confcam,attention)               "Achtung"
    set caption(confcam,connexion_texte1)        "Bitte, einige Sekunden warten"
@@ -144,6 +154,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ferme)              "Fechado"
    set caption(confcam,obtu_synchro)            "Sincro"
 
+   set caption(confcam,camera)                  "Câmara:"
+
    set caption(confcam,attention)               "Aviso"
    set caption(confcam,connexion_texte1)        "Conexão da câmara em curso..."
    set caption(confcam,connexion_texte2)        "Por favor aguarde alguns segundos."
@@ -167,6 +179,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,obtu_ouvert)             "Open"
    set caption(confcam,obtu_ferme)              "Closed"
    set caption(confcam,obtu_synchro)            "Synchro"
+
+   set caption(confcam,camera)                  "Camera:"
 
    set caption(confcam,attention)               "Warning"
    set caption(confcam,connexion_texte1)        "Camera Connection in Progress..."
