@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.98 2007-11-02 23:20:29 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.99 2007-11-03 22:11:18 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -174,8 +174,8 @@ namespace eval ::confCam {
       #--- J'arrete la camera
       stopItem $confCam(currentCamItem)
       #--- je copie les parametres de la nouvelle camera dans conf()
-      widgetToConf     $confCam(currentCamItem)
-      configureCamera  $confCam(currentCamItem)
+      widgetToConf    $confCam(currentCamItem)
+      configureCamera $confCam(currentCamItem)
       $private(frm).cmd.ok configure -state normal
       $private(frm).cmd.appliquer configure -relief raised -state normal
       $private(frm).cmd.fermer configure -state normal
@@ -219,7 +219,7 @@ namespace eval ::confCam {
 
    proc createDialog { } {
       variable private
-      global audace caption conf confCam
+      global caption conf confCam
 
       #---
       if { [ winfo exists $private(frm) ] } {
@@ -483,8 +483,7 @@ namespace eval ::confCam {
    # Procedure de changement de l'obturateur de la camera
    #----------------------------------------------------------------------------
    proc setShutter { camItem shutterState } {
-      variable private
-      global caption conf confCam
+      global caption confCam
 
       #---
       set ShutterOptionList    [ ::confCam::getPluginProperty $camItem shutterList ]
@@ -515,7 +514,7 @@ namespace eval ::confCam {
    # Arrete la camera camItem
    #----------------------------------------------------------------------------
    proc stopItem { camItem } {
-      global audace caption conf confCam
+      global audace confCam
 
       if { $camItem == "" } {
          return
@@ -581,7 +580,7 @@ namespace eval ::confCam {
    #     propertyName : Propriete
    #
    proc getPluginProperty { camItem propertyName } {
-      global caption conf confCam
+      global confCam
 
       # binningList :      Retourne la liste des binnings disponibles
       # binningXListScan : Retourne la liste des binnings en x disponibles en mode scan
@@ -737,7 +736,7 @@ namespace eval ::confCam {
    #
    proc configureCamera { camItem } {
       variable private
-      global audace caption conf confCam confcolor
+      global audace caption conf confCam
 
       #--- Initialisation de la variable erreur
       set erreur "1"
@@ -820,7 +819,6 @@ namespace eval ::confCam {
          #--- Je cree la thread dediee a la camera
          set confCam($camItem,threadNo) [ ::confCam::createThread $camItem $bufNo]
 
-
          #--- Je mets a jour la liste des "cam$camNo product" des cameras connectees
          if { $confCam($camItem,camName) != "" } {
             if { $confCam(A,camNo) == $confCam($camItem,camNo) } {
@@ -886,7 +884,7 @@ namespace eval ::confCam {
    #
    proc widgetToConf { camItem } {
       variable private
-      global caption conf confCam
+      global conf confCam
 
       set camName                       [ $private(frm).usr.onglet raise ]
       set confCam($camItem,camName)     $camName
@@ -917,8 +915,8 @@ proc ::confCam::findPlugin { } {
    global audace caption
 
    #--- j'initialise les listes vides
-   set private(pluginNamespaceList)      ""
-   set private(pluginLabelList) ""
+   set private(pluginNamespaceList) ""
+   set private(pluginLabelList)     ""
 
    #--- je recherche les fichiers camera/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" camera * pkgIndex.tcl ]
@@ -958,7 +956,7 @@ proc ::confCam::findPlugin { } {
    }
    set pluginList [lsort -index 0 $pluginList]
    set private(pluginNamespaceList) ""
-   set private(pluginLabelList) ""
+   set private(pluginLabelList)     ""
    foreach plugin $pluginList {
       lappend private(pluginLabelList)     [lindex $plugin 0]
       lappend private(pluginNamespaceList) [lindex $plugin 1]
@@ -966,7 +964,7 @@ proc ::confCam::findPlugin { } {
 
    ::console::affiche_prompt "\n"
 
-   if { [llength $private(pluginNamespaceList)] <1 } {
+   if { [llength $private(pluginNamespaceList)] < 1 } {
       #--- aucun plugin correct
       return 1
    } else {
@@ -983,8 +981,6 @@ proc ::confCam::findPlugin { } {
 #    cmd : commande TCL a lancer quand la camera change
 #------------------------------------------------------------
 proc ::confCam::addCameraListener { camItem cmd } {
-   variable private
-
    trace add variable "::confCam($camItem,camNo)" write $cmd
 }
 
@@ -996,11 +992,8 @@ proc ::confCam::addCameraListener { camItem cmd } {
 #    cmd : commande TCL a lancer quand la camera change
 #------------------------------------------------------------
 proc ::confCam::removeCameraListener { camItem cmd } {
-   variable private
-
    trace remove variable "::confCam($camItem,camNo)" write $cmd
 }
-
 
 #--- Connexion au demarrage de la camera selectionnee par defaut
 ::confCam::init
