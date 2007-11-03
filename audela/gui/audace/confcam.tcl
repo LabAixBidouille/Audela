@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.99 2007-11-03 22:11:18 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.100 2007-11-03 23:01:28 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -96,7 +96,7 @@ namespace eval ::confCam {
       }
    }
 
-   proc dispThreadError { thread_id errorInfo} {
+   proc dispThreadError { thread_id ErrorInfo } {
       ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
    }
 
@@ -372,7 +372,7 @@ namespace eval ::confCam {
    #--- Cree une thread dediee a la camera
    #--- et retourne le numero de la thread
    #
-   proc createThread { camItem bufNo} {
+   proc createThread { camItem bufNo } {
       global confCam
 
       #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
@@ -658,10 +658,10 @@ namespace eval ::confCam {
    #  Parametres :
    #     aucun
    #
-   proc getCurrentCamItem {  } {
+   proc getCurrentCamItem { } {
       global confCam
 
-      return $confCam($currentCamItem)
+      return $confCam(currentCamItem)
    }
 
    #
