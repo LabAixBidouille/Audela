@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.26 2007-11-02 18:54:23 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.27 2007-11-03 19:04:28 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -26,6 +26,7 @@ proc ::confEqt::init { } {
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
+   set private(pluginLabelList)     ""
    set private(notebookLabelList)   ""
    set private(notebookNameList)    ""
    set private(frm)                 "$audace(base).confeqt"
@@ -376,6 +377,7 @@ proc ::confEqt::findPlugin { } {
 
    #--- j'initialise les listes vides
    set private(pluginNamespaceList) ""
+   set private(pluginLabelList)     ""
 
    #--- je recherche les fichiers equipment/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" equipment * pkgIndex.tcl ]
@@ -393,6 +395,7 @@ proc ::confEqt::findPlugin { } {
                      set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
                      #--- je l'ajoute dans la liste des plugins
                      lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                     lappend private(pluginLabelList) $pluginlabel
                      ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
                   }
                }
@@ -406,6 +409,20 @@ proc ::confEqt::findPlugin { } {
          console::affiche_erreur "::confEqt::findPlugin $::errorInfo\n"
       }
    }
+
+   #--- je trie les plugins par ordre alphabétique des libelles
+   set pluginList ""
+   for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
+      lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
+   }
+   set pluginList [lsort -index 0 $pluginList]
+   set private(pluginNamespaceList) ""
+   set private(pluginLabelList)     ""
+   foreach plugin $pluginList {
+      lappend private(pluginLabelList)     [lindex $plugin 0]
+      lappend private(pluginNamespaceList) [lindex $plugin 1]
+   }
+
    ::console::affiche_prompt "\n"
 
    if { [llength $private(pluginNamespaceList)] < 1 } {
