@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.6 2007-11-02 23:20:33 michelpujol Exp $
+# Mise a jour $Id: audine.tcl,v 1.7 2007-11-03 22:59:40 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -375,7 +375,7 @@ proc ::audine::fillConfigPage { frm camItem } {
 #
 proc ::audine::configureCamera { camItem bufNo } {
    variable private
-   global caption conf confCam
+   global audace caption conf confCam
 
    set catchResult [ catch {
       #--- Je configure le CCCD
