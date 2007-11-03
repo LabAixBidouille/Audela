@@ -2,12 +2,10 @@
 # Fichier : eventaude_gps.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: eventaude_gps.tcl,v 1.10 2007-11-02 23:20:40 michelpujol Exp $
+# Mise a jour $Id: eventaude_gps.tcl,v 1.11 2007-11-03 23:02:38 robertdelmas Exp $
 #
 
 namespace eval eventAude_GPS {
-   variable This
-   global eventAude_GPS
 
    #
    # eventAude_GPS::run this
@@ -81,10 +79,7 @@ namespace eval eventAude_GPS {
    proc createDialog { } {
       variable This
       variable private
-      global audace
-      global caption
-      global color
-      global conf
+      global audace caption color conf
 
       #--- initConf
       if { ! [ info exists conf(eventaude_gps,position) ] } { set conf(eventaude_gps,position) "+600+490" }
@@ -257,7 +252,7 @@ namespace eval eventAude_GPS {
       global caption
 
       #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-      set camNo [::confCam::getCamNo [::confCam::getCurrentCamItem ]]
+      set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
       set statusVariableName "::status_cam$camNo"
       if { [set $statusVariableName] != "exp" } {
          set private(coord_GPS_Observateur) [ cam$camNo gps ]
@@ -282,9 +277,7 @@ namespace eval eventAude_GPS {
    #
    proc confirm_save_long_lat { } {
       variable private
-      global audace
-      global caption
-      global confgene
+      global audace caption confgene
 
       set choix [ tk_messageBox -type yesno -icon warning -title "$caption(eventaude_gps,maj_long+lat-)" \
          -message "$caption(eventaude_gps,confirm)" ]
@@ -327,9 +320,7 @@ namespace eval eventAude_GPS {
    #
    proc confirm_save_alt { } {
       variable private
-      global audace
-      global caption
-      global confgene
+      global audace caption confgene
 
       set choix [ tk_messageBox -type yesno -icon warning -title "$caption(eventaude_gps,maj_alt-)" \
          -message "$caption(eventaude_gps,confirm)" ]

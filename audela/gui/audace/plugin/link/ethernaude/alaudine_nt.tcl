@@ -2,12 +2,10 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.12 2007-11-02 23:20:39 michelpujol Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.13 2007-11-03 23:02:13 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
-   variable This
-   global AlAudine_NT
 
    #
    # AlAudine_NT::run this
@@ -83,10 +81,7 @@ namespace eval AlAudine_NT {
    proc createDialog { } {
       variable This
       variable private
-      global audace
-      global color
-      global conf
-      global caption
+      global audace caption color conf
 
       #--- initConf
       if { ! [ info exists conf(alaudine_nt,position) ] }          { set conf(alaudine_nt,position)          "+600+490" }
@@ -284,7 +279,7 @@ namespace eval AlAudine_NT {
    # Fonction pour regler la temperature du CCD via l'AlAudine NT
    #
    proc ReglageTemp { temp_ccd_souhaite } {
-      set camNo [::confCam::getCamNo [::confCam::getCurrentCamItem ]]
+      set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
       cam$camNo cooler check $temp_ccd_souhaite
    }
 
@@ -295,12 +290,11 @@ namespace eval AlAudine_NT {
    proc AlAudine_NTDispTemp { } {
       variable This
       variable private
-      global audace
       global caption
 
       catch {
          #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-         set camNo [::confCam::getCamNo [::confCam::getCurrentCamItem ]]
+         set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
          set statusVariableName "::status_cam$camNo"
          if { [set $statusVariableName] == "exp" } {
             #--- Si on lit une image de la camera, il ne faut pas lire la temperature
