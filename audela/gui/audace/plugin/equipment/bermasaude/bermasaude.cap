@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.15 2007-11-02 16:44:36 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.16 2007-11-03 15:54:33 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -278,7 +278,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_filtre_encours_1) "Anbringelse af"
    set caption(bermasaude,bermasaude_filtre_encours_2) "filter udføres..."
 
-   set caption(bermasaude,arreter)                     "# Arrêter"
+   set caption(bermasaude,arreter)                     "Stop"
    set caption(bermasaude,creer_au_demarrage)          "Tilslut automatisk dette udstyr ved næste start"
 
 }
