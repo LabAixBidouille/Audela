@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.24 2007-11-02 18:54:09 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.25 2007-11-03 19:04:48 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -26,7 +26,7 @@ proc ::confLink::init { } {
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
-   set private(pluginTitleList)     ""
+   set private(pluginLabelList)     ""
    set private(frm)                 "$audace(base).confLink"
 
    #--- j'ajoute le repertoire pouvant contenir des plugins
@@ -337,9 +337,9 @@ proc ::confLink::select { { linkNamespace "" } } {
       #--- je recupere le label correspondant au namespace
       set namespaceLabel [getNamespaceLabel $linkNamespace]
       #--- je recupere l'index correspondant à l'onglet
-      set index [ lsearch -exact $private(pluginTitleList) "$namespaceLabel" ]
+      set index [ lsearch -exact $private(pluginLabelList) "$namespaceLabel" ]
       if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [ lindex $private(pluginTitleList) $index ]
+         Rnotebook:select $private(frm).usr.book [ lindex $private(pluginLabelList) $index ]
       }
    }
 }
@@ -396,7 +396,7 @@ proc ::confLink::findPlugin { } {
 
    #--- j'initialise les listes vides
    set private(pluginNamespaceList) ""
-   set private(pluginTitleList)     ""
+   set private(pluginLabelList)     ""
 
    #--- je recherche les fichiers link/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" link * pkgIndex.tcl ]
@@ -414,7 +414,7 @@ proc ::confLink::findPlugin { } {
                      set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
                      #--- je l'ajoute dans la liste des plugins
                      lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-                     lappend private(pluginTitleList) $pluginlabel
+                     lappend private(pluginLabelList) $pluginlabel
                      ::console::affiche_prompt "#$caption(conflink,liaison) $pluginlabel v$pluginInfo(version)\n"
                   }
                }
@@ -428,6 +428,20 @@ proc ::confLink::findPlugin { } {
          console::affiche_erreur "::confLink::findPlugin $::errorInfo\n"
       }
    }
+
+   #--- je trie les plugins par ordre alphabétique des libelles
+   set pluginList ""
+   for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
+      lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
+   }
+   set pluginList [lsort -index 0 $pluginList]
+   set private(pluginNamespaceList) ""
+   set private(pluginLabelList)     ""
+   foreach plugin $pluginList {
+      lappend private(pluginLabelList)     [lindex $plugin 0]
+      lappend private(pluginNamespaceList) [lindex $plugin 1]
+   }
+
    ::console::affiche_prompt "\n"
 
    if { [llength $private(pluginNamespaceList)] < 1 } {

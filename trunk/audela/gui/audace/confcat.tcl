@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.17 2007-11-02 18:54:38 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.18 2007-11-03 19:04:09 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -27,7 +27,7 @@ proc ::confCat::init { } {
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
-   set private(pluginTitleList)     ""
+   set private(pluginLabelList)     ""
    set private(frm)                 "$audace(base).confcat"
 
    #--- j'ajoute le repertoire pouvant contenir des plugins
@@ -107,7 +107,7 @@ proc ::confCat::appliquer { } {
    set conf(confCat) [Rnotebook:currentName $private(frm).usr.book ]
    #--- je recupere le namespace correspondant au label
    set label "[Rnotebook:currentName $private(frm).usr.book ]"
-   set index [lsearch -exact $private(pluginTitleList) $label ]
+   set index [lsearch -exact $private(pluginLabelList) $label ]
    if { $index != -1 } {
       set conf(confCat) [lindex $private(pluginNamespaceList) $index]
    } else {
@@ -213,7 +213,7 @@ proc ::confCat::createDialog { } {
       set mainFrame $private(frm).usr.book
 
          #--- J'affiche les onglets dans la fenetre
-         Rnotebook:create $mainFrame -tabs "$private(pluginTitleList)" -borderwidth 1
+         Rnotebook:create $mainFrame -tabs "$private(pluginLabelList)" -borderwidth 1
 
          #--- Je demande a chaque plugin d'afficher sa page de config
          set indexOnglet 1
@@ -281,7 +281,7 @@ proc ::confCat::select { { name "" } } {
    #--- je recupere le label correspondant au namespace
    set index [ lsearch -exact $private(pluginNamespaceList) "$name" ]
    if { $index != -1 } {
-      Rnotebook:select $private(frm).usr.book [ lindex $private(pluginTitleList) $index ]
+      Rnotebook:select $private(frm).usr.book [ lindex $private(pluginLabelList) $index ]
    }
 }
 
@@ -344,7 +344,7 @@ proc ::confCat::findPlugin { } {
 
    #--- j'initialise les listes vides
    set private(pluginNamespaceList) ""
-   set private(pluginTitleList)     ""
+   set private(pluginLabelList)     ""
 
    #--- je recherche les fichiers chart/*/pkgIndex.tcl
    set filelist [glob -nocomplain -type f -join "$audace(rep_plugin)" chart * pkgIndex.tcl ]
@@ -362,7 +362,7 @@ proc ::confCat::findPlugin { } {
                      set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
                      #--- je l'ajoute dans la liste des plugins
                      lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-                     lappend private(pluginTitleList) $pluginlabel
+                     lappend private(pluginLabelList) $pluginlabel
                      ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
                   }
                }
@@ -376,6 +376,20 @@ proc ::confCat::findPlugin { } {
          console::affiche_erreur "::confCat::findPlugin $::errorInfo\n"
       }
    }
+
+   #--- je trie les plugins par ordre alphabétique des libelles
+   set pluginList ""
+   for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
+      lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
+   }
+   set pluginList [lsort -index 0 $pluginList]
+   set private(pluginNamespaceList) ""
+   set private(pluginLabelList)     ""
+   foreach plugin $pluginList {
+      lappend private(pluginLabelList)     [lindex $plugin 0]
+      lappend private(pluginNamespaceList) [lindex $plugin 1]
+   }
+
    ::console::affiche_prompt "\n"
 
    if { [llength $private(pluginNamespaceList)] < 1 } {
