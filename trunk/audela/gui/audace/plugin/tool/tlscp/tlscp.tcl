@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.1 2007-11-03 17:38:23 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.2 2007-11-03 17:49:24 robertdelmas Exp $
 #
 
 #============================================================
@@ -1878,6 +1878,15 @@ proc ::tlscp::config::closeWindow { visuNo } {
    set deb [ expr 1 + [ string first + $geometry ] ]
    set fin [ string length $geometry ]
    set ::conf(tlscp,configWindowPosition) "+[ string range $geometry $deb $fin ]"
+}
+
+#------------------------------------------------------------
+# showHelp
+#    affiche l'aide de cet outil
+#------------------------------------------------------------
+proc ::tlscp::config::showHelp { } {
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::tlscp::getPluginType ] ] \
+      [::tlscp::getPluginDirectory] [::tlscp::getPluginHelp]
 }
 
 #------------------------------------------------------------
