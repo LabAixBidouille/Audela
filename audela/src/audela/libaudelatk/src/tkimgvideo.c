@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: tkimgvideo.c,v 1.1 2006-12-08 16:43:16 michelpujol Exp $
+// $Id: tkimgvideo.c,v 1.2 2007-11-06 18:18:38 michelpujol Exp $
 
 /* 
  * usage (WINDOWS only) :
@@ -79,7 +79,7 @@ typedef struct VideoMaster {
 				 * deleted. */
     int	flags;			/* Sundry flags, defined below. */
     int	width, height;		/* Dimensions of image. */
-    int  userWidth, userHeight;	/* User-declared image dimensions. */
+//    int  userWidth, userHeight;	/* User-declared image dimensions. */
     int  source;
     double zoom;
     int  previousParentSource;
@@ -103,7 +103,8 @@ typedef struct VideoInstance {
 				/* Pointer to the next instance in the list
 				 * of instances associated with this master. */
     int refCount;		/* Number of instances using this structure. */
-    int width, height;		/* Dimensions of the pixmap. */
+    //int width, height;		/* Dimensions of the pixmap. */
+    int imageX, imageY;       // window relative position 
     Tk_Window  tkParentWindow;
     Tk_Window  tkVideoWindow;
 } VideoInstance;
@@ -165,10 +166,10 @@ static Tk_ConfigSpec configSpecs[] = {
 	 DEF_VIDEO_ZOOM, Tk_Offset(VideoMaster, zoom), 0},
 
     {TK_CONFIG_INT, "-height", (char *) NULL, (char *) NULL,
-	 DEF_VIDEO_HEIGHT, Tk_Offset(VideoMaster, userHeight), 0},
+	 DEF_VIDEO_HEIGHT, Tk_Offset(VideoMaster, height), 0},
     
     {TK_CONFIG_INT, "-width", (char *) NULL, (char *) NULL,
-	 DEF_VIDEO_WIDTH, Tk_Offset(VideoMaster, userWidth), 0},
+	 DEF_VIDEO_WIDTH, Tk_Offset(VideoMaster, width), 0},
     
     {TK_CONFIG_END, (char *) NULL, (char *) NULL, (char *) NULL,
 	 (char *) NULL, 0, 0}
@@ -201,6 +202,9 @@ static void	 DisposeInstance _ANSI_ARGS_((ClientData clientData));
 static int   detachVideoSource( VideoInstance *instancePtr) ;
 void setSource( VideoMaster *masterPtr, int source);
 void setZoom( VideoMaster *masterPtr, double zoom);
+void setPosition( VideoMaster *masterPtr, int x, int y);
+int getWidth ( VideoMaster *masterPtr);
+int getHeight ( VideoMaster *masterPtr);
 
 /*
  *----------------------------------------------------------------------
@@ -340,6 +344,10 @@ ImgPhotoCmd(ClientData clientData, Tcl_Interp * interp, int objc, Tcl_Obj *CONST
          Tcl_SetObjResult(interp, Tcl_NewIntObj(masterPtr->source));
       } else if (strcmp(arg,"-zoom") == 0) {
          Tcl_SetObjResult(interp, Tcl_NewDoubleObj(masterPtr->zoom));
+      } else if (strcmp(arg,"-width") == 0) {
+         Tcl_SetObjResult(interp, Tcl_NewIntObj(masterPtr->width));
+      } else if (strcmp(arg,"-height") == 0) {
+         Tcl_SetObjResult(interp, Tcl_NewIntObj(masterPtr->height));
       } else {
          Tk_ConfigureValue(interp, Tk_MainWindow(interp), configSpecs,
             (char *) masterPtr, Tcl_GetString(objv[2]), 0);
@@ -349,17 +357,13 @@ ImgPhotoCmd(ClientData clientData, Tcl_Interp * interp, int objc, Tcl_Obj *CONST
       
    case VIDEO_CONFIGURE:      
       if (objc == 2) {
-         Tcl_Obj *obj, *subobj;
          result = Tk_ConfigureInfo(interp, Tk_MainWindow(interp),
             configSpecs, (char *) masterPtr, (char *) NULL, 0);
          if (result != TCL_OK) {
             return result;
          }
-         obj = Tcl_NewObj();
-         subobj = Tcl_NewStringObj("-source {} {} {}", 16);
-         Tcl_ListObjAppendElement(interp, obj, subobj);
-         Tcl_ListObjAppendList(interp, obj, Tcl_GetObjResult(interp));
-         Tcl_SetObjResult(interp, obj);
+         // return option list values
+         Tcl_SetObjResult(interp, Tcl_GetObjResult(interp));
          return TCL_OK;
       } else if (objc == 3) {
          char *arg = Tcl_GetStringFromObj(objv[2], &length);         
@@ -370,6 +374,14 @@ ImgPhotoCmd(ClientData clientData, Tcl_Interp * interp, int objc, Tcl_Obj *CONST
          } else if (!strcmp(arg, "-zoom")) {
             Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),"-zoom {} {} {}", (char *) NULL);
             Tcl_SetObjResult(interp, Tcl_NewDoubleObj(masterPtr->zoom));
+            return TCL_OK;
+         } else if (!strcmp(arg, "-width")) {
+            Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),"-width {} {} {}", (char *) NULL);
+            Tcl_SetObjResult(interp, Tcl_NewIntObj(masterPtr->width));
+            return TCL_OK;
+         } else if (!strcmp(arg, "-height")) {
+            Tcl_AppendStringsToObj(Tcl_GetObjResult(interp),"-height {} {} {}", (char *) NULL);
+            Tcl_SetObjResult(interp, Tcl_NewIntObj(masterPtr->height));
             return TCL_OK;
          } else {
             return Tk_ConfigureInfo(interp, Tk_MainWindow(interp),
@@ -426,6 +438,8 @@ ImgVideoConfigureMaster(interp, masterPtr, objc, objv, flags)
             } else {
                if ( source != masterPtr->source ) {
                   setSource(masterPtr, source);
+                  Tk_ImageChanged(masterPtr->tkMaster, 0, 0, 0,
+	                  0, masterPtr->width, masterPtr->height);
                }
             }
          } else {
@@ -441,6 +455,8 @@ ImgVideoConfigureMaster(interp, masterPtr, objc, objv, flags)
                return TCL_ERROR;
             } else {
                setZoom(masterPtr, zoom);
+               Tk_ImageChanged(masterPtr->tkMaster, 0, 0, 0,
+	                  0, masterPtr->width, masterPtr->height);
             }
          } else {
             Tcl_AppendResult(interp, "value for \"-zoom\" missing", (char *) NULL);
@@ -476,19 +492,28 @@ static void ImgVideoConfigureInstance(VideoInstance *instancePtr)
 {
    VideoMaster *masterPtr = instancePtr->masterPtr;   
    Window  videoWindow;
+   //char * tkParentPathName;
+   //char tkPathName[1024];
    
    if ( masterPtr->source != 0  && instancePtr->tkParentWindow != 0 ) {
       
       if ( instancePtr->tkVideoWindow == 0 ) {
-         //instancePtr->tkVideoWindow = Tk_CreateAnonymousWindow(masterPtr->interp, instancePtr->tkParentWindow, (char*) NULL);
-         instancePtr->tkVideoWindow = Tk_CreateWindow(masterPtr->interp, instancePtr->tkParentWindow, "video", (char*) NULL);
+         instancePtr->tkVideoWindow = Tk_CreateAnonymousWindow(masterPtr->interp, instancePtr->tkParentWindow, (char*) NULL);
+         //instancePtr->tkVideoWindow = Tk_CreateWindow(masterPtr->interp, instancePtr->tkParentWindow, "video", (char*) NULL);
+         //tkParentPathName= Tk_PathName(instancePtr->tkParentWindow);
+         //sprintf(tkPathName,"%s.video",tkParentPathName);
+         //instancePtr->tkVideoWindow = Tk_CreateWindowFromPath (masterPtr->interp, instancePtr->tkParentWindow, tkPathName, (char*) NULL);
          Tk_MapWindow(instancePtr->tkVideoWindow);
       }
 
-      //videoWindow = attachVideoSource(instancePtr->tkVideoWindow, masterPtr->source );
 #ifdef __WIN32__
-       videoWindow= Tk_AttachHWND(instancePtr->tkVideoWindow,(HWND) masterPtr->source);
-       masterPtr->previousParentSource = (int) SetParent((HWND) masterPtr->source, (HWND) Tk_GetHWND(Tk_WindowId(Tk_Parent(instancePtr->tkVideoWindow))));
+   // je supprime la fenetre Windows cree par defaut 
+   DestroyWindow( (HWND) Tk_GetHWND(Tk_WindowId(instancePtr->tkVideoWindow)));
+   // j'attache la hwnd a la tk_window
+   videoWindow= Tk_AttachHWND(instancePtr->tkVideoWindow,(HWND) masterPtr->source);
+   // j'affecte la Window du canvas comme parent 
+   masterPtr->previousParentSource = (int) SetParent((HWND) masterPtr->source, (HWND) Tk_GetHWND(Tk_WindowId(Tk_Parent(instancePtr->tkVideoWindow))));
+   capPreviewScale( (HWND) masterPtr->source, TRUE);
 #endif
    }
 }
@@ -521,17 +546,22 @@ static ClientData ImgVideoGet(Tk_Window tkwin, ClientData masterData)
 {
    VideoMaster *masterPtr = (VideoMaster *) masterData;
    VideoInstance *instancePtr;
+   Display *tkWinDisplay;
+
 
    
    // See if there is already an instance for windows using
    // the same source.  If so then just re-use it.
    for (instancePtr = masterPtr->instancePtr; instancePtr != NULL; instancePtr = instancePtr->nextPtr) {
-      if ((Tk_Display(tkwin) == instancePtr->display)) {
+      tkWinDisplay = Tk_Display(tkwin);
+      if (tkWinDisplay == instancePtr->display) {
          // Re-use this instance.
          if (instancePtr->refCount == 0) {
             //  We are resurrecting this instance.            
             Tcl_CancelIdleCall(DisposeInstance, (ClientData) instancePtr);
             instancePtr->refCount++;
+            return (ClientData) instancePtr;
+         } else {
             return (ClientData) instancePtr;
          }
       }
@@ -544,9 +574,9 @@ static ClientData ImgVideoGet(Tk_Window tkwin, ClientData masterData)
    instancePtr->tkParentWindow = tkwin;
    instancePtr->tkVideoWindow = 0;
    instancePtr->refCount = 1;
-   instancePtr->width = 0;
-   instancePtr->height = 0;
-
+   instancePtr->imageX = 0;
+   instancePtr->imageY = 0;
+   
    instancePtr->nextPtr = masterPtr->instancePtr;
    masterPtr->instancePtr = instancePtr;
 
@@ -585,7 +615,17 @@ ImgVideoDisplay(clientData, display, drawable, imageX, imageY, width,
     int drawableX, drawableY;	/* Coordinates within drawable that
 				 * correspond to imageX and imageY. */
 {
-   // pas de réfraichissement nécessaire pour une video
+   VideoInstance *instancePtr = (VideoInstance *) clientData;
+
+
+   if ( instancePtr->refCount == 1 ) {
+      if ( instancePtr->imageX != -imageX || instancePtr->imageY != -imageY ) {
+         instancePtr->imageX = -imageX;
+         instancePtr->imageY = -imageY;
+         // translation de l'image
+         setPosition(instancePtr->masterPtr, -imageX , -imageY);
+      }
+   }
 }
 
 
@@ -827,11 +867,14 @@ void setSource( VideoMaster *masterPtr, int source) {
       }      
       // set new source
       masterPtr->source = source;
-   
+      masterPtr->width = getWidth(masterPtr);
+      masterPtr->height = getHeight(masterPtr);
+
       // configure instance with the new source
       for (instancePtr = masterPtr->instancePtr; instancePtr != NULL; instancePtr = instancePtr->nextPtr) {
          ImgVideoConfigureInstance(instancePtr);
       }
+
    } else {
       // detach  previous source
       for (instancePtr = masterPtr->instancePtr; instancePtr != NULL; instancePtr = instancePtr->nextPtr) {
@@ -839,8 +882,40 @@ void setSource( VideoMaster *masterPtr, int source) {
       }
       // erase source
       masterPtr->source = source;
+      masterPtr->width = 0;
+      masterPtr->height = 0;
+
    }
 }
+
+#ifdef WIN32
+
+BOOL CALLBACK EnumCanvasChildProc( HWND hwndChild, LPARAM lParam) {
+  char ligne[256];
+  HWND hwndCap = (HWND)lParam;
+  sprintf(ligne, "%8X", hwndChild);
+
+
+  if ( GetClassName(hwndChild, ligne, sizeof(ligne))> 0 ) {
+     if( hwndChild != hwndCap) {
+
+        SetWindowPos( 
+           hwndCap,          // placement-order handle
+           hwndChild,             // handle to window
+           0,                // horizontal position
+           0,                 // vertical position
+           0,            // width
+           0,           // height
+           SWP_NOSIZE |SWP_NOACTIVATE |SWP_NOMOVE// window-positioning flags  SWP_NOMOVE  
+           );
+     }
+  }
+  return 1;
+  
+}
+
+#endif
+
 
 /*
  *--------------------------------------------------------------
@@ -857,7 +932,7 @@ void setSource( VideoMaster *masterPtr, int source) {
  *
  *--------------------------------------------------------------
  */
-void setZoom( VideoMaster *masterPtr, double zoom) {
+void setZoom( VideoMaster *masterPtr, double zoom ) {
 #ifdef WIN32
    HWND hwndCap;
    CAPSTATUS capStatus;
@@ -872,27 +947,159 @@ void setZoom( VideoMaster *masterPtr, double zoom) {
       int width = (int) (zoom * capStatus.uiImageWidth);
       int height = (int) (zoom * capStatus.uiImageHeight);
 
-      //Tk_ResizeWindow(tkwin, width, height);
       SetWindowPos( 
          hwndCap,             // handle to window
-         NULL,             // placement-order handle
+         NULL,      // placement-order handle
          100,                // horizontal position
          100,                 // vertical position
          width,            // width
          height,           // height
-         SWP_NOMOVE | SWP_NOOWNERZORDER // window-positioning flags
+         SWP_NOOWNERZORDER |SWP_NOMOVE // window-positioning flags    
       );
       
+      masterPtr->width = width;
+      masterPtr->height = height;
+
+    //EnumChildWindows(GetParent(hwndCap), EnumCanvasChildProc, (LPARAM) hwndCap );
+
       if ( masterPtr->zoom == 1.) {
          // video scale doesn't depend on window size
-         capPreviewScale( hwndCap, FALSE);
+         //capPreviewScale( hwndCap, FALSE);
       } else {
          // video scale depends on windows size
-         capPreviewScale( hwndCap, TRUE);
+         //capPreviewScale( hwndCap, TRUE);
       } 
    }
 
 
    #endif   
 }
+
+
+/*
+ *--------------------------------------------------------------
+ *
+ * setZoom (WIN32 only)
+ *
+ *	This procedure sets the zoom 
+ *
+ * Results:
+ *	Returns a standard Tcl return value.
+ *
+ * Side effects:
+ *	None.
+ *
+ *--------------------------------------------------------------
+ */
+void setPosition( VideoMaster *masterPtr, int x, int y ) {
+#ifdef WIN32
+   HWND hwndCap;
+   CAPSTATUS capStatus;
+
+   int  si = sizeof(int);
+   int  sl = sizeof(long);
+   int  slp = sizeof(LPARAM);
+   int  ss  = sizeof(short);
+   int  sh  = sizeof(HWND);
+
+   int a ;
+   a = si; a=sl; a=slp; a= ss;
+
+   hwndCap = (HWND) masterPtr->source;
+   if ( hwndCap == NULL) {
+      return;
+   }
+
+   if (capGetStatus(hwndCap, &capStatus, sizeof(CAPSTATUS)) == TRUE ) {
+      //Tk_ResizeWindow(tkwin, width, height);
+      SetWindowPos( 
+         hwndCap,             // handle to window
+         NULL,      // placement-order handle
+         x,                // horizontal position
+         y,                 // vertical position
+         0,            // width
+         0,           // height
+         SWP_NOOWNERZORDER |SWP_NOSIZE |SWP_NOACTIVATE // window-positioning flags  SWP_NOMOVE  
+      );
+
+   }
+
+   // 
+   EnumChildWindows(GetParent(hwndCap), EnumCanvasChildProc, (LPARAM) hwndCap );
+
+
+
+   #endif   
+}
+
+
+
+/*
+ *--------------------------------------------------------------
+ *
+ * getWidth (WIN32 only)
+ *
+ *	   return image width 
+ *
+ * Results:
+ *	    if error , returns 0
+ *
+ * Side effects:
+ *	None.
+ *
+ *--------------------------------------------------------------
+ */
+int getWidth( VideoMaster *masterPtr) {
+#ifdef WIN32
+   HWND hwndCap;
+   CAPSTATUS capStatus;
+
+   hwndCap = (HWND) masterPtr->source;
+   if ( hwndCap == NULL) {
+      return 0;
+   }
+
+   if (capGetStatus(hwndCap, &capStatus, sizeof(CAPSTATUS)) == TRUE ) {
+      return capStatus.uiImageWidth;
+   } else {
+      return 0;
+   }
+
+   #endif   
+}
+
+/*
+ *--------------------------------------------------------------
+ *
+ * getHeight (WIN32 only)
+ *
+ *	   return image width 
+ *
+ * Results:
+ *	    if error , returns 0
+ *
+ * Side effects:
+ *	None.
+ *
+ *--------------------------------------------------------------
+ */
+int getHeight ( VideoMaster *masterPtr) {
+#ifdef WIN32
+   HWND hwndCap;
+   CAPSTATUS capStatus;
+
+   hwndCap = (HWND) masterPtr->source;
+   if ( hwndCap == NULL) {
+      return 0;
+   }
+
+   if (capGetStatus(hwndCap, &capStatus, sizeof(CAPSTATUS)) == TRUE ) {
+      return capStatus.uiImageHeight;
+   } else {
+      return 0;
+   }
+
+#endif   
+}
+
 
