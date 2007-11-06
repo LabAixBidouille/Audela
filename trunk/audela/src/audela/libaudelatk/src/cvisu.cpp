@@ -705,7 +705,10 @@ int CVisu::UpdateDisplay()
       return ELIBSTD_NO_TKPHOTO_HANDLE;
    }
 
-   if( zoom == 1 ) {
+   // affichage de l'image 
+   // remarque : si orgww==0 et orgwh==0 , il faut utiliser Tk_PhotoPutBlock car Tk_PhotoPutZoomedBlock 
+   //            ne supporte pas une image de taille nulle (boucle interne infinie)
+   if( zoom == 1 || (orgww==0 && orgwh==0)) {
       Tk_PhotoPutBlock(ph,&pib,0,0, orgww,orgwh);
    } else if( zoom > 1) {
       Tk_PhotoPutZoomedBlock(ph, &pib, 0, 0, (int) (orgww*zoom), (int) (orgwh*zoom), (int) zoom, (int) zoom, 1, 1);
