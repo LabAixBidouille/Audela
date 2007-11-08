@@ -2,27 +2,34 @@
 # Fichier : apncode.tcl
 # Description : Transcodage des variables de commande des APN
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: apncode.tcl,v 1.7 2007-11-02 23:20:40 michelpujol Exp $
+# Mise a jour $Id: apncode.tcl,v 1.8 2007-11-08 22:03:55 robertdelmas Exp $
 #
 
-#::acqapn::VerifData
+#============================================================
+# Declaration du namespace acqapn
+#    initialise le namespace
+#============================================================
+namespace eval ::acqapn {
+}
+
+# VerifData
 #--- Vérification des valeurs
 #
-proc VerifData { reglage } {
+proc ::acqapn::VerifData { reglage } {
    variable private
 
    switch -exact $reglage {
-      lens        { set private(dzoom)         [::acqapn::Dzoom $private(lens)] }
-      metering    { set private(code_metering) [::acqapn::Metering $private(metering)] }
+      lens        { set private(coolpix,dzoom)         [::acqapn::Dzoom $private(coolpix,lens)] }
+      metering    { set private(coolpix,code_metering) [::acqapn::Metering $private(coolpix,metering)] }
       format      { ::acqapn::Resolution }
       compression { ::acqapn::Resolution }
    }
 }
 
-#::acqapn::Dzoom
+# Dzoom
 #--- Codage du digital zoom à partir de lens
 #
-proc Dzoom { lens } {
+proc ::acqapn::Dzoom { lens } {
    switch -exact $lens {
       FishEye   { set dzoom "2" }
       Wide      { set dzoom "4" }
@@ -31,10 +38,10 @@ proc Dzoom { lens } {
    return $dzoom
 }
 
-#::acqapn::Metering
+# Metering
 #--- Codage du digital metering à partir de metering
 #
-proc Metering { metering } {
+proc ::acqapn::Metering { metering } {
    switch -exact $metering {
       Center       { set code "2" }
       Spot         { set code "3" }
@@ -45,94 +52,94 @@ proc Metering { metering } {
 }
 
 #
-#::acqapn::Resolution
+# Resolution
 #--- Cette commande est appelée pour définir la comande de résolution
 #--- en fonction du format et de la compression
 #
-proc Resolution { } {
+proc ::acqapn::Resolution { } {
    variable private
 
    #--- La combinaison format+compression est vérifiée
-   set cmdresol "$private(format)-$private(compression)"
+   set cmdresol "$private(coolpix,format)-$private(coolpix,compression)"
    switch -exact $cmdresol {
-      VGA-Basic   { set private(resolution) "1" }
-      VGA-Normal  { set private(resolution) "2" }
-      VGA-Fine    { set private(resolution) "3" }
-      XGA-Basic   { set private(resolution) "7" }
-      XGA-Normal  { set private(resolution) "8" }
-      XGA-Fine    { set private(resolution) "9" }
-      SXGA-Basic  { set private(resolution) "4" }
-      SXGA-Normal { set private(resolution) "5" }
-      SXGA-Fine   { set private(resolution) "6" }
-      UXGA-Basic  { set private(resolution) "10" }
-      UXGA-Normal { set private(resolution) "11" }
-      UXGA-Fine   { set private(resolution) "12" }
-      3:2-Basic   { set private(resolution) "26" }
-      3:2-Normal  { set private(resolution) "27" }
-      3:2-Fine    { set private(resolution) "28" }
-      3:2-Hi      { set private(resolution) "38" }
-      MAX-Basic   { set private(resolution) "29" }
-      MAX-Normal  { set private(resolution) "30" }
-      MAX-Fine    { set private(resolution) "31" }
-      MAX-Hi      { set private(resolution) "33" }
-      MAX-Raw     { set private(resolution) "55" }
-      default     { set private(resolution) "-1" ; ::acqapn::ErrComm 3 }
+      VGA-Basic   { set private(coolpix,resolution) "1" }
+      VGA-Normal  { set private(coolpix,resolution) "2" }
+      VGA-Fine    { set private(coolpix,resolution) "3" }
+      XGA-Basic   { set private(coolpix,resolution) "7" }
+      XGA-Normal  { set private(coolpix,resolution) "8" }
+      XGA-Fine    { set private(coolpix,resolution) "9" }
+      SXGA-Basic  { set private(coolpix,resolution) "4" }
+      SXGA-Normal { set private(coolpix,resolution) "5" }
+      SXGA-Fine   { set private(coolpix,resolution) "6" }
+      UXGA-Basic  { set private(coolpix,resolution) "10" }
+      UXGA-Normal { set private(coolpix,resolution) "11" }
+      UXGA-Fine   { set private(coolpix,resolution) "12" }
+      3:2-Basic   { set private(coolpix,resolution) "26" }
+      3:2-Normal  { set private(coolpix,resolution) "27" }
+      3:2-Fine    { set private(coolpix,resolution) "28" }
+      3:2-Hi      { set private(coolpix,resolution) "38" }
+      MAX-Basic   { set private(coolpix,resolution) "29" }
+      MAX-Normal  { set private(coolpix,resolution) "30" }
+      MAX-Fine    { set private(coolpix,resolution) "31" }
+      MAX-Hi      { set private(coolpix,resolution) "33" }
+      MAX-Raw     { set private(coolpix,resolution) "55" }
+      default     { set private(coolpix,resolution) "-1" ; ::acqapn::ErrComm 3 }
    }
 }
 
 #
-#::acqapn::ReverseDzoom
+# ReverseDzoom
 #--- Décodage du digital zoom en lens
 #
-proc ReverseDzoom { } {
+proc ::acqapn::ReverseDzoom { } {
    variable private
 
    switch -exact $private(dzoom) {
-      0       { set private(lens) "Telephoto" ; set private(dzoom) "8" }
-      2       { set private(lens) "Wide" }
-      4       { set private(lens) "FishEye" }
+      0       { set private(coolpix,lens) "Telephoto" ; set private(coolpix,dzoom) "8" }
+      2       { set private(coolpix,lens) "Wide" }
+      4       { set private(coolpix,lens) "FishEye" }
       default { ::acqapn::ErrComm 4 }
    }
 }
 
 #
-#::acqapn::ReverseResolution
+# ReverseResolution
 #---Définition du format et de la compresion en fonction de la résolution
 #
-proc ReverseResolution { } {
+proc ::acqapn::ReverseResolution { } {
    variable private
 
-   switch -exact $private(init,resolution) {
-      1       { set private(init,format) "VGA"  ; set private(init,compression) "Basic" }
-      2       { set private(init,format) "VGA"  ; set private(init,compression) "Normal" }
-      3       { set private(init,format) "VGA"  ; set private(init,compression) "Fine" }
-      4       { set private(init,format) "SXGA" ; set private(init,compression) "Basic" }
-      5       { set private(init,format) "SXGA" ; set private(init,compression) "Normal" }
-      6       { set private(init,format) "SXGA" ; set private(init,compression) "Fine" }
-      7       { set private(init,format) "XGA"  ; set private(init,compression) "Basic" }
-      8       { set private(init,format) "XGA"  ; set private(init,compression) "Normal" }
-      9       { set private(init,format) "XGA"  ; set private(init,compression) "Fine" }
-      10      { set private(init,format) "UXGA" ; set private(init,compression) "Basic" }
-      11      { set private(init,format) "UXGA" ; set private(init,compression) "Normal" }
-      12      { set private(init,format) "UXGA" ; set private(init,compression) "Fine" }
-      26      { set private(init,format) "3:2"  ; set private(init,compression) "Basic" }
-      27      { set private(init,format) "3:2"  ; set private(init,compression) "Normal" }
-      28      { set private(init,format) "3:2"  ; set private(init,compression) "Fine" }
-      29      { set private(init,format) "MAX"  ; set private(init,compression) "Basic" }
-      30      { set private(init,format) "MAX"  ; set private(init,compression) "Normal" }
-      31      { set private(init,format) "MAX"  ; set private(init,compression) "Fine" }
-      33      { set private(init,format) "MAX"  ; set private(init,compression) "Hi" }
-      38      { set private(init,format) "3:2"  ; set private(init,compression) "Hi" }
-      55      { set private(init,format) "MAX"  ; set private(init,compression) "Raw" }
+   switch -exact $private(coolpix_init,resolution) {
+      1       { set private(coolpix_init,format) "VGA"  ; set private(coolpix_init,compression) "Basic" }
+      2       { set private(coolpix_init,format) "VGA"  ; set private(coolpix_init,compression) "Normal" }
+      3       { set private(coolpix_init,format) "VGA"  ; set private(coolpix_init,compression) "Fine" }
+      4       { set private(coolpix_init,format) "SXGA" ; set private(coolpix_init,compression) "Basic" }
+      5       { set private(coolpix_init,format) "SXGA" ; set private(coolpix_init,compression) "Normal" }
+      6       { set private(coolpix_init,format) "SXGA" ; set private(coolpix_init,compression) "Fine" }
+      7       { set private(coolpix_init,format) "XGA"  ; set private(coolpix_init,compression) "Basic" }
+      8       { set private(coolpix_init,format) "XGA"  ; set private(coolpix_init,compression) "Normal" }
+      9       { set private(coolpix_init,format) "XGA"  ; set private(coolpix_init,compression) "Fine" }
+      10      { set private(coolpix_init,format) "UXGA" ; set private(coolpix_init,compression) "Basic" }
+      11      { set private(coolpix_init,format) "UXGA" ; set private(coolpix_init,compression) "Normal" }
+      12      { set private(coolpix_init,format) "UXGA" ; set private(coolpix_init,compression) "Fine" }
+      26      { set private(coolpix_init,format) "3:2"  ; set private(coolpix_init,compression) "Basic" }
+      27      { set private(coolpix_init,format) "3:2"  ; set private(coolpix_init,compression) "Normal" }
+      28      { set private(coolpix_init,format) "3:2"  ; set private(coolpix_init,compression) "Fine" }
+      29      { set private(coolpix_init,format) "MAX"  ; set private(coolpix_init,compression) "Basic" }
+      30      { set private(coolpix_init,format) "MAX"  ; set private(coolpix_init,compression) "Normal" }
+      31      { set private(coolpix_init,format) "MAX"  ; set private(coolpix_init,compression) "Fine" }
+      33      { set private(coolpix_init,format) "MAX"  ; set private(coolpix_init,compression) "Hi" }
+      38      { set private(coolpix_init,format) "3:2"  ; set private(coolpix_init,compression) "Hi" }
+      55      { set private(coolpix_init,format) "MAX"  ; set private(coolpix_init,compression) "Raw" }
       default { ::acqapn::ErrComm 5 }
    }
 }
 
 #
-#::acqapn::Exposure
-#--- Cette commande est appelée pour définir la comande et la valeur d'exposition
+# Exposure
+#--- Cette commande est appelée pour définir la commande et la valeur d'exposition
 #
-proc Exposure { var exposure } {
+proc ::acqapn::Exposure { var exposure } {
    variable private
    global panneau
 
@@ -141,6 +148,6 @@ proc Exposure { var exposure } {
    set exposurecmd  "exposure+"
    if { $valeur < "0" } { set exposurecmd "exposure-" }
    set panneau(coolpix$var,exposurecmd) $exposurecmd
-   set private($var,code_exposure) $code_exposure
+   set private(coolpix$var,code_exposure) $code_exposure
 }
 
