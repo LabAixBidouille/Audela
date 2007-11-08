@@ -23,7 +23,12 @@ http://fr.groups.yahoo.com/group/audeladev/
 ====================
 
 AudeLA est capable de piloter les cameras CCD suivantes :
+- AndorTech,
+- APN (Appareil Photo Numerique),
 - Audine (Kaf series 400, 401, 401E, 1600, 1602, 1602E et 3200E),
+- CB245,
+- Cemes,
+- Finger Lakes Instruments,
 - Hi-SIS 11,
 - Hi-SIS 22 (12 et 14 bits),
 - Hi-SIS 23,
@@ -34,22 +39,17 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - Hi-SIS 43,
 - Hi-SIS 44,
 - Hi-SIS 48,
-- SBIG (tous les modeles),
-- CB245,
-- MX516,
-- MX916,
-- HX516,
 - Kitty 237,
 - Kitty 255,
 - Kitty 2,
-- WebCam,
-- TH7852A,
+- SBIG (tous les modeles),
 - SCR1300XTC,
-- APN (Appareil Photo Numerique),
-- AndorTech,
-- Finger Lakes Instruments,
-- CEMES,
-- Nikon CoolPix (port serie).
+- MX516,
+- MX916,
+- HX516,
+- TH7852A,
+- WebCam,
+- Nikon CoolPix (port serie) : Uniquement creee par l'outil Acquisition APN CoolPix.
 
 AudeLA est capable de piloter les montures suivantes :
 - LX200,
@@ -63,21 +63,21 @@ AudeLA est capable de piloter les montures suivantes :
 AudeLA est capable de piloter les interfaces de communication suivantes :
 - AudiNet (interface Ethernet pour cameras Audine et telescopes LX200 : PicoWeb),
 - EthernAude (interface Ethernet pour cameras CCD),
-- Manuel,
 - GPhoto2,
-- Port parallele,
+- Manuel,
 - PhotoPC,
+- Port parallele,
+- Port serie,
 - QuickAudine (interface USB pour cameras Audine),
 - QuickRemote (interface USB pour APN, WebCam longue pose, raquette de telescope,
-  mise au point, etc.),
-- Port serie.
+  mise au point, etc.).
 
 AudeLA est capable de piloter les equipements suivants :
-- La roue a filtres developpee dans le cadre de l'association Aude,
 - Focaliseur AudeCom,
 - Focaliseur JMI,
 - Focaliseur LX200,
-- Lhires III.
+- Lhires III,
+- Roue a filtres developpee dans le cadre de l'association Aude.
 
 Bien entendu les auteurs ne disposent pas de tout ce materiel cite. Ils les ont 
 integres en fonction des moyens et des connaissances disponibles, n'etant pas a 
