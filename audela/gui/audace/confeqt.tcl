@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.27 2007-11-03 19:04:28 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.28 2007-11-08 21:40:02 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -415,7 +415,7 @@ proc ::confEqt::findPlugin { } {
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
    }
-   set pluginList [lsort -index 0 $pluginList]
+   set pluginList [lsort -dictionary -index 0 $pluginList]
    set private(pluginNamespaceList) ""
    set private(pluginLabelList)     ""
    foreach plugin $pluginList {

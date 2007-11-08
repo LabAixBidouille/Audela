@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.25 2007-11-03 19:04:48 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.26 2007-11-08 21:40:17 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -434,7 +434,7 @@ proc ::confLink::findPlugin { } {
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
    }
-   set pluginList [lsort -index 0 $pluginList]
+   set pluginList [lsort -dictionary -index 0 $pluginList]
    set private(pluginNamespaceList) ""
    set private(pluginLabelList)     ""
    foreach plugin $pluginList {
