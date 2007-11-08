@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.22 2007-11-03 19:05:06 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.23 2007-11-08 21:41:46 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -428,7 +428,7 @@ proc ::confPad::findPlugin { } {
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
    }
-   set pluginList [lsort -index 0 $pluginList]
+   set pluginList [lsort -dictionary -index 0 $pluginList]
    set private(pluginNamespaceList) ""
    set private(pluginLabelList)     ""
    foreach plugin $pluginList {
