@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.9 2007-11-02 23:20:36 michelpujol Exp $
+# Mise a jour $Id: kitty.tcl,v 1.10 2007-11-09 23:45:58 michelpujol Exp $
 #
 
 namespace eval ::kitty {
@@ -334,6 +334,10 @@ proc ::kitty::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
       if { $conf(kitty,modele) == "237" } {
          #--- Je cree la camera
          set camNo [ cam::create kitty $conf(kitty,port) -name KITTY237 -canbits [ lindex $conf(kitty,res) 0 ] ]

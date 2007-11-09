@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.7 2007-11-02 23:20:38 michelpujol Exp $
+# Mise a jour $Id: starlight.tcl,v 1.8 2007-11-09 23:45:59 michelpujol Exp $
 #
 
 namespace eval ::starlight {
@@ -251,6 +251,10 @@ proc ::starlight::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
       if { $conf(starlight,modele) == "MX516" } {
          #--- Je cree la camera
          set camNo [ cam::create starlight $conf(starlight,port) -name MX516 ]

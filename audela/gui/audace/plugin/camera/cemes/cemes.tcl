@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.24 2007-11-02 23:20:33 michelpujol Exp $
+# Mise a jour $Id: cemes.tcl,v 1.25 2007-11-09 23:45:57 michelpujol Exp $
 #
 
 namespace eval ::cemes {
@@ -233,6 +233,10 @@ proc ::cemes::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
       #--- Je cree la camera
       set camNo [ cam::create cemes PCI ]
       console::affiche_erreur "$caption(cemes,port_camera) $caption(cemes,2points) [ cam$camNo port ]\n"

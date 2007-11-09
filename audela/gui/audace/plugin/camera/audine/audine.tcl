@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.7 2007-11-03 22:59:40 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.8 2007-11-09 23:45:57 michelpujol Exp $
 #
 
 namespace eval ::audine {
@@ -378,6 +378,10 @@ proc ::audine::configureCamera { camItem bufNo } {
    global audace caption conf confCam
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
       #--- Je configure le CCCD
       if { [ string range $conf(audine,ccd) 0 4 ] == "kaf16" } {
          set ccd "kaf1602"
