@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.56 2007-11-02 23:20:47 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.57 2007-11-09 23:49:08 michelpujol Exp $
 #
 
 #==============================================================
@@ -345,7 +345,7 @@ namespace eval ::acqfc {
 #***** Fin de la procedure Init_list_extension *****************
 
 #***** Procedure Adapt_Panneau_AcqFC ***************************
-   proc Adapt_Panneau_AcqFC { visuNo { a "" } { b "" } { c "" } } {
+   proc Adapt_Panneau_AcqFC { visuNo args } {
       global audace conf panneau
 
       set panneau(acqfc,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
@@ -2019,7 +2019,7 @@ namespace eval ::acqfc {
 
       set camItem [::confVisu::getCamItem $visuNo]
 
-      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
+      if { [ ::confCam::isReady $camItem ] == 0 } {
          ::confCam::run
          tkwait window $audace(base).confCam
          #--- Je decoche la checkbox
@@ -2739,6 +2739,14 @@ namespace eval ::acqfc {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $panneau(acqfc,$visuNo,base).status_video
+
+      #--- J'active le preview
+      if { [::confCam::isReady $panneau(acqfc,$visuNo,camItem)] == 1 } {
+         if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) "hasVideo"] == 1 } {
+            set panneau(acqfc,$visuNo,showvideopreview) 1
+            changerVideoPreview $visuNo
+         }
+      }
    }
 #***** Fin fenetre de configuration video ****************************************************
 
@@ -2847,7 +2855,7 @@ namespace eval ::acqfc {
       #--- Une camera est connectee
       if { [ ::confVisu::getCamItem $visuNo ] == "" } {
          return
-      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
+      } elseif { [::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] "hasVideo"] != 1  } {
          return
       }
 
@@ -3012,7 +3020,7 @@ namespace eval ::acqfc {
 
 #***** Procedure de rafraississement du nombre de pixels *************************************
    proc refreshNumberPixel { visuNo } {
-      global audace zone
+      global audace panneau zone
 
       #--- J'arrete le mode video fenetree
       catch { cam$panneau(acqfc,$visuNo,camNo) stopvideocrop }
