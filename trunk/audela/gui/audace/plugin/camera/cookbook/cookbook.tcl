@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.17 2007-11-02 23:20:34 michelpujol Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.18 2007-11-09 23:45:58 michelpujol Exp $
 #
 
 namespace eval ::cookbook {
@@ -223,6 +223,10 @@ proc ::cookbook::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
       #--- Je cree la camera
       set camNo [ cam::create cookbook $conf(cookbook,port) -name CB245 ]
       console::affiche_erreur "$caption(cookbook,port_camera) $caption(cookbook,2points) $conf(cookbook,port)\n"

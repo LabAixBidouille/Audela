@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.26 2007-11-02 23:20:38 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.27 2007-11-09 23:45:59 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -735,6 +735,9 @@ namespace eval ::webcam::config {
 proc ::webcam::config::run { visuNo camItem } {
    variable private
 
+   #--- je recupere le numero de la camera
+   set private($camItem,camNo) [::confCam::getVisuNo $camItem]
+
    if { $::tcl_platform(os) == "Linux" } {
       set private($visuNo,toplevel) "[confVisu::getBase $visuNo].webcamconfig"
       set private($visuNo,camItem) $camItem
@@ -752,7 +755,7 @@ proc ::webcam::config::run { visuNo camItem } {
       }
       set result 0
    } else {
-      set result [ catch { after 10 "cam$private($camItem,camNo) videosource" } ]
+      set result [ after 10 "cam$private($camItem,camNo) videosource" ]
    }
    return $result
 }

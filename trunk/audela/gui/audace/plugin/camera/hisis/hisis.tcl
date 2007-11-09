@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.7 2007-11-02 23:20:36 michelpujol Exp $
+# Mise a jour $Id: hisis.tcl,v 1.8 2007-11-09 23:45:58 michelpujol Exp $
 #
 
 namespace eval ::hisis {
@@ -397,6 +397,10 @@ proc ::hisis::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
       if { $conf(hisis,modele) == "11" } {
          #--- Je cree la camera
          set camNo [ cam::create hisis $conf(hisis,port) -name Hi-SIS11 ]

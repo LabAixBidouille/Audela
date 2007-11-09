@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.16 2007-11-02 23:20:38 michelpujol Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.17 2007-11-09 23:45:58 michelpujol Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -208,6 +208,10 @@ proc ::scr1300xtc::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
       #--- Je cree la camera
       set camNo [ cam::create synonyme $conf(scr1300xtc,port) -name SCR1300XTC ]
       console::affiche_erreur "$caption(scr1300xtc,port_camera) $caption(scr1300xtc,2points) $conf(scr1300xtc,port)\n"

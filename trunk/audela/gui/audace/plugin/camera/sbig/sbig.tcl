@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.8 2007-11-02 23:20:36 michelpujol Exp $
+# Mise a jour $Id: sbig.tcl,v 1.9 2007-11-09 23:45:58 michelpujol Exp $
 #
 
 namespace eval ::sbig {
@@ -297,6 +297,10 @@ proc ::sbig::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+      #--- je verifie que la camera n'est deja utilisee
+      if { $private(A,camNo) != 0 || $private(B,camNo) != 0 || $private(C,camNo) != 0  } {
+         error "" "CameraUnique"
+      }
      ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
       #--- Je cree la camera
       set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) ]
