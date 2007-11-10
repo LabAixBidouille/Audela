@@ -2,7 +2,7 @@
 # Fichier : autoguider.tcl
 # Description : Outil d'autoguidage
 # Auteur : Michel PUJOL
-# Mise a jour $Id: autoguider.tcl,v 1.27 2007-11-02 23:20:48 michelpujol Exp $
+# Mise a jour $Id: autoguider.tcl,v 1.28 2007-11-10 11:28:31 michelpujol Exp $
 #
 
 #==============================================================
@@ -297,7 +297,7 @@ proc ::autoguider::initPlugin{ } {
 # adaptPanel
 #    adapte l'affichage des boutons en fonction de la camera
 #------------------------------------------------------------
-proc ::autoguider::adaptPanel { visuNo { command "" } { varname1 "" } { varname2 "" } } {
+proc ::autoguider::adaptPanel { visuNo args } {
    variable private
    global conf
 
@@ -430,6 +430,7 @@ proc ::autoguider::startSearchStar { visuNo } {
       vwait ::autoguider::private($visuNo,acquisitionState)
       set result $private($visuNo,searchResult))
    } else {
+      set private($visuNo,acquisitionState)  0
       set result ""
    }
 
@@ -489,6 +490,7 @@ proc ::autoguider::startCenterStar { visuNo } {
       vwait ::autoguider::private($visuNo,acquisitionState)
       set result $private($visuNo,centerResult)
    } else {
+      set private($visuNo,acquisitionState)  0
       set result ""
    }
 
@@ -517,7 +519,13 @@ proc ::autoguider::startGuiding { visuNo } {
    set private($visuNo,mode)        "guide"
    set private($visuNo,continuousAcquisition) 1
    set private($visuNo,acquisitionState) 1
-   ::autoguider::startAcquisition $visuNo
+   set result [startAcquisition $visuNo]
+   if { $result == 0 } {
+      #--- rien a faire
+   } else {
+      set private($visuNo,acquisitionState)  0
+   }
+
 
 }
 
@@ -534,18 +542,18 @@ proc ::autoguider::startAcquisition { visuNo } {
 
    #--- Petits raccourcis bien pratiques
    set camItem [::confVisu::getCamItem $visuNo ]
-   set camNo [::confCam::getCamNo $camItem ]
 
+   #--- je verifie la presence la camera
+   if { [::confCam::isReady $camItem] == 0 } {
+      ::confCam::run
+      return 1
+   }
+
+   set camNo [::confCam::getCamNo $camItem ]
    set private($visuNo,camThreadNo) [::confCam::getThreadNo $camItem ]
 
    if { $private($visuNo,acquisitionState) != 1 } {
       #--- je ne fais rien si une demande d'arret est en cours
-      return 1
-   }
-
-   #--- je verifie la presence la camera
-   if { $camNo == 0 } {
-      ::confCam::run
       return 1
    }
 
@@ -584,7 +592,7 @@ proc ::autoguider::startAcquisition { visuNo } {
    if { $private($visuNo,camThreadNo) == 0 } {
       after 0 [list ::autoguider::processAcquisition $visuNo $camNo "" $conf(autoguider,intervalle)]
    } else {
-      #[info body ::autoguider::processAcquisition]
+      #--- je copie la procedure processAcquisition dans la thread de la camera
       set script "proc  processAcquisition { visuNo camNo mainThreadNo intervalle } { [info body ::autoguider::processAcquisition] }"
       thread::send $private($visuNo,camThreadNo) "$script"
       #--- je fais une acquisition avec la thread de la camera
@@ -1427,12 +1435,10 @@ proc ::autoguider::webcamConfigure { visuNo } {
 #     appl
 #  parametres
 #     visuNo : numero de visu
-#     varname    (facultatif): nom de la variable surveillee par la fonction trace
-#     arrayindex (facultatif): index du tableau si varname est un tableau surveille par la fonction trace
-#     operation  (facultatif): operation surveillee par la fonction trace
+#     args   : valeur fournies par le gestionnaire de listener
 #  return : null
 #------------------------------------------------------------
-proc ::autoguider::onChangeZoom { visuNo { varname "" } { arrayindex "" } { operation "" } } {
+proc ::autoguider::onChangeZoom { visuNo args } {
    variable private
 
    #--- je redessine l'origine
@@ -1446,12 +1452,10 @@ proc ::autoguider::onChangeZoom { visuNo { varname "" } { arrayindex "" } { oper
 #     appl
 #  parametres
 #     visuNo : numero de visu
-#     varname    (facultatif): nom de la variable surveillee par la fonction trace
-#     arrayindex (facultatif): index du tableau si varname est un tableau surveille par la fonction trace
-#     operation  (facultatif): operation surveillee par la fonction trace
+#     args   : valeur fournies par le gestionnaire de listener
 #  return : null
 #------------------------------------------------------------
-proc ::autoguider::onChangeSubWindow { visuNo { varname "" } { arrayindex "" } { operation "" } } {
+proc ::autoguider::onChangeSubWindow { visuNo args } {
    variable private
 
    #--- je redessine l'origine

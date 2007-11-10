@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.2 2007-11-03 17:49:24 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.3 2007-11-10 11:28:31 michelpujol Exp $
 #
 
 #============================================================
@@ -431,7 +431,7 @@ proc ::tlscp::deletePluginInstance { visuNo } {
 #    varIndex  : index de la variable surveillee si c'est un array
 #    operation : operation declencheuse (array read write unset)
 #------------------------------------------------------------
-proc ::tlscp::adaptPanel { visuNo { varName "" } { varIndex "" } { operation "" } } {
+proc ::tlscp::adaptPanel { visuNo args } {
    variable private
    global conf
 
@@ -848,38 +848,34 @@ proc ::tlscp::stopAcquisition { visuNo  } {
 # onChangeZoom
 #    appl
 # parametres
-#    visuNo                  : numero de visu
-#    varname    (facultatif) : nom de la variable surveillee par la fonction trace
-#    arrayindex (facultatif) : index du tableau si varname est un tableau surveille par la fonction trace
-#    operation  (facultatif) : operation surveillee par la fonction trace
+#    visuNo  : numero de visu
+#     args   : valeur fournies par le gestionnaire de listener
 # return : null
 #------------------------------------------------------------
-proc ::tlscp::onChangeZoom { visuNo { varname "" } { arrayindex "" } { operation "" } } {
+proc ::tlscp::onChangeZoom { visuNo args } {
    variable private
 
    #--- je redessine l'origine
    ::tlscp::center::changeShowAxis $visuNo
    #--- je redessine la cible
-   ::tlscp::center::moveTarget $visuNo $:tlscp::center::private($visuNo,targetCoord)
+   ::tlscp::center::moveTarget $visuNo $::tlscp::center::private($visuNo,targetCoord)
 }
 
 #------------------------------------------------------------
 # onChangeSubWindow
 #    appl
 # parametres
-#    visuNo                  : numero de visu
-#    varname    (facultatif) : nom de la variable surveillee par la fonction trace
-#    arrayindex (facultatif) : index du tableau si varname est un tableau surveille par la fonction trace
-#    operation  (facultatif) : operation surveillee par la fonction trace
+#    visuNo  : numero de visu
+#     args   : valeur fournies par le gestionnaire de listener
 # return : null
 #------------------------------------------------------------
-proc ::tlscp::onChangeSubWindow { visuNo { varname "" } { arrayindex "" } { operation "" } } {
+proc ::tlscp::onChangeSubWindow { visuNo args } {
    variable private
 
    #--- je redessine l'origine
    ::tlscp::center::changeShowAxis $visuNo
    #--- je redessine la cible
-   ::tlscp::center::moveTarget $visuNo $:tlscp::center::private($visuNo,targetCoord)
+   ::tlscp::center::moveTarget $visuNo $::tlscp::center::private($visuNo,targetCoord)
 }
 
 #------------------------------------------------------------
@@ -994,7 +990,7 @@ proc ::tlscp::center::init { visuNo } {
 #    execute les acquisitions en boucle
 # parametres
 #    visuNo : numero de la visu
-#    mode   :  "acq" , "center"
+#    mode   :  "acq" , "center", "search"
 # return
 #    0 si le lance est OK
 #    1 si erreur de lancement
@@ -1007,6 +1003,17 @@ proc ::tlscp::center::startAcquisition { visuNo mode } {
       #--- je ne fais rien si une demande d'arret est en cours
       return 1
    }
+
+   #--- Petits raccourcis bien pratiques
+   set camItem [::confVisu::getCamItem $visuNo ]
+   set camNo   [::confCam::getCamNo $camItem ]
+
+   #--- je verifie la presence de la camera
+   if { [::confCam::isReady $camItem] == 0 } {
+      ::confCam::run
+      return 1
+   }
+
    set private($visuNo,acquisitionState) 1
    set private($visuNo,mode)  $mode
 
@@ -1014,11 +1021,6 @@ proc ::tlscp::center::startAcquisition { visuNo mode } {
    $::tlscp::private($visuNo,This).camera.goccd configure -text "$::caption(tlscp,stopccd) (ESC)" -command "::tlscp::center::stopAcquisition $visuNo"
    #--- J'associe la commande d'arret a la touche ESCAPE
    bind all <Key-Escape> "::tlscp::center::stopAcquisition $visuNo"
-
-   #--- Petits raccourcis bien pratiques
-   set camItem [::confVisu::getCamItem $visuNo ]
-   set camNo   [::confCam::getCamNo $camItem ]
-   set private($visuNo,camThreadNo) [::confCam::getThreadNo $camItem ]
 
    if { $private($visuNo,mode) == "center" } {
       #--- J'intialise la liste des deltas
@@ -1041,6 +1043,7 @@ proc ::tlscp::center::startAcquisition { visuNo mode } {
    cam$camNo radecfromtel 0
    cam$camNo exptime $::conf(tlscp,expTime)
 
+   set private($visuNo,camThreadNo) [::confCam::getThreadNo $camItem ]
    if { $private($visuNo,camThreadNo) == 0 } {
       after 0 [list ::tlscp::center::processAcquisition $visuNo $camNo ""]
    } else {
@@ -1299,29 +1302,16 @@ proc ::tlscp::center::processAcquisition2 { visuNo } {
 
 #------------------------------------------------------------
 # createTarget
-#    affiche la cible autour du point de coordonnees targetCoord
+#    cree et affiche la cible au coocrdonnees (1,1)(2,2) du canvas
 #
-#       *----------* y1=y0+w
-#       |          |
-#       |          |
-#     ..|..........|...........
-#       |          |
-#       |          |
-#       *----------* y1=y0-w
-#       x1         x2
 # parametres :
 #    visuNo      : numero de la visu courante
-#    targetCoord : coordonnees de la cible (referentiel buffer)
 #------------------------------------------------------------
 proc ::tlscp::center::createTarget { visuNo } {
    variable private
 
    #--- je supprime l'affichage precedent de la cible
    deleteTarget $visuNo
-
-   if { $private($visuNo,targetCoord) == "" } {
-     return
-   }
 
    #--- j'affiche la cible
    $private($visuNo,hCanvas) create rect 1 1 2 2 -outline red -offset center -tag target
@@ -1337,6 +1327,10 @@ proc ::tlscp::center::createTarget { visuNo } {
 #------------------------------------------------------------
 proc ::tlscp::center::moveTarget { visuNo targetCoord } {
    variable private
+
+   if { $private($visuNo,targetCoord) == "" } {
+     return
+   }
 
    #--- je cree la cible si elle n'existe pas
    if { [$private($visuNo,hCanvas) gettags target] == "" } {

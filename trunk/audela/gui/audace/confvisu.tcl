@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.73 2007-11-02 23:20:31 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.74 2007-11-10 11:28:30 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -100,11 +100,6 @@ namespace eval ::confVisu {
       set private($visuNo,zoom)            "1"
       set private($visuNo,currentTool)     ""
       set private($visuNo,pluginInstanceList) [list ]
-
-      #--- Initialisation des variables utilisees par les listener
-      set private($visuNo,listenerMirror)    "0"
-      set private($visuNo,listenerZoom)      $private($visuNo,zoom)
-      set private($visuNo,listenerSubWindow) $private($visuNo,window)
 
       #--- Initialisation de variables pour le trace de repere
       set private($visuNo,boxSize)         ""
@@ -495,76 +490,62 @@ namespace eval ::confVisu {
    proc setZoom { visuNo { zoom "" } } {
       variable private
 
-      set bufNo [visu$visuNo buf]
-
-      if { [ buf$bufNo imageready ] == "1" } {
-
-         #--- je modifie le zoom si une nouvelle valeur est donnee en parametre
-         if { $zoom == "" } {
-            #--- rien a faire, on prend la valeur de private($visuNo,zoom)
-         } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 } {
-            set private($visuNo,zoom) $zoom
-         } else {
-            ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
-         }
-
-         #--- je calcule les coordonnées du centre de l'image
-         set canvasCenterPrev [getCanvasCenter $visuNo]
-         set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
-
-         #--- je calcule la position du bord gauche et du bord haut
-         set previousLeft [expr [lindex $canvasCenterPrev 0] - [lindex [$private($visuNo,hCanvas) xview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 2] ]
-         set previousTop  [expr [lindex $canvasCenterPrev 1] - [lindex [$private($visuNo,hCanvas) yview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 3] ]
-         set zoomPrev [visu$visuNo zoom]
-
-         #--- j'applique le nouveau zoom
-         visu$visuNo zoom $private($visuNo,zoom)
-
-         #--- rafraichissement de l'image avec le nouveau zoom
-         visu$visuNo clear
-         visu$visuNo disp
-
-         #--- mise a jour du parametre scrollposition du canvas
-         setScrollbarSize $visuNo
-
-         #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
-         set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
-
-         #--- je calcule la nouvelle position du bord gauche et du haut pour garder le centre de l'image au meme endroit
-         set newleft [expr [lindex $canvasCenter 0] - $previousLeft ]
-         set newtop  [expr [lindex $canvasCenter 1] - $previousTop  ]
-
-         #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible
-         if { $newleft < 0 } { set newleft 0 }
-         if { $newtop  < 0 } { set newtop  0 }
-
-         #--- je centre le canvas
-         set scrollRegion [$private($visuNo,hCanvas) cget -scrollregion]
-         set leftRegion   [lindex $scrollRegion 0]
-         set topRegion    [lindex $scrollRegion 1]
-         set rightRegion  [lindex $scrollRegion 2]
-         set bottomRegion [lindex $scrollRegion 3]
-
-         if { $rightRegion != 0 } {
-            $private($visuNo,hCanvas) xview moveto [ expr $newleft / ($rightRegion - $leftRegion) ]
-         }
-
-         if { $bottomRegion != 0 } {
-            $private($visuNo,hCanvas) yview moveto [ expr $newtop / ($bottomRegion - $topRegion) ]
-         }
-
-         #--- je mets a jour la taille du reticule
-         ::confVisu::redrawCrosshair $visuNo
-
-         #--- je mets a jour la variable surveillee par le listener
-         set private($visuNo,listenerZoom) $private($visuNo,zoom)
-
+      #--- je modifie le zoom si une nouvelle valeur est donnee en parametre
+      if { $zoom == "" } {
+         #--- rien a faire, on prend la valeur de private($visuNo,zoom)
+      } elseif { $zoom==.125 || $zoom==.25 || $zoom==.5 || $zoom==1 || $zoom==2 || $zoom==4 } {
+         set private($visuNo,zoom) $zoom
       } else {
-
-         set private($visuNo,zoom) "1"
-
+         ::console::affiche_erreur "confVisu::setZoom error : zoom $zoom not authorized\n"
       }
 
+      #--- je calcule les coordonnées du centre de l'image
+      set canvasCenterPrev [getCanvasCenter $visuNo]
+      set pictureCenter [::confVisu::canvas2Picture $visuNo $canvasCenterPrev ]
+
+      #--- je calcule la position du bord gauche et du bord haut
+      set previousLeft [expr [lindex $canvasCenterPrev 0] - [lindex [$private($visuNo,hCanvas) xview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 2] ]
+      set previousTop  [expr [lindex $canvasCenterPrev 1] - [lindex [$private($visuNo,hCanvas) yview] 0] * [lindex [$private($visuNo,hCanvas) cget -scrollregion ] 3] ]
+      set zoomPrev [visu$visuNo zoom]
+
+      #--- j'applique le nouveau zoom
+      visu$visuNo zoom $private($visuNo,zoom)
+
+      #--- rafraichissement de l'image avec le nouveau zoom
+      visu$visuNo clear
+      visu$visuNo disp
+
+      #--- mise a jour du parametre scrollposition du canvas
+      setScrollbarSize $visuNo
+
+      #--- je calcule les coordonnes de l'ancien centre du canvas dans le nouveau repere
+      set canvasCenter [::confVisu::picture2Canvas $visuNo $pictureCenter]
+
+      #--- je calcule la nouvelle position du bord gauche et du haut pour garder le centre de l'image au meme endroit
+      set newleft [expr [lindex $canvasCenter 0] - $previousLeft ]
+      set newtop  [expr [lindex $canvasCenter 1] - $previousTop  ]
+
+      #--- je corrige les deplacements si l'ancien centre du canvas n'est plus visible
+      if { $newleft < 0 } { set newleft 0 }
+      if { $newtop  < 0 } { set newtop  0 }
+
+      #--- je centre le canvas
+      set scrollRegion [$private($visuNo,hCanvas) cget -scrollregion]
+      set leftRegion   [lindex $scrollRegion 0]
+      set topRegion    [lindex $scrollRegion 1]
+      set rightRegion  [lindex $scrollRegion 2]
+      set bottomRegion [lindex $scrollRegion 3]
+
+      if { $rightRegion != 0 } {
+         $private($visuNo,hCanvas) xview moveto [ expr $newleft / ($rightRegion - $leftRegion) ]
+      }
+
+      if { $bottomRegion != 0 } {
+         $private($visuNo,hCanvas) yview moveto [ expr $newtop / ($bottomRegion - $topRegion) ]
+      }
+
+      #--- je mets a jour la taille du reticule
+      ::confVisu::redrawCrosshair $visuNo
    }
 
    #------------------------------------------------------------
@@ -577,16 +558,10 @@ namespace eval ::confVisu {
    proc setMirrorX { visuNo } {
       variable private
 
-      set bufNo [visu$visuNo buf]
-      if { [ buf$bufNo imageready ] == "1" } {
-         visu$visuNo mirrorx $private($visuNo,mirror_x)
-         ::confVisu::autovisu $visuNo
-      } else {
-         set private($visuNo,mirror_x) "0"
-      }
+      #--- j'applique un miroir vertical (sur l'axe des x)
+      visu$visuNo mirrorx $private($visuNo,mirror_x)
+      ::confVisu::autovisu $visuNo
 
-      #--- je met à jour la variable surveillee par le listener
-      set private($visuNo,listenerMirror) "0"
    }
 
    #------------------------------------------------------------
@@ -599,16 +574,9 @@ namespace eval ::confVisu {
    proc setMirrorY { visuNo } {
       variable private
 
-      set bufNo [visu$visuNo buf]
-      if { [ buf$bufNo imageready ] == "1" } {
-         visu$visuNo mirrory $private($visuNo,mirror_y)
-         ::confVisu::autovisu $visuNo
-      } else {
-         set private($visuNo,mirror_y) "0"
-      }
-
-      #--- je met à jour la variable surveillee par le listener
-      set private($visuNo,listenerMirror) "0"
+      #--- j'applique un miroir horizontal (sur l'axe des y)
+      visu$visuNo mirrory $private($visuNo,mirror_y)
+      ::confVisu::autovisu $visuNo
    }
 
    #------------------------------------------------------------
@@ -750,10 +718,6 @@ namespace eval ::confVisu {
       } else {
          set private($visuNo,window) "0"
       }
-
-      #--- je met à jour la variable surveillee par le listener
-      set private($visuNo,listenerSubWindow) $private($visuNo,window)
-
    }
 
    #------------------------------------------------------------
@@ -861,7 +825,7 @@ namespace eval ::confVisu {
       variable private
 
       set imageNo [visu$visuNo image]
-      set camNo   [::confcam::getCamNo $private($visuNo) ]
+      set camNo   [::confCam::getCamNo $private($visuNo,camItem) ]
 
       if { $state == 1 } {
          #--- Je supprime l'image precedente
@@ -904,7 +868,7 @@ namespace eval ::confVisu {
    proc addCameraListener { visuNo cmd } {
       variable private
 
-      trace add variable "::confVisu::private($visuNo,camItem)" write $cmd
+      trace add execution ::confVisu::setCamera  leave $cmd
    }
 
    #------------------------------------------------------------
@@ -917,7 +881,7 @@ namespace eval ::confVisu {
    proc removeCameraListener { visuNo cmd } {
       variable private
 
-      trace remove variable "::confVisu::private($visuNo,camItem)" write $cmd
+      trace remove execution ::confVisu::setCamera leave $cmd
    }
 
    #------------------------------------------------------------
@@ -930,7 +894,7 @@ namespace eval ::confVisu {
    proc addFileNameListener { visuNo cmd } {
       variable private
 
-      trace add variable "::confVisu::private($visuNo,lastFileName)" write $cmd
+      trace add execution ::confVisu::setFileName leave $cmd
    }
 
    #------------------------------------------------------------
@@ -943,7 +907,7 @@ namespace eval ::confVisu {
    proc removeFileNameListener { visuNo cmd } {
       variable private
 
-      trace remove variable "::confVisu::private($visuNo,lastFileName)" write $cmd
+      trace remove execution ::confVisu::setFileName leave $cmd
    }
 
    #------------------------------------------------------------
@@ -956,7 +920,8 @@ namespace eval ::confVisu {
    proc addMirrorListener { visuNo cmd } {
       variable private
 
-      trace add variable "::confVisu::private($visuNo,listenerMirror)" write $cmd
+      trace add execution ::confVisu::setMirrorX leave $cmd
+      trace add execution ::confVisu::setMirrorY leave $cmd
    }
 
    #------------------------------------------------------------
@@ -969,7 +934,8 @@ namespace eval ::confVisu {
    proc removeMirrorListener { visuNo cmd } {
       variable private
 
-      trace remove variable "::confVisu::private($visuNo,listenerMirror)" write $cmd
+      trace remove execution ::confVisu::setMirrorX leave $cmd
+      trace remove execution ::confVisu::setMirrorY leave $cmd
    }
 
    #------------------------------------------------------------
@@ -982,7 +948,7 @@ namespace eval ::confVisu {
    proc addSubWindowListener { visuNo cmd } {
       variable private
 
-      trace add variable "::confVisu::private($visuNo,listenerSubWindow)" write $cmd
+      trace add execution ::confVisu::setWindow leave $cmd
    }
 
    #------------------------------------------------------------
@@ -995,7 +961,7 @@ namespace eval ::confVisu {
    proc removeSubWindowListener { visuNo cmd } {
       variable private
 
-      trace remove variable "::confVisu::private($visuNo,listenerSubWindow)" write $cmd
+      trace remove execution ::confVisu::setWindow leave $cmd
    }
 
    #------------------------------------------------------------
@@ -1008,7 +974,8 @@ namespace eval ::confVisu {
    proc addZoomListener { visuNo cmd } {
       variable private
 
-      trace add variable "::confVisu::private($visuNo,listenerZoom)" write $cmd
+      trace add execution ::confVisu::setZoom  leave $cmd
+
    }
 
    #------------------------------------------------------------
@@ -1021,7 +988,7 @@ namespace eval ::confVisu {
    proc removeZoomListener { visuNo cmd } {
       variable private
 
-      trace remove variable "::confVisu::private($visuNo,listenerZoom)" write $cmd
+      trace remove execution ::confVisu::setZoom  leave $cmd
    }
 
    #------------------------------------------------------------
@@ -2284,7 +2251,7 @@ namespace eval ::confVisu {
       variable private
       global caption
 
-      #--- je mets a jour le nom du fichier (cette variable est surveillee par un listener)
+      #--- je mets a jour le nom du fichier
       set private($visuNo,lastFileName) "$fileName"
 
       #--- je mets a jour le nom du fichier dans le titre de la fenetre
@@ -2293,7 +2260,6 @@ namespace eval ::confVisu {
       } else {
         wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
       }
-
    }
 }
 #--- namespace end

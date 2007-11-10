@@ -2,7 +2,7 @@
 # Fichier : sectiongraph.tcl
 # Description : Affiche une coupe de l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: sectiongraph.tcl,v 1.7 2006-11-04 19:08:42 robertdelmas Exp $
+# Mise a jour $Id: sectiongraph.tcl,v 1.8 2007-11-10 11:28:30 michelpujol Exp $
 #
 
 namespace eval ::sectiongraph {
@@ -11,7 +11,7 @@ namespace eval ::sectiongraph {
 #------------------------------------------------------------
 #  init
 #     initialise le graphe
-#  
+#
 #------------------------------------------------------------
 proc ::sectiongraph::init { visuNo } {
    variable private
@@ -22,12 +22,12 @@ proc ::sectiongraph::init { visuNo } {
       return
    }
 
-   #--- je verifie si la variable 
+   #--- je verifie si la variable
    if { [info exists private($visuNo,This)] } {
       wm withdraw $private($visuNo,This)
       wm deiconify $private($visuNo,This)
       focus $private($visuNo,This)
-      return 
+      return
    }
 
    #--- j'initalise les variables de travail
@@ -38,7 +38,7 @@ proc ::sectiongraph::init { visuNo } {
    ::polydraw::setMouseAddNode $visuNo "0"
    #--- je cree la fenetre contenant le graphe
    ::sectiongraph::createToplevel $visuNo
-   #--- je dessine la ligne de coupe au centre du canvas 
+   #--- je dessine la ligne de coupe au centre du canvas
    set canvasCenter [::confVisu::getCanvasCenter $visuNo ]
    set x1 [expr [lindex $canvasCenter 0 ] - 20 ]
    set x2 [expr [lindex $canvasCenter 0 ] + 20 ]
@@ -57,12 +57,10 @@ proc ::sectiongraph::init { visuNo } {
 #     mise a jour du graphe
 #  parametres
 #     visuNo : numero de visu
-#     varname : nom de la variable surveillee par la fonction trace
-#     arrayindex : index deu tableau si varname est un tableau surveille le par la fonction trace
-#     operation  : operation par la fonction trace
+#     args   : valeur fournies par le gestionnaire de listener
 #  return : null
 #------------------------------------------------------------
-proc ::sectiongraph::refresh { visuNo itemNo { varname "" } { arrayindex "" } { operation "" } } {
+proc ::sectiongraph::refresh { visuNo itemNo args } {
    variable private
 
    #--- je recupere les coordonnees de la ligne de coupe
@@ -106,7 +104,7 @@ proc ::sectiongraph::refresh { visuNo itemNo { varname "" } { arrayindex "" } { 
    if { [buf$bufNo getnaxis] == 1 } {
       set height [visu$visuNo thickness]
    }
-   
+
    if { $width > 0 && $height > 0 } {
       #--- je teste la valeur d'un point pour connaitre le nombre de plan de couleur
       set nbcolor($visuNo) [lindex [buf$bufNo getpix [list 1 1 ] ] 0]
@@ -161,7 +159,7 @@ proc ::sectiongraph::refresh { visuNo itemNo { varname "" } { arrayindex "" } { 
 #------------------------------------------------------------
 #  createToplevel
 #     initialise le graphe
-#  
+#
 #  return namespace name
 #------------------------------------------------------------
 proc ::sectiongraph::createToplevel { visuNo } {
@@ -181,7 +179,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
       wm withdraw $This
       wm deiconify $This
       focus $This
-      return 
+      return
    }
 
    #--- Creation de la fenetre
@@ -236,7 +234,7 @@ proc ::sectiongraph::createToplevel { visuNo } {
 #------------------------------------------------------------
 #  closeToplevel
 #     ferme la fenetre et libere les ressources associées
-#  
+#
 #  return namespace name
 #------------------------------------------------------------
 proc ::sectiongraph::closeToplevel { visuNo } {
@@ -250,11 +248,11 @@ proc ::sectiongraph::closeToplevel { visuNo } {
       ::polydraw::deleteItem $visuNo $private($visuNo,itemNo)
       ::polydraw::close $visuNo
       blt::vector destroy sectiongraphX$visuNo sectiongraphYR$visuNo sectiongraphYG$visuNo sectiongraphYB$visuNo
-   
+
       #--- je supprime la fenetre
       destroy $private($visuNo,This)
-      
-      #--- je supprime les variables associees a la visu      
+
+      #--- je supprime les variables associees a la visu
       array unset private $visuNo,*
    }
 }

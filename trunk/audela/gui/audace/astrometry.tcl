@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.17 2007-06-14 21:20:39 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.18 2007-11-10 11:28:29 michelpujol Exp $
 #
 
 namespace eval ::astrometry {
@@ -237,7 +237,7 @@ namespace eval ::astrometry {
       ::audace::showHelpItem "$help(dir,analyse)" "1090astrometrie.htm"
    }
 
-   proc updatewcs { { varname "" } { arrayindex "" } { operation "" } } {
+   proc updatewcs { args } {
       variable astrom
       global audace
 
@@ -438,7 +438,7 @@ namespace eval ::astrometry {
          return
       }
       #---
-      set sextractor yes
+      set sextractor no
       set starfile no
       #::console::affiche_resultat "=====> astrom(currenttypewcs)=$astrom(currenttypewcs) \n"
       if {$astrom(currenttypecal)=="delwcs"} {
@@ -545,14 +545,16 @@ namespace eval ::astrometry {
          buf$audace(bufNo) save "${mypath}/${sky0}$ext"
          $astrom(This).status.lab configure -text "$caption(astrometry,start,1)" ; update
          if {$sextractor=="no"} {
-            ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=20"
+            ##ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=20"
+            ttscript2 "IMA/SERIES \"$mypath\" \"$sky0\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" STAT \"objefile=${mypath}/x$sky$ext\" detect_kappa=1"
          } else {
             buf$audace(bufNo) save "${mypath}/${sky}$ext"
             # exec sex $mypath/$sky0$ext -c [pwd]/config.sex
             sextractor "$mypath/$sky0$ext" -c config.sex
          }
          $astrom(This).status.lab configure -text "$caption(astrometry,start,2) $cattype : $::astrometry::catvalues(catfolder) ..." ; update
-         set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
+         ##set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" " } msg ]
+         set erreur [ catch { ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${mypath}/c$sky$ext\" \"jpegfile_chart2=$mypath/${sky}a.jpg\" \"magrlim=10.0\" \"magblim=10.0\"" } msg ]
          if { $erreur == "1" } {
             if {$silent=="no"} {
                if { $::astrometry::catvalues(cattype) == "$caption(astrometry,cat,usno)" } {
@@ -576,7 +578,8 @@ namespace eval ::astrometry {
          } else {
             $astrom(This).status.lab configure -text "$caption(astrometry,start,3)" ; update
             if {$sextractor=="no"} {
-               ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY delta=5 epsilon=0.0002"
+               ###ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY delta=5 epsilon=0.0002"
+               ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY delta=4 epsilon=0.0002"
             } else {
                ttscript2 "IMA/SERIES \"$mypath\" \"$sky\" . . \"$ext\" \"$mypath\" \"$sky\" . \"$ext\" ASTROMETRY objefile=catalog.cat nullpixel=-10000 delta=5 epsilon=0.0002 file_ascii=ascii.txt"
             }

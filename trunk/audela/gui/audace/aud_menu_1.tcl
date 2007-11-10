@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.17 2007-10-18 21:11:39 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.18 2007-11-10 11:28:29 michelpujol Exp $
 #
 
 namespace eval ::audace {
@@ -82,8 +82,9 @@ namespace eval ::audace {
    #
    # ::audace::header visuNo
    # Affiche l'en-tete FITS d'un fichier
+   #     args   : valeurs fournies par le gestionnaire de listener
    #
-   proc header { visuNo { varname "" } { arrayindex "" } { operation "" } } {
+   proc header { visuNo args } {
       variable private
       global audace caption color conf
 
