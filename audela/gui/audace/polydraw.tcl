@@ -2,7 +2,7 @@
 # Fichier : polydraw.tcl
 # Description : Dessine un polygone
 # Auteur : Michel PUJOL
-# Mise a jour $Id: polydraw.tcl,v 1.5 2007-09-14 13:50:39 michelpujol Exp $
+# Mise a jour $Id: polydraw.tcl,v 1.6 2007-11-10 11:28:30 michelpujol Exp $
 #
 
 namespace eval ::polydraw {
@@ -111,12 +111,10 @@ proc ::polydraw::setMouseAddNode { visuNo value } {
 #          voir ::confVisu::addZoomListener
 #  parametres
 #     visuNo : numero de visu
-#     varname    (facultatif): nom de la variable surveillee par la fonction trace
-#     arrayindex (facultatif): index deu tableau si varname est un tableau surveille par la fonction trace
-#     operation  (facultatif): operation surveillee par la fonction trace
+#     args   : valeur fournies par le gestionnaire de listener
 #  return : null
 #------------------------------------------------------------
-proc ::polydraw::setZoom { visuNo { varname "" } { arrayindex "" } { operation "" } } {
+proc ::polydraw::setZoom { visuNo args } {
    variable private
 
    set w $private($visuNo,hCanvas)

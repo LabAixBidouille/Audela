@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.24 2007-09-14 14:25:43 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.25 2007-11-10 11:28:30 michelpujol Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -1038,7 +1038,7 @@ proc smedian {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" MED $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+      ###ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: smedian in out number ?first_index? ?tt_options?"
    }

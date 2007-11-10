@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.17 2007-11-02 23:20:30 michelpujol Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.18 2007-11-10 11:28:30 michelpujol Exp $
 #
 
 namespace eval ::confOptic {
@@ -463,16 +463,16 @@ namespace eval ::confOptic {
 
       #--- Cas de la camera A
       #--- Je formate les entry pour permettre le calcul decimal
-      set confOptic::widget(A,diametre) [ format "%.1f" $confOptic::widget(A,diametre) ]
-      $confOptic::widget(frm).entDiametre configure -textvariable confOptic::widget(A,diametre)
+      set widget(A,diametre) [ format "%.1f" $widget(A,diametre) ]
+      $widget(frm).entDiametre configure -textvariable ::confOptic::widget(A,diametre)
 
-      set confOptic::widget(A,focale) [ format "%.1f" $confOptic::widget(A,focale) ]
-      $confOptic::widget(frm).entFocale configure -textvariable confOptic::widget(A,focale)
+      set widget(A,focale) [ format "%.1f" $widget(A,focale) ]
+      $widget(frm).entFocale configure -textvariable ::confOptic::widget(A,focale)
 
       #--- Je mets a jour la combobox de configuration du systeme optique
-      set confOptic::widget(A,config_instrument) "$confOptic::widget(A,instrument) - $confOptic::widget(A,diametre) -\
-         $confOptic::widget(A,focale) - $confOptic::widget(A,barlow_reduc)"
-      $confOptic::widget(frm).comboboxModele configure -textvariable confOptic::widget(A,config_instrument)
+      set widget(A,config_instrument) "$widget(A,instrument) - $widget(A,diametre) -\
+         $widget(A,focale) - $widget(A,barlow_reduc)"
+      $widget(frm).comboboxModele configure -textvariable ::confOptic::widget(A,config_instrument)
 
       #--- Mise a jour des parametres calcules
       ::confOptic::Calculette A $widget(frm)
@@ -514,16 +514,16 @@ namespace eval ::confOptic {
 
       #--- Cas de la camera B
       #--- Je formate les entry pour permettre le calcul decimal
-      set confOptic::widget(B,diametre) [ format "%.1f" $confOptic::widget(B,diametre) ]
-      $confOptic::widget(frm).entDiametre configure -textvariable confOptic::widget(B,diametre)
+      set widget(B,diametre) [ format "%.1f" $widget(B,diametre) ]
+      $widget(frm).entDiametre configure -textvariable widget(B,diametre)
 
-      set confOptic::widget(B,focale) [ format "%.1f" $confOptic::widget(B,focale) ]
-      $confOptic::widget(frm).entFocale configure -textvariable confOptic::widget(B,focale)
+      set widget(B,focale) [ format "%.1f" $widget(B,focale) ]
+      $widget(frm).entFocale configure -textvariable ::confOptic::widget(B,focale)
 
       #--- Je mets a jour la combobox de configuration du systeme optique
-      set confOptic::widget(B,config_instrument) "$confOptic::widget(B,instrument) - $confOptic::widget(B,diametre) -\
-         $confOptic::widget(B,focale) - $confOptic::widget(B,barlow_reduc)"
-      $confOptic::widget(frm).comboboxModele configure -textvariable confOptic::widget(B,config_instrument)
+      set widget(B,config_instrument) "$widget(B,instrument) - $widget(B,diametre) -\
+         $widget(B,focale) - $widget(B,barlow_reduc)"
+      $widget(frm).comboboxModele configure -textvariable widget(B,config_instrument)
 
       #--- Mise a jour des parametres calcules
       ::confOptic::Calculette B $widget(frm)
@@ -565,16 +565,16 @@ namespace eval ::confOptic {
 
       #--- Cas de la camera C
       #--- Je formate les entry pour permettre le calcul decimal
-      set confOptic::widget(C,diametre) [ format "%.1f" $confOptic::widget(C,diametre) ]
-      $confOptic::widget(frm).entDiametre configure -textvariable confOptic::widget(C,diametre)
+      set widget(C,diametre) [ format "%.1f" $widget(C,diametre) ]
+      $widget(frm).entDiametre configure -textvariable ::confOptic::widget(C,diametre)
 
-      set confOptic::widget(C,focale) [ format "%.1f" $confOptic::widget(C,focale) ]
-      $confOptic::widget(frm).entFocale configure -textvariable confOptic::widget(C,focale)
+      set widget(C,focale) [ format "%.1f" $widget(C,focale) ]
+      $widget(frm).entFocale configure -textvariable ::confOptic::widget(C,focale)
 
       #--- Je mets a jour la combobox de configuration du systeme optique
-      set confOptic::widget(C,config_instrument) "$confOptic::widget(C,instrument) - $confOptic::widget(C,diametre) -\
-         $confOptic::widget(C,focale) - $confOptic::widget(C,barlow_reduc)"
-      $confOptic::widget(frm).comboboxModele configure -textvariable confOptic::widget(C,config_instrument)
+      set widget(C,config_instrument) "$widget(C,instrument) - $widget(C,diametre) -\
+         $widget(C,focale) - $widget(C,barlow_reduc)"
+      $widget(frm).comboboxModele configure -textvariable ::confOptic::widget(C,config_instrument)
 
       #--- Mise a jour des parametres calcules
       ::confOptic::Calculette C $widget(frm)
@@ -710,7 +710,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc fillConfigPage1 { nn } {
       variable widget
-      global audace caption confCam color
+      global audace caption color
 
       #--- Recherche du numero de la camera A connectee
       if { [::confCam::isReady "A"] != "0" } {
@@ -778,19 +778,19 @@ namespace eval ::confOptic {
       label $widget(frm).labInstrument -text "$caption(confoptic,instrument)" -relief flat
       pack $widget(frm).labInstrument -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entInstrument -textvariable confOptic::widget(A,instrument) -width 30
+      entry $widget(frm).entInstrument -textvariable ::confOptic::widget(A,instrument) -width 30
       pack $widget(frm).entInstrument -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labDiametre -text "$caption(confoptic,diametre)" -relief flat
       pack $widget(frm).labDiametre -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entDiametre -textvariable confOptic::widget(A,diametre) -width 8
+      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(A,diametre) -width 8
       pack $widget(frm).entDiametre -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labFocale -text "$caption(confoptic,focale)" -relief flat
       pack $widget(frm).labFocale -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entFocale -textvariable confOptic::widget(A,focale) -width 8
+      entry $widget(frm).entFocale -textvariable ::confOptic::widget(A,focale) -width 8
       pack $widget(frm).entFocale -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labBarlow_Reduc -text "$caption(confoptic,barlow_reduc)" -relief flat
@@ -803,7 +803,7 @@ namespace eval ::confOptic {
          -relief sunken    \
          -borderwidth 2    \
          -editable 1       \
-         -textvariable confOptic::widget(A,barlow_reduc) \
+         -textvariable ::confOptic::widget(A,barlow_reduc) \
          -values $list_combobox
       pack $widget(frm).comboboxBarlow_Reduc -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
@@ -828,7 +828,7 @@ namespace eval ::confOptic {
 
       #--- Prise en compte du binning choisi
       if { $camNo != "" && $camNo != "0" } {
-         cam$camNo bin [list [string range $::confOptic::widget(A,binning) 0 0] [string range $::confOptic::widget(A,binning) 2 2]]
+         cam$camNo bin [list [string range $widget(A,binning) 0 0] [string range $widget(A,binning) 2 2]]
       }
 
       #--- Informations liees a la camera CCD
@@ -869,16 +869,16 @@ namespace eval ::confOptic {
       label $widget(frm).labBinning -text "$caption(confoptic,binning)" -relief flat
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
+      set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
-         -height [ llength $confOptic::widget(list_combobox) ] \
+         -height [ llength $widget(list_combobox) ] \
          -relief sunken    \
          -borderwidth 2    \
          -editable 0       \
-         -textvariable confOptic::widget(A,binning) \
+         -textvariable ::confOptic::widget(A,binning) \
          -modifycmd "::confOptic::Impact_Binning A $widget(frm)" \
-         -values $confOptic::widget(list_combobox)
+         -values $widget(list_combobox)
       pack $widget(frm).labURL_Binning -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labPixDim -text "$caption(confoptic,pix_dim)" -relief flat
@@ -914,7 +914,7 @@ namespace eval ::confOptic {
 
       #--- Bind pour la selection d'une camera CCD
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook A"
-      bind [ Rnotebook:button $nn 1 ] <Button-1> "::confOptic::MAJ_Conf_Camera A $::confOptic::widget(frm)"
+      bind [ Rnotebook:button $nn 1 ] <Button-1> "::confOptic::MAJ_Conf_Camera A $widget(frm)"
    }
 
    #------------------------------------------------------------
@@ -925,7 +925,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc fillConfigPage2 { nn } {
       variable widget
-      global audace caption confCam color
+      global audace caption color
 
       #--- Recherche du numero de la camera B connectee
       if { [::confCam::isReady "B"] != "0" } {
@@ -993,19 +993,19 @@ namespace eval ::confOptic {
       label $widget(frm).labInstrument -text "$caption(confoptic,instrument)" -relief flat
       pack $widget(frm).labInstrument -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entInstrument -textvariable confOptic::widget(B,instrument) -width 30
+      entry $widget(frm).entInstrument -textvariable ::confOptic::widget(B,instrument) -width 30
       pack $widget(frm).entInstrument -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labDiametre -text "$caption(confoptic,diametre)" -relief flat
       pack $widget(frm).labDiametre -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entDiametre -textvariable confOptic::widget(B,diametre) -width 8
+      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(B,diametre) -width 8
       pack $widget(frm).entDiametre -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labFocale -text "$caption(confoptic,focale)" -relief flat
       pack $widget(frm).labFocale -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entFocale -textvariable confOptic::widget(B,focale) -width 8
+      entry $widget(frm).entFocale -textvariable ::confOptic::widget(B,focale) -width 8
       pack $widget(frm).entFocale -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labBarlow_Reduc -text "$caption(confoptic,barlow_reduc)" -relief flat
@@ -1018,7 +1018,7 @@ namespace eval ::confOptic {
          -relief sunken    \
          -borderwidth 2    \
          -editable 1       \
-         -textvariable confOptic::widget(B,barlow_reduc) \
+         -textvariable ::confOptic::widget(B,barlow_reduc) \
          -values $list_combobox
       pack $widget(frm).comboboxBarlow_Reduc -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
@@ -1043,7 +1043,7 @@ namespace eval ::confOptic {
 
       #--- Prise en compte du binning choisi
       if { $camNo != "" && $camNo != "0" } {
-         cam$camNo bin [list [string range $::confOptic::widget(B,binning) 0 0] [string range $::confOptic::widget(B,binning) 2 2]]
+         cam$camNo bin [list [string range $widget(B,binning) 0 0] [string range $widget(B,binning) 2 2]]
       }
 
       #--- Informations liees a la camera CCD
@@ -1084,16 +1084,16 @@ namespace eval ::confOptic {
       label $widget(frm).labBinning -text "$caption(confoptic,binning)" -relief flat
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
+      set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
-         -height [ llength $confOptic::widget(list_combobox) ] \
+         -height [ llength $widget(list_combobox) ] \
          -relief sunken    \
          -borderwidth 2    \
          -editable 0       \
-         -textvariable confOptic::widget(B,binning) \
+         -textvariable ::confOptic::widget(B,binning) \
          -modifycmd "::confOptic::Impact_Binning B $widget(frm)" \
-         -values $confOptic::widget(list_combobox)
+         -values $widget(list_combobox)
       pack $widget(frm).labURL_Binning -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labPixDim -text "$caption(confoptic,pix_dim)" -relief flat
@@ -1129,7 +1129,7 @@ namespace eval ::confOptic {
 
       #--- Bind pour la selection d'une camera CCD
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook B"
-      bind [ Rnotebook:button $nn 2 ] <Button-1> "::confOptic::MAJ_Conf_Camera B $::confOptic::widget(frm)"
+      bind [ Rnotebook:button $nn 2 ] <Button-1> "::confOptic::MAJ_Conf_Camera B $widget(frm)"
    }
 
    #------------------------------------------------------------
@@ -1140,7 +1140,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc fillConfigPage3 { nn } {
       variable widget
-      global audace caption confCam color
+      global audace caption color
 
       #--- Recherche du numero de la camera C connectee
       if { [::confCam::isReady "C"] != "0" } {
@@ -1208,19 +1208,19 @@ namespace eval ::confOptic {
       label $widget(frm).labInstrument -text "$caption(confoptic,instrument)" -relief flat
       pack $widget(frm).labInstrument -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entInstrument -textvariable confOptic::widget(C,instrument) -width 30
+      entry $widget(frm).entInstrument -textvariable ::confOptic::widget(C,instrument) -width 30
       pack $widget(frm).entInstrument -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labDiametre -text "$caption(confoptic,diametre)" -relief flat
       pack $widget(frm).labDiametre -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entDiametre -textvariable confOptic::widget(C,diametre) -width 8
+      entry $widget(frm).entDiametre -textvariable ::confOptic::widget(C,diametre) -width 8
       pack $widget(frm).entDiametre -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labFocale -text "$caption(confoptic,focale)" -relief flat
       pack $widget(frm).labFocale -in $widget(frm).frame7 -anchor w -side top -padx 30 -pady 5
 
-      entry $widget(frm).entFocale -textvariable confOptic::widget(C,focale) -width 8
+      entry $widget(frm).entFocale -textvariable ::confOptic::widget(C,focale) -width 8
       pack $widget(frm).entFocale -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labBarlow_Reduc -text "$caption(confoptic,barlow_reduc)" -relief flat
@@ -1233,7 +1233,7 @@ namespace eval ::confOptic {
          -relief sunken    \
          -borderwidth 2    \
          -editable 1       \
-         -textvariable confOptic::widget(C,barlow_reduc) \
+         -textvariable ::confOptic::widget(C,barlow_reduc) \
          -values $list_combobox
       pack $widget(frm).comboboxBarlow_Reduc -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
@@ -1258,7 +1258,7 @@ namespace eval ::confOptic {
 
       #--- Prise en compte du binning choisi
       if { $camNo != "" && $camNo != "0" } {
-         cam$camNo bin [list [string range $::confOptic::widget(C,binning) 0 0] [string range $::confOptic::widget(C,binning) 2 2]]
+         cam$camNo bin [list [string range $widget(C,binning) 0 0] [string range $widget(C,binning) 2 2]]
       }
 
       #--- Informations liees a la camera CCD
@@ -1299,16 +1299,16 @@ namespace eval ::confOptic {
       label $widget(frm).labBinning -text "$caption(confoptic,binning)" -relief flat
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
-      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
+      set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
-         -height [ llength $confOptic::widget(list_combobox) ] \
+         -height [ llength $widget(list_combobox) ] \
          -relief sunken    \
          -borderwidth 2    \
          -editable 0       \
-         -textvariable confOptic::widget(C,binning) \
+         -textvariable ::confOptic::widget(C,binning) \
          -modifycmd "::confOptic::Impact_Binning C $widget(frm)" \
-         -values $confOptic::widget(list_combobox)
+         -values $widget(list_combobox)
       pack $widget(frm).labURL_Binning -in $widget(frm).frame12 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labPixDim -text "$caption(confoptic,pix_dim)" -relief flat
@@ -1344,7 +1344,7 @@ namespace eval ::confOptic {
 
       #--- Bind pour la selection d'une camera CCD
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook C"
-      bind [ Rnotebook:button $nn 3 ] <Button-1> "::confOptic::MAJ_Conf_Camera C $::confOptic::widget(frm)"
+      bind [ Rnotebook:button $nn 3 ] <Button-1> "::confOptic::MAJ_Conf_Camera C $widget(frm)"
    }
 
    #==============================================================
@@ -1354,12 +1354,12 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  MAJ_Binning { }
    #     Affichage des binnings disponibles selon les cameras
+   #     args   : valeur fournies par le gestionnaire de listener
    #
    #------------------------------------------------------------
 
-   proc MAJ_Binning { camItem frm { varname "" } { arrayindex "" } { operation "" } } {
+   proc MAJ_Binning { camItem frm args } {
       variable widget
-      global confCam
 
       #--- Recherche du binning associe a la camera selectionnee
       if { $camItem != "0" } {
@@ -1367,18 +1367,18 @@ namespace eval ::confOptic {
       } else {
          set camNo ""
       }
-      set confOptic::widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
+      set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       #--- Mise a jour des parametres dependant du binning
       if { $camNo != "" && $camNo != "0" } {
          #--- Mise a jour de la combobox du binning
-         $frm.labURL_Binning configure -height [ llength $::confOptic::widget(list_combobox) ]
-         $frm.labURL_Binning configure -values $::confOptic::widget(list_combobox)
+         $frm.labURL_Binning configure -height [ llength $widget(list_combobox) ]
+         $frm.labURL_Binning configure -values $widget(list_combobox)
       } else {
          #--- Mise a jour de la combobox du binning
-         set confOptic::widget($camItem,binning) "1x1"
-         $frm.labURL_Binning configure -height [ llength $confOptic::widget(list_combobox) ]
-         $frm.labURL_Binning configure -values $confOptic::widget(list_combobox)
-         $frm.labURL_Binning configure -textvariable confOptic::widget($camItem,binning)
+         set widget($camItem,binning) "1x1"
+         $frm.labURL_Binning configure -height [ llength $widget(list_combobox) ]
+         $frm.labURL_Binning configure -values $widget(list_combobox)
+         $frm.labURL_Binning configure -textvariable ::confOptic::widget($camItem,binning)
          #--- Mise a jour du champ et de l'echantilonnage
          $frm.labVal_Champ configure -text ""
          $frm.labVal_Echantillonnage configure -text ""
@@ -1394,7 +1394,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc Impact_Binning { camItem frm } {
       variable widget
-      global audace confCam
+      global audace
 
       #--- Recherche du numero de la camera CCD
       if { $camItem != "0" } {
@@ -1404,7 +1404,7 @@ namespace eval ::confOptic {
       }
       #--- Prise en compte du binning choisi
       if { $camNo != "" && $camNo != "0" } {
-         cam$camNo bin [list [string range $::confOptic::widget($camItem,binning) 0 0] [string range $::confOptic::widget($camItem,binning) 2 2]]
+         cam$camNo bin [list [string range $widget($camItem,binning) 0 0] [string range $widget($camItem,binning) 2 2]]
       }
       #--- Mise a jour des informations concernant la camera
       if { $camNo != "" && $camNo != "0" } {
@@ -1427,33 +1427,32 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc Calculette { camItem frm } {
       variable widget
-      global confCam
 
       #--- Je formate les entry pour permettre le calcul decimal
-      set confOptic::widget($camItem,diametre) [ format "%.1f" $confOptic::widget($camItem,diametre) ]
-      $frm.entDiametre configure -textvariable confOptic::widget($camItem,diametre)
+      set widget($camItem,diametre) [ format "%.1f" $widget($camItem,diametre) ]
+      $frm.entDiametre configure -textvariable ::confOptic::widget($camItem,diametre)
 
-      set confOptic::widget($camItem,focale) [ format "%.1f" $confOptic::widget($camItem,focale) ]
-      $frm.entFocale configure -textvariable confOptic::widget($camItem,focale)
+      set widget($camItem,focale) [ format "%.1f" $widget($camItem,focale) ]
+      $frm.entFocale configure -textvariable ::confOptic::widget($camItem,focale)
 
       #--- Je mets a jour la combobox du systeme optique
-      set confOptic::widget($camItem,config_instrument) "$confOptic::widget($camItem,instrument) -\
-         $confOptic::widget($camItem,diametre) - $confOptic::widget($camItem,focale) -\
-         $confOptic::widget($camItem,barlow_reduc)"
-      $frm.comboboxModele configure -textvariable confOptic::widget($camItem,config_instrument)
+      set widget($camItem,config_instrument) "$widget($camItem,instrument) -\
+         $widget($camItem,diametre) - $widget($camItem,focale) -\
+         $widget($camItem,barlow_reduc)"
+      $frm.comboboxModele configure -textvariable ::confOptic::widget($camItem,config_instrument)
 
       #--- Calcul de la focale resultante du systeme optique
-      set confOptic::widget($camItem,focale_resultante) [ expr $confOptic::widget($camItem,focale) * $confOptic::widget($camItem,barlow_reduc) ]
-      $frm.labVal_Foc_Result configure -text $confOptic::widget($camItem,focale_resultante)
+      set widget($camItem,focale_resultante) [ expr $widget($camItem,focale) * $widget($camItem,barlow_reduc) ]
+      $frm.labVal_Foc_Result configure -text $widget($camItem,focale_resultante)
 
       #--- Calcul du rapport F/D du systeme optique
-      set confOptic::widget($camItem,F/D) [ format "%.1f" \
-         [ expr $confOptic::widget($camItem,focale_resultante) / $confOptic::widget($camItem,diametre) ] ]
-      $frm.labVal_F/D configure -text $confOptic::widget($camItem,F/D)
+      set widget($camItem,F/D) [ format "%.1f" \
+         [ expr $widget($camItem,focale_resultante) / $widget($camItem,diametre) ] ]
+      $frm.labVal_F/D configure -text $widget($camItem,F/D)
 
       #--- Calcul du pouvoir separateur du systeme optique
-      set confOptic::widget($camItem,PS) [ format "%.2f" [ expr 120.0 / $confOptic::widget($camItem,diametre) ] ]
-      $frm.labVal_PS configure -text $confOptic::widget($camItem,PS)
+      set widget($camItem,PS) [ format "%.2f" [ expr 120.0 / $widget($camItem,diametre) ] ]
+      $frm.labVal_PS configure -text $widget($camItem,PS)
 
       #--- Recherche du numero de la camera CCD
       if { $camItem != "0" } {
@@ -1472,8 +1471,8 @@ namespace eval ::confOptic {
          set dim_x($camItem) [ expr [ lindex $nb_xy($camItem) 0 ] * [ lindex $pix_dim_xy($camItem) 0 ] * 1000. ]
          set dim_y($camItem) [ expr [ lindex $nb_xy($camItem) 1 ] * [ lindex $pix_dim_xy($camItem) 1 ] * 1000. ]
          #--- Champ en x et en y en minutes d'arc
-         set champ_x($camItem) [ format "%.1f" [ expr 206265 * $dim_x($camItem) / ( $confOptic::widget($camItem,focale_resultante) * 60. ) ] ]
-         set champ_y($camItem) [ format "%.1f" [ expr 206265 * $dim_y($camItem) / ( $confOptic::widget($camItem,focale_resultante) * 60. ) ] ]
+         set champ_x($camItem) [ format "%.1f" [ expr 206265 * $dim_x($camItem) / ( $widget($camItem,focale_resultante) * 60. ) ] ]
+         set champ_y($camItem) [ format "%.1f" [ expr 206265 * $dim_y($camItem) / ( $widget($camItem,focale_resultante) * 60. ) ] ]
          $frm.labVal_Champ configure -text "$champ_x($camItem) x $champ_y($camItem)"
          #--- Echantillonnage du CCD en x et en y en secondes d'arc par pixels
          set echantillonnage_x($camItem) [ format "%.1f"  [ expr $champ_x($camItem) * 60. / [ lindex $nb_xy($camItem) 0 ] ] ]
@@ -1499,7 +1498,7 @@ namespace eval ::confOptic {
       }
       #--- Prise en compte du binning choisi
       if { $camNo != "" && $camNo != "0" } {
-         cam$camNo bin [list [string range $::confOptic::widget($camItem,binning) 0 0] [string range $::confOptic::widget($camItem,binning) 2 2]]
+         cam$camNo bin [list [string range $widget($camItem,binning) 0 0] [string range $widget($camItem,binning) 2 2]]
       }
       #--- Je mets a jour les parametres de la camera CCD
       if { $camNo != "" && $camNo != "0" } {
