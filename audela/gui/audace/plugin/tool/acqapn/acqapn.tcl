@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.28 2007-11-08 22:05:53 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.29 2007-11-11 10:54:22 robertdelmas Exp $
 #
 
 #============================================================
@@ -141,7 +141,7 @@ namespace eval ::acqapn {
       if { [ file exists $fichier ] } { source $fichier }
 
       #--- Creation de la variable pour le vitesse de communication
-      ::acqapn::initToConf
+      ::acqapn::config::initToConf
 
       #--- Creation des infos de configuration (config.ini) si elles n'existent pas
       if {![info exists conf(coolpix,adjust)]}       {set conf(coolpix,adjust)       "Standard"}
@@ -594,9 +594,11 @@ namespace eval ::acqapn {
          #--- Mise a jour de la liste des images
          ::acqapn::MajList
          ::acqapn::ConfigListeVues
-         ::console::affiche_saut "# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
-         [clock format $time_now -format "%H:%M:%S" -gmt 1 ].\n\n"
          update
+         if { $panneau(acqapn,majlist) == "1" } {
+            ::console::affiche_saut "# [$This.fra4.vues get] $caption(acqapn,msg,expose)\
+            [clock format $time_now -format "%H:%M:%S" -gmt 1 ].\n\n"
+         }
       }
 
       #--- Affichage du bouton 'Memoire'
@@ -628,7 +630,9 @@ namespace eval ::acqapn {
       catch { exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $conf(coolpix,baud)\
          erase$panneau(acqapn,a_effacer) } msg
 
-      if { $msg!="eph_open failed" } {
+      set msg_court [ string range $msg 0 10 ]
+
+      if { $msg_court!="Error 10003" } {
          if { $panneau(acqapn,a_effacer)=="all" || ($panneau(acqapn,a_effacer)=="last" && $private(coolpix,nb_images)=="1") } {
 
             #--- Message sur la console
@@ -988,18 +992,32 @@ namespace eval ::acqapn {
       global conf coolpix_base panneau
 
       set file ""
+      set panneau(acqapn,majlist) "1"
+
       if { $panneau(acqapn,initstate)=="1" } {
 
          #--- Mise a jour du nombre de poses en memoire
          catch { set infos [exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $conf(coolpix,baud) count] } msg
-         if { $msg!="" && $msg!="$infos" } { ::acqapn::ErrComm $msg ; return }
+
+         set msg_court [ string range $msg 0 10 ]
+
+         if { $msg_court=="Error 10003" } {
+            set panneau(acqapn,majlist) "0"
+            ::acqapn::ErrComm $msg
+            return
+         }
          set private(coolpix,nb_images) [lindex $infos end]
 
          if { $private(coolpix,nb_images) > "0" } {
 
             #--- Cree le fichier saverep.log dans audace\audace\plugin\tool\acqapn\saverep.log
             catch { set infos [exec $panneau(acqapn,photopc) $panneau(acqapn,cmd_usb) -s $conf(coolpix,baud) list] } msg
-            if { $msg!="" && $msg!="$infos" } { ::acqapn::ErrComm $msg ; return }
+            set msg_court [ string range $msg 0 10 ]
+            if { $msg_court=="Error 10003" } {
+               set panneau(acqapn,majlist) "0"
+               ::acqapn::ErrComm $msg
+               return
+            }
             set rp [open $panneau(acqapn,saverep) w]
             puts $rp $infos
             close $rp
@@ -1410,185 +1428,6 @@ namespace eval ::acqapn {
    }
 
    #
-   # ::acqapn::initToConf
-   #--- Initialisation de la variable de configuration
-   #
-   proc initToConf { } {
-      global conf
-
-      #--- Initialise la variable de la camera Nikon CoolPix
-      if { ! [ info exists conf(coolpix,baud) ] } { set conf(coolpix,baud) "115200" }
-   }
-
-   #
-   # ::acqapn::confToWidget
-   #--- Charge la configuration dans une variable locale
-   #
-   proc confToWidget { } {
-      variable private
-      global conf
-
-      #--- Recupere la configuration de la camera Nikon CoolPix dans le tableau private(...)
-      set private(coolpix,baud) $conf(coolpix,baud)
-   }
-
-   #
-   # ::acqapn::widgetToConf
-   #--- Acquisition de la configuration, c'est a dire isolation de la variable dans le tableau conf(...)
-   #
-   proc widgetToConf { } {
-      variable private
-      global conf
-
-      #--- Memorise la configuration de la camera Nikon CoolPix dans le tableau conf(coolpix,...)
-      set conf(coolpix,baud) $private(coolpix,baud)
-   }
-
-   #
-   # ::acqapn::run this
-   #--- Cree la fenetre de reglage de la vitesse en bauds du port serie
-   #--- this = chemin de la fenetre
-   #
-   proc run { this } {
-      global panneau
-
-      set panneau(acqapn,acqapnSetup) $this
-      createDialog
-      tkwait visibility $panneau(acqapn,acqapnSetup)
-   }
-
-   #
-   # ::acqapn::ok
-   #--- Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
-   #--- et fermer la fenetre du choix de l'affichage ou non de messages sur la Console
-   #
-   proc ok { } {
-      appliquer
-      fermer
-   }
-
-   #
-   # ::acqapn::appliquer
-   #--- Fonction 'Appliquer' pour memoriser et appliquer la configuration
-   #
-   proc appliquer { } {
-      widgetToConf
-   }
-
-   #
-   # ::acqapn::afficheAide
-   #--- Fonction appellee lors de l'appui sur le bouton 'Aide'
-   #
-   proc afficheAide { } {
-      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqapn::getPluginType ] ] \
-         [ ::acqapn::getPluginDirectory ] acqapn.htm
-   }
-
-   #
-   # ::acqapn::fermer
-   #--- Fonction appellee lors de l'appui sur le bouton 'Fermer'
-   #
-   proc fermer { } {
-      global panneau
-
-      destroy $panneau(acqapn,acqapnSetup)
-   }
-
-   #
-   # ::acqapn::createDialog
-   #--- Creation de l'interface graphique
-   #
-   proc createDialog { } {
-      global audace caption conf panneau
-
-      #---
-      if { [ winfo exists $panneau(acqapn,acqapnSetup) ] } {
-         wm withdraw $panneau(acqapn,acqapnSetup)
-         wm deiconify $panneau(acqapn,acqapnSetup)
-         focus $panneau(acqapn,acqapnSetup)
-         return
-      }
-
-      #--- Charge la configuration de la vitesse de communication dans une variable locale
-      ::acqapn::confToWidget
-
-      #--- Determination de la fenetre parente
-      set base "$audace(base)"
-
-      #--- Cree la fenetre $panneau(acqapn,acqapnSetup) de niveau le plus haut
-      toplevel $panneau(acqapn,acqapnSetup) -class Toplevel
-      set posx_config [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
-      set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
-      wm geometry $panneau(acqapn,acqapnSetup) +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
-      wm resizable $panneau(acqapn,acqapnSetup) 0 0
-      wm title $panneau(acqapn,acqapnSetup) "$caption(acqapn,camera)"
-
-      #--- Frame du choix de la vitesse en bauds du port serie
-      frame $panneau(acqapn,acqapnSetup).frame1 -borderwidth 0 -relief raised
-
-         label $panneau(acqapn,acqapnSetup).frame1.lab1 -text $caption(acqapn,baud)
-         pack $panneau(acqapn,acqapnSetup).frame1.lab1 -anchor nw -side left -padx 10 -pady 10
-
-         set list_combobox [ list 115200 57600 38400 19200 9600 ]
-         ComboBox $panneau(acqapn,acqapnSetup).frame1.listeBaud \
-            -width 8                           \
-            -height [ llength $list_combobox ] \
-            -relief sunken                     \
-            -borderwidth 1                     \
-            -editable 0                        \
-            -textvariable ::acqapn::private(coolpix,baud) \
-            -values $list_combobox
-         pack $panneau(acqapn,acqapnSetup).frame1.listeBaud -anchor nw -side left -padx 0 -pady 10
-
-      pack $panneau(acqapn,acqapnSetup).frame1 -side top -fill both -expand 1
-
-      #--- Frame des boutons
-      frame $panneau(acqapn,acqapnSetup).frame2 -borderwidth 1 -relief raised
-
-         #--- Cree le bouton 'OK'
-         button $panneau(acqapn,acqapnSetup).but_ok -text "$caption(acqapn,ok)" -width 7 -borderwidth 2 \
-            -command "::acqapn::ok"
-         if { $conf(ok+appliquer) == "1" } {
-            pack $panneau(acqapn,acqapnSetup).but_ok -in $panneau(acqapn,acqapnSetup).frame2 \
-               -side left -anchor w -padx 3 -pady 3 -ipady 5
-         }
-
-         #--- Cree le bouton 'Appliquer'
-         button $panneau(acqapn,acqapnSetup).but_appliquer -text "$caption(acqapn,appliquer)" -width 8 \
-            -borderwidth 2 -command "::acqapn::appliquer"
-         pack $panneau(acqapn,acqapnSetup).but_appliquer -in $panneau(acqapn,acqapnSetup).frame2 \
-            -side left -anchor w -padx 3 -pady 3 -ipady 5
-
-         #--- Cree un label 'Invisible' pour simuler un espacement
-         label $panneau(acqapn,acqapnSetup).lab_invisible -width 7
-         pack $panneau(acqapn,acqapnSetup).lab_invisible -in $panneau(acqapn,acqapnSetup).frame2 \
-            -side left -anchor w -padx 3 -pady 3 -ipady 5
-
-         #--- Cree le bouton 'Fermer'
-         button $panneau(acqapn,acqapnSetup).but_fermer -text "$caption(acqapn,fermer)" -width 7 -borderwidth 2 \
-            -command "::acqapn::fermer"
-         pack $panneau(acqapn,acqapnSetup).but_fermer -in $panneau(acqapn,acqapnSetup).frame2 \
-            -side right -anchor w -padx 3 -pady 3 -ipady 5
-
-         #--- Cree le bouton 'Aide'
-         button $panneau(acqapn,acqapnSetup).but_aide -text "$caption(acqapn,aide)" -width 7 -borderwidth 2 \
-            -command "::acqapn::afficheAide"
-         pack $panneau(acqapn,acqapnSetup).but_aide -in $panneau(acqapn,acqapnSetup).frame2 \
-            -side right -anchor w -padx 3 -pady 3 -ipady 5
-
-      pack $panneau(acqapn,acqapnSetup).frame2 -side top -fill x
-
-      #--- La fenetre est active
-      focus $panneau(acqapn,acqapnSetup)
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $panneau(acqapn,acqapnSetup) <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $panneau(acqapn,acqapnSetup)
-   }
-
-   #
    # ::acqapn::connect
    #--- Connecte la camera Nikon CoolPix
    #
@@ -1605,6 +1444,133 @@ namespace eval ::acqapn {
       ::acqapn::Off
    }
 
+   #--- Namespace pour la boite de configuration de la vitesse de communication
+   namespace eval ::acqapn::config {
+
+      #
+      # ::acqapn::config::initToConf
+      #--- Initialisation de la variable de configuration
+      #
+      proc initToConf { } {
+         global conf
+
+         #--- Initialise la variable de la camera Nikon CoolPix
+         if { ! [ info exists conf(coolpix,baud) ] } { set conf(coolpix,baud) "115200" }
+      }
+
+      #
+      # ::acqapn::config::confToWidget
+      #--- Charge la configuration dans une variable locale
+      #
+      proc confToWidget { } {
+         variable private
+         global conf
+
+         #--- Recupere la configuration de la camera Nikon CoolPix dans le tableau private(...)
+         set private(coolpix,baud) $conf(coolpix,baud)
+      }
+
+      #
+      # ::acqapn::config::widgetToConf
+      #--- Acquisition de la configuration, c'est a dire isolation de la variable dans le tableau conf(...)
+      #
+      proc widgetToConf { } {
+         variable private
+         global conf
+
+         #--- Memorise la configuration de la camera Nikon CoolPix dans le tableau conf(coolpix,...)
+         set conf(coolpix,baud) $private(coolpix,baud)
+      }
+
+      #
+      # ::acqapn::config::run
+      #--- Cree la fenetre de reglage de la vitesse en bauds du port serie
+      #
+      proc run { visuNo } {
+         global audace
+
+         ::confGenerique::run $visuNo "$audace(base).acqapnSetup" "::acqapn::config" -modal 0
+         set posx_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
+         set posy_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
+         wm geometry $audace(base).acqapnSetup +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
+      }
+
+      #
+      # ::acqapn::config::ok
+      #--- Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
+      #--- et fermer la fenetre de reglage de la vitesse en bauds du port serie
+      #
+      proc ok { visuNo } {
+         ::acqapn::config::apply $visuNo
+         ::acqapn::config::closeWindow
+      }
+
+      #
+      # ::acqapn::config::apply
+      #--- Fonction 'Appliquer' pour memoriser et appliquer la configuration
+      #
+      proc apply { visuNo } {
+         ::acqapn::config::widgetToConf
+      }
+
+      #
+      # ::acqapn::config::showHelp
+      #--- Fonction appellee lors de l'appui sur le bouton 'Aide'
+      #
+      proc showHelp { } {
+         ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqapn::getPluginType ] ] \
+            [ ::acqapn::getPluginDirectory ] [ ::acqapn::getPluginHelp ] "ancre_coolpix"
+      }
+
+      #
+      # ::acqapn::config::closeWindow
+      #--- Fonction appellee lors de l'appui sur le bouton 'Fermer'
+      #
+      proc closeWindow { visuNo } {
+      }
+
+      #
+      # ::acqapn::config::getLabel
+      #--- Retourne le nom de la fenetre de configuration
+      #
+      proc getLabel { } {
+         global caption
+
+         return "$caption(acqapn,camera)"
+      }
+
+      #
+      # ::acqapn::config::fillConfigPage
+      #--- Creation de l'interface graphique
+      #
+      proc fillConfigPage { frm visuNo } {
+         variable private
+         global caption
+
+         #--- Charge la configuration de la vitesse de communication dans une variable locale
+         ::acqapn::config::confToWidget
+
+         #--- Frame du choix de la vitesse en bauds du port serie
+         frame $frm.baud -borderwidth 0 -relief raised
+
+            label $frm.baud.lab1 -text $caption(acqapn,baud)
+            pack $frm.baud.lab1 -anchor nw -side left -padx 10 -pady 10
+
+            set list_combobox [ list 115200 57600 38400 19200 9600 ]
+            ComboBox $frm.baud.listeBaud \
+               -width 8                           \
+               -height [ llength $list_combobox ] \
+               -relief sunken                     \
+               -borderwidth 1                     \
+               -editable 0                        \
+               -textvariable ::acqapn::config::private(coolpix,baud) \
+               -values $list_combobox
+            pack $frm.baud.listeBaud -anchor nw -side left -padx 0 -pady 10
+
+         pack $frm.baud -side top -fill both -expand 1
+      }
+
+   }
 #====================== Fin des fenetres annexes =================================================
 }
 
@@ -1665,7 +1631,7 @@ proc acqapnBuildIF { This } {
          button $This.fra5.avance -borderwidth 4 -text $caption(acqapn,label,reglage) \
             -font $audace(font,arial_8_n) -state normal \
             -command {
-               ::acqapn::run $base.acqapnSetup
+               ::acqapn::config::run 1
             }
          pack $This.fra5.avance -in $This.fra5 -anchor center -side top -fill x
 
