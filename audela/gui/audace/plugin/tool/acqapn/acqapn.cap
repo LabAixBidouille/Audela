@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.11 2007-11-08 21:42:56 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.12 2007-11-11 10:50:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -93,10 +93,6 @@ set caption(acqapn,selviewer)                "Install Viewer"
 
 set caption(acqapn,camera)                   "Nikon CoolPix"
 set caption(acqapn,baud)                     "Serial Port Speed (bauds)"
-set caption(acqapn,ok)                       "OK"
-set caption(acqapn,appliquer)                "Apply"
-set caption(acqapn,fermer)                   "Close"
-set caption(acqapn,aide)                     "Help"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -183,10 +179,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqapn,camera)                "Nikon CoolPix"
    set caption(acqapn,baud)                  "Vitesse du port série (bauds)"
-   set caption(acqapn,ok)                    "OK"
-   set caption(acqapn,appliquer)             "Appliquer"
-   set caption(acqapn,fermer)                "Fermer"
-   set caption(acqapn,aide)                  "Aide"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -273,10 +265,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqapn,camera)                "Nikon CoolPix"
    set caption(acqapn,baud)                  "Velocita' porta seriale (bauds)"
-   set caption(acqapn,ok)                    "OK"
-   set caption(acqapn,appliquer)             "Applica"
-   set caption(acqapn,fermer)                "Chiudi"
-   set caption(acqapn,aide)                  "Aiuto"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -363,10 +351,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqapn,camera)                "Nikon CoolPix"
    set caption(acqapn,baud)                  "Velocidad del Puerto Serie (baudios)"
-   set caption(acqapn,ok)                    "OK"
-   set caption(acqapn,appliquer)             "Aplicar"
-   set caption(acqapn,fermer)                "Cerrar"
-   set caption(acqapn,aide)                  "Ayuda"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -453,10 +437,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqapn,camera)                "Nikon CoolPix"
    set caption(acqapn,baud)                  "Seriell Port Geschwindigkeit (Bauds)"
-   set caption(acqapn,ok)                    "OK"
-   set caption(acqapn,appliquer)             "Anwenden"
-   set caption(acqapn,fermer)                "Schließen"
-   set caption(acqapn,aide)                  "Hilfe"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -543,10 +523,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqapn,camera)                "Nikon CoolPix"
    set caption(acqapn,baud)                  "Velocidade da Porta Série (bauds)"
-   set caption(acqapn,ok)                    "OK"
-   set caption(acqapn,appliquer)             "Aplicar"
-   set caption(acqapn,fermer)                "Fechar"
-   set caption(acqapn,aide)                  "Ajuda"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -633,10 +609,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqapn,camera)                "Nikon CoolPix"
    set caption(acqapn,baud)                  "Serial Port Speed (bauds)"
-   set caption(acqapn,ok)                    "OK"
-   set caption(acqapn,appliquer)             "Apply"
-   set caption(acqapn,fermer)                "Close"
-   set caption(acqapn,aide)                  "Help"
 
 }
 
