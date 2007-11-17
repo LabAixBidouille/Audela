@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.10 2007-11-09 23:45:58 michelpujol Exp $
+# Mise a jour $Id: kitty.tcl,v 1.11 2007-11-17 11:50:25 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -453,17 +453,19 @@ proc ::kitty::stop { camItem } {
 #
 proc ::kitty::KittyDispTemp { camItem } {
    variable private
-   global audace caption
+   global caption
 
-   catch {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
-      if { [ winfo exists $frm] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
+      if { [ winfo exists $frm.frame3.frame10.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
          $frm.frame3.frame10.temp_ccd configure \
             -text "$caption(kitty,temperature_CCD) $temp_ccd $caption(kitty,deg_c)"
          set private(aftertemp) [ after 5000 ::kitty::KittyDispTemp $camItem ]
       } else {
-         catch { unset private(aftertemp) }
+         if { [ info exists private(aftertemp) ] == "0" } {
+            unset private(aftertemp)
+         }
       }
    }
 }
