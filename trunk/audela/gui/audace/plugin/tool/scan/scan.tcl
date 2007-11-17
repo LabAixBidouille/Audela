@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.34 2007-11-10 11:28:31 michelpujol Exp $
+# Mise a jour $Id: scan.tcl,v 1.35 2007-11-17 13:19:47 robertdelmas Exp $
 #
 
 #============================================================
@@ -352,11 +352,12 @@ namespace eval ::scan {
 
       #--- Configuration dynamique de l'outil en fonction de la liaison
       ::scan::adaptOutilScan
-      ::confVisu::addCameraListener $visuNo ::scan::adaptOutilScan
-      trace add variable ::conf(audine,port) write ::scan::adaptOutilScan
 
       #--- Mise a jour de la dimension du pixel a la connexion d'une camera
       ::scan::updateCellDim
+
+      #--- Mise en service de la surveillance de la connexion d'une camera
+      ::confVisu::addCameraListener $visuNo ::scan::adaptOutilScan
       ::confVisu::addCameraListener $visuNo ::scan::updateCellDim
 
       #---
@@ -373,11 +374,8 @@ namespace eval ::scan {
       #--- Sauvegarde de la configuration
       ::scan::enregistrementVar
 
-      #--- Arret de la surveillance
+      #--- Arret de la surveillance de la connexion d'une camera
       ::confVisu::removeCameraListener $visuNo ::scan::adaptOutilScan
-      trace remove variable ::conf(audine,port) write ::scan::adaptOutilScan
-
-      #--- Supprime la procedure de surveillance de la connexion d'une camera
       ::confVisu::removeCameraListener $visuNo ::scan::updateCellDim
 
       #---

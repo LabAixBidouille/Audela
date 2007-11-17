@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.36 2007-11-10 11:28:31 michelpujol Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.37 2007-11-17 13:20:06 robertdelmas Exp $
 #
 
 global panneau
@@ -348,14 +348,14 @@ namespace eval ::scanfast {
          $This.fra3.bin.binY configure -values $panneau(scanfast,listBinningY)
       }
 
-     #--- Binnings associes aux liaisons
+      #--- Binnings et frames associes aux liaisons
       switch [ ::confLink::getLinkNamespace $conf(audine,port) ] {
          ethernaude {
             #--- Adaptation des binnings extremes
             if { $panneau(scanfast,binningX) > "2" } {
                set panneau(scanfast,binningX) "2"
             }
-            #--- Mise en forme de la frame
+            #--- Etat du bouton et mise en forme des frames
             $This.fra33.but1 configure -state normal
             pack forget $This.fra33
             pack $This.fra4 -side top -fill x
@@ -368,7 +368,7 @@ namespace eval ::scanfast {
             if { $panneau(scanfast,binningY) > "16" } {
                set panneau(scanfast,binningY) "2"
             }
-            #--- Mise en forme de la frame
+            #--- Etat du bouton et mise en forme des frames
             $This.fra33.but1 configure -state normal
             pack $This.fra33 -side top -fill x
             pack forget $This.fra4
@@ -378,7 +378,7 @@ namespace eval ::scanfast {
             pack $This.fra5 -side top -fill x
          }
          default {
-            #--- Mise en forme de la frame
+            #--- Etat du bouton
             $This.fra33.but1 configure -state disabled
          }
       }
@@ -417,8 +417,9 @@ namespace eval ::scanfast {
 
       #--- Configuration dynamique de l'outil en fonction de la liaison
       ::scanfast::adaptOutilScanfast
-      ::confVisu::addCameraListener 1 ::scanfast::adaptOutilScanfast
-      trace add variable ::conf(audine,port) write ::scanfast::adaptOutilScanfast
+
+      #--- Mise en service de la surveillance de la connexion d'une camera
+      ::confVisu::addCameraListener $visuNo ::scanfast::adaptOutilScanfast
 
       #---
       pack $This -side left -fill y
@@ -434,9 +435,8 @@ namespace eval ::scanfast {
       #--- Sauvegarde de la configuration
       ::scanfast::enregistrementVar
 
-      #--- Arret de la surveillance
-      ::confVisu::removeCameraListener 1 ::scanfast::adaptOutilScanfast
-      trace remove variable ::conf(audine,port) write ::scanfast::adaptOutilScanfast
+      #--- Arret de la surveillance de la connexion d'une camera
+      ::confVisu::removeCameraListener $visuNo ::scanfast::adaptOutilScanfast
 
       #---
       pack forget $This
