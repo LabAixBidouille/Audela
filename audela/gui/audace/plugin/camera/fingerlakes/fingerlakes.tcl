@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.19 2007-11-09 23:45:58 michelpujol Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.20 2007-11-17 11:49:49 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -303,17 +303,19 @@ proc ::fingerlakes::stop { camItem } {
 #
 proc ::fingerlakes::FLIDispTemp { camItem } {
    variable private
-   global audace caption
+   global caption
 
-   catch {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
-      if { [ winfo exists $frm ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
+      if { [ winfo exists $frm.frame1.frame3.frame5.frame7.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
          set temp_ccd [ format "%+5.2f" $temp_ccd ]
          $frm.frame1.frame3.frame5.frame7.temp_ccd configure \
             -text "$caption(fingerlakes,temperature_CCD) $temp_ccd $caption(fingerlakes,deg_c)"
          set private(aftertemp) [ after 5000 ::fingerlakes::FLIDispTemp $camItem ]
       } else {
-         catch { unset private(aftertemp) }
+         if { [ info exists private(aftertemp) ] == "0" } {
+            unset private(aftertemp)
+         }
       }
    }
 }
