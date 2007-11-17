@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.9 2007-11-09 23:45:58 michelpujol Exp $
+# Mise a jour $Id: sbig.tcl,v 1.10 2007-11-17 11:51:06 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -371,11 +371,11 @@ proc ::sbig::stop { camItem } {
 #
 proc ::sbig::SbigDispTemp { camItem } {
    variable private
-   global audace caption
+   global caption
 
-   catch {
+   if { [ info exists private(frm) ] } {
       set frm $private(frm)
-      if { [ winfo exists $frm ] == "1" && [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
+      if { [ winfo exists $frm.power ] == "1" && [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
          set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
          set temp_ccd [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
          set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
@@ -387,7 +387,9 @@ proc ::sbig::SbigDispTemp { camItem } {
             -text "$caption(sbig,temp_ext) $temp_ccd $caption(sbig,deg_c) / $temp_ambiant $caption(sbig,deg_c)"
          set private(aftertemp) [ after 5000 ::sbig::SbigDispTemp $camItem ]
       } else {
-         catch { unset private(aftertemp) }
+         if { [ info exists private(aftertemp) ] == "0" } {
+            unset private(aftertemp)
+         }
       }
    }
 }
