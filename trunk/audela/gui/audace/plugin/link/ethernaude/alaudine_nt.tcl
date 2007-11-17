@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.13 2007-11-03 23:02:13 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.14 2007-11-17 10:28:03 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -292,21 +292,25 @@ namespace eval AlAudine_NT {
       variable private
       global caption
 
-      catch {
-         #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-         set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
+      #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
+      set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
+      if { $camNo != "0" } {
          set statusVariableName "::status_cam$camNo"
-         if { [set $statusVariableName] == "exp" } {
-            #--- Si on lit une image de la camera, il ne faut pas lire la temperature
+      } else {
+         return
+      }
+      if { [set $statusVariableName] == "exp" } {
+         #--- Si on lit une image de la camera, il ne faut pas lire la temperature
+         set private(aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
+      } else {
+         if { [ winfo exists $This.lab7 ] == "1" && [ catch { set temp_ccd_mesure [ cam$camNo temperature ] } ] == "0" } {
+            set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
+            $This.lab7 configure \
+               -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
             set private(aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
          } else {
-            if { [ info exists This ] == "1" && [ catch { set temp_ccd_mesure [ cam$camNo temperature ] } ] == "0" } {
-               set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
-               $This.lab7 configure \
-                  -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
-               set private(aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
-            } else {
-               catch { unset private(aftertemp) }
+            if { [ info exists private(aftertemp) ] == "0" } {
+               unset private(aftertemp)
             }
          }
       }
