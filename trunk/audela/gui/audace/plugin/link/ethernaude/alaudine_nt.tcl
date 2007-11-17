@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.14 2007-11-17 10:28:03 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.15 2007-11-17 11:52:43 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -17,7 +17,6 @@ namespace eval AlAudine_NT {
 
       set This $this
       createDialog
-      ::AlAudine_NT::AlAudine_NTDispTemp
       tkwait visibility $This
    }
 
