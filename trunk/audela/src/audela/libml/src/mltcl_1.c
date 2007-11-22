@@ -82,7 +82,7 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 		strcpy(pathname_tycho,ligne);
 
 		//boucle sur chaque zone
-		for (k=0;k<24;k++) {
+		for (k=9;k<24;k++) {
 			zonename=k*75;
 			sprintf (zone,"%04d", zonename);
 		
@@ -176,57 +176,6 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 					fclose(cattycho);
 					return TCL_ERROR;
 				}
-
-				//recherche nbdebut pour une zone RA de l'usno
-				/*for (k2=5;k2<18;k2++){
-					if (accusno[k1].texte[k2]!= ' ') {
-						break;
-					}
-				}
-				for (k3=k2;k3<23;k3++){
-					if (accusno[k1].texte[k3]== ' ') {
-						break;
-					}
-				}
-				for (kk=k2;kk<k3;kk++) { s[kk-k2]=accusno[k1].texte[kk]; } ; s[k3-k2]='\0';
-				nbdebutusno=atol(s);
-				
-				for (k2=k3;k2<k3+15;k2++){
-					if (accusno[k1].texte[k2]!= ' ') {
-						break;
-					}
-				}
-				
-				for (kk=k2;kk<29;kk++) { s[kk-k2]=accusno[k1].texte[kk]; } ; s[29-k2]='\0';
-				nbusno=atof(s);*/
-
-				//recherche nbdebut pour une zone RA du tycho
-				/*for (k2=5;k2<18;k2++){
-					if (acctycho[k1].texte[k2]!= ' ') {
-						break;
-					}
-				}
-				for (k3=k2;k3<23;k3++){
-					if (acctycho[k1].texte[k3]== ' ') {
-						break;
-					}
-				}
-				for (kk=k2;kk<k3;kk++) { s[kk-k2]=acctycho[k1].texte[kk]; } ; s[k3-k2]='\0';
-				nbdebuttycho=atol(s);
-				
-				for (k2=k3;k2<k3+15;k2++){
-					if (acctycho[k1].texte[k2]!= ' ') {
-						break;
-					}
-				}
-			
-				for (kk=k2;kk<29;kk++) { s[kk-k2]=acctycho[k1].texte[kk]; } ; s[29-k2]='\0';
-				nbtycho=atof(s);*/
-				
-				//boucle pour chaque fichier de zone, pour chaque petite zone RA 
-			
-				//fseek(cattycho,(12)*(nbdebuttycho-1),0);
-
 				
 				 while (feof(cattycho)==0) {
 				//for (k2=(int)nbdebuttycho-1;k2<(int)nbdebuttycho+(int)nbtycho;k2++) {
@@ -325,7 +274,7 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 						//les étoiles les plus proches
 						proche1=sqrt(diffminra*diffminra+diffdec2*diffdec2);
 						proche2=sqrt(diffmindec*diffmindec+diffra2*diffra2);
-						if ((proche1<proche2)&&(proche1<0.0004)&&(diffminra<0.00028)&&(diffmindec<0.00028)) {
+						if ((proche1<proche2)&&(proche1<0.0004)&&(diffminra<0.00028)&&(diffdec2<0.00028)) {
 							sprintf(ligne,"%sdiffZONE%s.acc",pathname_usno,zone);
 							f1=fopen(ligne,"a");
 							if (f1==NULL) {
@@ -336,7 +285,7 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 							}
 							fprintf(f1,"%15.10f %15.10f 		%15.10f %15.10f %15.10f %15.10f %15.10f		%d	%d\n",diffminra,diffdec2,minra,mindec2,ratycho,detycho,differencemagn1,mink2ra,mink2dec);
 							fclose(f1);
-						} else if  ((proche2<proche1)&&(proche2<0.0004)&&(diffminra<0.00028)&&(diffmindec<0.00028)) {
+						} else if  ((proche2<proche1)&&(proche2<0.0004)&&(diffra2<0.00028)&&(diffmindec<0.00028)) {
 							sprintf(ligne,"%sdiffZONE%s.acc",pathname_usno,zone);
 							f1=fopen(ligne,"a");
 							if (f1==NULL) {
@@ -667,12 +616,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						/* on a une nouvelle ligne*/
 						/*il faut copier lignes[k1].ligne dans lignes[nimages2+1]*/
 						if (temp == 0) {
-							//if (k==3) {
-							//	fprintf(f_in1,"%s",lignes[k].texte);
-							//	nb_ligne = ftell(f_in1);
-						//	} else {
 								fprintf(f_in1,"\n%s",lignes[k].texte);
-							//}
 						} else {
 
 							if ((lignes[k].nouvelledate != lignes[temp].nouvelledate)&&(temp!=0)) {
