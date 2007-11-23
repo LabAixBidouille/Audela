@@ -1342,7 +1342,7 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
    int msg,k,kkk,x,y,adr,index;
    double value,*cost,*sint,rho,theta,rho_int;
    int naxis11,naxis12,naxis21,naxis22,nombre,taille,naxis222,naxis122;
-   double threshold;
+   double threshold,threshold_ligne;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -1350,12 +1350,13 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
    index=pseries->index;
    naxis11=p_in->naxis1;
    naxis21=p_in->naxis2;
-   naxis12=180;
+   naxis12=180*2;
    naxis22=(int)ceil(sqrt(naxis11*naxis11+naxis21*naxis21));
    naxis122=2*naxis12;
    naxis222=2*naxis22;
    nelem2=(long)(naxis12*naxis222);
    threshold=pseries->threshold;
+   threshold_ligne=30;	//définition d'un nombre mini de points pour avoir une droite
 
    /* --- calcul de la fonction ---*/
    /*tt_imabuilder(p_out);*/
@@ -1389,8 +1390,8 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
       return(msg);
    }
    for(k=0;k<naxis12;k++) {
-      theta=(1.*k-90.)*(TT_PI)/180.;
-      /*theta=(1.*k-0.)*(TT_PI)/180.;*/
+      //theta=(1.*k-90.)*(TT_PI)/180.;
+      theta=(1.*k-90.)*(TT_PI)/360.; //pour avoir une résolution 2 fois plus grande
       cost[k]=cos(theta);
       sint[k]=sin(theta);
    }
@@ -1407,11 +1408,11 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
                rho_int=naxis22+(int)rho;
                if ((rho_int>=0)&&(rho_int<naxis222)) {
                   adr=(int)(rho_int*naxis12+k);
-                  if (pseries->binary_yesno==TT_NO) {
-                     p_out->p[adr]+=(TT_PTYPE)(value);
-                  } else {
+                  //if (pseries->binary_yesno==TT_NO) {
+                   //  p_out->p[adr]+=(TT_PTYPE)(value);
+                  //} else {
                      p_out->p[adr]+=(TT_PTYPE)(1.);
-                  }
+                  //}
                }
             }
          }
@@ -1421,6 +1422,18 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
    /* --- on libere les pointeurs ---*/
    tt_free2((void**)&cost,"cost");
    tt_free2((void**)&sint,"sint");
+
+   /* --- recherche d'un ou plusieur maximum --- */
+	 for(x=0;x<naxis11;x++) {
+		for(y=0;y<naxis21;y++) {
+			adr=y*naxis11+x;
+			value=p_in->p[adr];
+			if (value>=threshold_ligne) {
+			}
+		}
+	 }
+
+
 
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
