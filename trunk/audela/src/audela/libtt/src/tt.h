@@ -159,6 +159,7 @@
 #define TT_IMASERIES_RADIAL 34
 #define TT_IMASERIES_SMILEX 35
 #define TT_IMASERIES_SMILEY 36
+#define TT_IMASERIES_HOUGH_MYRTILLE 37
 
 #define TT_KERNELTYPE_FH 0
 #define TT_KERNELTYPE_FB 1
@@ -936,6 +937,7 @@ int tt_ima_series_invert_2(TT_IMA_SERIES *pseries);
 int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_rgradient_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_hough_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries);
 int tt_ima_series_back_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_test_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_resample_1(TT_IMA_SERIES *pseries);

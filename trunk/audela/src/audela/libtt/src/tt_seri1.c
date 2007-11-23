@@ -348,6 +348,9 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_HOUGH) {
       msg=tt_ima_series_hough_1(pseries);
       fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_HOUGH_MYRTILLE) {
+      msg=tt_ima_series_hough_myrtille(pseries);
+      fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_BACK) {
       msg=tt_ima_series_back_1(pseries);
       fct_found=TT_YES;
@@ -475,6 +478,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    else if (strcmp(keys[10],"SUBDARK")==0) { pseries->numfct=TT_IMASERIES_SUBDARK; }
    else if (strcmp(keys[10],"RGRADIENT")==0) { pseries->numfct=TT_IMASERIES_RGRADIENT; }
    else if (strcmp(keys[10],"HOUGH")==0) { pseries->numfct=TT_IMASERIES_HOUGH; }
+   else if (strcmp(keys[10],"HOUGH_MYRTILLE")==0) { pseries->numfct=TT_IMASERIES_HOUGH_MYRTILLE; }
    else if (strcmp(keys[10],"BACK")==0) { pseries->numfct=TT_IMASERIES_BACK; }
    else if (strcmp(keys[10],"TEST")==0) { pseries->numfct=TT_IMASERIES_TEST; }
    else if (strcmp(keys[10],"RESAMPLE")==0) { pseries->numfct=TT_IMASERIES_RESAMPLE; }

@@ -1215,21 +1215,34 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 				}
 			}
 
+
+			for (kkk=0;kkk<(int)(nelem);kkk++) {
+				p_tmp1->p[kkk]=p_out->p[kkk];	 
+			}
 			//binarisation de l'image en fonction de l'hitogramme
 			tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-
+			
+			//seuillage haut pour récupérer seulement les géostationnaires
 			for (y=0;y<naxis2;y++) {
 				for (x=0;x<naxis1;x++) {
 					if (p_out->p[y*naxis1+x]<(pseries->hicut)*0.88) {
 						p_out->p[y*naxis1+x]=0;				
-					} //else if (p_out->p[y*naxis1+x]>=(pseries->hicut)*2/3) {
-						//p_out->p[y*naxis1+x]=1;
-					//}
+					} 
 				}
 			}
+			//sauve image pour recherche de geo
+			tt_imasaver(p_out,"D:/geo.fit",8);
 
-			//tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-
+			//seuillage bas pour garder les éventuelles traînées faibles
+			for (y=0;y<naxis2;y++) {
+				for (x=0;x<naxis1;x++) {
+					if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*0.4) {
+						p_tmp1->p[y*naxis1+x]=0;				
+					} 
+				}
+			}
+			//sauve image pour recherche de gto et défilants
+			tt_imasaver(p_tmp1,"D:/gto.fit",8);
 
 			//filtre médian
 			//tt_ima_series_filter_1("FILTER kernel_type=MED kernel_coef=0.0");
@@ -1315,6 +1328,107 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 	}
 
 }
+
+
+int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* Transformee de Hough arrangée pour la detection des GTO                 */
+/***************************************************************************/
+/* - mots optionels utilisables et valeur par defaut :                     */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_out;
+   long nelem2;
+   int msg,k,kkk,x,y,adr,index;
+   double value,*cost,*sint,rho,theta,rho_int;
+   int naxis11,naxis12,naxis21,naxis22,nombre,taille,naxis222,naxis122;
+   double threshold;
+
+   /* --- intialisations ---*/
+   p_in=pseries->p_in;
+   p_out=pseries->p_out;
+   index=pseries->index;
+   naxis11=p_in->naxis1;
+   naxis21=p_in->naxis2;
+   naxis12=180;
+   naxis22=(int)ceil(sqrt(naxis11*naxis11+naxis21*naxis21));
+   naxis122=2*naxis12;
+   naxis222=2*naxis22;
+   nelem2=(long)(naxis12*naxis222);
+   threshold=pseries->threshold;
+
+   /* --- calcul de la fonction ---*/
+   /*tt_imabuilder(p_out);*/
+   tt_imacreater(p_out,naxis12,naxis222);
+
+   /* --- mise a zero de l'image de sortie ---*/
+   for (kkk=0;kkk<(int)(nelem2);kkk++) {
+      value=0.;
+      p_out->p[kkk]=(TT_PTYPE)(value);
+   }
+
+   /* --- on trace une ligne mediane ---*/
+   for(k=0;k<naxis12;k++) {
+      rho_int=naxis22;
+      adr=(int)(rho_int*naxis12+k);
+      p_out->p[adr]+=(TT_PTYPE)(1);
+   }
+
+   /* --- table de cos, sin ---*/
+   nombre=naxis12;
+   taille=sizeof(double);
+   cost=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&cost,&nombre,&taille,"cost"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_hough_myrtille for pointer cost");
+      return(msg);
+   }
+   sint=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&sint,&nombre,&taille,"sint"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_hough_myrtille for pointer sint");
+      tt_free2((void**)&cost,"cost");
+      return(msg);
+   }
+   for(k=0;k<naxis12;k++) {
+      theta=(1.*k-90.)*(TT_PI)/180.;
+      /*theta=(1.*k-0.)*(TT_PI)/180.;*/
+      cost[k]=cos(theta);
+      sint[k]=sin(theta);
+   }
+
+   /* --- balayage ---*/
+   for(x=0;x<naxis11;x++) {
+      for(y=0;y<naxis21;y++) {
+         adr=y*naxis11+x;
+         value=p_in->p[adr];
+         if (value>=threshold) {
+            for(k=0;k<naxis12;k++) {
+               rho=-x*sint[k]+y*cost[k];
+               rho_int=(int)rho;
+               rho_int=naxis22+(int)rho;
+               if ((rho_int>=0)&&(rho_int<naxis222)) {
+                  adr=(int)(rho_int*naxis12+k);
+                  if (pseries->binary_yesno==TT_NO) {
+                     p_out->p[adr]+=(TT_PTYPE)(value);
+                  } else {
+                     p_out->p[adr]+=(TT_PTYPE)(1.);
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   /* --- on libere les pointeurs ---*/
+   tt_free2((void**)&cost,"cost");
+   tt_free2((void**)&sint,"sint");
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(OK_DLL);
+}
+
 
 
 //###############################################################################################################################
