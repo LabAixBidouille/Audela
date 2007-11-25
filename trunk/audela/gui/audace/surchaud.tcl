@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.25 2007-11-10 11:28:30 michelpujol Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.26 2007-11-25 08:15:28 alainklotz Exp $
 #
 # offset  value
 # offset1  in out const ?tt_options?
@@ -28,6 +28,7 @@
 # register2  in out number ?first_index? ?tt_options?
 # registerwcs  in out number ?first_index? ?tt_options?
 # registerbox  in out number ?first_index? ?tt_options?
+# registerfine  in out number ?delta? ?oversampling? ?first_index? ?tt_options?
 # subsky  back_kernel back_threshold  ?tt_options?
 # subsky1  in out back_kernel back_threshold ?tt_options?
 # subsky2  in out number back_kernel back_threshold ?first_index? ?tt_options?
@@ -35,6 +36,7 @@
 # window2 in out number {x1 y1 x2 y2} ?first_index? ?tt_options?
 # smedian  in out number ?first_index? ?tt_options?
 # sadd  in out number ?first_index? ?tt_options?
+# sprod  in out number ?first_index? ?tt_options?
 # ssigma  in out number ?first_index? ?tt_options?
 # smean  in out number ?first_index? ?tt_options?
 # ssk  in out number kappa ?first_index? ?tt_options?
@@ -639,6 +641,34 @@ proc opt2 {args} {
    }
 }
 
+proc prod {args} {
+   #--- operand value
+   global audace
+
+   if {[llength $args] == 2} {
+      set operand [lindex $args 0]
+      set diroperand [file dirname "$operand"]
+      set len [expr [string length $audace(rep_images)]-1]
+      if {(($len>=0)&&($diroperand=="."))} {
+         set car [string index $audace(rep_images) $len]
+         if {$car!="/"} {
+            set operand "$audace(rep_images)/$operand"
+         } else {
+            set operand "$audace(rep_images)$operand"
+         }
+      }
+      set ext [file extension "$operand"]
+      if {$ext==""} {
+         set operand "${operand}[buf$audace(bufNo) extension]"
+      }
+      buf$audace(bufNo) imaseries "PROD \"file=$operand\" constant=[lindex $args 1]"
+      ::audace::autovisu $audace(visuNo)
+   } else {
+      error "Usage: prod operand value"
+   }
+}
+
+
 proc delete2 {args} {
    #--- in number
    global audace
@@ -836,9 +866,39 @@ proc registerwcs {args} {
       }
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" REGISTER matchwcs"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" REGISTER matchwcs $options"
    } else {
       error "Usage: registerwcs in out number ?first_index? ?tt_options?"
+   }
+}
+
+proc registerfine {args} {
+   #--- in out number ?delta? ?oversampling? ?first_index? ?tt_options?
+   global audace
+
+   set n [llength $args]
+   if {$n>=3} {
+      set delta 1
+      if {$n==4} {
+         set delta "[lindex $args 3]"
+      }
+      set oversampling 10
+      if {$n==5} {
+         set oversampling "[lindex $args 4]"
+      }
+      set first 1
+      if {$n==6} {
+         set first "[lindex $args 5]"
+      }
+      set options ""
+      if {$n>=7} {
+         set options "[lrange $args 6 end]"
+      }
+      set ni [expr [lindex $args 2]+$first-1]
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" REGISTERFINE oversampling=$oversampling delta=$delta \"file=$audace(rep_images)/[lindex $args 0]${first}${ext}\" $options"
+   } else {
+      error "Usage: registerfine in out number ?delta? ?oversampling? ?first_index? ?tt_options?"
    }
 }
 
@@ -1064,6 +1124,29 @@ proc sadd {args} {
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: sadd in out number ?first_index? ?tt_options?"
+   }
+}
+
+proc sprod {args} {
+   #--- in out number ?first_index? ?tt_options?
+   global audace
+
+   set n [llength $args]
+   if {$n>=3} {
+      set first 1
+      if {$n==4} {
+         set first "[lindex $args 3]"
+      }
+      set options ""
+      if {$n>=5} {
+         set options "[lrange $args 4 end]"
+      }
+      set ni [expr [lindex $args 2]+$first-1]
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" PROD $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: sprod in out number ?first_index? ?tt_options?"
    }
 }
 
