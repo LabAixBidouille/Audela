@@ -313,6 +313,68 @@ int tt_ima_series_div_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
+int tt_ima_series_prod_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* Produit de deux images                                                  */
+/***************************************************************************/
+/* - mots optionels utilisables et valeur par defaut :                     */
+/* constant=1                                                              */
+/* file="file.fit"                                                         */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_tmp1,*p_out;
+   char fullname[(FLEN_FILENAME)+5];
+   char message[TT_MAXLIGNE];
+   long nelem,firstelem,nelem_tmp;
+   double value,constant;
+   int msg,kkk,index;
+
+   /* --- initialisations ---*/
+   p_in=pseries->p_in;
+   p_tmp1=pseries->p_tmp1;
+   p_out=pseries->p_out;
+   nelem=pseries->nelements;
+   constant=pseries->constant;
+   index=pseries->index;
+
+   /* --- charge l'image file dans p_tmp1---*/
+   if (index==1) {
+      /*tt_imabuilder(p_tmp1);*/
+      firstelem=(long)(1);
+      nelem_tmp=(long)(0);
+      strcpy(fullname,pseries->file);
+      if ((msg=tt_imaloader(p_tmp1,fullname,firstelem,nelem_tmp))!=0) {
+	 sprintf(message,"Problem concerning file %s",fullname);
+	 tt_errlog(msg,message);
+	 return(msg);
+      }
+      /* --- verification des dimensions ---*/
+      if ((p_tmp1->naxis1!=p_in->naxis1)||(p_tmp1->naxis2!=p_in->naxis2)) {
+	 sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp1->naxis1,p_tmp1->naxis2,p_tmp1->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
+	 tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
+	 return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+      }
+   }
+
+   /* --- calcul de la fonction ---*/
+   /*tt_imabuilder(p_out);*/
+   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+   for (kkk=0;kkk<(int)(nelem);kkk++) {
+      if (p_tmp1->p[kkk]==0) {
+	 value=p_in->p[kkk];
+      } else {
+	 value=p_in->p[kkk]*p_tmp1->p[kkk]/constant;
+      }
+      p_out->p[kkk]=(TT_PTYPE)(value);
+   }
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(OK_DLL);
+}
+
 int tt_ima_series_filter_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 /* Filtre kernel d'une serie d'images                                      */

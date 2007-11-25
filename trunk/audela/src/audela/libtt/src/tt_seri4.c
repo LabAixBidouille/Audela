@@ -783,6 +783,185 @@ int tt_ima_series_register_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
+int tt_ima_series_registerfine_1(TT_IMA_SERIES *pseries)
+/***************************************************************************/
+/* Translation d'un lot d'images par autocorrelation spatiale              */
+/***************************************************************************/
+/*                                                                         */
+/* - mots optionels utilisables et valeur par defaut :                     */
+/* oversampling = 4                                                        */
+/* delta = 1 pixel (+/- delta pixels)                                      */
+/***************************************************************************/
+{
+   TT_IMA *p_in,*p_tmp1,*p_tmp2,*p_out;
+   char fullname[(FLEN_FILENAME)+5];
+   char message[TT_MAXLIGNE];
+   long nelem,firstelem,nelem_tmp;
+   double value,delta,trans_x,trans_y,trans_x0,trans_y0,dtrans;
+   int msg,kkk,index,kx,ky,deltaint;
+   int oversampling;
+   double residumin,residu;
+   double a[6];
+
+   /* --- intialisations ---*/
+   p_in=pseries->p_in;
+   p_tmp1=pseries->p_tmp1;
+   p_tmp2=pseries->p_tmp2;
+   p_out=pseries->p_out;
+   nelem=pseries->nelements;
+   index=pseries->index;
+   oversampling=pseries->oversampling;
+   delta=pseries->delta;
+
+   /* --- charge l'image file dans p_tmp1---*/
+   if (index==1) {
+      firstelem=(long)(1);
+      nelem_tmp=(long)(0);
+      strcpy(fullname,pseries->file);
+      if ((msg=tt_imaloader(p_tmp1,fullname,firstelem,nelem_tmp))!=0) {
+	 sprintf(message,"Problem concerning file %s",fullname);
+	 tt_errlog(msg,message);
+	 return(msg);
+      }
+      /* --- verification des dimensions ---*/
+      if ((p_tmp1->naxis1!=p_in->naxis1)||(p_tmp1->naxis2!=p_in->naxis2)) {
+	 sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_tmp1->naxis1,p_tmp1->naxis2,p_tmp1->load_fullname,p_in->naxis1,p_in->naxis2,p_in->load_fullname);
+	 tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
+	 return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+      }
+   }
+
+   /* --- copie l'image initiale dans p_tmp2 ---*/
+   tt_imacreater(p_tmp2,p_in->naxis1,p_in->naxis2);
+   for (kkk=0;kkk<(int)(nelem);kkk++) {
+      value=p_in->p[kkk];
+      p_tmp2->p[kkk]=(TT_PTYPE)(value);
+   }
+
+   /* --- n sort si la zone d'exploration est impossible --- */
+   if ((oversampling<=0)||(delta==0.)) {
+      /* --- calcul des temps ---*/
+      pseries->jj_stack=pseries->jj[index-1];
+      pseries->exptime_stack=pseries->exptime[index-1];
+      return(OK_DLL);
+   }
+
+   delta=fabs(delta);
+   deltaint=(int)ceil(delta);
+   dtrans=1./oversampling;
+   /* --- calcul de la meilleure translation ---*/
+   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+   residumin=TT_MAX_DOUBLE;
+   trans_x0=0.;
+   trans_y0=0.;
+   for (trans_x=0;trans_x<=delta/2;trans_x+=dtrans) {
+      for (trans_y=0;trans_y<=delta/2;trans_y+=dtrans) {
+         /* --- debut du calcul du residu ---*/
+         for (kkk=0;kkk<(int)(nelem);kkk++) { value=p_tmp2->p[kkk]; p_in->p[kkk]=(TT_PTYPE)(value); }
+         tt_util_transima1(pseries,trans_x,trans_y);
+         residu=0.;
+         for (kx=deltaint;kx<p_in->naxis1-deltaint;kx++) {
+            for (ky=deltaint;ky<p_in->naxis2-deltaint;ky++) {
+               kkk=kx*p_in->naxis2+ky;
+               value=p_out->p[kkk]-p_tmp1->p[kkk]; 
+               residu+=(value*value);
+            }
+         }
+         if (residu<residumin) {
+            residumin=residu;
+            trans_x0=trans_x;
+            trans_y0=trans_y;
+         }
+         /* --- fin du calcul du residu ---*/
+         if (trans_y==0) { continue; }
+         trans_y=-trans_y;
+         /* --- debut du calcul du residu ---*/
+         for (kkk=0;kkk<(int)(nelem);kkk++) { value=p_tmp2->p[kkk]; p_in->p[kkk]=(TT_PTYPE)(value); }
+         tt_util_transima1(pseries,trans_x,trans_y);
+         residu=0.;
+         for (kx=deltaint;kx<p_in->naxis1-deltaint;kx++) {
+            for (ky=deltaint;ky<p_in->naxis2-deltaint;ky++) {
+               kkk=kx*p_in->naxis2+ky;
+               value=p_out->p[kkk]-p_tmp1->p[kkk]; 
+               residu+=(value*value);
+            }
+         }
+         if (residu<residumin) {
+            residumin=residu;
+            trans_x0=trans_x;
+            trans_y0=trans_y;
+         }
+         /* --- fin du calcul du residu ---*/
+         trans_y=-trans_y;
+      }
+      if (trans_x==0) { continue; }
+      trans_x=-trans_x;
+      for (trans_y=0;trans_y<=delta/2;trans_y+=dtrans) {
+         /* --- debut du calcul du residu ---*/
+         for (kkk=0;kkk<(int)(nelem);kkk++) { value=p_tmp2->p[kkk]; p_in->p[kkk]=(TT_PTYPE)(value); }
+         tt_util_transima1(pseries,trans_x,trans_y);
+         residu=0.;
+         for (kx=deltaint;kx<p_in->naxis1-deltaint;kx++) {
+            for (ky=deltaint;ky<p_in->naxis2-deltaint;ky++) {
+               kkk=kx*p_in->naxis2+ky;
+               value=p_out->p[kkk]-p_tmp1->p[kkk]; 
+               residu+=(value*value);
+            }
+         }
+         if (residu<residumin) {
+            residumin=residu;
+            trans_x0=trans_x;
+            trans_y0=trans_y;
+         }
+         /* --- fin du calcul du residu ---*/
+         if (trans_y==0) { continue; }
+         trans_y=-trans_y;
+         /* --- debut du calcul du residu ---*/
+         for (kkk=0;kkk<(int)(nelem);kkk++) { value=p_tmp2->p[kkk]; p_in->p[kkk]=(TT_PTYPE)(value); }
+         tt_util_transima1(pseries,trans_x,trans_y);
+         residu=0.;
+         for (kx=deltaint;kx<p_in->naxis1-deltaint;kx++) {
+            for (ky=deltaint;ky<p_in->naxis2-deltaint;ky++) {
+               kkk=kx*p_in->naxis2+ky;
+               value=p_out->p[kkk]-p_tmp1->p[kkk]; 
+               residu+=(value*value);
+            }
+         }
+         if (residu<residumin) {
+            residumin=residu;
+            trans_x0=trans_x;
+            trans_y0=trans_y;
+         }
+         /* --- fin du calcul du residu ---*/
+         trans_y=-trans_y;
+      }
+      trans_x=-trans_x;
+   }
+
+   /* --- effectue la meilleure translation ---*/
+   for (kkk=0;kkk<(int)(nelem);kkk++) { value=p_tmp2->p[kkk]; p_in->p[kkk]=(TT_PTYPE)(value); }
+   tt_util_transima1(pseries,trans_x0,trans_y0);
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   /* --- calcule les nouveaux parametres de projection ---*/
+   a[0]=1.;
+   a[1]=0.;
+   a[2]=-trans_x0;
+   a[3]=0.;
+   a[4]=1.;
+   a[5]=-trans_y0;
+   tt_util_update_wcs(p_in,p_out,a,2,NULL);
+
+   /* --- calcul des temps ---*/
+   pseries->jj_stack=pseries->jj[index-1];
+   pseries->exptime_stack=pseries->exptime[index-1];
+
+   return(OK_DLL);
+}
+
 int tt_ima_series_stat_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 /* statistiques sur une serie d'images                                     */

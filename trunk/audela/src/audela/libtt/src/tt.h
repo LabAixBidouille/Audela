@@ -160,6 +160,8 @@
 #define TT_IMASERIES_SMILEX 35
 #define TT_IMASERIES_SMILEY 36
 #define TT_IMASERIES_HOUGH_MYRTILLE 37
+#define TT_IMASERIES_REGISTERFINE 38
+#define TT_IMASERIES_PROD 39
 
 #define TT_KERNELTYPE_FH 0
 #define TT_KERNELTYPE_FB 1
@@ -819,6 +821,7 @@ typedef struct {
    int matchwcs;
    double coef_smile2;
    double coef_smile4;
+   int oversampling;
    /* --- parametres internes (private) ---*/
    double binary_yesno;
    double val_exptime;
@@ -942,11 +945,13 @@ int tt_ima_series_back_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_test_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_resample_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_radial_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_prod_1(TT_IMA_SERIES *pseries);
 
 int tt_ima_series_tilt_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_smiley_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_register_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_registerfine_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_astrometry_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_stat_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_geostat_1(TT_IMA_SERIES *pseries);

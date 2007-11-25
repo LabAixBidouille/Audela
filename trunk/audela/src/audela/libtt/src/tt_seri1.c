@@ -390,6 +390,12 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_SMILEY) {
       msg=tt_ima_series_smiley_1(pseries);
       fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_REGISTERFINE) {
+      msg=tt_ima_series_registerfine_1(pseries);
+      fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_PROD) {
+      msg=tt_ima_series_prod_1(pseries);
+      fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_DELETE) {
       msg=OK_DLL;
       fct_found=TT_YES;
@@ -492,7 +498,8 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    else if (strcmp(keys[10],"SMILEX")==0) { pseries->numfct=TT_IMASERIES_SMILEX; }
    else if (strcmp(keys[10],"SMILEY")==0) { pseries->numfct=TT_IMASERIES_SMILEY; }
    else if (strcmp(keys[10],"RADIAL")==0) { pseries->numfct=TT_IMASERIES_RADIAL; }
-
+   else if (strcmp(keys[10],"REGISTERFINE")==0) { pseries->numfct=TT_IMASERIES_REGISTERFINE; }
+   else if (strcmp(keys[10],"PROD")==0) { pseries->numfct=TT_IMASERIES_PROD; }
 
    tt_user1_ima_series_builder1(keys[10],pseries);
    tt_user2_ima_series_builder1(keys[10],pseries);
@@ -614,6 +621,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->p_ast.ra0=-100.;
    pseries->coef_smile2=0.;
    pseries->coef_smile4=0.;
+   pseries->oversampling=4;
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=6;k2++) {
          pseries->p_ast.pv[k1][k2]=0.;
@@ -979,6 +987,9 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       }
       else if (strcmp(mot,"LENGTH")==0) {
 	 pseries->length=(int)(fabs(atoi(argu)));
+      }
+      else if (strcmp(mot,"OVERSAMPLING")==0) {
+	 pseries->oversampling=(int)(fabs(atoi(argu)));
       }
       else if (strcmp(mot,"PERCENT")==0) {
 	 pseries->percent=(double)(fabs(atof(argu)));
