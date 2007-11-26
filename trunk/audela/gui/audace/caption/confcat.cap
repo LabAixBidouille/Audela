@@ -1,6 +1,6 @@
 #
 # Fichier : confcat.cap
-# Mise a jour $Id: confcat.cap,v 1.12 2007-10-01 13:07:37 robertdelmas Exp $
+# Mise a jour $Id: confcat.cap,v 1.13 2007-11-26 17:43:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcat,fermer)              "Schließen"
    set caption(confcat,aide)                "Hilfe"
 
-   set caption(confcat,pas_carte)           "# Il n'y a pas de carte présente."
+   set caption(confcat,pas_carte)           "Keine Karte."
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

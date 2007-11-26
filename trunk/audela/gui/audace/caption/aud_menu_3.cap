@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.30 2007-10-18 21:09:07 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.31 2007-11-26 17:42:32 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -627,7 +627,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,aucune)                    "Keine"
    set caption(pretraitement,auto)                      "Auto"
    set caption(pretraitement,rep-images)                "Die Bilder müssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
-   set caption(pretraitement,non_valide)                "# Le prétraitement est impossible sans offset, dark et flat-field."
+   set caption(pretraitement,non_valide)                "Voraufbereitung ohne Neigung, Schwarz und Flat-Field Bild unmöglich."
 
    set caption(pretraitement,liste_serie)               "Index Liste:"
    set caption(pretraitement,nom_generique)             "Generischen Nahmen:"

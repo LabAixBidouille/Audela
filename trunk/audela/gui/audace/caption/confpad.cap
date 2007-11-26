@@ -1,6 +1,6 @@
 #
 # Fichier : confpad.cap
-# Mise a jour $Id: confpad.cap,v 1.11 2007-10-01 13:08:36 robertdelmas Exp $
+# Mise a jour $Id: confpad.cap,v 1.12 2007-11-26 17:43:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -71,7 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confpad,aide)         "Hilfe"
   set caption(confpad,configurer)    "Konfigurieren"
 
-   set caption(confpad,pas_raquette) "# Il n'y a pas de raquette présente."
+   set caption(confpad,pas_raquette) "Keine Handsteuerung."
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

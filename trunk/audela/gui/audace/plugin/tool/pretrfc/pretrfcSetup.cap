@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfcSetup.cap
-# Mise a jour $Id: pretrfcSetup.cap,v 1.5 2007-10-01 13:07:14 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.cap,v 1.6 2007-11-26 17:44:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -60,8 +60,8 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Vorhandlung - Konfiguration"
-   set caption(pretrfcSetup,texte1)                 "# Afficher les messages sur la Console :"
-   set caption(pretrfcSetup,texte2)                 "# Enregistrer les dates dans le fichier log :"
+   set caption(pretrfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen:"
+   set caption(pretrfcSetup,texte2)                 "Die Zeit in die Log Datei speichern:"
 
    set caption(pretrfcSetup,ok)                     "OK"
    set caption(pretrfcSetup,appliquer)              "Anwenden"
