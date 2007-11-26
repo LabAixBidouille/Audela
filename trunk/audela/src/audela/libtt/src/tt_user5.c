@@ -1341,8 +1341,9 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
    long nelem2;
    int msg,k,kkk,x,y,adr,index;
    double value,*cost,*sint,rho,theta,rho_int;
-   int naxis11,naxis12,naxis21,naxis22,nombre,taille,naxis222,naxis122;
-   double threshold,threshold_ligne;
+   int naxis11,naxis12,naxis21,naxis22,nombre,taille,naxis222,naxis122,adr_max;
+   double threshold,threshold_ligne,seuil_max,somme_value,somme_xg,somme_yg,xg,yg;
+   int ymax, xmax,kl,kc;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -1396,6 +1397,7 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
       sint[k]=sin(theta);
    }
 
+   
    /* --- balayage ---*/
    for(x=0;x<naxis11;x++) {
       for(y=0;y<naxis21;y++) {
@@ -1422,18 +1424,49 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
    /* --- on libere les pointeurs ---*/
    tt_free2((void**)&cost,"cost");
    tt_free2((void**)&sint,"sint");
-
-   /* --- recherche d'un ou plusieur maximum --- */
-	 for(x=0;x<naxis11;x++) {
-		for(y=0;y<naxis21;y++) {
-			adr=y*naxis11+x;
-			value=p_in->p[adr];
-			if (value>=threshold_ligne) {
+   
+   /* --- calcul du seuil en fonction du maximum de l'image --- */
+   seuil_max=0;
+   adr_max=0;
+	for(x=0;x<naxis12;x++) {
+		for(y=0;y<naxis222;y++) {
+			adr=y*naxis12+x;
+			value=p_out->p[adr];
+			if (value>seuil_max) {
+				seuil_max=value;
+				adr_max=adr;
+				ymax=y;
+				xmax=x;
 			}
 		}
 	 }
-
-
+	threshold_ligne=seuil_max/2;
+	somme_value=0;
+	somme_xg=0;
+	somme_yg=0;
+	for (kl=-20; kl<=20;kl++) { //attention à ymax!
+		if (ymax+kl<0) continue;
+		if (ymax+kl>=naxis222) break;
+		for (kc=-20;kc<=20;kc++) { //attention à xmin!
+			if (xmax+kc<0) continue;
+			if (xmax+kc>=naxis12) break;
+			adr=kl*naxis12+adr_max+kc;
+			if (p_out->p[adr]>threshold_ligne) {
+				somme_value=somme_value+p_out->p[adr];
+				somme_xg=somme_xg+(xmax+kc)*p_out->p[adr];
+				somme_yg=somme_yg+(ymax+kl)*p_out->p[adr];
+			}
+		}
+	}
+	if (somme_value!=0) {
+		xg=	somme_xg/somme_value;
+		yg= somme_yg/somme_value;
+	} else {
+		xg=xmax;
+		yg=ymax;
+	}
+	
+		
 
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
