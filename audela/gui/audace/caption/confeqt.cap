@@ -1,6 +1,6 @@
 #
 # Fichier : confeqt.cap
-# Mise a jour $Id: confeqt.cap,v 1.10 2007-10-01 13:07:57 robertdelmas Exp $
+# Mise a jour $Id: confeqt.cap,v 1.11 2007-11-26 17:43:30 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -87,7 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confeqt,aide)                "Hilfe"
    set caption(confeqt,configurer)          "Konfigurieren"
 
-   set caption(confeqt,pas_equipement)      "# Il n'y a pas d'équipement présent."
+   set caption(confeqt,pas_equipement)      "Keine Einrichtung."
 
    set caption(confeqt,attention)           "Achtung"
    set caption(confeqt,connexion_texte1)    "Bitte, einige Sekunden warten"

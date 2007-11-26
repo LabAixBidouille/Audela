@@ -1,6 +1,6 @@
 #
 # Fichier : conflink.cap
-# Mise a jour $Id: conflink.cap,v 1.11 2007-10-01 13:08:13 robertdelmas Exp $
+# Mise a jour $Id: conflink.cap,v 1.12 2007-11-26 17:43:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -87,7 +87,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,fermer)              "Schließen"
    set caption(conflink,aide)                "Hilfe"
 
-   set caption(conflink,pas_liaison)         "# Il n'y a pas de liaison présente."
+   set caption(conflink,pas_liaison)         "Kein Link."
 
    set caption(conflink,attention)           "Achtung"
    set caption(conflink,connexion_texte1)    "Bitte, einige Sekunden warten"

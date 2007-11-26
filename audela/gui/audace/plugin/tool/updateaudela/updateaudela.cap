@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.13 2007-10-01 13:09:14 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.14 2007-11-26 17:44:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -210,7 +210,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,refresh)            "Aktualisieren"
    set caption(updateaudela,delete)             "Abschaffen"
    set caption(updateaudela,download)           "Herunterladen"
-   set caption(updateaudela,downloadOk)         "# %s est téléchargé."
+   set caption(updateaudela,downloadOk)         "%s ist heruntergeladet worden."
    set caption(updateaudela,show)               "Zeigen"
    set caption(updateaudela,makeKit)            "Ein Kit machen"
    set caption(updateaudela,installPlugin)      "Ein Plug-in installieren"
@@ -220,33 +220,33 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,directory)          "%s Verzeichnis existiert schon.\nVollen sie es aktualisieren?"
    set caption(updateaudela,confirmDelete)      "Wollen sie wirklich %s löschen?"
    set caption(updateaudela,makeKitOk)          "%s Datei ist geschaffen."
-   set caption(updateaudela,confirmInstall)     "# Voulez vous remplacer %s par %s ?"
-   set caption(updateaudela,confirmInstallNew)  "# Voulez vous installer ce nouveau plug-in %s ?"
+   set caption(updateaudela,confirmInstall)     "Wollen sie %s mit %s vertauschen?"
+   set caption(updateaudela,confirmInstallNew)  "Wollen sie dieses neues Plug-in %s installieren?"
    set caption(updateaudela,installPluginOk)    "Das %s Plug-in ist in \n %s \n Verzeichnis installiert (%s Datei(en) erschaffen oder aktualisiert)."
    set caption(updateaudela,restart)            "AudeLA bitte wieder starten um diese Änderungen zu befähigen."
 
-   set caption(updateaudela,pluginDetail)       "# Informations du plug-in"
-   set caption(updateaudela,availableUpdate)    "# Mises à jour téléchargées"
-   set caption(updateaudela,moreInfo)           "# Plus d'informations"
-   set caption(updateaudela,connect)            "# Connecter"
-   set caption(updateaudela,developperOption)   "# Option développeur"
-   set caption(updateaudela,downloadAndInstall) "# Installer immediatement après le téléchargement"
-   set caption(updateaudela,address)            "# Adresse"
-   set caption(updateaudela,audelaAddress)      "# Site AudeLA"
-   set caption(updateaudela,otherAddress)       "# Autre site"
-   set caption(updateaudela,badAudelaVersion)   "# Cette mise à jour nécessite AudeLA %s"
-   set caption(updateaudela,makeCoreUpdate)     "# Faire une mise à jour de AudeLA"
-   set caption(updateaudela,makePluginUpdate)   "# Créer un fichier de mise à jour"
+   set caption(updateaudela,pluginDetail)       "Plug-in Information"
+   set caption(updateaudela,availableUpdate)    "Updates heruntergeladet"
+   set caption(updateaudela,moreInfo)           "Mehr Information"
+   set caption(updateaudela,connect)            "Anschließen"
+   set caption(updateaudela,developperOption)   "Planer Option"
+   set caption(updateaudela,downloadAndInstall) "Sofort nach dem Herunterladen installieren"
+   set caption(updateaudela,address)            "Adresse"
+   set caption(updateaudela,audelaAddress)      "Audela Website"
+   set caption(updateaudela,otherAddress)       "Anderen Website"
+   set caption(updateaudela,badAudelaVersion)   "Dieses Update erfordert AudeLA %s"
+   set caption(updateaudela,makeCoreUpdate)     "AudeLA aktualisieren"
+   set caption(updateaudela,makePluginUpdate)   "Eine Update Datei erschaffen"
 
-   set caption(updateaudela,selectedFiles)      "# Fichiers sélectionnés"
-   set caption(updateaudela,addCvs)             "# Ajouter Diff CVS"
-   set caption(updateaudela,addAllFiles)        "# Ajouter tous les fichiers"
-   set caption(updateaudela,addFile)            "# Ajouter à la sélection"
-   set caption(updateaudela,removeFile)         "# Supprimer de la sélection"
-   set caption(updateaudela,createCoreUpdate)   "# Créer le fichier de mise à jour"
-   set caption(updateaudela,previousVersion)    "# Version précédente"
-   set caption(updateaudela,currentVersion)     "# Version actuelle"
-   set caption(updateaudela,fileOutside)        "# Fichier hors périmètre"
+   set caption(updateaudela,selectedFiles)      "Ausgewählten Dateien"
+   set caption(updateaudela,addCvs)             "Diff CVS beitragen"
+   set caption(updateaudela,addAllFiles)        "Alle Dateien beitragen"
+   set caption(updateaudela,addFile)            "Ausgewählten Dateien beitragen"
+   set caption(updateaudela,removeFile)         "Vom Wahl entfernen"
+   set caption(updateaudela,createCoreUpdate)   "Eine Update Datei erschaffen"
+   set caption(updateaudela,previousVersion)    "Vorausgehende Ausführung"
+   set caption(updateaudela,currentVersion)     "Aktuelle Ausführung"
+   set caption(updateaudela,fileOutside)        "Datei nicht im Spielraum"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {

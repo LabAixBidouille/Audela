@@ -1,6 +1,6 @@
 #
 # Fichier : confcam.cap
-# Mise a jour $Id: confcam.cap,v 1.41 2007-11-02 23:21:15 robertdelmas Exp $
+# Mise a jour $Id: confcam.cap,v 1.42 2007-11-26 17:43:03 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -133,7 +133,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confcam,attention)               "Achtung"
    set caption(confcam,connexion_texte1)        "Bitte, einige Sekunden warten"
    set caption(confcam,connexion_texte2)        "während das Kamera Anschluß."
-   set caption(confcam,connexion_texte3)        "# Une seule caméra de ce type peut être connectée.\nVeuillez en choisir une autre."
+   set caption(confcam,connexion_texte3)        "Nur eine Kamera dieser Typ kann verbunden sein.\nBitte eine andere wählen.."
 
    set caption(confcam,pb)                      "Problem"
    set caption(confcam,onlycam+obt)             "Diese Funktion ist leider nicht\nmit diese Kamera verfügbar."
