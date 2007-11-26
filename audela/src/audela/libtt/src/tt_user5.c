@@ -28,6 +28,7 @@
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries);
+int tt_geo_defilant_1(TT_IMA_SERIES *pseries);
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries);
 
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
@@ -53,6 +54,7 @@ int tt_user5_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries)
 {
    if (strcmp(keys10,"TRAINEE")==0) { pseries->numfct=TT_IMASERIES_USER5_TRAINEE; }
    else if (strcmp(keys10,"MORPHOMATH")==0) { pseries->numfct=TT_IMASERIES_USER5_MORPHOMATH;}
+   else if (strcmp(keys10,"GEOGTO")==0) { pseries->numfct=TT_IMASERIES_USER5_GEOGTO;}
    else if (strcmp(keys10,"MASQUECATA")==0) { pseries->numfct=TT_IMASERIES_USER5_MASQUECATA;}
    return(OK_DLL);
 }
@@ -91,7 +93,10 @@ int tt_user5_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *ms
    } else if (pseries->numfct==TT_IMASERIES_USER5_MASQUECATA){
 	  *msg=tt_ima_masque_catalogue(pseries);
       *fct_found=TT_YES;
-   } 
+   } else if (pseries->numfct==TT_IMASERIES_USER5_GEOGTO) {
+	   *msg=tt_geo_defilant_1(pseries);
+	   *fct_found=TT_YES;
+   }
    return(OK_DLL);
 }
 
@@ -1011,7 +1016,84 @@ double erf( double x ) {
 //												MORPHO MATHS
 //###############################################################################################################################
 //###############################################################################################################################
+int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
+{
+	TT_IMA *p_in,*p_out, *p_tmp1;
+	int result,kkk,x,y;
+	int nelem,index,x1,y1,naxis1,naxis2;
+	int *se = NULL;
+	double dvalue;
+	double mode2,mini2,maxi2;
 
+	/* --- intialisations ---*/
+	p_in=pseries->p_in; 
+	p_out=pseries->p_out;
+	p_tmp1=pseries->p_tmp1;
+	nelem=pseries->nelements;
+	naxis1=p_in->naxis1;
+	naxis2=p_in->naxis2;
+	index=pseries->index;
+	x1=pseries->x1;
+	y1=pseries->y1;
+
+	/* --- calcul de la fonction ---*/
+	tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		dvalue=(double)p_in->p[kkk];
+		p_out->p[kkk]=(TT_PTYPE)(dvalue);	 
+	}
+	tt_imacreater(p_tmp1,p_in->naxis1,p_in->naxis2);
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		dvalue=(double)p_in->p[kkk];
+		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);	 
+	}
+	
+//	tt_ima_series_morphomath_1(p_in,TOPHAT,RECTANGLE,10,1);
+
+
+
+
+
+			for (kkk=0;kkk<(int)(nelem);kkk++) {
+				p_tmp1->p[kkk]=p_out->p[kkk];	 
+			}
+			//binarisation de l'image en fonction de l'histogramme
+			tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+			
+			//seuillage haut pour récupérer seulement les géostationnaires
+			for (y=0;y<naxis2;y++) {
+				for (x=0;x<naxis1;x++) {
+					if (p_out->p[y*naxis1+x]<(pseries->hicut)*0.88) {
+						p_out->p[y*naxis1+x]=0;				
+					} 
+				}
+			}
+			//sauve image pour recherche de geo
+			tt_imasaver(p_out,"D:/geo.fit",8);
+
+			//seuillage bas pour garder les éventuelles traînées faibles
+			for (y=0;y<naxis2;y++) {
+				for (x=0;x<naxis1;x++) {
+					if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*0.4) {
+						p_tmp1->p[y*naxis1+x]=0;				
+					} 
+				}
+			}
+			//sauve image pour recherche de gto et défilants
+			tt_imasaver(p_tmp1,"D:/gto.fit",8);
+
+			//filtre médian
+			//tt_ima_series_filter_1("FILTER kernel_type=MED kernel_coef=0.0");
+
+
+	/* --- calcul des temps ---*/
+	pseries->jj_stack=pseries->jj[index-1];
+	pseries->exptime_stack=pseries->exptime[index-1];
+
+	result=0;
+	return result ;
+
+}
 
 
 
@@ -1076,8 +1158,7 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 	if (strcmp (pseries->struct_elem,"RECTANGLE")==0) {
 		
 		size=x1*y1;
-		se=calloc(size,sizeof(int));
-	
+		se=calloc(size,sizeof(int));	
 		for (i=0; i<size;i++) {
 				se[i]=1;
 		}
@@ -1088,32 +1169,25 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 		sizey = y1;
 		
 	}  else if (strcmp (pseries->struct_elem,"DIAMOND")==0){
-
 		size=x1*y1;
 		se=calloc(size,sizeof(int));
-
 		for (i=0; i<size;i++) {
 			se[i]=0;
-		}
-	
+		}	
 		for (i=0; i<y1;i++) {	
 			if (i< y1/2) {
 				for (kkk=0;kkk<(2*i+1);kkk++) {
-					se[i*(x1-1)+(x1-1)/2+kkk]=1;
-					
+					se[i*(x1-1)+(x1-1)/2+kkk]=1;					
 				}
 			} else if (i== y1/2) {
 				for(kkk=0;kkk<x1;kkk++) {
 					se[i*x1-1+kkk]=1;
 				}
-
 			} else {
 				for (kkk=0;kkk<(2*(y1-i-1)+1);kkk++) {
-					se[i*x1+(x1-1)/2+kkk - i+(y1-1)/2]=1;
-				
+					se[i*x1+(x1-1)/2+kkk - i+(y1-1)/2]=1;			
 				}
-			}
-			
+			}	
 		}
 		
 		sizex = x1;
@@ -1127,11 +1201,9 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 		y1=1;
 		size=x1*y1;
 		se=calloc(size,sizeof(int));
-
 		for (i=0; i<size;i++) {
 			se[i]=1;
 		}
-
 	}
 	
 	//appel de la fonction de traitement de morpho_math
@@ -1139,113 +1211,63 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 
 	if (i==0) {
 			dilate (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-
 	} 
-
 	i=strcmp (pseries->nom_trait,"ERODE");
-
 	if (i==0) {
 			erode (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-
-	} 
-	
+	} 	
 	i=strcmp (pseries->nom_trait,"OPEN");
-
 	if (i==0) {
 			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
-
-
 	} 
-
 	i=strcmp (pseries->nom_trait,"CLOSE");
-
 	if (i==0) {
 			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
-
-
 	} 
-
 	i=strcmp (pseries->nom_trait,"TOPHAT");
-
 	if (i==0) {
-			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 
-			/* --- Calcul des seuils de visualisation ---*/
-			//réduction de la dynamique des images
+		/* --- Calcul des seuils de visualisation ---*/
+		//réduction de la dynamique des images
 
-			tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			hicuttemp =pseries->hicut;
-			locuttemp=pseries->locut;
-			tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
+		tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+		hicuttemp =pseries->hicut;
+		locuttemp=pseries->locut;
+		tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
 
-			//tt_util_cuts(TT_IMA *p,TT_IMA_SERIES *pseries,double *hicut,double *locut,int dejastat)
+		//tt_util_cuts(TT_IMA *p,TT_IMA_SERIES *pseries,double *hicut,double *locut,int dejastat)
 
+		for (y=0;y<naxis2;y++) {
+			for (x=0;x<naxis1;x++) {
+				p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;
 
-			for (y=0;y<naxis2;y++) {
-				for (x=0;x<naxis1;x++) {
-					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;
-
-					if (p_out->p[y*naxis1+x]<locuttemp) {
-						p_out->p[y*naxis1+x]=0;
-					} else if (p_out->p[y*naxis1+x]>hicuttemp) {
-						p_out->p[y*naxis1+x]=255;
-					} else {
-						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)locuttemp)*(float)255./(float)(hicuttemp-locuttemp);
-					}
-					
-
-					if (p_tmp2->p[y*naxis1+x]<pseries->locut) {					
-						p_tmp2->p[y*naxis1+x]=0;	
-					} else if (p_tmp2->p[y*naxis1+x]>pseries->hicut) {
-						p_tmp2->p[y*naxis1+x]=255;
-					} else {
-						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)pseries->locut)*(float)255./(float)(pseries->hicut-pseries->locut);
-					}
-
-					if ((p_out->p[y*naxis1+x]/((mode1-(float)pseries->locut)*255./(float)(pseries->hicut-pseries->locut))<1)&&(locuttemp > pseries->locut)) {
-						p_out->p[y*naxis1+x]=(float)1.1*(p_out->p[y*naxis1+x])*(float)pseries->locut/(float)locuttemp;
-					} else if ((p_out->p[y*naxis1+x]/((mode1-(float)pseries->locut)*255./(float)(pseries->hicut-pseries->locut))>1)&&(pseries->hicut> hicuttemp)) {
-						p_out->p[y*naxis1+x]=(float)1.1*(p_out->p[y*naxis1+x])*(float)pseries->hicut/(float)hicuttemp;
-					}
-
-					p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];	
+				if (p_out->p[y*naxis1+x]<locuttemp) {
+					p_out->p[y*naxis1+x]=0;
+				} else if (p_out->p[y*naxis1+x]>hicuttemp) {
+					p_out->p[y*naxis1+x]=255;
+				} else {
+					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)locuttemp)*(float)255./(float)(hicuttemp-locuttemp);
 				}
-			}
-
-
-			for (kkk=0;kkk<(int)(nelem);kkk++) {
-				p_tmp1->p[kkk]=p_out->p[kkk];	 
-			}
-			//binarisation de l'image en fonction de l'hitogramme
-			tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			
-			//seuillage haut pour récupérer seulement les géostationnaires
-			for (y=0;y<naxis2;y++) {
-				for (x=0;x<naxis1;x++) {
-					if (p_out->p[y*naxis1+x]<(pseries->hicut)*0.88) {
-						p_out->p[y*naxis1+x]=0;				
-					} 
+				
+				if (p_tmp2->p[y*naxis1+x]<pseries->locut) {					
+					p_tmp2->p[y*naxis1+x]=0;	
+				} else if (p_tmp2->p[y*naxis1+x]>pseries->hicut) {
+					p_tmp2->p[y*naxis1+x]=255;
+				} else {
+					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)pseries->locut)*(float)255./(float)(pseries->hicut-pseries->locut);
 				}
-			}
-			//sauve image pour recherche de geo
-			tt_imasaver(p_out,"D:/geo.fit",8);
-
-			//seuillage bas pour garder les éventuelles traînées faibles
-			for (y=0;y<naxis2;y++) {
-				for (x=0;x<naxis1;x++) {
-					if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*0.4) {
-						p_tmp1->p[y*naxis1+x]=0;				
-					} 
+				if ((p_out->p[y*naxis1+x]/((mode1-(float)pseries->locut)*255./(float)(pseries->hicut-pseries->locut))<1)&&(locuttemp > pseries->locut)) {
+					p_out->p[y*naxis1+x]=(float)1.1*(p_out->p[y*naxis1+x])*(float)pseries->locut/(float)locuttemp;
+				} else if ((p_out->p[y*naxis1+x]/((mode1-(float)pseries->locut)*255./(float)(pseries->hicut-pseries->locut))>1)&&(pseries->hicut> hicuttemp)) {
+					p_out->p[y*naxis1+x]=(float)1.1*(p_out->p[y*naxis1+x])*(float)pseries->hicut/(float)hicuttemp;
 				}
+				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];	
 			}
-			//sauve image pour recherche de gto et défilants
-			tt_imasaver(p_tmp1,"D:/gto.fit",8);
-
-			//filtre médian
-			//tt_ima_series_filter_1("FILTER kernel_type=MED kernel_coef=0.0");
+		}
 	} 
 		
 	free(se);
@@ -1342,7 +1364,7 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
    int msg,k,kkk,x,y,adr,index;
    double value,*cost,*sint,rho,theta,rho_int;
    int naxis11,naxis12,naxis21,naxis22,nombre,taille,naxis222,naxis122,adr_max;
-   double threshold,threshold_ligne,seuil_max,somme_value,somme_xg,somme_yg,xg,yg;
+   double threshold,threshold_ligne,seuil_max,somme_value,somme_theta,somme_ro,theta0,ro0,a0,b0;
    int ymax, xmax,kl,kc;
 
    /* --- intialisations ---*/
@@ -1351,7 +1373,7 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
    index=pseries->index;
    naxis11=p_in->naxis1;
    naxis21=p_in->naxis2;
-   naxis12=180*2;
+   naxis12=180;
    naxis22=(int)ceil(sqrt(naxis11*naxis11+naxis21*naxis21));
    naxis122=2*naxis12;
    naxis222=2*naxis22;
@@ -1391,8 +1413,8 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
       return(msg);
    }
    for(k=0;k<naxis12;k++) {
-      //theta=(1.*k-90.)*(TT_PI)/180.;
-      theta=(1.*k-90.)*(TT_PI)/360.; //pour avoir une résolution 2 fois plus grande
+      theta=(1.*k-90.)*(TT_PI)/180.;
+      //theta=(1.*k-90.)*(TT_PI)/360.; //pour avoir une résolution 2 fois plus grande
       cost[k]=cos(theta);
       sint[k]=sin(theta);
    }
@@ -1442,8 +1464,8 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
 	 }
 	threshold_ligne=seuil_max/2;
 	somme_value=0;
-	somme_xg=0;
-	somme_yg=0;
+	somme_theta=0;
+	somme_ro=0;
 	for (kl=-20; kl<=20;kl++) { //attention à ymax!
 		if (ymax+kl<0) continue;
 		if (ymax+kl>=naxis222) break;
@@ -1453,19 +1475,32 @@ int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries)
 			adr=kl*naxis12+adr_max+kc;
 			if (p_out->p[adr]>threshold_ligne) {
 				somme_value=somme_value+p_out->p[adr];
-				somme_xg=somme_xg+(xmax+kc)*p_out->p[adr];
-				somme_yg=somme_yg+(ymax+kl)*p_out->p[adr];
+				somme_theta=somme_theta+(xmax+kc)*p_out->p[adr];
+				somme_ro=somme_ro+(ymax+kl)*p_out->p[adr];
 			}
 		}
 	}
 	if (somme_value!=0) {
-		xg=	somme_xg/somme_value;
-		yg= somme_yg/somme_value;
+		theta0=	somme_theta/somme_value;
+		ro0= somme_ro/somme_value;
 	} else {
-		xg=xmax;
-		yg=ymax;
+		theta0=xmax;
+		ro0=ymax;
 	}
 	
+	//coordonnées du point dans le plan de hough
+	theta0=(theta0-naxis12/2.)*(TT_PI)/180.;
+	ro0=ro0-naxis22;
+
+	//pour angle différent de 90°
+	if (theta0==(TT_PI)/2.) {
+		//tourner image
+	} else {
+		a0=tan(theta0);
+		b0=ro0/(cos(theta0));
+	}
+	pseries->xcenter=a0;
+	pseries->ycenter=b0;
 		
 
    /* --- calcul des temps ---*/
