@@ -27,10 +27,10 @@
 /***** prototypes des fonctions internes du user5 ***********/
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
-int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries);
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries);
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries);
 
+int tt_morphomath_1 (TT_IMA_SERIES *pseries);
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
@@ -53,8 +53,8 @@ int tt_user5_ima_series_builder1(char *keys10,TT_IMA_SERIES *pseries)
 /**************************************************************************/
 {
    if (strcmp(keys10,"TRAINEE")==0) { pseries->numfct=TT_IMASERIES_USER5_TRAINEE; }
-   else if (strcmp(keys10,"MORPHOMATH")==0) { pseries->numfct=TT_IMASERIES_USER5_MORPHOMATH;}
    else if (strcmp(keys10,"GEOGTO")==0) { pseries->numfct=TT_IMASERIES_USER5_GEOGTO;}
+   else if (strcmp(keys10,"MORPHOMATH")==0) { pseries->numfct=TT_IMASERIES_USER5_MORPHOMATH;}
    else if (strcmp(keys10,"MASQUECATA")==0) { pseries->numfct=TT_IMASERIES_USER5_MASQUECATA;}
    return(OK_DLL);
 }
@@ -87,14 +87,14 @@ int tt_user5_ima_series_dispatch1(TT_IMA_SERIES *pseries,int *fct_found, int *ms
    if (pseries->numfct==TT_IMASERIES_USER5_TRAINEE) {
       *msg=tt_ima_series_trainee_1(pseries);
       *fct_found=TT_YES;
-   } else if (pseries->numfct==TT_IMASERIES_USER5_MORPHOMATH){
-	  *msg=tt_ima_series_morphomath_1(pseries);
-      *fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_USER5_MASQUECATA){
 	  *msg=tt_ima_masque_catalogue(pseries);
       *fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_USER5_GEOGTO) {
 	   *msg=tt_geo_defilant_1(pseries);
+	   *fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_USER5_MORPHOMATH) {
+	   *msg=tt_morphomath_1(pseries);
 	   *fct_found=TT_YES;
    }
    return(OK_DLL);
@@ -1016,106 +1016,21 @@ double erf( double x ) {
 //												MORPHO MATHS
 //###############################################################################################################################
 //###############################################################################################################################
+//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
+
+//buf1 imaseries "GEOGTO nom_trait=TOPHAT struct_elem=RECTANGLE x1=10 y1=1"
+
+//buf1 imaseries "GEOGTO nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
+//pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
+
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
-	TT_IMA *p_in,*p_out, *p_tmp1;
+	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp2;
 	int result,kkk,x,y;
-	int nelem,index,x1,y1,naxis1,naxis2;
+	int nelem,index,naxis1,naxis2,x1,y1;
 	int *se = NULL;
 	double dvalue;
 	double mode2,mini2,maxi2;
-
-	/* --- intialisations ---*/
-	p_in=pseries->p_in; 
-	p_out=pseries->p_out;
-	p_tmp1=pseries->p_tmp1;
-	nelem=pseries->nelements;
-	naxis1=p_in->naxis1;
-	naxis2=p_in->naxis2;
-	index=pseries->index;
-	x1=pseries->x1;
-	y1=pseries->y1;
-
-	/* --- calcul de la fonction ---*/
-	tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		dvalue=(double)p_in->p[kkk];
-		p_out->p[kkk]=(TT_PTYPE)(dvalue);	 
-	}
-	tt_imacreater(p_tmp1,p_in->naxis1,p_in->naxis2);
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		dvalue=(double)p_in->p[kkk];
-		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);	 
-	}
-	
-//	tt_ima_series_morphomath_1(p_in,TOPHAT,RECTANGLE,10,1);
-
-
-
-
-
-			for (kkk=0;kkk<(int)(nelem);kkk++) {
-				p_tmp1->p[kkk]=p_out->p[kkk];	 
-			}
-			//binarisation de l'image en fonction de l'histogramme
-			tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			
-			//seuillage haut pour récupérer seulement les géostationnaires
-			for (y=0;y<naxis2;y++) {
-				for (x=0;x<naxis1;x++) {
-					if (p_out->p[y*naxis1+x]<(pseries->hicut)*0.88) {
-						p_out->p[y*naxis1+x]=0;				
-					} 
-				}
-			}
-			//sauve image pour recherche de geo
-			tt_imasaver(p_out,"D:/geo.fit",8);
-
-			//seuillage bas pour garder les éventuelles traînées faibles
-			for (y=0;y<naxis2;y++) {
-				for (x=0;x<naxis1;x++) {
-					if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*0.4) {
-						p_tmp1->p[y*naxis1+x]=0;				
-					} 
-				}
-			}
-			//sauve image pour recherche de gto et défilants
-			tt_imasaver(p_tmp1,"D:/gto.fit",8);
-
-			//filtre médian
-			//tt_ima_series_filter_1("FILTER kernel_type=MED kernel_coef=0.0");
-
-
-	/* --- calcul des temps ---*/
-	pseries->jj_stack=pseries->jj[index-1];
-	pseries->exptime_stack=pseries->exptime[index-1];
-
-	result=0;
-	return result ;
-
-}
-
-
-
-int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
-/****************************************************************************/
-/* trait morpho math sur image dans buffer						            */
-/****************************************************************************/
-/****************************************************************************/
-//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
-
-//buf1 imaseries "MORPHOMATH nom_trait=TOPHAT struct_elem=RECTANGLE x1=10 y1=1"
-
-//buf1 imaseries "MORPHOMATH nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
-//pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
-
-{
-	TT_IMA *p_in,*p_out, *p_tmp1, *p_tmp2;
-	int result,i,kkk,x,y;
-	int size,sizex,sizey, nelem,index,x1,y1,naxis1,naxis2;
-	int *se = NULL;
-	double dvalue,hicuttemp,locuttemp;
-	double mode1,mini1,maxi1,mode2,mini2,maxi2;
 
 
 	/* --- intialisations ---*/
@@ -1129,6 +1044,119 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 	index=pseries->index;
 	x1=pseries->x1;
 	y1=pseries->y1;
+
+	/* --- calcul de la fonction ---*/
+	tt_imacreater(p_out,naxis1,naxis2);
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		dvalue=(double)p_in->p[kkk];
+		p_out->p[kkk]=(TT_PTYPE)(dvalue);	 
+	}
+	tt_imacreater(p_tmp1,naxis1,naxis2);
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		dvalue=(double)p_in->p[kkk];
+		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);	 
+	}
+	
+	tt_morphomath_1(pseries);
+	
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		p_tmp2->p[kkk]=p_in->p[kkk];	 
+	}
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		p_in->p[kkk]=p_out->p[kkk];	 
+	}
+	
+	//binarisation de l'image en fonction de l'histogramme
+	tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+			
+	//seuillage haut pour récupérer seulement les géostationnaires
+	for (y=0;y<naxis2;y++) {
+		for (x=0;x<naxis1;x++) {
+			if (p_in->p[y*naxis1+x]<(pseries->hicut)*0.88) {
+				p_in->p[y*naxis1+x]=0;				
+			} 
+		}
+	}
+	//seuillage bas pour garder les éventuelles traînées faibles
+	for (y=0;y<naxis2;y++) {
+		for (x=0;x<naxis1;x++) {
+			if (p_out->p[y*naxis1+x]<(pseries->hicut)*0.4) {
+				p_out->p[y*naxis1+x]=0;				
+			} 
+		}
+	}
+	for (kkk=0;kkk<(int)(nelem);kkk++) {
+		p_tmp1->p[kkk]=p_out->p[kkk];	 
+	}
+
+
+	//filtre médian pour les géostationnaires
+	pseries->kernel_type=TT_KERNELTYPE_MED;
+	pseries->kernel_coef=0.0;
+	tt_ima_series_filter_1(pseries);
+
+
+/***************************************************/
+//sauve images pour recherche de geo gto et défilants
+//p_out = geo seuillé +filtre médian
+//p_in = geo seuillé
+//p_tmp2 = p_in initiale
+//p_tmp1 = gto seuillé
+	tt_imasaver(p_out,"D:/geoss.fit",16);
+	tt_imasaver(p_tmp1,"D:/gtoss.fit",16);
+
+
+	/* --- calcul des temps ---*/
+	pseries->jj_stack=pseries->jj[index-1];
+	pseries->exptime_stack=pseries->exptime[index-1];
+
+	result=0;
+	return result ;
+
+}
+
+
+
+//void morphomath (TT_IMA_SERIES *pseries,TT_IMA* p_in,TT_IMA* p_out,char* nom_trait, char* struct_elem,int x1,int y1)
+int tt_morphomath_1 (TT_IMA_SERIES *pseries)
+/****************************************************************************/
+/* trait morpho math sur image dans buffer						            */
+/****************************************************************************/
+/****************************************************************************/
+//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
+
+//buf1 imaseries "MORPHOMATH nom_trait=TOPHAT struct_elem=RECTANGLE x1=10 y1=1"
+
+//buf1 imaseries "MORPHOMATH nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
+//pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
+
+{
+	TT_IMA *p_tmp1, *p_tmp2, *p_in, *p_out;
+	int i,kkk,x,y;
+	int size, nelem,naxis1,naxis2,sizex,sizey;
+	int *se = NULL;
+	double dvalue,hicuttemp,locuttemp;
+	double mode1,mini1,maxi1,mode2,mini2,maxi2;
+	char *nom_trait, *struct_elem;
+	int x1,y1,result;
+
+	p_in=pseries->p_in; 
+	p_out=pseries->p_out;
+	p_tmp1=pseries->p_tmp1;
+	p_tmp2=pseries->p_tmp2;
+	nelem=pseries->nelements;
+	naxis1=p_in->naxis1;
+	naxis2=p_in->naxis2;
+	x1=pseries->x1;
+	y1=pseries->y1;
+	nom_trait=pseries->nom_trait;
+	struct_elem=pseries->struct_elem;
+
+	/* --- intialisations ---*/
+	naxis1=p_in->naxis1;
+	naxis2=p_in->naxis2;
+	nelem=naxis1*naxis2;
+
 
 	/* --- calcul de la fonction ---*/
 	tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
@@ -1155,7 +1183,7 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 	}
 
 	//creation de l'élément structurant
-	if (strcmp (pseries->struct_elem,"RECTANGLE")==0) {
+	if (strcmp (struct_elem,"RECTANGLE")==0) {
 		
 		size=x1*y1;
 		se=calloc(size,sizeof(int));	
@@ -1168,7 +1196,7 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 		sizex = x1;
 		sizey = y1;
 		
-	}  else if (strcmp (pseries->struct_elem,"DIAMOND")==0){
+	}  else if (strcmp (struct_elem,"DIAMOND")==0){
 		size=x1*y1;
 		se=calloc(size,sizeof(int));
 		for (i=0; i<size;i++) {
@@ -1207,26 +1235,26 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 	}
 	
 	//appel de la fonction de traitement de morpho_math
-	i=strcmp (pseries->nom_trait,"DILATE");
+	i=strcmp (nom_trait,"DILATE");
 
 	if (i==0) {
 			dilate (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 	} 
-	i=strcmp (pseries->nom_trait,"ERODE");
+	i=strcmp (nom_trait,"ERODE");
 	if (i==0) {
 			erode (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 	} 	
-	i=strcmp (pseries->nom_trait,"OPEN");
+	i=strcmp (nom_trait,"OPEN");
 	if (i==0) {
 			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 	} 
-	i=strcmp (pseries->nom_trait,"CLOSE");
+	i=strcmp (nom_trait,"CLOSE");
 	if (i==0) {
 			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 	} 
-	i=strcmp (pseries->nom_trait,"TOPHAT");
+	i=strcmp (nom_trait,"TOPHAT");
 	if (i==0) {
 		erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
@@ -1269,15 +1297,14 @@ int tt_ima_series_morphomath_1(TT_IMA_SERIES *pseries)
 			}
 		}
 	} 
-		
+/**********************************************************************/
+//enregistre l'image après le traitement de morphologie mathématique
+tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
+
 	free(se);
-
-	/* --- calcul des temps ---*/
-	pseries->jj_stack=pseries->jj[index-1];
-	pseries->exptime_stack=pseries->exptime[index-1];
-
 	result=0;
-	return result ;
+	return result;
+
 }
 
 
