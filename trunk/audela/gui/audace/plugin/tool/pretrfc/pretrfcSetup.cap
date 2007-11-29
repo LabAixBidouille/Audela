@@ -1,6 +1,6 @@
 #
 # Fichier : pretrfcSetup.cap
-# Mise a jour $Id: pretrfcSetup.cap,v 1.6 2007-11-26 17:44:10 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.cap,v 1.7 2007-11-29 22:12:44 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,22 +15,12 @@ set caption(pretrfcSetup,titre)                     "Preprocessing - Setup"
 set caption(pretrfcSetup,texte1)                    "Display messages on the Terminal:"
 set caption(pretrfcSetup,texte2)                    "Record dates in the log file:"
 
-set caption(pretrfcSetup,ok)                        "OK"
-set caption(pretrfcSetup,appliquer)                 "Apply"
-set caption(pretrfcSetup,fermer)                    "Close"
-set caption(pretrfcSetup,aide)                      "Help"
-
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Prétraitement - Configuration"
    set caption(pretrfcSetup,texte1)                 "Afficher les messages sur la Console :"
    set caption(pretrfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
-
-   set caption(pretrfcSetup,ok)                     "OK"
-   set caption(pretrfcSetup,appliquer)              "Appliquer"
-   set caption(pretrfcSetup,fermer)                 "Fermer"
-   set caption(pretrfcSetup,aide)                   "Aide"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -39,22 +29,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretrfcSetup,texte1)                 "Mostra messaggio sul terminale:"
    set caption(pretrfcSetup,texte2)                 "Salvataggio date nel file di log:"
 
-   set caption(pretrfcSetup,ok)                     "OK"
-   set caption(pretrfcSetup,appliquer)              "Applica"
-   set caption(pretrfcSetup,fermer)                 "Chiudi"
-   set caption(pretrfcSetup,aide)                   "Aiuto"
-
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Preproceso - Configuración"
    set caption(pretrfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
    set caption(pretrfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
-
-   set caption(pretrfcSetup,ok)                     "OK"
-   set caption(pretrfcSetup,appliquer)              "Aplicar"
-   set caption(pretrfcSetup,fermer)                 "Cerrar"
-   set caption(pretrfcSetup,aide)                   "Ayuda"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -63,11 +43,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretrfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen:"
    set caption(pretrfcSetup,texte2)                 "Die Zeit in die Log Datei speichern:"
 
-   set caption(pretrfcSetup,ok)                     "OK"
-   set caption(pretrfcSetup,appliquer)              "Anwenden"
-   set caption(pretrfcSetup,fermer)                 "Schließen"
-   set caption(pretrfcSetup,aide)                   "Hilfe"
-
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -75,22 +50,12 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretrfcSetup,texte1)                 "Mostrar mensagens na Consola:"
    set caption(pretrfcSetup,texte2)                 "Guardar datas no ficheiro log:"
 
-   set caption(pretrfcSetup,ok)                     "OK"
-   set caption(pretrfcSetup,appliquer)              "Aplicar"
-   set caption(pretrfcSetup,fermer)                 "Fechar"
-   set caption(pretrfcSetup,aide)                   "Ajuda"
-
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(pretrfcSetup,titre)                  "Preprocessing - Setup"
    set caption(pretrfcSetup,texte1)                 "Display messages on the Terminal:"
    set caption(pretrfcSetup,texte2)                 "Record dates in the log file:"
-
-   set caption(pretrfcSetup,ok)                     "OK"
-   set caption(pretrfcSetup,appliquer)              "Anvend"
-   set caption(pretrfcSetup,fermer)                 "Luk"
-   set caption(pretrfcSetup,aide)                   "Hjælp"
 
 }
 
