@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.18 2007-11-09 23:45:58 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.19 2007-12-01 20:36:46 michelpujol Exp $
 #
 
 namespace eval ::dslr {
@@ -411,17 +411,19 @@ proc ::dslr::stop { camItem } {
       ::confLink::delete $conf(dslr,longueposeport) "cam$private($camItem,camNo)" "longuepose"
    }
 
-   #--- Je restitue si necessaire l'etat du service WIA sous Windows
-   if { $::tcl_platform(platform) == "windows" } {
-       if { [ cam$private($camItem,camNo) systemservice ] != "$conf(dslr,statut_service)" } {
-          cam$private($camItem,camNo) systemservice $conf(dslr,statut_service)
-       }
-   }
-
-   #--- J'arrete la camera
    if { $private($camItem,camNo) != 0 } {
-     cam::delete $private($camItem,camNo)
-     set private($camItem,camNo) 0
+      #--- Je restitue si necessaire l'etat du service WIA sous Windows
+      if { $::tcl_platform(platform) == "windows" } {
+          if { [ cam$private($camItem,camNo) systemservice ] != "$conf(dslr,statut_service)" } {
+             cam$private($camItem,camNo) systemservice $conf(dslr,statut_service)
+          }
+      }
+
+      #--- J'arrete la camera
+      if { $private($camItem,camNo) != 0 } {
+        cam::delete $private($camItem,camNo)
+        set private($camItem,camNo) 0
+      }
    }
 }
 
