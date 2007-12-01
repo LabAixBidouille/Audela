@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.7 2007-11-29 22:10:26 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.8 2007-12-01 18:03:52 robertdelmas Exp $
 #
 
 namespace eval acqfcSetup {
@@ -87,7 +87,7 @@ namespace eval acqfcSetup {
    #
    proc ok { visuNo } {
       ::acqfcSetup::apply $visuNo
-      ::acqfcSetup::closeWindow
+      ::acqfcSetup::closeWindow $visuNo
    }
 
    #

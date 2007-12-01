@@ -1,8 +1,8 @@
 #
 # Fichier : pretrfcSetup.tcl
-# Description : Choisir l'affichage ou non de messages sur la Console
+# Description : Configuration de certains parametres de l'outil Pretraitement
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.9 2007-11-29 22:10:45 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.tcl,v 1.10 2007-12-01 18:04:25 robertdelmas Exp $
 #
 
 namespace eval pretrfcSetup {
@@ -63,7 +63,7 @@ namespace eval pretrfcSetup {
       global audace
 
       set This $this
-      ::confGenerique::run 1 "$This" "::pretrfcSetup" -modal 0
+      ::confGenerique::run $visuNo "$This" "::pretrfcSetup" -modal 0
       set posx_config [ lindex [ split [ wm geometry $audace(base).fenetrePretr ] "+" ] 1 ]
       set posy_config [ lindex [ split [ wm geometry $audace(base).fenetrePretr ] "+" ] 2 ]
       wm geometry $This +[ expr $posx_config + 40 ]+[ expr $posy_config + 390 ]
@@ -76,8 +76,8 @@ namespace eval pretrfcSetup {
    # l'enregistrement ou non des dates dans le fichier log
    #
    proc ok { visuNo } {
-      ::pretrfcSetup::apply
-      ::pretrfcSetup::closeWindow
+      ::pretrfcSetup::apply $visuNo
+      ::pretrfcSetup::closeWindow $visuNo
    }
 
    #
