@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.78 2007-10-14 15:49:02 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.79 2007-12-02 00:07:43 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -911,18 +911,11 @@ namespace eval ::audace {
          ::confTel::configureTelescope
       }
 
-      #--- Connexion au demarrage du driver de la raquette
-      if { $conf(confPad,start) == "1" } {
-         ::confPad::configureDriver
-      }
-
       #--- Connexion au demarrage des equipements
       ::confEqt::startDriver
 
-      #--- Connexion au demarrage du driver de carte
-      if { $conf(confCat,start) == "1" } {
-         ::confCat::configureDriver
-      }
+      #--- Connexion au demarrage de la carte
+      ::confCat::startDriver
    }
 
    #
