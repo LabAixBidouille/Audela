@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.19 2007-11-08 21:39:44 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.20 2007-12-02 00:06:30 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -305,6 +305,18 @@ proc ::confCat::createUrlLabel { tkparent title url } {
    bind   $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
    bind   $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
    return $tkparent.labURL
+}
+
+#------------------------------------------------------------
+# ::confCat::startDriver
+# lance le plugin
+#------------------------------------------------------------
+proc ::confCat::startDriver { } {
+   global conf
+
+   if { $conf(confCat,start) == "1" } {
+      ::confCat::configureDriver
+   }
 }
 
 #------------------------------------------------------------
