@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.101 2007-11-09 23:46:58 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.102 2007-12-02 00:00:51 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -237,18 +237,14 @@ proc ::confCam::createDialog { } {
 
    frame $private(frm).usr -borderwidth 0 -relief raised
       #--- Creation de la fenetre a onglets
-      set notebook [ NoteBook $private(frm).usr.onglet ]
+      set notebook [ NoteBook $private(frm).usr.onglet  ]
       for { set i 0 } { $i < [ llength $private(pluginNamespaceList) ] } { incr i } {
-         set pluginInfo(os) [ ::[ lindex $private(pluginNamespaceList) $i ]::getPluginOS ]
-         foreach os $pluginInfo(os) {
-            if { $os == [ lindex $::tcl_platform(os) 0 ] } {
-               set namespace [ lindex $private(pluginNamespaceList) $i ]
-               set title     [ lindex $private(pluginLabelList) $i ]
-               set frm [$notebook insert end $namespace -text $title ]
-               ::$namespace\::fillConfigPage $frm $private(currentCamItem)
-            }
-         }
+         set namespace [ lindex $private(pluginNamespaceList) $i ]
+         set title [ lindex $private(pluginLabelList) $i ]
+         set frm [$notebook insert end $namespace -text $title  -raisecmd "::confCam::onRaiseNotebook $namespace"]
+         ::$namespace\::fillConfigPage $frm $private(currentCamItem)
       }
+
       pack $notebook -fill both -expand 1
    pack $private(frm).usr -side top -fill both -expand 1
 
@@ -479,6 +475,18 @@ proc ::confCam::selectNotebook { camItem { camName "" } } {
    } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
       $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
    }
+}
+
+#----------------------------------------------------------------------------
+# confCam::onRaiseNotebook
+# affiche en gras le nom de l'onglet
+#----------------------------------------------------------------------------
+proc ::confCam::onRaiseNotebook { camName } {
+   variable private
+   set font [$private(frm).usr.onglet.c itemcget "$camName:text" -font]
+   lappend font "bold"
+   #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+   after 100 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
 }
 
 #----------------------------------------------------------------------------
