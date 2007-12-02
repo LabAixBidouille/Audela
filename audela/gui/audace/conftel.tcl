@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.36 2007-11-02 18:53:42 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.37 2007-12-02 00:04:25 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -52,8 +52,9 @@ namespace eval ::confTel {
       set confTel(geometry) $conf(telescope,geometry)
 
       #--- Initalise les listes de montures
-      set confTel(labels) [ list LX200 Ouranos AudeCom Temma ASCOM Celestron ]
-      set confTel(names)  [ list lx200 ouranos audecom temma ascom celestron ]
+      set confTel(labels)      [ list LX200 Ouranos AudeCom Temma ASCOM Celestron ]
+      set confTel(names)       [ list lx200 ouranos audecom temma ascom celestron ]
+      set confTel(nomRaquette) $conf(confPad)
    }
 
    #
