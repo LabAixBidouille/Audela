@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.23 2007-11-08 21:41:46 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.24 2007-12-02 00:06:09 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -22,7 +22,6 @@ proc ::confPad::init { } {
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
-   if { ! [ info exists conf(confPad,start) ] }    { set conf(confPad,start)    "0" }
    if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x265+155+100" }
 
    #--- Initialise les variables locales
@@ -343,16 +342,26 @@ proc ::confPad::configureDriver { pluginName } {
    global conf
 
    #--- je ferme la raquette precedente
-   if { $conf(confPad) != "" } {
-      $conf(confPad)::deletePluginInstance
+   if { $pluginName != "" } {
+      ::$pluginName\::deletePluginInstance
    }
 
    set conf(confPad) $pluginName
 
    #--- je cree le plugin
-   if { $conf(confPad) != "" } {
-      $conf(confPad)::createPluginInstance
+   if { $pluginName != "" } {
+      ::$pluginName\::createPluginInstance
    }
+}
+
+#------------------------------------------------------------
+# ::confPad::startDriver
+# lance le plugin
+#------------------------------------------------------------
+proc ::confPad::startDriver { } {
+   global conf
+
+   ::confPad::configureDriver $conf(confPad)
 }
 
 #------------------------------------------------------------
