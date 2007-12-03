@@ -1186,8 +1186,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		se=calloc(size,sizeof(int));	
 		for (i=0; i<size;i++) {
 				se[i]=1;
-		}
-		
+		}	
 		// attention c'est valable que pour un rectangle mais il faut calculer 
 		//pour cercle ou autre SE pour avoir les dimensions de la matrice SE
 		sizex = x1;
@@ -1213,8 +1212,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					se[i*x1+(x1-1)/2+kkk - i+(y1-1)/2]=1;			
 				}
 			}	
-		}
-		
+		}		
 		sizex = x1;
 		sizey = y1;
 		
@@ -1231,8 +1229,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 						se[j*(2*x1+1)+i]=1;
 				}
 			}
-		}
-		
+		}		
 		sizex = x1;
 		sizey = x1;
 		
@@ -1321,7 +1318,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	}
-	i=strcmp (nom_trait,"TEST");//médiane sous condition pour avoir le fond de ciel
+	i=strcmp (nom_trait,"CIEL");//médiane sous condition pour avoir le fond de ciel
 	if (i==0) {
 		//defini le nombre de fois que l'image subit ce traitement
 		nb_test=2;
@@ -1335,16 +1332,16 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				}
 			}
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			seuil =pseries->hicut;
+			seuil =(pseries->hicut)*0.4;
 			tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 	//-------------------------------------------------------------------/
 	//enregistre l'image après le traitement de morphologie mathématique
-//	tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+		tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
 			//erosion par la médiane si gradient supérieur à seuil
 			// définition du centre de l'élément structurant
 			// SE est au milieu du rectangle sizex*sizey
-			sizex2=100;
+			sizex2=90;
 			sizey2=3;
 			cx=(sizex2-1)/2;
 			cy=(sizey2-1)/2;
@@ -1356,7 +1353,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			//on commence par le coin en bas à gauche de l'image p_out [0][0]
 			for (y=cy;y<(naxis2-cy-1);y++) {
 				for (x=cx;x<(naxis1-cx);x++) {
-					if (p_tmp1->p[y*naxis1+x]<seuil*0.35) {continue;}
+					if (p_tmp1->p[y*naxis1+x]<seuil) {continue;}
 					//boucle dans la boite englobant le SE
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
@@ -1392,8 +1389,6 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					if (inf<pseries->locut*1.005) {
 						p_out->p[y*naxis1+x]=(float)(pseries->locut*1.005);
 					}
-
-
 				}
 			}
 			//pour les pixel a gauche de l'image
@@ -1415,8 +1410,6 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					if (inf<pseries->locut*1.005) {
 						p_out->p[y*naxis1+x]=(float)(pseries->locut*1.005);
 					}
-
-
 				}
 			}
 			free(medindice);
@@ -1429,12 +1422,10 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				}
 			}
 		}
-	
 	}
-//-------------------------------------------------------------------/
-//enregistre l'image après le traitement de morphologie mathématique
-//tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
-
+	//-------------------------------------------------------------------/
+	//enregistre l'image après le traitement de morphologie mathématique
+	//tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
 	free(se);
 	result=0;
 	return result;
