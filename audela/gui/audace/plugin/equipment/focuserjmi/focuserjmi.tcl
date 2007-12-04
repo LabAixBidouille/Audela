@@ -2,15 +2,18 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.11 2007-09-20 19:18:09 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.12 2007-12-04 22:47:30 robertdelmas Exp $
 #
 
 #
 # Procedures generiques obligatoires (pour configurer tous les plugins camera, monture, equipement) :
 #     initPlugin        : Initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : Retourne le nom affichable du plugin
+#     getStartFlag      : Retourne l'indicateur de lancement au demarrage
 #     getPluginHelp     : Retourne la documentation htm associee
-#     getPluginType     : Retourne le type de plugin (pour classer le plugin dans le menu principal)
+#     getPluginTitle    : Retourne le titre du plugin dans la langue de l'utilisateur
+#     getPluginType     : Retourne le type de plugin
+#     getPluginOS       : Retourne les OS sous lesquels le plugin fonctionne
+#     getPluginProperty : Retourne la propriete du plugin
 #     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
 #     configurePlugin   : Configure le plugin
 #     stopPlugin        : Arrete le plugin et libere les ressources occupees
@@ -47,7 +50,7 @@ proc ::focuserjmi::getPluginTitle { } {
 #  ::focuserjmi::getPluginHelp
 #     retourne la documentation du equipement
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::focuserjmi::getPluginHelp { } {
    return "focuserjmi.htm"
@@ -203,9 +206,15 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
    pack $frm.frame1 -side top -fill x
 
-   #--- Frame du checkbutton creer au demarrage
+   #--- Frame du bouton Arreter et du checkbutton creer au demarrage
    frame $frm.start -borderwidth 0 -relief flat
 
+      #--- Bouton Arreter
+      button $frm.start.stop -text "$caption(focuserjmi,arreter)" -relief raised \
+         -command { ::focuserjmi::deletePlugin }
+      pack $frm.start.stop -side left -padx 10 -pady 3 -ipadx 10 -expand 1
+
+      #--- Checkbutton démarrage automatique
       checkbutton $frm.start.chk -text "$caption(focuserjmi,creer_au_demarrage)" \
          -highlightthickness 0 -variable conf(focuserjmi,start)
       pack $frm.start.chk -side top -padx 3 -pady 3 -fill x
