@@ -2,7 +2,7 @@
 # Fichier : quickremote.tcl
 # Description : Interface de liaison QuickRemote
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickremote.tcl,v 1.19 2007-10-14 09:11:04 robertdelmas Exp $
+# Mise a jour $Id: quickremote.tcl,v 1.20 2007-12-04 22:43:32 robertdelmas Exp $
 #
 
 namespace eval quickremote {
@@ -14,16 +14,16 @@ namespace eval quickremote {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return rien
 #------------------------------------------------------------
-proc ::quickremote::configureDriver { } {
+proc ::quickremote::configurePlugin { } {
    global audace
 
    #--- rien a faire
@@ -115,7 +115,7 @@ proc ::quickremote::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 #  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
+#     retourne le label du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::quickremote::getPluginTitle { } {
    global caption
@@ -125,9 +125,9 @@ proc ::quickremote::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::quickremote::getPluginHelp { } {
    return "quickremote.htm"
@@ -135,7 +135,7 @@ proc ::quickremote::getPluginHelp { } {
 
 #------------------------------------------------------------
 #  getPluginType
-#     retourne le type de driver
+#     retourne le type de plugin
 #------------------------------------------------------------
 proc ::quickremote::getPluginType { } {
    return "link"
@@ -151,7 +151,7 @@ proc ::quickremote::getPluginOS { } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return rien
 #------------------------------------------------------------
@@ -257,7 +257,7 @@ proc ::quickremote::getSelectedLinkLabel { } {
 
 #------------------------------------------------------------
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::quickremote::initPlugin { } {
    variable private
@@ -290,7 +290,7 @@ proc ::quickremote::initConf { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------

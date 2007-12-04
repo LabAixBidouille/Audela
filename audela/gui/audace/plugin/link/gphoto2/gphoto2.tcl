@@ -2,7 +2,7 @@
 # Fichier : gphoto2.tcl
 # Description : Interface de liaison GPhoto2
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: gphoto2.tcl,v 1.12 2007-10-14 09:09:44 robertdelmas Exp $
+# Mise a jour $Id: gphoto2.tcl,v 1.13 2007-12-04 22:40:15 robertdelmas Exp $
 #
 
 namespace eval gphoto2 {
@@ -14,16 +14,16 @@ namespace eval gphoto2 {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::gphoto2::configureDriver { } {
+proc ::gphoto2::configurePlugin { } {
    global audace
 
    #--- Affiche la liaison
@@ -83,7 +83,7 @@ proc ::gphoto2::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 #  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
+#     retourne le label du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::gphoto2::getPluginTitle { } {
    global caption
@@ -93,9 +93,9 @@ proc ::gphoto2::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::gphoto2::getPluginHelp { } {
    return "gphoto2.htm"
@@ -103,7 +103,7 @@ proc ::gphoto2::getPluginHelp { } {
 
 #------------------------------------------------------------
 #  getPluginType
-#     retourne le type de driver
+#     retourne le type de plugin
 #------------------------------------------------------------
 proc ::gphoto2::getPluginType { } {
    return "link"
@@ -119,7 +119,7 @@ proc ::gphoto2::getPluginOS { } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return nothing
 #------------------------------------------------------------
@@ -182,7 +182,7 @@ proc ::gphoto2::getSelectedLinkLabel { } {
 
 #------------------------------------------------------------
 #  initPlugin (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::gphoto2::initPlugin { } {
    variable private
@@ -212,7 +212,7 @@ proc ::gphoto2::initConf { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready) , 1 (not ready)
 #------------------------------------------------------------

@@ -2,7 +2,7 @@
 # Fichier : serialport.tcl
 # Description : Interface de liaison Port Serie
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: serialport.tcl,v 1.19 2007-10-14 09:11:22 robertdelmas Exp $
+# Mise a jour $Id: serialport.tcl,v 1.20 2007-12-04 22:43:54 robertdelmas Exp $
 #
 
 namespace eval serialport {
@@ -14,7 +14,7 @@ namespace eval serialport {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
@@ -33,7 +33,7 @@ proc ::serialport::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 #  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
+#     retourne le label du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::serialport::getPluginTitle { } {
    global caption
@@ -43,9 +43,9 @@ proc ::serialport::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::serialport::getPluginHelp { } {
    return "serialport.htm"
@@ -53,7 +53,7 @@ proc ::serialport::getPluginHelp { } {
 
 #------------------------------------------------------------
 #  getPluginType
-#     retourne le type de driver
+#     retourne le type de plugin
 #------------------------------------------------------------
 proc ::serialport::getPluginType { } {
    return "link"
@@ -69,7 +69,7 @@ proc ::serialport::getPluginOS { } {
 
 #------------------------------------------------------------
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
+#     initialise le plugin
 #
 #  return namespace
 #------------------------------------------------------------
@@ -97,12 +97,12 @@ proc ::serialport::initPlugin { } {
 }
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return rien
 #------------------------------------------------------------
-proc ::serialport::configureDriver { } {
+proc ::serialport::configurePlugin { } {
    global audace
 
    #--- Affiche la liaison
@@ -170,7 +170,7 @@ proc ::serialport::deletePluginInstance { linkLabel deviceId usage } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return rien
 #------------------------------------------------------------
