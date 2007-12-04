@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.24 2007-12-02 00:06:09 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.25 2007-12-04 22:22:10 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -22,7 +22,7 @@ proc ::confPad::init { } {
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
-   if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x265+155+100" }
+   if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x275+160+60" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -68,26 +68,35 @@ proc ::confPad::getCurrentPad { } {
 #
 # Parametres :
 #    variablePluginName : contient le nom de la variable dans laquelle
-#                         sera copie le nom du plugin selectionné
+#                         sera copie le nom du plugin selectionne
 #------------------------------------------------------------
 proc ::confPad::run { { variablePluginName "" } } {
    variable private
-   global conf
+   global caption conf
 
    set private(variablePluginName) $variablePluginName
 
-   if { [createDialog] == 0 } {
-      if { $variablePluginName != "" } {
-         #--- je recupere le nom du plugin pre-selectionne par l'appelant
-         set pluginName [set $variablePluginName]
+   #--- je verifie si le plugin existe dans la liste des onglets
+   if { [ llength $private(pluginNamespaceList) ] > 0 } {
+      ::confPad::createDialog
+      if { $::confPad::private(variablePluginName) != "" } {
+         set selectedPluginName [ set $::confPad::private(variablePluginName) ]
       } else {
-         #--- je recupere le nom du plugin par defaut
-         set pluginName $conf(confPad)
+         set selectedPluginName "$conf(confPad)"
       }
-      if { $pluginName != "" } {
-         #--- je selectionne l'onglet du plugin
-         select $pluginName
+      if { $selectedPluginName != "" } {
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [ lsearch -exact $private(pluginNamespaceList) $selectedPluginName ] == -1 } {
+            #--- si la valeur n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set selectedPluginName [ lindex $private(pluginNamespaceList) 0 ]
+         }
+      } else {
+         set selectedPluginName [ lindex $private(pluginNamespaceList) 0 ]
       }
+      selectNotebook $selectedPluginName
+   } else {
+      tk_messageBox -title "$caption(confpad,config)" -message "$caption(confpad,pas_raquette)" -icon error
    }
 }
 
@@ -118,14 +127,8 @@ proc ::confPad::appliquer { } {
    $private(frm).cmd.appliquer configure -relief groove -state disabled
    $private(frm).cmd.fermer configure -state disabled
 
-   #--- je recupere le namespace correspondant au label
-   set label "[Rnotebook:currentName $private(frm).usr.book ]"
-   set index [lsearch -exact $private(pluginLabelList) $label ]
-   if { $index != -1 } {
-      set padName [lindex $private(pluginNamespaceList) $index]
-   } else {
-      set padName ""
-   }
+   #--- je recupere le nom du plugin selectionne
+   set selectedPluginName [ $private(frm).usr.onglet raise ]
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
    foreach name $private(pluginNamespaceList) {
@@ -134,11 +137,11 @@ proc ::confPad::appliquer { } {
 
    #--- je copie le nom dans la variable de sortie
    if { $private(variablePluginName) != "" } {
-      set $private(variablePluginName) $padName
+      set $private(variablePluginName) $selectedPluginName
    }
 
    #--- je demarre le plugin selectionne
-   configureDriver $padName
+   configurePlugin $selectedPluginName
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -152,15 +155,11 @@ proc ::confPad::appliquer { } {
 proc ::confPad::afficheAide { } {
    variable private
 
-   #--- je recupere l'index de l'onglet selectionne
-   set index [Rnotebook:currentIndex $private(frm).usr.book ]
-   if { $index != -1 } {
-      set selectedPluginName [lindex $private(pluginNamespaceList) [expr $index -1]]
-      #--- j'affiche la documentation
-      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
-      set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
-      ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
-   }
+   #--- j'affiche la documentation
+   set selectedPluginName  [ $private(frm).usr.onglet raise ]
+   set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+   set pluginHelp          [ $selectedPluginName\::getPluginHelp ]
+   ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 }
 
 #------------------------------------------------------------
@@ -197,12 +196,6 @@ proc ::confPad::createDialog { } {
    variable private
    global caption conf
 
-   #--- Je verifie qu'il y a des raquettes
-   if { [ llength $private(pluginNamespaceList) ] < 1 } {
-      tk_messageBox -title "$caption(confpad,config)" -message "$caption(confpad,pas_raquette)" -icon error
-      return 1
-   }
-
    #---
    if { [ winfo exists $private(frm) ] } {
       wm withdraw $private(frm)
@@ -216,7 +209,7 @@ proc ::confPad::createDialog { } {
 
    toplevel $private(frm)
    wm geometry $private(frm) $private(confPad,geometry)
-   wm minsize $private(frm) 440 265
+   wm minsize $private(frm) 440 230
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confpad,config)"
@@ -226,19 +219,14 @@ proc ::confPad::createDialog { } {
    frame $private(frm).usr -borderwidth 0 -relief raised
 
       #--- Creation de la fenetre a onglets
-      set mainFrame $private(frm).usr.book
-
-         #--- J'affiche les onglets dans la fenetre
-         Rnotebook:create $mainFrame -tabs "$private(pluginLabelList)" -borderwidth 1
-
-         #--- Je demande a chaque plugin d'afficher sa page de config
-         set indexOnglet 1
-         foreach name $private(pluginNamespaceList) {
-            set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
-            incr indexOnglet
-         }
-
-      pack $mainFrame -fill both -expand 1
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      for { set i 0 } { $i < [ llength $private(pluginLabelList) ] } { incr i } {
+         set namespace [ lindex $private(pluginNamespaceList) $i ]
+         set title     [ lindex $private(pluginLabelList) $i ]
+         set frm       [ $notebook insert end $namespace -text "$title " -raisecmd "::confPad::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
 
    pack $private(frm).usr -side top -fill both -expand 1
 
@@ -284,12 +272,12 @@ proc ::confPad::createDialog { } {
 # Parametres :
 #    frm     : chemin TK de la frame a creer
 #    variablePluginName : contient le nom de la variable dans laquelle sera
-#                         copie le nom du plugin selectionné
+#                         copie le nom du plugin selectionne
 #
 # Return
 #    nothing
 # Exemple:
-#    ::confEqt::createFramePad $frm.padList ::confTel(audine,plugin)
+#    ::confPad::createFramePad $frm.padList ::confTel(nomRaquette)
 #    pack $frm.pluginList -in $frm -anchor center -side right -padx 10
 #------------------------------------------------------------
 proc ::confPad::createFramePad { frm variablePluginName} {
@@ -319,31 +307,44 @@ proc ::confPad::createFramePad { frm variablePluginName} {
 }
 
 #------------------------------------------------------------
-# ::confPad::select [label]
-# Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
+# ::confPad::selectNotebook
+# Selectionne un onglet
 # Si le label est omis ou inconnu, le premier onglet est selectionne
 #------------------------------------------------------------
-proc ::confPad::select { { name "" } } {
+proc ::confPad::selectNotebook { { pad "" } } {
    variable private
 
-   #--- je recupere le label correspondant au namespace
-   set index [ lsearch -exact $private(pluginNamespaceList) "$name" ]
-   if { $index != -1 } {
-      Rnotebook:select $private(frm).usr.book [ lindex $private(pluginLabelList) $index ]
+   if { $pad != "" } {
+      set frm [ $private(frm).usr.onglet getframe $pad ]
+      $private(frm).usr.onglet raise $pad
+   } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
+      $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
    }
 }
 
+#----------------------------------------------------------------------------
+# ::confPad::onRaiseNotebook
+# Affiche en gras le nom de l'onglet
+#----------------------------------------------------------------------------
+proc ::confPad::onRaiseNotebook { padName } {
+   variable private
+
+   set font [$private(frm).usr.onglet.c itemcget "$padName:text" -font]
+   lappend font "bold"
+   #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+   after 200 $private(frm).usr.onglet.c itemconfigure "$padName:text" -font [list $font]
+}
+
 #------------------------------------------------------------
-# ::confPad::configureDriver
+# ::confPad::configurePlugin
 # configure le plugin dont le label est dans $conf(confPad)
 #------------------------------------------------------------
-proc ::confPad::configureDriver { pluginName } {
-   variable private
+proc ::confPad::configurePlugin { pluginName } {
    global conf
 
-   #--- je ferme la raquette precedente
-   if { $pluginName != "" } {
-      ::$pluginName\::deletePluginInstance
+   #--- j'arrete le plugin precedent
+   if { $conf(confPad) != "" } {
+      ::$conf(confPad)\::deletePluginInstance
    }
 
    set conf(confPad) $pluginName
@@ -355,26 +356,28 @@ proc ::confPad::configureDriver { pluginName } {
 }
 
 #------------------------------------------------------------
-# ::confPad::startDriver
+# ::confPad::startPlugin
 # lance le plugin
 #------------------------------------------------------------
-proc ::confPad::startDriver { } {
+proc ::confPad::startPlugin { } {
    global conf
 
-   ::confPad::configureDriver $conf(confPad)
+   ::confPad::configurePlugin $conf(confPad)
 }
 
 #------------------------------------------------------------
-# ::confPad::stopDriver
+# ::confPad::stopPlugin
 # arrete le plugin selectionne
 #
 #  return rien
 #------------------------------------------------------------
-proc ::confPad::stopDriver { } {
+proc ::confPad::stopPlugin { } {
    global conf
 
    if { "$conf(confPad)" != "" } {
-      $conf(confPad)::deletePluginInstance
+      catch {
+         $conf(confPad)::deletePluginInstance
+      }
    }
 }
 
@@ -407,19 +410,17 @@ proc ::confPad::findPlugin { } {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type) == "pad"} {
-               foreach os $pluginInfo(os) {
-                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
-                     #--- je charge le package
-                     package require $pluginInfo(name)
-                     #--- j'initalise le plugin
-                     $pluginInfo(namespace)::initPlugin
-                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-                     #--- je l'ajoute dans la liste des plugins
-                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-                     lappend private(pluginLabelList) $pluginlabel
-                     ::console::affiche_prompt "#$caption(confpad,raquette) $pluginlabel v$pluginInfo(version)\n"
-                  }
+            if { $pluginInfo(type) == "pad" } {
+               if { [ lsearch $pluginInfo(os) [ lindex $::tcl_platform(os) 0 ] ] != "-1" } {
+                  #--- je charge le package
+                  package require $pluginInfo(name)
+                  #--- j'initalise le plugin
+                  $pluginInfo(namespace)::initPlugin
+                  set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                  #--- je l'ajoute dans la liste des plugins
+                  lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                  lappend private(pluginLabelList) $pluginlabel
+                  ::console::affiche_prompt "#$caption(confpad,raquette) $pluginlabel v$pluginInfo(version)\n"
                }
             }
          } else {
@@ -432,7 +433,7 @@ proc ::confPad::findPlugin { } {
       }
    }
 
-   #--- je trie les plugins par ordre alphabétique des libelles
+   #--- je trie les plugins par ordre alphabetique des libelles
    set pluginList ""
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
