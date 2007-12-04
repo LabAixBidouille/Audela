@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.26 2007-11-17 11:49:06 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.27 2007-12-04 19:05:37 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -15,7 +15,7 @@ namespace eval ::cemes {
 
 #
 # ::cemes::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::cemes::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::cemes::getPluginTitle { } {
 
 #
 # ::cemes::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::cemes::getPluginHelp { } {
    return "cemes.htm"
@@ -33,7 +33,7 @@ proc ::cemes::getPluginHelp { } {
 
 #
 # ::cemes::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::cemes::getPluginType { } {
    return "camera"

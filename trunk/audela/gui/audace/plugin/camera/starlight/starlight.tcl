@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.8 2007-11-09 23:45:59 michelpujol Exp $
+# Mise a jour $Id: starlight.tcl,v 1.9 2007-12-04 19:18:10 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -15,7 +15,7 @@ namespace eval ::starlight {
 
 #
 # ::starlight::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::starlight::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::starlight::getPluginTitle { } {
 
 #
 # ::starlight::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::starlight::getPluginHelp { } {
    return "starlight.htm"
@@ -33,7 +33,7 @@ proc ::starlight::getPluginHelp { } {
 
 #
 # ::starlight::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::starlight::getPluginType { } {
    return "camera"

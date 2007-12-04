@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.17 2007-11-09 23:45:58 michelpujol Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.18 2007-12-04 19:17:20 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -15,7 +15,7 @@ namespace eval ::scr1300xtc {
 
 #
 # ::scr1300xtc::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::scr1300xtc::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::scr1300xtc::getPluginTitle { } {
 
 #
 # ::scr1300xtc::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::scr1300xtc::getPluginHelp { } {
    return "scr1300xtc.htm"
@@ -33,7 +33,7 @@ proc ::scr1300xtc::getPluginHelp { } {
 
 #
 # ::scr1300xtc::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::scr1300xtc::getPluginType { } {
    return "camera"

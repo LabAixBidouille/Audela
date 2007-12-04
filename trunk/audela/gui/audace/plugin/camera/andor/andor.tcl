@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.10 2007-11-17 11:48:21 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.11 2007-12-04 19:03:17 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -15,7 +15,7 @@ namespace eval ::andor {
 
 #
 # ::andor::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::andor::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::andor::getPluginTitle { } {
 
 #
 # ::andor::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::andor::getPluginHelp { } {
    return "andor.htm"
@@ -33,7 +33,7 @@ proc ::andor::getPluginHelp { } {
 
 #
 # ::andor::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::andor::getPluginType { } {
    return "camera"

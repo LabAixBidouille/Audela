@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.10 2007-11-17 11:51:06 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.11 2007-12-04 19:16:27 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -15,7 +15,7 @@ namespace eval ::sbig {
 
 #
 # ::sbig::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::sbig::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::sbig::getPluginTitle { } {
 
 #
 # ::sbig::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::sbig::getPluginHelp { } {
    return "sbig.htm"
@@ -33,7 +33,7 @@ proc ::sbig::getPluginHelp { } {
 
 #
 # ::sbig::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::sbig::getPluginType { } {
    return "camera"

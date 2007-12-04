@@ -2,15 +2,17 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.9 2007-09-20 19:17:47 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.10 2007-12-04 19:23:42 robertdelmas Exp $
 #
 
 #
 # Procedures generiques obligatoires (pour configurer tous les plugins camera, monture, equipement) :
 #     initPlugin        : Initialise le namespace (appelee pendant le chargement de ce source)
-#     getLabel          : Retourne le nom affichable du plugin
+#     getStartFlag      : Retourne l'indicateur de lancement au demarrage
 #     getPluginHelp     : Retourne la documentation htm associee
-#     getPluginType     : Retourne le type de plugin (pour classer le plugin dans le menu principal)
+#     getPluginTitle    : Retourne le titre du plugin dans la langue de l'utilisateur
+#     getPluginType     : Retourne le type de plugin
+#     getPluginOS       : Retourne les OS sous lesquels le plugin fonctionne
 #     fillConfigPage    : Affiche la fenetre de configuration de ce plugin
 #     configurePlugin   : Configure le plugin
 #     stopPlugin        : Arrete le plugin et libere les ressources occupees
@@ -56,7 +58,7 @@ proc ::focuseraudecom::getPluginTitle { } {
 #  ::focuseraudecom::getPluginHelp
 #     retourne la documentation du equipement
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::focuseraudecom::getPluginHelp { } {
    return "focuseraudecom.htm"
