@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.20 2007-12-02 00:06:30 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.21 2007-12-04 22:15:29 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -23,7 +23,7 @@ proc ::confCat::init { } {
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confCat) ] }          { set conf(confCat)          "" }
    if { ! [ info exists conf(confCat,start) ] }    { set conf(confCat,start)    "0" }
-   if { ! [ info exists conf(confCat,geometry) ] } { set conf(confCat,geometry) "490x330+130+60" }
+   if { ! [ info exists conf(confCat,geometry) ] } { set conf(confCat,geometry) "500x340+110+60" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -58,11 +58,25 @@ proc ::confCat::getLabel { } {
 #------------------------------------------------------------
 proc ::confCat::run { } {
    variable private
-   global conf
+   global caption conf
 
-   if { [createDialog ] == 0 } {
-      select $conf(confCat)
-      catch { tkwait visibility $private(frm) }
+   #--- je verifie si le plugin existe dans la liste des onglets
+   if { [ llength $private(pluginNamespaceList) ] > 0 } {
+      ::confCat::createDialog
+      set selectedPluginName "$conf(confCat)"
+      if { $selectedPluginName != "" } {
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [ lsearch -exact $private(pluginNamespaceList) $selectedPluginName ] == -1 } {
+            #--- si la valeur n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set selectedPluginName [ lindex $private(pluginNamespaceList) 0 ]
+         }
+      } else {
+         set selectedPluginName [ lindex $private(pluginNamespaceList) 0 ]
+      }
+      selectNotebook $selectedPluginName
+   } else {
+      tk_messageBox -title "$caption(confcat,config)" -message "$caption(confcat,pas_carte)" -icon error
    }
 }
 
@@ -88,31 +102,13 @@ proc ::confCat::ok { } {
 #------------------------------------------------------------
 proc ::confCat::appliquer { } {
    variable private
-   global conf
 
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
    $private(frm).cmd.fermer configure -state disabled
 
-   #--- j'arrete le plugin precedent
-   if { "$conf(confCat)" != "" } {
-      #--- je detruis le plugin danc catch, au cas ou il aurait ete supprime
-      #--- depuis sa derniere selections
-      catch {
-         $conf(confCat)::deletePluginInstance
-      }
-   }
-
-   #--- je recupere le label de l'onglet selectionne
-   set conf(confCat) [Rnotebook:currentName $private(frm).usr.book ]
-   #--- je recupere le namespace correspondant au label
-   set label "[Rnotebook:currentName $private(frm).usr.book ]"
-   set index [lsearch -exact $private(pluginLabelList) $label ]
-   if { $index != -1 } {
-      set conf(confCat) [lindex $private(pluginNamespaceList) $index]
-   } else {
-      set conf(confCat) ""
-   }
+   #--- je recupere le nom du plugin selectionne
+   set selectedPluginName [ $private(frm).usr.onglet raise ]
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
    foreach name $private(pluginNamespaceList) {
@@ -120,9 +116,7 @@ proc ::confCat::appliquer { } {
    }
 
    #--- je demarre le plugin selectionne
-   if { $conf(confCat) != "" } {
-      $conf(confCat)::createPluginInstance
-   }
+   configurePlugin $selectedPluginName
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -136,15 +130,11 @@ proc ::confCat::appliquer { } {
 proc ::confCat::afficheAide { } {
    variable private
 
-   #--- je recupere l'index de l'onglet selectionne
-   set index [Rnotebook:currentIndex $private(frm).usr.book ]
-   if { $index != -1 } {
-      set selectedPluginName [lindex $private(pluginNamespaceList) [expr $index -1]]
-      #--- j'affiche la documentation
-      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
-      set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
-      ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
-   }
+   #--- j'affiche la documentation
+   set selectedPluginName  [ $private(frm).usr.onglet raise ]
+   set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+   set pluginHelp          [ $selectedPluginName\::getPluginHelp ]
+   ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 }
 
 #------------------------------------------------------------
@@ -181,12 +171,6 @@ proc ::confCat::createDialog { } {
    variable private
    global caption conf
 
-   #--- Je verifie qu'il y a des cartes
-   if { [ llength $private(pluginNamespaceList) ] < 1 } {
-      tk_messageBox -title "$caption(confcat,config)" -message "$caption(confcat,pas_carte)" -icon error
-      return 1
-   }
-
    #---
    if { [ winfo exists $private(frm) ] } {
       wm withdraw $private(frm)
@@ -200,7 +184,7 @@ proc ::confCat::createDialog { } {
 
    toplevel $private(frm)
    wm geometry $private(frm) $private(confCat,geometry)
-   wm minsize $private(frm) 490 330
+   wm minsize $private(frm) 500 340
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confcat,config)"
@@ -210,19 +194,14 @@ proc ::confCat::createDialog { } {
    frame $private(frm).usr -borderwidth 0 -relief raised
 
       #--- Creation de la fenetre a onglets
-      set mainFrame $private(frm).usr.book
-
-         #--- J'affiche les onglets dans la fenetre
-         Rnotebook:create $mainFrame -tabs "$private(pluginLabelList)" -borderwidth 1
-
-         #--- Je demande a chaque plugin d'afficher sa page de config
-         set indexOnglet 1
-         foreach name $private(pluginNamespaceList) {
-            set drivername [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
-            incr indexOnglet
-         }
-
-      pack $mainFrame -fill both -expand 1
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      for { set i 0 } { $i < [ llength $private(pluginLabelList) ] } { incr i } {
+         set namespace [ lindex $private(pluginNamespaceList) $i ]
+         set title     [ lindex $private(pluginLabelList) $i ]
+         set frm       [ $notebook insert end $namespace -text "$title    " -raisecmd "::confCat::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
 
    pack $private(frm).usr -side top -fill both -expand 1
 
@@ -271,26 +250,52 @@ proc ::confCat::createDialog { } {
 }
 
 #------------------------------------------------------------
-# ::confCat::select [label]
-# Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
+# ::confCat::selectNotebook
+# Selectionne un onglet
 # Si le label est omis ou inconnu, le premier onglet est selectionne
 #------------------------------------------------------------
-proc ::confCat::select { { name "" } } {
+proc ::confCat::selectNotebook { { chart "" } } {
    variable private
 
-   #--- je recupere le label correspondant au namespace
-   set index [ lsearch -exact $private(pluginNamespaceList) "$name" ]
-   if { $index != -1 } {
-      Rnotebook:select $private(frm).usr.book [ lindex $private(pluginLabelList) $index ]
+   if { $chart != "" } {
+      set frm [ $private(frm).usr.onglet getframe $chart ]
+      $private(frm).usr.onglet raise $chart
+   } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
+      $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
    }
 }
 
-#------------------------------------------------------------
-# ::confCat::configureDriver
-# configure le plugin selectionne
-#------------------------------------------------------------
-proc ::confCat::configureDriver { } {
+#----------------------------------------------------------------------------
+# ::confCat::onRaiseNotebook
+# Affiche en gras le nom de l'onglet
+#----------------------------------------------------------------------------
+proc ::confCat::onRaiseNotebook { chartName } {
+   variable private
 
+   set font [$private(frm).usr.onglet.c itemcget "$chartName:text" -font]
+   lappend font "bold"
+   #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+   after 200 $private(frm).usr.onglet.c itemconfigure "$chartName:text" -font [list $font]
+}
+
+#------------------------------------------------------------
+# ::confCat::configurePlugin
+# configure le plugin dont le label est dans $conf(confCat)
+#------------------------------------------------------------
+proc ::confCat::configurePlugin { pluginName } {
+   global conf
+
+   #--- j'arrete le plugin precedent
+   if { $conf(confCat) != "" } {
+      ::$conf(confCat)\::deletePluginInstance
+   }
+
+   set conf(confCat) $pluginName
+
+   #--- je cree le plugin
+   if { $pluginName != "" } {
+      ::$pluginName\::createPluginInstance
+   }
 }
 
 #------------------------------------------------------------
@@ -308,24 +313,24 @@ proc ::confCat::createUrlLabel { tkparent title url } {
 }
 
 #------------------------------------------------------------
-# ::confCat::startDriver
+# ::confCat::startPlugin
 # lance le plugin
 #------------------------------------------------------------
-proc ::confCat::startDriver { } {
+proc ::confCat::startPlugin { } {
    global conf
 
    if { $conf(confCat,start) == "1" } {
-      ::confCat::configureDriver
+      ::confCat::configurePlugin $conf(confCat)
    }
 }
 
 #------------------------------------------------------------
-# ::confCat::stopDriver
+# ::confCat::stopPlugin
 # arrete le plugin selectionne
 #
 #  return rien
 #------------------------------------------------------------
-proc ::confCat::stopDriver { } {
+proc ::confCat::stopPlugin { } {
    global conf
 
    if { "$conf(confCat)" != "" } {
@@ -364,19 +369,17 @@ proc ::confCat::findPlugin { } {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type) == "chart"} {
-               foreach os $pluginInfo(os) {
-                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
-                     #--- je charge le package
-                     package require $pluginInfo(name)
-                     #--- j'initalise le plugin
-                     $pluginInfo(namespace)::initPlugin
-                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-                     #--- je l'ajoute dans la liste des plugins
-                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-                     lappend private(pluginLabelList) $pluginlabel
-                     ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
-                  }
+            if { $pluginInfo(type) == "chart" } {
+               if { [ lsearch $pluginInfo(os) [ lindex $::tcl_platform(os) 0 ] ] != "-1" } {
+                  #--- je charge le package
+                  package require $pluginInfo(name)
+                  #--- j'initalise le plugin
+                  $pluginInfo(namespace)::initPlugin
+                  set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                  #--- je l'ajoute dans la liste des plugins
+                  lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                  lappend private(pluginLabelList) $pluginlabel
+                  ::console::affiche_prompt "#$caption(confcat,carte) $pluginlabel v$pluginInfo(version)\n"
                }
             }
          } else {
@@ -389,7 +392,7 @@ proc ::confCat::findPlugin { } {
       }
    }
 
-   #--- je trie les plugins par ordre alphabétique des libelles
+   #--- je trie les plugins par ordre alphabetique des libelles
    set pluginList ""
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
