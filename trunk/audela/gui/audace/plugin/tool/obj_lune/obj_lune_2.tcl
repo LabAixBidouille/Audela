@@ -2,7 +2,7 @@
 # Fichier : obj_lune_2.tcl
 # Description : Programme pour la partie graphique de l'outil Objectif Lune
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_2.tcl,v 1.8 2007-09-01 12:25:02 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_2.tcl,v 1.9 2007-12-04 18:54:20 robertdelmas Exp $
 #
 
 namespace eval obj_lune {
@@ -33,14 +33,10 @@ namespace eval obj_lune {
    # Lit le catalogue des sites choisis
    #
    proc LitCataChoisi { } {
-      global audace
-      global zone
-      global site
-      global obj_lune
-      global frmm
+      global audace obj_lune site zone
 
       #--- Gestion du bouton Calculer les meilleures dates d'observation
-      $frmm(Obj_Lune5).frame7.calcul configure -state disabled
+      $obj_lune(onglet5).frame7.calcul configure -state disabled
       #--- Efface carte affichee
       image delete imageflag2
       image create photo imageflag2
@@ -62,31 +58,31 @@ namespace eval obj_lune {
       set obj_lune(nbre_carte_lib) "0"
       ::obj_lune::EffaceRectangleBleu_Rouge
       #--- Nettoyage des infos latitude et longitude selenes, dimension et du ou des numeros des cartes du site
-      $frmm(Obj_Lune1).frame13.lab2a configure -text "-"
-      $frmm(Obj_Lune1).frame14.lab3a configure -text "-"
-      $frmm(Obj_Lune1).frame15.lab4a configure -text "-"
-      $frmm(Obj_Lune1).frame9.labURL8a configure -text "-"
-      $frmm(Obj_Lune3).frame5.labURL3 configure -text "-"
-      $frmm(Obj_Lune4).frame5.labURL3 configure -text "-"
+      $obj_lune(onglet1).frame13.lab2a configure -text "-"
+      $obj_lune(onglet1).frame14.lab3a configure -text "-"
+      $obj_lune(onglet1).frame15.lab4a configure -text "-"
+      $obj_lune(onglet1).frame9.labURL8a configure -text "-"
+      $obj_lune(onglet3).frame5.labURL3 configure -text "-"
+      $obj_lune(onglet4).frame5.labURL3 configure -text "-"
       #--- Nettoyage des infos nom, latitude et longitude selenes, dates, heures, longitudes du terminateur,
       #--- librations et fraction eclairee
-      $frmm(Obj_Lune5).frame4.lab1a configure -text "-"
-      $frmm(Obj_Lune5).frame5.lab2a configure -text "-"
-      $frmm(Obj_Lune5).frame6.lab3a configure -text "-"
-      $frmm(Obj_Lune5).frame8.labURL4a configure -text "-"
-      $frmm(Obj_Lune5).frame9.labURL5a configure -text "-"
-      $frmm(Obj_Lune5).frame10.labURL6a configure -text "-"
-      $frmm(Obj_Lune5).frame11.labURL7a configure -text "-"
-      $frmm(Obj_Lune5).frame12.labURL8a configure -text "-"
-      $frmm(Obj_Lune5).frame13.labURL9a configure -text "-"
-      $frmm(Obj_Lune5).frame15.labURL11a configure -text "-"
-      $frmm(Obj_Lune5).frame16.labURL12a configure -text "-"
-      $frmm(Obj_Lune5).frame17.labURL13a configure -text "-"
-      $frmm(Obj_Lune5).frame18.labURL14a configure -text "-"
-      $frmm(Obj_Lune5).frame19.labURL15a configure -text "-"
-      $frmm(Obj_Lune5).frame20.labURL16a configure -text "-"
+      $obj_lune(onglet5).frame4.lab1a configure -text "-"
+      $obj_lune(onglet5).frame5.lab2a configure -text "-"
+      $obj_lune(onglet5).frame6.lab3a configure -text "-"
+      $obj_lune(onglet5).frame8.labURL4a configure -text "-"
+      $obj_lune(onglet5).frame9.labURL5a configure -text "-"
+      $obj_lune(onglet5).frame10.labURL6a configure -text "-"
+      $obj_lune(onglet5).frame11.labURL7a configure -text "-"
+      $obj_lune(onglet5).frame12.labURL8a configure -text "-"
+      $obj_lune(onglet5).frame13.labURL9a configure -text "-"
+      $obj_lune(onglet5).frame15.labURL11a configure -text "-"
+      $obj_lune(onglet5).frame16.labURL12a configure -text "-"
+      $obj_lune(onglet5).frame17.labURL13a configure -text "-"
+      $obj_lune(onglet5).frame18.labURL14a configure -text "-"
+      $obj_lune(onglet5).frame19.labURL15a configure -text "-"
+      $obj_lune(onglet5).frame20.labURL16a configure -text "-"
       #--- Efface le dessin du terminateur sur la Lune
-      $frmm(Obj_Lune5).frame3.image5a delete cadres
+      $obj_lune(onglet5).frame3.image5a delete cadres
       #--- Ouverture du catalogue des sites choisis
       set f [open [file join $audace(rep_plugin) tool obj_lune cata_obj_lune $obj_lune(cata_choisi)] r]
       #--- Creation d'une liste de sites
@@ -95,15 +91,15 @@ namespace eval obj_lune {
       set long [llength $site]
       set long [expr $long-2]
       #--- Met chaque ligne du catalogue dans une variable et acceleration de l'affichage
-      pack forget $frmm(Obj_Lune1).frame3.lb1
-      pack forget $frmm(Obj_Lune1).frame3.scrollbar
-      pack forget $frmm(Obj_Lune1).frame3
+      pack forget $obj_lune(onglet1).frame3.lb1
+      pack forget $obj_lune(onglet1).frame3.scrollbar
+      pack forget $obj_lune(onglet1).frame3
       for {set i 0} {$i <= $long} {incr i} {
          $zone(list_site) insert end "[lindex $site $i]"
       }
-      pack $frmm(Obj_Lune1).frame3.lb1 -side left -anchor nw
-      pack $frmm(Obj_Lune1).frame3.scrollbar -side left -fill y
-      pack $frmm(Obj_Lune1).frame3 -side top -fill both -expand 1
+      pack $obj_lune(onglet1).frame3.lb1 -side left -anchor nw
+      pack $obj_lune(onglet1).frame3.scrollbar -side left -fill y
+      pack $obj_lune(onglet1).frame3 -side top -fill both -expand 1
       #--- Ferme le catalogue des sites choisis
       close $f
    }
@@ -113,19 +109,13 @@ namespace eval obj_lune {
    # Affichage des infos du site choisi
    #
    proc AfficheInfoSite { } {
-      global audace
-      global zone
-      global obj_lune
-      global zone
-      global color
-      global thissite_lune
-      global frmm
+      global audace color obj_lune thissite_lune zone
 
       #--- Definition du bind de selection du site choisi
       bind $zone(list_site) <Double-ButtonRelease-1> { }
       bind $zone(list_site) <ButtonRelease-1> {
          #--- Gestion du bouton Calculer les meilleures dates d'observation
-         $frmm(Obj_Lune5).frame7.calcul configure -state normal
+         $obj_lune(onglet5).frame7.calcul configure -state normal
          #--- Initialisation numero de cartes
          set obj_lune(n1)     ""
          set obj_lune(n2)     ""
@@ -149,20 +139,20 @@ namespace eval obj_lune {
          $zone(list_histoire) delete 0.0 end
          #--- Nettoyage des informations de date, heure, longitude du terminateur, librations et fraction eclairee
          #--- de l'onglet meilleure date d'observation
-         $frmm(Obj_Lune5).frame8.labURL4a configure -text "-"
-         $frmm(Obj_Lune5).frame9.labURL5a configure -text "-"
-         $frmm(Obj_Lune5).frame10.labURL6a configure -text "-"
-         $frmm(Obj_Lune5).frame11.labURL7a configure -text "-"
-         $frmm(Obj_Lune5).frame12.labURL8a configure -text "-"
-         $frmm(Obj_Lune5).frame13.labURL9a configure -text "-"
-         $frmm(Obj_Lune5).frame15.labURL11a configure -text "-"
-         $frmm(Obj_Lune5).frame16.labURL12a configure -text "-"
-         $frmm(Obj_Lune5).frame17.labURL13a configure -text "-"
-         $frmm(Obj_Lune5).frame18.labURL14a configure -text "-"
-         $frmm(Obj_Lune5).frame19.labURL15a configure -text "-"
-         $frmm(Obj_Lune5).frame20.labURL16a configure -text "-"
+         $obj_lune(onglet5).frame8.labURL4a configure -text "-"
+         $obj_lune(onglet5).frame9.labURL5a configure -text "-"
+         $obj_lune(onglet5).frame10.labURL6a configure -text "-"
+         $obj_lune(onglet5).frame11.labURL7a configure -text "-"
+         $obj_lune(onglet5).frame12.labURL8a configure -text "-"
+         $obj_lune(onglet5).frame13.labURL9a configure -text "-"
+         $obj_lune(onglet5).frame15.labURL11a configure -text "-"
+         $obj_lune(onglet5).frame16.labURL12a configure -text "-"
+         $obj_lune(onglet5).frame17.labURL13a configure -text "-"
+         $obj_lune(onglet5).frame18.labURL14a configure -text "-"
+         $obj_lune(onglet5).frame19.labURL15a configure -text "-"
+         $obj_lune(onglet5).frame20.labURL16a configure -text "-"
          #--- Efface le dessin du terminateur sur la Lune
-         $frmm(Obj_Lune5).frame3.image5a delete cadres
+         $obj_lune(onglet5).frame3.image5a delete cadres
          #--- Efface les rectangles et les numeros des precedentes selections
          ::obj_lune::EffaceRectangleBleu_Rouge
          set obj_lune(n_carte) "-"
@@ -171,7 +161,7 @@ namespace eval obj_lune {
          set thissite_lune [lindex $site [%W curselection]]
          #--- Preparation de l'affichage du nom
          set obj_lune(nom_site) "[string range $thissite_lune 0 25]"
-         $frmm(Obj_Lune5).frame4.lab1a configure -text "$obj_lune(nom_site)"
+         $obj_lune(onglet5).frame4.lab1a configure -text "$obj_lune(nom_site)"
          #--- Preparation de l'affichage de la latitude selene
          for {set i 0} {$i <= 7} {incr i} {
             if { [string compare [string range $thissite_lune [expr 26+$i] [expr 26+$i]] "N"] == "0" } {
@@ -180,8 +170,8 @@ namespace eval obj_lune {
                set obj_lune(lat_selene) "-[string range $thissite_lune 26 33]"
             }
          }
-         $frmm(Obj_Lune1).frame13.lab2a configure -text "$obj_lune(lat_selene)"
-         $frmm(Obj_Lune5).frame5.lab2a configure -text "$obj_lune(lat_selene)"
+         $obj_lune(onglet1).frame13.lab2a configure -text "$obj_lune(lat_selene)"
+         $obj_lune(onglet5).frame5.lab2a configure -text "$obj_lune(lat_selene)"
          #--- Preparation de l'affichage de la longitude selene
          for {set i 0} {$i <= 7} {incr i} {
             if { [string compare [string range $thissite_lune [expr 34+$i] [expr 34+$i]] "E"] == "0" } {
@@ -190,13 +180,13 @@ namespace eval obj_lune {
                set obj_lune(long_selene) "-[string range $thissite_lune 34 41]"
             }
          }
-         $frmm(Obj_Lune1).frame14.lab3a configure -text "$obj_lune(long_selene)"
-         $frmm(Obj_Lune5).frame6.lab3a configure -text "$obj_lune(long_selene)"
+         $obj_lune(onglet1).frame14.lab3a configure -text "$obj_lune(long_selene)"
+         $obj_lune(onglet5).frame6.lab3a configure -text "$obj_lune(long_selene)"
          #--- Preparation de l'affichage de la dimension en km
-         $frmm(Obj_Lune1).frame15.lab4a configure -text "[string range $thissite_lune 42 49]"
+         $obj_lune(onglet1).frame15.lab4a configure -text "[string range $thissite_lune 42 49]"
          #--- Preparation de l'affichage du ou des numeros des cartes de l'atlas dans l'onglet GOTO
          if { [string range $thissite_lune 86 89] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77] [string range $thissite_lune 78 81] [string range $thissite_lune 82 85] [string range $thissite_lune 86 89]\
                  [string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
@@ -215,7 +205,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 82 85] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77] [string range $thissite_lune 78 81] [string range $thissite_lune 82 85] [string range $thissite_lune 90 93]\
                  [string range $thissite_lune 94 97]" -fg $color(blue)
@@ -233,7 +223,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 78 81] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77] [string range $thissite_lune 78 81] [string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "8"
@@ -249,7 +239,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 74 77] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77] [string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "7"
@@ -264,7 +254,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 70 73] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "6"
@@ -278,7 +268,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 66 69] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 90 93]
                   [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "5"
@@ -291,7 +281,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 62 65] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "4"
             set obj_lune(n1) "[string trimright [string range $thissite_lune 50 53] " "]"
@@ -302,7 +292,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 58 61] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "3"
             set obj_lune(n1) "[string trimright [string range $thissite_lune 50 53] " "]"
@@ -312,7 +302,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 54 57] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "2"
             set obj_lune(n1) "[string trimright [string range $thissite_lune 50 53] " "]"
@@ -321,7 +311,7 @@ namespace eval obj_lune {
             ::obj_lune::Trait_Carte_lib_et_autres
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 50 53] != "    " } {
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 90 93]\
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 90 93]\
                  [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte) "1"
             set obj_lune(n1) "[string trimright [string range $thissite_lune 50 53] " "]"
@@ -330,7 +320,7 @@ namespace eval obj_lune {
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 94 97] != "    " } {
             #--- Traitement de l'affichage des cartes de librations seules
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
             set obj_lune(nbre_carte_lib) "2"
             set obj_lune(lib_n1) "[string trimright [string range $thissite_lune 90 93] " "]"
             set obj_lune(lib_n2) "[string trimright [string range $thissite_lune 94 97] " "]"
@@ -339,7 +329,7 @@ namespace eval obj_lune {
             ::obj_lune::AffichePremiereCarte
          } elseif { [string range $thissite_lune 90 93] != "    " } {
             #--- Traitement de l'affichage des cartes de librations seules
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "[string range $thissite_lune 90 93]" -fg $color(blue)
+            $obj_lune(onglet1).frame9.labURL8a configure -text "[string range $thissite_lune 90 93]" -fg $color(blue)
             set obj_lune(nbre_carte_lib) "1"
             set obj_lune(lib_n1) "[string trimright [string range $thissite_lune 90 93] " "]"
             ::obj_lune::ConversionNumeroCarte_lib1
@@ -347,51 +337,51 @@ namespace eval obj_lune {
          } else {
             set obj_lune(n1)     ""
             set obj_lune(lib_n1) ""
-            $frmm(Obj_Lune1).frame9.labURL8a configure -text "-"
+            $obj_lune(onglet1).frame9.labURL8a configure -text "-"
          }
          #--- Preparation de l'affichage du ou des numeros des cartes de l'atlas dans l'onglet Cartographie
          if { [string range $thissite_lune 86 89] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77] [string range $thissite_lune 78 81] [string range $thissite_lune 82 85] [string range $thissite_lune 86 89]" -fg $color(blue)
          } elseif { [string range $thissite_lune 82 85] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77] [string range $thissite_lune 78 81] [string range $thissite_lune 82 85]" -fg $color(blue)
          } elseif { [string range $thissite_lune 78 81] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77] [string range $thissite_lune 78 81]" -fg $color(blue)
          } elseif { [string range $thissite_lune 74 77] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]\
                  [string range $thissite_lune 74 77]" -fg $color(blue)
          } elseif { [string range $thissite_lune 70 73] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69] [string range $thissite_lune 70 73]" -fg $color(blue)
          } elseif { [string range $thissite_lune 66 69] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65] [string range $thissite_lune 66 69]" -fg $color(blue)
          } elseif { [string range $thissite_lune 62 65] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61] [string range $thissite_lune 62 65]" -fg $color(blue)
          } elseif { [string range $thissite_lune 58 61] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]\
                  [string range $thissite_lune 58 61]" -fg $color(blue)
          } elseif { [string range $thissite_lune 54 57] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]" -fg $color(blue)
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53] [string range $thissite_lune 54 57]" -fg $color(blue)
          } elseif { [string range $thissite_lune 50 53] != "    " } {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53]" -fg $color(blue)
+            $obj_lune(onglet3).frame5.labURL3 configure -text "[string range $thissite_lune 50 53]" -fg $color(blue)
          } else {
-            $frmm(Obj_Lune3).frame5.labURL3 configure -text "-"
+            $obj_lune(onglet3).frame5.labURL3 configure -text "-"
          }
          #--- Preparation de l'affichage du ou des numeros des cartes de l'atlas dans l'onglet Cartes de librations
          if { [string range $thissite_lune 94 97] != "    " } {
-            $frmm(Obj_Lune4).frame5.labURL3 configure -text "[string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
+            $obj_lune(onglet4).frame5.labURL3 configure -text "[string range $thissite_lune 90 93] [string range $thissite_lune 94 97]" -fg $color(blue)
          } elseif { [string range $thissite_lune 90 93] != "    " } {
-            $frmm(Obj_Lune4).frame5.labURL3 configure -text "[string range $thissite_lune 90 93]" -fg $color(blue)
+            $obj_lune(onglet4).frame5.labURL3 configure -text "[string range $thissite_lune 90 93]" -fg $color(blue)
          } else {
-            $frmm(Obj_Lune4).frame5.labURL3 configure -text "-"
+            $obj_lune(onglet4).frame5.labURL3 configure -text "-"
          }
          #--- Visibilite du site choisi (librations + fraction eclairee/fraction non eclairee de la Lune)
          set visibilite "1"
@@ -465,9 +455,7 @@ namespace eval obj_lune {
    # Dessine la phase de la Lune en fonction de la fraction illuminee de son disque
    #
    proc Lune_Dessine_Phase { } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       #--- Initialisation pour le diametre de l'image de la Lune
       set EB [expr (287.0-12.0)/2.0]
@@ -476,30 +464,30 @@ namespace eval obj_lune {
       #--- Calcul du segment definissant le croissant
       set EC [expr (1-2*$obj_lune(fraction_illu))*$EB]
       #--- Verifie l'existance du widget
-      if { [ winfo exists $frmm(Obj_Lune2) ] } {
+      if { [ winfo exists $obj_lune(onglet2) ] } {
          #--- Cas particulier de la Nouvelle Lune
          if { $obj_lune(fraction_illu) == "0.0" } {
-            $frmm(Obj_Lune2).frame23.image2a create oval 12 12 287 287 -outline $color(red) -tags cadres -width 4.0
+            $obj_lune(onglet2).frame23.image2a create oval 12 12 287 287 -outline $color(red) -tags cadres -width 4.0
          #--- Cas particulier de la Pleine Lune
          } elseif { $obj_lune(fraction_illu) == "1.0" } {
-            $frmm(Obj_Lune2).frame23.image2a create oval 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0
+            $obj_lune(onglet2).frame23.image2a create oval 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0
          } else {
             #--- Traitement du croissant ascendant ou descendant
             #--- Croissant ascendant
             if { $obj_lune(age_lune) < $demi_rev_syno } {
-               $frmm(Obj_Lune2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent -180 -style arc
+               $obj_lune(onglet2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent -180 -style arc
                if { $obj_lune(fraction_illu) < 0.5 } {
-                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
+                  $obj_lune(onglet2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
                } else {
-                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
+                  $obj_lune(onglet2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
                }
             #--- Croissant descendant
             } else {
-               $frmm(Obj_Lune2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent 180 -style arc
+               $obj_lune(onglet2).frame23.image2a create arc 12 12 287 287 -outline $color(yellow) -tags cadres -width 4.0 -start 90 -extent 180 -style arc
                if { $obj_lune(fraction_illu) > 0.5 } {
-                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
+                  $obj_lune(onglet2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent -180 -style arc
                } else {
-                  $frmm(Obj_Lune2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
+                  $obj_lune(onglet2).frame23.image2a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color(yellow) -tags cadres -width 2.0 -start 90 -extent 180 -style arc
                }
             }
          }
@@ -511,9 +499,7 @@ namespace eval obj_lune {
    # Dessine le terminateur et la phase de la Lune pour les meilleures date d'observation du site
    #
    proc Lune_Dessine_Phase_Meilleure_Date { fraction_illu age_lune color_pmd } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       #--- Inintialisation des variables
       set obj_lune(fraction_illu) $fraction_illu
@@ -526,27 +512,27 @@ namespace eval obj_lune {
       set EC [expr (1-2*$obj_lune(fraction_illu))*$EB]
       #--- Cas particulier de la Nouvelle Lune
       if { $obj_lune(fraction_illu) == "0.0" } {
-         $frmm(Obj_Lune5).frame3.image5a create oval 12 12 287 287 -outline $color(red) -tags cadres -width 4.0
+         $obj_lune(onglet5).frame3.image5a create oval 12 12 287 287 -outline $color(red) -tags cadres -width 4.0
       #--- Cas particulier de la Pleine Lune
       } elseif { $obj_lune(fraction_illu) == "1.0" } {
-         $frmm(Obj_Lune5).frame3.image5a create oval 12 12 287 287 -outline $color_pmd -tags cadres -width 4.0
+         $obj_lune(onglet5).frame3.image5a create oval 12 12 287 287 -outline $color_pmd -tags cadres -width 4.0
       } else {
          #--- Traitement du croissant ascendant ou descendant
          #--- Croissant ascendant
          if { $obj_lune(age_lune) < $demi_rev_syno } {
-            $frmm(Obj_Lune5).frame3.image5a create arc 12 12 287 287 -outline $color_pmd -tags cadres -width 4.0 -start 90 -extent -180 -style arc
+            $obj_lune(onglet5).frame3.image5a create arc 12 12 287 287 -outline $color_pmd -tags cadres -width 4.0 -start 90 -extent -180 -style arc
             if { $obj_lune(fraction_illu) < 0.5 } {
-               $frmm(Obj_Lune5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent -180 -style arc
+               $obj_lune(onglet5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent -180 -style arc
             } else {
-               $frmm(Obj_Lune5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent 180 -style arc
+               $obj_lune(onglet5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent 180 -style arc
             }
          #--- Croissant descendant
          } else {
-            $frmm(Obj_Lune5).frame3.image5a create arc 12 12 287 287 -outline $color_pmd -tags cadres -width 4.0 -start 90 -extent 180 -style arc
+            $obj_lune(onglet5).frame3.image5a create arc 12 12 287 287 -outline $color_pmd -tags cadres -width 4.0 -start 90 -extent 180 -style arc
             if { $obj_lune(fraction_illu) > 0.5 } {
-               $frmm(Obj_Lune5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent -180 -style arc
+               $obj_lune(onglet5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent -180 -style arc
             } else {
-               $frmm(Obj_Lune5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent 180 -style arc
+               $obj_lune(onglet5).frame3.image5a create arc [expr 12.0+abs($EB-$EC)] 12 [expr 287.0-abs($EB-$EC)] 287 -outline $color_pmd -tags cadres -width 2.0 -start 90 -extent 180 -style arc
             }
          }
       }
@@ -557,13 +543,11 @@ namespace eval obj_lune {
    # Affichage du catalogue des sites choisis
    #
    proc affiche_cata_choisi { } {
-      global obj_lune
-      global langage
-      global frmm
+      global langage obj_lune
 
       #--- Efface l'AD et la Dec. du site lunaire a chaque changement de catalogue
-      $frmm(Obj_Lune1).frame17.lab6a configure -text "-"
-      $frmm(Obj_Lune1).frame18.lab7a configure -text "-"
+      $obj_lune(onglet1).frame17.lab6a configure -text "-"
+      $obj_lune(onglet1).frame18.lab7a configure -text "-"
       #--- Efface la variable obj_lune(long_selene) a chaque changement de catalogue
       catch { unset obj_lune(long_selene) }
       #--- Charge le catalogue choisi
@@ -713,10 +697,7 @@ namespace eval obj_lune {
    # Affichage du rectangle et de la carte du site choisi
    #
    proc AfficheRectangleCarteChoisie { } {
-      global zone
-      global color
-      global obj_lune
-      global frmm
+      global color obj_lune zone
 
       #--- Charge les coordonnees pointees dans l'image image_cartes_lune
       bind $zone(image_cartes_lune) <Motion> {
@@ -728,7 +709,7 @@ namespace eval obj_lune {
          if { ($y>"4") && ($y<"40") } {
             if { ($x>"54") && ($x<"83") } {
                set obj_lune(n_carte) "1"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar01$obj_lune(extension_cartes)"
@@ -738,7 +719,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "2"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar02$obj_lune(extension_cartes)"
@@ -748,7 +729,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "3"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar03$obj_lune(extension_cartes)"
@@ -758,7 +739,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "4"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar04$obj_lune(extension_cartes)"
@@ -768,7 +749,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "5"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar05$obj_lune(extension_cartes)"
@@ -778,7 +759,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "6"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar06$obj_lune(extension_cartes)"
@@ -788,7 +769,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"245") } {
                set obj_lune(n_carte) "7"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar07$obj_lune(extension_cartes)"
@@ -797,12 +778,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"40") && ($y<"77") } {
             if { ($x>"23") && ($x<"57") } {
                set obj_lune(n_carte) "8"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar08$obj_lune(extension_cartes)"
@@ -812,7 +793,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "9"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar09$obj_lune(extension_cartes)"
@@ -822,7 +803,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "10"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar10$obj_lune(extension_cartes)"
@@ -832,7 +813,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "11"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar11$obj_lune(extension_cartes)"
@@ -842,7 +823,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "12"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar12$obj_lune(extension_cartes)"
@@ -852,7 +833,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "13"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar13$obj_lune(extension_cartes)"
@@ -862,7 +843,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "14"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar14$obj_lune(extension_cartes)"
@@ -872,7 +853,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "15"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar15$obj_lune(extension_cartes)"
@@ -882,7 +863,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"275") } {
                set obj_lune(n_carte) "16"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar16$obj_lune(extension_cartes)"
@@ -891,12 +872,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"77") && ($y<"112") } {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "17"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar17$obj_lune(extension_cartes)"
@@ -906,7 +887,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "18"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar18$obj_lune(extension_cartes)"
@@ -916,7 +897,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "19"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar19$obj_lune(extension_cartes)"
@@ -926,7 +907,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "20"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar20$obj_lune(extension_cartes)"
@@ -936,7 +917,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "21"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar21$obj_lune(extension_cartes)"
@@ -946,7 +927,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "22"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar22$obj_lune(extension_cartes)"
@@ -956,7 +937,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "23"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar23$obj_lune(extension_cartes)"
@@ -966,7 +947,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "24"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar24$obj_lune(extension_cartes)"
@@ -976,7 +957,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "25"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar25$obj_lune(extension_cartes)"
@@ -986,7 +967,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "26"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar26$obj_lune(extension_cartes)"
@@ -996,7 +977,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "27"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar27$obj_lune(extension_cartes)"
@@ -1005,12 +986,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"112") && ($y<"148") } {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "28"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar28$obj_lune(extension_cartes)"
@@ -1020,7 +1001,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "29"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar29$obj_lune(extension_cartes)"
@@ -1030,7 +1011,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "30"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar30$obj_lune(extension_cartes)"
@@ -1040,7 +1021,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "31"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar31$obj_lune(extension_cartes)"
@@ -1050,7 +1031,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "32"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar32$obj_lune(extension_cartes)"
@@ -1060,7 +1041,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "33"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar33$obj_lune(extension_cartes)"
@@ -1070,7 +1051,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "34"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar34$obj_lune(extension_cartes)"
@@ -1080,7 +1061,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "35"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar35$obj_lune(extension_cartes)"
@@ -1090,7 +1071,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "36"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar36$obj_lune(extension_cartes)"
@@ -1100,7 +1081,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "37"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar37$obj_lune(extension_cartes)"
@@ -1110,7 +1091,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "38"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar38$obj_lune(extension_cartes)"
@@ -1119,12 +1100,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"148") && ($y<"185") } {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "39"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar39$obj_lune(extension_cartes)"
@@ -1134,7 +1115,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "40"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar40$obj_lune(extension_cartes)"
@@ -1144,7 +1125,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "41"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar41$obj_lune(extension_cartes)"
@@ -1154,7 +1135,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "42"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar42$obj_lune(extension_cartes)"
@@ -1164,7 +1145,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "43"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar43$obj_lune(extension_cartes)"
@@ -1174,7 +1155,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "44"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar44$obj_lune(extension_cartes)"
@@ -1184,7 +1165,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "45"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar45$obj_lune(extension_cartes)"
@@ -1194,7 +1175,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "46"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar46$obj_lune(extension_cartes)"
@@ -1204,7 +1185,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "47"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar47$obj_lune(extension_cartes)"
@@ -1214,7 +1195,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "48"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar48$obj_lune(extension_cartes)"
@@ -1224,7 +1205,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "49"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar49$obj_lune(extension_cartes)"
@@ -1233,12 +1214,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"185") && ($y<"221") } {
             if { ($x>"4") && ($x<"30") } {
                set obj_lune(n_carte) "50"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar50$obj_lune(extension_cartes)"
@@ -1248,7 +1229,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"30") && ($x<"57") } {
                set obj_lune(n_carte) "51"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar51$obj_lune(extension_cartes)"
@@ -1258,7 +1239,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "52"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar52$obj_lune(extension_cartes)"
@@ -1268,7 +1249,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "53"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar53$obj_lune(extension_cartes)"
@@ -1278,7 +1259,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "54"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar54$obj_lune(extension_cartes)"
@@ -1288,7 +1269,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "55"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar55$obj_lune(extension_cartes)"
@@ -1298,7 +1279,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "56"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar56$obj_lune(extension_cartes)"
@@ -1308,7 +1289,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "57"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar57$obj_lune(extension_cartes)"
@@ -1318,7 +1299,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "58"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar58$obj_lune(extension_cartes)"
@@ -1328,7 +1309,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"269") } {
                set obj_lune(n_carte) "59"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar59$obj_lune(extension_cartes)"
@@ -1338,7 +1319,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"269") && ($x<"295") } {
                set obj_lune(n_carte) "60"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar60$obj_lune(extension_cartes)"
@@ -1347,12 +1328,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"221") && ($y<"257") } {
             if { ($x>"23") && ($x<"57") } {
                set obj_lune(n_carte) "61"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar61$obj_lune(extension_cartes)"
@@ -1362,7 +1343,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"57") && ($x<"83") } {
                set obj_lune(n_carte) "62"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar62$obj_lune(extension_cartes)"
@@ -1372,7 +1353,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "63"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar63$obj_lune(extension_cartes)"
@@ -1382,7 +1363,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "64"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar64$obj_lune(extension_cartes)"
@@ -1392,7 +1373,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "65"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar65$obj_lune(extension_cartes)"
@@ -1402,7 +1383,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "66"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar66$obj_lune(extension_cartes)"
@@ -1412,7 +1393,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "67"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar67$obj_lune(extension_cartes)"
@@ -1422,7 +1403,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"242") } {
                set obj_lune(n_carte) "68"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar68$obj_lune(extension_cartes)"
@@ -1432,7 +1413,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"275") } {
                set obj_lune(n_carte) "69"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar69$obj_lune(extension_cartes)"
@@ -1441,12 +1422,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"257") && ($y<"293") } {
             if { ($x>"54") && ($x<"83") } {
                set obj_lune(n_carte) "70"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar70$obj_lune(extension_cartes)"
@@ -1456,7 +1437,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"83") && ($x<"110") } {
                set obj_lune(n_carte) "71"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar71$obj_lune(extension_cartes)"
@@ -1466,7 +1447,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"110") && ($x<"136") } {
                set obj_lune(n_carte) "72"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar72$obj_lune(extension_cartes)"
@@ -1476,7 +1457,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"136") && ($x<"163") } {
                set obj_lune(n_carte) "73"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar73$obj_lune(extension_cartes)"
@@ -1486,7 +1467,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"163") && ($x<"189") } {
                set obj_lune(n_carte) "74"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar74$obj_lune(extension_cartes)"
@@ -1496,7 +1477,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"189") && ($x<"216") } {
                set obj_lune(n_carte) "75"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar75$obj_lune(extension_cartes)"
@@ -1506,7 +1487,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"216") && ($x<"245") } {
                set obj_lune(n_carte) "76"
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
+               $obj_lune(onglet3).frame8.labURL7 configure -text "$obj_lune(n_carte)" -fg $color(red)
                bind $zone(image_cartes_lune) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie) $obj_lune(n_carte)
                   set obj_lune(carte_choisie) "ar76$obj_lune(extension_cartes)"
@@ -1515,10 +1496,10 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarteChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } else {
-            $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+            $obj_lune(onglet3).frame8.labURL7 configure -text "-"
          }
       }
    }
@@ -1528,10 +1509,7 @@ namespace eval obj_lune {
    # Affichage du polygone et de la carte du site choisi
    #
    proc AffichePolygoneCarteChoisie { } {
-      global zone
-      global color
-      global obj_lune
-      global frmm
+      global color obj_lune zone
 
       #--- Charge les coordonnees pointees dans l'image_cartes_lune
       bind $zone(image4a) <Motion> {
@@ -1543,7 +1521,7 @@ namespace eval obj_lune {
          if { ($y>"8") && ($y<"54") } {
             if { ($x>"56") && ($x<"149") } {
                set obj_lune(n_carte_lib) "I"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib77$obj_lune(extension_cartes)"
@@ -1553,7 +1531,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"149") && ($x<"242") } {
                set obj_lune(n_carte_lib) "II"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib78$obj_lune(extension_cartes)"
@@ -1562,12 +1540,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarte_libChoisie
                }
             } else {
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet4).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"54") && ($y<"148") } {
             if { ($x>"10") && ($x<"56") } {
                set obj_lune(n_carte_lib) "VIII"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib84$obj_lune(extension_cartes)"
@@ -1577,7 +1555,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"288") } {
                set obj_lune(n_carte_lib) "III"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib79$obj_lune(extension_cartes)"
@@ -1586,12 +1564,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarte_libChoisie
                }
             } else {
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet4).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"148") && ($y<"242") } {
             if { ($x>"10") && ($x<"56") } {
                set obj_lune(n_carte_lib) "VII"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib83$obj_lune(extension_cartes)"
@@ -1601,7 +1579,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"242") && ($x<"288") } {
                set obj_lune(n_carte_lib) "IV"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib80$obj_lune(extension_cartes)"
@@ -1610,12 +1588,12 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarte_libChoisie
                }
             } else {
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet4).frame8.labURL7 configure -text "-"
             }
          } elseif { ($y>"242") && ($y<"288") } {
             if { ($x>"56") && ($x<"149") } {
                set obj_lune(n_carte_lib) "VI"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib82$obj_lune(extension_cartes)"
@@ -1625,7 +1603,7 @@ namespace eval obj_lune {
                }
             } elseif { ($x>"149") && ($x<"242") } {
                set obj_lune(n_carte_lib) "V"
-               $frmm(Obj_Lune4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
+               $obj_lune(onglet4).frame8.labURL7 configure -text "$obj_lune(n_carte_lib)" -fg $color(red)
                bind $zone(image4a) <ButtonPress-1> {
                   set obj_lune(n_carte_choisie_lib) $obj_lune(n_carte_lib)
                   set obj_lune(carte_choisie_lib) "lib81$obj_lune(extension_cartes)"
@@ -1634,10 +1612,10 @@ namespace eval obj_lune {
                   ::obj_lune::AfficheCarte_libChoisie
                }
             } else {
-               $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+               $obj_lune(onglet3).frame8.labURL7 configure -text "-"
             }
          } else {
-            $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+            $obj_lune(onglet3).frame8.labURL7 configure -text "-"
          }
       }
    }
@@ -1679,9 +1657,7 @@ namespace eval obj_lune {
    # Affichage de la carte du site choisi
    #
    proc AfficheCarteChoisie { } {
-      global obj_lune
-      global audace
-      global zone
+      global audace obj_lune zone
 
       set num [ catch { imageflag2 configure \
          -file [ file join $audace(rep_plugin) tool obj_lune $obj_lune(rep_cartes) $obj_lune(carte_choisie) ] } msg ]
@@ -1699,9 +1675,7 @@ namespace eval obj_lune {
    # Affichage de la carte de librations du site choisi
    #
    proc AfficheCarte_libChoisie { } {
-      global obj_lune
-      global audace
-      global zone
+      global audace obj_lune zone
 
       set num [ catch { imageflag4b configure \
          -file [ file join $audace(rep_plugin) tool obj_lune $obj_lune(rep_cartes) $obj_lune(carte_choisie_lib) ] } msg ]
@@ -1719,10 +1693,7 @@ namespace eval obj_lune {
    # Invite au telechargement des cartes de la Lune
    #
    proc Manque_Cartes { } {
-      global audace
-      global color
-      global caption
-      global obj_lune
+      global audace caption color obj_lune
 
       if [ winfo exists $audace(base).manque_cartes ] {
          destroy $audace(base).manque_cartes
@@ -1772,14 +1743,12 @@ namespace eval obj_lune {
    # Affichage du rectangle de la carte du site choisi et de son numero
    #
    proc AfficheRepereSite { } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       #--- Affichage du numero de la carte choisie
       catch {
          if { $obj_lune(n_carte) != "-" } {
-            $frmm(Obj_Lune3).frame7.labURL5 configure -text "$obj_lune(n_carte_choisie)" -fg $color(red)
+            $obj_lune(onglet3).frame7.labURL5 configure -text "$obj_lune(n_carte_choisie)" -fg $color(red)
          }
       }
 
@@ -1950,9 +1919,7 @@ namespace eval obj_lune {
    # Affichage du rectangle de la carte choisie et de son numero
    #
    proc AfficheRepereSite_Bind { } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       catch {
          for {set i 1} {$i <= $obj_lune(nbre_carte) } {incr i} {
@@ -2113,7 +2080,7 @@ namespace eval obj_lune {
               }
             }
          }
-         $frmm(Obj_Lune3).frame7.labURL5 configure -text "$obj_lune(n1)" -fg $color(red)
+         $obj_lune(onglet3).frame7.labURL5 configure -text "$obj_lune(n1)" -fg $color(red)
          set obj_lune(n_carte_choisie) $obj_lune(n1)
       }
    }
@@ -2123,14 +2090,12 @@ namespace eval obj_lune {
    # Affichage du polygone de la carte de librations du site choisi et de son numero
    #
    proc AfficheRepereSite_lib { } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       #--- Affichage du numero de la carte de librations choisie
       catch {
          if { $obj_lune(n_carte_lib) != "-" } {
-            $frmm(Obj_Lune4).frame7.labURL5 configure -text "$obj_lune(n_carte_choisie_lib)" -fg $color(red)
+            $obj_lune(onglet4).frame7.labURL5 configure -text "$obj_lune(n_carte_choisie_lib)" -fg $color(red)
          }
       }
 
@@ -2165,9 +2130,7 @@ namespace eval obj_lune {
    # Affichage du polygone de la carte de librations choisie et de son numero
    #
    proc AfficheRepereSite_lib_Bind { } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       catch {
          for {set i 1} {$i <= $obj_lune(nbre_carte_lib) } {incr i} {
@@ -2193,7 +2156,7 @@ namespace eval obj_lune {
             }
          }
          ::obj_lune::ConversionNumeroCarte_lib1_Bind
-         $frmm(Obj_Lune4).frame7.labURL5 configure -text "$obj_lune(lib_n1)" -fg $color(red)
+         $obj_lune(onglet4).frame7.labURL5 configure -text "$obj_lune(lib_n1)" -fg $color(red)
          set obj_lune(n_carte_choisie_lib) $obj_lune(lib_n1)
          ::obj_lune::ConversionNumeroCarte_lib1
       }
@@ -2204,17 +2167,17 @@ namespace eval obj_lune {
    # Efface les cadres bleus et/ou rouges de la precedente selection de tous les onglets
    #
    proc EffaceRectangleBleu_Rouge { } {
-      global frmm
+      global obj_lune
 
       #--- Efface les rectangles des precedentes cartes selectionnees
-      $frmm(Obj_Lune3).frame4.image_cartes_lune delete cadres
-      $frmm(Obj_Lune4).frame4.image4a delete cadres
+      $obj_lune(onglet3).frame4.image_cartes_lune delete cadres
+      $obj_lune(onglet4).frame4.image4a delete cadres
 
       #--- Efface les numeros des cartes choisies et de la carte courante
-      $frmm(Obj_Lune3).frame7.labURL5 configure -text "-"
-      $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
-      $frmm(Obj_Lune4).frame7.labURL5 configure -text "-"
-      $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet3).frame7.labURL5 configure -text "-"
+      $obj_lune(onglet3).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet4).frame7.labURL5 configure -text "-"
+      $obj_lune(onglet4).frame8.labURL7 configure -text "-"
    }
 
    #
@@ -2222,14 +2185,14 @@ namespace eval obj_lune {
    # Efface les cadres bleus et/ou rouges de la precedente selection de l'onglet cartographie
    #
    proc EffaceRectangleBleu_Rouge_Carto { } {
-      global frmm
+      global obj_lune
 
       #--- Efface les rectangles des precedentes cartes selectionnees
-      $frmm(Obj_Lune3).frame4.image_cartes_lune delete cadres
+      $obj_lune(onglet3).frame4.image_cartes_lune delete cadres
 
       #--- Efface les numeros des cartes choisies et de la carte courante
-      $frmm(Obj_Lune3).frame7.labURL5 configure -text "-"
-      $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet3).frame7.labURL5 configure -text "-"
+      $obj_lune(onglet3).frame8.labURL7 configure -text "-"
    }
 
    #
@@ -2237,14 +2200,14 @@ namespace eval obj_lune {
    # Efface les cadres bleus et/ou rouges de la precedente selection de l'onglet carte de librations
    #
    proc EffaceRectangleBleu_Rouge_Lib { } {
-      global frmm
+      global obj_lune
 
       #--- Efface les rectangles des precedentes cartes selectionnees
-      $frmm(Obj_Lune4).frame4.image4a delete cadres
+      $obj_lune(onglet4).frame4.image4a delete cadres
 
       #--- Efface les numeros des cartes choisies et de la carte courante
-      $frmm(Obj_Lune4).frame7.labURL5 configure -text "-"
-      $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet4).frame7.labURL5 configure -text "-"
+      $obj_lune(onglet4).frame8.labURL7 configure -text "-"
    }
 
    #
@@ -2252,9 +2215,7 @@ namespace eval obj_lune {
    # Encadre la carte choisie d'un rectangle
    #
    proc DessineRectangle { rect couleur } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       #--- Recupere les coordonnees
       set x1 [lindex $rect 0]
@@ -2264,10 +2225,10 @@ namespace eval obj_lune {
 
       if { $couleur == "$color(red)" } {
          #--- Efface les rectangles des precedentes cartes selectionnees
-         $frmm(Obj_Lune3).frame4.image_cartes_lune delete cadres
+         $obj_lune(onglet3).frame4.image_cartes_lune delete cadres
       }
       #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-      $frmm(Obj_Lune3).frame4.image_cartes_lune create rectangle [expr $x1] [expr $y1] \
+      $obj_lune(onglet3).frame4.image_cartes_lune create rectangle [expr $x1] [expr $y1] \
             [expr $x2] [expr $y2] -outline $couleur -tags cadres -width 2.0
    }
 
@@ -2277,7 +2238,6 @@ namespace eval obj_lune {
    #
    proc DessineRectangle_Bind { rect couleur } {
       global obj_lune
-      global frmm
 
       #--- Recupere les coordonnees
       set x1 [lindex $rect 0]
@@ -2286,7 +2246,7 @@ namespace eval obj_lune {
       set y2 [lindex $rect 3]
 
       #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-      $frmm(Obj_Lune3).frame4.image_cartes_lune create rectangle [expr $x1] [expr $y1] \
+      $obj_lune(onglet3).frame4.image_cartes_lune create rectangle [expr $x1] [expr $y1] \
             [expr $x2] [expr $y2] -outline $couleur -tags cadres -width 2.0
    }
 
@@ -2295,9 +2255,7 @@ namespace eval obj_lune {
    # Encadre la carte choisie d'un polygone
    #
    proc DessinePolygone { rect_lib couleur_lib } {
-      global obj_lune
-      global color
-      global frmm
+      global color obj_lune
 
       #--- Recupere les coordonnees
       set x1 [lindex $rect_lib 0]
@@ -2317,16 +2275,16 @@ namespace eval obj_lune {
 
       if { $couleur_lib == "$color(red)" } {
          #--- Efface les polygones des precedentes cartes selectionnees
-         $frmm(Obj_Lune4).frame4.image4a delete cadres
+         $obj_lune(onglet4).frame4.image4a delete cadres
       }
       #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
    }
 
    #
@@ -2335,7 +2293,6 @@ namespace eval obj_lune {
    #
    proc DessinePolygone_Bind { rect_lib couleur_lib } {
       global obj_lune
-      global frmm
 
       #--- Recupere les coordonnees
       set x1 [lindex $rect_lib 0]
@@ -2354,13 +2311,13 @@ namespace eval obj_lune {
       set y7 [lindex $rect_lib 13]
 
       #--- Creation du cadre, le tag "cadres" permettra par la suite de l'effacer facilement
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
-      $frmm(Obj_Lune4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x1] [expr $y1] [expr $x2] [expr $y2] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x2] [expr $y2] [expr $x3] [expr $y3] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x3] [expr $y3] [expr $x4] [expr $y4] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x4] [expr $y4] [expr $x5] [expr $y5] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x5] [expr $y5] [expr $x6] [expr $y6] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x6] [expr $y6] [expr $x7] [expr $y7] -fill $couleur_lib -tags cadres -width 2.0
+      $obj_lune(onglet4).frame4.image4a create line [expr $x7] [expr $y7] [expr $x1] [expr $y1] -fill $couleur_lib -tags cadres -width 2.0
    }
 
    #
@@ -2446,8 +2403,7 @@ namespace eval obj_lune {
    # Traitement de l'affichage des cartes de librations avec les cartes normales
    #
    proc Trait_Carte_lib_et_autres { } {
-      global obj_lune
-      global thissite_lune
+      global obj_lune thissite_lune
 
       if { ([string range $thissite_lune 90 93] != "    ") & ([string range $thissite_lune 94 97] != "    ") } {
          set obj_lune(nbre_carte_lib) "2"

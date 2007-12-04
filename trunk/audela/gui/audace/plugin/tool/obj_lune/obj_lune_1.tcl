@@ -2,7 +2,7 @@
 # Fichier : obj_lune_1.tcl
 # Description : Programme de calcul (ephemerides, etc.)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_1.tcl,v 1.5 2007-09-01 12:24:38 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_1.tcl,v 1.6 2007-12-04 18:53:35 robertdelmas Exp $
 #
 
 namespace eval obj_lune {
@@ -12,10 +12,7 @@ namespace eval obj_lune {
    # Calcule les ephemerides de la Lune toutes les secondes
    #
    proc Lune_Ephemerides { } {
-      global audace
-      global obj_lune
-      global caption
-      global frmm
+      global audace caption obj_lune
 
       if { $obj_lune(espion) != "1" } {
          #--- Preparation de l'heure TU pour le calcul des ephemerides
@@ -50,10 +47,10 @@ namespace eval obj_lune {
          set obj_lune(ad_site) [mc_angle2hms [lindex $res 0] 360 zero 2 auto string]
          set obj_lune(dec_site) [mc_angle2dms [lindex $res 1] 90 zero 2 + string]
          #--- Verifie l'existance du widget
-         if { [ winfo exists $frmm(Obj_Lune1) ] } {
+         if { [ winfo exists $obj_lune(onglet1) ] } {
             if { [ info exists obj_lune(long_selene) ] } {
-               $frmm(Obj_Lune1).frame17.lab6a configure -text "$obj_lune(ad_site)"
-               $frmm(Obj_Lune1).frame18.lab7a configure -text "$obj_lune(dec_site)"
+               $obj_lune(onglet1).frame17.lab6a configure -text "$obj_lune(ad_site)"
+               $obj_lune(onglet1).frame18.lab7a configure -text "$obj_lune(dec_site)"
             }
          }
          #--- Affichage de la hauteur et de l'azimut
@@ -222,11 +219,7 @@ namespace eval obj_lune {
    # Calcule la date du meilleur moment d'une lunaison pour observer un site
    #
    proc Meilleures_Dates { } {
-      global audace
-      global caption
-      global obj_lune
-      global color
-      global frmm
+      global audace caption color obj_lune
 
       #--- Recherche de la premiere meilleure date
       #--- Preparation de l'heure TU pour le calcul des ephemerides
@@ -358,79 +351,79 @@ namespace eval obj_lune {
       ::obj_lune::Lune_Dessine_Phase_Meilleure_Date $fraction_illu_180 $age_lune_now_180 $color(blue)
       #--- Affichage des dates d'observation, des longitudes des terminateurs, des librations et des fractions illuminees de la Lune
       if { $now_0 < $now_180 } {
-         $frmm(Obj_Lune5).frame8.labURL4a configure -text "$now_0_1" -fg $color(red)
-         $frmm(Obj_Lune5).frame9.labURL5a configure -text "$now_0_2" -fg $color(red)
+         $obj_lune(onglet5).frame8.labURL4a configure -text "$now_0_1" -fg $color(red)
+         $obj_lune(onglet5).frame9.labURL5a configure -text "$now_0_2" -fg $color(red)
          if { $long_term_meilleure_date_0 < "0.0" } {
-            $frmm(Obj_Lune5).frame10.labURL6a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
+            $obj_lune(onglet5).frame10.labURL6a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
          } else {
-            $frmm(Obj_Lune5).frame10.labURL6a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
+            $obj_lune(onglet5).frame10.labURL6a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
          }
          if { $obj_lune(Lib_lat_0) < "0.0" } {
-           $frmm(Obj_Lune5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(red)
+           $obj_lune(onglet5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(red)
          } else {
-           $frmm(Obj_Lune5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(red)
+           $obj_lune(onglet5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(red)
          }
          if { $obj_lune(Lib_long_0) < "0.0" } {
-            $frmm(Obj_Lune5).frame12.labURL8a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
+            $obj_lune(onglet5).frame12.labURL8a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
          } else {
-            $frmm(Obj_Lune5).frame12.labURL8a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
+            $obj_lune(onglet5).frame12.labURL8a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
          }
-         $frmm(Obj_Lune5).frame13.labURL9a configure -text "[format "%3d" $obj_lune(fraction_illu_%_0)]$caption(obj_lune1,pourcentage)" -fg $color(red)
-         $frmm(Obj_Lune5).frame15.labURL11a configure -text "$now_180_1" -fg $color(blue)
-         $frmm(Obj_Lune5).frame16.labURL12a configure -text "$now_180_2" -fg $color(blue)
+         $obj_lune(onglet5).frame13.labURL9a configure -text "[format "%3d" $obj_lune(fraction_illu_%_0)]$caption(obj_lune1,pourcentage)" -fg $color(red)
+         $obj_lune(onglet5).frame15.labURL11a configure -text "$now_180_1" -fg $color(blue)
+         $obj_lune(onglet5).frame16.labURL12a configure -text "$now_180_2" -fg $color(blue)
          if { $long_term_meilleure_date_180 < "0.0" } {
-            $frmm(Obj_Lune5).frame17.labURL13a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
+            $obj_lune(onglet5).frame17.labURL13a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
          } else {
-            $frmm(Obj_Lune5).frame17.labURL13a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
+            $obj_lune(onglet5).frame17.labURL13a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
          }
          if { $obj_lune(Lib_lat_180) < "0.0" } {
-           $frmm(Obj_Lune5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(blue)
+           $obj_lune(onglet5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(blue)
          } else {
-           $frmm(Obj_Lune5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(blue)
+           $obj_lune(onglet5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(blue)
          }
          if { $obj_lune(Lib_long_180) < "0.0" } {
-            $frmm(Obj_Lune5).frame19.labURL15a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
+            $obj_lune(onglet5).frame19.labURL15a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
          } else {
-            $frmm(Obj_Lune5).frame19.labURL15a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
+            $obj_lune(onglet5).frame19.labURL15a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
          }
-         $frmm(Obj_Lune5).frame20.labURL16a configure -text "[format "%3d" $obj_lune(fraction_illu_%_180)]$caption(obj_lune1,pourcentage)" -fg $color(blue)
+         $obj_lune(onglet5).frame20.labURL16a configure -text "[format "%3d" $obj_lune(fraction_illu_%_180)]$caption(obj_lune1,pourcentage)" -fg $color(blue)
       } else {
-         $frmm(Obj_Lune5).frame8.labURL4a configure -text "$now_180_1" -fg $color(blue)
-         $frmm(Obj_Lune5).frame9.labURL5a configure -text "$now_180_2" -fg $color(blue)
+         $obj_lune(onglet5).frame8.labURL4a configure -text "$now_180_1" -fg $color(blue)
+         $obj_lune(onglet5).frame9.labURL5a configure -text "$now_180_2" -fg $color(blue)
          if { $long_term_meilleure_date_180 < "0.0" } {
-            $frmm(Obj_Lune5).frame10.labURL6a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
+            $obj_lune(onglet5).frame10.labURL6a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
          } else {
-            $frmm(Obj_Lune5).frame10.labURL6a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
+            $obj_lune(onglet5).frame10.labURL6a configure -text "$long_term_meilleure_date_180$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
          }
          if { $obj_lune(Lib_lat_180) < "0.0" } {
-           $frmm(Obj_Lune5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(blue)
+           $obj_lune(onglet5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(blue)
          } else {
-           $frmm(Obj_Lune5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(blue)
+           $obj_lune(onglet5).frame11.labURL7a configure -text "$obj_lune(Lib_lat_180)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(blue)
          }
          if { $obj_lune(Lib_long_180) < "0.0" } {
-            $frmm(Obj_Lune5).frame12.labURL8a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
+            $obj_lune(onglet5).frame12.labURL8a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(blue)
          } else {
-            $frmm(Obj_Lune5).frame12.labURL8a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
+            $obj_lune(onglet5).frame12.labURL8a configure -text "$obj_lune(Lib_long_180)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(blue)
          }
-         $frmm(Obj_Lune5).frame13.labURL9a configure -text "[format "%3d" $obj_lune(fraction_illu_%_180)]$caption(obj_lune1,pourcentage)" -fg $color(blue)
-         $frmm(Obj_Lune5).frame15.labURL11a configure -text "$now_0_1" -fg $color(red)
-         $frmm(Obj_Lune5).frame16.labURL12a configure -text "$now_0_2" -fg $color(red)
+         $obj_lune(onglet5).frame13.labURL9a configure -text "[format "%3d" $obj_lune(fraction_illu_%_180)]$caption(obj_lune1,pourcentage)" -fg $color(blue)
+         $obj_lune(onglet5).frame15.labURL11a configure -text "$now_0_1" -fg $color(red)
+         $obj_lune(onglet5).frame16.labURL12a configure -text "$now_0_2" -fg $color(red)
          if { $long_term_meilleure_date_0 < "0.0" } {
-            $frmm(Obj_Lune5).frame17.labURL13a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
+            $obj_lune(onglet5).frame17.labURL13a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
          } else {
-            $frmm(Obj_Lune5).frame17.labURL13a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
+            $obj_lune(onglet5).frame17.labURL13a configure -text "$long_term_meilleure_date_0$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
          }
          if { $obj_lune(Lib_lat_0) < "0.0" } {
-           $frmm(Obj_Lune5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(red)
+           $obj_lune(onglet5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,sud))" -fg $color(red)
          } else {
-           $frmm(Obj_Lune5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(red)
+           $obj_lune(onglet5).frame18.labURL14a configure -text "$obj_lune(Lib_lat_0)$caption(obj_lune1,degre) ($caption(obj_lune1,nord))" -fg $color(red)
          }
          if { $obj_lune(Lib_long_0) < "0.0" } {
-            $frmm(Obj_Lune5).frame19.labURL15a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
+            $obj_lune(onglet5).frame19.labURL15a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,ouest))" -fg $color(red)
          } else {
-            $frmm(Obj_Lune5).frame19.labURL15a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
+            $obj_lune(onglet5).frame19.labURL15a configure -text "$obj_lune(Lib_long_0)$caption(obj_lune1,degre) ($caption(obj_lune1,est))" -fg $color(red)
          }
-         $frmm(Obj_Lune5).frame20.labURL16a configure -text "[format "%3d" $obj_lune(fraction_illu_%_0)]$caption(obj_lune1,pourcentage)" -fg $color(red)
+         $obj_lune(onglet5).frame20.labURL16a configure -text "[format "%3d" $obj_lune(fraction_illu_%_0)]$caption(obj_lune1,pourcentage)" -fg $color(red)
       }
    }
 
@@ -494,5 +487,6 @@ namespace eval obj_lune {
       set obj_lune(age_lune) [expr 29.53058868*$age_lune/360.0]
       return $obj_lune(age_lune)
    }
+
 }
 
