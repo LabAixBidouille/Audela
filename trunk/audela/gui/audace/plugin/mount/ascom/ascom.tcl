@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.3 2007-09-22 06:43:05 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.4 2007-12-04 20:33:32 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -15,7 +15,7 @@ namespace eval ::ascom {
 
 #
 # ::ascom::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::ascom::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::ascom::getPluginTitle { } {
 
 #
 #  ::ascom::getPluginHelp
-#     Retourne la documentation du driver
+#     Retourne la documentation du plugin
 #
 proc ::ascom::getPluginHelp { } {
    return "ascom.htm"
@@ -33,7 +33,7 @@ proc ::ascom::getPluginHelp { } {
 
 #
 # ::ascom::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::ascom::getPluginType { } {
    return "mount"
@@ -54,7 +54,7 @@ proc ::ascom::getPluginOS { } {
 proc ::ascom::initPlugin { } {
    global conf confTel
 
-   #--- Drivers ASCOM installes sur le PC
+   #--- Plugins ASCOM installes sur le PC
    set confTel(ascom_drivers) ""
    if { [ lindex $::tcl_platform(os) 0 ] == "Windows" } {
       set erreur [ catch { ::registry keys "HKEY_LOCAL_MACHINE\\SOFTWARE\\ASCOM\\Telescope Drivers" } msg ]

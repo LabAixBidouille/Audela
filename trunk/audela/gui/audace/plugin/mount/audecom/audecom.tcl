@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.9 2007-09-22 06:43:23 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.10 2007-12-04 20:34:20 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -15,7 +15,7 @@ namespace eval ::audecom {
 
 #
 # ::audecom::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::audecom::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::audecom::getPluginTitle { } {
 
 #
 #  ::audecom::getPluginHelp
-#     Retourne la documentation du driver
+#     Retourne la documentation du plugin
 #
 proc ::audecom::getPluginHelp { } {
    return "audecom.htm"
@@ -33,7 +33,7 @@ proc ::audecom::getPluginHelp { } {
 
 #
 # ::audecom::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::audecom::getPluginType { } {
    return "mount"

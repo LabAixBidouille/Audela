@@ -1,10 +1,10 @@
 #
 # Fichier : carteducielv2.tcl
-# Description : Driver de communication avec "Cartes du Ciel" (communication DDE)
+# Description : Plugin de communication avec "Cartes du Ciel" (communication DDE)
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.17 2007-09-20 19:05:47 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.18 2007-12-04 20:43:41 robertdelmas Exp $
 #
 
 namespace eval carteducielv2 {
@@ -41,7 +41,7 @@ proc ::carteducielv2::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 #  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
+#     retourne le label du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::carteducielv2::getPluginTitle { } {
    global caption
@@ -51,9 +51,9 @@ proc ::carteducielv2::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::carteducielv2::getPluginHelp { } {
    return "carteducielv2.htm"
@@ -177,7 +177,7 @@ proc ::carteducielv2::widgetToConf { } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return rien
 #------------------------------------------------------------
@@ -291,7 +291,7 @@ proc ::carteducielv2::deletePluginInstance { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
@@ -318,7 +318,7 @@ proc ::carteducielv2::isReady { } {
 }
 
 #==============================================================
-# Fonctions specifiques du driver de la categorie "catalog"
+# Fonctions specifiques du plugin de la categorie "catalog"
 #==============================================================
 
 #------------------------------------------------------------
