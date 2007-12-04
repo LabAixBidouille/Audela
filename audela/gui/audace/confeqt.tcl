@@ -2,14 +2,14 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.28 2007-11-08 21:40:02 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.29 2007-12-04 22:48:44 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
 }
 
 #------------------------------------------------------------
-# ::confEqt::init ( est lance automatiquement au chargement de ce fichier tcl)
+# ::confEqt::init (est lance automatiquement au chargement de ce fichier tcl)
 # initialise les variable conf(..) et caption(..)
 # demarrer le plugin selectionne par defaut
 #------------------------------------------------------------
@@ -21,8 +21,7 @@ proc ::confEqt::init { } {
    source [ file join "$audace(rep_caption)" confeqt.cap ]
 
    #--- cree les variables dans conf(..) si elles n'existent pas
-   if { ! [ info exists conf(confEqt,start) ] }    { set conf(confEqt,start)    "0" }
-   if { ! [ info exists conf(confEqt,geometry) ] } { set conf(confEqt,geometry) "460x405+155+100" }
+   if { ! [ info exists conf(confEqt,geometry) ] } { set conf(confEqt,geometry) "460x405+140+60" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -59,27 +58,21 @@ proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { co
    global caption
 
    #--- je memorise le nom de la variable contenant le nom du plugin selectionne
-   #--- la procedure apply copira le nom du plugin selectionne dans cette variable
+   #--- la procedure appliquer copira le nom du plugin selectionne dans cette variable
    set private(variablePluginName) $variablePluginName
-
-   if { $::confEqt::private(variablePluginName) != "" } {
-      set selectedPluginName [set $::confEqt::private(variablePluginName)]
-   } else {
-      set selectedPluginName ""
-   }
 
    set private(notebookLabelList) [list ]
    set private(notebookNameList)  [list ]
 
    #--- Si authorizedPluginType est vide tous les onglets sont affiches
    if { $authorizedPluginType == "" } {
-      #--- les plugin  de tous les types sont autorises
+      #--- les plugins de tous les types sont autorises
       set private(notebookNameList) $private(pluginNamespaceList)
       foreach pluginName $private(notebookNameList) {
          lappend private(notebookLabelList) [::$pluginName\::getPluginTitle]
       }
    } else {
-      #--- je cree la liste des plugin dont le type est autorise
+      #--- je cree la liste des plugins dont le type est autorise
       foreach pluginName $private(pluginNamespaceList) {
          if { [lsearch -exact $authorizedPluginType [::$pluginName\::getPluginType]] != -1 } {
             lappend private(notebookNameList)  $pluginName
@@ -89,17 +82,24 @@ proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { co
    }
 
    #--- je verifie si le plugin existe dans la liste des onglets
-   if { [llength $private(notebookNameList) ] > 0 } {
+   if { [ llength $private(notebookNameList) ] > 0 } {
       ::confEqt::createDialog
+      if { $::confEqt::private(variablePluginName) != "" } {
+         set selectedPluginName [ set $::confEqt::private(variablePluginName) ]
+      } else {
+         set selectedPluginName ""
+      }
       if { $selectedPluginName != "" } {
          #--- je verifie que la valeur par defaut existe dans la liste
-         if { [lsearch -exact $private(notebookNameList) $selectedPluginName ] == -1 } {
+         if { [ lsearch -exact $private(notebookNameList) $selectedPluginName ] == -1 } {
             #--- si la valeur n'existe pas dans la liste,
             #--- je la remplace par le premier item de la liste
-            set selectedPluginName [lindex $private(notebookNameList) 0]
+            set selectedPluginName [ lindex $private(notebookNameList) 0 ]
          }
-         select $selectedPluginName
+      } else {
+         set selectedPluginName [ lindex $private(notebookNameList) 0 ]
       }
+      selectNotebook $selectedPluginName
    } else {
       tk_messageBox -title "$caption(confeqt,config)" -message "$caption(confeqt,pas_equipement)" -icon error
    }
@@ -133,9 +133,8 @@ proc ::confEqt::appliquer { } {
    $private(frm).cmd.appliquer configure -relief groove -state disabled
    $private(frm).cmd.fermer configure -state disabled
 
-   #--- je recupere le nom du plugin selectionné
-   set index [expr [Rnotebook:currentIndex $private(frm).usr.book ] -1]
-   set selectedPluginName  [lindex $private(notebookNameList) $index]
+   #--- je recupere le nom du plugin selectionne
+   set selectedPluginName [ $private(frm).usr.onglet raise ]
 
    #--- Affichage d'un message d'alerte si necessaire
    ::confEqt::connectEquipement
@@ -144,7 +143,7 @@ proc ::confEqt::appliquer { } {
    ::confEqt::configurePlugin $selectedPluginName
 
    #--- je cree le plugin selectionne
-   createPlugin $selectedPluginName
+   ::confEqt::createPlugin $selectedPluginName
 
    #--- je copie le nom dans la variable de sortie
    if { $private(variablePluginName) != "" } {
@@ -168,17 +167,10 @@ proc ::confEqt::appliquer { } {
 proc ::confEqt::afficheAide { } {
    variable private
 
-   #--- je recupere le label de l'onglet selectionne
-   set private(conf_confEqt) [Rnotebook:currentName $private(frm).usr.book ]
-
-   #--- je recupere le nom du plugin selectionne
-   set index [Rnotebook:currentIndex $private(frm).usr.book ]
-   set index [ expr $index - 1 ]
-   set selectedPluginName [lindex $private(notebookNameList) $index]
-
    #--- j'affiche la documentation
-   set pluginHelp [ $selectedPluginName\::getPluginHelp ]
+   set selectedPluginName  [ $private(frm).usr.onglet raise ]
    set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+   set pluginHelp          [ $selectedPluginName\::getPluginHelp ]
    ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 }
 
@@ -245,7 +237,8 @@ proc ::confEqt::createDialog { } {
    variable private
    global caption conf
 
-   if { [winfo exists $private(frm)] } {
+   #---
+   if { [ winfo exists $private(frm) ] } {
       wm withdraw $private(frm)
       wm deiconify $private(frm)
       focus $private(frm)
@@ -267,19 +260,14 @@ proc ::confEqt::createDialog { } {
    frame $private(frm).usr -borderwidth 0 -relief raised
 
       #--- Creation de la fenetre a onglets
-      set mainFrame $private(frm).usr.book
-
-         #--- J'affiche les onglets dans la fenetre
-         Rnotebook:create $mainFrame -tabs "$private(notebookLabelList)" -borderwidth 1
-
-         #--- Je demande a chaque plugin d'afficher sa page de config
-         set indexOnglet 1
-         foreach name $private(notebookNameList) {
-            set pluginname [ $name\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ] ]
-            incr indexOnglet
-         }
-
-      pack $mainFrame -fill both -expand 1
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      for { set i 0 } { $i < [ llength $private(notebookLabelList) ] } { incr i } {
+         set namespace [ lindex $private(pluginNamespaceList) $i ]
+         set title     [ lindex $private(pluginLabelList) $i ]
+         set frm       [ $notebook insert end $namespace -text "$title    " -raisecmd "::confEqt::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
 
    pack $private(frm).usr -side top -fill both -expand 1
 
@@ -318,18 +306,32 @@ proc ::confEqt::createDialog { } {
    return 0
 }
 
-#------------------------------------------------------------
-# ::confEqt::select [label]
-# Selectionne un onglet en passant le label de l'onglet decrit dans la fenetre de configuration
-# Si le label est omis ou inconnu, le premier onglet est selectionne
-#------------------------------------------------------------
-proc ::confEqt::select { { equipment "" } } {
+#----------------------------------------------------------------------------
+# ::confEqt::selectNotebook
+# Selectionne un onglet
+#----------------------------------------------------------------------------
+proc ::confEqt::selectNotebook { { equipment "" } } {
    variable private
 
-   #--- je selectionne l'onglet qui contient le label de l'equipement
    if { $equipment != "" } {
-      Rnotebook:select $private(frm).usr.book [::$equipment\::getPluginTitle]
+      set frm [ $private(frm).usr.onglet getframe $equipment ]
+      $private(frm).usr.onglet raise $equipment
+   } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
+      $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
    }
+}
+
+#----------------------------------------------------------------------------
+# ::confEqt::onRaiseNotebook
+# Affiche en gras le nom de l'onglet
+#----------------------------------------------------------------------------
+proc ::confEqt::onRaiseNotebook { equipmentName } {
+   variable private
+
+   set font [$private(frm).usr.onglet.c itemcget "$equipmentName:text" -font]
+   lappend font "bold"
+   #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+   after 200 $private(frm).usr.onglet.c itemconfigure "$equipmentName:text" -font [list $font]
 }
 
 #------------------------------------------------------------
@@ -386,18 +388,16 @@ proc ::confEqt::findPlugin { } {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
             if { $pluginInfo(type) == "equipment" || $pluginInfo(type) == "focuser" || $pluginInfo(type) == "spectroscope" } {
-               foreach os $pluginInfo(os) {
-                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
-                     #--- je charge le package
-                     package require $pluginInfo(name)
-                     #--- j'initalise le plugin
-                     $pluginInfo(namespace)::initPlugin
-                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-                     #--- je l'ajoute dans la liste des plugins
-                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-                     lappend private(pluginLabelList) $pluginlabel
-                     ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
-                  }
+               if { [ lsearch $pluginInfo(os) [ lindex $::tcl_platform(os) 0 ] ] != "-1" } {
+                  #--- je charge le package
+                  package require $pluginInfo(name)
+                  #--- j'initalise le plugin
+                  $pluginInfo(namespace)::initPlugin
+                  set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                  #--- je l'ajoute dans la liste des plugins
+                  lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                  lappend private(pluginLabelList) $pluginlabel
+                  ::console::affiche_prompt "#$caption(confeqt,equipement) $pluginlabel v$pluginInfo(version)\n"
                }
             }
          } else {
@@ -410,7 +410,7 @@ proc ::confEqt::findPlugin { } {
       }
    }
 
-   #--- je trie les plugins par ordre alphabétique des libelles
+   #--- je trie les plugins par ordre alphabetique des libelles
    set pluginList ""
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
@@ -576,10 +576,10 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::startDriver
+# ::confEqt::startPlugin
 # lance tous les plugins
 #------------------------------------------------------------
-proc ::confEqt::startDriver { } {
+proc ::confEqt::startPlugin { } {
    variable private
    global audace
 
@@ -603,10 +603,10 @@ proc ::confEqt::startDriver { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::stopDriver
+# ::confEqt::stopPlugin
 # arrete tous les plugins qui sont en service
 #------------------------------------------------------------
-proc ::confEqt::stopDriver { } {
+proc ::confEqt::stopPlugin { } {
    variable private
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)

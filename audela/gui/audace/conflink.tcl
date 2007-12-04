@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.26 2007-11-08 21:40:17 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.27 2007-12-04 22:48:23 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -36,7 +36,7 @@ proc ::confLink::init { } {
 
    #--- configure le plugin selectionne par defaut
    #if { $conf(confLink,start) == "1" } {
-   #   configureDriver
+   #   configurePlugin
    #}
 }
 
@@ -47,15 +47,11 @@ proc ::confLink::init { } {
 proc ::confLink::afficheAide { } {
    variable private
 
-   #--- je recupere l'index de l'onglet selectionne
-   set index [Rnotebook:currentIndex $private(frm).usr.book ]
-   if { $index != -1 } {
-      set selectedPluginName [lindex $private(pluginNamespaceList) [expr $index -1]]
-      #--- j'affiche la documentation
-      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
-      set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
-      ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
-   }
+   #--- j'affiche la documentation
+   set selectedPluginName  [ $private(frm).usr.onglet raise ]
+   set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+   set pluginHelp          [ $selectedPluginName\::getPluginHelp ]
+   ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 }
 
 #------------------------------------------------------------
@@ -66,45 +62,36 @@ proc ::confLink::afficheAide { } {
 proc ::confLink::appliquer { } {
    variable private
    global audace
-   global caption
-   global conf
 
    $private(frm).cmd.ok configure -state disabled
    $private(frm).cmd.appliquer configure -relief groove -state disabled
    $private(frm).cmd.fermer configure -state disabled
 
-   #--- je recupere le label de l'onglet choisi
-   set namespaceLabel "[Rnotebook:currentName $private(frm).usr.book ]"
-   #--- je recherche le namespace ayant ce label
-   foreach namespace $private(pluginNamespaceList) {
-      if { [$namespace\:\:getPluginTitle] == $namespaceLabel } {
-         set linkNamespace $namespace
-         break
-      }
-   }
+   #--- je recupere le nom du plugin selectionne
+   set linkNamespace [ $private(frm).usr.onglet raise ]
+
+   #--- Affichage d'un message d'alerte si necessaire
+  ### ::confLink::displayConnectMessage
 
    #--- je recupere le link choisi
    set private(linkLabel) [$linkNamespace\:\:getSelectedLinkLabel]
    set $private(variableLinkLabel) $private(linkLabel)
 
    #--- j'arrete la liaison precedente
-   #stopDriver
+  ### stopPlugin
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
    foreach name $private(pluginNamespaceList) {
       set drivername [ $name\:\:widgetToConf ]
    }
 
-   #--- Affichage d'un message d'alerte si necessaire
-   #::confLink::displayConnectMessage
-
    #--- je demarre le plugin selectionne
-   configureDriver
+   configurePlugin
 
    #--- Effacement du message d'alerte s'il existe
-   #if [ winfo exists $audace(base).connectLiaison ] {
-   #   destroy $audace(base).connectLiaison
-   #}
+  ### if [ winfo exists $audace(base).connectLiaison ] {
+  ###    destroy $audace(base).connectLiaison
+  ### }
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -178,8 +165,7 @@ proc ::confLink::recup_position { } {
 #------------------------------------------------------------
 proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    variable private
-   global conf
-   global caption
+   global caption conf
 
    if { [winfo exists $private(frm)] } {
       destroy $private(frm)
@@ -191,7 +177,6 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
          -message "$caption(conflink,pas_liaison)" -icon error
       return 1
    }
-
 
    #---
    set private(position) $conf(confLink,position)
@@ -205,43 +190,39 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 
    toplevel $private(frm)
    if { $::tcl_platform(os) == "Linux" } {
-      wm geometry $private(frm) 620x370$private(position)
-      wm minsize $private(frm) 620 370
+      wm geometry $private(frm) 620x420$private(position)
+      wm minsize $private(frm) 620 420
    } else {
-      wm geometry $private(frm) 580x370$private(position)
-      wm minsize $private(frm) 580 370
+      wm geometry $private(frm) 580x420$private(position)
+      wm minsize $private(frm) 580 420
    }
-   wm resizable $private(frm) 1 0
+   wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(conflink,config) $configurationTitle"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confLink::fermer"
 
+   #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
 
-   #--- creation de la fenetre a onglets
-   set mainFrame $private(frm).usr.book
+      if { $authorizedNamespaces == "" } {
+         set authorizedNamespaces $private(pluginNamespaceList)
+      }
 
-   if { $authorizedNamespaces == "" } {
-      set  authorizedNamespaces $private(pluginNamespaceList)
-   }
+      set linkTypes [list]
+      foreach linkNamespace $authorizedNamespaces {
+         lappend linkTypes [getNamespaceLabel $linkNamespace]
+      }
 
-   set linkTypes [list]
-   foreach linkNamespace $authorizedNamespaces {
-      lappend linkTypes [getNamespaceLabel $linkNamespace]
-   }
+      #--- Creation de la fenetre a onglets
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      for { set i 0 } { $i < [ llength $private(pluginLabelList) ] } { incr i } {
+         set namespace [ lindex $private(pluginNamespaceList) $i ]
+         set title     [ lindex $private(pluginLabelList) $i ]
+         set frm       [ $notebook insert end $namespace -text "$title    " -raisecmd "::confLink::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
 
-   #--- j'affiche les onglets dans la fenetre
-   Rnotebook:create $mainFrame -tabs "$linkTypes" -borderwidth 1
-
-   #--- je demande a chaque plugin d'afficher sa page de config
-   set indexOnglet 1
-   foreach linkNamespace $authorizedNamespaces {
-      #--- j'affiche l'onglet
-      $linkNamespace\:\:fillConfigPage [ Rnotebook:frame $mainFrame $indexOnglet ]
-      incr indexOnglet
-   }
-
-   pack $mainFrame -fill both -expand 1
    pack $private(frm).usr -side top -fill both -expand 1
 
    #--- frame checkbutton creer au demarrage
@@ -326,29 +307,38 @@ proc ::confLink::delete { linkLabel deviceId usage } {
 }
 
 #------------------------------------------------------------
-# ::confLink::select [label]
-#    Selectionne un onglet correspondant au namespace donne en parametre
-#    Si linkNamespace est omis ou inconnu, le premier onglet est selectionne
+# ::confLink::selectNotebook
+#    Selectionne un onglet
 #------------------------------------------------------------
-proc ::confLink::select { { linkNamespace "" } } {
+proc ::confLink::selectNotebook { { linkNamespace "" } } {
    variable private
 
    if { $linkNamespace != "" } {
-      #--- je recupere le label correspondant au namespace
-      set namespaceLabel [getNamespaceLabel $linkNamespace]
-      #--- je recupere l'index correspondant à l'onglet
-      set index [ lsearch -exact $private(pluginLabelList) "$namespaceLabel" ]
-      if { $index != -1 } {
-         Rnotebook:select $private(frm).usr.book [ lindex $private(pluginLabelList) $index ]
-      }
+      set frm [ $private(frm).usr.onglet getframe $linkNamespace ]
+      $private(frm).usr.onglet raise $linkNamespace
+   } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
+      $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
    }
 }
 
+#----------------------------------------------------------------------------
+# ::confLink::onRaiseNotebook
+#    Affiche en gras le nom de l'onglet
+#----------------------------------------------------------------------------
+proc ::confLink::onRaiseNotebook { linkName } {
+   variable private
+
+   set font [$private(frm).usr.onglet.c itemcget "$linkName:text" -font]
+   lappend font "bold"
+   #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+   after 200 $private(frm).usr.onglet.c itemconfigure "$linkName:text" -font [list $font]
+}
+
 #------------------------------------------------------------
-# ::confLink::configureDriver
+# ::confLink::configurePlugin
 #    Configure le plugin dont le label est dans private(linkLabel)
 #------------------------------------------------------------
-proc ::confLink::configureDriver { } {
+proc ::confLink::configurePlugin { } {
    variable private
 
    if { $private(linkLabel) == "" } {
@@ -357,18 +347,18 @@ proc ::confLink::configureDriver { } {
    }
 
    #--- je configure le plugin
-   [getLinkNamespace $private(linkLabel)]\::configureDriver
+   [getLinkNamespace $private(linkLabel)]\::configurePlugin
 }
 
 #------------------------------------------------------------
-# ::confLink::stopDriver
+# ::confLink::stopPlugin
 #    Arrete un link, si le nom d'un link est donne en parametre
 #    Arrete tous les links, si aucun link est donne en parametre
 # return rien
 #------------------------------------------------------------
-proc ::confLink::stopDriver { { linkLabel "" } } {
+proc ::confLink::stopPlugin { { linkLabel "" } } {
    if { $linkLabel != "" } {
-      [getLinkNamespace )]\:\:stopDriver
+      [getLinkNamespace )]\:\:stopPlugin
    } else {
       #--- j'arrete tous les links
       ##### A FAIRE
@@ -404,19 +394,17 @@ proc ::confLink::findPlugin { } {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type) == "link"} {
-               foreach os $pluginInfo(os) {
-                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
-                     #--- je charge le package
-                     package require $pluginInfo(name)
-                     #--- j'initalise le plugin
-                     $pluginInfo(namespace)::initPlugin
-                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-                     #--- je l'ajoute dans la liste des plugins
-                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-                     lappend private(pluginLabelList) $pluginlabel
-                     ::console::affiche_prompt "#$caption(conflink,liaison) $pluginlabel v$pluginInfo(version)\n"
-                  }
+            if { $pluginInfo(type) == "link" } {
+               if { [ lsearch $pluginInfo(os) [ lindex $::tcl_platform(os) 0 ] ] != "-1" } {
+                  #--- je charge le package
+                  package require $pluginInfo(name)
+                  #--- j'initalise le plugin
+                  $pluginInfo(namespace)::initPlugin
+                  set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                  #--- je l'ajoute dans la liste des plugins
+                  lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                  lappend private(pluginLabelList) $pluginlabel
+                  ::console::affiche_prompt "#$caption(conflink,liaison) $pluginlabel v$pluginInfo(version)\n"
                }
             }
          } else {
@@ -459,9 +447,7 @@ proc ::confLink::findPlugin { } {
 #------------------------------------------------------------
 proc ::confLink::displayConnectMessage { } {
    variable private
-   global audace
-   global caption
-   global color
+   global audace caption color
 
    if [ winfo exists $audace(base).connectLiaison ] {
       destroy $audace(base).connectLiaison
@@ -622,7 +608,7 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
 
    #--- je liste les packages qui sont presents parmi ceux qui sont autorises
    set authorizedPresentNamespaces [list ]
-   foreach  name $authorizedNamespaces  {
+   foreach  name $authorizedNamespaces {
        if { [lsearch $private(pluginNamespaceList) $name ] != -1 } {
          lappend authorizedPresentNamespaces $name
        }
@@ -632,9 +618,11 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
       set linkNamespace [getLinkNamespace $private(linkLabel) ]
       if { $linkNamespace != "" } {
          #--- je selectionne l'onglet correspondant au linkNamespace
-         select $linkNamespace
+         selectNotebook $linkNamespace
          #--- je selectionne le link dans l'onglet
          $linkNamespace\::selectConfigLink $private(linkLabel)
+      } else {
+         selectNotebook [ lindex $private(pluginNamespaceList) 0 ]
       }
       #--- j'attends la fermeture de la fenetre
       tkwait window $private(frm)
