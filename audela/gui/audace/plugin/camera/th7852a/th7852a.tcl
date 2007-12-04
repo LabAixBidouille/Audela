@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.19 2007-11-09 23:45:59 michelpujol Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.20 2007-12-04 19:19:02 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -15,7 +15,7 @@ namespace eval ::th7852a {
 
 #
 # ::th7852a::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::th7852a::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::th7852a::getPluginTitle { } {
 
 #
 # ::th7852a::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::th7852a::getPluginHelp { } {
    return "th7852a.htm"
@@ -33,7 +33,7 @@ proc ::th7852a::getPluginHelp { } {
 
 #
 # ::th7852a::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::th7852a::getPluginType { } {
    return "camera"

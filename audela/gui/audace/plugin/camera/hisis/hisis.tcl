@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.8 2007-11-09 23:45:58 michelpujol Exp $
+# Mise a jour $Id: hisis.tcl,v 1.9 2007-12-04 19:14:12 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
@@ -15,7 +15,7 @@ namespace eval ::hisis {
 
 #
 # ::hisis::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::hisis::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::hisis::getPluginTitle { } {
 
 #
 # ::hisis::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::hisis::getPluginHelp { } {
    return "hisis.htm"
@@ -33,7 +33,7 @@ proc ::hisis::getPluginHelp { } {
 
 #
 # ::hisis::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::hisis::getPluginType { } {
    return "camera"
