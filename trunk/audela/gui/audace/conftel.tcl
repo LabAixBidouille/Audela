@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.37 2007-12-02 00:04:25 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.38 2007-12-04 22:51:39 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -18,7 +18,7 @@ namespace eval ::confTel {
    #
    # confTel::init (est lance automatiquement au chargement de ce fichier tcl)
    # Initialise les variables conf(...) et caption(...)
-   # Demarre le driver selectionne par defaut
+   # Demarre le plugin selectionne par defaut
    #
    proc init { } {
       global audace conf confTel
@@ -109,7 +109,7 @@ namespace eval ::confTel {
          $frm.ctlking configure -text "$caption(conftel,audecom_ctl_king)" -state disabled
          update
       }
-      stopDriver
+      stopPlugin
       widgetToConf
       configureTelescope
       set confTel(fenetre,mobile,valider) "0"
@@ -232,7 +232,7 @@ namespace eval ::confTel {
          set frm $frmm(Telscp2)
          if { $confTel(ouranos,connect) == "1" } {
             $frm.but_init configure -relief raised -state normal -command { ::OuranosCom::find_res }
-            $frm.but_close configure -relief raised -state normal -command { ::confTel::stopDriver }
+            $frm.but_close configure -relief raised -state normal -command { ::confTel::stopPlugin }
             $frm.but_read configure -relief raised -state normal -command { ::OuranosCom::go_ouranos }
             if { $confTel(ouranos,show_coord) == "1" } {
                $frm.rad0 configure -state normal -command {
@@ -607,7 +607,8 @@ namespace eval ::confTel {
          pack $nn -fill both -expand 1
       pack $This.usr -side top -fill both -expand 1
       frame $This.start -borderwidth 1 -relief raised
-         button $This.start.stop -text "$caption(conftel,arreter)" -width 7 -command "::confTel::stopDriver"
+         button $This.start.stop -text "$caption(conftel,arreter)" -width 7 \
+            -command { ::confTel::stopPlugin }
          pack $This.start.stop -side left -padx 3 -pady 3 -expand true
          checkbutton $This.start.chk -text "$caption(conftel,creer_au_demarrage)" \
             -highlightthickness 0 -variable conf(telescope,start)
@@ -1015,7 +1016,7 @@ namespace eval ::confTel {
             -command { ::OuranosCom::find_res }
          pack $frm.but_init -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
          button $frm.but_close -text "$caption(conftel,ouranos_stop)" -width 6 -relief raised -state normal \
-            -command { ::confTel::stopDriver }
+            -command { ::confTel::stopPlugin }
          pack $frm.but_close -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
          button $frm.but_read -text "$caption(conftel,ouranos_lire)" -width 6 -relief raised -state normal \
             -command { ::OuranosCom::go_ouranos }
@@ -1632,7 +1633,7 @@ namespace eval ::confTel {
    }
 
    #
-   # Onglet de configuration des drivers ASCOM
+   # Onglet de configuration des plugins ASCOM
    #
    proc fillPage5 { nn } {
       global audace caption color conf confTel frmm
@@ -1661,7 +1662,7 @@ namespace eval ::confTel {
       frame $frm.frame3 -borderwidth 0 -relief raised
       pack $frm.frame3 -side bottom -fill x -pady 2
 
-      #--- Definition du driver
+      #--- Definition du plugin
       label $frm.lab1 -text "$caption(conftel,driver_ascom)"
       pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
@@ -1684,7 +1685,7 @@ namespace eval ::confTel {
       ::confPad::createFramePad $frm.nom_raquette "::confTel(nomRaquette)"
       pack $frm.nom_raquette -in $frm.frame2 -side left -padx 0 -pady 10
 
-      #--- Site web officiel des drivers ASCOM
+      #--- Site web officiel des plugins ASCOM
       label $frm.lab103 -text "$caption(conftel,site_web_ref)"
       pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
 
@@ -1961,10 +1962,10 @@ namespace eval ::confTel {
    }
 
    #
-   # confTel::stopDriver
+   # confTel::stopPlugin
    # Ferme la monture ouverte
    #
-   proc stopDriver { } {
+   proc stopPlugin { } {
       global audace conf
 
       #--- Je ferme la liaison
@@ -2345,9 +2346,9 @@ namespace eval ::confTel {
 
       if { $conf(raquette) == "1" } {
          #--- je cree la nouvelle raquette
-         ::confPad::configureDriver $confTel(nomRaquette)
+         ::confPad::configurePlugin $confTel(nomRaquette)
       } else {
-         ::confPad::stopDriver
+         ::confPad::stopPlugin
       }
       if { $erreur == "0" } {
          if { $conf(telescope) != "ouranos" } {
@@ -2475,7 +2476,7 @@ namespace eval ::confTel {
       set conf(temma,suivi_ad)        $confTel(temma,suivi_ad)
       set conf(temma,suivi_dec)       $confTel(temma,suivi_dec)
       set conf(temma,type)            $confTel(temma,type)
-      #--- Memorise la configuration du driver ASCOM dans le tableau conf(ascom,...)
+      #--- Memorise la configuration du plugin ASCOM dans le tableau conf(ascom,...)
       set frm [ Rnotebook:frame $nn 5 ]
       set conf(ascom,driver)          $confTel(ascom,driver)
       #--- Memorise la configuration du Celestron dans le tableau conf(celestron,...)
