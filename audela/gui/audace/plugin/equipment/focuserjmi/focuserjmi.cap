@@ -1,6 +1,6 @@
 #
 # Fichier : focuserjmi.cap
-# Mise a jour $Id: focuserjmi.cap,v 1.6 2007-02-14 16:34:18 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.cap,v 1.7 2007-12-04 19:21:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,6 +17,7 @@ set caption(focuserjmi,configure)             "Set up"
 set caption(focuserjmi,bitStart)              "Start Bit Number"
 set caption(focuserjmi,bitDirection)          "Direction Bit Number"
 
+set caption(focuserjmi,arreter)               "Stop"
 set caption(focuserjmi,creer_au_demarrage)    "Next time software is run connect this equipment automatically"
 
 # *************** Version française ***************************
@@ -28,6 +29,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,bitStart)           "Numéro du bit de démarrage"
    set caption(focuserjmi,bitDirection)       "Numéro du bit de direction"
 
+   set caption(focuserjmi,arreter)            "Arrêter"
    set caption(focuserjmi,creer_au_demarrage) "Connexion automatique de cet équipement au prochain démarrage"
 
 # *************** Version italienne ***************************
@@ -39,6 +41,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,bitStart)           "Numero del bit di start"
    set caption(focuserjmi,bitDirection)       "Numero del bit di direzione"
 
+   set caption(focuserjmi,arreter)            "Ferma"
    set caption(focuserjmi,creer_au_demarrage) "Connessione automatica di questo equipaggiamento alla prossima esecuzione del software"
 
 # *************** Version espagnole ***************************
@@ -50,6 +53,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,bitStart)           "Numero del bit de comienzo"
    set caption(focuserjmi,bitDirection)       "Numero del bit de dirección"
 
+   set caption(focuserjmi,arreter)            "Parar"
    set caption(focuserjmi,creer_au_demarrage) "La próxima vez que se ejecute el programa, el equipo se conecta automáticamente"
 
 # *************** Version allemande ***************************
@@ -61,6 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,bitStart)           "Nummer der Start Bit"
    set caption(focuserjmi,bitDirection)       "Nummer der Direktion Bit"
 
+   set caption(focuserjmi,arreter)            "Halten"
    set caption(focuserjmi,creer_au_demarrage) "Nächste Mal diese Einrichtung automatisch anschließen"
 
 # *************** Version portugaise ***************************
@@ -72,6 +77,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,bitStart)           "Número do bit inicial"
    set caption(focuserjmi,bitDirection)       "Número do bit de direcção"
 
+   set caption(focuserjmi,arreter)            "Parar"
    set caption(focuserjmi,creer_au_demarrage) "O equipamento conecta-se automaticamente na próxima execução do programa"
 
 # *************** Version danoise *****************************
@@ -83,6 +89,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(focuserjmi,bitStart)           "Start bit-værdi"
    set caption(focuserjmi,bitDirection)       "Retnings bit-værdi"
 
+   set caption(focuserjmi,arreter)            "Stop"
    set caption(focuserjmi,creer_au_demarrage) "Tilslut automatisk dette udstyr ved næste start"
 
 }
