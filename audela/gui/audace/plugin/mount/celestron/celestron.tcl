@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.3 2007-09-22 06:43:40 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.4 2007-12-04 20:36:28 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -15,7 +15,7 @@ namespace eval ::celestron {
 
 #
 # ::celestron::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::celestron::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::celestron::getPluginTitle { } {
 
 #
 #  ::celestron::getPluginHelp
-#     Retourne la documentation du driver
+#     Retourne la documentation du plugin
 #
 proc ::celestron::getPluginHelp { } {
    return "celestron.htm"
@@ -33,7 +33,7 @@ proc ::celestron::getPluginHelp { } {
 
 #
 # ::celestron::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::celestron::getPluginType { } {
    return "mount"

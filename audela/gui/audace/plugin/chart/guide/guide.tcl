@@ -1,8 +1,8 @@
 #
 # Fichier : guide.tcl
-# Description : Driver de communication avec "guide"
+# Description : Plugin de communication avec "guide"
 # Auteur : Robert DELMAS
-# Mise a jour $Id: guide.tcl,v 1.20 2007-09-20 19:06:31 robertdelmas Exp $
+# Mise a jour $Id: guide.tcl,v 1.21 2007-12-04 20:47:00 robertdelmas Exp $
 #
 
 namespace eval guide {
@@ -35,7 +35,7 @@ namespace eval guide {
 
    #------------------------------------------------------------
    #  getPluginTitle
-   #     retourne le label du driver dans la langue de l'utilisateur
+   #     retourne le label du plugin dans la langue de l'utilisateur
    #------------------------------------------------------------
    proc getPluginTitle { } {
       global caption
@@ -45,9 +45,9 @@ namespace eval guide {
 
    #------------------------------------------------------------
    #  getPluginHelp
-   #     retourne la documentation du driver
+   #     retourne la documentation du plugin
    #
-   #  return "nom_driver.htm"
+   #  return "nom_plugin.htm"
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "guide.htm"
@@ -165,7 +165,7 @@ namespace eval guide {
 
    #------------------------------------------------------------
    #  fillConfigPage
-   #     fenetre de configuration du driver
+   #     fenetre de configuration du plugin
    #
    #  return rien
    #------------------------------------------------------------
@@ -265,7 +265,7 @@ namespace eval guide {
 
    #------------------------------------------------------------
    #  isReady
-   #     informe de l'etat de fonctionnement du driver
+   #     informe de l'etat de fonctionnement du plugin
    #
    #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
@@ -282,7 +282,7 @@ namespace eval guide {
    }
 
    #==============================================================
-   # Fonctions specifiques du driver de la categorie "catalog"
+   # Fonctions specifiques du plugin de la categorie "catalog"
    #==============================================================
 
    #------------------------------------------------------------
