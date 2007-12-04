@@ -2,7 +2,7 @@
 # Fichier : ouranoscom.tcl
 # Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Mise a jour $Id: ouranoscom.tcl,v 1.7 2007-10-13 09:32:47 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.tcl,v 1.8 2007-12-04 22:45:23 robertdelmas Exp $
 #
 
 #--- Initialisation de variables
@@ -424,7 +424,7 @@ namespace eval OuranosCom {
       global caption
 
       console::affiche_erreur "$caption(ouranoscom,pas_de_reponse)\n"
-      ::confTel::stopDriver
+      ::confTel::stopPlugin
       return
    }
 
