@@ -1,6 +1,6 @@
 #
 # Fichier : hisis.cap
-# Mise a jour $Id: hisis.cap,v 1.2 2007-10-20 15:39:42 robertdelmas Exp $
+# Mise a jour $Id: hisis.cap,v 1.3 2007-12-04 19:12:02 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -81,7 +81,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,port_camera)               "Port Hi-SIS"
    set caption(hisis,2points)                   ":"
 
-   set caption(hisis,titre_site_web)            "Reference Web Site:"
+   set caption(hisis,titre_site_web)            "Site Web de référence :"
    set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
 
 # *************** Version italienne ***************************
@@ -119,7 +119,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"
 
-   set caption(hisis,titre_site_web)            "Reference Web Site:"
+   set caption(hisis,titre_site_web)            "Sito Web di riferimento:"
    set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
 
 # *************** Version espagnole ***************************
@@ -157,7 +157,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,port_camera)               "Puerto Hi-SIS"
    set caption(hisis,2points)                   ":"
 
-   set caption(hisis,titre_site_web)            "Reference Web Site:"
+   set caption(hisis,titre_site_web)            "Sitio Web de referencia:"
    set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
 
 # *************** Version allemande ***************************
@@ -195,7 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,port_camera)               "Hi-SIS Port - Modell"
    set caption(hisis,2points)                   ":"
 
-   set caption(hisis,titre_site_web)            "Reference Web Site:"
+   set caption(hisis,titre_site_web)            "Referenz Webseite:"
    set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
 
 # *************** Version portugaise ***************************
@@ -233,7 +233,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(hisis,port_camera)               "Porta Hi-SIS"
    set caption(hisis,2points)                   ":"
 
-   set caption(hisis,titre_site_web)            "Reference Web Site:"
+   set caption(hisis,titre_site_web)            "Site Web de referência:"
    set caption(hisis,site_web_ref)              "http://www.europixel.it/europixelweb/welcomeframe.htm"
 
 # *************** Version danoise *****************************
