@@ -1,6 +1,6 @@
 #
 # Fichier : superpad.cap
-# Mise a jour $Id: superpad.cap,v 1.7 2007-05-09 21:49:42 robertdelmas Exp $
+# Mise a jour $Id: superpad.cap,v 1.8 2007-12-04 22:17:22 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,7 +13,6 @@ global caption langage
 
 set caption(superpad,titre)                  "SuperPad"
 set caption(superpad,pad_size)               "Its size"
-set caption(superpad,pad_visible)            "Always Visible"
 set caption(superpad,center_speed)           "Centering Factor"
 set caption(superpad,telescope)              "Mount"
 set caption(superpad,non_connecte)           "not connected"
@@ -31,7 +30,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
    set caption(superpad,pad_size)            "Sa taille"
-   set caption(superpad,pad_visible)         "Toujours visible"
    set caption(superpad,center_speed)        "Coefficient de centrage"
    set caption(superpad,telescope)           "Monture"
    set caption(superpad,non_connecte)        "non connectée"
@@ -49,7 +47,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
    set caption(superpad,pad_size)            "Dimensioni"
-   set caption(superpad,pad_visible)         "Sempre visibile"
    set caption(superpad,center_speed)        "Coefficente per centraggio"
    set caption(superpad,telescope)           "Montatura"
    set caption(superpad,non_connecte)        "non connessa"
@@ -67,7 +64,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
    set caption(superpad,pad_size)            "Su tamaño"
-   set caption(superpad,pad_visible)         "Siempre visible"
    set caption(superpad,center_speed)        "Factor de centrado"
    set caption(superpad,telescope)           "Montura"
    set caption(superpad,non_connecte)        "no conectado"
@@ -85,7 +81,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
    set caption(superpad,pad_size)            "Ihre Größe"
-   set caption(superpad,pad_visible)         "Immer Sichtbar"
    set caption(superpad,center_speed)        "Zentrierung Faktor"
    set caption(superpad,telescope)           "Montierung"
    set caption(superpad,non_connecte)        "nicht verbun."
@@ -103,7 +98,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
    set caption(superpad,pad_size)            "Seu tamanho"
-   set caption(superpad,pad_visible)         "Sempre visivel"
    set caption(superpad,center_speed)        "Coeficiente de centragem"
    set caption(superpad,telescope)           "Montagem"
    set caption(superpad,non_connecte)        "não conectado"
@@ -121,7 +115,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(superpad,titre)               "SuperPad"
    set caption(superpad,pad_size)            "Dens størrelse"
-   set caption(superpad,pad_visible)         "Altid synlig"
    set caption(superpad,center_speed)        "Centreringsfaktor"
    set caption(superpad,telescope)           "Montering"
    set caption(superpad,non_connecte)        "ikke tilsluttet"
