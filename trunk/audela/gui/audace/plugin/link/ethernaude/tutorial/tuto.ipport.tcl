@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.ipport.tcl,v 1.9 2007-10-02 17:11:59 robertdelmas Exp $
+# Mise a jour $Id: tuto.ipport.tcl,v 1.10 2007-12-04 22:29:20 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -152,7 +152,7 @@ proc connect_ethernaude {} {
    }
    #--- Si une camera est connectee, j'arrete les plugins camera
    if { [ ::cam::list ] != "" } {
-      ::confCam::stopDriver
+      ::confCam::stopPlugin
    }
    #--- Je connecte l'Audine via la liaison EthernAude
    set eth_canspeed [ expr round((-7.11)/(39.51-7.11)*30.) ]
