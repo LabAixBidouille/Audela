@@ -65,7 +65,6 @@ AudeLA est capable de piloter les interfaces de communication suivantes :
 - EthernAude (interface Ethernet pour cameras CCD),
 - GPhoto2,
 - Manuel,
-- PhotoPC,
 - Port parallele,
 - Port serie,
 - QuickAudine (interface USB pour cameras Audine),
