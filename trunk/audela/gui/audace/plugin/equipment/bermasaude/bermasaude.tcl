@@ -2,25 +2,25 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.21 2007-11-02 18:51:21 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.22 2007-12-04 23:07:53 robertdelmas Exp $
 #
 
 #
-# Procedures generiques obligatoires (pour configurer tous les drivers camera, telescope, equipement) :
+# Procedures generiques obligatoires (pour configurer tous les plugins camera, telescope, equipement) :
 #     initPlugin      : Initialise le plugin
-#     getLabel        : Retourne le nom affichable du plugin
-#     getPluginHelp   : Retourne la documentation htm associee
 #     getStartFlag    : Retourne l'indicateur de lancement au demarrage
+#     getPluginHelp   : Retourne la documentation htm associee
 #     getPluginTitle  : Retourne le titre du plugin dans la langue de l'utilisateur
 #     getPluginType   : Retourne le type de plugin
-#     fillConfigPage  : Affiche la fenetre de configuration de ce driver
+#     getPluginOS     : Retourne les OS sous lesquels le plugin fonctionne
+#     fillConfigPage  : Affiche la fenetre de configuration de ce plugin
 #     createPlugin    : Cree une instance du plugin
 #     deletePlugin    : Arrete une instance du plugin et libere les ressources occupees
 #     configurePlugin : Configure le plugin
-#     isReady         : Informe de l'etat de fonctionnement du driver
+#     isReady         : Informe de l'etat de fonctionnement du plugin
 #
 
-# Procedures specifiques a ce driver :
+# Procedures specifiques a ce plugin :
 #     representationRoueAFiltres : Representation graphique de la roue a filtres
 #     choixNomBouton             : Choix du nom des boutons (couleur des filtres)
 #     choixCouleur               : Choix des couleurs des filtres
@@ -32,7 +32,7 @@
 #     filtre_4                   : Positionne le filtre n°4 sur le chemin optique
 #     filtre_5                   : Positionne le filtre n°5 sur le chemin optique
 #     connectBerMasAude          : Permet de rendre actifs ou inactifs les boutons
-#
+#     configureEtatBoutons       : Configure l'etat des boutons de commande des filtres
 #     bermasaude_create          : Creation de la liaison serie
 #     bermasaude_delete          : Fermeture de la liaison serie
 #     bermasaude_reset           : Reset de l'electronique de la roue a filtres
@@ -81,9 +81,9 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    #  getPluginHelp
-   #     retourne la documentation du driver
+   #     retourne la documentation du plugin
    #
-   #  return "nom_driver.htm"
+   #  return "nom_plugin.htm"
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "bermasaude.htm"
@@ -91,7 +91,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    #  getPluginType
-   #     retourne le type de driver
+   #     retourne le type de plugin
    #
    #  return "equipment"
    #------------------------------------------------------------
@@ -119,7 +119,7 @@ namespace eval bermasaude {
 
    #------------------------------------------------------------
    #  fillConfigPage
-   #     fenetre de configuration du driver
+   #     fenetre de configuration du plugin
    #
    #  return nothing
    #------------------------------------------------------------
@@ -131,6 +131,7 @@ namespace eval bermasaude {
       set widget(port)  $conf(bermasaude,port)
       set widget(combi) [ lindex "$caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj)" \
          $conf(bermasaude,combi) ]
+
       #--- Prise en compte des liaisons
       set widget(list_connexion) [::confLink::getLinkLabels { "serialport" } ]
 
@@ -138,10 +139,10 @@ namespace eval bermasaude {
       set widget(frm) $frm
 
       #--- Choix des couleurs
-      choixCouleur
+      ::bermasaude::choixCouleur
 
       #--- Choix du nom des boutons (couleur des filtres)
-      choixNomBouton
+      ::bermasaude::choixNomBouton
 
       #--- Je verifie le contenu de la liste
       if { [ llength $widget(list_connexion) ] > 0 } {
@@ -207,39 +208,21 @@ namespace eval bermasaude {
          frame $frm.frame2.frame4 -borderwidth 0 -relief raised
 
             #--- Gestion des boutons de commande
-            if { $bermasaude(connect) == "1" } {
-               button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised \
-                  -state normal -command { ::bermasaude::filtre_1 }
-               pack $frm.frame2.frame4.but_1 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_2 -text "$bermasaude(caption_position_2)" -width 10 -relief raised \
-                  -state normal -command { ::bermasaude::filtre_2 }
-               pack $frm.frame2.frame4.but_2 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_3 -text "$bermasaude(caption_position_3)" -width 10 -relief raised \
-                  -state normal -command { ::bermasaude::filtre_3 }
-               pack $frm.frame2.frame4.but_3 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_4 -text "$bermasaude(caption_position_4)" -width 10 -relief raised \
-                  -state normal -command { ::bermasaude::filtre_4 }
-               pack $frm.frame2.frame4.but_4 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised \
-                  -state normal -command { ::bermasaude::filtre_5 }
-               pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
-            } else {
-               button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised \
-                  -state disabled
-               pack $frm.frame2.frame4.but_1 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_2 -text "$bermasaude(caption_position_2)" -width 10 -relief raised \
-                  -state disabled
-               pack $frm.frame2.frame4.but_2 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_3 -text "$bermasaude(caption_position_3)" -width 10 -relief raised \
-                  -state disabled
-               pack $frm.frame2.frame4.but_3 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_4 -text "$bermasaude(caption_position_4)" -width 10 -relief raised \
-                  -state disabled
-               pack $frm.frame2.frame4.but_4 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-               button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised \
-                  -state disabled
-               pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 2 -ipady 5 -fill x -expand 1
-            }
+            button $frm.frame2.frame4.but_1 -text "$bermasaude(caption_position_1)" -width 10 -relief raised \
+               -state normal -command { ::bermasaude::filtre_1 }
+            pack $frm.frame2.frame4.but_1 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+            button $frm.frame2.frame4.but_2 -text "$bermasaude(caption_position_2)" -width 10 -relief raised \
+               -state normal -command { ::bermasaude::filtre_2 }
+            pack $frm.frame2.frame4.but_2 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+            button $frm.frame2.frame4.but_3 -text "$bermasaude(caption_position_3)" -width 10 -relief raised \
+               -state normal -command { ::bermasaude::filtre_3 }
+            pack $frm.frame2.frame4.but_3 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+            button $frm.frame2.frame4.but_4 -text "$bermasaude(caption_position_4)" -width 10 -relief raised \
+               -state normal -command { ::bermasaude::filtre_4 }
+            pack $frm.frame2.frame4.but_4 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
+            button $frm.frame2.frame4.but_5 -text "$bermasaude(caption_position_5)" -width 10 -relief raised \
+               -state normal -command { ::bermasaude::filtre_5 }
+            pack $frm.frame2.frame4.but_5 -anchor center -side top -padx 30 -pady 5 -ipady 5 -fill x -expand 1
 
          pack $frm.frame2.frame4 -side left -fill both -expand 1
 
@@ -276,9 +259,10 @@ namespace eval bermasaude {
 
             #--- Bouton Arreter
             button $frm.frame3.start.stop -text "$caption(bermasaude,arreter)" -relief raised \
-               -command { ::bermasaude::stopDriver }
+               -command { ::bermasaude::deletePlugin }
             pack $frm.frame3.start.stop -side left -padx 10 -pady 3 -ipadx 10 -expand 1
 
+            #--- Checkbutton démarrage automatique
             checkbutton $frm.frame3.start.chk -text "$caption(bermasaude,creer_au_demarrage)" \
                -highlightthickness 0 -variable conf(bermasaude,start)
             pack $frm.frame3.start.chk -side top -padx 10 -pady 3 -expand 1
@@ -288,7 +272,10 @@ namespace eval bermasaude {
       pack $frm.frame3 -side bottom -fill x
 
       #--- Affichage de la representation
-      representationRoueAFiltres
+      ::bermasaude::representationRoueAFiltres
+
+      #--- Gestion des boutons actifs/inactifs
+      ::bermasaude::configureEtatBoutons
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -320,7 +307,7 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc configurePlugin { } {
       variable widget
-      global caption conf
+      global bermasaude caption conf
 
       #--- Memorise la configuration de la roue a filtres BerMasAude dans le tableau conf(bermasaude,...)
       set conf(bermasaude,port)  $widget(port)
@@ -336,47 +323,47 @@ namespace eval bermasaude {
    #------------------------------------------------------------
    proc createPlugin { } {
       variable widget
-      global audace bermasaude caption conf ttybermasaude
+      global audace bermasaude caption conf ttybermasaude zone
 
       #--- Ferme le port comx de communication de la roue a filtres BerMasAude
-      if { [ info exists ttybermasaude ] } {
-         ::bermasaude::bermasaude_delete $ttybermasaude
-         unset ttybermasaude
+      ::bermasaude::deletePlugin
+
+      #--- Representation de l'absence de filtre (blanc --> rien sur le chemin optique)
+      if { [ info exists zone(image2a) ] } {
+         $zone(image2a) create oval 65 105 115 155 -outline $audace(color,textColor) \
+            -fill $audace(color,backColor) -tags cadres -width 2.0
       }
 
-      switch -exact -- $conf(confEqt) {
-         bermasaude {
-            #--- Ouvre le port comx de communication de la roue a filtres BerMasAude
-            set ttybermasaude [ ::bermasaude::bermasaude_create $conf(bermasaude,port) ]
-            if { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "0" } {
-               ::bermasaude::bermasaude_reset $ttybermasaude
-               #--- Attente de l'arret en rotation de la roue a filtres
-               after 1000
-               while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
-                  after 1000
-               }
-               console::affiche_erreur "$caption(bermasaude,bermasaude_port)\
-                  $caption(bermasaude,caractere_2points) $conf(bermasaude,port)\n"
-               console::affiche_erreur "$caption(bermasaude,bermasaude_combinaison)\
-                  $caption(bermasaude,caractere_2points) [ lindex "$caption(bermasaude,bermasaude_bvri) \
-                  $caption(bermasaude,bermasaude_cmj)" $conf(bermasaude,combi) ]\n"
-               #--- Demande et affiche la version du logiciel du microcontroleur
-               set v_firmware [ ::bermasaude::bermasaude_v_firmware $ttybermasaude ]
-               console::affiche_erreur "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
-               #--- Demande et affiche le nombre de filtres de la roue
-               set nbr_filtres [ ::bermasaude::bermasaude_nbr_filtres $ttybermasaude ]
-               console::affiche_erreur "$caption(bermasaude,bermasaude_nbr_filtres_1)\
-                  $nbr_filtres $caption(bermasaude,bermasaude_nbr_filtres_2)\n\n"
-               set bermasaude(connect) "1"
-               #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
-               set linkNo [ ::confLink::create $conf(bermasaude,port) "$conf(confEqt)" "control" "" ]
-            } else {
-               set bermasaude(connect) "0"
-            }
-            #--- Gestion des boutons actifs/inactifs
-            connectBerMasAude
+      #--- Ouvre le port comx de communication de la roue a filtres BerMasAude
+      set ttybermasaude [ ::bermasaude::bermasaude_create $conf(bermasaude,port) ]
+      if { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "0" } {
+         ::bermasaude::bermasaude_reset $ttybermasaude
+         #--- Attente de l'arret en rotation de la roue a filtres
+         after 1000
+         while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
+            after 1000
          }
+         console::affiche_erreur "$caption(bermasaude,bermasaude_port)\
+            $caption(bermasaude,caractere_2points) $conf(bermasaude,port)\n"
+         console::affiche_erreur "$caption(bermasaude,bermasaude_combinaison)\
+            $caption(bermasaude,caractere_2points) [ lindex "$caption(bermasaude,bermasaude_bvri) \
+            $caption(bermasaude,bermasaude_cmj)" $conf(bermasaude,combi) ]\n"
+         #--- Demande et affiche la version du logiciel du microcontroleur
+         set v_firmware [ ::bermasaude::bermasaude_v_firmware $ttybermasaude ]
+         console::affiche_erreur "$caption(bermasaude,bermasaude_version_micro) $v_firmware\n"
+         #--- Demande et affiche le nombre de filtres de la roue
+         set nbr_filtres [ ::bermasaude::bermasaude_nbr_filtres $ttybermasaude ]
+         console::affiche_erreur "$caption(bermasaude,bermasaude_nbr_filtres_1)\
+            $nbr_filtres $caption(bermasaude,bermasaude_nbr_filtres_2)\n\n"
+         set bermasaude(connect) "1"
+         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
+         set linkNo [ ::confLink::create $conf(bermasaude,port) "bermasaude" "control" "" ]
+      } else {
+         ::bermasaude::deletePlugin
+         set bermasaude(connect) "0"
       }
+      #--- Gestion des boutons actifs/inactifs
+      ::bermasaude::connectBerMasAude
 
       #--- Effacement du message d'alerte s'il existe
       if [ winfo exists $audace(base).connectEquipement ] {
@@ -391,12 +378,26 @@ namespace eval bermasaude {
    #  return nothing
    #------------------------------------------------------------
    proc deletePlugin { } {
+      global bermasaude conf ttybermasaude
 
+      if { [ info exists ttybermasaude ] } {
+         #--- Je re-initialisation la variable de l'etat de la roue a filtres
+         set bermasaude(connect) "0"
+         #--- Je desactive les boutons
+         ::bermasaude::configureEtatBoutons
+         #--- Je memorise le port
+         set eqtPort $conf(bermasaude,port)
+         #--- Je ferme le port serie
+         ::bermasaude::bermasaude_delete $ttybermasaude
+         unset ttybermasaude
+         #--- Je ferme le link
+         ::confLink::delete $eqtPort "bermasaude" "control"
+      }
    }
 
    #------------------------------------------------------------
    #  isReady
-   #     informe de l'etat de fonctionnement du driver
+   #     informe de l'etat de fonctionnement du plugin
    #
    #  return 0 (ready) , 1 (not ready)
    #------------------------------------------------------------
@@ -405,7 +406,7 @@ namespace eval bermasaude {
    }
 
    #==============================================================
-   # Procedures specifiques du driver
+   # Procedures specifiques du plugin
    #==============================================================
 
    #------------------------------------------------------------
@@ -419,9 +420,21 @@ namespace eval bermasaude {
       global bermasaude
 
       #--- Initialisation du graphisme de la roue a filtres
-      filtreInit
+      ::bermasaude::filtreInit
 
-      catch {
+      #--- Configure l'etat des boutons (normal ou disabled)
+      ::bermasaude::configureEtatBoutons
+   }
+
+   #------------------------------------------------------------
+   # configureEtatBoutons
+   #    Configure l'etat des boutons
+   #------------------------------------------------------------
+   proc configureEtatBoutons { } {
+      variable widget
+      global bermasaude
+
+      if { [ info exists widget(frm) ] } {
          set frm $widget(frm)
          if { $bermasaude(connect) == "1" } {
             $frm.frame2.frame4.but_1 configure -text "$bermasaude(caption_position_1)" -width 10 -relief raised \
@@ -505,16 +518,16 @@ namespace eval bermasaude {
       global audace bermasaude caption ttybermasaude zone
 
       #--- Choix des couleurs
-      choixCouleur
+      ::bermasaude::choixCouleur
 
       #--- Choix du nom des boutons (couleur des filtres)
-      choixNomBouton
+      ::bermasaude::choixNomBouton
 
       #--- Initialisation des variables
       set bermasaude(position) "1"
       set bermasaude(color_filtre) $bermasaude(color_filtre_1)
 
-      catch {
+      if { [ info exists zone(image2a) ] } {
          #--- Representation de l'absence de filtre (blanc --> rien sur le chemin optique)
          $zone(image2a) create oval 65 105 115 155 -outline $audace(color,textColor) -fill $bermasaude(color_filtre) \
             -tags cadres -width 2.0
@@ -541,7 +554,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_1)
 
       #--- Commande de la roue a filtres
-      cmdRoueFiltres
+      ::bermasaude::cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -556,7 +569,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_2)
 
       #--- Commande de la roue a filtres
-      cmdRoueFiltres
+      ::bermasaude::cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -571,7 +584,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_3)
 
       #--- Commande de la roue a filtres
-      cmdRoueFiltres
+      ::bermasaude::cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -586,7 +599,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_4)
 
       #--- Commande de la roue a filtres
-      cmdRoueFiltres
+      ::bermasaude::cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -601,7 +614,7 @@ namespace eval bermasaude {
       set bermasaude(color_filtre) $bermasaude(color_filtre_5)
 
       #--- Commande de la roue a filtres
-      cmdRoueFiltres
+      ::bermasaude::cmdRoueFiltres
    }
 
    #------------------------------------------------------------
@@ -612,17 +625,20 @@ namespace eval bermasaude {
       variable widget
       global audace bermasaude caption ttybermasaude zone
 
-      #--- Gestion des boutons actifs/inactifs
-      for { set i 1 } { $i <= 5 } { incr i } {
-         $widget(frm).frame2.frame4.but_$i configure -state disabled
-      }
-      $widget(frm).frame2.frame4.but_$bermasaude(position) configure -relief groove
+         #--- Gestion des boutons actifs/inactifs
+         if { [ winfo exists $widget(frm).frame2.frame4.but_$bermasaude(position) ] } {
+            for { set i 1 } { $i <= 5 } { incr i } {
+               $widget(frm).frame2.frame4.but_$i configure -state disabled
+            }
+            $widget(frm).frame2.frame4.but_$bermasaude(position) configure -relief groove
+         }
 
-      #--- Representation de la couleur du filtre
-      $zone(image2a) create oval 65 105 115 155 -outline $audace(color,textColor) -fill $bermasaude(color_filtre) \
-         -tags cadres -width 2.0
+         #--- Representation de la couleur du filtre
+         if { [ info exists zone(image2a) ] } {
+            $zone(image2a) create oval 65 105 115 155 -outline $audace(color,textColor) -fill $bermasaude(color_filtre) \
+               -tags cadres -width 2.0
+         }
 
-      catch {
          #--- Demande la position courante de la roue a filtres
          set num_filtre_position [ ::bermasaude::bermasaude_position $ttybermasaude ]
          ::console::affiche_resultat "$caption(bermasaude,bermasaude_filtre_depart_1)\
@@ -642,35 +658,18 @@ namespace eval bermasaude {
             $bermasaude(caption_position_$num_filtre_position_arrivee)\
             $caption(bermasaude,bermasaude_filtre_arrive_2)\n\n"
          bell
-      }
 
-      #--- Gestion des boutons actifs/inactifs
-      $widget(frm).frame2.frame4.but_$bermasaude(position) configure -relief raised
-      for {set i 1} {$i <= 5} {incr i} {
-         $widget(frm).frame2.frame4.but_$i configure -state normal
-      }
-   }
-
-   #------------------------------------------------------------
-   # stopDriver
-   #    Arrete la roue a filtres
-   #------------------------------------------------------------
-   proc stopDriver { } {
-      global conf ttybermasaude
-
-      if { [ info exists ttybermasaude ] } {
-         #--- Je memorise le port
-         set eqtPort $conf(bermasaude,port)
-         #--- Je ferme le port serie
-         ::bermasaude::bermasaude_delete $ttybermasaude
-         unset ttybermasaude
-         #--- Je ferme le link
-         ::confLink::delete $eqtPort "$conf(confEqt)" "control"
-      }
+         #--- Gestion des boutons actifs/inactifs
+         if { [ winfo exists $widget(frm).frame2.frame4.but_$bermasaude(position) ] } {
+            $widget(frm).frame2.frame4.but_$bermasaude(position) configure -relief raised
+            for {set i 1} {$i <= 5} {incr i} {
+               $widget(frm).frame2.frame4.but_$i configure -state normal
+            }
+         }
    }
 
 #------------------------------------------------------------
-# Procedures du driver de la roue a filtres (BerMasAude)
+# Procedures du plugin de la roue a filtres (BerMasAude)
 #------------------------------------------------------------
 
     proc bermasaude_create { port } {
@@ -744,7 +743,7 @@ namespace eval bermasaude {
        after [ expr $bermasaude(attente) ]
        #--- Boucle jusqu'au positionnement du filtre destination
        after 1000
-       while { [ bermasaude_etat_roue $ttybermasaude ] == "1" } {
+       while { [ ::bermasaude::bermasaude_etat_roue $ttybermasaude ] == "1" } {
           after 1000
        }
        return $num_filtre
