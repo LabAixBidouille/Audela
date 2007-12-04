@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.13 2007-09-20 19:10:57 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.14 2007-12-04 22:25:18 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -31,13 +31,12 @@ namespace eval ::lx200pad {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-
       }
    }
 
    #------------------------------------------------------------
    #  getPluginTitle
-   #     retourne le label du driver dans la langue de l'utilisateur
+   #     retourne le label du plugin dans la langue de l'utilisateur
    #------------------------------------------------------------
    proc getPluginTitle { } {
       global caption
@@ -47,9 +46,9 @@ namespace eval ::lx200pad {
 
    #------------------------------------------------------------
    #  getPluginHelp
-   #     retourne la documentation du driver
+   #     retourne la documentation du plugin
    #
-   #  return "nom_driver.htm"
+   #  return "nom_plugin.htm"
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "lx200pad.htm"
@@ -81,7 +80,6 @@ namespace eval ::lx200pad {
       global conf
 
       if { ! [ info exists conf(lx200pad,padsize) ] }  { set conf(lx200pad,padsize)  "0.6" }
-      if { ! [ info exists conf(lx200pad,visible) ] }  { set conf(lx200pad,visible)  "1" }
       if { ! [ info exists conf(lx200pad,position) ] } { set conf(lx200pad,position) "657+252" }
 
       return
@@ -99,7 +97,6 @@ namespace eval ::lx200pad {
       global conf
 
       set widget(padsize) $conf(lx200pad,padsize)
-      set widget(visible) $conf(lx200pad,visible)
    }
 
    #------------------------------------------------------------
@@ -114,18 +111,16 @@ namespace eval ::lx200pad {
       global conf
 
       set conf(lx200pad,padsize) $widget(padsize)
-      set conf(lx200pad,visible) $widget(visible)
    }
 
    #------------------------------------------------------------
    #  fillConfigPage
-   #     fenetre de configuration du driver
+   #     fenetre de configuration du plugin
    #
    #  return nothing
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      variable private
       global caption
 
       #--- Je memorise la reference de la frame
@@ -151,15 +146,6 @@ namespace eval ::lx200pad {
          pack $frm.frame1.taille -anchor nw -side left -padx 10 -pady 10
 
       pack $frm.frame1 -side top -fill both -expand 0
-
-      #--- Raquette toujours visible
-      frame $frm.frame2 -borderwidth 0 -relief raised
-
-         checkbutton $frm.frame2.visible -text "$caption(lx200pad,pad_visible)" -highlightthickness 0 \
-            -variable ::lx200pad::widget(visible) -onvalue 1 -offvalue 0
-         pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
-
-      pack $frm.frame2 -side top -fill both -expand 0
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -193,7 +179,7 @@ namespace eval ::lx200pad {
          set geom [wm geometry .lx200pad]
          set deb [expr 1+[string first + $geom ]]
          set fin [string length $geom]
-         set conf(lx200pad,position) "[string range  $geom $deb $fin]"
+         set conf(lx200pad,position) [string range $geom $deb $fin]
       }
 
       #--- Supprime la raquette
@@ -208,7 +194,7 @@ namespace eval ::lx200pad {
 
    #------------------------------------------------------------
    #  isReady
-   #     informe de l'etat de fonctionnement du driver
+   #     informe de l'etat de fonctionnement du plugin
    #
    #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
@@ -217,7 +203,7 @@ namespace eval ::lx200pad {
    }
 
    #==============================================================
-   # Procedures specifiques du driver
+   # Procedures specifiques du plugin
    #==============================================================
 
    #------------------------------------------------------------
@@ -1171,7 +1157,7 @@ namespace eval ::lx200pad {
       #--- J'attends un changement de la valeur de audace(telescope,speed)
       vwait audace(telescope,speed)
 
-      #--- Si la raquette existe, je met a jour l'affichage de la vitesse
+      #--- Si la raquette existe, je mets a jour l'affichage de la vitesse
       if { [ winfo exists .lx200pad ] } {
          switch -exact -- $audace(telescope,speed) {
             1 { ::lx200pad::lx200_set_guide }
