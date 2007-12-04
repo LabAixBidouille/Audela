@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.19 2007-12-01 20:36:46 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.20 2007-12-04 19:09:55 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -15,7 +15,7 @@ namespace eval ::dslr {
 
 #
 # ::dslr::getPluginTitle
-#    Retourne le label du driver dans la langue de l'utilisateur
+#    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::dslr::getPluginTitle { } {
    global caption
@@ -25,7 +25,7 @@ proc ::dslr::getPluginTitle { } {
 
 #
 # ::dslr::getPluginHelp
-#    Retourne la documentation du driver
+#    Retourne la documentation du plugin
 #
 proc ::dslr::getPluginHelp { } {
    return "dslr.htm"
@@ -33,7 +33,7 @@ proc ::dslr::getPluginHelp { } {
 
 #
 # ::dslr::getPluginType
-#    Retourne le type de driver
+#    Retourne le type du plugin
 #
 proc ::dslr::getPluginType { } {
    return "camera"
@@ -276,7 +276,7 @@ proc ::dslr::fillConfigPage { frm camItem } {
          -command " ::dslr::setLoadParameters $camItem"
       pack $frm.frame11.config_telechargement -side top -pady 10 -ipadx 10 -ipady 5 -expand true
 
-   pack $frm.frame11 -anchor n -side bottom -fill both -expand true
+   pack $frm.frame11 -anchor n -side top -fill both -expand true
 
    #--- Frame du site web officiel de la CB245
    frame $frm.frame12 -borderwidth 0 -relief raised
