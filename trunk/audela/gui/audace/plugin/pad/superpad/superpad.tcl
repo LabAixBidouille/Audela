@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.19 2007-11-02 23:20:40 michelpujol Exp $
+# Mise a jour $Id: superpad.tcl,v 1.20 2007-12-04 22:25:46 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -31,13 +31,12 @@ namespace eval ::superpad {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-
       }
    }
 
    #------------------------------------------------------------
    #  getPluginTitle
-   #     retourne le label du driver dans la langue de l'utilisateur
+   #     retourne le label du plugin dans la langue de l'utilisateur
    #------------------------------------------------------------
    proc getPluginTitle { } {
       global caption
@@ -47,9 +46,9 @@ namespace eval ::superpad {
 
    #------------------------------------------------------------
    #  getPluginHelp
-   #     retourne la documentation du driver
+   #     retourne la documentation du plugin
    #
-   #  return "nom_driver.htm"
+   #  return "nom_plugin.htm"
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "superpad.htm"
@@ -82,7 +81,6 @@ namespace eval ::superpad {
 
       if { ! [ info exists conf(superpad,padsize) ] }      { set conf(superpad,padsize)      "0.5" }
       if { ! [ info exists conf(superpad,centerspeed) ] }  { set conf(superpad,centerspeed)  "140" }
-      if { ! [ info exists conf(superpad,visible) ] }      { set conf(superpad,visible)      "1" }
       if { ! [ info exists conf(superpad,position) ] }     { set conf(superpad,position)     "100+100" }
       if { ! [ info exists conf(superpad,focuserLabel) ] } { set conf(superpad,focuserLabel) "focuserjmi" }
 
@@ -100,7 +98,6 @@ namespace eval ::superpad {
       global conf
 
       set widget(padsize)      $conf(superpad,padsize)
-      set widget(visible)      $conf(superpad,visible)
       set widget(centerspeed)  $conf(superpad,centerspeed)
       set widget(focuserLabel) $conf(superpad,focuserLabel)
    }
@@ -116,20 +113,18 @@ namespace eval ::superpad {
       global conf
 
       set conf(superpad,padsize)      $widget(padsize)
-      set conf(superpad,visible)      $widget(visible)
       set conf(superpad,centerspeed)  $widget(centerspeed)
       set conf(superpad,focuserLabel) $widget(focuserLabel)
    }
 
    #------------------------------------------------------------
    #  fillConfigPage
-   #     fenetre de configuration du driver
+   #     fenetre de configuration du plugin
    #
    #  return nothing
    #------------------------------------------------------------
    proc fillConfigPage { frm } {
       variable widget
-      variable private
       global caption
 
       #--- Je memorise la reference de la frame
@@ -177,15 +172,6 @@ namespace eval ::superpad {
 
       pack $frm.frame3 -side top -fill both -expand 0
 
-      #--- Raquette toujours visible
-      frame $frm.frame4 -borderwidth 0 -relief raised
-
-         checkbutton $frm.frame4.visible -text "$caption(superpad,pad_visible)" -highlightthickness 0 \
-            -variable ::superpad::widget(visible) -onvalue 1 -offvalue 0
-         pack $frm.frame4.visible -anchor nw -side left -padx 10 -pady 10
-
-      pack $frm.frame4 -side top -fill both -expand 0
-
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
    }
@@ -219,7 +205,7 @@ namespace eval ::superpad {
          set geom [wm geometry .superpad]
          set deb [expr 1+[string first + $geom ]]
          set fin [string length $geom]
-         set conf(superpad,position) "[string range  $geom $deb $fin]"
+         set conf(superpad,position) [string range $geom $deb $fin]
 
          #--- supprime la raquette
          catch { destroy .superpad }
@@ -230,7 +216,7 @@ namespace eval ::superpad {
 
    #------------------------------------------------------------
    #  isReady
-   #     informe de l'etat de fonctionnement du driver
+   #     informe de l'etat de fonctionnement du plugin
    #
    #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
@@ -239,7 +225,7 @@ namespace eval ::superpad {
    }
 
    #==============================================================
-   # Procedures specifiques du driver
+   # Procedures specifiques du plugin
    #==============================================================
 
    #------------------------------------------------------------
@@ -247,6 +233,8 @@ namespace eval ::superpad {
    #     cree la fenetre de la raquette
    #------------------------------------------------------------
    proc run { {zoom .4} {positionxy 0+0} } {
+      global caption color colorpad geompad
+
       if { [ string length [ info commands .superpad.display* ] ] != "0" } {
          destroy .superpad
       }
@@ -260,11 +248,6 @@ namespace eval ::superpad {
       # === Initialisation of the variables
       # === Initialisation des variables
       # =======================================
-
-      #--- Definition of global variables (arrays)
-      #--- Definition des variables globales (arrays)
-      variable widget
-      global caption color colorpad geompad
 
       #--- Definition of colorpads
       #--- Definition des couleurs
@@ -348,7 +331,6 @@ namespace eval ::superpad {
 ###################################################################
 
 namespace eval ::telescopePad {
-   variable This
 
    array set private {
       telescopeRa    ""
@@ -391,7 +373,6 @@ namespace eval ::telescopePad {
    #------------------------------------------------------------
    proc addFrame { parentFrame zoom } {
       variable This
-      variable private
       global audace colorpad geompad statustel
 
       set This $parentFrame.movepad
@@ -444,10 +425,10 @@ namespace eval ::telescopePad {
          -text "1" -value 1 -variable audace(telescope,speed) \
          -command { ::telescope::setSpeed "1" }
 
-      pack $This.card.speed.4 -in $This.card.speed  -fill y -expand 1
-      pack $This.card.speed.3 -in $This.card.speed  -fill y -expand 1
-      pack $This.card.speed.2 -in $This.card.speed  -fill y -expand 1
-      pack $This.card.speed.1 -in $This.card.speed  -fill y -expand 1
+      pack $This.card.speed.4 -in $This.card.speed -fill y -expand 1
+      pack $This.card.speed.3 -in $This.card.speed -fill y -expand 1
+      pack $This.card.speed.2 -in $This.card.speed -fill y -expand 1
+      pack $This.card.speed.1 -in $This.card.speed -fill y -expand 1
 
       button  $This.card.w -borderwidth 4 \
          -font [ list {Arial} $geompad(fontsize20) $geompad(textthick) ] \
@@ -527,9 +508,9 @@ namespace eval ::telescopePad {
       bind $This.card.ns.n <ButtonRelease-1> { ::telescope::stop n }
 
       #--- bind display zone
-      bind $This.frameCoord <ButtonPress-1>            { ::telescope::afficheCoord }
-      bind $This.frameCoord.labelRa <ButtonPress-1>    { ::telescope::afficheCoord }
-      bind $This.frameCoord.labelDec <ButtonPress-1>   { ::telescope::afficheCoord }
+      bind $This.frameCoord <ButtonPress-1>          { ::telescope::afficheCoord }
+      bind $This.frameCoord.labelRa <ButtonPress-1>  { ::telescope::afficheCoord }
+      bind $This.frameCoord.labelDec <ButtonPress-1> { ::telescope::afficheCoord }
 
    }
 
@@ -1055,7 +1036,6 @@ namespace eval DlgSelectStar {
 
       set This $this
       createDialog
-      #tkwait visibility $This
       tkwait window $This
       return $result
    }
@@ -1154,7 +1134,7 @@ namespace eval DlgSelectStar {
       array donesearch stars $searchId
       update
       set size [grid bbox $This.frameButton]
-      wm geometry $This "[lindex $size 2]x[lindex $size 3]"
+      wm geometry $This [lindex $size 2]x[lindex $size 3]
 
       pack $This.frameButton -side top -fill both -expand 1
    }

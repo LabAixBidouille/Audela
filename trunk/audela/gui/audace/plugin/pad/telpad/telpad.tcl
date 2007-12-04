@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.15 2007-09-20 19:11:38 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.16 2007-12-04 22:26:12 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -31,13 +31,12 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc getPluginProperty { propertyName } {
       switch $propertyName {
-
       }
    }
 
    #------------------------------------------------------------
    #  getPluginTitle
-   #     retourne le label du driver dans la langue de l'utilisateur
+   #     retourne le label du plugin dans la langue de l'utilisateur
    #------------------------------------------------------------
    proc getPluginTitle { } {
       global caption
@@ -47,9 +46,9 @@ namespace eval telpad {
 
    #------------------------------------------------------------
    #  getPluginHelp
-   #     retourne la documentation du driver
+   #     retourne la documentation du plugin
    #
-   #  return "nom_driver.htm"
+   #  return "nom_plugin.htm"
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "telpad.htm"
@@ -80,7 +79,6 @@ namespace eval telpad {
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(telpad,visible) ] }      { set conf(telpad,visible)      "1" }
       if { ! [ info exists conf(telpad,wmgeometry) ] }   { set conf(telpad,wmgeometry)   "157x254+657+252" }
       if { ! [ info exists conf(telpad,focuserLabel) ] } { set conf(telpad,focuserLabel) "focuserlx200" }
 
@@ -97,7 +95,6 @@ namespace eval telpad {
       variable widget
       global conf
 
-      set widget(visible)      $conf(telpad,visible)
       set widget(focuserLabel) $conf(telpad,focuserLabel)
    }
 
@@ -111,13 +108,12 @@ namespace eval telpad {
       variable widget
       global conf
 
-      set conf(telpad,visible)      $widget(visible)
       set conf(telpad,focuserLabel) $widget(focuserLabel)
    }
 
    #------------------------------------------------------------
    #  fillConfigPage
-   #     fenetre de configuration du driver
+   #     fenetre de configuration du plugin
    #
    #  return nothing
    #------------------------------------------------------------
@@ -135,15 +131,6 @@ namespace eval telpad {
          pack $frm.frame1.focuser -anchor nw -side left -padx 10 -pady 10
 
       pack $frm.frame1 -side top -fill both -expand 0
-
-      #--- Raquette toujours visible
-      frame $frm.frame2 -borderwidth 0 -relief raised
-
-         checkbutton $frm.frame2.visible -text "$caption(telpad,pad_visible)" -highlightthickness 0 \
-            -variable ::telpad::widget(visible) -onvalue 1 -offvalue 0
-         pack $frm.frame2.visible -anchor nw -side left -padx 10 -pady 10
-
-      pack $frm.frame2 -side top -fill both -expand 0
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $frm
@@ -174,9 +161,9 @@ namespace eval telpad {
       global conf
 
       #--- Ferme la raquette
-      if { [info exists This] == 1 } {
+      if { [ info exists This ] == 1 } {
          if { [ winfo exists $This ] == 1 } {
-            set conf(telpad,wmgeometry) "[ wm geometry $This ]"
+            set conf(telpad,wmgeometry) [ wm geometry $This ]
            destroy $This
          }
       }
@@ -184,7 +171,7 @@ namespace eval telpad {
 
    #------------------------------------------------------------
    #  isReady
-   #     informe de l'etat de fonctionnement du driver
+   #     informe de l'etat de fonctionnement du plugin
    #
    #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
@@ -193,7 +180,7 @@ namespace eval telpad {
    }
 
    #==============================================================
-   # Procedures specifiques du driver
+   # Procedures specifiques du plugin
    #==============================================================
 
    #------------------------------------------------------------
@@ -206,7 +193,6 @@ namespace eval telpad {
 
       set This $this
       createDialog
-      #tkwait visibility $This
 
       #--- Je refraichis l'affichage des coordonnees
       ::telescope::afficheCoord
@@ -219,7 +205,6 @@ namespace eval telpad {
    #------------------------------------------------------------
    proc createDialog { } {
       variable This
-      variable widget
       global audace caption conf
 
       if { [ winfo exists $This ] } {
