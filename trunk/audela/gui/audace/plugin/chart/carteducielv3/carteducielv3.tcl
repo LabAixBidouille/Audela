@@ -1,10 +1,10 @@
 #
 # Fichier : carteducielv3.tcl
-# Description : Driver de communication avec "Cartes Du Ciel" (communication TCP)
+# Description : Plugin de communication avec "Cartes Du Ciel" (communication TCP)
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.17 2007-09-20 19:06:05 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.18 2007-12-04 20:45:55 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -37,7 +37,7 @@ namespace eval carteducielv3 {
 
    #------------------------------------------------------------
    #  getPluginTitle
-   #     retourne le label du driver dans la langue de l'utilisateur
+   #     retourne le label du plugin dans la langue de l'utilisateur
    #------------------------------------------------------------
    proc getPluginTitle { } {
       global caption
@@ -47,9 +47,9 @@ namespace eval carteducielv3 {
 
    #------------------------------------------------------------
    #  getPluginHelp
-   #     retourne la documentation du driver
+   #     retourne la documentation du plugin
    #
-   #  return "nom_driver.htm"
+   #  return "nom_plugin.htm"
    #------------------------------------------------------------
    proc getPluginHelp { } {
       return "carteducielv3.htm"
@@ -88,7 +88,7 @@ namespace eval carteducielv3 {
       }
 
       if { ! [ info exists conf(carteducielv3,fixedfovstate) ] } { set conf(carteducielv3,fixedfovstate) "1" }
-      if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00ss" }
+      if { ! [ info exists conf(carteducielv3,fixedfovvalue) ] } { set conf(carteducielv3,fixedfovvalue) "05d00m00s" }
       if { ! [ info exists conf(carteducielv3,dirname) ] }       { set conf(carteducielv3,dirname)       "c:/" }
       if { ! [ info exists conf(carteducielv3,binarypath) ] }    { set conf(carteducielv3,binarypath)    " " }
       if { ! [ info exists conf(carteducielv3,localserver) ] }   { set conf(carteducielv3,localserver)   "1" }
@@ -184,7 +184,7 @@ namespace eval carteducielv3 {
 
    #------------------------------------------------------------
    #  fillConfigPage
-   #     fenetre de configuration du driver
+   #     fenetre de configuration du plugin
    #
    #  return rien
    #------------------------------------------------------------
@@ -333,7 +333,7 @@ namespace eval carteducielv3 {
 
    #------------------------------------------------------------
    #  isReady
-   #     informe de l'etat de fonctionnement du driver
+   #     informe de l'etat de fonctionnement du plugin
    #
    #  return 0 (ready), 1 (not ready)
    #------------------------------------------------------------
@@ -343,7 +343,7 @@ namespace eval carteducielv3 {
    }
 
    #==============================================================
-   # Fonctions specifiques du driver de la categorie "catalog"
+   # Fonctions specifiques du plugin de la categorie "catalog"
    #==============================================================
 
    #------------------------------------------------------------
