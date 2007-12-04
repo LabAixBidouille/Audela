@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.16 2007-10-14 09:10:24 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.17 2007-12-04 22:42:50 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -14,7 +14,7 @@ namespace eval parallelport {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
@@ -43,9 +43,9 @@ proc ::parallelport::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::parallelport::getPluginHelp { } {
    return "parallelport.htm"
@@ -69,7 +69,7 @@ proc ::parallelport::getPluginOS { } {
 
 #------------------------------------------------------------
 #  initPlugin
-#     initialise le driver
+#     initialise le plugin
 #     init est lance automatiquement au chargement de ce fichier tcl
 #  return namespace
 #------------------------------------------------------------
@@ -89,12 +89,12 @@ proc ::parallelport::initPlugin { } {
 }
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return rien
 #------------------------------------------------------------
-proc ::parallelport::configureDriver { } {
+proc ::parallelport::configurePlugin { } {
    global audace
 
    #--- Affiche la liaison
@@ -172,7 +172,7 @@ proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return rien
 #------------------------------------------------------------
@@ -262,7 +262,7 @@ proc ::parallelport::getSelectedLinkLabel { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------

@@ -2,7 +2,7 @@
 # Fichier : quickaudine.tcl
 # Description : Interface de liaison QuickAudine
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: quickaudine.tcl,v 1.20 2007-10-14 09:10:44 robertdelmas Exp $
+# Mise a jour $Id: quickaudine.tcl,v 1.21 2007-12-04 22:43:08 robertdelmas Exp $
 #
 
 namespace eval quickaudine {
@@ -14,16 +14,16 @@ namespace eval quickaudine {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return rien
 #------------------------------------------------------------
-proc ::quickaudine::configureDriver { } {
+proc ::quickaudine::configurePlugin { } {
    global audace
 
    #--- Affiche la liaison
@@ -94,7 +94,7 @@ proc ::quickaudine::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 #  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
+#     retourne le label du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::quickaudine::getPluginTitle { } {
    global caption
@@ -104,9 +104,9 @@ proc ::quickaudine::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::quickaudine::getPluginHelp { } {
    return "quickaudine.htm"
@@ -114,7 +114,7 @@ proc ::quickaudine::getPluginHelp { } {
 
 #------------------------------------------------------------
 #  getPluginType
-#     retourne le type de driver
+#     retourne le type de plugin
 #------------------------------------------------------------
 proc ::quickaudine::getPluginType { } {
    return "link"
@@ -130,7 +130,7 @@ proc ::quickaudine::getPluginOS { } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return rien
 #------------------------------------------------------------
@@ -267,7 +267,7 @@ proc ::quickaudine::getSelectedLinkLabel { } {
 
 #------------------------------------------------------------
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::quickaudine::initPlugin { } {
    variable private
@@ -303,7 +303,7 @@ proc ::quickaudine::initConf { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------

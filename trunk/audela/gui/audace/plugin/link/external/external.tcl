@@ -2,7 +2,7 @@
 # Fichier : external.tcl
 # Description : Interface de liaison manuelle
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: external.tcl,v 1.9 2007-10-14 09:09:24 robertdelmas Exp $
+# Mise a jour $Id: external.tcl,v 1.10 2007-12-04 22:38:41 robertdelmas Exp $
 #
 
 namespace eval external {
@@ -14,16 +14,16 @@ namespace eval external {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::external::configureDriver { } {
+proc ::external::configurePlugin { } {
    global audace
 
    #--- Affiche la liaison
@@ -82,7 +82,7 @@ proc ::external::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 #  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
+#     retourne le label du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::external::getPluginTitle { } {
    global caption
@@ -92,9 +92,9 @@ proc ::external::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::external::getPluginHelp { } {
    return "external.htm"
@@ -102,7 +102,7 @@ proc ::external::getPluginHelp { } {
 
 #------------------------------------------------------------
 #  getPluginType
-#     retourne le type de driver
+#     retourne le type de plugin
 #------------------------------------------------------------
 proc ::external::getPluginType { } {
    return "link"
@@ -118,7 +118,7 @@ proc ::external::getPluginOS { } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return nothing
 #------------------------------------------------------------
@@ -173,7 +173,7 @@ proc ::external::getSelectedLinkLabel { } {
 
 #------------------------------------------------------------
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::external::initPlugin { } {
    variable private
@@ -202,7 +202,7 @@ proc ::external::initConf { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready) , 1 (not ready)
 #------------------------------------------------------------

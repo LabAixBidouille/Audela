@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.21 2007-10-28 08:54:29 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.22 2007-12-04 22:37:47 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -14,7 +14,7 @@ namespace eval ethernaude {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
@@ -44,12 +44,12 @@ proc ::ethernaude::ConfEthernAude { } {
 }
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::ethernaude::configureDriver { } {
+proc ::ethernaude::configurePlugin { } {
    global audace
 
    return
@@ -103,7 +103,7 @@ proc ::ethernaude::deletePluginInstance { linkLabel deviceId usage } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return nothing
 #------------------------------------------------------------
@@ -224,7 +224,7 @@ proc ::ethernaude::getPluginProperty { propertyName } {
 
 #------------------------------------------------------------
 #  getPluginTitle
-#     retourne le label du driver dans la langue de l'utilisateur
+#     retourne le label du plugin dans la langue de l'utilisateur
 #------------------------------------------------------------
 proc ::ethernaude::getPluginTitle { } {
    global caption
@@ -234,9 +234,9 @@ proc ::ethernaude::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::ethernaude::getPluginHelp { } {
    return "ethernaude.htm"
@@ -300,7 +300,7 @@ proc ::ethernaude::getSelectedLinkLabel { } {
 
 #------------------------------------------------------------
 #  initPlugin  (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
+#     initialise le plugin
 #------------------------------------------------------------
 proc ::ethernaude::initPlugin { } {
    variable private
@@ -340,7 +340,7 @@ proc ::ethernaude::initConf { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------

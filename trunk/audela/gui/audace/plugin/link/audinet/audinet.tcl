@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.13 2007-10-11 19:24:04 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.14 2007-12-04 22:36:08 robertdelmas Exp $
 #
 
 namespace eval audinet {
@@ -14,16 +14,16 @@ namespace eval audinet {
 }
 
 #==============================================================
-# Procedures generiques de configuration des drivers
+# Procedures generiques de configuration des plugins
 #==============================================================
 
 #------------------------------------------------------------
-#  configureDriver
-#     configure le driver
+#  configurePlugin
+#     configure le plugin
 #
 #  return nothing
 #------------------------------------------------------------
-proc ::audinet::configureDriver { } {
+proc ::audinet::configurePlugin { } {
    global audace
 
    #--- Affiche la liaison
@@ -102,9 +102,9 @@ proc ::audinet::getPluginTitle { } {
 
 #------------------------------------------------------------
 #  getPluginHelp
-#     retourne la documentation du driver
+#     retourne la documentation du plugin
 #
-#  return "nom_driver.htm"
+#  return "nom_plugin.htm"
 #------------------------------------------------------------
 proc ::audinet::getPluginHelp { } {
    return "audinet.htm"
@@ -128,7 +128,7 @@ proc ::audinet::getPluginOS { } {
 
 #------------------------------------------------------------
 #  fillConfigPage
-#     fenetre de configuration du driver
+#     fenetre de configuration du plugin
 #
 #  return nothing
 #------------------------------------------------------------
@@ -331,7 +331,7 @@ proc ::audinet::getSelectedLinkLabel { } {
 
 #------------------------------------------------------------
 #  initPlugin (est lance automatiquement au chargement de ce fichier tcl)
-#     initialise le driver
+#     initialise le plugin
 #
 #  return namespace name
 #------------------------------------------------------------
@@ -373,7 +373,7 @@ proc ::audinet::initConf { } {
 
 #------------------------------------------------------------
 #  isReady
-#     informe de l'etat de fonctionnement du driver
+#     informe de l'etat de fonctionnement du plugin
 #
 #  return 0 (ready), 1 (not ready)
 #------------------------------------------------------------
