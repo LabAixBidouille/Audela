@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.11 2007-10-05 16:55:26 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.12 2007-12-04 18:53:04 robertdelmas Exp $
 #
 
 global audace
@@ -28,8 +28,7 @@ namespace eval obj_lune {
    #
    proc run { } {
       variable This
-      global audace
-      global obj_lune
+      global audace obj_lune
 
       set This "$audace(base).obj_lune"
       createDialog
@@ -43,14 +42,11 @@ namespace eval obj_lune {
    #
    proc goto_lune { } {
       variable This
-      global audace
-      global obj_lune
-      global conf
+      global audace conf obj_lune
 
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief groove -state disabled
       $This.cmd.match configure -relief raised -state disabled
-      $This.cmd.aide configure -relief raised -state disabled
       $This.cmd.fermer configure -relief raised -state disabled
       update
       #--- Gestion des differents telescopes goto
@@ -58,7 +54,6 @@ namespace eval obj_lune {
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state normal
       $This.cmd.match configure -relief raised -state normal
-      $This.cmd.aide configure -relief raised -state normal
       $This.cmd.fermer configure -relief raised -state normal
       update
       catch {
@@ -73,14 +68,11 @@ namespace eval obj_lune {
    #
    proc match_lune { } {
       variable This
-      global audace
-      global obj_lune
-      global caption
+      global audace caption obj_lune
 
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state disabled
       $This.cmd.match configure -relief groove -state disabled
-      $This.cmd.aide configure -relief raised -state disabled
       $This.cmd.fermer configure -relief raised -state disabled
       update
       #--- Gestion des differents telescopes goto
@@ -97,7 +89,6 @@ namespace eval obj_lune {
       #--- Gestion des boutons actifs/inactifs
       $This.cmd.goto configure -relief raised -state normal
       $This.cmd.match configure -relief raised -state normal
-      $This.cmd.aide configure -relief raised -state normal
       $This.cmd.fermer configure -relief raised -state normal
       update
       catch {
@@ -111,8 +102,7 @@ namespace eval obj_lune {
    #
    proc fermer { } {
       variable This
-      global conf
-      global obj_lune
+      global conf obj_lune
 
       #--- Recuperation de la position et de la dimension de la fenetre
       set conf(obj_lune,wmgeometry) [ wm geometry $This ]
@@ -128,11 +118,13 @@ namespace eval obj_lune {
       destroy $This
    }
 
+   #
+   # obj_lune::createDialog
+   # Creation de l'interface graphique
+   #
    proc createDialog { } {
       variable This
-      global caption
-      global conf
-      global obj_lune
+      global caption conf obj_lune
 
       #--- Initialisation
       set obj_lune(indice_mois)      "0"
@@ -159,20 +151,9 @@ namespace eval obj_lune {
       wm protocol $This WM_DELETE_WINDOW ::obj_lune::fermer
       set obj_lune(espion) "0"
 
-      frame $This.usr -borderwidth 0 -relief raised
-         #--- Creation de la fenetre a onglets
-         set nn $This.usr.book
-         Rnotebook:create $nn -tabs "{$caption(obj_lune,goto)} {$caption(obj_lune,ephemerides)} \
-            {$caption(obj_lune,cartographie)} {$caption(obj_lune,carte_libration)} \
-            {$caption(obj_lune,meilleur_moment)}" -borderwidth 1
-         fillPage1 $nn
-         fillPage2 $nn
-         fillPage3 $nn
-         fillPage4 $nn
-         fillPage5 $nn
-         pack $nn -fill both -expand 1
-      pack $This.usr -side top -fill both -expand 1
+      #--- Frame des boutons
       frame $This.cmd -borderwidth 1 -relief raised
+
          button $This.cmd.goto -text "$caption(obj_lune,goto)" -relief raised -state normal \
             -command { ::obj_lune::goto_lune }
          pack $This.cmd.goto -side left -padx 5 -pady 5 -ipadx 5 -ipady 5
@@ -186,7 +167,31 @@ namespace eval obj_lune {
             -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::obj_lune::getPluginType ] ] \
                [ ::obj_lune::getPluginDirectory ] [ ::obj_lune::getPluginHelp ]"
          pack $This.cmd.aide -side right -padx 5 -pady 5 -ipadx 5 -ipady 5
-      pack $This.cmd -side top -fill x
+
+      pack $This.cmd -side bottom -fill x
+
+      #--- Frame des onglets
+      frame $This.usr -borderwidth 0 -relief raised
+
+         #--- Creation de la fenetre a onglets
+         set notebook [ NoteBook $This.usr.onglet ]
+
+         gotoPage           [ $notebook insert end gotoPage           -text "$caption(obj_lune,goto) " \
+                               -raisecmd "::obj_lune::cmdOnglet1" ]
+         ephemeridesPage    [ $notebook insert end ephemeridesPage    -text "$caption(obj_lune,ephemerides)   " \
+                               -raisecmd "::obj_lune::cmdOnglet2" ]
+         cartePage          [ $notebook insert end cartePage          -text "$caption(obj_lune,cartographie)   " \
+                               -raisecmd "::obj_lune::cmdOnglet3" ]
+         carteLibrationPage [ $notebook insert end carteLibrationPage -text "$caption(obj_lune,carte_libration)      " \
+                               -raisecmd "::obj_lune::cmdOnglet4" ]
+         meilleurMomentPage [ $notebook insert end meilleurMomentPage -text "$caption(obj_lune,meilleur_moment)           " \
+                               -raisecmd "::obj_lune::cmdOnglet5" ]
+
+         pack $notebook -fill both -expand 1 -padx 4 -pady 4
+
+         $notebook raise [ $notebook page 0 ]
+
+      pack $This.usr -side top -fill both -expand 1
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
       bind $This <Key-F1> { ::console::GiveFocus }
@@ -195,17 +200,112 @@ namespace eval obj_lune {
       ::confColor::applyColor $This
    }
 
-   proc fillPage1 {nn} {
+   #
+   # obj_lune::cmdOnglet1
+   # Procedure executee lorsqu'on selectionne l'onglet numero 1
+   #
+   proc cmdOnglet1 { } {
       variable This
-      global audace
       global obj_lune
-      global caption
-      global zone
-      global frmm
+
+      #--- Affiche en gras le titre de l'onglet
+      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "gotoPage" ]
+      #--- Efface les rectangles bleus et rouges
+      ::obj_lune::EffaceRectangleBleu_Rouge
+      #--- Reaffiche les rectangles bleus uniquement
+      ::obj_lune::AfficheRepereSite
+      ::obj_lune::AfficheRepereSite_lib
+      #--- Efface les numeros des cartes choisies
+      $obj_lune(onglet3).frame7.labURL5 configure -text "-"
+      $obj_lune(onglet4).frame7.labURL5 configure -text "-"
+      #--- Efface les numeros des cartes courantes
+      $obj_lune(onglet3).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet4).frame8.labURL7 configure -text "-"
+   }
+
+   #
+   # obj_lune::cmdOnglet2
+   # Procedure executee lorsqu'on selectionne l'onglet numero 2
+   #
+   proc cmdOnglet2 { } {
+      variable This
+      global obj_lune
+
+      #--- Affiche en gras le titre de l'onglet
+      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "ephemeridesPage" ]
+      #--- Efface les numeros des cartes courantes
+      $obj_lune(onglet3).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet4).frame8.labURL7 configure -text "-"
+   }
+
+   #
+   # obj_lune::cmdOnglet3
+   # Procedure executee lorsqu'on selectionne l'onglet numero 3
+   #
+   proc cmdOnglet3 { } {
+      variable This
+      global obj_lune
+
+      #--- Affiche en gras le titre de l'onglet
+      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "cartePage" ]
+      #--- Efface les numeros des cartes courantes
+      $obj_lune(onglet3).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet4).frame8.labURL7 configure -text "-"
+   }
+
+   #
+   # obj_lune::cmdOnglet4
+   # Procedure executee lorsqu'on selectionne l'onglet numero 4
+   #
+   proc cmdOnglet4 { } {
+      variable This
+      global obj_lune
+
+      #--- Affiche en gras le titre de l'onglet
+      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "carteLibrationPage" ]
+      #--- Efface les numeros des cartes courantes
+      $obj_lune(onglet3).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet4).frame8.labURL7 configure -text "-"
+   }
+
+   #
+   # obj_lune::cmdOnglet5
+   # Procedure executee lorsqu'on selectionne l'onglet numero 5
+   #
+   proc cmdOnglet5 { } {
+      variable This
+      global obj_lune
+
+      #--- Affiche en gras le titre de l'onglet
+      ::obj_lune::onRaiseNotebook [ $This.usr.onglet raise "meilleurMomentPage" ]
+      #--- Efface les numeros des cartes courantes
+      $obj_lune(onglet3).frame8.labURL7 configure -text "-"
+      $obj_lune(onglet4).frame8.labURL7 configure -text "-"
+   }
+
+   #
+   # obj_lune::onRaiseNotebook
+   # Affiche en gras le nom de l'onglet
+   #
+   proc onRaiseNotebook { ongletName } {
+      variable This
+
+      set font [ $This.usr.onglet.c itemcget "$ongletName:text" -font ]
+      lappend font "bold"
+      #--- Remarque : Il faut attendre que l'onglet soit redessine avant de changer la police
+      after 200 $This.usr.onglet.c itemconfigure "$ongletName:text" -font [ list $font ]
+   }
+
+   #
+   # obj_lune::gotoPage
+   # Onglet de selection du site lunaire
+   #
+   proc gotoPage { frm } {
+      variable This
+      global audace caption obj_lune zone
 
       #--- Initialisation
-      set frmm(Obj_Lune1) [Rnotebook:frame $nn 1]
-      set frm $frmm(Obj_Lune1)
+      set obj_lune(onglet1) $frm
 
       #--- Creation des differents frames
       frame $frm.frame4 -borderwidth 0 -relief raised
@@ -415,24 +515,12 @@ namespace eval obj_lune {
       label $frm.frame9.labURL8a -text "-"
       pack $frm.frame9.labURL8a -side left -padx 0 -pady 1
 
-      #--- Initialisation du numero de la carte courante
-      bind [Rnotebook:button $nn 1] <Button-1> {
-         #--- Reaffiche les rectangles bleus uniquement
-         ::obj_lune::AfficheRepereSite
-         ::obj_lune::AfficheRepereSite_lib
-         #--- Efface les numeros des cartes choisies et de la carte courante
-         $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
-         $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
-      }
-
       #--- Selectionne un des 2 onglets de la cartographie
       bind $frm.frame9.labURL8a <ButtonPress-1> {
          for {set i 1} {$i <= 84} {incr i} {
             if { $i <= 76 } {
                if { $obj_lune(n1) == "$i" } {
-                  set num_onglet "3"
-                  set nn "$This.usr.book"
-                  switch -exact -- $num_onglet { 3 { Rnotebook:raise $nn 3 } }
+                  $This.usr.onglet raise "cartePage"
                   if { ($i >= "1") && ($i <= "9") } {
                      set obj_lune(carte_choisie) "ar0$obj_lune(n1)$obj_lune(extension_cartes)"
                   } else {
@@ -445,9 +533,9 @@ namespace eval obj_lune {
                }
             } else {
                if { $obj_lune(lib_n1) == "$i" } {
-                  set num_onglet "4"
-                  set nn "$This.usr.book"
-                  switch -exact -- $num_onglet { 4 { Rnotebook:raise $nn 4 } }
+                  if { $obj_lune(n1) == "" } {
+                     $This.usr.onglet raise "carteLibrationPage"
+                  }
                   set obj_lune(carte_choisie_lib) "lib$obj_lune(lib_n1)$obj_lune(extension_cartes)"
                   ::obj_lune::EffaceRectangleBleu_Rouge_Lib
                   ::obj_lune::AfficheRepereSite_lib
@@ -459,15 +547,15 @@ namespace eval obj_lune {
       }
    }
 
-   proc fillPage2 {nn} {
-      global obj_lune
-      global caption
-      global audace
-      global frmm
+   #
+   # obj_lune::ephemeridesPage
+   # Onglet de calcul des ephemerides
+   #
+   proc ephemeridesPage { frm } {
+      global audace caption obj_lune
 
       #--- Initialisation
-      set frmm(Obj_Lune2) [Rnotebook:frame $nn 2]
-      set frm $frmm(Obj_Lune2)
+      set obj_lune(onglet2) $frm
 
       #--- Creation des differents frames
       frame $frm.frame0 -borderwidth 0 -relief raised
@@ -702,28 +790,20 @@ namespace eval obj_lune {
          -command { set obj_lune(change_mois) "-" ; ::obj_lune::precedant_suivant }
       pack $frm.frame31.moins -side left -padx 12 -pady 8 -fill x
 
-      #--- Initialisation du numero de la carte courante
-      bind [Rnotebook:button $nn 2] <Button-1> {
-         $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
-         $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
-      }
-
       #--- Calcul et affichage des ephemerides et des dates des phases de la Lune
       ::obj_lune::Lune_Ephemerides
       ::obj_lune::Lune_Phases
    }
 
-   proc fillPage3 {nn} {
-      global audace
-      global obj_lune
-      global caption
-      global zone
-      global color
-      global frmm
+   #
+   # obj_lune::cartePage
+   # Onglet de selection et d'affichage des cartes
+   #
+   proc cartePage { frm } {
+      global audace caption color obj_lune zone
 
       #--- Initialisation
-      set frmm(Obj_Lune3) [Rnotebook:frame $nn 3]
-      set frm $frmm(Obj_Lune3)
+      set obj_lune(onglet3) $frm
 
       #--- Creation des differents frames
       frame $frm.frame0 -borderwidth 0 -relief raised
@@ -801,25 +881,17 @@ namespace eval obj_lune {
 
       #--- Affichage du rectangle rouge de la carte courante choisie
       ::obj_lune::AfficheRectangleCarteChoisie
-
-      #--- Initialisation du numero de la carte courante
-      bind [Rnotebook:button $nn 3] <Button-1> {
-         $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
-         $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
-      }
    }
 
-   proc fillPage4 {nn} {
-      global audace
-      global obj_lune
-      global caption
-      global zone
-      global color
-      global frmm
+   #
+   # obj_lune::carteLibrationPage
+   # Onglet de selection et d'affichage des cartes de libration
+   #
+   proc carteLibrationPage { frm } {
+      global audace caption color obj_lune zone
 
       #--- Initialisation
-      set frmm(Obj_Lune4) [Rnotebook:frame $nn 4]
-      set frm $frmm(Obj_Lune4)
+      set obj_lune(onglet4) $frm
 
       #--- Creation des differents frames
       frame $frm.frame0 -borderwidth 0 -relief raised
@@ -897,23 +969,17 @@ namespace eval obj_lune {
 
       #--- Affichage du contour rouge de la carte courante choisie
       ::obj_lune::AffichePolygoneCarteChoisie
-
-      #--- Initialisation du numero de la carte courante
-      bind [Rnotebook:button $nn 4] <Button-1> {
-         $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
-         $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
-      }
    }
 
-   proc fillPage5 {nn} {
-      global audace
-      global obj_lune
-      global caption
-      global frmm
+   #
+   # obj_lune::meilleurMomentPage
+   # Onglet de calcul du meilleur moment pour observer un site
+   #
+   proc meilleurMomentPage { frm } {
+      global audace caption obj_lune
 
       #--- Initialisation
-      set frmm(Obj_Lune5) [Rnotebook:frame $nn 5]
-      set frm $frmm(Obj_Lune5)
+      set obj_lune(onglet5) $frm
 
       #--- Creation des differents frames
       frame $frm.frame0 -borderwidth 0 -relief raised
@@ -1077,12 +1143,7 @@ namespace eval obj_lune {
       pack $frm.frame20.lab16 -side left -padx 0 -pady 0
       label $frm.frame20.labURL16a -text "-"
       pack $frm.frame20.labURL16a -side left -padx 0 -pady 0
-
-      #--- Initialisation du numero de la carte courante
-      bind [Rnotebook:button $nn 5] <Button-1> {
-         $frmm(Obj_Lune3).frame8.labURL7 configure -text "-"
-         $frmm(Obj_Lune4).frame8.labURL7 configure -text "-"
-      }
    }
+
 }
 
