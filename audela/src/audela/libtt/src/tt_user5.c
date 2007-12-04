@@ -1025,11 +1025,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp2;
 	int result,kkk,x,y;
-	int nelem,index,naxis1,naxis2,x1,y1;
+	int nelem,index,naxis1,naxis2,x1,y1,nb_ss_image,k;
 	int *se = NULL;
 	double dvalue;
 	double mode2,mini2,maxi2;
-
 
 	/* --- intialisations ---*/
 	p_in=pseries->p_in; 
@@ -1045,62 +1044,76 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	/* --- calcul de la fonction ---*/
 	tt_imacreater(p_out,naxis1,naxis2);
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		dvalue=(double)p_in->p[kkk];
-		p_out->p[kkk]=(TT_PTYPE)(dvalue);	 
-	}
 	tt_imacreater(p_tmp1,naxis1,naxis2);
+	tt_imacreater(p_tmp2,naxis1,naxis2);
 	for (kkk=0;kkk<(int)(nelem);kkk++) {
 		dvalue=(double)p_in->p[kkk];
-		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);	 
-	}
-	
-	tt_morphomath_1(pseries);
-	
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		p_tmp2->p[kkk]=p_in->p[kkk];	 
-	}
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		p_in->p[kkk]=p_out->p[kkk];	 
-	}
-	
-	//binarisation de l'image en fonction de l'histogramme
-	tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			
-	//seuillage haut pour récupérer seulement les géostationnaires
-	for (y=0;y<naxis2;y++) {
-		for (x=0;x<naxis1;x++) {
-			if (p_in->p[y*naxis1+x]<(pseries->hicut)*0.88) {
-				p_in->p[y*naxis1+x]=0;				
-			} 
-		}
-	}
-	//seuillage bas pour garder les éventuelles traînées faibles
-	for (y=0;y<naxis2;y++) {
-		for (x=0;x<naxis1;x++) {
-			if (p_out->p[y*naxis1+x]<(pseries->hicut)*0.4) {
-				p_out->p[y*naxis1+x]=0;				
-			} 
-		}
-	}
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		p_tmp1->p[kkk]=p_out->p[kkk];	 
+		p_out->p[kkk]=(TT_PTYPE)(dvalue);
+		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);
+		p_tmp2->p[kkk]=(TT_PTYPE)(dvalue);
 	}
 
-	//filtre médian pour les géostationnaires
-	pseries->kernel_type=TT_KERNELTYPE_MED;
-	pseries->kernel_coef=0.0;
-	tt_ima_series_filter_1(pseries);
+	tt_morphomath_1(pseries);
+	
+	//pour visualiser le tophat 
+	//tt_imasaver(p_out,"D:/tophat.fit",16);
+
+	tt_imadestroyer(p_out);
+	tt_imadestroyer(p_in);
+
+	//binarisation de l'image en fonction de l'histogramme
+	tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+	
+	for (y=0;y<naxis2;y++) {
+		for (x=0;x<naxis1;x++) {
+			//seuillage haut pour récupérer seulement les géostationnaires
+			if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*1.9) {
+				p_tmp1->p[y*naxis1+x]=0;	
+				//seuillage bas pour garder les éventuelles traînées faibles
+				if (p_tmp2->p[y*naxis1+x]<(pseries->hicut)*1) {
+					p_tmp2->p[y*naxis1+x]=0;				
+				} 
+			} 
+		}
+	}
+	
 
 //-------------------------------------------------------/
 //sauve images pour recherche de geo gto et défilants
-//p_out = geo seuillé +filtre médian
-//p_in = geo seuillé
-//p_tmp2 = p_in initiale
-//p_tmp1 = gto seuillé
-	tt_imasaver(p_out,"D:/geoss.fit",16);
-	tt_imasaver(p_tmp1,"D:/gtoss.fit",16);
+//p_tmp2 = gto seuillé 
+//p_tmp1 = geo seuillé
 
+	tt_imasaver(p_tmp1,"D:/geoss.fit",16);
+	tt_imasaver(p_tmp2,"D:/gtoss.fit",16);
+
+	/* --- recherche des traînées dans p_out --- */
+	//couper l'image en 64 sous-images de 256*256 pixels 
+	nb_ss_image=8;
+	k=0;
+	for (kkk=0;kkk<nb_ss_image*nb_ss_image;kkk++) {
+		//definition de la zone de la sous_image
+		tt_imacreater(p_in,naxis1/nb_ss_image,naxis2/nb_ss_image);
+		pseries->threshold=1;
+		//pseries->index
+		//première imagette en bas à gauche, dernière en haut à droite
+		for (kkk=k;kkk<((int)(nelem)/(nb_ss_image*nb_ss_image)+k);kkk++) {
+			dvalue=(double)p_tmp2->p[kkk];
+			p_in->p[kkk]=(TT_PTYPE)(dvalue);
+		}
+
+
+		tt_ima_series_hough_myrtille(pseries);
+		//attention p_out est lea transformée de hough!!!
+		tt_imadestroyer(p_in);
+		k=k+(int)(nelem)/(nb_ss_image*nb_ss_image);
+	}
+
+	//détection des traînées a cheval sur deux sous images ou plus
+
+	/* --- enregistrer le photocentre de chaque point détecter dans p_in --- */
+	// se servir des traînées détectées pour les éliminer de la liste des geo
+	
+	//
 
 	/* --- calcul des temps ---*/
 	pseries->jj_stack=pseries->jj[index-1];
@@ -1108,7 +1121,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	result=0;
 	return result ;
-
 }
 
 
@@ -1157,20 +1169,15 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 	/* --- calcul de la fonction ---*/
 	tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		dvalue=(double)p_in->p[kkk];
-		p_out->p[kkk]=(TT_PTYPE)(dvalue);	 
-	}
 	tt_imacreater(p_tmp1,p_in->naxis1,p_in->naxis2);
+		tt_imacreater(p_tmp2,p_in->naxis1,p_in->naxis2);
 	for (kkk=0;kkk<(int)(nelem);kkk++) {
 		dvalue=(double)p_in->p[kkk];
-		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);	 
+		p_out->p[kkk]=(TT_PTYPE)(dvalue);	
+		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);
+		p_tmp2->p[kkk]=(TT_PTYPE)(dvalue);
 	}
-	tt_imacreater(p_tmp2,p_in->naxis1,p_in->naxis2);
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		dvalue=(double)p_in->p[kkk];
-		p_tmp2->p[kkk]=(TT_PTYPE)(dvalue);	 
-	}
+	
 
 	if (x1%2 != 1) {
 		x1=x1+1;
@@ -1179,27 +1186,26 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		y1=y1+1;
 	}
 
-	//creation de l'élément structurant
-	if (strcmp (struct_elem,"RECTANGLE")==0) {
-		
+	/* ------------------------------------------- */
+	/* ---- creation de l'élément structurant ---- */
+	/* ------------------------------------------- */
+	if (strcmp (struct_elem,"RECTANGLE")==0) {	
 		size=x1*y1;
 		se=calloc(size,sizeof(int));	
 		for (i=0; i<size;i++) {
 				se[i]=1;
 		}	
-		// attention c'est valable que pour un rectangle mais il faut calculer 
-		//pour cercle ou autre SE pour avoir les dimensions de la matrice SE
 		sizex = x1;
 		sizey = y1;
 		
-	}  else if (strcmp (struct_elem,"DIAMOND")==0){
+	} else if (strcmp (struct_elem,"DIAMOND")==0){
 		size=x1*y1;
 		se=calloc(size,sizeof(int));
 		for (i=0; i<size;i++) {
 			se[i]=0;
 		}	
-		for (i=0; i<y1;i++) {	
-			if (i< y1/2) {
+		for (i=0;i<y1;i++) {	
+			if (i<y1/2) {
 				for (kkk=0;kkk<(2*i+1);kkk++) {
 					se[i*(x1-1)+(x1-1)/2+kkk]=1;					
 				}
@@ -1244,9 +1250,13 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		for (i=0; i<size;i++) {
 			se[i]=1;
 		}
+		sizex = x1;
+		sizey = y1;
 	}
 	
-	//appel de la fonction de traitement de morpho_math
+	/* --------------------------------------------------------- */
+	/* --- appel de la fonction de traitement de morpho_math --- */
+	/* --------------------------------------------------------- */
 	i=strcmp (nom_trait,"DILATE");
 
 	if (i==0) {
@@ -1266,9 +1276,58 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 	} 
+
 	i=strcmp (nom_trait,"TOPHAT");
+	//filtre chapeau de haut forme classique
 	if (i==0) {
+		//ouverture de l'image initiale
 		erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+
+		//réduction de la dynamique des images et calcul des seuils de visu
+		tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+		hicuttemp =pseries->hicut;
+		locuttemp=pseries->locut;
+		tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
+
+		//rajustement de l'histogramme des deux images pour faire la soustraction entre l'image initiale et une ouverture 
+		for (y=0;y<naxis2;y++) {
+			for (x=0;x<naxis1;x++) {
+				p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;
+
+				if (p_out->p[y*naxis1+x]<locuttemp) {
+					p_out->p[y*naxis1+x]=0;
+				} else if (p_out->p[y*naxis1+x]>hicuttemp) {
+					p_out->p[y*naxis1+x]=255;
+				} else {
+					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)locuttemp)*(float)255./(float)(hicuttemp-locuttemp);
+				}
+				
+				if (p_tmp2->p[y*naxis1+x]<pseries->locut) {					
+					p_tmp2->p[y*naxis1+x]=0;	
+				} else if (p_tmp2->p[y*naxis1+x]>pseries->hicut) {
+					p_tmp2->p[y*naxis1+x]=255;
+				} else {
+					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)pseries->locut)*(float)255./(float)(pseries->hicut-pseries->locut);
+				}
+				if ((p_out->p[y*naxis1+x]/((mode1-(float)pseries->locut)*255./(float)(pseries->hicut-pseries->locut))<1)&&(locuttemp > pseries->locut)) {
+					p_out->p[y*naxis1+x]=(float)1.1*(p_out->p[y*naxis1+x])*(float)pseries->locut/(float)locuttemp;
+				} else if ((p_out->p[y*naxis1+x]/((mode1-(float)pseries->locut)*255./(float)(pseries->hicut-pseries->locut))>1)&&(pseries->hicut> hicuttemp)) {
+					p_out->p[y*naxis1+x]=(float)1.1*(p_out->p[y*naxis1+x])*(float)pseries->hicut/(float)hicuttemp;
+				}
+				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];	
+			}
+		}
+	}
+	
+	i=strcmp (nom_trait,"TOPHATE");
+	if (i==0) {
+		//extension du tophat : ouverture d'une fermeture
+			//fermeture
+		dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			//ouverture
+		erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 
 		/* --- Calcul des seuils de visualisation ---*/
@@ -1308,6 +1367,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	} 
+
 	i=strcmp (nom_trait,"GRADIENT");
 	if (i==0) {
 		erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
@@ -1318,7 +1378,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	}
-	i=strcmp (nom_trait,"CIEL");//médiane sous condition pour avoir le fond de ciel
+
+	i=strcmp (nom_trait,"CIEL");//médiane sous condition pour faire une carte du fond de ciel
 	if (i==0) {
 		//defini le nombre de fois que l'image subit ce traitement
 		nb_test=2;
@@ -1334,9 +1395,9 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 			seuil =(pseries->hicut)*0.4;
 			tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-	//-------------------------------------------------------------------/
-	//enregistre l'image après le traitement de morphologie mathématique
-		tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+	
+			//enregistre l'image après le traitement de morphologie mathématique
+			//	tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
 			//erosion par la médiane si gradient supérieur à seuil
 			// définition du centre de l'élément structurant
@@ -1423,7 +1484,6 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	}
-	//-------------------------------------------------------------------/
 	//enregistre l'image après le traitement de morphologie mathématique
 	//tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
 	free(se);
@@ -1446,7 +1506,6 @@ void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int si
 	//on commence par le coin en bas à gauche de l'image p_out [0][0]
 	for (y=cy;y<(naxis2-cy);y++) {
 		for (x=cx;x<(naxis1-cx);x++) {
-
 			sup=pin->p[y*naxis1+x];
 			//boucle dans la boite englobant le SE
 			for (yy=0;yy<sizey;yy++) {
@@ -1457,7 +1516,7 @@ void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int si
 					}
 				}
 			}
-			 pout->p[y*naxis1+x]=(TT_PTYPE)(sup);
+			pout->p[y*naxis1+x]=(TT_PTYPE)(sup);
 		}
 	}			
 }
@@ -1477,7 +1536,6 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 	//on commence par le coin en bas à gauche de l'image p_out [0][0]
 	for (y=cy;y<(naxis2-cy);y++) {
 		for (x=cx;x<(naxis1-cx);x++) {
-
 			inf=pin->p[y*naxis1+x];
 			//boucle dans la boite englobant le SE
 			for (yy=0;yy<sizey;yy++) {
