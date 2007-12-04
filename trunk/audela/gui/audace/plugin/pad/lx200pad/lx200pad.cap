@@ -1,6 +1,6 @@
 #
 # Fichier : lx200pad.cap
-# Mise a jour $Id: lx200pad.cap,v 1.6 2007-01-27 14:46:15 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.cap,v 1.7 2007-12-04 22:16:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,49 +13,42 @@ global caption langage
 
 set caption(lx200pad,titre)            "LX200"
 set caption(lx200pad,pad_size)         "Its size"
-set caption(lx200pad,pad_visible)      "Always Visible"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Sa taille"
-   set caption(lx200pad,pad_visible)   "Toujours visible"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Dimensioni"
-   set caption(lx200pad,pad_visible)   "Sempre visibile"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Su tamaño"
-   set caption(lx200pad,pad_visible)   "Siempre visible"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Ihre Größe"
-   set caption(lx200pad,pad_visible)   "Immer Sichtbar"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Seu tamanho"
-   set caption(lx200pad,pad_visible)   "Sempre visivel"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(lx200pad,titre)         "LX200"
    set caption(lx200pad,pad_size)      "Dens størrelse"
-   set caption(lx200pad,pad_visible)   "Altid synlig"
 
 }
 
