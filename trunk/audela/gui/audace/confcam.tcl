@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.102 2007-12-02 00:00:51 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.103 2007-12-04 22:28:25 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -111,10 +111,10 @@ proc ::confCam::run { } {
 }
 
 #
-# confCam::startDriver
+# confCam::startPlugin
 # Ouvre les cameras
 #
-proc ::confCam::startDriver { } {
+proc ::confCam::startPlugin { } {
    variable private
    global conf
 
@@ -133,10 +133,10 @@ proc ::confCam::startDriver { } {
 }
 
 #
-# confCam::stopDriver
+# confCam::stopPlugin
 # Ferme toutes les cameras ouvertes
 #
-proc ::confCam::stopDriver { } {
+proc ::confCam::stopPlugin { } {
    ::confCam::stopItem A
    ::confCam::stopItem B
    ::confCam::stopItem C
@@ -236,16 +236,17 @@ proc ::confCam::createDialog { } {
    wm protocol $private(frm) WM_DELETE_WINDOW ::confCam::fermer
 
    frame $private(frm).usr -borderwidth 0 -relief raised
+
       #--- Creation de la fenetre a onglets
-      set notebook [ NoteBook $private(frm).usr.onglet  ]
+      set notebook [ NoteBook $private(frm).usr.onglet ]
       for { set i 0 } { $i < [ llength $private(pluginNamespaceList) ] } { incr i } {
          set namespace [ lindex $private(pluginNamespaceList) $i ]
-         set title [ lindex $private(pluginLabelList) $i ]
-         set frm [$notebook insert end $namespace -text $title  -raisecmd "::confCam::onRaiseNotebook $namespace"]
+         set title     [ lindex $private(pluginLabelList) $i ]
+         set frm       [ $notebook insert end $namespace -text "$title " -raisecmd "::confCam::onRaiseNotebook $namespace" ]
          ::$namespace\::fillConfigPage $frm $private(currentCamItem)
       }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
 
-      pack $notebook -fill both -expand 1
    pack $private(frm).usr -side top -fill both -expand 1
 
    #--- Je recupere la liste des visu
@@ -483,10 +484,11 @@ proc ::confCam::selectNotebook { camItem { camName "" } } {
 #----------------------------------------------------------------------------
 proc ::confCam::onRaiseNotebook { camName } {
    variable private
+
    set font [$private(frm).usr.onglet.c itemcget "$camName:text" -font]
    lappend font "bold"
    #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
-   after 100 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
+   after 200 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
 }
 
 #----------------------------------------------------------------------------
@@ -908,19 +910,17 @@ proc ::confCam::findPlugin { } {
       set catchResult [catch {
          #--- je recupere le nom du package
          if { [ ::audace::getPluginInfo "$pkgIndexFileName" pluginInfo] == 0 } {
-            if { $pluginInfo(type) == "camera"} {
-               foreach os $pluginInfo(os) {
-                  if { $os == [ lindex $::tcl_platform(os) 0 ] } {
-                     #--- je charge le package
-                     package require $pluginInfo(name)
-                     #--- j'initalise le plugin
-                     $pluginInfo(namespace)::initPlugin
-                     set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
-                     #--- je l'ajoute dans la liste des plugins
-                     lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
-                     lappend private(pluginLabelList) $pluginlabel
-                     ::console::affiche_prompt "#$caption(confcam,camera) $pluginlabel v$pluginInfo(version)\n"
-                  }
+            if { $pluginInfo(type) == "camera" } {
+               if { [ lsearch $pluginInfo(os) [ lindex $::tcl_platform(os) 0 ] ] != "-1" } {
+                  #--- je charge le package
+                  package require $pluginInfo(name)
+                  #--- j'initalise le plugin
+                  $pluginInfo(namespace)::initPlugin
+                  set pluginlabel "[$pluginInfo(namespace)::getPluginTitle]"
+                  #--- je l'ajoute dans la liste des plugins
+                  lappend private(pluginNamespaceList) [ string trimleft $pluginInfo(namespace) "::" ]
+                  lappend private(pluginLabelList) $pluginlabel
+                  ::console::affiche_prompt "#$caption(confcam,camera) $pluginlabel v$pluginInfo(version)\n"
                }
             }
          } else {
