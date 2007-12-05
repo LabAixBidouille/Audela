@@ -940,7 +940,6 @@ int tt_ima_series_invert_2(TT_IMA_SERIES *pseries);
 int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_rgradient_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_hough_1(TT_IMA_SERIES *pseries);
-int tt_ima_series_hough_myrtille(TT_IMA_SERIES *pseries);
 int tt_ima_series_back_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_test_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_resample_1(TT_IMA_SERIES *pseries);
