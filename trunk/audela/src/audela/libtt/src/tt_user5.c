@@ -30,7 +30,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries);
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries);
 
-void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double a0, double b0);
+void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double *eq);
 
 int tt_morphomath_1 (TT_IMA_SERIES *pseries);
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
@@ -1025,12 +1025,15 @@ double erf( double x ) {
 
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
-	TT_IMA *p_in,*p_out,*p_tmp1,*pin, *pout;
-	int result,kkk,x,y,k1,k2,k3,k4,k5;
-	int nelem,index,naxis1,naxis2,x1,y1,nb_ss_image,k;
+	TT_IMA *p_in,*p_out,*p_tmp1,*pin, *pout,*p_tmp2;
+	int result,kkk,x,y,k1,k2,k3,k5;
+	int nelem,index,naxis1,naxis2,x1,y1,nb_ss_image,k,ngto;
 	int *se = NULL;
-	double dvalue,a0,b0;
+	double dvalue;
 	double mode2,mini2,maxi2;
+	char filenamegto[FLEN_FILENAME];
+	FILE *fic;
+	double *eq;
 
 	/* --- intialisations ---*/
 	p_in=pseries->p_in; 
@@ -1038,12 +1041,18 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	pout=pseries->p_in; 
 	p_out=pseries->p_out;
 	p_tmp1=pseries->p_tmp1;
+	p_tmp2=pseries->p_tmp2;
 	nelem=pseries->nelements;
 	naxis1=p_in->naxis1;
 	naxis2=p_in->naxis2;
 	index=pseries->index;
 	x1=pseries->x1;
 	y1=pseries->y1;
+	eq = (double*)calloc(2,sizeof(double));
+	strcpy(filenamegto,pseries->objefile);
+	if (strcmp(filenamegto,"")==0) {
+		strcpy(filenamegto,"../ros/src/grenouille/gtostat.txt");
+	}
 
 	/* --- calcul de la fonction ---*/
 	tt_imacreater(p_out,naxis1,naxis2);
@@ -1057,7 +1066,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	tt_morphomath_1(pseries);
 	
 	//pour visualiser le tophat 
-	//tt_imasaver(p_out,"D:/tophat.fit",16);
+	tt_imasaver(p_out,"D:/tophat.fit",16);
 
 	for (kkk=0;kkk<(int)(nelem);kkk++) {
 		dvalue=(double)p_out->p[kkk];
@@ -1070,10 +1079,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	for (y=0;y<naxis2;y++) {
 		for (x=0;x<naxis1;x++) {
 			//seuillage haut pour récupérer seulement les géostationnaires
-			if (p_out->p[y*naxis1+x]<(pseries->hicut)*1.9) {
+			if (p_out->p[y*naxis1+x]<(pseries->hicut)*1.8) {
 				p_out->p[y*naxis1+x]=0;	
 				//seuillage bas pour garder les éventuelles traînées faibles
-				if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*0.9) {
+				if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*0.8) {
 					p_tmp1->p[y*naxis1+x]=0;				
 				} 
 			} 
@@ -1085,50 +1094,56 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 //sauve images pour recherche de geo gto et défilants
 //p_tmp1 = gto seuillé 
 //p_out = geo seuillé
-
 	tt_imasaver(p_out,"D:/geo.fit",16);
 	tt_imasaver(p_tmp1,"D:/gto.fit",16);
 
 	/* --- recherche des traînées dans p_out --- */
 	//couper l'image en 64 sous-images de 256*256 pixels 
 	nb_ss_image=8;
-	k=0;
+	k=0;ngto=0;
 	k3=0;
-	k4=1;
 	pseries->threshold=1;
 	//definition de la zone de la sous_image
-	tt_imacreater(pin,naxis1/nb_ss_image,naxis2/nb_ss_image);
-		
+	tt_imadestroyer(p_tmp2);
+	tt_imacreater(p_tmp2,256,256);
+
+	/* --- ouvre le fichier en ecriture ---*/
+	fic=fopen(filenamegto,"wt");	
+
 	for (kkk=0;kkk<nb_ss_image*nb_ss_image;kkk++) {	
 	
 		//première imagette en bas à gauche, dernière en haut à droite
 		for (k1=0;k1<(int)(naxis1)/(nb_ss_image);k1++) {
 			for (k2=0;k2<(int)(naxis2)/(nb_ss_image);k2++) {
 				dvalue=(double)p_tmp1->p[naxis2*(k2+k3*naxis2/nb_ss_image)+k1+k5];
-				pin->p[(naxis2/nb_ss_image)*k2+k1]=(TT_PTYPE)(dvalue);
+				p_tmp2->p[(naxis2/nb_ss_image)*k2+k1]=(TT_PTYPE)(dvalue);
 			}
 		}
 		/////////////////////
-		//tt_imasaver(pin,"D:/gtopetite.fit",16);
-
-		tt_ima_series_hough_myrtille(pin,pout,(naxis1)/(nb_ss_image),(naxis2)/(nb_ss_image),1,0,0);
+		tt_imasaver(p_tmp2,"D:/gtopetite.fit",16);
+	
+		tt_ima_series_hough_myrtille(p_tmp2,pout,(naxis1)/(nb_ss_image),(naxis2)/(nb_ss_image),1,eq);
 
 		//recupère les coordonnées de la droite détectée y=a0*x+b0
-		a0=pseries->xcenter;
-		b0=pseries->ycenter;
-
+		if ((eq[0]!=0)&&(eq[1]!=0)) {
+			//chnagement de repère: petite image -> grande image
+			eq[1]=eq[1]-(k5)*eq[0]+k3*256;
+			/* --- enregistrer l'equation de la droite détectée --- */
+			fprintf(fic,"%d %f %f\n",ngto,eq[0],eq[1]);
+			ngto++;
+		}
+		
 		//attention pout est la transformée de hough!!!
 		k=k+(int)(naxis2)/(nb_ss_image);
 		k5=k-k3*naxis2;
-		k3=(int)k4/8;
-		k4++;
+		k3=(int)(kkk+1)/8;
 	}
-
-	tt_imadestroyer(pin);
+	fclose(fic);
+	tt_imadestroyer(p_tmp2);
 
 	//détection des traînées a cheval sur deux sous images ou plus
 
-	/* --- enregistrer le photocentre de chaque point détecter dans p_in --- */
+	
 
 	/* --- sortir la liste des geo --- */
 	// se servir des traînées détectées pour les éliminer de la liste des geo
@@ -1572,7 +1587,7 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 }
 
 
-void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double a0, double b0)
+void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double *eq)
 /***************************************************************************/
 /* Transformee de Hough arrangée pour la detection des GTO                 */
 /***************************************************************************/
@@ -1714,15 +1729,18 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		if (theta0==(TT_PI)/2.) {
 			//tourner image
 		} else {
-			a0=tan(theta0);
-			b0=ro0/(cos(theta0));
+			eq[0]=tan(theta0);
+			eq[1]=ro0/(cos(theta0));
 		}
 	} else {
 		//pas de detection dans le plan de hough
-		a0=0;
-		b0=0;
+		eq[0]=0;
+		eq[1]=0;
 	}
+
+
 	//equation de la droite sous la forme y=a0*x+b0
+	tt_imadestroyer(pout);
 	
 }
 
