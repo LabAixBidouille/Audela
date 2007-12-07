@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.9 2007-12-04 19:04:43 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.10 2007-12-07 22:42:33 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -472,6 +472,9 @@ proc ::audine::configureCamera { camItem bufNo } {
                -debug_cam $conf(audinet,debug) ]
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]
+         }
+         default {
+            error "$conf(audine,port) driver not found."
          }
       }
       #--- J'affiche un message d'information dans la Console
