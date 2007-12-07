@@ -723,6 +723,8 @@ typedef struct {
    TT_IMA *p_in;
    TT_IMA *p_tmp1;
    TT_IMA *p_tmp2;
+   TT_IMA *p_tmp3;
+   TT_IMA *p_tmp4;
    TT_IMA *p_out;
    double *jj;
    double *poids;
