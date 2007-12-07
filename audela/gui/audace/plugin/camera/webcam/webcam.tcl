@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.28 2007-12-04 19:20:03 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.29 2007-12-07 22:43:24 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -466,6 +466,9 @@ proc ::webcam::configureCamera { camItem bufNo } {
                #--- si  longueposestartvalue=0 alors longueposestovalue=1
                #--- si  longueposestartvalue=1 alors longueposestovalue=0
                cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
+            }
+            default {
+               error "$conf(webcam,$camItem,longueposeport) long exposure driver not found."
             }
          }
       } else {
