@@ -1330,18 +1330,20 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				}
 				//changement de repère: petite image -> grande image
 				eq[1]=eq[1]-(k5+kk*n1/2)*eq[0]+(k3)*256+kk*n2/2;
-				somme_x=somme_x+k5+kk*n1/2;
-				somme_y=somme_y+(k3)*256+kk*n2/2;
-				xdebut=xdebut+k5+kk*n1/2;
-				ydebut=ydebut+(k3)*256+kk*n2/2;
-				xfin=xfin+k5+kk*n1/2;
-				yfin=yfin+(k3)*256+kk*n2/2;
+				if ((somme_x!=0)&&(somme_y!=0)) {
+					somme_x=somme_x+k5+kk*n1/2;
+					somme_y=somme_y+(k3)*256+kk*n2/2;
+					xdebut=xdebut+k5+kk*n1/2;
+					ydebut=ydebut+(k3)*256+kk*n2/2;
+					xfin=xfin+k5+kk*n1/2;
+					yfin=yfin+(k3)*256+kk*n2/2;
 
-				/* ---------------------------------------------------- */
-				/* --- enregistrer l'equation de la droite détectée --- */
-				/* ---------------------------------------------------- */
-				fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",ngto,eq[0],eq[1],somme_x,somme_y,xdebut,ydebut,xfin,yfin);
-				ngto++;
+					/* ---------------------------------------------------- */
+					/* --- enregistrer l'equation de la droite détectée --- */
+					/* ---------------------------------------------------- */
+					fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",ngto,eq[0],eq[1],somme_x,somme_y,xdebut,ydebut,xfin,yfin);
+					ngto++;
+				}
 			}
 	
 			k=k+n2;
@@ -1350,8 +1352,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 		}
 	}
 	fclose(fic);
-
-	
 
 
 	/* --- sortir la liste des geo --- */
@@ -1412,8 +1412,12 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 
 	/* --- calcul de la fonction ---*/
-	//tt_imacreater(p_out,naxis1,naxis2);
-	//tt_imacreater(p_tmp1,naxis1,naxis2);
+	if (p_out->naxis1==0) {
+		tt_imacreater(p_out,naxis1,naxis2);
+	}
+	if (p_tmp1->naxis1==0) {
+		tt_imacreater(p_tmp1,naxis1,naxis2);
+	}
 	tt_imacreater(p_tmp2,naxis1,naxis2);
 	for (kkk=0;kkk<(int)(nelem);kkk++) {
 		dvalue=(double)p_in->p[kkk];
