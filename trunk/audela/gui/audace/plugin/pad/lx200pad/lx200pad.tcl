@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.14 2007-12-04 22:25:18 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.15 2007-12-07 22:46:32 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -162,6 +162,10 @@ namespace eval ::lx200pad {
 
       #--- Affiche la raquette
       lx200pad::run $conf(lx200pad,padsize) $conf(lx200pad,position)
+
+      #--- Je demarre la surveillance de audace(telescope,speed)
+      ::telescope::addSpeedListener ::lx200pad::surveilleSpeed
+
       return
    }
 
@@ -182,12 +186,11 @@ namespace eval ::lx200pad {
          set conf(lx200pad,position) [string range $geom $deb $fin]
       }
 
+      #--- J'arrete la surveillance de audace(telescope,speed)
+      ::telescope::removeSpeedListener ::lx200pad::surveilleSpeed
+
       #--- Supprime la raquette
       destroy .lx200pad
-
-      #--- J'arrete la surveillance de audace(telescope,speed) et je modifie pour debloquer la boucle d'attente
-      set temp $audace(telescope,speed)
-      set audace(telescope,speed) $temp
 
       return
    }
@@ -1112,35 +1115,12 @@ namespace eval ::lx200pad {
          bind $zonelx200(0).lab2 <ButtonPress-1> {::telescope::setSpeed "1"}
       }
 
-      #--- Je demarre la surveillance de audace(telescope,speed)
-      ::lx200pad::startSurveilleSpeed
-
       #--- Je refraichi l'affichage des coordonnees
       ::telescope::afficheCoord
 
       # =======================================
       # === It is the end of the script run ===
       # =======================================
-   }
-
-   #------------------------------------------------------------
-   #  startSurveilleSpeed
-   #   lance ::lx200pad::surveilleSpeed si ce n'est pas deja fait
-   #
-   #  return rien
-   #------------------------------------------------------------
-   proc startSurveilleSpeed { } {
-      global suveilleSpeedActif
-
-      #--- Je cree la variable globale si elle n'existe pas
-      if { [info exists suveilleSpeedActif] == "0" } {
-         set suveilleSpeedActif "0"
-      }
-
-      if { $suveilleSpeedActif == "0" } {
-         after 100 ::lx200pad::surveilleSpeed
-         set suveilleSpeedActif "1"
-      }
    }
 
    #------------------------------------------------------------
@@ -1151,11 +1131,8 @@ namespace eval ::lx200pad {
    #
    #  return rien
    #------------------------------------------------------------
-   proc surveilleSpeed { } {
-      global audace suveilleSpeedActif
-
-      #--- J'attends un changement de la valeur de audace(telescope,speed)
-      vwait audace(telescope,speed)
+   proc surveilleSpeed { args } {
+      global audace
 
       #--- Si la raquette existe, je mets a jour l'affichage de la vitesse
       if { [ winfo exists .lx200pad ] } {
@@ -1165,13 +1142,6 @@ namespace eval ::lx200pad {
             3 { ::lx200pad::lx200_set_find }
             4 { ::lx200pad::lx200_set_slew }
          }
-      }
-
-      #--- Je relance la surveillance
-      if { $suveilleSpeedActif == "1" && [ winfo exists .lx200pad ] } {
-          after 100 ::lx200pad::surveilleSpeed
-      } else {
-         set suveilleSpeedActif "0"
       }
    }
 
