@@ -2151,13 +2151,17 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    Tcl_DString dsptr;
-   int result,valid,k;
+   int result,valid;
    char s[524];
-   char ss[524];
    char sss[524];
    char name[524];
    struct elemorb elem;
-   double jj,jj0,a,n=0.0,k_gauss;
+   double jj;
+   /*
+   double jj0,a,n=0.0,k_gauss;
+   char ss[524];
+   int k;
+   */
    double longmpc,rhocosphip,rhosinphip;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
    double long1_sun=0.,lati_sun=0.;
@@ -2203,6 +2207,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       1 24209U 96044B   03262.91033065 -.00000065  00000-0  00000+0 0  8956
       2 24209   0.0626 123.5457 0004535  56.5151 138.1659  1.00273036 26182
       */
+      /*
 	   result=TCL_OK;
 	   Tcl_DStringInit(&dsptr);
       while (feof(ftle)==0) {
@@ -2272,13 +2277,26 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
             } else {
                k_gauss=K;
             }
-            n=n*360.; /* deg/day */
+            n=n*360.; // deg/day
             a=pow(k_gauss/(DR)/n,2./3.);
             elem.q=a*(1-elem.e);
-            /* --- on lance le calcul ---*/
+            // --- on lance le calcul ---
             mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
             sprintf(s,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
             Tcl_DStringAppend(&dsptr,s,-1);
+         }
+      }
+      fclose(ftle);
+      */
+ 	   result=TCL_OK;
+	   Tcl_DStringInit(&dsptr);
+      while (feof(ftle)==0) {
+         mc_tle_decnext1(ftle,&elem,name,&valid);
+         if (valid==1) {
+            /* --- on lance le calcul ---*/
+            mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+            sprintf(s,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
+            Tcl_DStringAppend(&dsptr,sss,-1);
          }
       }
       fclose(ftle);
@@ -2291,13 +2309,17 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
 int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    Tcl_DString dsptr;
-   int result,valid,k;
+   int result,valid;
    char s[524];
-   char ss[524];
    char sss[524];
    char name[524];
    struct elemorb elem;
-   double jj,jj0,a,n=0.0,k_gauss;
+   double jj;
+   /*
+   double jj0,a,n=0.0,k_gauss;
+   char ss[524];
+   int k;
+   */
    double longmpc,rhocosphip,rhosinphip;
    FILE *ftle;
 
@@ -2329,90 +2351,11 @@ int Cmd_mctcl_tle2xyz(ClientData clientData, Tcl_Interp *interp, int argc, char 
          result = TCL_ERROR;
 	      return(result);
       }
-      /*
-      0         1         2         3         4         5         6         7
-       123456789 123456789 123456789 123456789 123456789 123456789 123456789
-      TELECOM 2D
-      1 24209U 96044B   03262.91033065 -.00000065  00000-0  00000+0 0  8956
-      2 24209   0.0626 123.5457 0004535  56.5151 138.1659  1.00273036 26182
-      */
-	  result=TCL_OK;
-	  Tcl_DStringInit(&dsptr);
-      strcpy(elem.designation,"");
+ 	   result=TCL_OK;
+	   Tcl_DStringInit(&dsptr);
       while (feof(ftle)==0) {
-         fgets(s,255,ftle);
-         valid=0;
-         if (s!=NULL) {
-            if (s[0]=='1') {
-               strcpy(ss,s+1); ss[7-1+1]='\0';
-               strcpy(elem.id_norad,ss);
-               strcpy(ss,s+8); ss[17-1+1]='\0';
-               strcpy(elem.id_cospar,ss);
-               strcpy(ss,s+18); ss[2]='\0';
-               sprintf(sss,"20%s-01-01T00:00:00",ss);
-               mctcl_decode_date(interp,sss,&jj0);
-               strcpy(ss,s+20); ss[12]='\0';
-               jj0+=(atof(ss)-1.);
-			   valid=0;
-            } else if (s[0]=='2') {
-               strcpy(ss,s+8); ss[15-8+1]='\0';
-               elem.i=atof(ss)*(DR);
-               strcpy(ss,s+17); ss[24-17+1]='\0';
-               elem.o=atof(ss)*(DR);
-               strcpy(ss,s+26); ss[32-26+1]='\0';
-               elem.e=1e-7*atof(ss);
-               strcpy(ss,s+34); ss[41-34+1]='\0';
-               elem.w=atof(ss)*(DR);
-               strcpy(ss,s+43); ss[50-43+1]='\0';
-               elem.m0=atof(ss)*(DR);
-               strcpy(ss,s+52); ss[62-52+1]='\0';
-               n=atof(ss);
-               if (strcmp(name,"")==0) {
-                  valid=1;
-               } else if (strstr(elem.designation,name)!=NULL) {
-                  valid=1;
-               }
-            } else {
-               k=(int)strlen(s);
-			   if (k>79) {k=79;s[k]='\0';}
-               strcpy(elem.designation,s);
-               if (k>0) {
-                  elem.designation[k-1]='\0';
-               } else {
-                  elem.designation[0]='\0';
-			   }
-			   valid=0;
-            }
-         }
+         mc_tle_decnext1(ftle,&elem,name,&valid);
          if (valid==1) {
-            elem.type=4;
-            elem.jj_m0=jj0;
-            elem.jj_equinoxe=jj0;
-            elem.jj_epoque=jj0;
-            elem.h0=0.;
-            elem.g=0.;
-            elem.n=0.;
-            elem.h=0.;
-            elem.nbjours=0;
-            elem.nbobs=0;
-            elem.ceu0=0.;
-            elem.ceut=0.;
-            elem.jj_ceu0=jj0;
-            elem.code1=0;
-            elem.code2=0;
-            elem.code3=0;
-            elem.code4=0;
-            elem.code5=0;
-            elem.code6=0;
-            elem.residu_rms=0.;
-            if (elem.type==4) {
-               k_gauss=KGEOS;
-            } else {
-               k_gauss=K;
-            }
-            n=n*360.; /* deg/day */
-            a=pow(k_gauss/(DR)/n,2./3.);
-            elem.q=a*(1-elem.e);
             /* --- on lance le calcul ---*/
             mc_xyzgeoelem(jj,elem,longmpc,rhocosphip,rhosinphip,0,&xageo,&yageo,&zageo,&xtgeo,&ytgeo,&ztgeo,&xsgeo,&ysgeo,&zsgeo,&xlgeo,&ylgeo,&zlgeo);
             sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,xageo,yageo,zageo,xtgeo,ytgeo,ztgeo,xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo);
@@ -2596,6 +2539,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /*    nombre decimal <  1000000 : Jour Julien Modifie						       */
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
+/* Home : localisation topocentrique                                        */
 /* HTM_level  : niveau du découpage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
@@ -2641,10 +2585,11 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
    double *relief=NULL;
    double *albedo=NULL;
    int klon,klat,nlon,nlat;
+   int valid;
 //double dlt;
 
-   if(argc<14) {
-      sprintf(s,"Usage: %s Planet Date_TT HTM_level filename_relief filename_albedo frame_coord frame_center lon_phase0 Date_phase0_TT sideral_period_h lonpole latpole density_g/cm3 ?genefilename?", argv[0]);
+   if(argc<15) {
+      sprintf(s,"Usage: %s Planet Date_TT Home HTM_level filename_relief filename_albedo frame_coord frame_center lon_phase0 Date_phase0_TT sideral_period_h lonpole latpole density_g/cm3 ?genefilename?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
  	   return TCL_ERROR;
    } else {
@@ -2662,29 +2607,31 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
       }
       /* --- decode la date ---*/
 	  	mctcl_decode_date(interp,argv[2],&jj);
+      /* --- decode le Home ---*/
+      longmpc=0.;
+      rhocosphip=0.;
+      rhosinphip=0.;
+      mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
       /* --- decode les parametres physiques ---*/
-      cdr.htmlevel=atoi(argv[3]);
-      strcpy(filename_relief,argv[4]);
-      strcpy(filename_albedo,argv[5]);
-      cdr.frame_coord=atoi(argv[6]);  /* =0 pole defined /ecliptic.  =1 pole defined /equator. */
-      cdr.frame_center=atoi(argv[7]);  /* =0 heliocentric.  =1 geocentric. */
-      cdr.lon_phase0=atof(argv[8]);
-      mctcl_decode_date(interp,argv[9],&cdr.jd_phase0);
-      cdr.period=atof(argv[10])/24.;
-      cdr.lonpole=atof(argv[11]);
-      cdr.latpole=atof(argv[12]);
-      cdr.density=atof(argv[13]); /* density g/cm3 */
-      if (argc>=15) {
-         genefilename=argv[14];
+      cdr.htmlevel=atoi(argv[4]);
+      strcpy(filename_relief,argv[5]);
+      strcpy(filename_albedo,argv[6]);
+      cdr.frame_coord=atoi(argv[7]);  /* =0 pole defined /ecliptic.  =1 pole defined /equator. */
+      cdr.frame_center=atoi(argv[8]);  /* =0 heliocentric.  =1 geocentric. */
+      cdr.lon_phase0=atof(argv[9]);
+      mctcl_decode_date(interp,argv[10],&cdr.jd_phase0);
+      cdr.period=atof(argv[11])/24.;
+      cdr.lonpole=atof(argv[12]);
+      cdr.latpole=atof(argv[13]);
+      cdr.density=atof(argv[14]); /* density g/cm3 */
+      if (argc>=16) {
+         genefilename=argv[15];
       } else {
          genefilename=NULL;
       }
       /* --- */
       dl=0.5*sqrt(41253./(8*pow(4,cdr.htmlevel)));
-      dl=5.;
-	   longmpc=0.;
-	   rhocosphip=0.;
-	   rhosinphip=0.;
+      dl=10.;
       /* === */
 	   /* === Lecture de la carte de relief ===*/
       /* === */
@@ -2698,7 +2645,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
       }
       if ((fichier_relief=fopen(filename_relief,"rt") ) == NULL) {
          free(relief);
-         sprintf(s,"Error : file %s cannot be read",argv[4]);
+         sprintf(s,"Error : file %s cannot be read",argv[5]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
 
@@ -2731,7 +2678,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
       if ((fichier_albedo=fopen(filename_albedo,"rt") ) == NULL) {
          free(relief);
          free(albedo);
-         sprintf(s,"Error : file %s cannot be read",argv[4]);
+         sprintf(s,"Error : file %s cannot be read",argv[6]);
          Tcl_SetResult(interp,s,TCL_VOLATILE);
          return TCL_ERROR;
 
@@ -2765,33 +2712,49 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
             free(relief);
             return TCL_ERROR;
 		   }
-      }
-      do {
-         /* --- lecture d'une ligne de la base d'orbite ---*/
-  			orbitisgood=NO;
-   		if (strcmp(orbitformat,"BOWELLFILE")==0) {
-            if (fgets(orbitstring,300,fichier_in)==0) {
-		         strcpy(orbitstring,"");
-   	      }
-            mc_bow_dec1(orbitstring,&aster);
-   	      if ((strcmp(aster.name,objename)==0)||(aster.num==atoi(objename))) {
-     			   orbitisgood=YES;
+         do {
+            /* --- lecture d'une ligne de la base d'orbite ---*/
+  			   orbitisgood=NO;
+   		   if (strcmp(orbitformat,"BOWELLFILE")==0) {
+               if (fgets(orbitstring,300,fichier_in)==0) {
+		            strcpy(orbitstring,"");
+   	         }
+               mc_bow_dec1(orbitstring,&aster);
+   	         if ((strcmp(aster.name,objename)==0)||(aster.num==atoi(objename))) {
+     			      orbitisgood=YES;
+                  break;
+			      }
+  			   } else if (strcmp(orbitformat,"MPCFILE")==0) {
+               if (fgets(orbitstring,300,fichier_in)==0) {
+   		         strcpy(orbitstring,"");
+		         }
+			      mc_mpc_dec1(orbitstring,&aster);
+   	         if ((strcmp(aster.name,objename)==0)||(aster.num==atoi(objename))) {
+     			      orbitisgood=YES;
+                  break;
+			      }
+            } else {
                break;
-			   }
-  			} else if (strcmp(orbitformat,"MPCFILE")==0) {
-            if (fgets(orbitstring,300,fichier_in)==0) {
-   		      strcpy(orbitstring,"");
-		      }
-			   mc_mpc_dec1(orbitstring,&aster);
-   	      if ((strcmp(aster.name,objename)==0)||(aster.num==atoi(objename))) {
-     			   orbitisgood=YES;
-               break;
-			   }
-         } else {
-            break;
+            }
+         } while (feof(fichier_in)==0);
+         fclose(fichier_in);
+         if (orbitisgood==NO) {
+            mc_aster2elem(aster,&elem);
          }
-      } while (feof(fichier_in)==0);
-      fclose(fichier_in);
+      }
+  		if (strcmp(orbitformat,"TLE")==0) {
+         fichier_in=fopen(orbitfile,"rt");
+         if (fichier_in != NULL) {
+            while (feof(fichier_in)==0) {
+               mc_tle_decnext1(fichier_in,&elem,objename,&valid);
+               if (valid==1) {
+                  orbitisgood=YES;
+                  break;
+               }
+            }
+            fclose(fichier_in);
+         }
+      }
       if (orbitisgood==NO) {
          /* --- la planete n'a pas ete trouvee dans fichier d'orbite : il faut sortir ---*/
          sprintf(s,"Error : Planet %s (type %d) not found in the file %s",objename,planetnum,orbitfile);
@@ -2800,7 +2763,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
          free(albedo);
          return TCL_ERROR;
       }
-      mc_aster2elem(aster,&elem);
+
       /* === */
 	   /* === Calcul des coordonnes heliocentriques de la planete et de la Terre pour chaque phase ===*/
       /* === */
@@ -2813,12 +2776,11 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
          free(albedo);
          return TCL_ERROR;
       }
-      /*phi=cdr.jd_phase0-cdr.period*floor((jj-cdr.jd_phase0)/cdr.period);*/
       phi=cdr.jd_phase0+cdr.period*floor((jj-cdr.jd_phase0)/cdr.period);
       for (k=0;k<n;k++) {
          cdrpos[k].phase=1.*k/n;
          cdrpos[k].jd=phi+1.*k/n*cdr.period;
-		   mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+   		mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
          /*
           xearth=1.;
           yearth=0.;
@@ -2867,6 +2829,51 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
          sprintf(s,"%f ",cdrpos[k].mag2);
          Tcl_DStringAppend(&dsptr,s,-1);
       }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].mag0);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].xearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].yearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].zearth);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].xaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].yaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].zaster);
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].angelong/(DR));
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
+      Tcl_DStringAppend(&dsptr,"} {",-1);
+      for (k=0;k<n;k++) {
+         sprintf(s,"%f ",cdrpos[k].angphase/(DR));
+         Tcl_DStringAppend(&dsptr,s,-1);
+      }
       Tcl_DStringAppend(&dsptr,"} ",-1);
       /* === sortie et destructeurs ===*/
       free(cdrpos);
@@ -2881,6 +2888,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
 int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Simulation de la courbe de lumiere d'asteroides binaires (SSB)           */
+/* OBSOLETE ? => SIMUMAGBIN */
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide SSB dans      */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */

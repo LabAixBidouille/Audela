@@ -734,6 +734,7 @@ void mc_lec_station_mpc(char *nom_fichier_station, char *station, double *longmp
 void mc_readelem(char *nom_fichier_in,struct elemorb *elem);
 void mc_select_observ(struct observ *obsin, int nbobsin,char *designation,struct observ *obsout,int *nbobsout);
 void mc_select32_observ(struct observ *obsin, int nbobsin,struct observ *obsout,int *nbobsout,int contrainte);
+void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid);
 void mc_tri1(char *nom_in, char *nom_out);
 void mc_tri2(char *nom_in, char *nom_out,char *nom_ref);
 int mc_util_comptelignes(char *nom,int *nblignes);
@@ -1238,6 +1239,8 @@ void mc_select_observ(struct observ *obsin, int nbobsin,char *designation,struct
 void mc_select32_observ(struct observ *obsin, int nbobsin,struct observ *obsout,int *nbobsout,int contrainte);
    Isole une serie de deux ou trois observations prealablement triee en
    ordre chronologique par mc_select_observ.
+void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid);
+   Genere un fichier de reference pour effectuer un tri croissant.
 void mc_tri1(char *nom_in, char *nom_out);
    Genere un fichier de reference pour effectuer un tri croissant.
    Le fichier in comporte deux colonnes : 1/ un indice incremental entier
