@@ -780,6 +780,112 @@ void mc_select32_observ(struct observ *obsin, int nbobsin,struct observ *obsout,
    }
 }
 
+void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
+/***************************************************************************/
+/* Lit les elements d'orbites TLE d'un fichier ouvert                      */
+/* si name="", alors retourne le TLE suivant dans la structure elem        */
+/* sinon alors retourne le TLE suivant dans la structure elem si c'est name*/
+/* Le flag valid=1 si la lecture a reussi                                  */
+/***************************************************************************/
+{
+   int k;
+   char s[524];
+   char ss[524];
+   char sss[524];
+   double jj0,a,n=0.0,k_gauss;
+
+      /*
+      0         1         2         3         4         5         6         7
+       123456789 123456789 123456789 123456789 123456789 123456789 123456789
+      TELECOM 2D
+      1 24209U 96044B   03262.91033065 -.00000065  00000-0  00000+0 0  8956
+      2 24209   0.0626 123.5457 0004535  56.5151 138.1659  1.00273036 26182
+      */
+   strcpy(elem->designation,"");
+   *valid=0;
+   if (ftle==NULL) {
+      return;
+   }
+   while (feof(ftle)==0) {
+      fgets(s,255,ftle);
+      *valid=0;
+      if (s!=NULL) {
+         if (s[0]=='1') {
+            strcpy(ss,s+1); ss[7-1+1]='\0';
+            strcpy(elem->id_norad,ss);
+            strcpy(ss,s+8); ss[17-1+1]='\0';
+            strcpy(elem->id_cospar,ss);
+            strcpy(ss,s+18); ss[2]='\0';
+            sprintf(sss,"20%s-01-01T00:00:00",ss);
+            mc_dateobs2jd(sss,&jj0);
+            strcpy(ss,s+20); ss[12]='\0';
+            jj0+=(atof(ss)-1.);
+            *valid=0;
+         } else if (s[0]=='2') {
+            strcpy(ss,s+8); ss[15-8+1]='\0';
+            elem->i=atof(ss)*(DR);
+            strcpy(ss,s+17); ss[24-17+1]='\0';
+            elem->o=atof(ss)*(DR);
+            strcpy(ss,s+26); ss[32-26+1]='\0';
+            elem->e=1e-7*atof(ss);
+            strcpy(ss,s+34); ss[41-34+1]='\0';
+            elem->w=atof(ss)*(DR);
+            strcpy(ss,s+43); ss[50-43+1]='\0';
+            elem->m0=atof(ss)*(DR);
+            strcpy(ss,s+52); ss[62-52+1]='\0';
+            n=atof(ss);
+            if (strcmp(name,"")==0) {
+               *valid=1;
+            } else if (strstr(elem->designation,name)!=NULL) {
+               *valid=1;
+            }
+         } else {
+            k=(int)strlen(s);
+			   if (k>79) {k=79;s[k]='\0';}
+            strcpy(elem->designation,s);
+            if (k>0) {
+               elem->designation[k-1]='\0';
+            } else {
+               elem->designation[0]='\0';
+			   }
+			   *valid=0;
+         }
+         if (*valid==1) {
+            elem->type=4;
+            elem->jj_m0=jj0;
+            elem->jj_equinoxe=jj0;
+            elem->jj_epoque=jj0;
+            elem->h0=0.;
+            elem->g=0.;
+            elem->n=0.;
+            elem->h=0.;
+            elem->nbjours=0;
+            elem->nbobs=0;
+            elem->ceu0=0.;
+            elem->ceut=0.;
+            elem->jj_ceu0=jj0;
+            elem->code1=0;
+            elem->code2=0;
+            elem->code3=0;
+            elem->code4=0;
+            elem->code5=0;
+            elem->code6=0;
+            elem->residu_rms=0.;
+            if (elem->type==4) {
+               k_gauss=KGEOS;
+            } else {
+               k_gauss=K;
+            }
+            n=n*360.; /* deg/day */
+            a=pow(k_gauss/(DR)/n,2./3.);
+            elem->q=a*(1-elem->e);
+            return;
+         }
+      }
+   }
+}
+
+
 void mc_tri1(char *nom_in, char *nom_out)
 /***************************************************************************/
 /* Genere un fichier de reference pour effectuer un tri croissant.         */
