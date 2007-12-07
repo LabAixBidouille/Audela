@@ -1025,29 +1025,32 @@ double erf( double x ) {
 
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
-	TT_IMA *p_in,*p_out,*p_tmp1,*pin, *pout,*p_tmp2;
-	int result,kkk,x,y,k1,k2,k3,k5;
-	int nelem,index,naxis1,naxis2,x1,y1,nb_ss_image,k,ngto;
+	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp2,*p_tmp3,*p_tmp4;
+	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul;
+	double xfin,yfin,xdebut,ydebut;
+	int result,nelem,index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,bord;
 	int *se = NULL;
-	double dvalue;
-	double mode2,mini2,maxi2;
+	double dvalue,somme_value,somme_x,somme_y,somme_value2,somme_x2,somme_y2;
+	double mode2,mini2,maxi2,bg;
+	double *bgmean = NULL, *bgsigma =NULL;
 	char filenamegto[FLEN_FILENAME];
 	FILE *fic;
 	double *eq;
 
 	/* --- intialisations ---*/
 	p_in=pseries->p_in; 
-	pin=pseries->p_in; 
-	pout=pseries->p_in; 
+	p_tmp4=pseries->p_tmp4; 
 	p_out=pseries->p_out;
 	p_tmp1=pseries->p_tmp1;
 	p_tmp2=pseries->p_tmp2;
+	p_tmp3=pseries->p_tmp3;
 	nelem=pseries->nelements;
 	naxis1=p_in->naxis1;
 	naxis2=p_in->naxis2;
 	index=pseries->index;
 	x1=pseries->x1;
 	y1=pseries->y1;
+
 	eq = (double*)calloc(2,sizeof(double));
 	strcpy(filenamegto,pseries->objefile);
 	if (strcmp(filenamegto,"")==0) {
@@ -1056,100 +1059,306 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	/* --- calcul de la fonction ---*/
 	tt_imacreater(p_out,naxis1,naxis2);
+	tt_imadestroyer(p_tmp1);
+	tt_imabuilder(p_tmp1);
 	tt_imacreater(p_tmp1,naxis1,naxis2);
-
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		dvalue=(double)p_in->p[kkk];
-		p_out->p[kkk]=(TT_PTYPE)(dvalue);
-	}
+	//tt_imabuilder(p_tmp3);
+	//tt_imacreater(p_tmp3,naxis1,naxis2);
 
 	tt_morphomath_1(pseries);
 	
 	//pour visualiser le tophat 
 	tt_imasaver(p_out,"D:/tophat.fit",16);
-
-	for (kkk=0;kkk<(int)(nelem);kkk++) {
-		dvalue=(double)p_out->p[kkk];
-		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);
-	}
 	
 	//binarisation de l'image en fonction de l'histogramme
-	tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+	tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 	
 	for (y=0;y<naxis2;y++) {
 		for (x=0;x<naxis1;x++) {
 			//seuillage haut pour récupérer seulement les géostationnaires
 			if (p_out->p[y*naxis1+x]<(pseries->hicut)*1.8) {
-				p_out->p[y*naxis1+x]=0;	
+				p_tmp1->p[y*naxis1+x]=0;	
 				//seuillage bas pour garder les éventuelles traînées faibles
-				if (p_tmp1->p[y*naxis1+x]<(pseries->hicut)*0.8) {
-					p_tmp1->p[y*naxis1+x]=0;				
-				} 
-			} 
-		}
-	}
-	
-
-//-------------------------------------------------------/
-//sauve images pour recherche de geo gto et défilants
-//p_tmp1 = gto seuillé 
-//p_out = geo seuillé
-	tt_imasaver(p_out,"D:/geo.fit",16);
-	tt_imasaver(p_tmp1,"D:/gto.fit",16);
-
-	/* --- recherche des traînées dans p_out --- */
-	//couper l'image en 64 sous-images de 256*256 pixels 
-	nb_ss_image=8;
-	k=0;ngto=0;
-	k3=0;
-	pseries->threshold=1;
-	//definition de la zone de la sous_image
-	tt_imadestroyer(p_tmp2);
-	tt_imacreater(p_tmp2,256,256);
-
-	/* --- ouvre le fichier en ecriture ---*/
-	fic=fopen(filenamegto,"wt");	
-
-	for (kkk=0;kkk<nb_ss_image*nb_ss_image;kkk++) {	
-	
-		//première imagette en bas à gauche, dernière en haut à droite
-		for (k1=0;k1<(int)(naxis1)/(nb_ss_image);k1++) {
-			for (k2=0;k2<(int)(naxis2)/(nb_ss_image);k2++) {
-				dvalue=(double)p_tmp1->p[naxis2*(k2+k3*naxis2/nb_ss_image)+k1+k5];
-				p_tmp2->p[(naxis2/nb_ss_image)*k2+k1]=(TT_PTYPE)(dvalue);
+				if (p_out->p[y*naxis1+x]<(pseries->hicut)*0.8) {
+					p_tmp2->p[y*naxis1+x]=0;				
+				}  else {
+					p_tmp2->p[y*naxis1+x]=p_out->p[y*naxis1+x];
+				}
+			} else {
+				p_tmp1->p[y*naxis1+x]=p_out->p[y*naxis1+x];
 			}
 		}
-		/////////////////////
-		tt_imasaver(p_tmp2,"D:/gtopetite.fit",16);
+	}
 	
-		tt_ima_series_hough_myrtille(p_tmp2,pout,(naxis1)/(nb_ss_image),(naxis2)/(nb_ss_image),1,eq);
+	tt_util_bgk(p_out,&(pseries->bgmean),&(pseries->bgsigma));
+	bg=(pseries->bgmean)+3*(pseries->bgsigma);
 
-		//recupère les coordonnées de la droite détectée y=a0*x+b0
-		if ((eq[0]!=0)&&(eq[1]!=0)) {
-			//chnagement de repère: petite image -> grande image
-			eq[1]=eq[1]-(k5)*eq[0]+k3*256;
-			/* --- enregistrer l'equation de la droite détectée --- */
-			fprintf(fic,"%d %f %f\n",ngto,eq[0],eq[1]);
-			ngto++;
-		}
+	//-------------------------------------------------------/
+	//sauve images pour recherche de geo gto et défilants
+	//p_out = gto seuillé et p_tmp1 = geo seuillé
+	//tt_imasaver(p_tmp1,"D:/geo.fit",16);
+	//tt_imasaver(p_tmp2,"D:/gto.fit",16);
+
+	/* ----------------------------------------- */
+	/* --- recherche des traînées dans p_out --- */
+	/* ----------------------------------------- */
+	//couper l'image en 64 sous-images de 256*256 pixels 
+	nb_ss_image1=8;nb_ss_image2=8;
+	n2=(int)naxis2/nb_ss_image2;
+	n1=(int)naxis1/nb_ss_image1;
+	pseries->threshold=1;
+	ngto=1;
+	//definition de la zone de la sous_image
+	p_tmp3->naxis1=n1;
+	p_tmp3->naxis2=n2;
+	tt_imacreater(p_tmp3,n1,n2);
+
+	/* --- ouvre le fichier en ecriture ---*/
+	fic=fopen(filenamegto,"wt");
+	for (kk=0;kk<2;kk++) {//kk=1 pour imagette décalée
+		k=0;
+		k3=0;k5=0;
+		for (kkk=0;kkk<(nb_ss_image1-2*kk)*(nb_ss_image2-2*kk);kkk++) {	
 		
-		//attention pout est la transformée de hough!!!
-		k=k+(int)(naxis2)/(nb_ss_image);
-		k5=k-k3*naxis2;
-		k3=(int)(kkk+1)/8;
+			//première imagette en bas à gauche, dernière en haut à droite
+			for (k1=0;k1<n1;k1++) {
+				for (k2=0;k2<n2;k2++) {
+					dvalue=(double)p_tmp2->p[naxis2*(k2+k3*n2+kk*n2/2)+k1+k5+kk*n1/2];
+					p_tmp3->p[n2*k2+k1]=(TT_PTYPE)(dvalue);
+				}
+			}
+			/////////////////////
+			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+		
+			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
+
+			//recupère les coordonnées de la droite détectée y=a0*x+b0
+			if ((eq[0]!=0)||(eq[1]!=0)) {		
+				somme_value=0;somme_x=0;somme_y=0;ydebut=0;ydebut=0;xfin=0;yfin=0;
+				//recherche du centre de la trace
+				for (k1=0;k1<n1;k1++) {
+					for (k2=0;k2<n2;k2++) {
+						if ((k2<eq[0]*(k1-1)+eq[1])||(k2>eq[0]*(k1+1)+eq[1])) {continue;}		
+						dvalue=(double)p_tmp3->p[n2*k2+k1];
+						somme_value= somme_value+dvalue;
+						somme_x=somme_x+k1*dvalue;
+						somme_y=somme_y+k2*dvalue;	
+					}
+				}
+
+				if (somme_value!=0) {
+					// coordonnées du centre dans la grande image
+					somme_x=somme_x*1.0/somme_value;
+					somme_y=somme_y*1.0/somme_value;
+					nbnul=0;
+					for (k1=(int)somme_x;k1>0;k1--) {
+						if (nbnul>40) break;
+						for (k2=(int)somme_y;k2>0;k2--) {
+							if (nbnul>40) break;
+							if ((k2<eq[0]*(k1-2)+eq[1])||(k2>eq[0]*(k1+2)+eq[1])) {continue;}	
+							//debut traînée quand p_in->p = fond de ciel
+							dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
+							if (dvalue<=bg) {
+								nbnul++;
+								if (nbnul==1) {
+									xdebut=k1;
+									ydebut=k2;
+								} 
+							}
+							if ((dvalue>bg)&&(nbnul<40)) {
+								nbnul=(int)(nbnul/3.0);
+							}
+						}
+					}
+					nbnul=0;
+					for (k1=(int)somme_x;k1<n1;k1++) {
+						if (nbnul>40) break;
+						for (k2=(int)somme_y;k2<n2;k2++) {
+							if (nbnul>40) break;
+							if ((k2<eq[0]*(k1-2)+eq[1])||(k2>eq[0]*(k1+2)+eq[1])) {continue;}
+							//recherche la fin de la traînée				
+							dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
+							if (dvalue<=bg) {
+								nbnul++;
+								if (nbnul==1) {
+									xfin=k1;
+									yfin=k2;
+								} 
+							}
+							if ((dvalue>bg)&&(nbnul<40)) {
+								nbnul=(int)(nbnul/3.0);
+							}
+						}
+					}			
+
+				} else {
+					somme_x=0;xdebut=0;xfin=0;
+					somme_y=0;ydebut=0;yfin=0;
+				}
+				
+				/* -------------------------------------------------- */
+				/* --- si la trace deborde sur une autre imagette --- */
+				/* -------------------------------------------------- */				
+				if ((xfin>n1-10)||((yfin>n2-10))) {	
+					bord=0;
+					if (kkk%nb_ss_image1) {
+						if (somme_y<n2/2) bord=1;
+					}				
+					if (kkk%nb_ss_image1==(nb_ss_image1-1)) {
+						if (somme_y>n2/2) bord=1;
+					}
+
+					if (kkk<nb_ss_image1) {
+						if (somme_y<n2/2) bord=1;
+						if (kkk==0) {
+							if (somme_x<n1/2) bord=1;
+						}
+						if (kkk==7) {
+							if (somme_x>n1/2) bord=1;
+						}
+					}
+					if (kkk>=nb_ss_image1*(nb_ss_image2-1)) {
+						if (somme_y>n2/2) bord=1;
+						if (kkk==nb_ss_image1*(nb_ss_image2-1)) {
+							if (somme_x<n1/2) bord=1;
+						}
+						if (kkk==nb_ss_image1*nb_ss_image2-1) {
+							if (somme_x>n1/2) bord=1;
+						}
+					}
+
+					if (bord!=1) {
+						//on prend une nouvelle imagette centrée sur le barycentre calculé précédement
+						for (k1=0;k1<n1;k1++) {
+							for (k2=0;k2<n2;k2++) {
+								dvalue=(double)p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+								p_tmp3->p[n2*k2+k1]=(TT_PTYPE)(dvalue);
+							}
+						}
+				
+						tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
+						//////////////////////////////////////////
+						//tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
+						//recupère les coordonnées de la droite détectée y=a0*x+b0
+						if ((eq[0]!=0)||(eq[1]!=0)) {
+							somme_value2=0;somme_x2=0;somme_y2=0;xdebut=0;ydebut=0;
+							//recherche du centre de la trace
+							for (k1=0;k1<n1;k1++) {
+								for (k2=0;k2<n2;k2++) {
+									if ((k2<eq[0]*(k1-1)+eq[1])||(k2>eq[0]*(k1+1)+eq[1])) {continue;}		
+									dvalue=(double)p_tmp3->p[n2*k2+k1];
+									somme_value2= somme_value2+dvalue;
+									somme_x2=somme_x2+k1*dvalue;
+									somme_y2=somme_y2+k2*dvalue;								
+								}
+							}
+							if (somme_value2!=0) {
+								// coordonnées du centre dans la grande image
+								somme_x2=somme_x2*1.0/somme_value2;
+								somme_y2=somme_y2*1.0/somme_value2;
+								nbnul=0;
+								for (k1=(int)somme_x2;k1>0;k1--) {
+									if (nbnul>40) break;
+									for (k2=(int)somme_y2;k2>0;k2--) {
+										if (nbnul>40) break;
+										if ((k2<eq[0]*(k1-2)+eq[1])||(k2>eq[0]*(k1+2)+eq[1])) {continue;}		
+										//debut traînée quand p_in->p = fond de ciel
+										dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+										if (dvalue<=bg) {
+											nbnul++;
+											if (nbnul==1) {
+												xdebut=k1;
+												ydebut=k2;
+											} 
+										}
+										if ((dvalue>bg)&&(nbnul<40)) {
+											nbnul=(int)(nbnul/3.0);
+										}
+									}
+								}
+								nbnul=0;
+								for (k1=(int)somme_x2;k1<n1;k1++) {
+									if (nbnul>40) break;
+									for (k2=(int)somme_y2;k2<n2;k2++) {
+										if (nbnul>40) break;
+										if ((k2<eq[0]*(k1-2)+eq[1])||(k2>eq[0]*(k1+2)+eq[1])) {continue;}
+										//recherche la fin de la traînée				
+										dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+										if (dvalue<=bg) {
+											nbnul++;
+											if (nbnul==1) {
+												xfin=k1;
+												yfin=k2;
+											} 
+										}
+										if ((dvalue>bg)&&(nbnul<40)) {
+											nbnul=(int)(nbnul/3.0);
+										}
+									}
+								}
+								for (k1=(int)xdebut;k1<(int)xfin;k1++) {
+									for (k2=(int)ydebut;k2<(int)yfin;k2++) {										
+										//mettre a zero les pixels concernés pour ne pour ne pas avoir deux fois la traînées
+										if ((k2<eq[0]*(k1-2)+eq[1])||(k2>eq[0]*(k1+2)+eq[1])) {continue;}
+										p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(kk-1)*n1/2+(int)somme_x]=0;
+										//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+									}
+								}				
+							} else {
+								somme_x=0;xdebut=0;xfin=0;
+								somme_y=0;ydebut=0;yfin=0;
+							}
+							//changement de repère: 
+							eq[1]=somme_y-n2/2+eq[1]-eq[0]*(somme_x-n1/2);					
+							xdebut=xdebut+somme_x-n1/2;
+							ydebut=ydebut+somme_y-n2/2;
+							xfin=xfin+somme_x-n1/2;
+							yfin=yfin+somme_y-n2/2;
+							somme_x=somme_x2+somme_x-n1/2;
+							somme_y=somme_y2+somme_y-n2/2;
+						}	
+					}
+				} else {					
+					for (k1=(int)xdebut;k1<(int)xfin;k1++) {
+						for (k2=(int)ydebut;k2<(int)yfin;k2++) {										
+							//mettre a zero les pixels concernés pour ne pour ne pas avoir deux fois la traînées
+							if ((k2<eq[0]*(k1-2)+eq[1])||(k2>eq[0]*(k1+2)+eq[1])) {continue;}
+							p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(kk-1)*n1/2+(int)somme_x]=-50;
+							//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+						}
+					}							
+				}
+				//changement de repère: petite image -> grande image
+				eq[1]=eq[1]-(k5+kk*n1/2)*eq[0]+(k3)*256+kk*n2/2;
+				somme_x=somme_x+k5+kk*n1/2;
+				somme_y=somme_y+(k3)*256+kk*n2/2;
+				xdebut=xdebut+k5+kk*n1/2;
+				ydebut=ydebut+(k3)*256+kk*n2/2;
+				xfin=xfin+k5+kk*n1/2;
+				yfin=yfin+(k3)*256+kk*n2/2;
+
+				/* ---------------------------------------------------- */
+				/* --- enregistrer l'equation de la droite détectée --- */
+				/* ---------------------------------------------------- */
+				fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",ngto,eq[0],eq[1],somme_x,somme_y,xdebut,ydebut,xfin,yfin);
+				ngto++;
+			}
+	
+			k=k+n2;
+			k5=k-k3*naxis2;
+			k3=(int)(kkk+1)/8;
+		}
 	}
 	fclose(fic);
-	tt_imadestroyer(p_tmp2);
-
-	//détection des traînées a cheval sur deux sous images ou plus
 
 	
+
 
 	/* --- sortir la liste des geo --- */
 	// se servir des traînées détectées pour les éliminer de la liste des geo
-	
-	
-	
+
+
+
 	/* --- calcul des temps ---*/
 	pseries->jj_stack=pseries->jj[index-1];
 	pseries->exptime_stack=pseries->exptime[index-1];
@@ -1203,9 +1412,9 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 
 	/* --- calcul de la fonction ---*/
-	tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
-	tt_imacreater(p_tmp1,p_in->naxis1,p_in->naxis2);
-		tt_imacreater(p_tmp2,p_in->naxis1,p_in->naxis2);
+	//tt_imacreater(p_out,naxis1,naxis2);
+	//tt_imacreater(p_tmp1,naxis1,naxis2);
+	tt_imacreater(p_tmp2,naxis1,naxis2);
 	for (kkk=0;kkk<(int)(nelem);kkk++) {
 		dvalue=(double)p_in->p[kkk];
 		p_out->p[kkk]=(TT_PTYPE)(dvalue);	
@@ -1691,8 +1900,8 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		}
 	 }
 	//enregistre l'image de hough
-	tt_imasaver(pout,"D:/hough.fit",16);
-	//seuil de détection fixé arbitrairement à 20 points alignés
+	//tt_imasaver(pout,"D:/hough.fit",16);
+	//seuil de détection fixé arbitrairement à 25 points alignés
 	if (seuil_max>20) {
 		threshold_ligne=seuil_max/2;
 		somme_value=0;
@@ -1708,8 +1917,8 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 				adr=kl*naxis12+adr_max+kc;
 				if (pout->p[adr]>threshold_ligne) {
 					somme_value=somme_value+pout->p[adr];
-					somme_theta=somme_theta+(xmax+kc)*pout->p[adr];
-					somme_ro=somme_ro+(ymax+kl)*pout->p[adr];
+					somme_theta=somme_theta+(xmax+kc)*1.0*pout->p[adr];
+					somme_ro=somme_ro+(ymax+kl)*1.0*pout->p[adr];
 				}
 			}
 		}

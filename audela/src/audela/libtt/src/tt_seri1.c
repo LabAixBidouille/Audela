@@ -348,10 +348,7 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_HOUGH) {
       msg=tt_ima_series_hough_1(pseries);
       fct_found=TT_YES;
-   } else if (pseries->numfct==TT_IMASERIES_HOUGH_MYRTILLE) {
-      msg=tt_ima_series_hough_myrtille(pseries);
-      fct_found=TT_YES;
-   } else if (pseries->numfct==TT_IMASERIES_BACK) {
+   }  else if (pseries->numfct==TT_IMASERIES_BACK) {
       msg=tt_ima_series_back_1(pseries);
       fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_TEST) {
@@ -1079,6 +1076,8 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->p_in=NULL;
    pseries->p_tmp1=NULL;
    pseries->p_tmp2=NULL;
+   pseries->p_tmp3=NULL;
+   pseries->p_tmp4=NULL;
    pseries->p_out=NULL;
    pseries->jj=NULL;
    pseries->exptime=NULL;
@@ -1121,6 +1120,32 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    }
    if ((msg=tt_imabuilder(pseries->p_tmp2))!=OK_DLL) {
       tt_errlog(msg,"Pb tt_imabuilder in tt_ima_series_builder (pointer pseries->p_tmp2)");
+      tt_ima_series_destroyer(pseries);
+      return(msg);
+   }
+
+   nombre=1;
+   taille=sizeof(TT_IMA);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_tmp3,&nombre,&taille,"pseries->p_tmp3"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_builder (pointer p_tmp3)");
+      tt_ima_series_destroyer(pseries);
+      return(TT_ERR_PB_MALLOC);
+   }
+   if ((msg=tt_imabuilder(pseries->p_tmp3))!=OK_DLL) {
+      tt_errlog(msg,"Pb tt_imabuilder in tt_ima_series_builder (pointer pseries->p_tmp3)");
+      tt_ima_series_destroyer(pseries);
+      return(msg);
+   }
+
+   nombre=1;
+   taille=sizeof(TT_IMA);
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&pseries->p_tmp4,&nombre,&taille,"pseries->p_tmp4"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_builder (pointer p_tmp4)");
+      tt_ima_series_destroyer(pseries);
+      return(TT_ERR_PB_MALLOC);
+   }
+   if ((msg=tt_imabuilder(pseries->p_tmp4))!=OK_DLL) {
+      tt_errlog(msg,"Pb tt_imabuilder in tt_ima_series_builder (pointer pseries->p_tmp4)");
       tt_ima_series_destroyer(pseries);
       return(msg);
    }
@@ -1192,6 +1217,16 @@ int tt_ima_series_destroyer(TT_IMA_SERIES *pseries)
       tt_free(pseries->p_tmp2,"pseries->p_tmp2");
    }
    pseries->p_tmp2=NULL;
+   if (pseries->p_tmp3!=NULL) {
+      tt_imadestroyer(pseries->p_tmp3);
+      tt_free(pseries->p_tmp3,"pseries->p_tmp3");
+   }
+   pseries->p_tmp3=NULL;
+   if (pseries->p_tmp4!=NULL) {
+      tt_imadestroyer(pseries->p_tmp4);
+      tt_free(pseries->p_tmp4,"pseries->p_tmp4");
+   }
+   pseries->p_tmp4=NULL;
    if (pseries->p_out!=NULL) {
       tt_imadestroyer(pseries->p_out);
       tt_free(pseries->p_out,"pseries->p_out");
