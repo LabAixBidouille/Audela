@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.20 2007-12-04 19:09:55 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.21 2007-12-07 22:43:06 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -349,6 +349,9 @@ proc ::dslr::configureCamera { camItem bufNo } {
             }
             external {
                cam$camNo longuepose 2
+            }
+            default {
+               error "$conf(dslr,longueposeport) long exposure driver not found."
             }
          }
       } else {
