@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.103 2007-12-04 22:28:25 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.104 2007-12-07 22:48:43 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -120,15 +120,21 @@ proc ::confCam::startPlugin { } {
 
    if { $conf(camera,A,start) == "1" } {
       set private(A,camName) $conf(camera,A,camName)
-      ::confCam::configureCamera "A"
+      if { $private(A,camName) != "" } {
+         ::confCam::configureCamera "A"
+      }
    }
    if { $conf(camera,B,start) == "1" } {
       set private(B,camName) $conf(camera,B,camName)
-      ::confCam::configureCamera "B"
+      if { $private(B,camName) != "" } {
+         ::confCam::configureCamera "B"
+      }
    }
    if { $conf(camera,C,start) == "1" } {
       set private(C,camName) $conf(camera,C,camName)
-      ::confCam::configureCamera "C"
+      if { $private(C,camName) != "" } {
+         ::confCam::configureCamera "C"
+      }
    }
 }
 
@@ -770,7 +776,7 @@ proc ::confCam::configureCamera { camItem } {
       }
    } else {
       #--- Si c'est l'ouverture d'une camera au demarrage de Audela
-      #--- J'impose la visu :
+      #--- J'impose la visu
       if { $camItem == "A" } { set visuNo 1 }
       if { $camItem == "B" } { set visuNo [::confVisu::create] }
       if { $camItem == "C" } { set visuNo [::confVisu::create] }
