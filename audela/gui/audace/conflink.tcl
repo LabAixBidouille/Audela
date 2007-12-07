@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.27 2007-12-04 22:48:23 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.28 2007-12-07 22:55:31 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -70,9 +70,6 @@ proc ::confLink::appliquer { } {
    #--- je recupere le nom du plugin selectionne
    set linkNamespace [ $private(frm).usr.onglet raise ]
 
-   #--- Affichage d'un message d'alerte si necessaire
-  ### ::confLink::displayConnectMessage
-
    #--- je recupere le link choisi
    set private(linkLabel) [$linkNamespace\:\:getSelectedLinkLabel]
    set $private(variableLinkLabel) $private(linkLabel)
@@ -82,16 +79,11 @@ proc ::confLink::appliquer { } {
 
    #--- je demande a chaque plugin de sauver sa config dans le tableau conf(..)
    foreach name $private(pluginNamespaceList) {
-      set drivername [ $name\:\:widgetToConf ]
+      $name\:\:widgetToConf
    }
 
    #--- je demarre le plugin selectionne
    configurePlugin
-
-   #--- Effacement du message d'alerte s'il existe
-  ### if [ winfo exists $audace(base).connectLiaison ] {
-  ###    destroy $audace(base).connectLiaison
-  ### }
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -439,47 +431,6 @@ proc ::confLink::findPlugin { } {
       #--- tout est ok
       return 0
    }
-}
-
-#------------------------------------------------------------
-# ::confLink::displayConnectMessage
-#    Affichage d'un message d'alerte pendant la connexion d'une liaison au demarrage
-#------------------------------------------------------------
-proc ::confLink::displayConnectMessage { } {
-   variable private
-   global audace caption color
-
-   if [ winfo exists $audace(base).connectLiaison ] {
-      destroy $audace(base).connectLiaison
-   }
-
-   toplevel $audace(base).connectLiaison
-   wm resizable $audace(base).connectLiaison 0 0
-   wm title $audace(base).connectLiaison "$caption(conflink,attention)"
-   if { [ info exists private(frm) ] } {
-      set posx_connectLiaison [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
-      set posy_connectLiaison [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
-      wm geometry $audace(base).connectLiaison +[ expr $posx_connectLiaison + 50 ]+[ expr $posy_connectLiaison + 100 ]
-      wm transient $audace(base).connectLiaison $private(frm)
-   } else {
-      wm geometry $audace(base).connectLiaison +200+100
-      wm transient $audace(base).connectLiaison $audace(base)
-   }
-
-   #--- Cree l'affichage du message
-   label $audace(base).connectLiaison.labURL_1 -text "$caption(conflink,connexion_texte1)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
-   pack $audace(base).connectLiaison.labURL_1 -padx 10 -pady 2
-   label $audace(base).connectLiaison.labURL_2 -text "$caption(conflink,connexion_texte2)" \
-      -font $audace(font,arial_10_b) -fg $color(red)
-   pack $audace(base).connectLiaison.labURL_2 -padx 10 -pady 2
-   update
-
-   #--- La nouvelle fenetre est active
-   focus $audace(base).connectLiaison
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).connectLiaison
 }
 
 #------------------------------------------------------------
