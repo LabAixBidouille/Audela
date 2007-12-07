@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.22 2007-12-04 23:07:53 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.23 2007-12-07 22:47:51 robertdelmas Exp $
 #
 
 #
@@ -322,17 +322,10 @@ namespace eval bermasaude {
    #  return nothing
    #------------------------------------------------------------
    proc createPlugin { } {
-      variable widget
       global audace bermasaude caption conf ttybermasaude zone
 
       #--- Ferme le port comx de communication de la roue a filtres BerMasAude
       ::bermasaude::deletePlugin
-
-      #--- Representation de l'absence de filtre (blanc --> rien sur le chemin optique)
-      if { [ info exists zone(image2a) ] } {
-         $zone(image2a) create oval 65 105 115 155 -outline $audace(color,textColor) \
-            -fill $audace(color,backColor) -tags cadres -width 2.0
-      }
 
       #--- Ouvre le port comx de communication de la roue a filtres BerMasAude
       set ttybermasaude [ ::bermasaude::bermasaude_create $conf(bermasaude,port) ]
@@ -358,12 +351,14 @@ namespace eval bermasaude {
          set bermasaude(connect) "1"
          #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par l'equipement)
          set linkNo [ ::confLink::create $conf(bermasaude,port) "bermasaude" "control" "" ]
+         #--- Gestion des boutons actifs/inactifs
+         ::bermasaude::connectBerMasAude
       } else {
          ::bermasaude::deletePlugin
          set bermasaude(connect) "0"
+         #--- Configure l'etat des boutons (normal ou disabled)
+         ::bermasaude::configureEtatBoutons
       }
-      #--- Gestion des boutons actifs/inactifs
-      ::bermasaude::connectBerMasAude
 
       #--- Effacement du message d'alerte s'il existe
       if [ winfo exists $audace(base).connectEquipement ] {
@@ -378,13 +373,19 @@ namespace eval bermasaude {
    #  return nothing
    #------------------------------------------------------------
    proc deletePlugin { } {
-      global bermasaude conf ttybermasaude
+      global audace bermasaude conf ttybermasaude zone
 
       if { [ info exists ttybermasaude ] } {
          #--- Je re-initialisation la variable de l'etat de la roue a filtres
          set bermasaude(connect) "0"
          #--- Je desactive les boutons
          ::bermasaude::configureEtatBoutons
+         #--- Representation de l'absence de filtre (blanc --> rien sur le chemin optique)
+         if { [ info exists zone(image2a) ] } {
+            $zone(image2a) create oval 65 105 115 155 -outline $audace(color,textColor) \
+               -fill $audace(color,backColor) -tags cadres -width 2.0
+         }
+         update
          #--- Je memorise le port
          set eqtPort $conf(bermasaude,port)
          #--- Je ferme le port serie
@@ -416,7 +417,6 @@ namespace eval bermasaude {
    #    les erreurs dues a un appui 'curieux' sur ces boutons
    #------------------------------------------------------------
    proc connectBerMasAude { } {
-      variable widget
       global bermasaude
 
       #--- Initialisation du graphisme de la roue a filtres
