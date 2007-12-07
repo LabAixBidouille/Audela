@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: crosshair.tcl,v 1.9 2007-05-27 18:47:12 michelpujol Exp $
+# Mise a jour $Id: crosshair.tcl,v 1.10 2007-12-07 22:43:55 robertdelmas Exp $
 #
 
 namespace eval ::Crosshair {
@@ -11,7 +11,7 @@ namespace eval ::Crosshair {
 
    #------------------------------------------------------------
    #  init
-   #     initialise le driver
+   #     initialise le reticule
    #
    #  return namespace name
    #------------------------------------------------------------
@@ -43,7 +43,7 @@ namespace eval ::Crosshair {
 
    #------------------------------------------------------------
    #  getLabel
-   #     retourne le nom et le label du driver
+   #     retourne le nom et le label du reticule
    #
    #  return "Titre de l'onglet (dans la langue de l'utilisateur)"]
    #
@@ -70,7 +70,7 @@ namespace eval ::Crosshair {
 
    #------------------------------------------------------------
    #  fillConfigPage { }
-   #     fenetre de configuration du driver
+   #     fenetre de configuration du reticule
    #
    #  return rien
    #
