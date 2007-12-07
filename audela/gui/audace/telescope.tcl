@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.11 2007-09-14 13:54:47 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.12 2007-12-07 22:45:28 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -844,6 +844,26 @@ global audace
          set audace(pos_tel_ew) ""
          set audace(chg_pos_tel) "  ?  "
       }
+   }
+
+   #------------------------------------------------------------
+   # addSpeedListener
+   #    ajoute une procedure a appeler si on change de vitesse
+   #  parametres :
+   #    cmd : commande TCL a lancer quand la camera change
+   #------------------------------------------------------------
+   proc addSpeedListener { cmd } {
+      trace add variable "::audace(telescope,speed)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   # removeSpeedListener
+   #    supprime une procedure a appeler si on change de vitesse
+   #  parametres :
+   #    cmd : commande TCL a lancer quand la camera change
+   #------------------------------------------------------------
+   proc removeSpeedListener { cmd } {
+      trace remove variable "::audace(telescope,speed)" write $cmd
    }
 
 }
