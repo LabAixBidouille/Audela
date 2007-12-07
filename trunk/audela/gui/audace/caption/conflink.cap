@@ -1,6 +1,6 @@
 #
 # Fichier : conflink.cap
-# Mise a jour $Id: conflink.cap,v 1.12 2007-11-26 17:43:43 robertdelmas Exp $
+# Mise a jour $Id: conflink.cap,v 1.13 2007-12-07 22:44:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -21,10 +21,6 @@ set caption(conflink,aide)                   "Help"
 
 set caption(conflink,pas_liaison)            "No Link."
 
-set caption(conflink,attention)              "Warning"
-set caption(conflink,connexion_texte1)       "Link Connection in Progress..."
-set caption(conflink,connexion_texte2)       "Please wait a few seconds."
-
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
@@ -37,10 +33,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,aide)                "Aide"
 
    set caption(conflink,pas_liaison)         "Il n'y a pas de liaison présente."
-
-   set caption(conflink,attention)           "Attention"
-   set caption(conflink,connexion_texte1)    "Veuillez patienter quelques secondes"
-   set caption(conflink,connexion_texte2)    "pendant la connexion de votre liaison."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -55,10 +47,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,pas_liaison)         "Nessun collegamento."
 
-   set caption(conflink,attention)           "Attenzione"
-   set caption(conflink,connexion_texte1)    "Attendere qualche secondo per la"
-   set caption(conflink,connexion_texte2)    "connessione del collegamento."
-
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
@@ -71,10 +59,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,aide)                "Ayuda"
 
    set caption(conflink,pas_liaison)         "No hay enlace."
-
-   set caption(conflink,attention)           "!Cuidado¡"
-   set caption(conflink,connexion_texte1)    "Conectando con el enlace..."
-   set caption(conflink,connexion_texte2)    "Por favor, espere unos segundos."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -89,10 +73,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,pas_liaison)         "Kein Link."
 
-   set caption(conflink,attention)           "Achtung"
-   set caption(conflink,connexion_texte1)    "Bitte, einige Sekunden warten"
-   set caption(conflink,connexion_texte2)    "während die Verbindung zum Link."
-
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
@@ -106,10 +86,6 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(conflink,pas_liaison)         "Sem ligação."
 
-   set caption(conflink,attention)           "Aviso"
-   set caption(conflink,connexion_texte1)    "Estabelecimento de ligação em curso..."
-   set caption(conflink,connexion_texte2)    "Por favor aguarde alguns segundos."
-
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
@@ -122,10 +98,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(conflink,aide)                "Help"
 
    set caption(conflink,pas_liaison)         "No Link."
-
-   set caption(conflink,attention)           "Warning"
-   set caption(conflink,connexion_texte1)    "Link Connection in Progress..."
-   set caption(conflink,connexion_texte2)    "Please wait a few seconds."
 
 }
 
