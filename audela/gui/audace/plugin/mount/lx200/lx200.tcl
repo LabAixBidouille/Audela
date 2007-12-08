@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.4 2007-12-04 20:37:21 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.5 2007-12-08 22:55:15 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -103,7 +103,7 @@ proc ::lx200::fillConfigPage { frm } {
 #    Configure la monture LX200 en fonction des donnees contenues dans les variables conf(lx200,...)
 #
 proc ::lx200::configureTelescope { telItem } {
-   global caption conf confCam
+   global caption conf
 
 }
 

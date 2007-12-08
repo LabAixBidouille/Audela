@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.11 2007-12-04 20:39:55 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.12 2007-12-08 22:55:15 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -107,7 +107,7 @@ proc ::temma::fillConfigPage { frm } {
 #    Configure la monture Temma en fonction des donnees contenues dans les variables conf(temma,...)
 #
 proc ::temma::configureTelescope { telItem } {
-   global caption conf confCam
+   global caption conf
 
 }
 

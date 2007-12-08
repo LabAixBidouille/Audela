@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.4 2007-12-04 20:33:32 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.5 2007-12-08 22:55:14 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -119,7 +119,7 @@ proc ::ascom::fillConfigPage { frm } {
 #    Configure la monture ASCOM en fonction des donnees contenues dans les variables conf(ascom,...)
 #
 proc ::ascom::configureTelescope { telItem } {
-   global caption conf confCam
+   global caption conf
 
 }
 

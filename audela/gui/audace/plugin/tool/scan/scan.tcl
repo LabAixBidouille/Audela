@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.35 2007-11-17 13:19:47 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.36 2007-12-08 22:57:28 robertdelmas Exp $
 #
 
 #============================================================
@@ -645,7 +645,7 @@ namespace eval ::scan {
 
    proc changeObt { } {
       variable This
-      global audace caption confCam panneau
+      global audace caption panneau
 
       if { [ ::cam::list ] != "" } {
          set camItem [ ::confVisu::getCamItem 1 ]

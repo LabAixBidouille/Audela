@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.10 2007-12-07 22:42:33 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.11 2007-12-08 22:56:02 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -375,7 +375,7 @@ proc ::audine::fillConfigPage { frm camItem } {
 #
 proc ::audine::configureCamera { camItem bufNo } {
    variable private
-   global audace caption conf confCam
+   global audace caption conf
 
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee

@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.4 2007-12-04 20:38:03 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.5 2007-12-08 22:55:15 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -112,7 +112,7 @@ proc ::ouranos::fillConfigPage { frm } {
 #    Configure la monture Ouranos en fonction des donnees contenues dans les variables conf(ouranos,...)
 #
 proc ::ouranos::configureTelescope { telItem } {
-   global caption conf confCam
+   global caption conf
 
 }
 

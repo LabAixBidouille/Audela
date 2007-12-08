@@ -2,7 +2,7 @@
 # Fichier : ethernaude.tcl
 # Description : Interface de liaison EthernAude
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: ethernaude.tcl,v 1.22 2007-12-04 22:37:47 robertdelmas Exp $
+# Mise a jour $Id: ethernaude.tcl,v 1.23 2007-12-08 22:56:04 robertdelmas Exp $
 #
 
 namespace eval ethernaude {
@@ -24,7 +24,6 @@ namespace eval ethernaude {
 proc ::ethernaude::ConfEthernAude { } {
    variable widget
    variable private
-   global confCam
 
    if { [info exists widget(frm) ] } {
       set frm $widget(frm)
