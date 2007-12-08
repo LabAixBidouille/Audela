@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.10 2007-12-04 20:34:20 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.11 2007-12-08 22:55:14 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -156,7 +156,7 @@ proc ::audecom::fillConfigPage { frm } {
 #    Configure la monture AudeCom en fonction des donnees contenues dans les variables conf(audecom,...)
 #
 proc ::audecom::configureTelescope { telItem } {
-   global caption conf confCam
+   global caption conf
 
 }
 

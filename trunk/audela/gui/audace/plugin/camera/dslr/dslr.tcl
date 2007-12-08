@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.21 2007-12-07 22:43:06 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.22 2007-12-08 22:56:02 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -303,7 +303,7 @@ proc ::dslr::fillConfigPage { frm camItem } {
 #
 proc ::dslr::configureCamera { camItem bufNo } {
    variable private
-   global caption conf confCam
+   global caption conf
 
    set catchResult [ catch {
       #--- je verifie que la camera n'est deja utilisee

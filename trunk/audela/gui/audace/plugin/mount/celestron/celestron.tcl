@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.4 2007-12-04 20:36:28 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.5 2007-12-08 22:55:14 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -101,7 +101,7 @@ proc ::celestron::fillConfigPage { frm } {
 #    Configure la monture Celestron en fonction des donnees contenues dans les variables conf(celestron,...)
 #
 proc ::celestron::configureTelescope { telItem } {
-   global caption conf confCam
+   global caption conf
 
 }
 

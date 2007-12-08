@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.29 2007-12-07 22:43:24 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.30 2007-12-08 22:56:05 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -410,7 +410,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 #
 proc ::webcam::configureCamera { camItem bufNo } {
    variable private
-   global caption conf confCam
+   global caption conf
 
    set catchResult [ catch {
       #--- Je cree la camera
@@ -507,7 +507,7 @@ proc ::webcam::selectPort { camItem tklist } {
 #
 proc ::webcam::stop { camItem } {
    variable private
-   global conf confCam
+   global conf
 
    #--- Gestion des widgets actifs/inactifs
    ::webcam::configWebCamInactif
@@ -530,7 +530,6 @@ proc ::webcam::stop { camItem } {
 #
 proc ::webcam::configWebCam { camItem } {
    variable private
-   global confCam
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)

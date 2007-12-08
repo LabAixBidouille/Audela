@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.57 2007-11-09 23:49:08 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.58 2007-12-08 22:54:16 robertdelmas Exp $
 #
 
 #==============================================================
@@ -608,7 +608,7 @@ namespace eval ::acqfc {
 
 #***** Procedure de changement de l'obturateur *****************
    proc ChangeObt { visuNo } {
-      global audace caption conf confCam panneau
+      global audace caption conf panneau
 
       #---
       set camItem [ ::confVisu::getCamItem $visuNo ]
