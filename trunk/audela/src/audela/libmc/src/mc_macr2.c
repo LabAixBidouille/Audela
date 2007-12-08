@@ -309,6 +309,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
 /***************************************************************************/
 /* frame=0 for ecliptic J2000.0 */
 /* frame=1 for equatorial J2000.0 */
+/* si *diamapp<0 alors l'astre est dans l'ombre de la Terre */
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,xs,ys,zs;
@@ -316,31 +317,33 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
    struct pqw elempq;
    double equinoxe=J2000;
    double dxeq=0.,dyeq=0.,dzeq=0.;
-   double xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo;
+   double xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo,xanti,yanti,zanti;
+   double r1,r2,rlim,cost,costlim,tlim;
+   double reqter=6378.14,reqsol=696000.;
+
    /*FILE *fichier_out;*/
    jjd=jj;
 
    if (elem.type==4) {
       /*--- frame = equatorial geocentric J2000.0 ---*/
       mc_xyzgeoelem(jj,elem,longmpc,rhocosphip,rhosinphip,0,xaster,yaster,zaster,xearth,yearth,zearth,&xsgeo,&ysgeo,&zsgeo,&xlgeo,&ylgeo,&zlgeo);
-      /* --- coord. spheriques ---*/
-      mc_xyz2add(*xaster,*yaster,*zaster,asd,dec,delta);
-      /* --- topocentric cartesian coordinates ---*/
-      mc_he2ge(*xaster,*yaster,*zaster,*xearth,*yearth,*zearth,xaster,yaster,zaster);
-      mc_he2ge(xsgeo,ysgeo,zsgeo,*xearth,*yearth,*zearth,&xs,&ys,&zs);
+      r= sqrt( (*xaster-xsgeo)*(*xaster-xsgeo) + (*yaster-ysgeo)*(*yaster-ysgeo) + (*zaster-zsgeo)*(*zaster-zsgeo) );
+      rs=sqrt( (*xearth-xsgeo)*(*xearth-xsgeo) + (*yearth-ysgeo)*(*yearth-ysgeo) + (*zearth-zsgeo)*(*zearth-zsgeo) );
+      /* --- coord. spheriques locales ---*/
+      mc_xyz2add( (*xaster-*xearth), (*yaster-*yearth), (*zaster-*zearth),asd,dec,delta);
+      /* --- geo-> helio ---*/
+      mc_he2ge(*xaster,*yaster,*zaster,-xsgeo,-ysgeo,-zsgeo,xaster,yaster,zaster);
+      mc_he2ge(*xearth,*yearth,*zearth,-xsgeo,-ysgeo,-zsgeo,xearth,yearth,zearth);
       if (frame==0) {
          mc_obliqmoy(jjd,&eps);
          mc_xyzeq2ec(*xaster,*yaster,*zaster,eps,xaster,yaster,zaster);
-         mc_xyzeq2ec(xs,ys,zs,eps,&xs,&ys,&zs);
+         mc_xyzeq2ec(*xearth,*yearth,*zearth,eps,xearth,yearth,zearth);
       }
 
       /* --- parametres elong et magnitude ---*/
-      r=sqrt(*xaster* *xaster+*yaster* *yaster+ *zaster* *zaster);
       *rr=r;
-      rs=sqrt(xs*xs+ys*ys+zs*zs);
       mc_elonphas(r,rs,*delta,elong,phase);
-      /*mc_magaster(r,*delta,*phase,elem.h,elem.g,mag);*/
-      *mag=30.;
+      mc_magaster(r,*delta,*phase,elem.h,elem.g,mag);
       *diamapp=0.;
 
    } else {
@@ -403,6 +406,36 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       mc_elonphas(r,rs,*delta,elong,phase);
       mc_magaster(r,*delta,*phase,elem.h,elem.g,mag);
       *diamapp=0.;
+   }
+
+   if (*delta<0.015) {
+      /*--- soleil ---*/
+      mc_jd2lbr1a(jjd,llp,mmp,uup);
+      mc_jd2lbr1b(jjd,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
+      mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
+      mc_obliqmoy(jjd,&eps);
+      mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
+      mc_precxyz(jjd,xs,ys,zs,equinoxe,&xs,&ys,&zs); /* equatoriale J2000 */
+
+      r1=*xearth+xs;
+      r1=*yearth+ys;
+      r1=*zearth+zs;
+
+      /*--- point antisolaire ---*/
+      r2=rs*reqsol/(reqsol-reqter);
+      r1=rs*reqter/(reqsol-reqter);
+      rlim=sqrt(r1*r1+reqter*1e3/UA*reqter*1e3/UA);
+      xanti=-reqsol/(reqsol-reqter)*xs;
+      yanti=-reqsol/(reqsol-reqter)*ys;
+      zanti=-reqsol/(reqsol-reqter)*zs;
+      tlim=atan(reqter*1e3/UA/r1);
+      costlim=cos(atan(reqter*1e3/UA/r1));
+      r1=sqrt((-xs-xanti)*(-xs-xanti)+(-ys-yanti)*(-ys-yanti)+(-zs-zanti)*(-zs-zanti));
+      r2=sqrt((*xaster-xanti)*(*xaster-xanti)+(*yaster-yanti)*(*yaster-yanti)+(*zaster-zanti)*(*zaster-zanti));
+      cost=((-xs-xanti)*(*xaster-xanti)+(-ys-yanti)*(*yaster-yanti)+(-zs-zanti)*(*zaster-zanti))/r1/r2;
+      if ((r2<=rlim)&(cost>=costlim)) {
+         *diamapp=-1.;
+      }
    }
 
 }
@@ -763,6 +796,7 @@ void mc_xyzgeoelem(double jj,struct elemorb elem, double longmpc,double rhocosph
    mc_lbr2xyz(ls,bs,rs,&xs,&ys,&zs);
    mc_obliqmoy(jjd,&eps);
    mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs);
+   mc_precxyz(jjd,xs,ys,zs,equinoxe,&xs,&ys,&zs); /* equatoriale J2000 */
 
    /* --- Lune ---*/
    mc_jd2lbr1a(jjd,llp,mmp,uup);
@@ -770,6 +804,7 @@ void mc_xyzgeoelem(double jj,struct elemorb elem, double longmpc,double rhocosph
    mc_lbr2xyz(l,b,r,&x,&y,&z);
    mc_obliqmoy(jjd,&eps);
    mc_xyzec2eq(x,y,z,eps,&xl,&yl,&zl);
+   mc_precxyz(jjd,xl,yl,zl,equinoxe,&xl,&yl,&zl); /* equatoriale J2000 */
 
    /*--- calcul de la parallaxe ---*/
    mc_paraldxyzeq(jjd,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);

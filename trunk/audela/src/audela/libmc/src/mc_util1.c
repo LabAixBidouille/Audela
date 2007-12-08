@@ -128,11 +128,15 @@ void mc_magaster(double r, double delta, double phase, double h, double g, doubl
 /***************************************************************************/
 /***************************************************************************/
 {
-   double phi1,phi2,tanb;
+   double phi1,phi2,tanb,argu;
    tanb=tan(phase/2);
    phi1=exp(-3.33*pow(tanb,0.63));
    phi2=exp(-1.87*pow(tanb,1.22));
-   *mag=h+5*log(r*delta)/log(10)-2.5*log((1-g)*phi1+g*phi2)/log(10);
+   argu=(1-g)*phi1+g*phi2;
+   if (argu<1e-15) {
+      argu=1e-15;
+   }
+   *mag=h+5*log(r*delta)/log(10)-2.5*log(argu)/log(10);
 }
 
 void mc_magplanet(double r,double delta,int planete,double phase,double l,double b,double *mag,double *diamapp)
