@@ -856,9 +856,9 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
             elem->jj_equinoxe=jj0;
             elem->jj_epoque=jj0;
             elem->h0=0.;
-            elem->g=0.;
+            elem->g=0.15;
             elem->n=0.;
-            elem->h=0.;
+            elem->h=30.;
             elem->nbjours=0;
             elem->nbobs=0;
             elem->ceu0=0.;

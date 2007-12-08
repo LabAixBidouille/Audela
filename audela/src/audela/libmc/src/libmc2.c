@@ -2586,6 +2586,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
    double *albedo=NULL;
    int klon,klat,nlon,nlat;
    int valid;
+   double *jds,jdk;
 //double dlt;
 
    if(argc<15) {
@@ -2631,7 +2632,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
       }
       /* --- */
       dl=0.5*sqrt(41253./(8*pow(4,cdr.htmlevel)));
-      dl=10.;
+      dl=3;
       /* === */
 	   /* === Lecture de la carte de relief ===*/
       /* === */
@@ -2777,10 +2778,37 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
          return TCL_ERROR;
       }
       phi=cdr.jd_phase0+cdr.period*floor((jj-cdr.jd_phase0)/cdr.period);
+      jds=(double*)calloc(n,sizeof(double));
+      if (jds==NULL) {
+         free(relief);
+         free(albedo);
+         return TCL_ERROR;
+      }
       for (k=0;k<n;k++) {
          cdrpos[k].phase=1.*k/n;
          cdrpos[k].jd=phi+1.*k/n*cdr.period;
+         jds[k]=cdrpos[k].jd;
+      }
+      for (k=0;k<n;k++) {
    		mc_xyzasaaphelio(cdrpos[k].jd,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+         if (cdr.frame_time==1) {
+            /* cdrpos[k].jd etait entre dans le repere de l'asteroide */
+            /* Il faut donc soustraire la duree -delta pour savoir quand on l'a vu depuis la Terre en TT */
+            mc_aberpla(cdrpos[k].jd,-delta,&jdk);
+            cdrpos[k].jdtt=jdk;
+   		   mc_xyzasaaphelio(jdk,longmpc,rhocosphip,rhosinphip,elem,cdr.frame_coord,&xearth,&yearth,&zearth,&xaster,&yaster,&zaster,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r);
+            cdrpos[k].jd=jds[k];
+         } else {
+            cdrpos[k].jdtt=cdrpos[k].jd;
+            /* On transforme JD dans le repere de l'asteroide */
+            mc_aberpla(cdrpos[k].jd,delta,&cdrpos[k].jd);
+         }
+         /* --- la phase est calculee dans le repere de l'asteroide ---*/
+         cdrpos[k].phase=(cdrpos[k].jd-cdr.jd_phase0)/cdr.period;
+         cdrpos[k].phase=cdrpos[k].phase-floor(cdrpos[k].phase);
+         /* --- la phase est calculee dans le repere terrestre ---*/
+         cdrpos[k].phasett=(cdrpos[k].jdtt-cdr.jd_phase0tt)/cdr.period;
+         cdrpos[k].phasett=cdrpos[k].phasett-floor(cdrpos[k].phasett);
          /*
           xearth=1.;
           yearth=0.;
@@ -2794,13 +2822,26 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
          cdrpos[k].xaster=xaster;
          cdrpos[k].yaster=yaster;
          cdrpos[k].zaster=zaster;
-         cdrpos[k].xearth=xearth;
-         cdrpos[k].yearth=yearth;
-         cdrpos[k].zearth=zearth;
-         cdrpos[k].delta=delta;
          cdrpos[k].r=r;
+         cdrpos[k].angelong=elong;
+         cdrpos[k].angphase=phase;
+         cdrpos[k].mag0=mag;
          cdrpos[k].mag1=mag;
          cdrpos[k].mag2=mag;
+         if (cdr.frame_center==0) { 
+            /* heliocentric */
+            cdrpos[k].xearth=0.;
+            cdrpos[k].yearth=0.;
+            cdrpos[k].zearth=0.;
+            cdrpos[k].delta=r;
+         } else {
+            /* geocentric */
+            cdrpos[k].xearth=xearth;
+            cdrpos[k].yearth=yearth;
+            cdrpos[k].zearth=zearth;
+            cdrpos[k].delta=delta;
+         }
+         cdrpos[k].eclipsed=diamapp; /* =1 if in the shadow of the Earth. Else =0 */
       }
       /* === */
 	   /* === Calcul de la courbe de lumiere ===*/
@@ -2879,6 +2920,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
       free(cdrpos);
       free(relief);
       free(albedo);
+      free(jds);
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
    }
@@ -3766,6 +3808,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
             cdrpos[k].zearth=zearth;
             cdrpos[k].delta=delta;
          }
+         cdrpos[k].eclipsed=diamapp; /* =1 if in the shadow of the Earth. Else =0 */
       }
       /* === */
 	   /* === Calcul de la courbe de lumiere ===*/

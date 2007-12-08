@@ -369,7 +369,6 @@ void mc_ephem2(char *nom_fichier_ele,double jj, double rangetq, double pastq, do
    */
 }
 
-
 void mc_paradist(char *nom_fichier_obs,char *nom_fichier_ele,char *nom_fichier_out)
 /***************************************************************************/
 /* Calcul de la distance Terre Astre a partir d'observations effectuees    */
@@ -1267,10 +1266,23 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
          sprintf(filename,"%s%d.fit",genefilename,kt+1);
          mc_savefits(image,wcs.naxis1,wcs.naxis2,filename,&wcs);
       }
+      /* --- cas when the object in the shadow of the Earth ---*/
+      if (cdrpos[kt].eclipsed<0) {
+         etotlamb=0.;
+         etotls=0.;
+      }
       /* --- mag1 take account for a pure Lambert law ---*/
-      cdrpos[kt].mag1=32.2800-2.5*log10(etotlamb);
+      if (etotlamb==0) {
+         cdrpos[kt].mag1=99.99;
+      } else {
+         cdrpos[kt].mag1=32.2800-2.5*log10(etotlamb);
+      }
       /* --- mag2 take account for a pure Lommel-Seeliger law ---*/
-      cdrpos[kt].mag2=31.9665-2.5*log10(etotls);
+      if (etotls==0) {
+         cdrpos[kt].mag2=99.99;
+      } else {
+         cdrpos[kt].mag2=31.9665-2.5*log10(etotls);
+      }
       /**/
       if (kt==0) {
          trtotmin=trtot;
@@ -3324,9 +3336,6 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
          }
       }
 
-
-
-
       /* ===========================================================*/
       /* ===========================================================*/
       /* === 7) image of the binary system viewed from the Earth ===*/
@@ -3695,10 +3704,23 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
          /* --- contribution to the total E (Lommel-Seeliger) ---*/
          etotls+=(htms[khtms].els*htms[khtms].tr);
       }
+      /* --- cas when the object in the shadow of the Earth ---*/
+      if (cdrpos[kt].eclipsed<0) {
+         etotlamb=0.;
+         etotls=0.;
+      }
       /* --- mag1 take account for a pure Lambert law ---*/
-      cdrpos[kt].mag1=32.2800-2.5*log10(etotlamb);
+      if (etotlamb==0) {
+         cdrpos[kt].mag1=99.99;
+      } else {
+         cdrpos[kt].mag1=32.2800-2.5*log10(etotlamb);
+      }
       /* --- mag2 take account for a pure Lommel-Seeliger law ---*/
-      cdrpos[kt].mag2=31.9665-2.5*log10(etotls);
+      if (etotls==0) {
+         cdrpos[kt].mag2=99.99;
+      } else {
+         cdrpos[kt].mag2=31.9665-2.5*log10(etotls);
+      }
    }
    /* --- destroy memory allocations ---*/
    free(kfarsun);

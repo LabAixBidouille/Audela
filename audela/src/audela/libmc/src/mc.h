@@ -450,6 +450,7 @@ typedef struct {
    double mag0;
    double mag1;
    double mag2;
+   double eclipsed;
 } mc_cdrpos;
 
 /* --- CDR pour courbes de lumieres d'asteroides */
