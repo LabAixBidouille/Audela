@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.18 2007-11-10 11:28:29 michelpujol Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.19 2007-12-08 00:02:56 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -438,7 +438,7 @@ namespace eval ::astrometry {
          return
       }
       #---
-      set sextractor no
+      set sextractor yes
       set starfile no
       #::console::affiche_resultat "=====> astrom(currenttypewcs)=$astrom(currenttypewcs) \n"
       if {$astrom(currenttypecal)=="delwcs"} {
