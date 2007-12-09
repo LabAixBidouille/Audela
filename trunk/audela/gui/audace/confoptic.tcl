@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.19 2007-12-09 11:51:35 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.20 2007-12-09 18:22:42 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -45,7 +45,7 @@ namespace eval ::confOptic {
       global caption conf
 
       #--- Position de la fenetre
-      if { ! [ info exists conf(confoptic,position) ] } { set conf(confoptic,position) "+150+75" }
+      if { ! [ info exists conf(confoptic,position) ] } { set conf(confoptic,position) "+15+0" }
 
       #--- Instrumentation associee a la camera A
       if { ! [ info exists conf(confoptic,combinaison_optique_A,0) ] } {
@@ -313,8 +313,8 @@ namespace eval ::confOptic {
       confToWidget
       #---
       toplevel $This
-      wm geometry $This 540x530$widget(confoptic,position)
-      wm minsize $This 540 530
+      wm geometry $This 540x535$widget(confoptic,position)
+      wm minsize $This 540 535
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(confoptic,config_optique)"

@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.28 2007-12-07 22:55:31 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.29 2007-12-09 18:22:09 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -22,7 +22,7 @@ proc ::confLink::init { } {
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confLink,start) ] }    { set conf(confLink,start)    "0" }
-   if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+155+100" }
+   if { ! [ info exists conf(confLink,position) ] } { set conf(confLink,position) "+15+15" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""

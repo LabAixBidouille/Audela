@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.104 2007-12-07 22:48:43 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.105 2007-12-09 18:17:26 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -26,7 +26,7 @@ proc ::confCam::init { } {
    if { ! [ info exists conf(camera,B,start) ] }   { set conf(camera,B,start)   "0" }
    if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
    if { ! [ info exists conf(camera,C,start) ] }   { set conf(camera,C,start)   "0" }
-   if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "670x430+25+45" }
+   if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "605x440+15+15" }
 
    #--- Je charge le package Thread si l'option multitread est activive dans le TCL
    if { [info exists ::tcl_platform(threaded)] } {
@@ -235,7 +235,7 @@ proc ::confCam::createDialog { } {
    #---
    toplevel $private(frm)
    wm geometry $private(frm) $private(geometry)
-   wm minsize $private(frm) 670 430
+   wm minsize $private(frm) 605 440
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confcam,config)"

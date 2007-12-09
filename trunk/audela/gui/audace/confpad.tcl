@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.25 2007-12-04 22:22:10 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.26 2007-12-09 18:23:04 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -22,7 +22,7 @@ proc ::confPad::init { } {
 
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confPad) ] }          { set conf(confPad)          "" }
-   if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x275+160+60" }
+   if { ! [ info exists conf(confPad,geometry) ] } { set conf(confPad,geometry) "440x240+15+15" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -209,7 +209,7 @@ proc ::confPad::createDialog { } {
 
    toplevel $private(frm)
    wm geometry $private(frm) $private(confPad,geometry)
-   wm minsize $private(frm) 440 230
+   wm minsize $private(frm) 440 240
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confpad,config)"
