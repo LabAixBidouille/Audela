@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.18 2007-11-10 11:28:30 michelpujol Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.19 2007-12-09 11:51:35 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -204,9 +204,9 @@ namespace eval ::confOptic {
       if { ! [ info exists conf(confoptic,combinaison_optique_D,9) ] } { set conf(confoptic,combinaison_optique_D,9) "" }
 
       #--- J'initialise les combobox du binning
-      set widget(A,binning) "1x1"
-      set widget(B,binning) "1x1"
-      set widget(C,binning) "1x1"
+      foreach camItem { A B C } {
+         set widget($camItem,binning) "1x1"
+      }
    }
 
    #------------------------------------------------------------
@@ -221,7 +221,6 @@ namespace eval ::confOptic {
 
       $This.cmd.ok configure -relief groove -state disabled
       $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -state disabled
       $This.cmd.fermer configure -state disabled
       appliquer
       fermer $visuNo
@@ -239,12 +238,10 @@ namespace eval ::confOptic {
 
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -relief groove -state disabled
-      $This.cmd.aide configure -state disabled
       $This.cmd.fermer configure -state disabled
       widgetToConf
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -relief raised -state normal
-      $This.cmd.aide configure -state normal
       $This.cmd.fermer configure -state normal
    }
 
@@ -254,18 +251,9 @@ namespace eval ::confOptic {
    #
    #------------------------------------------------------------
    proc afficherAide { } {
-      variable This
       global help
 
-      $This.cmd.ok configure -state disabled
-      $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -relief groove -state disabled
-      $This.cmd.fermer configure -state disabled
       ::audace::showHelpItem "$help(dir,optic)" "1010config_optique.htm"
-      $This.cmd.ok configure -state normal
-      $This.cmd.appliquer configure -state normal
-      $This.cmd.aide configure -relief raised -state normal
-      $This.cmd.fermer configure -state normal
    }
 
    #------------------------------------------------------------
@@ -277,15 +265,11 @@ namespace eval ::confOptic {
       variable This
 
       #--- Supprime la procedure de surveillance de la connexion d'une camera
-      ::confCam::removeCameraListener "A" "::confOptic::MAJ_Binning A [ Rnotebook:frame $This.usr.book 1 ]"
-      ::confCam::removeCameraListener "B" "::confOptic::MAJ_Binning B [ Rnotebook:frame $This.usr.book 2 ]"
-      ::confCam::removeCameraListener "C" "::confOptic::MAJ_Binning C [ Rnotebook:frame $This.usr.book 3 ]"
+      ::confCam::removeCameraListener "A" "::confOptic::MAJ_Binning A [ $This.usr.onglet getframe fillConfigCameraA ]"
+      ::confCam::removeCameraListener "B" "::confOptic::MAJ_Binning B [ $This.usr.onglet getframe fillConfigCameraB ]"
+      ::confCam::removeCameraListener "C" "::confOptic::MAJ_Binning C [ $This.usr.onglet getframe fillConfigCameraC ]"
       #---
       recup_position
-      $This.cmd.ok configure -state disabled
-      $This.cmd.appliquer configure -state disabled
-      $This.cmd.aide configure -state disabled
-      $This.cmd.fermer configure -relief groove -state disabled
       destroy $This
    }
 
@@ -336,16 +320,23 @@ namespace eval ::confOptic {
       wm title $This "$caption(confoptic,config_optique)"
       wm protocol $This WM_DELETE_WINDOW "::confOptic::fermer $visuNo"
 
-      #--- Definition des frames recevant les onglets
+      #--- Frame des onglets
       frame $This.usr -borderwidth 0 -relief raised
+
          #--- Creation de la fenetre a onglets
-         set nn $This.usr.book
-         Rnotebook:create $nn -tabs [ list $caption(confoptic,camera_A) $caption(confoptic,camera_B) \
-            $caption(confoptic,camera_C) ] -borderwidth 1
-         fillConfigPage1 $nn
-         fillConfigPage2 $nn
-         fillConfigPage3 $nn
-         pack $nn -fill both -expand 1
+         set notebook [ NoteBook $This.usr.onglet ]
+
+         fillConfigCameraA [ $notebook insert end fillConfigCameraA -text "$caption(confoptic,camera_A)  " \
+                               -raisecmd "::confOptic::cmdOngletCameraA" ]
+         fillConfigCameraB [ $notebook insert end fillConfigCameraB -text "$caption(confoptic,camera_B)  " \
+                               -raisecmd "::confOptic::cmdOngletCameraB" ]
+         fillConfigCameraC [ $notebook insert end fillConfigCameraC -text "$caption(confoptic,camera_C)  " \
+                               -raisecmd "::confOptic::cmdOngletCameraC" ]
+
+         pack $notebook -fill both -expand 1 -padx 4 -pady 4
+
+         $notebook raise [ $notebook page 0 ]
+
       pack $This.usr -side top -fill both -expand 1
 
       #--- Definition des frames recevant les boutons
@@ -367,9 +358,9 @@ namespace eval ::confOptic {
       pack $This.cmd -side top -fill x
 
       #--- Charge la procedure de surveillance de la connexion d'une camera
-      ::confCam::addCameraListener "A" "::confOptic::MAJ_Binning A [ Rnotebook:frame $This.usr.book 1 ]"
-      ::confCam::addCameraListener "B" "::confOptic::MAJ_Binning B [ Rnotebook:frame $This.usr.book 2 ]"
-      ::confCam::addCameraListener "C" "::confOptic::MAJ_Binning C [ Rnotebook:frame $This.usr.book 3 ]"
+      ::confCam::addCameraListener "A" "::confOptic::MAJ_Binning A [ $This.usr.onglet getframe fillConfigCameraA ]"
+      ::confCam::addCameraListener "B" "::confOptic::MAJ_Binning B [ $This.usr.onglet getframe fillConfigCameraB ]"
+      ::confCam::addCameraListener "C" "::confOptic::MAJ_Binning C [ $This.usr.onglet getframe fillConfigCameraC ]"
 
       #--- La fenetre est active
       focus $This
@@ -382,20 +373,58 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  select [ camItem ]
-   #     Selectionne un onglet en passant le nom de la
-   #     camera (A, B ou C)
-   #
+   #  cmdOngletCameraA
+   #     Procedure executee lorsqu'on selectionne l'onglet numero 1
    #------------------------------------------------------------
-   proc select { { camItem A } } {
+   proc cmdOngletCameraA { } {
+      variable This
+      variable widget
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraA" ]
+      #--- Mise a jour des parametres de la camera CCD A
+      ::confOptic::MAJ_Conf_Camera A $widget(frm)
+   }
+
+   #------------------------------------------------------------
+   #  cmdOngletCameraB
+   #     Procedure executee lorsqu'on selectionne l'onglet numero 2
+   #------------------------------------------------------------
+   proc cmdOngletCameraB { } {
+      variable This
+      variable widget
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraB" ]
+      #--- Mise a jour des parametres de la camera CCD B
+      ::confOptic::MAJ_Conf_Camera B $widget(frm)
+   }
+
+   #------------------------------------------------------------
+   #  cmdOngletCameraC
+   #     Procedure executee lorsqu'on selectionne l'onglet numero 3
+   #------------------------------------------------------------
+   proc cmdOngletCameraC { } {
+      variable This
+      variable widget
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confOptic::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCameraC" ]
+      #--- Mise a jour des parametres de la camera CCD C
+      ::confOptic::MAJ_Conf_Camera C $widget(frm)
+   }
+
+   #------------------------------------------------------------
+   #  obj_lune::onRaiseNotebook
+   #     Affiche en gras le nom de l'onglet
+   #------------------------------------------------------------
+   proc onRaiseNotebook { ongletName } {
       variable This
 
-      set nn $This.usr.book
-      switch -exact -- $camItem {
-         A { Rnotebook:raise $nn 1 }
-         B { Rnotebook:raise $nn 2 }
-         C { Rnotebook:raise $nn 3 }
-      }
+      set font [ $This.usr.onglet.c itemcget "$ongletName:text" -font ]
+      lappend font "bold"
+      #--- Remarque : Il faut attendre que l'onglet soit redessine avant de changer la police
+      after 200 $This.usr.onglet.c itemconfigure "$ongletName:text" -font [ list $font ]
    }
 
    #------------------------------------------------------------
@@ -703,12 +732,12 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  fillConfigPage1 { }
+   #  fillConfigCameraA { }
    #     Fenetre de configuration de la camera CCD A
    #
    #  return rien
    #------------------------------------------------------------
-   proc fillConfigPage1 { nn } {
+   proc fillConfigCameraA { frm } {
       variable widget
       global audace caption color
 
@@ -722,7 +751,7 @@ namespace eval ::confOptic {
       }
 
       #--- Je memorise la reference de la frame
-      set widget(frm) [ Rnotebook:frame $nn 1 ]
+      set widget(frm) $frm
 
       #--- Creation des differents frames
       frame $widget(frm).frame1 -borderwidth 1 -relief raised
@@ -870,6 +899,9 @@ namespace eval ::confOptic {
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
       set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
+      if { $widget(list_combobox) == "{}" } {
+         set widget(list_combobox) $widget(A,binning)
+      }
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
          -height [ llength $widget(list_combobox) ] \
@@ -913,17 +945,16 @@ namespace eval ::confOptic {
       ::confOptic::Calculette A $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook A"
-      bind [ Rnotebook:button $nn 1 ] <Button-1> "::confOptic::MAJ_Conf_Camera A $widget(frm)"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "set ::confCam::private(currentCamItem) A ; ::confCam::run ; ::confCam::selectNotebook A"
    }
 
    #------------------------------------------------------------
-   #  fillConfigPage2 { }
+   #  fillConfigCameraB { }
    #     Fenetre de configuration de la camera CCD B
    #
    #  return rien
    #------------------------------------------------------------
-   proc fillConfigPage2 { nn } {
+   proc fillConfigCameraB { frm } {
       variable widget
       global audace caption color
 
@@ -937,7 +968,7 @@ namespace eval ::confOptic {
       }
 
       #--- Je memorise la reference de la frame
-      set widget(frm) [ Rnotebook:frame $nn 2 ]
+      set widget(frm) $frm
 
       #--- Creation des differents frames
       frame $widget(frm).frame1 -borderwidth 1 -relief raised
@@ -1085,6 +1116,9 @@ namespace eval ::confOptic {
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
       set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
+      if { $widget(list_combobox) == "{}" } {
+         set widget(list_combobox) $widget(B,binning)
+      }
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
          -height [ llength $widget(list_combobox) ] \
@@ -1128,17 +1162,16 @@ namespace eval ::confOptic {
       ::confOptic::Calculette B $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook B"
-      bind [ Rnotebook:button $nn 2 ] <Button-1> "::confOptic::MAJ_Conf_Camera B $widget(frm)"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "set ::confCam::private(currentCamItem) B ; ::confCam::run ; ::confCam::selectNotebook B"
    }
 
    #------------------------------------------------------------
-   #  fillConfigPage3 { }
+   #  fillConfigCameraC { }
    #     Fenetre de configuration de la camera CCD C
    #
    #  return rien
    #------------------------------------------------------------
-   proc fillConfigPage3 { nn } {
+   proc fillConfigCameraC { frm } {
       variable widget
       global audace caption color
 
@@ -1152,7 +1185,7 @@ namespace eval ::confOptic {
       }
 
       #--- Je memorise la reference de la frame
-      set widget(frm) [ Rnotebook:frame $nn 3 ]
+      set widget(frm) $frm
 
       #--- Creation des differents frames
       frame $widget(frm).frame1 -borderwidth 1 -relief raised
@@ -1300,6 +1333,9 @@ namespace eval ::confOptic {
       pack $widget(frm).labBinning -in $widget(frm).frame11 -anchor w -side top -padx 10 -pady 5
 
       set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
+      if { $widget(list_combobox) == "{}" } {
+         set widget(list_combobox) $widget(C,binning)
+      }
       ComboBox $widget(frm).labURL_Binning \
          -width 5          \
          -height [ llength $widget(list_combobox) ] \
@@ -1343,8 +1379,7 @@ namespace eval ::confOptic {
       ::confOptic::Calculette C $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
-      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "::confCam::run ; ::confCam::selectNotebook C"
-      bind [ Rnotebook:button $nn 3 ] <Button-1> "::confOptic::MAJ_Conf_Camera C $widget(frm)"
+      bind $widget(frm).labURL_nomCamera <ButtonPress-1> "set ::confCam::private(currentCamItem) C ; ::confCam::run ; ::confCam::selectNotebook C"
    }
 
    #==============================================================
@@ -1354,10 +1389,9 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  MAJ_Binning { }
    #     Affichage des binnings disponibles selon les cameras
-   #     args   : valeur fournies par le gestionnaire de listener
+   #     args : valeurs fournies par le gestionnaire de listener
    #
    #------------------------------------------------------------
-
    proc MAJ_Binning { camItem frm args } {
       variable widget
 
@@ -1367,15 +1401,16 @@ namespace eval ::confOptic {
       } else {
          set camNo ""
       }
-      set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
       #--- Mise a jour des parametres dependant du binning
       if { $camNo != "" && $camNo != "0" } {
          #--- Mise a jour de la combobox du binning
+         set widget(list_combobox) [ ::confCam::getPluginProperty $camItem binningList ]
          $frm.labURL_Binning configure -height [ llength $widget(list_combobox) ]
          $frm.labURL_Binning configure -values $widget(list_combobox)
       } else {
          #--- Mise a jour de la combobox du binning
          set widget($camItem,binning) "1x1"
+         set widget(list_combobox) "$widget($camItem,binning)"
          $frm.labURL_Binning configure -height [ llength $widget(list_combobox) ]
          $frm.labURL_Binning configure -values $widget(list_combobox)
          $frm.labURL_Binning configure -textvariable ::confOptic::widget($camItem,binning)
@@ -1488,7 +1523,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    proc MAJ_Conf_Camera { camItem frm } {
       variable widget
-      global audace caption confCam color
+      global audace caption color
 
       #--- Recherche du numero de la camera CCD
       if { $camItem != "" } {
@@ -1508,13 +1543,15 @@ namespace eval ::confOptic {
             [ expr [ lindex [ cam$camNo celldim ] 1 ] * 1e6 ]"
          set pix_dim($camItem)  "[ expr [ lindex [ cam$camNo pixdim ] 0 ] * 1e6 ] x \
             [ expr [ lindex [ cam$camNo pixdim ] 1 ] * 1e6 ]"
-         set fg                  "$color(blue)"
+         set fg                 "$color(blue)"
       } else {
          set camera($camItem)   "$caption(confoptic,nocam)"
          set capteur($camItem)  ""
          set cell_dim($camItem) ""
          set pix_dim($camItem)  ""
-         set fg                  "$color(red)"
+         set fg                 "$color(red)"
+         $frm.labVal_Champ configure -text ""
+         $frm.labVal_Echantillonnage configure -text ""
       }
       #--- Affichage des parametres de la camera CCD
       if { [ winfo exists $audace(base).confOptic ] } {
