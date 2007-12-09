@@ -2,13 +2,12 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.80 2007-12-04 22:54:23 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.81 2007-12-09 18:50:46 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
 
 #--- Chargement de scripts d'utilitaires
-source notebook.tcl
 source mclistbox.tcl
 source menu.tcl
 
@@ -905,9 +904,6 @@ namespace eval ::audace {
 
       #--- Connexion au demarrage du telescope
       if { $conf(telescope,start) == "1" } {
-        # if { $conf(confLink,start) == "1" } {
-        #    ::confLink::configureDriver
-        # }
          ::confTel::configureTelescope
       }
 
