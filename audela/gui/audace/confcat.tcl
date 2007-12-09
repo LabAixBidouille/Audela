@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.21 2007-12-04 22:15:29 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.22 2007-12-09 18:19:58 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -23,7 +23,7 @@ proc ::confCat::init { } {
    #--- cree les variables dans conf(..) si elles n'existent pas
    if { ! [ info exists conf(confCat) ] }          { set conf(confCat)          "" }
    if { ! [ info exists conf(confCat,start) ] }    { set conf(confCat,start)    "0" }
-   if { ! [ info exists conf(confCat,geometry) ] } { set conf(confCat,geometry) "500x340+110+60" }
+   if { ! [ info exists conf(confCat,geometry) ] } { set conf(confCat,geometry) "500x350+15+15" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -184,7 +184,7 @@ proc ::confCat::createDialog { } {
 
    toplevel $private(frm)
    wm geometry $private(frm) $private(confCat,geometry)
-   wm minsize $private(frm) 500 340
+   wm minsize $private(frm) 500 350
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confcat,config)"

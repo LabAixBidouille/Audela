@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.29 2007-12-04 22:48:44 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.30 2007-12-09 18:20:21 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -21,7 +21,7 @@ proc ::confEqt::init { } {
    source [ file join "$audace(rep_caption)" confeqt.cap ]
 
    #--- cree les variables dans conf(..) si elles n'existent pas
-   if { ! [ info exists conf(confEqt,geometry) ] } { set conf(confEqt,geometry) "460x405+140+60" }
+   if { ! [ info exists conf(confEqt,geometry) ] } { set conf(confEqt,geometry) "460x415+15+15" }
 
    #--- Initialise les variables locales
    set private(pluginNamespaceList) ""
@@ -250,7 +250,7 @@ proc ::confEqt::createDialog { } {
 
    toplevel $private(frm)
    wm geometry $private(frm) $private(confEqt,geometry)
-   wm minsize $private(frm) 460 405
+   wm minsize $private(frm) 460 415
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confeqt,config)"
