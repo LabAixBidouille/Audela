@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.38 2007-12-04 22:51:39 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.39 2007-12-09 18:44:52 robertdelmas Exp $
 #
 
 #--- Initialisation des variables confTel
@@ -27,7 +27,7 @@ namespace eval ::confTel {
       if { ! [ info exists conf(raquette) ] }           { set conf(raquette)           "1" }
       if { ! [ info exists conf(telescope) ] }          { set conf(telescope)          "lx200" }
       if { ! [ info exists conf(telescope,start) ] }    { set conf(telescope,start)    "0" }
-      if { ! [ info exists conf(telescope,geometry) ] } { set conf(telescope,geometry) "540x480+110+20" }
+      if { ! [ info exists conf(telescope,geometry) ] } { set conf(telescope,geometry) "540x500+15+0" }
 
       #--- Charge le fichier caption
       source [ file join $audace(rep_caption) conftel.cap ]
@@ -65,16 +65,25 @@ namespace eval ::confTel {
    #
    proc run { } {
       variable This
+      variable private
       global audace conf confTel
 
       set This "$audace(base).confTel"
       set confTel(nomRaquette) [::confPad::getCurrentPad]
+      set private(pluginNamespaceList) "lx200 ouranos audecom temma ascom celestron"
+      set selectedPluginName "$conf(telescope)"
       createDialog
-      if { [ info exists conf ] } {
-         select $conf(telescope)
+      if { $selectedPluginName != "" } {
+         #--- je verifie que la valeur par defaut existe dans la liste
+         if { [ lsearch -exact $private(pluginNamespaceList) $selectedPluginName ] == -1 } {
+            #--- si la valeur n'existe pas dans la liste,
+            #--- je la remplace par le premier item de la liste
+            set selectedPluginName [ lindex $private(pluginNamespaceList) 0 ]
+         }
       } else {
-         select lx200
+         set selectedPluginName [ lindex $private(pluginNamespaceList) 0 ]
       }
+      selectNotebook $selectedPluginName
    }
 
    #
@@ -101,21 +110,26 @@ namespace eval ::confTel {
       variable This
       global audace caption conf confTel frmm
 
-      set frm $frmm(Telscp3)
       $This.cmd.ok configure -state disabled
       $This.cmd.appliquer configure -relief groove -state disabled
       $This.cmd.fermer configure -state disabled
+
+      set frm $frmm(Telscp3)
       if { [ winfo exists $frm.ctlking ] } {
          $frm.ctlking configure -text "$caption(conftel,audecom_ctl_king)" -state disabled
          update
       }
+
       stopPlugin
       widgetToConf
       configureTelescope
+
       set confTel(fenetre,mobile,valider) "0"
+
       $This.cmd.ok configure -state normal
       $This.cmd.appliquer configure -relief raised -state normal
       $This.cmd.fermer configure -state normal
+
       if { $conf(telescope) == "audecom" } {
          if { [ winfo exists $audace(base).confAudecomKing ] } {
             $frm.ctlking configure -text "$caption(conftel,audecom_ctl_king)" -state disabled
@@ -138,9 +152,11 @@ namespace eval ::confTel {
       variable This
       global confTel
 
-      set selectedPluginName [lindex $confTel(names) [expr [Rnotebook:currentIndex $This.usr.book ] -1 ] ]
+      #--- J'affiche la documentation
+      set selectedPluginName  $confTel(tel)
+     ### set selectedPluginName  [ $This.usr.onglet raise ]
       set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
-      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
+      set pluginHelp          [ $selectedPluginName\::getPluginHelp ]
       ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
    }
 
@@ -588,24 +604,36 @@ namespace eval ::confTel {
       #---
       toplevel $This
       wm geometry $This $confTel(geometry)
-      wm minsize $This 540 480
+      wm minsize $This 540 500
       wm resizable $This 1 1
       wm deiconify $This
       wm title $This "$caption(conftel,config)"
       wm protocol $This WM_DELETE_WINDOW ::confTel::fermer
 
+      #--- Frame de la fenetre de configuration
       frame $This.usr -borderwidth 0 -relief raised
+
          #--- Creation de la fenetre a onglets
-         set nn $This.usr.book
-         Rnotebook:create $nn -tabs { LX200 Ouranos AudeCom Temma ASCOM Celestron } -borderwidth 1
-         fillPage1 $nn
-         fillPage2 $nn
-         fillPage3 $nn
-         fillPage4 $nn
-         fillPage5 $nn
-         fillPage6 $nn
-         pack $nn -fill both -expand 1
+         set notebook [ NoteBook $This.usr.onglet ]
+
+         fillConfigLX200     [ $notebook insert end fillConfigLX200 -text "LX200  " \
+            -raisecmd "::confTel::cmdOnglet1" ]
+         fillConfigOuranos   [ $notebook insert end fillConfigOuranos -text "Ouranos  " \
+            -raisecmd "::confTel::cmdOnglet2" ]
+         fillConfigAudeCom   [ $notebook insert end fillConfigAudeCom -text "AudeCom  " \
+            -raisecmd "::confTel::cmdOnglet3" ]
+         fillConfigTemma     [ $notebook insert end fillConfigTemma -text "Temma  " \
+            -raisecmd "::confTel::cmdOnglet4" ]
+         fillConfigASCOM     [ $notebook insert end fillConfigASCOM -text "ASCOM  " \
+            -raisecmd "::confTel::cmdOnglet5" ]
+         fillConfigCelestron [ $notebook insert end fillConfigCelestron -text "Celestron  " \
+            -raisecmd "::confTel::cmdOnglet6" ]
+
+         pack $notebook -fill both -expand 1 -padx 4 -pady 4
+
       pack $This.usr -side top -fill both -expand 1
+
+      #--- Frame du checkbutton creer au demarrage et le bouton Arreter
       frame $This.start -borderwidth 1 -relief raised
          button $This.start.stop -text "$caption(conftel,arreter)" -width 7 \
             -command { ::confTel::stopPlugin }
@@ -614,6 +642,8 @@ namespace eval ::confTel {
             -highlightthickness 0 -variable conf(telescope,start)
          pack $This.start.chk -side left -padx 3 -pady 3 -expand true
       pack $This.start -side top -fill x
+
+      #--- Frame des boutons OK, Appliquer, Aide et Fermer
       frame $This.cmd -borderwidth 1 -relief raised
          button $This.cmd.ok -text "$caption(conftel,ok)" -relief raised -state normal -width 7 \
             -command { ::confTel::ok }
@@ -675,7 +705,7 @@ namespace eval ::confTel {
    #
    # Onglet de configuration du LX200
    #
-   proc fillPage1 { nn } {
+   proc fillConfigLX200 { frm } {
       global audace caption color conf confTel frmm
 
       #--- Prise en compte des liaisons
@@ -692,8 +722,7 @@ namespace eval ::confTel {
       set confTel(raquette)              $conf(raquette)
 
       #--- Initialisation
-      set frmm(Telscp1) [ Rnotebook:frame $nn 1 ]
-      set frm $frmm(Telscp1)
+      set frmm(Telscp1) $frm
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -833,14 +862,12 @@ namespace eval ::confTel {
       set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(conftel,site_lx200)" \
          "$caption(conftel,site_lx200)" ]
       pack $labelName -side top -fill x -pady 2
-
-      bind [ Rnotebook:button $nn 1 ] <Button-1> { global confTel ; set confTel(tel) "lx200" }
    }
 
    #
    # Onglet de configuration d'Ouranos
    #
-   proc fillPage2 { nn } {
+   proc fillConfigOuranos { frm } {
       global audace caption color conf confTel frmm ouranoscom
 
       #--- Prise en compte des liaisons
@@ -856,8 +883,7 @@ namespace eval ::confTel {
       set confTel(ouranos,port) $conf(ouranos,port)
 
       #--- Initialisation
-      set frmm(Telscp2) [ Rnotebook:frame $nn 2 ]
-      set frm $frmm(Telscp2)
+      set frmm(Telscp2) $frm
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1145,14 +1171,12 @@ namespace eval ::confTel {
          }
          update
       }
-
-      bind [ Rnotebook:button $nn 2 ] <Button-1> { global confTel ; set confTel(tel) "ouranos" }
    }
 
    #
    # Onglet de configuration d'AudeCom
    #
-   proc fillPage3 { nn } {
+   proc fillConfigAudeCom { frm } {
       global audace caption color conf confTel frmm
 
       #--- Prise en compte des liaisons
@@ -1207,8 +1231,7 @@ namespace eval ::confTel {
       set confTel(raquette)             $conf(raquette)
 
       #--- Initialisation
-      set frmm(Telscp3) [ Rnotebook:frame $nn 3 ]
-      set frm $frmm(Telscp3)
+      set frmm(Telscp3) $frm
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1403,14 +1426,12 @@ namespace eval ::confTel {
       set labelName [ ::confTel::createPdfLabel $frm.frame3 "$caption(conftel,doc_audecom)" \
          "$caption(conftel,doc_audecom)" ]
       pack $labelName -side top -fill x -pady 2
-
-      bind [ Rnotebook:button $nn 3 ] <Button-1> { global confTel ; set confTel(tel) "audecom" }
    }
 
    #
    # Onglet de configuration des modules Temma
    #
-   proc fillPage4 { nn } {
+   proc fillConfigTemma { frm } {
       global audace caption color conf confTel frmm
 
       #--- Prise en compte des liaisons
@@ -1431,8 +1452,7 @@ namespace eval ::confTel {
       set confTel(raquette)          $conf(raquette)
 
       #--- Initialisation
-      set frmm(Telscp4) [ Rnotebook:frame $nn 4 ]
-      set frm $frmm(Telscp4)
+      set frmm(Telscp4) $frm
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1628,14 +1648,12 @@ namespace eval ::confTel {
       set labelName [ ::confTel::createUrlLabel $frm.frame8 "$caption(conftel,site_temma)" \
          "$caption(conftel,site_temma)" ]
       pack $labelName -side top -fill x -pady 2
-
-      bind [ Rnotebook:button $nn 4 ] <Button-1> { global confTel ; set confTel(tel) "temma" }
    }
 
    #
    # Onglet de configuration des plugins ASCOM
    #
-   proc fillPage5 { nn } {
+   proc fillConfigASCOM { frm } {
       global audace caption color conf confTel frmm
 
       #--- initConf
@@ -1646,8 +1664,7 @@ namespace eval ::confTel {
       set confTel(raquette)     $conf(raquette)
 
       #--- Initialisation
-      set frmm(Telscp5) [Rnotebook:frame $nn 5]
-      set frm $frmm(Telscp5)
+      set frmm(Telscp5) $frm
 
       #--- Definition des couleurs
       set fg $color(blue)
@@ -1692,14 +1709,12 @@ namespace eval ::confTel {
       set labelName [ ::confTel::createUrlLabel $frm.frame3 "$caption(conftel,site_ascom)" \
          "$caption(conftel,site_ascom)" ]
       pack $labelName -side top -fill x -pady 2
-
-      bind [Rnotebook:button $nn 5] <Button-1> { global confTel ; set confTel(tel) "ascom" }
    }
 
    #
    # Onglet de configuration du Celestron
    #
-   proc fillPage6 { nn } {
+   proc fillConfigCelestron { frm } {
       global audace caption color conf confTel frmm
 
       #--- Prise en compte des liaisons
@@ -1714,8 +1729,7 @@ namespace eval ::confTel {
       set confTel(raquette)         $conf(raquette)
 
       #--- Initialisation
-      set frmm(Telscp6) [ Rnotebook:frame $nn 6 ]
-      set frm $frmm(Telscp6)
+      set frmm(Telscp6) $frm
 
       #--- Creation des differents frames
       frame $frm.frame1 -borderwidth 0 -relief raised
@@ -1821,8 +1835,6 @@ namespace eval ::confTel {
       set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(conftel,site_celestron)" \
          "$caption(conftel,site_celestron)" ]
       pack $labelName -side top -fill x -pady 2
-
-      bind [ Rnotebook:button $nn 6 ] <Button-1> { global confTel ; set confTel(tel) "celestron" }
    }
 
    #
@@ -1942,23 +1954,119 @@ namespace eval ::confTel {
    }
 
    #
-   # confTel::select [ tel ]
-   # Selectionne un onglet en passant le nom (eventuellement) du telescope decrit dans le panneau
+   # confTel::selectNotebook
+   # Selectionne un onglet
    #
-   proc select { { tel lx200 } } {
+   proc selectNotebook { tel } {
       variable This
       global confTel
 
-      set nn $This.usr.book
       set confTel(tel) $tel
       switch -exact -- $tel {
-         lx200     { Rnotebook:raise $nn 1 }
-         ouranos   { Rnotebook:raise $nn 2 }
-         audecom   { Rnotebook:raise $nn 3 }
-         temma     { Rnotebook:raise $nn 4 }
-         ascom     { Rnotebook:raise $nn 5 }
-         celestron { Rnotebook:raise $nn 6 }
+         lx200     { $This.usr.onglet raise fillConfigLX200 }
+         ouranos   { $This.usr.onglet raise fillConfigOuranos }
+         audecom   { $This.usr.onglet raise fillConfigAudeCom }
+         temma     { $This.usr.onglet raise fillConfigTemma }
+         ascom     { $This.usr.onglet raise fillConfigASCOM }
+         celestron { $This.usr.onglet raise fillConfigCelestron }
       }
+   }
+
+   #
+   # confTel::cmdOnglet1
+   # Procedure executee lorsqu'on selectionne l'onglet numero 1
+   #
+   proc cmdOnglet1 { } {
+      variable This
+      global confTel
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confTel::onRaiseNotebook [ $This.usr.onglet raise "fillConfigLX200" ]
+      #--- Name de la monture
+      set confTel(tel) "lx200"
+   }
+
+   #
+   # confTel::cmdOnglet2
+   # Procedure executee lorsqu'on selectionne l'onglet numero 2
+   #
+   proc cmdOnglet2 { } {
+      variable This
+      global confTel
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confTel::onRaiseNotebook [ $This.usr.onglet raise "fillConfigOuranos" ]
+      #--- Name de la monture
+      set confTel(tel) "ouranos"
+   }
+
+   #
+   # confTel::cmdOnglet3
+   # Procedure executee lorsqu'on selectionne l'onglet numero 3
+   #
+   proc cmdOnglet3 { } {
+      variable This
+      global confTel
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confTel::onRaiseNotebook [ $This.usr.onglet raise "fillConfigAudeCom" ]
+      #--- Name de la monture
+      set confTel(tel) "audecom"
+   }
+
+   #
+   # confTel::cmdOnglet4
+   # Procedure executee lorsqu'on selectionne l'onglet numero 4
+   #
+   proc cmdOnglet4 { } {
+      variable This
+      global confTel
+
+      #--- Affiche en gras le titre de l'onglet
+     ::confTel::onRaiseNotebook [ $This.usr.onglet raise "fillConfigTemma" ]
+      #--- Name de la monture
+      set confTel(tel) "temma"
+   }
+
+   #
+   # confTel::cmdOnglet5
+   # Procedure executee lorsqu'on selectionne l'onglet numero 5
+   #
+   proc cmdOnglet5 { } {
+      variable This
+      global confTel
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confTel::onRaiseNotebook [ $This.usr.onglet raise "fillConfigASCOM" ]
+      #--- Name de la monture
+      set confTel(tel) "ascom"
+   }
+
+   #
+   # confTel::cmdOnglet6
+   # Procedure executee lorsqu'on selectionne l'onglet numero 6
+   #
+   proc cmdOnglet6 { } {
+      variable This
+      global confTel
+
+      #--- Affiche en gras le titre de l'onglet
+      ::confTel::onRaiseNotebook [ $This.usr.onglet raise "fillConfigCelestron" ]
+      #--- Name de la monture
+      set confTel(tel) "celestron"
+   }
+
+   #
+   # ::confTel::onRaiseNotebook
+   # Affiche en gras le nom de l'onglet
+   #
+   proc onRaiseNotebook { mountName } {
+      variable This
+
+      set font [$This.usr.onglet.c itemcget "$mountName:text" -font]
+      lappend font "bold"
+      #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+      after 200 $This.usr.onglet.c itemconfigure "$mountName:text" -font [list $font]
    }
 
    #
@@ -2403,17 +2511,16 @@ namespace eval ::confTel {
       variable This
       global audace caption conf confTel
 
-      set nn $This.usr.book
       set conf(telescope)             $confTel(tel)
       set conf(raquette)              $confTel(raquette)
       #--- Memorise la configuration du LX200 dans le tableau conf(lx200,...)
-      set frm [ Rnotebook:frame $nn 1 ]
+      set frm [ $This.usr.onglet getframe "lx200" ]
       set conf(lx200,port)            $confTel(lx200,port)
       set conf(lx200,format)          [ lsearch "$caption(conftel,format_court_long)" "$confTel(lx200,format)" ]
       set conf(lx200,modele)          $confTel(lx200,modele)
       set conf(lx200,ite-lente_tempo) $confTel(lx200,ite-lente_tempo)
       #--- Memorise la configuration de Ouranos dans le tableau conf(ouranos,...)
-      set frm [ Rnotebook:frame $nn 2 ]
+      set frm [ $This.usr.onglet getframe "ouranos" ]
       set conf(ouranos,cod_dec)       $confTel(ouranos,cod_dec)
       set conf(ouranos,cod_ra)        $confTel(ouranos,cod_ra)
       set conf(ouranos,freq)          $confTel(ouranos,freq)
@@ -2423,7 +2530,7 @@ namespace eval ::confTel {
       set conf(ouranos,port)          $confTel(ouranos,port)
       set conf(ouranos,show_coord)    $confTel(ouranos,show_coord)
       #--- Memorise la configuration de AudeCom dans le tableau conf(audecom,...)
-      set frm [ Rnotebook:frame $nn 3 ]
+      set frm [ $This.usr.onglet getframe "audecom" ]
       set conf(audecom,port)          $confTel(audecom,port)
       set conf(audecom,pec)           $confTel(audecom,pec)
       set conf(audecom,king)          $confTel(audecom,king)
@@ -2467,7 +2574,7 @@ namespace eval ::confTel {
       set conf(audecom,dec)           $confTel(audecom,dec)
       set conf(audecom,type)          $confTel(audecom,type)
       #--- Memorise la configuration du module temma dans le tableau conf(temma,...)
-      set frm [ Rnotebook:frame $nn 4 ]
+      set frm [ $This.usr.onglet getframe "temma" ]
       set conf(temma,correc_AD)       $confTel(temma,correc_AD)
       set conf(temma,correc_Dec)      $confTel(temma,correc_Dec)
       set conf(temma,liaison)         $confTel(temma,liaison)
@@ -2477,10 +2584,10 @@ namespace eval ::confTel {
       set conf(temma,suivi_dec)       $confTel(temma,suivi_dec)
       set conf(temma,type)            $confTel(temma,type)
       #--- Memorise la configuration du plugin ASCOM dans le tableau conf(ascom,...)
-      set frm [ Rnotebook:frame $nn 5 ]
+      set frm [ $This.usr.onglet getframe "ascom" ]
       set conf(ascom,driver)          $confTel(ascom,driver)
       #--- Memorise la configuration du Celestron dans le tableau conf(celestron,...)
-      set frm [ Rnotebook:frame $nn 6 ]
+      set frm [ $This.usr.onglet getframe "celestron" ]
       set conf(celestron,port)        $confTel(celestron,port)
       set conf(celestron,format)      [ lsearch "$caption(conftel,format_court_long)" "$confTel(celestron,format)" ]
    }
