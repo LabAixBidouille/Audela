@@ -41,6 +41,7 @@
 /* --- Ajout de parametres pour la classe ima/series --- */
 typedef struct {
    double param1;
+   char filename[30];
 } TT_USER5_IMA_SERIES;
 
 /* --- Ajout de parametres pour la classe ima/stack --- */
