@@ -1064,7 +1064,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 		strcpy(filenamegeo,"geo.txt");
 	}
 
-	eq = (double*)calloc(2,sizeof(double));
+	eq = (double*)calloc(3,sizeof(double));
 	
 
 	/* --- calcul de la fonction ---*/
@@ -1153,16 +1153,24 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 
 			//recupère les coordonnées de la droite détectée y=a0*x+b0
-			if ((eq[0]!=0)||(eq[1]!=0)) {		
+			if ((eq[0]!=0)||(eq[1]!=0)||(eq[2]!=0)) {		
 				somme_value=0;somme_x=0;somme_y=0;ydebut=0;ydebut=0;xfin=0;yfin=0;
 				//recherche du centre de la trace
 				for (k1=0;k1<n1;k1++) {
 					for (k2=0;k2<n2;k2++) {
-						if ((k2<eq[0]*(k1-1)+eq[1])||(k2>eq[0]*(k1+1)+eq[1])) {continue;}		
-						dvalue=(double)p_tmp3->p[n2*k2+k1];
-						somme_value= somme_value+dvalue;
-						somme_x=somme_x+k1*dvalue;
-						somme_y=somme_y+k2*dvalue;	
+						if (eq[2]!=0) { //cas des droites verticales
+							if ((k2<eq[2]-1)||(k2>eq[2]+1)) {continue;}		
+							dvalue=(double)p_tmp3->p[n2*k2+k1];
+							somme_value= somme_value+dvalue;
+							somme_x=somme_x+k1*dvalue;
+							somme_y=somme_y+k2*dvalue;
+						} else {
+							if ((k2<eq[0]*(k1-1)+eq[1])||(k2>eq[0]*(k1+1)+eq[1])) {continue;}		
+							dvalue=(double)p_tmp3->p[n2*k2+k1];
+							somme_value= somme_value+dvalue;
+							somme_x=somme_x+k1*dvalue;
+							somme_y=somme_y+k2*dvalue;	
+						}
 					}
 				}
 				if (somme_value!=0) {
@@ -1174,18 +1182,34 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						if (nbnul>40) break;
 						for (k2=(int)somme_y;k2>0;k2--) {
 							if (nbnul>40) break;
-							if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}	
-							//debut traînée quand p_in->p = fond de ciel
-							dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-							if (dvalue<=bg) {
-								nbnul++;
-								if (nbnul==1) {
-									xdebut=k1;
-									ydebut=k2;
-								} 
-							}
-							if ((dvalue>bg)&&(nbnul<40)) {
-								nbnul=(int)(nbnul/3.0);
+							if (eq[2]!=0) { //cas des droites verticales
+								if ((k2<eq[2]-3)||(k2>eq[2]+3)) {continue;}	
+								//debut traînée quand p_out->p = fond de ciel
+								dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
+								if (dvalue<=bg) {
+									nbnul++;
+									if (nbnul==1) {
+										xdebut=k1;
+										ydebut=k2;
+									} 
+								}
+								if ((dvalue>bg)&&(nbnul<40)) {
+									nbnul=(int)(nbnul/3.0);
+								}
+							} else {
+								if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}	
+								//debut traînée quand p_out->p = fond de ciel
+								dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
+								if (dvalue<=bg) {
+									nbnul++;
+									if (nbnul==1) {
+										xdebut=k1;
+										ydebut=k2;
+									} 
+								}
+								if ((dvalue>bg)&&(nbnul<40)) {
+									nbnul=(int)(nbnul/3.0);
+								}
 							}
 						}
 					}
@@ -1194,18 +1218,33 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						if (nbnul>40) break;
 						for (k2=(int)somme_y;k2<n2;k2++) {
 							if (nbnul>40) break;
-							if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
-							//recherche la fin de la traînée				
-							dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-							if (dvalue<=bg) {
-								nbnul++;
-								if (nbnul==1) {
-									xfin=k1;
-									yfin=k2;
-								} 
-							}
-							if ((dvalue>bg)&&(nbnul<40)) {
-								nbnul=(int)(nbnul/3.0);
+							if (eq[2]!=0) { //cas des droites verticales
+								if ((k2<eq[2]-3)||(k2>eq[2]+3)) {continue;}	
+								dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
+								if (dvalue<=bg) {
+									nbnul++;
+									if (nbnul==1) {
+										xfin=k1;
+										yfin=k2;
+									} 
+								}
+								if ((dvalue>bg)&&(nbnul<40)) {
+									nbnul=(int)(nbnul/3.0);
+								}
+							} else {
+								if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
+								//recherche la fin de la traînée				
+								dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
+								if (dvalue<=bg) {
+									nbnul++;
+									if (nbnul==1) {
+										xfin=k1;
+										yfin=k2;
+									} 
+								}
+								if ((dvalue>bg)&&(nbnul<40)) {
+									nbnul=(int)(nbnul/3.0);
+								}
 							}
 						}
 					}			
@@ -1261,16 +1300,24 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						//////////////////////////////////////////
 						//tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
 						//recupère les coordonnées de la droite détectée y=a0*x+b0
-						if ((eq[0]!=0)||(eq[1]!=0)) {
+						if ((eq[0]!=0)||(eq[1]!=0)||(eq[2]!=0)) {
 							somme_value2=0;somme_x2=0;somme_y2=0;xdebut=0;ydebut=0;
 							//recherche du centre de la trace
 							for (k1=0;k1<n1;k1++) {
 								for (k2=0;k2<n2;k2++) {
-									if ((k2<eq[0]*(k1-1)+eq[1])||(k2>eq[0]*(k1+1)+eq[1])) {continue;}		
-									dvalue=(double)p_tmp3->p[n2*k2+k1];
-									somme_value2= somme_value2+dvalue;
-									somme_x2=somme_x2+k1*dvalue;
-									somme_y2=somme_y2+k2*dvalue;								
+									if (eq[2]!=0) {
+										if ((k2<eq[2]-1)||(k2>eq[2]+1)) {continue;}		
+										dvalue=(double)p_tmp3->p[n2*k2+k1];
+										somme_value2= somme_value2+dvalue;
+										somme_x2=somme_x2+k1*dvalue;
+										somme_y2=somme_y2+k2*dvalue;
+									} else {
+										if ((k2<eq[0]*(k1-1)+eq[1])||(k2>eq[0]*(k1+1)+eq[1])) {continue;}		
+										dvalue=(double)p_tmp3->p[n2*k2+k1];
+										somme_value2= somme_value2+dvalue;
+										somme_x2=somme_x2+k1*dvalue;
+										somme_y2=somme_y2+k2*dvalue;
+									}
 								}
 							}
 							if (somme_value2!=0) {
@@ -1282,18 +1329,34 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									if (nbnul>40) break;
 									for (k2=(int)somme_y2;k2>0;k2--) {
 										if (nbnul>40) break;
-										if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}		
-										//debut traînée quand p_in->p = fond de ciel
-										dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
-										if (dvalue<=bg) {
-											nbnul++;
-											if (nbnul==1) {
-												xdebut=k1;
-												ydebut=k2;
-											} 
-										}
-										if ((dvalue>bg)&&(nbnul<40)) {
-											nbnul=(int)(nbnul/3.0);
+										if (eq[2]!=0) {
+											if ((k2<eq[2]-3)||(k2>eq[2]+3)) {continue;}	
+											//debut traînée quand p_in->p = fond de ciel
+											dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+											if (dvalue<=bg) {
+												nbnul++;
+												if (nbnul==1) {
+													xdebut=k1;
+													ydebut=k2;
+												} 
+											}
+											if ((dvalue>bg)&&(nbnul<40)) {
+												nbnul=(int)(nbnul/3.0);
+											}
+										} else {
+											if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}		
+											//debut traînée quand p_in->p = fond de ciel
+											dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+											if (dvalue<=bg) {
+												nbnul++;
+												if (nbnul==1) {
+													xdebut=k1;
+													ydebut=k2;
+												} 
+											}
+											if ((dvalue>bg)&&(nbnul<40)) {
+												nbnul=(int)(nbnul/3.0);
+											}
 										}
 									}
 								}
@@ -1302,27 +1365,49 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									if (nbnul>40) break;
 									for (k2=(int)somme_y2;k2<n2;k2++) {
 										if (nbnul>40) break;
-										if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
-										//recherche la fin de la traînée				
-										dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
-										if (dvalue<=bg) {
-											nbnul++;
-											if (nbnul==1) {
-												xfin=k1;
-												yfin=k2;
-											} 
-										}
-										if ((dvalue>bg)&&(nbnul<40)) {
-											nbnul=(int)(nbnul/3.0);
+										if (eq[2]!=0) {
+											if ((k2<eq[2]-3)||(k2>eq[2]+3)) {continue;}	
+											//recherche la fin de la traînée				
+											dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+											if (dvalue<=bg) {
+												nbnul++;
+												if (nbnul==1) {
+													xfin=k1;
+													yfin=k2;
+												} 
+											}
+											if ((dvalue>bg)&&(nbnul<40)) {
+												nbnul=(int)(nbnul/3.0);
+											}
+										} else {
+											if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
+											//recherche la fin de la traînée				
+											dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+											if (dvalue<=bg) {
+												nbnul++;
+												if (nbnul==1) {
+													xfin=k1;
+													yfin=k2;
+												} 
+											}
+											if ((dvalue>bg)&&(nbnul<40)) {
+												nbnul=(int)(nbnul/3.0);
+											}
 										}
 									}
 								}
 								for (k1=(int)xdebut;k1<(int)xfin;k1++) {
-									for (k2=(int)ydebut;k2<(int)yfin;k2++) {										
+									for (k2=(int)ydebut;k2<(int)yfin;k2++) {
 										//mettre a zero les pixels concernés pour ne pour ne pas avoir deux fois la traînées
-										if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
-										p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(kk-1)*n1/2+(int)somme_x]=0;
-										//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+										if (eq[2]!=0) {
+											if ((k2<eq[2]-2)||(k2>eq[2]+2)) {continue;}
+											p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(kk-1)*n1/2+(int)somme_x]=0;
+											//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+										} else {
+											if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
+											p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(kk-1)*n1/2+(int)somme_x]=0;
+											//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+										}
 									}
 								}				
 							} else {
@@ -1343,9 +1428,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					for (k1=(int)xdebut;k1<(int)xfin;k1++) {
 						for (k2=(int)ydebut;k2<(int)yfin;k2++) {										
 							//mettre a zero les pixels concernés pour ne pour ne pas avoir deux fois la traînées
-							if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
-							p_tmp2->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2]=0;
-							//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+							if (eq[2]!=0) {
+								if ((k2<eq[2]-2)||(k2>eq[2]+2)) {continue;}
+								p_tmp2->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2]=0;
+							} else {
+								if ((k2<eq[0]*(k1-3)+eq[1])||(k2>eq[0]*(k1+3)+eq[1])) {continue;}
+								p_tmp2->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2]=0;
+								//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+							}
 						}
 					}							
 				}
@@ -1844,7 +1934,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
    /* --- intialisations ---*/
    naxis11=naxis1;
    naxis21=naxis2;
-   naxis12=180;
+   naxis12=180*2;
    naxis22=(int)ceil(sqrt(naxis11*naxis11+naxis21*naxis21));
    naxis122=2*naxis12;
    naxis222=2*naxis22;
@@ -1880,8 +1970,8 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
       tt_free2((void**)&cost,"cost");
    }
    for(k=0;k<naxis12;k++) {
-      theta=(1.*k-90.)*(TT_PI)/180.;
-      //theta=(1.*k-90.)*(TT_PI)/360.; //pour avoir une résolution 2 fois plus grande
+      //theta=(1.*k-90.)*(TT_PI)/180.;
+      theta=(1.*k/2-90.)*(TT_PI)/180.; //pour avoir une résolution 2 fois plus grande
       cost[k]=cos(theta);
       sint[k]=sin(theta);
    }
@@ -1930,7 +2020,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		}
 	 }
 	//enregistre l'image de hough
-	//tt_imasaver(pout,"D:/hough.fit",16);
+	tt_imasaver(pout,"D:/hough.fit",16);
 	//seuil de détection fixé arbitrairement à 25 points alignés
 	if (seuil_max>25) {
 		threshold_ligne=seuil_max/2;
@@ -1961,20 +2051,25 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		}
 		
 		//coordonnées du point dans le plan de hough
-		theta0=(theta0-naxis12/2.)*(TT_PI)/180.;
+		//theta0=(theta0-naxis12/2.)*(TT_PI)/180.;
+		theta0=(theta0/2.0-naxis12/4)*(TT_PI)/180.;
 		ro0=ro0-naxis22;
 
 		//pour angle différent de 90°
 		if (theta0==(TT_PI)/2.) {
-			//tourner image
+			eq[0]=0;
+			eq[1]=0;
+			eq[2]=-ro0;
 		} else {
 			eq[0]=tan(theta0);
 			eq[1]=ro0/(cos(theta0));
+			eq[2]=0;
 		}
 	} else {
 		//pas de detection dans le plan de hough
 		eq[0]=0;
 		eq[1]=0;
+		eq[2]=0;
 	}
 
 
