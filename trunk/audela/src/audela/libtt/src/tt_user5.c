@@ -1029,7 +1029,7 @@ double erf( double x ) {
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp2,*p_tmp3,*p_tmp4;
-	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul;
+	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul,i;
 	double xfin,yfin,xdebut,ydebut,l;
 	int result,nelem,index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,bord;
 	int *se = NULL;
@@ -1039,6 +1039,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	char filenamegto[FLEN_FILENAME],filenamegeo[FLEN_FILENAME];
 	FILE *fic;
 	double *eq;
+	double bary_x[300], bary_y[300], somme[300];
+	double sommexy,sommex,sommey,sommexx;
 
 	/* --- intialisations ---*/
 	p_in=pseries->p_in; 
@@ -1076,7 +1078,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	tt_morphomath_1(pseries);
 	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);
+	//tt_imasaver(p_out,"D:/tophat.fit",16);
 	
 	//binarisation de l'image en fonction de l'histogramme
 	tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
@@ -1415,7 +1417,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								somme_y=0;ydebut=0;yfin=0;
 							}
 							//changement de repère: 
-							eq[1]=somme_y-n2/2+eq[1]-eq[0]*(somme_x-n1/2);					
+							if (eq[2]==0) {
+								eq[1]=somme_y-n2/2+eq[1]-eq[0]*(somme_x-n1/2);	
+							}									
 							xdebut=xdebut+somme_x-n1/2;
 							ydebut=ydebut+somme_y-n2/2;
 							xfin=xfin+somme_x-n1/2;
@@ -1440,7 +1444,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}							
 				}
 				//changement de repère: petite image -> grande image
-				eq[1]=eq[1]-(k5+kk*n1/2)*eq[0]+(k3)*256+kk*n2/2;
+				if (eq[2]==0) {
+					eq[1]=eq[1]-(k5+kk*n1/2)*eq[0]+(k3)*256+kk*n2/2;
+				}
 				if ((somme_x!=0)&&(somme_y!=0)) {
 					somme_x=somme_x+k5+kk*n1/2;
 					somme_y=somme_y+(k3)*256+kk*n2/2;
@@ -1453,10 +1459,98 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					l=sqrt((xdebut-xfin)*(xdebut-xfin)+(ydebut-yfin)*(ydebut-yfin));
 
 					if (l>4) {
+						/* ------------------------------------------ */
+						/* --- ajustement par les moindres carrés --- */
+						/* ------------------------------------------ */
+						for (k=0;k<300;k++) {
+								bary_x[k]=0;
+								bary_y[k]=0;
+								somme[k]=0;
+						}
+					
+						// echantillon des barycentres sur chaque ligne de pixel
+						if (((eq[0]!=0)&&(eq[0]<1))||(eq[2]!=0)) { // droites non horizontales, droites verticales
+							i=0;
+							for (k2=(int)ydebut;k2<=(int)yfin;k2++) {
+								if (eq[2]==0) {
+									for (k1=(int)((k2-eq[1])/eq[0]-2);k1<=(int)((k2-eq[1])/eq[0]+2);k1++) {
+										dvalue=(double)p_out->p[naxis2*k2+k1];
+										somme[i]= somme[i]+dvalue;
+										bary_x[i]=bary_x[i]+k1*dvalue;
+									}	
+									i++;
+								} else  {
+									for (k1=(int)(eq[2]-2);k1<=(int)(eq[2]+2);k1++) {
+										dvalue=(double)p_out->p[naxis2*k2+k1];
+										somme[i]= somme[i]+dvalue;
+										bary_x[i]=bary_x[i]+k1*dvalue;
+									}	
+									i++;
+								}
+							} 
+							sommexy=0;sommex=0;sommey=0;sommexx=0;
+							for (k=0; k<i; k++) {
+								if (somme[k]!=0) {
+									bary_x[k]=bary_x[k]/somme[k];
+									sommexy=sommexy+bary_x[k]*(ydebut+k);
+									sommex=sommex+bary_x[k];
+									sommey=sommey+(ydebut+k);
+									sommexx=sommexx+bary_x[k]*bary_x[k];
+								} else {
+									bary_x[k]=0;
+								}
+							}
+						} else  { 
+							i=0;
+							for (k1=(int)xdebut;k1<=(int)xfin;k1++) {
+								for (k2=(int)(eq[0]*k1+eq[1]-2);k2<=(int)(eq[0]*k1+eq[1]+2);k2++) {
+									dvalue=(double)p_out->p[naxis2*k2+k1];
+									somme[i]= somme[i]+dvalue;
+									bary_y[i]=bary_y[i]+k2*dvalue;
+								}	
+								i++;
+							} 
+							sommexy=0;sommex=0;sommey=0;sommexx=0;
+							for (k=0; k<i; k++) {		
+								if (somme[k]!=0) {
+									bary_y[k]=bary_y[k]/somme[k];
+									sommexy=sommexy+(xdebut+k)*bary_y[k];
+									sommex=sommex+(xdebut+k);
+									sommey=sommey+bary_y[k];
+									sommexx=sommexx+(xdebut+k)*(xdebut+k);
+								} else {
+									bary_y[k]=0;
+								}
+							}
+						}
+						
+						if ((eq[2]==0)&&((sommexx!=0)||(sommex!=0))) {
+							eq[0]=(i*sommexy-sommex*sommey)/(i*sommexx-sommex*sommex);
+							eq[1]=(sommey*sommexx-sommex*sommexy)/(i*sommexx-sommex*sommex);
+						} else if (eq[2]!=0) {
+							eq[2]=sommex/i;
+						}
+
+						/* --- recherche plus fine des bouts du segment --- */
+						if (eq[2]==0) {
+							if (eq[0]!=0) { 
+								ydebut=(eq[1]/(eq[0]*eq[0])+ydebut+xdebut/eq[0])/(1+1/(eq[0]*eq[0]));
+								xdebut=(ydebut-eq[1])/eq[0];
+								yfin=(eq[1]/(eq[0]*eq[0])+yfin+xfin/eq[0])/(1+1/(eq[0]*eq[0]));
+								xfin=(yfin-eq[1])/eq[0];
+							} else {
+								ydebut=eq[1];
+								yfin=eq[1];
+							}
+						} else {
+							xdebut=eq[2];
+							xfin=eq[2];
+						}
+
 						/* ---------------------------------------------------- */
 						/* --- enregistrer l'equation de la droite détectée --- */
-						/* ---------------------------------------------------- */
-						fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",ngto,eq[0],eq[1],somme_x,somme_y,xdebut,ydebut,xfin,yfin);
+						/* ---------------------------------------------------- */					
+						fprintf(fic,"%d %f %f %f %f %f %f %f %f %f\n",ngto,eq[0],eq[1],eq[2],somme_x,somme_y,xdebut,ydebut,xfin,yfin);	
 						ngto++;
 					}
 				}
