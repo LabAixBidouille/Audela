@@ -371,6 +371,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
    int h,w,status,sortie,type=1,mode=2;
    short *pix;
    long size;
+   int k;
 
    if(p==NULL) return ;
 
@@ -393,8 +394,12 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 	   size=(long)(w)*(long)(h);
 	   cam->drv_status=GetAcquiredData16(pix,size);
 	   if(cam->drv_status!=DRV_SUCCESS) {
-			sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
-			return;
+         if (cam->drv_status==DRV_NO_NEW_DATA) {
+            for (k=0;k<size;k++) { pix[k]=(short)0; }
+         } else {
+   			sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
+	   		return;
+         }
 		}
 	}
 
@@ -628,7 +633,7 @@ void cam_setup_exposure(struct camprop *cam,float *texptime,float *taccumtime,fl
 		}
 		cam->drv_status=SetNumberAccumulations(1);
 		if(cam->drv_status!=DRV_SUCCESS) {
-	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->exptime));
+	      sprintf(cam->msg,"Error %d. %s",cam->drv_status,get_status(cam->drv_status));
 			return;
 		}
 	}
