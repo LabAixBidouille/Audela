@@ -1042,7 +1042,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	double *eq;
 	double bary_x[300], bary_y[300], somme[300];
 	double sommexy,sommex,sommey,sommexx;
-	double fwhmx,fwhmy,xcc,fwhmxy,ycc,r1,r2,r3,r11,r22,r33,dx,dy,dx2,dy2,d2,fmoy,fmed,f23,sigma,seuilf,flux,ra,dec;
+	double fwhmx,fwhmy,xcc,fwhmxy,ycc,r1,r2,r3,r11,r22,r33,dx,dy,dx2,dy2,d2,fmoy,fmed,f23,sigma,flux,ra,dec;
 	int nombre, taille,xx1,xx2,yy1,yy2,msg,n23,j,n23d,n23f,nsats,valid_ast;
 	double *vec;
 	double **mat, *pp, *ecart;
@@ -1782,73 +1782,34 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
                    sigma=sqrt(sigma/(n23f-n23d));
                 }
                 free(vec);
-				//test sur le mot centroide
-				if(strcmp (pseries->centroide,"gauss")==0) {
-					//fitte une gaussienne pour la recherche du centroide
-					pp = (double*)calloc(6,sizeof(double));
-					ecart = (double*)calloc(1,sizeof(double));
-					sizex=xx2-xx1+1;
-					sizey=yy2-yy1+1;
+			
+				//fitte une gaussienne pour la recherche du centroide
+				pp = (double*)calloc(6,sizeof(double));
+				ecart = (double*)calloc(1,sizeof(double));
+				sizex=xx2-xx1+1;
+				sizey=yy2-yy1+1;
 
-					//fixe la taille de la fenêtre de travail: sizex et sizey
-					mat = (double**)calloc(sizex,sizeof(double));
-					for(k=0;k<sizex;k++) {
-						*(mat+k) = (double*)calloc(sizey,sizeof(double));
-					}
-					//--- Mise a zero des deux buffers 
-					for(k=0;k<sizex;k++) {
-						for(k2=0;k2<sizey;k2++) {
-							mat[k][k2]=(double)0.;
-						}
-					}
-					for (j=0;j<sizey;j++) {  
-					   for (i=0;i<sizex;i++) {	  
-						  mat[i][j]=p_in->p[naxis1*(j+yy1)+i+xx1];
-					   }
-					}
-
-					tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
-					xcc=pp[1]+xx1;
-					ycc=pp[4]+yy1;
-
-				} else {
-					/* --- photocentre (xc,yc) ---*/
-					xx1=(int)(xcc-r1);
-					xx2=(int)(xcc+r1);
-					yy1=(int)(ycc-r1);
-					yy2=(int)(ycc+r1);
-					if (xx1<0) xx1=0;
-					if (xx1>=naxis1) xx1=naxis1-1;
-					if (xx2<0) xx2=0;
-					if (xx2>=naxis1) xx2=naxis1-1;
-					if (yy1<0) yy1=0;
-					if (yy1>=naxis2) yy1=naxis2-1;
-					if (yy2<0) yy2=0;
-					if (yy2>=naxis2) yy2=naxis2-1;
-					seuilf=0.2*(p_in->p[naxis1*y+x]-fmed);
-					sommex=0.;
-					sommey=0.;
-					flux=0.;
-					for (j=yy1;j<=yy2;j++) {
-					   dy=1.*j-ycc;
-					   dy2=dy*dy;
-					   for (i=xx1;i<=xx2;i++) {
-						  dx=1.*i-xcc;
-						  dx2=dx*dx;
-						  d2=dx2+dy2;
-						  dvalue=(double)p_in->p[naxis1*j+i]-fmed;
-						  if ((d2<=r11)&&(dvalue>=seuilf)) {
-							 flux += dvalue;
-							 sommex += (double)(i * dvalue);
-							 sommey += (double)(j * dvalue);
-						  }
-					   }
-					}
-					if (flux!=0.) {
-					   xcc = sommex / flux ;
-					   ycc = sommey / flux ;
+				//fixe la taille de la fenêtre de travail: sizex et sizey
+				mat = (double**)calloc(sizex,sizeof(double));
+				for(k=0;k<sizex;k++) {
+					*(mat+k) = (double*)calloc(sizey,sizeof(double));
+				}
+				//--- Mise a zero des deux buffers 
+				for(k=0;k<sizex;k++) {
+					for(k2=0;k2<sizey;k2++) {
+						mat[k][k2]=(double)0.;
 					}
 				}
+				for (j=0;j<sizey;j++) {  
+				   for (i=0;i<sizex;i++) {	  
+					  mat[i][j]=p_in->p[naxis1*(j+yy1)+i+xx1];
+				   }
+				}
+
+				tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
+				xcc=pp[1]+xx1;
+				ycc=pp[4]+yy1;
+
 				/* --- photometrie (flux) ---*/
                 xx1=(int)(xcc-r1);
                 xx2=(int)(xcc+r1);
