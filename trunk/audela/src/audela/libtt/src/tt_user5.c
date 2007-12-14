@@ -1784,6 +1784,19 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
                 free(vec);
 			
 				//fitte une gaussienne pour la recherche du centroide
+				xx1=(int)(xcc-r2);
+                xx2=(int)(xcc+r2);
+                yy1=(int)(ycc-r2);
+                yy2=(int)(ycc+r2);
+                if (xx1<0) xx1=0;
+                if (xx1>=naxis1) xx1=naxis1-1;
+                if (xx2<0) xx2=0;
+                if (xx2>=naxis1) xx2=naxis1-1;
+                if (yy1<0) yy1=0;
+                if (yy1>=naxis2) yy1=naxis2-1;
+                if (yy2<0) yy2=0;
+                if (yy2>=naxis2) yy2=naxis2-1;
+      
 				pp = (double*)calloc(6,sizeof(double));
 				ecart = (double*)calloc(1,sizeof(double));
 				sizex=xx2-xx1+1;
@@ -1810,6 +1823,32 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				xcc=pp[1]+xx1;
 				ycc=pp[4]+yy1;
 
+				//avec le vrai centroide
+				fwhmx=0;
+				for (k=(int)xcc;k<=(naxis1-2);k++) {
+					if ((p_in->p[naxis1*(int)ycc+k]-p_in->p[naxis1*(int)ycc+k+1])<=0) break;
+					else fwhmx+=1;
+				}		           
+				for (k=(int)xcc;k>=1+x1;k--) {
+					if ((p_in->p[naxis1*(int)ycc+k]-p_in->p[naxis1*(int)ycc+k-1])<=0) break;
+					else fwhmx+=1;
+				}  
+				fwhmx/=2.;
+					
+				fwhmy=0;
+           		for (k=(int)ycc;k<(naxis2-y1);k++) {
+					if ((p_in->p[naxis1*k+(int)xcc]-p_in->p[naxis1*(k+1)+(int)xcc])<=0) break;
+					else fwhmy+=1;
+				}		         
+				for (k=(int)ycc;k>=1+y1;k--) {
+					if ((p_in->p[naxis1*k+(int)xcc]-p_in->p[naxis1*(k-1)+(int)xcc])<=0) break;
+					else fwhmy+=1;
+				}
+				fwhmy/=2.;
+				fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
+                r1=1.5*fwhmxy;
+                r2=2.0*fwhmxy;
+            
 				/* --- photometrie (flux) ---*/
                 xx1=(int)(xcc-r1);
                 xx2=(int)(xcc+r1);
