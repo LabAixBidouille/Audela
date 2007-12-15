@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.29 2007-12-09 18:22:09 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.30 2007-12-15 08:56:01 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -164,7 +164,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    }
 
    #--- Je verifie qu'il y a des liaisons
-   if { [llength $private(pluginNamespaceList)] <1 } {
+   if { [llength $authorizedNamespaces] <1 } {
       tk_messageBox -title "$caption(conflink,config) $configurationTitle" \
          -message "$caption(conflink,pas_liaison)" -icon error
       return 1
@@ -196,21 +196,11 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
    #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
 
-      if { $authorizedNamespaces == "" } {
-         set authorizedNamespaces $private(pluginNamespaceList)
-      }
-
-      set linkTypes [list]
-      foreach linkNamespace $authorizedNamespaces {
-         lappend linkTypes [getNamespaceLabel $linkNamespace]
-      }
-
       #--- Creation de la fenetre a onglets
       set notebook [ NoteBook $private(frm).usr.onglet ]
-      for { set i 0 } { $i < [ llength $private(pluginLabelList) ] } { incr i } {
-         set namespace [ lindex $private(pluginNamespaceList) $i ]
-         set title     [ lindex $private(pluginLabelList) $i ]
-         set frm       [ $notebook insert end $namespace -text "$title    " -raisecmd "::confLink::onRaiseNotebook $namespace" ]
+      foreach namespace $authorizedNamespaces {
+         set title [ ::$namespace\::getPluginTitle ]
+         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confLink::onRaiseNotebook $namespace" ]
          ::$namespace\::fillConfigPage $frm
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
@@ -550,19 +540,23 @@ proc ::confLink::run { { variableLinkLabel "" } { authorizedNamespaces "" } { co
    global conf
 
    if { $variableLinkLabel == "" } {
-      set private(linkLabel) ""
+      set private(linkLabel)         ""
       set private(variableLinkLabel) ""
    } else {
-      set private(linkLabel) [set $variableLinkLabel]
+      set private(linkLabel)         [set $variableLinkLabel]
       set private(variableLinkLabel) $variableLinkLabel
    }
 
-   #--- je liste les packages qui sont presents parmi ceux qui sont autorises
-   set authorizedPresentNamespaces [list ]
-   foreach  name $authorizedNamespaces {
-       if { [lsearch $private(pluginNamespaceList) $name ] != -1 } {
-         lappend authorizedPresentNamespaces $name
-       }
+   if { $authorizedNamespaces == "" } {
+      set authorizedPresentNamespaces $private(pluginNamespaceList)
+   } else {
+      #--- je liste les packages qui sont presents parmi ceux qui sont autorises
+      set authorizedPresentNamespaces [list ]
+      foreach name $authorizedNamespaces {
+          if { [lsearch $private(pluginNamespaceList) $name ] != -1 } {
+            lappend authorizedPresentNamespaces $name
+          }
+      }
    }
 
    if { [createDialog $authorizedPresentNamespaces $configurationTitle ]==0 } {
