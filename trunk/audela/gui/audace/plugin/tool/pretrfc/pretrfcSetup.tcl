@@ -2,7 +2,7 @@
 # Fichier : pretrfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Pretraitement
 # Auteur : Robert DELMAS
-# Mise a jour $Id: pretrfcSetup.tcl,v 1.10 2007-12-01 18:04:25 robertdelmas Exp $
+# Mise a jour $Id: pretrfcSetup.tcl,v 1.11 2007-12-15 08:10:21 robertdelmas Exp $
 #
 
 namespace eval pretrfcSetup {
@@ -67,17 +67,6 @@ namespace eval pretrfcSetup {
       set posx_config [ lindex [ split [ wm geometry $audace(base).fenetrePretr ] "+" ] 1 ]
       set posy_config [ lindex [ split [ wm geometry $audace(base).fenetrePretr ] "+" ] 2 ]
       wm geometry $This +[ expr $posx_config + 40 ]+[ expr $posy_config + 390 ]
-   }
-
-   #
-   # pretrfcSetup::ok
-   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
-   # et fermer la fenetre du choix de l'affichage ou non de messages sur la Console et de
-   # l'enregistrement ou non des dates dans le fichier log
-   #
-   proc ok { visuNo } {
-      ::pretrfcSetup::apply $visuNo
-      ::pretrfcSetup::closeWindow $visuNo
    }
 
    #
