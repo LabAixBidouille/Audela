@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.105 2007-12-09 18:17:26 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.106 2007-12-15 08:54:10 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -241,14 +241,14 @@ proc ::confCam::createDialog { } {
    wm title $private(frm) "$caption(confcam,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW ::confCam::fermer
 
+   #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
 
       #--- Creation de la fenetre a onglets
       set notebook [ NoteBook $private(frm).usr.onglet ]
-      for { set i 0 } { $i < [ llength $private(pluginNamespaceList) ] } { incr i } {
-         set namespace [ lindex $private(pluginNamespaceList) $i ]
-         set title     [ lindex $private(pluginLabelList) $i ]
-         set frm       [ $notebook insert end $namespace -text "$title " -raisecmd "::confCam::onRaiseNotebook $namespace" ]
+      foreach namespace $private(pluginNamespaceList) {
+         set title [ ::$namespace\::getPluginTitle ]
+         set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confCam::onRaiseNotebook $namespace" ]
          ::$namespace\::fillConfigPage $frm $private(currentCamItem)
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
@@ -885,7 +885,6 @@ proc ::confCam::widgetToConf { camItem } {
 
    ::$private($camItem,camName)::widgetToConf $camItem
 }
-
 
 #------------------------------------------------------------
 # ::confCam::findPlugin
