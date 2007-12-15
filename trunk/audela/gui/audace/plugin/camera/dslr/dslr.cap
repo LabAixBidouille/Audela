@@ -1,6 +1,6 @@
 #
 # Fichier : dslr.cap
-# Mise a jour $Id: dslr.cap,v 1.13 2007-10-20 22:44:41 robertdelmas Exp $
+# Mise a jour $Id: dslr.cap,v 1.14 2007-12-15 08:11:00 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,10 +15,11 @@ set caption(dslr,camera)                    "Digital Camera"
 
 set caption(dslr,name)                      "Digital Camera"
 
+set caption(dslr,liaison)                   "Link"
+set caption(dslr,configurer)                "Set up"
 set caption(dslr,miroir_x)                  "Horizontal Mirror"
 set caption(dslr,miroir_y)                  "Vertical Mirror"
 set caption(dslr,longuepose)                "Long Exposure"
-set caption(dslr,configurer)                "Set up"
 set caption(dslr,quickremote)               "QuickRemote"
 set caption(dslr,externe)                   "Manual"
 set caption(dslr,longueposebit)             "Control Bit Number"
@@ -44,10 +45,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,name)                   "Appareil Photo Numérique"
 
+   set caption(dslr,liaison)                "Liaison"
+   set caption(dslr,configurer)             "Configurer"
    set caption(dslr,miroir_x)               "Miroir horizontal"
    set caption(dslr,miroir_y)               "Miroir vertical"
    set caption(dslr,longuepose)             "Longue pose"
-   set caption(dslr,configurer)             "Configurer"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuel"
    set caption(dslr,longueposebit)          "Numéro du bit de commande"
@@ -73,10 +75,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,name)                   "Fotocamera digitale"
 
+   set caption(dslr,liaison)                "Collegamento"
+   set caption(dslr,configurer)             "Configurare"
    set caption(dslr,miroir_x)               "Specchio orizzontale"
    set caption(dslr,miroir_y)               "Specchio verticale"
    set caption(dslr,longuepose)             "Lunga posa"
-   set caption(dslr,configurer)             "Configurare"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuale"
    set caption(dslr,longueposebit)          "Numero bit del comando"
@@ -102,10 +105,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,name)                   "Cámara digital"
 
+   set caption(dslr,liaison)                "Enlace"
+   set caption(dslr,configurer)             "Configurar"
    set caption(dslr,miroir_x)               "Espejo horizontal"
    set caption(dslr,miroir_y)               "Espejo vertical"
    set caption(dslr,longuepose)             "Exposición larga"
-   set caption(dslr,configurer)             "Configurar"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
    set caption(dslr,longueposebit)          "Número del bit de control"
@@ -131,10 +135,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,name)                   "Digital Fotoapparat"
 
+   set caption(dslr,liaison)                "Link"
+   set caption(dslr,configurer)             "Konfigurieren"
    set caption(dslr,miroir_x)               "Horizontale Spiegel"
    set caption(dslr,miroir_y)               "Verticale Spiegel"
    set caption(dslr,longuepose)             "Lange Belichtung"
-   set caption(dslr,configurer)             "Konfigurieren"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manuell"
    set caption(dslr,longueposebit)          "Steuer Bit Nummer"
@@ -160,10 +165,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,name)                   "Câmara Digital"
 
+   set caption(dslr,liaison)                "Ligação"
+   set caption(dslr,configurer)             "Configurar"
    set caption(dslr,miroir_x)               "Espelho Horizontal"
    set caption(dslr,miroir_y)               "Espelho Vertical"
    set caption(dslr,longuepose)             "Longa Exposição"
-   set caption(dslr,configurer)             "Configurar"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
    set caption(dslr,longueposebit)          "Controlo do Número do Bit"
@@ -189,10 +195,11 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(dslr,name)                   "Digital Camera"
 
+   set caption(dslr,liaison)                "Link"
+   set caption(dslr,configurer)             "Set up"
    set caption(dslr,miroir_x)               "Horisontal spejl"
    set caption(dslr,miroir_y)               "Vertikal spejl"
    set caption(dslr,longuepose)             "Long Exposure"
-   set caption(dslr,configurer)             "Set up"
    set caption(dslr,quickremote)            "QuickRemote"
    set caption(dslr,externe)                "Manual"
    set caption(dslr,longueposebit)          "Control Bit Number"
