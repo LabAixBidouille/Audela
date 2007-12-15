@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.22 2007-12-08 22:56:02 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.23 2007-12-15 08:11:54 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -66,6 +66,7 @@ proc ::dslr::initPlugin { } {
    global conf
 
    #--- Initialise les variables de la camera APN (DSLR)
+   if { ! [ info exists conf(dslr,liaison) ] }              { set conf(dslr,liaison)              "gphoto2" }
    if { ! [ info exists conf(dslr,longuepose) ] }           { set conf(dslr,longuepose)           "0" }
    if { ! [ info exists conf(dslr,longueposeport) ] }       { set conf(dslr,longueposeport)       "LPT1:" }
    if { ! [ info exists conf(dslr,longueposelinkbit) ] }    { set conf(dslr,longueposelinkbit)    "0" }
@@ -93,6 +94,7 @@ proc ::dslr::confToWidget { } {
    global conf
 
    #--- Recupere la configuration de la camera APN (DSLR) dans le tableau private(...)
+   set private(liaison)              $conf(dslr,liaison)
    set private(longuepose)           $conf(dslr,longuepose)
    set private(longueposeport)       $conf(dslr,longueposeport)
    set private(longueposelinkbit)    $conf(dslr,longueposelinkbit)
@@ -112,6 +114,7 @@ proc ::dslr::widgetToConf { camItem } {
    global conf
 
    #--- Memorise la configuration de la camera APN (DSLR) dans le tableau conf(dslr,...)
+   set conf(dslr,liaison)              $private(liaison)
    set conf(dslr,longuepose)           $private(longuepose)
    set conf(dslr,longueposeport)       $private(longueposeport)
    set conf(dslr,longueposelinkbit)    $private(longueposelinkbit)
@@ -141,17 +144,33 @@ proc ::dslr::fillConfigPage { frm camItem } {
       destroy $i
    }
 
-   #--- Je constitue la liste des liaisons pour la longuepose
-   set list_combobox [ ::confLink::getLinkLabels { "parallelport" "quickremote" "external" } ]
+   #--- Je constitue la liste des liaisons pour les APN
+   set list_combobox1 [ ::confLink::getLinkLabels { "gphoto2" } ]
 
    #--- Je verifie le contenu de la liste
-   if { [ llength $list_combobox ] > 0 } {
+   if { [ llength $list_combobox1 ] > 0 } {
+      #--- si la liste n'est pas vide,
+      #--- je verifie que la valeur par defaut existe dans la liste
+      if { [lsearch -exact $list_combobox1 $::dslr::private(liaison) ] == -1 } {
+         #--- si la valeur par defaut n'existe pas dans la liste,
+         #--- je la remplace par le premier item de la liste
+         set ::dslr::private(liaison) [lindex $list_combobox1 0]
+      }
+   } else {
+      #--- si la liste est vide, on continue quand meme
+   }
+
+   #--- Je constitue la liste des liaisons pour la longuepose
+   set list_combobox2 [ ::confLink::getLinkLabels { "parallelport" "quickremote" "external" } ]
+
+   #--- Je verifie le contenu de la liste
+   if { [ llength $list_combobox2 ] > 0 } {
       #--- Si la liste n'est pas vide,
       #--- je verifie que la valeur par defaut existe dans la liste
-      if { [ lsearch -exact $list_combobox $::dslr::private(longueposeport) ] == -1 } {
+      if { [ lsearch -exact $list_combobox2 $::dslr::private(longueposeport) ] == -1 } {
          #--- Si la valeur par defaut n'existe pas dans la liste,
          #--- je la remplace par le premier item de la liste
-         set ::dslr::private(longueposeport) [lindex $list_combobox 0]
+         set ::dslr::private(longueposeport) [lindex $list_combobox2 0]
       }
    } else {
       #--- Si la liste est vide
@@ -165,8 +184,35 @@ proc ::dslr::fillConfigPage { frm camItem } {
    #--- Frame des miroirs en x et en y et de la configuration de la longue pose
    frame $frm.frame1 -borderwidth 0 -relief raised
 
-      #--- Frame des miroirs en x et en y
+      #--- Frame de la configuration de la liaison et des miroirs en x et en y
       frame $frm.frame1.frame6 -borderwidth 0 -relief raised
+
+         #--- Frame de la configuration de la liaison
+         frame $frm.frame1.frame6.frame13 -borderwidth 0 -relief raised
+
+            #--- Definition de la liaison
+            label $frm.frame1.frame6.frame13.lab1 -text "$caption(dslr,liaison)"
+            pack $frm.frame1.frame6.frame13.lab1 -anchor center -side left -padx 10
+
+            #--- Choix de la liaison
+            ComboBox $frm.frame1.frame6.frame13.port \
+               -width 11      \
+               -height [ llength $list_combobox1 ] \
+               -relief sunken \
+               -borderwidth 1 \
+               -editable 0    \
+               -textvariable ::dslr::private(liaison) \
+               -values $list_combobox1
+            pack $frm.frame1.frame6.frame13.port -anchor center -side right -padx 10
+
+            #--- Bouton de configuration de la liaison
+            button $frm.frame1.frame6.frame13.configure -text "$caption(dslr,configurer)" -relief raised \
+               -command {
+                  ::confLink::run ::dslr::private(liaison) { "gphoto2" } ""
+               }
+            pack $frm.frame1.frame6.frame13.configure -side right -pady 10 -ipadx 10 -ipady 1 -expand true
+
+         pack $frm.frame1.frame6.frame13 -side top -fill both -expand 1
 
          #--- Miroir en x et en y
          checkbutton $frm.frame1.frame6.mirx -text "$caption(dslr,miroir_x)" -highlightthickness 0 \
@@ -202,12 +248,12 @@ proc ::dslr::fillConfigPage { frm camItem } {
             #--- Choix du port ou de la liaison
             ComboBox $frm.frame1.frame7.frame8.moyen_longuepose \
                -width 13      \
-               -height [ llength $list_combobox ] \
+               -height [ llength $list_combobox2 ] \
                -relief sunken \
                -borderwidth 1 \
                -editable 0    \
                -textvariable ::dslr::private(longueposeport) \
-               -values $list_combobox \
+               -values $list_combobox2 \
                -modifycmd {
                   ::dslr::configureAPNLinkLonguePose
                }
@@ -458,7 +504,6 @@ proc ::dslr::confDSLR { camItem } {
       if { $private(longuepose) == "1" } {
          #--- Widgets de configuration de la longue pose actifs
          $frm.frame1.frame7.frame8.configure_longuepose configure -state normal
-         $frm.frame1.frame7.frame8.configure_longuepose configure -command "::dslr::confDSLR $camItem"
          $frm.frame1.frame7.frame8.moyen_longuepose configure -state normal
          $frm.frame1.frame7.frame9.longueposelinkbit configure -state normal
          $frm.frame1.frame7.frame10.longueposestartvalue configure -state normal
