@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.26 2007-12-09 18:23:04 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.27 2007-12-15 08:52:37 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -220,10 +220,9 @@ proc ::confPad::createDialog { } {
 
       #--- Creation de la fenetre a onglets
       set notebook [ NoteBook $private(frm).usr.onglet ]
-      for { set i 0 } { $i < [ llength $private(pluginLabelList) ] } { incr i } {
-         set namespace [ lindex $private(pluginNamespaceList) $i ]
-         set title     [ lindex $private(pluginLabelList) $i ]
-         set frm       [ $notebook insert end $namespace -text "$title " -raisecmd "::confPad::onRaiseNotebook $namespace" ]
+      foreach namespace $private(pluginNamespaceList) {
+         set title [ ::$namespace\::getPluginTitle ]
+         set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confPad::onRaiseNotebook $namespace" ]
          ::$namespace\::fillConfigPage $frm
       }
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
