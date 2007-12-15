@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.30 2007-12-01 18:03:14 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.31 2007-12-15 08:09:43 robertdelmas Exp $
 #
 
 #============================================================
@@ -1493,16 +1493,6 @@ namespace eval ::acqapn {
          set posx_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
          set posy_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
          wm geometry $audace(base).acqapnSetup +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
-      }
-
-      #
-      # ::acqapn::config::ok
-      #--- Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
-      #--- et fermer la fenetre de reglage de la vitesse en bauds du port serie
-      #
-      proc ok { visuNo } {
-         ::acqapn::config::apply $visuNo
-         ::acqapn::config::closeWindow $visuNo
       }
 
       #

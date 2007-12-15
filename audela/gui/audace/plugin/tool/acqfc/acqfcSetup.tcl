@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.8 2007-12-01 18:03:52 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.9 2007-12-15 08:10:00 robertdelmas Exp $
 #
 
 namespace eval acqfcSetup {
@@ -77,17 +77,6 @@ namespace eval acqfcSetup {
       set posx_config [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
       set posy_config [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
       wm geometry $panneau(acqfc,$visuNo,acqfcSetup) +[ expr $posx_config + 165 ]+[ expr $posy_config + 55 ]
-   }
-
-   #
-   # acqfcSetup::ok
-   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
-   # et fermer la fenetre du choix de l'affichage ou non de messages sur la Console et de
-   # l'enregistrement ou non des dates dans le fichier log
-   #
-   proc ok { visuNo } {
-      ::acqfcSetup::apply $visuNo
-      ::acqfcSetup::closeWindow $visuNo
    }
 
    #
