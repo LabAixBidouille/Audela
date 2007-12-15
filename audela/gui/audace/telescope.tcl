@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.12 2007-12-07 22:45:28 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.13 2007-12-15 22:59:59 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -765,7 +765,7 @@ global audace
             LX200       {
                            if { $conf(lx200,modele) == "$caption(telescope,modele_audecom)" } {
                               return 0
-                           } elseif { $conf(lx200,modele) == "$caption(conftel,modele_ite-lente)" } {
+                           } elseif { $conf(lx200,modele) == "$caption(telescope,modele_ite-lente)" } {
                               return 0
                            } else {
                               return 1
