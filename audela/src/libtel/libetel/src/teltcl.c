@@ -443,3 +443,46 @@ int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 	return TCL_OK;
 }
+
+int cmdTelHadec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   struct telprop *tel;
+	char result[256];
+   int axisno,k;
+   char angles[3][30];
+	double angledegs[3];
+	int angleucs[3];
+	int voidangles[3];
+   tel = (struct telprop *)clientData;
+   strcpy(result,"");
+   /* --- lecture sur les axes valides ---*/
+	for (k=0;k<3;k++) {
+		voidangles[k]=(int)&angles[k];
+	}
+	etel_radec_coord(tel,1,voidangles,angledegs,angleucs);
+	/* --- mise en forme du resultat ---*/
+   if (tel->axis_param[0].type!=AXIS_NOTDEFINED) {
+      for (axisno=0;axisno<3;axisno++) {
+         if (tel->axis_param[axisno].type==AXIS_HA) {
+            strcat(result,angles[axisno]);
+         }
+      }
+   }
+   if (tel->axis_param[1].type!=AXIS_NOTDEFINED) {
+      for (axisno=0;axisno<3;axisno++) {
+         if (tel->axis_param[axisno].type==AXIS_DEC) {
+            strcat(result,angles[axisno]);
+         }
+      }
+   } else {
+      strcat(result," +00d00m00s");
+   }
+   if (tel->axis_param[2].type!=AXIS_NOTDEFINED) {
+      for (axisno=0;axisno<3;axisno++) {
+         if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
+            strcat(result,angles[axisno]);
+         }
+      }
+   }
+   Tcl_SetResult(interp,result,TCL_VOLATILE);
+   return TCL_OK;
+}

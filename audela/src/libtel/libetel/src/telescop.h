@@ -51,6 +51,8 @@
 typedef struct {
    int type;
    int teeth_per_turn;
+	int posinit;
+	double angleinit;
 } axis_params;
 
 /* --- structure qui accueille les parametres---*/
@@ -122,7 +124,7 @@ void mytel_error(struct telprop *tel,int err);
 int etel_home(struct telprop *tel, char *home_default);
 double etel_tsl(struct telprop *tel,int *h, int *m,int *sec);
 void etel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
-
+void etel_radec_coord(struct telprop *tel, int flagha, int *voidangles,double *angledegs,int *angleucs);
 
 
 #endif
