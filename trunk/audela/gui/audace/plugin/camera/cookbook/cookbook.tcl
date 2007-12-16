@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.19 2007-12-04 19:06:34 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.20 2007-12-16 11:36:23 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -49,7 +49,7 @@ proc ::cookbook::getPluginOS { } {
 
 #
 # ::cookbook::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::cookbook::getCamNo { camItem } {
    variable private

@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.23 2007-12-15 08:11:54 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.24 2007-12-16 11:36:42 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -49,7 +49,7 @@ proc ::dslr::getPluginOS { } {
 
 #
 # ::dslr::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::dslr::getCamNo { camItem } {
    variable private

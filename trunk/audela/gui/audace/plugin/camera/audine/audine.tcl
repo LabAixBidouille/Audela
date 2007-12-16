@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.11 2007-12-08 22:56:02 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.12 2007-12-16 11:35:42 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -49,7 +49,7 @@ proc ::audine::getPluginOS { } {
 
 #
 # ::audine::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::audine::getCamNo { camItem } {
    variable private

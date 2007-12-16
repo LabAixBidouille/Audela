@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.11 2007-12-04 19:03:17 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.12 2007-12-16 11:35:20 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -49,7 +49,7 @@ proc ::andor::getPluginOS { } {
 
 #
 # ::andor::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::andor::getCamNo { camItem } {
    variable private

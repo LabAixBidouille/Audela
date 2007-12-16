@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.20 2007-12-04 19:19:02 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.21 2007-12-16 11:39:04 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -49,7 +49,7 @@ proc ::th7852a::getPluginOS { } {
 
 #
 # ::th7852a::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::th7852a::getCamNo { camItem } {
    variable private

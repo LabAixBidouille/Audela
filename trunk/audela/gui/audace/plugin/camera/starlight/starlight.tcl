@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.9 2007-12-04 19:18:10 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.10 2007-12-16 11:38:46 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -49,7 +49,7 @@ proc ::starlight::getPluginOS { } {
 
 #
 # ::starlight::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::starlight::getCamNo { camItem } {
    variable private

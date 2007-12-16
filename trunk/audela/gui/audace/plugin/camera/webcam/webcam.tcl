@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.30 2007-12-08 22:56:05 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.31 2007-12-16 11:39:28 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -49,7 +49,7 @@ proc ::webcam::getPluginOS { } {
 
 #
 # ::webcam::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::webcam::getCamNo { camItem } {
    variable private
