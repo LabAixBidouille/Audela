@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.27 2007-12-04 19:05:37 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.28 2007-12-16 11:36:04 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -49,7 +49,7 @@ proc ::cemes::getPluginOS { } {
 
 #
 # ::cemes::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::cemes::getCamNo { camItem } {
    variable private

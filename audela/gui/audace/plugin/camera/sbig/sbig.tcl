@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.11 2007-12-04 19:16:27 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.12 2007-12-16 11:38:01 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -49,7 +49,7 @@ proc ::sbig::getPluginOS { } {
 
 #
 # ::sbig::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::sbig::getCamNo { camItem } {
    variable private

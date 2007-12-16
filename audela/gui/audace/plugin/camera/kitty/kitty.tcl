@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.12 2007-12-04 19:15:24 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.13 2007-12-16 11:37:41 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -49,7 +49,7 @@ proc ::kitty::getPluginOS { } {
 
 #
 # ::kitty::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::kitty::getCamNo { camItem } {
    variable private

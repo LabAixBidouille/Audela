@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.9 2007-12-04 19:14:12 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.10 2007-12-16 11:37:22 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
@@ -49,7 +49,7 @@ proc ::hisis::getPluginOS { } {
 
 #
 # ::hisis::getCamNo
-#    Retourne le ou les OS de fonctionnement du plugin
+#    Retourne le numero de la camera
 #
 proc ::hisis::getCamNo { camItem } {
    variable private
