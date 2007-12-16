@@ -75,7 +75,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 /* --------------------------------------------------------- */
 {
    //char s[1024];
-	int err;
+	int err,k;
    tel->drv=NULL;
 	/* create drive */
 	if (err = dsa_create_drive(&tel->drv)) {
@@ -108,10 +108,16 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->axis_param[0].type=AXIS_HA;
    tel->axis_param[1].type=AXIS_NOTDEFINED; //AXIS_DEC;
    tel->axis_param[2].type=AXIS_NOTDEFINED;
-   /* ---  Nombre de dents sur la roue dentee --- */
+   /* --- Nombre de dents sur la roue dentee --- */
    tel->axis_param[0].teeth_per_turn=480;
    tel->axis_param[1].teeth_per_turn=480;
    tel->axis_param[2].teeth_per_turn=480;
+	/* --- Inits par defaut ---*/
+	for (k=0;k<3;k++) {
+		tel->axis_param[0].posinit=0;
+		tel->axis_param[0].angleinit=0.;
+	}
+
 	return 0;
 }
 
@@ -300,6 +306,39 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 int mytel_radec_init(struct telprop *tel)
 /* it corresponds to the "match" function of an LX200 */
 {
+   int axisno,k;
+   char angles[3][30];
+	double angledegs[3];
+	int angleucs[3];
+	int voidangles[3];
+	int h,m,sec;
+	double tsl,angle;
+   /* --- lecture sur les axes valides ---*/
+	for (k=0;k<3;k++) {
+		voidangles[k]=(int)&angles[k];
+	}
+	etel_radec_coord(tel,0,voidangles,angledegs,angleucs);
+	/* --- mise en forme du resultat ---*/
+   if (tel->axis_param[0].type!=AXIS_NOTDEFINED) {
+      for (axisno=0;axisno<3;axisno++) {
+         if (tel->axis_param[axisno].type==AXIS_HA) {
+				tel->axis_param[axisno].posinit=angleucs[axisno];
+				tsl=etel_tsl(tel,&h,&m,&sec);
+				angle=tsl-tel->ra0;
+				angle+=720.;
+				angle=angle-360*floor(angle/360);
+				tel->axis_param[axisno].angleinit=angle;
+         }
+         if (tel->axis_param[axisno].type==AXIS_DEC) {
+				tel->axis_param[axisno].posinit=angleucs[axisno];
+				tel->axis_param[axisno].angleinit=tel->dec0;
+         }
+         if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
+				tel->axis_param[axisno].posinit=angleucs[axisno];
+				tel->axis_param[axisno].angleinit=0.;
+         }
+      }
+   }
    return 0;
 }
 
@@ -321,72 +360,110 @@ int mytel_radec_goto(struct telprop *tel)
    double motorturns,tsl,vit,nbmotorturnpersec;
    double facteur_vitesse;
    int posmax,posmin,pos1,vit1;
-   char coord0[50],coord1[50],s[1024];
-   int time_in=0,time_out=240;
+   char s[1024];
+   int time_in=0,time_out=240,k;
+   int time_in0=0,time_out0=240;
+	double dr,da;
+	double angledeg0s[3],angledeg1s[3];
+	double angledeg00s[3],angledeg11s[3];
+	int angleucs[3];
    /* --- boucle sur les axes valides ---*/
-   for (axisno=0;axisno<3;axisno++) {
-      if (tel->axis_param[axisno].type==AXIS_NOTDEFINED) {
-         continue;
-      }
-      // = butees
-      posmin=0;
-      posmax=(int)(pow(2,31));
-      facteur_vitesse=10.;
-      //= regle une vitesse de pointage
-      vit=10.; //deg/s
-      deg_per_tooth=360./tel->axis_param[axisno].teeth_per_turn; // teeth/360deg
-      nbmotorturnpersec=vit/deg_per_tooth; // motorturn/s
-      // = envoi la consigne de la vitesse du moteur
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,239,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-         traits=512;
-      } else {
-         traits=val;
-      }
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,241,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-         interpo=1024;
-      } else {
-         interpo=val;
-      }
-      uc_per_motorturn=traits*interpo; // UC/motorturn or UC/tooth
-      vit1=(int)(nbmotorturnpersec*uc_per_motorturn/facteur_vitesse); // UC/s
-   	if (err = dsa_set_register_s(tel->drv,ETEL_K,211,axisno,vit1,DSA_DEF_TIMEOUT)) {
-         return 1;
-	   }
-      // = decode les coordonnes
-      if (tel->axis_param[axisno].type==AXIS_HA) {
-         tsl=etel_tsl(tel,&h,&m,&sec);
-         angle=tsl-tel->ra0;
-         angle=tel->ra0; // verue pour test
-      } else if (tel->axis_param[axisno].type==AXIS_DEC) {
-         angle=tsl-tel->dec0;
-      } else if (tel->axis_param[axisno].type==AXIS_AZ) {
-         angle=0.; // a faire
-      } else if (tel->axis_param[axisno].type==AXIS_ELEV) {
-         angle=0.; // a faire
-      } else if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
-         angle=0.; // a faire
-      }
-      // = goto vers des coordonnes
-      motorturns=angle/deg_per_tooth; // motorturn
-      pos1=(int)(motorturns*uc_per_motorturn); // UC
-      if ((pos1>=posmin)&&(pos1>posmax)) {
-      	if (err = dsa_set_register_s(tel->drv,ETEL_K,210,axisno,pos1,DSA_DEF_TIMEOUT)) {
-            return 1;
-	      }
-      }
-   }
    if (tel->radec_goto_blocking==1) {
-      /* A loop is actived until the telescope is stopped */
-      tel_radec_coord(tel,coord0);
-      while (1==1) {
-   	   time_in++;
-         sprintf(s,"after 350"); mytel_tcleval(tel,s);
-         tel_radec_coord(tel,coord1);
-         if (strcmp(coord0,coord1)==0) {break;}
-         strcpy(coord0,coord1);
-	     if (time_in>=time_out) {break;}
-      }
-   }
+		etel_radec_coord(tel,1,NULL,angledeg00s,angleucs);
+	}
+	while (1==1) {
+		/* --- boucle sur les axes valides ---*/
+		for (axisno=0;axisno<3;axisno++) {
+		   if (tel->axis_param[axisno].type==AXIS_NOTDEFINED) {
+				continue;
+			}
+			// = butees
+			posmin=0;
+			posmax=(int)(pow(2,31)-1);
+			facteur_vitesse=10.;
+			//= regle une vitesse de pointage
+			vit=10.; //deg/s
+			deg_per_tooth=360./tel->axis_param[axisno].teeth_per_turn; // teeth/360deg
+			nbmotorturnpersec=vit/deg_per_tooth; // motorturn/s
+			// = envoi la consigne de la vitesse du moteur
+   		if (err = dsa_get_register_s(tel->drv,ETEL_M,239,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+				traits=512;
+			} else {
+				traits=val;
+			}
+   		if (err = dsa_get_register_s(tel->drv,ETEL_M,241,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+				interpo=1024;
+			} else {
+				interpo=val;
+			}
+			uc_per_motorturn=traits*interpo; // UC/motorturn or UC/tooth
+			vit1=(int)(nbmotorturnpersec*uc_per_motorturn/facteur_vitesse); // UC/s
+   		if (err = dsa_set_register_s(tel->drv,ETEL_K,211,axisno,vit1,DSA_DEF_TIMEOUT)) {
+				return 1;
+			}
+			// = decode les coordonnes
+			if (tel->axis_param[axisno].type==AXIS_HA) {
+				tsl=etel_tsl(tel,&h,&m,&sec);
+				angle=tsl-tel->ra0;
+				angle+=720.;
+				angle=angle-360*floor(angle/360);
+				//angle=tel->ra0; // verue pour test
+			} else if (tel->axis_param[axisno].type==AXIS_DEC) {
+				angle=tsl-tel->dec0;
+			} else if (tel->axis_param[axisno].type==AXIS_AZ) {
+				angle=0.; // a faire
+			} else if (tel->axis_param[axisno].type==AXIS_ELEV) {
+				angle=0.; // a faire
+			} else if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
+				angle=0.; // a faire
+			}
+			// = goto vers des coordonnes
+			motorturns=(angle-tel->axis_param[axisno].angleinit)/deg_per_tooth; // motorturn
+			pos1=(int)(motorturns*uc_per_motorturn+tel->axis_param[axisno].posinit); // UC
+			if (pos1<posmin)  {
+				pos1+=(posmax+1);
+			}
+			if ((pos1>=posmin)&&(pos1<=posmax)) {
+      		if (err = dsa_set_register_s(tel->drv,ETEL_K,210,axisno,pos1,DSA_DEF_TIMEOUT)) {
+					return 1;
+				}
+			}
+		}
+		/* --- condition de fin de raliement ---*/
+		if (tel->radec_goto_blocking==0) {
+			break;
+		} else {
+			/* A loop is actived until the telescope is stopped */
+			//tel_radec_coord(tel,coord0);
+			dr=4*atan(1)/180.;
+			etel_radec_coord(tel,1,NULL,angledeg0s,angleucs);
+			while (1==1) {
+   			time_in++;
+				sprintf(s,"after 350"); mytel_tcleval(tel,s);
+				etel_radec_coord(tel,1,NULL,angledeg1s,angleucs);
+				da=0.;
+				for (k=0;k<3;k++) {
+					da=da+fabs(asin(sin(angledeg1s[k]-angledeg0s[k]))/dr*3600.);
+				}
+				if (da<3.) {break;} // sortie avec un residu a 3 arcsec
+				for (k=0;k<3;k++) {
+					angledeg0s[k]=angledeg1s[k];
+				}
+				if (time_in>=time_out) {break;}
+			}
+		}
+   	time_in0++;
+		etel_radec_coord(tel,1,NULL,angledeg11s,angleucs);
+		da=0.;
+		for (k=0;k<3;k++) {
+			da=da+fabs(asin(sin(angledeg11s[k]-angledeg00s[k]))/dr*3600.);
+		}
+		if (da<1000) {break;} // sortie avec un residu a 1000 arcsec !!!!
+		for (k=0;k<3;k++) {
+			angledeg00s[k]=angledeg11s[k];
+		}
+		if (time_in0>=time_out0) {break;}
+	}
    return 0;
 }
 
@@ -428,56 +505,18 @@ int mytel_radec_motor(struct telprop *tel)
 
 int mytel_radec_coord(struct telprop *tel,char *result)
 {
-   double deg_per_tooth,angle,ra;
-   int traits,interpo,axisno,err,val;
-   int uc_per_motorturn,h,m,sec,pos;
-   double motorturns,tsl;
-   char angles[3][30],s[128];
+   int axisno,k;
+   char angles[3][30];
+	double angledegs[3];
+	int angleucs[3];
+	int voidangles[3];
    strcpy(result,"");
    /* --- lecture sur les axes valides ---*/
-   for (axisno=0;axisno<3;axisno++) {
-      strcpy(angles[axisno],"");
-      if (tel->axis_param[axisno].type==AXIS_NOTDEFINED) {
-         continue;
-      }
-      deg_per_tooth=360./tel->axis_param[axisno].teeth_per_turn; // teeth/360deg
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,239,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-         traits=512;
-      } else {
-         traits=val;
-      }
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,241,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-         interpo=1024;
-      } else {
-         interpo=val;
-      }
-      uc_per_motorturn=traits*interpo; // UC/motorturn or UC/tooth
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,7,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-         pos=0;
-      } else {
-         pos=val;
-      }
-      motorturns=1.*pos/uc_per_motorturn; // motorturn
-      angle=motorturns*deg_per_tooth; // deg
-      if (tel->axis_param[axisno].type==AXIS_HA) {
-         tsl=etel_tsl(tel,&h,&m,&sec);
-         ra=tsl-angle;
-         ra=angle; // verue pour test
-         sprintf(s,"mc_angle2hms %f 360 zero 2 auto string",ra); mytel_tcleval(tel,s);
-         sprintf(angles[axisno],"%s ",tel->interp->result);
-         continue;
-      }
-      if (tel->axis_param[axisno].type==AXIS_DEC) {
-         sprintf(s,"mc_angle2dms \"%f\" 90 zero 1 + string",angle); mytel_tcleval(tel,s);
-         sprintf(angles[axisno],"%s ",tel->interp->result);
-         continue;
-      }
-      if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
-         sprintf(s,"mc_angle2dms \"%f\" 360 zero 1 auto string",angle); mytel_tcleval(tel,s);
-         sprintf(angles[axisno],"%s ",tel->interp->result);
-         continue;
-      }
-   }
+	for (k=0;k<3;k++) {
+		voidangles[k]=(int)&angles[k];
+	}
+	etel_radec_coord(tel,0,voidangles,angledegs,angleucs);
+	/* --- mise en forme du resultat ---*/
    if (tel->axis_param[0].type!=AXIS_NOTDEFINED) {
       for (axisno=0;axisno<3;axisno++) {
          if (tel->axis_param[axisno].type==AXIS_HA) {
@@ -674,3 +713,82 @@ void etel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function
 	}
 }
 
+/* flagha=0 si on veut retourner en ascension droite */
+/* flagha=1 si on veut retourner en angle horaire */
+void etel_radec_coord(struct telprop *tel, int flagha, int *voidangles,double *angledegs,int *angleucs)
+{
+   double deg_per_tooth,angle,ra;
+   int traits,interpo,axisno,err,val;
+   int uc_per_motorturn,h,m,sec,pos;
+   double motorturns,tsl;
+	char s[128];
+	char *angles;
+   /* --- lecture sur les axes valides ---*/
+   for (axisno=0;axisno<3;axisno++) {
+		if (voidangles!=NULL) {
+			angles=(char*)voidangles[axisno];
+			strcpy(angles,"");
+		}
+		angleucs[axisno]=(int)0;
+		angledegs[axisno]=(double)0;
+      if (tel->axis_param[axisno].type==AXIS_NOTDEFINED) {
+         continue;
+      }
+      deg_per_tooth=360./tel->axis_param[axisno].teeth_per_turn; // teeth/360deg
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,239,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+         traits=512;
+      } else {
+         traits=val;
+      }
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,241,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+         interpo=1024;
+      } else {
+         interpo=val;
+      }
+      uc_per_motorturn=traits*interpo; // UC/motorturn or UC/tooth
+   	if (err = dsa_get_register_s(tel->drv,ETEL_M,7,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+         pos=0;
+      } else {
+         pos=val;
+      }
+		angleucs[axisno]=pos;
+      motorturns=1.*(pos-tel->axis_param[axisno].posinit)/uc_per_motorturn; // motorturn
+      angle=motorturns*deg_per_tooth+tel->axis_param[axisno].angleinit; // deg
+      if (tel->axis_param[axisno].type==AXIS_HA) {
+         tsl=etel_tsl(tel,&h,&m,&sec);
+         ra=tsl-angle;
+			if (flagha==1) {
+	         ra=angle;
+			}
+			ra+=720.;
+			ra=ra-360*floor(ra/360);
+			angledegs[axisno]=ra;
+			if (voidangles!=NULL) {
+	         sprintf(s,"mc_angle2hms %f 360 zero 2 auto string",ra); mytel_tcleval(tel,s);
+				sprintf(angles,"%s ",tel->interp->result);
+			}
+         continue;
+      }
+      if (tel->axis_param[axisno].type==AXIS_DEC) {
+         sprintf(s,"mc_angle2deg %f 90",angle); mytel_tcleval(tel,s);
+			sprintf(angles,"%s ",tel->interp->result);
+			angledegs[axisno]=atof(angles);
+			if (voidangles!=NULL) {
+				sprintf(s,"mc_angle2dms \"%f\" 90 zero 1 + string",angle); mytel_tcleval(tel,s);
+				sprintf(angles,"%s ",tel->interp->result);
+			}
+         continue;
+      }
+      if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
+			angle+=720.;
+			angle=angle-360*floor(angle/360);
+			angledegs[axisno]=angle;
+			if (voidangles!=NULL) {
+	         sprintf(s,"mc_angle2dms \"%f\" 360 zero 1 auto string",angle); mytel_tcleval(tel,s);
+		      sprintf(angles,"%s ",tel->interp->result);
+			}
+         continue;
+      }
+   }
+	return;
+}
