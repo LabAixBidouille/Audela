@@ -2,7 +2,7 @@
 # Fichier : audecomconfig.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: audecomconfig.tcl,v 1.1 2007-06-19 20:12:37 robertdelmas Exp $
+# Mise a jour $Id: audecomconfig.tcl,v 1.2 2007-12-18 22:22:12 robertdelmas Exp $
 #
 
 #
@@ -10,14 +10,11 @@
 # Description : Fenetre de configuration pour le parametrage des moteurs pour AudeCom
 #
 
-# Initialisation de la variable confTel(audecom,connect)
 # Initialisation de la variable confgene(espion) pour supprimer la ligne TU=HL-Xh si l'heure de l'ordinateur est en TU
-global confTel
 global confgene
 
-#--- Initialisation de variables
-set confTel(audecom,connect) "0"
-set confgene(espion)         "1"
+#--- Initialisation de variable
+set confgene(espion) "1"
 
 namespace eval confAudecomMot {
    variable This
@@ -28,10 +25,14 @@ namespace eval confAudecomMot {
    # Initialise les variables caption(...)
    #
    proc init { } {
+      variable private
       global audace
 
       #--- Charge le fichier caption
       source [ file join $audace(rep_plugin) mount audecom audecomconfig.cap ]
+
+      #--- Initialisation d'une variable pour le namespace confAudecomMobile
+      set private(fenetre,mobile,valider) "0"
    }
 
    #
@@ -77,10 +78,10 @@ namespace eval confAudecomMot {
 
    proc createDialog { } {
       variable This
+      variable private
       global audace
       global conf
       global caption
-      global confTel
       global confAudecomMot
       global confAudecom
 
@@ -99,12 +100,12 @@ namespace eval confAudecomMot {
       wm geometry $This +[ expr $posx_audecom_para_mot + 0 ]+[ expr $posy_audecom_para_mot + 70 ]
       wm resizable $This 0 0
 
-      #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomMot(audecom,rat_ad)  $confTel(audecom,rat_ad)
-      set confAudecomMot(audecom,rat_dec) $confTel(audecom,rat_dec)
-      set confAudecomMot(audecom,maxad)   $confTel(audecom,maxad)
-      set confAudecomMot(audecom,maxdec)  $confTel(audecom,maxdec)
-      set confAudecomMot(audecom,limp)    $confTel(audecom,limp)
+      #--- On utilise les valeurs contenues dans le tableau private pour l'initialisation
+      set confAudecomMot(audecom,rat_ad)  $::audecom::private(rat_ad)
+      set confAudecomMot(audecom,rat_dec) $::audecom::private(rat_dec)
+      set confAudecomMot(audecom,maxad)   $::audecom::private(maxad)
+      set confAudecomMot(audecom,maxdec)  $::audecom::private(maxdec)
+      set confAudecomMot(audecom,limp)    $::audecom::private(limp)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -368,14 +369,14 @@ namespace eval confAudecomMot {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
+      variable private
       global confAudecomMot
-      global confTel
 
-      set confTel(audecom,rat_ad)  $confAudecomMot(audecom,rat_ad)
-      set confTel(audecom,rat_dec) $confAudecomMot(audecom,rat_dec)
-      set confTel(audecom,maxad)   $confAudecomMot(audecom,maxad)
-      set confTel(audecom,maxdec)  $confAudecomMot(audecom,maxdec)
-      set confTel(audecom,limp)    $confAudecomMot(audecom,limp)
+      set ::audecom::private(rat_ad)  $confAudecomMot(audecom,rat_ad)
+      set ::audecom::private(rat_dec) $confAudecomMot(audecom,rat_dec)
+      set ::audecom::private(maxad)   $confAudecomMot(audecom,maxad)
+      set ::audecom::private(maxdec)  $confAudecomMot(audecom,maxdec)
+      set ::audecom::private(limp)    $confAudecomMot(audecom,limp)
    }
 }
 
@@ -431,10 +432,10 @@ namespace eval confAudecomFoc {
 
    proc createDialog { } {
       variable This
+      variable private
       global audace
       global conf
       global caption
-      global confTel
       global confAudecomFoc
 
       if { [ winfo exists $This ] } {
@@ -452,11 +453,11 @@ namespace eval confAudecomFoc {
       wm geometry $This +[ expr $posx_audecom_para_foc + 0 ]+[ expr $posy_audecom_para_foc + 70 ]
       wm resizable $This 0 0
 
-      #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomFoc(audecom,vitesse)     $confTel(audecom,vitesse)
-      set confAudecomFoc(audecom,intra_extra) $confTel(audecom,intra_extra)
-      set confAudecomFoc(audecom,inv_rot)     $confTel(audecom,inv_rot)
-      set confAudecomFoc(audecom,dep_val)     $confTel(audecom,dep_val)
+      #--- On utilise les valeurs contenues dans le tableau private pour l'initialisation
+      set confAudecomFoc(audecom,vitesse)     $::audecom::private(vitesse)
+      set confAudecomFoc(audecom,intra_extra) $::audecom::private(intra_extra)
+      set confAudecomFoc(audecom,inv_rot)     $::audecom::private(inv_rot)
+      set confAudecomFoc(audecom,dep_val)     $::audecom::private(dep_val)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -632,13 +633,13 @@ namespace eval confAudecomFoc {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
+      variable private
       global confAudecomFoc
-      global confTel
 
-      set confTel(audecom,vitesse)     $confAudecomFoc(audecom,vitesse)
-      set confTel(audecom,intra_extra) $confAudecomFoc(audecom,intra_extra)
-      set confTel(audecom,inv_rot)     $confAudecomFoc(audecom,inv_rot)
-      set confTel(audecom,dep_val)     $confAudecomFoc(audecom,dep_val)
+      set ::audecom::private(vitesse)     $confAudecomFoc(audecom,vitesse)
+      set ::audecom::private(intra_extra) $confAudecomFoc(audecom,intra_extra)
+      set ::audecom::private(inv_rot)     $confAudecomFoc(audecom,inv_rot)
+      set ::audecom::private(dep_val)     $confAudecomFoc(audecom,dep_val)
    }
 }
 
@@ -694,11 +695,11 @@ namespace eval confAudecomPec {
 
    proc createDialog { } {
       variable This
+      variable private
       global audace
       global conf
       global caption
       global color
-      global confTel
       global confAudecomPec
 
       if { [ winfo exists $This ] } {
@@ -716,28 +717,28 @@ namespace eval confAudecomPec {
       wm geometry $This +[ expr $posx_audecom_prog_pec + 0 ]+[ expr $posy_audecom_prog_pec + 70 ]
       wm resizable $This 0 0
 
-      #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomPec(audecom,t0)   $confTel(audecom,t0)
-      set confAudecomPec(audecom,t1)   $confTel(audecom,t1)
-      set confAudecomPec(audecom,t2)   $confTel(audecom,t2)
-      set confAudecomPec(audecom,t3)   $confTel(audecom,t3)
-      set confAudecomPec(audecom,t4)   $confTel(audecom,t4)
-      set confAudecomPec(audecom,t5)   $confTel(audecom,t5)
-      set confAudecomPec(audecom,t6)   $confTel(audecom,t6)
-      set confAudecomPec(audecom,t7)   $confTel(audecom,t7)
-      set confAudecomPec(audecom,t8)   $confTel(audecom,t8)
-      set confAudecomPec(audecom,t9)   $confTel(audecom,t9)
-      set confAudecomPec(audecom,t10)  $confTel(audecom,t10)
-      set confAudecomPec(audecom,t11)  $confTel(audecom,t11)
-      set confAudecomPec(audecom,t12)  $confTel(audecom,t12)
-      set confAudecomPec(audecom,t13)  $confTel(audecom,t13)
-      set confAudecomPec(audecom,t14)  $confTel(audecom,t14)
-      set confAudecomPec(audecom,t15)  $confTel(audecom,t15)
-      set confAudecomPec(audecom,t16)  $confTel(audecom,t16)
-      set confAudecomPec(audecom,t17)  $confTel(audecom,t17)
-      set confAudecomPec(audecom,t18)  $confTel(audecom,t18)
-      set confAudecomPec(audecom,t19)  $confTel(audecom,t19)
-      set confAudecomPec(audecom,rpec) $confTel(audecom,rpec)
+      #--- On utilise les valeurs contenues dans le tableau private pour l'initialisation
+      set confAudecomPec(audecom,t0)   $::audecom::private(t0)
+      set confAudecomPec(audecom,t1)   $::audecom::private(t1)
+      set confAudecomPec(audecom,t2)   $::audecom::private(t2)
+      set confAudecomPec(audecom,t3)   $::audecom::private(t3)
+      set confAudecomPec(audecom,t4)   $::audecom::private(t4)
+      set confAudecomPec(audecom,t5)   $::audecom::private(t5)
+      set confAudecomPec(audecom,t6)   $::audecom::private(t6)
+      set confAudecomPec(audecom,t7)   $::audecom::private(t7)
+      set confAudecomPec(audecom,t8)   $::audecom::private(t8)
+      set confAudecomPec(audecom,t9)   $::audecom::private(t9)
+      set confAudecomPec(audecom,t10)  $::audecom::private(t10)
+      set confAudecomPec(audecom,t11)  $::audecom::private(t11)
+      set confAudecomPec(audecom,t12)  $::audecom::private(t12)
+      set confAudecomPec(audecom,t13)  $::audecom::private(t13)
+      set confAudecomPec(audecom,t14)  $::audecom::private(t14)
+      set confAudecomPec(audecom,t15)  $::audecom::private(t15)
+      set confAudecomPec(audecom,t16)  $::audecom::private(t16)
+      set confAudecomPec(audecom,t17)  $::audecom::private(t17)
+      set confAudecomPec(audecom,t18)  $::audecom::private(t18)
+      set confAudecomPec(audecom,t19)  $::audecom::private(t19)
+      set confAudecomPec(audecom,rpec) $::audecom::private(rpec)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -1153,24 +1154,24 @@ namespace eval confAudecomPec {
    #
    proc moyti { } {
       variable This
+      variable private
       global conf
       global color
-      global confTel
       global confAudecomPec
 
-      set confTel(audecom,t) 0
+      set private(t) 0
       for {set i 0} {$i <= 19} {incr i} {
-         set confTel(audecom,t) [ expr $confTel(audecom,t) + $confAudecomPec(audecom,t$i) ]
+         set private(t) [ expr $private(t) + $confAudecomPec(audecom,t$i) ]
       }
-      set confTel(audecom,moyti) [ expr $confTel(audecom,t) / 20.0 ]
-      if { $confTel(audecom,moyti) == "$conf(audecom,dsuivinom)" } {
+      set private(moyti) [ expr $private(t) / 20.0 ]
+      if { $private(moyti) == "$conf(audecom,dsuivinom)" } {
          set fg $color(blue)
          analyse1
       } else {
          set fg $color(red)
          analyse2
       }
-      $This.labURL5 configure -textvariable confTel(audecom,moyti) -fg $fg -width 11
+      $This.labURL5 configure -textvariable ::confAudecomPec::private(moyti) -fg $fg -width 11
    }
 
    #
@@ -1178,30 +1179,30 @@ namespace eval confAudecomPec {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
-      global confTel
+      variable private
       global confAudecomPec
 
-      set confTel(audecom,t0)   $confAudecomPec(audecom,t0)
-      set confTel(audecom,t1)   $confAudecomPec(audecom,t1)
-      set confTel(audecom,t2)   $confAudecomPec(audecom,t2)
-      set confTel(audecom,t3)   $confAudecomPec(audecom,t3)
-      set confTel(audecom,t4)   $confAudecomPec(audecom,t4)
-      set confTel(audecom,t5)   $confAudecomPec(audecom,t5)
-      set confTel(audecom,t6)   $confAudecomPec(audecom,t6)
-      set confTel(audecom,t7)   $confAudecomPec(audecom,t7)
-      set confTel(audecom,t8)   $confAudecomPec(audecom,t8)
-      set confTel(audecom,t9)   $confAudecomPec(audecom,t9)
-      set confTel(audecom,t10)  $confAudecomPec(audecom,t10)
-      set confTel(audecom,t11)  $confAudecomPec(audecom,t11)
-      set confTel(audecom,t12)  $confAudecomPec(audecom,t12)
-      set confTel(audecom,t13)  $confAudecomPec(audecom,t13)
-      set confTel(audecom,t14)  $confAudecomPec(audecom,t14)
-      set confTel(audecom,t15)  $confAudecomPec(audecom,t15)
-      set confTel(audecom,t16)  $confAudecomPec(audecom,t16)
-      set confTel(audecom,t17)  $confAudecomPec(audecom,t17)
-      set confTel(audecom,t18)  $confAudecomPec(audecom,t18)
-      set confTel(audecom,t19)  $confAudecomPec(audecom,t19)
-      set confTel(audecom,rpec) $confAudecomPec(audecom,rpec)
+      set ::audecom::private(t0)   $confAudecomPec(audecom,t0)
+      set ::audecom::private(t1)   $confAudecomPec(audecom,t1)
+      set ::audecom::private(t2)   $confAudecomPec(audecom,t2)
+      set ::audecom::private(t3)   $confAudecomPec(audecom,t3)
+      set ::audecom::private(t4)   $confAudecomPec(audecom,t4)
+      set ::audecom::private(t5)   $confAudecomPec(audecom,t5)
+      set ::audecom::private(t6)   $confAudecomPec(audecom,t6)
+      set ::audecom::private(t7)   $confAudecomPec(audecom,t7)
+      set ::audecom::private(t8)   $confAudecomPec(audecom,t8)
+      set ::audecom::private(t9)   $confAudecomPec(audecom,t9)
+      set ::audecom::private(t10)  $confAudecomPec(audecom,t10)
+      set ::audecom::private(t11)  $confAudecomPec(audecom,t11)
+      set ::audecom::private(t12)  $confAudecomPec(audecom,t12)
+      set ::audecom::private(t13)  $confAudecomPec(audecom,t13)
+      set ::audecom::private(t14)  $confAudecomPec(audecom,t14)
+      set ::audecom::private(t15)  $confAudecomPec(audecom,t15)
+      set ::audecom::private(t16)  $confAudecomPec(audecom,t16)
+      set ::audecom::private(t17)  $confAudecomPec(audecom,t17)
+      set ::audecom::private(t18)  $confAudecomPec(audecom,t18)
+      set ::audecom::private(t19)  $confAudecomPec(audecom,t19)
+      set ::audecom::private(rpec) $confAudecomPec(audecom,rpec)
    }
 }
 
@@ -1221,10 +1222,10 @@ namespace eval confAudecomKing {
    #
    proc run { this } {
       variable This
-      global frmm
+      variable private
 
       set This $this
-      set frm $frmm(Telscp3)
+      set frm $::audecom::private(frm)
       $frm.ctlking configure -relief groove -state disabled
       createDialog
       tkwait visibility $This
@@ -1237,13 +1238,13 @@ namespace eval confAudecomKing {
    #
    proc fermer { } {
       variable This
+      variable private
       global audace
       global confgene
-      global frmm
 
-      set frm $frmm(Telscp3)
       set confgene(espion2) "1"
       if { [ winfo exists $audace(base).confTel ] } {
+         set frm $::audecom::private(frm)
          $frm.ctlking configure -relief raised -state normal
       }
       destroy $This
@@ -1503,6 +1504,7 @@ namespace eval confAudecomKing {
             $This.lab7 configure -text "$confgene(posobs,altitude) $caption(audecomconfig,metre)"
          }
          if { $confgene(temps,hsysteme) == "$caption(audecomconfig,heure_legale)" } {
+            $This.lab19 configure -text "$caption(audecomconfig,heure_legale)"
             if { $confgene(espion1) == "1" } {
                set confgene(espion1) "0"
                #--- Cree le label fushoraire
@@ -1518,7 +1520,6 @@ namespace eval confAudecomKing {
                #--- Mise a jour dynamique des couleurs
                ::confColor::applyColor $This
             }
-            $This.lab19 configure -text "$caption(audecomconfig,heure_legale)"
             catch {
                if { $confgene(temps,hhiverete) == "$caption(audecomconfig,aucune)" } {
                   $This.lab23 configure -text "$caption(audecomconfig,aucune)"
@@ -1630,9 +1631,9 @@ namespace eval confAudecomMobile {
    # et fermer la fenetre des parametres
    #
    proc ok { } {
-      global confTel
+      variable private
 
-      set confTel(fenetre,mobile,valider) "1"
+      set ::confAudecomMot::private(fenetre,mobile,valider) "1"
       appliquer
       fermer
    }
@@ -1681,10 +1682,10 @@ namespace eval confAudecomMobile {
 
   proc createDialog { } {
       variable This
+      variable private
       global audace
       global conf
       global caption
-      global confTel
       global confAudecomMobile
 
       if { [ winfo exists $This ] } {
@@ -1702,10 +1703,10 @@ namespace eval confAudecomMobile {
       wm geometry $This +[ expr $posx_audecom_para_mobile + 0 ]+[ expr $posy_audecom_para_mobile + 70 ]
       wm resizable $This 0 0
 
-      #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confAudecomMobile(audecom,ad)   $confTel(audecom,ad)
-      set confAudecomMobile(audecom,dec)  $confTel(audecom,dec)
-      set confAudecomMobile(audecom,type) $confTel(audecom,type)
+      #--- On utilise les valeurs contenues dans le tableau private pour l'initialisation
+      set confAudecomMobile(audecom,ad)   $::audecom::private(ad)
+      set confAudecomMobile(audecom,dec)  $::audecom::private(dec)
+      set confAudecomMobile(audecom,type) $::audecom::private(type)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -1821,12 +1822,12 @@ namespace eval confAudecomMobile {
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
+      variable private
       global confAudecomMobile
-      global confTel
 
-      set confTel(audecom,ad)   $confAudecomMobile(audecom,ad)
-      set confTel(audecom,dec)  $confAudecomMobile(audecom,dec)
-      set confTel(audecom,type) $confAudecomMobile(audecom,type)
+      set ::audecom::private(ad)   $confAudecomMobile(audecom,ad)
+      set ::audecom::private(dec)  $confAudecomMobile(audecom,dec)
+      set ::audecom::private(type) $confAudecomMobile(audecom,type)
    }
 }
 
