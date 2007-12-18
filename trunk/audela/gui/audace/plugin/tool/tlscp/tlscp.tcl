@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.3 2007-11-10 11:28:31 michelpujol Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.4 2007-12-18 22:34:13 robertdelmas Exp $
 #
 
 #============================================================
@@ -515,7 +515,7 @@ proc ::tlscp::startTool { visuNo } {
    variable private
 
    trace add variable ::conf(telescope) write "::tlscp::adaptPanel $visuNo"
-   trace add variable ::confTel(temma,modele) write "::tlscp::adaptPanel $visuNo"
+   trace add variable ::temma::private(modele) write "::tlscp::adaptPanel $visuNo"
    pack $private($visuNo,This) -side left -fill y
 
    #--- j'active la mise a jour automatique de l'affichage quand on change de camera
@@ -560,7 +560,7 @@ proc ::tlscp::stopTool { visuNo } {
    ::confVisu::createBindCanvas $visuNo <Double-1> "default"
 
    trace remove variable ::conf(telescope) write "::tlscp::adaptPanel $visuNo"
-   trace remove variable ::confTel(temma,modele) write "::tlscp::adaptPanel $visuNo"
+   trace remove variable ::temma::private(modele) write "::tlscp::adaptPanel $visuNo"
    pack forget $private($visuNo,This)
 }
 
