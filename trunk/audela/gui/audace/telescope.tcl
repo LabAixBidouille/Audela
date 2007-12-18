@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.13 2007-12-15 22:59:59 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.14 2007-12-18 22:32:48 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -31,7 +31,6 @@ global audace
       global conf
       global audace
       global caption
-      global confTel
 
       set Button_Init $this
 
@@ -41,7 +40,7 @@ global audace
          destroy $base.inittel
       }
 
-      if { ( $conf(telescope) == "audecom" ) && ( $confTel(audecom,connect) == "1" ) } {
+      if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          #--- Neutralisation du bouton initialisation
          $Button_Init configure -relief groove -state disabled
          #--- Reset position telescope
@@ -144,11 +143,10 @@ global audace
       global conf
       global audace
       global caption
-      global confTel
       global cataGoto
       global catalogue
 
-      if { ( $conf(telescope) == "audecom" ) && ( $confTel(audecom,connect) == "1" ) } {
+      if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          set audace(telescope,goto) "1"
          #--- Cas particulier du GOTO sur le Soleil et sur la Lune
          #--- Transfere les parametres de derive dans le microcontroleur
@@ -242,9 +240,8 @@ global audace
    proc stopGoto { { Button_Stop "" } } {
       global conf
       global audace
-      global confTel
 
-      if { ( $conf(telescope) == "audecom" ) && ( $confTel(audecom,connect) == "1" ) } {
+      if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          #--- Arret d'urgence du pointage et retour a la position au moment de l'action
          tel$audace(telNo) radec stop
          if { $audace(telescope,goto) == "0" } {
