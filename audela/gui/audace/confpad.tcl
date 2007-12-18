@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.27 2007-12-15 08:52:37 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.28 2007-12-18 21:06:05 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -276,7 +276,7 @@ proc ::confPad::createDialog { } {
 # Return
 #    nothing
 # Exemple:
-#    ::confPad::createFramePad $frm.padList ::confTel(nomRaquette)
+#    ::confPad::createFramePad $frm.padList ::confTel::private(nomRaquette)
 #    pack $frm.pluginList -in $frm -anchor center -side right -padx 10
 #------------------------------------------------------------
 proc ::confPad::createFramePad { frm variablePluginName} {
