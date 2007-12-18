@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.19 2007-09-14 14:35:00 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.20 2007-12-18 22:27:17 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -648,7 +648,6 @@ namespace eval cataGoto {
       global audace
       global color
       global conf
-      global confTel
       global panneau
       global caption
       global catalogue
@@ -948,9 +947,9 @@ namespace eval cataGoto {
    # Affichage de la fenetre de configuration des catalogues Messier, NGC et IC
    #
    proc CataObjet { menuChoisi } {
+      variable private
       global audace
       global conf
-      global confTel
       global panneau
       global caption
       global catalogue
@@ -994,7 +993,7 @@ namespace eval cataGoto {
          wm protocol $audace(base).cataObjet WM_DELETE_WINDOW {
             ::cataGoto::recup_position
             destroy $audace(base).cataObjet
-            set confTel(ouranos,objet) "4"
+            set ::ouranos::private(objet) "4"
          }
       } else {
          wm resizable $audace(base).cataObjet 0 0
@@ -1125,7 +1124,7 @@ namespace eval cataGoto {
                set cataGoto(carte,validation) "0"
                set cataGoto(carte,avant_plan) "0"
                destroy $audace(base).cataObjet
-               set confTel(ouranos,objet) "4"
+               set ::ouranos::private(objet) "4"
             }
          } else {
             button $audace(base).cataObjet.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
@@ -1277,12 +1276,12 @@ namespace eval cataGoto {
    # Affichage de la fenetre de configuration du catalogue des etoiles
    #
    proc CataEtoiles { } {
+      variable private
       global audace
       global caption
       global catalogue
       global zone
       global conf
-      global confTel
       global color
       global cataGoto
 
@@ -1310,7 +1309,7 @@ namespace eval cataGoto {
          wm protocol $audace(base).cataEtoile WM_DELETE_WINDOW {
             ::cataGoto::recup_position
             destroy $audace(base).cataEtoile
-            set confTel(ouranos,objet) "4"
+            set ::ouranos::private(objet) "4"
          }
       } else {
          wm resizable $audace(base).cataEtoile 0 0
@@ -1351,7 +1350,7 @@ namespace eval cataGoto {
                   set cataGoto(carte,validation) "0"
                   set cataGoto(carte,avant_plan) "0"
                   destroy $audace(base).cataEtoile
-                  set confTel(ouranos,objet) "4"
+                  set ::ouranos::private(objet) "4"
                }
          } else {
             button $audace(base).cataEtoile.frame9.fermer -text "$caption(catagoto,fermer)" -width 7 -state disabled \
