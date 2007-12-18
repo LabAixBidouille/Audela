@@ -2,7 +2,7 @@
 # Fichier : temmaconfig.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temmaconfig.tcl,v 1.1 2007-06-19 20:15:25 robertdelmas Exp $
+# Mise a jour $Id: temmaconfig.tcl,v 1.2 2007-12-18 22:20:33 robertdelmas Exp $
 #
 
 #
@@ -32,7 +32,7 @@ proc temma_get_motor { } {
 namespace eval confTemmaMobile {
 
    #
-   # confTemmaMobile::init (est lance automatiquement au chargement de ce fichier tcl)
+   # ::confTemmaMobile::init (est lance automatiquement au chargement de ce fichier tcl)
    # Initialise les variables caption(...)
    #
    proc init { } {
@@ -43,7 +43,7 @@ namespace eval confTemmaMobile {
    }
 
    #
-   # confTemmaMobile::run this args
+   # ::confTemmaMobile::run this args
    # Cree la fenetre de configuration des parametres de suivi
    # this = chemin de la fenetre
    #
@@ -56,7 +56,7 @@ namespace eval confTemmaMobile {
    }
 
    #
-   # confTemmaMobile::ok
+   # ::confTemmaMobile::ok
    # Fonction appelee lors de l'appui sur le bouton 'OK' pour appliquer la configuration
    # et fermer la fenetre des parametres
    #
@@ -66,7 +66,7 @@ namespace eval confTemmaMobile {
    }
 
    #
-   # confTemmaMobile::appliquer
+   # ::confTemmaMobile::appliquer
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc appliquer { } {
@@ -74,7 +74,7 @@ namespace eval confTemmaMobile {
    }
 
    #
-   # confTemmaMobile::fermer
+   # ::confTemmaMobile::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Annuler'
    #
    proc fermer { } {
@@ -84,7 +84,7 @@ namespace eval confTemmaMobile {
    }
 
    #
-   # confTemmaMobile::griser
+   # ::confTemmaMobile::griser
    # Fonction destinee a inhiber l'affichage de derive
    #
    proc griser { this } {
@@ -99,7 +99,7 @@ namespace eval confTemmaMobile {
    }
 
    #
-   # confTemmaMobile::activer
+   # ::confTemmaMobile::activer
    # Fonction destinee a activer l'affichage de derive
    #
    proc activer { this } {
@@ -115,11 +115,8 @@ namespace eval confTemmaMobile {
 
   proc createDialog { } {
       variable This
-      global audace
-      global conf
-      global caption
-      global confTel
-      global confTemmaMobile
+      variable private
+      global audace caption
 
       if { [ winfo exists $This ] } {
          wm withdraw $This
@@ -136,10 +133,10 @@ namespace eval confTemmaMobile {
       wm geometry $This +[ expr $posx_temma_para_mobile + 0 ]+[ expr $posy_temma_para_mobile + 70 ]
       wm resizable $This 0 0
 
-      #--- On utilise les valeurs contenues dans le tableau confTel pour l'initialisation
-      set confTemmaMobile(temma,suivi_ad)  $confTel(temma,suivi_ad)
-      set confTemmaMobile(temma,suivi_dec) $confTel(temma,suivi_dec)
-      set confTemmaMobile(temma,type)      $confTel(temma,type)
+      #--- On utilise les valeurs contenues dans le tableau ::temma::private pour l'initialisation
+      set private(temma,suivi_ad)  $::temma::private(suivi_ad)
+      set private(temma,suivi_dec) $::temma::private(suivi_dec)
+      set private(temma,type)      $::temma::private(type)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -166,32 +163,28 @@ namespace eval confTemmaMobile {
       #--- Radio-bouton etoile
       radiobutton $This.rad4 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(temmaconfig,para_mobile_etoile)" \
-         -value 0 -variable confTemmaMobile(temma,type) \
+         -value 0 -variable ::confTemmaMobile::private(temma,type) \
          -command { ::confTemmaMobile::griser "$audace(base).confTemmaMobile" }
       pack $This.rad4 -in $This.frame3 -anchor s -side left -padx 10 -pady 5
 
       #--- Radio-bouton comete, etc.
       radiobutton $This.rad3 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
          -text "$caption(temmaconfig,para_mobile_comete)" \
-         -value 1 -variable confTemmaMobile(temma,type) \
+         -value 1 -variable ::confTemmaMobile::private(temma,type) \
          -command { ::confTemmaMobile::activer "$audace(base).confTemmaMobile" }
       pack $This.rad3 -in $This.frame4 -anchor n -side left -padx 10 -pady 5
 
-      #--- Cree la zone a renseigner de la vitesse en asension droite
-      catch {
-         entry $This.suivi_ad -textvariable confTemmaMobile(temma,suivi_ad) -width 10 -justify center
-         pack $This.suivi_ad -in $This.frame6 -anchor n -side left -padx 5 -pady 5
-      }
+      #--- Cree la zone a renseigner de la vitesse en ascension droite
+      entry $This.suivi_ad -textvariable ::confTemmaMobile::private(temma,suivi_ad) -width 10 -justify center
+      pack $This.suivi_ad -in $This.frame6 -anchor n -side left -padx 5 -pady 5
 
       #--- Etiquette vitesse d'ascension droite
       label $This.lab_1 -text "$caption(temmaconfig,para_mobile_ad)"
       pack $This.lab_1 -in $This.frame6 -anchor n -side left -padx 10 -pady 5
 
       #--- Cree la zone a renseigner de la vitesse en declinaison
-      catch {
-         entry $This.suivi_dec -textvariable confTemmaMobile(temma,suivi_dec) -width 10 -justify center
-         pack $This.suivi_dec -in $This.frame7 -anchor n -side left -padx 5 -pady 5
-      }
+      entry $This.suivi_dec -textvariable ::confTemmaMobile::private(temma,suivi_dec) -width 10 -justify center
+      pack $This.suivi_dec -in $This.frame7 -anchor n -side left -padx 5 -pady 5
 
       #--- Etiquette vitesse de declinaison
       label $This.lab_2 -text "$caption(temmaconfig,para_mobile_dec)"
@@ -213,7 +206,7 @@ namespace eval confTemmaMobile {
       $This.lst1 insert end "$caption(temmaconfig,para_mobile,aide0)\n"
 
       #--- Entry actives ou non
-      if { $confTemmaMobile(temma,type) == "0" } {
+      if { $private(temma,type) == "0" } {
          ::confTemmaMobile::griser "$audace(base).confTemmaMobile"
       } else {
          ::confTemmaMobile::activer "$audace(base).confTemmaMobile"
@@ -231,38 +224,35 @@ namespace eval confTemmaMobile {
    }
 
    #
-   # confTemmaMobile::widgetToConf
-   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+   # ::confTemmaMobile::widgetToConf
+   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau ::temma::private(...)
    #
    proc widgetToConf { } {
       variable This
-      global audace
-      global caption
-      global confTel
-      global confTemmaMobile
+      variable private
 
       #--- Bornage de la correction
-      if { $confTemmaMobile(temma,suivi_ad) > "21541" } {
-         set confTemmaMobile(temma,suivi_ad) "21541"
-         $This.suivi_ad configure -textvariable confTemmaMobile(temma,suivi_ad)
+      if { $private(temma,suivi_ad) > "21541" } {
+         set private(temma,suivi_ad) "21541"
+         $This.suivi_ad configure -textvariable ::confTemmaMobile::private(temma,suivi_ad)
       }
-      if { $confTemmaMobile(temma,suivi_ad) < "-21541" } {
-         set confTemmaMobile(temma,suivi_ad) "-21541"
-         $This.suivi_ad configure -textvariable confTemmaMobile(temma,suivi_ad)
+      if { $private(temma,suivi_ad) < "-21541" } {
+         set private(temma,suivi_ad) "-21541"
+         $This.suivi_ad configure -textvariable ::confTemmaMobile::private(temma,suivi_ad)
       }
-      if { $confTemmaMobile(temma,suivi_dec) > "600" } {
-         set confTemmaMobile(temma,suivi_dec) "600"
-         $This.suivi_dec configure -textvariable confTemmaMobile(temma,suivi_dec)
+      if { $private(temma,suivi_dec) > "600" } {
+         set private(temma,suivi_dec) "600"
+         $This.suivi_dec configure -textvariable ::confTemmaMobile::private(temma,suivi_dec)
       }
-      if { $confTemmaMobile(temma,suivi_dec) < "-600" } {
-         set confTemmaMobile(temma,suivi_dec) "-600"
-         $This.suivi_dec configure -textvariable confTemmaMobile(temma,suivi_dec)
+      if { $private(temma,suivi_dec) < "-600" } {
+         set private(temma,suivi_dec) "-600"
+         $This.suivi_dec configure -textvariable ::confTemmaMobile::private(temma,suivi_dec)
       }
 
       #--- Transposition de variables
-      set confTel(temma,suivi_ad)  $confTemmaMobile(temma,suivi_ad)
-      set confTel(temma,suivi_dec) $confTemmaMobile(temma,suivi_dec)
-      set confTel(temma,type)      $confTemmaMobile(temma,type)
+      set ::temma::private(suivi_ad)  $private(temma,suivi_ad)
+      set ::temma::private(suivi_dec) $private(temma,suivi_dec)
+      set ::temma::private(type)      $private(temma,type)
    }
 }
 
