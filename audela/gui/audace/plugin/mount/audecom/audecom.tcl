@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.11 2007-12-08 22:55:14 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.12 2007-12-18 22:21:09 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -52,7 +52,10 @@ proc ::audecom::getPluginOS { } {
 #    Initialise les variables conf(audecom,...)
 #
 proc ::audecom::initPlugin { } {
-   global conf
+   global audace conf
+
+   #--- Charge le fichier auxiliaire
+   uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecomconfig.tcl ]\""
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
@@ -126,7 +129,49 @@ proc ::audecom::confToWidget { } {
    global conf
 
    #--- Recupere la configuration de la monture AudeCom dans le tableau private(...)
-
+   set private(port)        $conf(audecom,port)
+   set private(pec)         $conf(audecom,pec)
+   set private(king)        $conf(audecom,king)
+   set private(mobile)      $conf(audecom,mobile)
+   set private(german)      $conf(audecom,german)
+   #--- Pour la fenetre de configuration des parametres moteurs
+   set private(limp)        $conf(audecom,limp)
+   set private(maxad)       $conf(audecom,maxad)
+   set private(maxdec)      $conf(audecom,maxdec)
+   set private(rat_ad)      $conf(audecom,rat_ad)
+   set private(rat_dec)     $conf(audecom,rat_dec)
+   #--- Pour la fenetre de configuration des parametres de la focalisation
+   set private(dep_val)     $conf(audecom,dep_val)
+   set private(intra_extra) $conf(audecom,intra_extra)
+   set private(inv_rot)     $conf(audecom,inv_rot)
+   set private(vitesse)     $conf(audecom,vitesse)
+   #--- Pour la fenetre de configuration de la programmation du PEC
+   set private(rpec)        $conf(audecom,rpec)
+   set private(t0)          $conf(audecom,t0)
+   set private(t1)          $conf(audecom,t1)
+   set private(t2)          $conf(audecom,t2)
+   set private(t3)          $conf(audecom,t3)
+   set private(t4)          $conf(audecom,t4)
+   set private(t5)          $conf(audecom,t5)
+   set private(t6)          $conf(audecom,t6)
+   set private(t7)          $conf(audecom,t7)
+   set private(t8)          $conf(audecom,t8)
+   set private(t9)          $conf(audecom,t9)
+   set private(t10)         $conf(audecom,t10)
+   set private(t11)         $conf(audecom,t11)
+   set private(t12)         $conf(audecom,t12)
+   set private(t13)         $conf(audecom,t13)
+   set private(t14)         $conf(audecom,t14)
+   set private(t15)         $conf(audecom,t15)
+   set private(t16)         $conf(audecom,t16)
+   set private(t17)         $conf(audecom,t17)
+   set private(t18)         $conf(audecom,t18)
+   set private(t19)         $conf(audecom,t19)
+   #--- Pour la fenetre de configuration du suivi des objets mobiles
+   set private(ad)          $conf(audecom,ad)
+   set private(dec)         $conf(audecom,dec)
+   set private(type)        $conf(audecom,type)
+   set private(raquette)    $conf(raquette)
 }
 
 #
@@ -138,7 +183,49 @@ proc ::audecom::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture AudeCom dans le tableau conf(audecom,...)
-
+   set conf(audecom,port)        $private(port)
+   set conf(audecom,pec)         $private(pec)
+   set conf(audecom,king)        $private(king)
+   set conf(audecom,mobile)      $private(mobile)
+   set conf(audecom,german)      $private(german)
+   #--- Vient de la fenetre de configuration des parametres moteurs
+   set conf(audecom,limp)        $private(limp)
+   set conf(audecom,maxad)       $private(maxad)
+   set conf(audecom,maxdec)      $private(maxdec)
+   set conf(audecom,rat_ad)      $private(rat_ad)
+   set conf(audecom,rat_dec)     $private(rat_dec)
+   #--- Vient de la fenetre de configuration des parametres de la focalisation
+   set conf(audecom,dep_val)     $private(dep_val)
+   set conf(audecom,intra_extra) $private(intra_extra)
+   set conf(audecom,inv_rot)     $private(inv_rot)
+   set conf(audecom,vitesse)     $private(vitesse)
+   #--- Vient de la fenetre de configuration de la programmation PEC
+   set conf(audecom,rpec)        $private(rpec)
+   set conf(audecom,t0)          $private(t0)
+   set conf(audecom,t1)          $private(t1)
+   set conf(audecom,t2)          $private(t2)
+   set conf(audecom,t3)          $private(t3)
+   set conf(audecom,t4)          $private(t4)
+   set conf(audecom,t5)          $private(t5)
+   set conf(audecom,t6)          $private(t6)
+   set conf(audecom,t7)          $private(t7)
+   set conf(audecom,t8)          $private(t8)
+   set conf(audecom,t9)          $private(t9)
+   set conf(audecom,t10)         $private(t10)
+   set conf(audecom,t11)         $private(t11)
+   set conf(audecom,t12)         $private(t12)
+   set conf(audecom,t13)         $private(t13)
+   set conf(audecom,t14)         $private(t14)
+   set conf(audecom,t15)         $private(t15)
+   set conf(audecom,t16)         $private(t16)
+   set conf(audecom,t17)         $private(t17)
+   set conf(audecom,t18)         $private(t18)
+   set conf(audecom,t19)         $private(t19)
+   #--- Vient de la fenetre de configuration de suivi
+   set conf(audecom,ad)          $private(ad)
+   set conf(audecom,dec)         $private(dec)
+   set conf(audecom,type)        $private(type)
+   set conf(raquette)            $private(raquette)
 }
 
 #
@@ -147,16 +234,451 @@ proc ::audecom::widgetToConf { } {
 #
 proc ::audecom::fillConfigPage { frm } {
    variable private
-   global audace caption color
+   global audace caption conf
 
+   #--- Initialise une variable locale
+   set private(frm) $frm
+
+   #--- confToWidget
+   ::audecom::confToWidget
+
+   #--- Prise en compte des liaisons
+   set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
+
+   #--- Creation des differents frames
+   frame $frm.frame1 -borderwidth 0 -relief raised
+   pack $frm.frame1 -side top -fill x
+
+   frame $frm.frame2 -borderwidth 0 -relief raised
+   pack $frm.frame2 -side top -fill both -expand 1
+
+   frame $frm.frame3 -borderwidth 0 -relief raised
+   pack $frm.frame3 -side bottom -fill x -pady 2
+
+   frame $frm.frame4 -borderwidth 0 -relief raised
+   pack $frm.frame4 -in $frm.frame1 -side left -fill both -expand 1
+
+   frame $frm.frame5 -borderwidth 0 -relief raised
+   pack $frm.frame5 -in $frm.frame1 -side left -fill both -expand 1
+
+   frame $frm.frame6 -borderwidth 0 -relief raised
+   pack $frm.frame6 -in $frm.frame4 -side top -fill x
+
+   frame $frm.frame7 -borderwidth 0 -relief raised
+   pack $frm.frame7 -in $frm.frame4 -side top -fill x
+
+   frame $frm.frame16 -borderwidth 0 -relief raised
+   pack $frm.frame16 -in $frm.frame4 -side bottom -fill x
+
+   frame $frm.frame8 -borderwidth 0 -relief raised
+   pack $frm.frame8 -in $frm.frame4 -side bottom -fill x
+
+   frame $frm.frame9 -borderwidth 0 -relief raised
+   pack $frm.frame9 -in $frm.frame4 -side bottom -fill x
+
+   frame $frm.frame10 -borderwidth 0 -relief raised
+   pack $frm.frame10 -in $frm.frame4 -side top -fill x
+
+   frame $frm.frame11 -borderwidth 0 -relief raised
+   pack $frm.frame11 -in $frm.frame5 -side top -fill x
+
+   frame $frm.frame12 -borderwidth 0 -relief raised
+   pack $frm.frame12 -in $frm.frame5 -side top -fill x
+
+   frame $frm.frame13 -borderwidth 0 -relief raised
+   pack $frm.frame13 -in $frm.frame5 -side top -fill x
+
+   frame $frm.frame14 -borderwidth 0 -relief raised
+   pack $frm.frame14 -in $frm.frame5 -side top -fill x
+
+   #frame $frm.frame17 -borderwidth 0 -relief raised
+   #pack $frm.frame17 -in $frm.frame5 -side bottom -fill x
+
+   #frame $frm.frame15 -borderwidth 0 -relief raised
+   #pack $frm.frame15 -in $frm.frame5 -side bottom -fill x
+
+   frame $frm.frame18 -borderwidth 0 -relief raised
+   pack $frm.frame18 -in $frm.frame2 -side bottom -fill x
+
+   frame $frm.frame19 -borderwidth 0 -relief raised
+   pack $frm.frame19 -in $frm.frame2 -side top -fill x
+
+   #--- Definition du port
+   label $frm.lab1 -text "$caption(audecom,port)"
+     pack $frm.lab1 -in $frm.frame6 -anchor center -side left -padx 10 -pady 10
+
+   #--- Je verifie le contenu de la liste
+   if { [ llength $list_connexion ] > 0 } {
+      #--- Si la liste n'est pas vide,
+      #--- je verifie que la valeur par defaut existe dans la liste
+      if { [ lsearch -exact $list_connexion $private(port) ] == -1 } {
+         #--- Si la valeur par defaut n'existe pas dans la liste,
+         #--- je la remplace par le premier item de la liste
+         set private(port) [ lindex $list_connexion 0 ]
+      }
+   } else {
+      #--- Si la liste est vide, on continue quand meme
+   }
+
+   #--- Bouton de configuration des ports et liaisons
+   button $frm.configure -text "$caption(audecom,configurer)" -relief raised \
+      -command {
+         ::confLink::run ::audecom::private(port) { serialport } \
+            "- $caption(audecom,controle) - $caption(audecom,monture)"
+      }
+   pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+
+   #--- Choix du port ou de la liaison
+   ComboBox $frm.port \
+      -width 7          \
+      -height [ llength $list_connexion ] \
+      -relief sunken    \
+      -borderwidth 1    \
+      -textvariable ::audecom::private(port) \
+      -editable 0       \
+      -values $list_connexion
+   pack $frm.port -in $frm.frame6 -anchor center -side left -padx 10 -pady 8
+
+   #--- Intercallaire
+   label $frm.lab2 -text ""
+   pack $frm.lab2 -in $frm.frame7 -anchor center -side left -padx 10 -pady 10
+
+   #--- Les checkbuttons
+   checkbutton $frm.mobile -text "$caption(audecom,mobile)" -highlightthickness 0 \
+      -variable ::audecom::private(mobile)
+   pack $frm.mobile -in $frm.frame8 -anchor center -side left -padx 10 -pady 8
+
+   checkbutton $frm.king -text "$caption(audecom,king)" -highlightthickness 0 \
+      -variable ::audecom::private(king)
+   pack $frm.king -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
+
+   checkbutton $frm.pec -text "$caption(audecom,pec)" -highlightthickness 0 \
+      -variable ::audecom::private(pec)
+   pack $frm.pec -in $frm.frame10 -anchor center -side left -padx 10 -pady 8
+
+   #--- Les boutons de commande
+   button $frm.paramot -text "$caption(audecom,para_moteur)" \
+      -command { ::confAudecomMot::run "$audace(base).confAudecomMot" }
+   pack $frm.paramot -in $frm.frame11 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+
+   button $frm.parafoc -text "$caption(audecom,para_foc)" \
+      -command { ::confAudecomFoc::run "$audace(base).confAudecomFoc" }
+   pack $frm.parafoc -in $frm.frame12 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+
+   button $frm.progpec -text "$caption(audecom,prog_pec)" \
+      -command { ::confAudecomPec::run "$audace(base).confAudecomPec" }
+   pack $frm.progpec -in $frm.frame13 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+
+   #--- Le bouton de commande
+   button $frm.ctlmobile -text "$caption(audecom,ctl_mobile)" -state normal \
+      -command { ::confAudecomMobile::run "$audace(base).confAudecomMobile" }
+   pack $frm.ctlmobile -in $frm.frame14 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+
+   #--- Affiche le bouton de controle de la vitesse de King si le telescope AudeCom est connecte
+   if { [ ::confTel::isReady ] == 1 } {
+      if { [ winfo exists $audace(base).confAudecomKing ] } {
+         button $frm.ctlking -text "$caption(audecom,ctl_king)" -relief groove -state disabled \
+            -command { ::confAudecomKing::run "$audace(base).confAudecomKing" }
+         pack $frm.ctlking -in $frm.frame14 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+      } else {
+         button $frm.ctlking -text "$caption(audecom,ctl_king)" -relief raised -state normal \
+            -command { ::confAudecomKing::run "$audace(base).confAudecomKing" }
+         pack $frm.ctlking -in $frm.frame14 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+      }
+   }
+
+   #--- Le checkbutton pour la visibilite de la raquette a l'ecran
+   checkbutton $frm.raquette -text "$caption(audecom,raquette_tel)" \
+      -highlightthickness 0 -variable ::audecom::private(raquette)
+   pack $frm.raquette -in $frm.frame16 -anchor center -side left -padx 10 -pady 8
+
+   #--- Frame raquette
+   ::confPad::createFramePad $frm.nom_raquette "::confTel::private(nomRaquette)"
+   pack $frm.nom_raquette -in $frm.frame16 -anchor center -side left -padx 0 -pady 8
+
+   #--- Le checkbutton pour la monture equatoriale allemande
+   checkbutton $frm.german -text "$caption(audecom,mont_allemande)" -highlightthickness 0 \
+      -variable ::audecom::private(german) -command { ::audecom::config_equatorial_audecom }
+   pack $frm.german -in $frm.frame18 -anchor nw -side left -padx 10 -pady 8
+
+   #--- Gestion de l'option monture equatoriale allemande
+   if { $private(german) == "1" } {
+      #--- Position du telescope sur la monture equatoriale allemande : A l'est ou a l'ouest
+      label $frm.pos_tel -text "$caption(audecom,position_telescope)"
+      pack $frm.pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3
+
+      label $frm.pos_tel_ew -width 15 -anchor w -textvariable audace(pos_tel_ew)
+      pack $frm.pos_tel_ew -in $frm.frame19 -anchor center -side left
+
+      #--- Nouvelle position d'origine du telescope : A l'est ou a l'ouest
+      label $frm.pos_tel_est -text "$caption(audecom,change_position_telescope)"
+      pack $frm.pos_tel_est -in $frm.frame19 -anchor center -side left -padx 10 -pady 3
+
+      if { [ ::confTel::isReady ] == 1 } {
+         button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel) -command {
+     ###       set pos_tel [ tel$audace(telNo) german ]
+     ###       if { $pos_tel == "E" } {
+     ###          tel$audace(telNo) german W
+     ###       } elseif { $pos_tel == "W" } {
+     ###          tel$audace(telNo) german E
+     ###       }
+     ###       ::telescope::monture_allemande
+         }
+         pack $frm.chg_pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3 -ipadx 5 -ipady 5
+      } else {
+         button $frm.chg_pos_tel -text "  ?  " -relief raised -state disabled
+         pack $frm.chg_pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3 -ipadx 5 -ipady 5
+      }
+   }
+
+   #--- Document officiel d'AudeCom
+   label $frm.lab103 -text "$caption(audecom,document_ref)"
+   pack $frm.lab103 -in $frm.frame3 -side top -fill x -pady 2
+
+   set labelName [ ::confTel::createPdfLabel $frm.frame3 "$caption(audecom,doc_audecom)" \
+      "$caption(audecom,doc_audecom)" ]
+   pack $labelName -side top -fill x -pady 2
 }
 
 #
 # ::audecom::configureTelescope
 #    Configure la monture AudeCom en fonction des donnees contenues dans les variables conf(audecom,...)
 #
-proc ::audecom::configureTelescope { telItem } {
-   global caption conf
+proc ::audecom::configureTelescope { } {
+   variable private
+   global audace caption conf
 
+   set audace(telNo) [ tel::create audecom $conf(audecom,port) ]
+   console::affiche_erreur "$caption(audecom,port_audecom) $caption(audecom,2points)\
+      $conf(audecom,port)\n"
+   #--- Lit et affiche la version du firmware
+   set v_firmware [ tel$audace(telNo) firmware ]
+   set v_firmware "[ string range $v_firmware 0 0 ].[ string range $v_firmware 1 2 ]"
+   console::affiche_erreur "$caption(audecom,ver_firmware)$v_firmware\n"
+   console::affiche_saut "\n"
+   #--- Transfere les parametres des moteurs dans le microcontroleur
+   tel$audace(telNo) slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
+   tel$audace(telNo) pulse $conf(audecom,limp)
+   tel$audace(telNo) mechanicalplay $conf(audecom,rat_ad) $conf(audecom,rat_dec)
+   tel$audace(telNo) focspeed $conf(audecom,vitesse)
+   #--- R : Inhibe le PEC
+   tel$audace(telNo) pec_period 0
+   #--- Transfere les corrections pour le PEC dans le microcontroleur
+   for { set i 0 } { $i <= 19 } { incr i } {
+      tel$audace(telNo) pec_speed $conf(audecom,t$i)
+   }
+   #--- r : Active ou non le PEC
+   if { $conf(audecom,pec) == "1" } {
+      tel$audace(telNo) pec_period $conf(audecom,rpec)
+   }
+   #--- Transfere les parametres de derive dans le microcontroleur
+   set vit_der_alpha "0" ; set vit_der_delta "0"
+   if { $::confAudecomMot::private(fenetre,mobile,valider) == "1" } {
+      if { $conf(audecom,mobile) == "1" } {
+         switch -exact -- $conf(audecom,type) {
+            0 { set vit_der_alpha "43636" ; set vit_der_delta "0" } ; #--- Lune
+            1 { set vit_der_alpha "3548"  ; set vit_der_delta "0" } ; #--- Soleil
+            2 { set vit_der_alpha $conf(audecom,ad) ; set vit_der_delta $conf(audecom,dec) } ; #--- Comete
+            3 { set vit_der_alpha "0" ; set vit_der_delta "0" } ; #--- Etoile
+         }
+      }
+   } else {
+      catch { set frm $private(frm) }
+      set private(mobile) "0"
+      set conf(audecom,mobile)    "0"
+      if { $conf(telescope,start) != "1" } {
+         $frm.mobile configure
+      }
+   }
+   #--- Precaution pour ne jamais diviser par zero
+   if { $vit_der_alpha == "0" } { set vit_der_alpha "1" }
+   if { $vit_der_delta == "0" } { set vit_der_delta "1" }
+   #--- Calcul de la correction
+   set alpha [ expr $conf(audecom,dsuivinom)*1296000/$vit_der_alpha ]
+   set alpha [ expr round($alpha) ]
+   set delta [ expr $conf(audecom,dsuividelta)*1296000/$vit_der_delta ]
+   set delta [ expr round($delta) ]
+   #--- Bornage de la correction
+   if { $alpha > "99999999" }  { set alpha "99999999" }
+   if { $alpha < "-99999999" } { set alpha "-99999999" }
+   if { $delta > "99999999" }  { set delta "99999999" }
+   if { $delta < "-99999999" } { set delta "-99999999" }
+   #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
+   tel$audace(telNo) radec motor off
+   tel$audace(telNo) driftspeed $alpha $delta
+   tel$audace(telNo) radec motor on
+   #--- Affichage de la position du telescope
+  ### ::telescope::monture_allemande
+   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
+   set linkNo [ ::confLink::create $conf(audecom,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+   #--- Gestion du bouton actif/inactif
+   ::audecom::confAudeCom
+}
+
+#
+# ::audecom::stop
+#    Arrete la monture AudeCom
+#
+proc ::audecom::stop { } {
+   variable private
+   global audace confgene
+
+   #--- Efface la fenetre de controle de la vitesse de King si elle existe
+   if { [ winfo exists $audace(base).confAudecomKing ] } {
+      set confgene(espion2) "1"
+      destroy $audace(base).confAudecomKing
+   }
+
+   #--- Gestion du bouton actif/inactif
+   ::audecom::confAudeComInactif
+
+   #--- Initialisation d'une variable
+   set ::confAudecomMot::private(fenetre,mobile,valider) "0"
+
+   #--- Je memorise le port
+   set telPort [ tel$audace(telNo) port ]
+   #--- J'arrete la monture
+   tel::delete $audace(telNo)
+   #--- J'arrete le link
+   ::confLink::delete $telPort "tel$audace(telNo)" "control"
+   set audace(telNo) "0"
+}
+
+#
+# ::audecom::confAudeCom
+# Permet d'activer ou de désactiver le bouton 'Controle de la vitesse de King'
+#
+proc ::audecom::confAudeCom { } {
+   variable private
+   global caption
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::confTel::isReady ] == 1 } {
+            if { [ winfo exists $frm.ctlking ] } {
+               $frm.ctlking configure -text "$caption(audecom,ctl_king)" -relief groove -state disabled \
+                  -command { ::confAudecomKing::run "$audace(base).confAudecomKing" }
+            } else {
+               button $frm.ctlking -text "$caption(audecom,ctl_king)" -relief raised -state normal \
+                  -command { ::confAudecomKing::run "$audace(base).confAudecomKing" }
+               pack $frm.ctlking -in $frm.frame14 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
+            }
+         } else {
+            destroy $frm.ctlking
+         }
+      }
+   }
+   #--- Fonctionnalités d'une monture equatoriale allemande pilotee par AudeCom
+   ::audecom::config_equatorial_audecom
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $frm
+}
+
+#
+# ::audecom::confAudeComInactif
+#    Permet de desactiver le bouton a l'arret de la monture
+#
+proc ::audecom::confAudeComInactif { } {
+   variable private
+   global caption
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { [ ::confTel::isReady ] == 1 } {
+            #--- Boutons de la monture inactifs
+            destroy $frm.ctlking
+         }
+      }
+   }
+}
+
+#
+# ::audecom::config_equatorial_audecom
+# Permet d'afficher les fonctionnalites d'une monture equatoriale allemande pilotee par AudeCom
+#
+proc ::audecom::config_equatorial_audecom { } {
+   variable private
+   global audace caption conf
+
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [ winfo exists $frm ] } {
+         if { $private(german) == "1" } {
+            #---
+            destroy $frm.pos_tel
+            destroy $frm.pos_tel_ew
+            destroy $frm.pos_tel_est
+            destroy $frm.chg_pos_tel
+            #--- Position du telescope sur la monture equatoriale allemande : A l'est ou a l'ouest
+            label $frm.pos_tel -text "$caption(audecom,position_telescope)"
+            pack $frm.pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3
+            #---
+            label $frm.pos_tel_ew -width 15 -anchor w -textvariable audace(pos_tel_ew)
+            pack $frm.pos_tel_ew -in $frm.frame19 -anchor center -side left
+            #--- Nouvelle position d'origine du telescope : A l'est ou a l'ouest
+            label $frm.pos_tel_est -text "$caption(audecom,change_position_telescope)"
+            pack $frm.pos_tel_est -in $frm.frame19 -anchor center -side left -padx 10 -pady 3
+            #---
+            if { [ ::confTel::isReady ] == 1 } {
+               button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel) -command {
+           ###       set pos_tel [ tel$audace(telNo) german ]
+           ###       if { $pos_tel == "E" } {
+           ###          tel$audace(telNo) german W
+           ###       } elseif { $pos_tel == "W" } {
+           ###          tel$audace(telNo) german E
+           ###       }
+           ###       ::telescope::monture_allemande
+           ###    }
+               pack $frm.chg_pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3 -ipadx 5 -ipady 5
+            } else {
+               button $frm.chg_pos_tel -text "  ?  " -relief raised -state disabled
+               pack $frm.chg_pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3 -ipadx 5 -ipady 5
+            }
+         } else {
+            destroy $frm.pos_tel
+            destroy $frm.pos_tel_ew
+            destroy $frm.pos_tel_est
+            destroy $frm.chg_pos_tel
+         }
+         #--- Mise a jour dynamique des couleurs
+         ::confColor::applyColor $frm
+      }
+   }
+}
+
+#
+# ::audecom::getPluginProperty
+#    Retourne la valeur de la propriete
+#
+# Parametre :
+#    propertyName : Nom de la propriete
+# return : Valeur de la propriete ou "" si la propriete n'existe pas
+#
+# multiMount :       Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
+# name :             Retourne le modele de la monture
+# product :          Retourne le nom du produit
+#
+proc ::audecom::getPluginProperty { propertyName } {
+   global audace
+
+   switch $propertyName {
+      multiMount       { return 0 }
+      name             {
+         if { $audace(telNo) != "0" } {
+            return [ tel$audace(telNo) name ]
+         } else {
+            return ""
+         }
+      }
+      product          {
+         if { $audace(telNo) != "0" } {
+            return [ tel$audace(telNo) product ]
+         } else {
+            return ""
+         }
+      }
+   }
 }
 
