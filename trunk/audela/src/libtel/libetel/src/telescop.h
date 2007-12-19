@@ -53,6 +53,7 @@ typedef struct {
    int teeth_per_turn;
 	int posinit;
 	double angleinit;
+	int sens;
 } axis_params;
 
 /* --- structure qui accueille les parametres---*/
@@ -60,7 +61,7 @@ struct telprop {
    /* --- parametres standards, ne pas changer ---*/
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
-   DSA_DRIVE *drv;
+   DSA_DRIVE *drv[3];
    int type_mount;
    axis_params axis_param[3];
    char home[50];
@@ -95,10 +96,13 @@ int tel_home_get(struct telprop *tel,char *ligne);
 int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
 
 int mytel_radec_init(struct telprop *tel);
+int mytel_hadec_init(struct telprop *tel);
 int mytel_radec_init_additional(struct telprop *tel);
 int mytel_radec_goto(struct telprop *tel);
+int mytel_hadec_goto(struct telprop *tel);
 int mytel_radec_state(struct telprop *tel,char *result);
 int mytel_radec_coord(struct telprop *tel,char *result);
+int mytel_hadec_coord(struct telprop *tel,char *result);
 int mytel_radec_move(struct telprop *tel,char *direction);
 int mytel_radec_stop(struct telprop *tel,char *direction);
 int mytel_radec_motor(struct telprop *tel);
@@ -120,7 +124,7 @@ int mytel_tcleval(struct telprop *tel,char *ligne);
 int mytel_correct(struct telprop *tel,char *direction, int duration);
 
 void mytel_decimalsymbol(char *strin, char decin, char decout, char *strout);
-void mytel_error(struct telprop *tel,int err);
+void mytel_error(struct telprop *tel,int axisno, int err);
 int etel_home(struct telprop *tel, char *home_default);
 double etel_tsl(struct telprop *tel,int *h, int *m,int *sec);
 void etel_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);

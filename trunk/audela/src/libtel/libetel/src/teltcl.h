@@ -25,15 +25,12 @@
 
 /* ----- defines specifiques aux fonctions de cette camera ----*/
 int cmdTelStatus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelHoming(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelTargetPosition(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTypeMount(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelHadec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif
