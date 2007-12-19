@@ -1,413 +1,423 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.40 2007-12-18 22:25:39 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.41 2007-12-19 22:29:05 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
+}
 
-   #
-   # confTel::init (est lance automatiquement au chargement de ce fichier tcl)
-   # Initialise les variables conf(...) et caption(...)
-   # Demarre le plugin selectionne par defaut
-   #
-   proc init { } {
-      variable private
-      global audace conf
+#
+# ::confTel::init (est lance automatiquement au chargement de ce fichier tcl)
+# Initialise les variables conf(...) et caption(...)
+# Demarre le plugin selectionne par defaut
+#
+proc ::confTel::init { } {
+   variable private
+   global audace conf
 
-      #--- initConf
-      if { ! [ info exists conf(raquette) ] }           { set conf(raquette)           "1" }
-      if { ! [ info exists conf(telescope) ] }          { set conf(telescope)          "lx200" }
-      if { ! [ info exists conf(telescope,start) ] }    { set conf(telescope,start)    "0" }
-      if { ! [ info exists conf(telescope,geometry) ] } { set conf(telescope,geometry) "540x500+15+0" }
+   #--- initConf
+   if { ! [ info exists conf(raquette) ] }           { set conf(raquette)           "1" }
+   if { ! [ info exists conf(telescope) ] }          { set conf(telescope)          "lx200" }
+   if { ! [ info exists conf(telescope,start) ] }    { set conf(telescope,start)    "0" }
+   if { ! [ info exists conf(telescope,geometry) ] } { set conf(telescope,geometry) "540x500+15+0" }
 
-      #--- Charge le fichier caption
-      source [ file join $audace(rep_caption) conftel.cap ]
+   #--- Charge le fichier caption
+   source [ file join $audace(rep_caption) conftel.cap ]
 
-      #--- Initalise le numero de telescope a nul
-      set audace(telNo) "0"
+   #--- Initalise le numero de la monture a nul
+   set audace(telNo) "0"
 
-      #--- Initialisation de variables
-      set private(geometry) $conf(telescope,geometry)
+   #--- Initialisation de variables
+   set private(geometry) $conf(telescope,geometry)
 
-      #--- Initalise les listes de montures
-      set private(nomRaquette) $conf(confPad)
+   #--- Initalise les listes de montures
+   set private(nomRaquette) $conf(confPad)
 
-      #--- j'ajoute le repertoire pouvant contenir des plugins
-      lappend ::auto_path [file join "$::audace(rep_plugin)" mount]
+   #--- j'ajoute le repertoire pouvant contenir des plugins
+   lappend ::auto_path [file join "$::audace(rep_plugin)" mount]
 
-      #--- Initialise les variables locales
-      set private(pluginNamespaceList) ""
-      set private(pluginLabelList)     ""
-      set private(frm)                 "$audace(base).confTel"
+   #--- Initialise les variables locales
+   set private(pluginNamespaceList) ""
+   set private(pluginLabelList)     ""
+   set private(frm)                 "$audace(base).confTel"
 
-      #--- je recherche les plugins presents
-      findPlugin
+   #--- je recherche les plugins presents
+   findPlugin
 
-      #--- je verifie que le plugin par defaut existe dans la liste
-      if { [lsearch $private(pluginNamespaceList) $conf(telescope)] == -1 } {
-         #--- s'il n'existe pas, je vide le nom du plugin par defaut
-         set conf(telescope) ""
-      }
+   #--- je verifie que le plugin par defaut existe dans la liste
+   if { [lsearch $private(pluginNamespaceList) $conf(telescope)] == -1 } {
+      #--- s'il n'existe pas, je vide le nom du plugin par defaut
+      set conf(telescope) ""
    }
+}
 
-   #
-   # confTel::run
-   # Cree la fenetre de choix et de configuration des telescopes
-   # private(frm) = chemin de la fenetre
-   # conf(telescope) = nom du telescope (lx200, ouranos, audecom, temma, ascom, celestron)
-   #
-   proc run { } {
-      variable private
-      global conf
+#
+# ::confTel::run
+# Cree la fenetre de choix et de configuration des montures
+# private(frm) = chemin de la fenetre
+# conf(telescope) = nom de la monture (ascom, audecom, celestron, lx200, ouranos, temma, etc.)
+#
+proc ::confTel::run { } {
+   variable private
+   global conf
 
-      set private(nomRaquette) [::confPad::getCurrentPad]
-      createDialog
-      selectNotebook $conf(telescope)
-   }
+   set private(nomRaquette) [::confPad::getCurrentPad]
+   createDialog
+   selectNotebook $conf(telescope)
+}
 
-   #
-   # confTel::ok
-   # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-   # la configuration, et fermer la fenetre de reglage du telescope
-   #
-   proc ok { } {
-      variable private
+#
+# ::confTel::ok
+# Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
+# la configuration, et fermer la fenetre de configuration
+#
+proc ::confTel::ok { } {
+   variable private
 
-      $private(frm).cmd.ok configure -relief groove -state disabled
-      $private(frm).cmd.appliquer configure -state disabled
-      $private(frm).cmd.fermer configure -state disabled
-      appliquer
-      fermer
-   }
+   $private(frm).cmd.ok configure -relief groove -state disabled
+   $private(frm).cmd.appliquer configure -state disabled
+   $private(frm).cmd.fermer configure -state disabled
+   appliquer
+   fermer
+}
 
-   #
-   # confTel::appliquer
-   # Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
-   # memoriser et appliquer la configuration
-   #
-   proc appliquer { } {
-      variable private
-      global audace caption conf
+#
+# ::confTel::appliquer
+# Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
+# memoriser et appliquer la configuration
+#
+proc ::confTel::appliquer { } {
+   variable private
+   global audace caption conf
 
-      $private(frm).cmd.ok configure -state disabled
-      $private(frm).cmd.appliquer configure -relief groove -state disabled
-      $private(frm).cmd.fermer configure -state disabled
+   $private(frm).cmd.ok configure -state disabled
+   $private(frm).cmd.appliquer configure -relief groove -state disabled
+   $private(frm).cmd.fermer configure -state disabled
 
-      stopPlugin
-      widgetToConf
-      configureTelescope
+   #--- J'arrete la monture
+   stopPlugin
+   #--- Je copie les parametres de la nouvelle monture dans conf()
+   widgetToConf
+   configureTelescope
 
-      $private(frm).cmd.ok configure -state normal
-      $private(frm).cmd.appliquer configure -relief raised -state normal
-      $private(frm).cmd.fermer configure -state normal
-   }
+   $private(frm).cmd.ok configure -state normal
+   $private(frm).cmd.appliquer configure -relief raised -state normal
+   $private(frm).cmd.fermer configure -state normal
+}
 
-   #
-   # confTel::afficherAide
-   # Fonction appellee lors de l'appui sur le bouton 'Aide'
-   #
-   proc afficherAide { } {
-      variable private
+#
+# ::confTel::afficherAide
+# Fonction appellee lors de l'appui sur le bouton 'Aide'
+#
+proc ::confTel::afficherAide { } {
+   variable private
 
-      #--- J'affiche la documentation
-      set selectedPluginName [ $private(frm).usr.onglet raise ]
-      set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
-      set pluginHelp [ $selectedPluginName\::getPluginHelp ]
-      ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
-   }
+   #--- J'affiche la documentation
+   set selectedPluginName [ $private(frm).usr.onglet raise ]
+   set pluginTypeDirectory [ ::audace::getPluginTypeDirectory [ $selectedPluginName\::getPluginType ] ]
+   set pluginHelp [ $selectedPluginName\::getPluginHelp ]
+   ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
+}
 
-   #
-   # confTel::fermer
-   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
-   #
-   proc fermer { } {
-      variable private
+#
+# ::confTel::fermer
+# Fonction appellee lors de l'appui sur le bouton 'Fermer'
+#
+proc ::confTel::fermer { } {
+   variable private
 
-      ::confTel::recupPosDim
-      destroy $private(frm)
-   }
+   ::confTel::recupPosDim
+   destroy $private(frm)
+}
 
-   #
-   # confTel::recupPosDim
-   # Permet de recuperer et de sauvegarder la position de la fenetre de configuration du telescope
-   #
-   proc recupPosDim { } {
-      variable private
-      global conf
+#
+# ::confTel::recupPosDim
+# Permet de recuperer et de sauvegarder la position de la fenetre de configuration
+#
+proc ::confTel::recupPosDim { } {
+   variable private
+   global conf
 
-      set private(geometry) [ wm geometry $private(frm) ]
-      set conf(telescope,geometry) $private(geometry)
-   }
+   set private(geometry) [ wm geometry $private(frm) ]
+   set conf(telescope,geometry) $private(geometry)
+}
 
-   proc createDialog { } {
-      variable private
-      global caption conf
+#
+# ::confTel::createDialog
+# Creation de la boite avec les onglets
+#
+proc ::confTel::createDialog { } {
+   variable private
+   global caption conf
 
-      if { [ winfo exists $private(frm) ] } {
-         wm withdraw $private(frm)
-         wm deiconify $private(frm)
-         selectNotebook $conf(telescope)
-         focus $private(frm)
-         return
-      }
-      #---
-      toplevel $private(frm)
-      wm geometry $private(frm) $private(geometry)
-      wm minsize $private(frm) 540 500
-      wm resizable $private(frm) 1 1
+   if { [ winfo exists $private(frm) ] } {
+      wm withdraw $private(frm)
       wm deiconify $private(frm)
-      wm title $private(frm) "$caption(conftel,config)"
-      wm protocol $private(frm) WM_DELETE_WINDOW ::confTel::fermer
-
-      #--- Frame de la fenetre de configuration
-      frame $private(frm).usr -borderwidth 0 -relief raised
-
-         #--- Creation de la fenetre a onglets
-         set notebook [ NoteBook $private(frm).usr.onglet ]
-         foreach namespace $private(pluginNamespaceList) {
-            set title [ ::$namespace\::getPluginTitle ]
-            set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confTel::onRaiseNotebook $namespace" ]
-            ::$namespace\::fillConfigPage $frm
-         }
-         pack $notebook -fill both -expand 1 -padx 4 -pady 4
-
-      pack $private(frm).usr -side top -fill both -expand 1
-
-      #--- Frame du checkbutton creer au demarrage et le bouton Arreter
-      frame $private(frm).start -borderwidth 1 -relief raised
-         button $private(frm).start.stop -text "$caption(conftel,arreter)" -width 7 \
-            -command { ::confTel::stopPlugin }
-         pack $private(frm).start.stop -side left -padx 3 -pady 3 -expand true
-         checkbutton $private(frm).start.chk -text "$caption(conftel,creer_au_demarrage)" \
-            -highlightthickness 0 -variable conf(telescope,start)
-         pack $private(frm).start.chk -side left -padx 3 -pady 3 -expand true
-      pack $private(frm).start -side top -fill x
-
-      #--- Frame des boutons OK, Appliquer, Aide et Fermer
-      frame $private(frm).cmd -borderwidth 1 -relief raised
-         button $private(frm).cmd.ok -text "$caption(conftel,ok)" -relief raised -state normal -width 7 \
-            -command { ::confTel::ok }
-         if { $conf(ok+appliquer) == "1" } {
-            pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-         }
-         button $private(frm).cmd.appliquer -text "$caption(conftel,appliquer)" -relief raised -state normal -width 8 \
-            -command { ::confTel::appliquer }
-         pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-         button $private(frm).cmd.fermer -text "$caption(conftel,fermer)" -relief raised -state normal -width 7 \
-            -command { ::confTel::fermer }
-         pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         button $private(frm).cmd.aide -text "$caption(conftel,aide)" -relief raised -state normal -width 7 \
-            -command { ::confTel::afficherAide }
-         pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $private(frm).cmd -side top -fill x
-
-      #--- La fenetre est active
+      selectNotebook $conf(telescope)
       focus $private(frm)
+      return
+   }
+   #---
+   toplevel $private(frm)
+   wm geometry $private(frm) $private(geometry)
+   wm minsize $private(frm) 540 500
+   wm resizable $private(frm) 1 1
+   wm deiconify $private(frm)
+   wm title $private(frm) "$caption(conftel,config)"
+   wm protocol $private(frm) WM_DELETE_WINDOW ::confTel::fermer
 
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $private(frm) <Key-F1> { ::console::GiveFocus }
+   #--- Frame de la fenetre de configuration
+   frame $private(frm).usr -borderwidth 0 -relief raised
 
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $private(frm)
+      #--- Creation de la fenetre a onglets
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      foreach namespace $private(pluginNamespaceList) {
+         set title [ ::$namespace\::getPluginTitle ]
+         set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confTel::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
+
+   pack $private(frm).usr -side top -fill both -expand 1
+
+   #--- Frame du checkbutton creer au demarrage et le bouton Arreter
+   frame $private(frm).start -borderwidth 1 -relief raised
+      button $private(frm).start.stop -text "$caption(conftel,arreter)" -width 7 \
+         -command { ::confTel::stopPlugin }
+      pack $private(frm).start.stop -side left -padx 3 -pady 3 -expand true
+      checkbutton $private(frm).start.chk -text "$caption(conftel,creer_au_demarrage)" \
+         -highlightthickness 0 -variable conf(telescope,start)
+      pack $private(frm).start.chk -side left -padx 3 -pady 3 -expand true
+   pack $private(frm).start -side top -fill x
+
+   #--- Frame des boutons OK, Appliquer, Aide et Fermer
+   frame $private(frm).cmd -borderwidth 1 -relief raised
+      button $private(frm).cmd.ok -text "$caption(conftel,ok)" -relief raised -state normal -width 7 \
+         -command { ::confTel::ok }
+      if { $conf(ok+appliquer) == "1" } {
+         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+      }
+      button $private(frm).cmd.appliquer -text "$caption(conftel,appliquer)" -relief raised -state normal -width 8 \
+         -command { ::confTel::appliquer }
+      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+      button $private(frm).cmd.fermer -text "$caption(conftel,fermer)" -relief raised -state normal -width 7 \
+         -command { ::confTel::fermer }
+      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+      button $private(frm).cmd.aide -text "$caption(conftel,aide)" -relief raised -state normal -width 7 \
+         -command { ::confTel::afficherAide }
+      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+   pack $private(frm).cmd -side top -fill x
+
+   #--- La fenetre est active
+   focus $private(frm)
+
+   #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
+   bind $private(frm) <Key-F1> { ::console::GiveFocus }
+
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $private(frm)
+}
+
+#
+# ::confTel::createUrlLabel
+# Cree un widget "label" avec une URL du site WEB
+#
+proc ::confTel::createUrlLabel { tkparent title url } {
+   global audace color
+
+   label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   if { $url != "" } {
+      bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
+   }
+   bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
+   bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
+   return  $tkparent.labURL
+}
+
+#
+# ::confTel::createPdfLabel
+# Cree un widget "label" pour un document pdf
+#
+proc ::confTel::createPdfLabel { tkparent title pdf } {
+   global audace color
+
+   set filename [ file join $audace(rep_plugin) mount audecom french $pdf ]
+   label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
+   if { $pdf != "" } {
+      bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Notice_pdf \"$filename\""
+   }
+   bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
+   bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
+   return  $tkparent.labURL
+}
+
+#
+# ::confTel::connectMonture
+# Affichage d'un message d'alerte pendant la connexion de la monture au demarrage
+#
+proc ::confTel::connectMonture { } {
+   variable private
+   global audace caption color
+
+   if [ winfo exists $audace(base).connectTelescope ] {
+      destroy $audace(base).connectTelescope
    }
 
-   #
-   # Cree un widget "label" avec une URL du site WEB
-   #
-   proc createUrlLabel { tkparent title url } {
-      global audace color
-
-      label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
-      if { $url != "" } {
-         bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Site_htm $url"
-      }
-      bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
-      bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
-      return  $tkparent.labURL
-   }
-
-   #
-   # Cree un widget "label" pour un document pdf
-   #
-   proc createPdfLabel { tkparent title pdf } {
-      global audace color
-
-      set filename [ file join $audace(rep_plugin) mount audecom french $pdf ]
-      label $tkparent.labURL -text "$title" -font $audace(font,url) -fg $color(blue)
-      if { $pdf != "" } {
-         bind $tkparent.labURL <ButtonPress-1> "::audace::Lance_Notice_pdf \"$filename\""
-      }
-      bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
-      bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
-      return  $tkparent.labURL
-   }
-
-   #
-   # confTel::Connect_Telescope
-   # Affichage d'un message d'alerte pendant la connexion du telescope au demarrage
-   #
-   proc Connect_Telescope { } {
-      variable private
-      global audace caption color
-
-      if [ winfo exists $audace(base).connectTelescope ] {
-         destroy $audace(base).connectTelescope
-      }
-
-      toplevel $audace(base).connectTelescope
-      wm resizable $audace(base).connectTelescope 0 0
-      wm title $audace(base).connectTelescope "$caption(conftel,attention)"
-      if { [ info exists private(frm) ] } {
+   toplevel $audace(base).connectTelescope
+   wm resizable $audace(base).connectTelescope 0 0
+   wm title $audace(base).connectTelescope "$caption(conftel,attention)"
+   if { [ info exists private(frm) ] } {
+      if { [ winfo exists $private(frm) ] } {
          set posx_connectTelescope [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
          set posy_connectTelescope [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
          wm geometry $audace(base).connectTelescope +[ expr $posx_connectTelescope + 50 ]+[ expr $posy_connectTelescope + 100 ]
          wm transient $audace(base).connectTelescope $private(frm)
-      } else {
-         wm geometry $audace(base).connectTelescope +200+100
-         wm transient $audace(base).connectTelescope $audace(base)
       }
-
-      #--- Cree l'affichage du message
-      label $audace(base).connectTelescope.labURL_1 -text "$caption(conftel,connexion_texte1)" \
-         -font $audace(font,arial_10_b) -fg $color(red)
-      pack $audace(base).connectTelescope.labURL_1 -padx 10 -pady 2
-      label $audace(base).connectTelescope.labURL_2 -text "$caption(conftel,connexion_texte2)" \
-         -font $audace(font,arial_10_b) -fg $color(red)
-      pack $audace(base).connectTelescope.labURL_2 -padx 10 -pady 2
-
-      #--- La nouvelle fenetre est active
-      focus $audace(base).connectTelescope
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $audace(base).connectTelescope
+   } else {
+      wm geometry $audace(base).connectTelescope +200+100
+      wm transient $audace(base).connectTelescope $audace(base)
    }
 
-   #
-   # confTel::selectNotebook
-   # Selectionne un onglet
-   #
-   proc selectNotebook { mountName } {
-      variable private
-      global conf
+   #--- Cree l'affichage du message
+   label $audace(base).connectTelescope.labURL_1 -text "$caption(conftel,connexion_texte1)" \
+      -font $audace(font,arial_10_b) -fg $color(red)
+   pack $audace(base).connectTelescope.labURL_1 -padx 10 -pady 2
+   label $audace(base).connectTelescope.labURL_2 -text "$caption(conftel,connexion_texte2)" \
+      -font $audace(font,arial_10_b) -fg $color(red)
+   pack $audace(base).connectTelescope.labURL_2 -padx 10 -pady 2
 
-      #--- je recupere l'item courant
-      if { $mountName == "" } {
-         set mountName $conf(telescope)
-      }
+   #--- La nouvelle fenetre est active
+   focus $audace(base).connectTelescope
 
-      if { $mountName != "" } {
-         set frm [ $private(frm).usr.onglet getframe $mountName ]
-         $private(frm).usr.onglet raise $mountName
-      } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
-         $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
-      }
+   #--- Mise a jour dynamique des couleurs
+   ::confColor::applyColor $audace(base).connectTelescope
+}
+
+#
+# ::confTel::selectNotebook
+# Selectionne un onglet
+#
+proc ::confTel::selectNotebook { mountName } {
+   variable private
+   global conf
+
+   #--- je recupere l'item courant
+   if { $mountName == "" } {
+      set mountName $conf(telescope)
    }
 
-   #
-   # ::confTel::onRaiseNotebook
-   # Affiche en gras le nom de l'onglet
-   #
-   proc onRaiseNotebook { mountName } {
-      variable private
-
-      set font [$private(frm).usr.onglet.c itemcget "$mountName:text" -font]
-      lappend font "bold"
-      #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
-      after 200 $private(frm).usr.onglet.c itemconfigure "$mountName:text" -font [list $font]
+   if { $mountName != "" } {
+      set frm [ $private(frm).usr.onglet getframe $mountName ]
+      $private(frm).usr.onglet raise $mountName
+   } elseif { [ llength $private(pluginNamespaceList) ] > 0 } {
+      $private(frm).usr.onglet raise [ lindex $private(pluginNamespaceList) 0 ]
    }
+}
 
-   #
-   # ::confTel::stopPlugin
-   # Ferme la monture ouverte
-   #
-   proc stopPlugin { } {
-      variable private
-      global audace conf
+#
+# ::confTel::onRaiseNotebook
+# Affiche en gras le nom de l'onglet
+#
+proc ::confTel::onRaiseNotebook { mountName } {
+   variable private
 
-      #--- Je ferme la liaison
-      if { $audace(telNo) != "0" } {
-         #--- Cas particulier de la monture Ouranos
-         if { $conf(telescope) == "ouranos" } {
-            ::OuranosCom::close_com
-         }
-         #--- Je ferme les ressources specifiques de la monture
-         ::$conf(telescope)\::stop
-         #--- Je supprime le label des visus
-         foreach visuNo [ ::visu::list ] {
-            ::confVisu::setMount $visuNo
-         }
+   set font [$private(frm).usr.onglet.c itemcget "$mountName:text" -font]
+   lappend font "bold"
+   #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+   after 200 $private(frm).usr.onglet.c itemconfigure "$mountName:text" -font [list $font]
+}
+
+#
+# ::confTel::stopPlugin
+# Ferme la monture ouverte
+#
+proc ::confTel::stopPlugin { } {
+   variable private
+   global audace conf
+
+   #--- Je ferme la liaison
+   if { $audace(telNo) != "0" } {
+      #--- Cas particulier de la monture Ouranos
+      if { $conf(telescope) == "ouranos" } {
+         ::OuranosCom::close_com
       }
-   }
-
-   #
-   # confTel::configureTelescope
-   # Configure le telescope en fonction des donnees contenues dans le tableau conf :
-   # conf(telescope) -> type de telescope employe
-   # conf(tel,...)   -> proprietes de ce type de telescope
-   #
-   proc configureTelescope { } {
-      variable private
-      global audace conf
-
-      #--- Affichage d'un message d'alerte si necessaire
-      ::confTel::Connect_Telescope
-
-      set catchResult [ catch {
-         #--- Je configure la monture
-         ::$conf(telescope)\::configureTelescope
-      } errorMessage ]
-
-      #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees
-      if { $conf(raquette) == "1" } {
-         #--- je cree la nouvelle raquette
-         ::confPad::configurePlugin $private(nomRaquette)
-      } else {
-         ::confPad::stopPlugin
-      }
-      if { $catchResult == "0" } {
-         if { $conf(telescope) != "ouranos" } {
-            ::telescope::setSpeed "$audace(telescope,speed)"
-            #--- vitesse du moteur de focalisation (valeur minimale par defaut)
-            ::focus::setSpeed "focuserlx200" "0"
-         } else {
-            ::telescope::setSpeed "0"
-            ::focus::setSpeed "focuserlx200" "0"
-         }
-         ::telescope::afficheCoord
-      }
-
-      #--- Gestion du modele de telescope connecte
-      if { $catchResult == "1" } {
-         #--- En cas de probleme, je desactive le demarrage automatique
-         set conf(telescope,start) "0"
-         #--- En cas de probleme, telescope par defaut
-         set conf(telescope)  "lx200"
-         set conf(lx200,port) [ lindex $audace(list_com) 0 ]
-      }
+      #--- Je ferme les ressources specifiques de la monture
+      ::$conf(telescope)\::stop
+      #--- Je supprime le label des visus
       foreach visuNo [ ::visu::list ] {
          ::confVisu::setMount $visuNo
       }
+   }
+}
 
-      #--- Effacement du message d'alerte s'il existe
-      if [ winfo exists $audace(base).connectTelescope ] {
-         destroy $audace(base).connectTelescope
+#
+# ::confTel::configureTelescope
+# Configure la monture en fonction des donnees contenues dans le tableau conf :
+# conf(telescope) -> type de monture employe
+#
+proc ::confTel::configureTelescope { } {
+   variable private
+   global audace conf
+
+   #--- Affichage d'un message d'alerte si necessaire
+   ::confTel::connectMonture
+
+   set catchResult [ catch {
+      #--- Je configure la monture
+      ::$conf(telescope)\::configureTelescope
+   } errorMessage ]
+
+   #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees
+   if { $conf(raquette) == "1" } {
+      #--- je cree la nouvelle raquette
+      ::confPad::configurePlugin $private(nomRaquette)
+   } else {
+      ::confPad::stopPlugin
+   }
+   if { $catchResult == "0" } {
+      if { $conf(telescope) != "ouranos" } {
+         ::telescope::setSpeed "$audace(telescope,speed)"
+         #--- vitesse du moteur de focalisation (valeur minimale par defaut)
+         ::focus::setSpeed "focuserlx200" "0"
+      } else {
+         ::telescope::setSpeed "0"
+         ::focus::setSpeed "focuserlx200" "0"
       }
+      ::telescope::afficheCoord
    }
 
-   #
-   # confTel::widgetToConf
-   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
-   #
-   proc widgetToConf { } {
-      variable private
-      global conf
-
-      #--- Memorise la configuration du telescope
-      set mountName       [ $private(frm).usr.onglet raise ]
-      set conf(telescope) $mountName
-      ::$mountName\::widgetToConf
+   #--- Gestion des erreurs
+   if { $catchResult == "1" } {
+      #--- En cas de probleme, je desactive le demarrage automatique
+      set conf(telescope,start) "0"
+      #--- En cas de probleme, la monture par defaut
+      set conf(telescope)  "lx200"
+      set conf(lx200,port) [ lindex $audace(list_com) 0 ]
    }
+
+   foreach visuNo [ ::visu::list ] {
+      ::confVisu::setMount $visuNo
+   }
+
+   #--- Effacement du message d'alerte s'il existe
+   if [ winfo exists $audace(base).connectTelescope ] {
+      destroy $audace(base).connectTelescope
+   }
+}
+
+#
+# ::confTel::widgetToConf
+# Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+#
+proc ::confTel::widgetToConf { } {
+   variable private
+   global conf
+
+   #--- Memorise la configuration de la monture
+   set mountName       [ $private(frm).usr.onglet raise ]
+   set conf(telescope) $mountName
+   ::$mountName\::widgetToConf
 }
 
 #
@@ -418,7 +428,7 @@ namespace eval ::confTel {
 #     propertyName : Propriete
 #
 proc ::confTel::getPluginProperty { propertyName } {
-   global audace
+   global audace conf
 
    # multiMount :       Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
    # name :             Retourne le modele de la monture
@@ -439,7 +449,7 @@ proc ::confTel::getPluginProperty { propertyName } {
    }
 
    #--- si une monture est selectionnee, je recherche la valeur propre a la monture
-   set result [ ::[ tel$audace(telNo) product ]::getPluginProperty $propertyName ]
+   set result [ ::$conf(telescope)\::getPluginProperty $propertyName ]
    return $result
 }
 
@@ -537,6 +547,6 @@ proc ::confTel::findPlugin { } {
    }
 }
 
-#--- Connexion au demarrage du telescope selectionne par defaut
+#--- Connexion au demarrage de la monture selectionnee par defaut
 ::confTel::init
 
