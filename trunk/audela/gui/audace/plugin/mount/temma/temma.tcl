@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.13 2007-12-18 22:18:12 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.14 2007-12-19 22:29:44 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -303,7 +303,7 @@ proc ::temma::fillConfigPage { frm } {
    #--- Rafraichissement de la position du telescope par rapport a la monture
    if { [ ::confTel::isReady ] == 1 } {
       #--- Affichage de la position du telescope
-      ::telescope::monture_allemande
+     ### ::telescope::monture_allemande
    }
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
@@ -392,7 +392,9 @@ proc ::temma::configureTelescope { } {
          [ lindex $correction_suivi 1 ]\n\n"
    }
    #--- Affichage de la position du telescope
-   ::telescope::monture_allemande
+   if { [ ::confTel::isReady ] == 1 } {
+      ::telescope::monture_allemande
+   }
    #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
    set linkNo [ ::confLink::create $conf(temma,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
    #--- Gestion des boutons actifs/inactifs
