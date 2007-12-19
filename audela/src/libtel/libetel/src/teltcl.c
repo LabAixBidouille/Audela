@@ -39,109 +39,25 @@
  *   structure pour les fonctions étendues
  */
 int cmdTelStatus(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
-   int result = TCL_OK,err=0;
+   char ligne[256],s[256];
+   int result = TCL_OK,err=0,k;
    struct telprop *tel;
 	DSA_STATUS sta = {sizeof(DSA_STATUS)};
    tel = (struct telprop *)clientData;
 	/* getting status */
-	if (err = dsa_get_status(tel->drv, &sta)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
+	/* --- boucle sur les axes ---*/
+	strcpy(s,"");
+	for (k=0;k<3;k++) {
+		if (err = dsa_get_status(tel->drv[k], &sta)) {
+			mytel_error(tel,k,err);
+   		sprintf(ligne,"%s",tel->msg);
+			Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		sprintf(ligne,"{%x %x} ", sta.raw.sw1, sta.raw.sw2);
+		strcat(s,ligne);
 	}
-	sprintf(ligne,"%x %x", sta.raw.sw1, sta.raw.sw2);
-   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-   return result;
-}
-
-int cmdTelHoming(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
-   int result = TCL_OK,err=0;
-   struct telprop *tel;
-   tel = (struct telprop *)clientData;
-   /* homing */
-	if (err = dsa_homing_start_s(tel->drv, 10000)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-	/* wait end of homing */
-	if (err = dsa_wait_movement_s(tel->drv, 10000)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-   Tcl_SetResult(interp,"",TCL_VOLATILE);
-   return result;
-}
-
-int cmdTelTest(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
-   int result = TCL_OK,err=0;
-	int typ,idx,sidx,value;
-	int cmd;
-   struct telprop *tel;
-   tel = (struct telprop *)clientData;
-   /* set register */
-	typ=ETEL_K; // X=1 K=2 M=3
-	idx=210; // POS=210
-	sidx=0;
-	value=240000;
-	if (argc>=3) {
-   	value=atoi(argv[2]);
-	}
-	if (err = dsa_set_register_s(tel->drv,typ,idx,sidx,value,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-	/* send command */
-	cmd=119;
-	if (err = dsa_execute_command_s(tel->drv,cmd,FALSE,FALSE,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-	/* wait end of homing */
-	if (err = dsa_wait_movement_s(tel->drv, 10000)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-   Tcl_SetResult(interp,"OK",TCL_VOLATILE);
-   return result;
-}
-
-int cmdTelTargetPosition(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
-   char ligne[256];
-   int result = TCL_OK,err=0;
-	int value;
-   struct telprop *tel;
-   tel = (struct telprop *)clientData;
-	value=240000;
-	if (argc>=3) {
-   	value=atoi(argv[2]);
-	}
-	if (err = dsa_set_target_position_s(tel->drv,0,value,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-	if (err = dsa_wait_movement_s(tel->drv, 10000)) {
-		mytel_error(tel,err);
-   	sprintf(ligne,"%s",tel->msg);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-		return TCL_ERROR;
-	}
-   Tcl_SetResult(interp,"OK",TCL_VOLATILE);
+   Tcl_SetResult(interp,s,TCL_VOLATILE);
    return result;
 }
 
@@ -176,8 +92,8 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
 		   params[kk].val.d=atof(argv[k+1]);
 		}
 	}
-	if (err = dsa_execute_command_x_s(tel->drv,cmd,params,nparams,FALSE,FALSE,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
+	if (err = dsa_execute_command_x_s(tel->drv[k],cmd,params,nparams,FALSE,FALSE,DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,k,err);
    	sprintf(ligne,"%s",tel->msg);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
@@ -188,30 +104,31 @@ int cmdTelExecuteCommandXS(ClientData clientData, Tcl_Interp *interp, int argc, 
 
 int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
-   int result = TCL_OK,err=0;
+   int result = TCL_OK,err=0,axisno;
    struct telprop *tel;
 	int typ,idx,sidx=0,val;
    tel = (struct telprop *)clientData;
-   if (argc<4) {
-   	sprintf(ligne,"usage: %s %s typ(X|K|M) idx ?sidx?",argv[0],argv[1]);
+   if (argc<5) {
+   	sprintf(ligne,"usage: %s %s axisno typ(X|K|M) idx ?sidx?",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
-	if (strcmp(argv[2],"X")==0) {
+   axisno=atoi(argv[2]);
+	if (strcmp(argv[3],"X")==0) {
 		typ=ETEL_X;
-	} else if (strcmp(argv[2],"K")==0) {
+	} else if (strcmp(argv[3],"K")==0) {
 		typ=ETEL_K;
-	} else if (strcmp(argv[2],"M")==0) {
+	} else if (strcmp(argv[3],"M")==0) {
 		typ=ETEL_M;
 	} else {
-   	typ=atoi(argv[2]);
+   	typ=atoi(argv[3]);
 	}
-	idx=atoi(argv[3]);
-	if (argc>=5) {
-   	sidx=atoi(argv[4]);
+	idx=atoi(argv[4]);
+	if (argc>=6) {
+   	sidx=atoi(argv[5]);
 	}
-	if (err = dsa_get_register_s(tel->drv,typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
+	if (err = dsa_get_register_s(tel->drv[axisno],typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,axisno,err);
    	sprintf(ligne,"%s",tel->msg);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
@@ -223,29 +140,30 @@ int cmdTelGetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char
 
 int cmdTelSetRegisterS(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
-   int result = TCL_OK,err=0;
+   int result = TCL_OK,err=0,axisno;
    struct telprop *tel;
 	int typ,idx,sidx=0,val;
    tel = (struct telprop *)clientData;
-   if (argc<6) {
-   	sprintf(ligne,"usage: %s %s typ(X|K|M) idx sidx value",argv[0],argv[1]);
+   if (argc<7) {
+   	sprintf(ligne,"usage: %s %s axisno typ(X|K|M) idx sidx value",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
 	}
-	if (strcmp(argv[2],"X")==0) {
+   axisno=atoi(argv[2]);
+	if (strcmp(argv[3],"X")==0) {
 		typ=ETEL_X;
-	} else if (strcmp(argv[2],"K")==0) {
+	} else if (strcmp(argv[3],"K")==0) {
 		typ=ETEL_K;
-	} else if (strcmp(argv[2],"M")==0) {
+	} else if (strcmp(argv[3],"M")==0) {
 		typ=ETEL_M;
 	} else {
-   	typ=atoi(argv[2]);
+   	typ=atoi(argv[3]);
 	}
-	idx=atoi(argv[3]);
-  	sidx=atoi(argv[4]);
-  	val=atoi(argv[5]);
-	if (err = dsa_set_register_s(tel->drv,typ,idx,sidx,val,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
+	idx=atoi(argv[4]);
+  	sidx=atoi(argv[5]);
+  	val=atoi(argv[6]);
+	if (err = dsa_set_register_s(tel->drv[axisno],typ,idx,sidx,val,DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,axisno,err);
    	sprintf(ligne,"%s",tel->msg);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
@@ -260,7 +178,7 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    struct telprop *tel;
    int axisno,val,typ,idx,sidx;
    char axistype[50];
-   int traits,interpo;
+   int traits,interpo,sens=1;
    long int uc_per_tooth;
    tel = (struct telprop *)clientData;
    if (argc>2) {
@@ -271,7 +189,7 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 		   return TCL_ERROR;
       }
    } else {
-    	sprintf(ligne,"usage: %s %s axisNo ha|dec|az|elev|parallactic ?teeth_per_turn?",argv[0],argv[1]);
+    	sprintf(ligne,"usage: %s %s axisno ha|dec|az|elev|parallactic ?teeth_per_turn? ?sens?",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       return TCL_ERROR;
    }
@@ -302,24 +220,33 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          tel->axis_param[axisno].teeth_per_turn=val;
       }
    }
-   if (tel->axis_param[axisno].type=AXIS_HA) {
+   if (argc>5) {
+      val=(int)atoi(argv[5]);
+		if (val>=0) {
+			sens=1;
+		} else {
+			sens=-1;
+      }
+   }
+   tel->axis_param[axisno].sens=sens;
+   if (tel->axis_param[axisno].type==AXIS_HA) {
       strcpy(axistype,"ha");
-   } else if (tel->axis_param[axisno].type=AXIS_DEC) {
+   } else if (tel->axis_param[axisno].type==AXIS_DEC) {
       strcpy(axistype,"dec");
-   } else if (tel->axis_param[axisno].type=AXIS_AZ) {
+   } else if (tel->axis_param[axisno].type==AXIS_AZ) {
       strcpy(axistype,"az");
-   } else if (tel->axis_param[axisno].type=AXIS_ELEV) {
+   } else if (tel->axis_param[axisno].type==AXIS_ELEV) {
       strcpy(axistype,"elev");
-   } else if (tel->axis_param[axisno].type=AXIS_PARALLACTIC) {
+   } else if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
       strcpy(axistype,"parallactic");
    } else {
       strcpy(axistype,"notdefined");
    }
    typ=ETEL_M;
    idx=239;
-   sidx=axisno;
-	if (err = dsa_get_register_s(tel->drv,typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
+   sidx=0;
+	if (err = dsa_get_register_s(tel->drv[axisno],typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,axisno,err);
    	sprintf(ligne,"%s",tel->msg);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
@@ -327,9 +254,9 @@ int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    traits=val;
    typ=ETEL_M;
    idx=241;
-   sidx=axisno;
-	if (err = dsa_get_register_s(tel->drv,typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		mytel_error(tel,err);
+   sidx=0;
+	if (err = dsa_get_register_s(tel->drv[axisno],typ,idx,sidx,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		mytel_error(tel,axisno,err);
    	sprintf(ligne,"%s",tel->msg);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		return TCL_ERROR;
@@ -385,104 +312,193 @@ int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       if (tel->axis_param[axisno].type==AXIS_NOTDEFINED) {
          continue;
       }
-      if (tel->axis_param[axisno].type=AXIS_HA) {
+      if (tel->axis_param[axisno].type==AXIS_HA) {
          strcpy(axistype,"ha");
-      } else if (tel->axis_param[axisno].type=AXIS_DEC) {
+      } else if (tel->axis_param[axisno].type==AXIS_DEC) {
          strcpy(axistype,"dec");
-      } else if (tel->axis_param[axisno].type=AXIS_AZ) {
+      } else if (tel->axis_param[axisno].type==AXIS_AZ) {
          strcpy(axistype,"az");
-      } else if (tel->axis_param[axisno].type=AXIS_ELEV) {
+      } else if (tel->axis_param[axisno].type==AXIS_ELEV) {
          strcpy(axistype,"elev");
-      } else if (tel->axis_param[axisno].type=AXIS_PARALLACTIC) {
+      } else if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
          strcpy(axistype,"parallactic");
       } else {
          strcpy(axistype,"notdefined");
       }
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,239,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		   mytel_error(tel,err);
+   	if (err = dsa_get_register_s(tel->drv[axisno],ETEL_M,239,0,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,axisno,err);
    	   sprintf(ligne,"%s",tel->msg);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		   return TCL_ERROR;
 	   }
       traits=val;
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,241,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		   mytel_error(tel,err);
+   	if (err = dsa_get_register_s(tel->drv[axisno],ETEL_M,241,0,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,axisno,err);
    	   sprintf(ligne,"%s",tel->msg);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		   return TCL_ERROR;
    	}
       interpo=val;
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,7,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		   mytel_error(tel,err);
+   	if (err = dsa_get_register_s(tel->drv[axisno],ETEL_M,7,0,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,axisno,err);
    	   sprintf(ligne,"%s",tel->msg);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		   return TCL_ERROR;
    	}
       pos=val;
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,11,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		   mytel_error(tel,err);
+   	if (err = dsa_get_register_s(tel->drv[axisno],ETEL_M,11,0,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,axisno,err);
    	   sprintf(ligne,"%s",tel->msg);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		   return TCL_ERROR;
    	}
       spd=val;
-   	if (err = dsa_get_register_s(tel->drv,ETEL_M,15,axisno,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
-		   mytel_error(tel,err);
+   	if (err = dsa_get_register_s(tel->drv[axisno],ETEL_M,15,0,&val,DSA_GET_CURRENT,DSA_DEF_TIMEOUT)) {
+		   mytel_error(tel,axisno,err);
    	   sprintf(ligne,"%s",tel->msg);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		   return TCL_ERROR;
    	}
       acc=val;
       uc_per_tooth=traits*interpo;
- 	   sprintf(s,"{{axisno %d} {designation %s} {pos %d} {spd %d} {acc %d} {teeth_per_turn %d} {uc_per_tooth %ld}} ",
+ 	   sprintf(s,"{{axisno %d} {designation %s} {pos %d} {spd %d} {acc %d} {teeth_per_turn %d} {uc_per_tooth %ld} {pos0 %d} {angle0 %10f} {sens %d} ",
          axisno,axistype,
          pos,spd,acc,
-         tel->axis_param[axisno].teeth_per_turn,uc_per_tooth);
+         tel->axis_param[axisno].teeth_per_turn,uc_per_tooth,
+			tel->axis_param[axisno].posinit,
+			tel->axis_param[axisno].angleinit,
+			tel->axis_param[axisno].sens);
       strcat(ligne,s);
    }
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 	return TCL_OK;
 }
 
-int cmdTelHadec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[2256],texte[256];
+   int result = TCL_OK,k;
    struct telprop *tel;
-	char result[256];
-   int axisno,k;
-   char angles[3][30];
-	double angledegs[3];
-	int angleucs[3];
-	int voidangles[3];
-   tel = (struct telprop *)clientData;
-   strcpy(result,"");
-   /* --- lecture sur les axes valides ---*/
-	for (k=0;k<3;k++) {
-		voidangles[k]=(int)&angles[k];
-	}
-	etel_radec_coord(tel,1,voidangles,angledegs,angleucs);
-	/* --- mise en forme du resultat ---*/
-   if (tel->axis_param[0].type!=AXIS_NOTDEFINED) {
-      for (axisno=0;axisno<3;axisno++) {
-         if (tel->axis_param[axisno].type==AXIS_HA) {
-            strcat(result,angles[axisno]);
-         }
-      }
-   }
-   if (tel->axis_param[1].type!=AXIS_NOTDEFINED) {
-      for (axisno=0;axisno<3;axisno++) {
-         if (tel->axis_param[axisno].type==AXIS_DEC) {
-            strcat(result,angles[axisno]);
-         }
-      }
+   char comment[]="Usage: %s %s ?goto|stop|move|coord|motor|init|state? ?options?";
+   if (argc<3) {
+      sprintf(ligne,comment,argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
    } else {
-      strcat(result," +00d00m00s");
-   }
-   if (tel->axis_param[2].type!=AXIS_NOTDEFINED) {
-      for (axisno=0;axisno<3;axisno++) {
-         if (tel->axis_param[axisno].type==AXIS_PARALLACTIC) {
-            strcat(result,angles[axisno]);
+      tel = (struct telprop*)clientData;
+      if (strcmp(argv[2],"init")==0) {
+         /* --- init ---*/
+         if (argc>=4) {
+			 /* - call the pointing model if exists -*/
+				/*
+            sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
+            Tcl_Eval(interp,ligne);
+			if (strcmp(tel->model_cat2tel,"")!=0) {
+               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
+               Tcl_Eval(interp,ligne);
+			}
+            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+            strcpy(ligne,interp->result);
+				*/
+			 /* - end of pointing model-*/
+            libtel_Getradec(interp,argv[3],&tel->ra0,&tel->dec0);
+            mytel_hadec_init(tel);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+         } else {
+            sprintf(ligne,"Usage: %s %s init {angle_ha angle_dec}",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
          }
+      } else if (strcmp(argv[2],"coord")==0) {
+         /* --- coord ---*/
+			mytel_hadec_coord(tel,ligne);
+			 /* - call the pointing model if exists -*/
+			/*
+         sprintf(ligne,"set libtel(radec) {%s}",texte);
+         Tcl_Eval(interp,ligne);
+         sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_tel2cat,texte);
+         Tcl_Eval(interp,ligne);
+            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+            strcpy(ligne,interp->result);
+				*/
+			 /* - end of pointing model-*/
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      } else if (strcmp(argv[2],"state")==0) {
+         /* --- state ---*/
+			tel_radec_state(tel,texte);
+            Tcl_SetResult(interp,texte,TCL_VOLATILE);
+      } else if (strcmp(argv[2],"goto")==0) {
+         /* --- goto ---*/
+         if (argc>=4) {
+			 /* - call the pointing model if exists -*/
+				/*
+            sprintf(ligne,"set libtel(radec) {%s}",argv[3]);
+            Tcl_Eval(interp,ligne);
+			if (strcmp(tel->model_cat2tel,"")!=0) {
+               sprintf(ligne,"catch {set libtel(radec) [%s {%s}]}",tel->model_cat2tel,argv[3]);
+               Tcl_Eval(interp,ligne);
+			}
+            Tcl_Eval(interp,"set libtel(radec) $libtel(radec)");
+            strcpy(ligne,interp->result);
+				*/
+			 /* - end of pointing model-*/
+            libtel_Getradec(interp,ligne,&tel->ra0,&tel->dec0);
+            if (argc>=5) {
+               for (k=4;k<=argc-1;k++) {
+                  if (strcmp(argv[k],"-rate")==0) {
+                     tel->radec_goto_rate=atof(argv[k+1]);
+                  }
+                  if (strcmp(argv[k],"-blocking")==0) {
+                     tel->radec_goto_blocking=atoi(argv[k+1]);
+                  }
+               }
+            }
+            mytel_hadec_goto(tel);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+         } else {
+            sprintf(ligne,"Usage: %s %s goto {angle_ha angle_dec} ?-rate value? ?-blocking boolean?",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      } else if (strcmp(argv[2],"move")==0) {
+         /* --- move ---*/
+         if (argc>=4) {
+            if (argc>=5) {
+               tel->radec_move_rate=atof(argv[4]);
+            }
+            tel_radec_move(tel,argv[3]);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+         } else {
+            sprintf(ligne,"Usage: %s %s move n|s|e|w ?rate?",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      } else if (strcmp(argv[2],"stop")==0) {
+         /* --- stop ---*/
+         if (argc>=4) {
+            tel_radec_stop(tel,argv[3]);
+         } else {
+            tel_radec_stop(tel,"");
+         }
+      } else if (strcmp(argv[2],"motor")==0) {
+         /* --- motor ---*/
+         if (argc>=4) {
+            tel->radec_motor=0;
+            if ((strcmp(argv[3],"off")==0)||(strcmp(argv[3],"0")==0)) {
+               tel->radec_motor=1;
+            }
+            tel_radec_motor(tel);
+            Tcl_SetResult(interp,"",TCL_VOLATILE);
+         } else {
+            sprintf(ligne,"Usage: %s %s motor on|off",argv[0],argv[1]);
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      } else {
+         /* --- sub command not found ---*/
+         sprintf(ligne,comment,argv[0],argv[1]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
       }
    }
-   Tcl_SetResult(interp,result,TCL_VOLATILE);
-   return TCL_OK;
+   return result;
 }
