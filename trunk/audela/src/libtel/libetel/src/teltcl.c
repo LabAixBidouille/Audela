@@ -502,3 +502,19 @@ int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    }
    return result;
 }
+
+int cmdTelInitDefault(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result = TCL_OK,err=0,mountno;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if (argc<3) {
+   	sprintf(ligne,"usage: %s %s mountNo",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+		return TCL_ERROR;
+	}
+   mountno=atoi(argv[2]);
+	mytel_init_mount_default(tel,mountno);
+   Tcl_SetResult(interp,"",TCL_VOLATILE);
+   return result;
+}
