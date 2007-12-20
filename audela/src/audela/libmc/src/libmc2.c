@@ -2295,7 +2295,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
          if (valid==1) {
             /* --- on lance le calcul ---*/
             mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-            sprintf(s,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
+            sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
             Tcl_DStringAppend(&dsptr,sss,-1);
          }
       }
