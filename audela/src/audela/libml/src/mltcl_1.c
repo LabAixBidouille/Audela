@@ -726,6 +726,14 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 							list2 = Tcl_GetObjResult  (interp);
 							list = Tcl_GetString (list2);
 							code = Tcl_SplitList(interp,list,&argcc,&argvv);
+							if (argcc <= 1) {
+								result=1;
+								/* --- l'identification a un problème --- */
+								strcpy(lignes2[n_in1].texte,ligne);
+								lignes2[n_in1].kobject=0;
+								nsat++;
+								break;
+							}
 							if (code != TCL_OK) {
 									sprintf(ligne, "Probleme sur le liste des ephemerides");
 									Tcl_SetResult(interp, ligne, TCL_VOLATILE);
