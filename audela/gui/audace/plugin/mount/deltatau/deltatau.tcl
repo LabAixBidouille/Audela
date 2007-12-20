@@ -1,101 +1,101 @@
 #
-# Fichier : etel.tcl
-# Description : Configuration de la monture Etel
-# Auteur : Robert DELMAS
-# Mise a jour $Id: deltatau.tcl,v 1.1 2007-12-19 01:10:40 alainklotz Exp $
+# Fichier : deltatau.tcl
+# Description : Configuration de la monture Delta Tau
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: deltatau.tcl,v 1.2 2007-12-20 19:34:02 robertdelmas Exp $
 #
 
-namespace eval ::etel {
-   package provide etel 1.0
+namespace eval ::deltatau {
+   package provide deltatau 1.0
    package require audela 1.4.0
 
    #--- Charge le fichier caption
-   source [ file join [file dirname [info script]] etel.cap ]
+   source [ file join [file dirname [info script]] deltatau.cap ]
 }
 
 #
-# ::etel::getPluginTitle
+# ::deltatau::getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
-proc ::etel::getPluginTitle { } {
+proc ::deltatau::getPluginTitle { } {
    global caption
 
-   return "$caption(etel,monture)"
+   return "$caption(deltatau,monture)"
 }
 
 #
-#  ::etel::getPluginHelp
+#  ::deltatau::getPluginHelp
 #     Retourne la documentation du plugin
 #
-proc ::etel::getPluginHelp { } {
-   return "etel.htm"
+proc ::deltatau::getPluginHelp { } {
+   return "deltatau.htm"
 }
 
 #
-# ::etel::getPluginType
+# ::deltatau::getPluginType
 #    Retourne le type du plugin
 #
-proc ::etel::getPluginType { } {
+proc ::deltatau::getPluginType { } {
    return "mount"
 }
 
 #
-# ::etel::getPluginOS
+# ::deltatau::getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
-proc ::etel::getPluginOS { } {
+proc ::deltatau::getPluginOS { } {
    return [ list Windows Linux Darwin ]
 }
 
 #
-# ::etel::initPlugin
-#    Initialise les variables conf(etel,...)
+# ::deltatau::initPlugin
+#    Initialise les variables conf(deltatau,...)
 #
-proc ::etel::initPlugin { } {
+proc ::deltatau::initPlugin { } {
    global conf
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
 
-   #--- Initialise les variables de la monture Etel
-   if { ! [ info exists conf(etel,port) ] }   { set conf(etel,port)   [ lindex $list_connexion 0 ] }
-   if { ! [ info exists conf(etel,format) ] } { set conf(etel,format) "1" }
+   #--- Initialise les variables de la monture Delta Tau
+   if { ! [ info exists conf(deltatau,port) ] }   { set conf(deltatau,port)   [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(deltatau,format) ] } { set conf(deltatau,format) "1" }
 }
 
 #
-# ::etel::confToWidget
+# ::deltatau::confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
-proc ::etel::confToWidget { } {
+proc ::deltatau::confToWidget { } {
    variable private
    global caption conf
 
-   #--- Recupere la configuration de la monture Etel dans le tableau private(...)
-   set private(port)     $conf(etel,port)
-   set private(format)   [ lindex "$caption(etel,format_court_long)" $conf(etel,format) ]
+   #--- Recupere la configuration de la monture Delta Tau dans le tableau private(...)
+   set private(port)     $conf(deltatau,port)
+   set private(format)   [ lindex "$caption(deltatau,format_court_long)" $conf(deltatau,format) ]
    set private(raquette) $conf(raquette)
 
 }
 
 #
-# ::etel::widgetToConf
+# ::deltatau::widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
-proc ::etel::widgetToConf { } {
+proc ::deltatau::widgetToConf { } {
    variable private
    global caption conf
 
-   #--- Memorise la configuration de la monture Etel dans le tableau conf(etel,...)
-   set conf(etel,port)   $private(port)
-   set conf(etel,format) [ lsearch "$caption(etel,format_court_long)" "$private(format)" ]
-   set conf(raquette)         $private(raquette)
+   #--- Memorise la configuration de la monture Delta Tau dans le tableau conf(deltatau,...)
+   set conf(deltatau,port)   $private(port)
+   set conf(deltatau,format) [ lsearch "$caption(deltatau,format_court_long)" "$private(format)" ]
+   set conf(raquette)        $private(raquette)
 }
 
 #
-# ::etel::fillConfigPage
-#    Interface de configuration de la monture Etel
+# ::deltatau::fillConfigPage
+#    Interface de configuration de la monture Delta Tau
 #
-proc ::etel::fillConfigPage { frm } {
+proc ::deltatau::fillConfigPage { frm } {
    variable private
    global audace caption
 
@@ -103,7 +103,7 @@ proc ::etel::fillConfigPage { frm } {
    set private(frm) $frm
 
    #--- confToWidget
-   ::etel::confToWidget
+   ::deltatau::confToWidget
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
@@ -134,7 +134,7 @@ proc ::etel::fillConfigPage { frm } {
    pack $frm.frame8 -in $frm.frame7 -side top -fill x
 
    #--- Definition du port
-   label $frm.lab1 -text "$caption(etel,port)"
+   label $frm.lab1 -text "$caption(deltatau,port)"
    pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
    #--- Je verifie le contenu de la liste
@@ -151,10 +151,10 @@ proc ::etel::fillConfigPage { frm } {
    }
 
    #--- Bouton de configuration des ports et liaisons
-   button $frm.configure -text "$caption(etel,configurer)" -relief raised \
+   button $frm.configure -text "$caption(deltatau,configurer)" -relief raised \
       -command {
-         ::confLink::run ::etel::private(port) { serialport } \
-            "- $caption(etel,controle) - $caption(etel,monture)"
+         ::confLink::run ::deltatau::private(port) { serialport } \
+            "- $caption(deltatau,controle) - $caption(deltatau,monture)"
       }
    pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
@@ -164,85 +164,85 @@ proc ::etel::fillConfigPage { frm } {
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::etel::private(port) \
+      -textvariable ::deltatau::private(port) \
       -editable 0       \
       -values $list_connexion
    pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
 
-   #--- Definition du format des donnees transmises au Etel
-   label $frm.lab2 -text "$caption(etel,format)"
+   #--- Definition du format des donnees transmises au Delta Tau
+   label $frm.lab2 -text "$caption(deltatau,format)"
    pack $frm.lab2 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
 
-   set list_combobox "$caption(etel,format_court_long)"
+   set list_combobox "$caption(deltatau,format_court_long)"
    ComboBox $frm.formatradec \
       -width 7          \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
-      -textvariable ::etel::private(format) \
+      -textvariable ::deltatau::private(format) \
       -editable 0       \
       -values $list_combobox
    pack $frm.formatradec -in $frm.frame8 -anchor center -side left -padx 30 -pady 10
 
-   #--- Le bouton de commande maj heure et position du Etel
-   button $frm.majpara -text "$caption(etel,maj_etel)" -relief raised -command {
+   #--- Le bouton de commande maj heure et position du Delta Tau
+   button $frm.majpara -text "$caption(deltatau,maj_deltatau)" -relief raised -command {
       tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
       tel$audace(telNo) home $audace(posobs,observateur,gps)
    }
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
-   checkbutton $frm.raquette -text "$caption(etel,raquette_tel)" \
-      -highlightthickness 0 -variable ::etel::private(raquette)
+   checkbutton $frm.raquette -text "$caption(deltatau,raquette_tel)" \
+      -highlightthickness 0 -variable ::deltatau::private(raquette)
    pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
 
    #--- Frame raquette
    ::confPad::createFramePad $frm.nom_raquette "::confTel::private(nomRaquette)"
    pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
 
-   #--- Site web officiel du Etel
-   label $frm.lab103 -text "$caption(etel,titre_site_web)"
+   #--- Site web officiel du Delta Tau
+   label $frm.lab103 -text "$caption(deltatau,titre_site_web)"
    pack $frm.lab103 -in $frm.frame5 -side top -fill x -pady 2
 
-   set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(etel,site_etel)" \
-      "$caption(etel,site_etel)" ]
+   set labelName [ ::confTel::createUrlLabel $frm.frame5 "$caption(deltatau,site_deltatau)" \
+      "$caption(deltatau,site_deltatau)" ]
    pack $labelName -side top -fill x -pady 2
 
    #--- Gestion du bouton actif/inactif
-   ::etel::confEtel
+   ::deltatau::confDeltaTau
 }
 
 #
-# ::etel::configureTelescope
-#    Configure la monture Etel en fonction des donnees contenues dans les variables conf(etel,...)
+# ::deltatau::configureTelescope
+#    Configure la monture Delta Tau en fonction des donnees contenues dans les variables conf(deltatau,...)
 #
-proc ::etel::configureTelescope { } {
+proc ::deltatau::configureTelescope { } {
    global audace caption conf
 
-   set audace(telNo) [ tel::create etel $conf(etel,port) ]
-   console::affiche_erreur "$caption(etel,port_etel)\
-      $caption(etel,2points) $conf(etel,port)\n"
+   set audace(telNo) [ tel::create deltatau $conf(deltatau,port) ]
+   console::affiche_erreur "$caption(deltatau,port_deltatau)\
+      $caption(deltatau,2points) $conf(deltatau,port)\n"
    console::affiche_saut "\n"
-   if { $conf(etel,format) == "0" } {
+   if { $conf(deltatau,format) == "0" } {
       tel$audace(telNo) longformat off
    } else {
       tel$audace(telNo) longformat on
    }
    #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-   set linkNo [ ::confLink::create $conf(etel,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+   set linkNo [ ::confLink::create $conf(deltatau,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
    #--- Gestion du bouton actif/inactif
-   ::etel::confEtel
+   ::deltatau::confDeltaTau
 }
 
 #
-# ::etel::stop
-#    Arrete la monture Etel
+# ::deltatau::stop
+#    Arrete la monture Delta Tau
 #
-proc ::etel::stop { } {
+proc ::deltatau::stop { } {
    global audace
 
    #--- Gestion du bouton actif/inactif
-   ::etel::confEtelInactif
+   ::deltatau::confDeltaTauInactif
 
    #--- Je memorise le port
    set telPort [ tel$audace(telNo) port ]
@@ -254,10 +254,10 @@ proc ::etel::stop { } {
 }
 
 #
-# ::etel::confEtel
+# ::deltatau::confDeltaTau
 # Permet d'activer ou de désactiver le bouton
 #
-proc ::etel::confEtel { } {
+proc ::deltatau::confDeltaTau { } {
    variable private
    global audace
 
@@ -279,10 +279,10 @@ proc ::etel::confEtel { } {
 }
 
 #
-# ::etel::confEtelInactif
+# ::deltatau::confDeltaTauInactif
 #    Permet de desactiver le bouton a l'arret de la monture
 #
-proc ::etel::confEtelInactif { } {
+proc ::deltatau::confDeltaTauInactif { } {
    variable private
 
    if { [ info exists private(frm) ] } {
@@ -297,7 +297,7 @@ proc ::etel::confEtelInactif { } {
 }
 
 #
-# ::etel::getPluginProperty
+# ::deltatau::getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
@@ -308,7 +308,7 @@ proc ::etel::confEtelInactif { } {
 # name :             Retourne le modele de la monture
 # product :          Retourne le nom du produit
 #
-proc ::etel::getPluginProperty { propertyName } {
+proc ::deltatau::getPluginProperty { propertyName } {
    global audace
 
    switch $propertyName {
