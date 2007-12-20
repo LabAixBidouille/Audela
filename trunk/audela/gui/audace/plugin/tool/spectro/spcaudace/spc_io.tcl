@@ -2591,13 +2591,18 @@ proc spc_fit2colors { args } {
         }
 
         #--- Découpage de la zone du spectre :
-        buf$audace(bufNo) window [ list $xdeb 1 $xfin 1 ]
+	set xfinal [ expr $xfin-$xdeb+1 ]
+	if { $xdeb>1 || $xfin<$naxis1 } {
+	    buf$audace(bufNo) window [ list $xdeb 1 $xfin 1 ]
+	}
 
         #--- Colorisation du spectre :
         # buf$audace(bufNo) imaseries "COLORSPECTRUM wavelengthmin=$ldeb wavelengthmax=$lfin"
-        buf$audace(bufNo) imaseries "COLORSPECTRUM wavelengthmin=$ldeb wavelengthmax=$lfin xmin=$xdeb xmax=$xfin"
+        # buf$audace(bufNo) imaseries "COLORSPECTRUM WAVELENGTHMIN=$ldeb WAVELENGTHMAX=$lfin XMIN=$xdeb XMAX=$xfin"
+        buf$audace(bufNo) imaseries "COLORSPECTRUM WAVELENGTHMIN=$ldeb WAVELENGTHMAX=$lfin XMIN=1 XMAX=$xfinal"
         # buf$audace(bufNo) scale {1 40} 1
-        buf$audace(bufNo) scale {0.6 40} 1
+        buf$audace(bufNo) scale { 0.6 40 } 1
+        #buf$audace(bufNo) scale { 0.6 40 } 2
         visu1 thickness 80
         #- Seuils -3 ; 70 fcontionne bien.
         ::confVisu::autovisu 1
@@ -2610,7 +2615,9 @@ proc spc_fit2colors { args } {
         buf$audace(bufNo) bitpix short
 
         #--- Retour du résultat :
-        file delete "$audace(rep_images)/$spectre_lin$conf(extension,defaut)"
+	if { "$fichier" != "$spectre_lin" } {
+	    file delete "$audace(rep_images)/$spectre_lin$conf(extension,defaut)"
+	}
         ::console::affiche_resultat "Profil de raies exporté sous ${fichier}_color.jpg\n"
         return "${fichier}_color.jpg"
     } else {
