@@ -33,6 +33,7 @@ static struct cmditem cmdlist[] = {
    {"type_axis", (Tcl_CmdProc *)cmdTelTypeAxis},\
    {"inc_axis", (Tcl_CmdProc *)cmdTelIncAxis},\
    {"hadec", (Tcl_CmdProc *)cmdTelHaDec},\
+   {"init_default", (Tcl_CmdProc *)cmdTelInitDefault},\
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}
 };

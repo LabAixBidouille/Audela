@@ -135,15 +135,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->axis_param[0].posinit=0;
 		tel->axis_param[0].angleinit=0.;
 	}
-	/* --- DEC special T193 ---*/
-   tel->axis_param[0].posinit=108066863; //119393950;
-	tel->axis_param[0].angleinit=30.; //0.;
-   tel->axis_param[0].teeth_per_turn=1;
-   tel->axis_param[0].sens=-1;
-	/* --- HA special T193 ---*/
-   tel->axis_param[1].posinit=99750139; // 99750139
-	tel->axis_param[1].angleinit=0.;
-   tel->axis_param[1].teeth_per_turn=1;
+	/* --- init special T193 ---*/
+	mytel_init_mount_default(tel,0);
 	return 0;
 }
 
@@ -424,12 +417,12 @@ int mytel_radec_state(struct telprop *tel,char *result)
    return 0;
 }
 
-int mytel_radec_goto0(struct telprop *tel)
+int mytel_radec_goto(struct telprop *tel)
 {
    return 0;
 }
 
-int mytel_radec_goto(struct telprop *tel)
+int mytel_radec_goto0(struct telprop *tel)
 {
    double deg_per_tooth,angle;
    int traits,interpo,axisno,err,val;
@@ -832,6 +825,22 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    sprintf(tel->home,"GPS %f %s %f %f",longitude,ew,latitude,altitude);
    strcpy(tel->home0,tel->home);
    return 0;
+}
+
+int mytel_init_mount_default(struct telprop *tel,int mountno)
+{
+	if (mountno==0) {
+		/* --- DEC special T193 ---*/
+		tel->axis_param[0].posinit= 108175977; 
+		tel->axis_param[0].angleinit=30.;
+		tel->axis_param[0].teeth_per_turn=1;
+		tel->axis_param[0].sens=-1;
+		/* --- HA special T193 ---*/
+		tel->axis_param[1].posinit=99793995;
+		tel->axis_param[1].angleinit=0.;
+		tel->axis_param[1].teeth_per_turn=1;
+	}
+	return 0;
 }
 
 /* ================================================================ */

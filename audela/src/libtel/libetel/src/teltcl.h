@@ -32,5 +32,6 @@ int cmdTelTypeMount(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 int cmdTelTypeAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelIncAxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelHaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelInitDefault(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

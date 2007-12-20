@@ -116,6 +116,7 @@ int mytel_date_get(struct telprop *tel,char *ligne);
 int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s);
 int mytel_home_get(struct telprop *tel,char *ligne);
 int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
+int mytel_init_mount_default(struct telprop *tel,int mountno);
 
 int mytel_get_format(struct telprop *tel);
 int mytel_set_format(struct telprop *tel,int longformatindex);
