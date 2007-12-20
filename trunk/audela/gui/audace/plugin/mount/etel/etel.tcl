@@ -1,8 +1,8 @@
 #
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
-# Auteur : Robert DELMAS
-# Mise a jour $Id: etel.tcl,v 1.1 2007-12-19 00:29:07 alainklotz Exp $
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: etel.tcl,v 1.2 2007-12-20 19:30:45 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -88,7 +88,7 @@ proc ::etel::widgetToConf { } {
    #--- Memorise la configuration de la monture Etel dans le tableau conf(etel,...)
    set conf(etel,port)   $private(port)
    set conf(etel,format) [ lsearch "$caption(etel,format_court_long)" "$private(format)" ]
-   set conf(raquette)         $private(raquette)
+   set conf(raquette)    $private(raquette)
 }
 
 #
