@@ -31,6 +31,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries);
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries);
 
 void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double *eq);
+int tt_histocuts_precis(TT_IMA *p,TT_IMA_SERIES *pseries,double percent_sb,double percent_sh,double *locut,double *hicut,double *mode,double *minim,double *maxim);
+int tt_histocuts_myrtille(TT_IMA *p,TT_IMA_SERIES *pseries,double *hicut,double *locut,double *mode,double *mini,double *maxi);
 
 int tt_morphomath_1 (TT_IMA_SERIES *pseries);
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
@@ -1084,20 +1086,26 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);
+	//tt_imasaver(p_out,"D:/tophat.fit",16);
 	
 	//binarisation de l'image en fonction de l'histogramme
 	tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 	tt_util_statima(p_out,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
+	tt_histocuts_myrtille(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 	if (strcmp (pseries->nom_trait,"TOPHATE")==0) {
-		seuil_gto=(pseries->hicut)*1.0;
+		/*seuil_gto=(pseries->hicut)+1.0*(pseries->sigma);
+		if (seuil_gto>((pseries->hicut)+(pseries->maxi-pseries->hicut)*1.0/4.0)) {
+			seuil_gto=(pseries->hicut)+(pseries->maxi-pseries->hicut)*1.0/4.0; 
+		}*/
+		seuil_gto=(pseries->hicut)*0.78;
 		//seuil_geo=(pseries->hicut)*2.4;
 		//formule établie sur des tests sur des images...
-		/*seuil_geo=((pseries->maxi)+(pseries->hicut)-2*(pseries->locut))/2.0;
+		//seuil_geo=((pseries->maxi)+(pseries->hicut)-2*(pseries->locut))/2.0;
+		seuil_geo=((pseries->maxi)+(pseries->hicut))/2.0;
 		if (seuil_geo>(pseries->maxi)*(1-2.5/10)) {
 			seuil_geo=(pseries->maxi)*(1-2.5/10);
-		}*/
-		seuil_geo=((pseries->maxi)+(pseries->hicut))/2.0;
+		}
+		//seuil_geo=((pseries->maxi)+(pseries->hicut))*3.0/5.0;
 	
 	} else {
 		seuil_gto=(pseries->hicut)*0.8;
@@ -1124,16 +1132,16 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	/* --- definition du seuil de detection --- */
 	if (strcmp (pseries->nom_trait,"TOPHATE")==0) {
-		bg=(pseries->bgmean)+1.4*(pseries->bgsigma);
+		bg=(pseries->bgmean)+2.5*(pseries->bgsigma);
 	} else {
-		bg=(pseries->bgmean)+2*(pseries->bgsigma);
+		bg=(pseries->bgmean)+2.5*(pseries->bgsigma);
 	}
 
 	//---------------------------------------------------/
 	//sauve images pour recherche de geo gto et défilants
 	//p_out = gto seuillé et p_tmp1 = geo seuillé
 	//tt_imasaver(p_tmp1,"D:/geo.fit",16);
-	tt_imasaver(p_tmp2,"D:/gto.fit",16);
+	//tt_imasaver(p_tmp2,"D:/gto.fit",16);
 
 /* ----------------------------------------- */
 /* --- recherche des traînées dans p_out --- */
@@ -1192,22 +1200,22 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				for (k1=0;k1<n1;k1++) {
 					for (k2=0;k2<n2;k2++) {
 						if (eq[2]!=0) { //cas des droites verticales
-							if (k2<eq[2]-2) {continue;}	
-							if (k2>eq[2]+2) {break;}
-						} else if (eq[0]<-0.2) {//cas des pentes négatives
+							if (k1<eq[2]-2) {continue;}	
+							if (k1>eq[2]+2) {break;}
+						} else if (eq[0]<-1) {//cas des fortes pentes négatives
+							if (eq[0]*(k1+2)+eq[1]>n2) break;
+							if (eq[0]*(k1+2)+eq[1]<0) continue;
 							if (k2<eq[0]*(k1+2)+eq[1]) {continue;}	
 							if (k2>eq[0]*(k1-2)+eq[1]) {break;}
-						} else if ((eq[0]<=0.2)&&(eq[0]>=-0.2)) {//cas des droites a très faibles pentes
-							if (eq[0]>0) {
-								if ((k2-1-eq[1])/eq[0]<0) continue;
-								if (k1<(k2-1-eq[1])/eq[0]) continue;
-								if (k1>(k2+1-eq[1])/eq[0]) break;
-							} else {
-								if ((k2+1-eq[1])/eq[0]<0) continue;
-								if (k1<(k2+1-eq[1])/eq[0]) continue;
-								if (k1>(k2-1-eq[1])/eq[0]) break;
-							}
-						} else {
+						} else if ((eq[0]<1)&&(eq[0]>-1)) {//cas des droites a faibles pentes
+							if (eq[0]*k1+eq[1]-2<0) continue;
+							if (k2<eq[0]*k1+eq[1]-2) continue;
+							if (k2>eq[0]*k1+eq[1]+2) break;
+
+						} else if ((eq[0]==0)&&(eq[2]==0)) { //cas des droites horizontales
+							if (k2<eq[1]-2) {continue;}	
+							if (k2>eq[1]+2) {break;}
+						} else { //cas des droites a fortes pentes positives
 							if (k2<eq[0]*(k1-2)+eq[1]) {continue;}	
 							if (k2>eq[0]*(k1+2)+eq[1]) {break;}
 						}
@@ -1228,27 +1236,38 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					if (somme_y>n2) somme_y=n2-1;
 					for (k1=(int)somme_x;k1>0;k1--) {
 						if (nbnul>40) break;
-						for (k2=(int)somme_y;k2>0;k2--) {
+						k2=(int)somme_y;
+						while (1) {
+							if (eq[0]<0) {
+								if (k2<n2) k2++;
+								else break;
+							} else {
+								if (k2>0) k2--;
+								else break;
+							}							
 							if (nbnul>40) break;
-							if (eq[2]!=0) { //cas des droites verticales
-								if (k2<eq[2]-3) {continue;}	
-								if (k2>eq[2]+3) {break;}
-							} else if (eq[0]<-0.2) {//cas des pentes négatives
-								if (k2<eq[0]*(k1+3)+eq[1]) {continue;}	
-								if (k2>eq[0]*(k1-3)+eq[1]) {break;}
-							} else if ((eq[0]<=0.2)&&(eq[0]>=-0.2)) {//cas des droites a très faibles pentes
+							if (eq[2]!=0) {//droites verticales
+								if (k1<eq[2]-1) {break;}	
+								if (k1>eq[2]+1) {continue;}
+							} else if (eq[0]<-1) {
+								if (k2<eq[0]*(k1+1)+eq[1]) {continue;}	
+								if (k2>eq[0]*(k1-1)+eq[1]) {break;}
+							} else if ((eq[0]<1)&&(eq[0]>-1)) {//cas des droites a très faibles pentes
 								if (eq[0]>0) {
-									if ((k2-1-eq[1])/eq[0]<0) continue;
-									if (k1<(k2-1-eq[1])/eq[0]) continue;
-									if (k1>(k2+1-eq[1])/eq[0]) break;
+									if (eq[0]*k1+eq[1]-1<0) break;
+									if (k2<eq[0]*k1+eq[1]-1) break;
+									if (k2>eq[0]*k1+eq[1]+1) continue;
 								} else {
-									if ((k2+1-eq[1])/eq[0]<0) continue;
-									if (k1<(k2+1-eq[1])/eq[0]) continue;
-									if (k1>(k2-1-eq[1])/eq[0]) break;
+									if (eq[0]*k1+eq[1]+1>n2) break;
+									if (k2<eq[0]*k1+eq[1]-1) continue;
+									if (k2>eq[0]*k1+eq[1]+1) break;
 								}
-							}else {
-								if (k2<eq[0]*(k1-3)+eq[1]) {continue;}	
-								if (k2>eq[0]*(k1+3)+eq[1]) {break;}
+							} else if ((eq[0]==0)&&(eq[2]==0)) { //cas des droites horizontales
+								if (k2<eq[1]-2) {break;}	
+								if (k2>eq[1]+2) {continue;}
+							} else {
+								if (k2<eq[0]*(k1-1)+eq[1]) {break;}	
+								if (k2>eq[0]*(k1+1)+eq[1]) {continue;}
 							}
 							//debut traînée quand p_out->p = fond de ciel
 							dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
@@ -1261,34 +1280,44 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 							if ((dvalue>bg)&&(nbnul<40)) {
 								nbnul=(int)(nbnul/3.0);
-							}
-							
+							}	
 						}
 					}
 					nbnul=0;
 					for (k1=(int)somme_x;k1<n1;k1++) {
 						if (nbnul>40) break;
-						for (k2=(int)somme_y;k2<n2;k2++) {
-							if (nbnul>40) break;
-							if (eq[2]!=0) { //cas des droites verticales
-								if (k2<eq[2]-3) {continue;}	
-								if (k2>eq[2]+3) {break;}
-							} else if (eq[0]<-0.2) {
-								if (k2<eq[0]*(k1+3)+eq[1]) {continue;}
-								if (k2>eq[0]*(k1-3)+eq[1]) {break;}				
-							} else if ((eq[0]<=0.2)&&(eq[0]>=-0.2)) {//cas des droites a très faibles pentes
-								if (eq[0]>0) {
-									if ((k2-1-eq[1])/eq[0]<0) continue;
-									if (k1<(k2-1-eq[1])/eq[0]) continue;
-									if (k1>(k2+1-eq[1])/eq[0]) break;
-								} else {
-									if ((k2+1-eq[1])/eq[0]<0) continue;
-									if (k1<(k2+1-eq[1])/eq[0]) continue;
-									if (k1>(k2-1-eq[1])/eq[0]) break;
-								}
+						k2=(int)somme_y;
+						while (1) {
+							if (eq[0]<0) {
+								if (k2>0) k2--;
+								else break;
 							} else {
-								if (k2<eq[0]*(k1-3)+eq[1]) {continue;}
-								if (k2>eq[0]*(k1+3)+eq[1]) {break;}
+								if (k2<n2) k2++;
+								else break;
+							}						
+							if (nbnul>40) break;
+							if (eq[2]!=0) {
+								if (k1<eq[2]-1) {continue;}	
+								if (k1>eq[2]+1) {break;}
+							} else if (eq[0]<-1) {
+								if (k2<eq[0]*(k1+1)+eq[1]) {break;}	
+								if (k2>eq[0]*(k1-1)+eq[1]) {continue;}
+							} else if ((eq[0]<1)&&(eq[0]>-1)) {//cas des droites a très faibles pentes
+								if (eq[0]>0) {
+									if (eq[0]*k1+eq[1]+1>n2) break;
+									if (k2<eq[0]*k1+eq[1]-1) continue;
+									if (k2>eq[0]*k1+eq[1]+1) break;
+								} else {
+									if (eq[0]*k1+eq[1]-1<0) break;
+									if (k2<eq[0]*k1+eq[1]-1) break;
+									if (k2>eq[0]*k1+eq[1]+1) continue;
+								}
+							} else if ((eq[0]==0)&&(eq[2]==0)) { //cas des droites horizontales
+								if (k2<eq[1]-2) {continue;}	
+								if (k2>eq[1]+2) {break;}
+							} else {
+								if (k2<eq[0]*(k1-1)+eq[1]) {continue;}	
+								if (k2>eq[0]*(k1+1)+eq[1]) {break;}
 							}
 							//recherche la fin de la traînée				
 							dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
@@ -1301,9 +1330,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 							if ((dvalue>bg)&&(nbnul<40)) {
 								nbnul=(int)(nbnul/3.0);
-							}
-							
-						}
+							}	
+						}				
 					}
 					if (xdebut<0) {xdebut=0;}
 					if (xfin<0) {xfin=0; xdebut=0;}
@@ -1322,7 +1350,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				/* -------------------------------------------------- */
 				/* --- si la trace deborde sur une autre imagette --- */
 				/* -------------------------------------------------- */				
-				if ((xfin>n1-10)||(yfin>n2-10)||(xdebut<10)||(ydebut<10)) {	
+				if ((xfin>n1-10)||(yfin>n2-10)||(xdebut<10)||(ydebut<10)||(xdebut>n1-10)||(ydebut>n2-10)||(xfin<10)||(yfin<10)) {	
 					bord=0;
 
 					if (kkk%nb_ss_image1==1) {
@@ -1366,34 +1394,34 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						if ((eq[0]!=0)||(eq[1]!=0)||(eq[2]!=0)) {
 							somme_value2=0;somme_x2=0;somme_y2=0;xdebut=0;ydebut=0;
 							//recherche du centre de la trace
-							for (k1=0;k1<n1;k1++) {
-								for (k2=0;k2<n2;k2++) {
-									if (eq[2]!=0) {
-										if (k2<eq[2]-1) {continue;}	
-										if (k2>eq[2]+1) {break;}
-									} else if (eq[0]<0) {
-										if (k2<eq[0]*(k1+1)+eq[1]) {continue;}	
-										if (k2>eq[0]*(k1-1)+eq[1]) {break;}
-									} else if ((eq[0]<=0.2)&&(eq[0]>=-0.2)) {//cas des droites a très faibles pentes
-										if (eq[0]>0) {
-											if ((k2-1-eq[1])/eq[0]<0) continue;
-											if (k1<(k2-1-eq[1])/eq[0]) continue;
-											if (k1>(k2+1-eq[1])/eq[0]) break;
+								for (k1=0;k1<n1;k1++) {
+									for (k2=0;k2<n2;k2++) {
+										if (eq[2]!=0) {
+											if (k1<eq[2]-2) {continue;}	
+											if (k1>eq[2]+2) {break;}
+										} else if (eq[0]<-1) {
+											if (eq[0]*(k1+2)+eq[1]>n2) break;
+											if (eq[0]*(k1+2)+eq[1]<0) continue;
+											if (k2<eq[0]*(k1+2)+eq[1]) {continue;}	
+											if (k2>eq[0]*(k1-2)+eq[1]) {break;}
+										} else if ((eq[0]<=1)&&(eq[0]>=-1)) {//cas des droites a très faibles pentes
+											if (eq[0]*k1+eq[1]-2<0) continue;
+											if (eq[0]*k1+eq[1]-2>n2) break;
+											if (k2<eq[0]*k1+eq[1]-2) continue;
+											if (k2>eq[0]*k1+eq[1]+2) break;
+										} else if ((eq[0]==0)&&(eq[2]==0)) { //cas des droites horizontales
+											if (k2<eq[1]-2) {continue;}	
+											if (k2>eq[1]+2) {break;}
 										} else {
-											if ((k2+1-eq[1])/eq[0]<0) continue;
-											if (k1<(k2+1-eq[1])/eq[0]) continue;
-											if (k1>(k2-1-eq[1])/eq[0]) break;
+											if (k2<eq[0]*(k1-2)+eq[1]) {continue;}	
+											if (k2>eq[0]*(k1+2)+eq[1]) {break;}
 										}
-									} else {
-										if (k2<eq[0]*(k1-1)+eq[1]) {continue;}	
-										if (k2>eq[0]*(k1+1)+eq[1]) {break;}
+										dvalue=(double)p_tmp3->p[n2*k2+k1];
+										somme_value2= somme_value2+dvalue;
+										somme_x2=somme_x2+k1*dvalue;
+										somme_y2=somme_y2+k2*dvalue;
 									}
-									dvalue=(double)p_tmp3->p[n2*k2+k1];
-									somme_value2= somme_value2+dvalue;
-									somme_x2=somme_x2+k1*dvalue;
-									somme_y2=somme_y2+k2*dvalue;
 								}
-							}
 							if (somme_value2!=0) {
 								// coordonnées du centre dans la grande image
 								somme_x2=somme_x2*1.0/somme_value2;
@@ -1401,27 +1429,38 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								nbnul=0;
 								for (k1=(int)somme_x2;k1>0;k1--) {
 									if (nbnul>40) break;
-									for (k2=(int)somme_y2;k2>0;k2--) {
+									k2=(int)somme_y2;
+									while (1) {
+										if (eq[0]<0) {
+											if (k2<n2) k2++;
+											else break;
+										} else {
+											if (k2>0) k2--;
+											else break;
+										}							
 										if (nbnul>40) break;
 										if (eq[2]!=0) {
-											if (k2<eq[2]-3) {continue;}	
-											if (k2>eq[2]+3) {break;}
-										} else if (eq[0]<0) {
-											if (k2<eq[0]*(k1+3)+eq[1]) {continue;}		
-											if (k2>eq[0]*(k1-3)+eq[1]) {break;}		
-										} else if ((eq[0]<=0.2)&&(eq[0]>=-0.2)) {//cas des droites a très faibles pentes
+											if (k1<eq[2]-1) {break;}	
+											if (k1>eq[2]+1) {continue;}
+										} else if (eq[0]<-1) {
+											if (k2<eq[0]*(k1+1)+eq[1]) {continue;}	
+											if (k2>eq[0]*(k1-1)+eq[1]) {break;}
+										} else if ((eq[0]<1)&&(eq[0]>-1)) {//cas des droites a très faibles pentes
 											if (eq[0]>0) {
-												if ((k2-1-eq[1])/eq[0]<0) continue;
-												if (k1<(k2-1-eq[1])/eq[0]) continue;
-												if (k1>(k2+1-eq[1])/eq[0]) break;
+												if (eq[0]*k1+eq[1]-1<0) break;
+												if (k2<eq[0]*k1+eq[1]-1) break;
+												if (k2>eq[0]*k1+eq[1]+1) continue;
 											} else {
-												if ((k2+1-eq[1])/eq[0]<0) continue;
-												if (k1<(k2+1-eq[1])/eq[0]) continue;
-												if (k1>(k2-1-eq[1])/eq[0]) break;
+												if (eq[0]*k1+eq[1]+1>n2) break;
+												if (k2<eq[0]*k1+eq[1]-1) continue;
+												if (k2>eq[0]*k1+eq[1]+1) break;
 											}
+										} else if ((eq[0]==0)&&(eq[2]==0)) { //cas des droites horizontales
+											if (k2<eq[1]-2) {break;}	
+											if (k2>eq[1]+2) {continue;}
 										} else {
-											if (k2<eq[0]*(k1-3)+eq[1]) {continue;}		
-											if (k2>eq[0]*(k1+3)+eq[1]) {break;}
+											if (k2<eq[0]*(k1-1)+eq[1]) {break;}	
+											if (k2>eq[0]*(k1+1)+eq[1]) {continue;}
 										}
 										//debut traînée quand p_in->p = fond de ciel
 										dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
@@ -1441,24 +1480,35 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								nbnul=0;
 								for (k1=(int)somme_x2;k1<n1;k1++) {
 									if (nbnul>40) break;
-									for (k2=(int)somme_y2;k2<n2;k2++) {
+									k2=(int)somme_y2;
+									while (1) {
+										if (eq[0]<0) {
+											if (k2>0) k2--;
+											else break;
+										} else {
+											if (k2<n2) k2++;
+											else break;
+										}		
 										if (nbnul>40) break;
 										if (eq[2]!=0) {
-											if (k2<eq[2]-3) {continue;}	
-											if (k2>eq[2]+3) {break;}
-										} else if (eq[0]<0) {
-											if (k2<eq[0]*(k1-3)+eq[1]) {continue;}
-											if (k2>eq[0]*(k1+3)+eq[1]) {break;}
-										} else if ((eq[0]<=0.2)&&(eq[0]>=-0.2)) {//cas des droites a très faibles pentes
+											if (k1<eq[2]-1) {continue;}	
+											if (k1>eq[2]+1) {break;}
+										} else if (eq[0]<-1) {
+											if (k2>eq[0]*(k1-1)+eq[1]) {continue;}
+											if (k2<eq[0]*(k1+1)+eq[1]) {break;}
+										} else if ((eq[0]<1)&&(eq[0]>-1)) {//cas des droites a très faibles pentes
 											if (eq[0]>0) {
-												if ((k2-1-eq[1])/eq[0]<0) continue;
-												if (k1<(k2-1-eq[1])/eq[0]) continue;
-												if (k1>(k2+1-eq[1])/eq[0]) break;
+												if (eq[0]*k1+eq[1]+1>n2) break;
+												if (k2<eq[0]*k1+eq[1]-1) continue;
+												if (k2>eq[0]*k1+eq[1]+1) break;
 											} else {
-												if ((k2+1-eq[1])/eq[0]<0) continue;
-												if (k1<(k2+1-eq[1])/eq[0]) continue;
-												if (k1>(k2-1-eq[1])/eq[0]) break;
+												if (eq[0]*k1+eq[1]-1<0) break;
+												if (k2<eq[0]*k1+eq[1]-1) break;
+												if (k2>eq[0]*k1+eq[1]+1) continue;
 											}
+										} else if ((eq[0]==0)&&(eq[2]==0)) { //cas des droites horizontales
+											if (k2<eq[1]-2) {continue;}	
+											if (k2>eq[1]+2) {break;}
 										} else {
 											if (k2<eq[0]*(k1-3)+eq[1]) {continue;}
 											if (k2>eq[0]*(k1+3)+eq[1]) {break;}
@@ -1519,26 +1569,19 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								somme[nb]=0;
 						}
 						/* --- recherche de la largeur des trainées --- */
-						if (((eq[0]!=0)&&(eq[0]<1))||(eq[2]!=0)) { // droites non horizontales, droites verticales
+						if ((eq[0]>1)||(eq[0]<-1)||(eq[2]!=0)) { // droites non horizontales, droites verticales
 							largx=0;nb=0;
-							for (k2=(int)ydebut;k2<=(int)yfin;k2++) {
-								largxx=0;
-								if (eq[2]==0) {
-									for (k1=(int)((k2-eq[1])/eq[0]-10);k1<(int)((k2-eq[1])/eq[0]);k1++) {
-										if (k1<0) continue;
-										if (k1>=naxis1) break;
-										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
-									}
-									for (k1=(int)((k2-eq[1])/eq[0]);k1<=(int)((k2-eq[1])/eq[0]+10);k1++) {
-										if (k1<0) continue;
-										if (k1>=naxis1) break;
-										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
-									}
-									if (largxx!=0) {
-										largx+=largxx;
-										nb++;
-									}
+							k2=(int)ydebut;
+							while (1) {
+								if (eq[0]<0) {
+									if (k2>yfin) k2--;
+									else break;
 								} else {
+									if (k2<yfin) k2++;
+									else break;
+								}	
+								largxx=0;
+								if (eq[2]!=0) { //droites verticales
 									for (k1=(int)(eq[2]);k1<=(int)(eq[2]+10);k1++) {
 										if (k1<0) continue;
 										if (k1>=naxis1) break;
@@ -1553,15 +1596,30 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 										largx+=largxx;
 										nb++;
 									}
-								}
-							}
+								} else {
+									for (k1=(int)((k2-eq[1])/eq[0]-10);k1<(int)((k2-eq[1])/eq[0]);k1++) {
+										if (k1<0) continue;
+										if (k1>=naxis1) break;
+										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+									}
+									for (k1=(int)((k2-eq[1])/eq[0]);k1<=(int)((k2-eq[1])/eq[0]+10);k1++) {
+										if (k1<0) continue;
+										if (k1>=naxis1) break;
+										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+									}
+									if (largxx!=0) {
+										largx+=largxx;
+										nb++;
+									}
+								}	
+							}							
 							if (nb != 0) {
 								largx=(int)(largx*1.0/(2.0*nb))+1;
 							}
-
+							
 						} else {
 							largx=0;nb=0;
-							for (k1=(int)xdebut;k1<=(int)xfin;k1++) {
+							for (k1=(int)xdebut;k1<(int)xfin;k1++) {
 								largxx=0;
 								for (k2=(int)(eq[0]*k1+eq[1]-10);k2<(int)(eq[0]*k1+eq[1]);k2++) {
 									if (k2<0) continue;
@@ -1576,8 +1634,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								if (largxx!=0) {
 									largx+=largxx;
 									nb++;
-								}
-						
+								}												
 							}
 							if (nb != 0) {
 								largx=(int)(largx*1.0/(2.0*nb))+1;
@@ -1587,9 +1644,17 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						if (largx<3) { largx=3;}
 
 						// echantillon des barycentres sur chaque ligne de pixel
-						if (((eq[0]!=0)&&(eq[0]<1))||(eq[2]!=0)) { // droites non horizontales, droites verticales
+						if ((eq[0]>1)||(eq[0]<-1)||(eq[2]!=0)) { // droites non horizontales, droites verticales, droites forte pente
 							i=0;
-							for (k2=(int)ydebut;k2<=(int)yfin;k2++) {
+							k2=(int)ydebut;
+							while (1) {
+								if (eq[0]<0) {
+									if (k2>yfin) k2--;
+									else break;
+								} else {
+									if (k2<yfin) k2++;
+									else break;
+								}	
 								if (eq[2]==0) {
 									for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
 										if (k1<0) continue;
@@ -1619,20 +1684,34 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								}
 							} 
 							sommexy=0;sommex=0;sommey=0;sommexx=0;
-							for (nb=0; nb<i; nb++) {
-								if (somme[nb]!=0) {
-									bary_x[nb]=bary_x[nb]/somme[nb];
-									sommexy=sommexy+bary_x[nb]*(ydebut+nb);
-									sommex=sommex+bary_x[nb];
-									sommey=sommey+(ydebut+nb);
-									sommexx=sommexx+bary_x[nb]*bary_x[nb];
-								} else {
-									bary_x[nb]=0;
+							if (eq[0]<0) {
+								for (nb=0; nb<i; nb++) {
+									if (somme[nb]!=0) {
+										bary_x[nb]=bary_x[nb]*1.0/somme[nb];
+										sommexy=sommexy+bary_x[nb]*(ydebut-nb);
+										sommex=sommex+bary_x[nb];
+										sommey=sommey+(ydebut-nb);
+										sommexx=sommexx+bary_x[nb]*bary_x[nb];
+									} else {
+										bary_x[nb]=0;
+									}
+								}
+							} else {
+								for (nb=0; nb<i; nb++) {
+									if (somme[nb]!=0) {
+										bary_x[nb]=bary_x[nb]*1.0/somme[nb];
+										sommexy=sommexy+bary_x[nb]*(ydebut+nb);
+										sommex=sommex+bary_x[nb];
+										sommey=sommey+(ydebut+nb);
+										sommexx=sommexx+bary_x[nb]*bary_x[nb];
+									} else {
+										bary_x[nb]=0;
+									}
 								}
 							}
 						} else  { 
 							i=0;
-							for (k1=(int)xdebut;k1<=(int)xfin;k1++) {
+							for (k1=(int)xdebut;k1<(int)xfin;k1++) {
 								for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
 									if (k2<0) continue;
 									if (k2>=naxis2) break;
@@ -1642,14 +1721,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 										bary_y[i]=bary_y[i]+k2*dvalue;
 									}
 								}	
-								if ((somme[i]!=0)&&(bary_x[i]!=0)) {
+								if ((somme[i]!=0)&&(bary_y[i]!=0)) {
 									i++;
 								}
 							} 
-							sommexy=0;sommex=0;sommey=0;sommexx=0;
+							sommexy=0;sommex=0;sommey=0;sommexx=0;							
 							for (nb=0; nb<i; nb++) {		
 								if (somme[nb]!=0) {
-									bary_y[nb]=bary_y[nb]/somme[nb];
+									bary_y[nb]=bary_y[nb]*1.0/somme[nb];
 									sommexy=sommexy+(xdebut+nb)*bary_y[nb];
 									sommex=sommex+(xdebut+nb);
 									sommey=sommey+bary_y[nb];
@@ -1657,12 +1736,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								} else {
 									bary_y[nb]=0;
 								}
-							}
+							}	
 						}
 						
 						if ((eq[2]==0)&&((sommexx!=0)||(sommex!=0))) {
-							eq[0]=(i*sommexy-sommex*sommey)/(i*sommexx-sommex*sommex);
-							eq[1]=(sommey*sommexx-sommex*sommexy)/(i*sommexx-sommex*sommex);
+							if ((i*sommexx-sommex*sommex)!=0) {								
+								eq[0]=(i*sommexy-sommex*sommey)/(i*sommexx-sommex*sommex);		
+								eq[1]=(sommey*sommexx-sommex*sommexy)/(i*sommexx-sommex*sommex);
+							}
 						} else if (eq[2]!=0) {
 							eq[2]=sommex/i;
 						}
@@ -1670,10 +1751,12 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						/* --- recherche plus fine des bouts du segment --- */
 						if (eq[2]==0) {
 							if (eq[0]!=0) { 
+								dvalue=ydebut;
 								ydebut=(eq[1]/(eq[0]*eq[0])+ydebut+xdebut/eq[0])/(1+1/(eq[0]*eq[0]));
-								xdebut=(ydebut-eq[1])/eq[0];
+								xdebut=(dvalue-eq[1])/eq[0];
+								dvalue=yfin;
 								yfin=(eq[1]/(eq[0]*eq[0])+yfin+xfin/eq[0])/(1+1/(eq[0]*eq[0]));
-								xfin=(yfin-eq[1])/eq[0];
+								xfin=(dvalue-eq[1])/eq[0];
 							} else {
 								ydebut=eq[1];
 								yfin=eq[1];
@@ -1684,28 +1767,47 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 
 						/* --- mise a zero pour la détection des geo --- */
-						for (k1=(int)xdebut-largx-2;k1<(int)xfin+largx+2;k1++) {
-							for (k2=(int)ydebut-largx-2;k2<(int)yfin+largx+2;k2++) {
-								if ((k1<0)||(k2<0)) continue;
-								if (k1>=naxis1) break;
-								if (k2>=naxis2) break;
-								//mettre a zero les pixels concernés pour ne pour ne pas avoir deux fois la traînées
-								if (eq[2]!=0) {
-									if (k2<eq[2]-largx-2) {continue;}
-									if (k2>eq[2]+largx+2) break;
-								} else if (eq[0]<0) {
-									if (k2<eq[0]*(k1+largx+2)+eq[1]) {continue;}
-									if (k2>eq[0]*(k1-largx-2)+eq[1]) break;
-								} else {
-									if (k2<eq[0]*(k1-largx-2)+eq[1]) {continue;}
-									if (k2>eq[0]*(k1+largx+2)+eq[1]) break;
+						if (eq[0]>=0) {
+							for (k1=(int)xdebut-largx-2;k1<(int)xfin+largx+2;k1++) {
+								for (k2=(int)ydebut-largx-2;k2<(int)yfin+largx+2;k2++) {
+									if ((k1<0)||(k2<0)) continue;
+									if (k1>=naxis1) break;
+									if (k2>=naxis2) break;
+									//mettre a zero les pixels concernés pour ne pour ne pas avoir deux fois la traînées
+									if (eq[2]!=0) {
+										if (k2<eq[2]-largx-2) {continue;}
+										if (k2>eq[2]+largx+2) break;
+									} else if (eq[0]<1) {
+										if (k2<eq[0]*k1-largx-2+eq[1]) {continue;}
+										if (k2>eq[0]*k1+largx+2+eq[1]) break;
+									} else {
+										if (k2<eq[0]*(k1-largx-2)+eq[1]) {continue;}
+										if (k2>eq[0]*(k1+largx+2)+eq[1]) break;
+									}
+									p_tmp1->p[naxis2*(k2)+k1]=0;
+									p_tmp2->p[naxis2*(k2)+k1]=0;
 								}
-								//p_tmp1->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2]=0;
-								//p_tmp2->p[naxis2*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2]=0;
-								p_tmp1->p[naxis2*(k2)+k1]=0;
-								p_tmp2->p[naxis2*(k2)+k1]=0;
+							}	
+						} else {//ydebut>yfin
+							for (k1=(int)xdebut-largx-2;k1<(int)xfin+largx+2;k1++) {
+								for (k2=(int)yfin-largx-2;k2<(int)ydebut+largx+2;k2++) {
+									if ((k1<0)||(k2<0)) continue;
+									if (k1>=naxis1) break;
+									if (k2>=naxis2) break;
+									if (eq[0]<=-1) {
+										if (k2<eq[0]*(k1+largx+2)+eq[1]) {continue;}
+										if (k2>eq[0]*(k1-largx-2)+eq[1]) break;
+										p_tmp1->p[naxis2*(k2)+k1]=0;
+										p_tmp2->p[naxis2*(k2)+k1]=0;
+									} else {
+										if (k2<eq[0]*k1+largx+2+eq[1]) {continue;}
+										if (k2>eq[0]*k1-largx-2+eq[1]) break;
+										p_tmp1->p[naxis2*(k2)+k1]=0;
+										p_tmp2->p[naxis2*(k2)+k1]=0;
+									}
+								}
 							}
-						}							
+						}
 						//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
 						/* ---------------------------------------------------- */
 						/* --- enregistrer l'equation de la droite détectée --- */
@@ -1714,8 +1816,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						ngto++;
 					}
 				}
-			}
-	
+			}	
 			k=k+n1;
 			k5=k-k3*(naxis1-2*kk*n1);
 			k3=(int)(kkk+1)/(8-2*kk);
@@ -2138,6 +2239,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 		//réduction de la dynamique des images et calcul des seuils de visu
 		tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+		hicut=pseries->hicut;
+		locut=pseries->locut;
 		tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
 		tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
 		//reajustement de l'histogramme en 8bit
@@ -2147,18 +2250,34 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 				if (p_out->p[y*naxis1+x]<mode1-pseries->sigma) {
 					p_out->p[y*naxis1+x]=0;
-				} else if (p_out->p[y*naxis1+x]>mode1+pseries->sigma) {
+				} else if (p_out->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
 					p_out->p[y*naxis1+x]=255;
 				} else {
-					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2*pseries->sigma);
+					//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
+					/*if (p_out->p[y*naxis1+x]<mode1) {
+						if (pseries->locut/locut<1) {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->locut/locut);
+						} else {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)0.97;
+						}
+					} else if (p_out->p[y*naxis1+x]>mode1) {
+						if (pseries->hicut/hicut>1) {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->hicut/hicut);
+						} else {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)1.06;
+						}
+					} else {*/
+						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma));
+					//}
 				}
+
 				
 				if (p_tmp2->p[y*naxis1+x]<mode1-pseries->sigma) {					
 					p_tmp2->p[y*naxis1+x]=0;	
-				} else if (p_tmp2->p[y*naxis1+x]>mode1+pseries->sigma) {
+				} else if (p_tmp2->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
 					p_tmp2->p[y*naxis1+x]=255;
 				} else {
-					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2*pseries->sigma);
+					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(3.0/2.0*pseries->sigma);
 				}
 				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];		
 			}
@@ -2173,8 +2292,10 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		//extension du tophat : ouverture d'une fermeture
 		// pour traiter le cas des satellites proches (compromis entre tophat excellent et détection de satellites proches)
 		if (strcmp (struct_elem,"RECTANGLE")==0) {
-			x2=x1*2/3;
-			y2=y1*2/3;
+			x2=(int)(x1*2.0/3.0);
+			y2=(int)(y1*2.0/3.0);
+			//x2=x1/2;
+			//y2=y1/2;
 			if (x2%2 != 1) {
 				x2=x2+1;
 			}
@@ -2202,15 +2323,15 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		dilate (p_tmp1,p_in,se2,x2,y2,sizex2,sizey2,naxis1,naxis2);
 		erode (p_out,p_tmp1,se2,x2,y2,sizex2,sizey2,naxis1,naxis2);
 			//ouverture
-		erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);		
 		dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
-	
+		
 		/* --- Calcul des seuils de visualisation ---*/
 		//réduction de la dynamique des images
-		tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+		tt_histocuts_myrtille(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 		hicut=pseries->hicut;
 		locut=pseries->locut;
-		tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
+		tt_histocuts_myrtille(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
 		tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
 		
 		for (y=0;y<naxis2;y++) {
@@ -2219,32 +2340,40 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 				if (p_out->p[y*naxis1+x]<mode1-pseries->sigma) {
 					p_out->p[y*naxis1+x]=0;
-				} else if (p_out->p[y*naxis1+x]>mode1+pseries->sigma) {
+				} else if (p_out->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
 					p_out->p[y*naxis1+x]=255;
 				} else {
-					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2*pseries->sigma);
-					/*if (p_out->p[y*naxis1+x]<mode1) {
-						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2*pseries->sigma)*(float)(pseries->locut/locut);
+					//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
+					if (p_out->p[y*naxis1+x]<mode1) {
+						if (pseries->locut/locut<1) {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->locut/locut);
+						} else {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)0.97;
+						}
 					} else if (p_out->p[y*naxis1+x]>mode1) {
-						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2*pseries->sigma)*(float)(pseries->hicut/hicut);
+						if (pseries->hicut/hicut>1) {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->hicut/hicut);
+						} else {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)1.06;
+						}
 					} else {
-						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2*pseries->sigma);
-					}*/
+						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma));
+					}
 				}
 
 				
 				if (p_tmp2->p[y*naxis1+x]<mode1-pseries->sigma) {					
 					p_tmp2->p[y*naxis1+x]=0;	
-				} else if (p_tmp2->p[y*naxis1+x]>mode1+pseries->sigma) {
+				} else if (p_tmp2->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
 					p_tmp2->p[y*naxis1+x]=255;
 				} else {
-					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2*pseries->sigma);
+					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(3.0/2.0*pseries->sigma);
 				}
 				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];		
 			}
 		}
-		tt_imasaver(p_tmp2,"D:/init2.fit",8);
-		tt_imasaver(p_out,"D:/ouv_de_ferm2.fit",8);
+		//tt_imasaver(p_tmp2,"D:/init2.fit",8);
+		//tt_imasaver(p_out,"D:/ouv_de_ferm2.fit",8);
 	} 
 
 	i=strcmp (nom_trait,"GRADIENT");
@@ -2431,6 +2560,187 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 }
 
 
+int tt_histocuts_myrtille(TT_IMA *p,TT_IMA_SERIES *pseries,double *hicut,double *locut,double *mode,double *mini,double *maxi)
+/***************************************************************************/
+/* Statistiques (hicut et locut) sur une image                             */
+/***************************************************************************/
+/* Il faut que soient deja calculees les donnees suivantes :               */
+/*  pseries->                                                              */
+/*                                                                         */
+/* pseries->lofrac=0.05 le seuil bas dans l'histogramme                    */
+/* pseries->hifrac=0.97 le seuil haut dans l'histogramme                   */
+/* pseries->cutscontrast=1.0 pour diminuer le contraste                    */
+/***************************************************************************/
+{
+   double sb,sh,bg,mi,ma;
+   int msg;
+
+   if (pseries->lofrac>1.) {pseries->lofrac=1.;}
+   if (pseries->lofrac<0.) {pseries->lofrac=0.;}
+   if (pseries->hifrac>1.) {pseries->hifrac=1.;}
+   if (pseries->hifrac<0.) {pseries->hifrac=0.;}
+   if (pseries->lofrac>pseries->hifrac) {
+      pseries->lofrac=0.05;
+      pseries->hifrac=0.97;
+   }
+   if ((msg=tt_histocuts_precis(p,pseries,pseries->lofrac,pseries->hifrac,&sb,&sh,&bg,&mi,&ma))!=OK_DLL) {
+      return(msg);
+   }
+   /* --- amplification de constraste ---*/
+   sb-=((bg-sb)*pseries->cutscontrast);
+   sh-=((bg-sh)*pseries->cutscontrast);
+   *hicut=sh;
+   *locut=sb;
+   *mode=bg;
+   *mini=mi;
+   *maxi=ma;
+   return(OK_DLL);
+}
+
+int tt_histocuts_precis(TT_IMA *p,TT_IMA_SERIES *pseries,double percent_sb,double percent_sh,double *locut,double *hicut,double *mode,double *minim,double *maxim)
+/***************************************************************************/
+/* Statistiques (hicut et locut) sur une image                             */
+/* Le pendant de la fonction tt_util_cuts2.                                */
+/***************************************************************************/
+{
+   double sb,sh,sb0,sh0,delta;
+   int *histo,k,sortie,modemax,taille,msg,nombre;
+   int nb,nelem,nelem0=0,nullpix_exist,index_histo,nbtours;
+   double mini,maxi,nullpix_value,valeur,*seuil,moyenne,deltam,rapport;
+
+   nelem=(p->naxis1)*(p->naxis2);
+   nullpix_exist=pseries->nullpix_exist;
+   nullpix_value=pseries->nullpix_value;
+   if (nullpix_exist==TT_NO) {
+      nullpix_value=TT_MIN_DOUBLE;
+   }
+   nb=50;
+   nombre=nb;
+   taille=sizeof(int);
+   histo=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&histo,&nombre,&taille,"histo"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_histocuts_precis (pointer histo)");
+      return(TT_ERR_PB_MALLOC);
+   }
+   nombre=nb+1;
+   taille=sizeof(double);
+   seuil=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&seuil,&nombre,&taille,"seuil"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_histocuts_precis (pointer seuil)");
+      tt_free(histo,"histo");
+      return(TT_ERR_PB_MALLOC);
+   }
+   /* --- calcul du mini et maxi ---*/
+   pseries->maxi=TT_MIN_FLOAT;
+   pseries->mini=TT_MAX_FLOAT;
+   for (k=0;k<nelem;k++) {
+      valeur=(double)(p->p[k]);
+      if (valeur!=nullpix_value) {
+         if (valeur>pseries->maxi) {pseries->maxi=valeur;}
+   	     if (valeur<pseries->mini) {pseries->mini=valeur;}
+	  }
+   }
+   *minim=pseries->mini;
+   *maxim=pseries->maxi;
+   delta=fabs(pseries->maxi-pseries->mini);
+   if ((delta!=0)&&(delta<1e-5)) {
+      pseries->maxi=pseries->mini+1e-5;
+   }
+   sb0=mini=pseries->mini;
+   sh0=maxi=pseries->maxi;
+   sortie=TT_NO;
+   nbtours=0;
+   /* --- boucle sur l'histogramme ---*/
+   do {
+      nbtours++;
+      if (mini==maxi) {
+	     *hicut=maxi;
+	     *locut=mini;
+         *mode=(maxi+mini)/2.;
+	     tt_free(seuil,"seuil");
+	     tt_free(histo,"histo");
+	     return(OK_DLL);
+      }
+      /* --- initialise les seuils ---*/
+      sb=mini;
+      sh=maxi;
+      /* --- remplit l'histogramme ---*/
+      for (k=0;k<nb;k++) {
+	     histo[k]=0;
+      }
+      deltam=fabs(maxi-mini);
+      if (deltam>1e-10) {
+         for (k=0,nelem0=0,moyenne=0.;k<nelem;k++) {
+   	        valeur=(double)(p->p[k]);
+	        if (valeur!=nullpix_value) {
+	           nelem0++;
+               deltam=(valeur-mini)/(maxi-mini);
+	           index_histo=(int)(fabs(floor(deltam*nb)));
+	           if (index_histo>=nb) { index_histo=nb-1; }
+	           else if (index_histo<0) { index_histo=0; }
+	           histo[index_histo]++;
+	           moyenne+=valeur;
+	        }
+         }
+      } else {
+         histo[0]=nelem;
+	     moyenne=(double)(p->p[0]);
+      }
+      /* --- calcule la moyenne ---*/
+      if (nelem0==0) {
+	     *hicut=sh;
+	     *locut=sb;
+         *mode=(sb+sh)/2.;
+	     return(OK_DLL);
+      }
+      moyenne/=nelem0;
+      /* --- remplit les valeurs de seuil inf pour chaque baton ---*/
+      for (k=0;k<=nb;k++) {
+	     seuil[k]=mini+(maxi-mini)*k/nb;
+      }
+      /* --- calcule le mode ---*/
+      modemax=0;
+      for (k=0;k<nb-1;k++) {
+   	     if (histo[k]>modemax) {
+	        modemax=histo[k];
+	        *mode=(seuil[k+1]+seuil[k])/2.;
+         }
+      }
+      /* --- calcule l'histogramme cumule ---*/
+      for (k=1;k<nb;k++) {
+	     histo[k]+=histo[k-1];
+      }
+      /* --- calcule des nouveaux seuils plus serres ---*/
+      for (k=0;k<nb;k++) {
+	     valeur=(double)(histo[k])/(double)(histo[nb-1]);
+	     if (valeur<=percent_sb) {sb=seuil[k];}
+	     if (valeur>=percent_sh) {sh=seuil[k+1];break;}
+      }
+      mini=sb-(sh-sb); if (mini<sb0) {mini=sb0;}
+      maxi=sh+(sh-sb); if (maxi>sh0) {maxi=sh0;}
+      if ((sh-sb)==0) {
+	     sortie=TT_YES;
+      } else {
+         rapport=fabs(1-(sh0-sb0)/(sh-sb));
+	     if (rapport<0.1) {
+	        sortie=TT_YES;
+	     }
+      }
+      if (nbtours>3) {
+         sortie=TT_YES;
+      }
+      /*printf("seuils histo : sb=%f sh=%f mode=%f\n",sb,sh,mode);getch();*/
+      sb0=sb;
+      sh0=sh;
+   } while (sortie==TT_NO);
+   *hicut=sh;
+   *locut=sb;
+   tt_free(seuil,"seuil");
+   tt_free(histo,"histo");
+   return(OK_DLL);
+}
+
+
 void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double *eq)
 /***************************************************************************/
 /* Transformee de Hough arrangée pour la detection des GTO                 */
@@ -2537,7 +2847,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 	//enregistre l'image de hough
 	//tt_imasaver(pout,"D:/hough.fit",16);
 	//seuil de détection fixé arbitrairement à 25 points alignés
-	if (seuil_max>25) {
+	if (seuil_max>20) {
 		threshold_ligne=seuil_max/2;
 		somme_value=0;
 		somme_theta=0;
