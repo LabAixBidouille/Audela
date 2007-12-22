@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.41 2007-12-19 22:29:05 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.42 2007-12-22 12:17:35 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -29,7 +29,9 @@ proc ::confTel::init { } {
    set audace(telNo) "0"
 
    #--- Initialisation de variables
-   set private(geometry) $conf(telescope,geometry)
+   set private(geometry)  $conf(telescope,geometry)
+   set private(telNo)     "0"
+   set private(mountName) ""
 
    #--- Initalise les listes de montures
    set private(nomRaquette) $conf(confPad)
@@ -55,7 +57,6 @@ proc ::confTel::init { } {
 #
 # ::confTel::run
 # Cree la fenetre de choix et de configuration des montures
-# private(frm) = chemin de la fenetre
 # conf(telescope) = nom de la monture (ascom, audecom, celestron, lx200, ouranos, temma, etc.)
 #
 proc ::confTel::run { } {
@@ -99,7 +100,7 @@ proc ::confTel::appliquer { } {
    stopPlugin
    #--- Je copie les parametres de la nouvelle monture dans conf()
    widgetToConf
-   configureTelescope
+   configureMonture
 
    $private(frm).cmd.ok configure -state normal
    $private(frm).cmd.appliquer configure -relief raised -state normal
@@ -232,7 +233,7 @@ proc ::confTel::createUrlLabel { tkparent title url } {
    }
    bind $tkparent.labURL <Enter> "$tkparent.labURL configure -fg $color(purple)"
    bind $tkparent.labURL <Leave> "$tkparent.labURL configure -fg $color(blue)"
-   return  $tkparent.labURL
+   return $tkparent.labURL
 }
 
 #
@@ -260,38 +261,38 @@ proc ::confTel::connectMonture { } {
    variable private
    global audace caption color
 
-   if [ winfo exists $audace(base).connectTelescope ] {
-      destroy $audace(base).connectTelescope
+   if [ winfo exists $audace(base).connectMonture ] {
+      destroy $audace(base).connectMonture
    }
 
-   toplevel $audace(base).connectTelescope
-   wm resizable $audace(base).connectTelescope 0 0
-   wm title $audace(base).connectTelescope "$caption(conftel,attention)"
+   toplevel $audace(base).connectMonture
+   wm resizable $audace(base).connectMonture 0 0
+   wm title $audace(base).connectMonture "$caption(conftel,attention)"
    if { [ info exists private(frm) ] } {
       if { [ winfo exists $private(frm) ] } {
-         set posx_connectTelescope [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
-         set posy_connectTelescope [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
-         wm geometry $audace(base).connectTelescope +[ expr $posx_connectTelescope + 50 ]+[ expr $posy_connectTelescope + 100 ]
-         wm transient $audace(base).connectTelescope $private(frm)
+         set posx_connectMonture [ lindex [ split [ wm geometry $private(frm) ] "+" ] 1 ]
+         set posy_connectMonture [ lindex [ split [ wm geometry $private(frm) ] "+" ] 2 ]
+         wm geometry $audace(base).connectMonture +[ expr $posx_connectMonture + 50 ]+[ expr $posy_connectMonture + 100 ]
+         wm transient $audace(base).connectMonture $private(frm)
       }
    } else {
-      wm geometry $audace(base).connectTelescope +200+100
-      wm transient $audace(base).connectTelescope $audace(base)
+      wm geometry $audace(base).connectMonture +200+100
+      wm transient $audace(base).connectMonture $audace(base)
    }
 
    #--- Cree l'affichage du message
-   label $audace(base).connectTelescope.labURL_1 -text "$caption(conftel,connexion_texte1)" \
+   label $audace(base).connectMonture.labURL_1 -text "$caption(conftel,connexion_texte1)" \
       -font $audace(font,arial_10_b) -fg $color(red)
-   pack $audace(base).connectTelescope.labURL_1 -padx 10 -pady 2
-   label $audace(base).connectTelescope.labURL_2 -text "$caption(conftel,connexion_texte2)" \
+   pack $audace(base).connectMonture.labURL_1 -padx 10 -pady 2
+   label $audace(base).connectMonture.labURL_2 -text "$caption(conftel,connexion_texte2)" \
       -font $audace(font,arial_10_b) -fg $color(red)
-   pack $audace(base).connectTelescope.labURL_2 -padx 10 -pady 2
+   pack $audace(base).connectMonture.labURL_2 -padx 10 -pady 2
 
    #--- La nouvelle fenetre est active
-   focus $audace(base).connectTelescope
+   focus $audace(base).connectMonture
 
    #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).connectTelescope
+   ::confColor::applyColor $audace(base).connectMonture
 }
 
 #
@@ -329,34 +330,49 @@ proc ::confTel::onRaiseNotebook { mountName } {
 }
 
 #
-# ::confTel::stopPlugin
-# Ferme la monture ouverte
+# ::confTel::startPlugin
+# Ouvre les montures
 #
-proc ::confTel::stopPlugin { } {
+proc ::confTel::startPlugin { } {
    variable private
-   global audace conf
+   global conf
 
-   #--- Je ferme la liaison
-   if { $audace(telNo) != "0" } {
-      #--- Cas particulier de la monture Ouranos
-      if { $conf(telescope) == "ouranos" } {
-         ::OuranosCom::close_com
-      }
-      #--- Je ferme les ressources specifiques de la monture
-      ::$conf(telescope)\::stop
-      #--- Je supprime le label des visus
-      foreach visuNo [ ::visu::list ] {
-         ::confVisu::setMount $visuNo
+   if { $conf(telescope,start) == "1" } {
+      set private(mountName) $conf(telescope)
+      if { $private(mountName) != "" } {
+         ::confTel::configureMonture
       }
    }
 }
 
 #
-# ::confTel::configureTelescope
-# Configure la monture en fonction des donnees contenues dans le tableau conf :
-# conf(telescope) -> type de monture employe
+# ::confTel::stopPlugin
+# Ferme la monture ouverte
 #
-proc ::confTel::configureTelescope { } {
+proc ::confTel::stopPlugin { } {
+   variable private
+   global audace
+
+   #--- Je ferme la liaison
+   if { $private(telNo) != "0" } {
+      #--- Je ferme les ressources specifiques de la monture
+      ::$private(mountName)::stop
+      #--- Raz du numero de monture
+      set private(telNo) "0"
+      set audace(telNo) $private(telNo)
+      #--- Je supprime le label des visus
+      foreach visuNo [ ::visu::list ] {
+         ::confVisu::setMount $visuNo
+      }
+   }
+   set private(mountName) ""
+}
+
+#
+# ::confTel::configureMonture
+# Configure la monture en fonction des donnees contenues dans le tableau conf(..)
+#
+proc ::confTel::configureMonture { } {
    variable private
    global audace conf
 
@@ -364,11 +380,24 @@ proc ::confTel::configureTelescope { } {
    ::confTel::connectMonture
 
    set catchResult [ catch {
+
       #--- Je configure la monture
-      ::$conf(telescope)\::configureTelescope
+      ::$private(mountName)::configureMonture
+
+      #--- Je recupere telNo
+      set private(telNo) [ ::$private(mountName)::getTelNo ]
+
+      #--- Mise a jour de la variable audace
+      set audace(telNo) $private(telNo)
+
+      #--- J'associe la monture avec les visus
+      foreach visuNo [ ::visu::list ] {
+         ::confVisu::setMount $visuNo
+      }
+
    } errorMessage ]
 
-   #--- Raffraichissement de la vitesse dans les raquettes et les panneaux, et de l'affichage des coordonnees
+   #--- Raffraichissement de la vitesse dans les raquettes et les outils, et de l'affichage des coordonnees
    if { $conf(raquette) == "1" } {
       #--- je cree la nouvelle raquette
       ::confPad::configurePlugin $private(nomRaquette)
@@ -376,33 +405,27 @@ proc ::confTel::configureTelescope { } {
       ::confPad::stopPlugin
    }
    if { $catchResult == "0" } {
-      if { $conf(telescope) != "ouranos" } {
-         ::telescope::setSpeed "$audace(telescope,speed)"
-         #--- vitesse du moteur de focalisation (valeur minimale par defaut)
-         ::focus::setSpeed "focuserlx200" "0"
-      } else {
-         ::telescope::setSpeed "0"
-         ::focus::setSpeed "focuserlx200" "0"
-      }
+      ::telescope::setSpeed "$audace(telescope,speed)"
       ::telescope::afficheCoord
    }
 
-   #--- Gestion des erreurs
-   if { $catchResult == "1" } {
-      #--- En cas de probleme, je desactive le demarrage automatique
-      set conf(telescope,start) "0"
-      #--- En cas de probleme, la monture par defaut
-      set conf(telescope)  "lx200"
-      set conf(lx200,port) [ lindex $audace(list_com) 0 ]
-   }
+   #--- Traitement des erreurs detectees par le catch
+   if { $catchResult != "0" } {
+      #--- J'affiche le message d'erreur
+      ::console::affiche_erreur "$::errorInfo\n\n"
+      tk_messageBox -message "$errorMessage. See console" -icon error
 
-   foreach visuNo [ ::visu::list ] {
-      ::confVisu::setMount $visuNo
+      #--- Je desactive le demarrage automatique
+      set conf(telescope,start) "0"
+
+      #--- En cas de probleme, camera par defaut
+      set private(mountName) ""
+      set private(telNo)     "0"
    }
 
    #--- Effacement du message d'alerte s'il existe
-   if [ winfo exists $audace(base).connectTelescope ] {
-      destroy $audace(base).connectTelescope
+   if [ winfo exists $audace(base).connectMonture ] {
+      destroy $audace(base).connectMonture
    }
 }
 
@@ -415,9 +438,11 @@ proc ::confTel::widgetToConf { } {
    global conf
 
    #--- Memorise la configuration de la monture
-   set mountName       [ $private(frm).usr.onglet raise ]
-   set conf(telescope) $mountName
-   ::$mountName\::widgetToConf
+   set mountName          [ $private(frm).usr.onglet raise ]
+   set private(mountName) $mountName
+   set conf(telescope)    $mountName
+
+   ::$private(mountName)::widgetToConf
 }
 
 #
@@ -428,7 +453,7 @@ proc ::confTel::widgetToConf { } {
 #     propertyName : Propriete
 #
 proc ::confTel::getPluginProperty { propertyName } {
-   global audace conf
+   variable private
 
    # multiMount :       Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
    # name :             Retourne le modele de la monture
@@ -444,12 +469,12 @@ proc ::confTel::getPluginProperty { propertyName } {
    }
 
    #--- si aucune monture n'est selectionnee, je retourne la valeur par defaut
-   if { $audace(telNo) == "0" } {
+   if { $private(mountName) == "" } {
       return $result
    }
 
    #--- si une monture est selectionnee, je recherche la valeur propre a la monture
-   set result [ ::$conf(telescope)\::getPluginProperty $propertyName ]
+   set result [ ::$private(mountName)::getPluginProperty $propertyName ]
    return $result
 }
 
@@ -461,14 +486,15 @@ proc ::confTel::getPluginProperty { propertyName } {
 #     telNo : Numero de la mounture
 #
 proc ::confTel::isReady { } {
-   #--- Je verifie si la monture est capable fournir son nom
-   if { [ getPluginProperty "name" ] == "" } {
-      #--- Monture KO
-      return 0
+   variable private
+
+   #--- Je verifie que la monture est prete
+   if { $private(mountName) == "" } {
+      set result "0"
    } else {
-      #--- Monture OK
-      return 1
+      set result [ ::$private(mountName)::isReady ]
    }
+   return $result
 }
 
 #------------------------------------------------------------
