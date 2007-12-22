@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.6 2007-12-18 22:17:22 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.7 2007-12-22 11:43:54 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -48,11 +48,42 @@ proc ::lx200::getPluginOS { } {
 }
 
 #
+# ::lx200::getTelNo
+#    Retourne le numero de la monture
+#
+proc ::lx200::getTelNo { } {
+   variable private
+
+   return $private(telNo)
+}
+
+#
+# ::lx200::isReady
+#    Indique que la monture est prete
+#    Retourne "1" si la monture est prete, sinon retourne "0"
+#
+proc ::lx200::isReady { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      #--- Monture KO
+      return 0
+   } else {
+      #--- Monture OK
+      return 1
+   }
+}
+
+#
 # ::lx200::initPlugin
 #    Initialise les variables conf(lx200,...)
 #
 proc ::lx200::initPlugin { } {
+   variable private
    global conf
+
+   #--- Initialisation
+   set private(telNo) "0"
 
    #--- Prise en compte des liaisons
    set list_connexion [::confLink::getLinkLabels { "serialport" "audinet" } ]
@@ -215,8 +246,8 @@ proc ::lx200::fillConfigPage { frm } {
 
    #--- Le bouton de commande maj heure et position du LX200
    button $frm.majpara -text "$caption(lx200,maj_lx200)" -relief raised -command {
-      tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$audace(telNo) home $audace(posobs,observateur,gps)
+      tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+      tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
    }
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
@@ -252,15 +283,17 @@ proc ::lx200::fillConfigPage { frm } {
 }
 
 #
-# ::lx200::configureTelescope
+# ::lx200::configureMonture
 #    Configure la monture LX200 en fonction des donnees contenues dans les variables conf(lx200,...)
 #
-proc ::lx200::configureTelescope { } {
-   global audace caption conf
+proc ::lx200::configureMonture { } {
+   variable private
+   global caption conf
 
    switch [::confLink::getLinkNamespace $conf(lx200,port)] {
       audinet {
-         set audace(telNo) [ tel::create lxnet $conf(lx200,port) -name lxnet \
+         #--- Je cree la monture
+         set telNo [ tel::create lxnet $conf(lx200,port) -name lxnet \
                -host $conf(audinet,host) \
                -ipsetting $conf(audinet,ipsetting) \
                -macaddress $conf(audinet,mac_address) \
@@ -269,33 +302,39 @@ proc ::lx200::configureTelescope { } {
                -focuseraddr $conf(audinet,focuser_addr) \
                -focuserbit $conf(audinet,focuser_bit) \
             ]
+         #--- J'affiche un message d'information dans la Console
          console::affiche_erreur "$caption(lx200,host_audinet) $caption(lx200,2points)\
             $conf(audinet,host)\n"
          console::affiche_saut "\n"
-         set audace(telNo) $msg
          if { $conf(lx200,format) == "0" } {
-            tel$audace(telNo) longformat off
+            tel$telNo longformat off
          } else {
-            tel$audace(telNo) longformat on
+            tel$telNo longformat on
          }
-         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-         set linkNo [ ::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+         set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
+         #--- Je change de variable
+         set private(telNo) $telNo
       }
       serialport {
-         set audace(telNo) [ tel::create lx200 $conf(lx200,port) ]
+         #--- Je cree la monture
+         set telNo [ tel::create lx200 $conf(lx200,port) ]
+         #--- J'affiche un message d'information dans la Console
          console::affiche_erreur "$caption(lx200,port_lx200) ($conf(lx200,modele))\
             $caption(lx200,2points) $conf(lx200,port)\n"
          console::affiche_saut "\n"
          if { $conf(lx200,format) == "0" } {
-            tel$audace(telNo) longformat off
+            tel$telNo longformat off
          } else {
-            tel$audace(telNo) longformat on
+            tel$telNo longformat on
          }
          if { $conf(lx200,modele) == "Ite-lente" } {
-            tel$audace(telNo) tempo $conf(lx200,ite-lente_tempo)
+            tel$telNo tempo $conf(lx200,ite-lente_tempo)
          }
-         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-         set linkNo [ ::confLink::create $conf(lx200,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+         #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+         set linkNo [ ::confLink::create $conf(lx200,port) "tel$telNo" "control" [ tel$telNo product ] ]
+         #--- Je change de variable
+         set private(telNo) $telNo
       }
    }
    #--- Gestion du bouton actif/inactif
@@ -307,18 +346,18 @@ proc ::lx200::configureTelescope { } {
 #    Arrete la monture LX200
 #
 proc ::lx200::stop { } {
-   global audace
+   variable private
 
    #--- Gestion du bouton actif/inactif
    ::lx200::confLX200Inactif
 
    #--- Je memorise le port
-   set telPort [ tel$audace(telNo) port ]
+   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
-   tel::delete $audace(telNo)
+   tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$audace(telNo)" "control"
-   set audace(telNo) "0"
+   ::confLink::delete $telPort "tel$private(telNo)" "control"
+   set private(telNo) "0"
 }
 
 #
@@ -332,24 +371,24 @@ proc ::lx200::confLX200 { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::lx200::isReady ] == 1 } {
             if { $conf(lx200,modele) == "$caption(lx200,modele_lx200)" } {
                #--- Bouton Mise a jour de la monture actif
                $frm.majpara configure -state normal -command {
-                  tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-                  tel$audace(telNo) home $audace(posobs,observateur,gps)
+                  tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+                  tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
                }
             } elseif { $conf(lx200,modele) == "$caption(lx200,modele_skysensor)" } {
                #--- Bouton Mise a jour de la monture actif
                $frm.majpara configure -state normal -command {
-                  tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-                  tel$audace(telNo) home $audace(posobs,observateur,gps)
+                  tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+                  tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
                }
             } elseif { $conf(lx200,modele) == "$caption(lx200,modele_gemini)" } {
                #--- Bouton Mise a jour de la monture actif
                $frm.majpara configure -state normal -command {
-                  tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-                  tel$audace(telNo) home $audace(posobs,observateur,gps)
+                  tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+                  tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
                }
             } else {
                #--- Bouton Mise a jour de la monture inactif
@@ -373,7 +412,7 @@ proc ::lx200::confLX200Inactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::lx200::isReady ] == 1 } {
             #--- Bouton Mise a jour de la monture inactif
             $frm.majpara configure -state disabled
          }
@@ -423,20 +462,20 @@ proc ::lx200::confIteLente { } {
 # product :          Retourne le nom du produit
 #
 proc ::lx200::getPluginProperty { propertyName } {
-   global audace
+   variable private
 
    switch $propertyName {
       multiMount       { return 0 }
       name             {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) name ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
       product          {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) product ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) product ]
          } else {
             return ""
          }

@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.6 2007-12-18 22:15:07 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.7 2007-12-22 11:40:33 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -44,7 +44,34 @@ proc ::ascom::getPluginType { } {
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::ascom::getPluginOS { } {
-   return [ list Windows Linux Darwin ]
+   return [ list Windows ]
+}
+
+#
+# ::ascom::getTelNo
+#    Retourne le numero de la monture
+#
+proc ::ascom::getTelNo { } {
+   variable private
+
+   return $private(telNo)
+}
+
+#
+# ::ascom::isReady
+#    Indique que la monture est prete
+#    Retourne "1" si la monture est prete, sinon retourne "0"
+#
+proc ::ascom::isReady { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      #--- Monture KO
+      return 0
+   } else {
+      #--- Monture OK
+      return 1
+   }
 }
 
 #
@@ -54,6 +81,9 @@ proc ::ascom::getPluginOS { } {
 proc ::ascom::initPlugin { } {
    variable private
    global conf
+
+   #--- Initialisation
+   set private(telNo) "0"
 
    #--- Plugins ASCOM installes sur le PC
    set private(ascom_drivers) ""
@@ -164,16 +194,23 @@ proc ::ascom::fillConfigPage { frm } {
 }
 
 #
-# ::ascom::configureTelescope
+# ::ascom::configureMonture
 #    Configure la monture ASCOM en fonction des donnees contenues dans les variables conf(ascom,...)
 #
-proc ::ascom::configureTelescope { } {
-   global audace caption conf
+proc ::ascom::configureMonture { } {
+   variable private
+   global caption conf
 
-   set audace(telNo) [ tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] ]
+   #--- Je cree la monture
+   set telNo [ tel::create ascom "unknown" [ lindex $conf(ascom,driver) 1 ] ]
+   #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(ascom,driver) \
       $caption(ascom,2points) [ lindex $conf(ascom,driver) 1 ] \n"
    console::affiche_saut "\n"
+   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+  ### set linkNo [ ::confLink::create $conf(ascom,port) "tel$telNo" "control" [ tel$telNo product ] ]
+   #--- Je change de variable
+   set private(telNo) $telNo
 }
 
 #
@@ -181,15 +218,16 @@ proc ::ascom::configureTelescope { } {
 #    Arrete la monture ASCOM
 #
 proc ::ascom::stop { } {
-   global audace
+   variable private
 
    #--- Je memorise le port
-   set telPort [ tel$audace(telNo) port ]
+   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
-   tel::delete $audace(telNo)
+   tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$audace(telNo)" "control"
-   set audace(telNo) "0"
+  ### ::confLink::delete $telPort "tel$private(telNo)" "control"
+   #--- Remise a zero du numero de monture
+   set private(telNo) "0"
 }
 
 #
@@ -205,20 +243,20 @@ proc ::ascom::stop { } {
 # product :          Retourne le nom du produit
 #
 proc ::ascom::getPluginProperty { propertyName } {
-   global audace
+   variable private
 
    switch $propertyName {
       multiMount       { return 0 }
       name             {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) name ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
       product          {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) product ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) product ]
          } else {
             return ""
          }

@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.2 2007-12-20 19:34:02 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.3 2007-12-22 11:42:18 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -48,11 +48,42 @@ proc ::deltatau::getPluginOS { } {
 }
 
 #
+# ::deltatau::getTelNo
+#    Retourne le numero de la monture
+#
+proc ::deltatau::getTelNo { } {
+   variable private
+
+   return $private(telNo)
+}
+
+#
+# ::deltatau::isReady
+#    Indique que la monture est prete
+#    Retourne "1" si la monture est prete, sinon retourne "0"
+#
+proc ::deltatau::isReady { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      #--- Monture KO
+      return 0
+   } else {
+      #--- Monture OK
+      return 1
+   }
+}
+
+#
 # ::deltatau::initPlugin
 #    Initialise les variables conf(deltatau,...)
 #
 proc ::deltatau::initPlugin { } {
+   variable private
    global conf
+
+   #--- Initialisation
+   set private(telNo) "0"
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
@@ -74,7 +105,6 @@ proc ::deltatau::confToWidget { } {
    set private(port)     $conf(deltatau,port)
    set private(format)   [ lindex "$caption(deltatau,format_court_long)" $conf(deltatau,format) ]
    set private(raquette) $conf(raquette)
-
 }
 
 #
@@ -186,8 +216,8 @@ proc ::deltatau::fillConfigPage { frm } {
 
    #--- Le bouton de commande maj heure et position du Delta Tau
    button $frm.majpara -text "$caption(deltatau,maj_deltatau)" -relief raised -command {
-      tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$audace(telNo) home $audace(posobs,observateur,gps)
+      tel$::deltatau::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+      tel$::deltatau::private(telNo) home $audace(posobs,observateur,gps)
    }
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
@@ -213,23 +243,28 @@ proc ::deltatau::fillConfigPage { frm } {
 }
 
 #
-# ::deltatau::configureTelescope
+# ::deltatau::configureMonture
 #    Configure la monture Delta Tau en fonction des donnees contenues dans les variables conf(deltatau,...)
 #
-proc ::deltatau::configureTelescope { } {
-   global audace caption conf
+proc ::deltatau::configureMonture { } {
+   variable private
+   global caption conf
 
-   set audace(telNo) [ tel::create deltatau $conf(deltatau,port) ]
+   #--- Je cree la monture
+   set telNo [ tel::create deltatau $conf(deltatau,port) ]
+   #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(deltatau,port_deltatau)\
       $caption(deltatau,2points) $conf(deltatau,port)\n"
    console::affiche_saut "\n"
    if { $conf(deltatau,format) == "0" } {
-      tel$audace(telNo) longformat off
+      tel$telNo longformat off
    } else {
-      tel$audace(telNo) longformat on
+      tel$telNo longformat on
    }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-   set linkNo [ ::confLink::create $conf(deltatau,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+   set linkNo [ ::confLink::create $conf(deltatau,port) "tel$telNo" "control" [ tel$telNo product ] ]
+   #--- Je change de variable
+   set private(telNo) $telNo
    #--- Gestion du bouton actif/inactif
    ::deltatau::confDeltaTau
 }
@@ -239,18 +274,19 @@ proc ::deltatau::configureTelescope { } {
 #    Arrete la monture Delta Tau
 #
 proc ::deltatau::stop { } {
-   global audace
+   variable private
 
    #--- Gestion du bouton actif/inactif
    ::deltatau::confDeltaTauInactif
 
    #--- Je memorise le port
-   set telPort [ tel$audace(telNo) port ]
+   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
-   tel::delete $audace(telNo)
+   tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$audace(telNo)" "control"
-   set audace(telNo) "0"
+   ::confLink::delete $telPort "tel$private(telNo)" "control"
+   #--- Remise a zero du numero de monture
+   set private(telNo) "0"
 }
 
 #
@@ -264,11 +300,11 @@ proc ::deltatau::confDeltaTau { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::deltatau::isReady ] == 1 } {
             #--- Bouton Mise a jour de la monture actif
             $frm.majpara configure -state normal -command {
-               tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-               tel$audace(telNo) home $audace(posobs,observateur,gps)
+               tel$::deltatau::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+               tel$::deltatau::private(telNo) home $audace(posobs,observateur,gps)
             }
          } else {
             #--- Bouton Mise a jour de la monture inactif
@@ -288,7 +324,7 @@ proc ::deltatau::confDeltaTauInactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::deltatau::isReady ] == 1 } {
             #--- Bouton Mise a jour de la monture inactif
             $frm.majpara configure -state disabled
          }
@@ -309,20 +345,20 @@ proc ::deltatau::confDeltaTauInactif { } {
 # product :          Retourne le nom du produit
 #
 proc ::deltatau::getPluginProperty { propertyName } {
-   global audace
+   variable private
 
    switch $propertyName {
       multiMount       { return 0 }
       name             {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) name ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
       product          {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) product ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) product ]
          } else {
             return ""
          }
