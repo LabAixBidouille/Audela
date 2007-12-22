@@ -1,14 +1,14 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.106 2007-12-15 08:54:10 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.107 2007-12-22 15:50:46 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
 }
 
 #
-# confCam::init (est lance automatiquement au chargement de ce fichier tcl)
+# ::confCam::init (est lance automatiquement au chargement de ce fichier tcl)
 # Initialise les variables conf(...) et caption(...)
 # Demarre le plugin selectionne par defaut
 #
@@ -93,15 +93,17 @@ proc ::confCam::init { } {
    }
 }
 
+#
+# ::confCam::dispThreadError
+#
 proc ::confCam::dispThreadError { thread_id ErrorInfo } {
    ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
 }
 
 #
-# confCam::run
+# ::confCam::run
 # Cree la fenetre de choix et de configuration des cameras
-# private(frm) = chemin de la fenetre
-# private($camItem,camName) = nom de la camera
+# private(currentCamItem) = C'est le camItem courant
 #
 proc ::confCam::run { } {
    variable private
@@ -111,7 +113,7 @@ proc ::confCam::run { } {
 }
 
 #
-# confCam::startPlugin
+# ::confCam::startPlugin
 # Ouvre les cameras
 #
 proc ::confCam::startPlugin { } {
@@ -139,7 +141,7 @@ proc ::confCam::startPlugin { } {
 }
 
 #
-# confCam::stopPlugin
+# ::confCam::stopPlugin
 # Ferme toutes les cameras ouvertes
 #
 proc ::confCam::stopPlugin { } {
@@ -149,7 +151,7 @@ proc ::confCam::stopPlugin { } {
 }
 
 #
-# confCam::ok
+# ::confCam::ok
 # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
 # la configuration, et fermer la fenetre de reglage de la camera
 #
@@ -164,7 +166,7 @@ proc ::confCam::ok { } {
 }
 
 #
-# confCam::appliquer
+# ::confCam::appliquer
 # Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
 # memoriser et appliquer la configuration
 #
@@ -185,7 +187,7 @@ proc ::confCam::appliquer { } {
 }
 
 #
-# confCam::afficherAide
+# ::confCam::afficherAide
 # Fonction appellee lors de l'appui sur le bouton 'Aide'
 #
 proc ::confCam::afficherAide { } {
@@ -198,7 +200,7 @@ proc ::confCam::afficherAide { } {
 }
 
 #
-# confCam::fermer
+# ::confCam::fermer
 # Fonction appellee lors de l'appui sur le bouton 'Fermer'
 #
 proc ::confCam::fermer { } {
@@ -209,7 +211,7 @@ proc ::confCam::fermer { } {
 }
 
 #
-# confCam::recupPosDim
+# ::confCam::recupPosDim
 # Permet de recuperer et de sauvegarder la position de la fenetre de configuration de la camera
 #
 proc ::confCam::recupPosDim { } {
@@ -220,6 +222,10 @@ proc ::confCam::recupPosDim { } {
    set conf(camera,geometry) $private(geometry)
 }
 
+#
+# ::confCam::createDialog
+# Creation de l'interface graphique
+#
 proc ::confCam::createDialog { } {
    variable private
    global caption conf
@@ -369,8 +375,9 @@ proc ::confCam::createDialog { } {
 }
 
 #
-#--- Cree une thread dediee a la camera
-#--- et retourne le numero de la thread
+# ::confCam::createThread
+# Cree une thread dediee a la camera
+# et retourne le numero de la thread
 #
 proc ::confCam::createThread { camItem bufNo } {
    variable private
@@ -407,6 +414,7 @@ proc ::confCam::createThread { camItem bufNo } {
 }
 
 #
+# ::confCam::createUrlLabel
 # Cree un widget "label" avec une URL du site WEB
 #
 proc ::confCam::createUrlLabel { tkparent title url } {
@@ -422,7 +430,7 @@ proc ::confCam::createUrlLabel { tkparent title url } {
 }
 
 #
-# confCam::connectCamera
+# ::confCam::connectCamera
 # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
 #
 proc ::confCam::connectCamera { } {
@@ -463,7 +471,7 @@ proc ::confCam::connectCamera { } {
 }
 
 #----------------------------------------------------------------------------
-# confCam::selectNotebook
+# ::confCam::selectNotebook
 # Selectionne un onglet
 #----------------------------------------------------------------------------
 proc ::confCam::selectNotebook { camItem { camName "" } } {
@@ -485,8 +493,8 @@ proc ::confCam::selectNotebook { camItem { camName "" } } {
 }
 
 #----------------------------------------------------------------------------
-# confCam::onRaiseNotebook
-# affiche en gras le nom de l'onglet
+# ::confCam::onRaiseNotebook
+# Affiche en gras le nom de l'onglet
 #----------------------------------------------------------------------------
 proc ::confCam::onRaiseNotebook { camName } {
    variable private
@@ -498,7 +506,7 @@ proc ::confCam::onRaiseNotebook { camName } {
 }
 
 #----------------------------------------------------------------------------
-# confCam::setShutter
+# ::confCam::setShutter
 # Procedure de changement de l'obturateur de la camera
 #----------------------------------------------------------------------------
 proc ::confCam::setShutter { camItem shutterState } {
@@ -530,7 +538,7 @@ proc ::confCam::setShutter { camItem shutterState } {
 }
 
 #----------------------------------------------------------------------------
-# confCam::stopItem
+# ::confCam::stopItem
 # Arrete la camera camItem
 #----------------------------------------------------------------------------
 proc ::confCam::stopItem { camItem } {
@@ -570,30 +578,31 @@ proc ::confCam::stopItem { camItem } {
 }
 
 #
-# confCam::isReady
-#    Retourne "1" si la camera est demarree, sinon retourne "0"
+# ::confCam::isReady
+# Retourne "1" si la camera est demarree, sinon retourne "0"
 #
-#  Parametres :
-#     camNo : Numero de la camera
+# Parametre :
+#    camItem : Camera A, B ou C
 #
 proc ::confCam::isReady { camItem } {
-   #--- Je verifie si la camera est capable fournir son nom
-   if { [getPluginProperty $camItem "name"] == "" } {
-      #--- camera KO
-      return 0
+   variable private
+
+   #--- Je verifie que la camera est prete
+   if { $private($camItem,camName) == "" } {
+      set result "0"
    } else {
-      #--- Camera OK
-      return 1
+      set result [ ::$private($camItem,camName)::isReady $camItem ]
    }
+   return $result
 }
 
 #
-# confCam::getPluginProperty
-#    Retourne la valeur d'une propriete de la camera
+# ::confCam::getPluginProperty
+# Retourne la valeur d'une propriete de la camera
 #
-#  Parametres :
-#     camItem      : Instance de la camera
-#     propertyName : Propriete
+# Parametres :
+#    camItem      : Instance de la camera
+#    propertyName : Propriete
 #
 proc ::confCam::getPluginProperty { camItem propertyName } {
    variable private
@@ -648,11 +657,11 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
 }
 
 #
-# confCam::getCamNo
-#    Retourne le numero de la camera
+# ::confCam::getCamNo
+# Retourne le numero de la camera
 #
-#  Parametres :
-#     camItem : intance de la camera
+# Parametres :
+#    camItem : intance de la camera
 #
 proc ::confCam::getCamNo { camItem } {
    variable private
@@ -668,11 +677,11 @@ proc ::confCam::getCamNo { camItem } {
 }
 
 #
-# confCam::getCurrentCamItem
-#    Retourne le camItem courant
+# ::confCam::getCurrentCamItem
+# Retourne le camItem courant
 #
-#  Parametres :
-#     aucun
+# Parametres :
+#    aucun
 #
 proc ::confCam::getCurrentCamItem { } {
    variable private
@@ -681,11 +690,12 @@ proc ::confCam::getCurrentCamItem { } {
 }
 
 #
-# confCam::getShutter
-#    Retourne l'etat de l'obturateur
-#    Si la camera n'a pas d'obturateur, retourne une chaine vide
-#  Parametres :
-#     camItem : Instance de la camera
+# ::confCam::getShutter
+# Retourne l'etat de l'obturateur
+# Si la camera n'a pas d'obturateur, retourne une chaine vide
+#
+# Parametres :
+#    camItem : Instance de la camera
 #
 proc ::confCam::getShutter { camItem } {
    variable private
@@ -699,11 +709,12 @@ proc ::confCam::getShutter { camItem } {
 }
 
 #
-# confCam::getThreadNo
-#    Retourne le numero de la thread de la camera
-#    Si la camera n'a pas de thread associee, la valeur retournee est "0"
-#  Parametres :
-#     camNo : Numero de la camera
+# ::confCam::getThreadNo
+# Retourne le numero de la thread de la camera
+# Si la camera n'a pas de thread associee, la valeur retournee est "0"
+#
+# Parametres :
+#    camNo : Numero de la camera
 #
 proc ::confCam::getThreadNo { camItem } {
    variable private
@@ -712,11 +723,12 @@ proc ::confCam::getThreadNo { camItem } {
 }
 
 #
-# getVisuNo
-#    Retourne le numero de la visu associee a la  camera
-#    Si la camera n'a pas de visu associee, la valeur retournee est ""
-#  Parametres :
-#     camItem : Numero de la camera
+# ::confCam::getVisuNo
+# Retourne le numero de la visu associee a la  camera
+# Si la camera n'a pas de visu associee, la valeur retournee est ""
+#
+# Parametres :
+#    camItem : Numero de la camera
 #
 proc ::confCam::getVisuNo { camItem } {
    variable private
@@ -725,11 +737,11 @@ proc ::confCam::getVisuNo { camItem } {
 }
 
 #
-# confCam::closeCamera
-#  Ferme la camera
+# ::confCam::closeCamera
+# Ferme la camera
 #
-#  Parametres :
-#     camNo : Numero de la camera
+# Parametres :
+#    camNo : Numero de la camera
 #
 proc ::confCam::closeCamera { camNo } {
    variable private
@@ -746,7 +758,7 @@ proc ::confCam::closeCamera { camNo } {
 }
 
 #
-# confCam::configureCamera
+# ::confCam::configureCamera
 # Configure la camera en fonction des donnees contenues dans le tableau conf :
 # private($camItem,camName) -> type de camera employe
 # conf(cam,A,...) -> proprietes de ce type de camera
@@ -809,6 +821,7 @@ proc ::confCam::configureCamera { camItem } {
    set bufNo [::confVisu::getBufNo $visuNo]
 
    set catchResult [ catch {
+
       #--- je configure la camera
       ::$private($camItem,camName)::configureCamera $camItem $bufNo
 
@@ -832,7 +845,6 @@ proc ::confCam::configureCamera { camItem } {
       }
 
    } errorMessage ]
-   #--- <= fin du catch
 
    #--- Traitement des erreurs detectees par le catch
    if { $catchResult != "0" } {
@@ -849,8 +861,10 @@ proc ::confCam::configureCamera { camItem } {
             tk_messageBox -message "$errorMessage. See console" -icon error
          }
       }
+
       #--- Je desactive le demarrage automatique
       set conf(camera,$camItem,start) "0"
+
       #--- Je supprime la thread de la camera si elle existe
       if { $private($camItem,threadNo)!=0 } {
         #--- Je supprime la thread
@@ -871,7 +885,7 @@ proc ::confCam::configureCamera { camItem } {
 }
 
 #
-# confCam::widgetToConf
+# ::confCam::widgetToConf
 # Acquisition de la configuration, c'est a dire isolation des
 # differentes variables dans le tableau conf(...)
 #
@@ -963,9 +977,10 @@ proc ::confCam::findPlugin { } {
 }
 
 #------------------------------------------------------------
-# addCameraListener
-#    ajoute une procedure a appeler si on change de camera
-#  parametres :
+# ::confCam::addCameraListener
+# ajoute une procedure a appeler si on change de camera
+#
+# parametres :
 #    camItem: numero de la visu
 #    cmd : commande TCL a lancer quand la camera change
 #------------------------------------------------------------
@@ -974,9 +989,10 @@ proc ::confCam::addCameraListener { camItem cmd } {
 }
 
 #------------------------------------------------------------
-# removeCameraListener
-#    supprime une procedure a appeler si on change de camera
-#  parametres :
+# ::confCam::removeCameraListener
+# supprime une procedure a appeler si on change de camera
+#
+# parametres :
 #    visuNo: numero de la visu
 #    cmd : commande TCL a lancer quand la camera change
 #------------------------------------------------------------
