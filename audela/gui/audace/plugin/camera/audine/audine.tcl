@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.12 2007-12-16 11:35:42 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.13 2007-12-22 15:33:50 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -55,6 +55,23 @@ proc ::audine::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::audine::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::audine::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #
@@ -580,7 +597,7 @@ proc ::audine::confAudine { camItem } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::isReady $camItem] == 1 && \
+         if { [ ::audine::isReady $camItem ] == 1 && \
             [ ::confLink::getLinkNamespace $::audine::private(port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera actif
             $frm.frame3.test configure -state normal
@@ -603,7 +620,7 @@ proc ::audine::confAudineInactif { camItem } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::isReady $camItem] == 1 && \
+         if { [ ::audine::isReady $camItem ] == 1 && \
             [ ::confLink::getLinkNamespace $::audine::private(port) ] == "parallelport" } {
             #--- Bouton Tests pour la fabrication de la camera inactif
             $frm.frame3.test configure -state disabled

@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.22 2007-12-16 11:37:03 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.23 2007-12-22 15:42:19 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -55,6 +55,23 @@ proc ::fingerlakes::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::fingerlakes::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::fingerlakes::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #
