@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.23 2007-12-15 08:51:55 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.24 2007-12-22 11:57:47 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -286,7 +286,7 @@ proc ::confCat::configurePlugin { pluginName } {
 
    #--- j'arrete le plugin precedent
    if { $conf(confCat) != "" } {
-      ::$conf(confCat)\::deletePluginInstance
+      ::$conf(confCat)::deletePluginInstance
    }
 
    set conf(confCat) $pluginName
