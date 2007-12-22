@@ -1,8 +1,8 @@
 #
 # Fichier : temma.tcl
-# Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour le telescope Temma
+# Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.14 2007-12-19 22:29:44 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.15 2007-12-22 11:51:19 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -48,11 +48,42 @@ proc ::temma::getPluginOS { } {
 }
 
 #
+# ::temma::getTelNo
+#    Retourne le numero de la monture
+#
+proc ::temma::getTelNo { } {
+   variable private
+
+   return $private(telNo)
+}
+
+#
+# ::temma::isReady
+#    Indique que la monture est prete
+#    Retourne "1" si la monture est prete, sinon retourne "0"
+#
+proc ::temma::isReady { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      #--- Monture KO
+      return 0
+   } else {
+      #--- Monture OK
+      return 1
+   }
+}
+
+#
 # ::temma::initPlugin
 #    Initialise les variables conf(temma,...)
 #
 proc ::temma::initPlugin { } {
+   variable private
    global audace conf
+
+   #--- Initialisation
+   set private(telNo) "0"
 
    #--- Charge le fichier auxiliaire
    uplevel #0 "source \"[ file join $audace(rep_plugin) mount temma temmaconfig.tcl ]\""
@@ -173,7 +204,7 @@ proc ::temma::fillConfigPage { frm } {
    #--- Bouton de configuration des ports et liaisons
    button $frm.configure -text "$caption(temma,configurer)" -relief raised \
       -command {
-         ::confLink::run ::private(port) { serialport } \
+         ::confLink::run ::temma::private(port) { serialport } \
             "- $caption(temma,controle) - $caption(temma,monture)"
       }
    pack $frm.configure -in $frm.frame1 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
@@ -214,7 +245,7 @@ proc ::temma::fillConfigPage { frm } {
 
       #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
       checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-         -variable ::temma::private(liaison) -onvalue 1 -offvalue 0 -command { ::temma::config_correc_Temma }
+         -variable ::temma::private(liaison) -onvalue 1 -offvalue 0 -command { ::temma::configCorrectionTemma }
       pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
       #--- Label de la correction en Dec
@@ -239,7 +270,7 @@ proc ::temma::fillConfigPage { frm } {
 
       #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
       checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-         -variable ::temma::private(liaison) -command { ::temma::config_correc_Temma }
+         -variable ::temma::private(liaison) -command { ::temma::configCorrectionTemma }
       pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
       #--- Label de la correction en Dec
@@ -264,9 +295,9 @@ proc ::temma::fillConfigPage { frm } {
    pack $frm.pos_tel_ew -in $frm.frame3 -anchor center -side left -pady 10
 
    #--- Initialisation de l'instrument au zenith
-   if { [ ::confTel::isReady ] == 1 } {
+   if { [ ::temma::isReady ] == 1 } {
       button $frm.init_zenith -text "$caption(temma,init_zenith)" -relief raised -state normal -command {
-         tel$audace(telNo) initzenith
+         tel$::temma::private(telNo) initzenith
          ::telescope::afficheCoord
       }
       pack $frm.init_zenith -in $frm.frame3 -anchor nw -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
@@ -279,13 +310,13 @@ proc ::temma::fillConfigPage { frm } {
    label $frm.pos_tel_est -text "$caption(temma,change_position_telescope)"
    pack $frm.pos_tel_est -in $frm.frame6 -anchor center -side left -padx 10 -pady 5
 
-   if { [ ::confTel::isReady ] == 1 } {
+   if { [ ::temma::isReady ] == 1 } {
       button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel) -command {
-         set pos_tel [ tel$audace(telNo) german ]
+         set pos_tel [ tel$::temma::private(telNo) german ]
          if { $pos_tel == "E" } {
-            tel$audace(telNo) german W
+            tel$::temma::private(telNo) german W
          } elseif { $pos_tel == "W" } {
-            tel$audace(telNo) german E
+            tel$::temma::private(telNo) german E
          }
          ::telescope::monture_allemande
       }
@@ -301,9 +332,9 @@ proc ::temma::fillConfigPage { frm } {
    pack $frm.tracking -in $frm.frame6 -anchor center -side right -padx 10 -pady 10 -ipadx 10 -ipady 5
 
    #--- Rafraichissement de la position du telescope par rapport a la monture
-   if { [ ::confTel::isReady ] == 1 } {
+   if { [ ::temma::isReady ] == 1 } {
       #--- Affichage de la position du telescope
-     ### ::telescope::monture_allemande
+      ::telescope::monture_allemande
    }
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
@@ -328,14 +359,15 @@ proc ::temma::fillConfigPage { frm } {
 }
 
 #
-# ::temma::configureTelescope
+# ::temma::configureMonture
 #    Configure la monture Temma en fonction des donnees contenues dans les variables conf(temma,...)
 #
-proc ::temma::configureTelescope { } {
+proc ::temma::configureMonture { } {
    variable private
-   global audace caption conf
+   global caption conf
 
-   set audace(telNo) [ tel::create temma $conf(temma,port) ]
+   #--- Je cree la monture
+   set telNo [ tel::create temma $conf(temma,port) ]
    if { $conf(temma,modele) == "0" } {
       set private(modele) $caption(temma,modele_1)
    } elseif { $conf(temma,modele) == "1" } {
@@ -343,14 +375,15 @@ proc ::temma::configureTelescope { } {
    } else {
       set private(modele) $caption(temma,modele_3)
    }
+   #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(temma,port_temma) ($private(modele)) \
       $caption(temma,2points) $conf(temma,port)\n"
    #--- Lit et affiche la version du Temma
-   set version [ tel$audace(telNo) firmware ]
+   set version [ tel$telNo firmware ]
    console::affiche_erreur "$caption(temma,version) $version\n"
    console::affiche_saut "\n"
    #--- Demande et recoit la latitude
-   set latitude_temma [ tel$audace(telNo) getlatitude ]
+   set latitude_temma [ tel$telNo getlatitude ]
    #--- Mise en forme de la latitude du lieu du format Temma au format d'affichage
    set signe_lat [ string range $latitude_temma 0 0 ]
    if { $signe_lat == "-" } {
@@ -369,22 +402,22 @@ proc ::temma::configureTelescope { } {
    ::console::affiche_erreur "$caption(temma,init_module)\n"
    ::console::affiche_erreur "$caption(temma,latitude) $latitude_temma\n\n"
    #--- Prise en compte des encodeurs
-   tel$audace(telNo) encoder "1"
+   tel$telNo encoder "1"
    #--- Force la mise en marche des moteurs
-   tel$audace(telNo) radec motor on
+   tel$telNo radec motor on
    #--- Prise en compte des corrections de la vitesse normale en AD et en Dec.
    if { $conf(temma,liaison) == "1" } {
-      tel$audace(telNo) correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
+      tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_AD)
    } else {
-      tel$audace(telNo) correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
+      tel$telNo correctionspeed $conf(temma,correc_AD) $conf(temma,correc_Dec)
    }
    #--- Correction de la vitesse de suivi en ad et en dec
    if { $conf(temma,type) == "0" } {
-      tel$audace(telNo) driftspeed 0 0
+      tel$telNo driftspeed 0 0
       ::console::affiche_resultat "$caption(temma,mobile_etoile)\n\n"
    } elseif { $conf(temma,type) == "1" } {
-      tel$audace(telNo) driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
-      set correction_suivi [ tel$audace(telNo) driftspeed ]
+      tel$telNo driftspeed $conf(temma,suivi_ad) $conf(temma,suivi_dec)
+      set correction_suivi [ tel$telNo driftspeed ]
       ::console::affiche_resultat "$caption(temma,ctl_mobile:)\n"
       ::console::affiche_resultat "$caption(temma,mobile_ad) $caption(temma,2points)\
          [ lindex $correction_suivi 0 ]\n"
@@ -392,14 +425,16 @@ proc ::temma::configureTelescope { } {
          [ lindex $correction_suivi 1 ]\n\n"
    }
    #--- Affichage de la position du telescope
-   if { [ ::confTel::isReady ] == 1 } {
+   if { [ ::temma::isReady ] == 1 } {
       ::telescope::monture_allemande
    }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-   set linkNo [ ::confLink::create $conf(temma,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+   set linkNo [ ::confLink::create $conf(temma,port) "tel$telNo" "control" [ tel$telNo product ] ]
+   #--- Je change de variable
+   set private(telNo) $telNo
    #--- Gestion des boutons actifs/inactifs
    ::temma::confTemma
-   ::temma::config_correc_Temma
+   ::temma::configCorrectionTemma
 }
 
 #
@@ -407,18 +442,19 @@ proc ::temma::configureTelescope { } {
 #    Arrete la monture Temma
 #
 proc ::temma::stop { } {
-   global audace
+   variable private
 
    #--- Gestion du bouton actif/inactif
    ::temma::confTemmaInactif
 
    #--- Je memorise le port
-   set telPort [ tel$audace(telNo) port ]
+   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
-   tel::delete $audace(telNo)
+   tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$audace(telNo)" "control"
-   set audace(telNo) "0"
+   ::confLink::delete $telPort "tel$private(telNo)" "control"
+   #--- Remise a zero du numero de monture
+   set private(telNo) "0"
 }
 
 #
@@ -432,18 +468,18 @@ proc ::temma::confTemma { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::temma::isReady ] == 1 } {
             #--- Boutons de la monture actifs
             $frm.init_zenith configure -state normal -command {
-               tel$audace(telNo) initzenith
+               tel$::temma::private(telNo) initzenith
                ::telescope::afficheCoord
             }
             $frm.chg_pos_tel configure -state normal -textvariable audace(chg_pos_tel) -command {
-               set pos_tel [ tel$audace(telNo) german ]
+               set pos_tel [ tel$::temma::private(telNo) german ]
                if { $pos_tel == "E" } {
-                  tel$audace(telNo) german W
+                  tel$::temma::private(telNo) german W
                } elseif { $pos_tel == "W" } {
-                  tel$audace(telNo) german E
+                  tel$::temma::private(telNo) german E
                }
                ::telescope::monture_allemande
             }
@@ -466,7 +502,7 @@ proc ::temma::confTemmaInactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::temma::isReady ] == 1 } {
             #--- Boutons de la monture inactifs
             $frm.init_zenith configure -state disabled
             $frm.chg_pos_tel configure -text "  ?  " -state disabled
@@ -476,10 +512,10 @@ proc ::temma::confTemmaInactif { } {
 }
 
 #
-# ::temma::config_correc_Temma
+# ::temma::configCorrectionTemma
 # Permet d'afficher une ou deux echelles de reglage de la vitesse normale de correction
 #
-proc ::temma::config_correc_Temma { } {
+proc ::temma::configCorrectionTemma { } {
    variable private
    global caption
 
@@ -499,7 +535,7 @@ proc ::temma::config_correc_Temma { } {
 
          #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
          checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-            -variable ::temma::private(liaison) -command { ::temma::config_correc_Temma }
+            -variable ::temma::private(liaison) -command { ::temma::configCorrectionTemma }
          pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
          #--- Label de la correction en Dec
@@ -530,7 +566,7 @@ proc ::temma::config_correc_Temma { } {
 
          #--- Le checkbutton pour la liaison physique des 2 reglages en Ad et en Dec.
          checkbutton $frm.liaison -text "$caption(temma,liaison_AD_Dec)" -highlightthickness 0 \
-            -variable ::temma::private(liaison) -command { ::temma::config_correc_Temma }
+            -variable ::temma::private(liaison) -command { ::temma::configCorrectionTemma }
          pack $frm.liaison -in $frm.frame4 -anchor w -side top -padx 10
 
          #--- Label de la correction en Dec
@@ -564,20 +600,20 @@ proc ::temma::config_correc_Temma { } {
 # product :          Retourne le nom du produit
 #
 proc ::temma::getPluginProperty { propertyName } {
-   global audace
+   variable private
 
    switch $propertyName {
       multiMount       { return 0 }
       name             {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) name ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
       product          {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) product ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) product ]
          } else {
             return ""
          }
