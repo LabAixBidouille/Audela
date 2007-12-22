@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.20 2007-12-16 11:36:23 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.21 2007-12-22 15:39:30 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -55,6 +55,23 @@ proc ::cookbook::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::cookbook::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::cookbook::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #

@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.24 2007-12-16 11:36:42 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.25 2007-12-22 15:41:43 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -55,6 +55,23 @@ proc ::dslr::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::dslr::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::dslr::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #
@@ -492,7 +509,7 @@ proc ::dslr::confDSLR { camItem } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm.frame11.config_telechargement ] } {
-         if { [ ::confCam::isReady $camItem] == 1 } {
+         if { [ ::dslr::isReady $camItem ] == 1 } {
             #--- Bouton de configuration de la camera APN (DSLR)
             $frm.frame11.config_telechargement configure -state normal
             $frm.frame11.config_telechargement configure -command " ::dslr::setLoadParameters $camItem"
@@ -527,7 +544,7 @@ proc ::dslr::confDSLRInactif { camItem } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::isReady $camItem ] == 1 } {
+         if { [ ::dslr::isReady $camItem ] == 1 } {
             #--- Bouton de configuration de la camera APN (DSLR)
             $frm.frame11.config_telechargement configure -state disabled
          }

@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.12 2007-12-16 11:35:20 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.13 2007-12-22 15:32:41 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -55,6 +55,23 @@ proc ::andor::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::andor::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::andor::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #
