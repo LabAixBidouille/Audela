@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.42 2007-12-22 12:17:35 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.43 2007-12-22 15:50:06 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -481,9 +481,6 @@ proc ::confTel::getPluginProperty { propertyName } {
 #
 # ::confTel::isReady
 #    Retourne "1" si la monture est demarree, sinon retourne "0"
-#
-#  Parametres :
-#     telNo : Numero de la mounture
 #
 proc ::confTel::isReady { } {
    variable private
