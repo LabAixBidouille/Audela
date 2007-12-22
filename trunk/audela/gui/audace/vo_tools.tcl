@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.10 2007-09-12 23:21:55 alainklotz Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.11 2007-12-22 01:41:56 alainklotz Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -339,7 +339,9 @@ proc vo_skybot { args } {
       if { $erreur == "0" && $flag >= 0 } {
          return $result
       } else {
-         tk_messageBox -title "error" -type ok -message $result
+	      if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+	         tk_messageBox -title "error" -type ok -message $result
+         }
          return "failed"
       }
 
@@ -434,7 +436,9 @@ proc vo_skybotresolver { args } {
       if { $erreur == "0" && $flag >= 0 } {
          return $result
       } else {
-         tk_messageBox -title "error" -type ok -message $result
+	      if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+	         tk_messageBox -title "error" -type ok -message $result
+         }
          return "failed"
       }
 
@@ -493,7 +497,9 @@ proc vo_skybotstatus { args } {
       if { $erreur == "0" } {
          return $response
       } else {
-         tk_messageBox -title "error" -type ok -message $response
+	      if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+            tk_messageBox -title "error" -type ok -message $response
+         }
          return "failed"
       }
 
@@ -550,7 +556,9 @@ proc vo_sesame { args } {
       if { $erreur == "0" } {
          return $response
       } else {
-         tk_messageBox -title "error" -type ok -message $response
+	      if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+            tk_messageBox -title "error" -type ok -message $response
+         }
          return "failed"
       }
 
