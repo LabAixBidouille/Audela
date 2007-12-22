@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.13 2007-12-04 19:24:36 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.14 2007-12-22 12:21:58 robertdelmas Exp $
 #
 
 #
@@ -126,14 +126,16 @@ proc ::focuserlx200::configurePlugin { } {
 
 #------------------------------------------------------------
 #  ::focuserlx200::createPlugin
-#     demarrerle plugin
+#     demarre le plugin
 #
 #  return nothing
 #------------------------------------------------------------
 proc ::focuserlx200::createPlugin { } {
-   #--- il n'y a rien a faire pour ce focuser car il utilise la liaison serie
-   #--- de la monture LX200
-   return
+   global audace
+
+   if { [ info exists audace(focus,speed) ] == "0" } {
+      set audace(focus,speed) "0"
+   }
 }
 
 #------------------------------------------------------------

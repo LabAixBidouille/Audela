@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.10 2007-12-04 19:23:42 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.11 2007-12-22 12:21:17 robertdelmas Exp $
 #
 
 #
@@ -126,14 +126,16 @@ proc ::focuseraudecom::configurePlugin { } {
 
 #------------------------------------------------------------
 #  ::focuseraudecom::createPlugin
-#     demarrerle plugin
+#     demarre le plugin
 #
 #  return nothing
 #------------------------------------------------------------
 proc ::focuseraudecom::createPlugin { } {
-   #--- il n'y a rien a faire pour ce focuser car il utilise la liaison serie
-   #--- de la monture AudeCom
-   return
+   global audace
+
+   if { [ info exists audace(focus,speed) ] == "0" } {
+      set audace(focus,speed) "0"
+   }
 }
 
 #------------------------------------------------------------
