@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.81 2007-12-09 18:50:46 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.82 2007-12-22 12:38:20 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -195,7 +195,7 @@ namespace eval ::audace {
       set confgene(fichier,compres)        $conf(fichier,compres)
    }
 
-   proc Default_exeutils { } {
+   proc defaultExeUtils { } {
       global conf
 
       if { $::tcl_platform(os) == "Linux" } {
@@ -435,7 +435,7 @@ namespace eval ::audace {
          { set conf(fonction_transfert,visu$visuNo,mode)     "1" }
 
       #--- Initialisation des executables
-      ::audace::Default_exeutils
+      ::audace::defaultExeUtils
    }
 
    proc verifip { ipinit } {
@@ -902,10 +902,8 @@ namespace eval ::audace {
       #--- Connexion au demarrage des cameras
       ::confCam::startPlugin
 
-      #--- Connexion au demarrage du telescope
-      if { $conf(telescope,start) == "1" } {
-         ::confTel::configureTelescope
-      }
+      #--- Connexion au demarrage de la monture
+      ::confTel::startPlugin
 
       #--- Connexion au demarrage des equipements
       ::confEqt::startPlugin
