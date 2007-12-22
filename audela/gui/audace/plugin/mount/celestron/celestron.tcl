@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.6 2007-12-18 22:16:12 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.7 2007-12-22 11:41:43 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -48,11 +48,42 @@ proc ::celestron::getPluginOS { } {
 }
 
 #
+# ::celestron::getTelNo
+#    Retourne le numero de la monture
+#
+proc ::celestron::getTelNo { } {
+   variable private
+
+   return $private(telNo)
+}
+
+#
+# ::celestron::isReady
+#    Indique que la monture est prete
+#    Retourne "1" si la monture est prete, sinon retourne "0"
+#
+proc ::celestron::isReady { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      #--- Monture KO
+      return 0
+   } else {
+      #--- Monture OK
+      return 1
+   }
+}
+
+#
 # ::celestron::initPlugin
 #    Initialise les variables conf(celestron,...)
 #
 proc ::celestron::initPlugin { } {
+   variable private
    global conf
+
+   #--- Initialisation
+   set private(telNo) "0"
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
@@ -186,8 +217,8 @@ proc ::celestron::fillConfigPage { frm } {
 
    #--- Le bouton de commande maj heure et position du Celestron
    button $frm.majpara -text "$caption(celestron,maj_celestron)" -relief raised -command {
-      tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$audace(telNo) home $audace(posobs,observateur,gps)
+      tel$::celestron::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+      tel$::celestron::private(telNo) home $audace(posobs,observateur,gps)
    }
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
@@ -213,23 +244,28 @@ proc ::celestron::fillConfigPage { frm } {
 }
 
 #
-# ::celestron::configureTelescope
+# ::celestron::configureMonture
 #    Configure la monture Celestron en fonction des donnees contenues dans les variables conf(celestron,...)
 #
-proc ::celestron::configureTelescope { } {
-   global audace caption conf
+proc ::celestron::configureMonture { } {
+   variable private
+   global caption conf
 
-   set audace(telNo) [ tel::create celestron $conf(celestron,port) ]
+   #--- Je cree la monture
+   set telNo [ tel::create celestron $conf(celestron,port) ]
+   #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(celestron,port_celestron)\
       $caption(celestron,2points) $conf(celestron,port)\n"
    console::affiche_saut "\n"
    if { $conf(celestron,format) == "0" } {
-      tel$audace(telNo) longformat off
+      tel$telNo longformat off
    } else {
-      tel$audace(telNo) longformat on
+      tel$telNo longformat on
    }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-   set linkNo [ ::confLink::create $conf(celestron,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+   set linkNo [ ::confLink::create $conf(celestron,port) "tel$telNo" "control" [ tel$telNo product ] ]
+   #--- Je change de variable
+   set private(telNo) $telNo
    #--- Gestion du bouton actif/inactif
    ::celestron::confCelestron
 }
@@ -239,18 +275,19 @@ proc ::celestron::configureTelescope { } {
 #    Arrete la monture Celestron
 #
 proc ::celestron::stop { } {
-   global audace
+   variable private
 
    #--- Gestion du bouton actif/inactif
    ::celestron::confCelestronInactif
 
    #--- Je memorise le port
-   set telPort [ tel$audace(telNo) port ]
+   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
-   tel::delete $audace(telNo)
+   tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$audace(telNo)" "control"
-   set audace(telNo) "0"
+   ::confLink::delete $telPort "tel$private(telNo)" "control"
+   #--- Remise a zero du numero de monture
+   set private(telNo) "0"
 }
 
 #
@@ -264,11 +301,11 @@ proc ::celestron::confCelestron { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::celestron::isReady ] == 1 } {
             #--- Bouton Mise a jour de la monture actif
             $frm.majpara configure -state normal -command {
-               tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-               tel$audace(telNo) home $audace(posobs,observateur,gps)
+               tel$::celestron::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+               tel$::celestron::private(telNo) home $audace(posobs,observateur,gps)
             }
          } else {
             #--- Bouton Mise a jour de la monture inactif
@@ -288,7 +325,7 @@ proc ::celestron::confCelestronInactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::celestron::isReady ] == 1 } {
             #--- Bouton Mise a jour de la monture inactif
             $frm.majpara configure -state disabled
          }
@@ -309,20 +346,20 @@ proc ::celestron::confCelestronInactif { } {
 # product :          Retourne le nom du produit
 #
 proc ::celestron::getPluginProperty { propertyName } {
-   global audace
+   variable private
 
    switch $propertyName {
       multiMount       { return 0 }
       name             {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) name ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
       product          {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) product ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) product ]
          } else {
             return ""
          }

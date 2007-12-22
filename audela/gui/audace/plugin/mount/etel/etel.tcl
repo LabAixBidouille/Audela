@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: etel.tcl,v 1.2 2007-12-20 19:30:45 robertdelmas Exp $
+# Mise a jour $Id: etel.tcl,v 1.3 2007-12-22 11:43:03 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -48,11 +48,42 @@ proc ::etel::getPluginOS { } {
 }
 
 #
+# ::etel::getTelNo
+#    Retourne le numero de la monture
+#
+proc ::etel::getTelNo { } {
+   variable private
+
+   return $private(telNo)
+}
+
+#
+# ::etel::isReady
+#    Indique que la monture est prete
+#    Retourne "1" si la monture est prete, sinon retourne "0"
+#
+proc ::etel::isReady { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      #--- Monture KO
+      return 0
+   } else {
+      #--- Monture OK
+      return 1
+   }
+}
+
+#
 # ::etel::initPlugin
 #    Initialise les variables conf(etel,...)
 #
 proc ::etel::initPlugin { } {
+   variable private
    global conf
+
+   #--- Initialisation
+   set private(telNo) "0"
 
    #--- Prise en compte des liaisons
    set list_connexion [ ::confLink::getLinkLabels { "serialport" } ]
@@ -74,7 +105,6 @@ proc ::etel::confToWidget { } {
    set private(port)     $conf(etel,port)
    set private(format)   [ lindex "$caption(etel,format_court_long)" $conf(etel,format) ]
    set private(raquette) $conf(raquette)
-
 }
 
 #
@@ -186,8 +216,8 @@ proc ::etel::fillConfigPage { frm } {
 
    #--- Le bouton de commande maj heure et position du Etel
    button $frm.majpara -text "$caption(etel,maj_etel)" -relief raised -command {
-      tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-      tel$audace(telNo) home $audace(posobs,observateur,gps)
+      tel$::etel::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+      tel$::etel::private(telNo) home $audace(posobs,observateur,gps)
    }
    pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
 
@@ -213,23 +243,28 @@ proc ::etel::fillConfigPage { frm } {
 }
 
 #
-# ::etel::configureTelescope
+# ::etel::configureMonture
 #    Configure la monture Etel en fonction des donnees contenues dans les variables conf(etel,...)
 #
-proc ::etel::configureTelescope { } {
-   global audace caption conf
+proc ::etel::configureMonture { } {
+   variable private
+   global caption conf
 
-   set audace(telNo) [ tel::create etel $conf(etel,port) ]
+   #--- Je cree la monture
+   set telNo [ tel::create etel $conf(etel,port) ]
+   #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(etel,port_etel)\
       $caption(etel,2points) $conf(etel,port)\n"
    console::affiche_saut "\n"
    if { $conf(etel,format) == "0" } {
-      tel$audace(telNo) longformat off
+      tel$telNo longformat off
    } else {
-      tel$audace(telNo) longformat on
+      tel$telNo longformat on
    }
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-   set linkNo [ ::confLink::create $conf(etel,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+   set linkNo [ ::confLink::create $conf(etel,port) "tel$telNo" "control" [ tel$telNo product ] ]
+   #--- Je change de variable
+   set private(telNo) $telNo
    #--- Gestion du bouton actif/inactif
    ::etel::confEtel
 }
@@ -239,18 +274,19 @@ proc ::etel::configureTelescope { } {
 #    Arrete la monture Etel
 #
 proc ::etel::stop { } {
-   global audace
+   variable private
 
    #--- Gestion du bouton actif/inactif
    ::etel::confEtelInactif
 
    #--- Je memorise le port
-   set telPort [ tel$audace(telNo) port ]
+   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
-   tel::delete $audace(telNo)
+   tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$audace(telNo)" "control"
-   set audace(telNo) "0"
+   ::confLink::delete $telPort "tel$private(telNo)" "control"
+   #--- Remise a zero du numero de monture
+   set private(telNo) "0"
 }
 
 #
@@ -264,11 +300,11 @@ proc ::etel::confEtel { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::etel::isReady ] == 1 } {
             #--- Bouton Mise a jour de la monture actif
             $frm.majpara configure -state normal -command {
-               tel$audace(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-               tel$audace(telNo) home $audace(posobs,observateur,gps)
+               tel$::etel::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+               tel$::etel::private(telNo) home $audace(posobs,observateur,gps)
             }
          } else {
             #--- Bouton Mise a jour de la monture inactif
@@ -288,7 +324,7 @@ proc ::etel::confEtelInactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::etel::isReady ] == 1 } {
             #--- Bouton Mise a jour de la monture inactif
             $frm.majpara configure -state disabled
          }
@@ -309,20 +345,20 @@ proc ::etel::confEtelInactif { } {
 # product :          Retourne le nom du produit
 #
 proc ::etel::getPluginProperty { propertyName } {
-   global audace
+   variable private
 
    switch $propertyName {
       multiMount       { return 0 }
       name             {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) name ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
       product          {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) product ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) product ]
          } else {
             return ""
          }

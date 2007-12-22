@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.12 2007-12-18 22:21:09 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.13 2007-12-22 11:41:07 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -48,11 +48,42 @@ proc ::audecom::getPluginOS { } {
 }
 
 #
+# ::audecom::getTelNo
+#    Retourne le numero de la monture
+#
+proc ::audecom::getTelNo { } {
+   variable private
+
+   return $private(telNo)
+}
+
+#
+# ::audecom::isReady
+#    Indique que la monture est prete
+#    Retourne "1" si la monture est prete, sinon retourne "0"
+#
+proc ::audecom::isReady { } {
+   variable private
+
+   if { $private(telNo) == "0" } {
+      #--- Monture KO
+      return 0
+   } else {
+      #--- Monture OK
+      return 1
+   }
+}
+
+#
 # ::audecom::initPlugin
 #    Initialise les variables conf(audecom,...)
 #
 proc ::audecom::initPlugin { } {
+   variable private
    global audace conf
+
+   #--- Initialisation
+   set private(telNo) "0"
 
    #--- Charge le fichier auxiliaire
    uplevel #0 "source \"[ file join $audace(rep_plugin) mount audecom audecomconfig.tcl ]\""
@@ -374,8 +405,8 @@ proc ::audecom::fillConfigPage { frm } {
       -command { ::confAudecomMobile::run "$audace(base).confAudecomMobile" }
    pack $frm.ctlmobile -in $frm.frame14 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
 
-   #--- Affiche le bouton de controle de la vitesse de King si le telescope AudeCom est connecte
-   if { [ ::confTel::isReady ] == 1 } {
+   #--- Affiche le bouton de controle de la vitesse de King si la monture AudeCom est connecte
+   if { [ ::audecom::isReady ] == 1 } {
       if { [ winfo exists $audace(base).confAudecomKing ] } {
          button $frm.ctlking -text "$caption(audecom,ctl_king)" -relief groove -state disabled \
             -command { ::confAudecomKing::run "$audace(base).confAudecomKing" }
@@ -398,7 +429,7 @@ proc ::audecom::fillConfigPage { frm } {
 
    #--- Le checkbutton pour la monture equatoriale allemande
    checkbutton $frm.german -text "$caption(audecom,mont_allemande)" -highlightthickness 0 \
-      -variable ::audecom::private(german) -command { ::audecom::config_equatorial_audecom }
+      -variable ::audecom::private(german) -command { ::audecom::configEquatorialAudeCom }
    pack $frm.german -in $frm.frame18 -anchor nw -side left -padx 10 -pady 8
 
    #--- Gestion de l'option monture equatoriale allemande
@@ -414,13 +445,13 @@ proc ::audecom::fillConfigPage { frm } {
       label $frm.pos_tel_est -text "$caption(audecom,change_position_telescope)"
       pack $frm.pos_tel_est -in $frm.frame19 -anchor center -side left -padx 10 -pady 3
 
-      if { [ ::confTel::isReady ] == 1 } {
+      if { [ ::audecom::isReady ] == 1 } {
          button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel) -command {
-     ###       set pos_tel [ tel$audace(telNo) german ]
+     ###       set pos_tel [ tel$::audecom::private(telNo) german ]
      ###       if { $pos_tel == "E" } {
-     ###          tel$audace(telNo) german W
+     ###          tel$::audecom::private(telNo) german W
      ###       } elseif { $pos_tel == "W" } {
-     ###          tel$audace(telNo) german E
+     ###          tel$::audecom::private(telNo) german E
      ###       }
      ###       ::telescope::monture_allemande
          }
@@ -441,53 +472,55 @@ proc ::audecom::fillConfigPage { frm } {
 }
 
 #
-# ::audecom::configureTelescope
+# ::audecom::configureMonture
 #    Configure la monture AudeCom en fonction des donnees contenues dans les variables conf(audecom,...)
 #
-proc ::audecom::configureTelescope { } {
+proc ::audecom::configureMonture { } {
    variable private
-   global audace caption conf
+   global caption conf
 
-   set audace(telNo) [ tel::create audecom $conf(audecom,port) ]
+   #--- Je cree la monture
+   set telNo [ tel::create audecom $conf(audecom,port) ]
+   #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(audecom,port_audecom) $caption(audecom,2points)\
       $conf(audecom,port)\n"
    #--- Lit et affiche la version du firmware
-   set v_firmware [ tel$audace(telNo) firmware ]
+   set v_firmware [ tel$telNo firmware ]
    set v_firmware "[ string range $v_firmware 0 0 ].[ string range $v_firmware 1 2 ]"
    console::affiche_erreur "$caption(audecom,ver_firmware)$v_firmware\n"
    console::affiche_saut "\n"
    #--- Transfere les parametres des moteurs dans le microcontroleur
-   tel$audace(telNo) slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
-   tel$audace(telNo) pulse $conf(audecom,limp)
-   tel$audace(telNo) mechanicalplay $conf(audecom,rat_ad) $conf(audecom,rat_dec)
-   tel$audace(telNo) focspeed $conf(audecom,vitesse)
+   tel$telNo slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
+   tel$telNo pulse $conf(audecom,limp)
+   tel$telNo mechanicalplay $conf(audecom,rat_ad) $conf(audecom,rat_dec)
+   tel$telNo focspeed $conf(audecom,vitesse)
    #--- R : Inhibe le PEC
-   tel$audace(telNo) pec_period 0
+   tel$telNo pec_period 0
    #--- Transfere les corrections pour le PEC dans le microcontroleur
    for { set i 0 } { $i <= 19 } { incr i } {
-      tel$audace(telNo) pec_speed $conf(audecom,t$i)
+      tel$telNo pec_speed $conf(audecom,t$i)
    }
    #--- r : Active ou non le PEC
    if { $conf(audecom,pec) == "1" } {
-      tel$audace(telNo) pec_period $conf(audecom,rpec)
+      tel$telNo pec_period $conf(audecom,rpec)
    }
    #--- Transfere les parametres de derive dans le microcontroleur
    set vit_der_alpha "0" ; set vit_der_delta "0"
    if { $::confAudecomMot::private(fenetre,mobile,valider) == "1" } {
       if { $conf(audecom,mobile) == "1" } {
          switch -exact -- $conf(audecom,type) {
-            0 { set vit_der_alpha "43636" ; set vit_der_delta "0" } ; #--- Lune
-            1 { set vit_der_alpha "3548"  ; set vit_der_delta "0" } ; #--- Soleil
+            0 { set vit_der_alpha "43636" ; set vit_der_delta "0" }                          ; #--- Lune
+            1 { set vit_der_alpha "3548"  ; set vit_der_delta "0" }                          ; #--- Soleil
             2 { set vit_der_alpha $conf(audecom,ad) ; set vit_der_delta $conf(audecom,dec) } ; #--- Comete
-            3 { set vit_der_alpha "0" ; set vit_der_delta "0" } ; #--- Etoile
+            3 { set vit_der_alpha "0" ; set vit_der_delta "0" }                              ; #--- Etoile
          }
       }
    } else {
       catch { set frm $private(frm) }
-      set private(mobile) "0"
-      set conf(audecom,mobile)    "0"
+      set private(mobile)      "0"
+      set conf(audecom,mobile) "0"
       if { $conf(telescope,start) != "1" } {
-         $frm.mobile configure
+         $frm.mobile configure -variable ::audecom::private(mobile)
       }
    }
    #--- Precaution pour ne jamais diviser par zero
@@ -504,13 +537,15 @@ proc ::audecom::configureTelescope { } {
    if { $delta > "99999999" }  { set delta "99999999" }
    if { $delta < "-99999999" } { set delta "-99999999" }
    #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
-   tel$audace(telNo) radec motor off
-   tel$audace(telNo) driftspeed $alpha $delta
-   tel$audace(telNo) radec motor on
-   #--- Affichage de la position du telescope
+   tel$telNo radec motor off
+   tel$telNo driftspeed $alpha $delta
+   tel$telNo radec motor on
+   #--- Affichage de la position du telescope sur la monture
   ### ::telescope::monture_allemande
-   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par le telescope)
-   set linkNo [ ::confLink::create $conf(audecom,port) "tel$audace(telNo)" "control" [ tel$audace(telNo) product ] ]
+   #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
+   set linkNo [ ::confLink::create $conf(audecom,port) "tel$telNo" "control" [ tel$telNo product ] ]
+   #--- Je change de variable
+   set private(telNo) $telNo
    #--- Gestion du bouton actif/inactif
    ::audecom::confAudeCom
 }
@@ -536,12 +571,13 @@ proc ::audecom::stop { } {
    set ::confAudecomMot::private(fenetre,mobile,valider) "0"
 
    #--- Je memorise le port
-   set telPort [ tel$audace(telNo) port ]
+   set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
-   tel::delete $audace(telNo)
+   tel::delete $private(telNo)
    #--- J'arrete le link
-   ::confLink::delete $telPort "tel$audace(telNo)" "control"
-   set audace(telNo) "0"
+   ::confLink::delete $telPort "tel$private(telNo)" "control"
+   #--- Remise a zero du numero de monture
+   set private(telNo) "0"
 }
 
 #
@@ -550,12 +586,12 @@ proc ::audecom::stop { } {
 #
 proc ::audecom::confAudeCom { } {
    variable private
-   global caption
+   global audace caption
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::audecom::isReady ] == 1 } {
             if { [ winfo exists $frm.ctlking ] } {
                $frm.ctlking configure -text "$caption(audecom,ctl_king)" -relief groove -state disabled \
                   -command { ::confAudecomKing::run "$audace(base).confAudecomKing" }
@@ -568,11 +604,11 @@ proc ::audecom::confAudeCom { } {
             destroy $frm.ctlking
          }
       }
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $frm
    }
    #--- Fonctionnalités d'une monture equatoriale allemande pilotee par AudeCom
-   ::audecom::config_equatorial_audecom
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $frm
+   ::audecom::configEquatorialAudeCom
 }
 
 #
@@ -586,7 +622,7 @@ proc ::audecom::confAudeComInactif { } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confTel::isReady ] == 1 } {
+         if { [ ::audecom::isReady ] == 1 } {
             #--- Boutons de la monture inactifs
             destroy $frm.ctlking
          }
@@ -595,10 +631,10 @@ proc ::audecom::confAudeComInactif { } {
 }
 
 #
-# ::audecom::config_equatorial_audecom
+# ::audecom::configEquatorialAudeCom
 # Permet d'afficher les fonctionnalites d'une monture equatoriale allemande pilotee par AudeCom
 #
-proc ::audecom::config_equatorial_audecom { } {
+proc ::audecom::configEquatorialAudeCom { } {
    variable private
    global audace caption conf
 
@@ -621,13 +657,13 @@ proc ::audecom::config_equatorial_audecom { } {
             label $frm.pos_tel_est -text "$caption(audecom,change_position_telescope)"
             pack $frm.pos_tel_est -in $frm.frame19 -anchor center -side left -padx 10 -pady 3
             #---
-            if { [ ::confTel::isReady ] == 1 } {
+            if { [ ::audecom::isReady ] == 1 } {
                button $frm.chg_pos_tel -relief raised -state normal -textvariable audace(chg_pos_tel) -command {
-           ###       set pos_tel [ tel$audace(telNo) german ]
+           ###       set pos_tel [ tel$::audecom::private(telNo) german ]
            ###       if { $pos_tel == "E" } {
-           ###          tel$audace(telNo) german W
+           ###          tel$::audecom::private(telNo) german W
            ###       } elseif { $pos_tel == "W" } {
-           ###          tel$audace(telNo) german E
+           ###          tel$::audecom::private(telNo) german E
            ###       }
            ###       ::telescope::monture_allemande
            ###    }
@@ -661,20 +697,20 @@ proc ::audecom::config_equatorial_audecom { } {
 # product :          Retourne le nom du produit
 #
 proc ::audecom::getPluginProperty { propertyName } {
-   global audace
+   variable private
 
    switch $propertyName {
       multiMount       { return 0 }
       name             {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) name ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
       product          {
-         if { $audace(telNo) != "0" } {
-            return [ tel$audace(telNo) product ]
+         if { $private(telNo) != "0" } {
+            return [ tel$private(telNo) product ]
          } else {
             return ""
          }
