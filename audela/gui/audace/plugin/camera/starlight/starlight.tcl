@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.10 2007-12-16 11:38:46 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.11 2007-12-22 15:48:55 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -55,6 +55,23 @@ proc ::starlight::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::starlight::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::starlight::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #
