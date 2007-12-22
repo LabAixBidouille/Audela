@@ -2,7 +2,7 @@
 # Fichier : ouranoscom.tcl
 # Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Mise a jour $Id: ouranoscom.tcl,v 1.9 2007-12-18 22:23:52 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.tcl,v 1.10 2007-12-22 12:08:14 robertdelmas Exp $
 #
 
 #--- Initialisation de variables
@@ -43,7 +43,7 @@ namespace eval OuranosCom {
          if { $private(find) == "1" } {
             set private(find) "0"
             set ::ouranos::private(show_coord) $conf(ouranos,show_coord)
-            ::ouranos::MatchOuranos
+            ::ouranos::matchOuranos
          }
          #--- Traitement graphique du bouton 'Lire'
          $frm.but_read configure -text "$caption(ouranoscom,lire)" -relief groove -state disabled
@@ -376,7 +376,7 @@ namespace eval OuranosCom {
             label $frm.match_dec -text "$caption(ouranoscom,dec1) $caption(ouranoscom,dms_angle)"
             pack $frm.match_dec -in $frm.frame4 -anchor center -side right -padx 10
             #--- Gestion des evenements Dec.
-            bind $frm.match_dec_entry <Enter> { ::ouranos::Format_Match_Dec }
+            bind $frm.match_dec_entry <Enter> { ::ouranos::formatMatchDec }
             bind $frm.match_dec_entry <Leave> { destroy $audace(base).format_match_dec }
             #--- Valeur AD en h mn s
             entry $frm.match_ra_entry -textvariable ::ouranos::private(match_ra) -justify center -width 12
@@ -385,7 +385,7 @@ namespace eval OuranosCom {
             label $frm.match_ra -text "$caption(ouranoscom,ad1) $caption(ouranoscom,hms_angle)"
             pack $frm.match_ra -in $frm.frame4 -anchor center -side right -padx 10
             #--- Gestion des evenements AD
-            bind $frm.match_ra_entry <Enter> { ::ouranos::Format_Match_AD }
+            bind $frm.match_ra_entry <Enter> { ::ouranos::formatMatchAD }
             bind $frm.match_ra_entry <Leave> { destroy $audace(base).format_match_ad }
          }
          #--- Mise a jour dynamique des couleurs
@@ -455,7 +455,7 @@ namespace eval OuranosCom {
          set ::ouranos::private(show_coord) "0"
          set private(init_ra)               "0"
          set private(init_dec)              "0"
-         ::ouranos::MatchOuranos
+         ::ouranos::matchOuranos
          set private(find) "1"
          ::OuranosCom::send_encod [ format "R%d\t%d\r" $::ouranos::private(cod_ra) $::ouranos::private(cod_dec) ]
          ::OuranosCom::send_encod [ format "I%d\t%d\r" $private(init_ra) $private(init_dec) ]
@@ -465,10 +465,10 @@ namespace eval OuranosCom {
    }
 
    #
-   # OuranosCom::TjrsVisible
+   # OuranosCom::tjrsVisible
    # Affichage visible des coordonnees ou des pas
    #
-   proc TjrsVisible { } {
+   proc tjrsVisible { } {
       variable private
       global audace caption conf
 
@@ -502,13 +502,13 @@ namespace eval OuranosCom {
             #--- Bouton radio x1
             radiobutton $audace(base).tjrsvisible.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(ouranoscom,x1)" -value 0 -variable ::ouranos::private(dim) -command {
-                  destroy $audace(base).tjrsvisible_x10 ; ::OuranosCom::TjrsVisible
+                  destroy $audace(base).tjrsvisible_x10 ; ::OuranosCom::tjrsVisible
                }
             pack $audace(base).tjrsvisible.rad0 -padx 20 -pady 2 -side left
             #--- Bouton radio x10
             radiobutton $audace(base).tjrsvisible.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -text "$caption(ouranoscom,x5)" -value 1 -variable ::ouranos::private(dim) -command {
-                  destroy $audace(base).tjrsvisible ; ::OuranosCom::TjrsVisible_x10
+                  destroy $audace(base).tjrsvisible ; ::OuranosCom::tjrsVisibleX10
                }
             pack $audace(base).tjrsvisible.rad1 -padx 20 -pady 2 -side right
             #--- La fenetre est active
@@ -522,10 +522,10 @@ namespace eval OuranosCom {
    }
 
    #
-   # OuranosCom::TjrsVisible_x10
+   # OuranosCom::tjrsVisibleX10
    # Affichage visible des coordonnees ou des pas en tres gros
    #
-   proc TjrsVisible_x10 { } {
+   proc tjrsVisibleX10 { } {
       variable private
       global audace caption conf
 
@@ -560,14 +560,14 @@ namespace eval OuranosCom {
             radiobutton $audace(base).tjrsvisible_x10.rad0 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -font {verdana 20 bold} -text "$caption(ouranoscom,:5)" -value 0 -variable ::ouranos::private(dim) \
                -command {
-                  destroy $audace(base).tjrsvisible_x10 ; ::OuranosCom::TjrsVisible
+                  destroy $audace(base).tjrsvisible_x10 ; ::OuranosCom::tjrsVisible
                }
             pack $audace(base).tjrsvisible_x10.rad0 -padx 100 -pady 10 -side left
             #--- Bouton radio x10
             radiobutton $audace(base).tjrsvisible_x10.rad1 -anchor nw -highlightthickness 0 -padx 0 -pady 0 \
                -font {verdana 20 bold} -text "$caption(ouranoscom,x1)" -value 1 -variable ::ouranos::private(dim) \
                -command {
-                  destroy $audace(base).tjrsvisible ; ::OuranosCom::TjrsVisible_x10
+                  destroy $audace(base).tjrsvisible ; ::OuranosCom::tjrsVisibleX10
                }
             pack $audace(base).tjrsvisible_x10.rad1 -padx 100 -pady 10 -side right
             #--- La fenetre est active
