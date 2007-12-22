@@ -2,7 +2,7 @@
 # Fichier : th7852a.tcl
 # Description : Configuration de la camera TH7852A
 # Auteur : Robert DELMAS
-# Mise a jour $Id: th7852a.tcl,v 1.21 2007-12-16 11:39:04 robertdelmas Exp $
+# Mise a jour $Id: th7852a.tcl,v 1.22 2007-12-22 15:49:16 robertdelmas Exp $
 #
 
 namespace eval ::th7852a {
@@ -55,6 +55,23 @@ proc ::th7852a::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::th7852a::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::th7852a::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #

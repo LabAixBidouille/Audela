@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.31 2007-12-16 11:39:28 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.32 2007-12-22 15:49:38 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -55,6 +55,23 @@ proc ::webcam::getCamNo { camItem } {
    variable private
 
    return $private($camItem,camNo)
+}
+
+#
+# ::webcam::isReady
+#    Indique que la camera est prete
+#    Retourne "1" si la camera est prete, sinon retourne "0"
+#
+proc ::webcam::isReady { camItem } {
+   variable private
+
+   if { $private($camItem,camNo) == "0" } {
+      #--- Camera KO
+      return 0
+   } else {
+      #--- Camera OK
+      return 1
+   }
 }
 
 #
@@ -534,7 +551,7 @@ proc ::webcam::configWebCam { camItem } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
-         if { [ ::confCam::isReady $camItem] == 1 } {
+         if { [ ::webcam::isReady $camItem ] == 1 } {
             #--- Boutons de configuration de la WebCam actif
             if { $::tcl_platform(os) == "Linux" } {
                $frm.frame6.videoFormatList configure -state normal
