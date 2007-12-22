@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.20 2007-12-04 22:25:46 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.21 2007-12-22 12:29:01 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -178,12 +178,17 @@ namespace eval ::superpad {
 
    #------------------------------------------------------------
    #  createPluginInstance
-   #     cree une intance du plugin
+   #     cree une instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
       global conf
+
+      #--- creation du focuser
+      if { $conf(superpad,focuserLabel) != "" } {
+         ::$conf(superpad,focuserLabel)::createPlugin
+      }
 
       #--- affiche la raquette
       run $conf(superpad,padsize) $conf(superpad,position)
@@ -1015,6 +1020,8 @@ namespace eval FrameFocusManager {
          [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backkey)
       }
 
+      #--- initialise et affiche la vitesse du focuser
+      ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
    }
 }
 
