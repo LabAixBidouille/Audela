@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.13 2007-12-22 11:41:07 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.14 2007-12-22 11:55:21 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -666,7 +666,7 @@ proc ::audecom::configEquatorialAudeCom { } {
            ###          tel$::audecom::private(telNo) german E
            ###       }
            ###       ::telescope::monture_allemande
-           ###    }
+               }
                pack $frm.chg_pos_tel -in $frm.frame19 -anchor center -side left -padx 10 -pady 3 -ipadx 5 -ipady 5
             } else {
                button $frm.chg_pos_tel -text "  ?  " -relief raised -state disabled
