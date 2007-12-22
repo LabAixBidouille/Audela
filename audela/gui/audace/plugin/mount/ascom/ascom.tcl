@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.7 2007-12-22 11:40:33 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.8 2007-12-22 11:53:38 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -221,7 +221,7 @@ proc ::ascom::stop { } {
    variable private
 
    #--- Je memorise le port
-   set telPort [ tel$private(telNo) port ]
+  ### set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
    tel::delete $private(telNo)
    #--- J'arrete le link
