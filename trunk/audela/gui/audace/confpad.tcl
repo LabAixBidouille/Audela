@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.28 2007-12-18 21:06:05 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.29 2007-12-22 11:58:44 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -343,7 +343,7 @@ proc ::confPad::configurePlugin { pluginName } {
 
    #--- j'arrete le plugin precedent
    if { $conf(confPad) != "" } {
-      ::$conf(confPad)\::deletePluginInstance
+      ::$conf(confPad)::deletePluginInstance
    }
 
    set conf(confPad) $pluginName
