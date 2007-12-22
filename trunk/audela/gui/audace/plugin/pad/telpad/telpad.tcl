@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.16 2007-12-04 22:26:12 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.17 2007-12-22 12:29:32 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -138,15 +138,21 @@ namespace eval telpad {
 
    #------------------------------------------------------------
    #  createPluginInstance
-   #     cree une intance du plugin
+   #     cree une instance du plugin
    #
    #  return rien
    #------------------------------------------------------------
    proc createPluginInstance { } {
-      global audace
+      global audace conf
+
+      #--- Creation du focuser
+      if { $conf(superpad,focuserLabel) != "" } {
+         ::$conf(superpad,focuserLabel)::createPlugin
+      }
 
       #--- Affiche la raquette
       telpad::run "$audace(base).telpad"
+
       return
    }
 
@@ -369,6 +375,9 @@ namespace eval telpad {
       bind $zone(plus)  <ButtonPress-1>   { catch { ::focus::move $::conf(telpad,focuserLabel) + } }
       bind $zone(plus)  <ButtonRelease-1> { ::focus::move $::conf(telpad,focuserLabel) stop }
 
+      #--- Initialise et affiche la vitesse du focuser
+      ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
+
       #--- La fenetre est active
       focus $This
 
@@ -377,7 +386,7 @@ namespace eval telpad {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
-  }
+   }
 
 }
 
