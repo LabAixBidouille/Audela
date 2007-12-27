@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.14 2007-10-05 17:26:24 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.15 2007-12-27 22:32:03 robertdelmas Exp $
 #
 
 # ========================================================
@@ -764,44 +764,44 @@ namespace eval ::visio {
    }
 
    proc lsort2 { args } {
-	   set elements [lindex $args end]
-	   set n [llength $elements]
-	   set elems ""
-	   set valid 1
-	   #::console::affiche_resultat "====================================================\n"
-	   #::console::affiche_resultat "====================================================\n"
-	   #::console::affiche_resultat "====================================================\n"
-	   #::console::affiche_resultat "AVANT elements=$elements\n"
-	   for {set k 0} {$k<$n} {incr k} {
-		   set element [lindex $elements $k]
-		   set err [catch {expr $element} msg]
-		   if {$err==1} {
-		      set ks1 [string last - $element]
-		      set ks2 [string last . $element]
-		      if {($ks1==-1)||($ks2==-1)} {
-			     set valid 0
-			     break
-	          }
-   		      set indice [string range $element [expr $ks1+1] [expr $ks2-1]]
-           } else {
-		      set indice $element
-	       }
-		   lappend elems [list [format %05d $indice] $element]
-	   }
-	   #::console::affiche_resultat "valid=$valid\n"
-	   if {$valid==1} {
-          #::console::affiche_resultat "AVANT elems=$elems\n"
-		  set elems [lsort -ascii $elems]
-          #::console::affiche_resultat "APRES elems=$elems\n"
-		  set elements ""
-	   	  for {set k 0} {$k<$n} {incr k} {
-		     set elem [lindex $elems $k]
-             #::console::affiche_resultat "k=$k elem=$elem\n"
-		     lappend elements [lindex $elem 1]
-	      }
-       }
-	   #::console::affiche_resultat "APRES elements=$elements\n"
-	   return $elements
+      set elements [lindex $args end]
+      set n [llength $elements]
+      set elems ""
+      set valid 1
+      #::console::affiche_resultat "====================================================\n"
+      #::console::affiche_resultat "====================================================\n"
+      #::console::affiche_resultat "====================================================\n"
+      #::console::affiche_resultat "AVANT elements=$elements\n"
+      for {set k 0} {$k<$n} {incr k} {
+         set element [lindex $elements $k]
+         set err [catch {expr $element} msg]
+         if {$err==1} {
+            set ks1 [string last - $element]
+            set ks2 [string last . $element]
+            if {($ks1==-1)||($ks2==-1)} {
+               set valid 0
+               break
+            }
+               set indice [string range $element [expr $ks1+1] [expr $ks2-1]]
+         } else {
+            set indice $element
+         }
+         lappend elems [list [format %05d $indice] $element]
+      }
+      #::console::affiche_resultat "valid=$valid\n"
+      if {$valid==1} {
+         #::console::affiche_resultat "AVANT elems=$elems\n"
+         set elems [lsort -ascii $elems]
+         #::console::affiche_resultat "APRES elems=$elems\n"
+         set elements ""
+         for {set k 0} {$k<$n} {incr k} {
+            set elem [lindex $elems $k]
+            #::console::affiche_resultat "k=$k elem=$elem\n"
+            lappend elements [lindex $elem 1]
+         }
+      }
+      #::console::affiche_resultat "APRES elements=$elements\n"
+      return $elements
    }
 }
 
