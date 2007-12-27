@@ -102,7 +102,6 @@
 #define TT_MIN_DOUBLE -1.79769313486231499e+308
 #define TT_EPS_DOUBLE 2.225073858507203e-308
 
-
 #define TT_PTYPE float
 #define TT_MAXPTYPE TT_MAX_FLOAT
 #define TT_MINPTYPE TT_MIN_FLOAT
@@ -162,6 +161,7 @@
 #define TT_IMASERIES_HOUGH_MYRTILLE 37
 #define TT_IMASERIES_REGISTERFINE 38
 #define TT_IMASERIES_PROD 39
+#define TT_IMASERIES_FITELLIP 40
 
 #define TT_KERNELTYPE_FH 0
 #define TT_KERNELTYPE_FB 1
@@ -614,6 +614,31 @@ typedef struct {
    double *magi;    /* magnitude i*/
 } TT_TBL_CATALIST ;
 
+/* --- informations pour fitellip LAPS --- */
+typedef struct {
+   double surmag;
+   double r25;
+   double xce;
+   double yce;
+   double csa;
+   double a;
+   double angp;
+   double x2;
+   double y2;
+   double xy;
+   double xmn;
+   double ap2;
+   double ag2;
+   double xmn2;
+   double xce1;
+   double yce1;
+   double al;
+   double poww;
+   int    isoph;
+   long   ncount;
+   double base[34];
+} TT_LAPS;
+
 /* --- informations sur la nature des images --- */
 typedef struct {
    /* --- image de travail qui a ete chargee ---*/
@@ -824,6 +849,8 @@ typedef struct {
    double coef_smile2;
    double coef_smile4;
    int oversampling;
+   double background;
+   int fitorder6543;
    /* --- parametres internes (private) ---*/
    double binary_yesno;
    double val_exptime;
@@ -947,6 +974,7 @@ int tt_ima_series_test_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_resample_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_radial_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_prod_1(TT_IMA_SERIES *pseries);
+int tt_ima_series_fitellip_1(TT_IMA_SERIES *pseries);
 
 int tt_ima_series_tilt_1(TT_IMA_SERIES *pseries);
 int tt_ima_series_smilex_1(TT_IMA_SERIES *pseries);
@@ -1009,6 +1037,8 @@ int tt_util_transima1(TT_IMA_SERIES *pseries,double trans_x,double trans_y);
 int tt_util_regima1(TT_IMA_SERIES *pseries);
 int tt_util_match_translate(TT_IMA *p_ref,TT_IMA *p_in,double *a,int *nbmatched);
 int tt_util_matrice_inverse_bilinaire(double *a, double *b);
+
+int tt_laps_analyse(TT_IMA *p_in,TT_IMA *p_out,double xc,double yc,double ciel,double cmag,double scale,double forme,int ordre3,int ordre4,int ordre5,int ordre6,double pgposang,int xd,int xf,int yd,int yf,double saturation, char *file_out,double *radius_max_analyse, double *radius_coeur,double *radius_effective,double *magnitude_totale,double *magnitude_asymptotique,double *brillance_effective,double *brillance_centrale);
 
 int tt_fct_ima_stack(void *arg1);
 int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack);

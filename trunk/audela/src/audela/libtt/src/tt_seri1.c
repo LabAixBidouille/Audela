@@ -393,6 +393,9 @@ int tt_ima_series_dispatch(char **keys,TT_IMA_SERIES *pseries)
    } else if (pseries->numfct==TT_IMASERIES_PROD) {
       msg=tt_ima_series_prod_1(pseries);
       fct_found=TT_YES;
+   } else if (pseries->numfct==TT_IMASERIES_FITELLIP) {
+      msg=tt_ima_series_fitellip_1(pseries);
+      fct_found=TT_YES;
    } else if (pseries->numfct==TT_IMASERIES_DELETE) {
       msg=OK_DLL;
       fct_found=TT_YES;
@@ -497,6 +500,7 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    else if (strcmp(keys[10],"RADIAL")==0) { pseries->numfct=TT_IMASERIES_RADIAL; }
    else if (strcmp(keys[10],"REGISTERFINE")==0) { pseries->numfct=TT_IMASERIES_REGISTERFINE; }
    else if (strcmp(keys[10],"PROD")==0) { pseries->numfct=TT_IMASERIES_PROD; }
+   else if (strcmp(keys[10],"FITELLIP")==0) { pseries->numfct=TT_IMASERIES_FITELLIP; }
 
    tt_user1_ima_series_builder1(keys[10],pseries);
    tt_user2_ima_series_builder1(keys[10],pseries);
@@ -619,6 +623,8 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
    pseries->coef_smile2=0.;
    pseries->coef_smile4=0.;
    pseries->oversampling=4;
+   pseries->background=0.;
+   pseries->fitorder6543=0;
    for (k1=1;k1<=2;k1++) {
       for (k2=0;k2<=6;k2++) {
          pseries->p_ast.pv[k1][k2]=0.;
@@ -729,6 +735,16 @@ int tt_ima_series_builder(char **keys,int nbima,TT_IMA_SERIES *pseries)
       else if (strcmp(mot,"ANGLE")==0) {
 	 if (strcmp(argu,"")!=0) {
 	    pseries->angle=(double)atof(argu);
+	 }
+      }
+      else if (strcmp(mot,"BACKGROUND")==0) {
+	 if (strcmp(argu,"")!=0) {
+	    pseries->background=(double)atof(argu);
+	 }
+      }
+      else if (strcmp(mot,"FITORDER6543")==0) {
+	 if (strcmp(argu,"")!=0) {
+	    pseries->fitorder6543=(int)atoi(argu);
 	 }
       }
       else if (strcmp(mot,"EXPTIME")==0) {
