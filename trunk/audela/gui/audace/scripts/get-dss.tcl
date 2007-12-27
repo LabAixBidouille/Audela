@@ -9,7 +9,7 @@
 # Modifier en Décembre 2005
 #   - Ajout d'une fenetre de dialogue
 #   - Ajout d'un fichier log des objets non téléchargés
-#   - Possibilité de charger/enregistrer des fichiers de paramètres  
+#   - Possibilité de charger/enregistrer des fichiers de paramètres
 #
 # Modifier en Juillet 2007
 #   - Ajout d'une listebox pour selectionné le catalogue de survey.
@@ -51,7 +51,7 @@ set password password_du_proxy
 #
 proc buildProxyHeaders {u p} {
   global param
-  
+
   if { $param(proxy) == "yes" } {
     return [list "Proxy-Authorization" \
            [concat "Basic" [base64::encode $u:$p]]]
@@ -95,12 +95,12 @@ proc Charge_Objet_SIMBAD {objet} {
     } else {
     set token1 [::http::geturl $BASE_URL -query $query]
   }
-  
+
 
   set data1  [::http::data $token1]
 
   ::http::cleanup $token1
-  
+
   update
 
   # Recherche les chaines qui contiennent les coordonnées retournées par la requete
@@ -124,14 +124,14 @@ proc Charge_Objet_SIMBAD {objet} {
   #   Plantage à cause d'un changement du nom de catalogue codé en dur dans le programme
   # Résolution :
   # Ajout d'une boite de dialogue permettant le choix du catalogue parmis :
-  #  <option value="poss2ukstu_red" selected>	POSS2/UKSTU Red</option>
-  #  <option value="poss2ukstu_blue" >		POSS2/UKSTU Blue</option>
-  #  <option value="poss2ukstu_ir" >		POSS2/UKSTU IR</option>
-  #  <option value="poss1_red" >		POSS1 Red</option>
-  #  <option value="poss1_blue" >		POSS1 Blue</option>
-  #  <option value="quickv" >			Quick-V</option>
-  #  <option value="phase2_gsc2" >		HST Phase 2 (GSC2)</option>
-  #  <option value="phase2_gsc1" >		HST Phase 2 (GSC1)</option>
+  #  <option value="poss2ukstu_red" selected>   POSS2/UKSTU Red</option>
+  #  <option value="poss2ukstu_blue" >          POSS2/UKSTU Blue</option>
+  #  <option value="poss2ukstu_ir" >            POSS2/UKSTU IR</option>
+  #  <option value="poss1_red" >                POSS1 Red</option>
+  #  <option value="poss1_blue" >               POSS1 Blue</option>
+  #  <option value="quickv" >                   Quick-V</option>
+  #  <option value="phase2_gsc2" >              HST Phase 2 (GSC2)</option>
+  #  <option value="phase2_gsc1" >              HST Phase 2 (GSC1)</option>
 
   # URL de la requète CGI 2
   set BASE_URL http://stdatu.stsci.edu/cgi-bin/dss_search/
@@ -141,27 +141,27 @@ proc Charge_Objet_SIMBAD {objet} {
   # comporte plusieurs couple champs - valeur_du_champs
   # Ici, les champs sont : v, r, d, e, h, w, f, c, fov, v3
   # v=poss2ukstu_red&r=00+31+45.00&d=-05+09+11.0&e=J2000&h=15.0&w=15.0&f=gif&c=none&fov=NONE&v3=
-  #set query [::http::formatQuery v poss2ukstu_red r 00+31+45.00 d -05+09+11.0 e J2000 h 15.0 w 15.0 f fits c none fov NONE v3 ""]  
+  #set query [::http::formatQuery v poss2ukstu_red r 00+31+45.00 d -05+09+11.0 e J2000 h 15.0 w 15.0 f fits c none fov NONE v3 ""]
   if { [catch {set a $ra}] } { set ra "" }
   if { [catch {set a $dec}] } { set dec "" }
 
   if { ($ra != "") && ($dec != "") } {
 
     set catalogue [.pre.lb.lb1 get [.pre.lb.lb1 curselection]]
-    
+
     switch -exact -- $catalogue {
-    	"POSS2/UKSTU Red" { set catal poss2ukstu_red }
-    	"POSS2/UKSTU Blue" { set catal poss2ukstu_blue } 
-    	"POSS2/UKSTU IR" { set catal poss2ukstu_ir } 
-    	"POSS1 Red" { set catal poss1_red } 
-    	"POSS1 Blue" { set catal poss1_blue } 
-    	"Quick-V" { set catal quickv } 
-    	"HST Phase 2 (GSC2)" { set catal phase2_gsc2 } 
-    	"HST Phase 2 (GSC1)" { set catal phase2_gsc1 }
-    	default { set catal poss2ukstu_red }
+      "POSS2/UKSTU Red" { set catal poss2ukstu_red }
+      "POSS2/UKSTU Blue" { set catal poss2ukstu_blue }
+      "POSS2/UKSTU IR" { set catal poss2ukstu_ir }
+      "POSS1 Red" { set catal poss1_red }
+      "POSS1 Blue" { set catal poss1_blue }
+      "Quick-V" { set catal quickv }
+      "HST Phase 2 (GSC2)" { set catal phase2_gsc2 }
+      "HST Phase 2 (GSC1)" { set catal phase2_gsc1 }
+      default { set catal poss2ukstu_red }
     }
-    
-   
+
+
     set query [::http::formatQuery v $catal r $ra d $dec e J2000 h $param(hauteur) w $param(largeur) f fits c none fov NONE v3 ""]
 
     # Lance la requete 2
@@ -175,7 +175,7 @@ proc Charge_Objet_SIMBAD {objet} {
     # Récupération dans $html de l'image proprement dite.
     set html  [::http::data $token2]
     ::http::cleanup $token2
-  
+
     update
 
     # Enregistrement de l'image (en mémoire) dans un fichier
@@ -232,7 +232,7 @@ proc recuperation {} {
 
     # Ouverture du fichier des erreurs
     set ferreur [open notloaded.txt a]
-  
+
     set ligne "[clock format [clock seconds] -format "20%y %m %d - %X"] - "
     append ligne "Lors du chargement des objets $param(NomObjet)$param(debut) à $param(NomObjet)$param(fin) "
     append ligne "les objets suivants étaient manquant :"
@@ -250,24 +250,24 @@ proc recuperation {} {
       Charge_Objet_SIMBAD $param(NomObjet)$x
 
       # Affiche_Objet $param(NomObjet)$x
-    
+
       wm iconify .dialog
       focus -force .pre.f10.b2
       update
     }
 
     wm withdraw .dialog
-  
+
     # fermeture du fichier des erreurs
     puts $ferreur "-------------------------------------------------"
     close $ferreur
-  
+
     # restaure le répertoire de base
     cd $old_rep
 
     tk_messageBox -message "FIN DU TRAITEMENT"
   }
-  
+
   focus -force .pre.f10.b2
 }
 
@@ -290,7 +290,7 @@ proc active_proxy {} {
 
 proc active_objet {} {
   global param
-  
+
   if { $param(NomObjet) == "M" } {
     .pre.f02.l1 configure -text "Objets : Messier $param(debut) à Messier $param(fin)"
    }
@@ -300,12 +300,12 @@ proc active_objet {} {
   if { $param(NomObjet) == "IC" } {
     .pre.f02.l1 configure -text "Objets : IC$param(debut) à IC$param(fin)"
    }
-  
+
   return 1
 }
 
 proc ajout_ini {fic} {
-  
+
   if { [file extension $fic] != ".ini" } {
     return "${fic}.ini"
   } else {
@@ -315,36 +315,36 @@ proc ajout_ini {fic} {
 
 proc ouvrir {} {
   global param
-  
+
   set fichier [tk_getOpenFile -title "Ouvrir un fichier de paramètres" \
     -filetypes {{{Fichier paramètres} {.ini}} } \
     -initialdir "c:/" ]
 
   # crée un interpréteur
   set tmpinterp [interp create]
-  
+
   # interprète le fichier de paramètres
   catch {interp eval $tmpinterp "source \"$fichier\""}
-  
+
   # charge dans le tableau param_temp les données de l'interpréteur temporaire
   array set param_temp [interp eval $tmpinterp "array get param"]
 
   # supprime l'interpreteur temporaire
   interp delete $tmpinterp
-  
+
   # charge dans param de l'interpréteur courant les valeur du param_temp
   array set param [array get param_temp]
-  
+
   active_proxy
 }
 
 proc enregistrer {} {
   global param
-  
+
   set fichier [tk_getSaveFile -title "Sauvegarder un fichier de paramètres" \
     -filetypes {{{Fichier paramètres} {.ini}} } \
     -initialdir "c:/" ]
-    
+
   set fp [open [ajout_ini ${fichier}] w]
   foreach a [array names param] {
     puts $fp "set param($a) \"[lindex [array get param $a] 1]\""
@@ -366,7 +366,7 @@ proc getdirname { {titre  "Selectionnez un repertoire"} { repinit "C:/" } { crea
     }
     set dirname $folder
   }
-  
+
   # Création du répertoire si inexistant et si creat vaut 'y'
   if { $dirname != "" } {
     if { $creat == "y" } {
@@ -375,14 +375,14 @@ proc getdirname { {titre  "Selectionnez un repertoire"} { repinit "C:/" } { crea
       }
     }
   }
-  
+
   return $dirname
-}  
+}
 proc getdir {} {
   global param
-  
+
   set old_dir $param(rep)
-  
+
   set rep [getdirname]
   if { $rep != "" } {
     set param(rep) $rep
@@ -391,10 +391,10 @@ proc getdir {} {
 
 proc quitter {} {
   global ferreur old_rep
-  
+
   # Restaure le répertoire initial
   catch {cd $old_rep}
-  
+
   destroy .dialog
   destroy .pre
 }
@@ -475,16 +475,16 @@ pack configure .pre.f02.l1 -side left
 #listbox .pre.frl.lb -listvariable {{POSS2/UKSTU Red}{POSS2/UKSTU Blue}{POSS2/UKSTU IR}{POSS1 Red}{POSS1 Blue}{Quick-V}{HST Phase 2 (GSC2)}{HST Phase 2 (GSC1)}} -state normal -height 3
 #pack configure .pre.frl.lb -side left
 
-  #  <option value="poss2ukstu_red" selected>	POSS2/UKSTU Red</option>
-  #  <option value="poss2ukstu_blue" >		POSS2/UKSTU Blue</option>
-  #  <option value="poss2ukstu_ir" >		POSS2/UKSTU IR</option>
-  #  <option value="poss1_red" >		POSS1 Red</option>
-  #  <option value="poss1_blue" >		POSS1 Blue</option>
-  #  <option value="quickv" >			Quick-V</option>
-  #  <option value="phase2_gsc2" >		HST Phase 2 (GSC2)</option>
-  #  <option value="phase2_gsc1" >		HST Phase 2 (GSC1)</option>
+  #  <option value="poss2ukstu_red" selected>   POSS2/UKSTU Red</option>
+  #  <option value="poss2ukstu_blue" >          POSS2/UKSTU Blue</option>
+  #  <option value="poss2ukstu_ir" >            POSS2/UKSTU IR</option>
+  #  <option value="poss1_red" >                POSS1 Red</option>
+  #  <option value="poss1_blue" >               POSS1 Blue</option>
+  #  <option value="quickv" >                   Quick-V</option>
+  #  <option value="phase2_gsc2" >              HST Phase 2 (GSC2)</option>
+  #  <option value="phase2_gsc1" >              HST Phase 2 (GSC1)</option>
 
-frame       .pre.lb -borderwidth 2 
+frame       .pre.lb -borderwidth 2
 # -relief groove
 pack configure .pre.lb -side top -fill x
 listbox     .pre.lb.lb1 -width 25 -height 5 -borderwidth 2 -relief sunken -yscrollcommand [list .pre.lb.scrollbar set]
@@ -509,7 +509,7 @@ pack configure .pre.f1 -side top -fill x
 label .pre.f1.l1 -text {Largeur image en arcmin :}
 pack configure .pre.f1.l1 -side left
 entry .pre.f1.e1 -textvariable param(largeur)
-pack configure .pre.f1.e1 -side left 
+pack configure .pre.f1.e1 -side left
 
 # hauteur image
 frame .pre.f2 -borderwidth 5
@@ -518,7 +518,7 @@ pack configure .pre.f2 -side top -fill x
 label .pre.f2.l2 -text {Hauteur image en arcmin :}
 pack configure .pre.f2.l2 -side left
 entry .pre.f2.e2 -textvariable param(hauteur)
-pack configure .pre.f2.e2 -side left 
+pack configure .pre.f2.e2 -side left
 
 # répertoire
 frame .pre.f3 -borderwidth 5
@@ -527,7 +527,7 @@ pack configure .pre.f3 -side top -fill x
 label .pre.f3.l3 -text {Répertoire de destination :}
 pack configure .pre.f3.l3 -side left
 entry .pre.f3.e3 -textvariable param(rep) -width 40
-pack configure .pre.f3.e3 -side left 
+pack configure .pre.f3.e3 -side left
 button .pre.f3.b3 -text "..." -command  {getdir}
 pack .pre.f3.b3 -side left
 
@@ -538,7 +538,7 @@ pack configure .pre.f4 -side top -fill x
 label .pre.f4.l4 -text {Compressé image :}
 pack configure .pre.f4.l4 -side left
 checkbutton .pre.f4.cbcompresse -variable param(compresse) -onvalue yes -offvalue no
-pack configure .pre.f4.cbcompresse -side left 
+pack configure .pre.f4.cbcompresse -side left
 
 # proxy
 frame .pre.f5 -borderwidth 5
@@ -547,7 +547,7 @@ pack configure .pre.f5 -side top -fill x
 label .pre.f5.l5 -text {Proxy :}
 pack configure .pre.f5.l5 -side left
 checkbutton .pre.f5.cbproxy -variable param(proxy) -onvalue yes -offvalue no
-pack configure .pre.f5.cbproxy -side left 
+pack configure .pre.f5.cbproxy -side left
 .pre.f5.cbproxy configure -command {active_proxy; active_objet}
 set param(proxy) no
 
@@ -558,7 +558,7 @@ pack configure .pre.f6 -side top -fill x
 label .pre.f6.l6 -text {Nom Proxy :}
 pack configure .pre.f6.l6 -side left
 entry .pre.f6.e6 -textvariable param(proxyname)
-pack configure .pre.f6.e6 -side left 
+pack configure .pre.f6.e6 -side left
 
 # proxy - port
 frame .pre.f7 -borderwidth 5
@@ -567,7 +567,7 @@ pack configure .pre.f7 -side top -fill x
 label .pre.f7.l7 -text {Port Proxy :}
 pack configure .pre.f7.l7 -side left
 entry .pre.f7.e7 -textvariable param(proxyport)
-pack configure .pre.f7.e7 -side left 
+pack configure .pre.f7.e7 -side left
 
 # proxy - user
 frame .pre.f8 -borderwidth 5
@@ -576,7 +576,7 @@ pack configure .pre.f8 -side top -fill x
 label .pre.f8.l8 -text {User Proxy :}
 pack configure .pre.f8.l8 -side left
 entry .pre.f8.e8 -textvariable param(proxyuser)
-pack configure .pre.f8.e8 -side left 
+pack configure .pre.f8.e8 -side left
 
 # proxy - password
 frame .pre.f9 -borderwidth 5
