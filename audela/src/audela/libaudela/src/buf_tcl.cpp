@@ -100,6 +100,8 @@ int cmdSaveJpg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdUnifyBg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdSubStars(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTtFitellip(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 // Fonctions Libtt de Delphine mises ici pour cause de redimensionnement d'image
 // Temporaire ?
@@ -130,6 +132,7 @@ static struct cmditem cmdlist[] = {
    {"delkwd",(Tcl_CmdProc *)cmdDelKwd},
    {"delkwds",(Tcl_CmdProc *)cmdDelKwds},
    {"extension", (Tcl_CmdProc *)cmdExtension},
+   {"fitellip", (Tcl_CmdProc *)cmdTtFitellip},
    {"fitgauss", (Tcl_CmdProc *)cmdFitGauss},
    {"fitgauss2d", (Tcl_CmdProc *)cmdFitGauss2d},
    {"flux", (Tcl_CmdProc *)cmdAstroPhot},
@@ -172,6 +175,7 @@ static struct cmditem cmdlist[] = {
    {"setpixels", (Tcl_CmdProc *)cmdSetPixels},
    {"slitcentro", (Tcl_CmdProc *)cmdSlitCentro},
    {"sub", (Tcl_CmdProc *)cmdTtSub},
+   {"substars", (Tcl_CmdProc *)cmdSubStars},
    {"stat", (Tcl_CmdProc *)cmdTtStat},
    {"synthegauss", (Tcl_CmdProc *)cmdGauss},
    {"type", (Tcl_CmdProc *)cmdType},
@@ -4710,5 +4714,200 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       }
       Tcl_Free((char*)listArgv);
    }
+   return retour;
+}
+
+int cmdSubStars(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   CBuffer *buffer;          // Buffer de travail pour cette fonction.
+   char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
+   int retour;               // Code d'erreur de retour.
+   int n=0;
+   ligne = new char[1000];
+   FILE *fascii;
+   int indexcol_x=-1, indexcol_y=-1, indexcol_bg=-1;
+   double radius=4;
+   double xc_exclu=-1, yc_exclu=-1, radius_exclu=0;
+
+   retour=TCL_OK;
+   if((argc<7)||((argc>=8)&&(argc<10))) {
+      sprintf(ligne,"Usage: %s %s ascii_file indexcol_x indexcol_y indexcol_background radius ?xc_exclu yc_exclu r_exclu?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      fascii=fopen(argv[2],"rt");
+      if (fascii==NULL) {
+         sprintf(ligne,"File %s does not exist.",argv[2]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+      else if(Tcl_GetInt(interp,argv[3],&indexcol_x)!=TCL_OK) {
+         strcpy(ligne,"indexcol_x must be an integer (or -1 if not defined)");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+      else if (Tcl_GetInt(interp,argv[4],&indexcol_y)!=TCL_OK) {
+         strcpy(ligne,"indexcol_x must be an integer (or -1 if not defined)");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+      else if( Tcl_GetInt(interp,argv[5],&indexcol_bg)!=TCL_OK) {
+         strcpy(ligne,"indexcol_background must be an integer (or -1 if not defined)");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+      else if (Tcl_GetDouble(interp,argv[6],&radius)!=TCL_OK) {
+         strcpy(ligne,"radius must be a float");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+      if (argc>=10) {
+         if (Tcl_GetDouble(interp,argv[7],&xc_exclu)!=TCL_OK) {
+            strcpy(ligne,"xc_exclu must be a float");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+         else if (Tcl_GetDouble(interp,argv[8],&yc_exclu)!=TCL_OK) {
+            strcpy(ligne,"yc_exclu must be a float");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+         else if (Tcl_GetDouble(interp,argv[9],&radius_exclu)!=TCL_OK) {
+            strcpy(ligne,"radius_exclu must be a float");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      }
+      if (retour == TCL_OK) {
+         buffer = (CBuffer*)clientData;
+         try {
+            buffer->SubStars(fascii,indexcol_x,indexcol_y,indexcol_bg,radius,xc_exclu,yc_exclu,radius_exclu,&n);
+         } catch(const CError& e) {
+            sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+         sprintf(ligne,"%d",n);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      }
+      fclose(fascii);
+   }
+   delete ligne;
+   return retour;
+}
+
+//==============================================================================
+// buf$i fitellip --
+//   Ajustement par des ellipses
+//
+int cmdTtFitellip(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   CBuffer *buffer;
+   char *ligne;
+   int retour = TCL_OK;
+   char **listArgv;          // Liste des argulents passes a getpix.
+   int listArgc;             // Nombre d'elements dans la liste des coordonnees.
+   int x1, y1, x2, y2;      // Coordonnees de la fenetre.
+   int naxis1,naxis2,temp;
+   double threshold=0.,background=0.,xc=-1.,yc=-1.;
+
+   ligne = new char[1000];
+
+   if(argc<3) {
+      sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2} ?threshold? ?background? ?xc yc?",argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      retour = TCL_ERROR;
+   } else {
+      buffer = (CBuffer*)clientData;
+      if (argc>=3) {
+         if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
+            sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else if(listArgc<4) {
+            sprintf(ligne,"Window struct not valid (not a list?) : must be {x1 y1 x2 y2}");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         } else {
+            if(Tcl_GetInt(interp,listArgv[0],&x1)!=TCL_OK) {
+               sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2}\nx1 must be an integer",argv[0],argv[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+            } else if(Tcl_GetInt(interp,listArgv[1],&y1)!=TCL_OK) {
+               sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2}\ny1 must be an integer",argv[0],argv[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+            } else if(Tcl_GetInt(interp,listArgv[2],&x2)!=TCL_OK) {
+               sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2}\nx2 must be an integer",argv[0],argv[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+            } else if(Tcl_GetInt(interp,listArgv[3],&y2)!=TCL_OK) {
+               sprintf(ligne,"Usage: %s %s {x1 y1 x2 y2}\ny2 must be an integer",argv[0],argv[1]);
+               Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+               retour = TCL_ERROR;
+            }
+            naxis1 = buffer->GetW();
+            naxis2 = buffer->GetH();
+            if (x1<1) {x1=1;}
+            if (x2<1) {x2=1;}
+            if (y1<1) {y1=1;}
+            if (y2<1) {y2=1;}
+            if (x1>naxis1) {x1=naxis1;}
+            if (x2>naxis1) {x2=naxis1;}
+            if (y1>naxis2) {y1=naxis2;}
+            if (y2>naxis2) {y2=naxis2;}
+            if (x1 > x2) {
+               temp = x1;
+               x1 = x2;
+               x2 = temp;
+            }
+            if (y1 > y2) {
+               temp = y1;
+               y1 = y2;
+               y2 = temp;
+            }
+         }
+      }
+      if (argc>=4) {
+         if (Tcl_GetDouble(interp,argv[3],&threshold)!=TCL_OK) {
+            strcpy(ligne,"threshold must be a float");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      }
+      if (argc>=5) {
+         if (Tcl_GetDouble(interp,argv[4],&background)!=TCL_OK) {
+            strcpy(ligne,"background must be a float");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      }
+      if (argc>=7) {
+         if (Tcl_GetDouble(interp,argv[5],&xc)!=TCL_OK) {
+            strcpy(ligne,"xc must be a float");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+         if (Tcl_GetDouble(interp,argv[6],&yc)!=TCL_OK) {
+            strcpy(ligne,"yc must be a float");
+            Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+            retour = TCL_ERROR;
+         }
+      }
+      // Appel a la methode du buffer
+      sprintf(ligne,"FITELLIP X1=%d X2=%d Y1=%d Y2=%d XCENTER=%f YCENTER=%f BACKGROUND=%f FITORDER6543=0000 FILE_ASCII=fitellip.txt THRESHOLD=%f",x1,x2,y1,y2,xc,yc,background,threshold);
+      try {
+         buffer->TtImaSeries(ligne);
+         strcpy(ligne,"");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_OK;
+      } catch(const CError& e) {
+         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         retour = TCL_ERROR;
+      }
+   }
+
+   delete ligne;
    return retour;
 }
