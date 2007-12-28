@@ -4,7 +4,7 @@
 # Observation en automatique
 # Camera : Script optimise pour une Audine Kaf-0400 pilotee par un port parallele
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: titania.tcl,v 1.4 2007-06-08 14:58:58 robertdelmas Exp $
+# Mise a jour $Id: titania.tcl,v 1.5 2007-12-28 11:21:35 robertdelmas Exp $
 #
 
 global audace
@@ -50,7 +50,7 @@ set name [format "%04d%02d%02d%02d%02d" [lindex $name 0] [lindex $name 1] [linde
 
 #--- Acquisition du scan et gestion de l'obturateur
 catch {cam$audace(camNo) shutter opened}
-cam$audace(camNo) scan $w $h $binx $dt -biny $biny -firstpix $firstpix -fast $speed -tmpfile 
+cam$audace(camNo) scan $w $h $binx $dt -biny $biny -firstpix $firstpix -fast $speed -tmpfile
 bell
 catch {cam$audace(camNo) shutter synchro}
 
