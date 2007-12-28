@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.4 2007-01-20 11:39:29 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.5 2007-12-28 11:37:10 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -42,7 +42,7 @@ proc caption_def { langage } {
      set texte(tuto_about1) "Tutorial for the Audine Camera\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
    }
    if {[string compare $langage french] ==0 } {
-     set caption(main_title) "Tuto : Un tutorial pour les débutants en CCD"   
+     set caption(main_title) "Tuto : Un tutorial pour les débutants en CCD"
      set caption(tuto_about) "A propos..."
      set caption(tuto_quit)  "Quitter"
      set caption(tuto_tools) "Outils"
@@ -166,9 +166,9 @@ if {[info command .main.textFrame] == "" } {
    frame .main.textFrame
    scrollbar .main.s -orient vertical -command {.main.t yview} -highlightthickness 0 \
        -takefocus 1
-   text .main.t -yscrollcommand {.main.s set} -wrap word -font $font 
+   text .main.t -yscrollcommand {.main.s set} -wrap word -font $font
    #\
-   #    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0 
+   #    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 }
 pack .main.s -in .main.textFrame -side right -fill y
 pack .main.t -in .main.textFrame -expand yes -fill both -padx 1
@@ -232,7 +232,7 @@ set lastLine ""
 # Create the text for the text widget.
 
 .main.t insert end "$texte(tuto_1)\n\n" title
-.main.t insert end "$texte(tuto_2)\n\n" 
+.main.t insert end "$texte(tuto_2)\n\n"
 
 .main.t insert end "$texte(tuto_3)" title
 .main.t insert end " \n " {demospace}
@@ -356,8 +356,8 @@ proc aboutBox {} {
 $texte(tuto_about1)
 }
 
-bind .main <Destroy> { 
-   destroy . 
+bind .main <Destroy> {
+   destroy .
    exit
 }
 

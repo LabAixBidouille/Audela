@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.cool.tcl,v 1.4 2007-01-20 11:29:51 robertdelmas Exp $
+# Mise a jour $Id: tuto.cool.tcl,v 1.5 2007-12-28 11:37:09 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -24,7 +24,7 @@ if {[string compare $langage english] ==0 } {
   set texte(firstdark_1) "Cooling the Camera"
   set texte(firstdark_2) "To improve image quality, it is recommended to cool the CCD camera"
   set texte(firstdark_3) "To cool the camera, first switch on the fan, then\
-press the Peltier button to start the cooling.  Wait a few minutes for the camera to be cooled.  Check there is no frost\ 
+press the Peltier button to start the cooling.  Wait a few minutes for the camera to be cooled.  Check there is no frost \
 on the CCD chip.\n
 The photograph shows the front face of the power supply box for the Audine camera with the buttons\
 to be actuated.\n
@@ -51,7 +51,7 @@ if {[string compare $langage french] ==0 } {
   set texte(firstdark_1) "Refroidissement de la caméra"
   set texte(firstdark_2) "Afin d'augmenter la qualité des images, il est conseillé de refroidir la caméra CCD"
   set texte(firstdark_3) "Pour refroidir la caméra, commencer par mettre le ventilateur en fonctionnement puis\
-le bouton du Peltier en marche. Attendre quelques minutes que la caméra se soit refroidie. Vérifier aussi qu'il n'y a pas\ 
+le bouton du Peltier en marche. Attendre quelques minutes que la caméra se soit refroidie. Vérifier aussi qu'il n'y a pas \
 de givre qui se dépose sur le CCD.\n
 La photo montre la face avant du boîtier d'alimentation de la caméra Audine sur laquelle se trouvent les boutons\
 à actionner.\n
@@ -169,9 +169,9 @@ pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
     -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
-text .second.t -yscrollcommand {.second.s set} -wrap word -font $font 
+text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0 
+#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -249,7 +249,7 @@ set lastLine ""
 focus .second.s
 wm withdraw .main
 
-bind .second <Destroy> { 
+bind .second <Destroy> {
    wm deiconify .main
    destroy .second
 }

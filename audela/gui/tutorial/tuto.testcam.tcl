@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.testcam.tcl,v 1.4 2007-01-20 11:29:51 robertdelmas Exp $
+# Mise a jour $Id: tuto.testcam.tcl,v 1.5 2007-12-28 11:37:10 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -93,7 +93,7 @@ global caption   # texts of captions
 global texte     # texts of text aeras
 global zone      # window name of usefull screen parts
 
-caption_def_firstdark $langage 
+caption_def_firstdark $langage
 
 #--- definition of colors
 set color(back)       #101040
@@ -199,7 +199,7 @@ pack .second.second.frame_test.button_test \
 
 #--- Menu de nombre de boucles
 tk_optionMenu .second.second.frame_test.optionmenu1 \
-   nb "10000" " 1000" "    1" 
+   nb "10000" " 1000" "    1"
 .second.second.frame_test.optionmenu1 configure \
    -disabledforeground $color(text) -fg $color(text) \
    -activeforeground $color(text) \
@@ -224,7 +224,7 @@ pack .second.second.frame_test2.button_test2 \
 
 #--- Menu de nombre de boucles
 tk_optionMenu .second.second.frame_test2.optionmenu1 \
-   nb2 "3" "2" "1" "10" 
+   nb2 "3" "2" "1" "10"
 .second.second.frame_test2.optionmenu1 configure \
    -disabledforeground $color(text) -fg $color(text) \
    -activeforeground $color(text) \
@@ -239,9 +239,9 @@ pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
     -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
-text .second.t -yscrollcommand {.second.s set} -wrap word -font $font 
+text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0 
+#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -320,7 +320,7 @@ set lastLine ""
 focus .second.s
 wm withdraw .main
 
-bind .second <Destroy> { 
+bind .second <Destroy> {
    wm deiconify .main
    destroy .second
 }
