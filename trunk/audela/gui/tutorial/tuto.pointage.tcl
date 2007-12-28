@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.pointage.tcl,v 1.4 2007-01-20 11:39:29 robertdelmas Exp $
+# Mise a jour $Id: tuto.pointage.tcl,v 1.5 2007-12-28 11:37:09 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -69,7 +69,7 @@ global caption   # texts of captions
 global texte     # texts of text aeras
 global zone      # window name of usefull screen parts
 
-caption_def_firstdark $langage 
+caption_def_firstdark $langage
 
 #--- definition of colors
 set color(back)       #101040
@@ -153,13 +153,13 @@ set zone(red_button) .second.snap.red_button
 label .second.snap.label1 \
    -text $caption(description) \
    -fg $color(text) -bg $color(back) \
-   -font systemfixed -padx 10 -pady 4 
+   -font systemfixed -padx 10 -pady 4
 pack .second.snap.label1 \
    -in .second.snap -anchor center -expand 1 -fill both -side top
 
 #--- create the widget to select the integration time
 tk_optionMenu .second.snap.optionmenu1 \
-   exposure "1 s" "10 s" "30 s" "60 s" 
+   exposure "1 s" "10 s" "30 s" "60 s"
 .second.snap.optionmenu1 configure \
    -disabledforeground $color(text) -fg $color(text) \
    -activeforeground $color(text) \
@@ -194,7 +194,7 @@ frame .second.snap.frame2 -bg $color(back) -height 10
 pack .second.snap.frame2 -in .second.snap -expand 1 -fill x -side top -anchor center
 
 #--- create a widget image in a canvas to display that of the visu space
-$zone(image1) create image 1 1 -image image1 -anchor nw -tag img1 
+$zone(image1) create image 1 1 -image image1 -anchor nw -tag img1
 
 #
 
@@ -203,9 +203,9 @@ pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
     -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
-text .second.t -yscrollcommand {.second.s set} -wrap word -font $font 
+text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0 
+#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -283,7 +283,7 @@ set lastLine ""
 .second.t configure -state disabled
 focus .second.s
 
-bind .second <Destroy> { 
+bind .second <Destroy> {
    wm deiconify .main
    destroy .second
 }
@@ -292,7 +292,7 @@ bind .second <Destroy> {
 # procedure to acquire an image
 ##################################################################
 proc acquisition_firstdark {exposure} {
-   #--- shared variables 
+   #--- shared variables
    global num
    global caption
    global zone
@@ -300,7 +300,7 @@ proc acquisition_firstdark {exposure} {
    #--- Change the red button text
    $zone(red_button) configure -text $caption(wait) -relief groove
    grab $zone(red_button)
-   update 
+   update
 
    #--- The image from this cam will be transfered to that buffer
    cam$num(cam1) buf $num(buf1)
@@ -318,7 +318,7 @@ proc acquisition_firstdark {exposure} {
 
    #--- Change the red button text
    $zone(red_button) configure -text $caption(compute) -relief groove
-   update 
+   update
 
    #--- get statistics from the acquired image
    set myStatistics [buf$num(buf1) stat]
@@ -338,7 +338,7 @@ proc acquisition_firstdark {exposure} {
    #--- get statistics from the acquired image
    set myStatistics [buf$num(buf1) stat]
    set mean_therm [lrange $myStatistics 4 4]
- 
+
    set th_level [expr ${mean_therm}/${expos}]
    # --- .second.snap.frame1.label1 configure -text "$caption(thermlevel) [format %5.2f $th_level] /s"
    if {$max_dark == 0} {

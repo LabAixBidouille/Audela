@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.biasdark.tcl,v 1.4 2007-01-20 11:29:51 robertdelmas Exp $
+# Mise a jour $Id: tuto.biasdark.tcl,v 1.5 2007-12-28 11:37:09 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -75,7 +75,7 @@ global caption   # texts of captions
 global texte     # texts of text aeras
 global zone      # window name of usefull screen parts
 
-caption_def_biasdark $langage 
+caption_def_biasdark $langage
 
 #--- definition of colors
 set color(back)       #101040
@@ -159,7 +159,7 @@ set zone(red_button) .second.snap.red_button
 label .second.snap.label1 \
    -text $caption(description) \
    -fg $color(text) -bg $color(back) \
-   -font systemfixed -padx 10 -pady 4 
+   -font systemfixed -padx 10 -pady 4
 pack .second.snap.label1 \
    -in .second.snap -anchor center -expand 1 -fill both -side top
 
@@ -200,7 +200,7 @@ frame .second.snap.frame2 -bg $color(back) -height 10
 pack .second.snap.frame2 -in .second.snap -expand 1 -fill x -side top -anchor center
 
 #--- create a widget image in a canvas to display that of the visu space
-$zone(image1) create image 1 1 -image image1 -anchor nw -tag img1 
+$zone(image1) create image 1 1 -image image1 -anchor nw -tag img1
 
 #
 
@@ -209,9 +209,9 @@ pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
     -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
-text .second.t -yscrollcommand {.second.s set} -wrap word -font $font 
+text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0 
+#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -289,7 +289,7 @@ set lastLine ""
 .second.t configure -state disabled
 focus .second.s
 
-bind .second <Destroy> { 
+bind .second <Destroy> {
    wm deiconify .main
    destroy .second
 }
@@ -298,18 +298,18 @@ bind .second <Destroy> {
 # procedure to acquire an image
 ##################################################################
 proc acquisition_biasdark {exposure} {
-   #--- shared variables 
+   #--- shared variables
    global num
    global caption
    global zone
    set nbi 10
-   
+
    set expos 0
    for {set k 1} {$k<=$nbi} {incr k} {
       #--- Change the red button text
       $zone(red_button) configure -text "$caption(wait) " -relief groove
       grab $zone(red_button)
-      update 
+      update
       .second.snap.label1 configure -text "$caption(gobias)"
       .second.snap.frame1.label2 configure -text "BIAS : $k/$nbi"
       update
@@ -329,12 +329,12 @@ proc acquisition_biasdark {exposure} {
 
       #--- Change the red button text
       $zone(red_button) configure -text $caption(compute) -relief groove
-      update 
+      update
 
       #--- get statistics from the acquired image
       set myStatistics [buf$num(buf1) stat]
       set max_dark [lrange $myStatistics 2 2]
-   
+
       #--- and display it with the right thresholds
       set lc [lrange $myStatistics 1 1]
       if {$lc < 0} { set lc 0 }
@@ -357,7 +357,7 @@ proc acquisition_biasdark {exposure} {
       #--- Change the red button text
       $zone(red_button) configure -text "$caption(wait) " -relief groove
       grab $zone(red_button)
-      update 
+      update
       .second.snap.label1 configure -text "$caption(godarks)"
       .second.snap.frame1.label2 configure -text "DARK $exposure : $k/$nbi"
       update
@@ -377,12 +377,12 @@ proc acquisition_biasdark {exposure} {
 
       #--- Change the red button text
       $zone(red_button) configure -text $caption(compute) -relief groove
-      update 
+      update
 
       #--- get statistics from the acquired image
       set myStatistics [buf$num(buf1) stat]
       set max_dark [lrange $myStatistics 2 2]
-   
+
       #--- and display it with the right thresholds
       set lc [lrange $myStatistics 1 1]
       if {$lc < 0} { set lc 0 }
