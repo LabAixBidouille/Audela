@@ -4,7 +4,7 @@
 # Description : Script pour la photométrie d'astéroïdes ou d'étoiles variables
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.6 2007-10-01 19:10:51 alainklotz Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.7 2007-12-28 10:29:09 alainklotz Exp $
 
 # Définition d'un espace réservé à ce script
 catch {namespace delete ::Calaphot}
@@ -980,7 +980,7 @@ namespace eval ::CalaPhot {
     proc Centroide {} {
         global audace
         set rect [ ::confVisu::getBox $audace(visuNo) ]
-        if { $rec != "" } {
+        if { $rect != "" } {
             # Récupération des coordonnées de la boite de sélection
             set x1 [lindex $rect 0]
             set y1 [lindex $rect 1]
@@ -1644,7 +1644,7 @@ namespace eval ::CalaPhot {
     # pour trouver pourquoi il ne converge pas sur des etoiles tres
     # etalées comme celles du T80 de l'OHP).
     proc jm_fitgauss2db { bufno box } {
-      set temp [jm_fitgauss2d $bufNo $box]
+      set temp [jm_fitgauss2d $bufno $box]
       if {[lindex $temp 0] != 0} {
          # La modélisation est correcte
          return $temp
