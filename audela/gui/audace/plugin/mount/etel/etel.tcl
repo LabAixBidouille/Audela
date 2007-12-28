@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: etel.tcl,v 1.3 2007-12-22 11:43:03 robertdelmas Exp $
+# Mise a jour $Id: etel.tcl,v 1.4 2007-12-28 11:22:20 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -44,7 +44,7 @@ proc ::etel::getPluginType { } {
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::etel::getPluginOS { } {
-   return [ list Windows Linux Darwin ]
+   return [ list Windows ]
 }
 
 #
