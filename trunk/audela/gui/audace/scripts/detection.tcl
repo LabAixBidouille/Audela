@@ -77,14 +77,14 @@ Message console "${entete_ligne_console}$caption(detection,start_detection)\n"
 
 # On lit le fichier obj_detection.txt
 
-set input [open ".\\scripts\\detection\\obj_detection.txt" r] 
-set contents [split [read $input] \n] 
+set input [open ".\\scripts\\detection\\obj_detection.txt" r]
+set contents [split [read $input] \n]
 close $input
 
 # lecture des paramètres d'acquisition (les premières lignes du fichier)
 
 set numligne 0
-foreach obj $contents { 
+foreach obj $contents {
  set numligne [expr $numligne+1]
 
  # binning
@@ -145,15 +145,15 @@ for {set i 1} {$i<=$iterationdef} {incr i} {
 
  Message console "${entete_ligne_console}------------------------------ $caption(detection,serie) : ${i}\n"
  set numligne 0
- foreach obj $contents { 
+ foreach obj $contents {
   set numligne [expr $numligne+1]
 
   if {$numligne>=$numligne_coord1} {
    if {[lindex $obj 0]!="*"} {
-    set rah [lindex $obj 0] 
-    set ram [lindex $obj 1] 
-    set decd [lindex $obj 2] 
-    set decm [lindex $obj 3] 
+    set rah [lindex $obj 0]
+    set ram [lindex $obj 1]
+    set decd [lindex $obj 2]
+    set decm [lindex $obj 3]
     # Les champs suivants ne sont peut être pas renseignés (prise en compte des paramètres de l'entête)
     set binningspec [lindex $obj 4]
     set timeexposurespec [lindex $obj 5]
@@ -161,10 +161,10 @@ for {set i 1} {$i<=$iterationdef} {incr i} {
     set headingnamespec [lindex $obj 7]
    } else {
     # ligne précédée d'un caractère "*"
-    set rah [lindex $obj 1] 
-    set ram [lindex $obj 2] 
-    set decd [lindex $obj 3] 
-    set decm [lindex $obj 4] 
+    set rah [lindex $obj 1]
+    set ram [lindex $obj 2]
+    set decd [lindex $obj 3]
+    set decm [lindex $obj 4]
     # Les champs suivants ne sont peut être pas renseignés (prise en compte des paramètres de l'entête)
     set binningspec [lindex $obj 5]
     set timeexposurespec [lindex $obj 6]
@@ -172,8 +172,8 @@ for {set i 1} {$i<=$iterationdef} {incr i} {
     set headingnamespec [lindex $obj 8]
    }
 
-   set ra "${rah}h${ram}m" 
-   set dec "${decd}d${decm}m" 
+   set ra "${rah}h${ram}m"
+   set dec "${decd}d${decm}m"
 
    if {($binningspec!="") & ($timeexposurespec!="") & ($numberexposurespec!="") & ($headingnamespec!="")} {
     # On prend les paramètres spécifiques à la ligne
