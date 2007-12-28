@@ -2910,5 +2910,297 @@ void CBuffer::UnifyBg()
    pix->UnifyBg();
 }
 
+//***************************************************
+// SubStars
+//
+// - elimine les etoiles a partir d'un fichier ASCII en x,y
+// - n'élimine pas les etoiles a l'interieur d'un rayon centre xc,yc
+//
+//***************************************************
+void CBuffer::SubStars(FILE *fascii, int indexcol_x, int indexcol_y, int indexcol_bg, double radius, double xc_exclu, double yc_exclu, double radius_exclu,int *n)
+{
+   int naxis1, naxis2;
+   int i,j,x1,x2,y1,y2,col,nn,np;
+   double r2,dx,dy;
+   TYPE_PIXELS *ppix= NULL;
+   char ligne[300],*lig,sep[10];
+   double x,y,bg,bg1,bg2,bgg[4];
+   double xc1,xc2,yc1,yc2,a,b,c,aa,bb,sdelta,vx,vy,d,percent;
+   int nb;
 
+   naxis1=GetW();
+   naxis2=GetH();
 
+   // seulement pour les images non couleur
+   if( pix->getPixelClass() != CLASS_GRAY) {
+      throw CError(ELIBSTD_NOT_IMPLEMENTED);
+   }
+   naxis1 = pix->GetWidth();
+   naxis2 = pix->GetHeight();
+   ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
+   pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
+
+   radius_exclu=radius_exclu*radius_exclu;
+   strcpy(sep," ");
+   nn=0;
+   while (!feof(fascii)) {
+      if (fgets(ligne,300,fascii)==NULL) {
+         continue;
+      }
+      /* --- recherche les coordonnees x,y ---*/
+      x=-1;
+      y=-1;
+      bg=-1e9;
+      lig=strtok(ligne,sep);
+      col=1;
+      if (col==indexcol_x) { x=atof(lig)-1; }
+      if (col==indexcol_y) { y=atof(lig)-1; }
+      if (col==indexcol_bg) { bg=atof(lig); }
+      while (lig!=NULL) {
+         lig=strtok(NULL,sep);
+         if (lig!=NULL) {
+            col++;
+         } else {
+            break;
+         }
+         if (col==indexcol_x) { x=atof(lig)-1; }
+         if (col==indexcol_y) { y=atof(lig)-1; }
+         if (col==indexcol_bg) { bg=atof(lig); }
+      }
+      if ((x==-1)||(y==-1)) {
+         continue;
+      }
+      /* --- test si l'etoile est dans la zone d'exclusion ---*/
+      if (radius_exclu>0) {
+         dx=x-xc_exclu;
+         dy=y-yc_exclu;
+         r2=dx*dx+dy*dy;
+         if (r2<radius_exclu) {
+            continue;
+         }
+      }
+      /* --- test si le fond est connu ---*/
+      if (bg==-1e9) {
+         d=3*radius;
+         np=0;
+         percent=0.5;
+         if (radius_exclu>0) {
+            /* --- mesure le fond sur les cotes perpendiculaire a l'axe ---*/
+            vx=x-xc_exclu;
+            vy=y-yc_exclu;
+            if (fabs(vy)>1e-5) {
+               bb=(vx*x+vy*y)/vy;
+               aa=-vx/vy;
+               a=1+aa*aa;
+               b=2*aa*bb-2*x-2*aa*y;
+               c=x*x+(y-bb)*(y-bb)-d*d;
+               sdelta=sqrt(b*b-4*a*c);
+               xc1=(-b+sdelta)/2/a;
+               yc1=bb+aa*xc1;
+               xc2=(-b-sdelta)/2/a;
+               yc2=bb+aa*xc2;
+            } else {
+               bb=(vx*x+vy*y)/vx;
+               aa=-vy/vx;
+               a=1+aa*aa;
+               b=2*aa*bb-2*y-2*aa*x;
+               c=y*y+(x-bb)*(x-bb)-d*d;
+               sdelta=sqrt(b*b-4*a*c);
+               yc1=(-b+sdelta)/2/a;
+               xc1=bb+aa*yc1;
+               yc2=(-b-sdelta)/2/a;
+               xc2=bb+aa*yc2;
+            }
+            np=0;
+            bg=0.;
+            BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
+            BoxBackground(ppix,xc2,yc2,radius,percent,&nb,&bg2); if (nb>2) { bgg[np]=bg2; np++; }
+            if (np>0) { 
+               util_qsort_double(bgg,0,np,NULL);
+               bg=bgg[0];
+            }
+         }
+         if (np==0) {
+            bg=0.;
+            xc1=x-d; yc1=y;   BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
+            xc1=x  ; yc1=y-d; BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
+            xc1=x+d; yc1=y;   BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
+            xc1=x  ; yc1=y+d; BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
+            if (np>0) { 
+               util_qsort_double(bgg,0,np,NULL);
+               bg=bgg[0];
+            } else {
+               bg=0.;
+            }
+         }
+      }
+      /* --- remplace par la valeur du fond ---*/
+      x1=(int)floor(x-radius);
+      x2=(int)ceil(x+radius);
+      y1=(int)floor(y-radius);
+      y2=(int)ceil(y+radius);
+      if (x1<0) { x1=0; }
+      if (x2>naxis1-1) { x2=naxis1-1; }
+      if (y1<0) { y1=0; }
+      if (y2>naxis2-1) { y2=naxis2-1; }
+      for(i=x1;i<x2;i++) {
+         dx=i-x;
+         for(j=y1;j<y2;j++) {
+            dy=j-y;
+            r2=sqrt(dx*dx+dy*dy);
+            if (r2<radius) {
+               *(ppix+naxis1*j+i)=(TYPE_PIXELS)(bg);
+            }
+         }
+      }
+      nn++;
+   }
+   *n=nn;
+
+   //  memorisation des pixels
+   SetPixels(PLANE_GREY, naxis1, naxis2, FORMAT_FLOAT, COMPRESS_NONE, ppix, 0, 0, 0);
+
+   free(ppix);
+
+}
+
+void CBuffer::BoxBackground(TYPE_PIXELS *ppix,double xc,double yc,double radius,double percent,int *nb,double *bg)
+{
+   int naxis1,naxis2;
+   int i,j,x1,x2,y1,y2,n,nn;
+   double r2,dx,dy,*vec=NULL;
+
+   *bg=0.;
+   if (percent<0) { percent=0.; }
+   if (percent>1) { percent=1.; }
+   vec=(double*)calloc((int)((2*ceil(radius)+1)*(2*ceil(radius)+1)),sizeof(double));
+   naxis1 = pix->GetWidth();
+   naxis2 = pix->GetHeight();
+   x1=(int)floor(xc-radius);
+   x2=(int)ceil(xc+radius);
+   y1=(int)floor(yc-radius);
+   y2=(int)ceil(yc+radius);
+   if (x1<0) { x1=0; }
+   if (x2>naxis1-1) { x2=naxis1-1; }
+   if (y1<0) { y1=0; }
+   if (y2>naxis2-1) { y2=naxis2-1; }
+   n=0;
+   for(i=x1;i<x2;i++) {
+      dx=i-xc;
+      for(j=y1;j<y2;j++) {
+         dy=j-yc;
+         r2=sqrt(dx*dx+dy*dy);
+         if (r2<radius) {
+            vec[n]=(double)*(ppix+naxis1*j+i);
+            n++;
+         }
+      }
+   }
+   if (n>0) {
+      util_qsort_double(vec,0,n,NULL);
+      nn=(int)(floor((n-1)*percent));
+      *bg=vec[nn];
+   }
+   *nb=n;
+   free(vec);
+}
+
+int CBuffer::util_qsort_double(double *x,int kdeb,int n,int *index)
+/***************************************************************************/
+/* Quick sort pour un tableau de double                                    */
+/***************************************************************************/
+/* x est le tableau qui commence a l'indice 1                              */
+/* kdeb la valeur de l'indice a partir duquel il faut trier                */
+/* n est le nombre d'elements                                              */
+/* index est le tableau des indices une fois le tri effectue (=NULL si on  */
+/*  ne veut pas l'utiliser).                                               */
+/***************************************************************************/
+{
+   double qsort_r[50],qsort_l[50];
+   int s,l,r,i,j,kfin;
+   double v,w;
+   int wi;
+   int kt1,kt2,kp;
+   double m,a;
+   int mi,ai;
+   kfin=n+kdeb-1;
+   /* --- retour immediat si n==1 ---*/
+   if (n==1) { return(0); }
+   if (index!=NULL) {
+      /*--- effectue un tri simple si n<=15 ---*/
+      if (n<=15) {
+         for (kt1=kdeb;kt1<kfin;kt1++) {
+            m=x[kt1];
+            mi=index[kt1];
+            kp=kt1;
+            for (kt2=kt1+1;kt2<=kfin;kt2++) {
+               if (x[kt2]<m) {
+                  m=x[kt2];
+                  mi=index[kt2];
+                  kp=kt2;
+               }
+            }
+            a=x[kt1];x[kt1]=m;x[kp]=a;
+            ai=index[kt1];index[kt1]=mi;index[kp]=ai;
+         }
+         return(0);
+      }
+      /*--- trie le tableau dans l'ordre croissant avec quick sort ---*/
+      s=kdeb; qsort_l[kdeb]=kdeb; qsort_r[kdeb]=kfin;
+      do {
+         l=(int)(qsort_l[s]); r=(int)(qsort_r[s]);
+         s=s-1;
+         do {
+            i=l; j=r;
+            v=x[(int) (floor((double)(l+r)/(double)2))];
+            do {
+               while (x[i]<v) {i++;}
+               while (v<x[j]) {j--;}
+               if (i<=j) {
+                  w=x[i];x[i]=x[j];x[j]=w;
+                  wi=index[i];index[i]=index[j];index[j]=wi;
+                  i++; j--;
+               }
+            } while (i<=j);
+            if ((j-l)>=(r-i)) {if (i<r) {s++ ; qsort_l[s]=i ; qsort_r[s]=r;} r=j; } else { if (l<j) {s++ ; qsort_l[s]=l ; qsort_r[s]=j;} l=i; }
+         } while (l<r);
+      } while (s!=(kdeb-1)) ;
+      return(0);
+   } else {
+      /*--- effectue un tri simple si n<=15 ---*/
+      if (n<=15) {
+         for (kt1=kdeb;kt1<kfin;kt1++) {
+            m=x[kt1];
+            kp=kt1;
+            for (kt2=kt1+1;kt2<=kfin;kt2++) {
+               if (x[kt2]<m) {
+                  m=x[kt2];
+                  kp=kt2;
+               }
+            }
+            a=x[kt1];x[kt1]=m;x[kp]=a;
+         }
+         return(0);
+      }
+      /*--- trie le tableau dans l'ordre croissant avec quick sort ---*/
+      s=kdeb; qsort_l[kdeb]=kdeb; qsort_r[kdeb]=kfin;
+      do {
+         l=(int)(qsort_l[s]); r=(int)(qsort_r[s]);
+         s=s-1;
+         do {
+            i=l; j=r;
+            v=x[(int) (floor((double)(l+r)/(double)2))];
+            do {
+               while (x[i]<v) {i++;}
+               while (v<x[j]) {j--;}
+               if (i<=j) {
+                  w=x[i];x[i]=x[j];x[j]=w;
+                  i++; j--;
+               }
+            } while (i<=j);
+            if ((j-l)>=(r-i)) {if (i<r) {s++ ; qsort_l[s]=i ; qsort_r[s]=r;} r=j; } else { if (l<j) {s++ ; qsort_l[s]=l ; qsort_r[s]=j;} l=i; }
+         } while (l<r);
+      } while (s!=(kdeb-1)) ;
+      return(0);
+   }
+}

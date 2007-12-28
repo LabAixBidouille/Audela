@@ -105,7 +105,8 @@ protected:
    float          initialMipsHi;
    static char    *FileFormatName [];
    char           temporaryRawFileName[255];
-
+   void BoxBackground(TYPE_PIXELS *ppix, double xc,double yc,double radius,double percent,int *nb, double *bg);
+   int util_qsort_double(double *x,int kdeb,int n,int *index);
 
 public:
    CBuffer();
@@ -214,6 +215,7 @@ public:
    void xy2radec(double x, double y, double *ra, double *dec,int order);
 
    void UnifyBg();
+   void SubStars(FILE *fascii, int indexcol_x, int indexcol_y, int indexcol_bg, double radius, double xc_exclu, double yc_exclu, double radius_exclu,int *n);
    void Window(int x1, int y1, int x2, int y2);
 
 };
