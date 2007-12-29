@@ -2,19 +2,17 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.13 2007-09-28 23:27:20 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.14 2007-12-29 10:57:19 robertdelmas Exp $
 #
 
 namespace eval camera {
-   variable private
    global audace
 
    #--- Autorise d'exporter la procedure acq
    namespace export acq
+
    #--- Chargement des captions
    source [ file join $audace(rep_caption) camera.cap ]
-   #--- Initialisation
-   set private(update) "0"
 
    #
    # acq exptime binning
@@ -212,7 +210,7 @@ namespace eval camera {
    # Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
    #
    proc gestionPose { Exposure GO_Stop { CameraName "" } { BufferName "" } } {
-      global audace conf
+      global audace
 
       #--- Correspond a un demarrage de la pose
       if { $GO_Stop == "1" } {
@@ -242,7 +240,7 @@ namespace eval camera {
    #
    # ::camera::dispTime_1 CameraName Proc_Avancement_pose
    # Decompte du temps d'exposition
-   # Utilisation dans les scripts : foc.tcl + snacq.tcl + tel.tcl
+   # Utilisation dans les scripts : acqfen.tcl + foc.tcl + snacq.tcl
    #
    proc dispTime_1 { CameraName { Proc_Avancement_pose "" } } {
 
@@ -381,29 +379,6 @@ namespace eval camera {
       }
    }
 
-   proc dispTime_3 { CameraName LabelTimeVariable { Proc_Avancement_pose "" } { visuNo "" } } {
-      global caption
-
-      set t "[ $CameraName timer -1 ]"
-      if { $t > "1" } {
-         set $LabelTimeVariable "[ expr $t-1 ] / [ format "%d" [ expr int([ $CameraName exptime ]) ] ]"
-         if { $Proc_Avancement_pose != "" } {
-            $Proc_Avancement_pose $visuNo $t
-         }
-         #--- j'attends une seconde et je  lance l'iteration suivante
-         after 1000 "::camera::dispTime_3 $CameraName $LabelTimeVariable $Proc_Avancement_pose $visuNo"
-      } else {
-         if { $t == -1 } {
-            set $LabelTimeVariable ""
-         } else {
-            set $LabelTimeVariable "$caption(camera,numerisation)"
-            if { $Proc_Avancement_pose != "" } {
-               $Proc_Avancement_pose $visuNo $t
-            }
-         }
-         update
-      }
-   }
 }
 
 #--- Importe la procedure acq dans le namespace global
