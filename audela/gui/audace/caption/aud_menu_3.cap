@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_3.cap
-# Mise a jour $Id: aud_menu_3.cap,v 1.31 2007-11-26 17:42:32 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.cap,v 1.32 2008-01-01 14:22:47 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -127,7 +127,7 @@ set caption(pretraitement,pas_renumerotation)           "The series was not renu
 set caption(pretraitement,renumerote_termine)           "File renumbering completed."
 set caption(pretraitement,numerotation_ok)              "Renumbering of the file series is correct."
 set caption(pretraitement,pas_fichier_manquant)         "No files are missing in this series."
-set caption(pretraitement,renumerote_manuel)            "If there are missing files in the series, file\nrenumbering must be performed manually."
+set caption(pretraitement,renumerote_manuel)            "There are missing files in the series, file\nrenumbering must be performed manually."
 set caption(pretraitement,indice_pas_1)                 "The first index in the series is not 1."
 set caption(pretraitement,fichier_indice_0)             "The file with index 0 has now the last index of the list."
 
@@ -255,7 +255,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(pretraitement,renumerote_termine)        "La renumérotation des fichiers est terminée."
    set caption(pretraitement,numerotation_ok)           "La numérotation de la série de fichiers est correcte."
    set caption(pretraitement,pas_fichier_manquant)      "Il n'y a pas de fichier manquant dans cette série."
-   set caption(pretraitement,renumerote_manuel)         "Si la série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
+   set caption(pretraitement,renumerote_manuel)         "La série a des fichiers manquants, la renumérotation\ndes fichiers doit être faite manuellement."
    set caption(pretraitement,indice_pas_1)              "Le premier indice de la série n'est pas 1."
    set caption(pretraitement,fichier_indice_0)          "Le fichier d'indice 0 porte désormais le dernier indice de la liste."
 
