@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.36 2007-10-14 15:50:42 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.37 2008-01-01 14:30:11 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2169,8 +2169,7 @@ namespace eval ::pretraitement {
       #--- Longueur de la liste des index
       set longueur_serie [ llength $liste_serie ]
       if { $index_serie != "" && $longueur_serie >= "1" } {
-         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-            -message "$caption(pretraitement,nom_generique_ok)"
+         ::console::disp "$caption(pretraitement,nom_generique_ok)\n\n"
       } else {
          tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
             -message "$caption(pretraitement,nom_generique_ko)"
@@ -2178,9 +2177,6 @@ namespace eval ::pretraitement {
          set nom_generique  ""
          set longueur_serie ""
          set indice_min     "1"
-         ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
-         ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
-         ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
          return [ list $nom_generique $longueur_serie $indice_min ]
       }
       #--- Identification du type de numerotation
@@ -2210,8 +2206,7 @@ namespace eval ::pretraitement {
                   -icon question -type yesno ]
                if { $choix == "yes" } {
                   renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,renumerote_termine)"
+                  ::console::disp "$caption(pretraitement,renumerote_termine)\n\n"
                } else {
                   tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                      -message "$caption(pretraitement,pas_renumerotation)"
@@ -2219,25 +2214,40 @@ namespace eval ::pretraitement {
                   set nom_generique  ""
                   set longueur_serie ""
                   set indice_min     "1"
-                  ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
-                  ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
-                  ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
                   return [ list $nom_generique $longueur_serie $indice_min ]
                }
             } else {
                #--- Il ne manque pas de fichiers dans la serie
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,numerotation_ok)\n$caption(pretraitement,pas_fichier_manquant)"
+               ::console::disp "$caption(pretraitement,numerotation_ok)\n$caption(pretraitement,pas_fichier_manquant)\n\n"
             }
+         #--- La serie ne commence pas par 1
          } else {
-            #--- La serie ne commence pas par 1
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,renumerote_manuel)"
+            #--- J'extrais la liste des index de la serie
+            set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+            if { $error == "0" } {
+               #--- Pour une serie du type 1 - 2 - 3 - etc.
+               set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+            } else {
+               #--- Pour une serie du type 01 - 02 - 03 - etc.
+               set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+            }
+            #--- J'extrais la longueur, le premier et le dernier indice de la serie
+            set longueur_serie [ llength $liste_serie ]
+            set indice_min [ lindex $liste_serie 0 ]
+            set indice_max [ lindex $liste_serie [ expr $longueur_serie - 1 ] ]
+            #--- Je signale l'absence d'index autre que 1
+            if { [ expr $indice_max - $indice_min + 1 ] != $longueur_serie } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                  -message "$caption(pretraitement,renumerote_manuel)"
+               #--- Sortie anticipee
+               set nom_generique  ""
+               set longueur_serie ""
+               set indice_min     "1"
+               return [ list $nom_generique $longueur_serie $indice_min ]
+            }
          }
+      #--- La serie commence par 0
       } else {
-         #--- La serie commence par 0
-         tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-            -message "$caption(pretraitement,indice_pas_1)"
          #--- Je recherche le dernier indice de la liste
          set dernier_indice [ expr [ lindex $liste_serie [ expr $longueur_serie - 1 ] ] + 1 ]
          #--- Je renumerote le fichier portant l'indice 0
@@ -2252,12 +2262,11 @@ namespace eval ::pretraitement {
          if { $etat_serie == "0" } {
             #--- Il manque des fichiers dans la serie, je propose de renumeroter la serie
             set choix [ tk_messageBox -title "$caption(pretraitement,attention)" \
-               -message "$caption(pretraitement,fichier_manquant)\n$caption(pretraitement,renumerotation)" \
+               -message "$caption(pretraitement,indice_pas_1)\n$caption(pretraitement,fichier_manquant)\n$caption(pretraitement,renumerotation)" \
                -icon question -type yesno ]
             if { $choix == "yes" } {
                renumerote $nom_generique -rep "$audace(rep_images)" -ext "$ext_serie"
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,renumerote_termine)\n$caption(pretraitement,fichier_indice_0)"
+               ::console::disp "$caption(pretraitement,renumerote_termine)\n$caption(pretraitement,fichier_indice_0)\n\n"
             } else {
                tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
                   -message "$caption(pretraitement,pas_renumerotation)\n$caption(pretraitement,fichier_indice_0)"
@@ -2265,15 +2274,11 @@ namespace eval ::pretraitement {
                set nom_generique  ""
                set longueur_serie ""
                set indice_min     "1"
-               ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
-               ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
-               ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
                return [ list $nom_generique $longueur_serie $indice_min ]
             }
          } else {
             #--- Il ne manque pas de fichiers dans la serie
-            tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-               -message "$caption(pretraitement,pas_fichier_manquant)\n$caption(pretraitement,fichier_indice_0)"
+            ::console::disp "$caption(pretraitement,indice_pas_1)\n$caption(pretraitement,pas_fichier_manquant)\n$caption(pretraitement,fichier_indice_0)\n\n"
          }
       }
       #--- J'extrais la liste des index de la serie
@@ -2285,10 +2290,9 @@ namespace eval ::pretraitement {
          #--- Pour une serie du type 01 - 02 - 03 - etc.
          set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
       }
-      #--- J'extrais le dernier indice de la serie
+      #--- J'extrais la longueur et le premier indice de la serie
       set longueur_serie [ llength $liste_serie ]
       set indice_min [ lindex $liste_serie 0 ]
-      set indice_max [ lindex $liste_serie [ expr $longueur_serie - 1 ] ]
       ::console::disp "$caption(pretraitement,liste_serie) $liste_serie \n\n"
       ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
       ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
