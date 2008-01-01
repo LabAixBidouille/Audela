@@ -52,13 +52,14 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - Nikon CoolPix (port serie) : Uniquement creee par l'outil Acquisition APN CoolPix.
 
 AudeLA est capable de piloter les montures suivantes :
-- LX200,
-- Ouranos (codeurs absolus),
-- AudeCom (ex-carte Kauffmann),
-- Temma (monture Takahashi avec module Temma),
 - ASCOM,
+- AudeCom (ex-carte Kauffmann),
 - Celestron,
-- N'importe quel telescope repondant au protocole LX200.
+- Delta Tau,
+- Etel,
+- LX200 ou n'importe quelle monture repondant au protocole LX200,
+- Ouranos (codeurs absolus),
+- Temma (monture Takahashi avec module Temma).
 
 AudeLA est capable de piloter les interfaces de communication suivantes :
 - AudiNet (interface Ethernet pour cameras Audine et telescopes LX200 : PicoWeb),
