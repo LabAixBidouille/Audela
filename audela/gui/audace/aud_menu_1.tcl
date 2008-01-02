@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.19 2007-12-04 22:55:35 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.20 2008-01-02 09:53:14 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -402,8 +402,7 @@ namespace eval ::newScript {
       variable Filename
       global audace caption newScript
 
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This
       } else {
