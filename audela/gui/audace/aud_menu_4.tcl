@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_4.tcl
 # Description : Script regroupant les fonctionnalites du menu Traitement
-# Mise a jour $Id: aud_menu_4.tcl,v 1.8 2007-05-15 21:53:58 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_4.tcl,v 1.9 2008-01-02 09:57:01 robertdelmas Exp $
 #
 
 namespace eval ::traiteFilters {
@@ -20,8 +20,7 @@ namespace eval ::traiteFilters {
       ::traiteFilters::initConf
       ::traiteFilters::confToWidget
       #---
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This
       } else {
