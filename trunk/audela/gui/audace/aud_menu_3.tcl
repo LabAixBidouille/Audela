@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.37 2008-01-01 14:30:11 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.38 2008-01-02 09:55:05 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -22,8 +22,7 @@ namespace eval ::pretraitement {
       #---
       set pretraitement(captionOperation) [ ::pretraitement::fonctionCaption "$type_pretraitement" ]
       #---
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This
       } else {
@@ -2322,8 +2321,7 @@ namespace eval ::traiteImage {
       #---
       set traiteImage(captionOperation) [ ::traiteImage::fonctionCaption "$type_pretraitement_image" ]
       #---
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This
       } else {
@@ -2822,8 +2820,7 @@ namespace eval ::traiteWindow {
       #---
       set traiteWindow(captionOperation) [ ::traiteWindow::fonctionCaption "$type_pretraitement" ]
       #---
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This
       } else {
@@ -3429,8 +3426,7 @@ namespace eval ::faireImageRef {
       #---
       set faireImageRef(captionOperation) [ ::faireImageRef::fonctionCaption "$type_image_reference" ]
       #---
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This
       } else {
