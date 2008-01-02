@@ -10,7 +10,8 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.2.0 - 10/10/2007"
+set spcaudace(version) "1.2.1 - 29/12/2007"
+#set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
 
