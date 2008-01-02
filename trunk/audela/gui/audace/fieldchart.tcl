@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.4 2007-05-15 21:53:08 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.5 2008-01-02 09:59:46 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -82,8 +82,7 @@ namespace eval ::mapWindow {
       ::mapWindow::initConf
       ::mapWindow::confToWidget
       #---
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This
       } else {
