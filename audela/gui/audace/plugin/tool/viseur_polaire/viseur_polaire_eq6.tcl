@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.6 2007-10-05 17:24:43 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.7 2008-01-02 10:00:57 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireEQ6 {
@@ -24,8 +24,7 @@ namespace eval viseurPolaireEQ6 {
       #--- Recupere les variables dans conf(...) si elles existent
       ::viseurPolaireEQ6::confToWidget
 
-      if { [ info exists This ] } {
-         wm withdraw $This
+      if { [ catch { wm withdraw $This } ] != "1" } {
          wm deiconify $This
          focus $This.but_fermer
       } else {
