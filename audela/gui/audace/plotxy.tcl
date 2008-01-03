@@ -2,7 +2,7 @@
 # Fichier : plotxy.tcl
 # Description : Realisation de graphes a partir de 2 listes de nombres
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: plotxy.tcl,v 1.5 2007-02-10 17:47:07 robertdelmas Exp $
+# Mise a jour $Id: plotxy.tcl,v 1.6 2008-01-03 22:05:08 robertdelmas Exp $
 #
 # La syntaxe est la plus proche possible de Matlab
 #
@@ -309,8 +309,10 @@ namespace eval ::plotxy {
       set baseplotxy $plotxy(fig$num,parent)
       set lastline $plotxy(fig$num,lastline)
       #--- show the graph of hide=0
-      if {$plotxy(fig$num,hide)==0} {
-         wm deiconify $baseplotxy
+      if { [ winfo exists $baseplotxy ] } {
+         if {$plotxy(fig$num,hide)==0} {
+            wm deiconify $baseplotxy
+         }
       }
       #--- decode the selected color
       set colorstring rgbk
