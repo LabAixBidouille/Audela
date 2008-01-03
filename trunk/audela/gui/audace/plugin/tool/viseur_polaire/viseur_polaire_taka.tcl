@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.8 2008-01-02 10:01:40 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.9 2008-01-03 22:04:35 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireTaka {
@@ -23,12 +23,13 @@ namespace eval viseurPolaireTaka {
       ::viseurPolaireTaka::initConf
       #--- Recupere les variables dans conf(...) si elles existent
       ::viseurPolaireTaka::confToWidget
-
-      if { [ catch { wm withdraw $This } ] != "1" } {
+      #---
+      set This $this
+      if { [ winfo exists $This ] } {
+         wm withdraw $This
          wm deiconify $This
          focus $This.but_fermer
       } else {
-         set This $this
          if { [ info exists viseurPolaireTaka(geometry) ] } {
             set deb [ expr 1 + [ string first + $viseurPolaireTaka(geometry) ] ]
             set fin [ string length $viseurPolaireTaka(geometry) ]
