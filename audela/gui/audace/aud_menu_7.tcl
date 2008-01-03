@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.8 2008-01-02 09:58:47 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.9 2008-01-03 22:03:29 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -16,11 +16,12 @@ namespace eval ::cwdWindow {
       global audace cwdWindow
 
       #---
-      if { [ catch { wm withdraw $This } ] != "1" } {
+      set This $this
+      if { [ winfo exists $This ] } {
+         wm withdraw $This
          wm deiconify $This
          focus $This
       } else {
-         set This $this
          set cwdWindow(dir_images) $audace(rep_images)
          set cwdWindow(dir_scripts) $audace(rep_scripts)
          set cwdWindow(dir_catalogues) $audace(rep_catalogues)
