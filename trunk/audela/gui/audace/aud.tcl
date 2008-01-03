@@ -2,13 +2,12 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.82 2007-12-22 12:38:20 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.83 2008-01-03 21:54:18 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
 
-#--- Chargement de scripts d'utilitaires
-source mclistbox.tcl
+#--- Chargement de script d'utilitaires
 source menu.tcl
 
 #--- Fichiers de audace
