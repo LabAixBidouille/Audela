@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.14 2007-12-18 22:32:48 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.15 2008-01-03 22:27:45 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -36,16 +36,13 @@ global audace
 
       set base [ ::confVisu::getBase $visuNo ]
 
-      if [ winfo exists $base.inittel ] {
-         destroy $base.inittel
-      }
-
       if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          #--- Neutralisation du bouton initialisation
          $Button_Init configure -relief groove -state disabled
          #--- Reset position telescope
          tel$audace(telNo) initcoord
 
+         #--- Creation d'une fenetre Toplevel
          toplevel $base.inittel
          wm transient $base.inittel $base
          wm resizable $base.inittel 0 0
@@ -72,7 +69,9 @@ global audace
             #--- Les coordonnees AD et Dec sont mises a jour a la fermeture de la fenetre
             ::telescope::afficheCoord
             #--- Activation du bouton initialisation
-            $::telescope::Button_Init configure -relief raised -state normal
+            if { [ winfo exists $::telescope::Button_Init ] } {
+               $::telescope::Button_Init configure -relief raised -state normal
+            }
          }
 
       } else {
@@ -81,6 +80,7 @@ global audace
          #--- Activation du bouton initialisation
          $Button_Init configure -relief raised -state normal
       }
+      #--- Les coordonnees AD et Dec sont mises a jour
       ::telescope::afficheCoord
    }
 
