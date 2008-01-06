@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.21 2008-01-03 18:43:31 michelpujol Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.22 2008-01-06 18:57:29 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -1395,10 +1395,10 @@ namespace eval ::confOptic {
    proc MAJ_Binning { camItem frm args } {
       variable widget
 
-      if {[winfo exists $frm] == 0 } {
+      #--- Teste l'existence de la fenetre
+      if { [ winfo exists $frm ] == 0 } {
          return
       }
-
       #--- Recherche du binning associe a la camera selectionnee
       if { $camItem != "0" } {
          set camNo [ ::confCam::getCamNo $camItem ]
