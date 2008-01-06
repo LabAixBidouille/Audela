@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.20 2007-12-18 22:27:17 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.21 2008-01-06 18:53:46 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -133,7 +133,7 @@ namespace eval cataGoto {
       set catalogue($visuNo,nameSpaceCaller) $nameSpaceCaller
 
       #--- je cree la frame si elle n'existe pas deja
-      if { [winfo exists $frm ] == 0 } {
+      if { [ winfo exists $frm ] == 0 } {
          frame $frm -borderwidth 0 -relief raised
       }
 

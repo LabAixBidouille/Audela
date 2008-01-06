@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.7 2007-06-28 17:52:53 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.8 2008-01-06 18:51:33 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -432,7 +432,7 @@ namespace eval ::seuilWindow {
       ::seuilWindow::initConf $visuNo
       set seuilWindow($visuNo,This) $base.seuilwindow
 
-      if { [winfo exists $seuilWindow($visuNo,This)] } {
+      if { [ winfo exists $seuilWindow($visuNo,This) ] } {
          wm withdraw $seuilWindow($visuNo,This)
          wm deiconify $seuilWindow($visuNo,This)
          focus $seuilWindow($visuNo,This)
