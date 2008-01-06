@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.30 2007-10-05 17:43:18 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.31 2008-01-06 19:04:34 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -504,7 +504,7 @@ proc ::visio2::showColumn { visuNo tbl columnIndex } {
 
    #--- je fais pareil pour la table ftpTable si elle est affichee
    if { [info exists ::visio2::ftpTable::private($visuNo,tbl)]
-       && [winfo exists ::visio2::ftpTable::private($visuNo,tbl)] } {
+       && [winfo exists $::visio2::ftpTable::private($visuNo,tbl)] } {
       if { "$::visio2::ftpTable::private($visuNo,tbl)" != "" } {
          set tbl $::visio2::ftpTable::private($visuNo,tbl)
          if { $show == 1 } {
