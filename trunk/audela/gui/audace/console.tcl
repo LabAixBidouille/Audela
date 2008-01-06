@@ -1,7 +1,7 @@
 #
 # Fichier : console.tcl
 # Description : Creation de la Console
-# Mise a jour $Id: console.tcl,v 1.6 2007-04-29 12:49:34 robertdelmas Exp $
+# Mise a jour $Id: console.tcl,v 1.7 2008-01-06 19:01:09 robertdelmas Exp $
 #
 
 namespace eval ::console {
@@ -21,7 +21,7 @@ namespace eval ::console {
          set This $this
       }
 
-      if { [info exists $This] } {
+      if { [winfo exists $This] } {
          wm deiconify $This
          return
       }

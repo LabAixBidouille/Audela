@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.14 2007-09-01 12:30:09 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.15 2008-01-06 19:02:11 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -2498,7 +2498,7 @@ proc createDialog_name_modpoi { } {
    variable This
    global audace caption modpoi
 
-   if { [ info exists $This ] } {
+   if { [ winfo exists $This ] } {
       wm withdraw $This
       wm deiconify $This
       focus $This
