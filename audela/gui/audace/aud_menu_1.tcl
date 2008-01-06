@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.21 2008-01-03 22:02:00 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.22 2008-01-06 18:50:27 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -94,7 +94,7 @@ namespace eval ::audace {
       #---
       set private(geometry_header_$visuNo) $conf(geometry_header_$visuNo)
       #---
-      if { [winfo exists $base.header] == 0 } {
+      if { [ winfo exists $base.header ] == 0 } {
          toplevel $base.header
          wm transient $base.header $base
          if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
@@ -258,7 +258,7 @@ namespace eval ::audace {
          #--- Positions et tailles des fenetres
          set conf(audace,visu1,wmgeometry) "[wm geometry $audace(base)]"
          set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
-         if {[winfo exists $audace(base).tjrsvisible]==1} {
+         if { [ winfo exists $audace(base).tjrsvisible ] == 1 } {
             set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
          }
          #--- Arrete les plugins camera
@@ -437,7 +437,7 @@ namespace eval ::newScript {
       } else {
          set This $this
       }
-      if { [ info exists $This ] } {
+      if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
          focus $This

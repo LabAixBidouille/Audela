@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_7.tcl
 # Description : Script regroupant les fonctionnalites du menu Configuration
-# Mise a jour $Id: aud_menu_7.tcl,v 1.9 2008-01-03 22:03:29 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_7.tcl,v 1.10 2008-01-06 18:52:48 robertdelmas Exp $
 #
 
 namespace eval ::cwdWindow {
@@ -365,7 +365,7 @@ namespace eval ::confEditScript {
       variable This
       global audace caption conf confgene
 
-      if { [ info exists $This ] } {
+      if { [ winfo exists $This ] } {
          wm withdraw $This
          wm deiconify $This
          focus $This
@@ -666,7 +666,7 @@ namespace eval ::audace {
       #--- Positions des fenetres
       set conf(audace,visu$visuNo,wmgeometry) "[wm geometry $audace(base)]"
       set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
-      if {[winfo exists $audace(base).tjrsvisible]==1} {
+      if { [ winfo exists $audace(base).tjrsvisible ] == 1 } {
          set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
       }
 
