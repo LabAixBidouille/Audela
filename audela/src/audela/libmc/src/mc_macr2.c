@@ -309,7 +309,8 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
 /***************************************************************************/
 /* frame=0 for ecliptic J2000.0 */
 /* frame=1 for equatorial J2000.0 */
-/* si *diamapp<0 alors l'astre est dans l'ombre de la Terre */
+/* si *diamapp=0 alors l'astre est dans l'ombre de la Terre */
+/* si *diamapp=1 alors l'astre est completement eclaire */
 /***************************************************************************/
 {
    double llp[10],mmp[10],uup[10],jjd,ls,bs,rs,eps,xs,ys,zs;
@@ -317,9 +318,11 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
    struct pqw elempq;
    double equinoxe=J2000;
    double dxeq=0.,dyeq=0.,dzeq=0.;
-   double xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo,xanti,yanti,zanti;
-   double r1,r2,rlim,cost,costlim,tlim;
-   double reqter=6378.14,reqsol=696000.;
+   double xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo;
+   double r1,r2;
+   double reqter=6378.14/UA*1e3,reqsol=696000./UA*1e3;
+   double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot,tmp;
+   int cas=0;
 
    /*FILE *fichier_out;*/
    jjd=jj;
@@ -331,6 +334,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       rs=sqrt( (*xearth-xsgeo)*(*xearth-xsgeo) + (*yearth-ysgeo)*(*yearth-ysgeo) + (*zearth-zsgeo)*(*zearth-zsgeo) );
       /* --- coord. spheriques locales ---*/
       mc_xyz2add( (*xaster-*xearth), (*yaster-*yearth), (*zaster-*zearth),asd,dec,delta);
+      mc_paraldxyzeq(jjd,longmpc,rhocosphip,rhosinphip,&dxeq,&dyeq,&dzeq);
       /* --- geo-> helio ---*/
       mc_he2ge(*xaster,*yaster,*zaster,-xsgeo,-ysgeo,-zsgeo,xaster,yaster,zaster);
       mc_he2ge(*xearth,*yearth,*zearth,-xsgeo,-ysgeo,-zsgeo,xearth,yearth,zearth);
@@ -344,7 +348,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       *rr=r;
       mc_elonphas(r,rs,*delta,elong,phase);
       mc_magaster(r,*delta,*phase,elem.h,elem.g,mag);
-      *diamapp=0.;
+      *diamapp=1.;
 
    } else {
       /*--- constantes equatoriales ---*/
@@ -388,7 +392,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       if (frame==0) {
          mc_xyzeq2ec(*xearth,*yearth,*zearth,eps,xearth,yearth,zearth); /* ecliptic J2000.0 */
       }
-      *xaster=x;
+      *xaster=x; 
       *yaster=y;
       *zaster=z;
       if (frame==0) {
@@ -405,10 +409,20 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       r=*rr;
       mc_elonphas(r,rs,*delta,elong,phase);
       mc_magaster(r,*delta,*phase,elem.h,elem.g,mag);
-      *diamapp=0.;
+      *diamapp=1.;
    }
 
+   /* --- case of eclipses ---*/
    if (*delta<0.015) {
+
+      /*--- correction de la parallaxe topo -> geo ---*/
+      if (frame==0) {
+         mc_xyzeq2ec(*xearth,*yearth,*zearth,-eps,xearth,yearth,zearth); /* ecliptic J2000.0 */
+      }
+      x=*xearth-dxeq;
+      y=*yearth-dyeq;
+      z=*zearth-dzeq;
+
       /*--- soleil ---*/
       mc_jd2lbr1a(jjd,llp,mmp,uup);
       mc_jd2lbr1b(jjd,SOLEIL,llp,mmp,uup,&ls,&bs,&rs);
@@ -416,26 +430,55 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
       mc_obliqmoy(jjd,&eps);
       mc_xyzec2eq(xs,ys,zs,eps,&xs,&ys,&zs); /* equatoriale a la date */
       mc_precxyz(jjd,xs,ys,zs,equinoxe,&xs,&ys,&zs); /* equatoriale J2000 */
+      xs*=-1;
+      ys*=-1;
+      zs*=-1;
 
-      r1=*xearth+xs;
-      r1=*yearth+ys;
-      r1=*zearth+zs;
-
-      /*--- point antisolaire ---*/
-      r2=rs*reqsol/(reqsol-reqter);
-      r1=rs*reqter/(reqsol-reqter);
-      rlim=sqrt(r1*r1+reqter*1e3/UA*reqter*1e3/UA);
-      xanti=-reqsol/(reqsol-reqter)*xs;
-      yanti=-reqsol/(reqsol-reqter)*ys;
-      zanti=-reqsol/(reqsol-reqter)*zs;
-      tlim=atan(reqter*1e3/UA/r1);
-      costlim=cos(atan(reqter*1e3/UA/r1));
-      r1=sqrt((-xs-xanti)*(-xs-xanti)+(-ys-yanti)*(-ys-yanti)+(-zs-zanti)*(-zs-zanti));
-      r2=sqrt((*xaster-xanti)*(*xaster-xanti)+(*yaster-yanti)*(*yaster-yanti)+(*zaster-zanti)*(*zaster-zanti));
-      cost=((-xs-xanti)*(*xaster-xanti)+(-ys-yanti)*(*yaster-yanti)+(-zs-zanti)*(*zaster-zanti))/r1/r2;
-      if ((r2<=rlim)&(cost>=costlim)) {
-         *diamapp=-1.;
+      r1=sqrt((x-*xaster)*(x-*xaster)+(y-*yaster)*(y-*yaster)+(z-*zaster)*(z-*zaster));
+      r2=sqrt((*xaster)*(*xaster)+(*yaster)*(*yaster)+(*zaster)*(*zaster));
+      cosa=-((x-*xaster)*(*xaster)+(y-*yaster)*(*yaster)+(z-*zaster)*(*zaster))/r1/r2;
+      if ((reqter/r1)>(reqsol/r2)) {
+         R1=reqter/r1;
+         R2=reqsol/r2;
+         cas=0;
+         airetot=PI*R2*R2;
+      } else {
+         R1=reqsol/r2;
+         R2=reqter/r1;
+         cas=1;
+         airetot=PI*R1*R1;
       }
+      rho=tan(mc_acos(cosa));
+      t2=2*mc_acos((R2*R2+rho*rho-R1*R1)/2/R2/rho);
+      t1=2*mc_acos((R1*R1+rho*rho-R2*R2)/2/R1/rho);
+      da1=0.5*R1*R1*(t1-sin(t1));
+      da2=0.5*R2*R2*(t2-sin(t2));
+      if (rho<(R1-R2)) {
+         if (cas==0) {
+            aire=0;
+         } else {
+            aire=PI*R1*R1-PI*R2*R2;
+         }
+      } else if (rho<sqrt(R1*R1-R2*R2)) {
+         if (cas==0) {
+            aire=da2-da1;
+         } else {
+            aire=PI*R1*R1-PI*R2*R2+da2-da1;
+         }
+      } else if (rho<(R1+R2)) {
+         if (cas==0) {
+            aire=PI*R2*R2-da1-da2;
+         } else {
+            aire=PI*R1*R1-da1-da2;
+         }
+      } else {
+         if (cas==0) {
+            aire=PI*R2*R2;
+         } else {
+            aire=PI*R1*R1;
+         }
+      }
+      *diamapp=(aire/airetot);
    }
 
 }

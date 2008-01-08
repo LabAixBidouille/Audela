@@ -1267,10 +1267,8 @@ void mc_simulc(mc_cdr cdr,double *relief,double *albedo,mc_cdrpos *cdrpos,int n,
          mc_savefits(image,wcs.naxis1,wcs.naxis2,filename,&wcs);
       }
       /* --- cas when the object in the shadow of the Earth ---*/
-      if (cdrpos[kt].eclipsed<0) {
-         etotlamb=0.;
-         etotls=0.;
-      }
+      etotlamb*=cdrpos[kt].eclipsed;
+      etotls*=cdrpos[kt].eclipsed;
       /* --- mag1 take account for a pure Lambert law ---*/
       if (etotlamb==0) {
          cdrpos[kt].mag1=99.99;
@@ -3705,10 +3703,8 @@ void mc_simulcbin(mc_cdr cdr,double *relief1,double *albedo1,double *relief2,dou
          etotls+=(htms[khtms].els*htms[khtms].tr);
       }
       /* --- cas when the object in the shadow of the Earth ---*/
-      if (cdrpos[kt].eclipsed<0) {
-         etotlamb=0.;
-         etotls=0.;
-      }
+      etotlamb*=cdrpos[kt].eclipsed;
+      etotls*=cdrpos[kt].eclipsed;
       /* --- mag1 take account for a pure Lambert law ---*/
       if (etotlamb==0) {
          cdrpos[kt].mag1=99.99;
