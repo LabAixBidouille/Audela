@@ -2841,7 +2841,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
             cdrpos[k].zearth=zearth;
             cdrpos[k].delta=delta;
          }
-         cdrpos[k].eclipsed=diamapp; /* =1 if in the shadow of the Earth. Else =0 */
+         cdrpos[k].eclipsed=diamapp; /* =0 if in the shadow of the Earth. Else =1 */
       }
       /* === */
 	   /* === Calcul de la courbe de lumiere ===*/
@@ -3808,7 +3808,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
             cdrpos[k].zearth=zearth;
             cdrpos[k].delta=delta;
          }
-         cdrpos[k].eclipsed=diamapp; /* =1 if in the shadow of the Earth. Else =0 */
+         cdrpos[k].eclipsed=diamapp; /* =0 if in the shadow of the Earth. Else =1 */
       }
       /* === */
 	   /* === Calcul de la courbe de lumiere ===*/
