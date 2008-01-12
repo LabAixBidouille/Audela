@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.107 2007-12-22 15:50:46 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.108 2008-01-12 13:55:28 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -586,6 +586,11 @@ proc ::confCam::stopItem { camItem } {
 #
 proc ::confCam::isReady { camItem } {
    variable private
+
+   #--- Je verifie que camItem existe
+   if { $camItem == "" } {
+      return 0
+   }
 
    #--- Je verifie que la camera est prete
    if { $private($camItem,camName) == "" } {
