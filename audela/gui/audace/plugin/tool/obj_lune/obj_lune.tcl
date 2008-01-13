@@ -2,7 +2,7 @@
 # Fichier : obj_lune.tcl
 # Description : Outil dedie a la Lune, avec Goto vers un site choisi, ephemerides et cartographie
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune.tcl,v 1.12 2007-12-04 18:53:04 robertdelmas Exp $
+# Mise a jour $Id: obj_lune.tcl,v 1.13 2008-01-13 17:26:57 robertdelmas Exp $
 #
 
 global audace
@@ -102,7 +102,7 @@ namespace eval obj_lune {
    #
    proc fermer { } {
       variable This
-      global conf obj_lune
+      global conf
 
       #--- Recuperation de la position et de la dimension de la fenetre
       set conf(obj_lune,wmgeometry) [ wm geometry $This ]
@@ -114,7 +114,6 @@ namespace eval obj_lune {
          image delete imageflag5a
       }
       #---
-      set obj_lune(espion) "1"
       destroy $This
    }
 
@@ -149,7 +148,6 @@ namespace eval obj_lune {
       wm deiconify $This
       wm title $This "$caption(obj_lune,titre)"
       wm protocol $This WM_DELETE_WINDOW ::obj_lune::fermer
-      set obj_lune(espion) "0"
 
       #--- Frame des boutons
       frame $This.cmd -borderwidth 1 -relief raised
