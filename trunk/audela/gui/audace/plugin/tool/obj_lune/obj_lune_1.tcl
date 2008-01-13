@@ -2,7 +2,7 @@
 # Fichier : obj_lune_1.tcl
 # Description : Programme de calcul (ephemerides, etc.)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: obj_lune_1.tcl,v 1.6 2007-12-04 18:53:35 robertdelmas Exp $
+# Mise a jour $Id: obj_lune_1.tcl,v 1.7 2008-01-13 17:28:34 robertdelmas Exp $
 #
 
 namespace eval obj_lune {
@@ -14,7 +14,7 @@ namespace eval obj_lune {
    proc Lune_Ephemerides { } {
       global audace caption obj_lune
 
-      if { $obj_lune(espion) != "1" } {
+      if { [ winfo exists $obj_lune(onglet2).frame8.lab6 ] } {
          #--- Preparation de l'heure TU pour le calcul des ephemerides
          set now now
          catch {
