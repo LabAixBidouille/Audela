@@ -1,6 +1,6 @@
 #
 # Fichier : audecomconfig.cap
-# Mise a jour $Id: audecomconfig.cap,v 1.1 2007-06-19 20:12:36 robertdelmas Exp $
+# Mise a jour $Id: audecomconfig.cap,v 1.2 2008-01-15 15:57:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -104,7 +104,7 @@ set caption(audecomconfig,para_mobile_etoile)         "Star or Stationary Object
 set caption(audecomconfig,para_mot,aide01)            "                                        Pressing a ? button will display help and describe"
 set caption(audecomconfig,para_mot,aide02)            "                                        how to select the best value to be entered (if any)"
 set caption(audecomconfig,para_mot,aide03)            "                                                for configuring your equatorial mount."
-set caption(audecomconfig,para_mot,aide05)            "The amplitude for the take up of plays must be expressed in decimal degrees."
+set caption(audecomconfig,para_mot,aide05)            "The amplitude for the take up of plays must be expressed in decimal degrees (0.5)."
 set caption(audecomconfig,para_mot,aide06)            "It can be different in Right Ascension and Declination."
 set caption(audecomconfig,para_mot,aide11)            "Default Values: Give the value that is hard-coded in the microcontroller."
 set caption(audecomconfig,para_mot,aide12)            "Limits: Define the selection interval for this value."
@@ -259,7 +259,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot,aide01)         "                                   Tout appui sur un bouton ' ? ' affiche l'aide associée qui"
    set caption(audecomconfig,para_mot,aide02)         "                                   explique le choix (si nécéssaire) de la meilleure valeur à"
    set caption(audecomconfig,para_mot,aide03)         "                                   saisir pour la configuration de votre monture équatoriale."
-   set caption(audecomconfig,para_mot,aide05)         "L'amplitude du rattrapage des jeux doit être exprimée en degrés décimaux."
+   set caption(audecomconfig,para_mot,aide05)         "L'amplitude du rattrapage des jeux doit être exprimée en degrés décimaux (0.5)."
    set caption(audecomconfig,para_mot,aide06)         "Elle peut être différente en Ascension Droite et en Déclinaison."
    set caption(audecomconfig,para_mot,aide11)         "' Valeurs par défaut ' : Donne la valeur programmée en dur dans le microcontrôleur."
    set caption(audecomconfig,para_mot,aide12)         "' Dans les limites de ' : Définit l'intervalle pour le choix de cette valeur."
@@ -416,7 +416,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot,aide01)         "                                      Premendo il bottone ' ? ' viene mostrato un aiuto e la"
    set caption(audecomconfig,para_mot,aide02)         "                                     descrizione su come selezionare i valori (se necessari)"
    set caption(audecomconfig,para_mot,aide03)         "                                          per configurare la vostra montatura equatoriale."
-   set caption(audecomconfig,para_mot,aide05)         "L'ampiezza del recupero giochi deve essere espresso in gradi decimali."
+   set caption(audecomconfig,para_mot,aide05)         "L'ampiezza del recupero giochi deve essere espresso in gradi decimali (0.5)."
    set caption(audecomconfig,para_mot,aide06)         "Potrebbe essere differente in Ascensione Retta ed in Declinazione."
    set caption(audecomconfig,para_mot,aide11)         "' Valore di default ': Fornisce il valore impostato nel microcontrollore (non modificabile)."
    set caption(audecomconfig,para_mot,aide12)         "' Nei limiti di ': Definisce l'intervallo per la scelta di questo valore."
@@ -573,7 +573,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot,aide01)         "                                       Pulsando la tecla ' ? ' se muestra la ayuda asociada"
    set caption(audecomconfig,para_mot,aide02)         "                                   que explica como escoger (si es necesario) el mejor valor"
    set caption(audecomconfig,para_mot,aide03)         "                                                 a introducir para tu montura ecuatorial."
-   set caption(audecomconfig,para_mot,aide05)         "La amplitud de la holgura debe expresarse en grados y decimas de grado."
+   set caption(audecomconfig,para_mot,aide05)         "La amplitud de la holgura debe expresarse en grados y decimas de grado (0.5)."
    set caption(audecomconfig,para_mot,aide06)         "Puede ser diferente para Ascension Recta y Declinacion."
    set caption(audecomconfig,para_mot,aide11)         "' Valores por defecto ': Da el valor preprogramado en el microcontrolador."
    set caption(audecomconfig,para_mot,aide12)         "' En los límites de ': Define el intervalo para escoger este valor."
@@ -730,7 +730,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot,aide01)         "                               Jeden Druck auf den Knopf ' ? ' anzeigt die passende Hilfe die"
    set caption(audecomconfig,para_mot,aide02)         "                          den Wahl erklärt (wenn notwendig) damit sie den besten Wert wählen"
    set caption(audecomconfig,para_mot,aide03)         "                                   können für eure äquatorial Teleskop Montierung Konfiguration."
-   set caption(audecomconfig,para_mot,aide05)         "Die Spielausgleichung Weite soll ein Decimalzahl sein."
+   set caption(audecomconfig,para_mot,aide05)         "Die Spielausgleichung Weite soll ein Decimalzahl sein (0.5)."
    set caption(audecomconfig,para_mot,aide06)         "Sie kann in Rektaszension anders als in Deklination sein."
    set caption(audecomconfig,para_mot,aide11)         "'Mangelwerten': gibt den initialen Wert aus dem AudeCom Mikrocontroller."
    set caption(audecomconfig,para_mot,aide12)         "'Innerhalb der Grenzen von': sitzt die Wahl Grenzen für diesen Wert."
@@ -887,7 +887,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot,aide01)         "                                   Pressionando um botão ' ? ' visualiza-se a ajuda associada que"
    set caption(audecomconfig,para_mot,aide02)         "                                   explica a escolha (se necessário) do melhor valor a"
    set caption(audecomconfig,para_mot,aide03)         "                                   seleccionar para a configuração da sua montagem equatorial."
-   set caption(audecomconfig,para_mot,aide05)         "A amplitude da correcção dos jogos deve ser exprimida em graus décimais."
+   set caption(audecomconfig,para_mot,aide05)         "A amplitude da correcção dos jogos deve ser exprimida em graus décimais (0.5)."
    set caption(audecomconfig,para_mot,aide06)         "Ela pode ser diferente en Ascenção Recta e em Declinação."
    set caption(audecomconfig,para_mot,aide11)         "' Valores por defeito ' : Dá o valor programado no microcontrolador."
    set caption(audecomconfig,para_mot,aide12)         "' Nos limites de ' : Define o intervalo de escolha desse valor."
@@ -1044,7 +1044,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecomconfig,para_mot,aide01)         "                                        Pressing a ? button will display help and describe"
    set caption(audecomconfig,para_mot,aide02)         "                                        how to select the best value to be entered (if any)"
    set caption(audecomconfig,para_mot,aide03)         "                                                for configuring your equatorial mount."
-   set caption(audecomconfig,para_mot,aide05)         "The amplitude for the take up of plays must be expressed in decimal degrees."
+   set caption(audecomconfig,para_mot,aide05)         "The amplitude for the take up of plays must be expressed in decimal degrees (0.5)."
    set caption(audecomconfig,para_mot,aide06)         "It can be different in Right Ascension and Declination."
    set caption(audecomconfig,para_mot,aide11)         "Default Values: Give the value that is hard-coded in the microcontroller."
    set caption(audecomconfig,para_mot,aide12)         "Limits: Define the selection interval for this value."
