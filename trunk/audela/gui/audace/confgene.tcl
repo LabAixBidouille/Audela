@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.35 2007-09-12 17:41:54 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.36 2008-01-15 16:05:45 robertdelmas Exp $
 #
 
 #
@@ -678,8 +678,6 @@ namespace eval confTemps {
       set confgene(temps,hhiverete)  [ lindex "$caption(confgene,temps_aucune) $caption(confgene,temps_hiver) $caption(confgene,temps_ete)" "$conf(temps,hhiverete)" ]
       set confgene(temps,hsysteme)   [ lindex "$caption(confgene,temps_heurelegale) $caption(confgene,temps_universel)" "$conf(temps,hsysteme)" ]
 
-      set confgene(espion) "1"
-
       destroy $This
    }
 
@@ -856,8 +854,7 @@ namespace eval confTemps {
 
       #--- Systeme d'heure utilise
       if { $confgene(temps,hsysteme) == "$caption(confgene,temps_heurelegale)" } {
-         if { $confgene(espion) == "0" } {
-            set confgene(espion) "1"
+         if { [ winfo exists $This.lab4 ] == 0 } {
             #--- Fuseau horaire
             label $This.lab4 -text "$caption(confgene,temps_fushoraire1)"
             pack $This.lab4 -in $This.frame5 -anchor w -side top -padx 10 -pady 5
@@ -892,13 +889,10 @@ namespace eval confTemps {
             ::confColor::applyColor $This
          }
       } else {
-         if { $confgene(espion) == "1" } {
-            set confgene(espion) "0"
-            destroy $This.lab4
-            destroy $This.fushoraire
-            destroy $This.lab5
-            destroy $This.hhiverete
-         }
+         destroy $This.lab4
+         destroy $This.fushoraire
+         destroy $This.lab5
+         destroy $This.hhiverete
       }
    }
 
