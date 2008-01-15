@@ -279,12 +279,22 @@ int mytel_radec_init(struct telprop *tel)
 /* it corresponds to the "match" function of an LX200 */
 {
    char s[1024];
+   char ra[100];
+   char dec[100];
    strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
-   strcpy(s,"$telcmd CanSync"); 
+   strcpy(s,"$telcmd CamSync"); 
    if ( mytel_tcleval(tel,s)==0) {
       return 1;
    }
-   sprintf(s,"$telcmd SyncToCoordinates [mc_angle2deg %f] [mc_angle2deg %f 90]",tel->ra0,tel->dec0); mytel_tcleval(tel,s);
+   strcpy(ra,"");
+   strcpy(dec,"");
+   sprintf(s,"expr [mc_angle2deg %f]/15.",tel->ra0); mytel_tcleval(tel,s);
+   strcpy(ra,tel->interp->result);
+   mytel_decimalsymbol(ra,'.',tel->sDecimal,ra);
+   sprintf(s,"expr [mc_angle2deg %f 90]",tel->dec0); mytel_tcleval(tel,s);
+   strcpy(dec,tel->interp->result);
+   mytel_decimalsymbol(dec,'.',tel->sDecimal,dec);
+   sprintf(s,"$telcmd SyncToCoordinates %s %s",ra,dec); mytel_tcleval(tel,s);
    return 0;
 }
 
@@ -333,7 +343,7 @@ int mytel_radec_goto(struct telprop *tel)
    sprintf(s,"expr [mc_angle2deg %f]/15.",tel->ra0); mytel_tcleval(tel,s);
    strcpy(ra,tel->interp->result);
    mytel_decimalsymbol(ra,'.',tel->sDecimal,ra);
-   sprintf(s,"expr [mc_angle2deg %f]",tel->dec0); mytel_tcleval(tel,s);
+   sprintf(s,"expr [mc_angle2deg %f 90]",tel->dec0); mytel_tcleval(tel,s);
    strcpy(dec,tel->interp->result);
    mytel_decimalsymbol(dec,'.',tel->sDecimal,dec);
    strcpy(s,"$telcmd Tracking 1"); mytel_tcleval(tel,s);
@@ -354,6 +364,9 @@ int mytel_radec_move(struct telprop *tel,char *direction)
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
    strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   if ((strcmp(direc,"S")==0)||(strcmp(direc,"W")==0)) {
+      rate*=-1;
+   }
    sprintf(ratestr,"%f",rate);
    mytel_decimalsymbol(ratestr,'.',tel->sDecimal,ratestr);
    if (strcmp(direc,"N")==0) {
@@ -377,6 +390,9 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
    sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
    strcpy(s,"set telcmd $::ascom_variable(1)"); mytel_tcleval(tel,s);
+   if ((strcmp(direc,"S")==0)||(strcmp(direc,"W")==0)) {
+      rate*=-1;
+   }
    sprintf(ratestr,"%f",rate);
    mytel_decimalsymbol(ratestr,'.',tel->sDecimal,ratestr);
    if (strcmp(direc,"N")==0) {
