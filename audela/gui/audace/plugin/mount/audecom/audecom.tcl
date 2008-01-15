@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.14 2007-12-22 11:55:21 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.15 2008-01-15 16:03:39 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -506,7 +506,7 @@ proc ::audecom::configureMonture { } {
    }
    #--- Transfere les parametres de derive dans le microcontroleur
    set vit_der_alpha "0" ; set vit_der_delta "0"
-   if { $::confAudecomMot::private(fenetre,mobile,valider) == "1" } {
+   if { $::confAudecomMobile::private(fenetre,mobile,valider) == "1" } {
       if { $conf(audecom,mobile) == "1" } {
          switch -exact -- $conf(audecom,type) {
             0 { set vit_der_alpha "43636" ; set vit_der_delta "0" }                          ; #--- Lune
@@ -556,11 +556,10 @@ proc ::audecom::configureMonture { } {
 #
 proc ::audecom::stop { } {
    variable private
-   global audace confgene
+   global audace
 
    #--- Efface la fenetre de controle de la vitesse de King si elle existe
    if { [ winfo exists $audace(base).confAudecomKing ] } {
-      set confgene(espion2) "1"
       destroy $audace(base).confAudecomKing
    }
 
@@ -568,7 +567,7 @@ proc ::audecom::stop { } {
    ::audecom::confAudeComInactif
 
    #--- Initialisation d'une variable
-   set ::confAudecomMot::private(fenetre,mobile,valider) "0"
+   set ::confAudecomMobile::private(fenetre,mobile,valider) "0"
 
    #--- Je memorise le port
    set telPort [ tel$private(telNo) port ]
