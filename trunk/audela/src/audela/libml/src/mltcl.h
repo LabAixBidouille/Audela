@@ -104,6 +104,7 @@ int Cmd_mltcl_residutycho2usno(ClientData clientData, Tcl_Interp *interp, int ar
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */
 /***************************************************************************/
 int mltcl_getinfoimage(Tcl_Interp *interp,int numbuf, ml_image *image);
+int WriteDisk(char *Chaine);
 
 
 #endif
