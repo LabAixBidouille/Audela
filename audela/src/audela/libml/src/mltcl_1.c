@@ -31,6 +31,30 @@
 #include "mltcl.h"
 
 
+//***************************************************************************
+//					log 
+//***************************************************************************
+int WriteDisk(char *Chaine)
+{
+FILE *F;
+char Nom[1000];
+SYSTEMTIME St;
+char Buffer[300];
+	
+	printf("\n%s",Chaine);
+	GetSystemTime(&St);
+	sprintf(Nom,"%lu%.2lu%.2lu-%s",St.wYear,St.wMonth,St.wDay,"log.txt");
+	sprintf(Buffer,"\n%dh%dm%ds : %s",St.wHour,St.wMinute,St.wSecond,Chaine);
+	F = fopen(Nom,"at");
+		
+	if(F!=NULL)
+	{
+		fwrite(Buffer,sizeof(char),strlen(Buffer),F);
+		fclose(F);
+	}
+	return 0;
+}
+
 int Cmd_mltcl_residutycho2usno(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Troncate the USNO-A1 catalog file to a given R magnitude                 */
@@ -321,8 +345,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int kmin,kmini,pareil;	
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
-	char s[ML_STAT_LIG_MAX],ligne[ML_STAT_LIG_MAX],home[35],im[40],lign[ML_STAT_LIG_MAX],toto[100],valid[4];
-	char satelname[26],noradname[10],cosparname[10];	
+	char s[ML_STAT_LIG_MAX],ligne[270],home[35],im[70],lign[270],toto[100],valid[4];
+	char satelname[30],noradname[30],cosparname[30], chaine [ML_STAT_LIG_MAX];	
 	FILE *f_in1, *f_in2;	
 	struct_ligsat *lignes,*lignes2;
 	char *list, *distang;
@@ -330,7 +354,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int argcc,argc2;
 	char **argvv,**argv2;
 	
-
+	WriteDisk("debut geostatident");
 	//int problemetelechargement,diffjour;
 	//char lpszWrite[20],tempspc[20],lpszCreate[20];
 	//FILETIME ftCreate, ftAccess, ftWrite;
@@ -392,7 +416,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		//}
 
 		/* --- on fabrique un fichier_tle2=geo.txt derriere lequel on ajoute les TLE personels --- */
+		f_in1=fopen("./geo.txt","r");
+		if (f_in1==NULL) {
+			f_in1=fopen("./geo.txt","a");
+			WriteDisk("pas de fichier geo.txt");
+		}
 		ml_file_copy ("./geo.txt","./tle2.txt");
+		//WriteDisk("fichier tle2");
 
 		f_in1=fopen(argv[4],"r");
 		if (f_in1==NULL) {
@@ -412,6 +442,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				if (lignes==NULL) {
 					sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in1);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					free(lignes);
 					return TCL_ERROR;
 				}
 				f_in1=fopen(argv[4],"r");
@@ -443,6 +474,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		/* est-ce que le fichier bdd exist?*/
 		f_in1=fopen(argv[2],"r");
 		if (f_in1==NULL) {
+			WriteDisk("pas de fichier bdd");
 			f_in2=fopen(argv[1],"r");
 			if (f_in2==NULL) {
 				sprintf(s,"FILE: %s DOESN'T EXIST", argv[1]);
@@ -453,6 +485,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			fclose(f_in2);
 			}
 		} else {
+			//WriteDisk("fichier bdd existe deja");
 			/* comme on ne recopie pas le fichier, on va chercher les lignes différentes pour compléter le fichier de sortie */
 			fclose(f_in1);
 			/* --- dimensionne la structure des donnees d'entree ---*/
@@ -484,6 +517,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			if (f_in2==NULL) {
 				sprintf(s,"file_00 %s not found",argv[1]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				free(lignes);
 				return TCL_ERROR;
 			}
 			while (feof(f_in2)==0) {
@@ -495,6 +529,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			if (lignes2==NULL) {
 				sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in1);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				free(lignes2);
 				return TCL_ERROR;
 			}
 			fclose(f_in2);
@@ -507,9 +542,12 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			if (f_in1==NULL) {
 				sprintf(s,"file_00 %s not found",argv[1]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				free(lignes);
+				free(lignes2);
 				return TCL_ERROR;
 			}
 			/* on cherche quand il y a une ligne blanche, correspond a un changement de date */
+			//WriteDisk("recherche des lignes blanches");
 			while (feof(f_in1)==0) {
 				 if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
 					strcpy(lignes[n_in].texte,ligne);
@@ -549,6 +587,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			if (f_in2==NULL) {
 				sprintf(s,"file_00 %s not found",argv[1]);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				free(lignes);
+				free(lignes2);
 				return TCL_ERROR;
 			}
 			while (feof(f_in2)==0) {
@@ -566,6 +606,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 			fclose(f_in2);
 			nimages2=kimage2-2;
+			//sprintf(chaine,"nombre d'images = %d",nimages2);
+			//WriteDisk(chaine);
 			/* --- on cherche les lignes qui manquent dans le fichier de sortie --- */
 			/*tester*/
 			if (nimages2!=nimages) {	
@@ -633,9 +675,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			free(lignes);
 			free(lignes2);
 		}
-		
+
+// trace AK 1
 
 		f_in2=fopen(argv[2],"rt");
+		//WriteDisk(argv[2]);
 		if (f_in2==NULL) {
 			sprintf(s,"file_0 %s not found",argv[2]);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -653,12 +697,14 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if (lignes2==NULL) {
 			sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in1);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			free(lignes);
 			return TCL_ERROR;
 		}
 		lignes=(struct_ligsat*)malloc(n_in1*sizeof(struct_ligsat));
 		if (lignes==NULL) {
 			sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in1);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			free(lignes2);
 			return TCL_ERROR;
 		}
 		n_in1=0;
@@ -670,8 +716,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if (f_in1==NULL) {
 			sprintf(s,"file_0 %s not found",argv[2]);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			free(lignes);
+			free(lignes2);
 			return TCL_ERROR;
 		}
+		//WriteDisk("grande boucle d'identification");
 
 		while (feof(f_in1)==0) {
 			if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
@@ -696,17 +745,24 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				}
 				if (strlen(ligne)>=3) {
 					if ((ligne[0]=='I')&&(ligne[1]=='M')&&(ligne[2]=='_')) {
-						//lignes2[n_in1].comment=1;
 						lignes2[n_in1].comment=0;
 						kimage2++;
 					}
-				}//	if (lignes2[n_in1].comment==1) {
+				}
+// debut AK
+//if (1==0) {
 				if (lignes2[n_in1].comment==0) {
 					k1=146+44 ; k2=156+44 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes2[n_in1].ident,s);
 					result= strlen(lignes2[n_in1].ident);
-					retour = strncmp(lignes2[n_in1].ident,"            \0",7);
+					retour=-1;
+					if ((lignes2[n_in1].ident[0]==' ')&&(lignes2[n_in1].ident[1]==' ')&&(lignes2[n_in1].ident[2]==' ')) {
+						retour=0;
+					} else {
+						retour=-1;
+					}
 					if ((retour==0) || (result<=3)) {
+					//	WriteDisk("le satellite n'est pas identifie");
 						/* --- le satellite n'est pas identifiée --- */
 						k1=0; k2=144+44; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(lignes2[n_in1].texte,s);
@@ -717,15 +773,25 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						k1=93 ; k2=101; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						lignes2[n_in1].ra=atof(s);
 						/* transforme le fichier de tle en ephemeride */
-						strcpy(toto,"./tle2.txt");
-						sprintf(lign,"mc_tle2ephem {%s} %s {%s}",im,toto,home);
-						result = Tcl_Eval(interp,lign);
+						
+						//WriteDisk("mc_tle2ephem");
+						GetCurrentDirectory (400,chaine);
+						strcpy(toto,chaine);
+						strcat(toto,"\\tle2.txt");
+						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,toto,home);
+						//WriteDisk(lign);
 
+						result = Tcl_Eval(interp,lign);
+	
+						//WriteDisk("result");
+// debut AK 1
+//if (1==0) {
 						if (result==TCL_OK) {
 							list=NULL;
 							list2 = Tcl_GetObjResult  (interp);
 							list = Tcl_GetString (list2);
 							code = Tcl_SplitList(interp,list,&argcc,&argvv);
+							
 							if (argcc <= 1) {
 								result=1;
 								/* --- l'identification a un problème --- */
@@ -735,9 +801,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								break;
 							}
 							if (code != TCL_OK) {
-									sprintf(ligne, "Probleme sur le liste des ephemerides");
-									Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-									return TCL_ERROR;
+								sprintf(ligne, "Probleme sur le liste des ephemerides");
+								Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+								free(lignes);
+								free(lignes2);
+								return TCL_ERROR;
 							}
 							kmin=0;
 							kmini=-1;
@@ -771,31 +839,36 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								/* calcul la distance et angle entre les deux coordonnées */
 								sprintf(lign,"mc_anglesep {%14.12f %14.12f %14.12f %14.12f}",ra0,dec0,ra,dec);
 								result = Tcl_Eval(interp,lign);
-
-								if (result==TCL_OK) {
+								if (result!=TCL_OK) {
+									WriteDisk("probleme avec mc_anglesep");
+									dist=0.0;
+									angl=0.0;
+									distmin=1;
+								} else {
 									list3 = Tcl_GetObjResult  (interp);
 									distang = Tcl_GetString (list3);
 									code = Tcl_SplitList(interp,distang,&argc2,&argv2);
-								}
-								k2=0;
-								k3=0;
-								for (k1=0;k1<20;k1++){
-									if (distang[k1]== ' ') {
-										k2=k1;
-										break;
+								
+									k2=0;
+									k3=0;
+									for (k1=0;k1<20;k1++){
+										if (distang[k1]== ' ') {
+											k2=k1;
+											break;
+										}
 									}
-								}
 
-								k1= 0; for (k3=k1;k3<k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
-								dist=atof(s);
-								k1= k2+1; for (k3=k1;k3<=k2+13;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
-								angl=atof(s);
-								if (dist <= distmin) {
-									distmin = dist;
-									kmini=kmin;
-									anglmin=angl;
+									k1= 0; for (k3=k1;k3<k2;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
+									dist=atof(s);
+									k1= k2+1; for (k3=k1;k3<=k2+13;k3++) { s[k3-k1]=distang[k3]; } ; s[k3-k1]='\0';
+									angl=atof(s);
+									if (dist <= distmin) {
+										distmin = dist;
+										kmini=kmin;
+										anglmin=angl;
+									}
+									kmin++;
 								}
-								kmin++;
 							}
 							if (distmin<=0.3) {
 								strcpy(valid," 1 ");
@@ -871,30 +944,48 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								lignes2[n_in1].angle = anglmin;
 
 							} else {
+								//WriteDisk(" on rajoute rien à  ligne[].texte");
 								/* on rajoute rien à  ligne[].texte*/
 								lignes2[n_in1].kobject=0;
 							}
 						} else {
+							WriteDisk("Probleme avec les tle");
 							sprintf(ligne, "Probleme avec les tle");
+
+							k1=0; k2=144+44; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							strcpy(lignes2[n_in1].texte,s);
+							
 							Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 							result = TCL_ERROR;
 						}
+//	}
+//fin AK 1
 					} else {
 						/* --- le satellite est deja identifiée --- */
-						strcpy(lignes2[n_in1].texte,ligne);
+					//	WriteDisk("le satellite est deja identifiée");
+					//	sprintf(chaine,"%s",ligne);
+					//	WriteDisk(chaine);
+						k1=0; k2=259; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						strcpy(lignes2[n_in1].texte,s);
 						lignes2[n_in1].kobject=0;
 						nsat++;
 					}
 					
 				} else {
-					strcpy(lignes2[n_in1].texte,ligne);	
+					k1=0; k2=259; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					strcpy(lignes2[n_in1].texte,s);
 				}
+//	}
+//fin AK
 				n_in1++;
 			}
 			
 		}
 		fclose(f_in1);
+		
 		/* si on en a qui sont pas identifiés */
+		//sprintf(chaine,"kimages2=%d et nsat=%d",kimage2,nsat);
+		//WriteDisk(chaine);
 		if (kimage2 != nsat) {
 			/* delete file argv[2] puis reouvre le même*/
 			if (remove(argv[2]))  {
@@ -930,11 +1021,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 			fclose(f_in1);
 		}
+
+		//WriteDisk("liberation des pointeurs");
 		free(lignes2);
 		free(lignes);
 		result = TCL_OK;
 	}
-
+	//WriteDisk("return fonction");
 	return result;
 }
 
