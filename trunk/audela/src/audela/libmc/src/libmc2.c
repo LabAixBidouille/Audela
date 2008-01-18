@@ -2146,7 +2146,29 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 
    return(TCL_OK);
 }
-
+//***************************************************************************
+//					log Myrtille
+//***************************************************************************
+int WriteDisk(char *Chaine)
+{
+FILE *F;
+char Nom[1000];
+SYSTEMTIME St;
+char Buffer[300];
+	
+	printf("\n%s",Chaine);
+	GetSystemTime(&St);
+	sprintf(Nom,"%lu%.2lu%.2lu-%s",St.wYear,St.wMonth,St.wDay,"log.txt");
+	sprintf(Buffer,"\n%dh%dm%ds : %s",St.wHour,St.wMinute,St.wSecond,Chaine);
+	F = fopen(Nom,"at");
+		
+	if(F!=NULL)
+	{
+		fwrite(Buffer,sizeof(char),strlen(Buffer),F);
+		fclose(F);
+	}
+	return 0;
+}
 
 int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -2178,6 +2200,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       sprintf(s,"Usage: %s Date file_tle Home ?satname?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
+	  WriteDisk ("pas assez d'arg");
 	   return(result);
    } else {
       /* --- decode la Date---*/
@@ -2295,8 +2318,8 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
          if (valid==1) {
             /* --- on lance le calcul ---*/
             mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-            sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
-            Tcl_DStringAppend(&dsptr,sss,-1);
+			sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
+			Tcl_DStringAppend(&dsptr,sss,-1);
          }
       }
       fclose(ftle);
