@@ -354,7 +354,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int argcc,argc2;
 	char **argvv,**argv2;
 	
-	WriteDisk("debut geostatident");
 	//int problemetelechargement,diffjour;
 	//char lpszWrite[20],tempspc[20],lpszCreate[20];
 	//FILETIME ftCreate, ftAccess, ftWrite;
@@ -474,7 +473,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		/* est-ce que le fichier bdd exist?*/
 		f_in1=fopen(argv[2],"r");
 		if (f_in1==NULL) {
-			WriteDisk("pas de fichier bdd");
+			//WriteDisk("pas de fichier bdd");
 			f_in2=fopen(argv[1],"r");
 			if (f_in2==NULL) {
 				sprintf(s,"FILE: %s DOESN'T EXIST", argv[1]);
@@ -676,7 +675,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			free(lignes2);
 		}
 
-// trace AK 1
 
 		f_in2=fopen(argv[2],"rt");
 		//WriteDisk(argv[2]);
@@ -749,8 +747,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						kimage2++;
 					}
 				}
-// debut AK
-//if (1==0) {
 				if (lignes2[n_in1].comment==0) {
 					k1=146+44 ; k2=156+44 ; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes2[n_in1].ident,s);
@@ -780,12 +776,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						strcat(toto,"\\tle2.txt");
 						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,toto,home);
 						//WriteDisk(lign);
-
-						result = Tcl_Eval(interp,lign);
-	
+						result = Tcl_Eval(interp,lign);	
 						//WriteDisk("result");
-// debut AK 1
-//if (1==0) {
+
 						if (result==TCL_OK) {
 							list=NULL;
 							list2 = Tcl_GetObjResult  (interp);
@@ -958,8 +951,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 							Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 							result = TCL_ERROR;
 						}
-//	}
-//fin AK 1
+
 					} else {
 						/* --- le satellite est deja identifiée --- */
 					//	WriteDisk("le satellite est deja identifiée");
@@ -975,8 +967,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					k1=0; k2=259; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes2[n_in1].texte,s);
 				}
-//	}
-//fin AK
 				n_in1++;
 			}
 			
@@ -1013,7 +1003,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					if (lignes2[k].kobject!=0) {
 						fprintf(f_in1,"%s %09.5f %07.3f %s\n",lignes2[k].texte,lignes2[k].distance,lignes2[k].angle,lignes2[k].ident);
 					} else {
-						fprintf(f_in1,"%s",lignes2[k].texte);
+						fprintf(f_in1,"%s\n",lignes2[k].texte);
 					}
 				} else {
 					fprintf(f_in1,"\n");
