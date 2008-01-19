@@ -2,7 +2,7 @@
 # Fichier : focuseraudecom.tcl
 # Description : Gere le focuser associe a la monture AudeCom
 # Auteur : Robert DELMAS
-# Mise a jour $Id: focuseraudecom.tcl,v 1.11 2007-12-22 12:21:17 robertdelmas Exp $
+# Mise a jour $Id: focuseraudecom.tcl,v 1.12 2008-01-19 12:34:02 robertdelmas Exp $
 #
 
 #
@@ -157,12 +157,10 @@ proc ::focuseraudecom::deletePlugin { } {
 #  return 0 (ready) , 1 (not ready)
 #------------------------------------------------------------
 proc ::focuseraudecom::isReady { } {
-   global audace
-
    set result "0"
    #--- le focuser est ready si la monture AudeCom est deja cree
    if { [ ::tel::list ] != "" } {
-      if { [tel$audace(telNo) name] == "AudeCom" } {
+      if { [ ::confTel::getPluginProperty "name" ] == "AudeCom" } {
          set result "1"
       }
    }
@@ -270,10 +268,10 @@ proc ::focuseraudecom::goto { } {
 #     incremente la vitesse du focus et appelle la procedure setSpeed
 #------------------------------------------------------------
 proc ::focuseraudecom::incrementSpeed { origin } {
-   global audace caption conf
+   global audace caption
 
    if { [ ::tel::list ] != "" } {
-      if { $conf(telescope) == "audecom" } {
+      if { [ ::confTel::getPluginProperty "product" ] == "audecom" } {
          if { $audace(focus,speed) == "0" } {
             ::focuseraudecom::setSpeed "1"
          } elseif { $audace(focus,speed) == "1" } {
@@ -281,7 +279,7 @@ proc ::focuseraudecom::incrementSpeed { origin } {
          } else {
             ::focuseraudecom::setSpeed "1"
          }
-      } elseif { $conf(telescope) == "lx200" } {
+      } elseif { [ ::confTel::getPluginProperty "product" ] == "lx200" } {
          #--- Inactif pour autres montures
          ::focuseraudecom::setSpeed "0"
          set origine [ lindex $origin 0 ]
@@ -314,10 +312,10 @@ proc ::focuseraudecom::incrementSpeed { origin } {
 #     change la vitesse de mouvement de la monture
 #------------------------------------------------------------
 proc ::focuseraudecom::setSpeed { { value "0" } } {
-   global audace caption conf
+   global audace caption
 
    if { [ ::tel::list ] != "" } {
-      if { $conf(telescope) == "audecom" } {
+      if { [ ::confTel::getPluginProperty "product" ] == "audecom" } {
          if { $value == "1" } {
             set audace(focus,speed) "1"
             set audace(focus,labelspeed) "$caption(focuseraudecom,x5)"
