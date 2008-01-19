@@ -2,7 +2,7 @@
 # Fichier : focuserlx200.tcl
 # Description : Gere le focuser associe a la monture LX200
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserlx200.tcl,v 1.14 2007-12-22 12:21:58 robertdelmas Exp $
+# Mise a jour $Id: focuserlx200.tcl,v 1.15 2008-01-19 12:34:32 robertdelmas Exp $
 #
 
 #
@@ -157,12 +157,10 @@ proc ::focuserlx200::deletePlugin { } {
 #  return 0 (ready) , 1 (not ready)
 #------------------------------------------------------------
 proc ::focuserlx200::isReady { } {
-   global audace
-
    set result "0"
    #--- le focuser est ready si la monture LX200 est deja cree
    if { [ ::tel::list ] != "" } {
-      if { [tel$audace(telNo) name] == "LX200" } {
+      if { [ ::confTel::getPluginProperty "name" ] == "LX200" } {
          set result "1"
       }
    }
@@ -213,10 +211,10 @@ proc ::focuserlx200::goto { } {
 #     incremente la vitesse du focus et appelle la procedure setSpeed
 #------------------------------------------------------------
 proc ::focuserlx200::incrementSpeed { origin } {
-   global audace caption conf
+   global audace caption
 
    if { [ ::tel::list ] != "" } {
-      if { $conf(telescope) == "lx200" } {
+      if { [ ::confTel::getPluginProperty "product" ] == "lx200" } {
          if { $audace(focus,speed) == "0" } {
             ::focuserlx200::setSpeed "1"
          } elseif { $audace(focus,speed) == "1" } {
@@ -224,7 +222,7 @@ proc ::focuserlx200::incrementSpeed { origin } {
          } else {
             ::focuserlx200::setSpeed "1"
          }
-      } elseif { $conf(telescope) == "audecom" } {
+      } elseif { [ ::confTel::getPluginProperty "product" ] == "audecom" } {
          #--- Inactif pour autres montures
          ::focuserlx200::setSpeed "0"
          set origine [ lindex $origin 0 ]
@@ -257,10 +255,10 @@ proc ::focuserlx200::incrementSpeed { origin } {
 #     change la vitesse de mouvement de la monture
 #------------------------------------------------------------
 proc ::focuserlx200::setSpeed { { value "0" } } {
-   global audace caption conf
+   global audace caption
 
    if { [ ::tel::list ] != "" } {
-      if { $conf(telescope) == "lx200" } {
+      if { [ ::confTel::getPluginProperty "product" ] == "lx200" } {
          if { $value == "1" } {
             set audace(focus,speed) "1"
             set audace(focus,labelspeed) "2"
