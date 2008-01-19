@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.15 2008-01-15 16:03:39 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.16 2008-01-19 12:18:19 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -375,13 +375,13 @@ proc ::audecom::fillConfigPage { frm } {
    pack $frm.lab2 -in $frm.frame7 -anchor center -side left -padx 10 -pady 10
 
    #--- Les checkbuttons
-   checkbutton $frm.mobile -text "$caption(audecom,mobile)" -highlightthickness 0 \
-      -variable ::audecom::private(mobile)
-   pack $frm.mobile -in $frm.frame8 -anchor center -side left -padx 10 -pady 8
-
    checkbutton $frm.king -text "$caption(audecom,king)" -highlightthickness 0 \
       -variable ::audecom::private(king)
-   pack $frm.king -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
+   pack $frm.king -in $frm.frame8 -anchor center -side left -padx 10 -pady 8
+
+   checkbutton $frm.mobile -text "$caption(audecom,mobile)" -highlightthickness 0 \
+      -variable ::audecom::private(mobile)
+   pack $frm.mobile -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
 
    checkbutton $frm.pec -text "$caption(audecom,pec)" -highlightthickness 0 \
       -variable ::audecom::private(pec)
@@ -400,7 +400,6 @@ proc ::audecom::fillConfigPage { frm } {
       -command { ::confAudecomPec::run "$audace(base).confAudecomPec" }
    pack $frm.progpec -in $frm.frame13 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
 
-   #--- Le bouton de commande
    button $frm.ctlmobile -text "$caption(audecom,ctl_mobile)" -state normal \
       -command { ::confAudecomMobile::run "$audace(base).confAudecomMobile" }
    pack $frm.ctlmobile -in $frm.frame14 -anchor center -side top -pady 3 -ipadx 10 -ipady 5 -expand true
@@ -428,7 +427,7 @@ proc ::audecom::fillConfigPage { frm } {
    pack $frm.nom_raquette -in $frm.frame16 -anchor center -side left -padx 0 -pady 8
 
    #--- Le checkbutton pour la monture equatoriale allemande
-   checkbutton $frm.german -text "$caption(audecom,mont_allemande)" -highlightthickness 0 \
+   checkbutton $frm.german -text "$caption(audecom,mont_allemande)" -highlightthickness 0 -state disabled \
       -variable ::audecom::private(german) -command { ::audecom::configEquatorialAudeCom }
    pack $frm.german -in $frm.frame18 -anchor nw -side left -padx 10 -pady 8
 
