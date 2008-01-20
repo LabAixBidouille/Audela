@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.8 2007-09-06 17:34:36 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.9 2008-01-20 19:12:38 jacquesmichelet Exp $
 #
 
 #=========================================================================
@@ -54,7 +54,7 @@ set caption(gps,valider)                     "OK"
 set caption(gps,erreur)                      "ERROR"
 set caption(gps,type_non_entier)             "At least one of the values is not an integer"
 set caption(gps,bienvenue)                   "GPS"
-set caption(gps,copyright)                   "(C)2001-2007   J. Michelet"
+set caption(gps,copyright)                   "(C)2001-2008   J. Michelet"
 set caption(gps,tchao)                       "End of GPS"
 set caption(gps,conseil_serie)               "Cannot open the serial port.\nPlease check whether the telescope uses the same port."
 set caption(gps,mauvaise_version)            "Libjm version must be greater than or equal to 3.0"
@@ -65,6 +65,8 @@ set caption(gps,arret_auto)                  "Stop"
 set caption(gps,intervalle_synchro)          "Synchro (s)"
 set caption(gps,help,titre)                  "Help For This Tool"
 set caption(gps,non_rs232)                   "This port is not an RS232 serial port."
+set caption(gps,droit_acces)                 "Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
+set caption(gps,pas_synchro)                 "No synchronisation"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -112,7 +114,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERREUR"
    set caption(gps,type_non_entier)          "Au moins une valeur n'est pas entière"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2007   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
    set caption(gps,tchao)                    "Fin de GPS"
    set caption(gps,conseil_serie)            "Problème à l'ouverture de la liaison série.\nPensez à vérifier si le télescope n'est pas configuré pour utiliser le même port."
    set caption(gps,mauvaise_version)         "Libjm doit être de version supérieure ou égale à 3.0"
@@ -123,6 +125,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Synchro (s)"
    set caption(gps,help,titre)               "Aide pour cet outil"
    set caption(gps,non_rs232)                "Ce port n'est pas un port série de type RS232."
+   set caption(gps,droit_acces)              "Vous n'avez pas les droits d'accès nécessaires pour modifier l'horloge système.\n Il vous faut être administrateur de l'ordinateur"
+   set caption(gps,pas_synchro)              "Pas de synchronisation"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -170,7 +174,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERRORE"
    set caption(gps,type_non_entier)          "Almeno un valore non e' intero"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2007   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
    set caption(gps,tchao)                    "Fine GPS"
    set caption(gps,conseil_serie)            "Problemi nell'apertura della porta seriale.\nVerificare che il telescopio non sia connesso sulla stessa porta."
    set caption(gps,mauvaise_version)         "Libjm deve avere una versione uguale o superiore a 3.0"
@@ -181,6 +185,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Sincronizza (s)"
    set caption(gps,help,titre)               "Aiuto per questo tool"
    set caption(gps,non_rs232)                "Questa non e` una porta seriale tipo RS232."
+   set caption(gps,droit_acces)              ">>> Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
+   set caption(gps,pas_synchro)              ">>> No synchronisation"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -228,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERROR"
    set caption(gps,type_non_entier)          "Al menos uno de los valores no es un número entero"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2007   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
    set caption(gps,tchao)                    "Fin de GPS"
    set caption(gps,conseil_serie)            "No puedo abrir el puerto serie.\nPor favor, compruebe que el telescopio no usa el mismo puerto."
    set caption(gps,mauvaise_version)         "La version de Libjm debe ser mayor o igual a 3.0"
@@ -239,6 +245,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Sincro (s)"
    set caption(gps,help,titre)               "Ayuda para esta herramienta"
    set caption(gps,non_rs232)                "Esto no es un puerto serie RS232."
+   set caption(gps,droit_acces)              ">>> Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
+   set caption(gps,pas_synchro)              ">>> No synchronisation"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -286,7 +294,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "IRRTUM"
    set caption(gps,type_non_entier)          "Mindestens einen Wert ist nicht ganz"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2007   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
    set caption(gps,tchao)                    "GPS Ende"
    set caption(gps,conseil_serie)            "Problem mit dem Comport Öffnung.\nNachsehen sie ob das Teleskop nicht beschaffen ist um dem selben Comport zu nützen."
    set caption(gps,mauvaise_version)         "Libjm Version soll größer als 3.0 sein"
@@ -297,6 +305,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Synchro (s)"
    set caption(gps,help,titre)               "Hilfe für dieses Gerät"
    set caption(gps,non_rs232)                "Diesen Anschluss ist nicht ein RS232 Anschluss."
+   set caption(gps,droit_acces)              ">>> Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
+   set caption(gps,pas_synchro)              ">>> No synchronisation"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -344,7 +354,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERRO"
    set caption(gps,type_non_entier)          "Pelo menos um valor não é inteiro"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2007   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
    set caption(gps,tchao)                    "Fim de GPS"
    set caption(gps,conseil_serie)            "Problema na abertura da ligação série.\nVerifique se o telescópio não está configurado para utilizar a mesma porta."
    set caption(gps,mauvaise_version)         "Libjm deve ser de versão superior ou igual a 3.0"
@@ -355,6 +365,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Sincro (s)"
    set caption(gps,help,titre)               "Ajuda para esta ferramenta"
    set caption(gps,non_rs232)                "Esta porta não é uma porta série do tipo RS232."
+   set caption(gps,droit_acces)              ">>> Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
+   set caption(gps,pas_synchro)              ">>> No synchronisation"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -402,7 +414,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,erreur)                   "ERROR"
    set caption(gps,type_non_entier)          "At least one of the values is not an integer"
    set caption(gps,bienvenue)                "GPS"
-   set caption(gps,copyright)                "(C)2001-2007   J. Michelet"
+   set caption(gps,copyright)                "(C)2001-2008   J. Michelet"
    set caption(gps,tchao)                    "End of GPS"
    set caption(gps,conseil_serie)            "Cannot open the serial port.\nPlease check whether the telescope uses the same port."
    set caption(gps,mauvaise_version)         "Libjm version must be greater than or equal to 3.0"
@@ -413,7 +425,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Synchro (s)"
    set caption(gps,help,titre)               "Help For This Tool"
    set caption(gps,non_rs232)                "This port is not an RS232 serial port."
-
+   set caption(gps,droit_acces)              "Insufficient privileges for setting the system clock.\n You need to be an administrator of this computer."
+   set caption(gps,pas_synchro)              "No synchronisation"
 }
 
 #=========================================================================
