@@ -720,7 +720,88 @@ int tt_ima_stack_prod_1(TT_IMA_STACK *pstack)
 	    nbima0++;
 	 }
       }
-      value=(nbima0==0)?pstack->nullpix_value:value*((double)(nbima)/(double)(nbima0));
+      if (nbima==0) {
+          value=pstack->nullpix_value;
+      } else {
+           if (nbima!=nbima0) {
+              if (value>0) {
+                 value=pow(value,((double)(nbima0)/(double)(nbima)));
+              }
+           }
+           if (pstack->powernorm==1) {
+              if (value<=0) {
+                 value=0.;
+              } else{
+                 value=pow(value,(double)(1./nbima0));
+              }
+           }
+      }
+      //value=(nbima0==0)?pstack->nullpix_value:value*((double)(nbima)/(double)(nbima0));
+      if (nbima0==0) {
+	 for (kk=0;kk<nbima;kk++) {
+	    poids[kk]+=(poids_pondere/(double)(nbima));
+	 }
+      } else {
+	 for (kk=0;kk<nbima;kk++) {
+	    if (index0[kk]==TT_YES) {
+	       poids[kk]+=(poids_pondere/(double)(nbima0));
+	    }
+	 }
+      }
+      p_out->p[(int)(firstelem)+kkk]=(TT_PTYPE)(value);
+   }
+   tt_free(index0,"index0");
+   return(OK_DLL);
+}
+
+int tt_ima_stack_pythagore_1(TT_IMA_STACK *pstack)
+/***************************************************************************/
+/* Empilement en faisant une formule de Pythagore sqrt(i1^2+i2^2+...)      */
+/***************************************************************************/
+/***************************************************************************/
+{
+   int kk,kkk;
+   double poids_pondere,value;
+   int base_adr;
+   TT_IMA *p_tmp=pstack->p_tmp;
+   TT_IMA *p_out=pstack->p_out;
+   long firstelem=pstack->firstelem;
+   long nelements=pstack->nelements;
+   long nelem=pstack->nelem;
+   long nelem0=pstack->nelem0;
+   int nbima=pstack->nbima;
+   double *poids=pstack->poids;
+   double val;
+   int *index0,nbima0;
+   int nombre,taille,msg;
+
+   nombre=nbima;
+   taille=sizeof(int);
+   index0=NULL;
+   if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&index0,&nombre,&taille,"index0"))!=0) {
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_stack_add_1 (pointer index0)");
+      return(TT_ERR_PB_MALLOC);
+   }
+   poids_pondere=(double)(nbima)/(double)(nelements);
+   for (kkk=0;kkk<(int)(nelem);kkk++) {
+       for (value=0,nbima0=0,kk=0;kk<nbima;kk++) {
+	 base_adr=(int)(nelem0)*kk;
+	 val=(double)(p_tmp->p[base_adr+kkk]);
+	 if (pstack->nullpix_exist==TT_YES) {
+	    if (val>pstack->nullpix_value) {
+	       index0[kk]=TT_YES;
+	       value+=val*val;
+	       nbima0++;
+	    } else {
+	       index0[kk]=TT_NO;
+	    }
+	 } else {
+	    index0[kk]=TT_YES;
+	    value+=val*val;
+	    nbima0++;
+	 }
+      }
+      value=(nbima0==0)?pstack->nullpix_value:sqrt(value)*((double)(nbima)/(double)(nbima0));
       if (nbima0==0) {
 	 for (kk=0;kk<nbima;kk++) {
 	    poids[kk]+=(poids_pondere/(double)(nbima));
