@@ -3351,17 +3351,17 @@ int focas_calcul_dist(int nb, struct focas_tableau_entree *data_tab, struct foca
       x0=(data_tab+i)->x;
       y0=(data_tab+i)->y;
       for (j=i+1;j<=nb;j++,k++) {
-	 x=x0-(data_tab+j)->x;
-	 y=y0-(data_tab+j)->y;
+		x=x0-(data_tab+j)->x;
+		y=y0-(data_tab+j)->y;
          if ((x==0.)&&(y==0.)) {
             tt_errlog(TT_ERR_MATCHING_NULL_DISTANCES,"Pb of null distance in focas_calcul_dist (check files .lst)");
             tt_free2((void**)&qsort_r,"qsort_r");
             tt_free2((void**)&qsort_l,"qsort_l");
             return(TT_ERR_MATCHING_NULL_DISTANCES);
-         }
-	 (dist+k)->indice1=i;
-	 (dist+k)->indice2=j;
-	 (dist+k)->dist2=(x*x+y*y);
+		}
+		(dist+k)->indice1=i;
+		(dist+k)->indice2=j;
+		(dist+k)->dist2=(x*x+y*y);
       }
    }
    /*--- trie le tableau dans l'ordre croissant des distances ---*/
