@@ -174,7 +174,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
       /* ===== loop to place scenes ==== */
       nscenesplaced=0;
       kl=0;
-      flag=0; /* =0 pas de conflit | =1 conflit reglé | =-1 conflit pas reglé */
+      flag=0; /* =0 pas de conflit | =1 conflit reglï¿½ | =-1 conflit pas reglï¿½ */
       while (kl<nscenes) {
          if (flag==0) {
             jd1=paramscenes[kl].jmeridien;
@@ -212,7 +212,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                flag=1;
                if (jd111>=jd10) {
                   /* --- le debut de scene est observable ---*/
-                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placées ---*/
+                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placï¿½es ---*/
                   for (kcc=k111;kcc<=k222;kcc++) {
                      if (occupations[kcc]>=0) {
                         /* --- une autre scene occupe deja la position ---*/
@@ -222,7 +222,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                   }
                }
                if (flag==1) {
-                  /* --- Le conflit est réglé et cette scene peut etre placée dans les occupations ---*/
+                  /* --- Le conflit est rï¿½glï¿½ et cette scene peut etre placï¿½e dans les occupations ---*/
                   k1=k111;
                   k2=k222;
                   break;
@@ -234,7 +234,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                flag=1;
                if (jd111<=jd20) {
                   /* --- la fin de scene est observable ---*/
-                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placées ---*/
+                  /* --- On verifie un eventuel conflit avec toutes les autres scenes deja placï¿½es ---*/
                   for (kcc=k111;kcc<=k222;kcc++) {
                      if (occupations[kcc]>=0) {
                         /* --- une autre scene occupe deja la position ---*/
@@ -244,7 +244,7 @@ int Cmd_mctcl_obsreq(ClientData clientData, Tcl_Interp *interp, int argc, char *
                   }
                }
                if (flag==1) {
-                  /* --- Cette scene peut etre placée dans les occupations ---*/
+                  /* --- Cette scene peut etre placï¿½e dans les occupations ---*/
                   k1=k111;
                   k2=k222;
                   break;
@@ -952,7 +952,7 @@ int mctcl_decode_planet(Tcl_Interp *interp, char *argv0,int *planetnum, char *pl
 
 int mctcl_decode_topo(Tcl_Interp *interp, char *argv0,double *longmpc, double *rhocosphip,double *rhosinphip)
 /*******************************************************************************/
-/* Decode automatiquement la position topocentrique MPC à partir du type Home. */
+/* Decode automatiquement la position topocentrique MPC ï¿½ partir du type Home. */
 /*******************************************************************************/
 /* SORTIES :																                */
 /* Longmpc : longitude (en radian) positive vers l'est.						    */
@@ -1761,9 +1761,9 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 /*           NAXIS2 nombre de pixels sur y                                  */
 /*           FOCLEN focale de l'objectif (en m)                             */
 /*           PIXSIZE1 taille du pixel sur x (en m/pixel)                    */
-/*                    négatif si RA croissant avec x decroissant.           */
+/*                    nï¿½gatif si RA croissant avec x decroissant.           */
 /*           PIXSIZE2 taille du pixel sur y (en m/pixel)                    */
-/*                    négatif si DEC croissant avec y decroissant.          */
+/*                    nï¿½gatif si DEC croissant avec y decroissant.          */
 /*           CROTA2 angle de rotation du champ (degres partir du nord->est) */
 /*           RA Ascension droite du centre (degres)                         */
 /*           DEC Declinaison du centre (degres)                             */
@@ -2151,6 +2151,7 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
 //***************************************************************************
 int WriteDisk(char *Chaine)
 {
+#if defined(OS_WIN)
 FILE *F;
 char Nom[1000];
 SYSTEMTIME St;
@@ -2167,6 +2168,7 @@ char Buffer[300];
 		fwrite(Buffer,sizeof(char),strlen(Buffer),F);
 		fclose(F);
 	}
+#endif
 	return 0;
 }
 
@@ -2397,7 +2399,7 @@ int Cmd_mctcl_simurelief(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /* Synthese de cartes de relief et d'albedo pour courbes de rotations.      */
 /****************************************************************************/
 /* Cette fonction prepare une carte de relief et une carte d'albedo pour    */
-/* etre utilisées par mc_simulc.                                            */
+/* etre utilisï¿½es par mc_simulc.                                            */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -2534,7 +2536,7 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide dans          */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prï¿½alablement avoir utilisï¿½ mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -2563,14 +2565,14 @@ int Cmd_mctcl_simulc(ClientData clientData, Tcl_Interp *interp, int argc, char *
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Home : localisation topocentrique                                        */
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dï¿½coupage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* sideral_period_h : periode de rotation sidï¿½rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* density_g/cm3 : masse volumique de la planete (g/cm3)                    */
@@ -2957,7 +2959,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide SSB dans      */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prï¿½alablement avoir utilisï¿½ mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -2985,14 +2987,14 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
 /*    nombre decimal <  1000000 : Jour Julien Modifie						       */
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dï¿½coupage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* sideral_period_h : periode de rotation sidï¿½rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* a_m : demi-grand axe de l'orbite des binaires (m)                        */
@@ -3239,7 +3241,7 @@ int Cmd_mctcl_simulcbin(ClientData clientData, Tcl_Interp *interp, int argc, cha
   	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
-            sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
+            sprintf(s,"Error : Orbit file %s (type=%p) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             free(relief1);
             free(albedo1);
@@ -3381,7 +3383,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide SSB dans      */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prï¿½alablement avoir utilisï¿½ mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -3410,7 +3412,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Refdates : =0 TT, =1 dans le repere de l'asteroide */
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dï¿½coupage HTM                                     */
 /* filename_relief1 : carte de relief obj1 creee avec mc_simurelief         */
 /* filename_albedo1 : carte d'albedo obj1 creee avec mc_simurelief          */
 /* filename_relief2 : carte de relief obj2 creee avec mc_simurelief         */
@@ -3419,9 +3421,9 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/*               Ce parametre doit etre celculé dans le repere de date      */
-/*               donné par Refdates.                                        */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/*               Ce parametre doit etre celculï¿½ dans le repere de date      */
+/*               donnï¿½ par Refdates.                                        */
+/* sideral_period_h : periode de rotation sidï¿½rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* a_m : demi-grand axe de l'orbite des binaires (m)                        */
@@ -3699,7 +3701,7 @@ int Cmd_mctcl_simumagbin(ClientData clientData, Tcl_Interp *interp, int argc, ch
   	   	   orbitfilefound=NO;
 		      orbitisgood=NO;
             /* --- le fichier d'orbite n'est pas trouve : il faut sortir ---*/
-            sprintf(s,"Error : Orbit file %s (type=%d) not found",orbitfile,orbitformat);
+            sprintf(s,"Error : Orbit file %s (type=%p) not found",orbitfile,orbitformat);
             Tcl_SetResult(interp,s,TCL_VOLATILE);
             free(relief1);
             free(albedo1);
@@ -3925,7 +3927,7 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 /****************************************************************************/
 /* Cette fonction simule la courbe de rotation d'un asteroide SSB dans      */
 /* l'intevalle [Date_phase0;Date_phase0+sideral_period_h].                  */
-/* Il faut préalablement avoir utilisé mc_simurelief                        */
+/* Il faut prï¿½alablement avoir utilisï¿½ mc_simurelief                        */
 /*																			                   */
 /*	ENTREES               											                   */
 /*	=======               											                   */
@@ -3961,14 +3963,14 @@ int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, c
 /*    Year : suivi des elements facultatifs suivants, dans l'ordre :		    */
 /*     Month Day Hour Minute Second (Format style Iso mais avec les espaces)*/
 /* Refdates : =0 UTC, =1 dans le repere de l'asteroide */
-/* HTM_level  : niveau du découpage HTM                                     */
+/* HTM_level  : niveau du dï¿½coupage HTM                                     */
 /* filename_relief : carte de relief creee avec mc_simurelief               */
 /* filename_albedo : carte d'albedo creee avec mc_simurelief                */
 /* frame_coord : referentiel de coordonnees (=0=ecliptique =1=equatorial)   */
 /* frame_center : referentiel de coordonnees (=0=helio =1=geo)              */
 /* lon_phase0 : longitude de la phase nulle de la cdr (deg)                 */
 /* Date_phase0 : Date de reference de la phase nulle de la cdr (Date)       */
-/* sideral_period_h : periode de rotation sidérale (h)                      */
+/* sideral_period_h : periode de rotation sidï¿½rale (h)                      */
 /* lonpole     : longitude du pole (deg) dans frame_coord                   */
 /* latpole     : latitude du pole (deg) dans frame_coord                    */
 /* a_m : demi-grand axe de l'orbite des binaires (m)                        */
@@ -4495,7 +4497,7 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
    int nelem,n,result,code,k;
    double *jds,*ras,*decs,*equinoxs;
    Tcl_DString dsptr;
-   double longmpc=0.,rhocosphip=0.,rhosinphip=0.;
+   double rhocosphip=0.,rhosinphip=0.;
    double latitude,altitude,longitude;
    double dlon,dlat;
    int naxis1,naxis2,methode,otherhome;
@@ -4510,7 +4512,7 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
    double delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
    double rasun,decsun,cosrsun,sinrsun,cosdsun,sindsun,coshsun,sinhsun;
    double ramoon,decmoon,cosrmoon,sinrmoon,cosdmoon,sindmoon,coshmoon,sinhmoon;
-   double hmax,lonzen,latzen;
+   double hmax,lonzen=0,latzen=0;
    double hobsotherhome;
 
    if(argc<12) {
@@ -4683,7 +4685,7 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
          sinrmoon=sin(ramoon);
          cosdmoon=cos(decmoon);
          sindmoon=sin(decmoon);
-         /* --- distance à la moon ---*/
+         /* --- distance ï¿½ la moon ---*/
          mc_sepangle(ra,ramoon,dec,decmoon,&distmoon,&posangle);
          /* --- Calcul de la visibilite en home --- */
          hobsotherhome=-PISUR2;
