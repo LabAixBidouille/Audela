@@ -259,54 +259,13 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    pseries->cutscontrast=1.0; //pour diminuer le contraste       
 
    /* --- Calcul des seuils de visualisation ---*/
-   //tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode,&maxi,&mini);
-   //tt_util_statima(p_out,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
    tt_util_bgk(p_out,&(pseries->bgmean),&(pseries->bgsigma));
-   /* seuils prédéfinis pour les pixels noirs et blancs */
-    /*seuil0 = mode + 0.1*mode;
-	seuil1 = pseries->hicut + 0.06*pseries->hicut;
-	// attention il ne faut pas que seuil0 > seuil 1
-	if ((seuil0 >= seuil1)||(seuil1<=seuil0+100)) {
-		seuil0 = mode ;
-		seuil1 = pseries->hicut+ 0.1*pseries->hicut;
-	}*/
-   //rajout	
+   
+   //seuils prédéfinis
 	sigma=pseries->bgsigma;
 	seuil=pseries->bgmean+10*sigma;
 	seuila=pseries->bgmean+8.5*sigma;
-	/*if (8*sigma>(pseries->hicut-pseries->bgmean)) {
-		if (7*sigma>(pseries->hicut-pseries->bgmean)) {
-			if (6*sigma>(pseries->hicut-pseries->bgmean)) {
-				//seuila=(pseries->hicut+pseries->bgmean)/2.0;
-				if (5*sigma>(pseries->hicut-pseries->bgmean)) {
-					if (4*sigma>(pseries->hicut-pseries->bgmean)) {
-						seuila=((3/4.0)*pseries->hicut+(1/4.0)*pseries->bgmean)/2.0;
-					} else {
-						seuila=pseries->bgmean+4*sigma;
-					}
-				} else {
-					seuila=pseries->bgmean+5*sigma;
-				}
-			} else {
-				seuila=pseries->bgmean+6*sigma;
-			}
-		} else {
-			seuila=pseries->bgmean+7*sigma;
-		}
-	} else {
-		seuila=pseries->bgmean+8*sigma;
-	}*/
-
-	/*if (((mode+8*5pseries->bgsigma))>seuil)&&(seuil+3*(pseries->sigma)/2<maxi)) {
-		seuil=mode +3*(pseries->sigma)/2;
-		seuila=mode+(pseries->sigma)/2;
-	} else if (((mode+pseries->sigma)>seuil)&&(seuil+3*(pseries->sigma)/2>maxi)) {
-		seuil=mode+pseries->sigma;
-		seuila=(mode+maxi)/2;
-	} else {
-		seuila=pseries->hicut-(pseries->sigma)/2;
-	}*/
-	//fin rajout
+	
    if (radius<=0) {
        xc=p_in->naxis1/2;
        yc=p_in->naxis2/2;
@@ -319,33 +278,9 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    //strcpy(filenamesat,"../ros/src/grenouille/catalog.cat");
 	strcpy(filenamesat,"./catalog.cat");
 
-   //seuil=pseries->threshold; // voir le calcul a faire en fonction du niveau de bruit
-   /*if (seuil<=0) {
-      seuil=100.;
-   }
-   seuila = seuil;
-   seuil = seuil+mode;
-   
-   for (kkk=0;kkk<(int)(nelem);kkk++) {
-      dvalue=(double)p_in->p[kkk];
-	  if (dvalue <= seuil0) {
-		 p_out->p[kkk]= 0;
-	  } 
-	  if (dvalue >= seuil1) {
-		 p_out->p[kkk]= 1;
-	  } 	  
-	  if ((dvalue > seuil0)&&(dvalue < seuil1)) {
-		 dvalue=dvalue/seuil1;
-		 p_out->p[kkk]=(TT_PTYPE)(dvalue);
-	  } 
-   }*/
-	//tt_imasaver(p_out,"D:/pout_algo2.fit",16);
+   //tt_imasaver(p_out,"D:/pout_algo2.fit",16);
    /* --- calcul ---*/
    tt_util_chercher_trainee(p_in,p_out,filenamesat,fwhmsat,seuil,seuila,xc,yc,exposure);
-   //tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
-	//tt_imadestroyer(p_out);
-	//tt_imabuilder(p_out);
-	//tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
    pseries->exptime_stack=pseries->exptime[index-1];
@@ -364,7 +299,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 
 {	
 	int xmax,ymax,ntrainee,sizex,sizey,nb,background,flags;
-	double fwhmyh,fwhmyb,posx,posy,fwhmx,fwhmy,lt,xc,yc,flux,fluxerr,fwhmd,a,b;
+	double fwhmyh,fwhmyb,posx,posy,posxanc,posyanc,fwhmx,fwhmy,lt,xc,yc,flux,fluxerr,fwhmd,a,b;
 	double magnitude, magnitudeerr,theta,classstar;
 	int k,k2,y,x,ltt,fwhmybi,fwhmyhi,fwhm,nelem;
 	double *matx;
@@ -372,17 +307,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	double **mat, *para, *carac;
 
 	nelem=pin->nelements;
-	/* --- calcul de la fonction ---*/
-	/*temp = (double*)calloc(nelem,sizeof(double));
-    for (k=0;k<(int)(nelem);k++) {
-		dvalue=(double)pout->p[k];
-		if (dvalue == 1.0) {
-			temp[k]=0;
-		} else {
-			temp[k]=-1;
-		}
-    }*/
-
+	posxanc=0;
+	posyanc=0;
 	para = (double*)calloc(6,sizeof(double));
 	
 	/* --- chercher les dimensions de l'image ---*/
@@ -406,11 +332,6 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	ntrainee=1;
 
 	/* --- grande boucle sur l'image ---*/
-	/*if (seuil>=seuil1) {
-		seuil=1.0;
-	} else {
-		seuil=seuil/seuil1;
-	}*/
 	for (y=3;y<ymax-3;y++) {
 		if ((y>ymax)||(y<0)) { continue; }	
 		for (x=3;x<(xmax-ltt-3);x++) {
@@ -439,8 +360,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				}
 				fwhmyh=fwhmyh/ltt;
 				fwhmyb=fwhmyb/ltt;
-				fwhmyhi =(int) fwhmyh+1;
-				fwhmybi =(int) fwhmyb+1;
+				fwhmyhi =(int) (1.5*(fwhmyh+1));
+				fwhmybi =(int) (1.5*(fwhmyb+1));
 				sizex=ltt+fwhmyhi+fwhmybi+10;
 				sizey=fwhmybi+fwhmyhi+10;
 				fwhm= (int) ((fwhmybi+fwhmyhi)/2);
@@ -471,22 +392,28 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				  for(k=0;k<sizex;k++) {
 					 mat[k][k2] = pin->p[xmax*(y-fwhmybi-nb+k2)+x-fwhm-nb+k];
 					 //temp[xmax*(y-fwhmybi-nb+k2)+x-fwhm-nb+k]=-1;// pour ne pas repasser sur la meme etoile
-					 if ((y-fwhmybi-nb+k2<ymax-3)&&(x-fwhm-nb+k<xmax-ltt-3)&&(y-fwhmybi-nb+k2>3)&&(x-fwhm-nb+k>3)) {
+					 if ((y-fwhmybi-nb+k2<ymax-1)&&(x-fwhm-nb+k<xmax-ltt-1)&&(y-fwhmybi-nb+k2>1)&&(x-fwhm-nb+k>1)) {
 						pout->p[xmax*(y-fwhmybi-nb+k2)+x-fwhm-nb+k]=(float)seuila;// pour ne pas repasser sur la meme etoile
 					 }
 				  }
 				}
 				//recherche de la position du photocentre
-				xc=2*fwhm+nb;
-				yc=fwhmybi+nb;
+				xc=2*(fwhm/1.5)+nb;
+				yc=(fwhmybi/1.5)+nb;
 				flux=0.0;
 
 				fittrainee2 (seuila,lt,fwhm,xc,yc,nb,sizex, sizey, mat, para, carac, exposure); 				
 				//fittrainee3 (seuila,lt,xc,yc,nb,sizex, sizey, mat, para, carac, exposure); 
 				//posx  = para[1]+x-fwhm-nb;
 				posx  = para[1]+1.0*x+1.0;
-				posy  = para[4]-fwhmybi-1.0*nb+1.0*y;
+				posy  = para[4]-(fwhmybi/1.5)-1.0*nb+1.0*y;
 				
+				/* --- pour ne pas avoir des étoiles doubles --- */
+				if (((posx-posxanc)<0.05)&&((posy-posyanc)<0.05)) { continue;}
+	
+				posxanc=posx;
+				posyanc=posy;
+
 				//paramètres calculés rapidement ou pas du tout, pour que le fichier de sortie ressemble à celui de SExtractor
 				flux=carac[1];
 				fluxerr=0.2*flux;
@@ -497,8 +424,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				theta =0.0;
 				flags=0;
 				classstar=0.90;
-				b=2.0*fwhm;
-				a=lt/2+2*fwhm;
+				b=2.0*fwhm/1.5;
+				a=lt/2+2*fwhm/1.5;
 
 				/*fittrainee (lt,fwhm,x,sizex, sizey, mat, para, carac, exposure); 
 				posx  = (para[1]-fwhm-nb+2*x)/2;
@@ -521,6 +448,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 			}
 		}
 	}
+	tt_imasaver(pout,"D:/pout_algo2.fit",16);
 	free(matx);
 	free(para);
 	//free(temp);
@@ -894,12 +822,9 @@ void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb
 			}
 			carac[1]= flux;
 		}
-		
-
 
 		p[2]=p[2]/.601;p[5]=p[5]/.601; free(F);return;
 	
-
 	} else {
 
 		l1=l2;
