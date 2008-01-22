@@ -343,6 +343,8 @@ int tt_fct_ima_stack(void *arg1)
 	 msg=tt_ima_stack_shutter_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_PROD) {
 	 msg=tt_ima_stack_prod_1(&pstack);
+      } else if (pstack.numfct==TT_IMASTACK_PYTHAGORE) {
+	 msg=tt_ima_stack_pythagore_1(&pstack);
       } else {
 	 tt_imadestroyer(&p_in);
 	 tt_imadestroyer(&p_tmp);
@@ -477,6 +479,7 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    else if (strcmp(keys[10],"SIG")==0) { pstack->numfct=TT_IMASTACK_SIG; }
    else if (strcmp(keys[10],"SHUTTER")==0) { pstack->numfct=TT_IMASTACK_SHUTTER; }
    else if (strcmp(keys[10],"PROD")==0) { pstack->numfct=TT_IMASTACK_PROD; }
+   else if (strcmp(keys[10],"PYTHAGORE")==0) { pstack->numfct=TT_IMASTACK_PYTHAGORE; }
 
    /* --- decodage des parametres optionels ---*/
    pstack->bitpix=0;
@@ -486,6 +489,7 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
    pstack->nullpix_value=0.;
    pstack->jpegfile_make=TT_NO;
    strcpy(pstack->jpegfile,"");
+   pstack->powernorm=0;
 
    for (k=11;k<(pstack->nbkeys);k++) {
       /* --- extrait le mot cle ---*/
@@ -541,6 +545,9 @@ int tt_ima_stack_builder(char **keys,TT_IMA_STACK *pstack)
 	 if (strcmp(argu,"")!=0) {
 	    pstack->kappa=(double)(fabs(atof(argu)));
 	 }
+      }
+      else if (strcmp(mot,"POWERNORM")==0) {
+         pstack->powernorm=1;
       }
    }
    return(OK_DLL);

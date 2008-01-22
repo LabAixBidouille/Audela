@@ -185,6 +185,7 @@
 #define TT_IMASTACK_SIG 6
 #define TT_IMASTACK_SHUTTER 7
 #define TT_IMASTACK_PROD 8
+#define TT_IMASTACK_PYTHAGORE 9
 
 #define TT_TBLPIX_X 0
 #define TT_TBLPIX_Y 1
@@ -735,6 +736,7 @@ typedef struct {
    double nullpix_value;
    char jpegfile[FLEN_FILENAME];
    int jpegfile_make;
+   int powernorm;
    TT_USER1_IMA_STACK user1;
    TT_USER2_IMA_STACK user2;
    TT_USER3_IMA_STACK user3;
@@ -1051,6 +1053,7 @@ int tt_ima_stack_sort_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_sk_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack);
 int tt_ima_stack_prod_1(TT_IMA_STACK *pstack);
+int tt_ima_stack_pythagore_1(TT_IMA_STACK *pstack);
 
 int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys);
 int tt_strupr(char *chaine);
