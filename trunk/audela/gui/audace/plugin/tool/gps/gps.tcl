@@ -2,7 +2,7 @@
 # Fichier : gps.tcl
 # Description : Outil de synchronisation GPS
 # Auteur : Jacques MICHELET
-# Mise a jour $Id: gps.tcl,v 1.11 2008-01-20 19:12:38 jacquesmichelet Exp $
+# Mise a jour $Id: gps.tcl,v 1.12 2008-01-22 19:09:15 jacquesmichelet Exp $
 #
 
 namespace eval ::gps {
@@ -315,23 +315,16 @@ namespace eval ::gps {
 	### Calibration ##############################################
 	##############################################################
 	proc Calibration {} {
-	   global caption
+		global caption
 
-	   set catchResult [ catch {
-		  set temps [time {jm_reglageheurepc 0} 10]
-		  set micro [string first "micro" $temps]
-		  set milli [expr [string range $temps 0 [expr $micro - 2]] / 1000]
-		  if {$milli < 0} {
-			 return [expr -$milli]
-		  } else {
-			 return $milli
-		  }
-	   } ]
-	   if { $catchResult == "1" } {
-		  tk_messageBox -title $caption(gps,ecoute_horloge) -type ok -icon warning -message "$::errorInfo"
-		  ::gps::ArretHorloge
-		  return "55"
-	   }
+		set temps [time {jm_reglageheurepc 0} 10]
+		set micro [string first "micro" $temps]
+		set milli [expr [string range $temps 0 [expr $micro - 2]] / 1000]
+		if {$milli < 0} {
+			return [expr -$milli]
+		} else {
+			return $milli
+		}
 	}
 
 	##############################################################
@@ -608,27 +601,34 @@ namespace eval ::gps {
 	### EcouteHorloge ############################################
 	##############################################################
 	proc EcouteHorloge {} {
+		global caption
 		variable This
 		variable horloge
 		variable etat
 
-		set etat horloge
+		# On cherche a savoir si l'utilisateur a les droits suffisants pour modifier l'horloge systeme
+		set erreur [catch {set temps [time {jm_reglageheurepc 0} 10] } resultat ]
+		if { $erreur } {
+			tk_messageBox -title $caption(gps,ecoute_horloge) -type ok -icon error -message $caption(gps,droit_acces)
+		} else {
+			set etat horloge
 
-		pack forget $This.fmanuel.freg.becoute_horloge
-		pack $This.fmanuel.freg.barret_horloge -side top -fill x -padx 3 -pady 3
-		update idletasks
-		EtatBouton disabled disabled disabled disabled disabled disabled normal normal normal disabled disabled
+			pack forget $This.fmanuel.freg.becoute_horloge
+			pack $This.fmanuel.freg.barret_horloge -side top -fill x -padx 3 -pady 3
+			update idletasks
+			EtatBouton disabled disabled disabled disabled disabled disabled normal normal normal disabled disabled
 
-		bind all <Key-Prior> {::gps::AvanceHorloge}
-		bind all <Key-Next> {::gps::RetardHorloge}
+			bind all <Key-Prior> {::gps::AvanceHorloge}
+			bind all <Key-Next> {::gps::RetardHorloge}
 
-		set horloge(demande_arret) 0
-		set horloge(decalage_total) 0
-		update idletasks
-		# Calibration
-		set parametres(temps_minimal) [Calibration]
+			set horloge(demande_arret) 0
+			set horloge(decalage_total) 0
+			update idletasks
+			# Calibration
+			set parametres(temps_minimal) [Calibration]
 
-		BoucleBip
+			BoucleBip
+		}
 	}
 
 	##############################################################
