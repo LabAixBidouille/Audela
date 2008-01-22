@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.27 2007-11-28 18:39:50 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.28 2008-01-22 23:05:34 alainklotz Exp $
 #
 # add  operand value
 # add1  in operand out const ?tt_options?
@@ -38,6 +38,7 @@
 # smean  in out number ?first_index? ?tt_options?
 # smedian  in out number ?first_index? ?tt_options?
 # sprod  in out number ?first_index? ?tt_options?
+# spythagore  in out number ?first_index? ?tt_options?
 # ssigma  in out number ?first_index? ?tt_options?
 # ssk  in out number kappa ?first_index? ?tt_options?
 # ssort  in out number percent ?first_index? ?tt_options?
@@ -1017,6 +1018,29 @@ proc sprod {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" PROD $options"
+      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+   } else {
+      error "Usage: sprod in out number ?first_index? ?tt_options?"
+   }
+}
+
+proc spythagore {args} {
+   #--- in out number ?first_index? ?tt_options?
+   global audace
+
+   set n [llength $args]
+   if {$n>=3} {
+      set first 1
+      if {$n==4} {
+         set first "[lindex $args 3]"
+      }
+      set options ""
+      if {$n>=5} {
+         set options "[lrange $args 4 end]"
+      }
+      set ni [expr [lindex $args 2]+$first-1]
+      set ext [buf$audace(bufNo) extension]
+      ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" PYTHAGORE $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: sprod in out number ?first_index? ?tt_options?"
