@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.28 2008-01-22 23:05:34 alainklotz Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.29 2008-01-23 16:14:09 robertdelmas Exp $
 #
 # add  operand value
 # add1  in operand out const ?tt_options?
@@ -1043,7 +1043,7 @@ proc spythagore {args} {
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" PYTHAGORE $options"
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
-      error "Usage: sprod in out number ?first_index? ?tt_options?"
+      error "Usage: spythagore in out number ?first_index? ?tt_options?"
    }
 }
 
