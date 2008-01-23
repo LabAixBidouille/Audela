@@ -163,7 +163,7 @@ int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 {
 	TT_IMA *p_in,*p_out;
-	double x,y,magn,nb;
+	double x,y,magn,nb=0;
 	int kx,ky;
 	long nelem;
     double dvalue,fond;
@@ -233,7 +233,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    double dvalue;
    int kkk,index;
    double fwhmsat,seuil,sigma,seuila;
-   double xc,yc,radius;
+   double xc=0,yc=0,radius;
    char filenamesat[FLEN_FILENAME];
    double exposure;	
   // double mode,mini,maxi;
@@ -443,7 +443,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				ntrainee,flux,fluxerr,magnitude,magnitudeerr,background,posx,posy,carac[2],carac[3],carac[4],
 				a,b,theta,fwhmd,flags, classstar);
 				ntrainee++;
-				tt_free2((double**)&mat,"mat");
+				tt_free2((void**)&mat,"mat");
 				x=x+ltt;
 			}
 		}
@@ -483,10 +483,10 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 /*********************************************************************************************/
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac, double exposure) {
 
-	double *matx,*maty, intensite,moyy,*addx,matyy,posx,inten,flux,flux2;
-	int jx,jxx,jy,moyjx,ltt,posmaty;
+	double *matx,*maty, intensite,moyy,*addx,matyy,posx,inten,flux,flux2=0.0;
+	int jx,jxx,jy,moyjx,ltt,posmaty=0;
 	int n23;
-	double value,sx,sy,fmoy,fmed,seuilf,f23,a,b,c,xcc,ycc;
+	double value,sx,sy,fmoy,fmed,seuilf,f23,a,b,c,xcc=0.0,ycc=0.0;
 	double *vec;
 	
 	ltt = (int) lt;
@@ -635,7 +635,7 @@ void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb
    double e1[6]; /* ici ajout */
    int i,jx,jy,k;
    double rr2;
-   double xx,yy,flux,x2,y2,xy,xxx,yyy;
+   double xx,yy,flux,x2,y2,xy=0,xxx,yyy;
    double *F;
 
    int n23;
@@ -1002,12 +1002,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp2,*p_tmp3,*p_tmp4;
 	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul,i,x0,y0;
-	double xfin,yfin,xdebut,ydebut,l;
+	double xfin,yfin,xdebut=0.0,ydebut,l;
 	int result,nelem,index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,bord;
-	int *se = NULL;
 	double dvalue,somme_value,somme_x,somme_y,somme_value2,somme_x2,somme_y2;
 	double mode2,mini2,maxi2,bg,seuil_gto,seuil_geo;
-	double *bgmean = NULL, *bgsigma =NULL;
 	char filenamegto[FLEN_FILENAME],filenamegeo[FLEN_FILENAME];
 	FILE *fic;
 	double *eq;
@@ -2061,7 +2059,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	double dvalue;//hicuttemp,locuttemp,sigma;
 	double mode1,mini1,maxi1,mode2,mini2,maxi2,seuil;
 	char *nom_trait, *struct_elem;
-	int x1,y1,x2,y2,result;
+	int x1,y1,x2=0,y2=0,result;
 	int cx,cy,xx,yy,nb_test,k_test;
 	double inf,hicut,locut;
 
@@ -2114,7 +2112,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		size=x1*y1;
 		se=calloc(size,sizeof(int));	
 		for (i=0; i<size;i++) {
-				se[i]=1;
+			se[i]=1;
 		}	
 		sizex = x1;
 		sizey = y1;
@@ -2723,7 +2721,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
    double value,*cost,*sint,rho,theta,rho_int;
    int naxis11,naxis12,naxis21,naxis22,nombre,taille,naxis222,naxis122,adr_max;
    double threshold_ligne,seuil_max,somme_value,somme_theta,somme_ro,theta0,ro0;
-   int ymax, xmax,kl,kc;
+   int ymax=0, xmax=0,kl,kc;
 
    /* --- intialisations ---*/
    naxis11=naxis1;

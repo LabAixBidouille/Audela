@@ -560,7 +560,6 @@ int tt_ima_stack_shutter_1(TT_IMA_STACK *pstack)
    long nelem0=pstack->nelem0;
    int nbima=pstack->nbima;
    double *poids=pstack->poids;
-   double *exptimes=pstack->exptimes;
    double *piletri,val;
    int *index;
    int *index0,nbima0,k;
