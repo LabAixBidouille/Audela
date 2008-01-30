@@ -8,7 +8,8 @@ Sous windows:
    cfitsio : vars.bat (regler les chemins si besoin), puis
    make.bat, puis install.bat
 
- - Lancer etel\make.bat puis etel\install.bat
+ - Lancer etel\make.bat (dezipper eventuellement lib.zip
+   dans le dossier etel) puis etel\install.bat
 
  - Ouvrir et compiler avec visual c++, en mode release :
       fli\libfli\lib\windows\libfli.dsw
@@ -26,7 +27,14 @@ Sous windows:
 
  - Lancer libftd2xx\make.bat puis libftd2xx\install.bat
 
- - Lancer libgphoto2\make.bat puis libgphoto2\install.bat
+ - Compiler libgphoto2\libltdl\vc60\libltdl.dsw
+   en mode release.
+   Compiler libgphoto2\libgphoto2_port\libgphoto2_port\vc60\libgphoto2_port.dsw
+   en mode release.
+   Compiler libgphoto2\libgphoto2_port\usb\vc60\libgphoto2_port_usb.dsw
+   en mode release.
+   Compiler libgphoto2\libgphoto2\vc60\libgphoto2.dsw
+   en mode release.
 
  - Lancer libusb\make.bat puis libusb\install.bat
 
@@ -39,7 +47,5 @@ Sous windows:
          (sex.exe est mis directement dans audela/bin)
 
  - Lancer tcl\make.bat puis tcl\install.bat
-
- - Lancer truetime\make.bat puis truetime\install.bat
 
  - Lancer utils\make.bat puis utils\install.bat
