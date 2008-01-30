@@ -38,6 +38,8 @@ Sous windows:
 
  - Lancer libusb\make.bat puis libusb\install.bat
 
+ - Lancer libvantage\make.bat puis libvantage\install.bat
+
  - Lancer porttalk\make.bat puis porttalk\install.bat
 
  - Lancer sbig\make.bat puis sbig\install.bat
