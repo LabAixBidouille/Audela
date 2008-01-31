@@ -42,7 +42,7 @@ double erf( double x );
 
 void dilate (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2);
 void erode (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey, int naxis1,int naxis2);
-
+int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2);
 
 
 /**************************************************************************/
@@ -2049,6 +2049,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 //buf1 imaseries "MORPHOMATH nom_trait=TOPHAT struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 imaseries "MORPHOMATH nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
 //pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
+// si le centre n'est pas centre et le SE n'est aps symmétrique, 
+// il faut revoir l'algo de dilation ( il faut utilisé le transposé de SE) !!
 
 {
 	TT_IMA *p_tmp1, *p_tmp2, *p_in, *p_out;
@@ -2195,6 +2197,10 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	if (i==0) {
 			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+	} 
+	i=strcmp (nom_trait,"OUVERTURE");
+	if (i==0) {
+			ouverture (p_out,x1,naxis1,naxis2);
 	} 
 
 	i=strcmp (nom_trait,"TOPHAT");
@@ -2525,6 +2531,151 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 		}
 	}
 }
+
+/************* MM: OUVERURE pour un SE ligne **************/
+/****** algo de VAN DROOGENBROECK *************************/
+/*réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors. Journal of Mathematical Imaging and Vision,2005 */
+
+//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
+//buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE struct_elem=RECTANGLE x1=10 y1=1"
+//buf1 save "D:/toqjd.fit"
+
+int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
+{ 
+	int i,x,y,aux,z,resol;
+	int minimum;
+	double *histo;
+	//decodage des paramètres
+	//N est la longueur du segment SE
+	//pour doit être la copie de pin!!
+
+	//initialisation
+	//attention à la résolution!! 255, 65535...
+	resol=65535;
+	histo=calloc(resol,sizeof(double));
+	//en basse résolution
+
+	if (resol<65535) {
+		for (x=0; x<naxis1*naxis1-1; x++) {
+			y=(int)(pout->p[x]*resol/65535.0);
+			pout->p[x]=(float)y;
+		}
+		tt_imasaver(pout,"D:/pin.fit",16);	
+	}
+	x=y=aux=0;
+
+	startline :
+	if (x>=naxis1*naxis1-1) {return 0;}
+	// gestion des bords pour un SE avec origine complétement à gauche
+	if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
+		x++;
+		goto startline;
+	}
+	y=x+1;
+	
+	while ((y<x+N-1)&&(pout->p[y]<=pout->p[x])) {
+		x++;
+		y++;
+	}
+	y++;
+	// analysis of the window [x,x+N[
+	while (y<x+N) {
+		if (pout->p[y]<=pout->p[x]) { // a new minimum is found
+			minimum=(int)pout->p[x];
+			x++;
+			while (x<y) {
+				pout->p[x]=(TT_PTYPE)minimum;
+				x++;
+			}
+			goto startline;
+		}
+		y++;
+	}
+	//no new minimum has been found and y=x+N
+	if (pout->p[y]<=pout->p[x]) {
+		minimum=(int)pout->p[x];
+		x++;
+		while (x<y) {
+				pout->p[x]=(TT_PTYPE)minimum;
+				x++;
+		}
+		goto startline;
+	}
+	//computing the histogram has become unavoidable
+	//resets the hitogram and computes the histogram over [x+1,y]
+	x++;
+	if (x>=naxis1*naxis1-1) {return 0;}
+	// gestion des bords pour un SE avec origine complétement à gauche
+	if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
+		x++;
+		goto startline;
+	}
+
+	for (i=0; i<resol;i++) {
+			histo[i]=0;
+	}	
+	
+	aux=x;
+	while (aux<=y) {
+		z=(int)pout->p[aux];
+		histo[z]=histo[z]+1;
+		aux=aux+1;
+	}
+	// finds and allocates the minimum
+	minimum=(int)(pout->p[x-1]+1);
+	while (histo[minimum]<=0) {
+		minimum=minimum+1;
+	}
+	histo[(int)(pout->p[x])]=histo[(int)(pout->p[x])]-1;
+	pout->p[x]=(TT_PTYPE)minimum;
+
+	//moves [x,y] to the right, updates the histogram, and finds the minimum
+	while (y<x+N) {
+		y++;
+		if (pout->p[y]<=minimum) {// a new minimum is found
+			x++;
+			while (x<y) {
+				pout->p[x]=(TT_PTYPE)minimum;
+				x++;
+				if (x>=naxis1*naxis1-1) {return 0;}
+				// gestion des bords pour un SE avec origine complétement à gauche
+				if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
+					x++;
+					goto startline;
+				}
+			}
+			goto startline;
+		}
+		//updates the histo and recomputes the minimum
+		//histo[(int)(pout->p[x])]=histo[(int)(pout->p[x])]-1;
+		histo[(int)pout->p[y]]=histo[(int)pout->p[y]]+1;
+		while (histo[minimum]<=0) {
+			minimum=minimum+1;
+		}
+		x++;
+		if (x>=naxis1*naxis1-1) {return 0;}
+		// gestion des bords pour un SE avec origine complétement à gauche
+		if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
+			x++;
+			goto startline;
+		}
+		histo[(int)pout->p[x]]=histo[(int)pout->p[x]]-1;
+		pout->p[x]=(TT_PTYPE)minimum;
+		//histo[minimum]=histo[minimum]+1;
+	}
+	free(histo);
+	/*if (y=x+N-1) {
+		goto startline;
+	}*/
+
+	return 0;
+}
+
+
+
+
+
+
 
 
 int tt_histocuts_myrtille(TT_IMA *p,TT_IMA_SERIES *pseries,double *hicut,double *locut,double *mode,double *mini,double *maxi)
