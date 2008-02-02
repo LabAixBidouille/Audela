@@ -2,7 +2,7 @@
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
 
-# Mise a jour $Id: spc_analyse.tcl,v 1.11 2008-02-02 21:53:24 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.12 2008-02-02 22:41:33 bmauclaire Exp $
 
 
 

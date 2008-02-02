@@ -5,7 +5,7 @@
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_runs.tcl
 
-# Mise a jour $Id: spc_gui_runs.tcl,v 1.7 2008-02-02 21:53:25 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_runs.tcl,v 1.8 2008-02-02 22:41:33 bmauclaire Exp $
 
 
 

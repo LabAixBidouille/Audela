@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.10 2008-02-02 21:53:25 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.11 2008-02-02 22:41:33 bmauclaire Exp $
 
 
 global caption langage
@@ -33,7 +33,15 @@ global caption langage
    set caption(spcaudace,gui,spc_load)                            "Load a FITS or DAT lines profil"
    set caption(spcaudace,gui,gloadmore)                          "Load more FITS lines profile"
    set caption(spcaudace,gui,gdelete)                            "Erase one lines profile ploted"
-   set caption(spcaudace,gui,gdeleteall)                        "Erase all lines profile ploted"
+   set caption(spcaudace,gui,gdeleteall)                         "Erase all lines profile ploted"
+   set caption(spcaudace,gui,spc_simbad)                         "Go to Simbad web data base"
+   set caption(spcaudace,gui,spc_bess)                           "Go to BeSS web data base"
+   set caption(spcaudace,gui,spc_uves)                           "Go to UVES web data base"
+   set caption(spcaudace,gui,print_on)                           "Print with "
+   set caption(spcaudace,gui,quitspc)                            "Exit SpcAud'ACE's window"
+
+   #--- Menu Conversions ---#
+   set caption(spcaudace,gui,conv)                               "Conversions"
    set caption(spcaudace,gui,spc_repconf)                        "Working directory configuration"
    set caption(spcaudace,gui,spc_spc2png_w)                      "Export a profil to png picture"
    set caption(spcaudace,gui,spc_spc2png2_w)                     "Export a profil to png picture (tough setup)"
@@ -44,12 +52,8 @@ global caption langage
    set caption(spcaudace,gui,spc_dat2fits_w)                     "Export DAT profil to FITS"
    set caption(spcaudace,gui,spc_spc2fits_w)                     "Export SPC profil to FITS"
    set caption(spcaudace,gui,spc_spcs2fits_w)                    "Export an entire directory of SPC profils to FITS"
-   set caption(spcaudace,gui,spc_simbad)                         "Go to Simbad web data base"
-   set caption(spcaudace,gui,spc_bess)                           "Go to BeSS web data base"
-   set caption(spcaudace,gui,spc_uves)                           "Go to UVES web data base"
    set caption(spcaudace,gui,spc_bessmodule_w)                   "Export a profil to BeSS's format"
-   set caption(spcaudace,gui,print_on)                           "Print with "
-   set caption(spcaudace,gui,quitspc)                            "Exit SpcAud'ACE's window"
+
 
    #--- Menu Géométrie ---#
    set caption(spcaudace,gui,spc_geometrie)                      "Geometry"
@@ -144,6 +148,7 @@ global caption langage
    set caption(spcaudace,gui,spc_aide)                           "Help"
    set caption(spcaudace,gui,spc_version_w)                      "Version $spcaudace(version)"
    set caption(spcaudace,gui,spc_help)                           "SpcAudACE's funtions list"
+   set caption(spcaudace,gui,spc_site)                           "SpcAudACE's webpage"
    set caption(spcaudace,gui,spc_about_w)                        "Author: Benjamin MAUCLAIRE"
    set caption(spcaudace,gui,spc_contrib_w)                      "Contributors: $spcaudace(contribs)."
 
@@ -176,6 +181,15 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,gdelete)                       "Effacer un profil de raies affiché"
      set caption(spcaudace,gui,gdeleteall)                    "Effacer tous les profils de raies affichés"
      set caption(spcaudace,gui,spc_repconf)                   "Configuration du répertoire de travail"
+     set caption(spcaudace,gui,spc_simbad)                    "Accès au site de la base Simbad"
+     set caption(spcaudace,gui,spc_bess)                      "Accès au site de la base BeSS"
+     set caption(spcaudace,gui,spc_uves)                      "Accès au site de la base UVES"
+     set caption(spcaudace,gui,print_on)                      "Imprimer avec "
+     set caption(spcaudace,gui,quitspc)                       "Quitter la fenêtre SpcAud'ACE"
+
+
+     #--- Menu Conversions ---#
+     set caption(spcaudace,gui,conv)                          "Conversions"
      set caption(spcaudace,gui,spc_spc2png_w)                 "Exporter un profil en image png"
      set caption(spcaudace,gui,spc_spc2png2_w)                "Exporter un profil en image png (réglages fins)"
      set caption(spcaudace,gui,writeps)                       "Fait une capture d'écran au format postscript"
@@ -185,12 +199,7 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_dat2fits_w)                "Conversion de profil dat vers fits"
      set caption(spcaudace,gui,spc_spc2fits_w)                "Conversion de profil spc vers fits"
      set caption(spcaudace,gui,spc_spcs2fits_w)               "Conversion d'un répertoire de profils spc vers fits"
-     set caption(spcaudace,gui,spc_simbad)                    "Accès au site de la base Simbad"
-     set caption(spcaudace,gui,spc_bess)                      "Accès au site de la base BeSS"
-     set caption(spcaudace,gui,spc_uves)                      "Accès au site de la base UVES"
      set caption(spcaudace,gui,spc_bessmodule_w)              "Export de fichier au format base BeSS"
-     set caption(spcaudace,gui,print_on)                      "Imprimer avec "
-     set caption(spcaudace,gui,quitspc)                       "Quitter la fenêtre SpcAud'ACE"
 
      #--- Menu Géométrie ---#
      set caption(spcaudace,gui,spc_geometrie)                 "Géométrie"
@@ -285,6 +294,7 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_aide)                      "Aide"
      set caption(spcaudace,gui,spc_version_w)                 "Version $spcaudace(version)"
      set caption(spcaudace,gui,spc_help)                      "Liste des fonctions de SpcAudACE"
+     set caption(spcaudace,gui,spc_site)                      "Site Internet de SpcAudACE"
      set caption(spcaudace,gui,spc_about_w)                   "Auteur : Benjamin MAUCLAIRE"
      set caption(spcaudace,gui,spc_contrib_w)                 "Contributeurs : $spcaudace(contribs)."
 

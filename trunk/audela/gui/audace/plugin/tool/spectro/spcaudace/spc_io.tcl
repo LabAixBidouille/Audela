@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.17 2008-02-02 21:53:29 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.18 2008-02-02 22:41:33 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
