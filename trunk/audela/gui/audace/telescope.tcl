@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des telescopes
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.15 2008-01-03 22:27:45 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.16 2008-02-02 18:36:13 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -203,6 +203,17 @@ global audace
          ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
          #--- j'attends que la variable soit remise a zero
          vwait ::audace(telescope,goto)
+         #--- Cas d'un Goto avec rattrapage des jeux
+         if { [ ::confTel::getPluginProperty mechanicalPlay ] == "1" } {
+            #--- Goto
+            tel$audace(telNo) radec goto $list_radec -blocking $blocking
+            #--- Boucle tant que le telescope n'est pas arrete
+            set audace(telescope,goto) "1"
+            set radec0 [ tel$audace(telNo) radec coord ]
+            ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
+            #--- j'attends que la variable soit remise a zero
+            vwait ::audace(telescope,goto)
+         }
          return 0
       } else {
          ::confTel::run
@@ -535,23 +546,6 @@ global audace
    }
 
    #------------------------------------------------------------
-   #  possedeControleSuivi
-   #     retourne 1 si le telescope possede le controle de suivi
-   #     retourne 0 sinon
-   #------------------------------------------------------------
-   proc possedeControleSuivi { {value " "} } {
-      global conf
-
-      if { ( $conf(telescope) == "audecom" )
-         || ( ( $conf(telescope) == "temma" ) && ( $conf(temma,modele) == "2" ) ) } {
-         set result "1"
-      } else {
-         set result "0"
-      }
-      return $result
-   }
-
-   #------------------------------------------------------------
    #  controleSuivi
    #     arrete ou met en marche le telescope
    #
@@ -710,7 +704,7 @@ global audace
       set radec ""
 
       if { [ ::tel::list ] != "" } {
-         if { [ ::telescope::fourniCoord ] != "0" } {
+         if { [ ::confTel::getPluginProperty hasCoordinates ] == "1" } {
             set radec [ tel$audace(telNo) radec coord ]
             #--- Traitement des coordonnees
             if { $radec == " +" } {
@@ -738,88 +732,6 @@ global audace
       }
 
       return $radec
-   }
-
-   #------------------------------------------------------------
-   #  possedeCorrectionRefraction
-   #     retourne 1 si le telescope corrige la refraction
-   #     retourne 0 sinon
-   #------------------------------------------------------------
-   proc possedeCorrectionRefraction { } {
-
-      # The telescope mount computes the refraction corrections
-      # yes = 1 (case of the Meade LX200, Sky Sensor 2000 PC, Losmandy Gemini or Mel Bartels)
-      # no  = 0 (case of the Ouranos, AudeCom or Ite-lente)
-      global audace
-      global conf
-      global caption
-
-      #--- Je verifie si la monture est capable fournir son nom de famille
-      set result [ catch { tel$audace(telNo) name } telName ]
-      #---
-      if { $result == 0 } {
-         switch -exact -- $telName {
-            LX200       {
-                           if { $conf(lx200,modele) == "$caption(telescope,modele_audecom)" } {
-                              return 0
-                           } elseif { $conf(lx200,modele) == "$caption(telescope,modele_ite-lente)" } {
-                              return 0
-                           } else {
-                              return 1
-                           }
-                        }
-            Ouranos     { return 0 }
-            AudeCom     { return 0 }
-            Temma       { return 0 }
-            ASCOM       { return 0 }
-            Celestron   { return 1 }
-            default     { return 0 }
-         }
-      } else {
-         return 0
-      }
-   }
-
-   #------------------------------------------------------------
-   #  possedeGoto
-   #     retourne 1 si le telescope possede la fonction Goto
-   #     retourne 0 sinon
-   #------------------------------------------------------------
-   proc possedeGoto { } {
-
-      # The telescope mounts have Goto function
-      # yes = 1 (onglet LX200, AudeCom, Temma )
-      # no  = 0 (onglet Ouranos)
-      global conf
-
-      if { [ regexp (lx200|audecom|temma|ascom) $conf(telescope) ] } {
-         set result "1"
-      } else {
-         set result "0"
-      }
-
-      return $result
-   }
-
-   #------------------------------------------------------------
-   #  fourniCoord
-   #     retourne 1 si le telescope renvoie des coordonnees
-   #     retourne 0 sinon
-   #------------------------------------------------------------
-   proc fourniCoord { } {
-
-      # The telescope mounts send coordinates
-      # yes = 1 (onglet LX200, Ouranos, AudeCom, Temma )
-      # no  = 0 (onglet )
-      global conf
-
-      if { [ regexp (lx200|ouranos|audecom|temma|ascom) $conf(telescope) ] } {
-         set result "1"
-      } else {
-         set result "0"
-      }
-
-      return $result
    }
 
    #------------------------------------------------------------
