@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.8 2007-12-22 11:53:38 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.9 2008-02-02 11:30:14 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -238,29 +238,43 @@ proc ::ascom::stop { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMount :       Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
-# name :             Retourne le modele de la monture
-# product :          Retourne le nom du produit
+# multiMount :            Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
+# name :                  Retourne le modele de la monture
+# product :               Retourne le nom du produit
+# hasCoordinates          Retourne la possibilite d'afficher les coordonnees
+# hasGoto                 Retourne la possibilite de faire un Goto
+# hasMatch                Retourne la possibilite de faire un Match
+# hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
+# hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
+# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+# mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::ascom::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMount       { return 0 }
-      name             {
+      multiMount              { return 0 }
+      name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
-      product          {
+      product                 {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) product ]
          } else {
             return ""
          }
       }
+      hasCoordinates          { return 1 }
+      hasGoto                 { return 1 }
+      hasMatch                { return 1 }
+      hasManualMotion         { return 1 }
+      hasControlSuivi         { return 0 }
+      hasCorrectionRefraction { return 0 }
+      mechanicalPlay          { return 0 }
    }
 }
 
