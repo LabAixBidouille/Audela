@@ -3,7 +3,7 @@
 # 
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.19 2008-02-02 21:53:30 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.20 2008-02-02 22:36:26 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.2.1 - 29/12/2007"
+set spcaudace(version) "1.2.2 - 02/02/2008"
 #set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
@@ -66,6 +66,7 @@ set spcaudace(sitedoc) "http://bmauclaire.free.fr/astronomie/softs/audela/spcaud
 
 
 #--- Site de bases de données :
+set spcaudace(webpage) "http://bmauclaire.free.fr/spcaudace/"
 set spcaudace(sitebess) "http://basebe.obspm.fr/basebe/"
 set spcaudace(siteuves) "http://www.sc.eso.org/santiago/uvespop/interface.html"
 set spcaudace(sitesimbad) "http://simbad.u-strasbg.fr/simbad/sim-fid"

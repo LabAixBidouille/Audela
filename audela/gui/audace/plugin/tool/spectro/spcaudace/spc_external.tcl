@@ -4,7 +4,7 @@
 #                                                                            #
 #****************************************************************************#
 
-# Mise a jour $Id: spc_external.tcl,v 1.2 2008-02-02 21:53:25 bmauclaire Exp $
+# Mise a jour $Id: spc_external.tcl,v 1.3 2008-02-02 22:36:26 bmauclaire Exp $
 
 
 
@@ -31,6 +31,25 @@ proc spc_help {} {
 }
 #*********************************************************#
 
+
+###############################################################################
+# Procédure de lancement du navigateur internet pour consulter le site d'SpcAudACE
+# Auteur : Benjamin MAUCLAIRE
+# Date création :  02-02-2008
+# Date de mise à jour : 02-02-2008
+################################################################################
+
+proc spc_webpage {} {
+
+    global spcaudace conf
+
+    if { $conf(editsite_htm)!="" } {
+	set answer [ catch { exec $conf(editsite_htm) $spcaudace(webpage) & } ]
+    } else {
+	::console::affiche_resultat "Configurer \"Editeurs/Navigateur web\" pour permettre l'affichage de la documentation d'SpcAudACE\n"
+    }
+}
+#*********************************************************#
 
 
 
