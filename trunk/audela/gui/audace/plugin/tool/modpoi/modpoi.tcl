@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.15 2008-01-06 19:02:11 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.16 2008-02-02 12:38:00 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -421,7 +421,7 @@ proc modpoi_wiz1b { } {
    -padx 5 -pady 3 -expand 0
    #--- Check if mount take refraction correction into account
    frame $modpoi(g,base).fra_refr
-      if { [ ::telescope::possedeCorrectionRefraction ] == "1" } {
+      if { [ ::confTel::getPluginProperty hasCorrectionRefraction ] == "1" } {
          label $modpoi(g,base).fra_refr.lab_refraction_1 \
          -text $caption(modpoi,wiz1b,refraction_1) -borderwidth 2 \
          -padx 0 -pady 3 -font $modpoi(font,normal)
@@ -998,7 +998,7 @@ proc modpoi_wiz3 { { h0 0 } { d0 0 } { starindex 1 } } {
    -side top -anchor center \
    -expand 0
    #--- Label for the comment
-   if { [ ::telescope::possedeCorrectionRefraction ] == "0" } {
+   if { [ ::confTel::getPluginProperty hasCorrectionRefraction ] == "0" } {
       label $modpoi(g,base).lab_comment_1 \
       -text $caption(modpoi,$wiz,comment_1) -borderwidth 2 \
       -padx 20 -pady 10 -font $modpoi(font,normal)
