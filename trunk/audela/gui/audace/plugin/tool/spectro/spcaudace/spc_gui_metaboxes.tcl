@@ -5,6 +5,10 @@
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
+# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.8 2008-02-02 21:53:25 bmauclaire Exp $
+
+
+
 source [ file join [file dirname [info script]] spc_gui_metaboxes.cap ]
 
 ########################################################################

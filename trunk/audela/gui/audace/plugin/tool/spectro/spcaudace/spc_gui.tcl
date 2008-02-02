@@ -1,6 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
+# Mise a jour $Id: spc_gui.tcl,v 1.11 2008-02-02 21:53:25 bmauclaire Exp $
 
 
 
@@ -63,7 +64,8 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2png_w) -command "spc_export2png" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
+      # .spc.menuBar.file add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_fit2ps) -command "spc_fit2ps" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_fits2dat_w) -command "spc_fits2dat" -underline 0
@@ -1066,6 +1068,18 @@ proc spc_postscript {} {
    #.spc.g postscript output $filename.ps
    .spc.g postscript output $filename
    ::console::affiche_resultat "Capture d'écran postscript sauvée sous $filename\n"
+}
+#*********************************************************************************#
+
+
+proc spc_scgif {} {
+   global audace conf
+
+   set image [ image create photo ]
+   .spc.g snap $image
+   set filename "$audace(rep_images)/screenshot.gif"
+   $image write $audace(rep_images)/screenshot.gif -format GIF
+   ::console::affiche_resultat "Capture d'écran sauvée sous $filename\n"
 }
 #*********************************************************************************#
 

@@ -1,3 +1,8 @@
+
+
+# Mise a jour $Id: spc_filter2.tcl,v 1.3 2008-02-02 21:53:25 bmauclaire Exp $
+
+
 ####################################################################
 # Procedure de la fonction d'apodisation pour filtre passe bas a reponse impulsionnelle finie 
 # Auteur : Patrick LAILLY

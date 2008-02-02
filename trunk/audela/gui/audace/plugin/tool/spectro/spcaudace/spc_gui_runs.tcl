@@ -5,6 +5,9 @@
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_runs.tcl
 
+# Mise a jour $Id: spc_gui_runs.tcl,v 1.7 2008-02-02 21:53:25 bmauclaire Exp $
+
+
 
 ########################################################################
 # Interface pour l'appel du panneau de prétraitement de Francois Cochard

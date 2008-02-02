@@ -2,6 +2,9 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_metaf.tcl ]
 
+# Mise a jour $Id: spc_metaf.tcl,v 1.14 2008-02-02 21:53:30 bmauclaire Exp $
+
+
 
 ###############################################################################
 # Procédure de test d'ihm

@@ -3,6 +3,10 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_astrophys.tcl ]
 
+# Mise a jour $Id: spc_astrophys.tcl,v 1.14 2008-02-02 21:53:24 bmauclaire Exp $
+
+
+
 #************* Liste des focntions **********************#
 #
 # spc_vradiale : calcul la vitesse radiale à partir de la FWHM de la raie modélisée par une gaussienne
