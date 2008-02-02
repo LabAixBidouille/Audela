@@ -2,11 +2,11 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.7 2007-12-22 11:44:42 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.8 2008-02-02 11:35:29 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
-   package provide ouranos 1.0
+   package provide ouranos 2.0
    package require audela 1.4.0
 
    #--- Charge le fichier caption
@@ -113,10 +113,10 @@ proc ::ouranos::initPlugin { } {
 #
 proc ::ouranos::confToWidget { } {
    variable private
-   global conf ouranoscom
+   global conf
 
    #--- Recupere la configuration de la monture Ouranos dans le tableau private(...)
-   if { $ouranoscom(lecture) != "1" } {
+   if { $::OuranosCom::private(lecture) == "0" } {
       ::OuranosCom::init_ouranos
    }
    set private(port) $conf(ouranos,port)
@@ -148,7 +148,7 @@ proc ::ouranos::widgetToConf { } {
 #
 proc ::ouranos::fillConfigPage { frm } {
    variable private
-   global audace caption color conf ouranoscom
+   global audace caption color conf
 
    #--- Initialise une variable locale
    set private(frm) $frm
@@ -167,7 +167,7 @@ proc ::ouranos::fillConfigPage { frm } {
    pack $frm.frame2 -side top -fill both -expand 1
 
    frame $frm.frame3 -borderwidth 0 -relief raised
-   pack $frm.frame3 -side top -fill both -expand 1
+   pack $frm.frame3 -side top -fill x -expand 0
 
    frame $frm.frame4 -borderwidth 0 -relief raised
    pack $frm.frame4 -side top -fill both -expand 1
@@ -277,7 +277,7 @@ proc ::ouranos::fillConfigPage { frm } {
    #--- Fenêtre de lecture de RA
    label $frm.coordRA -font $audace(font,arial_8_b) -textvariable ::ouranos::private(coord_ra) \
       -justify left -width 12
-   pack $frm.coordRA -in $frm.frame9 -anchor center -side top -padx 10 -pady 7
+   pack $frm.coordRA -in $frm.frame9 -anchor center -side top -padx 10 -pady 5
 
    #--- Informations concernant le codeur DEC
    label $frm.dec -text "$caption(ouranos,res_codeur)"
@@ -293,41 +293,45 @@ proc ::ouranos::fillConfigPage { frm } {
    pack $frm.invdec -in $frm.frame15 -anchor center -side left -padx 10 -pady 5
 
    #--- Label pour les coordonnées DEC
-   label  $frm.encDEC -text "$caption(ouranos,dec)"
+   label $frm.encDEC -text "$caption(ouranos,dec)"
    pack $frm.encDEC -in $frm.frame15 -anchor center -side right -padx 10 -pady 5
 
    #--- Fenêtre de lecture de DEC
    label $frm.coordDEC -font $audace(font,arial_8_b) -textvariable ::ouranos::private(coord_dec) \
       -justify left -width 12
-   pack $frm.coordDEC -in $frm.frame9 -anchor center -side bottom -padx 10 -pady 7
+   pack $frm.coordDEC -in $frm.frame9 -anchor center -side bottom -padx 10 -pady 5
 
    #--- Definition de l'initialisation DEC
    radiobutton $frm.dec90 -text "$caption(ouranos,init1)" -highlightthickness 0 \
-               -indicatoron 1 -variable ::ouranos::private(init) -value 0 -command { ::OuranosCom::set_dec_ra }
-   pack $frm.dec90 -in $frm.frame10 -anchor w -side top -padx 5
+      -indicatoron 1 -variable ::ouranos::private(init) -value 90 -command { }
+   pack $frm.dec90 -in $frm.frame10 -anchor w -side top -padx 5 -pady 5
 
    radiobutton $frm.dec0 -text "$caption(ouranos,init2)" -highlightthickness 0 \
-               -indicatoron 1 -variable ::ouranos::private(init) -value 1 -command { ::OuranosCom::set_dec_ra }
-   pack $frm.dec0 -in $frm.frame10 -anchor w -side top -padx 5
+      -indicatoron 1 -variable ::ouranos::private(init) -value 0 -command { }
+   pack $frm.dec0 -in $frm.frame10 -anchor w -side top -padx 5 -pady 5
+
+   radiobutton $frm.dec-90 -text "$caption(ouranos,init3)" -highlightthickness 0 \
+      -indicatoron 1 -variable ::ouranos::private(init) -value -90 -command { }
+   pack $frm.dec-90 -in $frm.frame10 -anchor w -side top -padx 5 -pady 5
 
    #--- Les boutons de commande
    if { [ ::ouranos::isReady ] == 1 } {
       button $frm.but_init -text "$caption(ouranos,reglage)"  -width 7 -relief raised -state normal \
          -command { ::OuranosCom::find_res }
-      pack $frm.but_init -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
+      pack $frm.but_init -in $frm.frame11 -anchor center -side left -padx 15 -pady 5 -ipady 5
       button $frm.but_close -text "$caption(ouranos,stop)" -width 6 -relief raised -state normal \
-         -command { ::ouranos::stop }
+         -command { ::OuranosCom::close_com }
       pack $frm.but_close -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
       button $frm.but_read -text "$caption(ouranos,lire)" -width 6 -relief raised -state normal \
          -command { ::OuranosCom::go_ouranos }
-      pack $frm.but_read -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
+      pack $frm.but_read -in $frm.frame11 -anchor center -side left -padx 15 -pady 5 -ipady 5
    } else {
       button $frm.but_init -text "$caption(ouranos,reglage)"  -width 7 -relief raised -state disabled
-      pack $frm.but_init -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
+      pack $frm.but_init -in $frm.frame11 -anchor center -side left -padx 15 -pady 5 -ipady 5
       button $frm.but_close -text "$caption(ouranos,stop)" -width 6 -relief raised -state disabled
       pack $frm.but_close -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
       button $frm.but_read -text "$caption(ouranos,lire)" -width 6 -relief raised -state disabled
-      pack $frm.but_read -in $frm.frame11 -anchor center -side left -padx 10 -pady 5 -ipady 5
+      pack $frm.but_read -in $frm.frame11 -anchor center -side left -padx 15 -pady 5 -ipady 5
    }
 
    #--- Definition de la fréquence de lecture
@@ -431,7 +435,7 @@ proc ::ouranos::fillConfigPage { frm } {
    if [ winfo exists $audace(base).tjrsvisible ] {
       set ::ouranos::private(tjrsvisible) "1"
    }
-   if { $ouranoscom(lecture) == "1" } {
+   if { $::OuranosCom::private(lecture) == "1" } {
       #--- Traitement graphique du bouton 'Lire'
       $frm.but_read configure -text "$caption(ouranos,lire)" -relief groove -state disabled
       #--- Traitement graphique du bouton 'Regler'
@@ -443,7 +447,6 @@ proc ::ouranos::fillConfigPage { frm } {
          #--- Bouton MATCH avec entry inactif
          $frm.but_match configure -text "$caption(ouranos,match)" -state disabled
       }
-      update
    }
 }
 
@@ -453,13 +456,17 @@ proc ::ouranos::fillConfigPage { frm } {
 #
 proc ::ouranos::configureMonture { } {
    variable private
-   global caption conf ouranoscom
+   global audace caption conf
 
-   #--- Initialisations
-   set conf(raquette)      "0"
-   set ouranoscom(lecture) "0"
+   #--- Initialisation
+   set conf(raquette) "0"
    #--- Je cree la monture
-   set telNo [ tel::create ouranos $conf(ouranos,port) ]
+   set telNo [ tel::create ouranos $conf(ouranos,port) -resol_ra $conf(ouranos,cod_ra) \
+      -resol_dec $conf(ouranos,cod_dec) -initial_dec $conf(ouranos,init) ]
+   #--- J'initialise la position de l'observateur
+   tel$telNo home $::audace(posobs,observateur,gps)
+   #--- J'initialise le sens de rotation des codeurs
+   tel$telNo invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
    #--- J'affiche un message d'information dans la Console
    console::affiche_erreur "$caption(ouranos,port_ouranos) $caption(ouranos,2points)\
       $conf(ouranos,port)\n"
@@ -468,14 +475,10 @@ proc ::ouranos::configureMonture { } {
       $conf(ouranos,cod_ra) $caption(ouranos,pas) $caption(ouranos,et) $caption(ouranos,dec)\
       $caption(ouranos,2points) $conf(ouranos,cod_dec) $caption(ouranos,pas)\n"
    console::affiche_saut "\n"
-   set ouranoscom(tty) [ tel$telNo channel ]
-   #--- Initialisation de l'interface Ouranos
-   tel$telNo invert $conf(ouranos,inv_ra) $conf(ouranos,inv_dec)
-   tel$telNo resolution $conf(ouranos,cod_ra) $conf(ouranos,cod_dec)
-   #--- Initialisation de l'affichage
+   #--- Je nettoye l'affichage les codeurs
    set private(coord_ra)  ""
    set private(coord_dec) ""
-   #--- Statut du port
+   #--- J'affiche le statut du port
    set private(status) $caption(ouranos,on)
    #--- Je cree la liaison (ne sert qu'a afficher l'utilisation de cette liaison par la monture)
    set linkNo [ ::confLink::create $conf(ouranos,port) "tel$telNo" "control" [ tel$telNo product ] ]
@@ -524,7 +527,7 @@ proc ::ouranos::confOuranos { } {
          if { [ ::ouranos::isReady ] == 1 } {
             #--- Boutons de la monture actifs
             $frm.but_init configure -relief raised -state normal -command { ::OuranosCom::find_res }
-            $frm.but_close configure -relief raised -state normal -command { ::ouranos::stop }
+            $frm.but_close configure -relief raised -state normal -command { ::OuranosCom::close_com }
             $frm.but_read configure -relief raised -state normal -command { ::OuranosCom::go_ouranos }
             if { $private(show_coord) == "1" } {
                #--- Radio-boutons de la monture actifs
@@ -594,11 +597,11 @@ proc ::ouranos::confOuranosInactif { } {
 #
 # ::ouranos::matchOuranos
 # Permet de gerer l'affichage du bouton MATCH d'Ouranos et des informations associes
-# ainsi que du bouton transfert des coordonnees pour MATCH
+# ainsi que le transfert des coordonnees pour MATCH
 #
 proc ::ouranos::matchOuranos { } {
    variable private
-   global audace caption ouranoscom
+   global audace caption
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
@@ -609,14 +612,13 @@ proc ::ouranos::matchOuranos { } {
          destroy $frm.match_dec_entry
          #---
          if { $private(show_coord) == "1" } {
-            if { $ouranoscom(lecture) == "0" } {
+            if { $::OuranosCom::private(lecture) == "0" } {
                #--- Bouton MATCH avec entry inactif
                $frm.but_match configure -state disabled
-            } elseif { $ouranoscom(lecture) == "1" } {
+            } else {
                #--- Bouton MATCH avec entry actif
                $frm.but_match configure -text "$caption(ouranos,match)" -width 8 -state normal \
                   -command { ::OuranosCom::match_ouranos }
-               update
             }
             #--- Valeur Dec. en ° ' "
             entry $frm.match_dec_entry -textvariable ::ouranos::private(match_dec) -justify center -width 12
@@ -636,12 +638,12 @@ proc ::ouranos::matchOuranos { } {
             #--- Gestion des evenements AD
             bind $frm.match_ra_entry <Enter> { ::ouranos::formatMatchAD }
             bind $frm.match_ra_entry <Leave> { destroy $audace(base).format_match_ad }
-            #--- Mise a jour dynamique des couleurs
-            ::confColor::applyColor $frm
          } else {
             #--- Bouton MATCH sans entry inactif
             $frm.but_match configure -state disabled
          }
+         #--- Mise a jour dynamique des couleurs
+         ::confColor::applyColor $frm
       }
    }
 }
@@ -699,15 +701,9 @@ proc ::ouranos::formatMatchAD { } {
    toplevel $audace(base).format_match_ad
    wm transient $audace(base).format_match_ad $audace(base).confTel
    wm title $audace(base).format_match_ad "$caption(ouranos,attention)"
-   if { $::tcl_platform(os) == "Linux" } {
-      set posx_format_match_ad [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
-      set posy_format_match_ad [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
-      wm geometry $audace(base).format_match_ad +[ expr $posx_format_match_ad + 74 ]+[ expr $posy_format_match_ad + 185 ]
-   } else {
-      set posx_format_match_ad [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
-      set posy_format_match_ad [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
-      wm geometry $audace(base).format_match_ad +[ expr $posx_format_match_ad + 30 ]+[ expr $posy_format_match_ad + 185 ]
-   }
+   set posx_format_match_ad [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
+   set posy_format_match_ad [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
+   wm geometry $audace(base).format_match_ad +[ expr $posx_format_match_ad + 60 ]+[ expr $posy_format_match_ad + 220 ]
    wm resizable $audace(base).format_match_ad 0 0
 
    #--- Cree l'affichage du message
@@ -736,15 +732,9 @@ proc ::ouranos::formatMatchDec { } {
    toplevel $audace(base).format_match_dec
    wm transient $audace(base).format_match_dec $audace(base).confTel
    wm title $audace(base).format_match_dec "$caption(ouranos,attention)"
-   if { $::tcl_platform(os) == "Linux" } {
-      set posx_format_match_dec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
-      set posy_format_match_dec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
-      wm geometry $audace(base).format_match_dec +[ expr $posx_format_match_dec + 294 ]+[ expr $posy_format_match_dec + 162 ]
-   } else {
-      set posx_format_match_dec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
-      set posy_format_match_dec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
-      wm geometry $audace(base).format_match_dec +[ expr $posx_format_match_dec + 224 ]+[ expr $posy_format_match_dec + 162 ]
-   }
+   set posx_format_match_dec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 1 ]
+   set posy_format_match_dec [ lindex [ split [ wm geometry $audace(base).confTel ] "+" ] 2 ]
+   wm geometry $audace(base).format_match_dec +[ expr $posx_format_match_dec + 254 ]+[ expr $posy_format_match_dec + 197 ]
    wm resizable $audace(base).format_match_dec 0 0
 
    #--- Cree l'affichage du message
@@ -770,29 +760,43 @@ proc ::ouranos::formatMatchDec { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMount :       Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
-# name :             Retourne le modele de la monture
-# product :          Retourne le nom du produit
+# multiMount :            Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
+# name :                  Retourne le modele de la monture
+# product :               Retourne le nom du produit
+# hasCoordinates          Retourne la possibilite d'afficher les coordonnees
+# hasGoto                 Retourne la possibilite de faire un Goto
+# hasMatch                Retourne la possibilite de faire un Match
+# hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
+# hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
+# hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+# mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::ouranos::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMount       { return 1 }
-      name             {
+      multiMount              { return 1 }
+      name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
          } else {
             return ""
          }
       }
-      product          {
+      product                 {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) product ]
          } else {
             return ""
          }
       }
+      hasCoordinates          { return 1 }
+      hasGoto                 { return 0 }
+      hasMatch                { return 1 }
+      hasManualMotion         { return 0 }
+      hasControlSuivi         { return 0 }
+      hasCorrectionRefraction { return 0 }
+      mechanicalPlay          { return 0 }
    }
 }
 
