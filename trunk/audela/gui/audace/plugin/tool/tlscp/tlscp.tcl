@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.4 2007-12-18 22:34:13 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.5 2008-02-02 18:29:44 robertdelmas Exp $
 #
 
 #============================================================
@@ -435,49 +435,44 @@ proc ::tlscp::adaptPanel { visuNo args } {
    variable private
    global conf
 
+   #--- Configuration des specificites AudeCom
    if { $conf(telescope) == "audecom" } {
       pack $private($visuNo,This).fra2.fra1a.check1 -in $private($visuNo,This).fra2.fra1a -side left \
          -fill both -anchor center -pady 1
-      #--- Evolution du script tant que la fonctionnalite "Stop Goto" sous AudeCom ne fonctionne pas
-      #--- pack $private($visuNo,This).fra2.fra2a.but2 -in $private($visuNo,This).fra2.fra2a -side right \
-      #---    -fill both -anchor center -pady 1
-      pack forget $private($visuNo,This).fra2.fra2a.but2
-      #--- Fin de l'evolution
+      pack $private($visuNo,This).fra2.fra2a.but2 -in $private($visuNo,This).fra2.fra2a -side right \
+         -fill both -anchor center -pady 1
       pack forget $private($visuNo,This).fra2.fra2a.but3
       pack $private($visuNo,This).fra2.but3 -in $private($visuNo,This).fra2 -side bottom -anchor center -fill x -pady 1
-      pack $private($visuNo,This).fra4.s.lab1 -in $private($visuNo,This).fra4.s -expand 1 -side left
-   } elseif { $conf(telescope) == "temma" } {
-      if { $conf(temma,modele) == "2" } {
-         pack forget $private($visuNo,This).fra2.fra1a.check1
-         pack forget $private($visuNo,This).fra2.fra2a.but2
-         pack $private($visuNo,This).fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-         pack forget $private($visuNo,This).fra2.but3
-         pack $private($visuNo,This).fra4.s.lab1 -in $private($visuNo,This).fra4.s -expand 1 -side left
-      } else {
-         pack forget $private($visuNo,This).fra2.fra1a.check1
-         pack forget $private($visuNo,This).fra2.fra2a.but2
-         pack $private($visuNo,This).fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
-         pack forget $private($visuNo,This).fra2.but3
-         pack forget $private($visuNo,This).fra4.s.lab1
-      }
    } else {
-      #--- C'est un telescope compatible LX200
       pack forget $private($visuNo,This).fra2.fra1a.check1
       pack forget $private($visuNo,This).fra2.fra2a.but2
       pack $private($visuNo,This).fra2.fra2a.but3 -side left -fill y -anchor center -pady 1
       pack forget $private($visuNo,This).fra2.but3
-      pack forget $private($visuNo,This).fra4.s.lab1
    }
-   if { [ ::telescope::possedeGoto ] == "0" } {
-      $private($visuNo,This).fra2.fra1a.match configure -relief groove -state disabled
+
+   #--- Configuration du controle du suivi sideral
+   if { [ ::confTel::getPluginProperty hasControlSuivi ] == "0" } {
+      pack forget $private($visuNo,This).fra4.s.lab1
+   } else {
+      pack $private($visuNo,This).fra4.s.lab1 -in $private($visuNo,This).fra4.s -expand 1 -side left
+   }
+
+   #--- Configuration du Goto
+   if { [ ::confTel::getPluginProperty hasGoto ] == "0" } {
       $private($visuNo,This).fra2.fra2a.but1 configure -relief groove -state disabled
       $private($visuNo,This).fra2.fra2a.but2 configure -relief groove -state disabled
       $private($visuNo,This).fra2.fra2a.but3 configure -relief groove -state disabled
    } else {
-      $private($visuNo,This).fra2.fra1a.match configure -relief raised -state normal
       $private($visuNo,This).fra2.fra2a.but1 configure -relief raised -state normal
       $private($visuNo,This).fra2.fra2a.but2 configure -relief raised -state normal
       $private($visuNo,This).fra2.fra2a.but3 configure -relief raised -state normal
+   }
+
+   #--- Configuration du Match
+   if { [ ::confTel::getPluginProperty hasMatch ] == "0" } {
+      $private($visuNo,This).fra2.fra1a.match configure -relief groove -state disabled
+   } else {
+      $private($visuNo,This).fra2.fra1a.match configure -relief raised -state normal
    }
 
    set This $private($visuNo,This)
@@ -490,11 +485,11 @@ proc ::tlscp::adaptPanel { visuNo args } {
       grid $private($visuNo,This).camera.pose.combo
       grid remove $private($visuNo,This).camera.pose.webcam
    } else {
-      #--- pas de longue pose
+      #--- sans longue pose
       grid remove $private($visuNo,This).camera.pose.label
       grid remove $private($visuNo,This).camera.pose.combo
       grid $private($visuNo,This).camera.pose.webcam
-      #--- je met la pose a zero car cette variable n'est utilisee et doit etre nulle
+      #--- je mets la pose a zero car cette variable n'est pas utilisee et doit etre nulle
       set ::conf(tlscp,expTime) "0"
    }
 
