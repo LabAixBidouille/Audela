@@ -2,7 +2,7 @@
 # Fichier : telpad.tcl
 # Description : Raquette simplifiee a l'usage des telescopes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: telpad.tcl,v 1.17 2007-12-22 12:29:32 robertdelmas Exp $
+# Mise a jour $Id: telpad.tcl,v 1.18 2008-02-02 12:39:40 robertdelmas Exp $
 #
 
 namespace eval telpad {
@@ -311,7 +311,7 @@ namespace eval telpad {
       set zone(s) $This.frame2.s.canv1
 
       #--- Ecrit l'etiquette du controle du suivi : Suivi on ou off
-      if { [::telescope::possedeControleSuivi] == "1" } {
+      if { [ ::confTel::getPluginProperty hasControlSuivi ] == "1" } {
          label $This.frame2.s.lab1 \
             -font $audace(font,arial_10_b) -textvariable audace(telescope,controle) \
             -borderwidth 0 -relief flat
