@@ -1,6 +1,6 @@
 #
 # Fichier : audecom.cap
-# Mise a jour $Id: audecom.cap,v 1.12 2007-12-18 22:21:34 robertdelmas Exp $
+# Mise a jour $Id: audecom.cap,v 1.13 2008-02-02 11:32:39 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -15,6 +15,7 @@ set caption(audecom,monture)                      "AudeCom"
 set caption(audecom,port)                         "Port"
 set caption(audecom,configurer)                   "Set up"
 set caption(audecom,controle)                     "Control"
+set caption(audecom,ouranos)                      "AudeCom + Ouranos"
 set caption(audecom,pec)                          "Enable PEC"
 set caption(audecom,king)                         "Enable Tracking using King Speed"
 set caption(audecom,mobile)                       "Enables the Tracking of Moving Objects"
@@ -42,6 +43,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,port)                      "Port"
    set caption(audecom,configurer)                "Configurer"
    set caption(audecom,controle)                  "Contrôle"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Active le PEC"
    set caption(audecom,king)                      "Active le suivi à la vitesse de King"
    set caption(audecom,mobile)                    "Active le suivi d'objets mobiles"
@@ -69,6 +71,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,port)                      "Porte"
    set caption(audecom,configurer)                "Configurare"
    set caption(audecom,controle)                  "Controllo"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Attivazione PEC"
    set caption(audecom,king)                      "Attivazione inseguimento con King"
    set caption(audecom,mobile)                    "Attivazione inseguimento oggetti mobili"
@@ -96,6 +99,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,port)                      "Puerto"
    set caption(audecom,configurer)                "Configurar"
    set caption(audecom,controle)                  "Control"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Activar PEC"
    set caption(audecom,king)                      "Activar de seguimiento usando velocidad King"
    set caption(audecom,mobile)                    "Activar el seguimiento de objetos móviles"
@@ -123,6 +127,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,port)                      "Port"
    set caption(audecom,configurer)                "Konfigurieren"
    set caption(audecom,controle)                  "Kontroll"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "PEC aktivieren"
    set caption(audecom,king)                      "King Tempo Folgung aktivieren"
    set caption(audecom,mobile)                    "Bewegliche Objekten Folgung aktivieren"
@@ -150,6 +155,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,port)                      "Porta"
    set caption(audecom,configurer)                "Configuração"
    set caption(audecom,controle)                  "Controlo"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Ligar PEC"
    set caption(audecom,king)                      "Ligar guiagem utilizando velocidade King"
    set caption(audecom,mobile)                    "Liga a guiagem de objectos em movimento"
@@ -177,6 +183,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audecom,port)                      "Port"
    set caption(audecom,configurer)                "Set up"
    set caption(audecom,controle)                  "Control"
+   set caption(audecom,ouranos)                   "AudeCom + Ouranos"
    set caption(audecom,pec)                       "Enable PEC"
    set caption(audecom,king)                      "Enable Tracking using King Speed"
    set caption(audecom,mobile)                    "Enables the Tracking of Moving Objects"
