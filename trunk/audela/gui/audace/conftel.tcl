@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.43 2007-12-22 15:50:06 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.44 2008-02-02 11:29:13 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -455,17 +455,31 @@ proc ::confTel::widgetToConf { } {
 proc ::confTel::getPluginProperty { propertyName } {
    variable private
 
-   # multiMount :       Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
-   # name :             Retourne le modele de la monture
-   # product :          Retourne le nom du produit
+   # multiMount :            Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
+   # name :                  Retourne le modele de la monture
+   # product :               Retourne le nom du produit
+   # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
+   # hasGoto                 Retourne la possibilite de faire un Goto
+   # hasMatch                Retourne la possibilite de faire un Match
+   # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
+   # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
+   # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
+   # mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
 
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
-      multiMount       { set result 0 }
-      name             { set result "" }
-      product          { set result "" }
-      default          { set result "" }
+      multiMount              { set result 0 }
+      name                    { set result "" }
+      product                 { set result "" }
+      hasCoordinates          { set result 1 }
+      hasGoto                 { set result 1 }
+      hasMatch                { set result 1 }
+      hasManualMotion         { set result 1 }
+      hasControlSuivi         { set result 0 }
+      hasCorrectionRefraction { set result 0 }
+      mechanicalPlay          { set result 0 }
+      default                 { set result 0 }
    }
 
    #--- si aucune monture n'est selectionnee, je retourne la valeur par defaut
