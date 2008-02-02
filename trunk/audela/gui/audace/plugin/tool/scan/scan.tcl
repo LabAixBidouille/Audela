@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.37 2007-12-18 22:30:08 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.38 2008-02-02 18:18:44 robertdelmas Exp $
 #
 
 #============================================================
@@ -617,26 +617,20 @@ namespace eval ::scan {
    proc cmdDec { } {
       variable This
       variable parametres
-      variable private
-      global audace conf panneau
+      global audace panneau
 
       #--- Initialisation et/ou determination de la position de la declinaison
-      if { [ ::tel::list ] != "" } {
-         set radec [ tel$audace(telNo) radec coord ]
-         if { [ lindex $radec 0 ] == "tel$audace(telNo)" } {
-            set panneau(scan,dec) "$parametres(scan,dec)"
-         } else {
-            set panneau(scan,dec) [ lindex $radec 1 ]
-         }
-      } elseif { ( $conf(telescope) == "ouranos" ) && ( [ ::confTel::isReady ] == 1 ) } {
-         if { $conf(ouranos,show_coord) == "1" } {
-            set panneau(scan,dec) "$::ouranos::private(coord_dec)"
+      if { [ ::confTel::isReady ] == "1" } {
+         if { [ ::confTel::getPluginProperty hasCoordinates ] == "1" } {
+            set panneau(scan,dec) "$audace(telescope,getdec)"
          } else {
             set panneau(scan,dec) "$parametres(scan,dec)"
          }
       } else {
          set panneau(scan,dec) "$parametres(scan,dec)"
       }
+
+      #--- Affiche la declinaison
       $This.fra3.fra3.ent2 configure -textvariable panneau(scan,dec)
       update
 
