@@ -3,6 +3,9 @@
 # Modification : 08/12/2005
 #
 
+# Mise a jour $Id: spc_cap.tcl,v 1.10 2008-02-02 21:53:25 bmauclaire Exp $
+
+
 global caption langage
 
 # *************** Version anglaise ****************************
@@ -35,6 +38,7 @@ global caption langage
    set caption(spcaudace,gui,spc_spc2png_w)                      "Export a profil to png picture"
    set caption(spcaudace,gui,spc_spc2png2_w)                     "Export a profil to png picture (tough setup)"
    set caption(spcaudace,gui,writeps)                            "Screenshot to postscript file"
+   set caption(spcaudace,gui,writegif)                           "Screenshot to GIF file"
    set caption(spcaudace,gui,spc_fit2ps)                         "Export a profil to postscript file"
    set caption(spcaudace,gui,spc_fits2dat_w)                     "Export FITS profils to dat"
    set caption(spcaudace,gui,spc_dat2fits_w)                     "Export DAT profil to FITS"
@@ -174,7 +178,8 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_repconf)                   "Configuration du répertoire de travail"
      set caption(spcaudace,gui,spc_spc2png_w)                 "Exporter un profil en image png"
      set caption(spcaudace,gui,spc_spc2png2_w)                "Exporter un profil en image png (réglages fins)"
-     set caption(spcaudace,gui,writeps)                       "Fait une captrure d'écran au format postscript"
+     set caption(spcaudace,gui,writeps)                       "Fait une capture d'écran au format postscript"
+     set caption(spcaudace,gui,writegif)                      "Fait une capture d'écran au format GIF"
      set caption(spcaudace,gui,spc_fit2ps)                    "Exporter un profil en postscript"
      set caption(spcaudace,gui,spc_fits2dat_w)                "Conversion de profil fits vers dat"
      set caption(spcaudace,gui,spc_dat2fits_w)                "Conversion de profil dat vers fits"

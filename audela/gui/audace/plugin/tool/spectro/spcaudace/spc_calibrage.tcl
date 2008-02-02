@@ -3,6 +3,9 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
+# Mise a jour $Id: spc_calibrage.tcl,v 1.15 2008-02-02 21:53:24 bmauclaire Exp $
+
+
 
 ####################################################################
 #  Procedure de calcul de dispersion moyenne

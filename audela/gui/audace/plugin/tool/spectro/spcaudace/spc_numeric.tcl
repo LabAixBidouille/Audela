@@ -1,6 +1,10 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
+# Mise a jour $Id: spc_numeric.tcl,v 1.7 2008-02-02 21:53:30 bmauclaire Exp $
+
+
+
 ####################################################################
 #  Procedure de détermination du maximum entre 2 valeurs
 #

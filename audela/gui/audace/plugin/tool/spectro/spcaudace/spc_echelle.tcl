@@ -7,3 +7,5 @@
 # Chargement en script : source $audace(rep_scripts)/spcaudace/spc_echelle.tcl
 #
 #####################################################################################
+
+# Mise a jour $Id: spc_echelle.tcl,v 1.2 2008-02-02 21:53:25 bmauclaire Exp $

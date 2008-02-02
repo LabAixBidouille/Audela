@@ -10,6 +10,8 @@
 #
 #####################################################################################
 
+# Mise a jour $Id: spc_io.tcl,v 1.17 2008-02-02 21:53:29 bmauclaire Exp $
+
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
 # qui seront initialisées dans le fichier cap_mauclaire.tcl
@@ -2233,6 +2235,7 @@ proc spc_autofit2png { args } {
             set xdeb [ lindex $args 2 ]
             set xfin [ lindex $args 3 ]
             set ydeb [ lindex $args 4 ]
+	    if { $ydeb<0 } { set ydeb "*" }
             set yfin [ lindex $args 5 ]
         } else {
             ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ??xdeb xfin? ?ydeb yfin??\n\n"
@@ -2412,6 +2415,7 @@ proc spc_autofit2pngps { args } {
             set xdeb [ lindex $args 2 ]
             set xfin [ lindex $args 3 ]
             set ydeb [ lindex $args 4 ]
+	    if { $ydeb<0 } { set ydeb "*" }
             set yfin [ lindex $args 5 ]
         } else {
             ::console::affiche_erreur "Usage: spc_autofit2png profil_de_raies_à_tracer \"Nom objet\" ?[[?xdeb xfin?] ?ydeb yfin?]?\n\n"

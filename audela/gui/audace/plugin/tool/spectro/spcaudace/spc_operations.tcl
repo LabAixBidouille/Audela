@@ -7,6 +7,8 @@
 #
 #####################################################################################
 
+# Mise a jour $Id: spc_operations.tcl,v 1.13 2008-02-02 21:53:30 bmauclaire Exp $
+
 
 
 ###############################################################################
@@ -824,7 +826,7 @@ proc spc_select { args } {
 	   #    incr k
 	   #}
 	   if { $abscisse >= $xdebl } {
-	       if {$abscisse <= $xfinl } {
+	       if { $abscisse <= $xfinl } {
 		   lappend nabscisses $abscisse
 		   lappend nintensites $intensite
 		   # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
@@ -834,7 +836,7 @@ proc spc_select { args } {
        }
 
        set len $k
-       ::console::affiche_resultat "$k intensités sélectionnées.\n"
+       ::console::affiche_resultat "$k intensités sélectionnées entre $xdebl et $xfinl.\n"
        #--- Initialisation à blanc d'un fichier fits :
        #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        ##buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_USHORT COMPRESS_NONE 0
@@ -867,6 +869,95 @@ proc spc_select { args } {
    }
 }
 ##########################################################
+
+
+# 2008-01-14
+proc spc_select2 { args } {
+
+   global audace audela
+   global conf
+
+   if {[llength $args] == 3} {
+       set infichier [ lindex $args 0 ]
+       set ldeb [ lindex $args 1 ]
+       set lfin [ lindex $args 2 ]
+       set fichier [ file rootname $infichier ]
+
+       #--- Linéarise la calibration avant cette operation :
+       #set spectre_lin [ spc_linearcal "$fichier" ]
+
+       #--- Récupére les mots clefs nécessaires au calcul :
+       #buf$audace(bufNo) load "$audace(rep_images)/$spectre_lin"
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
+       #-- Valeur minimale de l'abscisse : =0 si profil non étalonné
+       set crval1 [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+       #-- Dispersion du spectre : =1 si profil non étalonné
+       set disper [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+
+
+       #--- Calcul de xdeb et xfin :
+       set xdeb [ expr int(ceil(($ldeb-$crval1)/$disper)) ]
+       set xfin [ expr int(floor(($lfin-$crval1)/$disper)) ]
+       #-- Gestion de mauvaises longueurs d'onde donnes en argument :
+       if { $xdeb<0 || $xfin<0 } {
+	   ::console::affiche_resultat "Sélection hors des limites du spectre.\n"
+	   return ""
+       }
+       #-- Gestion de la longueur d'onde finale a prendre en compte :
+       set nlfin [ expr ($crval1+$xdeb*$disper)+$xfin*$disper ]
+       if { $nlfin > $lfin } {
+	   set xfin [ expr $xfin-1 ]
+       }
+       set nnaxis1 [ expr $xfin-$xdeb+1 ]
+
+#::console::affiche_resultat "$nnaxis1 intensités à sélectionnéer entre les pixels $xdeb et $xfin.\n"
+
+       #--- Selectionne les intensités dans le spectre initial :
+       set nintensites [ list ]
+       set len 0
+       for { set k [ expr $xdeb-1 ] } { $k<$xfin } {incr k} {
+	   lappend nintensites [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1]] 1 ]
+	   incr len
+       }
+
+       #--- Créée le fichier fits de sortie :
+       ::console::affiche_resultat "$len ($nnaxis1) intensités sélectionnées entre les pixels $xdeb et $xfin.\n"
+       #--- Initialisation à blanc d'un fichier fits :
+       #buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       ##buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_USHORT COMPRESS_NONE 0
+
+       #buf1 load "$audace(rep_images)/$spectre_lin"
+       buf1 load "$audace(rep_images)/$fichier"
+       buf$audace(bufNo) setpixels CLASS_GRAY $len 1 FORMAT_FLOAT COMPRESS_NONE 0
+       buf$audace(bufNo) copykwd 1
+       buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+       buf$audace(bufNo) setkwd [ list "NAXIS1" $len int "" "" ]
+
+       for {set k 0} {$k<$len} {incr k} {
+	   set intens [ lindex $nintensites $k ]
+	   buf$audace(bufNo) setpix [list [expr $k+1] 1] [ lindex $nintensites $k ]
+	   #::console::affiche_resultat "Intensité $k : $intens\n"
+       }
+
+       #--- Initatialisation de l'entête
+       set ldepart [ expr $crval1+$xdeb*$disper ]
+       buf$audace(bufNo) setkwd [list "CRVAL1" $ldepart float "" ""]
+       buf$audace(bufNo) setkwd [list "CDELT1" $disper float "" ""]
+
+       #--- Enregistrement du fichier fits final
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save1d "$audace(rep_images)/${fichier}_sel$conf(extension,defaut)"
+       buf$audace(bufNo) bitpix short
+       ::console::affiche_resultat "Sélection sauvée sous $audace(rep_images)/${fichier}_sel$conf(extension,defaut)\n"
+       return ${fichier}_sel
+   } else {
+       ::console::affiche_erreur "Usage: spc_select2 nom_fichier (de type fits) lambda_début lambda_fin\n\n"
+   }
+}
+##########################################################
+
+
 
 proc spc_select0 { args } {
 
