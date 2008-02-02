@@ -2,7 +2,7 @@
 # Procedures des traitements géométriques
 # Lancement en console : source $audace(rep_scripts)/spcaudace/spc_geom.tcl
 
-# Mise a jour $Id: spc_geom.tcl,v 1.13 2008-02-02 21:53:25 bmauclaire Exp $
+# Mise a jour $Id: spc_geom.tcl,v 1.14 2008-02-02 22:41:33 bmauclaire Exp $
 
 
 

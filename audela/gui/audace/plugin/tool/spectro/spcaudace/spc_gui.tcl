@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.11 2008-02-02 21:53:25 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.12 2008-02-02 22:41:33 bmauclaire Exp $
 
 
 
@@ -23,7 +23,8 @@ proc spc_winini { } {
    # wm title .spc "$caption(spcaudace,gui,main_title) - $profilspc(initialfile)"
    wm title .spc "$caption(spcaudace,gui,main_title) $spcaudace(version)"
    #wm geometry .spc 640x480+0+100
-   wm geometry .spc 640x513+0-68
+   #wm geometry .spc 640x513+0-68
+   wm geometry .spc 680x513+0-68
    wm maxsize .spc [winfo screenwidth .spc] [winfo screenheight .spc]
    wm minsize .spc 320 200
    wm resizable .spc 1 1
@@ -62,20 +63,6 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_repconf) -command { ::cwdWindow::run "$audace(base).cwdWindow" } -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2png_w) -command "spc_export2png" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
-      # .spc.menuBar.file add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_fit2ps) -command "spc_fit2ps" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_fits2dat_w) -command "spc_fits2dat" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_dat2fits_w) -command "spc_dat2fits" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spc2fits_w) -command "spc_spc2fits" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_bessmodule_w) -command "spc_bessmodule" -underline 0
-      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_simbad) -command "spc_simbad" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_bess) -command "spc_bess" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_uves) -command "spc_uves" -underline 0
@@ -107,6 +94,24 @@ proc spc_winini { } {
       bind .spc <Control-l> spc_postscript
       bind .spc <Control-q> { destroy .spc }
       #bind .spc <F1> aboutBox
+
+
+      #--- Menu Conversions ---#
+      .spc.menuBar add cascade -menu .spc.menuBar.conv -label $caption(spcaudace,gui,conv) -underline 0
+      menu .spc.menuBar.conv -tearoff 0 -bg $colorspc(backmenu)
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spc2png_w) -command "spc_export2png" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
+      # .spc.menuBar.conv add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fit2ps) -command "spc_fit2ps" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fits2dat_w) -command "spc_fits2dat" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_dat2fits_w) -command "spc_dat2fits" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spc2fits_w) -command "spc_spc2fits" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spcs2fits_w) -command "spc_spcs2fits" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_bessmodule_w) -command "spc_bessmodule" -underline 0
 
 
       #--- Menu Géométrie ---#
@@ -260,6 +265,7 @@ proc spc_winini { } {
       # .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_version_w) -command "spc_version" -underline 0
       .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_version_w)
       .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_help) -command "spc_help"
+      .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_site) -command "spc_webpage"
       .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_about_w)
       .spc.menuBar.aide add command -label $caption(spcaudace,gui,spc_contrib_w)
       .spc configure -menu .spc.menuBar

@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.3 2008-02-02 21:53:25 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.4 2008-02-02 22:41:33 bmauclaire Exp $
 
 
 ####################################################################
