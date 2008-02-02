@@ -2,9 +2,11 @@
 # Fichier : mauclaire.tcl
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
-# Mise a jour $Id: mauclaire.tcl,v 1.14 2007-11-10 11:28:30 michelpujol Exp $
 #
-
+# Mise a jour $Id: mauclaire.tcl,v 1.15 2008-02-02 22:09:06 bmauclaire Exp $
+#
+#
+#
 #--------------------- Liste des fonctions -----------------------------------#
 #
 # bm_ls                  : Liste les fichiers fits du répertoire de travail
@@ -47,11 +49,24 @@
 # Arguments : aucun
 ###############################################################################
 
-proc bm_ls {} {
+proc bm_ls { args } {
     global conf audace
-    
-    set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
-    ::console::affiche_resultat "$fliste\n\n"
+
+    set nbargs [ llength $args ]
+    if { $nbargs <= 1 } {
+	if { $nbargs == 1 } {
+	    set prefixe [ lindex $args 0 ]
+	    set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $prefixe*$conf(extension,defaut) ] ]
+	} elseif { $nbargs == 0 } {
+	    set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+	} else {
+	    console::affiche_erreur "Usage: bm_ls ?string_searched?\n"
+	    return ""
+	} 
+	::console::affiche_resultat "$fliste\n\n"
+    } else {
+	console::affiche_erreur "Usage: bm_ls ?string_searched?\n"
+    }
 }
 #*****************************************************************************#
 
@@ -122,7 +137,7 @@ proc bm_sphot { args } {
          #-- Attend que la variable $flag_ok change
          vwait flag_ok
          if { $flag_ok==1 } {
-            set coords_zone $audace(box)
+            set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
             set flag_ok 2
             destroy .benji
          } elseif { $flag_ok==2 } {
@@ -644,7 +659,10 @@ proc bm_renameext { args } {
       } elseif { [llength $args] == 1 } {
           set old_extension [ lindex $args 0 ]
           set repertoire $audace(rep_images)
+      } else {
+	  ::console::affiche_erreur "Usage: bm_renameext ?repertoire? extension_actuelle.\n"
       }
+
 
       cd $repertoire
       set liste_fichiers [ lsort -dictionary [glob -dir $repertoire *$old_extension] ]
@@ -663,6 +681,44 @@ proc bm_renameext { args } {
    }
 }
 #-----------------------------------------------------------------------------#
+
+
+###############################################################################
+# Description : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 17-12-2005
+# Date de mise a jour : 17-12-2005
+# Arguments : ?repertoire? extension actuelle des fichiers
+###############################################################################
+
+proc bm_renameext2 { args } {
+   global audace
+   global conf
+
+   if { [llength $args] == 2 } {
+      set old_extension [ lindex $args 0 ]
+      set new_extension [ lindex $args 1 ]
+
+      set repertoire $audace(rep_images)    
+      set liste_fichiers [ lsort -dictionary [ glob -dir $repertoire *$old_extension ] ]
+      set nbimg [ llength $liste_fichiers ]
+      ::console::affiche_resultat "$nbimg fichiers à renomer.\n"
+
+      foreach fichier $liste_fichiers {
+          #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
+          set prefixe_nom [ file rootname $fichier ]
+          ::console::affiche_resultat "Fichier renomé en ${prefixe_nom}.$new_extension\n"
+          file copy -force $fichier ${prefixe_nom}.$new_extension
+	  file delete -force $fichier
+      }
+   } else {
+      ::console::affiche_erreur "Usage: bm_renameext2 extension_actuelle(fts) nouvelle_extension(fit).\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
+
+
 
 ###############################################################################
 # Description : Registration planetaire sur un point initial et final : translation lineaire
@@ -714,7 +770,7 @@ proc bm_registerplin { args } {
       #-- Attend que la variable $flag_ok change
       vwait flag_ok
       if { $flag_ok==1 } {
-         set coords_zone $audace(box)
+         set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
          set flag_ok 2
          destroy .benji
       } elseif { $flag_ok==2 } {
@@ -756,7 +812,7 @@ proc bm_registerplin { args } {
       #-- Attend que la variable $flag_ok change
       vwait flag_ok
       if { $flag_ok==1 } {
-         set coords_zone $audace(box)
+         set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
          set flag_ok 2
          destroy .benji
       } elseif { $flag_ok==2 } {
@@ -841,11 +897,12 @@ proc bm_sflat { args } {
    global audace
    global conf
 
-   if {[llength $args] == 4} {
+   if {[llength $args] == 5} {
       set nom_flat [ lindex $args 0 ]
       set naxis1 [ lindex $args 1 ]
       set naxis2 [ lindex $args 2 ]
       set intensite [ lindex $args 3 ]
+      set duree_pose [ lindex $args 4 ]
 
       buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 $naxis2 FORMAT_USHORT COMPRESS_NONE 0
       buf$audace(bufNo) offset $intensite
@@ -857,11 +914,14 @@ proc bm_sflat { args } {
       buf$audace(bufNo) setkwd [ list NAXIS 2 int "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS1 $naxis1 int "" "" ]
       buf$audace(bufNo) setkwd [ list NAXIS2 $naxis2 int "" "" ]
-      buf$audace(bufNo) save $nom_flat
+      buf$audace(bufNo) setkwd [ list EXPOSURE $duree_pose int "" "s" ]
+      buf$audace(bufNo) setkwd [ list BIN1 1 int "" "" ]
+      buf$audace(bufNo) setkwd [ list BIN2 1 int "" "" ]
+      buf$audace(bufNo) save "$audace(rep_images)/$nom_flat"
       ::console::affiche_resultat "Flat artificiel sauvé sous $nom_flat\n"
       return $nom_flat
    } else {
-      ::console::affiche_erreur "Usage: bm_sflat nom_flat_sortie largeur hauteur valeur\n"
+      ::console::affiche_erreur "Usage: bm_sflat nom_flat_sortie largeur hauteur valeur(ADU) durée_pose(s)\n"
    }
 }
 #-----------------------------------------------------------------------------#
