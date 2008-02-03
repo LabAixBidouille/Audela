@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.13 2008-01-30 21:58:36 alainklotz Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.14 2008-02-03 10:16:14 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -96,10 +96,10 @@ proc vo_aladin { args } {
       } elseif { $::tcl_platform(os) == "Darwin" } {
          open "|\"${audace(rep_java)}/java\" -jar \"${audace(rep_aladinjar)}/Aladin.jar\" < \"$fnameajs\" " w+
       } else {
-	      if {[file exists "${audace(aladin)}/aladin.exe"]==1} {
-	         open "|\"${audace(aladin)}/aladin.exe\" \"$fnameajs\" " w+
+         if {[file exists "${audace(aladin)}/aladin.exe"]==1} {
+            open "|\"${audace(aladin)}/aladin.exe\" \"$fnameajs\" " w+
          } else {
-	         open "|\"aladin.exe\" \"$fnameajs\" " w+	         
+            open "|\"aladin.exe\" \"$fnameajs\" " w+
          }
       }
    } elseif {$method=="object"} {
