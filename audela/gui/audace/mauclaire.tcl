@@ -1,9 +1,9 @@
-#
-# Fichier : mauclaire.tcl
-# Description : Scripts pour un usage aise des fonctions d'Aud'ACE
+
+# Fichier : mauclaire.tc
+# Description : Scripts pour un usage aise des fonctions d'Aud'AC
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.15 2008-02-02 22:09:06 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.16 2008-02-04 20:28:48 denismarchais Exp $
 #
 #
 #
@@ -2003,4 +2003,3 @@ proc bm_pretrait_21-12-2005 { args } {
 #****************************************************************************#
 
 
-}
