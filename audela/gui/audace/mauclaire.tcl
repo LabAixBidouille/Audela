@@ -1,13 +1,13 @@
-
-# Fichier : mauclaire.tc
-# Description : Scripts pour un usage aise des fonctions d'Aud'AC
+#
+# Fichier : mauclaire.tcl
+# Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.16 2008-02-04 20:28:48 denismarchais Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.17 2008-02-04 22:47:28 robertdelmas Exp $
 #
+
 #
-#
-#--------------------- Liste des fonctions -----------------------------------#
+##--------------------- Liste des fonctions -----------------------------------#
 #
 # bm_ls                  : Liste les fichiers fits du répertoire de travail
 # bm_sphot               : Extrait le contenu d'un mot clef d'une serie de fichiers
@@ -50,23 +50,23 @@
 ###############################################################################
 
 proc bm_ls { args } {
-    global conf audace
+   global conf audace
 
-    set nbargs [ llength $args ]
-    if { $nbargs <= 1 } {
-	if { $nbargs == 1 } {
-	    set prefixe [ lindex $args 0 ]
-	    set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $prefixe*$conf(extension,defaut) ] ]
-	} elseif { $nbargs == 0 } {
-	    set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
-	} else {
-	    console::affiche_erreur "Usage: bm_ls ?string_searched?\n"
-	    return ""
-	} 
-	::console::affiche_resultat "$fliste\n\n"
-    } else {
-	console::affiche_erreur "Usage: bm_ls ?string_searched?\n"
-    }
+   set nbargs [ llength $args ]
+   if { $nbargs <= 1 } {
+      if { $nbargs == 1 } {
+         set prefixe [ lindex $args 0 ]
+         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $prefixe*$conf(extension,defaut) ] ]
+      } elseif { $nbargs == 0 } {
+         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+      } else {
+         console::affiche_erreur "Usage: bm_ls ?string_searched?\n"
+         return ""
+      }
+      ::console::affiche_resultat "$fliste\n\n"
+   } else {
+      console::affiche_erreur "Usage: bm_ls ?string_searched?\n"
+   }
 }
 #*****************************************************************************#
 
@@ -654,13 +654,13 @@ proc bm_renameext { args } {
    if { [llength $args] <= 2 } {
       set repdflt [pwd]
       if { [llength $args] == 2 } {
-          set repertoire [lindex $args 0]
-          set old_extension [ lindex $args 1 ]
+         set repertoire [lindex $args 0]
+         set old_extension [ lindex $args 1 ]
       } elseif { [llength $args] == 1 } {
-          set old_extension [ lindex $args 0 ]
-          set repertoire $audace(rep_images)
+         set old_extension [ lindex $args 0 ]
+         set repertoire $audace(rep_images)
       } else {
-	  ::console::affiche_erreur "Usage: bm_renameext ?repertoire? extension_actuelle.\n"
+         ::console::affiche_erreur "Usage: bm_renameext ?repertoire? extension_actuelle.\n"
       }
 
 
@@ -670,10 +670,10 @@ proc bm_renameext { args } {
       ::console::affiche_resultat "$nbimg fichiers à renomer.\n"
 
       foreach fichier $liste_fichiers {
-          #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
-          set prefixe_nom [ file rootname $fichier ]
-          ::console::affiche_resultat "${fichier} renomé en ${prefixe_nom}_c$conf(extension,defaut)\n"
-          file copy -force $fichier ${prefixe_nom}_c$conf(extension,defaut)
+         #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
+         set prefixe_nom [ file rootname $fichier ]
+         ::console::affiche_resultat "${fichier} renomé en ${prefixe_nom}_c$conf(extension,defaut)\n"
+         file copy -force $fichier ${prefixe_nom}_c$conf(extension,defaut)
       }
       cd $repdflt
    } else {
@@ -699,17 +699,17 @@ proc bm_renameext2 { args } {
       set old_extension [ lindex $args 0 ]
       set new_extension [ lindex $args 1 ]
 
-      set repertoire $audace(rep_images)    
+      set repertoire $audace(rep_images)
       set liste_fichiers [ lsort -dictionary [ glob -dir $repertoire *$old_extension ] ]
       set nbimg [ llength $liste_fichiers ]
       ::console::affiche_resultat "$nbimg fichiers à renomer.\n"
 
       foreach fichier $liste_fichiers {
-          #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
-          set prefixe_nom [ file rootname $fichier ]
-          ::console::affiche_resultat "Fichier renomé en ${prefixe_nom}.$new_extension\n"
-          file copy -force $fichier ${prefixe_nom}.$new_extension
-	  file delete -force $fichier
+         #regexp {(.+)\.$old_extension} $fichier match prefixe_nom
+         set prefixe_nom [ file rootname $fichier ]
+         ::console::affiche_resultat "Fichier renomé en ${prefixe_nom}.$new_extension\n"
+         file copy -force $fichier ${prefixe_nom}.$new_extension
+         file delete -force $fichier
       }
    } else {
       ::console::affiche_erreur "Usage: bm_renameext2 extension_actuelle(fts) nouvelle_extension(fit).\n"
@@ -1005,323 +1005,323 @@ proc bm_pretrait { args } {
    global conf
 
    if {[llength $args] <= 6} {
-       if {[llength $args] == 4} {
-	   #--- On se place dans le répertoire d'images configuré dans Audace
-	   set repdflt [ spc_goodrep ]
-	   set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
-	   set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
-	   set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
-	   set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
-	   set nom_offset "none"
-	   set flag_rmmaster "o"
-       } elseif {[llength $args] == 5} {
-	   #--- On se place dans le répertoire d'images configuré dans Audace
-	   set repdflt [ spc_goodrep ]
-	   set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
-	   set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
-	   set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
-	   set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
-	   set nom_offset [ file rootname [ file tail [ lindex $args 4 ] ] ]
-	   set flag_rmmaster "o"
-       } elseif {[llength $args] == 6} {
-	   #--- On se place dans le répertoire d'images configuré dans Audace
-	   set repdflt [ spc_goodrep ]
-	   set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
-	   set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
-	   set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
-	   set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
-	   set nom_offset [ file rootname [ file tail [ lindex $args 4 ] ] ]
-	   set flag_rmmaster [ lindex $args 5 ]
-       } else {
-	   ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?nom_offset (none)? ?effacement des masters (o/n)?\n\n"
-	   return ""
-       }
+      if {[llength $args] == 4} {
+         #--- On se place dans le répertoire d'images configuré dans Audace
+         set repdflt [ spc_goodrep ]
+         set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
+         set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
+         set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
+         set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
+         set nom_offset "none"
+         set flag_rmmaster "o"
+      } elseif {[llength $args] == 5} {
+         #--- On se place dans le répertoire d'images configuré dans Audace
+         set repdflt [ spc_goodrep ]
+         set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
+         set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
+         set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
+         set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
+         set nom_offset [ file rootname [ file tail [ lindex $args 4 ] ] ]
+         set flag_rmmaster "o"
+      } elseif {[llength $args] == 6} {
+         #--- On se place dans le répertoire d'images configuré dans Audace
+         set repdflt [ spc_goodrep ]
+         set nom_stellaire [ file rootname [ file tail [ lindex $args 0 ] ] ]
+         set nom_dark [ file rootname [ file tail [ lindex $args 1 ] ] ]
+         set nom_flat [ file rootname [ file tail [ lindex $args 2 ] ] ]
+         set nom_darkflat [ file rootname [ file tail [ lindex $args 3 ] ] ]
+         set nom_offset [ file rootname [ file tail [ lindex $args 4 ] ] ]
+         set flag_rmmaster [ lindex $args 5 ]
+      } else {
+         ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?nom_offset (none)? ?effacement des masters (o/n)?\n\n"
+         return ""
+      }
 
 
-       #--- Compte les images :
-       ## Renumerote chaque série de fichier
-       #renumerote $nom_stellaire
-       #renumerote $nom_dark
-       #renumerote $nom_flat
-       #renumerote $nom_darkflat
+      #--- Compte les images :
+      ## Renumerote chaque série de fichier
+      #renumerote $nom_stellaire
+      #renumerote $nom_dark
+      #renumerote $nom_flat
+      #renumerote $nom_darkflat
 
-       ## Détermine les listes de fichiers de chasue série
-       #set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
-       #set nb_dark [ llength $dark_liste ]
-       #set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) ] ]
-       #set nb_flat [ llength $flat_liste ]
-       #set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
-       #set nb_darkflat [ llength $darkflat_liste ]
-       #---------------------------------------------------------------------------------#
-       if { 1==0 } {
-       set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-       set nb_stellaire [ llength $stellaire_liste ]
-       #-- Gestion du cas des masters au lieu d'une série de fichier :
-       if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
-	   set dark_list [ list $nom_dark ]
-	   set nb_dark 1
-       } else {
-	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	   set nb_dark [ llength $dark_liste ]
-       }
-       if { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
-	   set flat_list [ list $nom_flat ]
-	   set nb_flat 1
-       } else {
-	   set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	   set nb_flat [ llength $flat_liste ]
-       }
-       if { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
-	   set darkflat_list [ list $nom_darkflat ]
-	   set nb_darkflat 1
-       } else {
-	   set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	   set nb_darkflat [ llength $darkflat_liste ]
-       }
-       }
-       #---------------------------------------------------------------------------------#
+      ## Détermine les listes de fichiers de chasue série
+      #set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_dark}\[0-9\]*$conf(extension,defaut) ] ]
+      #set nb_dark [ llength $dark_liste ]
+      #set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_flat}\[0-9\]*$conf(extension,defaut) ] ]
+      #set nb_flat [ llength $flat_liste ]
+      #set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]*$conf(extension,defaut) ] ]
+      #set nb_darkflat [ llength $darkflat_liste ]
+      #---------------------------------------------------------------------------------#
+      if { 1==0 } {
+      set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+      set nb_stellaire [ llength $stellaire_liste ]
+      #-- Gestion du cas des masters au lieu d'une série de fichier :
+      if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+         set dark_list [ list $nom_dark ]
+         set nb_dark 1
+      } else {
+         set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_dark [ llength $dark_liste ]
+      }
+      if { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+         set flat_list [ list $nom_flat ]
+         set nb_flat 1
+      } else {
+         set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_flat [ llength $flat_liste ]
+      }
+      if { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+         set darkflat_list [ list $nom_darkflat ]
+         set nb_darkflat 1
+      } else {
+         set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_darkflat [ llength $darkflat_liste ]
+      }
+      }
+      #---------------------------------------------------------------------------------#
 
-       #--- Compte les images :
-       if { [ file exists "$audace(rep_images)/$nom_stellaire$conf(extension,defaut)" ] } {
-	   set stellaire_liste [ list $nom_stellaire ]
-	   set nb_stellaire 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   renumerote $nom_stellaire
-	   set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	   set nb_stellaire [ llength $stellaire_liste ]
-       } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
-	   return ""
-       }
-       if { [ file exists "$audace(rep_images)/$nom_dark$conf(extension,defaut)" ] } {
-	   set dark_liste [ list $nom_dark ]
-	   set nb_dark 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   renumerote $nom_dark
-	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	   set nb_dark [ llength $dark_liste ]
-       } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_dark n'existe(nt) pas.\n"
-	   return ""
-       }
-       if { [ file exists "$audace(rep_images)/$nom_flat$conf(extension,defaut)" ] } {
-	   set flat_list [ list $nom_flat ]
-	   set nb_flat 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   renumerote $nom_flat
-	   set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	   set nb_flat [ llength $flat_list ]
-       } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_flat n'existe(nt) pas.\n"
-	   return ""
-       }
-       if { [ file exists "$audace(rep_images)/$nom_darkflat$conf(extension,defaut)" ] } {
-	   set darkflat_list [ list $nom_darkflat ]
-	   set nb_darkflat 1
-       } elseif { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   renumerote $nom_darkflat
-	   set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	   set nb_darkflat [ llength $darkflat_list ]
-       } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_darkflat n'existe(nt) pas.\n"
-	   return ""
-       }
-       if { $nom_offset!="none" } {
-	   if { [ file exists "$audace(rep_images)/$nom_offset$conf(extension,defaut)" ] } {
-	       set offset_list [ list $nom_offset ]
-	       set nb_offset 1
-	   } elseif { [ catch { glob -dir $audace(rep_images) ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	       renumerote $nom_offset
-	       set offset_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-	       set nb_offset [ llength $offset_list ]
-	   } else {
-	       ::console::affiche_resultat "Le(s) fichier(s) $nom_offset n'existe(nt) pas.\n"
-	       return ""
-	   }
-       }
-
-
-       #--- Isole le préfixe des noms de fichiers dans le cas ou ils possedent un "-" avant le n° :
-       set pref_stellaire ""
-       set pref_dark ""
-       set pref_flat ""
-       set pref_darkflat ""
-       set pref_offset ""
-       regexp {(.+)\-?[0-9]+} $nom_stellaire match pref_stellaire
-       regexp {(.+)\-?[0-9]+} $nom_dark match pref_dark
-       regexp {(.+)\-?[0-9]+} $nom_flat match pref_flat
-       regexp {(.+)\-?[0-9]+} $nom_darkflat match pref_darkflat
-       regexp {(.+)\-?[0-9]+} $nom_offset match pref_offset
-       #-- En attendant de gerer le cas des fichiers avec des - au milieu du nom de fichier
-       set pref_stellaire $nom_stellaire
-       set pref_dark $nom_dark
-       set pref_flat $nom_flat
-       set pref_darkflat $nom_darkflat
-       set pref_offset $nom_offset
-
-       ::console::affiche_resultat "brut=$pref_stellaire, dark=$pref_dark, flat=$pref_flat, df=$pref_darkflat, offset=$pref_offset\n"
-       #-- La regexp ne fonctionne pas bien pavec des noms contenant des "_"
-       if {$pref_stellaire == ""} {
-	   set pref_stellaire $nom_stellaire
-       }
-       if {$pref_dark == ""} {
-	   set pref_dark $nom_dark
-       }
-       if {$pref_flat == ""} {
-	   set pref_flat $nom_flat
-       }
-       if {$pref_darkflat == ""} {
-	   set pref_darkflat $nom_darkflat
-       }
-       if {$pref_offset == ""} {
-	   set pref_offset $nom_offset
-       }
-       # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
+      #--- Compte les images :
+      if { [ file exists "$audace(rep_images)/$nom_stellaire$conf(extension,defaut)" ] } {
+         set stellaire_liste [ list $nom_stellaire ]
+         set nb_stellaire 1
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+         renumerote $nom_stellaire
+         set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_stellaire [ llength $stellaire_liste ]
+      } else {
+         ::console::affiche_resultat "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
+         return ""
+      }
+      if { [ file exists "$audace(rep_images)/$nom_dark$conf(extension,defaut)" ] } {
+         set dark_liste [ list $nom_dark ]
+         set nb_dark 1
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+         renumerote $nom_dark
+         set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_dark [ llength $dark_liste ]
+      } else {
+         ::console::affiche_resultat "Le(s) fichier(s) $nom_dark n'existe(nt) pas.\n"
+         return ""
+      }
+      if { [ file exists "$audace(rep_images)/$nom_flat$conf(extension,defaut)" ] } {
+         set flat_list [ list $nom_flat ]
+         set nb_flat 1
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+         renumerote $nom_flat
+         set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_flat [ llength $flat_list ]
+      } else {
+         ::console::affiche_resultat "Le(s) fichier(s) $nom_flat n'existe(nt) pas.\n"
+         return ""
+      }
+      if { [ file exists "$audace(rep_images)/$nom_darkflat$conf(extension,defaut)" ] } {
+         set darkflat_list [ list $nom_darkflat ]
+         set nb_darkflat 1
+      } elseif { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+         renumerote $nom_darkflat
+         set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_darkflat [ llength $darkflat_list ]
+      } else {
+         ::console::affiche_resultat "Le(s) fichier(s) $nom_darkflat n'existe(nt) pas.\n"
+         return ""
+      }
+      if { $nom_offset!="none" } {
+         if { [ file exists "$audace(rep_images)/$nom_offset$conf(extension,defaut)" ] } {
+            set offset_list [ list $nom_offset ]
+            set nb_offset 1
+         } elseif { [ catch { glob -dir $audace(rep_images) ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
+            renumerote $nom_offset
+            set offset_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+            set nb_offset [ llength $offset_list ]
+         } else {
+            ::console::affiche_resultat "Le(s) fichier(s) $nom_offset n'existe(nt) pas.\n"
+            return ""
+         }
+      }
 
 
-       #--- Prétraitement des flats :
-       #-- Somme médiane des dark, dark_flat et offset :
-       if { $nb_dark == 1 } {
-	   ::console::affiche_resultat "L'image de dark est $nom_dark$conf(extension,defaut)\n"
-	   set pref_dark $nom_dark
-	   file copy -force $nom_dark$conf(extension,defaut) ${pref_dark}-smd$nb_dark$conf(extension,defaut)
-       } else {
-	   ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
-	   smedian "$nom_dark" "${pref_dark}-smd$nb_dark" $nb_dark
-       }
-       if { $nb_darkflat == 1 } {
-	   ::console::affiche_resultat "L'image de dark de flat est $nom_darkflat$conf(extension,defaut)\n"
-	   set pref_darkflat "$nom_darkflat"
-	   file copy -force $nom_darkflat$conf(extension,defaut) ${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)
-       } else {
-	   ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
-	   smedian "$nom_darkflat" "${pref_darkflat}-smd$nb_darkflat" $nb_darkflat
-       }
-       if { $nom_offset!="none" } {
-	   if { $nb_offset == 1 } {
-	       ::console::affiche_resultat "L'image de offset est $nom_offset$conf(extension,defaut)\n"
-	       set pref_offset $nom_offset
-	       file copy -force $nom_offset$conf(extension,defaut) ${pref_offset}-smd$nb_offset$conf(extension,defaut)
-	   } else {
-	       ::console::affiche_resultat "Somme médiane de $nb_offset offset(s)...\n"
-	       smedian "$nom_offset" "${pref_offset}-smd$nb_offset" $nb_offset
-	   }
-       }
+      #--- Isole le préfixe des noms de fichiers dans le cas ou ils possedent un "-" avant le n° :
+      set pref_stellaire ""
+      set pref_dark ""
+      set pref_flat ""
+      set pref_darkflat ""
+      set pref_offset ""
+      regexp {(.+)\-?[0-9]+} $nom_stellaire match pref_stellaire
+      regexp {(.+)\-?[0-9]+} $nom_dark match pref_dark
+      regexp {(.+)\-?[0-9]+} $nom_flat match pref_flat
+      regexp {(.+)\-?[0-9]+} $nom_darkflat match pref_darkflat
+      regexp {(.+)\-?[0-9]+} $nom_offset match pref_offset
+      #-- En attendant de gerer le cas des fichiers avec des - au milieu du nom de fichier
+      set pref_stellaire $nom_stellaire
+      set pref_dark $nom_dark
+      set pref_flat $nom_flat
+      set pref_darkflat $nom_darkflat
+      set pref_offset $nom_offset
 
-       #-- Soustraction du master_dark aux images de flat :
-       if { $nom_offset=="none" } {
-	   ::console::affiche_resultat "Soustraction des noirs associés aux plus...\n"
-	   if { $nb_flat == 1 } {
-	       set pref_flat $nom_flat
-	       buf$audace(bufNo) load "$nom_flat"
-	       buf$audace(bufNo) sub "${pref_darkflat}-smd$nb_darkflat" 0
-	       buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
-	   } else {
-	       sub2 "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" "${pref_flat}_moinsnoir-" 0 $nb_flat
-	       set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
-	       #set flat_traite_1 [ lindex [ glob ${pref_flat}_moinsnoir-*$conf(extension,defaut) ] 0 ]
-	   }
-       } else {
-	   ::console::affiche_resultat "Optimisation des noirs associés aux plus...\n"
-	   if { $nb_flat == 1 } {
-	       set pref_flat $nom_flat
-	       buf$audace(bufNo) load "$nom_flat"
-	       buf$audace(bufNo) opt "${pref_darkflat}-smd$nb_darkflat" "${pref_offset}-smd$nb_offset"
-	       buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
-	   } else {
-	       opt2 "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" "${pref_offset}-smd$nb_offset" "${pref_flat}_moinsnoir-" $nb_flat
-	       set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
-	   }
-       }
-	   
-       #-- Harmonisation des flats et somme médiane :
-       if { $nb_flat == 1 } {
-	   # Calcul du niveau moyen de la première image
-	   #buf$audace(bufNo) load "${pref_flat}_moinsnoir-1"
-	   #set intensite_moyenne [lindex [stat] 4]
-	   ## Mise au même niveau de toutes les images de PLU
-	   #::console::affiche_resultat "Mise au même niveau de l'image de PLU...\n"
-	   #ngain $intensite_moyenne
-	   #buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
-	   #file copy ${pref_flat}_moinsnoir-$nb_flat$conf(extension,defaut) ${pref_flat}-smd$nb_flat$conf(extension,defaut)
-	   ::console::affiche_resultat "Le flat prétraité est ${pref_flat}-smd$nb_flat\n"
-       } else {
-	   # Calcul du niveau moyen de la première image
-	   buf$audace(bufNo) load "$flat_moinsnoir_1"
-	   set intensite_moyenne [lindex [stat] 4]
-	   # Mise au même niveau de toutes les images de PLU
-	   ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
-	   ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
-	   ::console::affiche_resultat "Somme médiane des flat prétraités...\n"
-	   smedian "${pref_flat}_auniveau-" "${pref_flat}-smd$nb_flat" $nb_flat
-	   #file delete [ file join [ file rootname ${pref_flat}_auniveau-]$conf(extension,defaut) ]
-	   delete2 "${pref_flat}_auniveau-" $nb_flat
-	   delete2 "${pref_flat}_moinsnoir-" $nb_flat
-       }
+      ::console::affiche_resultat "brut=$pref_stellaire, dark=$pref_dark, flat=$pref_flat, df=$pref_darkflat, offset=$pref_offset\n"
+      #-- La regexp ne fonctionne pas bien pavec des noms contenant des "_"
+      if {$pref_stellaire == ""} {
+         set pref_stellaire $nom_stellaire
+      }
+      if {$pref_dark == ""} {
+         set pref_dark $nom_dark
+      }
+      if {$pref_flat == ""} {
+         set pref_flat $nom_flat
+      }
+      if {$pref_darkflat == ""} {
+         set pref_darkflat $nom_darkflat
+      }
+      if {$pref_offset == ""} {
+         set pref_offset $nom_offset
+      }
+      # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
 
 
-       #--- Prétraitement des images stellaires :
-       #-- Soustraction du noir des images stellaires :
-       ::console::affiche_resultat "Soustraction du noir des images stellaires...\n"
-       if { $nom_offset=="none" } {
-	   ::console::affiche_resultat "Soustraction des noirs associés aux images stellaires...\n"
-	   if { $nb_stellaire==1 } {
-	       set pref_stellaire "$nom_stellaire"
-	       buf$audace(bufNo) load "$nom_stellaire"
-	       buf$audace(bufNo) sub "${pref_dark}-smd$nb_dark" 0
-	       buf$audace(bufNo) save "${pref_stellaire}_moinsnoir"
-	   } else {
-	       sub2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire
-	   }
-       } else {
-	   ::console::affiche_resultat "Optimisation des noirs associés aux images stellaires...\n"
-	   if { $nb_stellaire==1 } {
-	       set pref_stellaire "$nom_stellaire"
-	       buf$audace(bufNo) load "$nom_stellaire"
-	       buf$audace(bufNo) opt "${pref_dark}-smd$nb_dark" "${pref_offset}-smd$nb_offset"
-	       buf$audace(bufNo) save "${pref_stellaire}_moinsnoir"
-	   } else {
-	       opt2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_offset}-smd$nb_offset" "${pref_stellaire}_moinsnoir-" $nb_stellaire
-	   }
-       }
+      #--- Prétraitement des flats :
+      #-- Somme médiane des dark, dark_flat et offset :
+      if { $nb_dark == 1 } {
+         ::console::affiche_resultat "L'image de dark est $nom_dark$conf(extension,defaut)\n"
+         set pref_dark $nom_dark
+         file copy -force $nom_dark$conf(extension,defaut) ${pref_dark}-smd$nb_dark$conf(extension,defaut)
+      } else {
+         ::console::affiche_resultat "Somme médiane de $nb_dark dark(s)...\n"
+         smedian "$nom_dark" "${pref_dark}-smd$nb_dark" $nb_dark
+      }
+      if { $nb_darkflat == 1 } {
+         ::console::affiche_resultat "L'image de dark de flat est $nom_darkflat$conf(extension,defaut)\n"
+         set pref_darkflat "$nom_darkflat"
+         file copy -force $nom_darkflat$conf(extension,defaut) ${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)
+      } else {
+         ::console::affiche_resultat "Somme médiane de $nb_darkflat dark(s) associé(s) aux flat(s)...\n"
+         smedian "$nom_darkflat" "${pref_darkflat}-smd$nb_darkflat" $nb_darkflat
+      }
+      if { $nom_offset!="none" } {
+         if { $nb_offset == 1 } {
+            ::console::affiche_resultat "L'image de offset est $nom_offset$conf(extension,defaut)\n"
+            set pref_offset $nom_offset
+            file copy -force $nom_offset$conf(extension,defaut) ${pref_offset}-smd$nb_offset$conf(extension,defaut)
+         } else {
+            ::console::affiche_resultat "Somme médiane de $nb_offset offset(s)...\n"
+            smedian "$nom_offset" "${pref_offset}-smd$nb_offset" $nb_offset
+         }
+      }
 
-       #-- Calcul du niveau moyen de la PLU traitée :
-       buf$audace(bufNo) load "${pref_flat}-smd$nb_flat"
-       set intensite_moyenne [lindex [stat] 4]
+      #-- Soustraction du master_dark aux images de flat :
+      if { $nom_offset=="none" } {
+         ::console::affiche_resultat "Soustraction des noirs associés aux plus...\n"
+         if { $nb_flat == 1 } {
+            set pref_flat $nom_flat
+            buf$audace(bufNo) load "$nom_flat"
+            buf$audace(bufNo) sub "${pref_darkflat}-smd$nb_darkflat" 0
+            buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
+         } else {
+            sub2 "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" "${pref_flat}_moinsnoir-" 0 $nb_flat
+            set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
+            #set flat_traite_1 [ lindex [ glob ${pref_flat}_moinsnoir-*$conf(extension,defaut) ] 0 ]
+         }
+      } else {
+         ::console::affiche_resultat "Optimisation des noirs associés aux plus...\n"
+         if { $nb_flat == 1 } {
+            set pref_flat $nom_flat
+            buf$audace(bufNo) load "$nom_flat"
+            buf$audace(bufNo) opt "${pref_darkflat}-smd$nb_darkflat" "${pref_offset}-smd$nb_offset"
+            buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
+         } else {
+            opt2 "$nom_flat" "${pref_darkflat}-smd$nb_darkflat" "${pref_offset}-smd$nb_offset" "${pref_flat}_moinsnoir-" $nb_flat
+            set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
+         }
+      }
 
-       #-- Division des images stellaires par la PLU :
-       ::console::affiche_resultat "Division des images stellaires par la PLU...\n"
-       div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}-smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
-       set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
+      #-- Harmonisation des flats et somme médiane :
+      if { $nb_flat == 1 } {
+         # Calcul du niveau moyen de la première image
+         #buf$audace(bufNo) load "${pref_flat}_moinsnoir-1"
+         #set intensite_moyenne [lindex [stat] 4]
+         ## Mise au même niveau de toutes les images de PLU
+         #::console::affiche_resultat "Mise au même niveau de l'image de PLU...\n"
+         #ngain $intensite_moyenne
+         #buf$audace(bufNo) save "${pref_flat}-smd$nb_flat"
+         #file copy ${pref_flat}_moinsnoir-$nb_flat$conf(extension,defaut) ${pref_flat}-smd$nb_flat$conf(extension,defaut)
+         ::console::affiche_resultat "Le flat prétraité est ${pref_flat}-smd$nb_flat\n"
+      } else {
+         # Calcul du niveau moyen de la première image
+         buf$audace(bufNo) load "$flat_moinsnoir_1"
+         set intensite_moyenne [lindex [stat] 4]
+         # Mise au même niveau de toutes les images de PLU
+         ::console::affiche_resultat "Mise au même niveau de toutes les images de PLU...\n"
+         ngain2 "${pref_flat}_moinsnoir-" "${pref_flat}_auniveau-" $intensite_moyenne $nb_flat
+         ::console::affiche_resultat "Somme médiane des flat prétraités...\n"
+         smedian "${pref_flat}_auniveau-" "${pref_flat}-smd$nb_flat" $nb_flat
+         #file delete [ file join [ file rootname ${pref_flat}_auniveau-]$conf(extension,defaut) ]
+         delete2 "${pref_flat}_auniveau-" $nb_flat
+         delete2 "${pref_flat}_moinsnoir-" $nb_flat
+      }
 
 
-       #--- Affichage et netoyage :
-       loadima "$image_traite_1"
-       ::console::affiche_resultat "Affichage de la première image prétraitée\n"
-       delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
-       if { $flag_rmmaster == "o" } {
-	   # Le 06/02/19 :
-	   file delete -force "${pref_dark}-smd$nb_dark$conf(extension,defaut)"
-	   file delete -force "${pref_flat}-smd$nb_flat$conf(extension,defaut)"
-	   file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
-       }
+      #--- Prétraitement des images stellaires :
+      #-- Soustraction du noir des images stellaires :
+      ::console::affiche_resultat "Soustraction du noir des images stellaires...\n"
+      if { $nom_offset=="none" } {
+         ::console::affiche_resultat "Soustraction des noirs associés aux images stellaires...\n"
+         if { $nb_stellaire==1 } {
+            set pref_stellaire "$nom_stellaire"
+            buf$audace(bufNo) load "$nom_stellaire"
+            buf$audace(bufNo) sub "${pref_dark}-smd$nb_dark" 0
+            buf$audace(bufNo) save "${pref_stellaire}_moinsnoir"
+         } else {
+            sub2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_stellaire}_moinsnoir-" 0 $nb_stellaire
+         }
+      } else {
+         ::console::affiche_resultat "Optimisation des noirs associés aux images stellaires...\n"
+         if { $nb_stellaire==1 } {
+            set pref_stellaire "$nom_stellaire"
+            buf$audace(bufNo) load "$nom_stellaire"
+            buf$audace(bufNo) opt "${pref_dark}-smd$nb_dark" "${pref_offset}-smd$nb_offset"
+            buf$audace(bufNo) save "${pref_stellaire}_moinsnoir"
+         } else {
+            opt2 "$nom_stellaire" "${pref_dark}-smd$nb_dark" "${pref_offset}-smd$nb_offset" "${pref_stellaire}_moinsnoir-" $nb_stellaire
+         }
+      }
 
-       #-- Effacement des fichiers copie des masters dark, flat et dflat dus a la copie automatique de pretrait :
-       if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_dark}-smd$nb_dark match resul ] } {
-	   file delete -force "${pref_dark}-smd$nb_dark$conf(extension,defaut)"
-       }
-       if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_flat}-smd$nb_flat match resul ] } {
-	   file delete -force "${pref_flat}-smd$nb_flat$conf(extension,defaut)"
-       }
-       if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_darkflat}-smd$nb_darkflat match resul ] } {
-	   file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
-       }
+      #-- Calcul du niveau moyen de la PLU traitée :
+      buf$audace(bufNo) load "${pref_flat}-smd$nb_flat"
+      set intensite_moyenne [lindex [stat] 4]
+
+      #-- Division des images stellaires par la PLU :
+      ::console::affiche_resultat "Division des images stellaires par la PLU...\n"
+      div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}-smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
+      set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
 
 
-       #--- Retour dans le répertoire de départ avnt le script
-       return ${pref_stellaire}-t-
+      #--- Affichage et netoyage :
+      loadima "$image_traite_1"
+      ::console::affiche_resultat "Affichage de la première image prétraitée\n"
+      delete2 "${pref_stellaire}_moinsnoir-" $nb_stellaire
+      if { $flag_rmmaster == "o" } {
+         # Le 06/02/19 :
+         file delete -force "${pref_dark}-smd$nb_dark$conf(extension,defaut)"
+         file delete -force "${pref_flat}-smd$nb_flat$conf(extension,defaut)"
+         file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
+      }
+
+      #-- Effacement des fichiers copie des masters dark, flat et dflat dus a la copie automatique de pretrait :
+      if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_dark}-smd$nb_dark match resul ] } {
+         file delete -force "${pref_dark}-smd$nb_dark$conf(extension,defaut)"
+      }
+      if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_flat}-smd$nb_flat match resul ] } {
+         file delete -force "${pref_flat}-smd$nb_flat$conf(extension,defaut)"
+      }
+      if { [ regexp {.+-smd[0-9]+-smd[0-9]+} ${pref_darkflat}-smd$nb_darkflat match resul ] } {
+         file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
+      }
+
+
+      #--- Retour dans le répertoire de départ avnt le script
+      return ${pref_stellaire}-t-
    } else {
-       ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?nom_offset (none)? ?effacement des masters (o/n)?\n\n"
+      ::console::affiche_erreur "Usage: bm_pretrait nom_generique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu ?nom_offset (none)? ?effacement des masters (o/n)?\n\n"
    }
 }
 #****************************************************************************#
@@ -1384,7 +1384,7 @@ proc bm_sadd { args } {
       } else {
          set unit_exposure 0
       }
-      set exposure [ expr $unit_exposure*$nb_file ] 
+      set exposure [ expr $unit_exposure*$nb_file ]
 
       #--- Somme :
       ::console::affiche_resultat "Somme de $nb_file images...\n"
@@ -1429,7 +1429,7 @@ proc bm_smean { args } {
       buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
       #- Bug ici : pas de EXPOSURE dans certains fits
       #set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
-      #set exposure [ expr $unit_exposure*$nb_file ] 
+      #set exposure [ expr $unit_exposure*$nb_file ]
 
       #--- Somme :
       ::console::affiche_resultat "Somme moyenne de $nb_file images...\n"
@@ -1640,7 +1640,7 @@ proc bm_exptime { args } {
       set dfrac_fin [ expr $d+$h/24.0+$mi/1440.0+$s/86400.0 ]
       #-- Difference et conversion en secondes :
       if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
-	 set duree [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+         set duree [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
       } elseif { [ lsearch $listemotsclef "EXPTIME" ] !=-1 } {
          set duree [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
       } else {
@@ -2001,5 +2001,4 @@ proc bm_pretrait_21-12-2005 { args } {
    }
 }
 #****************************************************************************#
-
 
