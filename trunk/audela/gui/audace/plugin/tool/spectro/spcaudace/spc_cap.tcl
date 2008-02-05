@@ -1,9 +1,9 @@
-#
-# Création : 2003
+
+# Création : 200
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.11 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.12 2008-02-05 21:18:04 denismarchais Exp $
 
 
 global caption langage
