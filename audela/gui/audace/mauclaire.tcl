@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.17 2008-02-04 22:47:28 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.18 2008-02-05 17:46:47 robertdelmas Exp $
 #
 
 #
@@ -23,23 +23,21 @@
 #                          mettre le chemin des images devant chaque image
 # bm_renumfile           : Renome les fichiers de numerotation collee au nom
 # bm_renameext           : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
+# bm_renameext2          : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
 # bm_registerplin        : Registration planetaire sur un point initial et final : translation lineaire
 # bm_sflat               : Cree un flat synthetique (image d'intensite uniforme) de nxp pixels
 # bm_pretraittot         : Effectue le pretraitement, l'appariement et les sommes d'une serie d'images brutes
 # bm_pretrait            : Effectue le pretraitement d'une serie d'images brutes
 # bm_register            : Effectue la registration d'une serie d'images brutes
-# bm_sadd0               : Effectue la somme d'une serie d'images
 # bm_sadd                : Effectue la somme d'une serie d'images
+# bm_smean               : Effectue la somme moyenne d'une serie d'images appariees
 # bm_smed                : Effectue la somme mediane d'une serie d'images
-# bm_smea                : Effectue la somme moyenne d'une serie d'images
 # bm_somes               : Effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
 # bm_fwhm                : Calcule la largeur equivalente d'une etoile en secondes d'arc
 # bm_cutima              : Decoupage d'une zone selectionnee a la souris d'une image chargee
 # bm_zoomima             : Zoom de l'image ou d'une partie selectionnee de l'image chargee
 # bm_exptime             : Calcule la duree totale d'exposition d'une serie
 #-----------------------------------------------------------------------------#
-
-
 
 ###############################################################################
 # Description : liste les fichiers du repertoire de travail
@@ -69,8 +67,6 @@ proc bm_ls { args } {
    }
 }
 #*****************************************************************************#
-
-
 
 ###############################################################################
 # Description : Extrait le contenu d'un mot clef d'une serie de fichiers
@@ -499,7 +495,6 @@ proc bm_datefile { args } {
          set mo "0$mo"
       }
 
-
       #--- Concatenation :
       set madate "$y$mo$d"
 
@@ -663,7 +658,6 @@ proc bm_renameext { args } {
          ::console::affiche_erreur "Usage: bm_renameext ?repertoire? extension_actuelle.\n"
       }
 
-
       cd $repertoire
       set liste_fichiers [ lsort -dictionary [glob -dir $repertoire *$old_extension] ]
       set nbimg [ llength $liste_fichiers ]
@@ -681,7 +675,6 @@ proc bm_renameext { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
 
 ###############################################################################
 # Description : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
@@ -716,9 +709,6 @@ proc bm_renameext2 { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
-
-
 
 ###############################################################################
 # Description : Registration planetaire sur un point initial et final : translation lineaire
@@ -940,7 +930,7 @@ proc bm_pretraittot { args } {
    global audace
    global conf
 
-      if { [llength $args] <= 6 } {
+   if { [llength $args] <= 6 } {
       if { [llength $args] == 4 } {
         set nom_stellaire [ lindex $args 0 ]
         set nom_dark [ lindex $args 1 ]
@@ -987,10 +977,8 @@ proc bm_pretraittot { args } {
 }
 #-----------------------------------------------------------------------------#
 
-
 ###############################################################################
-# Descirption : effectue le prétraitement d'une série d'images brutes
-#
+# Description : effectue le prétraitement d'une série d'images brutes
 # Auteur : Benjamin MAUCLAIRE
 # Date création : 27-08-2005
 # Date de mise à jour : 21-12-2005/2007-01-03/2007-07-10
@@ -1037,7 +1025,6 @@ proc bm_pretrait { args } {
          return ""
       }
 
-
       #--- Compte les images :
       ## Renumerote chaque série de fichier
       #renumerote $nom_stellaire
@@ -1054,30 +1041,30 @@ proc bm_pretrait { args } {
       #set nb_darkflat [ llength $darkflat_liste ]
       #---------------------------------------------------------------------------------#
       if { 1==0 } {
-      set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-      set nb_stellaire [ llength $stellaire_liste ]
-      #-- Gestion du cas des masters au lieu d'une série de fichier :
-      if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
-         set dark_list [ list $nom_dark ]
-         set nb_dark 1
-      } else {
-         set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-         set nb_dark [ llength $dark_liste ]
-      }
-      if { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
-         set flat_list [ list $nom_flat ]
-         set nb_flat 1
-      } else {
-         set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-         set nb_flat [ llength $flat_liste ]
-      }
-      if { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
-         set darkflat_list [ list $nom_darkflat ]
-         set nb_darkflat 1
-      } else {
-         set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
-         set nb_darkflat [ llength $darkflat_liste ]
-      }
+         set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+         set nb_stellaire [ llength $stellaire_liste ]
+         #-- Gestion du cas des masters au lieu d'une série de fichier :
+         if { [ catch { glob -dir $audace(rep_images) ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+            set dark_list [ list $nom_dark ]
+            set nb_dark 1
+         } else {
+            set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+            set nb_dark [ llength $dark_liste ]
+         }
+         if { [ catch { glob -dir $audace(rep_images) ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+            set flat_list [ list $nom_flat ]
+            set nb_flat 1
+         } else {
+            set flat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+            set nb_flat [ llength $flat_liste ]
+         }
+         if { [ catch { glob -dir $audace(rep_images) ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) } ] } {
+            set darkflat_list [ list $nom_darkflat ]
+            set nb_darkflat 1
+         } else {
+            set darkflat_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+            set nb_darkflat [ llength $darkflat_liste ]
+         }
       }
       #---------------------------------------------------------------------------------#
 
@@ -1140,7 +1127,6 @@ proc bm_pretrait { args } {
          }
       }
 
-
       #--- Isole le préfixe des noms de fichiers dans le cas ou ils possedent un "-" avant le n° :
       set pref_stellaire ""
       set pref_dark ""
@@ -1177,7 +1163,6 @@ proc bm_pretrait { args } {
          set pref_offset $nom_offset
       }
       # ::console::affiche_resultat "Corr : b=$pref_stellaire, d=$pref_dark, f=$pref_flat, df=$pref_darkflat\n"
-
 
       #--- Prétraitement des flats :
       #-- Somme médiane des dark, dark_flat et offset :
@@ -1259,7 +1244,6 @@ proc bm_pretrait { args } {
          delete2 "${pref_flat}_moinsnoir-" $nb_flat
       }
 
-
       #--- Prétraitement des images stellaires :
       #-- Soustraction du noir des images stellaires :
       ::console::affiche_resultat "Soustraction du noir des images stellaires...\n"
@@ -1294,7 +1278,6 @@ proc bm_pretrait { args } {
       div2 "${pref_stellaire}_moinsnoir-" "${pref_flat}-smd$nb_flat" "${pref_stellaire}-t-" $intensite_moyenne $nb_stellaire
       set image_traite_1 [ lindex [ lsort -dictionary [ glob ${pref_stellaire}-t-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
 
-
       #--- Affichage et netoyage :
       loadima "$image_traite_1"
       ::console::affiche_resultat "Affichage de la première image prétraitée\n"
@@ -1317,7 +1300,6 @@ proc bm_pretrait { args } {
          file delete -force "${pref_darkflat}-smd$nb_darkflat$conf(extension,defaut)"
       }
 
-
       #--- Retour dans le répertoire de départ avnt le script
       return ${pref_stellaire}-t-
    } else {
@@ -1325,9 +1307,6 @@ proc bm_pretrait { args } {
    }
 }
 #****************************************************************************#
-
-
-
 
 ###############################################################
 # Description : Effectue la registration d'une serie d'images brutes
@@ -1354,8 +1333,6 @@ proc bm_register { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
-
 
 ###############################################################################
 # Description : Effectue la somme d'une serie d'images appariees
@@ -1407,7 +1384,6 @@ proc bm_sadd { args } {
 }
 #-----------------------------------------------------------------------------#
 
-
 ###############################################################################
 # Description : Effectue la somme moyenne d'une serie d'images appariees
 # Auteur : Benjamin MAUCLAIRE
@@ -1444,8 +1420,6 @@ proc bm_smean { args } {
    }
 }
 #-----------------------------------------------------------------------------#
-
-
 
 ###############################################################################
 # Description : Effectue la somme mediane d'une serie d'images appariees
@@ -1657,7 +1631,6 @@ proc bm_exptime { args } {
 }
 #*****************************************************************************#
 
-
 #=============================================================================#
 #                    Anciennes implémentations                                #
 #=============================================================================#
@@ -1681,13 +1654,9 @@ proc bm_sadd_20060806 { args } {
    }
 }
 
-
-
-
 ####################################################################################
 #                  Anciennes implémentations                                       #
 ####################################################################################
-
 
 if { 1== 0} {
 ###############################################################################
@@ -2001,4 +1970,5 @@ proc bm_pretrait_21-12-2005 { args } {
    }
 }
 #****************************************************************************#
+}
 
