@@ -2189,7 +2189,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	if (i==0) {
 			erode (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 	} 	
-	i=strcmp (nom_trait,"OPEN");
+	i=strcmp (nom_trait,"OPEN"); // ouverture basique
 	if (i==0) {
 			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
@@ -2199,10 +2199,12 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 	} 
+	// ouverture très rapide pour des SE= ligne de longueur > 150 pixels
 	i=strcmp (nom_trait,"OUVERTURE");
 	if (i==0) {
 			ouverture (p_out,x1,naxis1,naxis2);
 	} 
+	// ouverture très rapide pour des SE= ligne de longueur <200 pixels
 	i=strcmp (nom_trait,"OUVERTURE2");
 	if (i==0) {
 			ouverture2 (p_out,x1,naxis1,naxis2);
@@ -2536,6 +2538,9 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 	}
 }
 
+///////////////////////////////////////////////////////////
+//      ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE        //
+///////////////////////////////////////////////////////////
 /************* MM: OUVERURE pour un SE ligne **************/
 /****** algo de VAN DROOGENBROECK *************************/
 /*réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors. Journal of Mathematical Imaging and Vision,2005 */
@@ -2672,7 +2677,9 @@ int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
 	return 0;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+//					ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE                 //
+////////////////////////////////////////////////////////////////////////////////
 /************* MM: OUVERTURE pour un SE ligne avec histo amélioré **************/
 /*************************** algo de VAN DROOGENBROECK *************************/
 /**************** gain de temps pour image codées sur 16 bits ******************/
