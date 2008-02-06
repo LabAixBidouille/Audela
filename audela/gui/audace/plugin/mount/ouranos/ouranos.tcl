@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.8 2008-02-02 11:35:29 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.9 2008-02-06 22:15:55 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -487,6 +487,11 @@ proc ::ouranos::configureMonture { } {
    #--- Gestion des boutons actifs/inactifs
    ::ouranos::confOuranos
    ::ouranos::matchOuranos
+
+   #--- Si Ouranos est une monture secondaire, c'est AudeCom qui specifie l'utilisation de la raquette
+   if { [ ::confTel::hasSecondaryMount ] == "1" } {
+      set conf(raquette) $::audecom::private(raquette)
+   }
 }
 
 #
@@ -760,9 +765,9 @@ proc ::ouranos::formatMatchDec { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMount :            Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
-# name :                  Retourne le modele de la monture
-# product :               Retourne le nom du produit
+# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# name                    Retourne le modele de la monture
+# product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
 # hasGoto                 Retourne la possibilite de faire un Goto
 # hasMatch                Retourne la possibilite de faire un Match
@@ -775,7 +780,7 @@ proc ::ouranos::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMount              { return 1 }
+      multiMountOuranos       { return 0 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
