@@ -1,8 +1,8 @@
 #
 # Fichier : ouranoscom.tcl
-# Description : Script minimum, variante de audecom.tcl dediee a l'interface Ouranos de Patrick DUFOUR
+# Description : Script dedie a l'interface Ouranos de Patrick DUFOUR
 # Auteurs : Raymond ZACHANTKE et Robert DELMAS
-# Mise a jour $Id: ouranoscom.tcl,v 1.11 2008-02-02 11:35:58 robertdelmas Exp $
+# Mise a jour $Id: ouranoscom.tcl,v 1.12 2008-02-06 22:53:36 robertdelmas Exp $
 #
 
 namespace eval OuranosCom {
@@ -205,13 +205,19 @@ proc ::OuranosCom::go_ouranos { } {
 
 #
 # ::OuranosCom::match_ouranos
-# MATCH
+# Synchronise l'interface avec l'objet pointe (commande Match)
 #
 proc ::OuranosCom::match_ouranos { } {
    variable private
 
-   #--- Envoi le Match
-   tel$::ouranos::private(telNo) radec init { $::ouranos::private(match_ra) $::ouranos::private(match_dec) }
+   if { [ ::confTel::hasSecondaryMount ] == "0" } {
+      #--- Envoie le Match a l'interface Ouranos
+      tel$::ouranos::private(telNo) radec init { $::ouranos::private(match_ra) $::ouranos::private(match_dec) }
+   } else {
+      #--- Si Ouranos est une monture secondaire, envoie egalement le Match a la monture principale
+      ::telescope::match { $::ouranos::private(match_ra) $::ouranos::private(match_dec) }
+
+   }
 }
 
 #
@@ -308,10 +314,17 @@ proc ::OuranosCom::show1 { } {
       set ::ouranos::private(coord_ra)  "[ lindex $pas_encod 0 ] $caption(ouranoscom,pas)"
       set ::ouranos::private(coord_dec) "[ lindex $pas_encod 1 ] $caption(ouranoscom,pas)"
    } else {
-      #--- Affichage en mode coordonnees
-      ::telescope::afficheCoord
-      set ::ouranos::private(coord_ra)  $audace(telescope,getra)
-      set ::ouranos::private(coord_dec) $audace(telescope,getdec)
+      if { [ ::confTel::hasSecondaryMount ] == "0" } {
+         #--- Affichage en mode coordonnees pour la monture principale
+         ::telescope::afficheCoord
+         set ::ouranos::private(coord_ra)  $audace(telescope,getra)
+         set ::ouranos::private(coord_dec) $audace(telescope,getdec)
+      } else {
+         #--- Affichage en mode coordonnees pour la monture secondaire
+         set radec [ tel$::ouranos::private(telNo) radec coord ]
+         set ::ouranos::private(coord_ra)  [ lindex $radec 0 ]
+         set ::ouranos::private(coord_dec) [ lindex $radec 1 ]
+      }
    }
 }
 
