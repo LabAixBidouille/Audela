@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.17 2008-02-02 11:34:39 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.18 2008-02-06 22:14:18 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -72,6 +72,25 @@ proc ::audecom::isReady { } {
       #--- Monture OK
       return 1
    }
+}
+
+#
+# ::audecom::hasSecondaryMount
+#    Retourne "1" si une monture secondaire Ouranos est demandee, sinon retourne "0"
+#
+proc ::audecom::hasSecondaryMount { } {
+   global conf
+
+   if { [ info exists conf(audecom,ouranos) ] } {
+      if { $conf(audecom,ouranos) == "1" } {
+         set result "1"
+      } else {
+         set result "0"
+      }
+   } else {
+      set result "0"
+   }
+   return $result
 }
 
 #
@@ -558,6 +577,14 @@ proc ::audecom::configureMonture { } {
    set private(telNo) $telNo
    #--- Gestion du bouton actif/inactif
    ::audecom::confAudeCom
+
+   #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
+   if { $conf(audecom,ouranos) == "1" } {
+      #--- Je copie les parametres Ouranos dans conf()
+      ::ouranos::widgetToConf
+      #--- Je configure la monture secondaire Ouranos
+      ::ouranos::configureMonture
+   }
 }
 
 #
@@ -566,7 +593,7 @@ proc ::audecom::configureMonture { } {
 #
 proc ::audecom::stop { } {
    variable private
-   global audace
+   global audace conf
 
    #--- Efface la fenetre de controle de la vitesse de King si elle existe
    if { [ winfo exists $audace(base).confAudecomKing ] } {
@@ -587,6 +614,11 @@ proc ::audecom::stop { } {
    ::confLink::delete $telPort "tel$private(telNo)" "control"
    #--- Remise a zero du numero de monture
    set private(telNo) "0"
+
+   #--- Deconnexion des codeurs Ouranos si la monture secondaire existe
+   if { $conf(audecom,ouranos) == "1" } {
+      ::ouranos::stop
+   }
 }
 
 #
@@ -701,9 +733,9 @@ proc ::audecom::configEquatorialAudeCom { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMount :            Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
-# name :                  Retourne le modele de la monture
-# product :               Retourne le nom du produit
+# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# name                    Retourne le modele de la monture
+# product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
 # hasGoto                 Retourne la possibilite de faire un Goto
 # hasMatch                Retourne la possibilite de faire un Match
@@ -716,7 +748,7 @@ proc ::audecom::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMount              { return 0 }
+      multiMountOuranos       { return 1 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
