@@ -1,21 +1,19 @@
 #
 # Fichier : telescope.tcl
-# Description : Centralise les commandes de mouvement des telescopes
+# Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.16 2008-02-02 18:36:13 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.17 2008-02-06 22:22:30 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
-global audace
-
-   #--- Chargement des captions
-   source [ file join $audace(rep_caption) telescope.cap ]
 
    proc init { } {
-      global audace
-      global caption
+      global audace caption
 
-      #---
+      #--- Chargement des captions
+      source [ file join $audace(rep_caption) telescope.cap ]
+
+      #--- Initialisation
       set audace(telescope,getra)      "00h00m00"
       set audace(telescope,getdec)     "+00d00m00"
       set audace(telescope,rate)       "1"
@@ -28,9 +26,7 @@ global audace
 
    proc initTel { this visuNo } {
       variable Button_Init
-      global conf
-      global audace
-      global caption
+      global audace caption conf
 
       set Button_Init $this
 
@@ -39,7 +35,7 @@ global audace
       if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          #--- Neutralisation du bouton initialisation
          $Button_Init configure -relief groove -state disabled
-         #--- Reset position telescope
+         #--- Reset position de la monture
          tel$audace(telNo) initcoord
 
          #--- Creation d'une fenetre Toplevel
@@ -86,14 +82,13 @@ global audace
 
    #------------------------------------------------------------
    #  match
-   #     synchronise le telescope avec les cordonnees radec
+   #     synchronise la monture avec les coordonnees radec
    #
    #     si modele = gemini
    #------------------------------------------------------------
    proc match { radec } {
-      global conf
-      global audace
-      global caption
+      variable private
+      global audace caption conf
 
       if { [ ::tel::list ] != "" } {
          if { $conf(telescope) == "lx200" && $conf(lx200,modele) == "$caption(telescope,modele_gemini)" } {
@@ -121,7 +116,12 @@ global audace
             set choix [ tk_messageBox -type yesno -icon warning -title "$caption(telescope,match)" \
                -message "$caption(telescope,match_confirm)" ]
             if { $choix == "yes" } {
+               #--- Cas de la monture principale
                tel$audace(telNo) radec init $radec
+               #--- Si Ouranos est une monture secondaire, envoie egalement le Match a l'interface Ouranos
+               if { [ ::confTel::hasSecondaryMount ] == "1" } {
+                  tel$::ouranos::private(telNo) radec init $radec
+               }
             }
          }
       } else {
@@ -133,18 +133,14 @@ global audace
 
    #------------------------------------------------------------
    #  goto
-   #     verifie que le telescope possede la fonction goto
-   #     envoi l'ordre au telescope de pointer les cordonnees list_radec en mode blocant ou non
+   #     verifie que la monture possede la fonction goto
+   #     envoi l'ordre a la monture de pointer les coordonnees list_radec en mode blocant ou non
    #  return
    #     0 si OK
-   #     -1 si erreur (telescope absent)
+   #     -1 si erreur (monture absente)
    #------------------------------------------------------------
    proc goto { list_radec blocking { But_Goto "" } { But_Match "" } } {
-      global conf
-      global audace
-      global caption
-      global cataGoto
-      global catalogue
+      global audace caption cataGoto catalogue conf
 
       if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          set audace(telescope,goto) "1"
@@ -197,7 +193,7 @@ global audace
          }
          #--- Goto
          tel$audace(telNo) radec goto $list_radec -blocking $blocking
-         #--- Boucle tant que le telescope n'est pas arrete
+         #--- Boucle tant que la monture n'est pas arretee
          set audace(telescope,goto) "1"
          set radec0 [ tel$audace(telNo) radec coord ]
          ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
@@ -207,7 +203,7 @@ global audace
          if { [ ::confTel::getPluginProperty mechanicalPlay ] == "1" } {
             #--- Goto
             tel$audace(telNo) radec goto $list_radec -blocking $blocking
-            #--- Boucle tant que le telescope n'est pas arrete
+            #--- Boucle tant que la monture n'est pas arretee
             set audace(telescope,goto) "1"
             set radec0 [ tel$audace(telNo) radec coord ]
             ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
@@ -249,8 +245,7 @@ global audace
    #     arrete le mouvement du GOTO
    #------------------------------------------------------------
    proc stopGoto { { Button_Stop "" } } {
-      global conf
-      global audace
+      global audace conf
 
       if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          #--- Arret d'urgence du pointage et retour a la position au moment de l'action
@@ -276,10 +271,10 @@ global audace
 
    #------------------------------------------------------------
    #  getSpeedLabelList
-   #     retourne la liste des libelles des  vitesses supportees par le telescope
+   #     retourne la liste des libelles des vitesses supportees par la monture
    #------------------------------------------------------------
    proc getSpeedLabelList { } {
-      global conf caption
+      global caption conf
 
       if { $conf(telescope) == "audecom" } {
          set speedList "$caption(telescope,x1) $caption(telescope,x5) $caption(telescope,200)"
@@ -294,10 +289,10 @@ global audace
 
    #------------------------------------------------------------
    #  getSpeedValueList
-   #     retourne la liste des valeurs des  vitesses supportees par le telescope
+   #     retourne la liste des valeurs des vitesses supportees par la monture
    #------------------------------------------------------------
    proc getSpeedValueList { } {
-      global conf caption
+      global caption conf
 
       if { $conf(telescope) == "audecom" } {
          set speedList "1 2 3"
@@ -311,13 +306,10 @@ global audace
 
    #------------------------------------------------------------
    #  decodeSpeedDlgShift
-   #     decode la vitesse du telescope pour les decalages de l'outil Acquisition
+   #     decode la vitesse de la monture pour les decalages de l'outil Acquisition
    #------------------------------------------------------------
    proc decodeSpeedDlgShift { } {
-      global audace
-      global caption
-      global conf
-      global panneau
+      global audace caption conf panneau
 
       if { [ ::tel::list ] != "" } {
          if { $conf(telescope) == "audecom" } {
@@ -357,12 +349,11 @@ global audace
 
    #------------------------------------------------------------
    #  incrementSpeed
-   #     incremente la vitesse du telescope
+   #     incremente la vitesse de la monture
    #     et met la nouvelle valeur dans la variable audace(telescope,speed)
    #------------------------------------------------------------
    proc incrementSpeed { } {
-      global conf
-      global audace
+      global audace conf
 
       if { [ ::tel::list ] != "" } {
          if { $conf(telescope) == "audecom" } {
@@ -412,7 +403,7 @@ global audace
                setSpeed "1"
             }
          } else {
-            #--- Inactif pour autres telescopes
+            #--- Inactif pour les autres montures
             setSpeed "0"
          }
       } else {
@@ -424,16 +415,13 @@ global audace
 
    #------------------------------------------------------------
    #  setSpeed
-   #     change la vitesse du telescope
+   #     change la vitesse de la monture
    #
    #     met a jour les variables audace(telescope,speed), audace(telescope,labelspeed),
    #     audace(telescope,rate), statustel(speed)
    #------------------------------------------------------------
    proc setSpeed { { value "2" } } {
-      global conf
-      global audace
-      global caption
-      global statustel
+      global audace caption conf statustel
 
       if { [ ::tel::list ] != "" } {
          if { $conf(telescope) == "audecom" } {
@@ -547,14 +535,12 @@ global audace
 
    #------------------------------------------------------------
    #  controleSuivi
-   #     arrete ou met en marche le telescope
+   #     arrete ou met en marche la monture
    #
    #     met à jour la variable audace(telescope,controle)
    #------------------------------------------------------------
    proc controleSuivi { {value " "} } {
-      global conf
-      global audace
-      global caption
+      global audace caption conf
 
       if { [ ::tel::list ] != "" } {
          if { ( $conf(telescope) == "audecom" ) || ( $conf(telescope) == "temma" ) } {
@@ -605,8 +591,7 @@ global audace
    proc move { direction } {
       variable AfterId
       variable AfterState
-      global conf
-      global audace
+      global audace conf
 
       if { $audace(telNo) != "0" } {
          if { $conf(telescope) == "temma" } {
@@ -643,8 +628,7 @@ global audace
    proc stop { direction } {
       variable AfterId
       variable AfterState
-      global conf
-      global audace
+      global audace conf
 
       if { [ ::tel::list ] != "" } {
          if { $conf(telescope) == "audecom" } {
@@ -678,7 +662,7 @@ global audace
    proc Boucle { } {
       global audace
 
-      #--- Boucle tant que le telescope n'est pas arrete
+      #--- Boucle tant que la monture n'est pas arretee
       set radecB0 [ tel$audace(telNo) radec coord ]
       after 300
       set radecB1 [ tel$audace(telNo) radec coord ]
@@ -693,13 +677,11 @@ global audace
    #  afficheCoord
    #     met a jour l'affichage des coordonnees
    #
-   #  description : interroge le telescope et met le resultat dans
+   #  description : interroge la monture et met le resultat dans
    #      les variables audace(telescope,getra) et audace(telescope,getdec)
    #------------------------------------------------------------
    proc afficheCoord { } {
-      global conf
-      global audace
-      global caption
+      global audace caption conf
 
       set radec ""
 
@@ -718,7 +700,7 @@ global audace
                set audace(telescope,getra)  [ lindex $radec 0 ]
                set audace(telescope,getdec) [ lindex $radec 1 ]
                if { $conf(telescope) == "temma" } {
-                  #--- Affichage de la position du telescope
+                  #--- Affichage de la position du telescope sur la monture equatoriale allemande
                   ::telescope::monture_allemande
                }
             }
@@ -738,10 +720,9 @@ global audace
    #  monture_allemande
    #------------------------------------------------------------
    proc monture_allemande { } {
-      global audace
-      global caption
+      global audace caption
 
-      #--- Position E ou O du telescope sur une monture equatoriale allemande
+      #--- Position E ou O du telescope sur la monture equatoriale allemande
       set pos_tel [ tel$audace(telNo) german ]
       if { $pos_tel == "E" } {
          set audace(pos_tel_ew) "$caption(telescope,cote_est)"
