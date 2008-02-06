@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.21 2007-12-22 12:29:01 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.22 2008-02-06 22:49:17 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -359,11 +359,15 @@ namespace eval ::telescopePad {
       variable private
       global audace caption
 
+      if { $audace(telNo) == "0" } {
+         return
+      }
+
       if {[::tel::list]!=""} {
          set radec [ tel$audace(telNo) radec coord ]
          #--- affiche les coordonnees
-         set private(telescopeRa)  [lindex $radec  0]
-         set private(telescopeDec) [lindex $radec  1]
+         set private(telescopeRa)  [lindex $radec 0]
+         set private(telescopeDec) [lindex $radec 1]
      } else {
          #--- display error
          set private(telescopeRa)  "$caption(superpad,telescope)"
