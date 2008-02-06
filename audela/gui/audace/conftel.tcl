@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.44 2008-02-02 11:29:13 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.45 2008-02-06 22:17:11 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -57,7 +57,6 @@ proc ::confTel::init { } {
 #
 # ::confTel::run
 # Cree la fenetre de choix et de configuration des montures
-# conf(telescope) = nom de la monture (ascom, audecom, celestron, lx200, ouranos, temma, etc.)
 #
 proc ::confTel::run { } {
    variable private
@@ -100,6 +99,7 @@ proc ::confTel::appliquer { } {
    stopPlugin
    #--- Je copie les parametres de la nouvelle monture dans conf()
    widgetToConf
+   #--- Je configure la monture
    configureMonture
 
    $private(frm).cmd.ok configure -state normal
@@ -455,9 +455,9 @@ proc ::confTel::widgetToConf { } {
 proc ::confTel::getPluginProperty { propertyName } {
    variable private
 
-   # multiMount :            Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
-   # name :                  Retourne le modele de la monture
-   # product :               Retourne le nom du produit
+   # multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+   # name                    Retourne le modele de la monture
+   # product                 Retourne le nom du produit
    # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
    # hasGoto                 Retourne la possibilite de faire un Goto
    # hasMatch                Retourne la possibilite de faire un Match
@@ -469,7 +469,7 @@ proc ::confTel::getPluginProperty { propertyName } {
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
-      multiMount              { set result 0 }
+      multiMountOuranos       { set result 0 }
       name                    { set result "" }
       product                 { set result "" }
       hasCoordinates          { set result 1 }
@@ -504,6 +504,21 @@ proc ::confTel::isReady { } {
       set result "0"
    } else {
       set result [ ::$private(mountName)::isReady ]
+   }
+   return $result
+}
+
+#
+# ::confTel::hasSecondaryMount
+#    Retourne "1" si une monture secondaire Ouranos est demandee, sinon retourne "0"
+#
+proc ::confTel::hasSecondaryMount { } {
+   global conf
+
+   if { [ ::confTel::getPluginProperty multiMountOuranos ] == "1" } {
+      set result [ ::$conf(telescope)::hasSecondaryMount ]
+   } else {
+      set result "0"
    }
    return $result
 }
