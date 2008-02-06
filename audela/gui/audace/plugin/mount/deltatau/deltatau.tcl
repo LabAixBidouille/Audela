@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.4 2008-02-02 11:30:55 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.5 2008-02-06 21:47:34 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -340,9 +340,9 @@ proc ::deltatau::confDeltaTauInactif { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMount :            Retourne la possibilite de connecter plusieurs montures differentes (1 : Oui, 0 : Non)
-# name :                  Retourne le modele de la monture
-# product :               Retourne le nom du produit
+# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# name                    Retourne le modele de la monture
+# product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
 # hasGoto                 Retourne la possibilite de faire un Goto
 # hasMatch                Retourne la possibilite de faire un Match
@@ -355,7 +355,7 @@ proc ::deltatau::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMount              { return 0 }
+      multiMountOuranos       { return 0 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
