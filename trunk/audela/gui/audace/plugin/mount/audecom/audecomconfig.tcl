@@ -2,7 +2,7 @@
 # Fichier : audecomconfig.tcl
 # Description : Configuration et pilotage de la monture AudeCom (Ex-Kauffmann)
 # Auteurs : Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: audecomconfig.tcl,v 1.3 2008-01-15 16:15:51 robertdelmas Exp $
+# Mise a jour $Id: audecomconfig.tcl,v 1.4 2008-02-06 22:49:37 robertdelmas Exp $
 #
 
 #
@@ -1172,6 +1172,11 @@ namespace eval confAudecomKing {
 proc ::confAudecomKing::run { this } {
    variable This
    variable private
+   global audace
+
+   if { $audace(telNo) == "0" } {
+      return
+   }
 
    set This $this
    set frm $::audecom::private(frm)
