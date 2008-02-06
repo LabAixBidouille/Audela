@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.21 2008-01-06 18:53:46 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.22 2008-02-06 22:19:03 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -12,11 +12,7 @@ namespace eval cataGoto {
    # Chargement des captions et initialisation de variables
    #
    proc init { { visuNo 1 } } {
-      global audace
-      global caption
-      global conf
-      global cataGoto
-      global catalogue
+      global audace caption cataGoto catalogue conf
 
       #--- Charge le fichier caption
       source [ file join $audace(rep_caption) catagoto.cap ]
@@ -68,9 +64,7 @@ namespace eval cataGoto {
    #
    proc recup_position { } {
       variable This
-      global audace
-      global conf
-      global cataGoto
+      global audace cataGoto conf
 
       if [ winfo exists $audace(base).gotoPlanete ] {
          set cataGoto(gotoPlanete,geometry) [ wm geometry $audace(base).gotoPlanete ]
@@ -120,8 +114,7 @@ namespace eval cataGoto {
    #    visuNo : Numero de la visu
    #
    proc createFrameCatalogue { frm variablePositionObjet visuNo nameSpaceCaller } {
-      global caption
-      global catalogue
+      global caption catalogue
 
       #--- Initialisation du catalogue choisi
       set catalogue(choisi,$visuNo) "$caption(catagoto,coord)"
@@ -273,11 +266,7 @@ namespace eval cataGoto {
    # Affichage de la fenetre de configuration pour les Goto vers des planetes
    #
    proc GotoPlanete { } {
-      global audace
-      global conf
-      global caption
-      global catalogue
-      global cataGoto
+      global audace caption cataGoto catalogue conf
 
       #---
       ::cataGoto::initPlanete
@@ -475,12 +464,7 @@ namespace eval cataGoto {
    # Ephemerides de la planete choisie
    #
    proc Ephemeride_Planete { } {
-      global conf
-      global color
-      global caption
-      global audace
-      global catalogue
-      global cataGoto
+      global audace caption cataGoto catalogue color conf
 
       #--- Preparation de l'heure TU
       set now now
@@ -645,13 +629,7 @@ namespace eval cataGoto {
    # Affichage de la fenetre de configuration des asteroides
    #
    proc CataAsteroide { } {
-      global audace
-      global color
-      global conf
-      global panneau
-      global caption
-      global catalogue
-      global cataGoto
+      global audace caption cataGoto catalogue color conf panneau
 
       #---
       ::cataGoto::initCataAsteroide
@@ -805,13 +783,7 @@ namespace eval cataGoto {
    # Recherche de l'objet choisi dans la nomenclature des asteroides via une connexion Internet
    #
    proc Recherche_Asteroide { } {
-      global conf
-      global color
-      global caption
-      global audace
-      global catalogue
-      global cataGoto
-      global voconf
+      global audace caption cataGoto catalogue color conf voconf
 
       set cataGoto(carte,nom_objet) ""
       set cataGoto(carte,ad) ""
@@ -948,12 +920,7 @@ namespace eval cataGoto {
    #
    proc CataObjet { menuChoisi } {
       variable private
-      global audace
-      global conf
-      global panneau
-      global caption
-      global catalogue
-      global cataGoto
+      global audace caption cataGoto catalogue conf panneau
 
       #---
       ::cataGoto::initCataObjet
@@ -1138,6 +1105,9 @@ namespace eval cataGoto {
          pack $audace(base).cataObjet.frame10.fermer -side right -padx 10 -pady 5 -ipady 5
       pack $audace(base).cataObjet.frame10 -side top -fill both -expand 1
 
+      #--- On donne le focus a l'entry de l'objet
+      focus $audace(base).cataObjet.frame1.obj_choisi_ref
+
       #--- Binding sur le bouton Rechercher
       bind $audace(base).cataObjet <Key-Return> "::cataGoto::Recherche_Objet"
 
@@ -1150,12 +1120,7 @@ namespace eval cataGoto {
    # Recherche de l'objet choisi dans les catalogues Messier, NGC et IC
    #
    proc Recherche_Objet { } {
-      global conf
-      global color
-      global caption
-      global audace
-      global catalogue
-      global cataGoto
+      global audace caption cataGoto catalogue color conf
 
       set cataGoto(carte,nom_objet) ""
       set cataGoto(carte,ad) ""
@@ -1221,6 +1186,16 @@ namespace eval cataGoto {
                      ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
                   }
                }
+            } elseif { $conf(telescope) == "audecom" && [ ::confTel::hasSecondaryMount ] == "1" } {
+               button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
+                  ::OuranosCom::match_transfert_ouranos
+                  destroy $audace(base).cataObjet
+                  #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
+                  if { $cataGoto(carte,validation) == "1" } {
+                     ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
+                  }
+                  set catalogue(validation) "1"
+               }
             } else {
                button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
                   set catalogue(validation) "1"
@@ -1277,13 +1252,7 @@ namespace eval cataGoto {
    #
    proc CataEtoiles { } {
       variable private
-      global audace
-      global caption
-      global catalogue
-      global zone
-      global conf
-      global color
-      global cataGoto
+      global audace caption cataGoto catalogue color conf zone
 
       #---
       ::cataGoto::initCataEtoiles
@@ -1490,6 +1459,16 @@ namespace eval cataGoto {
                      ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
                   }
                }
+            } elseif { $conf(telescope) == "audecom" && [ ::confTel::hasSecondaryMount ] == "1" } {
+               button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 -command {
+                  ::OuranosCom::match_transfert_ouranos
+                  destroy $audace(base).cataEtoile
+                  #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
+                  if { $cataGoto(carte,validation) == "1" } {
+                     ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
+                  }
+                  set catalogue(validation) "1"
+               }
             } else {
                button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 -command {
                   set catalogue(validation) "1"
@@ -1520,10 +1499,7 @@ namespace eval cataGoto {
    # Lit le catalogue des etoiles
    #
    proc LitCataEtoile { } {
-      global audace
-      global zone
-      global etbrillante
-      global table_etbrillante
+      global audace etbrillante table_etbrillante zone
 
       #--- Ouverture du catalogue des etoiles
       set f [open [file join $audace(rep_audela) audace etc catagoto etoiles_brillantes.txt] r]
@@ -1560,8 +1536,7 @@ namespace eval cataGoto {
    # Positionne la liste sur l'etoile la plus proche du meridien
    #
    proc Positionne_Etoile_Meridien { } {
-      global audace
-      global table_etbrillante
+      global audace table_etbrillante
 
       set Ecart_meridien_mini "10.0"
       for {set j 1} {$j <= $table_etbrillante(long)} {incr j} {
@@ -1604,8 +1579,7 @@ namespace eval cataGoto {
    # Affichage de la fenetre de configuration pour le choix des catalogues propres a l'utilisateur
    #
    proc CataObjetUtilisateur_Choix { } {
-      global audace
-      global catalogue
+      global audace catalogue
 
       #---
       ::cataGoto::Nettoyage
@@ -1625,13 +1599,7 @@ namespace eval cataGoto {
    # Affichage de la fenetre de configuration des catalogues propres a l'utilisateur
    #
    proc CataObjetUtilisateur { } {
-      global audace
-      global conf
-      global caption
-      global catalogue
-      global cataGoto
-      global zone
-      global color
+      global audace caption cataGoto catalogue color conf zone
 
       #---
       ::cataGoto::initCataObjetUtilisateur
@@ -1839,10 +1807,7 @@ namespace eval cataGoto {
    # Recherche de l'objet choisi dans les catalogues propres a l'utilisateur
    #
    proc LitCataUtilisateur { } {
-      global audace
-      global zone
-      global catalogue
-      global objet_utilisateur
+      global audace catalogue objet_utilisateur zone
 
       #--- Ouverture du catalogue des objets utilisateur
       set f [open [file join $audace(rep_catalogues) $catalogue(utilisateur)] r]
