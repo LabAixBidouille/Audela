@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.45 2008-02-06 22:17:11 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.46 2008-02-10 17:43:38 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -455,7 +455,7 @@ proc ::confTel::widgetToConf { } {
 proc ::confTel::getPluginProperty { propertyName } {
    variable private
 
-   # multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+   # multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
    # name                    Retourne le modele de la monture
    # product                 Retourne le nom du produit
    # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -464,12 +464,12 @@ proc ::confTel::getPluginProperty { propertyName } {
    # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
    # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
    # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-   # mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
+   # backlash                Retourne la possibilite de faire un rattrapage des jeux
 
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
    switch $propertyName {
-      multiMountOuranos       { set result 0 }
+      multiMount              { set result 0 }
       name                    { set result "" }
       product                 { set result "" }
       hasCoordinates          { set result 1 }
@@ -478,7 +478,7 @@ proc ::confTel::getPluginProperty { propertyName } {
       hasManualMotion         { set result 1 }
       hasControlSuivi         { set result 0 }
       hasCorrectionRefraction { set result 0 }
-      mechanicalPlay          { set result 0 }
+      backlash                { set result 0 }
       default                 { set result 0 }
    }
 
@@ -504,21 +504,6 @@ proc ::confTel::isReady { } {
       set result "0"
    } else {
       set result [ ::$private(mountName)::isReady ]
-   }
-   return $result
-}
-
-#
-# ::confTel::hasSecondaryMount
-#    Retourne "1" si une monture secondaire Ouranos est demandee, sinon retourne "0"
-#
-proc ::confTel::hasSecondaryMount { } {
-   global conf
-
-   if { [ ::confTel::getPluginProperty multiMountOuranos ] == "1" } {
-      set result [ ::$conf(telescope)::hasSecondaryMount ]
-   } else {
-      set result "0"
    }
    return $result
 }
