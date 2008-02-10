@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.5 2008-02-06 21:47:34 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.6 2008-02-10 17:32:03 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -276,6 +276,11 @@ proc ::deltatau::configureMonture { } {
 proc ::deltatau::stop { } {
    variable private
 
+   #--- Sortie anticipee si le telescope n'existe pas
+   if { $private(telNo) == "0" } {
+      return
+   }
+
    #--- Gestion du bouton actif/inactif
    ::deltatau::confDeltaTauInactif
 
@@ -340,7 +345,7 @@ proc ::deltatau::confDeltaTauInactif { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
 # name                    Retourne le modele de la monture
 # product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -349,13 +354,13 @@ proc ::deltatau::confDeltaTauInactif { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-# mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
+# backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::deltatau::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMountOuranos       { return 0 }
+      multiMount              { return 0 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
@@ -376,7 +381,7 @@ proc ::deltatau::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
       hasCorrectionRefraction { return 0 }
-      mechanicalPlay          { return 0 }
+      backlash                { return 0 }
    }
 }
 
