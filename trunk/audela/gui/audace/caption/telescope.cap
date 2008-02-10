@@ -1,6 +1,6 @@
 #
 # Fichier : telescope.cap
-# Mise a jour $Id: telescope.cap,v 1.15 2008-02-02 18:19:17 robertdelmas Exp $
+# Mise a jour $Id: telescope.cap,v 1.16 2008-02-10 17:35:26 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -32,8 +32,6 @@ set caption(telescope,match_confirm)       "Continue?"
 set caption(telescope,match_alg_init)      "Initial Alignment"
 set caption(telescope,match_alg_add)       "Additional Alignment"
 set caption(telescope,match_cancel)        "Cancel"
-set caption(telescope,soleil)              "Sun"
-set caption(telescope,lune)                "Moon"
 set caption(telescope,tel)                 "Mount"
 set caption(telescope,non_connecte)        "not connected"
 set caption(telescope,pas_coord1)          "No"
@@ -80,8 +78,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_alg_init)   "Alignement initial"
    set caption(telescope,match_alg_add)    "Alignement additionnel"
    set caption(telescope,match_cancel)     "Annuler"
-   set caption(telescope,soleil)           "Soleil"
-   set caption(telescope,lune)             "Lune"
    set caption(telescope,tel)              "Monture"
    set caption(telescope,non_connecte)     "non connectée"
    set caption(telescope,pas_coord1)       "Pas de"
@@ -128,8 +124,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_alg_init)   "Allineamento iniziale"
    set caption(telescope,match_alg_add)    "Allineamento addizionale"
    set caption(telescope,match_cancel)     "Cancella"
-   set caption(telescope,soleil)           "Sole"
-   set caption(telescope,lune)             "Luna"
    set caption(telescope,tel)              "Montatura"
    set caption(telescope,non_connecte)     "non connessa"
    set caption(telescope,pas_coord1)       "Nessuna"
@@ -176,8 +170,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_alg_init)   "Alineación inicial"
    set caption(telescope,match_alg_add)    "Alineamiento adicional"
    set caption(telescope,match_cancel)     "Cancelar"
-   set caption(telescope,soleil)           "Sol"
-   set caption(telescope,lune)             "Luna"
    set caption(telescope,tel)              "Montura"
    set caption(telescope,non_connecte)     "no conectado"
    set caption(telescope,pas_coord1)       "Sin"
@@ -224,8 +216,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_alg_init)   "Initiale Linie"
    set caption(telescope,match_alg_add)    "Zusatz Linie"
    set caption(telescope,match_cancel)     "Annullieren"
-   set caption(telescope,soleil)           "Sonne"
-   set caption(telescope,lune)             "Mond"
    set caption(telescope,tel)              "Montierung"
    set caption(telescope,non_connecte)     "nicht verbun."
    set caption(telescope,pas_coord1)       "Keine"
@@ -272,8 +262,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_alg_init)   "Alinhamento Inicial"
    set caption(telescope,match_alg_add)    "Alinhamento Adicional"
    set caption(telescope,match_cancel)     "Cancelar"
-   set caption(telescope,soleil)           "Sol"
-   set caption(telescope,lune)             "Lua"
    set caption(telescope,tel)              "Montagem"
    set caption(telescope,non_connecte)     "Disconectado"
    set caption(telescope,pas_coord1)       "Não"
@@ -320,8 +308,6 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(telescope,match_alg_init)   "Initial Alignment"
    set caption(telescope,match_alg_add)    "Additional Alignment"
    set caption(telescope,match_cancel)     "Cancel"
-   set caption(telescope,soleil)           "Sun"
-   set caption(telescope,lune)             "Moon"
    set caption(telescope,tel)              "Mount"
    set caption(telescope,non_connecte)     "not connected"
    set caption(telescope,pas_coord1)       "No"
