@@ -1,8 +1,8 @@
 #
 # Fichier : catagoto.tcl
-# Description : Assure la gestion des catalogues pour le telescope Ouranos et l'outil Telescope
+# Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.22 2008-02-06 22:19:03 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.23 2008-02-10 17:39:04 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -938,53 +938,27 @@ namespace eval cataGoto {
       set catalogue(M-NGC-IC) $menuChoisi
       #---
       toplevel $audace(base).cataObjet
-      if { $conf(telescope) == "ouranos" } {
-         if [ winfo exists $audace(base).confTel ] {
-            wm transient $audace(base).cataObjet $audace(base).confTel
-         }
-         wm resizable $audace(base).cataObjet 0 0
-         if { "$menuChoisi" == "$caption(catagoto,messier)" } {
-            wm title $audace(base).cataObjet "$caption(catagoto,messier)"
-            set catalogue(obj_choisi_ref) $caption(catagoto,M)
-            set catalogue(objet) "cat_messier.txt"
-         } elseif { $menuChoisi == "$caption(catagoto,ngc)" } {
-            wm title $audace(base).cataObjet "$caption(catagoto,ngc)"
-            set catalogue(obj_choisi_ref) $caption(catagoto,ngc)
-            set catalogue(objet) "cat_ngc.txt"
-         } elseif { $menuChoisi == "$caption(catagoto,ic)" } {
-            wm title $audace(base).cataObjet "$caption(catagoto,ic)"
-            set catalogue(obj_choisi_ref) $caption(catagoto,ic)
-            set catalogue(objet) "cat_ic.txt"
-         }
-         wm geometry $audace(base).cataObjet $cataGoto(cataObjet,position)
-         wm protocol $audace(base).cataObjet WM_DELETE_WINDOW {
-            ::cataGoto::recup_position
-            destroy $audace(base).cataObjet
-            set ::ouranos::private(objet) "4"
-         }
-      } else {
-         wm resizable $audace(base).cataObjet 0 0
-         if { "$menuChoisi" == "$caption(catagoto,messier)" } {
-            wm title $audace(base).cataObjet "$caption(catagoto,messier)"
-            set catalogue(obj_choisi_ref) $caption(catagoto,M)
-            set catalogue(objet) "cat_messier.txt"
-         } elseif { $menuChoisi == "$caption(catagoto,ngc)" } {
-            wm title $audace(base).cataObjet "$caption(catagoto,ngc)"
-            set catalogue(obj_choisi_ref) $caption(catagoto,ngc)
-            set catalogue(objet) "cat_ngc.txt"
-         } elseif { $menuChoisi == "$caption(catagoto,ic)" } {
-            wm title $audace(base).cataObjet "$caption(catagoto,ic)"
-            set catalogue(obj_choisi_ref) $caption(catagoto,ic)
-            set catalogue(objet) "cat_ic.txt"
-         }
-         wm geometry $audace(base).cataObjet $cataGoto(cataObjet,position)
-         wm protocol $audace(base).cataObjet WM_DELETE_WINDOW {
-            ::cataGoto::recup_position
-            set catalogue(validation)      "0"
-            set cataGoto(carte,validation) "0"
-            set cataGoto(carte,avant_plan) "0"
-            destroy $audace(base).cataObjet
-         }
+      wm resizable $audace(base).cataObjet 0 0
+      if { "$menuChoisi" == "$caption(catagoto,messier)" } {
+         wm title $audace(base).cataObjet "$caption(catagoto,messier)"
+         set catalogue(obj_choisi_ref) $caption(catagoto,M)
+         set catalogue(objet) "cat_messier.txt"
+      } elseif { $menuChoisi == "$caption(catagoto,ngc)" } {
+         wm title $audace(base).cataObjet "$caption(catagoto,ngc)"
+         set catalogue(obj_choisi_ref) $caption(catagoto,ngc)
+         set catalogue(objet) "cat_ngc.txt"
+      } elseif { $menuChoisi == "$caption(catagoto,ic)" } {
+         wm title $audace(base).cataObjet "$caption(catagoto,ic)"
+         set catalogue(obj_choisi_ref) $caption(catagoto,ic)
+         set catalogue(objet) "cat_ic.txt"
+      }
+      wm geometry $audace(base).cataObjet $cataGoto(cataObjet,position)
+      wm protocol $audace(base).cataObjet WM_DELETE_WINDOW {
+         ::cataGoto::recup_position
+         set catalogue(validation)      "0"
+         set cataGoto(carte,validation) "0"
+         set cataGoto(carte,avant_plan) "0"
+         destroy $audace(base).cataObjet
       }
 
       #--- La nouvelle fenetre est active
@@ -1085,22 +1059,12 @@ namespace eval cataGoto {
 
       #--- Cree l'affichage des boutons
       frame $audace(base).cataObjet.frame10 -borderwidth 1 -relief raised
-         if { $conf(telescope) == "ouranos" } {
-            button $audace(base).cataObjet.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
-               ::cataGoto::recup_position
-               set cataGoto(carte,validation) "0"
-               set cataGoto(carte,avant_plan) "0"
-               destroy $audace(base).cataObjet
-               set ::ouranos::private(objet) "4"
-            }
-         } else {
-            button $audace(base).cataObjet.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
-               ::cataGoto::recup_position
-               set catalogue(validation)      "0"
-               set cataGoto(carte,validation) "0"
-               set cataGoto(carte,avant_plan) "0"
-               destroy $audace(base).cataObjet
-            }
+         button $audace(base).cataObjet.frame10.fermer -text "$caption(catagoto,fermer)" -width 7 -command {
+            ::cataGoto::recup_position
+            set catalogue(validation)      "0"
+            set cataGoto(carte,validation) "0"
+            set cataGoto(carte,avant_plan) "0"
+            destroy $audace(base).cataObjet
          }
          pack $audace(base).cataObjet.frame10.fermer -side right -padx 10 -pady 5 -ipady 5
       pack $audace(base).cataObjet.frame10 -side top -fill both -expand 1
@@ -1177,30 +1141,9 @@ namespace eval cataGoto {
          } else {
             set fg $audace(color,textColor)
             destroy $audace(base).cataObjet.frame10.ok
-            if { $conf(telescope) == "ouranos" } {
-               button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
-                  ::OuranosCom::match_transfert_ouranos
-                  destroy $audace(base).cataObjet
-                  #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
-                  if { $cataGoto(carte,validation) == "1" } {
-                     ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
-                  }
-               }
-            } elseif { $conf(telescope) == "audecom" && [ ::confTel::hasSecondaryMount ] == "1" } {
-               button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
-                  ::OuranosCom::match_transfert_ouranos
-                  destroy $audace(base).cataObjet
-                  #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
-                  if { $cataGoto(carte,validation) == "1" } {
-                     ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
-                  }
-                  set catalogue(validation) "1"
-               }
-            } else {
-               button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 -command {
-                  set catalogue(validation) "1"
-               }
-            }
+
+            button $audace(base).cataObjet.frame10.ok -text "$caption(catagoto,ok)" -width 7 \
+               -command { set catalogue(validation) "1" }
             pack $audace(base).cataObjet.frame10.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $audace(base).cataObjet
@@ -1268,29 +1211,15 @@ namespace eval cataGoto {
       }
       #---
       toplevel $audace(base).cataEtoile
-      if { $conf(telescope) == "ouranos" } {
-         if [ winfo exists $audace(base).confTel ] {
-            wm transient $audace(base).cataEtoile $audace(base).confTel
-         }
-         wm resizable $audace(base).cataEtoile 0 0
-         wm title $audace(base).cataEtoile "$caption(catagoto,etoile)"
-         wm geometry $audace(base).cataEtoile $cataGoto(cataEtoile,position)
-         wm protocol $audace(base).cataEtoile WM_DELETE_WINDOW {
-            ::cataGoto::recup_position
-            destroy $audace(base).cataEtoile
-            set ::ouranos::private(objet) "4"
-         }
-      } else {
-         wm resizable $audace(base).cataEtoile 0 0
-         wm title $audace(base).cataEtoile "$caption(catagoto,etoile)"
-         wm geometry $audace(base).cataEtoile $cataGoto(cataEtoile,position)
-         wm protocol $audace(base).cataEtoile WM_DELETE_WINDOW {
-            ::cataGoto::recup_position
-            set catalogue(validation)      "0"
-            set cataGoto(carte,validation) "0"
-            set cataGoto(carte,avant_plan) "0"
-            destroy $audace(base).cataEtoile
-         }
+      wm resizable $audace(base).cataEtoile 0 0
+      wm title $audace(base).cataEtoile "$caption(catagoto,etoile)"
+      wm geometry $audace(base).cataEtoile $cataGoto(cataEtoile,position)
+      wm protocol $audace(base).cataEtoile WM_DELETE_WINDOW {
+         ::cataGoto::recup_position
+         set catalogue(validation)      "0"
+         set cataGoto(carte,validation) "0"
+         set cataGoto(carte,avant_plan) "0"
+         destroy $audace(base).cataEtoile
       }
 
       #--- La nouvelle fenetre est active
@@ -1312,25 +1241,14 @@ namespace eval cataGoto {
 
       #--- Cree l'affichage des boutons
       frame $audace(base).cataEtoile.frame9 -borderwidth 1 -relief raised
-         if { $conf(telescope) == "ouranos" } {
-            button $audace(base).cataEtoile.frame9.fermer -text "$caption(catagoto,fermer)" -width 7 -state disabled \
-               -command {
-                  ::cataGoto::recup_position
-                  set cataGoto(carte,validation) "0"
-                  set cataGoto(carte,avant_plan) "0"
-                  destroy $audace(base).cataEtoile
-                  set ::ouranos::private(objet) "4"
-               }
-         } else {
-            button $audace(base).cataEtoile.frame9.fermer -text "$caption(catagoto,fermer)" -width 7 -state disabled \
-               -command {
-                  ::cataGoto::recup_position
-                  set catalogue(validation)      "0"
-                  set cataGoto(carte,validation) "0"
-                  set cataGoto(carte,avant_plan) "0"
-                  destroy $audace(base).cataEtoile
-               }
-         }
+         button $audace(base).cataEtoile.frame9.fermer -text "$caption(catagoto,fermer)" -width 7 -state disabled \
+            -command {
+               ::cataGoto::recup_position
+               set catalogue(validation)      "0"
+               set cataGoto(carte,validation) "0"
+               set cataGoto(carte,avant_plan) "0"
+               destroy $audace(base).cataEtoile
+            }
          pack $audace(base).cataEtoile.frame9.fermer -side right -padx 10 -pady 5 -ipady 5 -fill x
       pack $audace(base).cataEtoile.frame9 -side bottom -fill both -expand 1
 
@@ -1450,30 +1368,8 @@ namespace eval cataGoto {
          } else {
             set fg $audace(color,textColor)
             destroy $audace(base).cataEtoile.frame9.ok
-            if { $conf(telescope) == "ouranos" } {
-               button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 -command {
-                  ::OuranosCom::match_transfert_ouranos
-                  destroy $audace(base).cataEtoile
-                  #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
-                  if { $cataGoto(carte,validation) == "1" } {
-                     ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
-                  }
-               }
-            } elseif { $conf(telescope) == "audecom" && [ ::confTel::hasSecondaryMount ] == "1" } {
-               button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 -command {
-                  ::OuranosCom::match_transfert_ouranos
-                  destroy $audace(base).cataEtoile
-                  #--- Affichage de champ dans une carte. Parametres : nom_objet, ad, dec, zoom_objet, avant_plan
-                  if { $cataGoto(carte,validation) == "1" } {
-                     ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
-                  }
-                  set catalogue(validation) "1"
-               }
-            } else {
-               button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 -command {
-                  set catalogue(validation) "1"
-               }
-            }
+            button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 /
+               -command { set catalogue(validation) "1" }
             pack $audace(base).cataEtoile.frame9.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
             #--- Mise a jour dynamique des couleurs
             ::confColor::applyColor $audace(base).cataEtoile
