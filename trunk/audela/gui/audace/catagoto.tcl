@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.23 2008-02-10 17:39:04 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.24 2008-02-10 18:34:25 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -1368,7 +1368,7 @@ namespace eval cataGoto {
          } else {
             set fg $audace(color,textColor)
             destroy $audace(base).cataEtoile.frame9.ok
-            button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 /
+            button $audace(base).cataEtoile.frame9.ok -text "$caption(catagoto,ok)" -width 7 \
                -command { set catalogue(validation) "1" }
             pack $audace(base).cataEtoile.frame9.ok -side left -padx 10 -pady 5 -ipady 5 -fill x
             #--- Mise a jour dynamique des couleurs
