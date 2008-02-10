@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.18 2008-02-06 22:14:18 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.19 2008-02-10 17:42:02 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -75,22 +75,55 @@ proc ::audecom::isReady { } {
 }
 
 #
-# ::audecom::hasSecondaryMount
-#    Retourne "1" si une monture secondaire Ouranos est demandee, sinon retourne "0"
+# ::audecom::getSecondaryTelNo
+#    Retourne le numero de la monture secondaire, sinon retourne "0"
 #
-proc ::audecom::hasSecondaryMount { } {
-   global conf
-
-   if { [ info exists conf(audecom,ouranos) ] } {
-      if { $conf(audecom,ouranos) == "1" } {
-         set result "1"
-      } else {
-         set result "0"
-      }
-   } else {
-      set result "0"
-   }
+proc ::audecom::getSecondaryTelNo { } {
+   set result [ ::ouranos::getTelNo ]
    return $result
+}
+
+#
+# ::audecom::setTrackSpeed
+#    Parametre la vitesse de suivi pour le Soleil ou la Lune
+#
+proc ::audecom::setTrackSpeed { } {
+   variable private
+   global caption conf
+
+   #--- Cas particulier du GOTO sur le Soleil et sur la Lune
+   #--- Transfere les parametres de derive dans le microcontroleur
+   set vit_der_alpha 0; set vit_der_delta 0
+   catch {
+      if { $catalogue(planete_choisie) == "$caption(audecom,soleil)" } {
+         set vit_der_alpha 3548
+         set vit_der_delta 0
+      } elseif { $catalogue(planete_choisie) == "$caption(audecom,lune)" } {
+         set vit_der_alpha 43636
+         set vit_der_delta 0
+      } else {
+         set vit_der_alpha 0
+         set vit_der_delta 0
+      }
+   }
+   #--- Precaution pour ne jamais diviser par zero
+   if { $vit_der_alpha == "0" } { set vit_der_alpha "1" }
+   if { $vit_der_delta == "0" } { set vit_der_delta "1" }
+   #--- Calcul de la correction
+   set alpha [ expr $conf(audecom,dsuivinom)*1296000/$vit_der_alpha ]
+   set alpha [ expr round($alpha) ]
+   set delta [ expr $conf(audecom,dsuividelta)*1296000/$vit_der_delta ]
+   set delta [ expr round($delta) ]
+   #--- Bornage de la correction
+   if { $alpha > "99999999" } { set alpha "99999999" }
+   if { $alpha < "-99999999" } { set alpha "-99999999" }
+   if { $delta > "99999999" } { set delta "99999999" }
+   if { $delta < "-99999999" } { set delta "-99999999" }
+   #--- Application de la correction solaire/lunaire ou annulation (suivi sideral)
+   #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
+   tel$private(telNo) radec motor off
+   tel$private(telNo) driftspeed $alpha $delta
+   tel$private(telNo) radec motor on
 }
 
 #
@@ -583,7 +616,13 @@ proc ::audecom::configureMonture { } {
       #--- Je copie les parametres Ouranos dans conf()
       ::ouranos::widgetToConf
       #--- Je configure la monture secondaire Ouranos
-      ::ouranos::configureMonture
+      set catchResult [ catch {
+         ::ouranos::configureMonture
+      } errorMessage ]
+      if { $catchResult != "0" } {
+         ::audecom::stop
+         error $errorMessage
+      }
    }
 }
 
@@ -594,6 +633,11 @@ proc ::audecom::configureMonture { } {
 proc ::audecom::stop { } {
    variable private
    global audace conf
+
+   #--- Sortie anticipee si le telescope n'existe pas
+   if { $private(telNo) == "0" } {
+      return
+   }
 
    #--- Efface la fenetre de controle de la vitesse de King si elle existe
    if { [ winfo exists $audace(base).confAudecomKing ] } {
@@ -733,7 +777,7 @@ proc ::audecom::configEquatorialAudeCom { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
 # name                    Retourne le modele de la monture
 # product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -742,13 +786,13 @@ proc ::audecom::configEquatorialAudeCom { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-# mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
+# backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::audecom::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMountOuranos       { return 1 }
+      multiMount              { return 1 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
@@ -769,7 +813,7 @@ proc ::audecom::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 1 }
       hasCorrectionRefraction { return 0 }
-      mechanicalPlay          { return 1 }
+      backlash                { return 1 }
    }
 }
 
