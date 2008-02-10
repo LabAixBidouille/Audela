@@ -2,7 +2,7 @@
 # Fichier : etel.tcl
 # Description : Configuration de la monture Etel
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: etel.tcl,v 1.6 2008-02-06 21:47:50 robertdelmas Exp $
+# Mise a jour $Id: etel.tcl,v 1.7 2008-02-10 17:32:22 robertdelmas Exp $
 #
 
 namespace eval ::etel {
@@ -276,6 +276,11 @@ proc ::etel::configureMonture { } {
 proc ::etel::stop { } {
    variable private
 
+   #--- Sortie anticipee si le telescope n'existe pas
+   if { $private(telNo) == "0" } {
+      return
+   }
+
    #--- Gestion du bouton actif/inactif
    ::etel::confEtelInactif
 
@@ -340,7 +345,7 @@ proc ::etel::confEtelInactif { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
 # name                    Retourne le modele de la monture
 # product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -349,13 +354,13 @@ proc ::etel::confEtelInactif { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-# mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
+# backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::etel::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMountOuranos       { return 0 }
+      multiMount              { return 0 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
@@ -376,7 +381,7 @@ proc ::etel::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
       hasCorrectionRefraction { return 0 }
-      mechanicalPlay          { return 0 }
+      backlash                { return 0 }
    }
 }
 

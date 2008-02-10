@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.9 2008-02-06 21:48:19 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.10 2008-02-10 17:32:48 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -348,6 +348,11 @@ proc ::lx200::configureMonture { } {
 proc ::lx200::stop { } {
    variable private
 
+   #--- Sortie anticipee si le telescope n'existe pas
+   if { $private(telNo) == "0" } {
+      return
+   }
+
    #--- Gestion du bouton actif/inactif
    ::lx200::confLX200Inactif
 
@@ -457,7 +462,7 @@ proc ::lx200::confIteLente { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
 # name                    Retourne le modele de la monture
 # product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -466,13 +471,13 @@ proc ::lx200::confIteLente { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-# mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
+# backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::lx200::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMountOuranos       { return 0 }
+      multiMount              { return 0 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
@@ -501,7 +506,7 @@ proc ::lx200::getPluginProperty { propertyName } {
             return 1
          }
       }
-      mechanicalPlay          { return 0 }
+      backlash                { return 0 }
    }
 }
 

@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.10 2008-02-06 21:46:53 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.11 2008-02-10 17:31:15 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -220,6 +220,11 @@ proc ::ascom::configureMonture { } {
 proc ::ascom::stop { } {
    variable private
 
+   #--- Sortie anticipee si le telescope n'existe pas
+   if { $private(telNo) == "0" } {
+      return
+   }
+
    #--- Je memorise le port
   ### set telPort [ tel$private(telNo) port ]
    #--- J'arrete la monture
@@ -238,7 +243,7 @@ proc ::ascom::stop { } {
 #    propertyName : Nom de la propriete
 # return : Valeur de la propriete ou "" si la propriete n'existe pas
 #
-# multiMountOuranos       Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
+# multiMount              Retourne la possibilite de se connecter avec Ouranos (1 : Oui, 0 : Non)
 # name                    Retourne le modele de la monture
 # product                 Retourne le nom du produit
 # hasCoordinates          Retourne la possibilite d'afficher les coordonnees
@@ -247,13 +252,13 @@ proc ::ascom::stop { } {
 # hasManualMotion         Retourne la possibilite de faire des deplacement Nord, Sud, Est ou Ouest
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
-# mechanicalPlay          Retourne la possibilite de faire un rattrapage des jeux
+# backlash                Retourne la possibilite de faire un rattrapage des jeux
 #
 proc ::ascom::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMountOuranos       { return 0 }
+      multiMount              { return 0 }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
@@ -274,7 +279,7 @@ proc ::ascom::getPluginProperty { propertyName } {
       hasManualMotion         { return 1 }
       hasControlSuivi         { return 0 }
       hasCorrectionRefraction { return 0 }
-      mechanicalPlay          { return 0 }
+      backlash                { return 0 }
    }
 }
 
