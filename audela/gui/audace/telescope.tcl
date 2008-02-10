@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.17 2008-02-06 22:22:30 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.18 2008-02-10 17:47:33 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -119,8 +119,9 @@ namespace eval ::telescope {
                #--- Cas de la monture principale
                tel$audace(telNo) radec init $radec
                #--- Si Ouranos est une monture secondaire, envoie egalement le Match a l'interface Ouranos
-               if { [ ::confTel::hasSecondaryMount ] == "1" } {
-                  tel$::ouranos::private(telNo) radec init $radec
+               set secondaryTelNo [ ::telescope::getSecondaryTelNo ]
+               if { $secondaryTelNo != "0" } {
+                  tel$secondaryTelNo radec init $radec
                }
             }
          }
@@ -142,43 +143,9 @@ namespace eval ::telescope {
    proc goto { list_radec blocking { But_Goto "" } { But_Match "" } } {
       global audace caption cataGoto catalogue conf
 
-      if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
-         set audace(telescope,goto) "1"
-         #--- Cas particulier du GOTO sur le Soleil et sur la Lune
-         #--- Transfere les parametres de derive dans le microcontroleur
-         set vit_der_alpha 0; set vit_der_delta 0
-         catch {
-            if { $catalogue(planete_choisie) == "$caption(telescope,soleil)" } {
-               set vit_der_alpha 3548
-               set vit_der_delta 0
-            } elseif { $catalogue(planete_choisie) == "$caption(telescope,lune)" } {
-               set vit_der_alpha 43636
-               set vit_der_delta 0
-            } else {
-               set vit_der_alpha 0
-               set vit_der_delta 0
-            }
-         }
-         #--- Precaution pour ne jamais diviser par zero
-         if { $vit_der_alpha == "0" } { set vit_der_alpha "1" }
-         if { $vit_der_delta == "0" } { set vit_der_delta "1" }
-         #--- Calcul de la correction
-         set alpha [ expr $conf(audecom,dsuivinom)*1296000/$vit_der_alpha ]
-         set alpha [ expr round($alpha) ]
-         set delta [ expr $conf(audecom,dsuividelta)*1296000/$vit_der_delta ]
-         set delta [ expr round($delta) ]
-         #--- Bornage de la correction
-         if { $alpha > "99999999" } { set alpha "99999999" }
-         if { $alpha < "-99999999" } { set alpha "-99999999" }
-         if { $delta > "99999999" } { set delta "99999999" }
-         if { $delta < "-99999999" } { set delta "-99999999" }
-         #--- Application de la correction solaire/lunaire ou annulation (suivi sideral)
-         #--- Arret des moteurs + Application des corrections + Mise en marche des moteurs
-         tel$audace(telNo) radec motor off
-         tel$audace(telNo) driftspeed $alpha $delta
-         tel$audace(telNo) radec motor on
-      }
       if { [ ::tel::list ] != "" } {
+         #---
+         setTrackSpeed
          #--- Gestion des boutons Goto et Match
          if { $But_Goto != "" } {
             $But_Goto configure -relief groove -state disabled
@@ -191,6 +158,22 @@ namespace eval ::telescope {
          if { $cataGoto(carte,validation) == "1" } {
             ::carte::gotoObject $cataGoto(carte,nom_objet) $cataGoto(carte,ad) $cataGoto(carte,dec) $cataGoto(carte,zoom_objet) $cataGoto(carte,avant_plan)
          }
+         #--- Cas d'un Goto avec rattrapage des jeux
+         set audace(telescope,stopgoto) "0"
+         if { [ ::confTel::getPluginProperty backlash ] == "1" } {
+            #--- Goto
+            tel$audace(telNo) radec goto $list_radec -blocking $blocking -backlash 1
+            #--- Boucle tant que la monture n'est pas arretee
+            set audace(telescope,goto) "1"
+            set radec0 [ tel$audace(telNo) radec coord ]
+            ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
+            #--- j'attends que la variable soit remise a zero
+            vwait ::audace(telescope,goto)
+         }
+         #---
+         if { $audace(telescope,stopgoto) == "1" } {
+            return 0
+         }
          #--- Goto
          tel$audace(telNo) radec goto $list_radec -blocking $blocking
          #--- Boucle tant que la monture n'est pas arretee
@@ -199,17 +182,6 @@ namespace eval ::telescope {
          ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
          #--- j'attends que la variable soit remise a zero
          vwait ::audace(telescope,goto)
-         #--- Cas d'un Goto avec rattrapage des jeux
-         if { [ ::confTel::getPluginProperty mechanicalPlay ] == "1" } {
-            #--- Goto
-            tel$audace(telNo) radec goto $list_radec -blocking $blocking
-            #--- Boucle tant que la monture n'est pas arretee
-            set audace(telescope,goto) "1"
-            set radec0 [ tel$audace(telNo) radec coord ]
-            ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
-            #--- j'attends que la variable soit remise a zero
-            vwait ::audace(telescope,goto)
-         }
          return 0
       } else {
          ::confTel::run
@@ -247,6 +219,7 @@ namespace eval ::telescope {
    proc stopGoto { { Button_Stop "" } } {
       global audace conf
 
+      set audace(telescope,stopgoto) "1"
       if { ( $conf(telescope) == "audecom" ) && ( [ ::confTel::isReady ] == 1 ) } {
          #--- Arret d'urgence du pointage et retour a la position au moment de l'action
          tel$audace(telNo) radec stop
@@ -733,6 +706,33 @@ namespace eval ::telescope {
       } else {
          set audace(pos_tel_ew) ""
          set audace(chg_pos_tel) "  ?  "
+      }
+   }
+
+   #------------------------------------------------------------
+   # getSecondaryTelNo
+   #    Retourne le numero de la monture secondaire, sinon retourne "0"
+   #------------------------------------------------------------
+   proc getSecondaryTelNo { } {
+      global conf
+
+      if { [ ::confTel::getPluginProperty multiMount ] == "1" } {
+         set result [ ::$conf(telescope)::getSecondaryTelNo ]
+      } else {
+         set result "0"
+      }
+      return $result
+   }
+
+   #------------------------------------------------------------
+   # setTrackSpeed
+   #    Parametre la vitesse de suivi pour le Soleil ou la Lune
+   #------------------------------------------------------------
+   proc setTrackSpeed { } {
+      global conf
+
+      if { [ info command ::$conf(telescope)::setTrackSpeed ] != "" } {
+         ::$conf(telescope)::setTrackSpeed
       }
    }
 
