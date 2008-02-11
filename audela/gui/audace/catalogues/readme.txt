@@ -10,10 +10,10 @@ Nom :
 Ascension Droite :
 - Les heures (hh) sont écrites sur 2 caractères.
 - Les minutes (mm) sont écrites sur 2 caractères.
-- Les secondes (ss.s) sont décimales, 2 caractères avant le ".", 1 après.
+- Les secondes (ss.s) sont décimales, 2 caractères avant le '.', 1 après.
 
 Déclinaison :
-- Les degrés (+/-dd) sont écrits sur 2 caractères précédés par un "+" ou un "-".
+- Les degrés (+/-dd) sont écrits sur 2 caractères précédés par un '+' ou un '-'.
 - Les minutes d'angle (mm) sont écrites sur 2 caractères.
 - Les secondes d'angle (ss) sont écrites sur 2 caractères.
 
