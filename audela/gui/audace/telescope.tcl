@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.18 2008-02-10 17:47:33 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.19 2008-02-12 15:15:28 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -145,7 +145,7 @@ namespace eval ::telescope {
 
       if { [ ::tel::list ] != "" } {
          #---
-         setTrackSpeed
+         ::telescope::setTrackSpeed
          #--- Gestion des boutons Goto et Match
          if { $But_Goto != "" } {
             $But_Goto configure -relief groove -state disabled
@@ -169,6 +169,8 @@ namespace eval ::telescope {
             ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
             #--- j'attends que la variable soit remise a zero
             vwait ::audace(telescope,goto)
+            #--- je traite le mode slewpath (si long, je passe en short pour le rattrapage des jeux)
+            ::telescope::slewpathLong2Short
          }
          #---
          if { $audace(telescope,stopgoto) == "1" } {
@@ -182,6 +184,8 @@ namespace eval ::telescope {
          ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
          #--- j'attends que la variable soit remise a zero
          vwait ::audace(telescope,goto)
+         #--- je restaure le mode slewpath si necessaire
+         ::telescope::slewpathShort2Long
          return 0
       } else {
          ::confTel::run
@@ -722,6 +726,30 @@ namespace eval ::telescope {
          set result "0"
       }
       return $result
+   }
+
+   #------------------------------------------------------------
+   # slewpathLong2Short
+   #    Commute le mode slewpath de long a short
+   #------------------------------------------------------------
+   proc slewpathLong2Short { } {
+      global conf
+
+      if { [ info command ::$conf(telescope)::slewpathLong2Short ] != "" } {
+         ::$conf(telescope)::slewpathLong2Short
+      }
+   }
+
+   #------------------------------------------------------------
+   # slewpathShort2Long
+   #    Commute le mode slewpath de short a long
+   #------------------------------------------------------------
+   proc slewpathShort2Long { } {
+      global conf
+
+      if { [ info command ::$conf(telescope)::slewpathShort2Long ] != "" } {
+         ::$conf(telescope)::slewpathShort2Long
+      }
    }
 
    #------------------------------------------------------------
