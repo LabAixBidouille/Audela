@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.19 2008-02-10 17:42:02 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.20 2008-02-12 15:12:18 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -81,6 +81,33 @@ proc ::audecom::isReady { } {
 proc ::audecom::getSecondaryTelNo { } {
    set result [ ::ouranos::getTelNo ]
    return $result
+}
+
+#
+# ::audecom::slewpathLong2Short
+#    Commute le mode slewpath de long a short
+#
+proc ::audecom::slewpathLong2Short { } {
+   variable private
+
+   set slewpath [ tel$private(telNo) slewpath ]
+   if { $slewpath == "long" } {
+      tel$private(telNo) slewpath short
+   }
+}
+
+#
+# ::audecom::slewpathShort2Long
+#    Commute le mode slewpath de short a long
+#
+proc ::audecom::slewpathShort2Long { } {
+   variable private
+   global conf
+
+   set slewpath [ tel$private(telNo) slewpath ]
+   if { $slewpath == "short" && $conf(audecom,gotopluslong) == "1" } {
+      tel$private(telNo) slewpath long
+   }
 }
 
 #
@@ -554,7 +581,7 @@ proc ::audecom::configureMonture { } {
    #--- Transfere les parametres des moteurs dans le microcontroleur
    tel$telNo slewspeed $conf(audecom,maxad) $conf(audecom,maxdec)
    tel$telNo pulse $conf(audecom,limp)
-   tel$telNo mechanicalplay $conf(audecom,rat_ad) $conf(audecom,rat_dec)
+   tel$telNo backlash $conf(audecom,rat_ad) $conf(audecom,rat_dec)
    tel$telNo focspeed $conf(audecom,vitesse)
    #--- R : Inhibe le PEC
    tel$telNo pec_period 0
