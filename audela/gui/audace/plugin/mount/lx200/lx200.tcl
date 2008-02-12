@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.10 2008-02-10 17:32:48 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.11 2008-02-12 15:08:55 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -75,6 +75,15 @@ proc ::lx200::isReady { } {
 }
 
 #
+# ::lx200::getSecondaryTelNo
+#    Retourne le numero de la monture secondaire, sinon retourne "0"
+#
+proc ::lx200::getSecondaryTelNo { } {
+   set result [ ::ouranos::getTelNo ]
+   return $result
+}
+
+#
 # ::lx200::initPlugin
 #    Initialise les variables conf(lx200,...)
 #
@@ -90,6 +99,7 @@ proc ::lx200::initPlugin { } {
 
    #--- Initialise les variables de la monture LX200
    if { ! [ info exists conf(lx200,port) ] }            { set conf(lx200,port)            [ lindex $list_connexion 0 ] }
+   if { ! [ info exists conf(lx200,ouranos) ] }         { set conf(lx200,ouranos)         "0" }
    if { ! [ info exists conf(lx200,modele) ] }          { set conf(lx200,modele)          "LX200" }
    if { ! [ info exists conf(lx200,format) ] }          { set conf(lx200,format)          "1" }
    if { ! [ info exists conf(lx200,ite-lente_tempo) ] } { set conf(lx200,ite-lente_tempo) "300" }
@@ -105,6 +115,7 @@ proc ::lx200::confToWidget { } {
 
    #--- Recupere la configuration de la monture LX200 dans le tableau private(...)
    set private(port)            $conf(lx200,port)
+   set private(ouranos)         $conf(lx200,ouranos)
    set private(modele)          $conf(lx200,modele)
    set private(format)          [ lindex "$caption(lx200,format_court_long)" $conf(lx200,format) ]
    set private(ite-lente_tempo) $conf(lx200,ite-lente_tempo)
@@ -121,6 +132,7 @@ proc ::lx200::widgetToConf { } {
 
    #--- Memorise la configuration de la monture LX200 dans le tableau conf(lx200,...)
    set conf(lx200,port)            $private(port)
+   set conf(lx200,ouranos)         $private(ouranos)
    set conf(lx200,format)          [ lsearch "$caption(lx200,format_court_long)" "$private(format)" ]
    set conf(lx200,modele)          $private(modele)
    set conf(lx200,ite-lente_tempo) $private(ite-lente_tempo)
@@ -170,14 +182,20 @@ proc ::lx200::fillConfigPage { frm } {
    pack $frm.frame7 -in $frm.frame1 -side left -fill both -expand 1
 
    frame $frm.frame8 -borderwidth 0 -relief raised
-   pack $frm.frame8 -in $frm.frame7 -side top -fill x
+   pack $frm.frame8 -in $frm.frame6 -side top -fill x
 
    frame $frm.frame9 -borderwidth 0 -relief raised
-   pack $frm.frame9 -in $frm.frame7 -side top -fill x
+   pack $frm.frame9 -in $frm.frame6 -side top -fill x
+
+   frame $frm.frame10 -borderwidth 0 -relief raised
+   pack $frm.frame10 -in $frm.frame7 -side top -fill x
+
+   frame $frm.frame11 -borderwidth 0 -relief raised
+   pack $frm.frame11 -in $frm.frame7 -side top -fill x
 
    #--- Definition du port
    label $frm.lab1 -text "$caption(lx200,port_liaison)"
-   pack $frm.lab1 -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
+   pack $frm.lab1 -in $frm.frame8 -anchor n -side left -padx 10 -pady 10
 
    #--- Je verifie le contenu de la liste
    if { [ llength $list_connexion ] > 0 } {
@@ -198,7 +216,7 @@ proc ::lx200::fillConfigPage { frm } {
          ::confLink::run ::lx200::private(port) { serialport audinet } \
             "- $caption(lx200,controle) - $caption(lx200,monture)"
       }
-   pack $frm.configure -in $frm.frame6 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
+   pack $frm.configure -in $frm.frame8 -anchor n -side left -pady 10 -ipadx 10 -ipady 1 -expand 0
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.port \
@@ -209,11 +227,23 @@ proc ::lx200::fillConfigPage { frm } {
       -textvariable ::lx200::private(port) \
       -editable 0       \
       -values $list_connexion
-   pack $frm.port -in $frm.frame6 -anchor n -side left -padx 10 -pady 10
+   pack $frm.port -in $frm.frame8 -anchor n -side left -padx 10 -pady 10
+
+   #--- Le checkbutton du fonctionnement coordonne LX200 (modele AudeCom) + Ouranos
+   if { [glob -nocomplain -type f -join "$audace(rep_plugin)" mount ouranos pkgIndex.tcl ] == "" } {
+      set private(ouranos) "0"
+      checkbutton $frm.ouranos -text "$caption(lx200,ouranos)" -highlightthickness 0 \
+         -variable ::lx200::private(ouranos) -state disabled
+      pack $frm.ouranos -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
+   } else {
+      checkbutton $frm.ouranos -text "$caption(lx200,ouranos)" -highlightthickness 0 \
+         -variable ::lx200::private(ouranos) -state normal
+      pack $frm.ouranos -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
+   }
 
    #--- Definition du LX200 ou du clone
    label $frm.lab3 -text "$caption(lx200,modele)"
-   pack $frm.lab3 -in $frm.frame8 -anchor center -side left -padx 10 -pady 10
+   pack $frm.lab3 -in $frm.frame10 -anchor center -side left -padx 10 -pady 10
 
    set list_combobox [ list $caption(lx200,modele_lx200) $caption(lx200,modele_audecom) \
       $caption(lx200,modele_skysensor) $caption(lx200,modele_gemini) $caption(lx200,modele_ite-lente) \
@@ -224,14 +254,14 @@ proc ::lx200::fillConfigPage { frm } {
       -relief sunken    \
       -borderwidth 1    \
       -textvariable ::lx200::private(modele) \
-      -modifycmd { ::lx200::confIteLente } \
+      -modifycmd { ::lx200::confModele } \
       -editable 0       \
       -values $list_combobox
-   pack $frm.modele -in $frm.frame8 -anchor center -side right -padx 10 -pady 10
+   pack $frm.modele -in $frm.frame10 -anchor center -side right -padx 10 -pady 10
 
    #--- Definition du format des donnees transmises au LX200
    label $frm.lab2 -text "$caption(lx200,format)"
-   pack $frm.lab2 -in $frm.frame9 -anchor center -side left -padx 10 -pady 10
+   pack $frm.lab2 -in $frm.frame11 -anchor center -side left -padx 10 -pady 10
 
    set list_combobox "$caption(lx200,format_court_long)"
    ComboBox $frm.formatradec \
@@ -242,7 +272,7 @@ proc ::lx200::fillConfigPage { frm } {
       -textvariable ::lx200::private(format) \
       -editable 0       \
       -values $list_combobox
-   pack $frm.formatradec -in $frm.frame9 -anchor center -side right -padx 10 -pady 10
+   pack $frm.formatradec -in $frm.frame11 -anchor center -side right -padx 10 -pady 10
 
    #--- Le bouton de commande maj heure et position du LX200
    button $frm.majpara -text "$caption(lx200,maj_lx200)" -relief raised -command {
@@ -279,7 +309,7 @@ proc ::lx200::fillConfigPage { frm } {
    ::lx200::confLX200
 
    #--- Gestion de la tempo pour Ite-lente
-   ::lx200::confIteLente
+   ::lx200::confModele
 }
 
 #
@@ -339,6 +369,20 @@ proc ::lx200::configureMonture { } {
    }
    #--- Gestion du bouton actif/inactif
    ::lx200::confLX200
+
+   #--- Si connexion des codeurs Ouranos demandee en tant que monture secondaire
+   if { $conf(lx200,ouranos) == "1" } {
+      #--- Je copie les parametres Ouranos dans conf()
+      ::ouranos::widgetToConf
+      #--- Je configure la monture secondaire Ouranos
+      set catchResult [ catch {
+         ::ouranos::configureMonture
+      } errorMessage ]
+      if { $catchResult != "0" } {
+         ::lx200::stop
+         error $errorMessage
+      }
+   }
 }
 
 #
@@ -347,6 +391,7 @@ proc ::lx200::configureMonture { } {
 #
 proc ::lx200::stop { } {
    variable private
+   global conf
 
    #--- Sortie anticipee si le telescope n'existe pas
    if { $private(telNo) == "0" } {
@@ -363,6 +408,11 @@ proc ::lx200::stop { } {
    #--- J'arrete le link
    ::confLink::delete $telPort "tel$private(telNo)" "control"
    set private(telNo) "0"
+
+   #--- Deconnexion des codeurs Ouranos si la monture secondaire existe
+   if { $conf(lx200,ouranos) == "1" } {
+      ::ouranos::stop
+   }
 }
 
 #
@@ -426,16 +476,17 @@ proc ::lx200::confLX200Inactif { } {
 }
 
 #
-# ::lx200::confIteLente
-# Permet d'activer ou de désactiver la tempo de l'interface Ite-lente
+# ::lx200::confModele
+# Permet d'activer ou de désactiver les champs lies au modele
 #
-proc ::lx200::confIteLente { } {
+proc ::lx200::confModele { } {
    variable private
-   global caption
+   global audace caption
 
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
+         #--- Cas du modele IteLente
          if { $private(modele) == "$caption(lx200,modele_ite-lente)" } {
             if { ! [ winfo exists $frm.lab4 ] } {
                #--- Label de la tempo Ite-lente
@@ -449,6 +500,19 @@ proc ::lx200::confIteLente { } {
             }
          } else {
             destroy $frm.lab4 ; destroy $frm.tempo
+         }
+         #--- Cas du modele AudeCom
+         if { $private(modele) == "$caption(lx200,modele_audecom)" } {
+            if { [glob -nocomplain -type f -join "$audace(rep_plugin)" mount ouranos pkgIndex.tcl ] == "" } {
+               set private(ouranos) "0"
+               $frm.ouranos configure -state disabled
+               pack $frm.ouranos -in $frm.frame9 -anchor center -side left -padx 10 -pady 8
+            } else {
+               $frm.ouranos configure -state normal
+            }
+         } else {
+            set private(ouranos) "0"
+            $frm.ouranos configure -state disabled
          }
       }
    }
@@ -477,7 +541,13 @@ proc ::lx200::getPluginProperty { propertyName } {
    variable private
 
    switch $propertyName {
-      multiMount              { return 0 }
+      multiMount              {
+         if { $::conf(lx200,modele) == "$::caption(lx200,modele_audecom)" } {
+            return 1
+         } else {
+            return 0
+         }
+      }
       name                    {
          if { $private(telNo) != "0" } {
             return [ tel$private(telNo) name ]
