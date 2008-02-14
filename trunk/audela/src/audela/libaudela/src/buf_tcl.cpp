@@ -2356,6 +2356,7 @@ int cmdTtSub(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          }
 
          buffer->Sub(fileName,(float)offset);
+         Tcl_SetResult(interp,"",TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -2409,6 +2410,7 @@ int cmdTtAdd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          }
          
          buffer->Add(fileName,(float)offset);
+         Tcl_SetResult(interp,"",TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
