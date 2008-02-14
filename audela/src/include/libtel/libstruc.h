@@ -57,6 +57,7 @@
    char model_tel2cat[50];\
    double speed;\
    double focusspeed;\
+   int active_backlash;\
    struct telprop *next;
 
 
