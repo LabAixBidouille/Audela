@@ -40,8 +40,8 @@ struct telprop {
    int slewpathindex;
    int langageindex;
    int boostindex;
-   double ra_play;
-   double dec_play;
+   double ra_backlash;
+   double dec_backlash;
    char home[50];
 };
 
