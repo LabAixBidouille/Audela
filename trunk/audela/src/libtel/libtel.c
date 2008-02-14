@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: libtel.c,v 1.4 2007-03-24 01:35:11 michelpujol Exp $
+// $Id: libtel.c,v 1.5 2008-02-14 19:21:03 michelpujol Exp $
 
 #include "sysexp.h"
 
@@ -658,6 +658,9 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 			tel_radec_state(tel,texte);
             Tcl_SetResult(interp,texte,TCL_VOLATILE);
       } else if (strcmp(argv[2],"goto")==0) {
+         tel->active_backlash = 0;
+         tel->radec_goto_blocking = 0;
+
          /* --- goto ---*/
          if (argc>=4) {
 			 /* - call the pointing model if exists -*/
@@ -679,12 +682,15 @@ int cmdTelRaDec(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   if (strcmp(argv[k],"-blocking")==0) {
                      tel->radec_goto_blocking=atoi(argv[k+1]);
                   }
+                  if (strcmp(argv[k],"-backlash")==0) {
+                     tel->active_backlash=atoi(argv[k+1]);
+                  }
                }
             }
             tel_radec_goto(tel);
             Tcl_SetResult(interp,"",TCL_VOLATILE);
          } else {
-            sprintf(ligne,"Usage: %s %s goto {angle_ra angle_dec} ?-rate value? ?-blocking boolean?",argv[0],argv[1]);
+            sprintf(ligne,"Usage: %s %s goto {angle_ra angle_dec} ?-rate value? ?-blocking boolean? ?-backlash boolean?",argv[0],argv[1]);
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
             result = TCL_ERROR;
          }
