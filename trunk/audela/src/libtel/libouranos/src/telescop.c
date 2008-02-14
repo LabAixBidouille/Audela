@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -77,6 +77,38 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char s[1024];
    char ss[256],ssusb[256],ssres[256];
    int k;
+   int i;
+   int initialDec = 0;
+   int initialPasRa, initialPasDec;
+   int retour;
+
+   tel->res_ra =65536;
+   tel->res_dec=65536;
+   tel->inv_ra=1;
+   tel->inv_dec=1;
+   tel->tempo=100;
+   tel->ha00=0.;
+   tel->dec00=0.;
+   strcpy(tel->home,"GPS 0 E 45 0");
+
+
+   // lit les parametres optionels
+   for (i=3;i<argc-1;i++) {
+      if (strcmp(argv[i],"-home")==0) {
+         //  get one string "GPS long e|w lat alt"
+         sprintf(tel->home,"%s",argv[i+1]);
+      }
+      if (strcmp(argv[i],"-initial_dec")==0) {
+         initialDec = atoi(argv[i+1]);
+      }
+      if (strcmp(argv[i],"-resol_ra")==0) {
+         tel->res_ra=(int)fabs((double)atoi(argv[i+1]));
+      }
+      if (strcmp(argv[i],"-resol_dec")==0) {
+         tel->res_dec=(int)fabs((double)atoi(argv[i+1]));
+      }
+   }
+
    /* --- transcode a port argument into comX or into /dev... */
    strcpy(ss,argv[2]);
    sprintf(s,"string range [string toupper %s] 0 2",ss);
@@ -120,20 +152,42 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    # 1 : 1 bits de stop
    */
    sprintf(s,"fconfigure %s -mode \"9600,n,8,1\" -buffering none -blocking 0",tel->channel); mytel_tcleval(tel,s);
-   tel->tempo=100;
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   tel->res_ra=32768;
-   tel->res_dec=32768;
-   tel->inv_ra=1;
-   tel->inv_dec=1;
-   ouranos_home(tel,"GPS 0 E 45 0");
+
    /* --- l'init stipule que :               */
    /*     le telescope est au meridien H=TSL */
    /*     et a la declinaison 0d             */
    /* --- lecture des codeurs en pas codeur  */
-   tel->ha00=0.;
-   tel->dec00=0.;
-   ouranos_readcoder(tel,&tel->hai00,&tel->deci00);
+   if(initialDec == 0 ) {
+      initialPasRa  = tel->res_ra /2;
+      initialPasDec = tel->res_dec /2;
+      tel->dec00=0.;
+   } else if(initialDec == 90 ) {
+      initialPasRa  = tel->res_ra /2;
+      initialPasDec = tel->res_dec /4;
+      tel->dec00=90.;
+   } else if(initialDec == -90 ) {
+      initialPasRa  = tel->res_ra /2;
+      initialPasDec = tel->res_dec * 3/4;
+      tel->dec00=-90.;
+   } else {
+      tel_close(tel);
+      sprintf(tel->msg, "error initial_dec must be 0, +90 or -90");
+      return 1;
+   }
+
+   retour = ouranos_initcoder(tel,initialPasRa,initialPasDec);
+   if ( retour == 1 ) {
+      tel_close(tel);
+      return 1;
+   }
+
+   retour = ouranos_readcoder(tel,&tel->hai00,&tel->deci00);
+   if ( retour == 1 ) {
+      tel_close(tel);
+      return 1;
+   }
+
    return 0;
 }
 
@@ -441,30 +495,13 @@ int ouranos_delete(struct telprop *tel)
 /* ---------------------------------------------------------------*/
 /* ---------------------------------------------------------------*/
 
-int ouranos_home(struct telprop *tel, char *home_default)
-{
-   char s[1024];
-   sprintf(s,"info exists audace(posobs,observateur,gps)");
-   mytel_tcleval(tel,s);
-   if (strcmp(tel->interp->result,"1")==0) {
-      sprintf(s,"set audace(posobs,observateur,gps)");
-      mytel_tcleval(tel,s);
-      strcpy(tel->home,tel->interp->result);
-	} else {
-      if (strcmp(home_default,"")!=0) {
-         strcpy(tel->home,home_default);
-      }
-   }
-   return 0;
-}
-
 double ouranos_tsl(struct telprop *tel)
 {
    char s[1024];
    char ss[1024];
    static double tsl;
    /* --- temps sideral local */
-   ouranos_home(tel,"");
+   //ouranos_home(tel,"");
    ouranos_GetCurrentFITSDate_function(tel->interp,ss,"::audace::date_sys2ut");
    sprintf(s,"mc_date2lst %s {%s}",ss,tel->home);
    mytel_tcleval(tel,s);
@@ -474,28 +511,103 @@ double ouranos_tsl(struct telprop *tel)
    return tsl;
 }
 
+/*
+ * ouranos_initcoder
+ *
+ *  initialise le boitier ouranos
+ *
+
+ *  envoi les commandes
+ *      "R%d\t%d\r" $nb_pas_ra $nb_pas_dec
+ *      "I%d\t%d\r" initialRa initialDec
+ *      "Q"
+ *
+ */
+int ouranos_initcoder(struct telprop *tel, int initialRa, int initialDec)
+{
+   char s[1024];
+   char ss[1024];
+   char rep[1024];
+   int i;
+
+   // initalise les coefficients pas/degres
+   sprintf(s,"puts %s \"R%05d\t%05d\r\"",tel->channel,tel->res_ra ,tel->res_dec);
+   mytel_tcleval(tel,s);
+
+   strcpy(rep,"");
+   for ( i=0 ; i <10 && strlen(rep) == 0; i++ ) {
+      sprintf(s,"after %d",tel->tempo);
+      mytel_tcleval(tel,s);
+      sprintf(s,"read %s 1",tel->channel);
+      mytel_tcleval(tel,s);
+      strcpy(rep,tel->interp->result);
+   }
+
+   if ( strlen(rep) == 0) {
+      sprintf(tel->msg,"error command R%05d\t%05d returns no response",tel->res_ra ,tel->res_dec);
+      return 1;
+   }
+
+   // initalise les coordonnes RA et DEC
+   sprintf(s,"puts %s \"I%05d\t%05d\r\"",tel->channel, initialRa, initialDec);
+   mytel_tcleval(tel,s);
+   // fconfigure documentation : For nonblocking mode to work correctly,
+   //the application must be using the Tcl event loop (e.g. by calling
+   // Tcl_DoOneEvent or invoking the vwait or update command).
+   sprintf(ss,"update");
+   mytel_tcleval(tel,ss);
+
+   strcpy(rep,"");
+   for ( i=0 ; i <10 && strlen(rep) == 0; i++ ) {
+      sprintf(s,"after %d",tel->tempo); // tel->tempo
+      mytel_tcleval(tel,s);
+      sprintf(s,"read %s 1",tel->channel);
+      mytel_tcleval(tel,s);
+      strcpy(rep,tel->interp->result);
+
+   }
+   if ( strlen(rep) == 0) {
+      sprintf(tel->msg,"error command I%05d\t%05d returns no response",initialRa, initialDec);
+      return 1;
+   }
+
+   return 0;
+}
+
+
 int ouranos_readcoder(struct telprop *tel,int *ra, int *dec)
 {
    char s[1024];
    char ss[1024];
+   int i;
+
    /* --- Demande les coordonnees */
    sprintf(s,"puts %s Q",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- Lit la chaine de resultat */
-   sprintf(s,"gets %s",tel->channel); mytel_tcleval(tel,s);
-   strcpy(ss,tel->interp->result);
-   if (strcmp(ss,"")==0) {
-      *ra=0;
-      *dec=0;
+   //--- Lit la chaine de resultat
+   strcpy(ss,"");
+   for ( i=0 ; i <10 && strlen(ss) == 0; i++ ) {
+      sprintf(s,"after %d",tel->tempo);
+      mytel_tcleval(tel,s);
+      sprintf(s,"gets %s",tel->channel);
+      mytel_tcleval(tel,s);
+      strcpy(ss,tel->interp->result);
+   }
+
+   if ( strlen(ss) == 0) {
+      sprintf(tel->msg,"error command Q returns no response");
       return 1;
    }
+
    /* --- decodage en pas codeurs */
    sprintf(s,"lindex {%s} 0",ss); mytel_tcleval(tel,s);
    *ra=(int)atoi(tel->interp->result);
    sprintf(s,"lindex {%s} 1",ss); mytel_tcleval(tel,s);
    *dec=(int)atoi(tel->interp->result);
+
    return 0;
 }
+
 
 int ouranos_testcom(struct telprop *tel)
 {
@@ -529,12 +641,12 @@ int ouranos_coord(struct telprop *tel,char *result)
    /* --- declinaison en degres ---*/
    dec=tel->dec00+360.*(deci-tel->deci00)/(double)tel->res_dec*tel->inv_dec;
    /* --- conversion vers la chaine finale */
-   strcpy(result,"0h0m0s 0d0m0s");
-   sprintf(s,"mc_angle2hms %f 360 nozero 2 auto string",ra); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2hms %f 360 nozero 0 auto string",ra); mytel_tcleval(tel,s);
    strcpy(result,tel->interp->result);
    strcat(result," ");
-   sprintf(s,"mc_angle2dms %f 90 nozero 2 + string",dec); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2dms %f 90 nozero 0 + string",dec); mytel_tcleval(tel,s);
    strcat(result,tel->interp->result);
+
    return 0;
 }
 
