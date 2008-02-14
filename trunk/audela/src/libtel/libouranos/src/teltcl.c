@@ -38,6 +38,23 @@
  *   structure pour les fonctions étendues
  */
 
+int cmdTelAdjust(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/***************************************************************************************/
+/* envoie la commande a l'interface ouranos pour ajuster lenombre de pas par tour       */
+/***************************************************************************************/
+   int result = TCL_OK;
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+
+   // 
+   tel->res_ra =65535;
+   tel->res_dec=65535;
+   ouranos_initcoder(tel, 0,0);
+
+   return result;
+}
+
+
 int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
 /* Choix de la tempo (en ms) entre deux ordres                                         */
