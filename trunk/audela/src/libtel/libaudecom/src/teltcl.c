@@ -475,7 +475,7 @@ int cmdTelReset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    return TCL_OK;
 }
 
-int cmdTelMechanicalplay(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+int cmdTelBacklash(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
 /***************************************************************************************/
 /* Valeurs des jeux mecaniques sur les axes (en degres) */
 /***************************************************************************************/
@@ -484,15 +484,15 @@ int cmdTelMechanicalplay(ClientData clientData, Tcl_Interp *interp, int argc, ch
    int result = TCL_OK;
    tel = (struct telprop *)clientData;
    if((argc!=4)&&(argc!=2)) {
-      sprintf(ligne,"Usage: %s %s ra_play_deg dec_play_deg",argv[0],argv[1]);
+      sprintf(ligne,"Usage: %s %s ra_backlash_deg dec_backlash_deg",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
    } else {
       if (argc==4) {
-         tel->ra_play=(double)atof(argv[2]);
-         tel->dec_play=(double)atof(argv[3]);
+         tel->ra_backlash=(double)atof(argv[2]);
+         tel->dec_backlash=(double)atof(argv[3]);
       }
-      sprintf(ligne,"%9f %9f",tel->ra_play,tel->dec_play);
+      sprintf(ligne,"%9f %9f",tel->ra_backlash,tel->dec_backlash);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    }
    return result;
