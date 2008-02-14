@@ -143,8 +143,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sate_move_radec=' ';
    sate_move_focus=' ';
    tel->boostindex=0;
-   tel->ra_play=(double)0.;
-   tel->dec_play=(double)0.;
+   tel->ra_backlash=(double)0.;
+   tel->dec_backlash=(double)0.;
    audecom_home(tel,"GPS 0 E 45 0");
    return 0;
 }
@@ -350,9 +350,8 @@ int mytel_radec_goto(struct telprop *tel)
    char coord0[50],coord1[50];
    int time_in=0,time_out=1000;
    double ra00,dec00,dra,ddec;
-   int nbgoto=1,old;
 
-   if ((tel->ra_play==0.)&&(tel->dec_play==0.)) {
+   if ( tel->active_backlash == 0 ) {
       kauf_goto(tel);
       sate_move_radec='A';
       if (tel->radec_goto_blocking==1) {
@@ -391,57 +390,36 @@ int mytel_radec_goto(struct telprop *tel)
       /*     un mouvement vers le nord (ddec<0)          */
       /* Table des raliements :                                         */
       /*                     dra>0                 dra<0                */
-      /* slewpathindex=0 :                       ra0=ra00-tel->ra_play  */
+      /* slewpathindex=0 :                       ra0=ra00-tel->ra_backlash  */
       /*                   ra0=ra00              ra0=ra00               */
-      /* slewpathindex=1 : ra0=ra00-tel->ra_play                        */
+      /* slewpathindex=1 : ra0=ra00-tel->ra_backlash                        */
       /*                   ra0=ra00              ra0=ra00               */
-      nbgoto=1;
+      //nbgoto=1;
       if ((dra<0)&&(tel->slewpathindex==0)) {
-         tel->ra0=ra00+tel->ra_play;
+         tel->ra0=ra00+tel->ra_backlash;
          sprintf(s,"mc_angle2deg \"[mc_angle2hms %7f 360] h\"",tel->ra0); mytel_tcleval(tel,s);
          tel->ra0=(double)atof(tel->interp->result);
-         nbgoto=2;
       }
       if ((dra>0)&&(tel->slewpathindex==1)) {
-         tel->ra0=ra00+tel->ra_play;
+         tel->ra0=ra00+tel->ra_backlash;
          sprintf(s,"mc_angle2deg \"[mc_angle2hms %7f 360] h\"",tel->ra0); mytel_tcleval(tel,s);
          tel->ra0=(double)atof(tel->interp->result);
-         nbgoto=2;
       }
       if ((ddec<0)&&(tel->slewpathindex==0)) {
-         tel->dec0=dec00-tel->dec_play;
+         tel->dec0=dec00-tel->dec_backlash;
          sprintf(s,"mc_angle2deg [mc_angle2dms %7f 90]",tel->dec0); mytel_tcleval(tel,s);
          tel->dec0=(double)atof(tel->interp->result);
-         nbgoto=2;
       }
       if ((ddec>0)&&(tel->slewpathindex==1)) {
-         tel->dec0=dec00-tel->dec_play;
+         tel->dec0=dec00-tel->dec_backlash;
          sprintf(s,"mc_angle2deg [mc_angle2dms %7f 90]",tel->dec0); mytel_tcleval(tel,s);
          tel->dec0=(double)atof(tel->interp->result);
-         nbgoto=2;
       }
       /* --- premier goto ---*/
       kauf_goto(tel);
-      sate_move_radec='A';
-      /* A loop is actived until the telescope is stopped */
-      tel_radec_coord(tel,coord0);
-      while (1==1) {
-         time_in++;
-         sprintf(s,"after 350"); mytel_tcleval(tel,s);
-         tel_radec_coord(tel,coord1);
-         if (strcmp(coord0,coord1)==0) {break;}
-         strcpy(coord0,coord1);
-	      if (time_in>=time_out) {break;}
-      }
-      sate_move_radec=' ';
-      tel->ra0=ra00;
-      tel->dec0=dec00;
-      /* --- second goto eventuel ---*/
-      if (nbgoto==2) {
-         old=tel->slewpathindex;
-         tel->slewpathindex=0;
-         kauf_goto(tel);
-         tel->slewpathindex=old;
+
+      if (tel->radec_goto_blocking==1) {
+      
          sate_move_radec='A';
          /* A loop is actived until the telescope is stopped */
          tel_radec_coord(tel,coord0);
@@ -454,7 +432,9 @@ int mytel_radec_goto(struct telprop *tel)
 	         if (time_in>=time_out) {break;}
          }
          sate_move_radec=' ';
+         tel->ra0=ra00;
       }
+      tel->dec0=dec00;      
    }
    return 0;
 }
