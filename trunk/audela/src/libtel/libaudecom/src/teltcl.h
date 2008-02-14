@@ -40,7 +40,7 @@ int cmdTelPECSpeed(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
 int cmdTelFocspeed(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelInitcoord(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelReset(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-int cmdTelMechanicalplay(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int cmdTelBacklash(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 
 #endif
