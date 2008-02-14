@@ -24,6 +24,7 @@
 #define __TELTCL_H__
 
 /* ----- defines specifiques aux fonctions de cette camera ----*/
+int cmdTelAdjust(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelResolution(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelInvert(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
