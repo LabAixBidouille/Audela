@@ -40,7 +40,7 @@ static struct cmditem cmdlist[] = {
    {"focspeed", (Tcl_CmdProc *)cmdTelFocspeed},\
    {"initcoord", (Tcl_CmdProc *)cmdTelInitcoord},\
    {"reset", (Tcl_CmdProc *)cmdTelReset},\
-   {"mechanicalplay",(Tcl_CmdProc *)cmdTelMechanicalplay},\
+   {"backlash",(Tcl_CmdProc *)cmdTelBacklash},\
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}
 };
