@@ -24,6 +24,7 @@ static struct cmditem cmdlist[] = {
    /* === Common commands for all telescopes ===*/
    COMMON_CMDLIST
    /* === Specific commands for that telescope ===*/
+   {"adjust", (Tcl_CmdProc *)cmdTelAdjust},\
    {"tempo", (Tcl_CmdProc *)cmdTelTempo},\
    {"resolution", (Tcl_CmdProc *)cmdTelResolution},\
    {"invert", (Tcl_CmdProc *)cmdTelInvert},\
