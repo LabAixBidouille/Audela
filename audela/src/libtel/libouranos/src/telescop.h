@@ -98,8 +98,9 @@ int ouranos_testcom(struct telprop *tel);
 
 int ouranos_delete(struct telprop *tel);
 
-int ouranos_home(struct telprop *tel, char *home_default);
+//int ouranos_home(struct telprop *tel, char *home_default);
 double ouranos_tsl(struct telprop *tel);
+int ouranos_initcoder(struct telprop *tel, int initialRa, int initialDec);
 int ouranos_readcoder(struct telprop *tel,int *ra, int *dec);
 void ouranos_GetCurrentFITSDate_function(Tcl_Interp *interp, char *s,char *function);
 
