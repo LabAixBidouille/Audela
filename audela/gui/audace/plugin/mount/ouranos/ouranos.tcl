@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.10 2008-02-10 17:38:08 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.11 2008-02-15 17:22:34 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -184,7 +184,7 @@ proc ::ouranos::fillConfigPage { frm } {
    pack $frm.frame8 -in $frm.frame2 -side left -fill both -expand 1
 
    frame $frm.frame9 -borderwidth 0 -relief raised
-   pack $frm.frame9 -in $frm.frame2 -side left -fill both -expand 1
+   pack $frm.frame9 -in $frm.frame2 -side left -fill both -expand 1 -pady 17
 
    frame $frm.frame10 -borderwidth 0 -relief raised
    pack $frm.frame10 -in $frm.frame3 -side left -fill both -expand 1
