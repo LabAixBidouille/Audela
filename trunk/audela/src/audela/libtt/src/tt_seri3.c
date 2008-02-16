@@ -1296,7 +1296,7 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
    filtre=NULL;
    taille=sizeof(double);
    if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&filtre,&largeur,&taille,"filtre"))!=0) {
-      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_wavelet_1 for pointer filtre");
+      tt_errlog(TT_ERR_PB_MALLOC,"Pb calloc in tt_ima_series_conv_1 for pointer filtre");
       return(msg);
    }
    somme=(double)0.;
@@ -1354,6 +1354,7 @@ int tt_ima_series_conv_1(TT_IMA_SERIES *pseries)
    /* --- on reinitialise l'image temporaire ---*/
    tt_imadestroyer(pseries->p_tmp1);
    tt_imabuilder(pseries->p_tmp1);
+   tt_free(filtre,"filtre");
 
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
