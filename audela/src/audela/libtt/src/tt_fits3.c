@@ -146,7 +146,6 @@ int tt_tblpixdestroyer(TT_TBL_PIXELIST *p)
    tt_util_free_ptrptr2((void***)&p->tform,"p->tform");
    tt_util_free_ptrptr2((void***)&p->ttype,"p->ttype");
    tt_util_free_ptrptr2((void***)&p->tunit,"p->tunit");
-   tt_util_free_ptrptr2((void***)&p->tunit,"p->tunit");
    tt_free2((void**)&p->datatypes,"p->datatypes");
    /* --- pour la description des donnees de la table ---*/
    tt_free2((void**)&p->x,"p->x");
