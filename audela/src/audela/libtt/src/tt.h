@@ -356,7 +356,7 @@ int libtt_main(int service, ...);
 typedef struct {
    char varname[50];
    int nballoc;
-   int address;
+   unsigned int address;
 } TT_MOUCHARD;
 #endif
 
@@ -923,7 +923,7 @@ int tt_ptr_imaseries(void *args);
 void tt_free(void *ptr,char *name);
 void *tt_calloc(int nombre,int taille);
 void *tt_malloc(int taille);
-int tt_util_mouchard(char *nomptr,int increment,int address);
+int tt_util_mouchard(char *nomptr,int increment,unsigned int address);
 int tt_util_calloc_ptr2(void **args);
 int tt_util_calloc_ptrptr_char2(void **args);
 int tt_util_calloc_ptrptr_char(void **arg1,void *arg2,void *arg3);

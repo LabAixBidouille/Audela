@@ -107,7 +107,7 @@ void *tt_malloc(int taille)
    return(ptr);
 }
 
-int tt_util_mouchard(char *nomptr,int increment,int address)
+int tt_util_mouchard(char *nomptr,int increment,unsigned int address)
 /***************************************************************************/
 {
 #ifdef TT_MOUCHARDPTR
@@ -129,7 +129,7 @@ int tt_util_mouchard(char *nomptr,int increment,int address)
    if (f==NULL) {
       f=fopen("mouchard.txt","w");
       fprintf(f,"1 \n");
-      fprintf(f,"%ld %s %d\n",increment,nomptr,address);
+      fprintf(f,"%d %s %u\n",increment,nomptr,address);
       fclose(f);
    } else {
       nblig=0;
@@ -156,7 +156,7 @@ int tt_util_mouchard(char *nomptr,int increment,int address)
    	    strcpy(texte,"");
 	    sscanf(ligne,"%s",texte);
 	    if ( (strcmp(texte,"")!=0) ) {
-	       sscanf(ligne,"%ld %s %d",&((mouchardptr+k)->nballoc),(mouchardptr+k)->varname,&(mouchardptr+k)->address);
+	       sscanf(ligne,"%d %s %u",&((mouchardptr+k)->nballoc),(mouchardptr+k)->varname,&(mouchardptr+k)->address);
                k++;
             }
 	 }
@@ -180,9 +180,9 @@ int tt_util_mouchard(char *nomptr,int increment,int address)
       }
       /* --- on ecrit le fichier de sortie ---*/
       f=fopen("mouchard.txt","w");
-      fprintf(f,"%ld \n",nblig);
+      fprintf(f,"%d \n",nblig);
       for (k=0;k<nblig;k++) {
-         fprintf(f,"%ld %s %d\n",(mouchardptr+k)->nballoc,(mouchardptr+k)->varname,(mouchardptr+k)->address);
+         fprintf(f,"%d %s %u\n",(mouchardptr+k)->nballoc,(mouchardptr+k)->varname,(mouchardptr+k)->address);
       }
       fclose(f);
    }
