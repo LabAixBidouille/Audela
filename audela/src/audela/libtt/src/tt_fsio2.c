@@ -52,7 +52,7 @@ void tt_free2(void **ptr,char *name)
 	 *ptr=NULL;
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard(name,-1);
+   tt_util_mouchard(name,-1,0);
 #endif
       } else {
 	 /*tt_errlog(TT_WAR_FREE_NULLPTR,name);*/
@@ -72,7 +72,7 @@ void tt_free(void *ptr,char *name)
       ptr=NULL;
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard(name,-1);
+   tt_util_mouchard(name,-1,0);
 #endif
    } else {
       /*tt_errlog(TT_WAR_FREE_NULLPTR,name);*/
@@ -107,7 +107,7 @@ void *tt_malloc(int taille)
    return(ptr);
 }
 
-int tt_util_mouchard(char *nomptr,int increment)
+int tt_util_mouchard(char *nomptr,int increment,int address)
 /***************************************************************************/
 {
 #ifdef TT_MOUCHARDPTR
@@ -129,7 +129,7 @@ int tt_util_mouchard(char *nomptr,int increment)
    if (f==NULL) {
       f=fopen("mouchard.txt","w");
       fprintf(f,"1 \n");
-      fprintf(f,"%ld %s\n",increment,nomptr);
+      fprintf(f,"%ld %s %d\n",increment,nomptr,address);
       fclose(f);
    } else {
       nblig=0;
@@ -156,7 +156,7 @@ int tt_util_mouchard(char *nomptr,int increment)
    	    strcpy(texte,"");
 	    sscanf(ligne,"%s",texte);
 	    if ( (strcmp(texte,"")!=0) ) {
-	       sscanf(ligne,"%ld %s ",&((mouchardptr+k)->nballoc),(mouchardptr+k)->varname);
+	       sscanf(ligne,"%ld %s %d",&((mouchardptr+k)->nballoc),(mouchardptr+k)->varname,&(mouchardptr+k)->address);
                k++;
             }
 	 }
@@ -175,13 +175,14 @@ int tt_util_mouchard(char *nomptr,int increment)
       if (existe==0) {
          strcpy((mouchardptr+nblig)->varname,nomptr);
          ((mouchardptr+nblig)->nballoc)=increment;
+         ((mouchardptr+nblig)->address)=address;
          nblig++;
       }
       /* --- on ecrit le fichier de sortie ---*/
       f=fopen("mouchard.txt","w");
       fprintf(f,"%ld \n",nblig);
       for (k=0;k<nblig;k++) {
-         fprintf(f,"%ld %s \n",(mouchardptr+k)->nballoc,(mouchardptr+k)->varname);
+         fprintf(f,"%ld %s %d\n",(mouchardptr+k)->nballoc,(mouchardptr+k)->varname,(mouchardptr+k)->address);
       }
       fclose(f);
    }
@@ -236,7 +237,7 @@ int tt_util_calloc_ptr2(void **args)
    /*printf(" fin allocation %s\n",(char*)argu[4]);*/
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard((char*)argu[4],1);
+   tt_util_mouchard((char*)argu[4],1,(int)&pp);
 #endif
 
    return(OK_DLL);
@@ -299,7 +300,7 @@ int tt_util_calloc_ptrptr_char2(void **args)
    *pp=(void*)p;
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard((char*)argu[4],1);
+   tt_util_mouchard((char*)argu[4],1,(int)&pp);
 #endif
    return(OK_DLL);
 }

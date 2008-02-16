@@ -174,9 +174,9 @@ int tt_tblcatloader(TT_IMA *p_ima,char *fullname)
    }
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   if (tform!=NULL) {tt_util_mouchard("p->tform",1);}
-   if (ttype!=NULL) {tt_util_mouchard("p->ttype",1);}
-   if (tunit!=NULL) {tt_util_mouchard("p->tunit",1);}
+   if (tform!=NULL) {tt_util_mouchard("p->tform",1,(int)&p->tform);}
+   if (ttype!=NULL) {tt_util_mouchard("p->ttype",1,(int)&p->ttype);}
+   if (tunit!=NULL) {tt_util_mouchard("p->tunit",1,(int)&p->tunit);}
 #endif
    if (tform!=NULL) {tt_util_free_ptrptr2((void***)&tform,"p->tform");}
    if (ttype!=NULL) {tt_util_free_ptrptr2((void***)&ttype,"p->ttype");}
@@ -190,16 +190,16 @@ int tt_tblcatloader(TT_IMA *p_ima,char *fullname)
    }
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard("p->x",1);
-   tt_util_mouchard("p->y",1);
-   tt_util_mouchard("p->ident",1);
-   tt_util_mouchard("p->ra",1);
-   tt_util_mouchard("p->dec",1);
-   tt_util_mouchard("p->magb",1);
-   tt_util_mouchard("p->magv",1);
-   tt_util_mouchard("p->magr",1);
-   tt_util_mouchard("p->magi",1);
-   tt_util_mouchard("tdatatypes",1);
+   tt_util_mouchard("p->x",1,(int)&p->x);
+   tt_util_mouchard("p->y",1,(int)&p->y);
+   tt_util_mouchard("p->ident",1,(int)&p->ident);
+   tt_util_mouchard("p->ra",1,(int)&p->ra);
+   tt_util_mouchard("p->dec",1,(int)&p->dec);
+   tt_util_mouchard("p->magb",1,(int)&p->magb);
+   tt_util_mouchard("p->magv",1,(int)&p->magv);
+   tt_util_mouchard("p->magr",1,(int)&p->magr);
+   tt_util_mouchard("p->magi",1,(int)&p->magi);
+   tt_util_mouchard("tdatatypes",1,(int)&tdatatypes);
 #endif
    tt_free2((void**)&tdatatypes,"tdatatypes");
    /*
