@@ -388,8 +388,8 @@ int tt_imadelnewkey(TT_IMA *p,char *keyname)
 	    break;
 	 }
       }
-      if (((int)strlen(keyname))>((int)(FLEN_KEYWORD))) {
-	 keyname[(int)(FLEN_KEYWORD)]='\0';
+      if (((int)strlen(keyname))>((int)(FLEN_KEYWORD-1))) {
+	 keyname[(int)(FLEN_KEYWORD-1)]='\0';
       }
       /* --- indice du mot a rechercher dans new_* ---*/
       for (indice=0,k=0;k<nbnewkey;k++) {
@@ -440,29 +440,29 @@ int tt_imanewkeychar(TT_IMA *p,char *keyname,char *value,int datatype,char *comm
 	 break;
       }
    }
-   if (((int)strlen(keyname))>((int)(FLEN_KEYWORD))) {
-      keyname[(int)(FLEN_KEYWORD)]='\0';
+   if (((int)strlen(keyname))>((int)(FLEN_KEYWORD-1))) {
+      keyname[(int)(FLEN_KEYWORD-1)]='\0';
    }
    strcpy(p->new_keynames[knew],keyname);
    if (comment!=NULL) {
-      if (((int)strlen(comment))>((int)(FLEN_COMMENT))) {
-	 comment[(int)(FLEN_COMMENT)]='\0';
+      if (((int)strlen(comment))>((int)(FLEN_COMMENT-1))) {
+	 comment[(int)(FLEN_COMMENT-1)]='\0';
       }
       strcpy(p->new_comments[knew],comment);
    } else {
       strcpy(p->new_comments[knew],"");
    }
    if (unit!=NULL) {
-      if (((int)strlen(unit))>((int)(FLEN_COMMENT))) {
-	 unit[(int)(FLEN_COMMENT)]='\0';
+      if (((int)strlen(unit))>((int)(FLEN_COMMENT-1))) {
+	 unit[(int)(FLEN_COMMENT-1)]='\0';
       }
       strcpy(p->new_units[knew],unit);
    } else {
       strcpy(p->new_units[knew],"");
    }
    if (value!=NULL) {
-      if (((int)strlen(value))>((int)(FLEN_VALUE))) {
-	 unit[(int)(FLEN_VALUE)]='\0';
+      if (((int)strlen(value))>((int)(FLEN_VALUE-1))) {
+	 unit[(int)(FLEN_VALUE-1)]='\0';
       }
       strcpy(p->new_values[knew],value);
    } else {
@@ -488,21 +488,21 @@ int tt_imanewkey(TT_IMA *p,char *keyname,void *value,int datatype,char *comment,
 	 break;
       }
    }
-   if (((int)strlen(keyname))>((int)(FLEN_KEYWORD))) {
-      keyname[(int)(FLEN_KEYWORD)]='\0';
+   if (((int)strlen(keyname))>((int)(FLEN_KEYWORD-1))) {
+      keyname[(int)(FLEN_KEYWORD-1)]='\0';
    }
    strcpy(p->new_keynames[knew],keyname);
    if (comment!=NULL) {
-      if (((int)strlen(comment))>((int)(FLEN_COMMENT))) {
-         comment[(int)(FLEN_COMMENT)]='\0';
+      if (((int)strlen(comment))>((int)(FLEN_COMMENT-1))) {
+         comment[(int)(FLEN_COMMENT-1)]='\0';
       }
       strcpy(p->new_comments[knew],comment);
    } else {
       strcpy(p->new_comments[knew],"");
    }
    if (unit!=NULL) {
-      if (((int)strlen(unit))>((int)(FLEN_COMMENT))) {
-         unit[(int)(FLEN_COMMENT)]='\0';
+      if (((int)strlen(unit))>((int)(FLEN_COMMENT-1))) {
+         unit[(int)(FLEN_COMMENT-1)]='\0';
       }
       strcpy(p->new_units[knew],unit);
    } else {
@@ -511,8 +511,8 @@ int tt_imanewkey(TT_IMA *p,char *keyname,void *value,int datatype,char *comment,
    p->new_datatypes[knew]=datatype;
    if (datatype==TSTRING) {
       string_v=(char*)(value);
-      if (((int)strlen(string_v))>((int)(FLEN_VALUE))) {
-	 string_v[(int)(FLEN_COMMENT)]='\0';
+      if (((int)strlen(string_v))>((int)(FLEN_VALUE-1))) {
+	 string_v[(int)(FLEN_COMMENT-1)]='\0';
       }
       strcpy(p->new_values[knew],string_v);
    /* il faudrait metre aussi le logical */

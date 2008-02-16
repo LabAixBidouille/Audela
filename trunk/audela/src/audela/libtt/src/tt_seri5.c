@@ -1480,7 +1480,7 @@ int tt_ima_series_headerfits_1(TT_IMA_SERIES *pseries)
       fgets(message,(TT_MAXLIGNE),fichier);
       tt_util_dellastchar(message);
       sscanf(message,"%s",keyname);
-      keyname[(FLEN_KEYWORD)]='\0';
+      keyname[(FLEN_KEYWORD-1)]='\0';
       if (strcmp(keyname,"")==0) {
 	 break;
       } else {
@@ -1490,7 +1490,7 @@ int tt_ima_series_headerfits_1(TT_IMA_SERIES *pseries)
         fgets(message,(TT_MAXLIGNE),fichier);
         tt_util_dellastchar(message);
         strcpy(value_char,message);
-        value_char[(FLEN_VALUE)]='\0';
+        value_char[(FLEN_VALUE-1)]='\0';
 	 if (strcmp(value_char,"")==0) {
 	    break;
 	 } else {
@@ -1500,11 +1500,11 @@ int tt_ima_series_headerfits_1(TT_IMA_SERIES *pseries)
 	    tt_util_dellastchar(message);
            sscanf(message,"%s",typedata);
 	    strcpy(comment,"");
-	    fgets(comment,FLEN_COMMENT+1,fichier);
+	    fgets(comment,FLEN_COMMENT,fichier);
 	    tt_util_dellastchar(comment);
 	    if (strcmp(comment,"")==0) {pcomment=NULL;} else {pcomment=comment;}
 	    strcpy(unit,"");
-	    fgets(unit,FLEN_COMMENT+1,fichier);
+	    fgets(unit,FLEN_COMMENT,fichier);
 	    tt_util_dellastchar(unit);
 	    if (strcmp(unit,"")==0) {punit=NULL;} else {punit=unit;}
 	    if (strcmp(message,"short")==0) {
