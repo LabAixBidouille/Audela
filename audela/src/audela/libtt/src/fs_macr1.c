@@ -699,7 +699,7 @@ int x_file(void *arg1,void *arg2,void *arg3,void **arg4, void *arg5,void **arg6,
 	    for (kk=1;kk<=tfields;kk++) {
 	       sprintf(motcle,"TDIM%d",kk);
 	       if ((msg=libfiles_main(FS_FITS_READ_KEYWORD,4,fptr,motcle,chaine,NULL))!=KEY_NO_EXIST) {
-		  for(kkk=0;kkk<=3;kkk++) {naxes[kkk]=0;}
+		  for(kkk=0;kkk<3;kkk++) {naxes[kkk]=0;}
 		  maxdim=3;
 		  if ((msg=libfiles_main(FS_FITS_READ_TDIM,5,fptr,&kk,&maxdim,&naxis,naxes))==0) {
 		     /*printf(" TDIM%d=%s (%ld %ld %ld) naxis=%d\n",kk,chaine,naxes[0],naxes[1],naxes[2],naxis);*/
