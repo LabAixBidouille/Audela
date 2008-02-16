@@ -174,9 +174,9 @@ int tt_tblobjloader(TT_IMA *p_ima,char *fullname)
    }
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   if (tform!=NULL) {tt_util_mouchard("p->tform",1);}
-   if (ttype!=NULL) {tt_util_mouchard("p->ttype",1);}
-   if (tunit!=NULL) {tt_util_mouchard("p->tunit",1);}
+   if (tform!=NULL) {tt_util_mouchard("p->tform",1,(int)&p->tform);}
+   if (ttype!=NULL) {tt_util_mouchard("p->ttype",1,(int)&p->ttype);}
+   if (tunit!=NULL) {tt_util_mouchard("p->tunit",1,(int)&p->tunit);}
 #endif
    if (tform!=NULL) {tt_util_free_ptrptr2((void***)&tform,"p->tform");}
    if (ttype!=NULL) {tt_util_free_ptrptr2((void***)&ttype,"p->ttype");}
@@ -190,20 +190,20 @@ int tt_tblobjloader(TT_IMA *p_ima,char *fullname)
    }
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard("p->x",1);
-   tt_util_mouchard("p->y",1);
-   tt_util_mouchard("p->ident",1);
-   tt_util_mouchard("p->ra",1);
-   tt_util_mouchard("p->dec",1);
-   tt_util_mouchard("p->mag",1);
-   tt_util_mouchard("p->fwhmx",1);
-   tt_util_mouchard("p->fwhmy",1);
-   tt_util_mouchard("p->background",1);
-   tt_util_mouchard("p->intensity",1);
-   tt_util_mouchard("p->flux",1);
-   tt_util_mouchard("p->ab",1);
-   tt_util_mouchard("p->posangle",1);
-   tt_util_mouchard("tdatatypes",1);
+   tt_util_mouchard("p->x",1,(int)&p->x);
+   tt_util_mouchard("p->y",1,(int)&p->y);
+   tt_util_mouchard("p->ident",1,(int)&p->ident);
+   tt_util_mouchard("p->ra",1,(int)&p->ra);
+   tt_util_mouchard("p->dec",1,(int)&p->dec);
+   tt_util_mouchard("p->mag",1,(int)&p->mag);
+   tt_util_mouchard("p->fwhmx",1,(int)&p->fwhmx);
+   tt_util_mouchard("p->fwhmy",1,(int)&p->fwhmy);
+   tt_util_mouchard("p->background",1,(int)&p->background);
+   tt_util_mouchard("p->intensity",1,(int)&p->intensity);
+   tt_util_mouchard("p->flux",1,(int)&p->flux);
+   tt_util_mouchard("p->ab",1,(int)&p->ab);
+   tt_util_mouchard("p->posangle",1,(int)&p->posangle);
+   tt_util_mouchard("tdatatypes",1,(int)&tdatatypes);
 #endif
    tt_free(tdatatypes,"tdatatypes");
    /*
