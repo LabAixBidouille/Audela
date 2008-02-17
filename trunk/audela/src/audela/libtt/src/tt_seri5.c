@@ -404,6 +404,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    int raL,deL,magL;
    double XXX,YYY,rienf;
    int bordurex=0,bordurey=0;
+   int np_index=0;
    /*
    double sind0;
    double cosd0;
@@ -491,22 +492,19 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 
    r=l_alpha/2.0;
    v=sin(r*Trad)/cos(d0*Trad);
-   if (v>=1.0)
-      {
-      /* Si le p“le est dans le champ alors on lit de 0 a 24 heures */
+   if (v>=1.0) {
+      /* Si le pole est dans le champ alors on lit de 0 a 24 heures */
       alpha1=0.0;
       alpha2=23.99999999;
-      }
-   else
-      {
-      /* Si le p“le n'est pas dans le champ */
+   } else {
+      /* Si le pole n'est pas dans le champ */
       v=asin(v);
       v*=Tdeg/15.0;
       alpha1=a0-v;
       alpha2=a0+v;
       if (alpha1<0.0) alpha1+=24.0;
       if (alpha2>24.0) alpha2-=24.0;
-      }
+   }
 
    r=l_delta/2.0;
    delta2=d0+r;
@@ -516,195 +514,157 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 
    /*=== recherche les differentes zones presentes dans l'image ===*/
    /* on est a cheval sur 0 heure */
-   if (alpha1>alpha2)
-      {
+   if (alpha1>alpha2) {
       dalpha=(23.99999999-alpha1)/97.0;
       ddelta=(delta2-delta1)/25.0;
       j=0;
-      for (ra=alpha1;ra<=23.99999999;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    j++;
-	    }
-	 }
-      dalpha2=alpha2/97.0;
-      for (ra=0;ra<=alpha2;ra+=dalpha2)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    j++;
-	    }
-	 }
-      nombre=j+5;
-      taille=sizeof(TT_USNO_INDEX);
-      p_index=NULL;
-      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
-	 tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
-	 return(TT_ERR_PB_MALLOC);
-      }
-      i=0;
-      for (ra=alpha1;ra<=23.99999999;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    p_index[i++].flag=-1;
-	    }
-	 }
-      for (ra=0;ra<=alpha2;ra+=dalpha2)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    p_index[i++].flag=-1;
-	    }
-	 }
+      for (ra=alpha1;ra<=23.99999999;ra+=dalpha) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				j++;
+			}
+		}
+		dalpha2=alpha2/97.0;
+		for (ra=0;ra<=alpha2;ra+=dalpha2) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				j++;
+			}
+		}
+		nombre=j+5;
+		taille=sizeof(TT_USNO_INDEX);
+		p_index=NULL;
+		if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
+			tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
+			return(TT_ERR_PB_MALLOC);
+		}
+		i=0;
+		for (ra=alpha1;ra<=23.99999999;ra+=dalpha) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				p_index[i++].flag=-1;
+			}
+		}
+		for (ra=0;ra<=alpha2;ra+=dalpha2) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				p_index[i++].flag=-1;
+			}
+		}
 
       p_index[i++].flag=-1;  // on complete pour bien borner la table
       p_index[i++].flag=-1;
+      np_index=i;
 
       k=0;
       first=1;
-      for (ra=alpha1;ra<=23.99999999;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
-	    if (first==1)
-	       {
-	       p_index[k].flag=1;
-	       p_index[k].indexRA=indexRA;
-	       p_index[k].indexSPD=indexSPD;
-	       first=0;
-	       }
-	    else
-	       {
-	       i=0;
-	       flag=0;
-	       while (p_index[i].flag!=-1)
-		  {
-		  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
-		     {
-		     flag=1;
-		     break;
-		     }
-		  i++;
-		  }
-	       if (flag==0)
-		  {
-		  k++;
-		  p_index[k].flag=1;
-		  p_index[k].indexRA=indexRA;
-		  p_index[k].indexSPD=indexSPD;
-		  }
-	       }
-	    }
-	 }
-      for (ra=0;ra<=alpha2;ra+=dalpha2)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
-	    if (first==1)
-	       {
-	       p_index[k].flag=1;
-	       p_index[k].indexRA=indexRA;
-	       p_index[k].indexSPD=indexSPD;
-	       first=0;
-	       }
-	    else
-	       {
-	       i=0;
-	       flag=0;
-	       while (p_index[i].flag!=-1)
-		  {
-		  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
-		     {
-		     flag=1;
-		     break;
-		     }
-		  i++;
-		  }
-	       if (flag==0)
-		  {
-		  k++;
-		  p_index[k].flag=1;
-		  p_index[k].indexRA=indexRA;
-		  p_index[k].indexSPD=indexSPD;
-		  }
-	       }
-	    }
-	 }
-      }
+      for (ra=alpha1;ra<=23.99999999;ra+=dalpha) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
+				if (first==1) {
+					p_index[k].flag=1;
+					p_index[k].indexRA=indexRA;
+					p_index[k].indexSPD=indexSPD;
+					first=0;
+				} else {
+					i=0;
+					flag=0;
+					while (p_index[i].flag!=-1) {
+						if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD) {
+							flag=1;
+							break;
+						}
+						i++;
+					}
+					if (flag==0) {
+						k++;
+						p_index[k].flag=1;
+						p_index[k].indexRA=indexRA;
+						p_index[k].indexSPD=indexSPD;
+					}
+				}
+			}
+		}
+		for (ra=0;ra<=alpha2;ra+=dalpha2) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
+				if (first==1) {
+					p_index[k].flag=1;
+					p_index[k].indexRA=indexRA;
+					p_index[k].indexSPD=indexSPD;
+					first=0;
+				} else {
+					i=0;
+					flag=0;
+					while (p_index[i].flag!=-1) {
+						if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD) {
+							flag=1;
+							break;
+						}
+						i++;
+					}
+					if (flag==0) {
+						k++;
+						p_index[k].flag=1;
+						p_index[k].indexRA=indexRA;
+						p_index[k].indexSPD=indexSPD;
+					}
+				}
+			}
+		}
+	}
    /*=== recherche les differentes zones presentes dans l'image ===*/
    /* on n'est pas a cheval sur 0 heure */
-   else
-      {
-      dalpha=(alpha2-alpha1)/97.0;
-      ddelta=(delta2-delta1)/25.0;
-      j=0;
-      for (ra=alpha1;ra<=alpha2;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    j++;
-	    }
-	 }
-      nombre=j+5;
-      taille=sizeof(TT_USNO_INDEX);
-      p_index=NULL;
-      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
-	 tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
-	 return(TT_ERR_PB_MALLOC);
-      }
-      i=0;
-      for (ra=alpha1;ra<=alpha2;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    p_index[i++].flag=-1;
-	 }
-      }
-
+   else {
+		dalpha=(alpha2-alpha1)/97.0;
+		ddelta=(delta2-delta1)/25.0;
+		j=0;
+		for (ra=alpha1;ra<=alpha2;ra+=dalpha) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				j++;
+			}
+		}
+		nombre=j+5;
+		taille=sizeof(TT_USNO_INDEX);
+		p_index=NULL;
+		if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
+			tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
+			return(TT_ERR_PB_MALLOC);
+		}
+		i=0;
+		for (ra=alpha1;ra<=alpha2;ra+=dalpha) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				p_index[i++].flag=-1;
+			}
+		}
       p_index[i++].flag=-1;  // on complete pour bien borner la table
       p_index[i++].flag=-1;
-
+      np_index=i;
       k=0;
       first=1;
-      for (ra=alpha1;ra<=alpha2;ra+=dalpha)
-	 {
-	 for (de=delta1;de<=delta2;de+=ddelta)
-	    {
-	    tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
-	    if (first==1)
-	       {
-	       p_index[k].flag=1;
-	       p_index[k].indexRA=indexRA;
-	       p_index[k].indexSPD=indexSPD;
-	       first=0;
-	       }
-	    else
-	       {
-	       i=0;
-	       flag=0;
-	       while (p_index[i].flag!=-1)
-		  {
-		  if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD)
-		     {
-		     flag=1;
-		     break;
-		     }
-		  i++;
-		  }
-	       if (flag==0)
-		  {
-		  k++;
-		  p_index[k].flag=1;
-		  p_index[k].indexRA=indexRA;
-		  p_index[k].indexSPD=indexSPD;
-		  }
-	       }
-	    }
-	 }
+      for (ra=alpha1;ra<=alpha2;ra+=dalpha) {
+			for (de=delta1;de<=delta2;de+=ddelta) {
+				tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
+				if (first==1) {
+					p_index[k].flag=1;
+					p_index[k].indexRA=indexRA;
+					p_index[k].indexSPD=indexSPD;
+					first=0;
+				} else {
+					i=0;
+					flag=0;
+					while (p_index[i].flag!=-1) {
+						if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD) {
+							flag=1;
+							break;
+						}
+						i++;
+					}
+					if (flag==0) {
+						k++;
+						p_index[k].flag=1;
+						p_index[k].indexRA=indexRA;
+						p_index[k].indexSPD=indexSPD;
+					}
+				}
+			}
+		}
    }
 
    /* --- bordure est la zone d'exclusion au bord de l'image ---*/
@@ -727,7 +687,6 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       return(PB_DLL);
    }
 
-
    /*==== balayage des fichiers des catalogues .CAT ====*/
 
    a0*=15.0*Trad;
@@ -742,150 +701,152 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    if (typecat==TT_USNOCOMP) {
       /* TYCHO */
       /*=== balayage des zones trouvees .ACC ===*/
-      k=0;
-      while (p_index[k].flag!=-1) {
-   	 sprintf(nom,"%styc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
+		for (k=0;k<np_index;k++) {
+			if (p_index[k].flag==-1) {
+				break;
+			}
+			sprintf(nom,"%styc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
          if ((acc=fopen(nom,"r"))==NULL) {
             sprintf(message,"File %s from USNO catalog not found\n",nom);
-	    tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
-	    fclose(out_file);
-	    tt_free2((void**)&p_index,"p_index");
-	    return(PB_DLL);
-         }
+				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
+				fclose(out_file);
+				tt_free2((void**)&p_index,"p_index");
+				return(PB_DLL);
+			}
          /*=== on lit 30 caracteres dans le fichier .acc ===*/
          for (i=0;i<=p_index[k].indexRA;i++) {
-	    if (fread(buf_acc,1,30,acc)!=30) break;
+				if (fread(buf_acc,1,30,acc)!=30) break;
          }
 #ifdef OS_LINUX_GCC_SO
-	 sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
+			sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
 #else
-	 sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
+			sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
 #endif
          if (typecat==TT_USNO) { offset=(offset-1)*12; }
          else { offset=(offset-1)*10; }
          p_index[k].offset=offset;
          p_index[k].nbObjects=nbObjects;
          fclose(acc);
-         k++;
       }
       /*==== balayage des fichiers de catalogue .CAT ====*/
-      k=0;
-      while (p_index[k].flag!=-1) {
+		for (k=0;k<np_index;k++) {
+			if (p_index[k].flag==-1) {
+				break;
+			}
          sprintf(nom,"%styc%sZON%04d.CAT",path_astromcatalog,slash,p_index[k].indexSPD*75);
          if ((cat=fopen(nom,"rb"))==NULL) {
-     	    sprintf(message,"File %s not found\n",nom);
-	    tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
-	    fclose(out_file);
-	    tt_free2((void**)&p_index,"p_index");
-	    return(PB_DLL);
+				sprintf(message,"File %s not found\n",nom);
+				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
+				fclose(out_file);
+				tt_free2((void**)&p_index,"p_index");
+				return(PB_DLL);
          }
          /* deplacement sur la premiere etoile */
          fseek(cat,p_index[k].offset,SEEK_SET);
          nbObjects=p_index[k].nbObjects;
          /* lecture de toute les etoiles de la zone */
          for (i=0;i<nbObjects;i++) {
-	    if (fread(&raL,1,4,cat)!=4) break;
-	    if (fread(&deL,1,4,cat)!=4) break;
-	    if (fread(&tmr,1,1,cat)!=1) break;
-	    if (fread(&tmb,1,1,cat)!=1) break;
-	    ra=(double)raL/360000.0;
-	    de=(double)deL/360000.0-90.0;
-	    mag_red=((double)tmr)/10.0-3.0;
-	    mag_bleue=((double)tmb)/10.0-3.0;
-  	    tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
-	    if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-	       /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-	       ppx=(double)XXX;
-	       ppy=(double)YYY;
-	       compteur=compteur+1;
-	       compteur_tyc=compteur_tyc+1;
-	       if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",
-			compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
-	          sprintf(message,"A line in file %s cannot be created\n",name);
-	          tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
-	          fclose(cat);
-	          fclose(out_file);
-	          tt_free2((void**)&p_index,"p_index");
-	          return(PB_DLL);
-               }
-	       j++;
+				if (fread(&raL,1,4,cat)!=4) break;
+				if (fread(&deL,1,4,cat)!=4) break;
+				if (fread(&tmr,1,1,cat)!=1) break;
+				if (fread(&tmb,1,1,cat)!=1) break;
+				ra=(double)raL/360000.0;
+				de=(double)deL/360000.0-90.0;
+				mag_red=((double)tmr)/10.0-3.0;
+				mag_bleue=((double)tmb)/10.0-3.0;
+  				tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
+				if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
+					/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+					ppx=(double)XXX;
+					ppy=(double)YYY;
+					compteur=compteur+1;
+					compteur_tyc=compteur_tyc+1;
+					if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+						sprintf(message,"A line in file %s cannot be created\n",name);
+						tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+						fclose(cat);
+						fclose(out_file);
+						tt_free2((void**)&p_index,"p_index");
+						return(PB_DLL);
+					}
+					j++;
             }
-	 }
+			}
          fclose(cat);
-         k++;
       }
       /* GSC */
       /*=== balayage des zones trouvees .ACC ===*/
-      k=0;
-      while (p_index[k].flag!=-1) {
-   	 sprintf(nom,"%sgsc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
+		for (k=0;k<np_index;k++) {
+			if (p_index[k].flag==-1) {
+				break;
+			}
+			sprintf(nom,"%sgsc%sZON%04d.ACC",path_astromcatalog,slash,p_index[k].indexSPD*75);
          if ((acc=fopen(nom,"r"))==NULL) {
-            sprintf(message,"File %s from USNO catalog not found\n",nom);
-	    tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
-	    fclose(out_file);
-	    tt_free2((void**)&p_index,"p_index");
-	    return(PB_DLL);
-         }
+				sprintf(message,"File %s from USNO catalog not found\n",nom);
+				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
+				fclose(out_file);
+				tt_free2((void**)&p_index,"p_index");
+				return(PB_DLL);
+			}
          /*=== on lit 30 caracteres dans le fichier .acc ===*/
          for (i=0;i<=p_index[k].indexRA;i++) {
-	    if (fread(buf_acc,1,30,acc)!=30) break;
+				if (fread(buf_acc,1,30,acc)!=30) break;
          }
 #ifdef OS_LINUX_GCC_SO
-	 sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
+			sscanf(buf_acc,"%lf %d %d",&rienf,&offset,&nbObjects);
 #else
-	 sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
+			sscanf(buf_acc,"%lf %ld %ld",&rienf,&offset,&nbObjects);
 #endif
          if (typecat==TT_USNO) { offset=(offset-1)*12; }
          else { offset=(offset-1)*10; }
          p_index[k].offset=offset;
          p_index[k].nbObjects=nbObjects;
          fclose(acc);
-         k++;
       }
       /*==== balayage des fichiers de catalogue .CAT ====*/
-      k=0;
-      while (p_index[k].flag!=-1) {
+		for (k=0;k<np_index;k++) {
+			if (p_index[k].flag==-1) {
+				break;
+			}
          sprintf(nom,"%sgsc%sZON%04d.CAT",path_astromcatalog,slash,p_index[k].indexSPD*75);
          if ((cat=fopen(nom,"rb"))==NULL) {
-     	    sprintf(message,"File %s not found\n",nom);
-	    tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
-	    fclose(out_file);
-	    tt_free2((void**)&p_index,"p_index");
-	    return(PB_DLL);
+     			sprintf(message,"File %s not found\n",nom);
+				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
+				fclose(out_file);
+				tt_free2((void**)&p_index,"p_index");
+				return(PB_DLL);
          }
          /* deplacement sur la premiere etoile */
          fseek(cat,p_index[k].offset,SEEK_SET);
          nbObjects=p_index[k].nbObjects;
          /* lecture de toute les etoiles de la zone */
          for (i=0;i<nbObjects;i++) {
-	    if (fread(&raL,1,4,cat)!=4) break;
-	    if (fread(&deL,1,4,cat)!=4) break;
-	    if (fread(&tmr,1,1,cat)!=1) break;
-	    if (fread(&tmb,1,1,cat)!=1) break;
-	    ra=(double)raL/360000.0;
-	    de=(double)deL/360000.0-90.0;
-	    mag_red=((double)tmr)/10.0-3.0;
-	    mag_bleue=((double)tmb)/10.0-3.0;
-  	    tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
-	    if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-	       /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-	       ppx=(double)XXX;
-	       ppy=(double)YYY;
-	       compteur=compteur+1;
-	       if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",
-			compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
-	          sprintf(message,"A line in file %s cannot be created\n",name);
-	          tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
-	          fclose(cat);
-	          fclose(out_file);
-	          tt_free2((void**)&p_index,"p_index");
-	          return(PB_DLL);
+				if (fread(&raL,1,4,cat)!=4) break;
+				if (fread(&deL,1,4,cat)!=4) break;
+				if (fread(&tmr,1,1,cat)!=1) break;
+				if (fread(&tmb,1,1,cat)!=1) break;
+				ra=(double)raL/360000.0;
+				de=(double)deL/360000.0-90.0;
+				mag_red=((double)tmr)/10.0-3.0;
+				mag_bleue=((double)tmb)/10.0-3.0;
+				tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
+				if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
+					/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+					ppx=(double)XXX;
+					ppy=(double)YYY;
+					compteur=compteur+1;
+					if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+						sprintf(message,"A line in file %s cannot be created\n",name);
+						tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+						fclose(cat);
+						fclose(out_file);
+						tt_free2((void**)&p_index,"p_index");
+						return(PB_DLL);
                }
-	       j++;
+				j++;
             }
-	 }
+			}
          fclose(cat);
-         k++;
       }
    }
 
@@ -893,15 +854,15 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    /* = On effectue ici le balayage sur le USNO    = */
    /* ============================================== */
    if ((typecat==TT_USNO)||(typecat==TT_USNOCOMP)) {
-      k=0;
-      while (p_index[k].flag!=-1) {
-         /* --- ne lit pas l'USNO si le compteur de Tycho est > 200 ---*/
-         /* --- (grand champ) ---*/
-         if (compteur_tyc>200) { break; }
+      /* --- ne lit pas l'USNO si le compteur de Tycho est > 200 ---*/
+      /* --- (grand champ) ---*/
+      if (compteur_tyc<=200) {
 
          /*=== balayage des zones trouvees .ACC ===*/
-         k=0;
-         while (p_index[k].flag!=-1) {
+			for (k=0;k<np_index;k++) {
+				if (p_index[k].flag==-1) {
+					break;
+				}
             if (typecat==TT_USNO) {
                sprintf(nom,"%sZONE%04d.ACC",path_astromcatalog,p_index[k].indexSPD*75);
             } else {
@@ -928,13 +889,14 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
             p_index[k].offset=offset;
             p_index[k].nbObjects=nbObjects;
             fclose(acc);
-            k++;
          }
 
          /*=== balayage des zones trouvees .CAT ===*/
-         k=0;
-         while (p_index[k].flag!=-1) {
+			for (k=0;k<np_index;k++) {
 
+				if (p_index[k].flag==-1) {
+					break;
+				}
             if (typecat==TT_USNO) {
                sprintf(nom,"%sZONE%04d.CAT",path_astromcatalog,p_index[k].indexSPD*75);
             } else {
@@ -974,26 +936,23 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
                   mag_bleue=((double)tmb)/10.0-3.0;
                }
                tt_util_astrom_radec2xy(&p,ra/(180/(TT_PI)),de/(180/(TT_PI)),&XXX,&YYY);
-	       if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
-               /*if (XXX>=0.0 && XXX<(double)nb_pixel_x && YYY>=0.0 && YYY<(double)nb_pixel_y) {*/
-                  /*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
-                  ppx=(double)XXX;
-                  ppy=(double)YYY;
-                  compteur=compteur+1;
-                  if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",
-                   compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
-                     sprintf(message,"A line in file %s cannot be created\n",name);
-                     tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
-                     fclose(cat);
-                     fclose(out_file);
-                     tt_free2((void**)&p_index,"p_index");
-                     return(PB_DLL);
+			      if (XXX>=XXXmin && XXX<XXXmax && YYY>=YYYmin && YYY<YYYmax && mag_red<=magrlim && mag_bleue<=magblim ) {
+						/*=== ecriture d'une ligne dans le fichier USNO.LST ===*/
+						ppx=(double)XXX;
+						ppy=(double)YYY;
+						compteur=compteur+1;
+						if ((fprintf(out_file,"%d %f %f %f %f %f %f %f\n",compteur,ppx,ppy,mag_red,ra,de,mag_red,mag_bleue))<0) {
+							sprintf(message,"A line in file %s cannot be created\n",name);
+							tt_errlog(TT_ERR_FILE_CANNOT_BE_WRITED,message);
+							fclose(cat);
+							fclose(out_file);
+							tt_free2((void**)&p_index,"p_index");
+							return(PB_DLL);
                   }
                j++;
                }
             }
             fclose(cat);
-            k++;
          }
       }
    }
@@ -1149,13 +1108,13 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       }
       for (k=0;k<(nbe+0);k++) {
          if (k<nbe) {
-   	 x=p_out->catalist->x[k];
-      	 /*y=naxis2-1-p_out->catalist->y[k];*/
-      	 y=naxis2-p_out->catalist->y[k];
-     	 magb=p_out->catalist->magb[k];
-	 magv=p_out->catalist->magv[k];
-	 magr=p_out->catalist->magr[k];
-	 magi=p_out->catalist->magi[k];
+				x=p_out->catalist->x[k];
+      		/*y=naxis2-1-p_out->catalist->y[k];*/
+      		y=naxis2-p_out->catalist->y[k];
+				magb=p_out->catalist->magb[k];
+				magv=p_out->catalist->magv[k];
+				magr=p_out->catalist->magr[k];
+				magi=p_out->catalist->magi[k];
          }
          if (k==nbe) {
             if ((p.ra0!=-100)&&(p.dec0!=-100)) {
@@ -1165,12 +1124,12 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       	       ra=p.crval1;
       	       dec=p.crval2;
             }
-   	    tt_util_astrom_radec2xy(&p,ra,dec,&x,&y);
-   	    /*y=naxis2-1-y;*/
-   	    y=naxis2-y;
-   	    magr=99;
-      	    magv=0;
-   	    magb=99;
+				tt_util_astrom_radec2xy(&p,ra,dec,&x,&y);
+				/*y=naxis2-1-y;*/
+				y=naxis2-y;
+				magr=99;
+				magv=0;
+				magb=99;
          }
          k0=(int)(x);
          k1=(int)(y);
@@ -1185,16 +1144,16 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
          magb=dvalue;
          rayon=5;
          for (kk0=k0-rayon;kk0<=k0+rayon;kk0++) {
-   	 for (kk1=k1-rayon;kk1<=k1+rayon;kk1++) {
-   	    dvalue=(kk0-x)*(kk0-x)+(kk1-y)*(kk1-y);
-   	    if (dvalue<=rayon) {
-   	       if ((kk0>=0)&&(kk0<naxis1)&&(kk1>=0)&&(kk1<naxis2)) {
-   		  pjpeg[3*(naxis1*kk1+kk0)+0]=(unsigned char)(magr); /* rouge */
-   		  pjpeg[3*(naxis1*kk1+kk0)+1]=(unsigned char)(magv); /* vert */
-   		  pjpeg[3*(naxis1*kk1+kk0)+2]=(unsigned char)(magb); /* bleu */
-   	       }
-   	    }
-   	 }
+				for (kk1=k1-rayon;kk1<=k1+rayon;kk1++) {
+					dvalue=(kk0-x)*(kk0-x)+(kk1-y)*(kk1-y);
+					if (dvalue<=rayon) {
+						if ((kk0>=0)&&(kk0<naxis1)&&(kk1>=0)&&(kk1<naxis2)) {
+							pjpeg[3*(naxis1*kk1+kk0)+0]=(unsigned char)(magr); /* rouge */
+							pjpeg[3*(naxis1*kk1+kk0)+1]=(unsigned char)(magv); /* vert */
+							pjpeg[3*(naxis1*kk1+kk0)+2]=(unsigned char)(magb); /* bleu */
+						}
+					}
+				}
          }
          /*--- indice de x,y dans le pointeur image FITS ---*/
          /*p_out->p[kk=xmax*y+x];*/
@@ -1223,7 +1182,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
          tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_1 (pointer jpeg)");
          return(TT_ERR_PB_MALLOC);
       }
-     if (pseries->hicut!=pseries->locut) {
+		if (pseries->hicut!=pseries->locut) {
          for (kk0=0;kk0<naxis1;kk0++) {
             for (kk1=0;kk1<naxis2;kk1++) {
                dvalue=p_out->p[naxis1*(naxis2-1-kk1)+kk0];
@@ -1234,27 +1193,27 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
                   magr=magr;
                }
                pjpeg[3*(naxis1*kk1+kk0)+0]=(unsigned char)(magr); /* rouge */
-   	     pjpeg[3*(naxis1*kk1+kk0)+1]=(unsigned char)(magr); /* vert */
-   	     pjpeg[3*(naxis1*kk1+kk0)+2]=(unsigned char)(magr); /* bleu */
+					pjpeg[3*(naxis1*kk1+kk0)+1]=(unsigned char)(magr); /* vert */
+					pjpeg[3*(naxis1*kk1+kk0)+2]=(unsigned char)(magr); /* bleu */
            }
          }
       }
       for (k=0;k<(nbe+0);k++) {
          if (k<nbe) {
-   	 x=p_out->catalist->x[k];
-   	 /*y=naxis2-1-p_out->catalist->y[k];*/
-   	 y=naxis2-p_out->catalist->y[k];
-   	 magb=p_out->catalist->magb[k];
-   	 magv=p_out->catalist->magv[k];
-   	 magr=p_out->catalist->magr[k];
-   	 magi=p_out->catalist->magi[k];
+   			x=p_out->catalist->x[k];
+   			/*y=naxis2-1-p_out->catalist->y[k];*/
+   			y=naxis2-p_out->catalist->y[k];
+   			magb=p_out->catalist->magb[k];
+   			magv=p_out->catalist->magv[k];
+   			magr=p_out->catalist->magr[k];
+   			magi=p_out->catalist->magi[k];
          }
          if (k==nbe) {
-   	 ra=p.ra0;
-   	 dec=p.dec0;
-  	 tt_util_astrom_radec2xy(&p,ra,dec,&x,&y);
-   	 /*y=naxis2-1-y;*/
-   	 y=naxis2-y;
+				ra=p.ra0;
+				dec=p.dec0;
+				tt_util_astrom_radec2xy(&p,ra,dec,&x,&y);
+				/*y=naxis2-1-y;*/
+				y=naxis2-y;
          }
          k0=(int)(x);
          k1=(int)(y);
@@ -1266,32 +1225,32 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
          dvalue=(16-magv)/(16-8)*155+100;if (dvalue<0) {dvalue=0;}if (dvalue>254) {dvalue=255;}
          magv=dvalue*0.;
          dvalue=(16-magb)/(16-8)*155+100;if (dvalue<0) {dvalue=0;}if (dvalue>254) {dvalue=255;}
-        magb=dvalue*0.;
+			magb=dvalue*0.;
          if (k==nbe) {
-   	 magr=99;
-   	 magv=0;
-   	 magb=99;
+				magr=99;
+				magv=0;
+				magb=99;
          }
          rayon=10;
          for (kk0=k0-rayon;kk0<=k0+rayon;kk0++) {
-   	 for (kk1=k1-rayon;kk1<=k1+rayon;kk1++) {
-   	    dvalue=(kk0-x)*(kk0-x)+(kk1-y)*(kk1-y);
-   	    if (dvalue<=rayon) {
-  	       if ((kk0>=0)&&(kk0<naxis1)&&(kk1>=0)&&(kk1<naxis2)) {
-  		  pjpeg[3*(naxis1*kk1+kk0)+0]=(unsigned char)(magr); /* rouge */
-   		  pjpeg[3*(naxis1*kk1+kk0)+1]=(unsigned char)(magv); /* vert */
-   		  pjpeg[3*(naxis1*kk1+kk0)+2]=(unsigned char)(magb); /* bleu */
-   	       }
-  	    }
-  	 }
-        }
+				for (kk1=k1-rayon;kk1<=k1+rayon;kk1++) {
+					dvalue=(kk0-x)*(kk0-x)+(kk1-y)*(kk1-y);
+					if (dvalue<=rayon) {
+						if ((kk0>=0)&&(kk0<naxis1)&&(kk1>=0)&&(kk1<naxis2)) {
+							pjpeg[3*(naxis1*kk1+kk0)+0]=(unsigned char)(magr); /* rouge */
+							pjpeg[3*(naxis1*kk1+kk0)+1]=(unsigned char)(magv); /* vert */
+							pjpeg[3*(naxis1*kk1+kk0)+2]=(unsigned char)(magb); /* bleu */
+						}
+					}
+				}
+			}
          /*--- indice de x,y dans le pointeur image FITS ---*/
-        /*p_out->p[kk=xmax*y+x];*/
+			/*p_out->p[kk=xmax*y+x];*/
       }
       /* --- enregistrement de l'image RGB en format JPEG --- */
       if ((msg=libfiles_main(FS_MACR_WRITE_JPG,6,pseries->jpegfile_chart2,&color_space,
-       pjpeg,&naxis1,&naxis2,&qualite))!=0) {
-          return(msg);
+		 pjpeg,&naxis1,&naxis2,&qualite))!=0) {
+			return(msg);
       }
       /* --- on libere le pointeur d'image jpeg---*/
       tt_free2((void**)&pjpeg,"pjpeg");
@@ -1305,7 +1264,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       sprintf(pseries->p_out->catakey,"%s:%d",value_char,rand());
       tt_imanewkey(p_out,"CATAKEY",pseries->p_out->catakey,TSTRING,"Link key for catafile","");
       if (strcmp(pseries->catafile,"")!=0) {
-	 strcpy(pseries->p_out->catalist_fullname,pseries->catafile);
+			strcpy(pseries->p_out->catalist_fullname,pseries->catafile);
       }
    }
 
