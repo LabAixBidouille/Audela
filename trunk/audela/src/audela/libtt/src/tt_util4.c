@@ -1114,7 +1114,7 @@ for (i=0;i<=(jmax-1);i++)
 
 void tt_laps_parami(int nisoph, TT_LAPS *isoph,double *radius_max_analyse, double *radius_coeur,double *radius_effective,double *magnitude_totale,double *magnitude_asymptotique,double *brillance_effective,double *brillance_centrale)
 {
-double s1,sm,sr,sr2,smr,moyy;
+double s1,sm,sr,sr2,smr,moyy,temp;
 int k,kc,j;
 double ama,det,p,amamax,ak,pot,su,su1,btot,pui;
 double ray2,rayon2,basy,poef,ref,pot0,pot1,r;
@@ -1208,8 +1208,10 @@ amagcent = isoph[1].surmag;
 amagcoeur = amagcent + .7526;
 kc = 1;
 
-while ( (isoph[kc].surmag<amagcoeur) && (kc<nisoph) ) {
+temp=isoph[kc].surmag;
+while ( (temp<amagcoeur) && (kc<nisoph) ) {
    kc=kc+1;
+	temp=isoph[kc].surmag;
 }
 
 cnit = (amagcoeur - isoph[kc-1].surmag) / (isoph[kc].surmag - isoph[kc-1].surmag);
