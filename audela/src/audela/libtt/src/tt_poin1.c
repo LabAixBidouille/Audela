@@ -857,7 +857,7 @@ int tt_ptr_freeptr(void *args)
    /* --- verification des arguments ---*/
    /* --- liberation memoire ---*/
    argu=(void**)(args);
-   if (argu[1]!=NULL) { p=*(void**)(argu[1]); tt_free2((void**)&p,"p"); }
+   if (argu[1]!=NULL) { p=*(void**)(argu[1]); tt_free2((void**)&p,NULL); }
    return(OK_DLL);
 }
 

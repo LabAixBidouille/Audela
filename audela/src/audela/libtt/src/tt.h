@@ -350,7 +350,7 @@ int libtt_main(int service, ...);
 #define TT_DISTORASTROM
 
 /* --- Mouchard de pointeurs pour le debug ---*/
-/*#define TT_MOUCHARDPTR*/
+//#define TT_MOUCHARDPTR
 
 #ifdef TT_MOUCHARDPTR
 typedef struct {

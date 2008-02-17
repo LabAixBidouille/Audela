@@ -926,7 +926,7 @@ int tt_imaloader(TT_IMA *p,char *fullname,long firstelem,long nelements)
    }
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard("p->p",1,(int)&(p->p));
+   tt_util_mouchard("p->p",1,(int)(p->p));
 #endif
    p->naxis1=(int)(p->naxes[0]);
    p->naxis2=(int)(p->naxes[1]);
