@@ -25,19 +25,20 @@
 int tt_util_free_ptrptr(void **ptr,char *name)
 /***************************************************************************/
 {
-   tt_free(*ptr,NULL);
-   tt_free(ptr,name);
+   char message[TT_MAXLIGNE];
+   sprintf(message,"%s.data",name);
+   tt_free2(ptr,message); /* NULL ? */
+   tt_free2((void*)&ptr,name);
    return(OK_DLL);
 }
 
 int tt_util_free_ptrptr2(void ***ptr,char *name)
 /***************************************************************************/
 {
-   /*printf("1.1 %p %p %p\n",ptr,*ptr,**ptr);*/
-   tt_free2(*ptr,NULL);
-   /*printf("1.2 %p %p %p\n",ptr,*ptr,**ptr);*/
+   char message[TT_MAXLIGNE];
+   sprintf(message,"%s.data",name);
+   tt_free2(*ptr,message); /* NULL ? */
    tt_free2((void**)ptr,name);
-   /*printf("1.3 %p %p\n",ptr,*ptr);*/
    return(OK_DLL);
 }
 
@@ -49,11 +50,11 @@ void tt_free2(void **ptr,char *name)
    if (ptr!=NULL) {
       if (*ptr!=NULL) {
 	 free(*ptr);
-	 *ptr=NULL;
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard(name,-1,0);
+   tt_util_mouchard(name,-1,(int)*ptr);
 #endif
+	 *ptr=NULL;
       } else {
 	 /*tt_errlog(TT_WAR_FREE_NULLPTR,name);*/
       }
@@ -69,42 +70,15 @@ void tt_free(void *ptr,char *name)
 {
    if (ptr!=NULL) {
       free(ptr);
-      ptr=NULL;
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard(name,-1,0);
+   tt_util_mouchard(name,-1,(int)ptr);
 #endif
+      ptr=NULL;
    } else {
       /*tt_errlog(TT_WAR_FREE_NULLPTR,name);*/
    }
    return;
-}
-
-void *tt_calloc(int nombre,int taille)
-/***************************************************************************/
-{
-   static void *ptr;
-   if (taille<=0) {
-      tt_errlog(TT_ERR_ALLOC_SIZE_ZERO,NULL);
-      return(NULL);
-   }
-   if (nombre<=0) {
-      tt_errlog(TT_ERR_ALLOC_NUMBER_ZERO,NULL);
-      return(NULL);
-   }
-   ptr=NULL;
-   ptr=(void*)calloc(nombre,taille);
-   return(ptr);
-}
-
-void *tt_malloc(int taille)
-/***************************************************************************/
-{
-   void *ptr;
-   ptr=NULL;
-   if (taille<=0) { return(NULL); }
-   ptr=(void*)malloc(taille);
-   return(ptr);
 }
 
 int tt_util_mouchard(char *nomptr,int increment,unsigned int address)
@@ -124,6 +98,9 @@ int tt_util_mouchard(char *nomptr,int increment,unsigned int address)
    */
    if (nomptr==NULL) {
       return(OK_DLL);
+   }
+   if (strcmp(nomptr,"p")==0) {
+	   increment+=0;
    }
    f=fopen("mouchard.txt","r");
    if (f==NULL) {
@@ -186,9 +163,37 @@ int tt_util_mouchard(char *nomptr,int increment,unsigned int address)
          fprintf(f,"%d %s %u\n",(mouchardptr+k)->nballoc,(mouchardptr+k)->varname,(mouchardptr+k)->address);
       }
       fclose(f);
+      free(mouchardptr);
    }
 #endif
    return(OK_DLL);
+}
+
+void *tt_calloc(int nombre,int taille)
+/***************************************************************************/
+{
+   static void *ptr;
+   if (taille<=0) {
+      tt_errlog(TT_ERR_ALLOC_SIZE_ZERO,NULL);
+      return(NULL);
+   }
+   if (nombre<=0) {
+      tt_errlog(TT_ERR_ALLOC_NUMBER_ZERO,NULL);
+      return(NULL);
+   }
+   ptr=NULL;
+   ptr=(void*)calloc(nombre,taille);
+   return(ptr);
+}
+
+void *tt_malloc(int taille)
+/***************************************************************************/
+{
+   void *ptr;
+   ptr=NULL;
+   if (taille<=0) { return(NULL); }
+   ptr=(void*)malloc(taille);
+   return(ptr);
 }
 
 int tt_util_calloc_ptr2(void **args)
@@ -238,7 +243,7 @@ int tt_util_calloc_ptr2(void **args)
    /*printf(" fin allocation %s\n",(char*)argu[4]);*/
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard((char*)argu[4],1,(int)&pp);
+   tt_util_mouchard((char*)argu[4],1,(int)p);
 #endif
 
    return(OK_DLL);
@@ -301,7 +306,9 @@ int tt_util_calloc_ptrptr_char2(void **args)
    *pp=(void*)p;
 #ifdef TT_MOUCHARDPTR
    /* --- debug ---*/
-   tt_util_mouchard((char*)argu[4],1,(int)&pp);
+   tt_util_mouchard((char*)argu[4],1,(int)p);
+   sprintf(message,"%s.data",(char*)argu[4]);
+   tt_util_mouchard(message,1,(int)p_data);
 #endif
    return(OK_DLL);
 }
