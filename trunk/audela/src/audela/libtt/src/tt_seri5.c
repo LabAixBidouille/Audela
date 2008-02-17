@@ -563,14 +563,15 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 					p_index[k].indexSPD=indexSPD;
 					first=0;
 				} else {
-					i=0;
 					flag=0;
-					while (p_index[i].flag!=-1) {
+					for (i=0;i<np_index;i++) {
+						if (p_index[i].flag==-1) {
+							break;
+						}
 						if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD) {
 							flag=1;
 							break;
 						}
-						i++;
 					}
 					if (flag==0) {
 						k++;
@@ -590,14 +591,15 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 					p_index[k].indexSPD=indexSPD;
 					first=0;
 				} else {
-					i=0;
 					flag=0;
-					while (p_index[i].flag!=-1) {
+					for (i=0;i<np_index;i++) {
+						if (p_index[i].flag==-1) {
+							break;
+						}
 						if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD) {
 							flag=1;
 							break;
 						}
-						i++;
 					}
 					if (flag==0) {
 						k++;
@@ -647,14 +649,15 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 					p_index[k].indexSPD=indexSPD;
 					first=0;
 				} else {
-					i=0;
 					flag=0;
-					while (p_index[i].flag!=-1) {
+					for (i=0;i<np_index;i++) {
+						if (p_index[i].flag==-1) {
+							break;
+						}
 						if (p_index[i].indexRA==indexRA && p_index[i].indexSPD==indexSPD) {
 							flag=1;
 							break;
 						}
-						i++;
 					}
 					if (flag==0) {
 						k++;
