@@ -354,7 +354,7 @@ int libtt_main(int service, ...);
 
 #ifdef TT_MOUCHARDPTR
 typedef struct {
-   char varname[50];
+   char varname[100];
    int nballoc;
    unsigned int address;
 } TT_MOUCHARD;
