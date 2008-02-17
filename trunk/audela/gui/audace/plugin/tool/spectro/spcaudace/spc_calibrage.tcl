@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.16 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.17 2008-02-17 19:42:24 bmauclaire Exp $
 
 
 
@@ -2699,6 +2699,9 @@ proc spc_rinstrum { args } {
            #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
            set rinstrum [ spc_ajustripbas $result_division ]
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
+           #-- Meth 6 : filtrage passe bas fort -> RI 4
+           set rinstrum [ spc_ajustripbasfort $result_division ]
+           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-4$conf(extension,defaut)"
        } elseif { $flag_br==1 } {
            if { $dispersion<=1. } {
                #-- Lhires3+résos 600 t/mm et 1200 t/mm-kaf1600 :
@@ -3292,6 +3295,60 @@ proc spc_ajustripbas { args } {
         return ${filenamespc}_lin
     } else {
         ::console::affiche_erreur "Usage: spc_ajustripbas fichier_profil.fit\n\n"
+    }
+}
+#****************************************************************#
+
+
+####################################################################
+# Procedure d'ajustement d'un nuage de points avec fort lissage
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 13-02-2008
+# Date modification : 13-02-2008
+# Arguments : fichier .fit du profil de raie
+####################################################################
+
+proc spc_ajustripbasfort { args } {
+    global conf
+    global audace
+
+    if { [ llength $args ]==1 } {
+        set filenamespc [ lindex $args 0 ]
+
+        #--- Filtrages passe-bas :
+        set rinstrum1 [ spc_passebas $filenamespc 200 ]
+        set rinstrum2 [ spc_smooth2 $rinstrum1 ]
+        set rinstrum3 [ spc_passebas $rinstrum2 100 ]
+        set rinstrum [ spc_passebas $rinstrum3 25 ]
+
+        #--- Effacement des fichiers intermédiaires :
+        file delete -force "$audace(rep_images)/$rinstrum1$conf(extension,defaut)"
+        file delete -force "$audace(rep_images)/$rinstrum2$conf(extension,defaut)"
+        file delete -force "$audace(rep_images)/$rinstrum3$conf(extension,defaut)"
+
+        #--- Extraction des données :
+        set contenu [ spc_fits2data $filenamespc ]
+        set abscisses [ lindex $contenu 0 ]
+        set ordonnees [ lindex $contenu 1 ]
+        set yadjs [ lindex [ spc_fits2data $rinstrum ] 1 ]
+
+        #--- Affichage du graphe
+        #::plotxy::clf
+        ::plotxy::figure 4
+        ::plotxy::plot $abscisses $yadjs r 1
+        ::plotxy::hold on
+        ::plotxy::plot $abscisses $ordonnees ob 0
+        ::plotxy::plotbackground #FFFFFF
+        ::plotxy::title "bleu : Résultat division - rouge : filtrage passe bas fort"
+        ::plotxy::hold off
+
+        #--- Retour du résultat :
+        file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/${filenamespc}_lin$conf(extension,defaut)"
+        ::console::affiche_resultat "Fichier fits sauvé sous ${filenamespc}_lin$conf(extension,defaut)\n"
+        return ${filenamespc}_lin
+    } else {
+        ::console::affiche_erreur "Usage: spc_ajustripbasfort fichier_profil.fit\n\n"
     }
 }
 #****************************************************************#
