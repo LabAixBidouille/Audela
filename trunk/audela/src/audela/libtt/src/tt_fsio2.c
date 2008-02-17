@@ -129,7 +129,7 @@ int tt_util_mouchard(char *nomptr,int increment,unsigned int address)
    if (f==NULL) {
       f=fopen("mouchard.txt","w");
       fprintf(f,"1 \n");
-      fprintf(f,"%d %s %u\n",increment,nomptr,address);
+      fprintf(f,"%d %s:%u %u\n",increment,nomptr,address,address);
       fclose(f);
    } else {
       nblig=0;
@@ -164,8 +164,9 @@ int tt_util_mouchard(char *nomptr,int increment,unsigned int address)
       fclose(f);
       /* --- on recherche si le nom existe ---*/
       existe=0;
+      sprintf(ligne,"%s:%u",nomptr,address);
       for (k=0;k<nblig;k++) {
-         if (strcmp((mouchardptr+k)->varname,nomptr)==0) {
+         if (strcmp((mouchardptr+k)->varname,ligne)==0) {
             ((mouchardptr+k)->nballoc)+=increment;
             existe=1;
             break;
@@ -173,7 +174,7 @@ int tt_util_mouchard(char *nomptr,int increment,unsigned int address)
       }
       /* --- on ajoute le nom a la liste s'il n'existe pas ---*/
       if (existe==0) {
-         strcpy((mouchardptr+nblig)->varname,nomptr);
+         sprintf((mouchardptr+nblig)->varname,"%s:%u",nomptr,address);
          ((mouchardptr+nblig)->nballoc)=increment;
          ((mouchardptr+nblig)->address)=address;
          nblig++;
