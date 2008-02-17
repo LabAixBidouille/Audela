@@ -4,7 +4,7 @@
  *
  * USB communication layer.
  *
- * $Id: usb.c,v 1.1 2006-12-03 09:56:41 michelpujol Exp $
+ * $Id: usb.c,v 1.2 2008-02-17 16:02:36 michelpujol Exp $
  ****************************************************************************/
 
 #include "config.h"
@@ -496,11 +496,11 @@ canon_usb_init (Camera *camera, GPContext *context)
 
                 /* Get body ID here */
                 GP_DEBUG ( "canon_usb_init: camera uses newer protocol, so we get body ID" );
-                res = canon_usb_get_body_id ( camera, context );
-                if ( res <= 0 ) {
-                        GP_DEBUG ( "canon_usb_init: \"Get body ID\" failed, code %d", res );
-                        return ( res );
-                }
+ //               res = canon_usb_get_body_id ( camera, context );
+ //               if ( res <= 0 ) {
+ //                       GP_DEBUG ( "canon_usb_init: \"Get body ID\" failed, code %d", res );
+ //                       return ( res );
+ //               }
 
                 GP_DEBUG ( "canon_usb_init: camera uses newer protocol, so we get camera abilities" );
                 c_res = canon_usb_dialogue (camera,
