@@ -350,7 +350,7 @@ int tt_ima_series_catchart_1(TT_IMA_SERIES *pseries)
    return(msg);
 }
 
-int tt_idx(int index,int nelem) {
+int tt_catchart_idx(int index,int nelem) {
 	if (index>=nelem) {
 		printf("Depassement de pointeur %d>=%d\n",index,nelem);
 		//index=nelem-1;
@@ -529,20 +529,30 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    if (alpha1>alpha2) {
       dalpha=(23.99999999-alpha1)/97.0;
       ddelta=(delta2-delta1)/25.0;
+		nombre=10; /* nombre entier quelocnque */
+		taille=sizeof(TT_USNO_INDEX);
+		p_index=NULL;
+		if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
+			tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
+			return(TT_ERR_PB_MALLOC);
+		}
       j=0;
       for (ra=alpha1;ra<=23.99999999;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				j++;
+				//j++;
+				p_index[tt_catchart_idx(j++,nombre)].flag=-1;
 			}
 		}
 		dalpha2=alpha2/97.0;
 		for (ra=0;ra<=alpha2;ra+=dalpha2) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				j++;
+				//j++;
+				p_index[tt_catchart_idx(j++,nombre)].flag=-1;
 			}
 		}
 		nombre=j+5;
 		taille=sizeof(TT_USNO_INDEX);
+		tt_free2((void**)&p_index,"p_index");
 		p_index=NULL;
 		if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
 			tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
@@ -551,17 +561,17 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		i=0;
 		for (ra=alpha1;ra<=23.99999999;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				p_index[tt_idx(i++,nombre)].flag=-1;
+				p_index[tt_catchart_idx(i++,nombre)].flag=-1;
 			}
 		}
 		for (ra=0;ra<=alpha2;ra+=dalpha2) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				p_index[tt_idx(i++,nombre)].flag=-1;
+				p_index[tt_catchart_idx(i++,nombre)].flag=-1;
 			}
 		}
 
-      p_index[tt_idx(i++,nombre)].flag=-1;  // on complete pour bien borner la table
-      p_index[tt_idx(i++,nombre)].flag=-1;
+      p_index[tt_catchart_idx(i++,nombre)].flag=-1;  // on complete pour bien borner la table
+      p_index[tt_catchart_idx(i++,nombre)].flag=-1;
       np_index=i;
 
       k=0;
@@ -570,26 +580,26 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 			for (de=delta1;de<=delta2;de+=ddelta) {
 				tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
 				if (first==1) {
-					p_index[tt_idx(k,nombre)].flag=1;
-					p_index[tt_idx(k,nombre)].indexRA=indexRA;
-					p_index[tt_idx(k,nombre)].indexSPD=indexSPD;
+					p_index[tt_catchart_idx(k,nombre)].flag=1;
+					p_index[tt_catchart_idx(k,nombre)].indexRA=indexRA;
+					p_index[tt_catchart_idx(k,nombre)].indexSPD=indexSPD;
 					first=0;
 				} else {
 					flag=0;
 					for (i=0;i<np_index;i++) {
-						if (p_index[tt_idx(i,nombre)].flag==-1) {
+						if (p_index[tt_catchart_idx(i,nombre)].flag==-1) {
 							break;
 						}
-						if (p_index[tt_idx(i,nombre)].indexRA==indexRA && p_index[tt_idx(i,nombre)].indexSPD==indexSPD) {
+						if (p_index[tt_catchart_idx(i,nombre)].indexRA==indexRA && p_index[tt_catchart_idx(i,nombre)].indexSPD==indexSPD) {
 							flag=1;
 							break;
 						}
 					}
 					if (flag==0) {
 						k++;
-						p_index[tt_idx(k,nombre)].flag=1;
-						p_index[tt_idx(k,nombre)].indexRA=indexRA;
-						p_index[tt_idx(k,nombre)].indexSPD=indexSPD;
+						p_index[tt_catchart_idx(k,nombre)].flag=1;
+						p_index[tt_catchart_idx(k,nombre)].indexRA=indexRA;
+						p_index[tt_catchart_idx(k,nombre)].indexSPD=indexSPD;
 					}
 				}
 			}
@@ -598,26 +608,26 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 			for (de=delta1;de<=delta2;de+=ddelta) {
 				tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
 				if (first==1) {
-					p_index[tt_idx(k,nombre)].flag=1;
-					p_index[tt_idx(k,nombre)].indexRA=indexRA;
-					p_index[tt_idx(k,nombre)].indexSPD=indexSPD;
+					p_index[tt_catchart_idx(k,nombre)].flag=1;
+					p_index[tt_catchart_idx(k,nombre)].indexRA=indexRA;
+					p_index[tt_catchart_idx(k,nombre)].indexSPD=indexSPD;
 					first=0;
 				} else {
 					flag=0;
 					for (i=0;i<np_index;i++) {
-						if (p_index[tt_idx(i,nombre)].flag==-1) {
+						if (p_index[tt_catchart_idx(i,nombre)].flag==-1) {
 							break;
 						}
-						if (p_index[tt_idx(i,nombre)].indexRA==indexRA && p_index[tt_idx(i,nombre)].indexSPD==indexSPD) {
+						if (p_index[tt_catchart_idx(i,nombre)].indexRA==indexRA && p_index[tt_catchart_idx(i,nombre)].indexSPD==indexSPD) {
 							flag=1;
 							break;
 						}
 					}
 					if (flag==0) {
 						k++;
-						p_index[tt_idx(k,nombre)].flag=1;
-						p_index[tt_idx(k,nombre)].indexRA=indexRA;
-						p_index[tt_idx(k,nombre)].indexSPD=indexSPD;
+						p_index[tt_catchart_idx(k,nombre)].flag=1;
+						p_index[tt_catchart_idx(k,nombre)].indexRA=indexRA;
+						p_index[tt_catchart_idx(k,nombre)].indexSPD=indexSPD;
 					}
 				}
 			}
@@ -628,14 +638,23 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
    else {
 		dalpha=(alpha2-alpha1)/97.0;
 		ddelta=(delta2-delta1)/25.0;
+		nombre=10; /* nombre entier quelocnque */
+		taille=sizeof(TT_USNO_INDEX);
+		p_index=NULL;
+		if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
+			tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
+			return(TT_ERR_PB_MALLOC);
+		}
 		j=0;
 		for (ra=alpha1;ra<=alpha2;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				j++;
+				//j++;
+				p_index[tt_catchart_idx(j++,nombre)].flag=-1;
 			}
 		}
 		nombre=j+5;
 		taille=sizeof(TT_USNO_INDEX);
+		tt_free2((void**)&p_index,"p_index");
 		p_index=NULL;
 		if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&p_index,&nombre,&taille,"p_index"))!=0) {
 			tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_catchart_2 (pointer p_index)");
@@ -644,11 +663,11 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		i=0;
 		for (ra=alpha1;ra<=alpha2;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				p_index[tt_idx(i++,nombre)].flag=-1;
+				p_index[tt_catchart_idx(i++,nombre)].flag=-1;
 			}
 		}
-      p_index[tt_idx(i++,nombre)].flag=-1;  // on complete pour bien borner la table
-      p_index[tt_idx(i++,nombre)].flag=-1;
+      p_index[tt_catchart_idx(i++,nombre)].flag=-1;  // on complete pour bien borner la table
+      p_index[tt_catchart_idx(i++,nombre)].flag=-1;
       np_index=i;
       k=0;
       first=1;
@@ -656,26 +675,26 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 			for (de=delta1;de<=delta2;de+=ddelta) {
 				tt_ComputeUsnoIndexs(tt_D2R(15.0*ra),tt_D2R(de),&indexSPD,&indexRA);
 				if (first==1) {
-					p_index[tt_idx(k,nombre)].flag=1;
-					p_index[tt_idx(k,nombre)].indexRA=indexRA;
-					p_index[tt_idx(k,nombre)].indexSPD=indexSPD;
+					p_index[tt_catchart_idx(k,nombre)].flag=1;
+					p_index[tt_catchart_idx(k,nombre)].indexRA=indexRA;
+					p_index[tt_catchart_idx(k,nombre)].indexSPD=indexSPD;
 					first=0;
 				} else {
 					flag=0;
 					for (i=0;i<np_index;i++) {
-						if (p_index[tt_idx(i,nombre)].flag==-1) {
+						if (p_index[tt_catchart_idx(i,nombre)].flag==-1) {
 							break;
 						}
-						if (p_index[tt_idx(i,nombre)].indexRA==indexRA && p_index[tt_idx(i,nombre)].indexSPD==indexSPD) {
+						if (p_index[tt_catchart_idx(i,nombre)].indexRA==indexRA && p_index[tt_catchart_idx(i,nombre)].indexSPD==indexSPD) {
 							flag=1;
 							break;
 						}
 					}
 					if (flag==0) {
 						k++;
-						p_index[tt_idx(k,nombre)].flag=1;
-						p_index[tt_idx(k,nombre)].indexRA=indexRA;
-						p_index[tt_idx(k,nombre)].indexSPD=indexSPD;
+						p_index[tt_catchart_idx(k,nombre)].flag=1;
+						p_index[tt_catchart_idx(k,nombre)].indexRA=indexRA;
+						p_index[tt_catchart_idx(k,nombre)].indexSPD=indexSPD;
 					}
 				}
 			}
@@ -717,10 +736,10 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       /* TYCHO */
       /*=== balayage des zones trouvees .ACC ===*/
 		for (k=0;k<np_index;k++) {
-			if (p_index[tt_idx(k,nombre)].flag==-1) {
+			if (p_index[tt_catchart_idx(k,nombre)].flag==-1) {
 				break;
 			}
-			sprintf(nom,"%styc%sZON%04d.ACC",path_astromcatalog,slash,p_index[tt_idx(k,nombre)].indexSPD*75);
+			sprintf(nom,"%styc%sZON%04d.ACC",path_astromcatalog,slash,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
          if ((acc=fopen(nom,"r"))==NULL) {
             sprintf(message,"File %s from USNO catalog not found\n",nom);
 				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
@@ -729,7 +748,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				return(PB_DLL);
 			}
          /*=== on lit 30 caracteres dans le fichier .acc ===*/
-         for (i=0;i<=p_index[tt_idx(k,nombre)].indexRA;i++) {
+         for (i=0;i<=p_index[tt_catchart_idx(k,nombre)].indexRA;i++) {
 				if (fread(buf_acc,1,30,acc)!=30) break;
          }
 #ifdef OS_LINUX_GCC_SO
@@ -739,16 +758,16 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 #endif
          if (typecat==TT_USNO) { offset=(offset-1)*12; }
          else { offset=(offset-1)*10; }
-         p_index[tt_idx(k,nombre)].offset=offset;
-         p_index[tt_idx(k,nombre)].nbObjects=nbObjects;
+         p_index[tt_catchart_idx(k,nombre)].offset=offset;
+         p_index[tt_catchart_idx(k,nombre)].nbObjects=nbObjects;
          fclose(acc);
       }
       /*==== balayage des fichiers de catalogue .CAT ====*/
 		for (k=0;k<np_index;k++) {
-			if (p_index[tt_idx(k,nombre)].flag==-1) {
+			if (p_index[tt_catchart_idx(k,nombre)].flag==-1) {
 				break;
 			}
-         sprintf(nom,"%styc%sZON%04d.CAT",path_astromcatalog,slash,p_index[tt_idx(k,nombre)].indexSPD*75);
+         sprintf(nom,"%styc%sZON%04d.CAT",path_astromcatalog,slash,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
          if ((cat=fopen(nom,"rb"))==NULL) {
 				sprintf(message,"File %s not found\n",nom);
 				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
@@ -757,8 +776,8 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				return(PB_DLL);
          }
          /* deplacement sur la premiere etoile */
-         fseek(cat,p_index[tt_idx(k,nombre)].offset,SEEK_SET);
-         nbObjects=p_index[tt_idx(k,nombre)].nbObjects;
+         fseek(cat,p_index[tt_catchart_idx(k,nombre)].offset,SEEK_SET);
+         nbObjects=p_index[tt_catchart_idx(k,nombre)].nbObjects;
          /* lecture de toute les etoiles de la zone */
          for (i=0;i<nbObjects;i++) {
 				if (fread(&raL,1,4,cat)!=4) break;
@@ -792,10 +811,10 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       /* GSC */
       /*=== balayage des zones trouvees .ACC ===*/
 		for (k=0;k<np_index;k++) {
-			if (p_index[tt_idx(k,nombre)].flag==-1) {
+			if (p_index[tt_catchart_idx(k,nombre)].flag==-1) {
 				break;
 			}
-			sprintf(nom,"%sgsc%sZON%04d.ACC",path_astromcatalog,slash,p_index[tt_idx(k,nombre)].indexSPD*75);
+			sprintf(nom,"%sgsc%sZON%04d.ACC",path_astromcatalog,slash,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
          if ((acc=fopen(nom,"r"))==NULL) {
 				sprintf(message,"File %s from USNO catalog not found\n",nom);
 				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
@@ -804,7 +823,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				return(PB_DLL);
 			}
          /*=== on lit 30 caracteres dans le fichier .acc ===*/
-         for (i=0;i<=p_index[tt_idx(k,nombre)].indexRA;i++) {
+         for (i=0;i<=p_index[tt_catchart_idx(k,nombre)].indexRA;i++) {
 				if (fread(buf_acc,1,30,acc)!=30) break;
          }
 #ifdef OS_LINUX_GCC_SO
@@ -814,16 +833,16 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 #endif
          if (typecat==TT_USNO) { offset=(offset-1)*12; }
          else { offset=(offset-1)*10; }
-         p_index[tt_idx(k,nombre)].offset=offset;
-         p_index[tt_idx(k,nombre)].nbObjects=nbObjects;
+         p_index[tt_catchart_idx(k,nombre)].offset=offset;
+         p_index[tt_catchart_idx(k,nombre)].nbObjects=nbObjects;
          fclose(acc);
       }
       /*==== balayage des fichiers de catalogue .CAT ====*/
 		for (k=0;k<np_index;k++) {
-			if (p_index[tt_idx(k,nombre)].flag==-1) {
+			if (p_index[tt_catchart_idx(k,nombre)].flag==-1) {
 				break;
 			}
-         sprintf(nom,"%sgsc%sZON%04d.CAT",path_astromcatalog,slash,p_index[tt_idx(k,nombre)].indexSPD*75);
+         sprintf(nom,"%sgsc%sZON%04d.CAT",path_astromcatalog,slash,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
          if ((cat=fopen(nom,"rb"))==NULL) {
      			sprintf(message,"File %s not found\n",nom);
 				tt_errlog(TT_ERR_FILE_NOT_FOUND,message);
@@ -832,8 +851,8 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 				return(PB_DLL);
          }
          /* deplacement sur la premiere etoile */
-         fseek(cat,p_index[tt_idx(k,nombre)].offset,SEEK_SET);
-         nbObjects=p_index[tt_idx(k,nombre)].nbObjects;
+         fseek(cat,p_index[tt_catchart_idx(k,nombre)].offset,SEEK_SET);
+         nbObjects=p_index[tt_catchart_idx(k,nombre)].nbObjects;
          /* lecture de toute les etoiles de la zone */
          for (i=0;i<nbObjects;i++) {
 				if (fread(&raL,1,4,cat)!=4) break;
@@ -875,13 +894,13 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 
          /*=== balayage des zones trouvees .ACC ===*/
 			for (k=0;k<np_index;k++) {
-				if (p_index[tt_idx(k,nombre)].flag==-1) {
+				if (p_index[tt_catchart_idx(k,nombre)].flag==-1) {
 					break;
 				}
             if (typecat==TT_USNO) {
-               sprintf(nom,"%sZONE%04d.ACC",path_astromcatalog,p_index[tt_idx(k,nombre)].indexSPD*75);
+               sprintf(nom,"%sZONE%04d.ACC",path_astromcatalog,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
             } else {
-               sprintf(nom,"%susno%sZON%04d.ACC",path_astromcatalog,slash,p_index[tt_idx(k,nombre)].indexSPD*75);
+               sprintf(nom,"%susno%sZON%04d.ACC",path_astromcatalog,slash,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
             }
             if ((acc=fopen(nom,"r"))==NULL) {
                sprintf(message,"File %s from USNO catalog not found\n",nom);
@@ -891,7 +910,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
                return(PB_DLL);
             }
             /*=== on lit 30 caracteres dans le fichier .acc ===*/
-            for (i=0;i<=p_index[tt_idx(k,nombre)].indexRA;i++) {
+            for (i=0;i<=p_index[tt_catchart_idx(k,nombre)].indexRA;i++) {
                if (fread(buf_acc,1,30,acc)!=30) break;
             }
 #ifdef OS_LINUX_GCC_SO
@@ -901,21 +920,21 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 #endif
             if (typecat==TT_USNO) { offset=(offset-1)*12; }
             else { offset=(offset-1)*10; }
-            p_index[tt_idx(k,nombre)].offset=offset;
-            p_index[tt_idx(k,nombre)].nbObjects=nbObjects;
+            p_index[tt_catchart_idx(k,nombre)].offset=offset;
+            p_index[tt_catchart_idx(k,nombre)].nbObjects=nbObjects;
             fclose(acc);
          }
 
          /*=== balayage des zones trouvees .CAT ===*/
 			for (k=0;k<np_index;k++) {
 
-				if (p_index[tt_idx(k,nombre)].flag==-1) {
+				if (p_index[tt_catchart_idx(k,nombre)].flag==-1) {
 					break;
 				}
             if (typecat==TT_USNO) {
-               sprintf(nom,"%sZONE%04d.CAT",path_astromcatalog,p_index[tt_idx(k,nombre)].indexSPD*75);
+               sprintf(nom,"%sZONE%04d.CAT",path_astromcatalog,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
             } else {
-               sprintf(nom,"%susno%sZON%04d.CAT",path_astromcatalog,slash,p_index[tt_idx(k,nombre)].indexSPD*75);
+               sprintf(nom,"%susno%sZON%04d.CAT",path_astromcatalog,slash,p_index[tt_catchart_idx(k,nombre)].indexSPD*75);
             }
             if ((cat=fopen(nom,"rb"))==NULL) {
                sprintf(message,"File %s not found\n",nom);
@@ -925,8 +944,8 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
                return(PB_DLL);
             }
             /* deplacement sur la premiere etoile */
-            fseek(cat,p_index[tt_idx(k,nombre)].offset,SEEK_SET);
-            nbObjects=p_index[tt_idx(k,nombre)].nbObjects;
+            fseek(cat,p_index[tt_catchart_idx(k,nombre)].offset,SEEK_SET);
+            nbObjects=p_index[tt_catchart_idx(k,nombre)].nbObjects;
             /* lecture de toute les etoiles de la zone */
             for (i=0;i<nbObjects;i++) {
                if (typecat==TT_USNO) {
