@@ -115,7 +115,7 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
    char comment[FLEN_COMMENT];
    char card[FLEN_CARD];
    int match,nbcards=0,nbexclus;
-   char **cards=NULL,*cards_data=NULL,**exclus;
+   char **cards=NULL,*cards_data=NULL,**exclus,*exclu0s;
    void **argu;
 
    argu=(void**)(arg11);
@@ -182,7 +182,7 @@ int macr_write(void *arg1,void *arg2,void *arg3,void *arg4,void *arg5,void *arg6
 	 if (arg6!=NULL) {
 	    exclus=(char**)(arg6);
 	    nbexclus=0;
-	    while(exclus[nbexclus++]!=NULL);
+	    while((exclu0s=exclus[nbexclus++])!=NULL);
 	    nbexclus--;
 	 } else {
 	    nbexclus=0;
