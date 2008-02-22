@@ -352,11 +352,11 @@ int tt_ima_series_catchart_1(TT_IMA_SERIES *pseries)
 
 int tt_catchart_idx(int index,int nelem) {
 	if (index>=nelem) {
-		printf("Depassement de pointeur %d>=%d\n",index,nelem);
+		/*printf("Depassement de pointeur %d>=%d\n",index,nelem);*/
 		index=nelem-1;
 	}
 	if (index<0) {
-		printf("Depassement de pointeur %d<0\n",index);
+		/*printf("Depassement de pointeur %d<0\n",index);*/
 		index=0;
 	}
 	return index;
