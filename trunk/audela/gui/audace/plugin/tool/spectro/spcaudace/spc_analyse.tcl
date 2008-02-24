@@ -1,8 +1,9 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
+# Mise a jour $Id: spc_analyse.tcl,v 1.13 2008-02-24 08:26:14 michelpujol Exp $
 
-# Mise a jour $Id: spc_analyse.tcl,v 1.12 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.13 2008-02-24 08:26:14 michelpujol Exp $
 
 
 
@@ -19,8 +20,8 @@
 
 ##########################################################
 # centerv
-#  SORTX [x1] [x2] [width] 
-#SORTY [y1] [y2] [height]  
+#  SORTX [x1] [x2] [width]
+#SORTY [y1] [y2] [height]
 
 
 # centerg
@@ -57,11 +58,11 @@ proc spc_centergauss { args } {
      #buf$audace(bufNo) load $fichier
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
-	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	 buf$audace(bufNo) mult -1.0
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+         # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+         buf$audace(bufNo) mult -1.0
+         set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      } elseif { [string compare $type "e"] == 0 } {
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+         set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      }
      #-- Le second element de la liste reponse est le centre X de la gaussienne
      set centre [lindex $lreponse 1]
@@ -104,13 +105,13 @@ proc spc_centergaussl { args } {
      set cdelt [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
      set listemotsclef [ buf$audace(bufNo) getkwds ]
      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	 set flag_nonlin 1
-	 set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
-	 set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
-	 set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
-	 set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+         set flag_nonlin 1
+         set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+         set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+         set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+         set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
      } else {
-	 set flag_nonlin 0
+         set flag_nonlin 0
      }
 
      #--- Détermine les valaurs d'encadrement :
@@ -121,12 +122,12 @@ proc spc_centergaussl { args } {
      #--- Mesure le centre de la raie modéilsée par une gaussienne :
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
-	 #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	 buf$audace(bufNo) mult -1.0
-	 # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
-	 set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
+         #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+         buf$audace(bufNo) mult -1.0
+         # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
+         set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
      } elseif { [string compare $type "e"] == 0 } {
-	 set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
+         set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
      }
      #-- Le second element de la liste reponse est le centre X de la gaussienne :
      set xcentre [lindex $lreponse 1]
@@ -136,9 +137,9 @@ proc spc_centergaussl { args } {
 
      #--- Converti le pixel en longueur d'onde :
      if { $flag_nonlin==1 } {
-	 set centre [ expr $spc_a+$spc_b*$xcentre+$spc_c*pow($xcentre,2)+$spc_d*pow($xcentre,3) ]
+         set centre [ expr $spc_a+$spc_b*$xcentre+$spc_c*pow($xcentre,2)+$spc_d*pow($xcentre,3) ]
      } else {
-	 set centre [ expr $xcentre*$cdelt+$crval ]
+         set centre [ expr $xcentre*$cdelt+$crval ]
      }
 
      #--- TRaitement du résultat :
@@ -166,25 +167,25 @@ proc spc_centergrav { args } {
     global conf
 
     if {[llength $args] == 3} {
-	set fichier [ lindex $args 0 ]
-	#- 2007-04-27 : int -> round
-	set xdeb [ expr round([lindex $args 1 ]) ]
-	set xfin [ expr round([lindex $args 2]) ]
+        set fichier [ lindex $args 0 ]
+        #- 2007-04-27 : int -> round
+        set xdeb [ expr round([lindex $args 1 ]) ]
+        set xfin [ expr round([lindex $args 2]) ]
 
-	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 
-	set listcoords [list $xdeb 1 $xfin 1]
-	set listecoefscale [ list 1 3 ]
-	buf$audace(bufNo) scale $listecoefscale 1
-	set lreponse [ buf$audace(bufNo) centro $listcoords ]
-	set centre [lindex $lreponse 0]
-	#-- BUG centro :
-	set centre [ expr $centre-1 ]
+        set listcoords [list $xdeb 1 $xfin 1]
+        set listecoefscale [ list 1 3 ]
+        buf$audace(bufNo) scale $listecoefscale 1
+        set lreponse [ buf$audace(bufNo) centro $listcoords ]
+        set centre [lindex $lreponse 0]
+        #-- BUG centro :
+        set centre [ expr $centre-1 ]
 
-	::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
+        ::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
      return $centre
     } else {
-	::console::affiche_erreur "Usage: spc_centergrav profil_de_raies (non calibré) x_debut (pixels) x_fin (pixels)\n\n"
+        ::console::affiche_erreur "Usage: spc_centergrav profil_de_raies (non calibré) x_debut (pixels) x_fin (pixels)\n\n"
     }
 }
 #****************************************************************#
@@ -205,57 +206,57 @@ proc spc_centergravl { args } {
     global conf
 
     if {[llength $args] == 3} {
-	set fichier [ file rootname [ lindex $args 0 ] ]
-	set ldeb [ lindex $args 1 ]
-	set lfin [ lindex $args 2 ]
+        set fichier [ file rootname [ lindex $args 0 ] ]
+        set ldeb [ lindex $args 1 ]
+        set lfin [ lindex $args 2 ]
 
-	#--- Conversion des longeurs d'onde en pixels :
-	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-	set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-	set listemotsclef [ buf$audace(bufNo) getkwds ]
-	if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	    set flag_spccal 1
-	    set spc_a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
-	    set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
-	    set spc_c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
-	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-		set spc_d [ lindex [buf$audace(bufNo) getkwd "SPC_D"] 1 ]
-	    } else {
-		set spc_d 0.
-	    }
-	    set xdeb [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($ldeb))*$spc_c))/(2*$spc_c)) ]
-	    set xfin [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($lfin))*$spc_c))/(2*$spc_c)) ]
-	} else {
-	    set flag_spccal 0
-	    #- 2007-04-27 : int -> round
-	    set xdeb [ expr round(($ldeb-$crval)/$cdelt) ]
-	    set xfin [ expr round(($lfin-$crval)/$cdelt) ]
-	}
-	set listcoords [list $xdeb 1 $xfin 1]
+        #--- Conversion des longeurs d'onde en pixels :
+        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+        set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+        set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+        set listemotsclef [ buf$audace(bufNo) getkwds ]
+        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+            set flag_spccal 1
+            set spc_a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
+            set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
+            set spc_c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
+            if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+                set spc_d [ lindex [buf$audace(bufNo) getkwd "SPC_D"] 1 ]
+            } else {
+                set spc_d 0.
+            }
+            set xdeb [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($ldeb))*$spc_c))/(2*$spc_c)) ]
+            set xfin [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($lfin))*$spc_c))/(2*$spc_c)) ]
+        } else {
+            set flag_spccal 0
+            #- 2007-04-27 : int -> round
+            set xdeb [ expr round(($ldeb-$crval)/$cdelt) ]
+            set xfin [ expr round(($lfin-$crval)/$cdelt) ]
+        }
+        set listcoords [list $xdeb 1 $xfin 1]
 
 
-	#--- Détermination du barycentre de la raie d'absorption :
-	##set listecoefscale [ list 1 3 ]
-	## buf$audace(bufNo) scale $listecoefscale 1
-	buf$audace(bufNo) mult -1.0
-	set lreponse [ buf$audace(bufNo) centro $listcoords ]
-	set xcenter [ lindex $lreponse 0 ]
-	#- BUG centro :
-	set xcenter [ expr $xcenter-1 ]
+        #--- Détermination du barycentre de la raie d'absorption :
+        ##set listecoefscale [ list 1 3 ]
+        ## buf$audace(bufNo) scale $listecoefscale 1
+        buf$audace(bufNo) mult -1.0
+        set lreponse [ buf$audace(bufNo) centro $listcoords ]
+        set xcenter [ lindex $lreponse 0 ]
+        #- BUG centro :
+        set xcenter [ expr $xcenter-1 ]
 
-	#--- Traduit la position en longueur d'onde :
-	if { $flag_spccal } {
-	    set lcentre [ expr $spc_a+$xcenter*$spc_b+$xcenter*$xcenter*$spc_c+pow($xcenter,3)*$spc_d ]
-	} else {
-	    set lcentre [ expr $xcenter*$cdelt+$crval ]
-	}
+        #--- Traduit la position en longueur d'onde :
+        if { $flag_spccal } {
+            set lcentre [ expr $spc_a+$xcenter*$spc_b+$xcenter*$xcenter*$spc_c+pow($xcenter,3)*$spc_d ]
+        } else {
+            set lcentre [ expr $xcenter*$cdelt+$crval ]
+        }
 
-	#--- Traitement du resultat :
-	::console::affiche_resultat "Le centre de gravité de la raie est : $lcentre A\n"
-	return $lcentre
+        #--- Traitement du resultat :
+        ::console::affiche_resultat "Le centre de gravité de la raie est : $lcentre A\n"
+        return $lcentre
     } else {
-	::console::affiche_erreur "Usage: spc_centergravl profil_de_raies_calibré lambda_debut lambda_fin\n\n"
+        ::console::affiche_erreur "Usage: spc_centergravl profil_de_raies_calibré lambda_debut lambda_fin\n\n"
     }
 }
 #****************************************************************#
@@ -280,55 +281,55 @@ proc spc_autocentergaussl { args } {
 
    if { [llength $args] == 3 || [llength $args] == 4 } {
        if { [llength $args] == 3 } {
-	   set fichier [ lindex $args 0 ]
-	   set lcentre [ expr [lindex $args 1 ] ]
-	   set type [ lindex $args 2 ]
-	   set dlargeur [ expr $largeur*0.5 ]
+           set fichier [ lindex $args 0 ]
+           set lcentre [ expr [lindex $args 1 ] ]
+           set type [ lindex $args 2 ]
+           set dlargeur [ expr $largeur*0.5 ]
        } elseif { [llength $args] == 4 } {
-	   set fichier [ lindex $args 0 ]
-	   set lcentre [ expr [lindex $args 1 ] ]
-	   set type [ lindex $args 2 ]
-	   set dlargeur [ expr 0.5*[ lindex $args 3 ] ]
+           set fichier [ lindex $args 0 ]
+           set lcentre [ expr [lindex $args 1 ] ]
+           set type [ lindex $args 2 ]
+           set dlargeur [ expr 0.5*[ lindex $args 3 ] ]
        } else {
-	   ::console::affiche_erreur "Usage: spc_autocentergaussl profil_raies_fits_calibré lambda_approchée type_raie (a/e) ?largeur_raie?\n\n"
-	   return 0
+           ::console::affiche_erreur "Usage: spc_autocentergaussl profil_raies_fits_calibré lambda_approchée type_raie (a/e) ?largeur_raie?\n\n"
+           return 0
        }
 
        #--- Entoure la raie 4 A de largeur
        set ldeb [ expr $lcentre-$dlargeur ]
        set lfin [ expr $lcentre+$dlargeur ]
-       
+
        #--- Charge la liste des mots clefs :
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
 
        #--- Cas d'une calibration non-linéaire :
        if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-	   #-- Polynome : lambda=a+bx+cx^2
-	   set a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
-	   set b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
-	   set c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
-	   #-- J'utilise la solution généralement positive de la méthode du discriminent :
-	   set xdeb [ expr round((-$b+sqrt($b*$b-4*$a*($c-$ldeb)))/(2*$a)) ]
-	   set xfin [ expr round((-$b+sqrt($b*$b-4*$a*($c-$lfin)))/(2*$a)) ]
+           #-- Polynome : lambda=a+bx+cx^2
+           set a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
+           set b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
+           set c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
+           #-- J'utilise la solution généralement positive de la méthode du discriminent :
+           set xdeb [ expr round((-$b+sqrt($b*$b-4*$a*($c-$ldeb)))/(2*$a)) ]
+           set xfin [ expr round((-$b+sqrt($b*$b-4*$a*($c-$lfin)))/(2*$a)) ]
        } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-	   set lambda0 [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
-	   set dispersion [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
-	   set xdeb [ expr round(($ldeb-$lambda0)/$dispersion) ]
-	   set xfin [ expr round(($lfin-$lambda0)/$dispersion) ]
+           set lambda0 [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
+           set dispersion [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
+           set xdeb [ expr round(($ldeb-$lambda0)/$dispersion) ]
+           set xfin [ expr round(($lfin-$lambda0)/$dispersion) ]
        }
 
        #--- Détermine le centre gaussien de la raie :
        set listcoords [ list $xdeb 1 $xfin 1 ]
        if { [string compare $type "a"] == 0 } {
-	   #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	   buf$audace(bufNo) mult -1.0
-	   # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
-	   set lreponse [buf$audace(bufNo) fitgauss $listcoords ]
-	   #-- Inverse de nouveau le spectre pour le rendre comme l'original
-	   buf$audace(bufNo) mult -1.0
+           #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+           buf$audace(bufNo) mult -1.0
+           # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
+           set lreponse [buf$audace(bufNo) fitgauss $listcoords ]
+           #-- Inverse de nouveau le spectre pour le rendre comme l'original
+           buf$audace(bufNo) mult -1.0
        } elseif { [string compare $type "e"] == 0 } {
-	   set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
+           set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
        }
        #-- Le second element de la liste reponse est le centre X de la gaussienne
        set xcentre [lindex $lreponse 1]
@@ -339,14 +340,14 @@ proc spc_autocentergaussl { args } {
 
        #--- Calcul la longueur de de la raie :
        if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-	   set lambda_centre [ expr $a+$b*$xcentre+$c*$xcentre*$xcentre ]
+           set lambda_centre [ expr $a+$b*$xcentre+$c*$xcentre*$xcentre ]
        } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-	   set lambda_centre [ expr $xcentre*$dispersion+$lambda0 ]
+           set lambda_centre [ expr $xcentre*$dispersion+$lambda0 ]
        }
 
        #--- Formatage du résultat :
        ::console::affiche_resultat "Le centre de la raie est : $lambda_centre Angstroms\n"
-       return $lambda_centre       
+       return $lambda_centre
    } else {
        ::console::affiche_erreur "Usage: spc_autocentergaussl profil_raies_fits_calibré lambda_approchée type_raie (a/e) ?largeur_raie?\n\n"
    }
@@ -384,13 +385,13 @@ proc spc_intensity { args } {
 
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
-	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	 buf$audace(bufNo) mult -1.0
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	 # Inverse de nouveau le spectre pour le rendre comme l'original
-	 buf$audace(bufNo) mult -1.0
+         # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+         buf$audace(bufNo) mult -1.0
+         set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+         # Inverse de nouveau le spectre pour le rendre comme l'original
+         buf$audace(bufNo) mult -1.0
      } elseif { [string compare $type "e"] == 0 } {
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+         set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      }
      # Attention, $lreponse 2 est en pixels
      set if0 [ expr ([ lindex $lreponse 2 ]*$cdelt+$crval)*.601*sqrt(acos(-1)) ]
@@ -438,13 +439,13 @@ proc spc_fwhm { args } {
 
      set listcoords [list $xdeb 1 $xfin 1]
      if { [string compare $type "a"] == 0 } {
-	 # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
-	 buf$audace(bufNo) mult -1.0
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
-	 # Inverse de nouveau le spectre pour le rendre comme l'original
-	 buf$audace(bufNo) mult -1.0
+         # fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
+         buf$audace(bufNo) mult -1.0
+         set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+         # Inverse de nouveau le spectre pour le rendre comme l'original
+         buf$audace(bufNo) mult -1.0
      } elseif { [string compare $type "e"] == 0 } {
-	 set lreponse [buf$audace(bufNo) fitgauss $listcoords]
+         set lreponse [buf$audace(bufNo) fitgauss $listcoords]
      }
      # Le second element de la liste reponse est le centre X de la gaussienne
      set xfwhm [lindex $lreponse 2]
@@ -490,7 +491,7 @@ proc spc_info { args } {
        if { 1==0 } {
        ::console::affiche_resultat "Date de prise de vue : $date\n"
        if { $date2 != "" } {
-	   ::console::affiche_resultat "Date de prise de vue 2 : $date2\n"
+           ::console::affiche_resultat "Date de prise de vue 2 : $date2\n"
        }
        ::console::affiche_resultat "Durée de la pose : $duree s\n"
        ::console::affiche_resultat "Longueur : $naxis1 pixels\n"
@@ -530,38 +531,38 @@ proc spc_coefscalibre { args } {
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-	   set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
-	   if { $lambda0==1. } {
-	       set lambda0 0.
-	   }
+           set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+           if { $lambda0==1. } {
+               set lambda0 0.
+           }
        } else {
-	   set lambda0 0.
+           set lambda0 0.
        }
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-	   set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+           set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
        } else {
-	   set dispersion 1.
+           set dispersion 1.
        }
        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	   set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+           set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
        } else {
-	   set spc_a $lambda0
-       }       
+           set spc_a $lambda0
+       }
        if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-	   set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+           set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
        } else {
-	   set spc_b $dispersion
+           set spc_b $dispersion
        }
        if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-	   set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+           set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
        } else {
-	   set spc_c 0.0
+           set spc_c 0.0
        }
        if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-	   set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+           set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
        } else {
-	   set spc_d 0.0
-       }       
+           set spc_d 0.0
+       }
 
        #--- Fromatage du résultat
        ::console::affiche_resultat "Polynôme de calibration : $spc_a+$spc_b*x+$spc_c*x^2+$spc_d*x^3\n"
@@ -591,39 +592,39 @@ proc spc_compare { args } {
     global conf
 
     if {[llength $args] == 2} {
-	set f1 [ lindex $args 0 ]
-	set f2 [lindex $args 1 ]
+        set f1 [ lindex $args 0 ]
+        set f2 [lindex $args 1 ]
 
-	#--- CAptage d'informations des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
-	set info [ spc_info $f1 ]
-	set len1 [ lindex $info 2 ]
-	set lambda_i1 [ lindex $info 3 ]
- 	set lambda_f1 [ lindex $info 4 ]
-	set disp1 [ lindex $info 5 ]
-	set info [ spc_info $f2 ]
-	set len2 [ lindex $info 2 ]
-	set lambda_i2 [ lindex $info 3 ]
- 	set lambda_f2 [ lindex $info 4 ]
-	set disp2 [ lindex $info 5 ]
+        #--- CAptage d'informations des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
+        set info [ spc_info $f1 ]
+        set len1 [ lindex $info 2 ]
+        set lambda_i1 [ lindex $info 3 ]
+         set lambda_f1 [ lindex $info 4 ]
+        set disp1 [ lindex $info 5 ]
+        set info [ spc_info $f2 ]
+        set len2 [ lindex $info 2 ]
+        set lambda_i2 [ lindex $info 3 ]
+         set lambda_f2 [ lindex $info 4 ]
+        set disp2 [ lindex $info 5 ]
 
-	#--- Réduction de la précision de comparaison des longueurs d'ondes au 1/10000 d'Angstrom :
-	set lambda_i1 [ expr int($lambda_i1*10000.)/10000. ]
-	set lambda_i2 [ expr int($lambda_i2*10000.)/10000. ]
-	set disp1 [ expr int($disp1*10000.)/10000. ]
-	set disp2 [ expr int($disp2*10000.)/10000. ]
+        #--- Réduction de la précision de comparaison des longueurs d'ondes au 1/10000 d'Angstrom :
+        set lambda_i1 [ expr int($lambda_i1*10000.)/10000. ]
+        set lambda_i2 [ expr int($lambda_i2*10000.)/10000. ]
+        set disp1 [ expr int($disp1*10000.)/10000. ]
+        set disp2 [ expr int($disp2*10000.)/10000. ]
 
-	#--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
-	#if { { $len1 == $len2 } && { $lambda_i1 == $lambda_i2 } && { $lambda_f1 == $lambda_f2 } && { $disp1 == $disp2 } } 
-	if { $len1==$len2 && $lambda_i1==$lambda_i2 && $lambda_f1==$lambda_f2 && $disp1==$disp2 } {
-	    ::console::affiche_resultat "Les 2 profils de raies ont les mêmes paramètres.\n"
-	    return 1
-	} else {
-	    ::console::affiche_resultat "Les 2 profils de raies n'ont pas les mêmes paramètres.\n"
-	    return 0
-	}
+        #--- Vérification de la compatibilité des 2 profils de raies : lambda_i, lambda_f et dispersion identiques
+        #if { { $len1 == $len2 } && { $lambda_i1 == $lambda_i2 } && { $lambda_f1 == $lambda_f2 } && { $disp1 == $disp2 } }
+        if { $len1==$len2 && $lambda_i1==$lambda_i2 && $lambda_f1==$lambda_f2 && $disp1==$disp2 } {
+            ::console::affiche_resultat "Les 2 profils de raies ont les mêmes paramètres.\n"
+            return 1
+        } else {
+            ::console::affiche_resultat "Les 2 profils de raies n'ont pas les mêmes paramètres.\n"
+            return 0
+        }
 
     } else {
-	::console::affiche_erreur "Usage : spc_compare profil_de_raies-1-fits profil_de_raies-2-fits\n\n"
+        ::console::affiche_erreur "Usage : spc_compare profil_de_raies-1-fits profil_de_raies-2-fits\n\n"
     }
 }
 #*********************************************************************#
@@ -646,169 +647,169 @@ proc spc_findbiglines { args } {
 
     set nbargs [ llength $args ]
     if { $nbargs <= 3 } {
-	if { $nbargs == 2 } {
-	    set filename [ lindex $args 0 ]
-	    set typeraies [ lindex $args 1 ]
-	    set largeur 10
-	} elseif { $nbargs == 3 } {
-	    set filename [ lindex $args 0 ]
-	    set typeraies [ lindex $args 1 ]
-	    set largeur [ expr int([ lindex $args 2 ]) ]
-	} else {
-	    ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie?\n"
-	    return 0
-	}
-	set pas [ expr int($largeur/2) ]
+        if { $nbargs == 2 } {
+            set filename [ lindex $args 0 ]
+            set typeraies [ lindex $args 1 ]
+            set largeur 10
+        } elseif { $nbargs == 3 } {
+            set filename [ lindex $args 0 ]
+            set typeraies [ lindex $args 1 ]
+            set largeur [ expr int([ lindex $args 2 ]) ]
+        } else {
+            ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie?\n"
+            return 0
+        }
+        set pas [ expr int($largeur/2) ]
 
-	#--- Gestion des profils calibrés en longueur d'onde :
-	buf$audace(bufNo) load "$audace(rep_images)/$filename"
-	#-- Retire les petites raies qui seraient des pixels chauds ou autre :
-	buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
-	#-- Renseigne sur les parametres de l'image :
-	set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
-	set nbrange [ expr int($naxis1/$largeur) ]
-	# ::console::affiche_resultat "nb intervalles : $nbrange\n"
+        #--- Gestion des profils calibrés en longueur d'onde :
+        buf$audace(bufNo) load "$audace(rep_images)/$filename"
+        #-- Retire les petites raies qui seraient des pixels chauds ou autre :
+        buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
+        #-- Renseigne sur les parametres de l'image :
+        set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+        set nbrange [ expr int($naxis1/$largeur) ]
+        # ::console::affiche_resultat "nb intervalles : $nbrange\n"
 
-	#--- Recherche des raies d'émission :
-	if { $typeraies == "a" } {
-	    buf$audace(bufNo) mult -1.0
-	    ::console::affiche_resultat "Recherche des raies d'absorption...\n"
-	} elseif { $typeraies == "e" } {
-	    ::console::affiche_resultat "Recherche des raies d'émission...\n"
-	} else {
-	    ::console::affiche_resultat "Type de raie inconnu. Donner (e/a).\n"
-	    return 0
-	}
-	for {set i 1} {$i<=[ expr $naxis1-2*$largeur ]} { set i [expr $i+$pas ]} {
-	    
+        #--- Recherche des raies d'émission :
+        if { $typeraies == "a" } {
+            buf$audace(bufNo) mult -1.0
+            ::console::affiche_resultat "Recherche des raies d'absorption...\n"
+        } elseif { $typeraies == "e" } {
+            ::console::affiche_resultat "Recherche des raies d'émission...\n"
+        } else {
+            ::console::affiche_resultat "Type de raie inconnu. Donner (e/a).\n"
+            return 0
+        }
+        for {set i 1} {$i<=[ expr $naxis1-2*$largeur ]} { set i [expr $i+$pas ]} {
 
-	    set xdeb $i
-	    set xfin [ expr $i+$largeur-1 ]
-	    set coords [ list $xdeb 1 $xfin 1 ]
-	    #-- Meth 1 : fit gaussien
-	    ## set gauss [ buf$audace(bufNo) fitgauss $coords -fwhmx $largeur ]
-	    #::console::affiche_resultat "Centre $i avant fitgauss\n"
-	    set gauss [ buf$audace(bufNo) fitgauss $coords ]
-	    #::console::affiche_resultat "Centre $i après fitgauss\n"
-	    lappend xcenters [ lindex $gauss 1 ]
-	    #-- Intensite en X :
-	    lappend intensites [ lindex $gauss 0 ]
 
-	    #set xc [ lindex $gauss 1 ]
-	    #::console::affiche_resultat "Centre $i trouvé; Xfin=$xfin\n"
+            set xdeb $i
+            set xfin [ expr $i+$largeur-1 ]
+            set coords [ list $xdeb 1 $xfin 1 ]
+            #-- Meth 1 : fit gaussien
+            ## set gauss [ buf$audace(bufNo) fitgauss $coords -fwhmx $largeur ]
+            #::console::affiche_resultat "Centre $i avant fitgauss\n"
+            set gauss [ buf$audace(bufNo) fitgauss $coords ]
+            #::console::affiche_resultat "Centre $i après fitgauss\n"
+            lappend xcenters [ lindex $gauss 1 ]
+            #-- Intensite en X :
+            lappend intensites [ lindex $gauss 0 ]
 
-	    #-- Meth 2 : centroide
-	    ##lappend intensites [ lindex [ buf$audace(bufNo) flux $coords ]  0 ]
-	    #lappend intensites [ lindex [ buf$audace(bufNo) fitgauss $coords ] 0 ]
-	    #lappend xcenters [ lindex [ buf$audace(bufNo) centro $coords ]  0 ]
-	}
+            #set xc [ lindex $gauss 1 ]
+            #::console::affiche_resultat "Centre $i trouvé; Xfin=$xfin\n"
 
-	#--- Tri des intensités les plus intenses :
-	::console::affiche_resultat "Triage des raies trouvées...\n"
-	set intensite 0
-	set listimax [ list 0 ]
-	set listabscisses [ list ]
-	set len [ llength $xcenters ]
+            #-- Meth 2 : centroide
+            ##lappend intensites [ lindex [ buf$audace(bufNo) flux $coords ]  0 ]
+            #lappend intensites [ lindex [ buf$audace(bufNo) fitgauss $coords ] 0 ]
+            #lappend xcenters [ lindex [ buf$audace(bufNo) centro $coords ]  0 ]
+        }
+
+        #--- Tri des intensités les plus intenses :
+        ::console::affiche_resultat "Triage des raies trouvées...\n"
+        set intensite 0
+        set listimax [ list 0 ]
+        set listabscisses [ list ]
+        set len [ llength $xcenters ]
 #::console::affiche_resultat "nb raies : $len\n"
-	#-- Meth2 : super lsort
-	foreach imax $intensites abscisse $xcenters {
-	    lappend doubleliste [ list $abscisse $imax ]
-	}
-	# set doublelistesorted [ lsort -decreasing -real -index 1 $doubleliste ]
+        #-- Meth2 : super lsort
+        foreach imax $intensites abscisse $xcenters {
+            lappend doubleliste [ list $abscisse $imax ]
+        }
+        # set doublelistesorted [ lsort -decreasing -real -index 1 $doubleliste ]
 
-	#--- Retire une raie sur 2 des raies dont les abscisses proche 1 l'une de l'autre
-	# set doublelistesorted [ lsort -decreasing -real -index 0 $doubleliste ]
-	set doublelistesorted [ lsort -increasing -real -index 0 $doubleliste ]
+        #--- Retire une raie sur 2 des raies dont les abscisses proche 1 l'une de l'autre
+        # set doublelistesorted [ lsort -decreasing -real -index 0 $doubleliste ]
+        set doublelistesorted [ lsort -increasing -real -index 0 $doubleliste ]
 #::console::affiche_resultat "Double liste : $doublelistesorted\n"
-	set len [ expr [ llength $doublelistesorted ]-1 ]
-	for {set j 0} {$j<$len} {incr j} {
-	    set abscissej [ lindex [ lindex $doublelistesorted $j ] 0 ]
-	    set abscissejj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 0 ]
-	    set imaxj [ lindex [ lindex $doublelistesorted $j ] 1 ]
-	    set imaxjj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 1 ]
-	    if { [ expr $abscissej-$abscissejj ] <= $ecart && $imaxj>=$imaxjj } {
-		set doublelistesorted [ lreplace $doublelistesorted [ expr $j+1 ] [ expr $j+1 ] [ list $abscissejj 0.0 ] ]
-		#set toto [ lindex $doublelistesorted [ expr $j+1 ] ]
-		#::console::affiche_resultat "$toto\n"
-	    } elseif { [ expr $abscissej-$abscissejj ] <= $ecart && $imaxj<=$imaxjj } {
-		set doublelistesorted [ lreplace $doublelistesorted [ expr $j ] [ expr $j ] [ list $abscissej 0.0 ] ]
-		# [ list $abscissejj 0.0 ]
-	    }
-	}
+        set len [ expr [ llength $doublelistesorted ]-1 ]
+        for {set j 0} {$j<$len} {incr j} {
+            set abscissej [ lindex [ lindex $doublelistesorted $j ] 0 ]
+            set abscissejj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 0 ]
+            set imaxj [ lindex [ lindex $doublelistesorted $j ] 1 ]
+            set imaxjj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 1 ]
+            if { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj>=$imaxjj } {
+                set doublelistesorted [ lreplace $doublelistesorted [ expr $j+1 ] [ expr $j+1 ] [ list $abscissejj 0.0 ] ]
+                #set toto [ lindex $doublelistesorted [ expr $j+1 ] ]
+                #::console::affiche_resultat "$toto\n"
+            } elseif { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj<=$imaxjj } {
+                set doublelistesorted [ lreplace $doublelistesorted [ expr $j ] [ expr $j ] [ list $abscissej 0.0 ] ]
+                # [ list $abscissejj 0.0 ]
+            }
+        }
 
-	#::console::affiche_resultat "Double liste : $doublelistesorted\n"
-	#::console::affiche_resultat "Double liste : $doubleliste\n"
-	#::console::affiche_resultat "Double liste : $doublelistesorted2\n"
+        #::console::affiche_resultat "Double liste : $doublelistesorted\n"
+        #::console::affiche_resultat "Double liste : $doubleliste\n"
+        #::console::affiche_resultat "Double liste : $doublelistesorted2\n"
 
-	#-- Meth 1 : mon tri (marche pas)
-	set flag 0
-	if { $flag==1 } {
-	for {set j 0} {$j<$len} {incr j} {
-	    set intensite [ lindex $intensites $j ]
-	    # set imax [ lindex [ lsort -real -decreasing $listimax ] 0 ]
-	    set imax [ lindex $listimax 0 ]
+        #-- Meth 1 : mon tri (marche pas)
+        set flag 0
+        if { $flag==1 } {
+        for {set j 0} {$j<$len} {incr j} {
+            set intensite [ lindex $intensites $j ]
+            # set imax [ lindex [ lsort -real -decreasing $listimax ] 0 ]
+            set imax [ lindex $listimax 0 ]
 #::console::affiche_resultat "imax n°$j: $imax\n"
-	    if { $intensite>$imax } {
-		set listimax [ linsert $listimax 0 $intensite ]
-		set listabscisses [ linsert $listabscisses 0 [ lindex $xcenters $j ] ]
-	    } else {
-		set listimax [ linsert $listimax $j $intensite ]
-		set listabscisses [ linsert $listabscisses $j [ lindex $xcenters $j ] ]
-	    }
-	}
+            if { $intensite>$imax } {
+                set listimax [ linsert $listimax 0 $intensite ]
+                set listabscisses [ linsert $listabscisses 0 [ lindex $xcenters $j ] ]
+            } else {
+                set listimax [ linsert $listimax $j $intensite ]
+                set listabscisses [ linsert $listabscisses $j [ lindex $xcenters $j ] ]
+            }
+        }
         }
         #::console::affiche_resultat "listimax : $listimax\n"
         #::console::affiche_resultat "xlistimax : $listabscisses\n"
 
-	#--- Sélection des abscisses des 12 raies les plus intenses :
-	set doublelistesorted2 [ lsort -decreasing -real -index 1 $doublelistesorted ]
-	set selection12 [ lrange $doublelistesorted2 0 12 ]
+        #--- Sélection des abscisses des 12 raies les plus intenses :
+        set doublelistesorted2 [ lsort -decreasing -real -index 1 $doublelistesorted ]
+        set selection12 [ lrange $doublelistesorted2 0 12 ]
 #::console::affiche_resultat "Double liste : $selection12\n"
 
-	#--- Retire dans la cette selection les raies détectées aui sont les mêmes en fait :
-	set selection12 [ lsort -increasing -real -index 0 $selection12 ]
+        #--- Retire dans la cette selection les raies détectées aui sont les mêmes en fait :
+        set selection12 [ lsort -increasing -real -index 0 $selection12 ]
 #::console::affiche_resultat "listimax : $selection12\n"
-	set len [ expr [ llength $selection12 ]-1 ]
-	for {set j 0} {$j<$len} {incr j} {
-	    set abscissej [ lindex [ lindex $selection12 $j ] 0 ]
-	    set abscissejj [ lindex [ lindex $selection12 [ expr $j+1 ] ] 0 ]
-	    set imaxj [ lindex [ lindex $selection12 $j ] 1 ]
-	    set imaxjj [ lindex [ lindex $selection12 [ expr $j+1 ] ] 1 ]
-	    if { [ expr $abscissej-$abscissejj ] <= $ecart && $imaxj>=$imaxjj } {
-		set selection12 [ lreplace $selection12 [ expr $j+1 ] [ expr $j+1 ] [ list $abscissejj 0.0 ] ]
-		#set toto [ lindex $doublelistesorted [ expr $j+1 ] ]
-		#::console::affiche_resultat "$toto\n"
-	    } elseif { [ expr $abscissej-$abscissejj ] <= $ecart && $imaxj<=$imaxjj } {
-		set selection12 [ lreplace $selection12 [ expr $j ] [ expr $j ] [ list $abscissej 0.0 ] ]
-		# [ list $abscissejj 0.0 ]
-	    }
-	}
+        set len [ expr [ llength $selection12 ]-1 ]
+        for {set j 0} {$j<$len} {incr j} {
+            set abscissej [ lindex [ lindex $selection12 $j ] 0 ]
+            set abscissejj [ lindex [ lindex $selection12 [ expr $j+1 ] ] 0 ]
+            set imaxj [ lindex [ lindex $selection12 $j ] 1 ]
+            set imaxjj [ lindex [ lindex $selection12 [ expr $j+1 ] ] 1 ]
+            if { [ expr $abscissejj - $abscissej] <= $ecart && $imaxj>=$imaxjj } {
+                set selection12 [ lreplace $selection12 [ expr $j+1 ] [ expr $j+1 ] [ list $abscissejj 0.0 ] ]
+                #set toto [ lindex $doublelistesorted [ expr $j+1 ] ]
+                #::console::affiche_resultat "$toto\n"
+            } elseif { [ expr $abscissej-$abscissejj ] <= $ecart && $imaxj<=$imaxjj } {
+                set selection12 [ lreplace $selection12 [ expr $j ] [ expr $j ] [ list $abscissej 0.0 ] ]
+                # [ list $abscissejj 0.0 ]
+            }
+        }
 
-	#--- Sélection des abscisses des 6 raies les plus intenses :
-	set selection12 [ lsort -decreasing -real -index 1 $selection12 ]
-	#set selection6 [ lrange $selection12 0 6 ]
-	set selection6 $selection12
+        #--- Sélection des abscisses des 6 raies les plus intenses :
+        set selection12 [ lsort -decreasing -real -index 1 $selection12 ]
+        #set selection6 [ lrange $selection12 0 6 ]
+        set selection6 $selection12
 
-	#--- Conversion des abscisses en longeueur d'onde :
-	set coefspoly [ spc_coefscalibre $filename ]
-	set spc_a [ lindex $coefspoly 0 ]
-	set spc_b [ lindex $coefspoly 1 ]
-	set spc_c [ lindex $coefspoly 2 ]
-	set spc_d [ lindex $coefspoly 3 ]
-	set k 0
-	foreach raie $selection6 {
-	    set x [ lindex $raie 0 ]
-	    set abscisse [ expr $spc_a+$spc_b*$x+$spc_c*$x*$x+$spc_d*$x*$x*$x ]
-	    set intensite [ lindex $raie 1 ]
-	    set selection6 [ lreplace $selection6 $k $k [ list $abscisse $intensite ] ]
-	    incr k
-	}
+        #--- Conversion des abscisses en longeueur d'onde :
+        set coefspoly [ spc_coefscalibre $filename ]
+        set spc_a [ lindex $coefspoly 0 ]
+        set spc_b [ lindex $coefspoly 1 ]
+        set spc_c [ lindex $coefspoly 2 ]
+        set spc_d [ lindex $coefspoly 3 ]
+        set k 0
+        foreach raie $selection6 {
+            set x [ lindex $raie 0 ]
+            set abscisse [ expr $spc_a+$spc_b*$x+$spc_c*$x*$x+$spc_d*$x*$x*$x ]
+            set intensite [ lindex $raie 1 ]
+            set selection6 [ lreplace $selection6 $k $k [ list $abscisse $intensite ] ]
+            incr k
+        }
 
-	#--- Affichage du résultat :
-	set selection6 [ lrange $selection6 0 6 ]
-	set mylistabscisses $selection6
-	::console::affiche_resultat "Abscisse et I des raies les plus intenses : $mylistabscisses\n"
-	return $mylistabscisses
+        #--- Affichage du résultat :
+        set selection6 [ lrange $selection6 0 6 ]
+        set mylistabscisses $selection6
+        ::console::affiche_resultat "Abscisse et I des raies les plus intenses : $mylistabscisses\n"
+        return $mylistabscisses
     }
     ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie?\n"
 }
@@ -841,14 +842,14 @@ proc spc_snr { args } {
        set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "NAXIS2" ] !=-1 } {
-	   set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+           set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
        } else {
-	   set naxis2 1
+           set naxis2 1
        }
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-	   set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+           set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
        } else {
-	   set disp 1.
+           set disp 1.
        }
 
        #--- Caclul du signal moyen sur l'interval du continuum  et determination de cet interval :
@@ -857,17 +858,17 @@ proc spc_snr { args } {
        set largeur [ expr int($naxis1/$nbtranches) ]
        set listresults ""
        for {set i 0} {$i<$nbtranches} {incr i} {
-	   if { $i==0 } {
-	       set zone [ list 1 1 $largeur 1 ]
-	       set x1 1
-	       set x2 $largeur
-	   } else {
-	       set x1 [ expr $i*$largeur ]
-	       set x2 [ expr ($i+1)*$largeur ]
-	       set zone [ list $x1 1 $x2 1 ]
-	   }
-	   set result [ buf$audace(bufNo) stat $zone ]
-	   lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $x1 $x2 ]
+           if { $i==0 } {
+               set zone [ list 1 1 $largeur 1 ]
+               set x1 1
+               set x2 $largeur
+           } else {
+               set x1 [ expr $i*$largeur ]
+               set x2 [ expr ($i+1)*$largeur ]
+               set zone [ list $x1 1 $x2 1 ]
+           }
+           set result [ buf$audace(bufNo) stat $zone ]
+           lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] $x1 $x2 ]
        }
        #-- Tri par ecart-type :
        set listresults [ lsort -increasing -real -index 1 $listresults ]
@@ -882,8 +883,8 @@ proc spc_snr { args } {
        set somme 0
        set intensites [ lindex [ spc_fits2data $fichier ] 1 ]
        for { set i [ expr $xdeb-1 ] } { $i<$xfin } { incr i } {
-	   set intensite [ lindex $intensites $i ]
-	   set somme [ expr $somme+pow($intensite-$S,2) ]
+           set intensite [ lindex $intensites $i ]
+           set somme [ expr $somme+pow($intensite-$S,2) ]
        }
        set N [ expr sqrt($somme/($xfin-$xdeb+1)) ]
        }
@@ -891,10 +892,10 @@ proc spc_snr { args } {
 
        #--- Calcul de SNR :
        if { $N != 0 } {
-	   set SNR [ expr $S/$N ]
+           set SNR [ expr $S/$N ]
        } else {
-	   ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
-	   set SNR 0
+           ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
+           set SNR 0
        }
 
        #--- Affichage des résultats :
@@ -925,14 +926,14 @@ proc spc_snr1 { args } {
        set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "NAXIS2" ] !=-1 } {
-	   set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
+           set naxis2 [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
        } else {
-	   set naxis2 1
+           set naxis2 1
        }
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-	   set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+           set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
        } else {
-	   set disp 1.
+           set disp 1.
        }
 
        #--- Crop de l'image : ne tient pas compte des 5% premier et derniers
@@ -955,10 +956,10 @@ proc spc_snr1 { args } {
 
        #--- Calcul de SNR :
        if { $N != 0 } {
-	   set SNR [ expr $S/$N ]
+           set SNR [ expr $S/$N ]
        } else {
-	   ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
-	   set SNR O
+           ::console::affiche_resultat "Le bruit N=0, donc SNR non calculable\n"
+           set SNR O
        }
 
        #--- Affichage des résultats :
@@ -988,50 +989,50 @@ proc spc_integrate { args } {
     global audace
 
     if { [llength $args] == 3 } {
-	set filename [ lindex $args 0 ]
-	set xdeb [ lindex $args 1 ]
-	set xfin [ lindex $args 2 ]
+        set filename [ lindex $args 0 ]
+        set xdeb [ lindex $args 1 ]
+        set xfin [ lindex $args 2 ]
 
-	#--- Conversion des données en liste :
-	set listevals [ spc_fits2data $filename ]
-	set xvals [ lindex $listevals 0 ]
-	set yvals [ lindex $listevals 1 ]
+        #--- Conversion des données en liste :
+        set listevals [ spc_fits2data $filename ]
+        set xvals [ lindex $listevals 0 ]
+        set yvals [ lindex $listevals 1 ]
 
-	foreach xval $xvals yval $yvals {
-	    if { $xval>=$xdeb && $xval<=$xfin } {
-		lappend xsel $xval
-		lappend ysel $yval
-	    }
-	}
-
-	#--- Calcul de l'aire sous la raie :
-	set valsselect [ list $xsel $ysel ]
-	set intensity [ spc_aire $valsselect ]
-	#set ew [ expr $intensity-($xfin-$xdeb) ]
-
-	if { 0==1 } {
-	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
-	set deltal [ expr abs($xfin-$xdeb) ]
-	set snr [ spc_snr $filename ]
-	set rapport [ expr $intensity/$deltal ]
-	if { $rapport>=1.0 } {
-	    set deltal [ expr $ew+0.1 ]
-	    ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
-	}
-	if { $snr != 0 } {
-	    set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
-	} else {
-	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n" ]
-	    set sigma 0
-	}
+        foreach xval $xvals yval $yvals {
+            if { $xval>=$xdeb && $xval<=$xfin } {
+                lappend xsel $xval
+                lappend ysel $yval
+            }
         }
 
-	#--- Affichage des résultats :
-	#::console::affiche_resultat "L'intensité de la raie sur ($xdeb-$xfin) vaut $intensity ADU.anstrom(s)\nsigma(I)=$sigma ADU.angstrom\n"
+        #--- Calcul de l'aire sous la raie :
+        set valsselect [ list $xsel $ysel ]
+        set intensity [ spc_aire $valsselect ]
+        #set ew [ expr $intensity-($xfin-$xdeb) ]
+
+        if { 0==1 } {
+        #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollman) :
+        set deltal [ expr abs($xfin-$xdeb) ]
+        set snr [ spc_snr $filename ]
+        set rapport [ expr $intensity/$deltal ]
+        if { $rapport>=1.0 } {
+            set deltal [ expr $ew+0.1 ]
+            ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
+        }
+        if { $snr != 0 } {
+            set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+        } else {
+            ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n" ]
+            set sigma 0
+        }
+        }
+
+        #--- Affichage des résultats :
+        #::console::affiche_resultat "L'intensité de la raie sur ($xdeb-$xfin) vaut $intensity ADU.anstrom(s)\nsigma(I)=$sigma ADU.angstrom\n"
         ::console::affiche_resultat "L'intensité de la raie sur ($xdeb-$xfin) vaut $intensity ADU.anstrom(s)\n"
-	return $intensity
+        return $intensity
     } else {
-	::console::affiche_erreur "Usage: spc_integrate nom_profil_raies lanmba_dep lambda_fin\n"
+        ::console::affiche_erreur "Usage: spc_integrate nom_profil_raies lanmba_dep lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -1052,66 +1053,66 @@ proc spc_integratec { args } {
     global audace
 
     if { [llength $args]==3 || [llength $args]==4 } {
-	if { [llength $args]==3 } {
-	    set filename [ lindex $args 0 ]
-	    set ldeb [ lindex $args 1 ]
-	    set lfin [ lindex $args 2 ]
-	} elseif { [llength $args]==4 } {
-	    set filename [ lindex $args 0 ]
-	    set ldeb [ lindex $args 1 ]
-	    set lfin [ lindex $args 2 ]
-	    set continuum [ lindex $args 3 ]
-	}
+        if { [llength $args]==3 } {
+            set filename [ lindex $args 0 ]
+            set ldeb [ lindex $args 1 ]
+            set lfin [ lindex $args 2 ]
+        } elseif { [llength $args]==4 } {
+            set filename [ lindex $args 0 ]
+            set ldeb [ lindex $args 1 ]
+            set lfin [ lindex $args 2 ]
+            set continuum [ lindex $args 3 ]
+        }
 
-	#--- Conversion des données en liste :
-	set listevals [ spc_fits2data $filename ]
-	set xvals [ lindex $listevals 0 ]
-	set yvals [ lindex $listevals 1 ]
+        #--- Conversion des données en liste :
+        set listevals [ spc_fits2data $filename ]
+        set xvals [ lindex $listevals 0 ]
+        set yvals [ lindex $listevals 1 ]
 
 
-	#--- Détermination de la valeur du continuum de la raie :
-	if { [llength $args]==3 } {
-	    buf$audace(bufNo) load "$audace(rep_images)/$filename"
-	    set listemotsclef [ buf$audace(bufNo) getkwds ]
-	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-		set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
-	    } else {
-		set disp 1.
-	    }
-	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-		set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
-	    } else {
-		set lambda 1.
-	    }
-	    set xdeb [ expr round(($ldeb-$lambda0)/$disp) ]
-	    set xfin [ expr round(($lfin-$lambda0)/$disp) ]
-	    set continuum [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]	    
-	} elseif { [llength $args]==4 } {
-	    set continuum $continuum
-	}
+        #--- Détermination de la valeur du continuum de la raie :
+        if { [llength $args]==3 } {
+            buf$audace(bufNo) load "$audace(rep_images)/$filename"
+            set listemotsclef [ buf$audace(bufNo) getkwds ]
+            if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+                set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+            } else {
+                set disp 1.
+            }
+            if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+                set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+            } else {
+                set lambda 1.
+            }
+            set xdeb [ expr round(($ldeb-$lambda0)/$disp) ]
+            set xfin [ expr round(($lfin-$lambda0)/$disp) ]
+            set continuum [ lindex [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ] 3 ]
+        } elseif { [llength $args]==4 } {
+            set continuum $continuum
+        }
 
-	#--- Création de la liste des valeurs sélectionnées par l'intervalle :
-	foreach xval $xvals yval $yvals {
-	    if { $xval>=$ldeb && $xval<=$lfin } {
-		lappend xsel $xval
-		lappend ysel [ expr $yval-$continuum ]
-	    }
-	}
+        #--- Création de la liste des valeurs sélectionnées par l'intervalle :
+        foreach xval $xvals yval $yvals {
+            if { $xval>=$ldeb && $xval<=$lfin } {
+                lappend xsel $xval
+                lappend ysel [ expr $yval-$continuum ]
+            }
+        }
 
-	#--- Retrait du continuum a chaque intensité sélectionnée :
-	#foreach y $ysel {
-	#    lappend yselc [ expr $y-$offset ]
-	#}
+        #--- Retrait du continuum a chaque intensité sélectionnée :
+        #foreach y $ysel {
+        #    lappend yselc [ expr $y-$offset ]
+        #}
 
-	#--- Calcul de l'aire sous la raie :
-	set valsselect [ list $xsel $ysel ]
-	set intensity [ spc_aire $valsselect ]
+        #--- Calcul de l'aire sous la raie :
+        set valsselect [ list $xsel $ysel ]
+        set intensity [ spc_aire $valsselect ]
 
-	#--- Affichage des résultats :
+        #--- Affichage des résultats :
         ::console::affiche_resultat "L'intensité de la raie sur ($ldeb-$lfin) vaut $intensity ADU.anstrom(s) ; Continuum à $continuum ADU\n"
-	return $intensity
+        return $intensity
     } else {
-	::console::affiche_erreur "Usage: spc_integratec nom_profil_raies lanmba_dep lambda_fin ?valeur_continuum?\n"
+        ::console::affiche_erreur "Usage: spc_integratec nom_profil_raies lanmba_dep lambda_fin ?valeur_continuum?\n"
     }
 }
 #***************************************************************************#
@@ -1132,55 +1133,55 @@ proc spc_imax { args } {
     global audace
 
     if { [llength $args] == 3 } {
-	set fichier [ lindex $args 0 ]
-	set lambda [ lindex $args 1 ]
-	set largeur [ lindex $args 2 ]
+        set fichier [ lindex $args 0 ]
+        set lambda [ lindex $args 1 ]
+        set largeur [ lindex $args 2 ]
 
-	#--- Détermine les paramètres de calibration :
-	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
-	set listemotsclef [ buf$audace(bufNo) getkwds ]
-	if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-	    set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
-	} else {
-	    set disp 1.
-	}
-	if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-	    set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
-	} else {
-	    set lambda0 1.
-	}
-	if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	    set flag_nonlin 1
-	    set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
-	    set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
-	    set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
-	    set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
-	} else {
-	    set flag_nonlin 0
-	}
+        #--- Détermine les paramètres de calibration :
+        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+        set listemotsclef [ buf$audace(bufNo) getkwds ]
+        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+            set disp [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+        } else {
+            set disp 1.
+        }
+        if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+            set lambda0 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+        } else {
+            set lambda0 1.
+        }
+        if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+            set flag_nonlin 1
+            set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+            set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+            set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+            set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+        } else {
+            set flag_nonlin 0
+        }
 
-	#-- Calcul des limites de l'ajustement pour une dispersion linéaire :
-	set xdeb [ expr round(($lambda-0.5*$largeur-$lambda0)/$disp) ]
-	set xfin [ expr round(($lambda+0.5*$largeur-$lambda0)/$disp) ]
+        #-- Calcul des limites de l'ajustement pour une dispersion linéaire :
+        set xdeb [ expr round(($lambda-0.5*$largeur-$lambda0)/$disp) ]
+        set xfin [ expr round(($lambda+0.5*$largeur-$lambda0)/$disp) ]
 
-	#--- Ajustement gaussien:
-	set gaussparams [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ]
-	set imax [ lindex $gaussparams 0 ]
-	set xcentre [ lindex $gaussparams 1 ]
+        #--- Ajustement gaussien:
+        set gaussparams [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ]
+        set imax [ lindex $gaussparams 0 ]
+        set xcentre [ lindex $gaussparams 1 ]
 
-	#--- Converti le pixel en longueur d'onde :
-	if { $flag_nonlin==1 } {
-	    set lcentre [ expr $spc_a+$spc_b*$xcentre+$spc_c*pow($xcentre,2)+$spc_d*pow($xcentre,3) ]
-	} else {
-	    set lcentre [ expr $disp*$xcentre+$lambda0 ]
-	}
+        #--- Converti le pixel en longueur d'onde :
+        if { $flag_nonlin==1 } {
+            set lcentre [ expr $spc_a+$spc_b*$xcentre+$spc_c*pow($xcentre,2)+$spc_d*pow($xcentre,3) ]
+        } else {
+            set lcentre [ expr $disp*$xcentre+$lambda0 ]
+        }
 
-	#--- Affichage des résultats :
+        #--- Affichage des résultats :
         ::console::affiche_resultat "L'amplitude de la raie centrée en $lcentre vaut $imax ADU\n"
-	set resul [ list $imax $lcentre ]
-	return $resul
+        set resul [ list $imax $lcentre ]
+        return $resul
     } else {
-	::console::affiche_erreur "Usage: spc_imax nom_profil_raies longueur_d_onde_raie largeur\n"
+        ::console::affiche_erreur "Usage: spc_imax nom_profil_raies longueur_d_onde_raie largeur\n"
     }
 }
 #***************************************************************************#
@@ -1202,44 +1203,44 @@ proc spc_imax0 { args } {
     global audace
 
     if { [llength $args] == 3 } {
-	set filename [ lindex $args 0 ]
-	set xdeb [ lindex $args 1 ]
-	set xfin [ lindex $args 2 ]
+        set filename [ lindex $args 0 ]
+        set xdeb [ lindex $args 1 ]
+        set xfin [ lindex $args 2 ]
 
-	#--- Conversion des données en liste :
-	set listevals [ spc_fits2data $filename ]
-	set xvals [ lindex $listevals 0 ]
-	set yvals [ lindex $listevals 1 ]
+        #--- Conversion des données en liste :
+        set listevals [ spc_fits2data $filename ]
+        set xvals [ lindex $listevals 0 ]
+        set yvals [ lindex $listevals 1 ]
 
-	foreach xval $xvals yval $yvals {
-	    if { $xval>=$xdeb && $xval<=$xfin } {
-		lappend xsel $xval
-		lappend ysel $yval
-	    }
-	}
+        foreach xval $xvals yval $yvals {
+            if { $xval>=$xdeb && $xval<=$xfin } {
+                lappend xsel $xval
+                lappend ysel $yval
+            }
+        }
 
-	#--- Calcul de la dérive de la raie :
-	set valsselect [ list $xsel $ysel ]
-	set valderiv [ spc_derivation $valsselect ]
-	set yderiv [ lindex $valderiv 1 ]
+        #--- Calcul de la dérive de la raie :
+        set valsselect [ list $xsel $ysel ]
+        set valderiv [ spc_derivation $valsselect ]
+        set yderiv [ lindex $valderiv 1 ]
 ::console::affiche_resultat "$yderiv\n"
 
-	#--- Détermine la zéro :
-	set i 0
-	foreach x $xsel y $yderiv {
-	    if { $y==0 } {
-		set ximax $x
-		break
-	    }
-	    incr i
-	}
-	set yimax [ lindex $ysel $i ]
+        #--- Détermine la zéro :
+        set i 0
+        foreach x $xsel y $yderiv {
+            if { $y==0 } {
+                set ximax $x
+                break
+            }
+            incr i
+        }
+        set yimax [ lindex $ysel $i ]
 
-	#--- Affichage des résultats :
+        #--- Affichage des résultats :
         ::console::affiche_resultat "L'amplitude de la raie sur ($xdeb-$xfin) vaut $yimax ADU\n"
-	return $yimax
+        return $yimax
     } else {
-	::console::affiche_erreur "Usage: spc_imax nom_profil_raies lanmba_dep lambda_fin\n"
+        ::console::affiche_erreur "Usage: spc_imax nom_profil_raies lanmba_dep lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -1262,38 +1263,38 @@ proc spc_icontinuum { args } {
     set nbtranches 10
 
     if { [llength $args]==1 } {
-	set fichier [ file rootname [ lindex $args 0 ] ]
+        set fichier [ file rootname [ lindex $args 0 ] ]
 
-	#--- Calcul des paramètres de l'image :
-	buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+        #--- Calcul des paramètres de l'image :
+        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
 
-	#--- Détermine les limites gauche et droite d'etude (valeurs != 0) :
-	set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
-	buf$audace(bufNo) window [ list [ lindex $limits 0 ] 1 [ lindex $limits 1 ] 1 ]
-	set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
-	set largeur [ expr int($naxis1/$nbtranches) ]
+        #--- Détermine les limites gauche et droite d'etude (valeurs != 0) :
+        set limits [ spc_findnnul [ lindex [ spc_fits2data "$fichier" ] 1 ] ]
+        buf$audace(bufNo) window [ list [ lindex $limits 0 ] 1 [ lindex $limits 1 ] 1 ]
+        set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+        set largeur [ expr int($naxis1/$nbtranches) ]
 
-	#--- Détermine l'intensité moyenne sur chaque tranches :
-	set listresults ""
-	for {set i 0} {$i<$nbtranches} {incr i} {
-	    if { $i==0 } {
-		set zone [ list 1 1 $largeur 1 ]
-	    } else {
-		set zone [ list [ expr $i*$largeur ] 1 [ expr ($i+1)*$largeur ] 1 ]
-	    }
-	    set result [ buf$audace(bufNo) stat $zone ]
-	    lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] ]
-	}
+        #--- Détermine l'intensité moyenne sur chaque tranches :
+        set listresults ""
+        for {set i 0} {$i<$nbtranches} {incr i} {
+            if { $i==0 } {
+                set zone [ list 1 1 $largeur 1 ]
+            } else {
+                set zone [ list [ expr $i*$largeur ] 1 [ expr ($i+1)*$largeur ] 1 ]
+            }
+            set result [ buf$audace(bufNo) stat $zone ]
+            lappend listresults [ list [ lindex $result 4 ] [ lindex $result 5 ] ]
+        }
 
-	#--- Tri par ecart-type :
-	set listresults [ lsort -increasing -real -index 1 $listresults ]
-	set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
+        #--- Tri par ecart-type :
+        set listresults [ lsort -increasing -real -index 1 $listresults ]
+        set icontinuum [ lindex [ lindex $listresults 0 ] 0 ]
 
-	#--- Affichage des résultats :
+        #--- Affichage des résultats :
         ::console::affiche_resultat "Le continuum vaut $icontinuum\n"
-	return $icontinuum
+        return $icontinuum
     } else {
-	::console::affiche_erreur "Usage: spc_icontinuum nom_profil_raies\n"
+        ::console::affiche_erreur "Usage: spc_icontinuum nom_profil_raies\n"
     }
 }
 #***************************************************************************#
@@ -1315,34 +1316,34 @@ proc spc_findnnul { args } {
     global audace
 
     if { [llength $args] == 1 } {
-	set liste_intentites [ lindex $args 0 ]
+        set liste_intentites [ lindex $args 0 ]
 
-	#--- Initialisations :
-	set len [ llength $liste_intentites ]
-	set i_inf 0
-	set i_sup [ expr $len-1 ]
+        #--- Initialisations :
+        set len [ llength $liste_intentites ]
+        set i_inf 0
+        set i_sup [ expr $len-1 ]
 
-	#--- Recherche de i_inf :
-	for {set i 0} {$i<$len} {incr i} { 
-	    if { [ lindex $liste_intentites $i ]!=0 } {
-		set i_inf $i
-		break
-	    }
-	}
+        #--- Recherche de i_inf :
+        for {set i 0} {$i<$len} {incr i} {
+            if { [ lindex $liste_intentites $i ]!=0 } {
+                set i_inf $i
+                break
+            }
+        }
 
-	#--- Recherche de i_sup :
-	for {set i [ expr $len-1 ]} {$i>=0} {incr i -1} {
-	    if { [ lindex $liste_intentites $i ]!=0 } {
-		set i_sup $i
-		break
-	    }
-	}
+        #--- Recherche de i_sup :
+        for {set i [ expr $len-1 ]} {$i>=0} {incr i -1} {
+            if { [ lindex $liste_intentites $i ]!=0 } {
+                set i_sup $i
+                break
+            }
+        }
 
-	#--- Traitement des résultats :
-	set results [ list $i_inf $i_sup ]
-	return $results
+        #--- Traitement des résultats :
+        set results [ list $i_inf $i_sup ]
+        return $results
     } else {
-	::console::affiche_erreur "Usage: spc_findnnul liste_intensites\n"
+        ::console::affiche_erreur "Usage: spc_findnnul liste_intensites\n"
     }
 }
 #***************************************************************************#
