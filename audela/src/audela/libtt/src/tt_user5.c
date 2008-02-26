@@ -46,6 +46,13 @@ int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2);
 int ouverture2 (TT_IMA* pout, int N,int naxis1,int naxis2);
 
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* ++++++++++++++++++++++++++++    INITIALISATION     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
 /**************************************************************************/
 /**************************************************************************/
 /* Initialisation des fonctions de user5 pour IMA/SERIES                  */
@@ -155,9 +162,14 @@ int tt_user5_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg)
    return(OK_DLL);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* ++++++++++++++++++++++++++++    FONCTIONS     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries)
 /***************************************************************************/
 /* remplace les trainées d'étoiles par le fond de ciel                     */
@@ -289,15 +301,15 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    return(OK_DLL);
 }
 
+
+
+int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuila, double xc0, double yc0, double exposure)
 /***************************************************************************/
 /* detecte le début des trainées d'étoiles sur une image trainee           */
 /***************************************************************************/
 /*														                   */
 /* 																		   */
 /***************************************************************************/
-
-int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuila, double xc0, double yc0, double exposure)
-
 {	
 	int xmax,ymax,ntrainee,sizex,sizey,nb,background,flags;
 	double fwhmyh,fwhmyb,posx,posy,posxanc,posyanc,fwhmx,fwhmy,lt,xc,yc,flux,fluxerr,fwhmd,a,b;
@@ -458,6 +470,8 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 	return 1;
 }
 
+
+void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac, double exposure) 
 /*********************************************************************************************/
 /* fitte les trainées avec une ellipse														 */
 /*********************************************************************************************/
@@ -482,7 +496,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 /*  carac[3]=Y2																				 */
 /*  carac[4]=XY																				 */
 /*********************************************************************************************/
-void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac, double exposure) {
+{
 
 	double *matx,*maty, intensite,moyy,*addx,matyy,posx,inten,flux,flux2=0.0;
 	int jx,jxx,jy,moyjx,ltt,posmaty=0;
@@ -603,6 +617,8 @@ void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat
 
 }
 
+
+void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb, int sizex, int sizey,double **mat,double *p,double *carac,double exposure) 
 /*********************************************************************************************/
 /* fitte les trainées avec une gaussienne convoluée avec une un trait (= forme d'une trainée)*/
 /*********************************************************************************************/
@@ -626,8 +642,7 @@ void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat
 /*  carac[3]=Y2																				 */
 /*  carac[4]=XY																				 */
 /*********************************************************************************************/
-
-void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb, int sizex, int sizey,double **mat,double *p,double *carac,double exposure) {
+{
 
    int l,nbmax,m,ltt;
    double l1,l2,a0,f,kk;
@@ -834,6 +849,7 @@ void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb
 }
 	
 
+void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure) 
 /*********************************************************************************************/
 /* fitte les trainées avec une gaussienne convolué avec une un trait (= forme d'une trainée) */
 /*	approximation de la fonction erf													     */
@@ -854,8 +870,7 @@ void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb
 /*     p[5]=fwhm Y																			 */
 /*  ecart=ecart-type																		 */
 /*********************************************************************************************/
-
-void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure) {
+{
    
    int l,nbmax,m,ltt;
    double l1,l2,a0;
@@ -987,19 +1002,33 @@ double erf( double x ) {
     return 1.0 - retval;
 }
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/* ++++++++++++++++++++++++++++    FONCTIONS   MORPHO MATHS  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-//###############################################################################################################################
-//###############################################################################################################################
-//												MORPHO MATHS
-//###############################################################################################################################
-//###############################################################################################################################
+int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
+/*********************************************************************************************/
+/* Recherche des GEO et des GTO dans les images traînées								     */
+/* traitement basé sur le chapeau haut de forme de Morpho Maths							     */
+/*********************************************************************************************/
+/* Entrées: chemin = repertoire pour suaver les résultats									 */
+/*			nom_trait= nom du traitement de morpho maths (choix entre TOPHAT et TOPHATE)	 */
+/*					TOPHAT= chapeau haut de forme classique									 */
+/*					TOPHATE= chapeau haut étendu (ouverture d'une fermeture)				 */
+/*			struct_elem = forme de l'element structurant (RECTANGLE, DAIMOND, CERCLE)		 */
+/*			x1 = longueur sur l'axe x de SE													 */
+/*			y1 = largeur sur l'axe y de SE													 */
+/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 */
+/*********************************************************************************************/
+/*      pour le moment les SE seront de dimensions impaires pour avoir un centre centré!     */
+/*********************************************************************************************/
+
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //set chemin "D:/"
 //buf1 imaseries "GEOGTO filename=$chemin nom_trait=TOPHATE struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 imaseries "GEOGTO filename=$chemin nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
-//pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
-
-int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp2,*p_tmp3,*p_tmp4;
 	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul,i,x0,y0;
@@ -2039,18 +2068,35 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 }
 
 
-
 //void morphomath (TT_IMA_SERIES *pseries,TT_IMA* p_in,TT_IMA* p_out,char* nom_trait, char* struct_elem,int x1,int y1)
 int tt_morphomath_1 (TT_IMA_SERIES *pseries)
-/****************************************************************************/
-/* trait morpho math sur image dans buffer						            */
-/****************************************************************************/
-/****************************************************************************/
+/*********************************************************************************************/
+/* Trait morpho math sur image dans buffer													 */
+/*********************************************************************************************/
+/* Entrées:												  									 */
+/*			nom_trait= nom du traitement de morpho maths (ERODE, DILATE, OPEN, CLOSE,		 */
+/*					OUVERTURE, OUVERTURE2, TOPHAT et TOPHATE)								 */
+/*					OUVERTURE=ouverture très rapide pour des SE:ligne de longueur>150 pixels */									 */
+/*					OUVERTURE2=ouverture très rapide pour des SE:ligne de longueur<150 pixels*/
+/*					TOPHAT= chapeau haut de forme classique									 */
+/*					TOPHATE= chapeau haut étendu (ouverture d'une fermeture)				 */
+/*			struct_elem = forme de l'element structurant (RECTANGLE, DAIMOND, CERCLE)		 */
+/*			x1 = longueur sur l'axe x de SE													 */
+/*			y1 = largeur sur l'axe y de SE													 */
+/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 */
+/*********************************************************************************************/
+/*      pour le moment les SE seront de dimensions impaires pour avoir un centre centré!     */
+/*********************************************************************************************/
+/* ATTENTION: si le centre n'est pas centre et le SE n'est pas symmétrique,					 */
+/* il faut revoir l'algo de dilation ( il faut utilisé le transposé de SE) !!				 */
+/*********************************************************************************************/
+
+
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=TOPHAT struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 imaseries "MORPHOMATH nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
 //pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
-// si le centre n'est pas centre et le SE n'est aps symmétrique, 
+// si le centre n'est pas centre et le SE n'est pas symmétrique, 
 // il faut revoir l'algo de dilation ( il faut utilisé le transposé de SE) !!
 
 {
@@ -2479,8 +2525,11 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 }
 
-/************* MM: DILATE **************/
+
 void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
+/*********************************************************************************************/
+/* Trait morpho math : algo de dilation classique: recherche du max dans SE					 */
+/*********************************************************************************************/
 {	
 	int cx,cy,x,y,xx,yy;
 	double sup;
@@ -2509,8 +2558,10 @@ void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int si
 }
 
 
-/************* MM: ERODE **************/
 void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
+/*********************************************************************************************/
+/* Trait morpho math : algo d'érosion classique: recherche du min dans SE					 */
+/*********************************************************************************************/
 {
 	int cx,cy,x,y,xx,yy;
 	double inf;
@@ -2538,18 +2589,24 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 	}
 }
 
-///////////////////////////////////////////////////////////
-//      ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE        //
-///////////////////////////////////////////////////////////
-/************* MM: OUVERURE pour un SE ligne **************/
-/****** algo de VAN DROOGENBROECK *************************/
-/*réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors. Journal of Mathematical Imaging and Vision,2005 */
+
+
+
+int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
+/*********************************************************************************************/
+/* Trait morpho math : algo d'ouverture optimisé pour SE ligne > 150 pixels					 */
+/*********************************************************************************************/
+/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE											 */
+/*********************************************************************************************/
+/*						 algo de VAN DROOGENBROECK											 */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*						Journal of Mathematical Imaging and Vision,2005						 */
+/*					très rapide pour des très gros SE: ligne > 150 pixels					 */
+/*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 save "D:/toqjd.fit"
-
-int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
 { 
 	int i,x,y,aux,z,resol;
 	int minimum;
@@ -2569,7 +2626,7 @@ int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
 			y=(int)(pout->p[x]*resol/65535.0);
 			pout->p[x]=(float)y;
 		}
-		tt_imasaver(pout,"D:/pin.fit",16);	
+		//tt_imasaver(pout,"D:/pin.fit",16);	
 	}
 	x=y=aux=0;
 
@@ -2677,20 +2734,26 @@ int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
 	return 0;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//					ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE                 //
-////////////////////////////////////////////////////////////////////////////////
-/************* MM: OUVERTURE pour un SE ligne avec histo amélioré **************/
-/*************************** algo de VAN DROOGENBROECK *************************/
-/**************** gain de temps pour image codées sur 16 bits ******************/
-/*réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors. Journal of Mathematical Imaging and Vision,2005 */
+
+
+int ouverture2 (TT_IMA* pout, int N,int naxis1,int naxis2)
+/*********************************************************************************************/
+/* Trait morpho math : algo d'ouverture optimisé pour SE ligne < 150 pixels					 */
+/*********************************************************************************************/
+/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codées en 16 bits				 */
+/*********************************************************************************************/
+/*						 algo de VAN DROOGENBROECK											 */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*						Journal of Mathematical Imaging and Vision,2005						 */
+/*					très rapide pour des très gros SE: ligne < 150 pixels					 */
+/*********************************************************************************************/
+/*						ATTENTION: pout doit être la copie de pin!!							 */
+/*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE2 struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 save "D:/ouverture2.fit"
 
-//pout doit être la copie de pin!!
-int ouverture2 (TT_IMA* pout, int N,int naxis1,int naxis2)
 { 
 	int i,x,y,aux;
 	int minimum;
@@ -3265,16 +3328,6 @@ void tt_fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart) {
    l1=l2;
    goto fitgauss2d_b1;
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
