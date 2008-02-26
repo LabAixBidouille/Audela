@@ -402,7 +402,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				xc=2*(fwhm/1.5)+nb;
 				yc=(fwhmybi/1.5)+nb;
 				flux=0.0;
-
+				//lt=lt+2*(fwhm+1);
 				fittrainee2 (seuila,lt,fwhm,xc,yc,nb,sizex, sizey, mat, para, carac, exposure); 				
 				//fittrainee3 (seuila,lt,xc,yc,nb,sizex, sizey, mat, para, carac, exposure); 
 				//posx  = para[1]+x-fwhm-nb;
@@ -441,7 +441,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 // attention matrice image commence au pixel 1,1 alors que l'analyse se fait avec 0,0 dans cette fonction !!
 // catalog.cat: numero flux_best fluxerr_best magn_best magnerr_best background X Y X2 Y2 XY A B theta FWHM flags class_star
 				fprintf(fic,"	%-d			%-9.1f		%-9.1f		%-9.1f		%-9.1f	%d	%9f		%9f		%8e	%8e	%8e	%f	%5.3f	%5.3f	%4.1f %d	%4.2f\n",
-				ntrainee,flux,fluxerr,magnitude,magnitudeerr,background,posx,posy,carac[2],carac[3],carac[4],
+				ntrainee,flux,fluxerr,magnitude,magnitudeerr,background,posx+1,posy+1,carac[2],carac[3],carac[4],
 				a,b,theta,fwhmd,flags, classstar);
 				ntrainee++;
 				tt_free2((void**)&mat,"mat");
