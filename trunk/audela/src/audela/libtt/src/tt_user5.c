@@ -1008,7 +1008,7 @@ double erf( double x ) {
 /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
+int tt_geo_defilant_1(TT_IMA_SERIES *pseries) 
 /*********************************************************************************************/
 /* Recherche des GEO et des GTO dans les images traînées								     */
 /* traitement basé sur le chapeau haut de forme de Morpho Maths							     */
@@ -1020,7 +1020,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /*			struct_elem = forme de l'element structurant (RECTANGLE, DAIMOND, CERCLE)		 */
 /*			x1 = longueur sur l'axe x de SE													 */
 /*			y1 = largeur sur l'axe y de SE													 */
-/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 */
+/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 
 /*********************************************************************************************/
 /*      pour le moment les SE seront de dimensions impaires pour avoir un centre centré!     */
 /*********************************************************************************************/
@@ -2075,15 +2075,16 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 /*********************************************************************************************/
 /* Entrées:												  									 */
 /*			nom_trait= nom du traitement de morpho maths (ERODE, DILATE, OPEN, CLOSE,		 */
-/*					OUVERTURE, OUVERTURE2, TOPHAT et TOPHATE)								 */
-/*					OUVERTURE=ouverture très rapide pour des SE:ligne de longueur>150 pixels */									 */
+/*					OUVERTURE, OUVERTURE2, TOPHAT, TOPHATE, GRADIENT, CIEL)					 */
+/*					OUVERTURE=ouverture très rapide pour des SE:ligne de longueur>150 pixels */									
 /*					OUVERTURE2=ouverture très rapide pour des SE:ligne de longueur<150 pixels*/
 /*					TOPHAT= chapeau haut de forme classique									 */
 /*					TOPHATE= chapeau haut étendu (ouverture d'une fermeture)				 */
+/*					CIEL= sort l'image du fond de ciel										 */
 /*			struct_elem = forme de l'element structurant (RECTANGLE, DAIMOND, CERCLE)		 */
 /*			x1 = longueur sur l'axe x de SE													 */
 /*			y1 = largeur sur l'axe y de SE													 */
-/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 */
+/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 
 /*********************************************************************************************/
 /*      pour le moment les SE seront de dimensions impaires pour avoir un centre centré!     */
 /*********************************************************************************************/
@@ -2104,14 +2105,14 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	int i,kkk,x,y,j;
 	int size, nelem,naxis1,naxis2,sizex,sizey, sizex2,sizey2,size2;
 	int *se = NULL,*medindice=NULL,*se2 = NULL;
-	double *med =NULL;
+	double *med =NULL,*med_val =NULL;
 	double dvalue;//hicuttemp,locuttemp,sigma;
 	double mode1,mini1,maxi1,mode2,mini2,maxi2,seuil;
 	char *nom_trait, *struct_elem;
 	int x1,y1,x2=0,y2=0,result;
-	int cx,cy,xx,yy,nb_test,k_test;
+	int cx,cy,xx,yy,nb_test,k_test,taille_carre_med;
 	double inf,hicut,locut;
-
+	
 	p_in=pseries->p_in; 
 	p_out=pseries->p_out;
 	p_tmp1=pseries->p_tmp1;
@@ -2415,7 +2416,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	i=strcmp (nom_trait,"CIEL");//médiane sous condition pour faire une carte du fond de ciel
 	if (i==0) {
 		//defini le nombre de fois que l'image subit ce traitement
-		nb_test=2;
+		nb_test=3;
 		//calcul du gradient morpho
 		for (k_test=1;k_test<=nb_test;k_test++) {
 			erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
@@ -2427,7 +2428,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 			seuil =(pseries->hicut)*0.4;
-			tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+			//tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 	
 			//enregistre l'image après le traitement de morphologie mathématique
 			//	tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
@@ -2435,8 +2436,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			//erosion par la médiane si gradient supérieur à seuil
 			// définition du centre de l'élément structurant
 			// SE est au milieu du rectangle sizex*sizey
-			sizex2=90;
-			sizey2=3;
+			sizex2=3;
+			sizey2=90;
 			cx=(sizex2-1)/2;
 			cy=(sizey2-1)/2;
 			size=sizex2*sizey2;
@@ -2452,7 +2453,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=-cx;xx<(sizex2-cx);xx++) {	
-							med[i]=p_in->p[(yy+y+cy)*naxis1+xx+x+cx];
+							med[i]=p_in->p[(yy+y)*naxis1+xx+x];
 							i++;
 						}
 					}
@@ -2473,7 +2474,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=(1-sizex2);xx<=0;xx++) {	
-							med[i]=p_in->p[(yy+y+cy)*naxis1+xx+x];
+							med[i]=p_in->p[(yy+y)*naxis1+xx+x-cx];
 							i++;
 						}
 					}
@@ -2494,6 +2495,26 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=x;xx<x+sizex2;xx++) {	
+							med[i]=p_in->p[(yy+y)*naxis1+xx+x+cx];
+							i++;
+						}
+					}
+					tt_util_qsort_double(med,0,i,medindice);
+					inf=med[(int)(size/2)];
+					p_out->p[y*naxis1+x]=(TT_PTYPE)(inf);
+					if (inf<pseries->locut*1.005) {
+						p_out->p[y*naxis1+x]=(float)(pseries->locut*1.005);
+					}
+				}
+			}
+			//pour les pixel en bas de l'image
+			for (y=0;y<cy;y++) {
+				for (x=cx;x<(naxis1-cx);x++) {
+					if (p_tmp1->p[y*naxis1+x]<seuil*0.4) {continue;}
+					//boucle dans la boite englobant le SE
+					i=0;
+					for (yy=-cy;yy<(sizey2-cy);yy++) {
+						for (xx=(1-sizex2);xx<=0;xx++) {	
 							med[i]=p_in->p[(yy+y+cy)*naxis1+xx+x];
 							i++;
 						}
@@ -2506,6 +2527,93 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					}
 				}
 			}
+			//pour les pixel en haut de l'image
+			for (y=(naxis2-cy-1);y<naxis2;y++) {
+				for (x=cx;x<(naxis1-cx);x++) {
+					if (p_tmp1->p[y*naxis1+x]<seuil*0.4) {continue;}
+					//boucle dans la boite englobant le SE
+					i=0;
+					for (yy=-cy;yy<(sizey2-cy);yy++) {
+						for (xx=x;xx<x+sizex2;xx++) {	
+							med[i]=p_in->p[(yy+y-cy)*naxis1+xx+x];
+							i++;
+						}
+					}
+					tt_util_qsort_double(med,0,i,medindice);
+					inf=med[(int)(size/2)];
+					p_out->p[y*naxis1+x]=(TT_PTYPE)(inf);
+					if (inf<pseries->locut*1.005) {
+						p_out->p[y*naxis1+x]=(float)(pseries->locut*1.005);
+					}
+				}
+			}
+			
+			free(medindice);
+			free(med);
+			if (nb_test>k_test) {
+				for (y=0;y<naxis2;y++) {
+					for (x=0;x<naxis1;x++) {
+						p_in->p[y*naxis1+x]=p_out->p[y*naxis1+x];
+					}	
+				}
+			}
+		}
+	}
+	i=strcmp (nom_trait,"CIEL2");//médiane sous condition pour faire une carte du fond de ciel
+	if (i==0) {
+		//defini le nombre de fois que l'image subit ce traitement
+		nb_test=3;
+		taille_carre_med= 64;
+		//calcul du gradient morpho
+		for (k_test=1;k_test<=nb_test;k_test++) {
+			erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			for (y=0;y<naxis2;y++) {
+				for (x=0;x<naxis1;x++) {
+					p_tmp1->p[y*naxis1+x]=(float)0.5*(p_tmp1->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x]);
+				}
+			}
+			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+
+			seuil =(pseries->hicut)*0.4;
+
+			/* --- calcul d'une image reduite de valeur de médiane de l'image initiale --- */
+			//size=(naxis1/taille_carre_med)*(naxis2/taille_carre_med)+(naxis1/taille_carre_med-1)*(naxis2/taille_carre_med-1);
+			size=(naxis1/taille_carre_med)*(naxis2/taille_carre_med);
+			med=calloc(size,sizeof(double));
+			for (i=0; i<size;i++) {
+				med[i]=1;
+			}
+			med_val=calloc(taille_carre_med*taille_carre_med,sizeof(double));
+			for (i=0; i<taille_carre_med*taille_carre_med;i++) {
+				med_val[i]=1;
+			}
+			j=0;
+			for (y=0;y<naxis2;y=y+taille_carre_med) {
+				for (x=0;x<naxis1;x=x+taille_carre_med) {
+					i=0;
+					for (yy=0;yy<taille_carre_med;yy++) {
+						for (xx=0;xx<taille_carre_med;xx++) {	
+							med_val[i++]=p_in->p[(yy+y)*naxis1+xx+x];
+						}
+					}
+					tt_util_qsort_double(med_val,0,i,medindice);
+					med[j++]=med_val[(int)(taille_carre_med*taille_carre_med/2.0)];
+				}
+			}
+			
+			/* --- boucle sur l'image --- */
+			for (y=0;y<naxis2;y++) {
+				for (x=0;x<naxis1;x++) {
+					if (p_tmp1->p[y*naxis1+x]<seuil) {continue;}
+					else {
+						kkk=((int)floor(1.*y/taille_carre_med))*naxis1/taille_carre_med+((int)floor(1.*x/taille_carre_med));
+						p_out->p[y*naxis1+x]=(float)med[kkk];
+					}
+				}
+			}
+				
 			free(medindice);
 			free(med);
 			if (nb_test>k_test) {
