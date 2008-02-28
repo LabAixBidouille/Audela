@@ -3015,7 +3015,7 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
    TT_ASTROM p_ast;
    FILE *fic;
 //pour centroide
-   double **mat, *pp, *ecart;
+   double **mat, pp[6],ecart;
    int sizex, sizey;
 
 
@@ -3208,8 +3208,10 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
 						//test sur le mot centroide
 						if(strcmp (centroide,"gauss")==0) {
 							//fitte une gaussienne pour la recherche du centroide
+							/*
 							pp = (double*)calloc(6,sizeof(double));
 							ecart = (double*)calloc(1,sizeof(double));
+							*/
 
 							xx1=(int)(xcc-2*r1);
 							xx2=(int)(xcc+2*r1);
@@ -3244,7 +3246,7 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
 							   }
 							}
 
-							tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
+							tt_fitgauss2d (sizex,sizey,mat,pp,&ecart);
 							xcc=pp[1]+xx1;
 							ycc=pp[4]+yy1;
 							for(k=0;k<sizex;k++) {

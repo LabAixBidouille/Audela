@@ -3355,7 +3355,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 /***************************************************/
 void tt_fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart) {
 
-   int l,nbmax,m;
+   int l,nbmax,m,mm;
    double l1,l2,a0;
    double e,er1,y0;
    double m0,m1;
@@ -3394,7 +3394,10 @@ void tt_fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart) {
 
    for (i=0;i<l;i++) {
 	   a0=p[i];
+		mm=0;
       fitgauss2d_b2:
+		mm++;
+		if (mm>nbmax) { break; }
 	   l2=0;
 	   for (jx=0;jx<sizex;jx++) {
 	      xx=(double)jx;
@@ -3402,7 +3405,6 @@ void tt_fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart) {
 	         yy=(double)jy;
 	         rr2=(xx-p[1])*(xx-p[1])+(yy-p[4])*(yy-p[4]);
 	         y0=p[0]*exp(-rr2/p[2]/p[5])+p[3];
-//	         y0=y0*Mask[jx][jy];
 	         l2=l2+(y[jx][jy]-y0)*(y[jx][jy]-y0);
          }
 	   }
@@ -3417,7 +3419,6 @@ void tt_fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart) {
 	         yy=(double)jy;
 	         rr2=(xx-p[1])*(xx-p[1])+(yy-p[4])*(yy-p[4]);
 	         y0=p[0]*exp(-rr2/p[2]/p[5])+p[3];
-//	         y0=y0*Mask[jx][jy];
 	         l2=l2+(y[jx][jy]-y0)*(y[jx][jy]-y0);
          }
 	   }
