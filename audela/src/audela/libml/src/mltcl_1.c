@@ -465,7 +465,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				}
 				f_in2=fopen("./tle2.txt","a+");
 				if (f_in2==NULL) {
-					sprintf(s,"file %s not found",f_in2);
+					strcpy(s,"file ./tle2.txt not found");
 				} else {
 					for (k=0;k<n_in;k++) {
 						fprintf(f_in2,"%s",lignes[k].texte);
@@ -778,7 +778,13 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						/* transforme le fichier de tle en ephemeride */
 						
 						//WriteDisk("mc_tle2ephem");
+#if defined(LIBRARY_DLL)
 						GetCurrentDirectory (400,chaine);
+#endif
+#if defined(LIBRARY_SO)
+						getcwd(chaine,400);
+#endif
+
 						strcpy(toto,chaine);
 						strcat(toto,"\\tle2.txt");
 						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,toto,home);
@@ -986,7 +992,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if (kimage2 != nsat) {
 			/* delete file argv[2] puis reouvre le même*/
 			if (remove(argv[2]))  {
+#if defined(LIBRARY_DLL)
 				const char * const msg = strerror(errno); // MSG contient le message d'erreur
+#endif
 			}
 			/* on recopie l'identification des satellites dans le fichier bdd */
 			f_in1=fopen(argv[2],"w+");
