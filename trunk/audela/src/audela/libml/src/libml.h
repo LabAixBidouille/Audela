@@ -67,6 +67,9 @@
 
 #include "mltcl.h"
 
+#if defined(LIBRARY_DLL)
 #include <io.h> 
+#endif
+
 #endif
 

@@ -36,15 +36,22 @@
 //***************************************************************************
 int WriteDisk(char *Chaine)
 {
+
 FILE *F;
 char Nom[1000];
-SYSTEMTIME St;
+time_t ltime;
+//SYSTEMTIME St;
 char Buffer[300];
 	
 	printf("\n%s",Chaine);
-	GetSystemTime(&St);
-	sprintf(Nom,"%lu%.2lu%.2lu-%s",St.wYear,St.wMonth,St.wDay,"log.txt");
-	sprintf(Buffer,"\n%dh%dm%ds : %s",St.wHour,St.wMinute,St.wSecond,Chaine);
+   time( &ltime );
+   strftime(Buffer,300,"%Y-%m-%dT%H-%M-%S",localtime( &ltime ));
+	//GetSystemTime(&St);
+	//sprintf(Nom,"%lu%.2lu%.2lu-%s",St.wYear,St.wMonth,St.wDay,"log.txt");
+	sprintf(Nom,"%s-log.txt",Buffer);
+	//sprintf(Buffer,"\n%dh%dm%ds : %s",St.wHour,St.wMinute,St.wSecond,Chaine);
+	strcat(Buffer," : ");
+	strcat(Buffer,Chaine);
 	F = fopen(Nom,"at");
 		
 	if(F!=NULL)
