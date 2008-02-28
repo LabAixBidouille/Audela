@@ -25,7 +25,7 @@ CFG=libml - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=xicl6.exe
+CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
@@ -51,7 +51,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\gslcblas.lib /nologo /subsystem:windows /dll /pdb:".\Release/libml.pdb" /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc" /out:"..\..\..\..\bin\libml.dll" /implib:".\Release/libml.lib"
 # SUBTRACT LINK32 /pdb:none
@@ -78,9 +78,9 @@ LINK32=xilink6.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib ..\..\..\external\lib\gsl.lib ..\..\..\external\lib\libtt.lib ..\..\..\external\lib\gslcblas.lib /nologo /subsystem:windows /dll /pdb:".\Debug/libml.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc" /out:"..\..\..\..\bin\libml.dll" /implib:".\Debug/libml.lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib ..\..\..\external\lib\gsl.lib  ..\..\..\external\lib\gslcblas.lib /nologo /subsystem:windows /dll /pdb:".\Debug/libml.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libc" /out:"..\..\..\..\bin\libml.dll" /implib:".\Debug/libml.lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
