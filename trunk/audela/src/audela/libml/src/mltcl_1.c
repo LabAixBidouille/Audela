@@ -429,6 +429,10 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		}
 		ml_file_copy ("./geo.txt","./tle2.txt");
 		//WriteDisk("fichier tle2");
+		
+		//correction d'un warning sous linux: pb d'initialisation de la structure lignes
+		lignes=(struct_ligsat*)malloc(1*sizeof(struct_ligsat));
+		free(lignes);
 
 		f_in1=fopen(argv[4],"r");
 		if (f_in1==NULL) {
