@@ -80,9 +80,9 @@ load libml ; ml_residutycho2usno "D:/catalogs/usno_coupe" "D:/catalogs/tycho_for
 	struct_texte_fichier *accusno,*acctycho;
 	int l,raL,deL,magL,raLL,deLL,magLL;
     double ratycho,detycho,mag_red_tycho,mag_bleue_tycho,rausno,decusno,mag_red_usno,mag_bleue_usno;
-	double differencera,differencedec,differencemagn1,differencemagn2,diffminra,minra,diffmindec,mindec;
+	double differencera,differencedec,differencemagn1=0.,differencemagn2=0.,diffminra,minra,diffmindec,mindec;
 //	long nbdebutusno, nbdebuttycho;
-	double minra2,diffra2,mindec2,diffdec2,proche1,proche2;
+	double minra2=0.,diffra2=0.,mindec2=0.,diffdec2=0.,proche1,proche2;
 
 	if(argc<3) {
 		sprintf(s,"Usage: %s pathname_usno  pathname_tycho", argv[0]);
@@ -1055,7 +1055,7 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
    double sepmax; /* maximum de distance pour deux objets dans la des images différentes (degrés) */
    double jjdifmin=0.014; /* differences de jours pour autoriser la comparaison */
    FILE *f_in;
-   int k,k1,k2,k3,kimage,nimages,kobject;
+   int k,k1,k2,k3,kimage,nimages,kobject=0;
    int n_in,ns;
    struct_ligsat *lignes;
    int *kdebs,*kfins;
