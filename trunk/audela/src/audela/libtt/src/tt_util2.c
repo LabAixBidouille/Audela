@@ -3247,7 +3247,10 @@ int tt_util_geostat(TT_IMA *p,char *filename,double fwhmsat,double seuil,double 
 							tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
 							xcc=pp[1]+xx1;
 							ycc=pp[4]+yy1;
-
+							for(k=0;k<sizex;k++) {
+								free(mat[k]);
+							}
+							free(mat);
 						} else {
 							/* --- photocentre (xc,yc) ---*/
 							xx1=(int)(xcc-r1);
