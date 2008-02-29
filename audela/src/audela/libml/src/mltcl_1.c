@@ -353,7 +353,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
 	char s[ML_STAT_LIG_MAX],ligne[270],home[35],im[70],lign[270],toto[100],valid[4];
-	char pathGeo[100],pathHttp[100],pathUrl[100],file_0[100],file_ident[100];
+	char pathGeo[100],pathTle2[100],pathHttp[100],pathUrl[100],file_0[100],file_ident[100];
 	char satelname[30],noradname[30],cosparname[30], chaine [ML_STAT_LIG_MAX];	
 	FILE *f_in1, *f_in2;	
 	struct_ligsat *lignes,*lignes2;
@@ -397,7 +397,18 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			strcpy (pathHttp,argv[4]);
 			strcpy (pathUrl,argv[5]);
 		}
-		
+		if (strcmp(pathGeo,".\0")==0) {
+#if defined(LIBRARY_DLL)
+			GetCurrentDirectory (400,pathGeo);
+#endif
+#if defined(LIBRARY_SO)
+			getcwd(pathGeo,400);
+#endif		
+		}
+		strcat(pathGeo,"/geo.txt");
+		strcat(pathTle2,"/tle2.txt");
+		strcat(pathHttp,"/tle.txt");
+
 		//problemetelechargement=0;
 		/* récupère la date et heure des modifs du fichier */
 		//hFile = CreateFile(argv[3],0,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
@@ -431,21 +442,21 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		//}
 
 		/* --- on fabrique un fichier_tle2=geo.txt derriere lequel on ajoute les TLE personels --- */
-		f_in1=fopen("pathGeo/geo.txt","r");
+		f_in1=fopen(pathGeo,"r");
 		if (f_in1==NULL) {
-			f_in1=fopen("pathGeo/geo.txt","a");
+			sprintf(s,"file %s not found, pas de fichier geo",pathGeo);
 			WriteDisk("pas de fichier geo.txt");
 		}
-		ml_file_copy ("pathGeo/geo.txt","pathGeo/tle2.txt");
+		ml_file_copy (pathGeo,pathTle2);
 		//WriteDisk("fichier tle2");
 		
 		//correction d'un warning sous linux: pb d'initialisation de la structure lignes
 		lignes=(struct_ligsat*)malloc(1*sizeof(struct_ligsat));
 		free(lignes);
 
-		f_in1=fopen("pathHttp/tle.txt","r");
+		f_in1=fopen(pathHttp,"r");
 		if (f_in1==NULL) {
-			sprintf(s,"file %s/tle.txt not found, pas de fichier tle",pathHttp);
+			sprintf(s,"file %s not found, pas de fichier tle",pathHttp);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 		} else {
 			n_in1=0;
@@ -464,9 +475,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					free(lignes);
 					return TCL_ERROR;
 				}
-				f_in1=fopen("pathHttp/tle.txt","r");
+				f_in1=fopen(pathHttp,"r");
 				if (f_in1==NULL) {
-					sprintf(s,"file %s/tle;txt not found, pas de fichier tle",pathHttp);
+					sprintf(s,"file %s not found, pas de fichier tle",pathHttp);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
 				}
 				n_in = 0;
@@ -476,9 +487,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						n_in++;
 					}
 				}
-				f_in2=fopen("pathGeo/tle2.txt","a+");
+				f_in2=fopen(pathTle2,"a+");
 				if (f_in2==NULL) {
-					strcpy(s,"file pathGeo/tle2.txt not found");
+					strcpy(s,"file pathTle2 not found");
 				} else {
 					for (k=0;k<n_in;k++) {
 						fprintf(f_in2,"%s",lignes[k].texte);
