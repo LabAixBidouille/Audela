@@ -353,6 +353,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 	int code;
 	double distmin,ra0,dec0, ra,dec,dist,angl,anglmin;
 	char s[ML_STAT_LIG_MAX],ligne[270],home[35],im[70],lign[270],toto[100],valid[4];
+	char pathGeo[100],pathHttp[100],pathUrl[100],file_0[100],file_ident[100];
 	char satelname[30],noradname[30],cosparname[30], chaine [ML_STAT_LIG_MAX];	
 	FILE *f_in1, *f_in2;	
 	struct_ligsat *lignes,*lignes2;
@@ -378,17 +379,25 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		/* --- decode les parametres facultatifs ---*/
 		 /* default: path= "C:\audela\audela\ros\src\grenouille" */
 		if(argc == 2) {
-			argv[3] = "./geo.txt";
-			argv[4] = "c:/Program Files/Apache Group/Apache2/htdocs/ros/tle.txt";
-			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
+			strcpy (pathGeo,".");
+			strcpy (pathHttp,"c:/Program Files/Apache Group/Apache2/htdocs/ros");
+			strcpy (pathUrl,"celestrak.com/NORAD/elements/geo.txt");
 		}
 		if(argc == 3) {
-			argv[4] = "c:/Program Files/Apache Group/Apache2/htdocs/ros/tle.txt";
-			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
+			strcpy (pathHttp,"c:/Program Files/Apache Group/Apache2/htdocs/ros");
+			strcpy (pathUrl,"celestrak.com/NORAD/elements/geo.txt");
 		}
 		if(argc == 4) {
-			argv[5] = "celestrak.com/NORAD/elements/geo.txt";
+			strcpy (pathUrl,"celestrak.com/NORAD/elements/geo.txt");
 		}
+		if(argc > 4) {
+			strcpy (file_0,argv[1]);
+			strcpy (file_ident,argv[2]);
+			strcpy (pathGeo,argv[3]);
+			strcpy (pathHttp,argv[4]);
+			strcpy (pathUrl,argv[5]);
+		}
+		
 		//problemetelechargement=0;
 		/* récupère la date et heure des modifs du fichier */
 		//hFile = CreateFile(argv[3],0,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,0,NULL);
@@ -422,21 +431,21 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		//}
 
 		/* --- on fabrique un fichier_tle2=geo.txt derriere lequel on ajoute les TLE personels --- */
-		f_in1=fopen("./geo.txt","r");
+		f_in1=fopen("pathGeo/geo.txt","r");
 		if (f_in1==NULL) {
-			f_in1=fopen("./geo.txt","a");
+			f_in1=fopen("pathGeo/geo.txt","a");
 			WriteDisk("pas de fichier geo.txt");
 		}
-		ml_file_copy ("./geo.txt","./tle2.txt");
+		ml_file_copy ("pathGeo/geo.txt","pathGeo/tle2.txt");
 		//WriteDisk("fichier tle2");
 		
 		//correction d'un warning sous linux: pb d'initialisation de la structure lignes
 		lignes=(struct_ligsat*)malloc(1*sizeof(struct_ligsat));
 		free(lignes);
 
-		f_in1=fopen(argv[4],"r");
+		f_in1=fopen("pathHttp/tle.txt","r");
 		if (f_in1==NULL) {
-			sprintf(s,"file %s not found, pas de fichier tle",argv[4]);
+			sprintf(s,"file %s/tle.txt not found, pas de fichier tle",pathHttp);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 		} else {
 			n_in1=0;
@@ -455,9 +464,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					free(lignes);
 					return TCL_ERROR;
 				}
-				f_in1=fopen(argv[4],"r");
+				f_in1=fopen("pathHttp/tle.txt","r");
 				if (f_in1==NULL) {
-					sprintf(s,"file %s not found, pas de fichier tle",argv[4]);
+					sprintf(s,"file %s/tle;txt not found, pas de fichier tle",pathHttp);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
 				}
 				n_in = 0;
@@ -467,9 +476,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						n_in++;
 					}
 				}
-				f_in2=fopen("./tle2.txt","a+");
+				f_in2=fopen("pathGeo/tle2.txt","a+");
 				if (f_in2==NULL) {
-					strcpy(s,"file ./tle2.txt not found");
+					strcpy(s,"file pathGeo/tle2.txt not found");
 				} else {
 					for (k=0;k<n_in;k++) {
 						fprintf(f_in2,"%s",lignes[k].texte);
@@ -482,16 +491,16 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 		}
 		/* est-ce que le fichier bdd exist?*/
-		f_in1=fopen(argv[2],"r");
+		f_in1=fopen(file_ident,"r");
 		if (f_in1==NULL) {
 			//WriteDisk("pas de fichier bdd");
-			f_in2=fopen(argv[1],"r");
+			f_in2=fopen(file_0,"r");
 			if (f_in2==NULL) {
-				sprintf(s,"FILE: %s DOESN'T EXIST", argv[1]);
+				sprintf(s,"FILE: %s DOESN'T EXIST", file_0);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				result = TCL_ERROR;
 			} else {
-			retour = ml_file_copy (argv[1],argv[2]);
+			retour = ml_file_copy (file_0,file_ident);
 			fclose(f_in2);
 			}
 		} else {
@@ -501,9 +510,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			/* --- dimensionne la structure des donnees d'entree ---*/
 			n_in=0;
 			/* pour le fichier bdd0 */
-			f_in1=fopen(argv[1],"rt");
+			f_in1=fopen(file_0,"rt");
 			if (f_in1==NULL) {
-				sprintf(s,"file_00 %s not found",argv[1]);
+				sprintf(s,"file_00 %s not found",file_0);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				return TCL_ERROR;
 			}
@@ -523,9 +532,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			fclose(f_in1);
 			n_in1=0;
 			/* pour le fichier bdd */
-			f_in2=fopen(argv[2],"rt");
+			f_in2=fopen(file_ident,"rt");
 			if (f_in2==NULL) {
-				sprintf(s,"file_00 %s not found",argv[1]);
+				sprintf(s,"file_ident %s not found",file_ident);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				free(lignes);
 				return TCL_ERROR;
@@ -548,9 +557,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			date=0;
 			kimage=0;
 			k=0;
-			f_in1=fopen(argv[1],"rt");
+			f_in1=fopen(file_0,"rt");
 			if (f_in1==NULL) {
-				sprintf(s,"file_00 %s not found",argv[1]);
+				sprintf(s,"file_00 %s not found",file_0);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				free(lignes);
 				free(lignes2);
@@ -593,9 +602,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			kimage2=0;
 			k=0;
 			n_in1=0;
-			f_in2=fopen(argv[2],"rt");
+			f_in2=fopen(file_ident,"rt");
 			if (f_in2==NULL) {
-				sprintf(s,"file_00 %s not found",argv[1]);
+				sprintf(s,"file_ident %s not found",file_ident);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				free(lignes);
 				free(lignes2);
@@ -654,9 +663,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					}
 				}
 				/* --- on sauve le resultat dans le fichier de sortie ---*/
-				f_in1=fopen(argv[2],"a+");
+				f_in1=fopen(file_ident,"a+");
 				if (f_in1==NULL) {
-					sprintf(s,"file_0 %s not created",argv[1]);
+					sprintf(s,"file_ident %s not created",file_ident);
 					Tcl_SetResult(interp,s,TCL_VOLATILE);
 					free(lignes);
 					free(lignes2);
@@ -687,10 +696,10 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		}
 
 
-		f_in2=fopen(argv[2],"rt");
+		f_in2=fopen(file_ident,"rt");
 		//WriteDisk(argv[2]);
 		if (f_in2==NULL) {
-			sprintf(s,"file_0 %s not found",argv[2]);
+			sprintf(s,"file_ident0 %s not found",file_ident);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			return TCL_ERROR;
 		}
@@ -721,9 +730,9 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		kimage2=0;
 		nsat=0;
 		strcpy(s,"");
-		f_in1=fopen(argv[2],"rt");
+		f_in1=fopen(file_ident,"rt");
 		if (f_in1==NULL) {
-			sprintf(s,"file_0 %s not found",argv[2]);
+			sprintf(s,"file_ident %s not found",file_ident);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			free(lignes);
 			free(lignes2);
@@ -995,15 +1004,15 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		//WriteDisk(chaine);
 		if (kimage2 != nsat) {
 			/* delete file argv[2] puis reouvre le même*/
-			if (remove(argv[2]))  {
+			if (remove(file_ident))  {
 #if defined(LIBRARY_DLL)
 				const char * const msg = strerror(errno); // MSG contient le message d'erreur
 #endif
 			}
 			/* on recopie l'identification des satellites dans le fichier bdd */
-			f_in1=fopen(argv[2],"w+");
+			f_in1=fopen(file_ident,"w+");
 			if (f_in1==NULL) {
-				sprintf(s,"file_0 %s not created",argv[2]);
+				sprintf(s,"file_ident %s not created",file_ident);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				free(lignes);
 				free(lignes2);
