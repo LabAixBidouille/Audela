@@ -400,9 +400,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if (strcmp(pathGeo,".\0")==0) {
 #if defined(LIBRARY_DLL)
 			GetCurrentDirectory (400,pathGeo);
+			GetCurrentDirectory (400,pathTle2);
 #endif
 #if defined(LIBRARY_SO)
 			getcwd(pathGeo,400);
+			getcwd(pathTle2,400);
 #endif		
 		}
 		strcat(pathGeo,"/geo.txt");
