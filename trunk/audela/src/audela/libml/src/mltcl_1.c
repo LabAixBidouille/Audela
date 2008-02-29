@@ -799,7 +799,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 #endif
 
 						strcpy(toto,chaine);
-						strcat(toto,"\\tle2.txt");
+						strcat(toto,"/tle2.txt");
 						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,toto,home);
 						//WriteDisk(lign);
 						result = Tcl_Eval(interp,lign);	
