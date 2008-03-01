@@ -3,7 +3,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_astrophys.tcl ]
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.15 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.16 2008-03-01 20:18:26 bmauclaire Exp $
 
 
 
@@ -643,7 +643,7 @@ proc spc_ewcourbe { args } {
 	set ldates ""
 	set list_ew ""
 	set intensite_raie 1
-	set fileliste [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ]
+	set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
 
 	foreach fichier $fileliste {
 	    ::console::affiche_resultat "\nTraitement de $fichier\n"
@@ -736,7 +736,7 @@ proc spc_ewcourbe_opt { args } {
 	set ldates ""
 	set list_ew ""
 	set intensite_raie 1
-	set fileliste [ glob -dir $audace(rep_images) ${nom_generic}*$conf(extension,defaut) ]
+	set fileliste [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_generic}*$conf(extension,defaut) ] ]
 
 	foreach fichier $fileliste {
 	    set fichier [ file tail $fichier ]
@@ -1464,8 +1464,164 @@ proc spc_autoew2 { args } {
 #***************************************************************************#
 
 
+####################################################################
+# Procédure de calcul d'intensité d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 24-02-2008
+# Date modification : 24-02-2008
+# Arguments : nom_profil_raies lambda_raie_1 lambda_raie_2 largeur_raie
+####################################################################
 
+proc spc_vrmes { args } {
+    global conf
+    global audace
+    set precision 0.01
+    set nbargs [llength $args]
+    if { $nbargs <= 5 } {
+	if { $nbargs == 5 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set lambda_raie_1 [ lindex $args 1 ]
+	    set lambda_raie_2 [ lindex $args 2 ]
+	    set largeur [ lindex $args 3 ]
+	    set prms [ lindex $args 4 ]
+	} elseif { $nbargs == 4 } {
+	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set lambda_raie_1 [ lindex $args 1 ]
+	    set lambda_raie_2 [ lindex $args 2 ]
+	    set largeur [ lindex $args 3 ]
+	    set prms 150
+	} else {
+	    ::console::affiche_erreur "Usage: spc_vrmes nom_profil_raies lambda_raie_Violet lambda_raie_Rouge largeur_raie ?pourcent_RMS_rejet (150)?\n"
+	}
 
+	#--- Recuperation des infos du spectre :
+	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+	set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+	set disper [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+
+        #--- Extraction des donnees :
+        set contenu [ spc_fits2data $filename ]
+        set abscisses [ lindex $contenu 0 ]
+        set intensites [ lindex $contenu 1 ]
+
+	#--- Creation des donnees de la premiere raie :
+	set xdeb [ expr $lambda_raie_1-0.5*$largeur ]
+	set xfin [ expr $lambda_raie_1+0.5*$largeur ]
+	set nabscisses1 ""
+	set nintensites1 ""
+	set k 0
+	foreach abscisse $abscisses intensite $intensites {
+	    #-- 060224 : gestion de lambda debut plus proche par defaut
+	    set diff [ expr abs($xdeb-$abscisse) ]
+	    if { $diff < $disper } {   
+		set xdebl [ expr $xdeb-$disper ]
+	    } else {
+		set xdebl $xdeb
+	    }
+	    #-- 060326 : gestion de lambda fin plus proche par exces
+	    set diff [ expr abs($xfin-$abscisse) ]
+	    if { $diff < $disper } {   
+		set xfinl [ expr $xfin+$disper ]
+	    } else {
+		set xfinl $xfin
+	    }
+	    
+	    #if { $abscisse >= $xdebl && $abscisse <= $xfin } {
+	    #    lappend nabscisses $abscisse
+	    #    lappend nintensites $intensite
+	    #    # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
+	    #    incr k
+	    #}
+	    if { $abscisse >= $xdebl } {
+		if { $abscisse <= $xfinl } {
+		    lappend nabscisses1 $abscisse
+		    lappend nintensites1 $intensite
+		    # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
+		    incr k
+		}
+	    }
+	}
+	set len1 $k
+
+	#--- Creation des donnees de la seconde raie :
+	set xdeb [ expr $lambda_raie_2-0.5*$largeur ]
+	set xfin [ expr $lambda_raie_2+0.5*$largeur ]
+	set nabscisses2 ""
+	set nintensites2 ""
+	set k 0
+	foreach abscisse $abscisses intensite $intensites {
+	    #-- 060224 : gestion de lambda debut plus proche par defaut
+	    set diff [ expr abs($xdeb-$abscisse) ]
+	    if { $diff < $disper } {   
+		set xdebl [ expr $xdeb-$disper ]
+	    } else {
+		set xdebl $xdeb
+	    }
+	    #-- 060326 : gestion de lambda fin plus proche par exces
+	    set diff [ expr abs($xfin-$abscisse) ]
+	    if { $diff < $disper } {   
+		set xfinl [ expr $xfin+$disper ]
+	    } else {
+		set xfinl $xfin
+	    }
+	    
+	    #if { $abscisse >= $xdebl && $abscisse <= $xfin } {
+	    #    lappend nabscisses $abscisse
+	    #    lappend nintensites $intensite
+	    #    # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
+	    #    incr k
+	    #}
+	    if { $abscisse >= $xdebl } {
+		if { $abscisse <= $xfinl } {
+		    lappend nabscisses2 $abscisse
+		    lappend nintensites2 $intensite
+		    # buf$audace(bufNo) setpix [list [expr $k+1] 1] $intensite
+		    incr k
+		}
+	    }
+	}
+	set len2 $k
+
+	#--- Détermination du maximum de la raie 1 par parabole :
+	set coefs [ spc_ajustpolynome $nabscisses1 $nintensites1 2 150 o ]
+	set a [ lindex $coefs 0 ]
+	set b [ lindex $coefs 1 ]
+	set c [ lindex $coefs 2 ]
+	set xm1 [ expr -$b/(2.*$c) ]
+	set imax1 [ expr $a+$b*$xm1+$c*$xm1*$xm1 ]
+
+	#--- Détermination du maximum de la raie 1 par parabole :
+	set coefs [ spc_ajustpolynome $nabscisses2 $nintensites2 2 150 o ]
+	set a [ lindex $coefs 0 ]
+	set b [ lindex $coefs 1 ]
+	set c [ lindex $coefs 2 ]
+	set xm2 [ expr -$b/(2.*$c) ]
+	set imax2 [ expr $a+$b*$xm2+$c*$xm2*$xm2 ]
+
+	#--- Utilisation des résultats :
+	#-- Raie V :
+	set ldeb1 [ lindex $nabscisses1 0 ]
+	set lfin1 [ lindex $nabscisses1 [ expr $len1-1 ] ]
+	set xc1 [ expr $xm1*($lfin1-$ldeb1)+$ldeb1 ]
+
+	#-- Raie R :
+	set ldeb2 [ lindex $nabscisses2 0 ]
+	set lfin2 [ lindex $nabscisses2 [ expr $len2-1 ] ]
+	set xc2 [ expr $xm2*($lfin2-$ldeb2)+$ldeb2 ]
+
+	#-- V/R :
+	set vr [ expr $imax1/$imax2 ]
+	::console::affiche_resultat "\nRaie V de centre $xc1 et d'intensité $imax1.\n"
+	::console::affiche_resultat "Raie R de centre $xc2 et d'intensité $imax2.\n"
+	::console::affiche_resultat "V/R=$vr.\n"
+ 	return $vr
+    } else {
+	::console::affiche_erreur "Usage: spc_vrmes nom_profil_raies lambda_raie_Violet lambda_raie_Rouge largeur_raie ?pourcent_RMS_rejet (150)?\n"
+    }
+}
+#***************************************************************************#    
 
 
 

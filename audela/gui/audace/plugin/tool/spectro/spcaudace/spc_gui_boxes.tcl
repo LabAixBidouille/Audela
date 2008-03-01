@@ -5,7 +5,7 @@
 #*****************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_boxes.tcl,v 1.11 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_boxes.tcl,v 1.12 2008-03-01 20:18:26 bmauclaire Exp $
 
 
 

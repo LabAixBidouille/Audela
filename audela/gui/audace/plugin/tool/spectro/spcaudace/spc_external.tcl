@@ -4,7 +4,7 @@
 #                                                                            #
 #****************************************************************************#
 
-# Mise a jour $Id: spc_external.tcl,v 1.4 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_external.tcl,v 1.5 2008-03-01 20:18:26 bmauclaire Exp $
 
 
 

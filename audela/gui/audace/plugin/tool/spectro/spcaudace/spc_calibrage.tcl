@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.17 2008-02-17 19:42:24 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.18 2008-03-01 20:18:26 bmauclaire Exp $
 
 
 
@@ -102,10 +102,10 @@ proc spc_calibre2 { args } {
     #-- Longueur d'onde de départ
 ### modif michel
 ###    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
-    buf$audace(bufNo) setkwd [list "CRVAL1" $lambdaRef float "" "angstrom"]
+    buf$audace(bufNo) setkwd [ list "CRVAL1" $lambdaRef double "" "angstrom"]
     #-- Dispersion
-    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "angstrom/pixel"]
-    buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
+    buf$audace(bufNo) setkwd [ list "CDELT1" $dispersion double "" "angstrom/pixel"]
+    buf$audace(bufNo) setkwd [ list "CUNIT1" "angstrom" string "Wavelength unit" ""]
     #-- Corrdonnée représentée sur l'axe 1 (ie X)
     buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
 
@@ -200,9 +200,9 @@ proc spc_calibre2sauto { args } {
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
     buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
     #-- Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
     #-- Dispersion
-    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "angstrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "angstrom/pixel"]
     buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
     #-- Corrdonnée représentée sur l'axe 1 (ie X)
     buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
@@ -254,9 +254,9 @@ proc spc_calibre2rd { args } {
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
     buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
     #-- Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
     #-- Dispersion
-    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "angstrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "angstrom/pixel"]
     buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
     #-- Corrdonnée représentée sur l'axe 1 (ie X)
     buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
@@ -300,9 +300,9 @@ proc spc_calibre2loi { args } {
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
     buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
     #-- Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
     #-- Dispersion
-    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "angstrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "angstrom/pixel"]
     buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
     #-- Corrdonnée représentée sur l'axe 1 (ie X)
     buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
@@ -372,11 +372,11 @@ proc spc_calibreloifile { args } {
       buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
       #-- Longueur d'onde de départ
       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
-          buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+          buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
       }
       #-- Dispersion
       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-          buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "angstrom/pixel"]
+          buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "angstrom/pixel"]
           buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
       }
       #-- Corrdonnée représentée sur l'axe 1 (ie X)
@@ -389,16 +389,16 @@ proc spc_calibreloifile { args } {
           # buf$audace(bufNo) setkwd [list "SPC_DESC" "A.x.x+B.x+C" string "" ""]
           #-- Nouvelle formulation :
           buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
-          buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom"]
+          buf$audace(bufNo) setkwd [list "SPC_A" $spc_a double "" "angstrom"]
           if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-              buf$audace(bufNo) setkwd [list "SPC_B" $spc_b float "" "angstrom/pixel"]
+              buf$audace(bufNo) setkwd [list "SPC_B" $spc_b double "" "angstrom/pixel"]
           }
           if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-              buf$audace(bufNo) setkwd [list "SPC_C" $spc_c float "" "angstrom*angstrom/pixel*pilxe"]
+              buf$audace(bufNo) setkwd [list "SPC_C" $spc_c double "" "angstrom*angstrom/pixel*pilxe"]
           }
-          buf$audace(bufNo) setkwd [list "SPC_D" $spc_d float "" "angstrom*angstrom*angstrom/pixel*pilxe*pixel"]
+          buf$audace(bufNo) setkwd [list "SPC_D" $spc_d double "" "angstrom*angstrom*angstrom/pixel*pilxe*pixel"]
           if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-              buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]
+              buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms double "" "angstrom"]
           }
 
       }
@@ -442,15 +442,15 @@ proc spc_calibredecal { args } {
           if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
               set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
               set lambda_modifie [ expr $lambda0+$decalage ]
-              buf$audace(bufNo) setkwd [list "CRVAL1" $lambda_modifie float "" "angstrom"]
+              buf$audace(bufNo) setkwd [list "CRVAL1" $lambda_modifie double "" "angstrom"]
           }
           set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
           set spc_a_modifie [ expr $spc_a+$decalage ]
-          buf$audace(bufNo) setkwd [list "SPC_A" $spc_a_modifie float "" "angstrom"]
+          buf$audace(bufNo) setkwd [list "SPC_A" $spc_a_modifie double "" "angstrom"]
       } elseif { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
               set lambda0 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
               set lambda_modifie [ expr $lambda0+$decalage ]
-              buf$audace(bufNo) setkwd [list "CRVAL1" $lambda_modifie float "" "angstrom"]
+              buf$audace(bufNo) setkwd [list "CRVAL1" $lambda_modifie double "" "angstrom"]
       }
 
       #--- Sauvegarde du profil calibré
@@ -545,10 +545,10 @@ proc spc_calibre3pil { args } {
     # setkwd [list "mot-clef" "valeur" [string, int, float] "commentaire" "unite"]
     #buf$audace(bufNo) setkwd [list "NAXIS1" "$naxis1" int "" ""]
     #-- Longueur d'onde de départ
-    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+    buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
     #-- Dispersion
     #buf$audace(bufNo) setkwd [list "CDELT1" "$dispersionm" float "" "Angtrom/pixel"]
-    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion float "" "Angtrom/pixel"]
+    buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "Angtrom/pixel"]
     #-- Longueur d'onde centrale
     #buf$audace(bufNo) setkwd [list "CRPIX1" "$lcentre" int "" "angstrom"]
     #-- Type de dispersion : LINEAR...
@@ -648,26 +648,26 @@ proc spc_calibren { args } {
 	set listemotsclef [ buf$audace(bufNo) getkwds ]
         buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
         #-- Longueur d'onde de départ :
-        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
         #-- Dispersion moyenne :
 	#- Si le mot clé n'existe pas :
 	if { [ lsearch $listemotsclef "CDELT1" ] ==-1 } {
-	    buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
+	    buf$audace(bufNo) setkwd [list "CDELT1" $a1 double "" "angstrom/pixel"]
 	    buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
 	} elseif { [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 3 ] != "\[angstrom/pixel\]" } {
 	    #- Si l'unité du mot clé montre qu'il n'a pas de valeur liée a une calibration en longueur d'onde :
-	    buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
+	    buf$audace(bufNo) setkwd [list "CDELT1" $a1 double "" "angstrom/pixel"]
 	    buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
 	}
         #-- Corrdonnée représentée sur l'axe 1 (ie X) :
         buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
         #-- Mots clefs du polynôme :
         buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
-        buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
-        buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_D" $d float "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_D" $d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
 
         #--- Fin du script :
         buf$audace(bufNo) bitpix float
@@ -776,19 +776,19 @@ proc spc_calibren_deg3 { args } {
         buf$audace(bufNo) load "$audace(rep_images)/$filename"
         buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
         #-- Longueur d'onde de départ :
-        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
         #-- Dispersion moyenne :
-        buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
+        buf$audace(bufNo) setkwd [list "CDELT1" $a1 double "" "angstrom/pixel"]
         buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
         #-- Corrdonnée représentée sur l'axe 1 (ie X) :
         buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
         #-- Mots clefs du polynôme :
         buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
-        buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
-        buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_D" $d float "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_D" $d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
 
         #--- Fin du script :
         buf$audace(bufNo) bitpix float
@@ -886,8 +886,8 @@ proc spc_linearcal { args } {
                 set intensite [ lindex $new_intensities $k ]
                 buf$audace(bufNo) setpix [ list [ expr $k+1 ] 1 ] $intensite
             }
-            buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda_deb float "" "angstrom" ]
-            buf$audace(bufNo) setkwd [ list "CDELT1" $pas float "" "angstrom/pixel" ]
+            buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda_deb double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "CDELT1" $pas double "" "angstrom/pixel" ]
             buf$audace(bufNo) delkwd "SPC_A"
             buf$audace(bufNo) delkwd "SPC_B"
             buf$audace(bufNo) delkwd "SPC_C"
@@ -903,11 +903,14 @@ proc spc_linearcal { args } {
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}_linear"
             buf$audace(bufNo) bitpix short
+#::console::affiche_erreur "\nLINEARCAL\n"
             ::console::affiche_resultat "\nLe profil rééchantillonné linéairement (pas=$pas A/pixel)\nest sauvé sous ${filename}_linear\n"
             return "${filename}_linear"
         } else {
-            ::console::affiche_resultat "Profil déjà linéarisé\n"
-            return "$filename"
+            ::console::affiche_resultat "Profil déjà linéarisé mais sauvé sous ${filename}_linear\n"
+	    #-- Bug : fichier original parfois efface dans les pipeline et spc_calibretelluric :
+	    file copy -force "$audace(rep_images)/$filename$conf(extension,defaut)" "$audace(rep_images)/${filename}_linear$conf(extension,defaut)"
+            return "${filename}_linear"
         }
     } else {
         ::console::affiche_erreur "Usage: spc_echantlin nom_profil_raies\n"
@@ -1330,7 +1333,7 @@ proc spc_autocalibrehaeau { args } {
         #--- Mise à jour des mots clefs :
         buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
         #-- Longueur d'onde de départ :
-        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0deg1 float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0deg1 double "" "angstrom"]
         #-- Dispersion moyenne :
         #buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
         #buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
@@ -1340,15 +1343,15 @@ proc spc_autocalibrehaeau { args } {
         if { $flag_spccal } {
             buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
             #buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
-            buf$audace(bufNo) setkwd [list "SPC_A" $lambda0 float "" "angstrom"]
-            buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+            buf$audace(bufNo) setkwd [list "SPC_A" $lambda0 double "" "angstrom"]
+            buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
         } else {
             buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
             #buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
-            buf$audace(bufNo) setkwd [list "SPC_A" $lambda0deg2 float "" "angstrom"]
-            buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
-            buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
-            buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+            buf$audace(bufNo) setkwd [list "SPC_A" $lambda0deg2 double "" "angstrom"]
+            buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
+            buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
+            buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
         }
 
         #--- Sauvegarde :
@@ -1913,10 +1916,10 @@ proc spc_calibretelluric { args } {
         #--- Sauvegarde le spectre calibré non-linéairement :
         buf$audace(bufNo) load "$audace(rep_images)/$filename"
         buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
-        buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
-        buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
         buf$audace(bufNo) bitpix float
         buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocalnl"
         buf$audace(bufNo) bitpix short
@@ -1948,7 +1951,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocalshifted"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo float "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -1969,7 +1972,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec float "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec double "" "angstrom" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -1989,7 +1992,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_linear"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial float "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial double "" "angstrom" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2013,7 +2016,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocalshifted"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo float "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2034,7 +2037,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_lindec"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec float "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec double "" "angstrom" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2054,7 +2057,7 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_linear"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial float "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial double "" "angstrom" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2392,7 +2395,7 @@ proc spc_autocalibrehaeau1 { args } {
         #--- Mise à jour des mots clefs :
         buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
         #-- Longueur d'onde de départ :
-        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
         #-- Dispersion moyenne :
         #buf$audace(bufNo) setkwd [list "CDELT1" $a1 float "" "angstrom/pixel"]
         #buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
@@ -2400,10 +2403,10 @@ proc spc_autocalibrehaeau1 { args } {
         #buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
         #-- Mots clefs du polynôme :
         buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+C.x.x+B.x+A" string "" ""]
-        buf$audace(bufNo) setkwd [list "SPC_A" $a float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
         #buf$audace(bufNo) setkwd [list "SPC_B" $b float "" "angstrom/pixel"]
         #buf$audace(bufNo) setkwd [list "SPC_C" $c float "" "angstrom.angstrom/pixel.pixel"]
-        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms float "" "angstrom"]
+        buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
 
         #--- Sauvegarde :
         buf$audace(bufNo) bitpix float
@@ -2692,16 +2695,18 @@ proc spc_rinstrum { args } {
            #-- Meth 3 : interpolation polynomiale de degré 1 -> RI 1
            set rinstrum [ spc_ajustrid1 $result_division ]
            file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-1$conf(extension,defaut)"
-           #-- Meth 4 : interpolation polynomiale de 2 -> RI 2
-           set rinstrum [ spc_ajustrid2 $result_division ]
-           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-2$conf(extension,defaut)"
 
            #-- Meth 5 : filtrage passe bas (largeur de 25 pixls par defaut) -> RI 3
-           set rinstrum [ spc_ajustripbas $result_division ]
-           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
-           #-- Meth 6 : filtrage passe bas fort -> RI 4
+           #set rinstrum [ spc_ajustripbas $result_division ]
+           #file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
+           #-- Meth 6 : filtrage passe bas fort -> RI 2
            set rinstrum [ spc_ajustripbasfort $result_division ]
-           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-4$conf(extension,defaut)"
+           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-2$conf(extension,defaut)"
+           #-- Meth 4 : interpolation polynomiale de 4 -> RI 3
+           set rinstrum [ spc_polynomefilter $result_division 3 150 o ]
+           file rename -force "$audace(rep_images)/$rinstrum$conf(extension,defaut)" "$audace(rep_images)/reponse_instrumentale-3$conf(extension,defaut)"
+
+
        } elseif { $flag_br==1 } {
            if { $dispersion<=1. } {
                #-- Lhires3+résos 600 t/mm et 1200 t/mm-kaf1600 :
@@ -2732,7 +2737,7 @@ proc spc_rinstrum { args } {
        } else {
            #-- Résultat de la division :
            ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
-           ::console::affiche_resultat "Réponse instrumentale sauvée sous reponse_instrumentale-3$conf(extension,defaut)\n"
+           ::console::affiche_erreur "Réponse instrumentale sauvée sous reponse_instrumentale-3$conf(extension,defaut)\n"
            #-- Le postfix sera soit 1, 2, 3 ou br :
            return reponse_instrumentale-
        }
@@ -3281,7 +3286,7 @@ proc spc_ajustripbas { args } {
 
         #--- Affichage du graphe
         #::plotxy::clf
-        ::plotxy::figure 3
+        ::plotxy::figure 2
         ::plotxy::plot $abscisses $yadjs r 1
         ::plotxy::hold on
         ::plotxy::plot $abscisses $ordonnees ob 0
@@ -3335,7 +3340,7 @@ proc spc_ajustripbasfort { args } {
 
         #--- Affichage du graphe
         #::plotxy::clf
-        ::plotxy::figure 4
+        ::plotxy::figure 2
         ::plotxy::plot $abscisses $yadjs r 1
         ::plotxy::hold on
         ::plotxy::plot $abscisses $ordonnees ob 0
@@ -3510,9 +3515,9 @@ proc spc_rinstrum_23-07-2007 { args } {
            buf$audace(bufNo) load "$audace(rep_images)/$fmes_sortie"
            set listemotsclef [ buf$audace(bufNo) getkwds ]
            set lambda0dec [ expr $lambda0+$deltal ]
-           buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda0dec float "" "angstrom" ]
+           buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda0dec double "" "angstrom" ]
            if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-                buf$audace(bufNo) setkwd [list "SPC_A" $lambda0dec float "" "angstrom"]
+                buf$audace(bufNo) setkwd [list "SPC_A" $lambda0dec double "" "angstrom"]
            }
            buf$audace(bufNo) bitpix float
            buf$audace(bufNo) save "$audace(rep_images)/${fmes_sortie}_dec"

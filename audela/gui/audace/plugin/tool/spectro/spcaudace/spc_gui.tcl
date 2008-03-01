@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.13 2008-02-05 21:18:04 denismarchais Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.14 2008-03-01 20:18:26 bmauclaire Exp $
 
 
 
@@ -200,11 +200,11 @@ proc spc_winini { } {
       menu .spc.menuBar.pipelines -tearoff 0 -background $colorspc(backmenu)
       # .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_geom2calibre_w) -command "spc_geom2calibre_w" -underline 0 -accelerator "Ctrl-1"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2rinstrum_w) -command "::param_spc_audace_traite2rinstrum::run" -underline 0 -accelerator "Ctrl-i"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-c"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-a"
-      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitestellaire) -command "::param_spc_audace_traitestellaire::run" -underline 0 -accelerator "Ctrl-s"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traitenebula) -command "::param_spc_audace_traitenebula::run" -underline 0 -accelerator "Ctrl-n"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_lampe2calibre_w) -command "::param_spc_audace_lampe2calibre::run" -underline 0 -accelerator "Ctrl-c"
+      .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2srinstrum_w) -command "::param_spc_audace_traite2srinstrum::run" -underline 0 -accelerator "Ctrl-a"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_traite2scalibre_w) -command "::param_spc_audace_traite2scalibre::run" -underline 0 -accelerator "Ctrl-t-c"
       .spc.menuBar.pipelines add command -label $caption(spcaudace,gui,spc_pipelines_space)
@@ -451,7 +451,7 @@ proc spc_loadmore { args } {
 	    return ""
 	}
 
-	#--- Générere la liste lambda, intensités :
+	#--- Génère la liste lambda, intensités :
 	if { "$filedir" != "$audace(rep_images)" } {
 	    file copy -force "$rep_et_filename" "$audace(rep_images)/$filename$conf(extension,defaut)"
 	}

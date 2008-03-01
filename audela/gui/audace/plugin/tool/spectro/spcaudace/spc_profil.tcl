@@ -20,7 +20,7 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.14 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.15 2008-03-01 20:18:28 bmauclaire Exp $
 
 
 
