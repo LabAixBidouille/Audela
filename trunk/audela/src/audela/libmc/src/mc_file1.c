@@ -848,6 +848,12 @@ void mc_tle_decnext1(FILE *ftle,struct elemorb *elem,char *name,int *valid)
             } else {
                elem->designation[0]='\0';
 			   }
+            n=(int)strlen(elem->designation);
+				for (k=0;k<n;k++) {
+					if (elem->designation[k]==13) {
+						elem->designation[k]='\0';
+					}
+				}
 			   *valid=0;
          }
          if (*valid==1) {
