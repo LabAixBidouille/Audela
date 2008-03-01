@@ -58,7 +58,7 @@
 #   define min(a,b) (((a)<(b))?(a):(b))
 #endif
 
-#define ML_STAT_LIG_MAX 400
+#define ML_STAT_LIG_MAX 1000
 
 typedef struct {
    char texte[ML_STAT_LIG_MAX];
