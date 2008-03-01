@@ -968,8 +968,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								k1=24-k;
 								strcat(lignes2[n_in1].texte,valid);
 								strcat(lignes2[n_in1].texte,satelname);
-printf("satelname=<%s>\n",satelname);
-//printf("lignes2[n_in1].texte=<%s>\n",lignes2[n_in1].texte);
+								//printf("satelname=<%s>\n",satelname);
+								//printf("lignes2[n_in1].texte=<%s>\n",lignes2[n_in1].texte);
 
 								for (k2=0;k2<k1;k2++) {
 									strcat(lignes2[n_in1].texte," ");
