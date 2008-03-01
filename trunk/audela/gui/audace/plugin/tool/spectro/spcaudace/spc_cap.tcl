@@ -1,9 +1,9 @@
-
-# Création : 200
+#
+# Création : 2003
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.12 2008-02-05 21:18:04 denismarchais Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.13 2008-03-01 20:18:26 bmauclaire Exp $
 
 
 global caption langage
@@ -43,11 +43,11 @@ global caption langage
    #--- Menu Conversions ---#
    set caption(spcaudace,gui,conv)                               "Conversions"
    set caption(spcaudace,gui,spc_repconf)                        "Working directory configuration"
-   set caption(spcaudace,gui,spc_spc2png_w)                      "Export a profil to png picture"
-   set caption(spcaudace,gui,spc_spc2png2_w)                     "Export a profil to png picture (tough setup)"
-   set caption(spcaudace,gui,writeps)                            "Screenshot to postscript file"
+   set caption(spcaudace,gui,spc_spc2png_w)                      "Export a profil to PNG picture"
+   set caption(spcaudace,gui,spc_spc2png2_w)                     "Export a profil to PNG picture (tough setup)"
+   set caption(spcaudace,gui,writeps)                            "Screenshot to Postscript file"
    set caption(spcaudace,gui,writegif)                           "Screenshot to GIF file"
-   set caption(spcaudace,gui,spc_fit2ps)                         "Export a profil to postscript file"
+   set caption(spcaudace,gui,spc_fit2ps)                         "Export a profil to Postscript file"
    set caption(spcaudace,gui,spc_fits2dat_w)                     "Export FITS profils to dat"
    set caption(spcaudace,gui,spc_dat2fits_w)                     "Export DAT profil to FITS"
    set caption(spcaudace,gui,spc_spc2fits_w)                     "Export SPC profil to FITS"
@@ -115,10 +115,10 @@ global caption langage
    set caption(spcaudace,gui,spc_pipelines)                      "Pipelines"
    set caption(spcaudace,gui,spc_pipelines_space)                "---------------------------------------------------------------------------"
    set caption(spcaudace,gui,spc_traite2rinstrum_w)              "1) Compute instrumental response (RI)"
-   set caption(spcaudace,gui,spc_lampe2calibre_w)                "2) Spectral lamp calibration"
-   set caption(spcaudace,gui,spc_traite2srinstrum_w)             "3) Incorporating calibration corrections to spectra (expert mode)"
-   set caption(spcaudace,gui,spc_traitestellaire)                "2-3) Stellar spectrum processing (simple mode)"
-   set caption(spcaudace,gui,spc_traitenebula)                   "2-3) Non stellar spectrum processing"
+   set caption(spcaudace,gui,spc_lampe2calibre_w)                "Spectral lamp calibration"
+   set caption(spcaudace,gui,spc_traite2srinstrum_w)             "Incorporating calibration corrections to spectra (expert mode)"
+   set caption(spcaudace,gui,spc_traitestellaire)                "2a) Stellar spectrum processing (simple mode)"
+   set caption(spcaudace,gui,spc_traitenebula)                   "2b) Non stellar spectrum processing"
    set caption(spcaudace,gui,spc_traite2scalibre_w)              "Incorporating calibration corrections (without RI) to spectra"
    # set caption(spcaudace,gui,spc_traitesimple2calibre_w)         "Prétraitement simple -> Calibration"
    # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)        "Prétraitement simple -> Réponse instrumentale"
@@ -190,15 +190,15 @@ if { [string compare $langage "french"] == "0" } {
 
      #--- Menu Conversions ---#
      set caption(spcaudace,gui,conv)                          "Conversions"
-     set caption(spcaudace,gui,spc_spc2png_w)                 "Exporter un profil en image png"
-     set caption(spcaudace,gui,spc_spc2png2_w)                "Exporter un profil en image png (réglages fins)"
-     set caption(spcaudace,gui,writeps)                       "Fait une capture d'écran au format postscript"
+     set caption(spcaudace,gui,spc_spc2png_w)                 "Exporter un profil en image PNG"
+     set caption(spcaudace,gui,spc_spc2png2_w)                "Exporter un profil en image PNG (réglages fins)"
+     set caption(spcaudace,gui,writeps)                       "Fait une capture d'écran au format Postscript"
      set caption(spcaudace,gui,writegif)                      "Fait une capture d'écran au format GIF"
-     set caption(spcaudace,gui,spc_fit2ps)                    "Exporter un profil en postscript"
-     set caption(spcaudace,gui,spc_fits2dat_w)                "Conversion de profil fits vers dat"
-     set caption(spcaudace,gui,spc_dat2fits_w)                "Conversion de profil dat vers fits"
-     set caption(spcaudace,gui,spc_spc2fits_w)                "Conversion de profil spc vers fits"
-     set caption(spcaudace,gui,spc_spcs2fits_w)               "Conversion d'un répertoire de profils spc vers fits"
+     set caption(spcaudace,gui,spc_fit2ps)                    "Exporter un profil en Postscript"
+     set caption(spcaudace,gui,spc_fits2dat_w)                "Conversion de profil FITS vers DAT"
+     set caption(spcaudace,gui,spc_dat2fits_w)                "Conversion de profil DAT vers FITS"
+     set caption(spcaudace,gui,spc_spc2fits_w)                "Conversion de profil SPC vers FITS"
+     set caption(spcaudace,gui,spc_spcs2fits_w)               "Conversion d'un répertoire de profils SPC vers FITS"
      set caption(spcaudace,gui,spc_bessmodule_w)              "Export de fichier au format base BeSS"
 
      #--- Menu Géométrie ---#
@@ -261,10 +261,10 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_pipelines)                 "Pipelines"
      set caption(spcaudace,gui,spc_pipelines_space)           "---------------------------------------------------------------------------"
      set caption(spcaudace,gui,spc_traite2rinstrum_w)         "1) Calcul de la réponse instrumentale"
-     set caption(spcaudace,gui,spc_lampe2calibre_w)           "2) Calibrations d'une lampe spectrale"
-     set caption(spcaudace,gui,spc_traite2srinstrum_w)        "3) Application des calibrations aux spectres (mode expert)"
-     set caption(spcaudace,gui,spc_traitestellaire)           "2-3) Réduction de spectres stellaires (mode simple)"
-     set caption(spcaudace,gui,spc_traitenebula)           "2-3) Réduction de spectres non stellaires"
+     set caption(spcaudace,gui,spc_lampe2calibre_w)           "Calibrations d'une lampe spectrale"
+     set caption(spcaudace,gui,spc_traite2srinstrum_w)        "Application des calibrations aux spectres (mode expert)"
+     set caption(spcaudace,gui,spc_traitestellaire)           "2a) Réduction de spectres stellaires (mode simple)"
+     set caption(spcaudace,gui,spc_traitenebula)              "2b) Réduction de spectres non stellaires"
      set caption(spcaudace,gui,spc_traite2scalibre_w)         "Application des calibrations (sans RI) aux spectres"
     # set caption(spcaudace,gui,spc_traitesimple2calibre_w)    "Prétraitement simple -> Calibration"
     # set caption(spcaudace,gui,spc_traitesimple2rinstrum_w)   "Prétraitement simple -> Réponse instrumentale"

@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.15 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.16 2008-03-01 20:18:27 bmauclaire Exp $
 
 
 
@@ -1270,7 +1270,6 @@ proc spc_traite2srinstrum { args } {
 	   }
        }
 
-
        #--- Effacement des images prétraitées :
        if { $rmfpretrait=="o" } {
 	   delete2 $fpretrait $nbimg
@@ -1301,6 +1300,7 @@ proc spc_traite2srinstrum { args } {
        ::console::affiche_resultat "\n\n**** Addition de $nbimg images ****\n\n"
        set fsadd [ spc_somme $freg ]
        #set fsadd [ bm_smed $freg ]
+
        if { $rmfpretrait=="o" } {
 	   delete2 $fgeom $nbimg
        }
@@ -1319,7 +1319,7 @@ proc spc_traite2srinstrum { args } {
        if { $methcos == "o" } {
 	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
 	   uncosmic $spcaudace(uncosmic)
-	   uncosmic $spcaudace(uncosmic)
+	   #uncosmic $spcaudace(uncosmic)
 	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
        }
 
@@ -1527,7 +1527,7 @@ proc spc_traitestellaire { args } {
        if { [ file exists "$audace(rep_images)/$noir$conf(extension,defaut)" ] } {
 	   set noir_master "$noir"
        } elseif { [ catch { glob -dir $audace(rep_images) $noir*-smd\[0-9\]$conf(extension,defaut) $noir*-smd\[0-9\]\[0-9\]$conf(extension,defaut) $noir*-smd\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   set noir_master [ lindex [ glob -dir $audace(rep_images) -tails $noir*-smd\[0-9\]$conf(extension,defaut) $noir*-smd\[0-9\]\[0-9\]$conf(extension,defaut) $noir*-smd\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] 0 ]
+	   set noir_master [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $noir*-smd\[0-9\]$conf(extension,defaut) $noir*-smd\[0-9\]\[0-9\]$conf(extension,defaut) $noir*-smd\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ] 0 ]
        } else {
 	   set noir_master "$noir"
        }
@@ -1536,7 +1536,7 @@ proc spc_traitestellaire { args } {
        if { [ file exists "$audace(rep_images)/$noirplu$conf(extension,defaut)" ] } {
 	   set noirplu_master "$noirplu"
        } elseif { [ catch { glob -dir $audace(rep_images) $noirplu*-smd\[0-9\]$conf(extension,defaut) $noirplu*-smd\[0-9\]\[0-9\]$conf(extension,defaut) $noirplu*-smd\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   set noirplu_master [ lindex [ glob -dir $audace(rep_images) -tails $noirplu*-smd\[0-9\]$conf(extension,defaut) $noirplu*-smd\[0-9\]\[0-9\]$conf(extension,defaut) $noirplu*-smd\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] 0 ]
+	   set noirplu_master [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $noirplu*-smd\[0-9\]$conf(extension,defaut) $noirplu*-smd\[0-9\]\[0-9\]$conf(extension,defaut) $noirplu*-smd\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ] 0 ]
        } else {
 	   set noirplu_master "$noirplu"
        }
@@ -1594,7 +1594,7 @@ proc spc_traitestellaire { args } {
        if { $export_bess=="o" } {
 	   #-- Recherche le spectre _1c :
 	   if { [ catch { glob -dir $audace(rep_images) $brut*_1c$conf(extension,defaut) } ]==0 } {
-	       set spectre_1c [ glob -dir $audace(rep_images) -tails $brut*_1c$conf(extension,defaut) ]
+	       set spectre_1c [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $brut*_1c$conf(extension,defaut) ] ]
 	   } else {
 	       ::console::affiche_resultat "Le spectre doit être corrigé de la réponse instrumentale pour être déposé dans la base BeSS\n"
 	       return "$spectre_png"
@@ -1695,7 +1695,7 @@ proc spc_traitenebula { args } {
        if { [ file exists "$audace(rep_images)/$noir$conf(extension,defaut)" ] } {
 	   set noir_master "$noir"
        } elseif { [ catch { glob -dir $audace(rep_images) ${noir}\[0-9\]$conf(extension,defaut) ${noir}\[0-9\]\[0-9\]$conf(extension,defaut) ${noir}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   set noir_master [ lindex [ glob -dir $audace(rep_images) -tails ${noir}\[0-9\]$conf(extension,defaut) ${noir}\[0-9\]\[0-9\]$conf(extension,defaut) ${noir}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] 0 ]
+	   set noir_master [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${noir}\[0-9\]$conf(extension,defaut) ${noir}\[0-9\]\[0-9\]$conf(extension,defaut) ${noir}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ] 0 ]
        } else {
 	   set noir_master "$noir"
        }
@@ -1704,7 +1704,7 @@ proc spc_traitenebula { args } {
        if { [ file exists "$audace(rep_images)/$noirplu$conf(extension,defaut)" ] } {
 	   set noirplu_master "$noirplu"
        } elseif { [ catch { glob -dir $audace(rep_images) ${noirplu}\[0-9\]$conf(extension,defaut) ${noirplu}\[0-9\]\[0-9\]$conf(extension,defaut) ${noirplu}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
-	   set noirplu_master [ lindex [ glob -dir $audace(rep_images) -tails ${noirplu}\[0-9\]$conf(extension,defaut) ${noirplu}\[0-9\]\[0-9\]$conf(extension,defaut) ${noirplu}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] 0 ]
+	   set noirplu_master [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${noirplu}\[0-9\]$conf(extension,defaut) ${noirplu}\[0-9\]\[0-9\]$conf(extension,defaut) ${noirplu}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ] 0 ]
        } else {
 	   set noirplu_master "$noirplu"
        }

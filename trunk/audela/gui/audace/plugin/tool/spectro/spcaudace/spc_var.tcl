@@ -3,7 +3,7 @@
 # 
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.21 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.22 2008-03-01 20:18:28 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.2.2 - 02/02/2008"
+set spcaudace(version) "1.2.4 - 1/03/2008"
 #set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
@@ -116,6 +116,9 @@ set spcaudace(largeur_savgol) 28
 set spcaudace(dlargeur_eau) 0.5
 #-- Coefficient de uncosmic
 set spcaudace(uncosmic) 0.85
+#-- Largeur des raies detectees (spc_findbiglines) :
+set spcaudace(largeur_raie_detect) 10
+
 
 #----------------------------------------------------------------------------------#
 # Couleurs et répertoires : (pris dans spc_cap.tcl et toujours présent -> migration à terminer)

@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.14 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.15 2008-03-01 20:18:27 bmauclaire Exp $
 
 
 
@@ -404,39 +404,57 @@ proc spc_somme { args } {
 
    if {[llength $args] == 1} {
        set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
-      set liste_fichiers [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ]
-      set nb_file [ llength $liste_fichiers ]
+       set liste_fichiers [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
+       set nb_file [ llength $liste_fichiers ]
 
-      #--- Gestion de la durée totale d'exposition :
-      buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
-      set listemotsclef [ buf$audace(bufNo) getkwds ]
-      if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
-         set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
-      } elseif { [ lsearch $listemotsclef "EXPTIME" ] !=-1 } {
-         set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
-      } else {
-         set unit_exposure 0
-      }
-      set exposure [ expr $unit_exposure*$nb_file ] 
+       #--- Gestion de la durée totale d'exposition :
+       buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
+	   set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
+       } elseif { [ lsearch $listemotsclef "EXPTIME" ] !=-1 } {
+	   set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPTIME" ] 1 ]
+       } else {
+	   set unit_exposure 0
+       }
+       set exposure [ expr $unit_exposure*$nb_file ] 
+       
+       #--- Somme :
+       ::console::affiche_resultat "Somme de $nb_file images...\n"
+       renumerote "$nom_generique"
+       # sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+       smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+       
+       #--- Calcul de EXPTIME et MID-HJD :
+       #-- Extime :
+       set exptime [ bm_exptime $nom_generique ]
 
-      #--- Somme :
-      ::console::affiche_resultat "Somme de $nb_file images...\n"
-      renumerote "$nom_generique"
-      # sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
-      smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+       #-- Recuperation de la date de la derniere image :
+       buf$audace(bufNo) load [ lindex $liste_fichiers [ expr $nb_file-1 ] ]
+       set dateobsend [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+       set mjdobsend [ mc_date2jd $dateobsend ]
+       set mjdobsend [ expr $mjdobsend+$unit_exposure/86400. ]
 
-      #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
-      set exptime [ bm_exptime $nom_generique ]
-      buf$audace(bufNo) load "$audace(rep_images)/${nom_generique}-s$nb_file"
-      buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
-      buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "s" ]
-      buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
+       #-- Récuperation de la date de début des poses :
+       buf$audace(bufNo) load "$audace(rep_images)/${nom_generique}-s$nb_file"
+       set dateobs [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
+       set mjdobsdeb [ mc_date2jd $dateobs ]
 
-      #--- Traitement du resultat :
-      ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
-      return "${nom_generique}-s$nb_file"
+       #-- Création de MID-HJD :
+       set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
+       ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
+       buf$audace(bufNo) setkwd [ list "MID-HJD" $midhjd double "Heliocentric Julian Date at mid-exposure" "d" ]
+
+       #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
+       buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
+       buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "s" ]
+       buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
+       
+       #--- Traitement du resultat :
+       ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
+       return "${nom_generique}-s$nb_file"
    } else {
-      ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier\n\n"
+       ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier\n\n"
    }
 }
 #-----------------------------------------------------------------------------#

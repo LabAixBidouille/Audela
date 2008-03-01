@@ -1,7 +1,7 @@
 
 
 
-# Mise a jour $Id: spc_filters.tcl,v 1.5 2008-02-02 22:41:33 bmauclaire Exp $
+# Mise a jour $Id: spc_filters.tcl,v 1.6 2008-03-01 20:18:26 bmauclaire Exp $
 
 
 
@@ -1345,3 +1345,232 @@ proc spc_ajust_piecewiselinear-1 { args } {
     }
 }
 #****************************************************************#
+
+
+####################################################################
+# Procedure de lissage d'un profil spectral via une fonction polynomiale 
+# Auteur : Patrick LAILLY
+# Date creation : 07-02-2008
+# Date modification : 16-02-2008
+# Algo : ajustement par moindres carr_s des donn_es (r_sultat division) par une fonction polynomiale 
+# L'ajustement se fait en 2 _tapes : dans la premiere on estime l'ordre de grandeur des r_sidus (RMS des r_sidus). 
+# Ceci permet de d_tecter les donn_es aberrantes (et notammant les restes de raies) : celles-ci sont d_finies  
+# comme les donn_es dont les r_sidus sont en valeur absolue sup_rieurs au RMS pr_c_demment calcul_ multipli_
+# par un param_tre (tauxRMS) d_fini ci-dessous.
+# Les donn_es aberrantes ne sont pas prises en compte dans la deuxi_me _tape du lissage qui fournit alors la
+# r_ponse instrumentale.
+# Le parametre visu permet de s'assurer visuellement de la qualite du resultat et donnee via la courbe verte
+# les _chantillons pris en compte dans la deuxieme etape du lissage (ce sont ceux pour lesquels la valeur de la 
+# courbe verte prend une valeur non nulle. 
+# Arguments : fichier .fit du profil de raie ndeg tauxRMS visu 
+####################################################################
+
+proc spc_polynomefilter { args } {
+
+    global conf
+    global audace
+    #global spc_audace(nul_pcent_intens)
+    set nul_pcent_intens .65
+
+
+    # ndeg est le degr_ choisi pour le polynome (ce nombre doit etre inferieur a 5)   
+    # tauxRMS specifie l'amplitude des residus (en % de la moyenne RMS) censes correspondre a des r_sidus de raies
+	# visu (=o ou n) indique si l'on veut ou non une visualisation du resultat 
+    # Exemples :
+    # spc_polynfilter resultat_division.fit 4 200 n
+    
+
+    set nb_args [ llength $args ]
+    if { $nb_args==4 } {
+	set filenamespc [ lindex $args 0 ]
+	set ndeg [ lindex $args 1 ]
+	set tauxRMS [ lindex $args 2 ]
+	set visu [ lindex $args 3 ]
+	if { $ndeg>5 } {
+	    ::console::affiche_erreur "Le degrè du polynome doit etre <=5 \n\n"
+	    return 0
+	}
+	    
+        #--- Extraction des donnees :
+        set contenu [ spc_fits2data $filenamespc ]
+        set abscissesorig [ lindex $contenu 0 ]
+        set ordonneesorig [ lindex $contenu 1 ]
+        set lenorig [llength $ordonneesorig ]
+ 
+        
+	#-- elimination des termes nuls au bord
+	set limits [ spc_findnnul $ordonneesorig ]
+	set i_inf [ lindex $limits 0 ]
+	set i_sup [ lindex $limits 1 ]
+	set nmilieu0 [ expr $i_sup -$i_inf +1 ]
+	#-- nmilieu0 est le nb d'echantillons non nuls dans la partie effective du profil
+	set lambdamin [ lindex $abscissesorig $i_inf ]
+	set lambdamax [ lindex $abscissesorig $i_sup ]
+	set ecartlambda [ expr $lambdamax-$lambdamin ]
+	set abscisses [ list ]
+	set ordonnees [ list ]
+	set xx [ list ]
+	set poids [ list ]
+	set intens_moy 0.
+	for { set i $i_inf } { $i<=$i_sup } { incr i } {
+  		set xi [ lindex $abscissesorig $i ]
+		set xxi [ expr ($xi-$lambdamin)/$ecartlambda ]
+  		set yi [ lindex $ordonneesorig $i ]
+  		lappend abscisses $xi
+		lappend xx $xxi
+  		lappend ordonnees $yi
+		lappend poids 1.
+  		set intens_moy [ expr $intens_moy +$yi ]
+	}
+	set intens_moy [ expr $intens_moy/($nmilieu0*1.) ]
+	# intens_moy est la valeur moyenne de l'intensite
+	::console::affiche_resultat "intensite moyenne : $intens_moy \n"
+	
+	#calcul matrice B
+	set B [ list ]
+	for { set i 0 } { $i<$nmilieu0 } { incr i } {
+		set Bi [ list ]
+		for { set j 0 } { $j<=1 } { incr j } {
+		lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
+		}
+	lappend B $Bi
+	}
+	
+
+
+	#-- calcul de l'ajustement
+	set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+        #-- extrait le resultat
+        set coeffs [ lindex $result 0 ]
+        set chi2 [ lindex $result 1 ]
+        set covar [ lindex $result 2 ]
+        set riliss1 [ gsl_mmult $B $coeffs ]
+		
+
+
+
+#-- evaluation et analyse des residus
+		
+	set resid [ gsl_msub $ordonnees $riliss1 ]
+	#::console::affiche_resultat "longueur B : [llength $B]\n"
+        #::console::affiche_resultat "longueur riliss : [llength $riliss1]\n"
+	set residtransp [ gsl_mtranspose $resid]
+
+	# les calculs ci-dessous sont ? la louche : il faudrati faire intervenir les poids
+	set rms_pat1  [ gsl_mmult $residtransp $resid ]
+	set rms_pat [ lindex $rms_pat1 0 ]
+	set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
+	set rms_pat [expr sqrt($rms_pat)]
+	::console::affiche_resultat "residu moyen (RMS) apres premiere etape : $rms_pat\n"
+	#--calcul des nouveaux poids censes eliminer les residus de raies
+	set seuilres [ expr $rms_pat*$tauxRMS*.01 ]
+	set poids [ list ]
+	for {set i 0} {$i<$nmilieu0} {incr i} {
+		set poidsi [ expr $intens_moy*.5 ]
+		set residi [ lindex $resid $i ]
+		if { [ expr abs($residi) ]>=$seuilres } {
+		set poidsi 0.
+		}
+		lappend poids $poidsi
+	}
+	
+	
+	#-- deuxieme etape du lissage
+	#calcul matrice B
+	set B [ list ]
+	for { set i 0 } { $i<$nmilieu0 } { incr i } {
+		set Bi [ list ]
+		for { set j 0 } { $j<=$ndeg } { incr j } {
+		lappend Bi [ expr pow([ lindex $xx $i ],$j) ]
+		}
+	lappend B $Bi
+	}
+	set riliss [ list ]
+	set result [ gsl_mfitmultilin $ordonnees $B $poids ]
+        #-- extrait le resultat
+        set coeffs [ lindex $result 0 ]
+        set chi2 [ lindex $result 1 ]
+        set covar [ lindex $result 2 ]
+	set riliss [ gsl_mmult $B $coeffs ]
+		
+	#-- evaluation et analyse des residus
+		
+	set resid [ gsl_msub $ordonnees $riliss ]
+	#::console::affiche_resultat "longueur B : [llength $B]\n"
+        #::console::affiche_resultat "longueur riliss : [llength $riliss]\n"
+	set residtransp [ gsl_mtranspose $resid]
+
+	# les calculs ci-dessous sont ? la louche : il faudrati faire intervenir les poids
+	set rms_pat1  [ gsl_mmult $residtransp $resid ]
+	set rms_pat [ lindex $rms_pat1 0 ]
+	set rms_pat [ expr ($rms_pat/($nmilieu0*1.)) ]
+	set rms_pat [expr sqrt($rms_pat)]
+	::console::affiche_resultat "residu moyen (RMS) apres deuxieme etape : $rms_pat\n"
+		
+	
+	
+	#-- mise a zero d'eventuels echantillons tres petits
+	set zero 0.
+	set seuil_min [ expr $intens_moy*$nul_pcent_intens/100. ]
+	for { set i 0 } {$i<$nmilieu0} {incr i} {
+		if { [ lindex $riliss $i ] < $seuil_min } { set riliss [ lreplace $riliss $i $i $zero ] }
+	}
+	
+	
+	
+
+#--- Rajout des valeurs nulles en d_but et en fin pour retrouver la dimension initiale du fichier de d_part :
+	set len_ini $lenorig
+	set len_cut $nmilieu0
+	set nb_insert_sup [ expr $lenorig-$i_inf-$nmilieu0 ]
+	for { set i 1 } { $i<=$nb_insert_sup } { incr i } {
+	    	set riliss [ linsert $riliss [ expr $len_cut+$i ] 0.0 ]
+	    	#set nouvpoids1 [ linsert $nouvpoids1 [ expr $len_cut+$i ] 0.0 ]    
+	}
+	for { set i 0 } { $i<$i_inf } { incr i } {
+	    	set riliss [ linsert $riliss 0 0.0 ]
+	    	#set nouvpoids1 [ linsert $nouvpoids1 0 0.0 ]
+	}
+	
+	::console::affiche_resultat "Nombre d'éléments traités : [ llength $riliss ]\n"
+	::console::affiche_resultat "Coéfficients du polynome : $coeffs\n"
+	
+
+  #--- Crée le fichier fits de sortie
+	set abscisses $abscissesorig 
+        set filename [ file rootname $filenamespc ]
+        
+        buf$audace(bufNo) load "$audace(rep_images)/$filename"
+	set k 1
+        foreach x $abscisses {
+		buf$audace(bufNo) setpix [list $k 1] [ lindex $riliss [ expr $k-1 ] ]
+            	incr k
+        }
+        #-- Sauvegarde du résultat :
+        buf$audace(bufNo) bitpix float
+        buf$audace(bufNo) save "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
+        buf$audace(bufNo) bitpix short
+        ::console::affiche_resultat "Fichier fits sauvé sous ${filename}_conti$conf(extension,defaut)\n"
+
+	
+      #--- Affichage du resultat :
+	set testvisu "n"
+	if { $visu == "o" } {       
+	    #::plotxy::clf
+	    ::plotxy::figure 3
+	    ::plotxy::plot $abscissesorig $riliss r 1
+	    #::plotxy::plot $abscissesorig $riliss1 o 1
+	    ::plotxy::hold on
+	    ::plotxy::plot $abscissesorig $ordonneesorig ob 0
+	    #::plotxy::hold on
+	    #::plotxy::plot $abscissesorig $poids g 0
+	    ::plotxy::plotbackground #FFFFFF
+	    ::plotxy::title "bleu : original - rouge : lissage par polynome de degré $ndeg"
+	    ::plotxy::hold off
+        }
+	
+	return ${filename}_conti	
+    } else {
+        ::console::affiche_erreur "Usage: spc_polynomefilter fichier_profil.fit degré polynome (<=5) pourcent_RMS_a_rejeter visualisation (o/n)\n\n"
+    }
+}
