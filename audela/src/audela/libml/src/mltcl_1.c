@@ -447,11 +447,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		}
 		ml_file_copy (pathGeo,pathTle2);
 		//WriteDisk("fichier tle2");		
-		/* correction d'un warning sous linux: pb d'initialisation de la structure lignes */
-		/*
-		lignes=(struct_ligsat*)malloc(1*sizeof(struct_ligsat));
-		free(lignes);
-		*/
+
 		f_in1=fopen(pathHttp,"r");
 		if (f_in1==NULL) {
 			/* --- pas fichier TLE perso ---*/
@@ -810,23 +806,8 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						lignes2[n_in1].dec=atof(s);
 						k1=93 ; k2=101; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						lignes2[n_in1].ra=atof(s);
-						/* transforme le fichier de tle en ephemeride */
-						
-						//WriteDisk("mc_tle2ephem");
-						/*
-#if defined(LIBRARY_DLL)
-						GetCurrentDirectory (400,chaine);
-#endif
-#if defined(LIBRARY_SO)
-						getcwd(chaine,400);
-#endif
 
-						strcpy(toto,chaine);
-						strcat(toto,"/tle2.txt");
-						strcpy(
-							
-						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,toto,home);
-						*/
+						/* transforme le fichier de tle en ephemeride */						
 						sprintf(lign,"mc_tle2ephem {%s} {%s} {%s}",im,pathTle2,home);
 						//WriteDisk(lign);
 						result = Tcl_Eval(interp,lign);	
@@ -968,8 +949,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								k1=24-k;
 								strcat(lignes2[n_in1].texte,valid);
 								strcat(lignes2[n_in1].texte,satelname);
-								//printf("satelname=<%s>\n",satelname);
-								//printf("lignes2[n_in1].texte=<%s>\n",lignes2[n_in1].texte);
 
 								for (k2=0;k2<k1;k2++) {
 									strcat(lignes2[n_in1].texte," ");
