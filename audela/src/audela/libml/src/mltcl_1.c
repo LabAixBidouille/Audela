@@ -466,7 +466,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 				}
 			}
 			fclose(f_in1);
-			//printf("n_in1 (A) = %d\n",n_in1);
 			if (n_in1!=0) {
 				/* --- dimensionne la structure des donnees d'entree ---*/
 				lignes=(struct_ligsat*)malloc(n_in1*sizeof(struct_ligsat));
@@ -488,7 +487,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 						n_in++;
 					}
 				}
-				//printf("n_in (B) = %d\n",n_in);
 				/* on ajoute les lignes de tle perso a la suite */
 				f_in2=fopen(pathTle2,"a+");
 				if (f_in2==NULL) {
@@ -537,7 +535,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					n_in++;
 				}
 			}
-			//printf("Le fichier %s comporte %d lignes (n_in) => *lignes (C)\n",file_0,n_in);
 			lignes=(struct_ligsat*)malloc(n_in*sizeof(struct_ligsat));
 			if (lignes==NULL) {
 				sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in);
@@ -560,7 +557,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 					n_in1++;
 				}
 			}
-			//printf("Le fichier %s comporte %d lignes (n_in1) => *lignes2 (D)\n",file_ident,n_in1);
 			lignes2=(struct_ligsat*)malloc(n_in1*sizeof(struct_ligsat));
 			if (lignes2==NULL) {
 				sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in1);
@@ -616,8 +612,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 			fclose(f_in1);
 			nimages=kimage-2;
-			//printf("Le fichier %s comporte %d lignes (n_in) => *lignes (E)\n",file_0,n_in);
-			//printf("Le fichier %s comporte %d images (nimages) (F)\n",file_0,nimages);
 
 			/* Lecture de *lignes2 a partir du fichier bdd */
 			kimage2=0;
@@ -646,8 +640,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 			fclose(f_in2);
 			nimages2=kimage2-2;
-			//printf("Le fichier %s comporte %d lignes (n_in1) => *lignes (G)\n",file_ident,n_in1);
-			//printf("Le fichier %s comporte %d images (nimages2) (H)\n",file_ident,nimages2);
 
 			//sprintf(chaine,"nombre d'images = %d",nimages2);
 			//WriteDisk(chaine);
@@ -682,12 +674,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 							}
 						}
 						if (lignes[k].kimage1 == 0) {
-						break;
+							break;
 						}
 					}
 				}
 				/* --- on sauve le resultat dans le fichier de sortie ---*/
-				//printf("Nouveau fichier %s auquel on a ajoute les dernieres observations (H)\n",file_ident);
 				f_in1=fopen(file_ident,"a+");
 				if (f_in1==NULL) {
 					sprintf(s,"file_ident %s not created",file_ident);
@@ -720,10 +711,6 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			free(lignes2);
 		}
 
-		//printf("========================================================\n");
-		//printf("=== Debut de boucle de la designation des satellites ===\n");
-		//printf("========================================================\n");
-
 		f_in2=fopen(file_ident,"rt");
 		//WriteDisk(argv[2]);
 		if (f_in2==NULL) {
@@ -738,13 +725,11 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 			}
 		}
 		fclose(f_in2);
-		//printf("Le fichier %s comporte %d lignes (n_in1) => *lignes & *lignes2 (AA)\n",file_ident,n_in1);
 		/* --- on recupère les données actuelles du fichier de sortie ---*/
 		lignes2=(struct_ligsat*)malloc(n_in1*sizeof(struct_ligsat));
 		if (lignes2==NULL) {
-			sprintf(s,"error : lignes pointer out of memory (%d elements)",n_in1);
+			sprintf(s,"error : lignes2 pointer out of memory (%d elements)",n_in1);
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
-			free(lignes);
 			return TCL_ERROR;
 		}
 		lignes=(struct_ligsat*)malloc(n_in1*sizeof(struct_ligsat));
@@ -769,7 +754,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		}
 		//WriteDisk("grande boucle d'identification");
 
-		//printf("Grande boucle d'identification (AB)\n");
+		/* === Grande boucle d'identification === */
 		while (feof(f_in1)==0) {
 			if (fgets(ligne,sizeof(ligne),f_in1)!=NULL) {
 				lignes2[n_in1].comment=12;
@@ -984,7 +969,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 								strcat(lignes2[n_in1].texte,valid);
 								strcat(lignes2[n_in1].texte,satelname);
 printf("satelname=<%s>\n",satelname);
-printf("lignes2[n_in1].texte=<%s>\n",lignes2[n_in1].texte);
+//printf("lignes2[n_in1].texte=<%s>\n",lignes2[n_in1].texte);
 
 								for (k2=0;k2<k1;k2++) {
 									strcat(lignes2[n_in1].texte," ");
