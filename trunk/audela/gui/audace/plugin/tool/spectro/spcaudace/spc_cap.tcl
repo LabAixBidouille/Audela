@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.14 2008-03-02 20:03:40 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.15 2008-03-02 20:08:34 bmauclaire Exp $
 
 
 global caption langage
