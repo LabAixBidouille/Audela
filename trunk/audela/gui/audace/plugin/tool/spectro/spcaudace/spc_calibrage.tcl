@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.19 2008-03-02 08:56:11 michelpujol Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.20 2008-03-02 21:24:35 bmauclaire Exp $
 
 
 
@@ -1994,13 +1994,15 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) setpix [ list [expr $x +1] 1 ] [lindex $newIntensities $x]
         }
 
-        #--- je calcule les coefficients de la droite moyenne lambda=f(xlin)
+        #-- je calcule les coefficients de la droite moyenne lambda=f(xlin)
         set sortie [ spc_ajustdeg1 $listexlin $listeraies $errors ]
+	#- lambda0 : lambda pour x=0
         set lambda0 [lindex [ lindex $sortie 0 ] 0]
         set cdelt1 [lindex [ lindex $sortie 0 ] 1]
+	#- crval1 : lambda pour x=1
         set crval1 [expr $lambda0 + $cdelt1]
-        buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 float "" "angstrom" ]
-        buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 float "" "angstrom/pixel" ]
+        buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 double "" "angstrom" ]
+        buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 double "" "angstrom/pixel" ]
 
         #-- j'enregistre l'image
         set spectre_ocallinbis "${filename}-ocalnlbis"
@@ -2012,15 +2014,16 @@ proc spc_calibretelluric { args } {
         set infos_cal   [ spc_rms $spectre_ocallinbis $listeraies ]
         set rms_calobis [ lindex $infos_cal 1 ]
         set mean_shift_calobis [ lindex $infos_cal 2 ]
-        ::console::affiche_resultat "Loi de calibration lineaire : $crval1+$cdelt1*x\n"
+        ::console::affiche_resultat "Loi de calibration lineaire calobis : $crval1+$cdelt1*x\n"
 
         ::console::affiche_resultat "============ Fin) Meilleure mesure ================\n"
-        #--- Sauve le spectre final recalibré (linéarirement) :
+        #-- Sauve le spectre final recalibré (linéarirement) :
         set liste_rms [ list [ list "calobis" $rms_calobis ] [ list "calo" $rms_calo ] [ list "lindec" $rms_lindec ] [ list "initial" $rms_initial ] ]
         set liste_rms [ lsort -index 1 -increasing -real $liste_rms ]
         set best_rms_name [ lindex [ lindex $liste_rms 0 ] 0 ]
         set best_rms_val [ lindex [ lindex $liste_rms 0 ] 1 ]
 
+	#--- Compare et choisis la meilleure calibration a l'aide du RMS :
         if { $best_rms_name == "calobis" } {
             #-- Le spectre recalibré avec l'eau (4) est meilleur :
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocallinbis"
@@ -2075,7 +2078,8 @@ proc spc_calibretelluric { args } {
             ::console::affiche_resultat "Loi de calibration finale linéarisée : $crval1+$cdelt1*x\n"
             ::console::affiche_resultat "Qualité de la calibration :\nRMS=$rms_initial A\nEcart moyen=$mean_shift_initial A\n\n"
         }
-        #-- Effacement des fichiers resultats des 4 methodes
+
+        #--- Effacement des fichiers resultats des 4 methodes
         file delete -force "$audace(rep_images)/$spectre_ocallinbis$conf(extension,defaut)"
         file delete -force "$audace(rep_images)/$spectre_ocalshifted$conf(extension,defaut)"
         file delete -force "$audace(rep_images)/$spectre_lindec$conf(extension,defaut)"
