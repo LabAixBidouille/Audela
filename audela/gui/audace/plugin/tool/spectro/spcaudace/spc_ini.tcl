@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_ini.tcl,v 1.11 2008-03-02 20:03:42 bmauclaire Exp $
+# Mise a jour $Id: spc_ini.tcl,v 1.12 2008-03-02 20:43:47 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
