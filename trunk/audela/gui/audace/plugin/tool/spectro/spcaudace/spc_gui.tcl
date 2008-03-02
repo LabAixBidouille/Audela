@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.15 2008-03-02 19:50:24 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.16 2008-03-02 19:56:18 bmauclaire Exp $
 
 
 
