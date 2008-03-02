@@ -1,11 +1,12 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.14 2008-03-01 20:18:26 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.15 2008-03-02 19:50:24 bmauclaire Exp $
 
 
 
 proc spc_winini { } {
+
 ############################################################################
 # Initialise la fenêtre de visualisation des profils
 ############################################################################
