@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.14 2008-03-01 20:18:26 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.15 2008-03-02 00:30:15 bmauclaire Exp $
 
 
 
@@ -645,7 +645,6 @@ proc spc_findbiglines { args } {
 
     set nbargs [ llength $args ]
     if { $nbargs <= 3 } {
-<<<<<<< spc_analyse.tcl
 	if { $nbargs == 2 } {
 	    set filename [ lindex $args 0 ]
 	    set typeraies [ lindex $args 1 ]
@@ -679,9 +678,7 @@ proc spc_findbiglines { args } {
 	    ::console::affiche_resultat "Type de raie inconnu. Donner (e/a).\n"
 	    return 0
 	}
-	for {set i 1} {$i<=[ expr $naxis1-2*$largeur ]} { set i [expr $i+$pas ]} {
-	    
-
+	for { set i 1 } { $i<=[ expr $naxis1-2*$largeur ] } { set i [ expr $i+$pas ] } {
 	    set xdeb $i
 	    set xfin [ expr $i+$largeur-1 ]
 	    set coords [ list $xdeb 1 $xfin 1 ]
@@ -709,7 +706,7 @@ proc spc_findbiglines { args } {
 	set listimax [ list 0 ]
 	set listabscisses [ list ]
 	set len [ llength $xcenters ]
-=======
+
         if { $nbargs == 2 } {
             set filename [ lindex $args 0 ]
             set typeraies [ lindex $args 1 ]
@@ -743,9 +740,7 @@ proc spc_findbiglines { args } {
             ::console::affiche_resultat "Type de raie inconnu. Donner (e/a).\n"
             return 0
         }
-        for {set i 1} {$i<=[ expr $naxis1-2*$largeur ]} { set i [expr $i+$pas ]} {
-
-
+        for { set i 1 } { $i<=[ expr $naxis1-2*$largeur ] } { set i [expr $i+$pas ] } {
             set xdeb $i
             set xfin [ expr $i+$largeur-1 ]
             set coords [ list $xdeb 1 $xfin 1 ]
@@ -785,7 +780,7 @@ proc spc_findbiglines { args } {
         set doublelistesorted [ lsort -increasing -real -index 0 $doubleliste ]
 #::console::affiche_resultat "Double liste : $doublelistesorted\n"
 	set len [ expr [ llength $doublelistesorted ]-1 ]
-	for {set j 0} {$j<$len} {incr j} {
+	for { set j 0 } { $j<$len } { incr j } {
 	    set abscissej [ lindex [ lindex $doublelistesorted $j ] 0 ]
 	    set abscissejj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 0 ]
 	    set imaxj [ lindex [ lindex $doublelistesorted $j ] 1 ]
@@ -807,38 +802,40 @@ proc spc_findbiglines { args } {
 	#-- Meth 1 : mon tri (marche pas)
 	set flag 0
 	if { $flag==1 } {
-	for {set j 0} {$j<$len} {incr j} {
+	for { set j 0 } { $j<$len } { incr j } {
 	    set intensite [ lindex $intensites $j ]
 	    # set imax [ lindex [ lsort -real -decreasing $listimax ] 0 ]
 	    set imax [ lindex $listimax 0 ]
 	    set len [ expr [ llength $doublelistesorted ]-1 ]
-        for {set j 0} {$j<$len} {incr j} {
-            set abscissej [ lindex [ lindex $doublelistesorted $j ] 0 ]
-            set abscissejj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 0 ]
-            set imaxj [ lindex [ lindex $doublelistesorted $j ] 1 ]
-            set imaxjj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 1 ]
-            if { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj>=$imaxjj } {
-                set doublelistesorted [ lreplace $doublelistesorted [ expr $j+1 ] [ expr $j+1 ] [ list $abscissejj 0.0 ] ]
-                #set toto [ lindex $doublelistesorted [ expr $j+1 ] ]
-                #::console::affiche_resultat "$toto\n"
-            } elseif { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj<=$imaxjj } {
-                set doublelistesorted [ lreplace $doublelistesorted [ expr $j ] [ expr $j ] [ list $abscissej 0.0 ] ]
-                # [ list $abscissejj 0.0 ]
-            }
+	    for { set j 0 } { $j<$len } { incr j } {
+		set abscissej [ lindex [ lindex $doublelistesorted $j ] 0 ]
+		set abscissejj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 0 ]
+		set imaxj [ lindex [ lindex $doublelistesorted $j ] 1 ]
+		set imaxjj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 1 ]
+		if { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj>=$imaxjj } {
+		    set doublelistesorted [ lreplace $doublelistesorted [ expr $j+1 ] [ expr $j+1 ] [ list $abscissejj 0.0 ] ]
+		    #set toto [ lindex $doublelistesorted [ expr $j+1 ] ]
+		    #::console::affiche_resultat "$toto\n"
+		} elseif { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj<=$imaxjj } {
+		    set doublelistesorted [ lreplace $doublelistesorted [ expr $j ] [ expr $j ] [ list $abscissej 0.0 ] ]
+		    # [ list $abscissejj 0.0 ]
+		}
+	    }
         }
+	}
 
         #::console::affiche_resultat "Double liste : $doublelistesorted\n"
         #::console::affiche_resultat "Double liste : $doubleliste\n"
         #::console::affiche_resultat "Double liste : $doublelistesorted2\n"
 
-        #-- Meth 1 : mon tri (marche pas)
+        #-- Meth 1bis : mon tri (marche pas)
         set flag 0
         if { $flag==1 } {
-        for {set j 0} {$j<$len} {incr j} {
+        for { set j 0 } { $j<$len } { incr j } {
             set intensite [ lindex $intensites $j ]
             # set imax [ lindex [ lsort -real -decreasing $listimax ] 0 ]
             set imax [ lindex $listimax 0 ]
->>>>>>> 1.13
+
 #::console::affiche_resultat "imax n°$j: $imax\n"
             if { $intensite>$imax } {
                 set listimax [ linsert $listimax 0 $intensite ]
@@ -857,16 +854,15 @@ proc spc_findbiglines { args } {
         set selection12 [ lrange $doublelistesorted2 0 12 ]
 #::console::affiche_resultat "Double liste : $selection12\n"
 
-<<<<<<< spc_analyse.tcl
 	#--- Retire dans la cette selection les raies détectées qui sont les mêmes en fait :
 	set selection12 [ lsort -increasing -real -index 0 $selection12 ]
-=======
+
         #--- Retire dans la cette selection les raies détectées aui sont les mêmes en fait :
         set selection12 [ lsort -increasing -real -index 0 $selection12 ]
->>>>>>> 1.13
+
 #::console::affiche_resultat "listimax : $selection12\n"
         set len [ expr [ llength $selection12 ]-1 ]
-        for {set j 0} {$j<$len} {incr j} {
+        for { set j 0 } { $j<$len } { incr j } {
             set abscissej [ lindex [ lindex $selection12 $j ] 0 ]
             set abscissejj [ lindex [ lindex $selection12 [ expr $j+1 ] ] 0 ]
             set imaxj [ lindex [ lindex $selection12 $j ] 1 ]
