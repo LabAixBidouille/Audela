@@ -321,7 +321,7 @@ void mc_xyzasaaphelio(double jj,double longmpc,double rhocosphip,double rhosinph
    double xsgeo,ysgeo,zsgeo,xlgeo,ylgeo,zlgeo;
    double r1,r2;
    double reqter=6378.14/UA*1e3,reqsol=696000./UA*1e3;
-   double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot,tmp;
+   double da1,da2,R1,R2,rho,t1,t2,cosa,aire,airetot;
    int cas=0;
 
    /*FILE *fichier_out;*/
