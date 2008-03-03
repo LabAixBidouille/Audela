@@ -43,12 +43,13 @@ time_t ltime;
 //SYSTEMTIME St;
 char Buffer[300];
 	
-	printf("\n%s",Chaine);
+	printf("\n%s\n",Chaine);
    time( &ltime );
    strftime(Buffer,300,"%Y-%m-%dT%H-%M-%S",localtime( &ltime ));
 	//GetSystemTime(&St);
 	//sprintf(Nom,"%lu%.2lu%.2lu-%s",St.wYear,St.wMonth,St.wDay,"log.txt");
-	sprintf(Nom,"%s-log.txt",Buffer);
+	//sprintf(Nom,"%s-log.txt",Buffer);
+	sprintf(Nom,"ml_log.txt",localtime( &ltime ));
 	//sprintf(Buffer,"\n%dh%dm%ds : %s",St.wHour,St.wMinute,St.wSecond,Chaine);
 	strcat(Buffer," : ");
 	strcat(Buffer,Chaine);
@@ -444,6 +445,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		if (f_in1==NULL) {
 			sprintf(s,"file %s not found, pas de fichier geo",pathGeo);
 			WriteDisk("pas de fichier geo.txt");
+			WriteDisk(pathGeo);
 		}
 		ml_file_copy (pathGeo,pathTle2);
 		//WriteDisk("fichier tle2");		
