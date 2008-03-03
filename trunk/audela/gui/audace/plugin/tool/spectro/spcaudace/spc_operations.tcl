@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.15 2008-03-01 20:18:27 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.16 2008-03-03 20:46:40 bmauclaire Exp $
 
 
 
@@ -702,6 +702,9 @@ proc spc_autonorma { args } {
 	    return "$fichier"
 	} else {
 	    set fsortie [ spc_mult "$fichier" [ expr 1./$icont ] ]
+	    buf$audace(bufNo) load "$audace(rep_images)/$fsortie"
+	    buf$audace(bufNo) setkwd [ list "BSS_NORM" "Dividing by mean continuum value" string "Technic used for normalisation" "" ]
+	    buf$audace(bufNo) save "$audace(rep_images)/$fsortie"
 	    file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
 	    ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm\n"
 	    return "${fichier}_norm"
