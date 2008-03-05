@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.20 2008-03-02 21:24:35 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.21 2008-03-05 19:04:55 bmauclaire Exp $
 
 
 
@@ -2003,6 +2003,15 @@ proc spc_calibretelluric { args } {
         set crval1 [expr $lambda0 + $cdelt1]
         buf$audace(bufNo) setkwd [list "CRVAL1" $crval1 double "" "angstrom" ]
         buf$audace(bufNo) setkwd [list "CDELT1" $cdelt1 double "" "angstrom/pixel" ]
+	set listemotsclef [ buf$audace(bufNo) getkwds ]
+	if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	    buf$audace(bufNo) delkwd "SPC_A"
+	    buf$audace(bufNo) delkwd "SPC_B"
+	    buf$audace(bufNo) delkwd "SPC_C"
+	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+		buf$audace(bufNo) delkwd "SPC_D"
+	    }
+	}
 
         #-- j'enregistre l'image
         set spectre_ocallinbis "${filename}-ocalnlbis"
@@ -2498,6 +2507,12 @@ proc spc_corrvhelio { args } {
        set fileout [ spc_calibredecal $spectre $deltal ]
 
        #--- Traitement du résultat :
+       buf$audace(bufNo) load "$audace(rep_images)/$fileout"
+       buf$audace(bufNo) setkwd [ list BSS_VHEL $vhelio float "Heliocentric velocity at data date" "km/s" ]
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save "$audace(rep_images)/$fileout"
+       buf$audace(bufNo) bitpix short
+
        file rename -force "$audace(rep_images)/$fileout$conf(extension,defaut)" "$audace(rep_images)/${spectre}_vhel$conf(extension,defaut)"
        ::console::affiche_resultat "Spectre décalé de $deltal A sauvé sous ${spectre}_vhel\n"
        return ${spectre}_vhel
