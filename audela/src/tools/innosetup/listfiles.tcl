@@ -8,9 +8,8 @@
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
 set version 1.4.0
-set makes audela
-#set makes src
-#set makes {ros ros_private_template}
+#set makes audela
+set makes {audela src ros ros_private_template}
 
 proc analdir { base } {
    global tab result resultfile f base0 make
@@ -85,7 +84,6 @@ proc analdir { base } {
             if {$make=="audela"} {
 	            append result "Source: \"$name1\"; DestDir: \"$name2\"; \n"
             } else {
-	            #append result "ZIP($level [lindex $repertoires 1]) \"$thisfile\" => \"$name3\";\n"
 	            append result "\"$thisfile\" \"$name3\"\n"
             }
          }
@@ -109,11 +107,10 @@ proc analdir { base } {
             } else {
                set datename [clock format [file mtime $thisfile] -format %Y-%m-%dT%H:%M:%S ]
             }
-            #
             #::console::affiche_resultat ">>>> $thisfile => $make => [lindex $repertoires 1] / [lindex $repertoires 2]\n"
-            if {($make=="audela") && ( ([lindex $repertoires 1]!="gui") && ([lindex $repertoires 1]!="bin") && ([lindex $repertoires 1]!="lib") && ([lindex $repertoires 1]!="images") ) } {
+            if {($make=="audela") && !( ([lindex $repertoires 1]=="gui") || ([lindex $repertoires 1]=="bin") || ([lindex $repertoires 1]=="lib") || ([lindex $repertoires 1]=="images") ) } {
                continue
-            } elseif {($make!=[lindex $repertoires 1]) } {
+            } elseif { ($make!="audela") && ($make!=[lindex $repertoires 1]) } {
 	            #::console::affiche_resultat ">>>> EXPLORATION\n"
                continue
             }
@@ -121,9 +118,6 @@ proc analdir { base } {
 	            continue
             }
             #::console::affiche_resultat "= $thisfile"
-            #if { ($make=="audela") && ([file tail $thisfile] != "CVS") && ([file tail $thisfile] != "src") && ([file tail $thisfile] != "dev") && ([file tail $thisfile] != "ros") && ([regexp -all "ros_private" [file tail $thisfile]]==0) } {
-				#	analdir $thisfile
-            #}
 				if { ([file tail $thisfile] != "CVS") && ([file tail $thisfile] != ".svn") && ([file tail $thisfile] != "Debug") && ([file tail $thisfile] != "Release") && ([file tail $thisfile] != "Output") } {
 					analdir $thisfile
 				}
