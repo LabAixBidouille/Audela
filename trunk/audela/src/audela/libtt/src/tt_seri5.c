@@ -539,15 +539,15 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
       j=0;
       for (ra=alpha1;ra<=23.99999999;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				//p_index[tt_catchart_idx(j++,nombre)].flag=-1;
-				p_index[j++].flag=-1;
+				p_index[tt_catchart_idx(j++,nombre)].flag=-1;
+				/*p_index[j++].flag=-1;*/
 			}
 		}
 		dalpha2=alpha2/97.0;
 		for (ra=0;ra<=alpha2;ra+=dalpha2) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				//p_index[tt_catchart_idx(j++,nombre)].flag=-1;
-				p_index[j++].flag=-1;
+				p_index[tt_catchart_idx(j++,nombre)].flag=-1;
+				/*p_index[j++].flag=-1;*/
 			}
 		}
 		nombre=j+5;
@@ -561,19 +561,15 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		i=0;
 		for (ra=alpha1;ra<=23.99999999;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				//p_index[tt_catchart_idx(i++,nombre)].flag=-1;
 				p_index[i++].flag=-1;
 			}
 		}
 		for (ra=0;ra<=alpha2;ra+=dalpha2) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				//p_index[tt_catchart_idx(i++,nombre)].flag=-1;
 				p_index[i++].flag=-1;
 			}
 		}
 
-      //p_index[tt_catchart_idx(i++,nombre)].flag=-1;  // on complete pour bien borner la table
-      //p_index[tt_catchart_idx(i++,nombre)].flag=-1;
       p_index[i++].flag=-1;  // on complete pour bien borner la table
       p_index[i++].flag=-1;
       np_index=i;
@@ -652,9 +648,7 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		j=0;
 		for (ra=alpha1;ra<=alpha2;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				//j++;
-				//p_index[tt_catchart_idx(j++,nombre)].flag=-1;
-				p_index[j++].flag=-1;
+				p_index[tt_catchart_idx(j++,nombre)].flag=-1;
 			}
 		}
 		nombre=j+5;
@@ -668,12 +662,9 @@ int tt_ima_series_catchart_2(TT_IMA_SERIES *pseries)
 		i=0;
 		for (ra=alpha1;ra<=alpha2;ra+=dalpha) {
 			for (de=delta1;de<=delta2;de+=ddelta) {
-				//p_index[tt_catchart_idx(i++,nombre)].flag=-1;
 				p_index[i++].flag=-1;
 			}
 		}
-      //p_index[tt_catchart_idx(i++,nombre)].flag=-1;  // on complete pour bien borner la table
-      //p_index[tt_catchart_idx(i++,nombre)].flag=-1;
       p_index[i++].flag=-1;  // on complete pour bien borner la table
       p_index[i++].flag=-1;
       np_index=i;
