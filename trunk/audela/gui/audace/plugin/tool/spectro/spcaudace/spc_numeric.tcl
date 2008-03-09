@@ -1,7 +1,7 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.9 2008-03-01 20:18:27 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.10 2008-03-09 21:10:45 bmauclaire Exp $
 
 
 
@@ -734,9 +734,9 @@ proc spc_gaussienne { args } {
 	#-- Pas
 	buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
 	#-- Longueur d'onde de départ
-	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
+	buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 double "" ""]
 	#-- Dispersion
-	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
+	buf$audace(bufNo) setkwd [list "CDELT1" 1.0 double "" ""]
 
 	for {set x 1} {$x <= $len} {incr x} {
 	    #set y [ expr $imax*exp(-1.0*($x-$xm)^2/$sigma^2) ]

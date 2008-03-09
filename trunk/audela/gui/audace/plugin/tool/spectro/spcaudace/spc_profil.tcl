@@ -20,7 +20,7 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.15 2008-03-01 20:18:28 bmauclaire Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.16 2008-03-09 21:10:45 bmauclaire Exp $
 
 
 
@@ -1585,7 +1585,7 @@ proc spc_loadfit_051217 { {filenamespc ""} } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 23-07-2007
-# Date de mise à jour : 23-07-2007
+# Date de mise à jour : 23-07-2007/20080307
 # Arguments : fichier .fit/.dat/(.spc) du profil de raie
 ##########################################################
 
@@ -1598,38 +1598,48 @@ proc spc_load { args } {
     if { $nbargs<=1 } {
 	#--- Un fichier donné en argument :
 	if { $nbargs==1 } {
-	    set filegiven [ file tail [ lindex $args 0 ] ]
+	    set file_et_rep [ lindex $args 0 ]
+	    set filegiven [ file tail "$file_et_rep" ]
+	    set file_rep [ file dirname "$file_et_rep" ]
+	    if { $file_rep=="." } {
+		set file_rep "$audace(rep_images)"
+	    }
+	    set file_extension [ file extension "$filegiven" ]
+
 	    #-- Détermine l'extension et sinon le fichier a charger :
-	    if { [ llength [ file extension $filegiven ] ] == 0 } {
-		if { [ catch { glob -dir $audace(rep_images) -tails $filegiven$conf(extension,defaut) $filegiven$spcaudace(extdat) } ] } {
+	    if { $file_extension != "" } {
+		set filename "$file_et_rep"
+	    } elseif { [ llength [ file extension $filegiven ] ] == 0 } {
+		if { [ catch { glob -dir $file_rep -tails $filegiven$conf(extension,defaut) $filegiven$spcaudace(extdat) } ] } {
 		    ::console::affiche_erreur "Le fichier $filegiven n'existe pas.\n\n"
 		    return ""
 		} else {
-		    set listname [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $filegiven$conf(extension,defaut) $filegiven$spcaudace(extdat) ] ]
+		    set listname [ lsort -dictionary [ glob -dir $file_rep -tails $filegiven$conf(extension,defaut) $filegiven$spcaudace(extdat) ] ]
 		    if { [ llength $listname ]==1 } {
-			set filename [ lindex $listname 0 ]
-			set extension [ file extension [ lindex $listname 0 ] ]
+			# set filename [ lindex $listname 0 ]
+			set filename "$file_et_rep"
+			set file_extension [ file extension [ lindex $listname 0 ] ]
 		    } elseif { [ llength $listname ]>1 } {
-			set filename [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $filegiven$conf(extension,defaut) ] ] 0 ]
-			set extension $conf(extension,defaut)
+			set filename [ lindex [ lsort -dictionary [ glob -dir $file_rep -tails $filegiven$conf(extension,defaut) ] ] 0 ]
+			set file_extension $conf(extension,defaut)
 		    }
 		}
 	    } else {
 		set filename "$filegiven"
-		set extension [ file extension $filegiven ]
+		set file_extension [ file extension $filegiven ]
 	    }
 	#--- Ouvre un navigateur de fichier pour choisir un fichier :
 	} elseif { $nbargs==0 } {
 	    set filegiven [ tk_getOpenFile -filetypes [ list [ list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz [buf$audace(bufNo)  $spcaudace(extdat) ]" ] ] -initialdir $audace(rep_images) ]
 	    set filename [ file tail $filegiven ]
-	    set extension [ file extension $filegiven ]
+	    set file_extension [ file extension $filegiven ]
 	}
 
 	#::console::affiche_resultat "name=$filename ; ext=$extension\n"
 	#--- Affiche le profil de rais selon l'extension :
-	if { "$extension"=="$conf(extension,defaut)" } {
+	if { "$file_extension"=="$conf(extension,defaut)" } {
 	    spc_loadfit "$filename"
-	} elseif { "$extension"=="$spcaudace(extdat)" } {
+	} elseif { "$file_extension"=="$spcaudace(extdat)" } {
 	    spc_loaddat "$filename"
 	} else {
 	    ::console::affiche_erreur "Usage: spc_load <file_name.fit/.dat>\n\n"
@@ -1648,7 +1658,7 @@ proc spc_load { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 16-02-2005
-# Date de mise à jour : 16-02-2005 / 17-12-2005
+# Date de mise à jour : 16-02-2005 / 17-12-2005/20080307
 # Arguments : fichier .fit du profil de raie
 ##########################################################
 
@@ -1686,10 +1696,16 @@ proc spc_loadfit { {filenamespc ""} } {
       }
             
    } else {
-       #set repertoire [pwd]
-       set repertoire "$audace(rep_images)"
-       set profilspc(initialdir) "$audace(rep_images)"
-       set rep_et_filename "$repertoire/$filenamespc"
+       #set repertoire "$audace(rep_images)"
+       #set profilspc(initialdir) "$audace(rep_images)"
+       #set rep_et_filename "$repertoire/$filenamespc"
+       set rep_et_file "$filenamespc"
+       set repertoire [ file dirname "$filenamespc" ]
+       if { $repertoire == "." } {
+	   set repertoire "$audace(rep_images)"
+       }
+       set nom_fichier [ file tail "$filenamespc" ]
+       set rep_et_filename "$repertoire/$nom_fichier"
    }
 
    #============================================================================#

@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.17 2008-03-02 09:02:19 michelpujol Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.18 2008-03-09 21:10:45 bmauclaire Exp $
 
 
 
@@ -1320,6 +1320,11 @@ proc spc_traite2srinstrum { args } {
 	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
 	   uncosmic $spcaudace(uncosmic)
 	   #uncosmic $spcaudace(uncosmic)
+	   buf$audace(bufNo) setkwd [ list BSS_COSM "Weighted median filter" string "Technic used for erasing cosmics" "" ]
+	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
+       } else {
+	   buf$audace(bufNo) load "$audace(rep_images)/$fsadd"
+	   buf$audace(bufNo) setkwd [ list BSS_COSM "None" string "Technic used for erasing cosmics" "" ]
 	   buf$audace(bufNo) save "$audace(rep_images)/$fsadd"
        }
 
@@ -1589,6 +1594,7 @@ proc spc_traitestellaire { args } {
        } else {
 	   set spectre_png "$flinearcal"
        }
+
 
        #--- Export au format Bess :
        if { $export_bess=="o" } {

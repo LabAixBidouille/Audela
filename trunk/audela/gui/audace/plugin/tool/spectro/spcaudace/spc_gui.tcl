@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.17 2008-03-02 20:43:46 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.18 2008-03-09 21:10:45 bmauclaire Exp $
 
 
 
@@ -421,15 +421,23 @@ proc spc_loadmore { args } {
     set nbargs [ llength $args ]
     if { $nbargs <= 2 } {
 	if { $nbargs == 1 } {
-	    set filename [ file rootname [ lindex $args 0 ] ]
+	    set rep_et_filename [ lindex $args 0 ]
+	    set filename [ file rootname [ file tail $rep_et_filename ] ]
 	    set lineColor [ lindex $spcaudace(lgcolors) [ spc_setgcolor ] ]
 	    regsub -all {[^a-z0-9]} "$filename" "" lineName
-	    set filedir "$audace(rep_images)"
+	    set filedir [ file dirname $rep_et_filename ]
+	    if { $filedir == "." } {
+		set filedir "$audace(rep_images)"
+	    }
 	} elseif { $nbargs == 2 } {
-	    set filename [ lindex $args 0 ]
+	    set rep_et_filename [ lindex $args 0 ]
+	    set filename [ file rootname [ file tail $rep_et_filename ] ]
 	    set lineColor [ lindex $args 1 ]
 	    regsub -all {[^a-z0-9]} "$filename" "" lineName
-	    set filedir "$audace(rep_images)"
+	    set filedir [ file dirname $rep_et_filename ]
+	    if { $filedir == "." } {
+		set filedir "$audace(rep_images)"
+	    }
 	} elseif { $nbargs == 0 } {
 	    if {[info exists profilspc(initialdir)] == 1} {
 		set idir "$profilspc(initialdir)"
@@ -453,11 +461,15 @@ proc spc_loadmore { args } {
 	}
 
 	#--- Génère la liste lambda, intensités :
-	if { "$filedir" != "$audace(rep_images)" } {
-	    file copy -force "$rep_et_filename" "$audace(rep_images)/$filename$conf(extension,defaut)"
+	#if { "${filedir}/" != "$audace(rep_images)" }
+	set flag_notpresent 0
+	if { [ catch { glob -dir $audace(rep_images) -tails $filename$conf(extension,defaut) } ] } {
+	    file copy -force "$filedir/$filename$conf(extension,defaut)" "$audace(rep_images)/$filename$conf(extension,defaut)"
+	    set flag_notpresent 1
 	}
 	set spectre_data [ spc_fits2data "$filename" ]
-	if { "$filedir" != "$audace(rep_images)" } {
+	#if { "${filedir}/" != "$audace(rep_images)" } 
+	if { $flag_notpresent } {
 	    file delete -force "$audace(rep_images)/$filename$conf(extension,defaut)"
 	}
 	set xlist [ lindex $spectre_data 0 ]
@@ -490,7 +502,7 @@ proc spc_loadmore { args } {
 	.spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth natural -color $lineColor
 
 	#--- Traitement du résultat :
-	::console::affiche_resultat "Nom du profil affiché : $lineName\n Nom à utiliser avec spc_gdelete.\n"
+	::console::affiche_resultat "Nom du profil affiché de couleur $lineColor : $lineName\n Nom à utiliser avec spc_gdelete.\n"
 	lappend spcaudace(gloaded) "$lineName"
 	return "$lineName"
     } else {

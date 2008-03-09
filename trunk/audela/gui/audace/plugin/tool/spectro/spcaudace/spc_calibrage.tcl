@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.21 2008-03-05 19:04:55 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.22 2008-03-09 21:10:44 bmauclaire Exp $
 
 
 
@@ -456,7 +456,7 @@ proc spc_calibredecal { args } {
       #--- Sauvegarde du profil calibré
       buf$audace(bufNo) bitpix float
       buf$audace(bufNo) save "$audace(rep_images)/${filespc}_dec"
-      ::console::affiche_resultat "spc_calibredecal Spectre décalé $decalage CRVAL1=, sauvé sous ${filespc}_dec\n"
+      ::console::affiche_resultat "spc_calibredecal Spectre décalé $decalage CRVAL1=$lambda_modifie, sauvé sous ${filespc}_dec\n"
       return "${filespc}_dec"
   } else {
       ::console::affiche_erreur "Usage: spc_calibredecal profil_a_decaler_fits decalage\n\n"
