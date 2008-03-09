@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.16 2008-03-03 20:46:40 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.17 2008-03-09 21:10:45 bmauclaire Exp $
 
 
 
@@ -654,8 +654,9 @@ proc spc_normaraie { args } {
      set coeff [ expr 1./$continuum ]
      ::console::affiche_resultat "Coéfficient de normalisation : $coeff\n"
      buf$audace(bufNo) mult $coeff
+     buf$audace(bufNo) bitpix float
      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_lnorm"
-
+     buf$audace(bufNo) bitpix short
      #--- Fin du script :
      ::console::affiche_resultat "Profil localement normalisé sauvé sous ${fichier}_lnorm.\n"
      return ${fichier}_lnorm
@@ -704,7 +705,9 @@ proc spc_autonorma { args } {
 	    set fsortie [ spc_mult "$fichier" [ expr 1./$icont ] ]
 	    buf$audace(bufNo) load "$audace(rep_images)/$fsortie"
 	    buf$audace(bufNo) setkwd [ list "BSS_NORM" "Dividing by mean continuum value" string "Technic used for normalisation" "" ]
+	    buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/$fsortie"
+	    buf$audace(bufNo) bitpix short
 	    file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
 	    ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm\n"
 	    return "${fichier}_norm"
