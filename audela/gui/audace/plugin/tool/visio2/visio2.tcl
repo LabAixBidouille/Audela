@@ -2,11 +2,12 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.32 2008-03-09 21:05:40 bmauclaire Exp $
+# Mise a jour $Id: visio2.tcl,v 1.33 2008-03-10 16:52:57 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
    package provide visio2 1.0
+   package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
    source [ file join [file dirname [info script]] visio2.cap ]
@@ -135,11 +136,35 @@ proc ::visio2::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
+#  getPluginHelp
+#     retourne le nom du fichier d'aide principal
+#------------------------------------------------------------
+proc ::visio2::getPluginHelp { } {
+   return "visio2.htm"
+}
+
+#------------------------------------------------------------
 #  getPluginType
 #     retourne le type de plugin
 #------------------------------------------------------------
 proc ::visio2::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+#  getPluginDirectory
+#     retourne le type de plugin
+#------------------------------------------------------------
+proc ::visio2::getPluginDirectory { } {
+   return "visio2"
+}
+
+#------------------------------------------------------------
+#  getPluginOS
+#     retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::visio2::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -479,7 +504,7 @@ proc ::visio2::showColumn { visuNo tbl columnIndex } {
 
    #--- je fais pareil pour la table ftpTable si elle est affichee
    if { [info exists ::visio2::ftpTable::private($visuNo,tbl)]
-       && [winfo exists ::visio2::ftpTable::private($visuNo,tbl)] } {
+       && [winfo exists $::visio2::ftpTable::private($visuNo,tbl)] } {
       if { "$::visio2::ftpTable::private($visuNo,tbl)" != "" } {
          set tbl $::visio2::ftpTable::private($visuNo,tbl)
          if { $show == 1 } {
@@ -542,9 +567,8 @@ proc ::visio2::createPanel { visuNo } {
 
    #--- Label du titre
    Button $This.titre.but -borderwidth 1 -text $caption(visio2,title) \
-      -command {
-         ::audace::showHelpPlugin "tool" "visio2" "visio2.htm"
-      }
+      -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] \
+         [ ::visio2::getPluginDirectory ] [ ::visio2::getPluginHelp ]"
    DynamicHelp::add $This.titre.but -text $caption(visio2,help,titre)
    pack $This.titre.but -in $This.titre -anchor center -expand 1 -fill x -side top -ipadx 5
 
@@ -620,7 +644,8 @@ proc ::visio2::config::getLabel { } {
 #   affiche l'aide de cet outil
 #------------------------------------------------------------
 proc ::visio2::config::showHelp { } {
-   ::audace::showHelpPlugin "tool" "visio2" "visio2.htm" "config"
+   ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::visio2::getPluginType ] ] \
+         [ ::visio2::getPluginDirectory ] [ ::visio2::getPluginHelp ] "config"
 }
 
 #------------------------------------------------------------
@@ -1020,9 +1045,7 @@ proc ::visio2::localTable::cmdButton1DoubleClick { visuNo tbl } {
 #------------------------------------------------------------------------------
 proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
    variable private
-   global conf
-   #-- Modif BM du 20080307 :
-   global audace
+   global audace conf
 
    set tbl $private($visuNo,tbl)
 
@@ -1048,7 +1071,7 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
          #--- j'affiche l'image 1D
          spc_load "$filename"
       }
-      #--- Fin BM.
+      #--- Fin BM
 
       if { [::Image::isAnimatedGIF "$filename"] == 1 } {
          setAnimationState $visuNo "1"
