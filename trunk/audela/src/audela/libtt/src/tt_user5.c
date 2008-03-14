@@ -2270,6 +2270,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
 		tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
 		//reajustement de l'histogramme en 8bit
+		tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouverture.fit",16);
+
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
 				p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;
@@ -2349,57 +2351,85 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		dilate (p_tmp1,p_in,se2,x2,y2,sizex2,sizey2,naxis1,naxis2);
 		erode (p_out,p_tmp1,se2,x2,y2,sizex2,sizey2,naxis1,naxis2);
 			//ouverture
-		erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);		
-		dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		ouverture2 (p_out, x1, naxis1, naxis2);
+			// valable pour SE=ligne de pixels sinon faire
+		//erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);		
+		//dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		
-		/* --- Calcul des seuils de visualisation ---*/
-		//réduction de la dynamique des images
-		tt_histocuts_myrtille(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+		/* --- Calcul des seuils de visualisation ---*/		
+	    // pour l'image du tophat
+		tt_util_statima(p_out,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));	
+		tt_util_bgk(p_out,&(pseries->bgmean),&(pseries->bgsigma));
+		tt_util_cuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),TT_YES);
 		hicut=pseries->hicut;
 		locut=pseries->locut;
-		tt_histocuts_myrtille(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
+		mode2=pseries->bgmean;
+		// pour l'image initiale
 		tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
-		
+		tt_util_bgk(p_in,&(pseries->bgmean),&(pseries->bgsigma));
+		tt_util_cuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),TT_YES);
+		mode1=pseries->bgmean;
+
+		//tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+		//tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
+
+		tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouv_de_ferm.fit",16);
+		/* --- detection des geo et des traînées du bruit --- */
+		// coefficient trouvé par des tests sur plusieurs images (pseries->sigma)/(pseries->mean)*50
+		if (((pseries->sigma)/(pseries->bgsigma)+pseries->bgsigma/4)/2.0<8) {
+			pseries->bgsigma=(((pseries->sigma)/(pseries->bgsigma)+pseries->bgsigma/4)/2.0)*pseries->bgsigma;
+		} else {
+			pseries->bgsigma=8*pseries->bgsigma;
+		}
+		//pseries->bgsigma=0;
+
+		//réduction de la dynamique des images
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
-				p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;
-
-				if (p_out->p[y*naxis1+x]<mode1-pseries->sigma) {
-					p_out->p[y*naxis1+x]=0;
-				} else if (p_out->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
-					p_out->p[y*naxis1+x]=255;
-				} else {
-					//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
-					if (p_out->p[y*naxis1+x]<mode1) {
-						if (pseries->locut/locut<1) {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->locut/locut);
-						} else {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)0.97;
-						}
-					} else if (p_out->p[y*naxis1+x]>mode1) {
-						if (pseries->hicut/hicut>1) {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->hicut/hicut);
-						} else {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)1.06;
-						}
-					} else {
-						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma));
-					}
+				if (mode1>mode2) {
+					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;
 				}
-
-				
-				if (p_tmp2->p[y*naxis1+x]<mode1-pseries->sigma) {					
-					p_tmp2->p[y*naxis1+x]=0;	
-				} else if (p_tmp2->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
-					p_tmp2->p[y*naxis1+x]=255;
+				if (fabs (p_out->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x])<pseries->bgsigma) {
+					p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x];
 				} else {
-					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(3.0/2.0*pseries->sigma);
+					if (p_out->p[y*naxis1+x]<mode1-pseries->bgsigma/2.0) {
+						p_out->p[y*naxis1+x]=0;
+					} else if (p_out->p[y*naxis1+x]>mode1+(pseries->bgsigma)*2) {
+					//} else if (p_out->p[y*naxis1+x]>hicut) {
+						p_out->p[y*naxis1+x]=255;
+					} else {
+						//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
+						if (p_out->p[y*naxis1+x]<mode1) {
+							if (pseries->locut/locut<1) {
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma/2.0))*(float)255./((float)(2.0/1.0*pseries->bgsigma))*(float)(pseries->locut/locut);
+							} else {
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma/2.0))*(float)255./((float)(2.0/1.0*pseries->bgsigma))*(float)(locut/pseries->locut);
+							}
+						} else if (p_out->p[y*naxis1+x]>mode1) {
+							if (pseries->hicut/hicut>1) {
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma/2.0))*(float)255./((float)(2.0/1.0*pseries->bgsigma))*(float)(pseries->hicut/hicut);
+							} else {
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma/2.0))*(float)255./((float)(2.0/1.0*pseries->bgsigma))*(float)(hicut/pseries->hicut);
+							}
+						} else {
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma/2.0))*(float)255./((float)(2.0/1.0*pseries->bgsigma));
+						}
+					}
+
+					
+					if (p_tmp2->p[y*naxis1+x]<mode1-pseries->bgsigma/2.0) {					
+						p_tmp2->p[y*naxis1+x]=0;	
+					} else if (p_tmp2->p[y*naxis1+x]>mode1+(pseries->bgsigma)*2) {
+						p_tmp2->p[y*naxis1+x]=255;
+					} else {
+						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma/2.0))*(float)255./(float)(2.0/1.0*pseries->bgsigma);
+					}
 				}
 				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];		
 			}
 		}
 		//tt_imasaver(p_tmp2,"D:/init2.fit",8);
-		//tt_imasaver(p_out,"D:/ouv_de_ferm2.fit",8);
+		//tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouv_de_ferm2.fit",8);
 	} 
 
 	i=strcmp (nom_trait,"GRADIENT");
