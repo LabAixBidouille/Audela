@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.15 2008-03-02 00:30:15 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.16 2008-03-15 13:55:55 michelpujol Exp $
 
 
 
@@ -679,68 +679,6 @@ proc spc_findbiglines { args } {
 	    return 0
 	}
 	for { set i 1 } { $i<=[ expr $naxis1-2*$largeur ] } { set i [ expr $i+$pas ] } {
-	    set xdeb $i
-	    set xfin [ expr $i+$largeur-1 ]
-	    set coords [ list $xdeb 1 $xfin 1 ]
-	    #-- Meth 1 : fit gaussien
-	    ## set gauss [ buf$audace(bufNo) fitgauss $coords -fwhmx $largeur ]
-	    #::console::affiche_resultat "Centre $i avant fitgauss\n"
-	    set gauss [ buf$audace(bufNo) fitgauss $coords ]
-	    #::console::affiche_resultat "Centre $i après fitgauss\n"
-	    lappend xcenters [ lindex $gauss 1 ]
-	    #-- Intensite en X :
-	    lappend intensites [ lindex $gauss 0 ]
-
-	    #set xc [ lindex $gauss 1 ]
-	    #::console::affiche_resultat "Centre $i trouvé; Xfin=$xfin\n"
-
-	    #-- Meth 2 : centroide
-	    ##lappend intensites [ lindex [ buf$audace(bufNo) flux $coords ]  0 ]
-	    #lappend intensites [ lindex [ buf$audace(bufNo) fitgauss $coords ] 0 ]
-	    #lappend xcenters [ lindex [ buf$audace(bufNo) centro $coords ]  0 ]
-	}
-
-	#--- Tri des intensités les plus intenses :
-	::console::affiche_resultat "Triage des raies trouvées...\n"
-	set intensite 0
-	set listimax [ list 0 ]
-	set listabscisses [ list ]
-	set len [ llength $xcenters ]
-
-        if { $nbargs == 2 } {
-            set filename [ lindex $args 0 ]
-            set typeraies [ lindex $args 1 ]
-            set largeur 10
-        } elseif { $nbargs == 3 } {
-            set filename [ lindex $args 0 ]
-            set typeraies [ lindex $args 1 ]
-            set largeur [ expr int([ lindex $args 2 ]) ]
-        } else {
-            ::console::affiche_erreur "Usage: spc_findbiglines nom_profil_de_raies type_raies ?largeur_raie?\n"
-            return 0
-        }
-        set pas [ expr int($largeur/2) ]
-
-        #--- Gestion des profils calibrés en longueur d'onde :
-        buf$audace(bufNo) load "$audace(rep_images)/$filename"
-        #-- Retire les petites raies qui seraient des pixels chauds ou autre :
-        buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
-        #-- Renseigne sur les parametres de l'image :
-        set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
-        set nbrange [ expr int($naxis1/$largeur) ]
-        # ::console::affiche_resultat "nb intervalles : $nbrange\n"
-
-        #--- Recherche des raies d'émission :
-        if { $typeraies == "a" } {
-            buf$audace(bufNo) mult -1.0
-            ::console::affiche_resultat "Recherche des raies d'absorption...\n"
-        } elseif { $typeraies == "e" } {
-            ::console::affiche_resultat "Recherche des raies d'émission...\n"
-        } else {
-            ::console::affiche_resultat "Type de raie inconnu. Donner (e/a).\n"
-            return 0
-        }
-        for { set i 1 } { $i<=[ expr $naxis1-2*$largeur ] } { set i [expr $i+$pas ] } {
             set xdeb $i
             set xfin [ expr $i+$largeur-1 ]
             set coords [ list $xdeb 1 $xfin 1 ]
@@ -806,36 +744,6 @@ proc spc_findbiglines { args } {
 	    set intensite [ lindex $intensites $j ]
 	    # set imax [ lindex [ lsort -real -decreasing $listimax ] 0 ]
 	    set imax [ lindex $listimax 0 ]
-	    set len [ expr [ llength $doublelistesorted ]-1 ]
-	    for { set j 0 } { $j<$len } { incr j } {
-		set abscissej [ lindex [ lindex $doublelistesorted $j ] 0 ]
-		set abscissejj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 0 ]
-		set imaxj [ lindex [ lindex $doublelistesorted $j ] 1 ]
-		set imaxjj [ lindex [ lindex $doublelistesorted [ expr $j+1 ] ] 1 ]
-		if { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj>=$imaxjj } {
-		    set doublelistesorted [ lreplace $doublelistesorted [ expr $j+1 ] [ expr $j+1 ] [ list $abscissejj 0.0 ] ]
-		    #set toto [ lindex $doublelistesorted [ expr $j+1 ] ]
-		    #::console::affiche_resultat "$toto\n"
-		} elseif { [ expr $abscissejj - $abscissej ] <= $ecart && $imaxj<=$imaxjj } {
-		    set doublelistesorted [ lreplace $doublelistesorted [ expr $j ] [ expr $j ] [ list $abscissej 0.0 ] ]
-		    # [ list $abscissejj 0.0 ]
-		}
-	    }
-        }
-	}
-
-        #::console::affiche_resultat "Double liste : $doublelistesorted\n"
-        #::console::affiche_resultat "Double liste : $doubleliste\n"
-        #::console::affiche_resultat "Double liste : $doublelistesorted2\n"
-
-        #-- Meth 1bis : mon tri (marche pas)
-        set flag 0
-        if { $flag==1 } {
-        for { set j 0 } { $j<$len } { incr j } {
-            set intensite [ lindex $intensites $j ]
-            # set imax [ lindex [ lsort -real -decreasing $listimax ] 0 ]
-            set imax [ lindex $listimax 0 ]
-
 #::console::affiche_resultat "imax n°$j: $imax\n"
             if { $intensite>$imax } {
                 set listimax [ linsert $listimax 0 $intensite ]
@@ -854,12 +762,8 @@ proc spc_findbiglines { args } {
         set selection12 [ lrange $doublelistesorted2 0 12 ]
 #::console::affiche_resultat "Double liste : $selection12\n"
 
-	#--- Retire dans la cette selection les raies détectées qui sont les mêmes en fait :
-	set selection12 [ lsort -increasing -real -index 0 $selection12 ]
-
         #--- Retire dans la cette selection les raies détectées aui sont les mêmes en fait :
         set selection12 [ lsort -increasing -real -index 0 $selection12 ]
-
 #::console::affiche_resultat "listimax : $selection12\n"
         set len [ expr [ llength $selection12 ]-1 ]
         for { set j 0 } { $j<$len } { incr j } {
