@@ -39,8 +39,6 @@ AudeLA est capable de piloter les cameras CCD suivantes :
 - Hi-SIS 43,
 - Hi-SIS 44,
 - Hi-SIS 48,
-- Kitty 237,
-- Kitty 255,
 - Kitty 2,
 - SBIG (tous les modeles),
 - SCR1300XTC,
