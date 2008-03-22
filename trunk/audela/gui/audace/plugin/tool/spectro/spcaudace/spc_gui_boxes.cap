@@ -1,6 +1,6 @@
 #
 # Fichier : spc_gui_boxes.cap
-# Mise a jour $Id: spc_gui_boxes.cap,v 1.1 2007-10-12 17:38:55 robertdelmas Exp $
+# Mise a jour $Id: spc_gui_boxes.cap,v 1.2 2008-03-22 19:28:55 michelpujol Exp $
 #
 # remarque : les traductions qui restent a faire commencent par "#"
 
@@ -36,6 +36,12 @@ global caption langage
 
    set caption(spcaudace,boxes,erreur,saisie)          "Entry error : Some fields are empty"
 
+   set caption(spcaudace,boxes,crop,titre) "Spectrum crop"
+   set caption(spcaudace,boxes,crop,ok_button) "OK"
+   set caption(spcaudace,boxes,crop,cancel_button) "Cancel"
+   set caption(spcaudace,boxes,crop,config,lmin) "Min wavelength"
+   set caption(spcaudace,boxes,crop,config,lmax) "Max wavelength"
+
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -63,6 +69,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(spcaudace,boxes,selectzone,config,ysup) "Y supérieur droit : "
    set caption(spcaudace,boxes,selectzone,aide)        "Utiliser la souris pour choisir les coordonnées\ndes points inférieur gauche et surpérieur droit \nde la zone à étudier."
    set caption(spcaudace,boxes,erreur,saisie)           "Erreur de saisie : Certains champs sont restés vides"
+
+   set caption(spcaudace,boxes,crop,titre) "Recadrage d'un spectre"
+   set caption(spcaudace,boxes,crop,ok_button) "OK"
+   set caption(spcaudace,boxes,crop,cancel_button) "Annuler"
+   set caption(spcaudace,boxes,crop,config,lmin) "Longueur d'onde minimum"
+   set caption(spcaudace,boxes,crop,config,lmax) "Longueur d'onde maximum"
+
 
 
 # *************** Version italienne ***************************
