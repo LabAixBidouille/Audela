@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.16 2008-03-15 13:55:55 michelpujol Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.17 2008-03-22 13:55:11 bmauclaire Exp $
 
 
 
@@ -64,8 +64,8 @@ proc spc_centergauss { args } {
      }
      #-- Le second element de la liste reponse est le centre X de la gaussienne
      set centre [lindex $lreponse 1]
-     #-- BUG fitgauss :
-     set centre [ expr $centre-1 ]
+     #-- BUG fitgauss : pas pour une lecture de pixel dans les spectres non calibres.
+     # set centre [ expr $centre-1 ]
 
      ::console::affiche_resultat "Le centre de la raie est : $centre (pixels)\n"
      return $centre
@@ -177,8 +177,8 @@ proc spc_centergrav { args } {
         buf$audace(bufNo) scale $listecoefscale 1
         set lreponse [ buf$audace(bufNo) centro $listcoords ]
         set centre [lindex $lreponse 0]
-        #-- BUG centro :
-        set centre [ expr $centre-1 ]
+        #-- BUG centro : pas pour non calibrés
+        #set centre [ expr $centre-1 ]
 
         ::console::affiche_resultat "Le centre de gravité de la raie est : $centre (pixels)\n"
      return $centre
@@ -323,7 +323,7 @@ proc spc_autocentergaussl { args } {
            #-- fitgauss ne fonctionne qu'avec les raies d'emission, on inverse donc le spectre d'absorption
            buf$audace(bufNo) mult -1.0
            # set lreponse [buf$audace(bufNo) fitgauss $listcoords -fwhmx 10]
-           set lreponse [buf$audace(bufNo) fitgauss $listcoords ]
+           set lreponse [ buf$audace(bufNo) fitgauss $listcoords ]
            #-- Inverse de nouveau le spectre pour le rendre comme l'original
            buf$audace(bufNo) mult -1.0
        } elseif { [string compare $type "e"] == 0 } {
@@ -331,7 +331,7 @@ proc spc_autocentergaussl { args } {
        }
        #-- Le second element de la liste reponse est le centre X de la gaussienne
        set xcentre [lindex $lreponse 1]
-       #-- BUG fitgauss :
+       #-- BUG fitgauss : non, car l'origine du fitgauss est 1 plutot que 0.
        set xcentre [ expr $xcentre-1 ]
        #set lreponse [ buf$audace(bufNo) centro $listcoords ]
        #set xcentre [lindex $lreponse 0]
@@ -661,8 +661,20 @@ proc spc_findbiglines { args } {
 
 	#--- Gestion des profils calibrés en longueur d'onde :
 	buf$audace(bufNo) load "$audace(rep_images)/$filename"
+        set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+          if { [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ] != 1 } {
+             set ecartfitgauss 1.0
+          } else {
+             set ecartfitgauss 0.0
+          }
+       } else {
+          set ecartfitgauss 0.0
+       }
+
 	#-- Retire les petites raies qui seraient des pixels chauds ou autre :
-	buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
+        # commenté le 2008-03-21
+	#buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
 	#-- Renseigne sur les parametres de l'image :
 	set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
 	set nbrange [ expr int($naxis1/$largeur) ]
@@ -687,7 +699,8 @@ proc spc_findbiglines { args } {
             #::console::affiche_resultat "Centre $i avant fitgauss\n"
             set gauss [ buf$audace(bufNo) fitgauss $coords ]
             #::console::affiche_resultat "Centre $i après fitgauss\n"
-            lappend xcenters [ lindex $gauss 1 ]
+            lappend xcenters [ expr [ lindex $gauss 1 ] -$ecartfitgauss ]
+            #lappend xcenters [ lindex $gauss 1 ]
             #-- Intensite en X :
             lappend intensites [ lindex $gauss 0 ]
 
@@ -786,8 +799,8 @@ proc spc_findbiglines { args } {
         #set selection6 [ lrange $selection12 0 6 ]
         set selection6 $selection12
 
-        #--- Conversion des abscisses en longeueur d'onde :
-        set coefspoly [ spc_coefscalibre $filename ]
+        #--- Conversion des abscisses en longueur d'onde :
+        set coefspoly [ spc_coefscalibre "$filename" ]
         set spc_a [ lindex $coefspoly 0 ]
         set spc_b [ lindex $coefspoly 1 ]
         set spc_c [ lindex $coefspoly 2 ]
@@ -1163,7 +1176,7 @@ proc spc_imax { args } {
         #--- Ajustement gaussien:
         set gaussparams [ buf$audace(bufNo) fitgauss [ list $xdeb 1 $xfin 1 ] ]
         set imax [ lindex $gaussparams 0 ]
-        set xcentre [ lindex $gaussparams 1 ]
+        set xcentre [ expr [ lindex $gaussparams 1 ] -1 ]
 
         #--- Converti le pixel en longueur d'onde :
         if { $flag_nonlin==1 } {
