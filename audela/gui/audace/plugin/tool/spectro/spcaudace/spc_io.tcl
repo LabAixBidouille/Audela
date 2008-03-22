@@ -10,7 +10,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.19 2008-03-01 20:18:27 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.20 2008-03-22 14:01:48 bmauclaire Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)
@@ -952,7 +952,11 @@ proc spc_fits2data { args } {
  if {[llength $args] == 1} {
      set filenamespc [ lindex $args 0 ]
 
-     buf$audace(bufNo) load "$audace(rep_images)/$filenamespc"
+     if { [llength [file split $filenamespc]] == 1 } {
+        #--- j'ajoute le repertoire par defaut devant le nom du fichier
+        set filenamespc [file join $audace(rep_images) $filenamespc]
+     }
+     buf$audace(bufNo) load $filenamespc
      set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
      set listemotsclef [ buf$audace(bufNo) getkwds ]
      if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
