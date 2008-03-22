@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.18 2008-03-09 21:10:45 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.19 2008-03-22 14:01:47 bmauclaire Exp $
 
 
 
@@ -416,62 +416,46 @@ proc pvisutools {} {
 ##########################################################
 
 proc spc_loadmore { args } {
-    global profilspc spcaudace conf caption audace
+   global profilspc spcaudace conf caption audace
 
-    set nbargs [ llength $args ]
-    if { $nbargs <= 2 } {
-	if { $nbargs == 1 } {
-	    set rep_et_filename [ lindex $args 0 ]
-	    set filename [ file rootname [ file tail $rep_et_filename ] ]
-	    set lineColor [ lindex $spcaudace(lgcolors) [ spc_setgcolor ] ]
-	    regsub -all {[^a-z0-9]} "$filename" "" lineName
-	    set filedir [ file dirname $rep_et_filename ]
-	    if { $filedir == "." } {
-		set filedir "$audace(rep_images)"
-	    }
-	} elseif { $nbargs == 2 } {
-	    set rep_et_filename [ lindex $args 0 ]
-	    set filename [ file rootname [ file tail $rep_et_filename ] ]
-	    set lineColor [ lindex $args 1 ]
-	    regsub -all {[^a-z0-9]} "$filename" "" lineName
-	    set filedir [ file dirname $rep_et_filename ]
-	    if { $filedir == "." } {
-		set filedir "$audace(rep_images)"
-	    }
-	} elseif { $nbargs == 0 } {
-	    if {[info exists profilspc(initialdir)] == 1} {
-		set idir "$profilspc(initialdir)"
-	    }
-	    if {[info exists profilspc(initialfile)] == 1} {
-		set ifile "$profilspc(initialfile)"
-	    }
-	    set rep_et_filename [ tk_getOpenFile -title $caption(spcaudace,gui,loadspcfit) -filetypes [list [list "$caption(spcaudace,gui,spc_profile)" [ list $conf(extension,defaut) ] ]] -initialdir $idir -initialfile $ifile ]
-	    if {[ string compare $rep_et_filename "" ] == 0 } {
-		return 0
-	    } else {
-		set filename [ file rootname [ file tail "$rep_et_filename" ] ]
-		set filedir [ file dirname "$rep_et_filename" ]
-		set profilspc(initialdir) "$filedir"
-		set lineColor [ lindex $spcaudace(lgcolors) [ spc_setgcolor ] ]
-		regsub -all {[^a-z0-9]} "$filename" "" lineName
-	    }
-	} else {
-	    ::console::affiche_erreur "Usage: spc_loadmore profil_raies_fits ?color (green, red,...)?\n\n"
-	    return ""
-	}
 
-	#--- Génère la liste lambda, intensités :
-	#if { "${filedir}/" != "$audace(rep_images)" }
-	set flag_notpresent 0
-	if { [ catch { glob -dir $audace(rep_images) -tails $filename$conf(extension,defaut) } ] } {
-	    file copy -force "$filedir/$filename$conf(extension,defaut)" "$audace(rep_images)/$filename$conf(extension,defaut)"
-	    set flag_notpresent 1
-	}
-	set spectre_data [ spc_fits2data "$filename" ]
-	#if { "${filedir}/" != "$audace(rep_images)" } 
-	if { $flag_notpresent } {
-	    file delete -force "$audace(rep_images)/$filename$conf(extension,defaut)"
-	}
+   set nbargs [ llength $args ]
+   if { $nbargs <= 2 } {
+      #-- j'intialise les variables avec les valeurs par defaut
+      set filename ""
+      set lineColor [ lindex $spcaudace(lgcolors) [ spc_setgcolor ] ]
+
+      #--- je lis l'argument 1
+      if { $nbargs >= 1 } {
+         set filename [ lindex $args 0 ]
+         if { [llength [file split $filename]] == 1 } {
+            #--- j'ajoute le repertoire par defaut devant le nom du fichier
+            set filename [file join $audace(rep_images) $filename]
+         }
+      } else {
+         set ifile ""
+         if {[info exists profilspc(initialfile)] == 1} {
+            set ifile "$profilspc(initialfile)"
+         }
+         set filename [ tk_getOpenFile -title $caption(spcaudace,gui,loadspcfit) -filetypes [list [list "$caption(spcaudace,gui,spc_profile)" [ list $conf(extension,defaut) ] ]] -initialdir $audace(rep_images) -initialfile $ifile ]
+         if { $filename == "" } {
+            return
+         }
+      }
+      set profilspc(initialdir)  [file dirname $filename]
+      set profilspc(initialfile) [file tail $filename]
+
+      #--- je lis l'argument 2
+      if { $nbargs >= 2 } {
+         set lineColor [ lindex $args 1 ]
+      }
+
+      #--- je prepare le nom de la ligne
+      regsub -all {[^a-z0-9]} "$filename" "" lineName
+
+      #--- Génère la liste lambda, intensités :
+      set spectre_data [ spc_fits2data "$filename" ]
+
 	set xlist [ lindex $spectre_data 0 ]
 	set ylist [ lindex $spectre_data 1 ]
 	set ymax [ lindex [ lsort -decreasing -real $ylist ] 0 ]
@@ -481,11 +465,11 @@ proc spc_loadmore { args } {
 	set len [ llength $xlist ]
 	blt::vector create gx$lineName
 	blt::vector create gy$lineName
-	
+
 	#--- je copie les listes dans les vecteurs :
 	gx$lineName set $xlist
 	gy$lineName set $ylist
-	
+
 	#--- si la courbe existe deja, je la supprime :
 	if { [ .spc.g element exists $lineName ] } {
 	    .spc.g element delete $lineName
@@ -514,7 +498,7 @@ proc spc_loadmore { args } {
 
 
 #########################################################
-# Efface de l'affichage un profil 
+# Efface de l'affichage un profil
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 19-09-2007
@@ -562,7 +546,7 @@ proc spc_setgcolor {} {
 	set spcaudace(gcolor) 0
 	return $spcaudace(gcolor)
     } else {
-	if { $spcaudace(gcolor) < $nbcolors } { 
+	if { $spcaudace(gcolor) < $nbcolors } {
 	    set spcaudace(gcolor) [ expr $spcaudace(gcolor) + 1 ]
 	    return $spcaudace(gcolor)
 	} else {
