@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.17 2008-03-09 21:10:45 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.18 2008-03-22 19:00:18 bmauclaire Exp $
 
 
 
@@ -441,9 +441,10 @@ proc spc_somme { args } {
        set mjdobsdeb [ mc_date2jd $dateobs ]
 
        #-- Création de MID-HJD :
+       #- Calcul a revoir car il doit etre tenu compte de  date julienne heliocentrique qui tient compte de la position de la terre sur son orbite et la ramène au soleil.
        set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
-       ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
-       buf$audace(bufNo) setkwd [ list "MID-HJD" $midhjd double "Heliocentric Julian Date at mid-exposure" "d" ]
+       # ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
+       buf$audace(bufNo) setkwd [ list "MID-JD" $midhjd double "Heliocentric Julian Date at mid-exposure" "d" ]
 
        #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
        buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
