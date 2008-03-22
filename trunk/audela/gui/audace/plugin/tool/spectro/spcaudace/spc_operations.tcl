@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.18 2008-03-22 19:00:18 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.19 2008-03-22 19:27:47 michelpujol Exp $
 
 
 
@@ -271,7 +271,7 @@ proc spc_pretrait { args } {
 	       set flat_moinsnoir_1 [ lindex [ lsort -dictionary [ glob ${pref_flat}_moinsnoir-\[0-9\]*$conf(extension,defaut) ] ] 0 ]
 	   }
        }
-	   
+
        #-- Harmonisation des flats et somme médiane :
        if { $nb_flat == 1 } {
 	   # Calcul du niveau moyen de la première image
@@ -417,14 +417,14 @@ proc spc_somme { args } {
        } else {
 	   set unit_exposure 0
        }
-       set exposure [ expr $unit_exposure*$nb_file ] 
-       
+       set exposure [ expr $unit_exposure*$nb_file ]
+
        #--- Somme :
        ::console::affiche_resultat "Somme de $nb_file images...\n"
        renumerote "$nom_generique"
        # sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
        smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
-       
+
        #--- Calcul de EXPTIME et MID-HJD :
        #-- Extime :
        set exptime [ bm_exptime $nom_generique ]
@@ -450,7 +450,7 @@ proc spc_somme { args } {
        buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
        buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "s" ]
        buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
-       
+
        #--- Traitement du resultat :
        ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
        return "${nom_generique}-s$nb_file"
@@ -472,7 +472,7 @@ proc spc_somme { args } {
 proc spc_uncosmic { args } {
     global audace spcaudace
     global conf
-    
+
     set nbargs [ llength $args ]
     if { $nbargs <= 2 } {
 	if { $nbargs == 1 } {
@@ -824,21 +824,21 @@ proc spc_select { args } {
        }
 
        #--- Sélection des longueurs d'onde à découper
-       #set diff1 [ expr abs($xdeb-[ lindex $abscisses 0 ]) ] 
+       #set diff1 [ expr abs($xdeb-[ lindex $abscisses 0 ]) ]
        #set diff2 [ expr abs($xfin-[ lindex $abscisses 0 ]) ]
        set nabscisses ""
        set k 0
        foreach abscisse $abscisses intensite $intensites {
 	   #-- 060224 : gestion de lambda debut plus proche par defaut
 	   set diff [ expr abs($xdeb-$abscisse) ]
-	   if { $diff < $disper } {   
+	   if { $diff < $disper } {
 	       set xdebl [ expr $xdeb-$disper ]
 	   } else {
 	       set xdebl $xdeb
 	   }
 	   #-- 060326 : gestion de lambda fin plus proche par exces
 	   set diff [ expr abs($xfin-$abscisse) ]
-	   if { $diff < $disper } {   
+	   if { $diff < $disper } {
 	       set xfinl [ expr $xfin+$disper ]
 	   } else {
 	       set xfinl $xfin
@@ -994,7 +994,7 @@ proc spc_select0 { args } {
        set xdeb [ lindex $args 1 ]
        set xfin [ lindex $args 2 ]
        set fichier [ file rootname $infichier ]
- 
+
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1]
        #--- Valeur minimale de l'abscisse : =0 si profil non étalonné
@@ -1016,7 +1016,7 @@ proc spc_select0 { args } {
 	       set intensite [buf$audace(bufNo) getpix [list [expr $k+1] 1]]
 	       lappend intensites $intensite
 	       #--- Alimente le nouveau spectre
-	       
+
 	       if { $abscisse >= $xdeb && $abscisse <= $xfin } {
 		   lappend nabscisses $abscisse
 		   lappend nintensites $intensite
@@ -1034,7 +1034,7 @@ proc spc_select0 { args } {
 	       set intensite [ lindex [buf$audace(bufNo) getpix [list [expr $k+1] 1]] 1 ]
 	       lappend intensites $intensite
 	       #--- Alimente le nouveau spectre
-	       
+
 	       if { $abscisse >= $xdeb && $abscisse <= $xfin } {
 		   lappend nabscisses $abscisse
 		   lappend nintensites $intensite
@@ -1047,7 +1047,7 @@ proc spc_select0 { args } {
        set longr [ llength $nabscisses ]
        ::console::affiche_resultat "Selection : $longr\n"
        #--- Sélection des longueurs d'onde à découper
-       #set diff1 [ expr abs($xdeb-[ lindex $abscisses 0 ]) ] 
+       #set diff1 [ expr abs($xdeb-[ lindex $abscisses 0 ]) ]
        #set diff2 [ expr abs($xfin-[ lindex $abscisses 0 ]) ]
        set nabscisses ""
        set nintensites ""
@@ -1055,7 +1055,7 @@ proc spc_select0 { args } {
        foreach abscisse $abscisses intensite $intensites {
 	   #-- 060224 : gestion de lambda debut plus proche par defaut
 	   set diff [ expr abs($xdeb-$abscisse) ]
-	   if { $diff < $disper } {   
+	   if { $diff < $disper } {
 	       set xdebl [ expr $xdeb-$disper ]
 	   } else {
 	       set xdebl $xdeb
@@ -1069,7 +1069,7 @@ proc spc_select0 { args } {
 	   }
        }
        set len $k
-	   
+
 
        ::console::affiche_resultat "$k intensités sélectionnées.\n"
        #--- Initialisation à blanc d'un fichier fits
@@ -1130,12 +1130,12 @@ proc spc_echant { args } {
 	#--- Boucle a vide preventive ??? :
 	set flag 0
 	if { $flag } {
-	blt::vector x(10) y(10) 
-	for {set i 10} {$i>0} {incr i -1} { 
+	blt::vector x(10) y(10)
+	for {set i 10} {$i>0} {incr i -1} {
 	    set x($i-1) [expr $i*$i]
 	    set y($i-1) [expr sin($i*$i*$i)]
-	}	
-	x sort y	
+	}
+	x sort y
 	x populate sx 10
 	blt::spline natural x y sx sy
 	::console::affiche_resultat "Premier spline passé...\n"
@@ -1152,8 +1152,8 @@ proc spc_echant { args } {
 
 	#--- Création des vecteurs abscisses et ordonnées des points à interpoler :
 	#-- Une liste commence à 0 ; Un vecteur fits commence à 1
-	#blt::vector x($len) y($len) 
-	#for {set i 0} {$i<$len} {incr i} { 
+	#blt::vector x($len) y($len)
+	#for {set i 0} {$i<$len} {incr i} {
 	#    set x($i) [lindex $abscisses $i]
 	#    set y($i) [lindex $ordonnees $i]
 	#}
@@ -1164,7 +1164,7 @@ proc spc_echant { args } {
 	x set $abscisses
 	y set $ordonnees
 
-	##for {set i $len} {$i>0} {incr i -1} { 
+	##for {set i $len} {$i>0} {incr i -1} {
 	##    set x($i-1) [lindex $abscisses [expr $i-1] ]
 	##    set y($i-1) [lindex $ordonnees [expr $i-1] ]
 	##}
@@ -1176,7 +1176,7 @@ proc spc_echant { args } {
 	set nabscisses [ lindex [ spc_fits2data $fichier_modele ] 0]
 	set nlen [ llength $nabscisses ]
 	#blt::vector sx($nlen)
-	#for {set i 0} {$i<$nlen} {incr i} { 
+	#for {set i 0} {$i<$nlen} {incr i} {
 	#    set sx($i) [lindex $nabscisses $i]
 	#}
 	blt::vector create sx
@@ -1191,9 +1191,9 @@ proc spc_echant { args } {
 	# The spline command computes a spline fitting a set of data points (x and y vectors) and produces a vector of the interpolated images (y-coordinates) at a given set of x-coordinates.
 	#blt::spline quadratic x y sx sy
 
-	
+
 	#--- Exportation des vecteurs coordonnées interpolées en liste puis fichier dat
-	for {set i 1} {$i <= $nlen} {incr i} { 
+	for {set i 1} {$i <= $nlen} {incr i} {
 	    lappend nordonnees $sy($i-1)
 	}
 	set ncoordonnees [ list $nabscisses $nordonnees ]
@@ -1204,7 +1204,7 @@ proc spc_echant { args } {
 	#--- Affichage
 	#destroy .testblt
 	#toplevel .testblt
-	#blt::graph .testblt.g 
+	#blt::graph .testblt.g
 	#pack .testblt.g -in .testblt
 	#.testblt.g element create line1 -symbol none -xdata sx -ydata sy -smooth natural
 	#-- Meth2
@@ -1218,8 +1218,8 @@ proc spc_echant { args } {
 	.testblt.g legend configure -position bottom
 	.testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
 	.testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
-	.testblt.g element create original -symbol none -x x -y y -color blue 
-	.testblt.g element create spline -symbol none -x sx -y sy -color red 
+	.testblt.g element create original -symbol none -x x -y y -color blue
+	.testblt.g element create spline -symbol none -x sx -y sy -color red
 	}
 	#blt::table . .testblt
 	return ${fichier_a_echant}_ech
@@ -1268,7 +1268,7 @@ proc spc_bordsnuls { args } {
 		buf$audace(bufNo) setpix [ list $k 1 ] 0.
 	    }
 	}
-	
+
 	#--- Sauvegarde :
 	buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${filename}_bn"
@@ -1280,6 +1280,131 @@ proc spc_bordsnuls { args } {
 }
 #****************************************************************#
 
+##########################################################
+# spc_cropvisu
+#  supprime les bords d'un profil linéaire avec la souris
+#
+# Parameters:
+#    filename : nom du fichier
+# Return:
+#    si OK , retourne le nom du fichier resultat
+#    sinon , retourne une exception a intercepter avec catch
+# Side effects :
+#  charge le profil dans le buffer
+#  vérifie que le profil est lineaire
+#     verifie que NAXIS=1
+#     mots clefs obligatoire : CVRAL1,CDELT1,CRPIX1
+#  recherche les limites des bords nuls
+#  demande la validation de l'utilisateur (Attention : GUI présente !)
+#  copie les intensités non nulles dans le buffer
+#  modifie le mot clef CRVAL1 et NAXIS1
+#
+##########################################################
+
+proc spc_cropvisu { args } {
+   global audace spcaudace profilspc
+   global conf
+   global caption
+
+
+   if { [llength $args] == 1 } {
+         set filename [ lindex $args 0 ]
+        if { [llength [file split $filename]] == 1 } {
+           #--- j'ajoute le repertoire par defaut devant le nom du fichier
+           set filename [file join $audace(rep_images) $filename ]
+        }
+   } elseif { [llength $args]==0 } {
+       set filename [ tk_getOpenFile  -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ]
+   } else {
+       ::console::affiche_erreur "Usage: spc_crop2 ?profil_de_raies_fits?\n\n"
+       return 0
+   }
+
+   #--- je charge le fichier dans le buffer,  les intensites sont copiees dans profilspc(intensite)
+   ###buf$audace(bufNo) load $filename
+   spc_loadfit $filename
+   set lambdas    $profilspc(pixels)
+   set intensites $profilspc(intensite)
+
+   #--- je verifie que NAXIS=1
+   if { [ lindex [ buf$audace(bufNo) getkwd "NAXIS" ] 1 ] != 1 } {
+      error "spc_crop2 : error not NAXIS=1 in $filename"
+   }
+   #--- je verifie la presence de CVRAL1,CDELT1,CRPIX1
+   if { [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 0 ] != "CRVAL1" } {
+       error "spc_crop2 : error CRVAL1 not found in $filename"
+   }
+   if { [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 0 ] != "CDELT1" } {
+       error "spc_crop2 : error CDELT1 not found in $filename"
+   }
+   if { [ lindex [ buf$audace(bufNo) getkwd "CRPIX1" ] 0 ] != "CRPIX1" } {
+       error "spc_crop2 : error CRPIX1 not found in $filename"
+   }
+
+   #--- Détermine les limites lmin et lmax
+   set naxis1 [lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+   for { set x 1 } { $x < $naxis1 } { incr x } {
+       set intensite [lindex $intensites [expr $x -1]]
+       if { $intensite!=0. } {
+           set lmin [lindex $lambdas [expr $x -1]]
+           break
+       }
+   }
+   for { set x $naxis1 } { $x > 1 } { set x [expr $x -1] } {
+       set intensite [lindex $intensites [expr $x -1]]
+       if { $intensite!=0. } {
+           set lmax [lindex $lambdas [expr $x -1]]
+           break
+       }
+   }
+
+   #--- j'affiche la boîte de dialogue pour valider les limites
+   set result [::param_spc_audace_crop::run $lmin $lmax ]
+   if { $result == ""} {
+      #-- je retourne une erreur si l'utilsateur a abandonne la validation
+      error "La validation des limites a ete annulee par l'utilisateur"
+   }
+
+   #--- je recupere les limites validees par l'utilisateur
+   set lmin [lindex $result 0]
+   set lmax [lindex $result 1]
+
+   #--- je recupere les intensites qui sont entre les limites
+   set cropLambdas ""
+   set cropIntensites ""
+   for { set i 0 } { $i < $naxis1 } { incr i } {
+      set lambda [lindex $lambdas $i]
+      if { $lambda >= $lmin && $lambda <= $lmax } {
+         lappend cropLambdas    $lambda
+         lappend cropIntensites [lindex $intensites $i]
+      }
+   }
+
+   #--- je copie les intensites dans le buffer
+   set naxis1 [llength $cropIntensites]
+   set naxis2 1
+   buf$audace(bufNo) setpixels CLASS_GRAY $naxis1 $naxis2 FORMAT_FLOAT COMPRESS_NONE 0 -keep_keywords
+   for { set x 1 } { $x <= $naxis1 } {incr x} {
+     buf$audace(bufNo) setpix [list $x 1] [lindex $cropIntensites [expr $x-1]]
+   }
+
+   #--- je change la valeur de NAXIS1
+   set kwd  [buf$audace(bufNo) getkwd "NAXIS1" ]
+   buf$audace(bufNo) setkwd [lreplace $kwd 1 1 $naxis1]
+
+   #--- je change la valeur de CRVAL1
+   set kwd  [buf$audace(bufNo) getkwd "CRVAL1" ]
+   buf$audace(bufNo) setkwd [lreplace $kwd 1 1 [lindex $cropLambdas 0]]
+
+   #--- j'enregistre dans un nouveau fichier
+   set cropFilename "[file rootname $filename]_crop[file extension $filename]"
+   buf$audace(bufNo) bitpix float
+   buf$audace(bufNo) save "$cropFilename"
+   buf$audace(bufNo) bitpix short
+
+   return "$cropFilename"
+}
+#****************************************************************#
 
 
 ##########################################################
@@ -1463,7 +1588,7 @@ proc spc_divri { args } {
 	    #set windowcoords [ $xdeb 1 $xfin 1 ]
 	    #buf$audace(bufNo) window
 	    #set i_infos [ buf$audace(bufNo) stat ]
-	    
+
 
 	    #--- Division avec les mises à zéro nécéssaires :
 	    #buf$audace(bufNo) load "$audace(rep_images)/$numerateur"
@@ -1477,7 +1602,7 @@ proc spc_divri { args } {
 		    set resultat_div [ expr 1.0*$ordo1/$ordo2 ]
 		    if { $cdelt1>=0.7 } {
 			if { $i<=$xdeb || $i>=$xfin } {
-			    if { $resultat_div >= $i_max*$spcaudace(imax_tolerence) } { 
+			    if { $resultat_div >= $i_max*$spcaudace(imax_tolerence) } {
 				buf$audace(bufNo) setpix [list $i 1] 0.
 			    } else {
 				buf$audace(bufNo) setpix [list $i 1] $resultat_div
@@ -1572,7 +1697,7 @@ proc spc_normaflat { args } {
 
 	#--- Obtention du flat normalisé :
 	buf$audace(bufNo) load "$audace(rep_images)/$filename"
-	set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ] 
+	set naxis2 [ lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1 ]
 	set flatnorma [ spc_1dto2d $fconti $naxis2 ]
 
 	#--- Traitement des résultats :
@@ -1851,7 +1976,7 @@ proc spc_autonorma_051215b { args } {
 	#set nx [llength [lindex $coordonnees 0]]
 	#set ny [llength [lindex $coordonnees 1]]
 	#::console::affiche_resultat "Nb points x : $nx ; y : $ny\n"
-	
+
 	#--- Normalisation par division
 	buf$audace(bufNo) load $audace(rep_images)/$fichier
 	buf$audace(bufNo) div $audace(rep_images)/$nom_continuum 1
@@ -2044,7 +2169,7 @@ proc spc_divri_21102006 { args } {
 		buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
 	    }
 	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+A.x.x+B.x+C" string "" ""]		
+		buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+A.x.x+B.x+C" string "" ""]
 	    }
 	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
 		buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom.angstrom/pixel.pixel"]
@@ -2059,7 +2184,7 @@ proc spc_divri_21102006 { args } {
 		buf$audace(bufNo) setkwd [list "SPC_D" $spc_d float "" "angstrom.angstrom.a/pixel.pixel.p"]
 	    }
 	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]		
+		buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]
 	    }
 	    buf$audace(bufNo) save "$audace(rep_images)/$fichier_out"
 
@@ -2107,14 +2232,14 @@ proc spc_echant_060328 { args } {
 	set len [llength $ordonnees]
 
 	#--- Une liste commence à 0 ; Un vecteur fits commence à 1
-	blt::vector x($len) y($len) 
-	for {set i $len} {$i>0} {incr i -1} { 
+	blt::vector x($len) y($len)
+	for {set i $len} {$i>0} {incr i -1} {
 	    set x($i-1) [lindex $abscisses $i]
 	    set y($i-1) [lindex $ordonnees $i]
 	}
 	x sort y
 
-	#for {set i $len} {$i>0} {incr i -1} { 
+	#for {set i $len} {$i>0} {incr i -1} {
 	#    set x($i-1) [lindex $abscisses [expr $i-1] ]
 	#    set y($i-1) [lindex $ordonnees [expr $i-1] ]
 	#}
@@ -2125,7 +2250,7 @@ proc spc_echant_060328 { args } {
 	set nlen [ llength $nabscisses ]
 	blt::vector sx($nlen)
 	blt::vector sy($nlen)
-	for {set i 1} {$i <= $nlen} {incr i} { 
+	for {set i 1} {$i <= $nlen} {incr i} {
 	    set sx($i-1) [lindex $nabscisses $i]
 	}
 
@@ -2135,9 +2260,9 @@ proc spc_echant_060328 { args } {
 	blt::spline natural x y sx sy
 	# The spline command computes a spline fitting a set of data points (x and y vectors) and produces a vector of the interpolated images (y-coordinates) at a given set of x-coordinates.
 	#blt::spline quadratic x y sx sy
-	
+
 	#--- Exportation des vecteurs coordonnées interpolées en liste puis fichier dat
-	for {set i 1} {$i <= $nlen} {incr i} { 
+	for {set i 1} {$i <= $nlen} {incr i} {
 	    lappend nordonnees $sy($i-1)
 	}
 	set ncoordonnees [ list $nabscisses $nordonnees ]
@@ -2148,7 +2273,7 @@ proc spc_echant_060328 { args } {
 	#--- Affichage
 	#destroy .testblt
 	#toplevel .testblt
-	#blt::graph .testblt.g 
+	#blt::graph .testblt.g
 	#pack .testblt.g -in .testblt
 	#.testblt.g element create line1 -symbol none -xdata sx -ydata sy -smooth natural
 	#-- Meth2
@@ -2162,8 +2287,8 @@ proc spc_echant_060328 { args } {
 	.testblt.g legend configure -position bottom
 	.testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
 	.testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
-	.testblt.g element create original -symbol none -x x -y y -color blue 
-	.testblt.g element create spline -symbol none -x sx -y sy -color red 
+	.testblt.g element create original -symbol none -x x -y y -color blue
+	.testblt.g element create spline -symbol none -x sx -y sy -color red
 	}
 	#blt::table . .testblt
 	return ${fichier_a_echant}_ech
@@ -2190,8 +2315,8 @@ proc spc_echant_060328 { args } {
 	set len [llength $ordonnees]
 
 	#--- Une liste commence à 0 ; Un vecteur fits commence à 1
-	blt::vector x($len) y($len) 
-	for {set i $len} {$i > 0} {incr i -1} { 
+	blt::vector x($len) y($len)
+	for {set i $len} {$i > 0} {incr i -1} {
 	    set x($i-1) [lindex $abscisses $i]
 	    set y($i-1) [lindex $ordonnees $i]
 	}
@@ -2201,10 +2326,10 @@ proc spc_echant_060328 { args } {
 	set nabscisses [ lindex [ spc_fits2data $fichier_abscisses ] 0]
 	set nlen [ llength $nabscisses ]
 	blt::vector sx($nlen)
-	for {set i 1} {$i <= $nlen} {incr i} { 
+	for {set i 1} {$i <= $nlen} {incr i} {
 	    set sx($i-1) [lindex $nabscisses $i]
 	}
-	
+
 	#--- Spline ---------------------------------------#
 	blt::vector sy($len)
 	# blt::spline natural x y sx sy
@@ -2213,7 +2338,7 @@ proc spc_echant_060328 { args } {
 	blt::spline natural x y sx sy
 
 	#--- Exportation des vecteurs coordonnées interpolées en liste puis fichier dat
-	for {set i 1} {$i <= $nlen} {incr i} { 
+	for {set i 1} {$i <= $nlen} {incr i} {
 	    lappend nordonnees $sy($i-1)
 	}
 	set ncoordonnees [ list $nabscisses $nordonnees ]
@@ -2224,7 +2349,7 @@ proc spc_echant_060328 { args } {
 	#--- Affichage
 	#destroy .testblt
 	#toplevel .testblt
-	#blt::graph .testblt.g 
+	#blt::graph .testblt.g
 	#pack .testblt.g -in .testblt
 	#.testblt.g element create line1 -symbol none -xdata sx -ydata sy -smooth natural
 	#-- Meth2
@@ -2238,8 +2363,8 @@ proc spc_echant_060328 { args } {
 	.testblt.g legend configure -position bottom
 	.testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
 	.testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
-	.testblt.g element create original -symbol none -x x -y y -color blue 
-	.testblt.g element create spline -symbol none -x sx -y sy -color red 
+	.testblt.g element create original -symbol none -x x -y y -color blue
+	.testblt.g element create spline -symbol none -x sx -y sy -color red
 	}
 	#blt::table . .testblt
 	return ${fichier}_ech
@@ -2264,8 +2389,8 @@ proc spc_spline_051211 { args } {
 	set len [llength $ordonnees]
 
 	#--- Une liste commence à 0 ; Un vecteur fits commence à 1
-	blt::vector x($len) y($len) 
-	for {set i $len} {$i > 0} {incr i -1} { 
+	blt::vector x($len) y($len)
+	for {set i $len} {$i > 0} {incr i -1} {
 	    set x($i-1) [lindex $abscisses $i]
 	    set y($i-1) [lindex $ordonnees $i]
 	}
@@ -2282,7 +2407,7 @@ proc spc_spline_051211 { args } {
 	#--- Affichage
 	#destroy .testblt
 	#toplevel .testblt
-	#blt::graph .testblt.g 
+	#blt::graph .testblt.g
 	#pack .testblt.g -in .testblt
 	#.testblt.g element create line1 -symbol none -xdata sx -ydata sy -smooth natural
 	#-- Meth2
@@ -2294,8 +2419,8 @@ proc spc_spline_051211 { args } {
 	.testblt.g legend configure -position bottom
 	.testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
 	.testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
-	.testblt.g element create original -symbol none -x x -y y -color blue 
-	.testblt.g element create spline -symbol none -x sx -y sy -color red 
+	.testblt.g element create original -symbol none -x x -y y -color blue
+	.testblt.g element create spline -symbol none -x sx -y sy -color red
 	#blt::table . .testblt
 
     } else {
@@ -2390,7 +2515,7 @@ proc spc_echant_21122005 { args } {
 }
 ##########################################################
 
-# Ne fonctionne pas : la bande passante est diminuée lorsque l'on passe par exemple de 5 à 2.2 
+# Ne fonctionne pas : la bande passante est diminuée lorsque l'on passe par exemple de 5 à 2.2
 proc spc_echant0 { args } {
 
    global audace
@@ -2436,12 +2561,12 @@ proc spc_echant-26-11-2006 { args } {
 	#--- Boucle a vide preventive ??? :
 	set flag 0
 	if { $flag } {
-	blt::vector x(10) y(10) 
-	for {set i 10} {$i>0} {incr i -1} { 
+	blt::vector x(10) y(10)
+	for {set i 10} {$i>0} {incr i -1} {
 	    set x($i-1) [expr $i*$i]
 	    set y($i-1) [expr sin($i*$i*$i)]
-	}	
-	x sort y	
+	}
+	x sort y
 	x populate sx 10
 	blt::spline natural x y sx sy
 	::console::affiche_resultat "Premier spline passé...\n"
@@ -2456,14 +2581,14 @@ proc spc_echant-26-11-2006 { args } {
 
 	#--- Création des vecteurs abscisses et ordonnées des points à interpoler :
 	#-- Une liste commence à 0 ; Un vecteur fits commence à 1
-	blt::vector x($len) y($len) 
-	for {set i 0} {$i<$len} {incr i} { 
+	blt::vector x($len) y($len)
+	for {set i 0} {$i<$len} {incr i} {
 	    set x($i) [lindex $abscisses $i]
 	    set y($i) [lindex $ordonnees $i]
 	}
 	x sort y
 
-	##for {set i $len} {$i>0} {incr i -1} { 
+	##for {set i $len} {$i>0} {incr i -1} {
 	##    set x($i-1) [lindex $abscisses [expr $i-1] ]
 	##    set y($i-1) [lindex $ordonnees [expr $i-1] ]
 	##}
@@ -2473,7 +2598,7 @@ proc spc_echant-26-11-2006 { args } {
 	set nabscisses [ lindex [ spc_fits2datadlin $fichier_modele ] 0]
 	set nlen [ llength $nabscisses ]
 	blt::vector sx($nlen)
-	for {set i 0} {$i<$nlen} {incr i} { 
+	for {set i 0} {$i<$nlen} {incr i} {
 	    set sx($i) [lindex $nabscisses $i]
 	}
 
@@ -2483,9 +2608,9 @@ proc spc_echant-26-11-2006 { args } {
 	blt::spline natural x y sx sy
 	# The spline command computes a spline fitting a set of data points (x and y vectors) and produces a vector of the interpolated images (y-coordinates) at a given set of x-coordinates.
 	#blt::spline quadratic x y sx sy
-	
+
 	#--- Exportation des vecteurs coordonnées interpolées en liste puis fichier dat
-	for {set i 1} {$i <= $nlen} {incr i} { 
+	for {set i 1} {$i <= $nlen} {incr i} {
 	    lappend nordonnees $sy($i-1)
 	}
 	set ncoordonnees [ list $nabscisses $nordonnees ]
@@ -2496,7 +2621,7 @@ proc spc_echant-26-11-2006 { args } {
 	#--- Affichage
 	#destroy .testblt
 	#toplevel .testblt
-	#blt::graph .testblt.g 
+	#blt::graph .testblt.g
 	#pack .testblt.g -in .testblt
 	#.testblt.g element create line1 -symbol none -xdata sx -ydata sy -smooth natural
 	#-- Meth2
@@ -2510,8 +2635,8 @@ proc spc_echant-26-11-2006 { args } {
 	.testblt.g legend configure -position bottom
 	.testblt.g axis configure x -min [lindex $abscisses 0] -max [lindex $abscisses $len]
 	.testblt.g axis configure y -min [lindex $ly 0] -max [lindex $ly $len]
-	.testblt.g element create original -symbol none -x x -y y -color blue 
-	.testblt.g element create spline -symbol none -x sx -y sy -color red 
+	.testblt.g element create original -symbol none -x x -y y -color blue
+	.testblt.g element create spline -symbol none -x sx -y sy -color red
 	}
 	#blt::table . .testblt
 	return ${fichier_a_echant}_ech
