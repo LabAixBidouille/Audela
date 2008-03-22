@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.22 2008-03-09 21:10:44 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.23 2008-03-22 18:53:13 bmauclaire Exp $
 
 
 
@@ -612,6 +612,9 @@ proc spc_calibren { args } {
         set c [ lindex $coeffs 2 ]
         set b [ lindex $coeffs 1 ]
         set a [ lindex $coeffs 0 ]
+
+
+        #-- Caclul crval1 :
         set lambda0deg2 [ expr $a+$b+$c ]
         set lambda0deg3 [ expr $a+$b+$c+$d ]
         #-- Calcul du RMS :
@@ -854,31 +857,55 @@ proc spc_linearcal { args } {
         buf$audace(bufNo) load "$audace(rep_images)/$filename"
         set listemotsclef [ buf$audace(bufNo) getkwds ]
         if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-            set spc_a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
-            set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
-            set spc_c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
-            set spc_d [ lindex [buf$audace(bufNo) getkwd "SPC_D"] 1 ]
-            set flag_spccal 1
+           set spc_a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
+           set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
+           set spc_c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
+           set spc_d [ lindex [buf$audace(bufNo) getkwd "SPC_D"] 1 ]
+           set flag_spccal 1
+           #-- Calcul l'incertitude sur une lecture de longueur d'onde :
+           set mes_incertitude [ expr 1.0/($spc_a*$spc_b) ]
         } else {
             set flag_spccal 0
         }
+
 
         #--- Calcul les longueurs éspacées d'un pas constant :
         if { $flag_spccal } {
             #-- Calcul le pas del calibration linéaire :
             set lambda_deb [ expr $spc_a+$spc_b+$spc_c ]
             set lambda_fin [ expr $spc_a+$spc_b*$len+$spc_c*$len*$len ]
-### modif michel
-###            set pas [ expr ($lambda_fin-$lambda_deb)/$len ]
+            #- Benji le 20080317 :
+            #set lambda_deb $spc_a
+            #set lambda_fin [ expr $spc_a+$spc_b*$len+$spc_c*$len*$len ]
+            #- modif michel
+            # set pas [ expr ($lambda_fin-$lambda_deb)/$len ]
             set pas [ expr ($lambda_fin-$lambda_deb)/($len +1 ) ]
 
             #-- Calcul les longueurs d'onde (linéaires) associées a chaque pixel :
+            # set xlin [ list ]
+            # set errors [ list ]
+            set lambdas [ list ]
             for {set i 0} {$i<$len} {incr i} {
-                lappend lambdas [ expr $pas*$i+$lambda_deb ]
+               lappend lambdas [ expr $pas*$i+$lambda_deb ]
+               #lappend errors $mes_incertitude
+               #lappend xlin $i
             }
             #-- Rééchantillonne par spline les intensités sur la nouvelle échelle en longueur d'onde :
 	    #-- Verifier les valeurs des lambdas pour eviter un "monoticaly error de BLT".
             set new_intensities [ lindex  [ spc_spline $xvals $yvals $lambdas n ] 1 ]
+            if { 1 == 0 } {
+               #-- 20080317 : Calcule les coefficients de la droite moyenne lambda=f(xlin) :
+               set sortie [ spc_ajustdeg1 $xlin $lambdas $errors ]
+               #- lambda0 : lambda pour x=0
+               set lambda0 [lindex [ lindex $sortie 0 ] 0]
+               set cdelt1 [lindex [ lindex $sortie 0 ] 1]
+               #- crval1 : lambda pour x=1
+               set crval11 [expr $lambda0 + $cdelt1]
+               set crval1 [ expr $lambda0-$pas ]
+               ::console::affiche_resultat "pas=$pas ; cdelt1=$cdelt1 ; crval11=$crval11 ; crval1=$crval1 ; lambda0=$lambda0\n"
+            }
+            set crval1 [ expr $lambda_deb-$pas ]
+
 
             #-- Enregistrement au format fits :
             buf$audace(bufNo) load "$audace(rep_images)/$filename"
@@ -886,7 +913,7 @@ proc spc_linearcal { args } {
                 set intensite [ lindex $new_intensities $k ]
                 buf$audace(bufNo) setpix [ list [ expr $k+1 ] 1 ] $intensite
             }
-            buf$audace(bufNo) setkwd [ list "CRVAL1" $lambda_deb double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "CRVAL1" $crval1 double "" "angstrom" ]
             buf$audace(bufNo) setkwd [ list "CDELT1" $pas double "" "angstrom/pixel" ]
             buf$audace(bufNo) delkwd "SPC_A"
             buf$audace(bufNo) delkwd "SPC_B"
