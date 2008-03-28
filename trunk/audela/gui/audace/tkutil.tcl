@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.11 2007-05-20 09:23:46 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.12 2008-03-28 16:58:55 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -41,7 +41,8 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_file)"       {.fits}      ] \
          [ list "$caption(tkutil,image_file)"       {.fits.gz}   ] \
          [ list "$caption(tkutil,image_file)"       {.jpeg .jpg} ] \
-         [ list "$caption(tkutil,image_file)"       {.crw .nef .cr2 .dng} ] \
+         [ list "$caption(tkutil,image_file)"       {.crw .cr2 .nef .dng} ] \
+         [ list "$caption(tkutil,image_file)"       {.CRW .CR2 .NEF .DNG} ] \
          [ list "$caption(tkutil,image_fits)"       {.fit}       ] \
          [ list "$caption(tkutil,image_fits)"       {.fit.gz}    ] \
          [ list "$caption(tkutil,image_fits)"       {.fts}       ] \
@@ -49,7 +50,8 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_fits)"       {.fits}      ] \
          [ list "$caption(tkutil,image_fits)"       {.fits.gz}   ] \
          [ list "$caption(tkutil,image_jpeg)"       {.jpeg .jpg} ] \
-         [ list "$caption(tkutil,image_raw)"        {.crw .nef .cr2 .dng} ] \
+         [ list "$caption(tkutil,image_raw)"        {.crw .cr2 .nef .dng} ] \
+         [ list "$caption(tkutil,image_raw)"        {.CRW .CR2 .NEF .DNG} ] \
          [ list "$caption(tkutil,fichier_tous)"     *            ]
    }
 
@@ -184,9 +186,13 @@ namespace eval tkutil {
          [ list "$caption(tkutil,image_fits) 5"     {.fits.gz}   ] \
          [ list "$caption(tkutil,image_jpeg)"       {.jpg}       ] \
          [ list "$caption(tkutil,image_raw)."       {.crw }      ] \
-         [ list "$caption(tkutil,image_raw) 1"      {.cr2}       ] \
-         [ list "$caption(tkutil,image_raw) 2"      {.nef }      ] \
-         [ list "$caption(tkutil,image_raw) 3"      {.dng}       ]
+         [ list "$caption(tkutil,image_raw).1"      {.CRW }      ] \
+         [ list "$caption(tkutil,image_raw) 2"      {.cr2}       ] \
+         [ list "$caption(tkutil,image_raw) 3"      {.CR2}       ] \
+         [ list "$caption(tkutil,image_raw) 4"      {.nef }      ] \
+         [ list "$caption(tkutil,image_raw) 5"      {.NEF }      ] \
+         [ list "$caption(tkutil,image_raw) 6"      {.dng}       ] \
+         [ list "$caption(tkutil,image_raw) 7"      {.DNG}       ]
    }
 
          ###[ list "$caption(tkutil,image_bmp)"        {.bmp}       ] \
