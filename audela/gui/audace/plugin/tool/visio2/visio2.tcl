@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.33 2008-03-10 16:52:57 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.34 2008-03-28 17:04:26 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -708,7 +708,9 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
    #--- fichiers extension par defaut
    if { ( $conf(extension,defaut) == ".jpg" ) || ( $conf(extension,defaut) == ".jpeg" ) || \
       ( $conf(extension,defaut) == ".crw" ) || ( $conf(extension,defaut) == ".nef" ) || \
-      ( $conf(extension,defaut) == ".cr2" ) || ( $conf(extension,defaut) == ".dng" ) \
+      ( $conf(extension,defaut) == ".cr2" ) || ( $conf(extension,defaut) == ".dng" ) || \
+      ( $conf(extension,defaut) == ".CRW" ) || ( $conf(extension,defaut) == ".NEF" ) || \
+      ( $conf(extension,defaut) == ".CR2" ) || ( $conf(extension,defaut) == ".DNG" ) \
        } {
 
      ###( $conf(extension,defaut) == ".gif" ) || ( $conf(extension,defaut) == ".bmp" ) || \
@@ -828,27 +830,45 @@ proc ::visio2::config::fillConfigPage { frm visuNo } {
   ### }
 
    #--- fichiers raw
-   if { ( $conf(extension,defaut) != ".crw" ) && ( $conf(extension,defaut) != ".nef" ) && \
-      ( $conf(extension,defaut) != ".cr2" ) && ( $conf(extension,defaut) != ".dng" ) } {
-      checkbutton $frm.extension.raw -text ".crw .nef" \
+   if { ( $conf(extension,defaut) != ".crw" ) && ( $conf(extension,defaut) != ".cr2" ) && \
+      ( $conf(extension,defaut) != ".nef" ) && ( $conf(extension,defaut) != ".dng" ) && \
+      ( $conf(extension,defaut) != ".CRW" ) && ( $conf(extension,defaut) != ".CR2" ) && \
+      ( $conf(extension,defaut) != ".NEF" ) && ( $conf(extension,defaut) != ".DNG" ) } {
+      checkbutton $frm.extension.raw -text ".crw .cr2 .nef .dng .CRW .CR2 .NEF .DNG" \
           -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
       pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
    } elseif { $conf(extension,defaut) == ".crw" } {
-      checkbutton $frm.extension.raw -text ".crw" \
+      checkbutton $frm.extension.raw -text ".cr2 .nef .dng .CRW .CR2 .NEF .DNG" \
           -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
-      pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
-   } elseif { $conf(extension,defaut) == ".nef" } {
-      checkbutton $frm.extension.raw -text ".nef" \
-          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
-      pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
    } elseif { $conf(extension,defaut) == ".cr2" } {
-      checkbutton $frm.extension.raw -text ".cr2" \
+      checkbutton $frm.extension.raw -text ".crw .nef .dng .CRW .CR2 .NEF .DNG" \
           -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
-      pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
+   } elseif { $conf(extension,defaut) == ".nef" } {
+      checkbutton $frm.extension.raw -text ".crw .cr2 .dng .CRW .CR2 .NEF .DNG" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
    } elseif { $conf(extension,defaut) == ".dng" } {
-      checkbutton $frm.extension.raw -text ".dng" \
+      checkbutton $frm.extension.raw -text ".crw .cr2 .nef .CRW .CR2 .NEF .DNG" \
           -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
-      pack $frm.extension.xbm -anchor w -side top -padx 5 -pady 0
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
+   } elseif { $conf(extension,defaut) == ".CRW" } {
+      checkbutton $frm.extension.raw -text ".crw .cr2 .nef .dng .CR2 .NEF .DNG" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
+   } elseif { $conf(extension,defaut) == ".CR2" } {
+      checkbutton $frm.extension.raw -text ".crw .cr2 .nef .dng .CRW .NEF .DNG" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
+   } elseif { $conf(extension,defaut) == ".NEF" } {
+      checkbutton $frm.extension.raw -text ".crw .cr2 .nef .dng .CRW .CR2 .DNG" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
+   } elseif { $conf(extension,defaut) == ".DNG" } {
+      checkbutton $frm.extension.raw -text ".crw .cr2 .nef .dng .CRW .CR2 .NEF" \
+          -highlightthickness 0 -variable ::visio2::config::widgetEnableExtension(raw)
+      pack $frm.extension.raw -anchor w -side top -padx 5 -pady 0
    }
 
    #--- fichiers avi
@@ -1062,7 +1082,6 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
       #--- j'affiche l'image
       loadima $filename $visuNo
 
-      #--- Modif BM du 20080307 :
       #--- je recupere naxis1 de l'image qui vient d'etre chargee
       set mynaxis [ lindex [ buf[::confVisu::getBufNo $visuNo] getkwd "NAXIS" ] 1 ]
       if { $mynaxis == 1 } {
@@ -1070,8 +1089,12 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
          ::confVisu::selectTool 1 ::spectro
          #--- j'affiche l'image 1D
          spc_load "$filename"
+      } else {
+         #--- si spcaudace est ouvert, je le ferme
+         if [ winfo exists .spc ] {
+            destroy .spc
+         }
       }
-      #--- Fin BM
 
       if { [::Image::isAnimatedGIF "$filename"] == 1 } {
          setAnimationState $visuNo "1"
@@ -2129,7 +2152,7 @@ proc ::visio2::renameDialog::fillConfigPage { frm visuNo } {
 
    if { [llength $private($visuNo,fileList)] >  1 } {
       TitleFrame $frm.renameFile -borderwidth 2 -relief ridge -text "$caption(visio2,renameFile)"
-         listbox $frm.renameFile.list -state normal -height 4 -state  disabled \
+         listbox $frm.renameFile.list -state normal -height 4 -state disabled \
             -listvariable ::visio2::renameDialog::private($visuNo,fileList) \
             -xscrollcommand [list $frm.renameFile.hsb set] \
             -yscrollcommand [list $frm.renameFile.vsb set]
@@ -2155,7 +2178,7 @@ proc ::visio2::renameDialog::fillConfigPage { frm visuNo } {
       pack $frm.firstIndex -side top -anchor w -padx 10 -pady 2 -fill none -expand 0
    } else {
       TitleFrame $frm.renameFile -borderwidth 2 -relief ridge -text "$caption(visio2,renameFile)"
-         listbox $frm.renameFile.list -state normal -height 1 -state  disabled \
+         listbox $frm.renameFile.list -state normal -height 1 -state disabled \
             -listvariable ::visio2::renameDialog::private($visuNo,fileList)
          pack $frm.renameFile.list -in [$frm.renameFile getframe] -side top -anchor w -padx 10 -pady 5 -fill x -expand 0
       pack $frm.renameFile -anchor w -side top -fill x -expand 0
