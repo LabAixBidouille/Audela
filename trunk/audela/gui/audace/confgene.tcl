@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.36 2008-01-15 16:05:45 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.37 2008-03-28 16:17:33 robertdelmas Exp $
 #
 
 #
@@ -95,6 +95,10 @@ namespace eval confPosObs {
       if { ! [ info exists conf(posobs,long) ] }            { set conf(posobs,long)            "1d22m36.2s" }
       if { ! [ info exists conf(posobs,lat) ] }             { set conf(posobs,lat)             "43d39m35.2s" }
       if { ! [ info exists conf(posobs,nordsud) ] }         { set conf(posobs,nordsud)         "N" }
+
+      #--- Concatenation de variables
+      set conf(posobs,estouest_long)                        "$conf(posobs,estouest)$conf(posobs,long)"
+      set conf(posobs,nordsud_lat)                          "$conf(posobs,nordsud)$conf(posobs,lat)"
    }
 
    proc createDialog { } {
