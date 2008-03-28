@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.34 2008-03-28 17:04:26 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.35 2008-03-28 19:40:30 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -1091,9 +1091,9 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
          spc_load "$filename"
       } else {
          #--- si spcaudace est ouvert, je le ferme
-         if [ winfo exists .spc ] {
-            destroy .spc
-         }
+        ### if [ winfo exists .spc ] {
+        ###    destroy .spc
+        ### }
       }
 
       if { [::Image::isAnimatedGIF "$filename"] == 1 } {
