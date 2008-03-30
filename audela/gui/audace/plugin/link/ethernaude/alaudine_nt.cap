@@ -1,6 +1,6 @@
 #
 # Fichier : alaudine_nt.cap
-# Mise a jour $Id: alaudine_nt.cap,v 1.6 2007-01-27 14:27:13 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.cap,v 1.7 2008-03-30 18:04:50 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -16,7 +16,7 @@ set caption(alaudine_nt,evaluation)             "Assessment of ambient temperatu
 set caption(alaudine_nt,degres)                 "°C"
 set caption(alaudine_nt,delta_t)                "Maximum Delta t possible (ambient temperature - CCD temperature):"
 set caption(alaudine_nt,temp_ccd_souhaite)      "CCD Temperature Required:"
-set caption(alaudine_nt,temp_ccd_mesure)        "Actual CCD Temperature:"
+set caption(alaudine_nt,temp_ccd_mesure)        "CCD Temperature Measured:"
 set caption(alaudine_nt,ok)                     "OK"
 set caption(alaudine_nt,appliquer)              "Apply"
 set caption(alaudine_nt,fermer)                 "Close"
@@ -32,7 +32,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,evaluation)          "Estimation de la température ambiante autour de la caméra CCD :"
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Delta t (température ambiante - température CCD) maximum possible :"
-   set caption(alaudine_nt,temp_ccd_souhaite)   "Température du CCD souhaitée :"
+   set caption(alaudine_nt,temp_ccd_souhaite)   "Température du CCD demandée :"
    set caption(alaudine_nt,temp_ccd_mesure)     "Température du CCD mesurée :"
    set caption(alaudine_nt,ok)                  "OK"
    set caption(alaudine_nt,appliquer)           "Appliquer"
@@ -118,7 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(alaudine_nt,degres)              "°C"
    set caption(alaudine_nt,delta_t)             "Maximum Delta t possible (ambient temperature - CCD temperature):"
    set caption(alaudine_nt,temp_ccd_souhaite)   "CCD Temperature Required:"
-   set caption(alaudine_nt,temp_ccd_mesure)     "Actual CCD Temperature:"
+   set caption(alaudine_nt,temp_ccd_mesure)     "CCD Temperature Measured:"
    set caption(alaudine_nt,ok)                  "OK"
    set caption(alaudine_nt,appliquer)           "Apply"
    set caption(alaudine_nt,fermer)              "Close"
