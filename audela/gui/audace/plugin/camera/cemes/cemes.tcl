@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.29 2007-12-22 15:38:48 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.30 2008-04-06 09:02:36 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -370,28 +370,19 @@ proc ::cemes::setShutter { camItem shutterState ShutterOptionList } {
    set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         #--- Gestion du mode de fonctionnement
-         switch -exact -- $shutterState {
-            0  {
-               set private(foncobtu) $caption(cemes,obtu_ouvert)
-               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
-               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
-               cam$camNo shutter "opened"
-            }
-            1  {
-               set private(foncobtu) $caption(cemes,obtu_ferme)
-               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
-               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
-               cam$camNo shutter "closed"
-            }
-            2  {
-               set private(foncobtu) $caption(cemes,obtu_synchro)
-               $frm.frame1.frame8.foncobtu configure -height [ llength $ShutterOptionList ]
-               $frm.frame1.frame8.foncobtu configure -values $ShutterOptionList
-               cam$camNo shutter "synchro"
-            }
+      #--- Gestion du mode de fonctionnement
+      switch -exact -- $shutterState {
+         0  {
+            set private(foncobtu) $caption(cemes,obtu_ouvert)
+            cam$camNo shutter "opened"
+         }
+         1  {
+            set private(foncobtu) $caption(cemes,obtu_ferme)
+            cam$camNo shutter "closed"
+         }
+         2  {
+            set private(foncobtu) $caption(cemes,obtu_synchro)
+            cam$camNo shutter "synchro"
          }
       }
    }
@@ -414,6 +405,7 @@ proc ::cemes::setShutter { camItem shutterState ShutterOptionList } {
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -435,6 +427,7 @@ proc ::cemes::getPluginProperty { camItem propertyName } {
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
       hasShutter       { return 1 }
+      hasTempSensor    { return 1 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }

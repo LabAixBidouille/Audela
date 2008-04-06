@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.13 2007-12-22 15:33:50 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.14 2008-04-06 09:01:45 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -641,28 +641,19 @@ proc ::audine::setShutter { camItem shutterState ShutterOptionList } {
    set camNo $private($camItem,camNo)
 
    if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         #--- Gestion du mode de fonctionnement
-         switch -exact -- $shutterState {
-            0  {
-               set private(foncobtu) $caption(audine,obtu_ouvert)
-               $frm.frame2.frame8.frame17.foncobtu configure -height [ llength $ShutterOptionList ]
-               $frm.frame2.frame8.frame17.foncobtu configure -values $ShutterOptionList
-               cam$camNo shutter "opened"
-            }
-            1  {
-               set private(foncobtu) $caption(audine,obtu_ferme)
-               $frm.frame2.frame8.frame17.foncobtu configure -height [ llength $ShutterOptionList ]
-               $frm.frame2.frame8.frame17.foncobtu configure -values $ShutterOptionList
-               cam$camNo shutter "closed"
-            }
-            2  {
-               set private(foncobtu) $caption(audine,obtu_synchro)
-               $frm.frame2.frame8.frame17.foncobtu configure -height [ llength $ShutterOptionList ]
-               $frm.frame2.frame8.frame17.foncobtu configure -values $ShutterOptionList
-               cam$camNo shutter "synchro"
-            }
+      #--- Gestion du mode de fonctionnement
+      switch -exact -- $shutterState {
+         0  {
+            set private(foncobtu) $caption(audine,obtu_ouvert)
+            cam$camNo shutter "opened"
+         }
+         1  {
+            set private(foncobtu) $caption(audine,obtu_ferme)
+            cam$camNo shutter "closed"
+         }
+         2  {
+            set private(foncobtu) $caption(audine,obtu_synchro)
+            cam$camNo shutter "synchro"
          }
       }
    }
@@ -685,6 +676,7 @@ proc ::audine::setShutter { camItem shutterState ShutterOptionList } {
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -729,7 +721,7 @@ proc ::audine::getPluginProperty { camItem propertyName } {
       hasFormat        { return 0 }
       hasLongExposure  { return 0 }
       hasScan          {
-         switch -exact [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
+         switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "parallelport" { return 1 }
             "quickaudine"  { return 0 }
             "audinet"      { return 0 }
@@ -737,6 +729,12 @@ proc ::audine::getPluginProperty { camItem propertyName } {
          }
       }
       hasShutter       { return 1 }
+      hasTempSensor         {
+         switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
+            "ethernaude" { return 1 }
+            default      { return 0 }
+         }
+      }
       hasVideo         {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "ethernaude" { return 2 }
