@@ -6,9 +6,10 @@
 
 
 // inclusion fichiers d'en-tete generaux
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 
+using namespace std;
 
 // inclusion fichiers d'en-tete locaux
 #include "Vecteur.h"
@@ -268,7 +269,7 @@ unsigned char Vecteur::Convolue(Vecteur *filtre) {
   // Initialisation variables locales
   Vecteur tmp_vect;
   unsigned long i;
-  // On teste que les deux vects sont de même type
+  // On teste que les deux vects sont de mï¿½me type
   if (adresse_type != (*filtre).AdresseType()) {
     cerr << "Libbm, erreur dans Vecteur::Convolue : ne peut convoluer des vecteurs de types differents.";
     return 1;

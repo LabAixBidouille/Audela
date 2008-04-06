@@ -5,29 +5,30 @@
 /*----------------------------------------------*/
 
 
-// inclusion fichiers d'en-tête generaux
+// inclusion fichiers d'en-tï¿½te generaux
 #include <iostream>
 
-// inclusion fichiers d'en-tête locaux
+// inclusion fichiers d'en-tï¿½te locaux
 #include "Image.h"
 
+using namespace std;
 
 // fonctions de la classe Image
 
 // ******************* pixel_hard2visu *******************
 // pixel_hard2visu
 // convertit la valeur pixel brute en valeur pixel 
-// "affichage" d'après la fonction de transfert.
+// "affichage" d'aprï¿½s la fonction de transfert.
 // *******************************************************
 
 unsigned char pixel_hard2visu(double pixel_hard, double seuil_bas, double seuil_haut, Vecteur *fonction_transfert, double *pixel_visu)
 {
-  /* --- 1er cas : le pixel est complètement noir sur l'image */
+  /* --- 1er cas : le pixel est complï¿½tement noir sur l'image */
   if (pixel_hard<=seuil_bas) {
     *pixel_visu=seuil_bas+((seuil_haut-seuil_bas) * (*fonction_transfert).LectureDouble(0))/255;
     return OK;
   } else {
-    /* --- 2nd cas : le pixel est complètement blanc sur l'image */
+    /* --- 2nd cas : le pixel est complï¿½tement blanc sur l'image */
     /* --- sa valeur n'est pas non plus modifiee */
     if (pixel_hard>=seuil_haut) {
       *pixel_visu=seuil_bas+((seuil_haut-seuil_bas) * (*fonction_transfert).LectureDouble(255))/255;
@@ -45,7 +46,7 @@ unsigned char pixel_hard2visu(double pixel_hard, double seuil_bas, double seuil_
 // ****************** image_hard2visu *********************
 // Image::hard2visu
 // transforme une image brute en image "affichage"
-// d'après la fonction de transfert.
+// d'aprï¿½s la fonction de transfert.
 // ********************************************************
 int Image::hard2visu(double seuil_haut, double seuil_bas, Vecteur *fonction_transfert)
 {
@@ -449,7 +450,7 @@ unsigned char Image::Convolue(Image* filtre) {
   bool retour = 0, retour2 = 0;
   unsigned long i, j;
 
-  // On teste que les deux images sont de même type
+  // On teste que les deux images sont de mï¿½me type
   if (adresse_type != (*filtre).AdresseType()) {
     cerr << "Libbm, erreur dans Image::Convolue : ne peut convoluer des images de types differents.";
     return(1);
@@ -593,9 +594,6 @@ unsigned char Image::Convolue(Image* filtre) {
 // ********************************************************
 unsigned char Image::Disque()
 {
-  /* --- variables locales */
-  bool retour = 0;
-
   /* --- procedure principale */
   if (Naxis1() != Naxis2()) {
     cerr << "Libbm, erreur dans Image::Disque : il faut que l'image initiale soit carree.";
