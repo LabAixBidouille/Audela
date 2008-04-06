@@ -2,13 +2,13 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.22 2008-01-06 18:57:29 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.23 2008-04-06 09:18:27 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
 
    #------------------------------------------------------------
-   #  init { }
+   #  init
    #     Initialise les captions et les variables de
    #     configuration de chaque systeme optique
    #
@@ -21,7 +21,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  run { }
+   #  run
    #     Cree la fenetre de choix et de configuration des
    #     systemes optiques associes aux cameras A, B et C
    #
@@ -35,7 +35,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  initConf { }
+   #  initConf
    #     Initialise les parametres de chaque systeme optique
    #     dans le tableau conf()
    #
@@ -152,56 +152,56 @@ namespace eval ::confOptic {
       if { ! [ info exists conf(confoptic,combinaison_optique_B,9) ] } { set conf(confoptic,combinaison_optique_B,9) "" }
 
       #--- Instrumentation associee a la camera C
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,0) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,0) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_D { }
-         set combinaison_optique_D(instrument)       "C8 $caption(confoptic,sans_accessoire)"
-         set combinaison_optique_D(diametre)         "203.0"
-         set combinaison_optique_D(focale)           "2000.0"
-         set combinaison_optique_D(barlow_reduc)     "1.0"
+         array set combinaison_optique_C { }
+         set combinaison_optique_C(instrument)       "C8 $caption(confoptic,sans_accessoire)"
+         set combinaison_optique_C(diametre)         "203.0"
+         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(barlow_reduc)     "1.0"
 
-         set conf(confoptic,combinaison_optique_D,0) [ array get combinaison_optique_D ]
+         set conf(confoptic,combinaison_optique_C,0) [ array get combinaison_optique_C ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,1) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,1) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_D { }
-         set combinaison_optique_D(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
-         set combinaison_optique_D(diametre)         "203.0"
-         set combinaison_optique_D(focale)           "2000.0"
-         set combinaison_optique_D(barlow_reduc)     "0.66"
+         array set combinaison_optique_C { }
+         set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
+         set combinaison_optique_C(diametre)         "203.0"
+         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(barlow_reduc)     "0.66"
 
-         set conf(confoptic,combinaison_optique_D,1) [ array get combinaison_optique_D ]
+         set conf(confoptic,combinaison_optique_C,1) [ array get combinaison_optique_C ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,2) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,2) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_D { }
-         set combinaison_optique_D(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
-         set combinaison_optique_D(diametre)         "203.0"
-         set combinaison_optique_D(focale)           "2000.0"
-         set combinaison_optique_D(barlow_reduc)     "0.33"
+         array set combinaison_optique_C { }
+         set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
+         set combinaison_optique_C(diametre)         "203.0"
+         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(barlow_reduc)     "0.33"
 
-         set conf(confoptic,combinaison_optique_D,2) [ array get combinaison_optique_D ]
+         set conf(confoptic,combinaison_optique_C,2) [ array get combinaison_optique_C ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,3) ] } {
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,3) ] } {
          #--- Je prepare un exemple de configuration optique
-         array set combinaison_optique_D { }
-         set combinaison_optique_D(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
-         set combinaison_optique_D(diametre)         "203.0"
-         set combinaison_optique_D(focale)           "2000.0"
-         set combinaison_optique_D(barlow_reduc)     "2.5"
+         array set combinaison_optique_C { }
+         set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
+         set combinaison_optique_C(diametre)         "203.0"
+         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(barlow_reduc)     "2.5"
 
-         set conf(confoptic,combinaison_optique_D,3) [ array get combinaison_optique_D ]
+         set conf(confoptic,combinaison_optique_C,3) [ array get combinaison_optique_C ]
       }
       #---
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,4) ] } { set conf(confoptic,combinaison_optique_D,4) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,5) ] } { set conf(confoptic,combinaison_optique_D,5) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,6) ] } { set conf(confoptic,combinaison_optique_D,6) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,7) ] } { set conf(confoptic,combinaison_optique_D,7) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,8) ] } { set conf(confoptic,combinaison_optique_D,8) "" }
-      if { ! [ info exists conf(confoptic,combinaison_optique_D,9) ] } { set conf(confoptic,combinaison_optique_D,9) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,4) ] } { set conf(confoptic,combinaison_optique_C,4) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,5) ] } { set conf(confoptic,combinaison_optique_C,5) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,6) ] } { set conf(confoptic,combinaison_optique_C,6) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,7) ] } { set conf(confoptic,combinaison_optique_C,7) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,8) ] } { set conf(confoptic,combinaison_optique_C,8) "" }
+      if { ! [ info exists conf(confoptic,combinaison_optique_C,9) ] } { set conf(confoptic,combinaison_optique_C,9) "" }
 
       #--- J'initialise les combobox du binning
       foreach camItem { A B C } {
@@ -210,7 +210,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  ok { }
+   #  ok
    #     Fonction appellee lors de l'appui sur le bouton 'OK'
    #     pour appliquer la configuration et fermer la fenetre
    #     de reglage des systemes optiques
@@ -227,7 +227,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  appliquer { }
+   #  appliquer
    #     Fonction appellee lors de l'appui sur le bouton
    #     'Appliquer' pour memoriser et appliquer la
    #     configuration
@@ -246,7 +246,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  showHelp { }
+   #  afficherAide
    #     Aide
    #
    #------------------------------------------------------------
@@ -257,7 +257,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  fermer { }
+   #  fermer
    #     Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    #------------------------------------------------------------
@@ -274,7 +274,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  recup_position { }
+   #  recup_position
    #     Permet de recuperer et de sauvegarder la position
    #     de la fenetre de configuration des systemes optiques
    #
@@ -293,7 +293,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  createDialog { }
+   #  createDialog
    #     Creation de la boite qui va accueillir les onglets
    #
    #------------------------------------------------------------
@@ -415,7 +415,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  obj_lune::onRaiseNotebook
+   #  onRaiseNotebook
    #     Affiche en gras le nom de l'onglet
    #------------------------------------------------------------
    proc onRaiseNotebook { ongletName } {
@@ -428,7 +428,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  confToWidget { }
+   #  confToWidget
    #     Copie les parametres du tableau conf() dans les
    #     variables des widgets
    #
@@ -465,13 +465,13 @@ namespace eval ::confOptic {
 
       #--- Je prepare les valeurs de la combobox de configuration du systeme optique C
       set widget(C,config_instrument) ""
-      foreach {key value} [ array get conf confoptic,combinaison_optique_D,* ] {
+      foreach {key value} [ array get conf confoptic,combinaison_optique_C,* ] {
          if { "$value" == "" } continue
          #--- Je mets les valeurs dans un array (de-serialisation)
-         array set combinaison_optique_D $value
+         array set combinaison_optique_C $value
          #--- Je prepare la ligne a afficher dans la combobox
-         set line "$combinaison_optique_D(instrument) - $combinaison_optique_D(diametre) - $combinaison_optique_D(focale) -\
-            $combinaison_optique_D(barlow_reduc)"
+         set line "$combinaison_optique_C(instrument) - $combinaison_optique_C(diametre) - $combinaison_optique_C(focale) -\
+            $combinaison_optique_C(barlow_reduc)"
          #--- J'ajoute la ligne
          lappend widget(C,config_instrument) "$line"
       }
@@ -481,7 +481,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  widgetToConf { }
+   #  widgetToConf
    #     Copie les valeurs des widgets dans le tableau conf()
    #
    #------------------------------------------------------------
@@ -504,7 +504,7 @@ namespace eval ::confOptic {
       $widget(frm).comboboxModele configure -textvariable ::confOptic::widget(A,config_instrument)
 
       #--- Mise a jour des parametres calcules
-      ::confOptic::Calculette A $widget(frm)
+      ::confOptic::afficheResultatCalculette A $widget(frm)
 
       #--- Je copie les valeurs des widgets pour la camera A
       set private(A,instrument)   $widget(A,instrument)
@@ -555,7 +555,7 @@ namespace eval ::confOptic {
       $widget(frm).comboboxModele configure -textvariable widget(B,config_instrument)
 
       #--- Mise a jour des parametres calcules
-      ::confOptic::Calculette B $widget(frm)
+      ::confOptic::afficheResultatCalculette B $widget(frm)
 
       #--- Je copie les valeurs des widgets pour la camera B
       set private(B,instrument)   $widget(B,instrument)
@@ -606,7 +606,7 @@ namespace eval ::confOptic {
       $widget(frm).comboboxModele configure -textvariable ::confOptic::widget(C,config_instrument)
 
       #--- Mise a jour des parametres calcules
-      ::confOptic::Calculette C $widget(frm)
+      ::confOptic::afficheResultatCalculette C $widget(frm)
 
       #--- Je copie les valeurs des widgets pour la camera C
       set private(C,instrument)   $widget(C,instrument)
@@ -615,23 +615,23 @@ namespace eval ::confOptic {
       set private(C,barlow_reduc) $widget(C,barlow_reduc)
 
       #--- J'ajoute le systeme optique en tete dans le tableau des systemes optiques precedents s'il n'y est pas deja
-      array set combinaison_optique_D { }
-      set combinaison_optique_D(instrument)   "$private(C,instrument)"
-      set combinaison_optique_D(diametre)     "$private(C,diametre)"
-      set combinaison_optique_D(focale)       "$private(C,focale)"
-      set combinaison_optique_D(barlow_reduc) "$private(C,barlow_reduc)"
+      array set combinaison_optique_C { }
+      set combinaison_optique_C(instrument)   "$private(C,instrument)"
+      set combinaison_optique_C(diametre)     "$private(C,diametre)"
+      set combinaison_optique_C(focale)       "$private(C,focale)"
+      set combinaison_optique_C(barlow_reduc) "$private(C,barlow_reduc)"
 
       #--- Je copie conf dans templist en mettant le systeme optique courant en premier
       array set templist_C { }
-      set templist_C(0) [ array get combinaison_optique_D ]
+      set templist_C(0) [ array get combinaison_optique_C ]
       set j "1"
-      foreach {key value} [ array get conf confoptic,combinaison_optique_D,* ] {
+      foreach {key value} [ array get conf confoptic,combinaison_optique_C,* ] {
          if { "$value" == "" } {
             set templist_C($j) ""
             incr j
          } else {
             array set temp1_C $value
-            if { "$temp1_C(instrument)" != "$combinaison_optique_D(instrument)" } {
+            if { "$temp1_C(instrument)" != "$combinaison_optique_C(instrument)" } {
                set templist_C($j) [ array get temp1_C ]
                incr j
             }
@@ -640,7 +640,7 @@ namespace eval ::confOptic {
 
       #-- Je copie templist dans conf
       for {set i 0} {$i < 10 } {incr i } {
-         set conf(confoptic,combinaison_optique_D,$i) $templist_C($i)
+         set conf(confoptic,combinaison_optique_C,$i) $templist_C($i)
       }
 
       #--- Je mets la position actuelle de la fenetre dans conf()
@@ -651,7 +651,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  cbCommand_A { }
+   #  cbCommand_A
    #     (appelee par la combobox a chaque changement de selection)
    #     Affiche les valeurs dans les widgets pour la camera A
    #
@@ -678,7 +678,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  cbCommand_B { }
+   #  cbCommand_B
    #     (appelee par la combobox a chaque changement de selection)
    #     Affiche les valeurs dans les widgets pour la camera B
    #
@@ -705,7 +705,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  cbCommand_C { }
+   #  cbCommand_C
    #     (appelee par la combobox a chaque changement de selection)
    #     Affiche les valeurs dans les widgets pour la camera C
    #
@@ -722,17 +722,17 @@ namespace eval ::confOptic {
       }
 
       #--- Je recupere les attributs de la configuration optique de la camera C de conf()
-      array set combinaison_optique_D $conf(confoptic,combinaison_optique_D,$index)
+      array set combinaison_optique_C $conf(confoptic,combinaison_optique_C,$index)
 
       #--- Je copie les valeurs dans les widgets pour la camera C
-      set widget(C,instrument)   $combinaison_optique_D(instrument)
-      set widget(C,diametre)     $combinaison_optique_D(diametre)
-      set widget(C,focale)       $combinaison_optique_D(focale)
-      set widget(C,barlow_reduc) $combinaison_optique_D(barlow_reduc)
+      set widget(C,instrument)   $combinaison_optique_C(instrument)
+      set widget(C,diametre)     $combinaison_optique_C(diametre)
+      set widget(C,focale)       $combinaison_optique_C(focale)
+      set widget(C,barlow_reduc) $combinaison_optique_C(barlow_reduc)
    }
 
    #------------------------------------------------------------
-   #  fillConfigCameraA { }
+   #  fillConfigCameraA
    #     Fenetre de configuration de la camera CCD A
    #
    #  return rien
@@ -798,7 +798,7 @@ namespace eval ::confOptic {
          -width 45         \
          -relief sunken    \
          -borderwidth 2    \
-         -editable 1       \
+         -editable 0       \
          -textvariable ::confOptic::widget(A,config_instrument) \
          -modifycmd "::confOptic::cbCommand_A $widget(frm).comboboxModele" \
          -values $widget(A,config_instrument)
@@ -843,11 +843,11 @@ namespace eval ::confOptic {
       label $widget(frm).labVal_Foc_Result -text "" -relief flat
       pack $widget(frm).labVal_Foc_Result -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
 
-      label $widget(frm).labF/D -text "$caption(confoptic,rapport_F/D)" -relief flat
-      pack $widget(frm).labF/D -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
+      label $widget(frm).labouverture -text "$caption(confoptic,rapport_ouverture)" -relief flat
+      pack $widget(frm).labouverture -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
 
-      label $widget(frm).labVal_F/D -text "" -relief flat
-      pack $widget(frm).labVal_F/D -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
+      label $widget(frm).labVal_ouverture -text "" -relief flat
+      pack $widget(frm).labVal_ouverture -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labP_Separateur -text "$caption(confoptic,pouvoir_separateur)" -relief flat
       pack $widget(frm).labP_Separateur -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
@@ -937,19 +937,19 @@ namespace eval ::confOptic {
 
       #--- Definition du bouton Calcul
       button $widget(frm).but_Calcul -text "$caption(confoptic,calcul)" -relief raised -width 15 \
-         -command "::confOptic::Calculette A $widget(frm)"
+         -command "::confOptic::afficheResultatCalculette A $widget(frm)"
       pack $widget(frm).but_Calcul -in $widget(frm).frame4 -anchor center -side left -expand true \
          -padx 10 -pady 5 -ipady 5
 
       #--- Calcul des parametres du systeme optique
-      ::confOptic::Calculette A $widget(frm)
+      ::confOptic::afficheResultatCalculette A $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> "set ::confCam::private(currentCamItem) A ; ::confCam::run ; ::confCam::selectNotebook A"
    }
 
    #------------------------------------------------------------
-   #  fillConfigCameraB { }
+   #  fillConfigCameraB
    #     Fenetre de configuration de la camera CCD B
    #
    #  return rien
@@ -1015,7 +1015,7 @@ namespace eval ::confOptic {
          -width 45         \
          -relief sunken    \
          -borderwidth 2    \
-         -editable 1       \
+         -editable 0       \
          -textvariable ::confOptic::widget(B,config_instrument) \
          -modifycmd "::confOptic::cbCommand_B $widget(frm).comboboxModele" \
          -values $widget(B,config_instrument)
@@ -1060,11 +1060,11 @@ namespace eval ::confOptic {
       label $widget(frm).labVal_Foc_Result -text "" -relief flat
       pack $widget(frm).labVal_Foc_Result -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
 
-      label $widget(frm).labF/D -text "$caption(confoptic,rapport_F/D)" -relief flat
-      pack $widget(frm).labF/D -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
+      label $widget(frm).labouverture -text "$caption(confoptic,rapport_ouverture)" -relief flat
+      pack $widget(frm).labouverture -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
 
-      label $widget(frm).labVal_F/D -text "" -relief flat
-      pack $widget(frm).labVal_F/D -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
+      label $widget(frm).labVal_ouverture -text "" -relief flat
+      pack $widget(frm).labVal_ouverture -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labP_Separateur -text "$caption(confoptic,pouvoir_separateur)" -relief flat
       pack $widget(frm).labP_Separateur -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
@@ -1154,19 +1154,19 @@ namespace eval ::confOptic {
 
       #--- Definition du bouton Calcul
       button $widget(frm).but_Calcul -text "$caption(confoptic,calcul)" -relief raised -width 15 \
-         -command "::confOptic::Calculette B $widget(frm)"
+         -command "::confOptic::afficheResultatCalculette B $widget(frm)"
       pack $widget(frm).but_Calcul -in $widget(frm).frame4 -anchor center -side left -expand true \
          -padx 10 -pady 5 -ipady 5
 
       #--- Calcul des parametres du systeme optique
-      ::confOptic::Calculette B $widget(frm)
+      ::confOptic::afficheResultatCalculette B $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> "set ::confCam::private(currentCamItem) B ; ::confCam::run ; ::confCam::selectNotebook B"
    }
 
    #------------------------------------------------------------
-   #  fillConfigCameraC { }
+   #  fillConfigCameraC
    #     Fenetre de configuration de la camera CCD C
    #
    #  return rien
@@ -1232,7 +1232,7 @@ namespace eval ::confOptic {
          -width 45         \
          -relief sunken    \
          -borderwidth 2    \
-         -editable 1       \
+         -editable 0       \
          -textvariable ::confOptic::widget(C,config_instrument) \
          -modifycmd "::confOptic::cbCommand_C $widget(frm).comboboxModele" \
          -values $widget(C,config_instrument)
@@ -1277,11 +1277,11 @@ namespace eval ::confOptic {
       label $widget(frm).labVal_Foc_Result -text "" -relief flat
       pack $widget(frm).labVal_Foc_Result -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
 
-      label $widget(frm).labF/D -text "$caption(confoptic,rapport_F/D)" -relief flat
-      pack $widget(frm).labF/D -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
+      label $widget(frm).labouverture -text "$caption(confoptic,rapport_ouverture)" -relief flat
+      pack $widget(frm).labouverture -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
 
-      label $widget(frm).labVal_F/D -text "" -relief flat
-      pack $widget(frm).labVal_F/D -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
+      label $widget(frm).labVal_ouverture -text "" -relief flat
+      pack $widget(frm).labVal_ouverture -in $widget(frm).frame10 -anchor w -side top -padx 0 -pady 5
 
       label $widget(frm).labP_Separateur -text "$caption(confoptic,pouvoir_separateur)" -relief flat
       pack $widget(frm).labP_Separateur -in $widget(frm).frame9 -anchor w -side top -padx 10 -pady 5
@@ -1371,12 +1371,12 @@ namespace eval ::confOptic {
 
       #--- Definition du bouton Calcul
       button $widget(frm).but_Calcul -text "$caption(confoptic,calcul)" -relief raised -width 15 \
-         -command "::confOptic::Calculette C $widget(frm)"
+         -command "::confOptic::afficheResultatCalculette C $widget(frm)"
       pack $widget(frm).but_Calcul -in $widget(frm).frame4 -anchor center -side left -expand true \
          -padx 10 -pady 5 -ipady 5
 
       #--- Calcul des parametres du systeme optique
-      ::confOptic::Calculette C $widget(frm)
+      ::confOptic::afficheResultatCalculette C $widget(frm)
 
       #--- Bind pour la selection d'une camera CCD
       bind $widget(frm).labURL_nomCamera <ButtonPress-1> "set ::confCam::private(currentCamItem) C ; ::confCam::run ; ::confCam::selectNotebook C"
@@ -1387,7 +1387,7 @@ namespace eval ::confOptic {
    #==============================================================
 
    #------------------------------------------------------------
-   #  MAJ_Binning { }
+   #  MAJ_Binning
    #     Affichage des binnings disponibles selon les cameras
    #     args : valeurs fournies par le gestionnaire de listener
    #
@@ -1427,7 +1427,7 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  Impact_Binning { }
+   #  Impact_Binning
    #     Prise en compte du binning choisi
    #
    #------------------------------------------------------------
@@ -1460,38 +1460,27 @@ namespace eval ::confOptic {
    }
 
    #------------------------------------------------------------
-   #  Calculette { }
+   #  Calculette
    #     Calcule les differents parametres du systeme optique
    #
    #------------------------------------------------------------
-   proc Calculette { camItem frm } {
-      variable widget
+   proc Calculette { camItem focale barlow_reduc diametre } {
+      variable private
+      global conf
 
-      #--- Je formate les entry pour permettre le calcul decimal
-      set widget($camItem,diametre) [ format "%.1f" $widget($camItem,diametre) ]
-      $frm.entDiametre configure -textvariable ::confOptic::widget($camItem,diametre)
-
-      set widget($camItem,focale) [ format "%.1f" $widget($camItem,focale) ]
-      $frm.entFocale configure -textvariable ::confOptic::widget($camItem,focale)
-
-      #--- Je mets a jour la combobox du systeme optique
-      set widget($camItem,config_instrument) "$widget($camItem,instrument) -\
-         $widget($camItem,diametre) - $widget($camItem,focale) -\
-         $widget($camItem,barlow_reduc)"
-      $frm.comboboxModele configure -textvariable ::confOptic::widget($camItem,config_instrument)
+      set combinaison(focale) $focale
+      set combinaison(barlow_reduc) $barlow_reduc
+      set combinaison(diametre) $diametre
 
       #--- Calcul de la focale resultante du systeme optique
-      set widget($camItem,focale_resultante) [ expr $widget($camItem,focale) * $widget($camItem,barlow_reduc) ]
-      $frm.labVal_Foc_Result configure -text $widget($camItem,focale_resultante)
+      set private($camItem,focale_resultante) [ expr $combinaison(focale) * $combinaison(barlow_reduc) ]
 
-      #--- Calcul du rapport F/D du systeme optique
-      set widget($camItem,F/D) [ format "%.1f" \
-         [ expr $widget($camItem,focale_resultante) / $widget($camItem,diametre) ] ]
-      $frm.labVal_F/D configure -text $widget($camItem,F/D)
+      #--- Calcul du rapport ouverture du systeme optique
+      set private($camItem,ouverture) [ format "%.1f" \
+         [ expr $private($camItem,focale_resultante) / $combinaison(diametre) ] ]
 
       #--- Calcul du pouvoir separateur du systeme optique
-      set widget($camItem,PS) [ format "%.2f" [ expr 120.0 / $widget($camItem,diametre) ] ]
-      $frm.labVal_PS configure -text $widget($camItem,PS)
+      set private($camItem,PS) [ format "%.2f" [ expr 120.0 / $combinaison(diametre) ] ]
 
       #--- Recherche du numero de la camera CCD
       if { $camItem != "0" } {
@@ -1510,18 +1499,62 @@ namespace eval ::confOptic {
          set dim_x($camItem) [ expr [ lindex $nb_xy($camItem) 0 ] * [ lindex $pix_dim_xy($camItem) 0 ] * 1000. ]
          set dim_y($camItem) [ expr [ lindex $nb_xy($camItem) 1 ] * [ lindex $pix_dim_xy($camItem) 1 ] * 1000. ]
          #--- Champ en x et en y en minutes d'arc
-         set champ_x($camItem) [ format "%.1f" [ expr 206265 * $dim_x($camItem) / ( $widget($camItem,focale_resultante) * 60. ) ] ]
-         set champ_y($camItem) [ format "%.1f" [ expr 206265 * $dim_y($camItem) / ( $widget($camItem,focale_resultante) * 60. ) ] ]
-         $frm.labVal_Champ configure -text "$champ_x($camItem) x $champ_y($camItem)"
+         set private($camItem,champ_x) [ format "%.1f" [ expr 206265 * $dim_x($camItem) / ( $private($camItem,focale_resultante) * 60. ) ] ]
+         set private($camItem,champ_y) [ format "%.1f" [ expr 206265 * $dim_y($camItem) / ( $private($camItem,focale_resultante) * 60. ) ] ]
          #--- Echantillonnage du CCD en x et en y en secondes d'arc par pixels
-         set echantillonnage_x($camItem) [ format "%.1f"  [ expr $champ_x($camItem) * 60. / [ lindex $nb_xy($camItem) 0 ] ] ]
-         set echantillonnage_y($camItem) [ format "%.1f"  [ expr $champ_y($camItem) * 60. / [ lindex $nb_xy($camItem) 1 ] ] ]
-         $frm.labVal_Echantillonnage configure -text "$echantillonnage_x($camItem) x $echantillonnage_y($camItem)"
+         set private($camItem,echantillonnage_x) [ format "%.1f"  [ expr $private($camItem,champ_x) * 60. / [ lindex $nb_xy($camItem) 0 ] ] ]
+         set private($camItem,echantillonnage_y) [ format "%.1f"  [ expr $private($camItem,champ_y)* 60. / [ lindex $nb_xy($camItem) 1 ] ] ]
+      } else {
+         set private($camItem,champ_x) ""
+         set private($camItem,champ_y) ""
+         set private($camItem,echantillonnage_x) ""
+         set private($camItem,echantillonnage_y) ""
       }
    }
 
    #------------------------------------------------------------
-   #  MAJ_Conf_Camera { }
+   #  afficheResultatCalculette
+   #     Calcule les differents parametres du systeme optique
+   #
+   #------------------------------------------------------------
+   proc afficheResultatCalculette { camItem frm } {
+      variable private
+      variable widget
+
+      #--- Je formate les entry pour permettre le calcul decimal
+      set widget($camItem,diametre) [ format "%.1f" $widget($camItem,diametre) ]
+      $frm.entDiametre configure -textvariable ::confOptic::widget($camItem,diametre)
+
+      set widget($camItem,focale) [ format "%.1f" $widget($camItem,focale) ]
+      $frm.entFocale configure -textvariable ::confOptic::widget($camItem,focale)
+
+      #--- Je mets a jour la combobox du systeme optique
+      set widget($camItem,config_instrument) "$widget($camItem,instrument) -\
+         $widget($camItem,diametre) - $widget($camItem,focale) -\
+         $widget($camItem,barlow_reduc)"
+      $frm.comboboxModele configure -textvariable ::confOptic::widget($camItem,config_instrument)
+
+      #--- Je calcule les valeurs
+      Calculette $camItem $widget($camItem,focale) $widget($camItem,barlow_reduc) $widget($camItem,diametre)
+
+      #--- Calcul de la focale resultante du systeme optique
+      $frm.labVal_Foc_Result configure -text $private($camItem,focale_resultante)
+
+      #--- Calcul du rapport ouverture du systeme optique
+      $frm.labVal_ouverture configure -text $private($camItem,ouverture)
+
+      #--- Calcul du pouvoir separateur du systeme optique
+      $frm.labVal_PS configure -text $private($camItem,PS)
+
+      #--- Calcul du champ et de l'echantillonnage de la camera CCD
+      #--- Champ en x et en y en minutes d'arc
+      $frm.labVal_Champ configure -text "$private($camItem,champ_x) x $private($camItem,champ_y)"
+      #--- Echantillonnage du CCD en x et en y en secondes d'arc par pixels
+      $frm.labVal_Echantillonnage configure -text "$private($camItem,echantillonnage_x) x $private($camItem,echantillonnage_y)"
+   }
+
+   #------------------------------------------------------------
+   #  MAJ_Conf_Camera
    #     Mise a jour des parametres de la camera CCD
    #
    #------------------------------------------------------------
@@ -1563,8 +1596,51 @@ namespace eval ::confOptic {
          $frm.labURL_typeCapteur configure -text $capteur($camItem)
          $frm.labURL_CellDim configure -text $cell_dim($camItem)
          $frm.labURL_PixDim configure -text $pix_dim($camItem)
-         ::confOptic::Calculette $camItem $frm
+         ::confOptic::afficheResultatCalculette $camItem $frm
       }
+   }
+
+   #------------------------------------------------------------
+   #  addOpticListener
+   #     ajoute une procedure a appeler si on change un parametre
+   #
+   #  parametres :
+   #     cmd : commande TCL a lancer quand la configuration optique change
+   #------------------------------------------------------------
+   proc addOpticListener { cmd } {
+      trace add variable "::confOptic::private(A,instrument)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   #  removeOpticListener
+   #     supprime une procedure a appeler si on change un parametre
+   #
+   #  parametres :
+   #     cmd : commande TCL a lancer quand la configuration optique change
+   #------------------------------------------------------------
+   proc removeOpticListener { cmd } {
+      trace remove variable "::confOptic::private(A,instrument)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   #  getConfOptic
+   #     retourne la configuration optique
+   #
+   #  parametres :
+   #     camItem : item de la camera
+   #  return :
+   #     retourne la liste {instrument diametre focale}
+   #------------------------------------------------------------
+   proc getConfOptic { camItem } {
+      variable private
+
+      #--- je recupere la première combinaison selectionnee
+      array set combinaison $::conf(confoptic,combinaison_optique_$camItem,0)
+
+      #--- je calcule la focale resultante
+      Calculette $camItem $combinaison(focale) $combinaison(barlow_reduc) $combinaison(diametre)
+
+      return [list $combinaison(instrument) $combinaison(diametre) $private($camItem,focale_resultante)]
    }
 
 }
