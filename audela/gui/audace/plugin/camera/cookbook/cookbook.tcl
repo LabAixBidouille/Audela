@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.21 2007-12-22 15:39:30 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.22 2008-04-06 08:57:40 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -304,6 +304,7 @@ proc ::cookbook::stop { camItem } {
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -325,6 +326,7 @@ proc ::cookbook::getPluginProperty { camItem propertyName } {
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
       hasShutter       { return 0 }
+      hasTempSensor    { return 0 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
