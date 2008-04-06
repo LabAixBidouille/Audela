@@ -1,6 +1,6 @@
 #
 # Fichier : confoptic.cap
-# Mise a jour $Id: confoptic.cap,v 1.15 2007-01-27 14:40:43 robertdelmas Exp $
+# Mise a jour $Id: confoptic.cap,v 1.16 2008-04-06 09:07:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,7 +25,7 @@ set caption(confoptic,diametre)              "Its diameter (mm):"
 set caption(confoptic,focale)                "Its focal length (mm):"
 set caption(confoptic,barlow_reduc)          "Barlow/Focal Reducer:"
 set caption(confoptic,focale_result)         "Resulting Focal Length (mm):"
-set caption(confoptic,rapport_F/D)           "F/D Ratio:"
+set caption(confoptic,rapport_ouverture)     "F/D Ratio:"
 set caption(confoptic,pouvoir_separateur)    "Resolving Power ( '' ):"
 set caption(confoptic,camera)                "Camera:"
 set caption(confoptic,nocam)                 "No Camera"
@@ -59,7 +59,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,focale)             "Sa longueur focale (mm) :"
    set caption(confoptic,barlow_reduc)       "Barlow/Réducteur de focale :"
    set caption(confoptic,focale_result)      "Longueur focale résultante (mm) :"
-   set caption(confoptic,rapport_F/D)        "Rapport F/D :"
+   set caption(confoptic,rapport_ouverture)  "Rapport F/D :"
    set caption(confoptic,pouvoir_separateur) "Pouvoir séparateur ( '' ) :"
    set caption(confoptic,camera)             "Caméra :"
    set caption(confoptic,nocam)              "Pas de caméra"
@@ -93,7 +93,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,focale)             "Sua lunghezza focale (mm):"
    set caption(confoptic,barlow_reduc)       "Barlow/Riduttore di focale:"
    set caption(confoptic,focale_result)      "Lunghezza focale risultante (mm):"
-   set caption(confoptic,rapport_F/D)        "Rapporto F/D:"
+   set caption(confoptic,rapport_ouverture)  "Rapporto F/D:"
    set caption(confoptic,pouvoir_separateur) "Potere separatore ( '' ):"
    set caption(confoptic,camera)             "Camera:"
    set caption(confoptic,nocam)              "Nessuna camera"
@@ -127,7 +127,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,focale)             "Su distancia focal (mm):"
    set caption(confoptic,barlow_reduc)       "Barlow/Reductor de focal:"
    set caption(confoptic,focale_result)      "Distancia focal resultante (mm):"
-   set caption(confoptic,rapport_F/D)        "Relacion F/D:"
+   set caption(confoptic,rapport_ouverture)  "Relacion F/D:"
    set caption(confoptic,pouvoir_separateur) "Poder separador ( '' ):"
    set caption(confoptic,camera)             "Cámara:"
    set caption(confoptic,nocam)              "No hay cámara"
@@ -161,7 +161,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,focale)             "Ihres Brennweite (mm):"
    set caption(confoptic,barlow_reduc)       "Barlow/Brennweite Verkleinerter:"
    set caption(confoptic,focale_result)      "Folgende Brennweite (mm):"
-   set caption(confoptic,rapport_F/D)        "F/D Verhältnis:"
+   set caption(confoptic,rapport_ouverture)  "F/D Verhältnis:"
    set caption(confoptic,pouvoir_separateur) "Auflösung Fähigkeit ( '' ):"
    set caption(confoptic,camera)             "Kamera:"
    set caption(confoptic,nocam)              "Keine Kamera"
@@ -195,7 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,focale)             "Distância focal (mm):"
    set caption(confoptic,barlow_reduc)       "Barlow/Redutor focal:"
    set caption(confoptic,focale_result)      "Distância focal resultante (mm):"
-   set caption(confoptic,rapport_F/D)        "Razão F/D:"
+   set caption(confoptic,rapport_ouverture)  "Razão F/D:"
    set caption(confoptic,pouvoir_separateur  "Poder resolvente (''):"
    set caption(confoptic,camera)             "Câmara:"
    set caption(confoptic,nocam)              "Sem Câmara"
@@ -229,7 +229,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confoptic,focale)             "Dets brændvidde (mm):"
    set caption(confoptic,barlow_reduc)       "Barlow/Focalreducering:"
    set caption(confoptic,focale_result)      "Resulterende brændvidde (mm):"
-   set caption(confoptic,rapport_F/D)        "F/D forhold:"
+   set caption(confoptic,rapport_ouverture)  "F/D forhold:"
    set caption(confoptic,pouvoir_separateur) "Opløsningsevne ( '' ):"
    set caption(confoptic,camera)             "Kamera:"
    set caption(confoptic,nocam)              "Ingen kamera!"
