@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.108 2008-01-12 13:55:28 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.109 2008-04-06 09:06:12 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -517,7 +517,7 @@ proc ::confCam::setShutter { camItem shutterState } {
    set ShutterOptionList    [ ::confCam::getPluginProperty $camItem shutterList ]
    set lg_ShutterOptionList [ llength $ShutterOptionList ]
    #---
-   if { [ ::confCam::getPluginProperty $camItem hasShutter ] } {
+   if { [ ::confCam::getPluginProperty $camItem hasShutter ] == "1" } {
       incr shutterState
       if { $lg_ShutterOptionList == "3" } {
          if { $shutterState == "3" } {
@@ -582,7 +582,7 @@ proc ::confCam::stopItem { camItem } {
 # Retourne "1" si la camera est demarree, sinon retourne "0"
 #
 # Parametre :
-#    camItem : Camera A, B ou C
+#    camItem : Item de la camera
 #
 proc ::confCam::isReady { camItem } {
    variable private
@@ -621,6 +621,7 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
    # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
    # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
    # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+   # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
    # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
    # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
    # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -641,6 +642,7 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
       hasLongExposure  { set result 0 }
       hasScan          { set result 0 }
       hasShutter       { set result 0 }
+      hasTempSensor    { set result 0 }
       hasVideo         { set result 0 }
       hasWindow        { set result 0 }
       longExposure     { set result 1 }
@@ -666,7 +668,7 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
 # Retourne le numero de la camera
 #
 # Parametres :
-#    camItem : intance de la camera
+#    camItem : Item de la camera
 #
 proc ::confCam::getCamNo { camItem } {
    variable private
@@ -700,7 +702,7 @@ proc ::confCam::getCurrentCamItem { } {
 # Si la camera n'a pas d'obturateur, retourne une chaine vide
 #
 # Parametres :
-#    camItem : Instance de la camera
+#    camItem : Item de la camera
 #
 proc ::confCam::getShutter { camItem } {
    variable private
@@ -710,6 +712,25 @@ proc ::confCam::getShutter { camItem } {
       return $conf($private($camItem,camName),foncobtu)
    } else {
       return ""
+   }
+}
+
+#
+# ::confCam::getTempCCD
+# Retourne la temperature du CCD
+# Si la camera n'a pas de capteur de temperature, retourne une chaine vide
+#
+# Parametres :
+#    camItem : Item de la camera
+#
+proc ::confCam::getTempCCD { camItem } {
+   set camNo [ ::confCam::getCamNo $camItem ]
+   if { $camNo != 0 } {
+      if { [ ::confCam::getPluginProperty $camItem hasTempSensor ] == "1" } {
+         return [ cam$camNo temperature ]
+      } else {
+         return ""
+      }
    }
 }
 
@@ -733,7 +754,7 @@ proc ::confCam::getThreadNo { camItem } {
 # Si la camera n'a pas de visu associee, la valeur retournee est ""
 #
 # Parametres :
-#    camItem : Numero de la camera
+#    camItem : Item de la camera
 #
 proc ::confCam::getVisuNo { camItem } {
    variable private
@@ -986,7 +1007,7 @@ proc ::confCam::findPlugin { } {
 # ajoute une procedure a appeler si on change de camera
 #
 # parametres :
-#    camItem: numero de la visu
+#    camItem : Item de la camera
 #    cmd : commande TCL a lancer quand la camera change
 #------------------------------------------------------------
 proc ::confCam::addCameraListener { camItem cmd } {
@@ -998,7 +1019,7 @@ proc ::confCam::addCameraListener { camItem cmd } {
 # supprime une procedure a appeler si on change de camera
 #
 # parametres :
-#    visuNo: numero de la visu
+#    camItem : Item de la camera
 #    cmd : commande TCL a lancer quand la camera change
 #------------------------------------------------------------
 proc ::confCam::removeCameraListener { camItem cmd } {
