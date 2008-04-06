@@ -6,9 +6,10 @@
 
 
 // inclusion fichiers d'en-tete generaux
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 
+using namespace std;
 
 // inclusion fichiers d'en-tete locaux
 #include "Vecteur.h"

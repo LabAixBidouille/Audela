@@ -4,8 +4,7 @@
 // Description : Fonctions interfaces entre TCL et C
 // =================================================
 
-
-// inclusion fichiers d'en-tête locaux
+// inclusion fichiers d'en-tï¿½te locaux
 #include "bm_c_tcl.h"
 #include "Image.h"
 
@@ -49,7 +48,7 @@ int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 //     /* --- decode le second parametre obligatoire ---*/
 //     retour = Tcl_GetInt(interp,argv[2],&x);
 //     if(retour!=TCL_OK) return retour;
-//     /* --- decode le troisième parametre obligatoire ---*/
+//     /* --- decode le troisiï¿½me parametre obligatoire ---*/
 //     retour = Tcl_GetInt(interp,argv[3],&y);
 //     if(retour!=TCL_OK) return retour;
 //     /*--- initialise la dynamic string ---*/
@@ -57,7 +56,7 @@ int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 //     /* --- recherche les infos du tampon image---*/
 //     retour = image.AudelaAImage(interp,numbuf);
 //     if(retour!=TCL_OK) return retour;
-//     /* --- recupère la valeur du pixel---*/
+//     /* --- recupï¿½re la valeur du pixel---*/
 //     double valeur = image.LectureFloat(x, y, &retour);
 //     if(retour!=TCL_OK) return retour;
 //     /* --- On met en forme le resultat dans une chaine de caracteres ---*/
@@ -99,10 +98,10 @@ int CmdVersionLib(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 //     /* --- decode le second parametre obligatoire ---*/
 //     retour = Tcl_GetInt(interp,argv[2],&x);
 //     if(retour!=TCL_OK) return retour;
-//     /* --- decode le troisième parametre obligatoire ---*/
+//     /* --- decode le troisiï¿½me parametre obligatoire ---*/
 //     retour = Tcl_GetInt(interp,argv[3],&y);
 //     if(retour!=TCL_OK) return retour;
-//     /* --- decode le quatrième parametre obligatoire ---*/
+//     /* --- decode le quatriï¿½me parametre obligatoire ---*/
 //     retour = Tcl_GetDouble(interp,argv[4],&valeur);
 //     if(retour!=TCL_OK) return retour;
 //     /* --- recherche les infos du tampon image---*/ 
@@ -143,7 +142,7 @@ int CmdBmMax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
     Tcl_DStringInit(&dsptr);
     /* --- recherche les infos du tampon image---*/ 
     image.AudelaAImage(interp,numbuf);
-    /* --- recupère la valeur du pixel---*/
+    /* --- recupï¿½re la valeur du pixel---*/
     retour = image.MaxXYFloat(&valeur, &x, &y);
     if(retour!=0) return retour;
     /* --- On met en forme le resultat dans une chaine de caracteres ---*/
@@ -207,10 +206,10 @@ int CmdBmHard2Visu(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
     /* --- decode le second parametre obligatoire ---*/
     retour = Tcl_GetDouble(interp,argv[2],&seuil_haut);
     if(retour!=TCL_OK) return retour;
-    /* --- decode le troisième parametre obligatoire ---*/
+    /* --- decode le troisiï¿½me parametre obligatoire ---*/
     retour = Tcl_GetDouble(interp,argv[3],&seuil_bas);
     if(retour!=TCL_OK) return retour;
-    /* --- decode le quatrième parametre obligatoire ---*/
+    /* --- decode le quatriï¿½me parametre obligatoire ---*/
     // attention, il s'agit d'une liste !
     if(Tcl_SplitList(interp,argv[4],&argcc,&argvv)!=TCL_OK) {
       // sprintf(ligne,"Position struct not valid: must be {x y}");
@@ -236,7 +235,7 @@ int CmdBmHard2Visu(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       }
     }
 
-    // On renvoie ça sous forme de liste.
+    // On renvoie ï¿½a sous forme de liste.
     // DecodeListeDouble(interp,liste,fonction_transfert,llength);
     /* --- recherche les infos du tampon image---*/
     //result=tcl_InfoImage(interp,numbuf,&image);
@@ -245,7 +244,7 @@ int CmdBmHard2Visu(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
     /* --- enregistre la valeur du pixel---*/
     //retour=image_hard2visu(image, seuil_haut, seuil_bas, fonction_transfert);
     retour=image.hard2visu(seuil_haut, seuil_bas, &fonction_transfert);
-    // On libère la memoire necessaire au tableau "fonction_transfert"
+    // On libï¿½re la memoire necessaire au tableau "fonction_transfert"
     //delete [] fonction_transfert;
     if(retour!=0) return retour;
     /*-- on renvoie le resultat dans le tampon AudeLA --*/
@@ -331,9 +330,9 @@ int CmdBmAjoute(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
     result=image2.AudelaAImage(interp,numbuf2);
     if(retour!=TCL_OK) return retour;
 
-    /* --- si troisième paramètre optionnel ---*/
+    /* --- si troisiï¿½me paramï¿½tre optionnel ---*/
     if(argc>3) {
-      /* --- decode le troisième parametre optionnel ---*/
+      /* --- decode le troisiï¿½me parametre optionnel ---*/
       retour = Tcl_GetDouble(interp,argv[3],&facteur);
       if(retour!=TCL_OK) return retour;
       /* --- somme (image1 = image1 + facteur * image2)---*/
@@ -464,7 +463,7 @@ int CmdBmMultiplie_ajoute(ClientData clientData, Tcl_Interp *interp, int argc, c
     /* --- decode le second parametre obligatoire ---*/
     retour = Tcl_GetInt(interp,argv[2],&numbuf2);
     if(retour!=TCL_OK) return retour;
-    /* --- decode le troisième parametre obligatoire ---*/
+    /* --- decode le troisiï¿½me parametre obligatoire ---*/
     retour = Tcl_GetInt(interp,argv[3],&numbuf3);
     if(retour!=TCL_OK) return retour;
 
@@ -687,7 +686,7 @@ int CmdBmMarche(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
     result=image1.AudelaAImage(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
 
-    /* --- les pixels positifs sont mis à 1 et les negatifs à -1 ---*/
+    /* --- les pixels positifs sont mis ï¿½ 1 et les negatifs ï¿½ -1 ---*/
     //retour=marche(image1);
     retour=image1.Marche();
     if(retour!=0) return retour;
@@ -725,12 +724,12 @@ int CmdBmDxx(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
     retour = Tcl_GetInt(interp,argv[2],&numbuf2);
     if(retour!=TCL_OK) return retour;
 
-    /* --- recherche les infos du tampon image n°1---*/
+    /* --- recherche les infos du tampon image nï¿½1---*/
     //result=tcl_InfoImage(interp,numbuf1,&image1);
     result=image1.AudelaAImage(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
     
-    /* --- recherche les infos du tampon image n°2---*/
+    /* --- recherche les infos du tampon image nï¿½2---*/
     //result=tcl_InfoImage(interp,numbuf2,&image2);
     result=image2.AudelaAImage(interp,numbuf2);
     if(retour!=TCL_OK) return retour;
@@ -777,12 +776,12 @@ int CmdBmDyy(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
     retour = Tcl_GetInt(interp,argv[2],&numbuf2);
     if(retour!=TCL_OK) return retour;
 
-    /* --- recherche les infos du tampon image n°1---*/
+    /* --- recherche les infos du tampon image nï¿½1---*/
     //result=tcl_InfoImage(interp,numbuf1,&image1);
     result=image1.AudelaAImage(interp,numbuf1);
     if(retour!=TCL_OK) return retour;
 
-    /* --- recherche les infos du tampon image n°2---*/
+    /* --- recherche les infos du tampon image nï¿½2---*/
     //result=tcl_InfoImage(interp,numbuf2,&image2);
     result=image2.AudelaAImage(interp,numbuf2);
     if(retour!=TCL_OK) return retour;
@@ -821,13 +820,13 @@ int CmdBmConvolue(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
     if (Tcl_GetInt(interp,argv[1],&numbuf1) != TCL_OK) return(TCL_ERROR);
     /* --- decode le second parametre obligatoire ---*/
     if (Tcl_GetInt(interp,argv[2],&numbuf2) != TCL_OK) return(TCL_ERROR);
-    /* --- decode le troisième parametre obligatoire ---*/
+    /* --- decode le troisiï¿½me parametre obligatoire ---*/
     if (Tcl_GetInt(interp,argv[3],&data_type) != TCL_OK) return(TCL_ERROR);
 
-    /* --- recherche les infos du tampon image n°1---*/
+    /* --- recherche les infos du tampon image nï¿½1---*/
     if (image1.AudelaAImage(interp,numbuf1) != 0) return(TCL_ERROR);
 
-    /* --- recherche les infos du tampon image n°2---*/
+    /* --- recherche les infos du tampon image nï¿½2---*/
     if (image2.AudelaAImage(interp,numbuf2) != 0) return(TCL_ERROR);
 
     /* --- convolution ---*/
@@ -908,7 +907,7 @@ int CmdBmConvolue(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       if (image1bis.ImageAAudela(interp,numbuf1) != 0) return(TCL_ERROR);
       break;
     default :
-      cerr << "Libbm, erreur dans CmdBmConvolue : tentative de convolution par un type incorrect";
+      std::cerr << "Libbm, erreur dans CmdBmConvolue : tentative de convolution par un type incorrect";
       return(TCL_ERROR);
     }
   }
@@ -1028,7 +1027,7 @@ int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
   int argcc; // Nombre d'elements dans la liste precitee.
   int *liste_numbuf; // Liste des numeros de buffers de la serie d'images.
   int numbuf_mediane;
-  Image* liste_images; // Liste des paramètres de la serie d'images.
+  Image* liste_images; // Liste des paramï¿½tres de la serie d'images.
   Image image_mediane,image_tmp;
   int k;
   double *liste_pixels;
@@ -1112,11 +1111,11 @@ int CmdBmMediane(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
     /*-- on reecrit le resultat dans le tampon image AudeLA --*/
     image_mediane.ImageAAudela(interp,numbuf_mediane);
 
-    // On libère la memoire utilisee par le tableau "liste_pixels"
+    // On libï¿½re la memoire utilisee par le tableau "liste_pixels"
     free(liste_pixels);
-    // On libère la memoire utilisee par le tableau "liste_images"
+    // On libï¿½re la memoire utilisee par le tableau "liste_images"
     free(liste_images);
-    // On libère la memoire necessaire au tableau "liste_numbuf"
+    // On libï¿½re la memoire necessaire au tableau "liste_numbuf"
     free(liste_numbuf);
     if(retour!=0) return retour;
   }

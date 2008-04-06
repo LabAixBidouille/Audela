@@ -4,8 +4,8 @@
 // Description : Prototype des fonctions interfaces Tcl et le C  
 // ============================================================
 
+#include <iostream>
 #include "libbm.h"
-#include <iostream.h>
 
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_statistics.h>

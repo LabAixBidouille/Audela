@@ -5,13 +5,14 @@
 /*----------------------------------------------*/
 
 
-// inclusion fichiers d'en-tête generaux
+// inclusion fichiers d'en-tï¿½te generaux
 #include <stdlib.h>
 
 
-// inclusion fichiers d'en-tête locaux
+// inclusion fichiers d'en-tï¿½te locaux
 #include "Image.h"
 
+using namespace std;
 
 // fonctions de la classe Image
 

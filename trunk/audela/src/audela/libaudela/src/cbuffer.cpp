@@ -20,11 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <iostream>
+
 #include <math.h>
 
-#include <iostream.h>
 #include <fstream.h>
 #include <time.h>
+
+using namespace std;
 
 #include "libstd.h"       // pour buf_pool
 #include "cbuffer.h"
@@ -370,14 +373,14 @@ void CBuffer::LoadFits(char *filename)
       }
 
    } catch (const CError& e) {
-      // Liberation de la memoire allouée par libtt
+      // Liberation de la memoire allouï¿½e par libtt
       Libtt_main(TT_PTR_FREEPTR,1,&ppix);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
       // je transmet l'erreur
       throw e;
    }
 
-   // Liberation de la memoire allouee par libtt (pas nécessire de catcher les erreurs)
+   // Liberation de la memoire allouee par libtt (pas nï¿½cessire de catcher les erreurs)
    msg = Libtt_main(TT_PTR_FREEPTR,1,&ppix);
    msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
 }
@@ -387,7 +390,7 @@ void CBuffer::LoadFits(char *filename)
  *  cree un fichier F
  *
  *   @param filename : nom du fichier
- *   @param init     : =1 initialiser le buffer la premiere fois ou bien =0 pour compléter
+ *   @param init     : =1 initialiser le buffer la premiere fois ou bien =0 pour complï¿½ter
  *   @param nbtot    : nombre d'images
  *   @param index    : index de l'image
  *   @param *naxis10 : valeur de naxis1 de l'image initiale (retourne si init=0, sinon a passer en parametre d'entrï¿½e)
@@ -2914,7 +2917,7 @@ void CBuffer::UnifyBg()
 // SubStars
 //
 // - elimine les etoiles a partir d'un fichier ASCII en x,y
-// - n'élimine pas les etoiles a l'interieur d'un rayon centre xc,yc
+// - n'ï¿½limine pas les etoiles a l'interieur d'un rayon centre xc,yc
 //
 //***************************************************
 void CBuffer::SubStars(FILE *fascii, int indexcol_x, int indexcol_y, int indexcol_bg, double radius, double xc_exclu, double yc_exclu, double radius_exclu,int *n)

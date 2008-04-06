@@ -5,13 +5,14 @@
 /*----------------------------------------------*/
 
 
-// inclusion fichiers d'en-tête generaux
+// inclusion fichiers d'en-tï¿½te generaux
 
 
-// inclusion fichiers d'en-tête locaux
+// inclusion fichiers d'en-tï¿½te locaux
 #include "Image.h"
 #include "bm_c_tcl.h"
 
+using namespace std;
 
 // fonctions de la classe Image
 
@@ -238,7 +239,7 @@ unsigned char Image::AudelaAImage(Tcl_Interp *interp, unsigned short numbuf) {
     return(1);
   }
   /*-- on recupere les pixels --*/
-  sprintf(lignetcl,"buf%d getpixels %d",numbuf, adresse_float);
+  sprintf(lignetcl,"buf%d getpixels %d",numbuf, (int)adresse_float);
   if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
   /* -- recherche le mot cle DATE-OBS dans l'entete FITS --*/
@@ -275,7 +276,7 @@ unsigned char Image::ImageAAudela(Tcl_Interp *interp, unsigned short numbuf) {
   //strcpy(lignetcl,"lindex [buf%d getkwd %s] 1");
 
   /*-- on copie le contenu de l'image dans un tampon AudeLA --*/
-  sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %d",numbuf ,naxis1, naxis2, adresse_float);
+  sprintf(lignetcl,"buf%d setpixels CLASS_GRAY %d %d  FORMAT_FLOAT COMPRESS_NONE %d",numbuf ,(int)naxis1, (int)naxis2, (int)adresse_float);
   if( Tcl_Eval(interp,lignetcl) != TCL_OK  ) { return TCL_ERROR; }
 
   return(TCL_OK);
