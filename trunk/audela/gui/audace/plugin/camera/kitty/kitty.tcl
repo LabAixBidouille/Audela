@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.15 2008-03-16 09:49:31 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.16 2008-04-06 08:58:27 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -462,6 +462,7 @@ proc ::kitty::testK2 { camItem } {
 # hasLongExposure :  Retourne l'existence du mode longue pose (1 : Oui, 0 : Non)
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
+# hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -483,6 +484,7 @@ proc ::kitty::getPluginProperty { camItem propertyName } {
       hasLongExposure  { return 0 }
       hasScan          { return 0 }
       hasShutter       { return 0 }
+      hasTempSensor    { return 1 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
