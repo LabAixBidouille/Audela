@@ -1,17 +1,17 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.109 2008-04-06 09:06:12 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.110 2008-04-06 10:17:58 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
 }
 
-#
-# ::confCam::init (est lance automatiquement au chargement de ce fichier tcl)
+#------------------------------------------------------------
+# init (est lance automatiquement au chargement de ce fichier tcl)
 # Initialise les variables conf(...) et caption(...)
 # Demarre le plugin selectionne par defaut
-#
+#------------------------------------------------------------
 proc ::confCam::init { } {
    variable private
    global audace caption conf
@@ -93,18 +93,18 @@ proc ::confCam::init { } {
    }
 }
 
-#
-# ::confCam::dispThreadError
-#
+#------------------------------------------------------------
+# dispThreadError
+#------------------------------------------------------------
 proc ::confCam::dispThreadError { thread_id ErrorInfo } {
    ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
 }
 
-#
-# ::confCam::run
+#------------------------------------------------------------
+# run
 # Cree la fenetre de choix et de configuration des cameras
 # private(currentCamItem) = C'est le camItem courant
-#
+#------------------------------------------------------------
 proc ::confCam::run { } {
    variable private
 
@@ -112,10 +112,10 @@ proc ::confCam::run { } {
    selectNotebook $private(currentCamItem)
 }
 
-#
-# ::confCam::startPlugin
+#------------------------------------------------------------
+# startPlugin
 # Ouvre les cameras
-#
+#------------------------------------------------------------
 proc ::confCam::startPlugin { } {
    variable private
    global conf
@@ -140,21 +140,21 @@ proc ::confCam::startPlugin { } {
    }
 }
 
-#
-# ::confCam::stopPlugin
+#------------------------------------------------------------
+# stopPlugin
 # Ferme toutes les cameras ouvertes
-#
+#------------------------------------------------------------
 proc ::confCam::stopPlugin { } {
    ::confCam::stopItem A
    ::confCam::stopItem B
    ::confCam::stopItem C
 }
 
-#
-# ::confCam::ok
+#------------------------------------------------------------
+# ok
 # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
 # la configuration, et fermer la fenetre de reglage de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::ok { } {
    variable private
 
@@ -165,11 +165,11 @@ proc ::confCam::ok { } {
    fermer
 }
 
-#
-# ::confCam::appliquer
+#------------------------------------------------------------
+# appliquer
 # Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
 # memoriser et appliquer la configuration
-#
+#------------------------------------------------------------
 proc ::confCam::appliquer { } {
    variable private
 
@@ -186,10 +186,10 @@ proc ::confCam::appliquer { } {
    $private(frm).cmd.fermer configure -state normal
 }
 
-#
-# ::confCam::afficherAide
+#------------------------------------------------------------
+# afficherAide
 # Fonction appellee lors de l'appui sur le bouton 'Aide'
-#
+#------------------------------------------------------------
 proc ::confCam::afficherAide { } {
    variable private
 
@@ -199,10 +199,10 @@ proc ::confCam::afficherAide { } {
    ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 }
 
-#
-# ::confCam::fermer
+#------------------------------------------------------------
+# fermer
 # Fonction appellee lors de l'appui sur le bouton 'Fermer'
-#
+#------------------------------------------------------------
 proc ::confCam::fermer { } {
    variable private
 
@@ -210,10 +210,10 @@ proc ::confCam::fermer { } {
    destroy $private(frm)
 }
 
-#
-# ::confCam::recupPosDim
+#------------------------------------------------------------
+# recupPosDim
 # Permet de recuperer et de sauvegarder la position de la fenetre de configuration de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::recupPosDim { } {
    variable private
    global conf
@@ -222,10 +222,10 @@ proc ::confCam::recupPosDim { } {
    set conf(camera,geometry) $private(geometry)
 }
 
-#
-# ::confCam::createDialog
+#------------------------------------------------------------
+# createDialog
 # Creation de l'interface graphique
-#
+#------------------------------------------------------------
 proc ::confCam::createDialog { } {
    variable private
    global caption conf
@@ -374,11 +374,11 @@ proc ::confCam::createDialog { } {
    ::confColor::applyColor $private(frm)
 }
 
-#
-# ::confCam::createThread
+#------------------------------------------------------------
+# createThread
 # Cree une thread dediee a la camera
 # et retourne le numero de la thread
-#
+#------------------------------------------------------------
 proc ::confCam::createThread { camItem bufNo } {
    variable private
 
@@ -413,10 +413,10 @@ proc ::confCam::createThread { camItem bufNo } {
    return $threadNo
 }
 
-#
-# ::confCam::createUrlLabel
+#------------------------------------------------------------
+# createUrlLabel
 # Cree un widget "label" avec une URL du site WEB
-#
+#------------------------------------------------------------
 proc ::confCam::createUrlLabel { tkparent title url } {
    global audace color
 
@@ -429,10 +429,10 @@ proc ::confCam::createUrlLabel { tkparent title url } {
    return  $tkparent.labURL
 }
 
-#
-# ::confCam::connectCamera
+#------------------------------------------------------------
+# connectCamera
 # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
-#
+#------------------------------------------------------------
 proc ::confCam::connectCamera { } {
    variable private
    global audace caption color
@@ -470,10 +470,10 @@ proc ::confCam::connectCamera { } {
    ::confColor::applyColor $audace(base).connectCamera
 }
 
-#----------------------------------------------------------------------------
-# ::confCam::selectNotebook
+#------------------------------------------------------------
+# selectNotebook
 # Selectionne un onglet
-#----------------------------------------------------------------------------
+#------------------------------------------------------------
 proc ::confCam::selectNotebook { camItem { camName "" } } {
    variable private
    global conf
@@ -492,10 +492,10 @@ proc ::confCam::selectNotebook { camItem { camName "" } } {
    }
 }
 
-#----------------------------------------------------------------------------
-# ::confCam::onRaiseNotebook
+#------------------------------------------------------------
+# onRaiseNotebook
 # Affiche en gras le nom de l'onglet
-#----------------------------------------------------------------------------
+#------------------------------------------------------------
 proc ::confCam::onRaiseNotebook { camName } {
    variable private
 
@@ -505,10 +505,10 @@ proc ::confCam::onRaiseNotebook { camName } {
    after 200 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
 }
 
-#----------------------------------------------------------------------------
-# ::confCam::setShutter
+#------------------------------------------------------------
+# setShutter
 # Procedure de changement de l'obturateur de la camera
-#----------------------------------------------------------------------------
+#------------------------------------------------------------
 proc ::confCam::setShutter { camItem shutterState } {
    variable private
    global caption
@@ -537,10 +537,10 @@ proc ::confCam::setShutter { camItem shutterState } {
    return $shutterState
 }
 
-#----------------------------------------------------------------------------
-# ::confCam::stopItem
+#------------------------------------------------------------
+# stopItem
 # Arrete la camera camItem
-#----------------------------------------------------------------------------
+#------------------------------------------------------------
 proc ::confCam::stopItem { camItem } {
    variable private
    global audace
@@ -577,13 +577,13 @@ proc ::confCam::stopItem { camItem } {
    set private($camItem,camName) ""
 }
 
-#
-# ::confCam::isReady
+#------------------------------------------------------------
+# isReady
 # Retourne "1" si la camera est demarree, sinon retourne "0"
 #
 # Parametre :
 #    camItem : Item de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::isReady { camItem } {
    variable private
 
@@ -601,14 +601,14 @@ proc ::confCam::isReady { camItem } {
    return $result
 }
 
-#
-# ::confCam::getPluginProperty
+#------------------------------------------------------------
+# getPluginProperty
 # Retourne la valeur d'une propriete de la camera
 #
 # Parametres :
 #    camItem      : Instance de la camera
 #    propertyName : Propriete
-#
+#------------------------------------------------------------
 proc ::confCam::getPluginProperty { camItem propertyName } {
    variable private
 
@@ -663,13 +663,13 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
    return $result
 }
 
-#
-# ::confCam::getCamNo
+#------------------------------------------------------------
+# getCamNo
 # Retourne le numero de la camera
 #
 # Parametres :
 #    camItem : Item de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::getCamNo { camItem } {
    variable private
 
@@ -683,27 +683,27 @@ proc ::confCam::getCamNo { camItem } {
    return $result
 }
 
-#
-# ::confCam::getCurrentCamItem
+#------------------------------------------------------------
+# getCurrentCamItem
 # Retourne le camItem courant
 #
 # Parametres :
 #    aucun
-#
+#------------------------------------------------------------
 proc ::confCam::getCurrentCamItem { } {
    variable private
 
    return $private(currentCamItem)
 }
 
-#
-# ::confCam::getShutter
+#------------------------------------------------------------
+# getShutter
 # Retourne l'etat de l'obturateur
 # Si la camera n'a pas d'obturateur, retourne une chaine vide
 #
 # Parametres :
 #    camItem : Item de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::getShutter { camItem } {
    variable private
    global conf
@@ -715,60 +715,60 @@ proc ::confCam::getShutter { camItem } {
    }
 }
 
-#
-# ::confCam::getTempCCD
+#------------------------------------------------------------
+# getTempCCD
 # Retourne la temperature du CCD
 # Si la camera n'a pas de capteur de temperature, retourne une chaine vide
 #
 # Parametres :
 #    camItem : Item de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::getTempCCD { camItem } {
    set camNo [ ::confCam::getCamNo $camItem ]
    if { $camNo != 0 } {
       if { [ ::confCam::getPluginProperty $camItem hasTempSensor ] == "1" } {
-         return [ cam$camNo temperature ]
+         return [ format "%+5.2f" [ cam$camNo temperature ] ]
       } else {
          return ""
       }
    }
 }
 
-#
-# ::confCam::getThreadNo
+#------------------------------------------------------------
+# getThreadNo
 # Retourne le numero de la thread de la camera
 # Si la camera n'a pas de thread associee, la valeur retournee est "0"
 #
 # Parametres :
 #    camNo : Numero de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::getThreadNo { camItem } {
    variable private
 
    return $private($camItem,threadNo)
 }
 
-#
-# ::confCam::getVisuNo
+#------------------------------------------------------------
+# getVisuNo
 # Retourne le numero de la visu associee a la  camera
 # Si la camera n'a pas de visu associee, la valeur retournee est ""
 #
 # Parametres :
 #    camItem : Item de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::getVisuNo { camItem } {
    variable private
 
    return $private($camItem,visuNo)
 }
 
-#
-# ::confCam::closeCamera
+#------------------------------------------------------------
+# closeCamera
 # Ferme la camera
 #
 # Parametres :
 #    camNo : Numero de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::closeCamera { camNo } {
    variable private
 
@@ -783,12 +783,12 @@ proc ::confCam::closeCamera { camNo } {
    }
 }
 
-#
-# ::confCam::configureCamera
+#------------------------------------------------------------
+# configureCamera
 # Configure la camera en fonction des donnees contenues dans le tableau conf :
 # private($camItem,camName) -> type de camera employe
 # conf(cam,A,...) -> proprietes de ce type de camera
-#
+#------------------------------------------------------------
 proc ::confCam::configureCamera { camItem } {
    variable private
    global audace caption conf
@@ -910,11 +910,11 @@ proc ::confCam::configureCamera { camItem } {
    }
 }
 
-#
-# ::confCam::widgetToConf
+#------------------------------------------------------------
+# widgetToConf
 # Acquisition de la configuration, c'est a dire isolation des
 # differentes variables dans le tableau conf(...)
-#
+#------------------------------------------------------------
 proc ::confCam::widgetToConf { camItem } {
    variable private
    global conf
@@ -927,19 +927,19 @@ proc ::confCam::widgetToConf { camItem } {
 }
 
 #------------------------------------------------------------
-# ::confCam::findPlugin
+# findPlugin
 # recherche les plugins de type "camera"
 #
 # conditions :
-#   - le plugin doit avoir une procedure getPluginType qui retourne "camera"
-#   - le plugin doit avoir une procedure getPluginTitle
-#   - etc.
+#    - le plugin doit avoir une procedure getPluginType qui retourne "camera"
+#    - le plugin doit avoir une procedure getPluginTitle
+#    - etc.
 #
 # si le plugin remplit les conditions :
 # son label est ajoute dans la liste pluginTitleList et son namespace est ajoute dans pluginNamespaceList
 # sinon le fichier tcl est ignore car ce n'est pas un plugin
 #
-# return 0 = OK, 1 = error (no plugin found)
+#    return 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confCam::findPlugin { } {
    variable private
@@ -1003,7 +1003,7 @@ proc ::confCam::findPlugin { } {
 }
 
 #------------------------------------------------------------
-# ::confCam::addCameraListener
+# addCameraListener
 # ajoute une procedure a appeler si on change de camera
 #
 # parametres :
