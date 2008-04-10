@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.23 2008-04-06 09:18:27 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.24 2008-04-10 18:02:15 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -1456,7 +1456,7 @@ namespace eval ::confOptic {
          $frm.labURL_PixDim configure -text $pix_dim($camItem)
       }
       #--- Calcul des parametres du systeme optique
-      ::confOptic::Calculette $camItem $frm
+      ::confOptic::Calculette $camItem $widget($camItem,focale) $widget($camItem,barlow_reduc) $widget($camItem,diametre)
    }
 
    #------------------------------------------------------------
@@ -1535,7 +1535,7 @@ namespace eval ::confOptic {
       $frm.comboboxModele configure -textvariable ::confOptic::widget($camItem,config_instrument)
 
       #--- Je calcule les valeurs
-      Calculette $camItem $widget($camItem,focale) $widget($camItem,barlow_reduc) $widget($camItem,diametre)
+      ::confOptic::Calculette $camItem $widget($camItem,focale) $widget($camItem,barlow_reduc) $widget($camItem,diametre)
 
       #--- Calcul de la focale resultante du systeme optique
       $frm.labVal_Foc_Result configure -text $private($camItem,focale_resultante)
@@ -1638,7 +1638,7 @@ namespace eval ::confOptic {
       array set combinaison $::conf(confoptic,combinaison_optique_$camItem,0)
 
       #--- je calcule la focale resultante
-      Calculette $camItem $combinaison(focale) $combinaison(barlow_reduc) $combinaison(diametre)
+      ::confOptic::Calculette $camItem $combinaison(focale) $combinaison(barlow_reduc) $combinaison(diametre)
 
       return [list $combinaison(instrument) $combinaison(diametre) $private($camItem,focale_resultante)]
    }
