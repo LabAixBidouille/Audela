@@ -23,13 +23,32 @@
 
 global audela
 
-set audela(major) "1"
-set audela(minor) "4"
-set audela(patch) "0"
-set audela(extra) ""
+set audela(name)    "AudeLA/Aud'ACE"
+
+set audela(major)   "1"
+set audela(minor)   "4"
+set audela(patch)   "0"
+set audela(extra)   ""
 
 set audela(version) "1.4.0"
 
-set audela(date)    "11/07/2007"
+set audela(date)    "06/07/2007"
 
 package provide audela "$audela(major).$audela(minor).$audela(patch)"
+
+namespace eval ::audela {
+   global caption
+   package provide audela 1.4.0
+}
+
+proc ::audela::getPluginType { } {
+   return "audela"
+}
+
+proc ::audela::getPluginTitle { } {
+   global caption
+
+   return "audela"
+}
+
+
