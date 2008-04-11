@@ -23,7 +23,7 @@
 
 global audela
 
-set audela(name)    "AudeLA/Aud'ACE"
+set audela(name)    "AudeLA"
 
 set audela(major)   "1"
 set audela(minor)   "4"
