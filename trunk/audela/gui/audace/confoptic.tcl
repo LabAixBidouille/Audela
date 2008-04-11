@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.24 2008-04-10 18:02:15 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.25 2008-04-11 22:37:30 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -52,8 +52,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_A { }
          set combinaison_optique_A(instrument)       "C8 $caption(confoptic,sans_accessoire)"
-         set combinaison_optique_A(diametre)         "203.0"
-         set combinaison_optique_A(focale)           "2000.0"
+         set combinaison_optique_A(diametre)         "0.203"
+         set combinaison_optique_A(focale)           "2.0"
          set combinaison_optique_A(barlow_reduc)     "1.0"
 
          set conf(confoptic,combinaison_optique_A,0) [ array get combinaison_optique_A ]
@@ -63,8 +63,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_A { }
          set combinaison_optique_A(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
-         set combinaison_optique_A(diametre)         "203.0"
-         set combinaison_optique_A(focale)           "2000.0"
+         set combinaison_optique_A(diametre)         "0.203"
+         set combinaison_optique_A(focale)           "2.0"
          set combinaison_optique_A(barlow_reduc)     "0.66"
 
          set conf(confoptic,combinaison_optique_A,1) [ array get combinaison_optique_A ]
@@ -74,8 +74,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_A { }
          set combinaison_optique_A(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
-         set combinaison_optique_A(diametre)         "203.0"
-         set combinaison_optique_A(focale)           "2000.0"
+         set combinaison_optique_A(diametre)         "0.203"
+         set combinaison_optique_A(focale)           "2.0"
          set combinaison_optique_A(barlow_reduc)     "0.33"
 
          set conf(confoptic,combinaison_optique_A,2) [ array get combinaison_optique_A ]
@@ -85,8 +85,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_A { }
          set combinaison_optique_A(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
-         set combinaison_optique_A(diametre)         "203.0"
-         set combinaison_optique_A(focale)           "2000.0"
+         set combinaison_optique_A(diametre)         "0.203"
+         set combinaison_optique_A(focale)           "2.0"
          set combinaison_optique_A(barlow_reduc)     "2.5"
 
          set conf(confoptic,combinaison_optique_A,3) [ array get combinaison_optique_A ]
@@ -104,8 +104,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_B { }
          set combinaison_optique_B(instrument)       "C8 $caption(confoptic,sans_accessoire)"
-         set combinaison_optique_B(diametre)         "203.0"
-         set combinaison_optique_B(focale)           "2000.0"
+         set combinaison_optique_B(diametre)         "0.203"
+         set combinaison_optique_B(focale)           "2.0"
          set combinaison_optique_B(barlow_reduc)     "1.0"
 
          set conf(confoptic,combinaison_optique_B,0) [ array get combinaison_optique_B ]
@@ -115,8 +115,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_B { }
          set combinaison_optique_B(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
-         set combinaison_optique_B(diametre)         "203.0"
-         set combinaison_optique_B(focale)           "2000.0"
+         set combinaison_optique_B(diametre)         "0.203"
+         set combinaison_optique_B(focale)           "2.0"
          set combinaison_optique_B(barlow_reduc)     "0.66"
 
          set conf(confoptic,combinaison_optique_B,1) [ array get combinaison_optique_B ]
@@ -126,8 +126,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_B { }
          set combinaison_optique_B(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
-         set combinaison_optique_B(diametre)         "203.0"
-         set combinaison_optique_B(focale)           "2000.0"
+         set combinaison_optique_B(diametre)         "0.203"
+         set combinaison_optique_B(focale)           "2.0"
          set combinaison_optique_B(barlow_reduc)     "0.33"
 
          set conf(confoptic,combinaison_optique_B,2) [ array get combinaison_optique_B ]
@@ -137,8 +137,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_B { }
          set combinaison_optique_B(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
-         set combinaison_optique_B(diametre)         "203.0"
-         set combinaison_optique_B(focale)           "2000.0"
+         set combinaison_optique_B(diametre)         "0.203"
+         set combinaison_optique_B(focale)           "2.0"
          set combinaison_optique_B(barlow_reduc)     "2.5"
 
          set conf(confoptic,combinaison_optique_B,3) [ array get combinaison_optique_B ]
@@ -156,8 +156,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_C { }
          set combinaison_optique_C(instrument)       "C8 $caption(confoptic,sans_accessoire)"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(diametre)         "0.203"
+         set combinaison_optique_C(focale)           "2.0"
          set combinaison_optique_C(barlow_reduc)     "1.0"
 
          set conf(confoptic,combinaison_optique_C,0) [ array get combinaison_optique_C ]
@@ -167,8 +167,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_C { }
          set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,reducteur) 0.66"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(diametre)         "0.203"
+         set combinaison_optique_C(focale)           "2.0"
          set combinaison_optique_C(barlow_reduc)     "0.66"
 
          set conf(confoptic,combinaison_optique_C,1) [ array get combinaison_optique_C ]
@@ -178,8 +178,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_C { }
          set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,reducteur) 0.33"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(diametre)         "0.203"
+         set combinaison_optique_C(focale)           "2.0"
          set combinaison_optique_C(barlow_reduc)     "0.33"
 
          set conf(confoptic,combinaison_optique_C,2) [ array get combinaison_optique_C ]
@@ -189,8 +189,8 @@ namespace eval ::confOptic {
          #--- Je prepare un exemple de configuration optique
          array set combinaison_optique_C { }
          set combinaison_optique_C(instrument)       "C8 + $caption(confoptic,barlow) 2.5"
-         set combinaison_optique_C(diametre)         "203.0"
-         set combinaison_optique_C(focale)           "2000.0"
+         set combinaison_optique_C(diametre)         "0.203"
+         set combinaison_optique_C(focale)           "2.0"
          set combinaison_optique_C(barlow_reduc)     "2.5"
 
          set conf(confoptic,combinaison_optique_C,3) [ array get combinaison_optique_C ]
@@ -1480,7 +1480,7 @@ namespace eval ::confOptic {
          [ expr $private($camItem,focale_resultante) / $combinaison(diametre) ] ]
 
       #--- Calcul du pouvoir separateur du systeme optique
-      set private($camItem,PS) [ format "%.2f" [ expr 120.0 / $combinaison(diametre) ] ]
+      set private($camItem,PS) [ format "%.2f" [ expr 0.120 / $combinaison(diametre) ] ]
 
       #--- Recherche du numero de la camera CCD
       if { $camItem != "0" } {
@@ -1499,11 +1499,11 @@ namespace eval ::confOptic {
          set dim_x($camItem) [ expr [ lindex $nb_xy($camItem) 0 ] * [ lindex $pix_dim_xy($camItem) 0 ] * 1000. ]
          set dim_y($camItem) [ expr [ lindex $nb_xy($camItem) 1 ] * [ lindex $pix_dim_xy($camItem) 1 ] * 1000. ]
          #--- Champ en x et en y en minutes d'arc
-         set private($camItem,champ_x) [ format "%.1f" [ expr 206265 * $dim_x($camItem) / ( $private($camItem,focale_resultante) * 60. ) ] ]
-         set private($camItem,champ_y) [ format "%.1f" [ expr 206265 * $dim_y($camItem) / ( $private($camItem,focale_resultante) * 60. ) ] ]
+         set private($camItem,champ_x) [ format "%.1f" [ expr 206265 * $dim_x($camItem) / ( $private($camItem,focale_resultante) * 1000. * 60. ) ] ]
+         set private($camItem,champ_y) [ format "%.1f" [ expr 206265 * $dim_y($camItem) / ( $private($camItem,focale_resultante) * 1000. * 60. ) ] ]
          #--- Echantillonnage du CCD en x et en y en secondes d'arc par pixels
          set private($camItem,echantillonnage_x) [ format "%.1f"  [ expr $private($camItem,champ_x) * 60. / [ lindex $nb_xy($camItem) 0 ] ] ]
-         set private($camItem,echantillonnage_y) [ format "%.1f"  [ expr $private($camItem,champ_y)* 60. / [ lindex $nb_xy($camItem) 1 ] ] ]
+         set private($camItem,echantillonnage_y) [ format "%.1f"  [ expr $private($camItem,champ_y) * 60. / [ lindex $nb_xy($camItem) 1 ] ] ]
       } else {
          set private($camItem,champ_x) ""
          set private($camItem,champ_y) ""
@@ -1522,10 +1522,10 @@ namespace eval ::confOptic {
       variable widget
 
       #--- Je formate les entry pour permettre le calcul decimal
-      set widget($camItem,diametre) [ format "%.1f" $widget($camItem,diametre) ]
+      set widget($camItem,diametre) [ format "%.3f" $widget($camItem,diametre) ]
       $frm.entDiametre configure -textvariable ::confOptic::widget($camItem,diametre)
 
-      set widget($camItem,focale) [ format "%.1f" $widget($camItem,focale) ]
+      set widget($camItem,focale) [ format "%.3f" $widget($camItem,focale) ]
       $frm.entFocale configure -textvariable ::confOptic::widget($camItem,focale)
 
       #--- Je mets a jour la combobox du systeme optique
