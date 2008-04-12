@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.15 2007-11-17 11:52:43 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.16 2008-04-12 16:45:29 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -279,7 +279,11 @@ namespace eval AlAudine_NT {
    #
    proc ReglageTemp { temp_ccd_souhaite } {
       set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
-      cam$camNo cooler check $temp_ccd_souhaite
+      if { $camNo != "0" } {
+         cam$camNo cooler check $temp_ccd_souhaite
+      } else {
+         return
+      }
    }
 
    #
@@ -296,6 +300,9 @@ namespace eval AlAudine_NT {
       if { $camNo != "0" } {
          set statusVariableName "::status_cam$camNo"
       } else {
+         if { [ info exists private(aftertemp) ] == "1" } {
+            unset private(aftertemp)
+         }
          return
       }
       if { [set $statusVariableName] == "exp" } {
@@ -308,7 +315,7 @@ namespace eval AlAudine_NT {
                -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
             set private(aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
          } else {
-            if { [ info exists private(aftertemp) ] == "0" } {
+            if { [ info exists private(aftertemp) ] == "1" } {
                unset private(aftertemp)
             }
          }
