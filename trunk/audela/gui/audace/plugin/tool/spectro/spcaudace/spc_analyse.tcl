@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.17 2008-03-22 13:55:11 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.18 2008-04-12 20:39:30 bmauclaire Exp $
 
 
 
@@ -272,10 +272,10 @@ proc spc_centergravl { args } {
 
 proc spc_autocentergaussl { args } {
 
-   global audace
+   global audace spcaudace
    global conf
-   #-- largeur en pixels de la raie :
-   set largeur 4.
+   #-- largeur en pixels de la raie (8) :
+   set largeur $spcaudace(largeur_raie_detect)
 
    if { [llength $args] == 3 || [llength $args] == 4 } {
        if { [llength $args] == 3 } {
@@ -674,7 +674,8 @@ proc spc_findbiglines { args } {
 
 	#-- Retire les petites raies qui seraient des pixels chauds ou autre :
         # commenté le 2008-03-21
-	#buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
+	# buf$audace(bufNo) imaseries "CONV kernel_type=gaussian sigma=0.9"
+        # A tester : uncosmic $spcaudace(uncosmic)
 	#-- Renseigne sur les parametres de l'image :
 	set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
 	set nbrange [ expr int($naxis1/$largeur) ]

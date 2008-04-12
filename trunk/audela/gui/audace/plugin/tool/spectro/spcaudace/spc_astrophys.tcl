@@ -3,7 +3,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_astrophys.tcl ]
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.16 2008-03-01 20:18:26 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.17 2008-04-12 20:39:31 bmauclaire Exp $
 
 
 
@@ -58,6 +58,8 @@ proc spc_vdoppler { args } {
 # Date de création : 08-02-2007
 # Date de mise à jour : 08-02-2007
 # Arguments : profil_raies_étalonné lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?
+# Explication : la correciton héliocentrique possède déjà le bon signe tandis que la vitesse héliocentrique non.
+#  La mesure de vitesse radiale nécessite d'être corrigée de la vitesse héliocentrique même si la calibration a été faite sur les raies telluriques car le centre du référentiel n'est pas la Terre mais le barycentre du Système Solaire.
 ##########################################################
 
 proc spc_vhelio { args } {
@@ -150,19 +152,19 @@ proc spc_vhelio { args } {
 
        #--- Calcul de la vitesse héliocentrique :
        set vhelio [ lindex [ mc_baryvel $datef $raf $decf J2000.0 ] 0 ]
-       set deltal [ expr round($vhelio*$lambda_ref/300000*$precision)/$precision ]
+       set deltal [ expr round($vhelio*$lambda_ref/299792.458*$precision)/$precision ]
        #--- Recherche la dispersion :
        if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
 	   set dispersion [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
-	   set erreurv [ expr round($precision*$dispersion*300000/$lambda_ref)/$precision ]
+	   set erreurv [ expr round($precision*$dispersion*299792.458/$lambda_ref)/$precision ]
        } else {
-	   set erreurv 0
+	   set erreurv 0.
        }
 
 
        #--- Formatage du résultat :
        #::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio±$erreurv km/s=$deltal±$dispersion A\n"
-       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio km/s <-> $deltal A\n"
+       ::console::affiche_resultat "La vitesse héliocentrique pour l'objet $raf ; $decf à la date du $datef vaut :\n$vhelio km/s <-> $deltal A +-$erreurv km/s\n"
        return $vhelio
    } else {
 	   ::console::affiche_erreur "Usage: spc_vhelio profil_raies_étalonné ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
@@ -182,6 +184,57 @@ proc spc_vhelio { args } {
 ##########################################################
 
 proc spc_vradiale { args } {
+
+   global audace
+   global conf
+
+   if { [llength $args] == 4 } {
+      set spectre [ lindex $args 0 ]
+      set typeraie [ lindex $args 1 ]
+      set lambda_approchee [lindex $args 2 ]
+      set lambda_ref [lindex $args 3 ]
+
+      #--- Recupere le jour julien :
+      buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+      if { [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ] != "" } {
+         set jd [ expr [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ] +2400000.5 ]
+      }
+
+      #--- Détermine l'erreur sur la mesure :
+      set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+
+      #--- Centre gaussien de la raie étudié :
+      set lambda_centre [ spc_autocentergaussl $spectre $lambda_approchee $typeraie ]
+      
+      #--- Calcul la vitesse radiale : Acker p.101 Dunod 2005.
+      set delta_lambda [ expr $lambda_centre-$lambda_ref ]
+      set vrad [ expr 299792.458*$delta_lambda/$lambda_ref ]
+      #-- The correction hc has to apply to the measured radial velocity: Vrad, real = Vrad,measured + hc.
+      #set vradcorrigee [ expr $vrad+$vhelio ]
+      #-- Erreur sur le calcul :
+      set vraderr [ expr 299792.458*$dispersion/$lambda_ref ]
+      
+      #--- Formatage du résultat :
+      ::console::affiche_resultat "La vitesse radiale de l'objet le $jd JJ à la longueur d'onde $lambda_centre A :\n\# Vrad=$vrad +- $vraderr km/s\n"
+      return $vrad
+   } else {
+       ::console::affiche_erreur "Usage: spc_vradiale profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf\n\n"
+   }
+}
+#*******************************************************************************#
+
+
+
+##########################################################
+# Procedure de determination de la vitesse radiale en km/s à l'aide du décalage d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 08-02-2007
+# Date de mise à jour : 08-02-2007
+# Arguments : profil_raies_étalonné, lambda_raie_approché, ?
+##########################################################
+
+proc spc_vradialecorr { args } {
 
    global audace
    global conf
@@ -218,7 +271,7 @@ proc spc_vradiale { args } {
 	   set mm [ lindex $args 12 ]
 	   set aaaa [ lindex $args 12 ]
        } else {
-	   ::console::affiche_erreur "Usage: spc_vradiale profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+	   ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
 	   return 0
        }
 
@@ -226,7 +279,13 @@ proc spc_vradiale { args } {
        #--- Calcul la correction héliocentrique :
        # mc_baryvel {2006 7 22} {19h24m58.00s} {11d57m00.0s} J2000.0
        if { [llength $args] == 4 } {
-	   set vhelio [ spc_vhelio $spectre ]
+          buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+          if { [ lindex [ buf$audace(bufNo) getkwd "OBJCTRA" ] 1 ] == "" } {
+             ::console::affiche_erreur "Il manque les coordonnées RA-DEC e l'objet.\nUsage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+             return 0
+          } else {
+             set vhelio [ spc_vhelio $spectre ]
+          }
        } elseif { [llength $args] == 10 } {
 	   set vhelio [ spc_vhelio $spectre $ra_h $ra_m $ra_s $dec_d $dec_m $dec_s ]
        } elseif { [llength $args] == 13 } {
@@ -238,10 +297,11 @@ proc spc_vradiale { args } {
 
        #--- Centre gaussien de la raie étudié :
        set lambda_centre [ spc_autocentergaussl $spectre $lambda_approchee $typeraie ]
-       set delta_lambda [ expr $lambda_centre-$lambda_ref ]
 
-       #--- Calcul la vitesse radiale :
+       #--- Calcul la vitesse radiale : Acker p.101 Dunod 2005.
+       set delta_lambda [ expr $lambda_centre-$lambda_ref ]
        set vrad [ expr 299792.458*$delta_lambda/$lambda_ref ]
+       #-- The correction hc has to apply to the measured radial velocity: Vrad, real = Vrad,measured + hc.
        set vradcorrigee [ expr $vrad+$vhelio ]
 
        #--- Formatage du résultat :
@@ -249,7 +309,7 @@ proc spc_vradiale { args } {
        set results [ list $vradcorrigee $vrad $vhelio ]
        return $results
    } else {
-       ::console::affiche_erreur "Usage: spc_vradiale profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
+       ::console::affiche_erreur "Usage: spc_vradialecorr profil_raies_étalonné type_raie (e/a) lambda_raie_approché lambda_réf ?RA_d RA_m RA_s DEC_h DEC_m DEC_s? ?JJ MM AAAA?\n\n"
    }
 }
 #*******************************************************************************#
@@ -656,8 +716,8 @@ proc spc_ewcourbe { args } {
 	    set date [ mc_date2jd $ladate ]
 	    #- Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
 	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
-	    #lappend ldates [ expr round($date*10000.)/10000.-2450000. ]
-	    lappend ldates [ expr int(($date-2450000.)*10000.)/10000. ]
+	    #lappend ldates [ expr round($date*10000.)/10000.-2400000.5 ]
+	    lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
 	    set results [ spc_autoew2 $fichier $lambda ]
 	    lappend list_ew [ lindex $results 0 ]
 	    lappend list_sigmaew [ lindex $results 1 ]
@@ -746,7 +806,7 @@ proc spc_ewcourbe_opt { args } {
 	    set date [ mc_date2jd $ladate ]
 	    # Ne tient que des 4 premières décimales du jour julien et retranche 50000 jours juliens
 	    #lappend ldates [ expr int($date*10000.)/10000.-50000.+0.5 ]
-	    lappend ldates [ expr int(($date-2450000.)*10000.)/10000. ]
+	    lappend ldates [ expr int(($date-2400000.5)*10000.)/10000. ]
 	    # lappend ldates [ expr $date-50000. ]
 	    set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	    set ldeb [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
@@ -851,7 +911,7 @@ proc spc_ewdirw { args } {
 	    #- 070707 :
 	    set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
 	    set date [ mc_date2jd $ladate ]
-	    set jddate [ expr int(($date-2450000.)*10000.)/10000. ]
+	    set jddate [ expr int(($date-2400000.5)*10000.)/10000. ]
 	    #--
 	    set mesure [ spc_autoew2 $fichier $lambda ]
 	    set ew [ lindex $mesure 0 ]
@@ -889,12 +949,12 @@ proc spc_ew { args } {
 
     if { [llength $args] == 3 } {
 	set filename [ lindex $args 0 ]
-	set xdeb [ lindex $args 1 ]
-	set xfin [ lindex $args 2 ]
+	set lambda_deb [ lindex $args 1 ]
+	set lambda_fin [ lindex $args 2 ]
 
-	spc_ew3 $filename $xdeb $xfin
+	spc_ew3 $filename $lambda_deb $lambda_fin
     } else {
-	::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lanmba_debutg lambda_fin\n"
+	::console::affiche_erreur "Usage: spc_ew nom_profil_raies_calibré lamba_debut lambda_fin\n"
     }
 }
 #***************************************************************************#
@@ -1213,6 +1273,8 @@ proc spc_ew3 { args } {
 	#set dispersion_locale [ expr 1.*$deltal/[ llength $xsel ] ]
 	buf$audace(bufNo) load "$audace(rep_images)/$filename"
 	set dispersion_locale [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+        set jd [ expr 2400000.5+ [ lindex [ buf$audace(bufNo) getkwd "MJD-OBS" ] 1 ] ]
+        set ladate [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
 	set ew [ expr -1.*$aire*$dispersion_locale/$icont ]
 
 	#--- Détermine le type de raie : émission ou absorption et donne un signe à EW
@@ -1250,6 +1312,8 @@ proc spc_ew3 { args } {
 
 	#--- Affichage des résultats :
 	::console::affiche_resultat "\n"
+        ::console::affiche_resultat "Date: $ladate ;\nJD: $jd\n"
+        ::console::affiche_resultat "\n"
 	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
 	::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
 	::console::affiche_resultat "SNR=$snr_short.\n\n"
@@ -1263,7 +1327,7 @@ proc spc_ew3 { args } {
 
 
 ####################################################################
-# Procédure de calcul d'intensité d'une raie
+# Calcul la largeur equivalenbte d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 1-09-2006
@@ -1271,92 +1335,101 @@ proc spc_ew3 { args } {
 # Arguments : nom_profil_raies lambda_raie
 ####################################################################
 
-proc spc_autoew { args } {
-    global conf
-    global audace
-    set precision 0.01
+proc spc_autoew1 { args } {
+   global conf
+   global audace
+   set precision 0.01
 
-    if { [llength $args] == 2 } {
-	set filename [ file rootname [ lindex $args 0 ] ]
-	set lambda_raie [ lindex $args 1 ]
+   set nb_args [ llength $args ]
+   if { $nb_args == 2 || $nb_args == 3} {
+      if { $nb_args == 2 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_raie [ lindex $args 1 ]
+         set lambda_deb [ expr $lambda_raie-20 ]
+         set lambda_fin [ expr $lambda_raie+20 ]
+      } elseif { $nb_args == 3 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_deb [ lindex $args 1 ]
+         set lambda_fin [ lindex $args 2 ]
+      } else {
+         ::console::affiche_erreur "Usage: spc_autoew1 nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+      }
 
-	#--- Valeur par defaut des bornes :
-	set lambda_deb [ expr $lambda_raie-20 ]
-	set lambda_fin [ expr $lambda_raie+20 ]
+      if { $nb_args == 2 } {
+         #--- Extraction des valeurs :
+         set listevals [ spc_fits2data $filename ]
+         set lambdas [ lindex $listevals 0 ]
+         set intensities [ lindex $listevals 1 ]
+         set len [ llength $lambdas ]
+         
+         #--- Trouve l'indice de la raie recherche dans la liste
+         set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
+         # ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
+         
+         #--- Déterminiation de la valeur du continuum :
+         # set icont 1.0
+         set icont [ spc_icontinuum $filename ]
 
-	#--- Extraction des valeurs :
-	set listevals [ spc_fits2data $filename ]
-	set lambdas [ lindex $listevals 0 ]
-	set intensities [ lindex $listevals 1 ]
-	set len [ llength $lambdas ]
-
-	#--- Trouve l'indice de la raie recherche dans la liste
-	set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
-	# ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
-
-
-	#--- Déterminiation de la valeur du continuum :
-	# set icont 1.0
-	set icont [ spc_icontinuum $filename ]
-
-	#--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
-	for { set i $i_lambda } { $i<$len } { incr i } { 
+         #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
+         for { set i $i_lambda } { $i<$len } { incr i } { 
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr $yval-$icont ]<=$precision } {
-		set lambda_fin [ lindex $lambdas $i ]
-		break
+               set lambda_fin [ lindex $lambdas $i ]
+               break
 	    }
-	}
+         }
 
-	#--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
-	for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
+         #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
+         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr $yval-$icont ]<=$precision } {
-		set lambda_deb [ lindex $lambdas $i ]
-		break
+               set lambda_deb [ lindex $lambdas $i ]
+               break
 	    }
 	    #::console::affiche_resultat "$diff\n"
-	}
+         }
+      }
 
-	#--- Détermination de la largeur équivalente :
-	set ew [ spc_ew3 $filename $lambda_deb $lambda_fin ]
-	set deltal [ expr abs($lambda_fin-$lambda_deb) ]
-
-
-	#--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
-	set snr [ spc_snr $filename ]
-	set rapport [ expr $ew/$deltal ]
-	if { $rapport>=1.0 } {
-	    set deltal [ expr $ew+0.1 ]
-	    ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
-	}
-	if { $snr != 0 } {
-	    set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
-	    #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
-	} else {
-	    ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
-	    set sigma 0
-	}
-
-        #--- Formatage des résultats :
-	set l_fin [ expr 0.01*round($lambda_fin*100) ]
-	set l_deb [ expr 0.01*round($lambda_deb*100) ]
-	set delta_l [ expr 0.01*round($deltal*100) ]
-	set ew_short [ expr 0.01*round($ew*100) ]
-	set sigma_ew [ expr 0.01*round($sigma*100) ]
-	set snr_short [ expr round($snr) ]
-
-	#--- Affichage des résultats :
-	::console::affiche_resultat "\n"
-	::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
-	::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
-	::console::affiche_resultat "SNR=$snr_short.\n\n"
-	set resultats [ list $ew $sigma_ew ]
-	#return $resultats
-	return $ew
-    } else {
-	::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie\n"
-    }
+      #--- Détermination de la largeur équivalente :
+      set ew [ spc_ew $filename $lambda_deb $lambda_fin ]
+      set deltal [ expr abs($lambda_fin-$lambda_deb) ]
+      
+      
+      #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
+      set snr [ spc_snr $filename ]
+      set rapport [ expr $ew/$deltal ]
+      if { $rapport>=1.0 } {
+         set deltal [ expr $ew+0.1 ]
+         ::console::affiche_resultat "Attention : largeur d'intégration<EW !\n"
+      }
+      if { $snr != 0 } {
+         set sigma [ expr sqrt(1+1/(1-$ew/$deltal))*(($deltal-$ew)/$snr) ]
+         #set sigma [ expr sqrt(1+1/(1-abs($ew)/$deltal))*(($deltal-abs($ew))/$snr) ]
+      } else {
+         ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
+         set sigma 0
+      }
+      
+      #--- Formatage des résultats :
+      set l_fin [ expr 0.01*round($lambda_fin*100) ]
+      set l_deb [ expr 0.01*round($lambda_deb*100) ]
+      set delta_l [ expr 0.01*round($deltal*100) ]
+      set ew_short [ expr 0.01*round($ew*100) ]
+      set sigma_ew [ expr 0.01*round($sigma*100) ]
+      set snr_short [ expr round($snr) ]
+      
+      #--- Affichage des résultats :
+      ::console::affiche_resultat "\n"
+      ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
+      ::console::affiche_resultat "Sigma(EW)=$sigma_ew A.\n"
+      ::console::affiche_resultat "SNR=$snr_short.\n\n"
+      #set resultats [ list $ew $sigma_ew ]
+      #return $ew
+      set results [ list $ew_short $sigma_ew $snr_short "EW($delta_l=$l_deb-$l_fin)" ]
+      return $results
+   } else {
+      ::console::affiche_erreur "Usage: spc_autoew1 nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+   }
 }
 #***************************************************************************#
 
@@ -1367,7 +1440,55 @@ proc spc_autoew { args } {
 
 
 ####################################################################
-# Procédure de calcul d'intensité d'une raie
+# Calcul la largeur equivalenbte d'une raie
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 04-04-2008
+# Date modification : 04-04-2008
+# Arguments : nom_profil_raies lambda_raie
+####################################################################
+
+proc spc_autoew { args } {
+   global conf
+   global audace
+
+   set nb_args [ llength $args ]
+   if { $nb_args == 2 || $nb_args == 3} {
+      if { $nb_args == 2 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_raie [ lindex $args 1 ]
+      } elseif { $nb_args == 3 } {
+         set filename [ file rootname [ lindex $args 0 ] ]
+         set lambda_deb [ lindex $args 1 ]
+         set lambda_fin [ lindex $args 2 ]
+      } else {
+         ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+         return 0
+      }
+
+       #--- Normalisation par extraction du continuum :
+       set sp_norma [ spc_autonorma "$filename" ]
+       #--- Mesure EW par intersection a I=1 :
+       if { $nb_args == 2 } {
+          set results_ew [ spc_autoew1 "$sp_norma" $lambda_raie ]
+       } elseif  { $nb_args == 3 } {
+          set results_ew [ spc_autoew1 "$sp_norma" $lambda_deb $lambda_fin ]
+       }
+
+       #--- Traitement des resultats :
+       file delete -force "$audace(rep_images)/$sp_norma$conf(extension,defaut)"
+       return $results_ew
+    } else {
+       ::console::affiche_erreur "Usage: spc_autoew nom_profil_raies_normalisé lambda_raie/lambda_deb lambda_fin\n"
+    }
+}
+#***************************************************************************#
+
+
+
+
+####################################################################
+# Calcul la largeur equivalenbte d'une raie
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-03-2007
@@ -1613,7 +1734,7 @@ proc spc_vrmes { args } {
 
 	#-- V/R :
 	set vr [ expr $imax1/$imax2 ]
-	::console::affiche_resultat "\nRaie V de centre $xc1 et d'intensité $imax1.\n"
+	::console::affiche_resultat "\n\# Raie V de centre $xc1 et d'intensité $imax1.\n"
 	::console::affiche_resultat "Raie R de centre $xc2 et d'intensité $imax2.\n"
 	::console::affiche_resultat "V/R=$vr.\n"
  	return $vr

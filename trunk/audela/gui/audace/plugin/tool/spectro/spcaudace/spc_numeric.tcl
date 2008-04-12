@@ -1,7 +1,7 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.10 2008-03-09 21:10:45 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.11 2008-04-12 20:39:32 bmauclaire Exp $
 
 
 
@@ -400,6 +400,7 @@ proc spc_ajustdeg2 { args } {
 # Date creation : 15-12-2005
 # Date modification : 26-05-2005
 # Arguments : liste abscisses, liste ordonnees, erreur
+# Condition : il faut 4 couples de points !
 ####################################################################
 #spc_ajustdeg3 {218.67 127.32 16.67} {211 208 210.1} 1
 #{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
@@ -1139,7 +1140,7 @@ proc spc_ajustpolynome { args } {
         #--- Affichage du resultat :
 	set testvisu "n"
 	if { $visu == "o" } {
-	    set numero_fig [ expr abs(int([lindex $coeffs 2 ])) ]
+	    set numero_fig [ expr abs(int([lindex $coeffs 2 ]*10*rand())) ]
 	    #::plotxy::clf
 	    ::plotxy::figure $numero_fig
 	    ::plotxy::plot $abscissesorig $riliss r 1

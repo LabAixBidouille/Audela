@@ -20,7 +20,7 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.16 2008-03-09 21:10:45 bmauclaire Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.17 2008-04-12 20:39:33 bmauclaire Exp $
 
 
 
@@ -381,6 +381,104 @@ proc spc_detect { args } {
 
 
 
+
+###############################################################
+# Détermine le centre vertical et la largeur d'un spectre 2D
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de creation : 11-04-2008
+# Date de mise a jour : 11-04-2008
+# Arguments : fichier fits du spectre spatial
+###############################################################
+
+proc spc_detectmoy { args } {
+
+    global audace
+    global conf
+    #-- Fraction des bords coupée :
+    set fraction_bord 0.05
+
+    if { [ llength $args ] == 1 } {
+	set filenamespc_spacial [ lindex $args 0 ]
+
+	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
+	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
+	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
+	set x1 [ expr int($fraction_bord*$naxis1) ]
+	set x2 [ expr int((1.-$fraction_bord)*$naxis1) ]
+	set y1 [ expr int($fraction_bord*$naxis2) ]
+	set y2 [ expr int((1.-$fraction_bord)*$naxis2) ]
+	#- Meth1 :
+	# set windowcoords [ list 1 $y1 1 $y2 ]
+	set windowcoords [ list $x1 $y1 $x2 $y2 ]
+	
+	#buf$audace(bufNo) binx 1 $naxis1 3
+	#set ycentre [lindex [ buf$audace(bufNo) centro $windowcoords ] 1]
+
+	#- Meth1 :
+	# buf$audace(bufNo) binx 1 $naxis1 1
+	buf$audace(bufNo) imaseries "binx x1=$x1 x2=$x2 width=1"
+	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
+	set ycenter [ lindex $gparams 5 ]
+	# Choix : la largeur de la gaussienne est de 1.7*FWHM
+	set largeur [ expr 1.7*[ lindex $gparams 6 ] ]
+	return [ list $ycenter $largeur ]
+    } else {
+	::console::affiche_erreur "Usage: spc_detectmoy spectre_2D_fits\n\n"
+    }
+}
+###############################################################
+
+
+###############################################################
+# Détermine le centre vertical et la largeur d'un spectre 2D
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de creation : 11-04-2008
+# Date de mise a jour : 12-04-2008
+# Arguments : fichier fits du spectre spatial
+###############################################################
+
+proc spc_detectserre2 { args } {
+
+    global audace
+    global conf
+    #-- Fraction des bords coupée :
+    set fraction_bord 0.05
+
+    if { [ llength $args ] == 1 } {
+	set filenamespc_spacial [ lindex $args 0 ]
+
+	buf$audace(bufNo) load "$audace(rep_images)/$filenamespc_spacial"
+	set naxis1 [lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1]
+	set naxis2 [lindex [ buf$audace(bufNo) getkwd "NAXIS2" ] 1]
+	set x1 [ expr int($fraction_bord*$naxis1) ]
+	set x2 [ expr int((1.-$fraction_bord)*$naxis1) ]
+	set y1 [ expr int($fraction_bord*$naxis2) ]
+	set y2 [ expr int((1.-$fraction_bord)*$naxis2) ]
+	#- Meth1 :
+	# set windowcoords [ list 1 $y1 1 $y2 ]
+	set windowcoords [ list $x1 $y1 $x2 $y2 ]
+	
+	#buf$audace(bufNo) binx 1 $naxis1 3
+	#set ycentre [lindex [ buf$audace(bufNo) centro $windowcoords ] 1]
+
+	#- Meth1 :
+	# buf$audace(bufNo) binx 1 $naxis1 1
+	buf$audace(bufNo) imaseries "binx x1=$x1 x2=$x2 width=1"
+	set gparams [ buf$audace(bufNo) fitgauss $windowcoords ]
+	set ycenter [ lindex $gparams 5 ]
+	# Choix : la largeur de la gaussienne est de 1.7*FWHM
+	set largeur [ expr 1.6*[ lindex $gparams 6 ] ]
+	return [ list $ycenter $largeur ]
+    } else {
+	::console::affiche_erreur "Usage: spc_detecserre2 spectre_2D_fits\n\n"
+    }
+}
+###############################################################
+
+
+
 ###############################################################
 # Détermine le centre vertical et la largeur d'un spectre 2D
 #
@@ -529,7 +627,7 @@ proc spc_binlopt { args } {
 
     if { [llength $args] == 3 } {
 	set spectre2d [ lindex $args 0 ]
-	set ycentre [ expr int([ lindex $args 1 ]) ]
+	set ycentre [ expr round([ lindex $args 1 ]) ]
 	set ylargeur [ lindex $args 2 ]
 
 	#--- Détermine les limites adaptées du binning :
@@ -760,7 +858,7 @@ proc spc_subsky { args } {
 
 proc spc_profil { args } {
 
-    global audace
+    global audace spcaudace
     global audela
     global conf
 
@@ -789,7 +887,7 @@ proc spc_profil { args } {
 	    set methodedetect [ lindex $args 2 ]
 	    set methodebin [ lindex $args 3 ]
 	} else {
-	    ::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, none, frac)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add, rober, horne)?\n\n"
+	    ::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, none, frac)? ?méthode de détection du spectre (large, serre, moy)? ?méthode de bining (add, rober, horne)?\n\n"
 	}
 
 	#--- Chargement du spectre 2D :
@@ -810,6 +908,8 @@ proc spc_profil { args } {
 	    set gauss_params [ spc_detect $spectre2d ]
 	} elseif { $methodedetect == "serre" } {
 	    set gauss_params [ spc_detectasym $spectre2d ]
+	} elseif { $methodedetect == "moy" } {
+	    set gauss_params [ spc_detectmoy $spectre2d ]
 	} else {
 	    set gauss_params [ spc_detect $spectre2d ]
 	}
@@ -851,8 +951,9 @@ proc spc_profil { args } {
 		}
 	    }
 	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
-	    buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
-	    buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
+	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 float "" "" ]
+	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 float "" "" ]
+            buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
 	    buf$audace(bufNo) bitpix float
 	    if { [regexp {1.3.0} $audela(version) match resu ] } {
 		buf$audace(bufNo) save "$audace(rep_images)/${spectre_zone_fc}_spc"
@@ -872,7 +973,7 @@ proc spc_profil { args } {
 	file delete -force "$audace(rep_images)/${spectre2d}_zone$conf(extension,defaut)"
 	return $profil_fc
    } else {
-	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre)? ?méthode de bining (add, rober, horne)?\n\n"
+	::console::affiche_erreur "Usage: spc_profil spectre_2D_fits ?méthode soustraction fond de ciel (moy, moy2, med, sup, inf, none, back)? ?méthode de détection du spectre (large, serre, moy)? ?méthode de bining (add, rober, horne)?\n\n"
    }
 }
 #**************************************************************************#
@@ -2053,9 +2154,11 @@ proc spc_profillampe { args } {
        #--- Crée le profil de raie du spectre de la lampe de étalon :
        buf$audace(bufNo) load "$audace(rep_images)/$spectre_lampe"
        buf$audace(bufNo) imaseries "BINY y1=$y1 y2=$y2 height=1"
-       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
+       buf$audace(bufNo) delkwd "NAXIS2"
        buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
+       buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save $audace(rep_images)/${spectre_lampe}_spc
        buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "\nProfil de raie de la lampe de calibration sauvé sous ${spectre_lampe}_spc\n"
@@ -2092,9 +2195,11 @@ proc spc_profillampezone { args } {
        
        #--- Crée le profil de raie du spectre de la lampe de étalon :
        buf$audace(bufNo) imaseries "BINY y1=$y1 y2=$y2 height=1"
-       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) setkwd [ list NAXIS 1 int "" "" ]
+       buf$audace(bufNo) delkwd "NAXIS2"
        buf$audace(bufNo) setkwd [list "CRVAL1" 1.0 float "" ""]
        buf$audace(bufNo) setkwd [list "CDELT1" 1.0 float "" ""]
+       buf$audace(bufNo) bitpix float
        buf$audace(bufNo) save1d $audace(rep_images)/${spectre_lampe}_spc
        buf$audace(bufNo) bitpix short
        ::console::affiche_resultat "\nProfil de raie de la lampe de calibration sauvé sous ${spectre_lampe}_spc\n"

@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.19 2008-03-22 14:01:47 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.20 2008-04-12 20:39:31 bmauclaire Exp $
 
 
 
@@ -103,8 +103,8 @@ proc spc_winini { } {
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spc2png_w) -command "spc_export2png" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_spc2png2_w) -command "spc_fit2pngopt" -underline 0
       # .spc.menuBar.conv add command -label $caption(spcaudace,gui,writeps) -command "spc_postscript" -underline 0
-      .spc.menuBar.conv add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fit2ps) -command "spc_fit2ps" -underline 0
+      .spc.menuBar.conv add command -label $caption(spcaudace,gui,writegif) -command "spc_scgif" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_fits2dat_w) -command "spc_fits2dat" -underline 0
       .spc.menuBar.conv add command -label $caption(spcaudace,gui,spc_file_space)
@@ -179,7 +179,8 @@ proc spc_winini { } {
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibretelluric) -command "spc_calibretelluric" -underline 0 -accelerator "Ctrl-T"
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calobilan) -command "spc_calobilan" -underline 0 -accelerator "Ctrl-B"
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_caloverif) -command "spc_caloverif" -underline 0 -accelerator "Ctrl-V"
-      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadh2o) -command "spc_loadh2o" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadneon) -command "spc_loadneon" -underline 0
+      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_loadmh2o) -command "spc_loadmh2o" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrum_w) -command "spc_rinstrum" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
@@ -486,7 +487,7 @@ proc spc_loadmore { args } {
 	.spc.g element create $lineName -symbol none -xdata gx$lineName -ydata gy$lineName -smooth natural -color $lineColor
 
 	#--- Traitement du résultat :
-	::console::affiche_resultat "Nom du profil affiché de couleur $lineColor : $lineName\n Nom à utiliser avec spc_gdelete.\n"
+	::console::affiche_resultat "Nom du profil affiché de couleur $lineColor : $lineName\nNom à utiliser avec spc_gdelete \n"
 	lappend spcaudace(gloaded) "$lineName"
 	return "$lineName"
     } else {

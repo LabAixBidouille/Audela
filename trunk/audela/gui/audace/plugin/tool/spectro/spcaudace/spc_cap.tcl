@@ -3,14 +3,14 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.16 2008-03-02 20:45:25 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.17 2008-04-12 20:39:31 bmauclaire Exp $
 
 
 global caption langage
 
 # *************** Version anglaise ****************************
 
-   set caption(spcaudace,gui,main_title)                         "SpcAud'ACE: Spectrum analyser"
+   set caption(spcaudace,gui,main_title)                         "SpcAud'ACE: spectrum analyser"
    set caption(spcaudace,gui,acq)                                "CCD acquisition"
    set caption(spcaudace,gui,erreur,saisie)                      "Entry error"
 
@@ -93,7 +93,7 @@ global caption langage
 
    #--- Menu Calibration ---#
    set caption(spcaudace,gui,spc_calibration)                    "Calibration"
-   set caption(spcaudace,gui,spc_loadh2o)                        "Load neon lines profile"
+   set caption(spcaudace,gui,spc_loadneon)                       "Load neon lines profile"
    set caption(spcaudace,gui,spc_calibre2file_w)                 "Wavelength calibration"
    set caption(spcaudace,gui,spc_calibre2loifile_w)              "Wavelength calibration with a spectral reference lamp"
    set caption(spcaudace,gui,spc_calibredecal)                   "Wavelength shifting"
@@ -102,7 +102,7 @@ global caption langage
    set caption(spcaudace,gui,spc_calibretelluric)                "Wavelength calibration with telluric lines"
    set caption(spcaudace,gui,spc_calobilan)                      "Wavelength calibration diagnostic with telluric lines"
    set caption(spcaudace,gui,spc_caloverif)                      "Wavelength calibration checking with telluric lines"
-   set caption(spcaudace,gui,spc_loadh2o)                        "Load tellruic lines profile"
+   set caption(spcaudace,gui,spc_loadmh2o)                       "Superpose tellruic lines profile"
 
    set caption(spcaudace,gui,spc_calibre_space)                  "---------------------------------------------------------------------------"
    set caption(spcaudace,gui,spc_rinstrum_w)                     "Compute instrumental response (RI)"
@@ -156,7 +156,7 @@ global caption langage
 # *************** Version française ***************************
 if { [string compare $langage "french"] == "0" } {
 
-     set caption(spcaudace,gui,main_title)                    "SpcAud'ACE : Analyseur de spectres"
+     set caption(spcaudace,gui,main_title)                    "SpcAud'ACE : analyseur de spectres"
      set caption(spcaudace,gui,acq)                           "Acquisition CCD"
      set caption(spcaudace,gui,erreur,saisie)                 "Erreur de saisie"
 
@@ -248,7 +248,7 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_calibretelluric)           "Etalonnage avec les raies telluriques"
      set caption(spcaudace,gui,spc_calobilan)                 "Bilan de la calibration avec les raies telluriques"
      set caption(spcaudace,gui,spc_caloverif)                 "Vérifie la calibration avec les raies telluriques"
-     set caption(spcaudace,gui,spc_loadh2o)                   "Visualiser le profil de raies de l'eau"
+     set caption(spcaudace,gui,spc_loadmh2o)                  "Superposer le profil de raies de l'eau"
      set caption(spcaudace,gui,spc_calibre_space)             "---------------------------------------------------------------------------"
      set caption(spcaudace,gui,spc_rinstrum_w)                "Calcul de la réponse instrumentale"
      set caption(spcaudace,gui,spc_rinstrumcorr_w)            "Correction de la réponse instrumentale"

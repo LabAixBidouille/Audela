@@ -5,7 +5,7 @@
 #*********************************************************************************#
 # Chargement : source $audace(rep_scripts)/spcaudace/spc_gui_boxes.tcl
 
-# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.13 2008-03-02 20:23:57 bmauclaire Exp $
+# Mise a jour $Id: spc_gui_metaboxes.tcl,v 1.14 2008-04-12 20:39:31 bmauclaire Exp $
 
 
 
@@ -3157,7 +3157,8 @@ namespace eval ::param_spc_audace_traite2rinstrum {
       #--- Cree la fenetre .param_spc_audace_traite2rinstrum de niveau le plus haut
       toplevel .param_spc_audace_traite2rinstrum -class Toplevel -bg $audace(param_spc_audace,traite2rinstrum,color,backpad)
       # wm geometry .param_spc_audace_traite2rinstrum 450x586+144-5
-      wm geometry .param_spc_audace_traite2rinstrum 450x643+150-20
+      # wm geometry .param_spc_audace_traite2rinstrum 450x643+150-20
+      wm geometry .param_spc_audace_traite2rinstrum 501x636+150-20
       wm resizable .param_spc_audace_traite2rinstrum 1 1
       wm title .param_spc_audace_traite2rinstrum $caption(spcaudace,metaboxes,traite2rinstrum,titre)
       wm protocol .param_spc_audace_traite2rinstrum WM_DELETE_WINDOW "::param_spc_audace_traite2rinstrum::annuler"
@@ -4273,6 +4274,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       set audace(param_spc_audace,traitestellaire,config,cal_eau) "n"
       set audace(param_spc_audace,traitestellaire,config,export_png) "n"
       set audace(param_spc_audace,traitestellaire,config,export_bess) "n"
+      set audace(param_spc_audace,traitestellaire,config,2lamps) "n"
 
 
       # === Variables d'environnement
@@ -4289,7 +4291,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       #--- Cree la fenetre .param_spc_audace_traitestellaire de niveau le plus haut
       toplevel .param_spc_audace_traitestellaire -class Toplevel -bg $audace(param_spc_audace,traitestellaire,color,backpad)
       #wm geometry .param_spc_audace_traitestellaire 450x558+10+10
-      wm geometry .param_spc_audace_traitestellaire 486x485+146-25
+      wm geometry .param_spc_audace_traitestellaire 486x506+146-25
       wm resizable .param_spc_audace_traitestellaire 1 1
       wm title .param_spc_audace_traitestellaire $caption(spcaudace,metaboxes,traitestellaire,titre)
       wm protocol .param_spc_audace_traitestellaire WM_DELETE_WINDOW "::param_spc_audace_traitestellaire::annuler"
@@ -4505,6 +4507,26 @@ namespace eval ::param_spc_audace_traitestellaire {
       pack .param_spc_audace_traitestellaire.methcos -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
 
 
+      #--- Label + Entry pour 2lamps
+      #-- Partie Label
+      frame .param_spc_audace_traitestellaire.2lamps -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitestellaire,color,backpad)
+      label .param_spc_audace_traitestellaire.2lamps.label  \
+	      -font $audace(param_spc_audace,traitestellaire,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,traitestellaire,config,2lamps) " -bg $audace(param_spc_audace,traitestellaire,color,backpad) \
+	      -fg $audace(param_spc_audace,traitestellaire,color,textkey) -relief flat
+      pack  .param_spc_audace_traitestellaire.2lamps.label -in .param_spc_audace_traitestellaire.2lamps -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitestellaire.2lamps.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitestellaire,config,2lamps) \
+         -values $liste_on
+      pack  .param_spc_audace_traitestellaire.2lamps.combobox -in .param_spc_audace_traitestellaire.2lamps -side right -fill none
+      pack .param_spc_audace_traitestellaire.2lamps -in .param_spc_audace_traitestellaire -fill x -pady 1 -padx 12
+
 
       #--- Label + Entry pour norma
       #-- Partie Label
@@ -4594,20 +4616,19 @@ namespace eval ::param_spc_audace_traitestellaire {
 
 
   proc go {} {
-      global audace conf
+      global audace conf spcaudace
       global caption
       global lampe2calibre_fileout
 
       #-- Options prédéfinies :
-      set methreg "spc"
-      set methsel "serre"
-      set methsky "med"
-      set methbin "rober"
+      set methreg "$spcaudace(methreg)"
+      set methsel "$spcaudace(methsel)"
+      set methsky "$spcaudace(methsky)"
+      set methbin "$spcaudace(methbin)"
       set methsmo "n"
       set ejbad "n"
       set ejtilt "n"
       set rmfpretrait "o"
-
       ::param_spc_audace_traitestellaire::recup_conf
       set lampe $audace(param_spc_audace,traitestellaire,config,lampe)
       set brut $audace(param_spc_audace,traitestellaire,config,brut)
@@ -4618,6 +4639,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       set rinstrum $audace(param_spc_audace,traitestellaire,config,rinstrum)
       set methraie $audace(param_spc_audace,traitestellaire,config,methraie)
       set methcos $audace(param_spc_audace,traitestellaire,config,methcos)
+      set flag_2lamps $audace(param_spc_audace,traitestellaire,config,2lamps)
       set methinv $audace(param_spc_audace,traitestellaire,config,methinv)
       set methnorma $audace(param_spc_audace,traitestellaire,config,norma)
       set cal_eau $audace(param_spc_audace,traitestellaire,config,cal_eau)
@@ -4629,7 +4651,7 @@ namespace eval ::param_spc_audace_traitestellaire {
       if { $offset=="" } {
 	  set offset "none"
       }
-      set listeargs [ list $lampe $brut $noir $plu $noirplu $offset $rinstrum $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $rmfpretrait $cal_eau $export_png $export_bess ]
+      set listeargs [ list $lampe $brut $noir $plu $noirplu $offset $rinstrum $methreg $methcos $flag_2lamps $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $rmfpretrait $cal_eau $export_png $export_bess ]
 
 
 
@@ -4639,7 +4661,7 @@ namespace eval ::param_spc_audace_traitestellaire {
 	  #-- Test si le fichier "lampe" est bien calibré :
 	  set flag_calibration [ spc_testcalibre "$lampe" ]
 	  if { $flag_calibration != -1 } {
-	      set fileout [ spc_traitestellaire $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait $flag_calibration ]
+	      set fileout [ spc_traitestellaire $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $cal_eau $export_png $export_bess $methreg $methsel $methsky $methbin $methsmo $ejbad $ejtilt $rmfpretrait $flag_2lamps $flag_calibration ]
 	      destroy .param_spc_audace_traitestellaire
 	      return $fileout
 	  }
@@ -4724,7 +4746,7 @@ namespace eval ::param_spc_audace_traitenebula {
       set audace(param_spc_audace,traitenebula,config,methbin) "rober"
       set audace(param_spc_audace,traitenebula,config,smooth) "n"
       set audace(param_spc_audace,traitenebula,config,methmasters) "o"
-
+      set audace(param_spc_audace,traitenebula,config,2lamps) "n"
 
       # === Variables d'environnement
       # backpad : #F0F0FF
@@ -4740,7 +4762,8 @@ namespace eval ::param_spc_audace_traitenebula {
       #--- Cree la fenetre .param_spc_audace_traitenebula de niveau le plus haut
       toplevel .param_spc_audace_traitenebula -class Toplevel -bg $audace(param_spc_audace,traitenebula,color,backpad)
       #wm geometry .param_spc_audace_traitenebula 450x558+10+10
-      wm geometry .param_spc_audace_traitenebula 486x562+191-20
+      #wm geometry .param_spc_audace_traitenebula 486x562+191-20
+      wm geometry .param_spc_audace_traitenebula 522x562+191-20
       wm resizable .param_spc_audace_traitenebula 1 1
       wm title .param_spc_audace_traitenebula $caption(spcaudace,metaboxes,traitenebula,titre)
       wm protocol .param_spc_audace_traitenebula WM_DELETE_WINDOW "::param_spc_audace_traitenebula::annuler"
@@ -4955,6 +4978,25 @@ namespace eval ::param_spc_audace_traitenebula {
       pack  .param_spc_audace_traitenebula.methcos.combobox -in .param_spc_audace_traitenebula.methcos -side right -fill none
       pack .param_spc_audace_traitenebula.methcos -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
+      #--- Label + Entry pour 2lamps
+      #-- Partie Label
+      frame .param_spc_audace_traitenebula.2lamps -borderwidth 0 -relief flat -bg $audace(param_spc_audace,traitenebula,color,backpad)
+      label .param_spc_audace_traitenebula.2lamps.label  \
+	      -font $audace(param_spc_audace,traitenebula,font,c12b) \
+	      -text "$caption(spcaudace,metaboxes,traitenebula,config,2lamps) " -bg $audace(param_spc_audace,traitenebula,color,backpad) \
+	      -fg $audace(param_spc_audace,traitenebula,color,textkey) -relief flat
+      pack  .param_spc_audace_traitenebula.2lamps.label -in .param_spc_audace_traitenebula.2lamps -side left -fill none
+      #-- Partie Combobox
+      ComboBox .param_spc_audace_traitenebula.2lamps.combobox \
+         -width 7          \
+         -height [ llength $liste_on ]  \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable audace(param_spc_audace,traitenebula,config,2lamps) \
+         -values $liste_on
+      pack  .param_spc_audace_traitenebula.2lamps.combobox -in .param_spc_audace_traitenebula.2lamps -side right -fill none
+      pack .param_spc_audace_traitenebula.2lamps -in .param_spc_audace_traitenebula -fill x -pady 1 -padx 12
 
 
       #--- Label + Entry pour norma
@@ -5125,6 +5167,7 @@ namespace eval ::param_spc_audace_traitenebula {
       set rinstrum $audace(param_spc_audace,traitenebula,config,rinstrum)
       set methraie $audace(param_spc_audace,traitenebula,config,methraie)
       set methcos $audace(param_spc_audace,traitenebula,config,methcos)
+      set flag_2lamps $audace(param_spc_audace,traitenebula,config,2lamps)
       set methinv $audace(param_spc_audace,traitenebula,config,methinv)
       set methnorma $audace(param_spc_audace,traitenebula,config,norma)
       set export_png $audace(param_spc_audace,traitenebula,config,export_png)
@@ -5139,7 +5182,7 @@ namespace eval ::param_spc_audace_traitenebula {
       if { $offset=="" } {
 	  set offset "none"
       }
-      set listeargs [ list $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $export_png $methreg $methsky $methbin $methsmo $rmfpretrait ]
+      set listeargs [ list $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $flag_2lamps $methinv $methnorma $export_png $methreg $methsky $methbin $methsmo $rmfpretrait ]
 
 
 
@@ -5149,7 +5192,7 @@ namespace eval ::param_spc_audace_traitenebula {
 	  #-- Test si le fichier "lampe" est bien calibré :
 	  set flag_calibration [ spc_testcalibre "$lampe" ]
 	  if { $flag_calibration != -1 } {
-	      set fileout [ spc_traitenebula $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $export_png $methreg $methsky $methbin $methsmo $rmfpretrait $flag_calibration ]
+	      set fileout [ spc_traitenebula $lampe $brut $noir $plu $noirplu $offset $rinstrum $methraie $methcos $methinv $methnorma $export_png $methreg $methsky $methbin $methsmo $rmfpretrait $flag_2lamps $flag_calibration ]
 	      destroy .param_spc_audace_traitenebula
 	      return $fileout
 	  }
