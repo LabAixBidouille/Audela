@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.14 2008-04-06 09:01:45 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.15 2008-04-12 16:48:14 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -566,9 +566,14 @@ proc ::audine::stop { camItem } {
    #--- Gestion du bouton actif/inactif
    ::audine::confAudineInactif $camItem
 
-   #--- Si la fenetre Test pour la fabrication de la camera est affichee, je la ferme
+   #--- Si la fenetre 'Test pour la fabrication de la camera' est affichee, je la ferme
    if { [ winfo exists $audace(base).testAudine ] } {
       ::testAudine::fermer
+   }
+
+   #--- Si la fenetre 'Alimentation AlAudine avec port I2C' est affichee, je la ferme
+   if { [ winfo exists $audace(base).alimAlAudineNT ] } {
+      ::AlAudine_NT::fermer
    }
 
    #--- Je ferme la liaison d'acquisition de la camera
