@@ -3,13 +3,12 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.19 2008-03-01 18:46:06 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.20 2008-04-12 20:44:40 bmauclaire Exp $
 #
 
 #
 ##--------------------- Liste des fonctions -----------------------------------#
 #
-# bm_ls                  : Liste les fichiers fits du répertoire de travail
 # bm_sphot               : Extrait le contenu d'un mot clef d'une serie de fichiers
 # bm_ovakwd              : Ajoute et initialise un mot clef et sa valeur pour les spectres LHIRES
 # bm_addmotcleftxt       : Ajoute et initialise un mot clef et sa valeur
@@ -37,6 +36,10 @@
 # bm_cutima              : Decoupage d'une zone selectionnee a la souris d'une image chargee
 # bm_zoomima             : Zoom de l'image ou d'une partie selectionnee de l'image chargee
 # bm_exptime             : Calcule la duree totale d'exposition d'une serie
+# bm_registerhplin       : registration horizontale assistée d'une série d'image.
+# bm_ls                  : Liste les fichiers fits du répertoire de travail
+# bm_rm                  : efface des fichiers dans le repertoire courant
+# bm_mv                  : renome un fichier du repertoire courant
 #-----------------------------------------------------------------------------#
 
 
@@ -70,7 +73,59 @@ proc bm_ls { args } {
 }
 #*****************************************************************************#
 
+###############################################################################
+# Description : efface des fichiers du repertoire courant
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2008-03-23
+# Date de mise a jour : 2008-03-23
+# Arguments : nom_fichiers
+###############################################################################
 
+proc bm_rm { args } {
+   global conf audace
+
+   set nbargs [ llength $args ]
+   if { $nbargs == 0 } {
+      console::affiche_erreur "Usage: bm_rm fichier1 fichier2 ...\n"
+      return ""
+   } elseif { $nbargs == 1 } {
+      set fichier [ file rootname [ lindex $args 0 ] ]
+      file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
+      ::console::affiche_resultat "$fichier effacé.\n"
+   } else {
+      foreach nom $args {
+         set fichier [ file rootname $nom ]
+         file delete -force "$audace(rep_images)/$fichier$conf(extension,defaut)"
+         ::console::affiche_resultat "$fichier effacé.\n"
+      }
+   }
+}
+#*****************************************************************************#
+
+###############################################################################
+# Description : efface des fichiers du repertoire courant
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2008-03-23
+# Date de mise a jour : 2008-03-23
+# Arguments : nom_fichiers
+###############################################################################
+
+proc bm_mv { args } {
+   global conf audace
+
+   set nbargs [ llength $args ]
+   if { $nbargs == 2 } {
+      set oldname [ file rootname [ lindex $args 0 ] ]
+      set newname [ file rootname [ lindex $args 1 ] ]
+      if { "$newname" != "$oldname" } {
+         file rename -force "$audace(rep_images)/$oldname$conf(extension,defaut)" "$audace(rep_images)/$newname$conf(extension,defaut)"
+         ::console::affiche_resultat "$oldname renomé en $newname.\n"
+      }
+   } else {
+      console::affiche_erreur "Usage: bm_mv ancien_nom nouveau_nom\n"
+   }
+}
+#*****************************************************************************#
 
 ###############################################################################
 # Description : Extrait le contenu d'un mot clef d'une serie de fichiers
@@ -724,8 +779,8 @@ proc bm_renameext2 { args } {
 # Description : Registration planetaire sur un point initial et final : translation lineaire
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 16-12-2005
-# Date de mise a jour : 16-12-2005
-# Argument : nom_generique_fichier (sans extension)
+# Date de mise a jour : 16-12-2005/19-03-2008
+# Argument : nom_generique_fichier (sans extension) effacement fichiers appariés (o/n)
 ###############################################################################
 
 proc bm_registerplin { args } {
@@ -733,14 +788,22 @@ proc bm_registerplin { args } {
    global conf
    global flag_ok
 
-   if {[llength $args] == 1} {
-      set nom_generique [ lindex $args 0 ]
+   if { [llength $args] <= 2 } {
+      if { [llength $args] == 2 } {
+         set nom_generique [ lindex $args 0 ]
+         set flag_erase [ lindex $args 1 ]
+      } elseif { [llength $args] == 1 } {
+         set nom_generique [ lindex $args 0 ]
+         set flag_erase "o"
+      } else {
+         ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
+      }
       set repdflt [bm_goodrep]
 
       #--- Renumerote la serie de fichier ----
       #renumerote $nom_generique
       #set liste_images [ glob ${nom_generique}*$conf(extension,defaut) ]
-      set liste_images [ lsort -dictionary [glob ${nom_generique}*$conf(extension,defaut)] ]
+      set liste_images [ lsort -dictionary [ glob ${nom_generique}\[0-9\]*$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]*$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]*$conf(extension,defaut) ] ]
       set nbimg [ llength $liste_images ]
 
       #--- Reperage du point de depart ----
@@ -863,9 +926,9 @@ proc bm_registerplin { args } {
       foreach fichier $liste_images {
          set delta_x [expr $deplacement_x*($i-1)]
          set delta_y [expr $deplacement_y*($i-1)]
-         buf$audace(bufNo) load $fichier
+         buf$audace(bufNo) load "$audace(rep_images)/$fichier"
          buf$audace(bufNo) imaseries "TRANS trans_x=$delta_x trans_y=$delta_y"
-         buf$audace(bufNo) save ${pref_nom_generique}_reg-$i
+         buf$audace(bufNo) save "$audace(rep_images)/${pref_nom_generique}_reg-$i"
          incr i
       }
       file delete ${pref_nom_generique}_reg-1$conf(extension,defaut)
@@ -876,13 +939,194 @@ proc bm_registerplin { args } {
       ::console::affiche_resultat "Somme de $nbimg images... sauvées sous ${pref_nom_generique}_s$nbimg\n"
       sadd ${pref_nom_generique}_reg- ${pref_nom_generique}_s$nbimg $nbimg
       loadima ${pref_nom_generique}_s$nbimg
-      delete2 ${pref_nom_generique}_reg- $nbimg
+      if { $flag_erase == "o" } {
+         delete2 ${pref_nom_generique}_reg- $nbimg
+      }
       cd $repdflt
    } else {
-      ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images\n\n"
+      ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
+
+
+
+###############################################################################
+# Description : Registration planetaire horizontale sur un point initial et final : translation horizontale lineaire
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 16-12-2005
+# Date de mise a jour : 19-03-2008
+# Argument : nom_generique_fichier (sans extension) effacement fichiers appariés (o/n)
+###############################################################################
+
+proc bm_registerhplin { args } {
+   global audace
+   global conf
+   global flag_ok
+
+   if { [llength $args] <= 2 } {
+      if { [llength $args] == 2 } {
+         set nom_generique [ lindex $args 0 ]
+         set flag_erase [ lindex $args 1 ]
+      } elseif { [llength $args] == 1 } {
+         set nom_generique [ lindex $args 0 ]
+         set flag_erase "o"
+      } else {
+         ::console::affiche_erreur "Usage : bm_registerplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
+      }
+      set repdflt [bm_goodrep]
+
+      #--- Renumerote la serie de fichier ----
+      #renumerote $nom_generique
+      #set liste_images [ glob ${nom_generique}*$conf(extension,defaut) ]
+      set liste_images [ lsort -dictionary [ glob ${nom_generique}\[0-9\]*$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]*$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]*$conf(extension,defaut) ] ]
+      set nbimg [ llength $liste_images ]
+
+      #--- Reperage du point de depart ----
+      set image_depart [lindex $liste_images 0]
+      loadima $image_depart
+      set flag_ok 0
+      #-- Creation de la fenetre
+      if { [ winfo exists .benji ] } {
+         destroy .benji
+      }
+      toplevel .benji
+      wm geometry .benji
+      wm title .benji "Get zone"
+      wm transient .benji .audace
+      #-- Textes d'avertissement
+      label .benji.lab -text "Sélectionnez l'objet à suivre (boîte petite)"
+      pack .benji.lab -expand true -expand true -fill both
+      #-- Sous-trame pour boutons
+      frame .benji.but
+      pack .benji.but -expand true -fill both
+      #-- Bouton "Ok"
+      button .benji.but.1  -command {set flag_ok 1} -text "Ok"
+      pack .benji.but.1 -side left -expand true -fill both
+      #-- Bouton "Annuler"
+      button .benji.but.2 -command {set flag_ok 2} -text "Annuler"
+      pack .benji.but.2 -side right -expand true -fill both
+      #-- Attend que la variable $flag_ok change
+      vwait flag_ok
+      if { $flag_ok==1 } {
+         set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
+         set flag_ok 2
+         destroy .benji
+      } elseif { $flag_ok==2 } {
+         set flag_ok 2
+         destroy .benji
+         return 0
+      }
+      #-- Determine le photocentre de la zone selectionee
+      set stats [ buf$audace(bufNo) stat ]
+      #set point_depart [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ]
+      set point_depart [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
+      ::console::affiche_resultat "Point A : $point_depart\n"
+
+      #---------------------------------------------------------#
+      #--- Reperage du point final ----
+      set image_finale [lindex $liste_images [expr $nbimg-1] ]
+      loadima $image_finale
+      set flag_ok 0
+      #-- Creation de la fenetre
+      if { [ winfo exists .benji ] } {
+         destroy .benji
+      }
+      toplevel .benji
+      wm geometry .benji
+      wm title .benji "Get zone"
+      wm transient .benji .audace
+      #-- Textes d'avertissement
+      label .benji.lab -text "Selectionnez l'objet à suivre (boîte petite)"
+      pack .benji.lab -expand true -expand true -fill both
+      #-- Sous-trame pour boutons
+      frame .benji.but
+      pack .benji.but -expand true -fill both
+      #-- Bouton "Ok"
+      button .benji.but.1  -command {set flag_ok 1} -text "Ok"
+      pack .benji.but.1 -side left -expand true -fill both
+      #-- Bouton "Annuler"
+      button .benji.but.2 -command {set flag_ok 2} -text "Annuler"
+      pack .benji.but.2 -side right -expand true -fill both
+      #-- Attend que la variable $flag_ok change
+      vwait flag_ok
+      if { $flag_ok==1 } {
+         set coords_zone [ ::confVisu::getBox $audace(visuNo) ]
+         set flag_ok 2
+         destroy .benji
+      } elseif { $flag_ok==2 } {
+         set flag_ok 2
+         destroy .benji
+         return 0
+      }
+      #-- Determine le photocentre de la zone selectionee
+      set stats [ buf$audace(bufNo) stat ]
+      set point_final [ lrange [ buf$audace(bufNo) centro $coords_zone [lindex $stats 6] ] 0 1]
+      ::console::affiche_resultat "Point B : $point_final\n"
+
+      #--- Caclul le deplacement de l'objet entre chaque image
+      set erra [ lindex $point_depart 2 ]
+      #set erra 0.1
+      if { $erra >=0.3 } {
+         set x_depart [expr [lindex $point_depart 0]+$erra ]
+         set y_depart [expr [lindex $point_depart 1]+$erra ]
+      } else {
+         set x_depart [ lindex $point_depart 0 ]
+         set y_depart [ lindex $point_depart 1 ]
+      }
+      set errb [ lindex $point_final 2 ]
+      if { $erra >=0.3 } {
+         set x_final [expr [lindex $point_final 0]+$errb ]
+         set y_final [expr [lindex $point_final 1]+$errb ]
+      } else {
+         set x_final [ lindex $point_final 0 ]
+         set y_final [ lindex $point_final 1 ]
+      }
+      #set x_final [ lindex $point_final 0 ]
+      #set y_final [ lindex $point_final 1 ]
+      set ecart_x [expr $x_final-$x_depart ]
+      set ecart_y [expr $y_final-$y_depart ]
+      ::console::affiche_resultat "Ecart total en x : $ecart_x ; Ecart total en y : $ecart_y\n"
+      set deplacement_x [ expr -1.0*$ecart_x/$nbimg ]
+      set deplacement_y [ expr -1.0*$ecart_y/$nbimg ]
+      ::console::affiche_resultat "Déplacement moyen entre chaque image : $deplacement_x ; $deplacement_y\n"
+
+      #--- Recalage de chaque image (sauf n°1)
+      #-- le deplacement de l'objet est suppose lineaire
+      #-- Isole le prefixe des noms de fichiers
+      regexp {(.+)\-} $nom_generique match pref_nom_generique
+      ::console::affiche_resultat "Appariement de $nbimg images...\n"
+      #- trans2 est Bugge !
+      #trans2 $nom_generique ${pref_nom_generique}_reg- $nbimg $deplacement_x $deplacement_y
+      set i 1
+      foreach fichier $liste_images {
+         set delta_x [expr $deplacement_x*($i-1)]
+         set delta_y [expr $deplacement_y*($i-1)]
+         buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+         buf$audace(bufNo) imaseries "TRANS trans_x=$delta_x trans_y=0"
+         buf$audace(bufNo) save "$audace(rep_images)/${pref_nom_generique}_reg-$i"
+         incr i
+      }
+      file delete ${pref_nom_generique}_reg-1$conf(extension,defaut)
+      file copy ${pref_nom_generique}-1$conf(extension,defaut) ${pref_nom_generique}_reg-1$conf(extension,defaut)
+      ::console::affiche_resultat "Images recalées sauvées sous ${pref_nom_generique}_reg-n°$conf(extension,defaut)\n"
+
+      #--- Somme des images :
+      ::console::affiche_resultat "Somme de $nbimg images... sauvées sous ${pref_nom_generique}_s$nbimg\n"
+      sadd ${pref_nom_generique}_reg- ${pref_nom_generique}_s$nbimg $nbimg
+      loadima ${pref_nom_generique}_s$nbimg
+      if { $flag_erase == "o" } {
+         delete2 ${pref_nom_generique}_reg- $nbimg
+      }
+      cd $repdflt
+   } else {
+      ::console::affiche_erreur "Usage : bm_registerhplin nom_generique_images ?effacement fichiers appariés (o/n)?\n\n"
+   }
+}
+#-----------------------------------------------------------------------------#
+
+
+
 
 ###############################################################################
 # Description : Cree un flat synthetique (image d'intensite uniforme) de nxp pixels
