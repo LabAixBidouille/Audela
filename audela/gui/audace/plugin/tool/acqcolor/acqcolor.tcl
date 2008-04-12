@@ -2,7 +2,7 @@
 # Fichier : acqcolor.tcl
 # Description : Outil pour l'acquisition d'images en couleur
 # Auteurs : Alain KLOTZ et Pierre THIERRY
-# Mise a jour $Id: acqcolor.tcl,v 1.12 2007-04-28 19:35:47 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.tcl,v 1.13 2008-04-12 16:42:47 robertdelmas Exp $
 #
 
 proc testexit { } {
@@ -1578,7 +1578,7 @@ proc header_color { } {
    wm geometry $audace(base).header_color +3+75
 
    if { [ buf1000 imageready ] == "1" } {
-      Scrolled_Text $audace(base).header_color.slb -width 87 -font $audace(font,en_tete_1) -height 20
+      Scrolled_Text $audace(base).header_color.slb -width 150 -font $audace(font,en_tete_1) -height 20
       pack $audace(base).header_color.slb -fill y -expand true
       $audace(base).header_color.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
       $audace(base).header_color.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)

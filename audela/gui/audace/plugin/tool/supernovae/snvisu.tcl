@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.27 2007-10-05 17:25:07 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.28 2008-04-12 16:43:54 robertdelmas Exp $
 #
 
 global audace
@@ -2050,7 +2050,7 @@ proc sn_header { bufnum } {
    wm geometry $audace(base).snheader +3+75
 
    if { [ buf$bufnum imageready ] == "1" } {
-      Scrolled_Text $audace(base).snheader.slb -width 87 -font $audace(font,en_tete_1) -height 20
+      Scrolled_Text $audace(base).snheader.slb -width 150 -font $audace(font,en_tete_1) -height 20
       pack $audace(base).snheader.slb -fill y -expand true
       $audace(base).snheader.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
       $audace(base).snheader.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
