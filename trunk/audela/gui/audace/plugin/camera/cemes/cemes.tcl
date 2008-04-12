@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.30 2008-04-06 09:02:36 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.31 2008-04-12 16:39:45 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -327,8 +327,17 @@ proc ::cemes::CemesDispTemp { camItem } {
          $frm.frame1.frame3.frame5.frame7.temp_ccd configure \
             -text "$caption(cemes,temperature_CCD) $temp_ccd $caption(cemes,deg_c)"
          set private(aftertemp) [ after 5000 ::cemes::CemesDispTemp $camItem ]
+      } elseif { [ winfo exists $frm.frame1.frame3.frame5.frame7.temp_ccd ] == "0" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
+         set temp_ccd [ format "%+5.2f" $temp_ccd ]
+         set private(aftertemp) [ after 5000 ::cemes::CemesDispTemp $camItem ]
+      } elseif { [ winfo exists $frm.frame1.frame3.frame5.frame7.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "1" } {
+         set temp_ccd ""
+         $frm.frame1.frame3.frame5.frame7.temp_ccd configure -text "$caption(cemes,temperature_CCD) $temp_ccd"
+         if { [ info exists private(aftertemp) ] == "1" } {
+            unset private(aftertemp)
+         }
       } else {
-         if { [ info exists private(aftertemp) ] == "0" } {
+         if { [ info exists private(aftertemp) ] == "1" } {
             unset private(aftertemp)
          }
       }

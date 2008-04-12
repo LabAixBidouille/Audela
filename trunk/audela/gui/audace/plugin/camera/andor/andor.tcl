@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.14 2008-04-06 09:02:10 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.15 2008-04-12 16:39:23 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -391,8 +391,17 @@ proc ::andor::AndorDispTemp { camItem } {
          $frm.frame2.frame6.frame11.temp_ccd configure \
             -text "$caption(andor,temperature_CCD) $temp_ccd $caption(andor,deg_c)"
          set private(aftertemp) [ after 5000 ::andor::AndorDispTemp $camItem ]
+      } elseif { [ winfo exists $frm.frame2.frame6.frame11.temp_ccd ] == "0" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
+         set temp_ccd [ format "%+5.2f" $temp_ccd ]
+         set private(aftertemp) [ after 5000 ::andor::AndorDispTemp $camItem ]
+      } elseif { [ winfo exists $frm.frame2.frame6.frame11.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "1" } {
+         set temp_ccd ""
+         $frm.frame2.frame6.frame11.temp_ccd configure -text "$caption(andor,temperature_CCD) $temp_ccd"
+         if { [ info exists private(aftertemp) ] == "1" } {
+            unset private(aftertemp)
+         }
       } else {
-         if { [ info exists private(aftertemp) ] == "0" } {
+         if { [ info exists private(aftertemp) ] == "1" } {
             unset private(aftertemp)
          }
       }
