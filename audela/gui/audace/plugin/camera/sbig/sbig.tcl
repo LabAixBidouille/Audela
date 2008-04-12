@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.14 2008-04-06 09:03:50 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.15 2008-04-12 16:40:54 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -393,18 +393,36 @@ proc ::sbig::SbigDispTemp { camItem } {
    if { [ info exists private(frm) ] } {
       set frm $private(frm)
       if { [ winfo exists $frm.power ] == "1" && [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
-         set temp_check [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
-         set temp_ccd [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
+         set temp_check   [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
+         set temp_ccd     [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
          set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
-         set regulation [ lindex $tempstatus 3 ]
-         set power [ format "%3.0f" [ expr 100.*[ lindex $tempstatus 4 ]/255. ] ]
+         set regulation   [ lindex $tempstatus 3 ]
+         set power        [ format "%3.0f" [ expr 100.*[ lindex $tempstatus 4 ]/255. ] ]
          $frm.power configure \
             -text "$caption(sbig,puissance_peltier) $power %"
          $frm.ccdtemp configure \
             -text "$caption(sbig,temp_ext) $temp_ccd $caption(sbig,deg_c) / $temp_ambiant $caption(sbig,deg_c)"
          set private(aftertemp) [ after 5000 ::sbig::SbigDispTemp $camItem ]
+      } elseif { [ winfo exists $frm.power ] == "0" && [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
+         set temp_check   [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
+         set temp_ccd     [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
+         set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
+         set regulation   [ lindex $tempstatus 3 ]
+         set power        [ format "%3.0f" [ expr 100.*[ lindex $tempstatus 4 ]/255. ] ]
+         set private(aftertemp) [ after 5000 ::sbig::SbigDispTemp $camItem ]
+      } elseif { [ winfo exists $frm.power ] == "1" && [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "1" } {
+         set temp_check   ""
+         set temp_ccd     ""
+         set temp_ambiant ""
+         set regulation   ""
+         set power        "--"
+         $frm.power configure -text "$caption(sbig,puissance_peltier) $power"
+         $frm.ccdtemp configure -text "$caption(sbig,temp_ext) $temp_ccd"
+         if { [ info exists private(aftertemp) ] == "1" } {
+            unset private(aftertemp)
+         }
       } else {
-         if { [ info exists private(aftertemp) ] == "0" } {
+         if { [ info exists private(aftertemp) ] == "1" } {
             unset private(aftertemp)
          }
       }
