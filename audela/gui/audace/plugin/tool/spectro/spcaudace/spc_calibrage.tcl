@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.23 2008-03-22 18:53:13 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.24 2008-04-12 20:39:31 bmauclaire Exp $
 
 
 
@@ -324,7 +324,7 @@ proc spc_calibre2loi { args } {
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 17-04-2006
-# Date modification : 20-09-2006/04-01-07
+# Date modification : 20-09-2006/04-01-07/07-04-2008
 # Arguments : profil_de_reference_fits profil_a_etalonner_fits
 ####################################################################
 
@@ -364,6 +364,16 @@ proc spc_calibreloifile { args } {
       if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
           set spc_rms [ lindex [ buf$audace(bufNo) getkwd "SPC_RMS" ] 1 ]
       }
+      if { [ lsearch $listemotsclef "SPC_RESP" ] !=-1 } {
+         set spc_res [ lindex [ buf$audace(bufNo) getkwd "SPC_RESP" ] 1 ]
+      } else {
+         set spc_res 0.
+      }
+      if { [ lsearch $listemotsclef "SPC_RESL" ] !=-1 } {
+         set spc_resl [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
+      } else {
+         set spc_resl 0.
+      }
 
       buf$audace(bufNo) load "$audace(rep_images)/$filespc"
       #--- Initialisation des mots clefs du fichier fits de sortie
@@ -376,11 +386,13 @@ proc spc_calibreloifile { args } {
       }
       #-- Dispersion
       if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-          buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "angstrom/pixel"]
-          buf$audace(bufNo) setkwd [list "CUNIT1" "angstrom" string "Wavelength unit" ""]
+         buf$audace(bufNo) setkwd [ list "CDELT1" $dispersion double "" "angstrom/pixel" ]
+         buf$audace(bufNo) setkwd [ list "CUNIT1" "angstrom" string "Wavelength unit" "" ]
       }
       #-- Corrdonnée représentée sur l'axe 1 (ie X)
-      buf$audace(bufNo) setkwd [list "CTYPE1" "Wavelength" string "" ""]
+     buf$audace(bufNo) setkwd [ list "CTYPE1" "Wavelength" string "" "" ]
+     buf$audace(bufNo) setkwd [ list "SPC_RESP" $spc_res double "Power of resolution at wavelength SPC_RESL" "" ]
+     buf$audace(bufNo) setkwd [ list "SPC_RESL" $spc_resl double "Wavelength where power of resolution was computed" "angstrom" ]
 
       #--- Mots clefs de la calibration non-linéaire :
       #-- A+B.x+C.x.x+D.x.x.x
@@ -388,17 +400,17 @@ proc spc_calibreloifile { args } {
           #-- Ancienne formulation < 04012007 :
           # buf$audace(bufNo) setkwd [list "SPC_DESC" "A.x.x+B.x+C" string "" ""]
           #-- Nouvelle formulation :
-          buf$audace(bufNo) setkwd [list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" ""]
-          buf$audace(bufNo) setkwd [list "SPC_A" $spc_a double "" "angstrom"]
+          buf$audace(bufNo) setkwd [ list "SPC_DESC" "A+B.x+C.x.x+D.x.x.x" string "" "" ]
+          buf$audace(bufNo) setkwd [ list "SPC_A" $spc_a double "" "angstrom" ]
           if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-              buf$audace(bufNo) setkwd [list "SPC_B" $spc_b double "" "angstrom/pixel"]
+              buf$audace(bufNo) setkwd [ list "SPC_B" $spc_b double "" "angstrom/pixel" ]
           }
           if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-              buf$audace(bufNo) setkwd [list "SPC_C" $spc_c double "" "angstrom*angstrom/pixel*pilxe"]
+              buf$audace(bufNo) setkwd [ list "SPC_C" $spc_c double "" "angstrom*angstrom/pixel*pilxe" ]
           }
-          buf$audace(bufNo) setkwd [list "SPC_D" $spc_d double "" "angstrom*angstrom*angstrom/pixel*pilxe*pixel"]
+          buf$audace(bufNo) setkwd [ list "SPC_D" $spc_d double "" "angstrom*angstrom*angstrom/pixel*pilxe*pixel" ]
           if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-              buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms double "" "angstrom"]
+              buf$audace(bufNo) setkwd [ list "SPC_RMS" $spc_rms double "" "angstrom" ]
           }
 
       }
@@ -604,21 +616,31 @@ proc spc_calibren { args } {
         set nbraies [ llength $lambdas ]
 
         #--- Calcul des coéfficients du polynome de calibration :
-        #-- Calcul du polynôme de calibration a+bx+cx^2 :
-        set sortie [ spc_ajustdeg2 $xvals $lambdas $errors ]
-        set coeffs [ lindex $sortie 0 ]
-        set chi2 [ lindex $sortie 1 ]
-        set d 0.0
-        set c [ lindex $coeffs 2 ]
-        set b [ lindex $coeffs 1 ]
-        set a [ lindex $coeffs 0 ]
-
+        if { $nbraies == 3 } {
+           #-- Calcul du polynôme de calibration a+bx+cx^2 :
+           set sortie [ spc_ajustdeg2 $xvals $lambdas $errors ]
+           set coeffs [ lindex $sortie 0 ]
+           set chi2 [ lindex $sortie 1 ]
+           set d 0.0
+           set c [ lindex $coeffs 2 ]
+           set b [ lindex $coeffs 1 ]
+           set a [ lindex $coeffs 0 ]
+        } elseif { $nbraies > 3 } {
+           #-- Calcul du polynôme de calibration a+b*x+c*x^2+d*x^3 :
+           set sortie [ spc_ajustdeg3 $xvals $lambdas $errors ]
+           set coeffs [ lindex $sortie 0 ]
+           set chi2 [ lindex $sortie 1 ]
+           set d [ lindex $coeffs 3 ]
+           set c [ lindex $coeffs 2 ]
+           set b [ lindex $coeffs 1 ]
+           set a [ lindex $coeffs 0 ]
+        }
 
         #-- Caclul crval1 :
         set lambda0deg2 [ expr $a+$b+$c ]
         set lambda0deg3 [ expr $a+$b+$c+$d ]
         #-- Calcul du RMS :
-        set rms [ expr $lambda0deg2*sqrt($chi2/$nbraies) ]
+        set rms [ expr $lambda0deg3*sqrt($chi2/$nbraies) ]
         ::console::affiche_resultat "spc_calibren RMS=$rms angstrom\n"
         #--- Commenté par M. Pujol :
         #-- Calcul d'une série de longueurs d'ondes passant par le polynome pour la linéarisation :
@@ -626,7 +648,7 @@ proc spc_calibren { args } {
         set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
         for {set x 20} {$x<=[ expr $naxis1-10 ]} { set x [ expr $x+20 ]} {
             lappend xpos $x
-            lappend lambdaspoly [ expr $a+$b*$x+$c*$x*$x ]
+            lappend lambdaspoly [ expr $a+$b*$x+$c*$x*$x+$d*$x*$x*$x ]
         }
 
         #--- Calcul des coéfficients de linéarisation de la calibration a1x+b1 (régression linéaire sur les abscisses choisies et leur lambda issues du polynome) :
@@ -640,7 +662,7 @@ proc spc_calibren { args } {
         #- 40 -10 l0deg1 : AB
         #- 40 -40 l0deg1 : AB+
         #- 20 -10 l0deg2 : AB++
-        if { $nbraies <=2 } {
+        if { $nbraies <=3 } {
             set lambda0 $lambda0deg2
         } else {
             set lambda0 $lambda0deg3
@@ -860,7 +882,11 @@ proc spc_linearcal { args } {
            set spc_a [ lindex [buf$audace(bufNo) getkwd "SPC_A"] 1 ]
            set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
            set spc_c [ lindex [buf$audace(bufNo) getkwd "SPC_C"] 1 ]
-           set spc_d [ lindex [buf$audace(bufNo) getkwd "SPC_D"] 1 ]
+           if { [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ] != "" } {
+              set spc_d [ lindex [buf$audace(bufNo) getkwd "SPC_D"] 1 ]
+           } else {
+              set spc_d 0.0
+           }
            set flag_spccal 1
            #-- Calcul l'incertitude sur une lecture de longueur d'onde :
            set mes_incertitude [ expr 1.0/($spc_a*$spc_b) ]
@@ -872,8 +898,8 @@ proc spc_linearcal { args } {
         #--- Calcul les longueurs éspacées d'un pas constant :
         if { $flag_spccal } {
             #-- Calcul le pas del calibration linéaire :
-            set lambda_deb [ expr $spc_a+$spc_b+$spc_c ]
-            set lambda_fin [ expr $spc_a+$spc_b*$len+$spc_c*$len*$len ]
+            set lambda_deb [ expr $spc_a+$spc_b+$spc_c+$spc_d ]
+            set lambda_fin [ expr $spc_a+$spc_b*$len+$spc_c*$len*$len+$spc_d*$len*$len*$len ]
             #- Benji le 20080317 :
             #set lambda_deb $spc_a
             #set lambda_fin [ expr $spc_a+$spc_b*$len+$spc_c*$len*$len ]
@@ -921,9 +947,9 @@ proc spc_linearcal { args } {
             if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
                 buf$audace(bufNo) delkwd "SPC_D"
             }
-            if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-                buf$audace(bufNo) delkwd "SPC_RMS"
-            }
+            #if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
+            #    buf$audace(bufNo) delkwd "SPC_RMS"
+            #}
             if { [ lsearch $listemotsclef "SPC_DESC" ] !=-1 } {
                 buf$audace(bufNo) delkwd "SPC_DESC"
             }
@@ -971,7 +997,10 @@ proc spc_calibrelampe { args } {
         buf$audace(bufNo) load "$audace(rep_images)/$spetalon"
         set intensite_fond [ lindex [ buf$audace(bufNo) stat ] 6 ]
         buf$audace(bufNo) imaseries "BINY y1=$yinf y2=$ysup height=1"
+        buf$audace(bufNo) delkwd "NAXIS2"
+        buf$audace(bufNo) bitpix float
         buf$audace(bufNo) save "$audace(rep_images)/${spetalon}_spc"
+        buf$audace(bufNo) bitpix short
 
         #--- Détemination du centre de chaque raies détectées dans le spectre étalon :
         set listemax [ spc_findlines ${spetalon}_spc 20 ]
@@ -1100,6 +1129,96 @@ proc spc_calibre { args } {
        }
    } else {
        ::console::affiche_erreur "Usage: spc_calibre profil_de_raies_a_calibrer\n\n"
+   }
+}
+#****************************************************************#
+
+
+##########################################################
+# CAlcul la resolution d'un spectre (prérablement sur un spectre de lampe de calibration)
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 07-04-2008
+# Date de mise à jour : 07-04-2008
+# Arguments : profil_lampe_calibration lambda_raie
+##########################################################
+
+proc spc_resolution { args } {
+
+   global audace spcaudace
+   global conf caption
+   set ecart [ expr 0.5*$spcaudace(largeur_raie_detect) ]
+
+   if { [ llength $args ] == 2 } {
+      set sp_name [ lindex $args 0 ]
+      set lambda_raie [ lindex $args 1 ]
+      set flag_nl 0
+
+      #--- Récupère les informaitons du sptectre :
+      buf$audace(bufNo) load "$audace(rep_images)/$sp_name"
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+         set spc_a [ lindex [ buf$audace(bufNo) getkwd "SPC_A" ] 1 ]
+         set spc_b [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+         set spc_c [ lindex [ buf$audace(bufNo) getkwd "SPC_C" ] 1 ]
+         set flag_nl 1
+      }
+      if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
+         set spc_d [ lindex [ buf$audace(bufNo) getkwd "SPC_D" ] 1 ]
+      } else {
+         set spc_d 0.
+      }
+      if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+         set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+      } else {
+         set cdelt1 1.
+      }
+      if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+         set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+      } else {
+         set crval1 1.
+      }
+
+      #--- Détermine les valeurs encadrants la raie :
+      if { $flag_nl } {
+         set x1 [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($lambda_raie-$ecart))*$spc_c))/(2*$spc_c)) ]
+         set x2 [ expr round((-$spc_b+sqrt($spc_b*$spc_b-4*($spc_a-($lambda_raie+$ecart))*$spc_c))/(2*$spc_c)) ]
+      } else {
+         set x1 [ expr round(($lambda_raie-$ecart-$crval1)/$cdelt1 +1) ]
+         set x2 [ expr round(($lambda_raie+$ecart-$crval1)/$cdelt1 +1) ]
+      }
+
+      #--- Mesure la FWHM et le centre gaussien de la raie :
+      set line_infos [ buf$audace(bufNo) fitgauss [ list $x1 1 $x2 1 ] ]
+      set fwhm [ lindex $line_infos 2 ]
+      set xcenter [ expr [ lindex $line_infos 1 ] -1 ]
+
+      #--- Calcul de la resolution :
+      set frac_lambda [ expr $lambda_raie-int($lambda_raie) ]
+      if { $frac_lambda == 0 } {
+         if { $flag_nl } {
+            set lcenter [ expr $spc_a+$spc_b*$xcenter+$spc_c*$xcenter*$xcenter+$spc_d*$xcenter*$xcenter*$xcenter ]
+            # set spc_res [ expr round($lcenter/($spc_b*$fwhm)) ]
+            set spc_res [ expr round($lcenter/($cdelt1*$fwhm)) ]
+         } else {
+            set lcenter [ expr $crval1+$cdelt1*$xcenter ]
+            set spc_res [ expr round($lcenter/($cdelt1*$fwhm)) ]
+         }
+      } else {
+         set lcenter $lambda_raie
+         set spc_res [ expr round($lcenter/($cdelt1*$fwhm)) ]
+      }
+
+      #--- Traitement des résultats :
+      buf$audace(bufNo) setkwd [ list "SPC_RESP" $spc_res float "Power of resolution at wavelength SPC_RESL" "" ]
+      buf$audace(bufNo) setkwd [ list "SPC_RESL" $lcenter double "Wavelength where power of resolution was computed" "angstrom" ]
+      buf$audace(bufNo) bitpix float
+      buf$audace(bufNo) save "$audace(rep_images)/$sp_name"
+      buf$audace(bufNo) bitpix short
+      ::console::affiche_resultat "\nLa résolution pour la raie $lcenter vaut : $spc_res\n"
+      return $spc_res
+   } else {
+       ::console::affiche_erreur "Usage: spc_resolution profil_de_raies longueur_d_onde_raie\n\n"
    }
 }
 #****************************************************************#
@@ -1919,7 +2038,7 @@ proc spc_calibretelluric { args } {
         file delete -force "$audace(rep_images)/$fcont1$conf(extension,defaut)"
         file delete -force "$audace(rep_images)/${filename}_conti$conf(extension,defaut)"
 
-        #--- Methode 1 : spectre initial linéair
+        #--- Methode 1 : spectre initial linéaire
         ::console::affiche_resultat "============ 1) spectre initial linéaire ================\n"
         set spectre_linear [ spc_linearcal "$filename" ]
         set infos_cal [ spc_rms "$spectre_linear" $listeraies ]
@@ -1941,8 +2060,9 @@ proc spc_calibretelluric { args } {
 
         #--- Methode 3 : callibration avec les raies telluriques
         ::console::affiche_resultat "============ 3) calibration sur l'eau ================\n"
-        set sortie [ spc_ajustdeg2 $listexmesures $listeraies $errors ]
+        set sortie [ spc_ajustdeg3 $listexmesures $listeraies $errors ]
         set coeffs [ lindex $sortie 0 ]
+        set d [ lindex $coeffs 3 ]
         set c [ lindex $coeffs 2 ]
         set b [ lindex $coeffs 1 ]
         set a [ lindex $coeffs 0 ]
@@ -1956,6 +2076,7 @@ proc spc_calibretelluric { args } {
         buf$audace(bufNo) setkwd [list "SPC_A" $a double "" "angstrom"]
         buf$audace(bufNo) setkwd [list "SPC_B" $b double "" "angstrom/pixel"]
         buf$audace(bufNo) setkwd [list "SPC_C" $c double "" "angstrom.angstrom/pixel.pixel"]
+        buf$audace(bufNo) setkwd [list "SPC_D" $d double "" "angstrom.angstrom.angstrom/pixel.pixel.pixel"]
         buf$audace(bufNo) setkwd [list "SPC_RMS" $rms double "" "angstrom"]
         buf$audace(bufNo) bitpix float
         buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocalnl"
@@ -1985,12 +2106,14 @@ proc spc_calibretelluric { args } {
 
         #--- Methode 4 : callibration 2 avec les raies telluriques
         ::console::affiche_resultat "============ 4) calibration sur l'eau bis ================\n"
-        #--- Calcul du polynôme de calibration xlin = a+bx+cx^2
+        #--- Calcul du polynôme de calibration xlin = a+bx+cx^2+cx^3
         ### spc_calibretelluric 94-bet-leo--profil-traite-final.fit
         set sortie [ spc_ajustdeg2 $listexmesures $listexraies $errors ]
-        ###::console::disp "sortie loi x=$sortie\n"
+        # set sortie [ spc_ajustdeg3 $listexmesures $listexraies $errors ]
         set coeffs [ lindex $sortie 0 ]
-        set c [ lindex $coeffs 2]
+        # set d [ lindex $coeffs 3 ]
+        set d 0.0
+        set c [ lindex $coeffs 2 ]
         set b [ lindex $coeffs 1 ]
         set a [ lindex $coeffs 0 ]
         set chi2 [ lindex $sortie 1 ]
@@ -2000,7 +2123,7 @@ proc spc_calibretelluric { args } {
         #--- je calcule les x linearises
         set listexlin [list]
         foreach x $listexmesures {
-            lappend listexlin [expr $a + $b*$x + $c*$x*$x ]
+            lappend listexlin [ expr $a + $b*$x + $c*$x*$x + $d*$x*$x*$x ]
         }
 
         #-- je charge l'image calibree avec le neon
@@ -2013,7 +2136,7 @@ proc spc_calibretelluric { args } {
         set intensites [list ]
         for {set x 0 } {$x<$naxis1} {incr x} {
             lappend xorigin $x
-            lappend xlinear [expr $a + $b*$x + $c*$x*$x]
+            lappend xlinear [ expr $a + $b*$x + $c*$x*$x + $d*$x*$x*$x ]
             lappend intensities [lindex [ buf$audace(bufNo) getpix [list [expr $x +1] 1] ] 1]
         }
         set newIntensities [ lindex [ spc_spline $xlinear $intensities $xorigin n ] 1 ]
@@ -2161,7 +2284,7 @@ proc spc_calobilan { args } {
         #-- Détermine la valeur du continuum :
         set icontinuum [ spc_icontinuum "$filename" ]
         #-- Applique au spectre de l'eau :
-        buf$audace(bufNo) load "$spcaudace(reptelluric)/wet1.fit"
+        buf$audace(bufNo) load "$spcaudace(reptelluric)/$spcaudace(sp_eau)"
         buf$audace(bufNo) mult $icontinuum
         buf$audace(bufNo) save "$audace(rep_images)/eau_conti"
 
@@ -2174,6 +2297,58 @@ proc spc_calobilan { args } {
         file delete -force "$audace(rep_images)/eau_conti$conf(extension,defaut)"
    } else {
        ::console::affiche_erreur "Usage: spc_calobilan profil_de_raies_fits ?largeur_raie (pixels)?\n\n"
+   }
+}
+#****************************************************************#
+
+
+####################################################################
+# Réalise un diagnostique de la calibration par prapport aux raies de l'eau :
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 23-09-2007
+# Date modification : 23-09-2007
+# Arguments : nom_profil_raies
+####################################################################
+
+proc spc_loadmh2o { args } {
+    global conf caption
+    global audace spcaudace
+
+    set nbargs [ llength $args ]
+    if { $nbargs <= 2 } {
+        if { $nbargs == 1 } {
+            set filename [ file rootname [ lindex $args 0 ] ]
+            set largeur $spcaudace(largeur_savgol)
+        } elseif { $nbargs == 2 } {
+            set filename [ file rootname [ lindex $args 0 ] ]
+            set largeur [ lindex $args 1 ]
+        } elseif { $nbargs == 0 } {
+	   set spctrouve [ file rootname [ file tail [ tk_getOpenFile -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
+	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
+	       set filename $spctrouve
+	   } else {
+              ::console::affiche_erreur "Usage: spc_loadmh2o nom_profil_de_raies_fits ?largeur_raie (pixel)?\n"
+	   }
+        }
+
+        #--- Met le spectre de l'eau au niveau du continuum du spectre étidié :
+        #-- Détermine la valeur du continuum :
+        set icontinuum [ spc_icontinuum "$filename" ]
+        #-- Applique au spectre de l'eau :
+        buf$audace(bufNo) load "$spcaudace(reptelluric)/$spcaudace(sp_eau)"
+        buf$audace(bufNo) mult $icontinuum
+        buf$audace(bufNo) save "$audace(rep_images)/eau_conti"
+
+        #--- Affichage des renseignements :
+        if { [ llength $spcaudace(gloaded) ] == 0 } {
+           spc_load "$filename"
+        }
+        spc_loadmore "eau_conti" "green"
+        set spcaudace(gcolor) [ expr $spcaudace(gcolor) + 1 ]
+        file delete -force "$audace(rep_images)/eau_conti$conf(extension,defaut)"
+   } else {
+       ::console::affiche_erreur "Usage: spc_loadmh2o profil_de_raies_fits ?largeur_raie (pixels)?\n\n"
    }
 }
 #****************************************************************#
@@ -2200,7 +2375,7 @@ proc spc_loadh2o { args } {
             set fileselect [ file rootname [ lindex $args 0 ] ]
             set filename "${fileselect}.fit"
         } elseif { $nbargs == 0 } {
-            set filename "wet1.fit"
+            set filename $spcaudace(sp_eau)
         } else {
             ::console::affiche_erreur "Usage: spc_loadh2o ?nom_profil_de_raies_telluric_bibliotheque?\n\n"
             return ""

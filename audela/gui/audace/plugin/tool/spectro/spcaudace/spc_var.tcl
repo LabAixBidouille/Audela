@@ -3,7 +3,7 @@
 # 
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.23 2008-03-09 21:10:45 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.24 2008-04-12 20:39:33 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.2.4 - 5/03/2008"
+set spcaudace(version) "1.3.0 - 12/04/2008"
 #set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
@@ -36,21 +36,26 @@ if { [regexp {1.3.0} $audela(version) match resu ] } {
 }
 
 
-#--- Répertoire des outils : Gnuplot, Spectrum... :
+#--- Chemin des répertoires :
+#-- Répertoire des outils : Gnuplot, Spectrum... :
 set spcaudace(repgp) [ file join $spcaudace(repspc) gp ]
 set spcaudace(spectrum) [ file join $spcaudace(repspc) plugins spectrum ]
 
-#--- Répertoire des données chimiques :
+#-- Répertoire des données chimiques :
 set spcaudace(repchimie) [ file join $spcaudace(repspc) data chimie ]
 set spcaudace(reptelluric) [ file join $spcaudace(repspc) data telluric ]
 # set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage_temp.txt"
 set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
 
-#--- Répertoire de la bibliothèque spectrale :
+#-- Répertoire de la bibliothèque spectrale :
 set spcaudace(rep_spcbib) [ file join $spcaudace(repspc) data bibliotheque_spectrale ]
 
-#--- Répertoire de la calibration-chimie :
+#-- Répertoire de la calibration-chimie :
 set spcaudace(rep_spccal) [ file join $spcaudace(repspc) data calibration_lambda ]
+
+
+#--- Fichiers tulisés :
+set spcaudace(sp_eau) "h2o_6500_6700.fit"
 
 
 #--- Répertoire de la calibration-chimie :
@@ -74,7 +79,16 @@ set spcaudace(sitesurveys) "http://bmauclaire.free.fr/astronomie/research/"
 set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
 
 
+#--- Option prédéfinies dans les pipelines :
+set spcaudace(methsel) "moy"
+set spcaudace(methreg) "spc"
+set spcaudace(methsky) "med"
+set spcaudace(methbin) "rober"
+
+
 #--- Valeur de paramètres des euristhiques algorithmiques :
+#-- Degré du polynome pour l'extraction du continuum :
+set spcaudace(degpoly_cont) 5
 #-- Fraction des bords ignorés dans certains calculs (spc_divri...) pour la détermination du Imax du profil :
 set spcaudace(pourcent_bord) 0.15
 #-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 5%
@@ -101,7 +115,7 @@ set spcaudace(nb_coupes) 10
 set spcaudace(epaisseur_detect) 0.05
 #-- Epaisseur binning par défaut :
 set spcaudace(largeur_binning) 7
-#-- Angle limit en degrès autorisé pour un tilt :
+#-- Angle limite en degrès autorisé pour un tilt :
 #set spcaudace(tilt_limit) 0.746
 #set spcaudace(tilt_limit) 1.5
 #set spcaudace(tilt_limit) 2.
@@ -116,8 +130,8 @@ set spcaudace(largeur_savgol) 28
 set spcaudace(dlargeur_eau) 0.5
 #-- Coefficient de uncosmic
 set spcaudace(uncosmic) 0.85
-#-- Largeur des raies detectees (spc_findbiglines) :
-set spcaudace(largeur_raie_detect) 10
+#-- Largeur des raies detectees (spc_findbiglines) : 10 ; 8
+set spcaudace(largeur_raie_detect) 8
 
 
 #----------------------------------------------------------------------------------#
