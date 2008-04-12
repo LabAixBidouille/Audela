@@ -1,6 +1,6 @@
 #
 # Fichier : astrometry.cap
-# Mise a jour $Id: astrometry.cap,v 1.14 2007-05-15 21:55:19 robertdelmas Exp $
+# Mise a jour $Id: astrometry.cap,v 1.15 2008-04-12 10:36:36 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -67,13 +67,13 @@ set caption(astrometry,Y)                 "Y"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(astrometry,title)          "Calibration astrométrique"
-   set caption(astrometry,wcs,optic)      "A partir des mots-clés de la configuration optique"
-   set caption(astrometry,wcs,classic)    "A partir des mots-clés WCS (World Coordinate System) classiques"
-   set caption(astrometry,wcs,matrix)     "A partir des mots-clés WCS (World Coordinate System) matrice"
+   set caption(astrometry,wcs,optic)      "A partir des mots clés de la configuration optique"
+   set caption(astrometry,wcs,classic)    "A partir des mots clés WCS (World Coordinate System) classiques"
+   set caption(astrometry,wcs,matrix)     "A partir des mots clés WCS (World Coordinate System) matrice"
    set caption(astrometry,cal,catalog)    "Méthode : Appariement avec un catalogue"
-   set caption(astrometry,cal,file)       "Méthode : Copie des mots-clés WCS d'une autre image"
-   set caption(astrometry,cal,manual)     "Méthode : Mise à jour manuelle des mots-clés WCS de cette image"
-   set caption(astrometry,cal,delwcs)     "Effacer les mots-clés WCS"
+   set caption(astrometry,cal,file)       "Méthode : Copie des mots clés WCS d'une autre image"
+   set caption(astrometry,cal,manual)     "Méthode : Mise à jour manuelle des mots clés WCS de cette image"
+   set caption(astrometry,cal,delwcs)     "Effacer les mots clés WCS"
    set caption(astrometry,cal,filename)   "Nom du fichier"
    set caption(astrometry,cal,catfolder)  "Chemin d'accès au catalogue"
    set caption(astrometry,cal,catname)    "Nom du catalogue"
@@ -94,13 +94,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(astrometry,start,8)        "Calibrée avec l'image :"
    set caption(astrometry,start,9)        "Calibrée avec les mots clés de la liste."
    set caption(astrometry,start,10)       "Vérification de la calibration"
-   set caption(astrometry,start,11)       "Mots-clés WCS effacés"
+   set caption(astrometry,start,11)       "Mots clés WCS effacés"
    set caption(astrometry,help)           "Aide"
    set caption(astrometry,delete_files)   "Suppression des fichiers temporaires"
    set caption(astrometry,delete_image)   "Suppression des images temporaires"
    set caption(astrometry,error_no_image) "Veuillez d'abord afficher une image."
    set caption(astrometry,error_spectrum) "Calculs astrométriques impossibles sur une image 1D."
-   set caption(astrometry,empty_keywords) "Pour réaliser une calibration astrométrique, vous devez renseigner\nles mots-clés ayant un champ vide dans cette fenêtre."
+   set caption(astrometry,empty_keywords) "Pour réaliser une calibration astrométrique, vous devez renseigner\nles mots clés ayant un champ vide dans cette fenêtre."
 
    set caption(astrometry,comment)        "La calibration astrométrique est réussie si tous les points rouges recouvrent des étoiles."
    set caption(astrometry,erreur_USNO)    "Le catalogue USNO %s (CD n°%s USNO-A2.0) est nécessaire."
