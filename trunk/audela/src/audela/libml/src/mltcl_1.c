@@ -449,6 +449,7 @@ int Cmd_mltcl_geostatident(ClientData clientData, Tcl_Interp *interp, int argc, 
 		}
 		ml_file_copy (pathGeo,pathTle2);
 		//WriteDisk("fichier tle2");		
+		fclose(f_in1);
 
 		f_in1=fopen(pathHttp,"r");
 		if (f_in1==NULL) {
