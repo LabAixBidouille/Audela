@@ -42,14 +42,17 @@ char Nom[1000];
 time_t ltime;
 //SYSTEMTIME St;
 char Buffer[300];
+struct tm *timeinfo;
 	
 	printf("\n%s\n",Chaine);
-   time( &ltime );
-   strftime(Buffer,300,"%Y-%m-%dT%H-%M-%S",localtime( &ltime ));
+    time( &ltime );
+	timeinfo = localtime( &ltime );
+
+    strftime(Buffer,150,"%Y-%m-%dT%H-%M-%S",timeinfo);
 	//GetSystemTime(&St);
 	//sprintf(Nom,"%lu%.2lu%.2lu-%s",St.wYear,St.wMonth,St.wDay,"log.txt");
 	//sprintf(Nom,"%s-log.txt",Buffer);
-	sprintf(Nom,"ml_log.txt",localtime( &ltime ));
+	sprintf(Nom,"ml_log.txt");
 	//sprintf(Buffer,"\n%dh%dm%ds : %s",St.wHour,St.wMinute,St.wSecond,Chaine);
 	strcat(Buffer," : ");
 	strcat(Buffer,Chaine);
