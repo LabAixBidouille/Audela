@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.24 2008-04-12 20:39:31 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.25 2008-04-16 01:51:41 bmauclaire Exp $
 
 
 
@@ -2328,7 +2328,8 @@ proc spc_loadmh2o { args } {
 	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
 	       set filename $spctrouve
 	   } else {
-              ::console::affiche_erreur "Usage: spc_loadmh2o nom_profil_de_raies_fits ?largeur_raie (pixel)?\n"
+              ::console::affiche_erreur "Le profil de raies doit se trouver dans le répertoire de travail.\nUsage: spc_loadmh2o nom_profil_de_raies_fits ?largeur_raie (pixel)?\n"
+              return ""
 	   }
         }
 

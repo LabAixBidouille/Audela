@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.17 2008-04-12 20:39:31 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.18 2008-04-16 01:51:40 bmauclaire Exp $
 
 
 global caption langage
@@ -133,6 +133,8 @@ global caption langage
    set caption(spcaudace,gui,spc_chimie)                         "Find chemical components"
    set caption(spcaudace,gui,spc_vradiale_w)                     "Radial velocity"
    set caption(spcaudace,gui,spc_vhelio)                         "Heliocentric velocity"
+   set caption(spcaudace,gui,spc_vradialecorr_w)                 "Radial velocity corrected from Vhelio"
+   set caption(spcaudace,gui,spc_vrmes_w)                        "Compute V over R line ratio"
    set caption(spcaudace,gui,spc_vexp_w)                         "Expension velocity"
    set caption(spcaudace,gui,spc_vrot_w)                         "Rotation velocity"
    set caption(spcaudace,gui,spc_ewcourbe_w)                     "EW=f(time) graph for a group of files"
@@ -279,6 +281,8 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_chimie)                    "Repérage des espèces atomiques"
      set caption(spcaudace,gui,spc_vradiale_w)                "Vitesse radiale"
      set caption(spcaudace,gui,spc_vhelio)                    "Vitesse héliocentrique"
+     set caption(spcaudace,gui,spc_vradialecorr_w)            "Vitesse radiale corrigée de Vhélio"
+     set caption(spcaudace,gui,spc_vrmes_w)                   "Calculer le rapport V/R d'une raie"
      set caption(spcaudace,gui,spc_vexp_w)                    "Vitesse d'expension"
      set caption(spcaudace,gui,spc_vrot_w)                    "Vitesse de rotation"
      set caption(spcaudace,gui,spc_te)                        "Température électronique (automatique)"
