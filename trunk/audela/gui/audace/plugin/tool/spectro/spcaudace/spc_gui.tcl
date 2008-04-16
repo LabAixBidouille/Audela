@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.20 2008-04-12 20:39:31 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.21 2008-04-16 01:51:41 bmauclaire Exp $
 
 
 
@@ -236,7 +236,9 @@ proc spc_winini { } {
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_bebuil) -command "spc_bebuil" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vradiale_w) -command "spc_vradiale" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vradialecorr_w) -command "spc_vradialecorr" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vhelio) -command "spc_vhelio" -underline 0
+      .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vrmes_w) -command "spc_vrmes" -underline 0
       #.spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vexp_w) -command "spc_vexp" -underline 0
       #.spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_vrot_w) -command "spc_vrot" -underline 0
       .spc.menuBar.analyse add command -label $caption(spcaudace,gui,spc_file_space)
