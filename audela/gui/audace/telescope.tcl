@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.19 2008-02-12 15:15:28 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.20 2008-04-17 20:28:45 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -311,6 +311,49 @@ namespace eval ::telescope {
             if { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,NS)" } {
                setSpeed "1"
             } elseif { $panneau(DlgShift,shiftSpeed) == "$caption(telescope,HS)" } {
+               setSpeed "2"
+            }
+         } else {
+            #--- Inactif pour autres telescopes
+            setSpeed "0"
+         }
+      } else {
+         ::confTel::run
+         tkwait window $audace(base).confTel
+         set audace(telescope,rate) "0"
+      }
+   }
+
+   #------------------------------------------------------------
+   #  decodeSpeedDlgShiftVideo
+   #     decode la vitesse de la monture pour les decalages de l'outil Acquisition Video
+   #------------------------------------------------------------
+   proc decodeSpeedDlgShiftVideo { } {
+      global audace caption conf panneau
+
+      if { [ ::tel::list ] != "" } {
+         if { $conf(telescope) == "audecom" } {
+            if { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,x1)" } {
+               setSpeed "1"
+            } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,x5)" } {
+               setSpeed "2"
+            } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,200)" } {
+               setSpeed "3"
+            }
+         } elseif { $conf(telescope) == "lx200" } {
+            if { $panneau(DlgShiftVideo,shiftSpeed) == "1" } {
+               setSpeed "1"
+            } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "2" } {
+               setSpeed "2"
+            } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "3" } {
+               setSpeed "3"
+            } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "4" } {
+               setSpeed "4"
+            }
+         } elseif { $conf(telescope) == "temma" } {
+            if { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,NS)" } {
+               setSpeed "1"
+            } elseif { $panneau(DlgShiftVideo,shiftSpeed) == "$caption(telescope,HS)" } {
                setSpeed "2"
             }
          } else {
