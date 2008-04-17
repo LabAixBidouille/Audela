@@ -1,8 +1,8 @@
 #
 # Fichier : dlgshift.tcl
-# Description : Fenetre dialog pour saisir les parametres de deplacement entre 2 images
+# Description : Fenetre de dialogue pour saisir les parametres de deplacement entre 2 images
 # Auteur : Michel PUJOL
-# Mise a jour $Id: dlgshift.tcl,v 1.4 2007-01-27 15:14:23 robertdelmas Exp $
+# Mise a jour $Id: dlgshift.tcl,v 1.5 2008-04-17 20:40:31 robertdelmas Exp $
 #
 
 namespace eval DlgShift {
@@ -13,8 +13,7 @@ namespace eval DlgShift {
    #      load configuration file
    #------------------------------------------------------------
    proc init { } {
-      global audace
-      global fileName
+      global audace fileName
 
       #--- Chargement des captions
       source [ file join $audace(rep_plugin) tool acqfc dlgshift.cap ]
@@ -44,8 +43,7 @@ namespace eval DlgShift {
    #------------------------------------------------------------
    proc cmdSave { } {
       variable This
-      global panneau
-      global fileName
+      global fileName panneau
 
       #---
       ::DlgShift::recup_position
@@ -71,8 +69,6 @@ namespace eval DlgShift {
    #      close dialog without saving
    #------------------------------------------------------------
    proc cmdCancel { } {
-      global fileName
-
       #--- reload old values
       loadDataFile
       #--- close the dialog window
@@ -86,8 +82,7 @@ namespace eval DlgShift {
    #------------------------------------------------------------
    proc loadDataFile { } {
       variable This
-      global panneau
-      global fileName
+      global fileName panneau
 
       set arrayName "panneau"
       set tempinterp [interp create]
@@ -116,9 +111,7 @@ namespace eval DlgShift {
    #      decalage du telescope pendant une serie d'images
    #------------------------------------------------------------
    proc Decalage_Telescope { } {
-      global conf
-      global panneau
-      global caption
+      global caption conf panneau
 
       #--- Déplacement du télescope
       if { $panneau(DlgShift,buttonShift) == "1" } {
@@ -178,10 +171,7 @@ namespace eval DlgShift {
    #------------------------------------------------------------
    proc createDialog { } {
       variable This
-      global conf
-      global audace
-      global caption
-      global panneau
+      global caption conf panneau
 
       if { [winfo exists $This] } {
          wm withdraw $This
