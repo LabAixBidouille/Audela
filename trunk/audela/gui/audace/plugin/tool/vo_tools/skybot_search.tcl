@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.16 2007-10-05 16:56:41 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.17 2008-04-18 21:45:16 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -628,7 +628,7 @@ namespace eval skybot_Search {
         menu $This.frame0.image.menu
           $This.frame0.image.menu add command -label "$caption(search,charge)" -command { ::skybot_Search::charger }
           $This.frame0.image.menu add command -label [concat "$caption(search,entete_FITS) (Ctrl+f)"] \
-                                              -command { ::audace::header $audace(visuNo) }
+                                              -command { ::keyword::header $audace(visuNo) }
         pack $This.frame0.image -side left
         #--- menu aide
         menubutton $This.frame0.aide -text "$caption(search,aide)" -underline 0 -menu $This.frame0.aide.menu
@@ -1029,7 +1029,7 @@ namespace eval skybot_Search {
       #--- Raccourci pour charger une image
       bind $This <Control-l> { ::skybot_Search::charger }
       #--- Raccourci pour voir l'entete FITS de l'image
-      bind $This <Control-f> { ::audace::header $audace(visuNo) }
+      bind $This <Control-f> { ::keyword::header $audace(visuNo) }
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This

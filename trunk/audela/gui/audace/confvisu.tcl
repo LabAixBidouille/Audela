@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.74 2007-11-10 11:28:30 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.75 2008-04-18 21:44:25 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -843,7 +843,7 @@ namespace eval ::confVisu {
 
       } else {
          #--- Je deconnecte la sortie de la camera
-         set result [ catch { cam$camNo  stopvideoview $visuNo } msg ]
+         set result [ catch { cam$camNo stopvideoview $visuNo } msg ]
          #--- je desactive le mode video
          visu$visuNo mode photo
          #--- j'active le reglage des seuils
@@ -1381,7 +1381,7 @@ namespace eval ::confVisu {
          "::audace::enregistrer_sous $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" " ::audace::header $visuNo "
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" " ::keyword::header $visuNo "
 
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
       Menu_Command   $visuNo  "$caption(audace,menu,fichier)" "$caption(confVisu,fermer)" \
