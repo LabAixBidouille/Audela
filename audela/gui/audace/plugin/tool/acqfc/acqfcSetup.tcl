@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.9 2007-12-15 08:10:00 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.10 2008-04-18 21:41:35 robertdelmas Exp $
 #
 
 namespace eval acqfcSetup {
@@ -101,6 +101,8 @@ namespace eval acqfcSetup {
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc closeWindow { visuNo } {
+      #--- Je desactive la surveillance de la connexion d'une camera
+      ::confVisu::removeCameraListener $visuNo "::acqfcSetup::configBox $visuNo"
    }
 
    #
@@ -114,17 +116,43 @@ namespace eval acqfcSetup {
    }
 
    #
+   # acqfcSetup::configBox
+   # Configure le bouton de la fenetre de configuration
+   #
+   proc configBox { visuNo args } {
+      global panneau
+
+      #--- Retourne l'item de la camera associee a la visu
+      set camItem [ ::confVisu::getCamItem $visuNo ]
+
+      #--- Configure le bouton d'acces au configurateur d'en-tete FITS
+      if { [ ::confCam::isReady $camItem ] == 0 } {
+         $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state disabled
+      } else {
+         $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state normal
+      }
+   }
+
+   #
    # acqfcSetup::fillConfigPage
    # Creation de l'interface graphique
    #
    proc fillConfigPage { frm visuNo } {
-      global caption panneau
+      global audace caption panneau
 
       #--- Charge la configuration de la vitesse de communication dans une variable locale
       ::acqfcSetup::confToWidget $visuNo
 
+      #--- Retourne l'item de la camera associee a la visu
+      set camItem [ ::confVisu::getCamItem $visuNo ]
+
       #--- Frame pour les commentaires
       frame $panneau(acqfc,$visuNo,acqfcSetup).frame3 -borderwidth 1 -relief raise
+
+         #--- Bouton du configurateur d'en-tete FITS
+         button $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -text $caption(acqfcSetup,en-tete_fits) \
+            -command "::keyword::run $visuNo $panneau(acqfc,$visuNo,This).keyword"
+         pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -side top -fill x
 
          #--- Frame pour le commentaire 1
          frame $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame4 -borderwidth 0
@@ -166,6 +194,11 @@ namespace eval acqfcSetup {
 
       pack $panneau(acqfc,$visuNo,acqfcSetup).frame3 -side top -fill both -expand 1
 
+      #--- Configure le bouton de la fenetre de configuration
+      ::acqfcSetup::configBox $visuNo
+
+      #--- Surveillance de la connexion d'une camera
+      ::confVisu::addCameraListener $visuNo "::acqfcSetup::configBox $visuNo"
    }
 
 }
