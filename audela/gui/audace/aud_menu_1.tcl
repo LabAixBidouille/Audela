@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.22 2008-01-06 18:50:27 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.23 2008-04-18 21:42:41 robertdelmas Exp $
 #
 
 namespace eval ::audace {
@@ -77,73 +77,6 @@ namespace eval ::audace {
       }
       restore_cursor
       menustate normal
-   }
-
-   #
-   # ::audace::header visuNo
-   # Affiche l'en-tete FITS d'un fichier
-   #     args   : valeurs fournies par le gestionnaire de listener
-   #
-   proc header { visuNo args } {
-      variable private
-      global audace caption color conf
-
-      #--- Initialisation
-      set base [ ::confVisu::getBase $visuNo ]
-      if { ! [ info exists conf(geometry_header_$visuNo) ] } { set conf(geometry_header_$visuNo) "632x303+3+75" }
-      #---
-      set private(geometry_header_$visuNo) $conf(geometry_header_$visuNo)
-      #---
-      if { [ winfo exists $base.header ] == 0 } {
-         toplevel $base.header
-         wm transient $base.header $base
-         if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
-            wm minsize $base.header 632 303
-         }
-         wm resizable $base.header 1 1
-         wm geometry $base.header $private(geometry_header_$visuNo)
-         wm protocol $base.header WM_DELETE_WINDOW "::audace::closeHeader $visuNo"
-         Scrolled_Text $base.header.slb -width 87 -font $audace(font,en_tete_1) -height 20
-         pack $base.header.slb -fill y -expand true
-         #--- Je declare le rafraichissement automatique des mots-cles si on charge une image
-         ::confVisu::addFileNameListener $visuNo "::audace::header $visuNo"
-         #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-         bind $base.header <Key-F1> { ::console::GiveFocus }
-         #--- Mise a jour dynamique des couleurs
-         ::confColor::applyColor $base.header
-      } else {
-         $base.header.slb.list delete 1.0 end
-      }
-      #---
-      wm title $base.header "$caption(audace,header_title) (visu$visuNo) - [::confVisu::getFileName $visuNo]"
-      #---
-      if { [ buf[ ::confVisu::getBufNo $visuNo ] imageready ] == "1" } {
-         $base.header.slb.list tag configure keyw -foreground $color(blue)   -font $audace(font,en_tete_2)
-         $base.header.slb.list tag configure egal -foreground $color(black)  -font $audace(font,en_tete_2)
-         $base.header.slb.list tag configure valu -foreground $color(red)    -font $audace(font,en_tete_2)
-         $base.header.slb.list tag configure comm -foreground $color(green1) -font $audace(font,en_tete_2)
-         $base.header.slb.list tag configure unit -foreground $color(orange) -font $audace(font,en_tete_2)
-         foreach kwd [ lsort -dictionary [ buf[ ::confVisu::getBufNo $visuNo ] getkwds ] ] {
-            set liste [ buf[ ::confVisu::getBufNo $visuNo ] getkwd $kwd ]
-            set koff 0
-            if {[llength $liste]>5} {
-               #--- Detourne un bug eventuel des mots longs (ne devrait jamais arriver !)
-               set koff [expr [llength $liste]-5]
-            }
-            set keyword "$kwd"
-            if {[string length $keyword]<=8} {
-               set keyword "[format "%8s" $keyword]"
-            }
-            $base.header.slb.list insert end "$keyword " keyw
-            $base.header.slb.list insert end "= " egal
-            $base.header.slb.list insert end "[lindex $liste [expr $koff+1]] " valu
-            $base.header.slb.list insert end "[lindex $liste [expr $koff+3]] " comm
-            $base.header.slb.list insert end "[lindex $liste [expr $koff+4]]\n" unit
-         }
-      } else {
-         $base.header.slb.list insert end "$caption(audace,header_noimage)"
-      }
-      update
    }
 
    #
@@ -361,34 +294,6 @@ namespace eval ::audace {
 ###################################################################################
 # Procedures annexes des procedures ci-dessus
 ###################################################################################
-
-namespace eval ::audace {
-
-   #
-   # ::audace::closeHeader visuNo
-   # Ferme l'en-tete FITS d'un fichier
-   #
-   proc closeHeader { visuNo } {
-      ::audace::headerRecupPosition $visuNo
-      ::confVisu::removeFileNameListener $visuNo "::audace::header $visuNo"
-      destroy [ ::confVisu::getBase $visuNo ].header
-   }
-
-   #
-   # audace::headerRecupPosition visuNo
-   # Permet de recuperer et de sauvegarder la dimension et la position de la fenetre de l'en-tete FITS
-   #
-   proc headerRecupPosition { visuNo } {
-      variable private
-      global conf
-
-      #---
-      set private(geometry_header_$visuNo) [ wm geometry [ ::confVisu::getBase $visuNo ].header ]
-      #---
-      set conf(geometry_header_$visuNo) $private(geometry_header_$visuNo)
-   }
-
-}
 
 namespace eval ::newScript {
 
