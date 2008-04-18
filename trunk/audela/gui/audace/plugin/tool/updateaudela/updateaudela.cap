@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.14 2007-11-26 17:44:31 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.15 2008-04-18 21:37:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -191,7 +191,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,makePluginUpdate)   "Crear fichero de Actualización"
 
    set caption(updateaudela,selectedFiles)      "Ficheros seleccionados"
-   set caption(updateaudela,addCvs)             "Añadir 'Diff CVS""
+   set caption(updateaudela,addCvs)             "Añadir 'Diff CVS"
    set caption(updateaudela,addAllFiles)        "Añadir todos los ficheros"
    set caption(updateaudela,addFile)            "Añadir a los ficheros seleccionados"
    set caption(updateaudela,removeFile)         "Quitar de los ficheros seleccionados"
