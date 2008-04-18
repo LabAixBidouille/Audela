@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.58 2007-12-08 22:54:16 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.59 2008-04-18 16:51:30 robertdelmas Exp $
 #
 
 #==============================================================
@@ -10,7 +10,7 @@
 #==============================================================
 
 namespace eval ::acqfc {
-   package provide acqfc 2.1
+   package provide acqfc 3.0
    package require audela 1.4.0
 
    #--- Charge le fichier caption pour recuperer le titre utilise par getPluginTitle
@@ -71,7 +71,7 @@ namespace eval ::acqfc {
 
       #--- Liste des modes disponibles
       set panneau(acqfc,$visuNo,list_mode) [ list $caption(acqfc,uneimage) $caption(acqfc,serie) $caption(acqfc,continu) \
-         $caption(acqfc,continu_1) $caption(acqfc,continu_2) $caption(acqfc,video) $caption(acqfc,video_1) ]
+         $caption(acqfc,continu_1) $caption(acqfc,continu_2) ]
 
       #--- Initialisation des modes
       set panneau(acqfc,$visuNo,mode,1) "$panneau(acqfc,$visuNo,This).mode.une"
@@ -79,8 +79,6 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,mode,3) "$panneau(acqfc,$visuNo,This).mode.continu"
       set panneau(acqfc,$visuNo,mode,4) "$panneau(acqfc,$visuNo,This).mode.serie_1"
       set panneau(acqfc,$visuNo,mode,5) "$panneau(acqfc,$visuNo,This).mode.continu_1"
-      set panneau(acqfc,$visuNo,mode,6) "$panneau(acqfc,$visuNo,This).mode.video"
-      set panneau(acqfc,$visuNo,mode,7) "$panneau(acqfc,$visuNo,This).mode.video_1"
       #--- Mode par defaut : Une image
       if { ! [ info exists panneau(acqfc,$visuNo,mode) ] } {
          set panneau(acqfc,$visuNo,mode) "$parametres(acqfc,$visuNo,mode)"
@@ -97,37 +95,11 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,avancement_acq)    "$parametres(acqfc,$visuNo,avancement_acq)"
       set panneau(acqfc,$visuNo,enregistrer)       "$parametres(acqfc,$visuNo,enregistrer)"
 
-      #--- Initialisation de variables pour l'acquisition video fenetree
-      set panneau(acqfc,$visuNo,fenetre)           "0"
-      set panneau(acqfc,$visuNo,largeur)           ""
-      set panneau(acqfc,$visuNo,hauteur)           ""
-      set panneau(acqfc,$visuNo,x1)                "$parametres(acqfc,$visuNo,x1)"
-      set panneau(acqfc,$visuNo,y1)                "$parametres(acqfc,$visuNo,y1)"
-      set panneau(acqfc,$visuNo,x2)                "$parametres(acqfc,$visuNo,x2)"
-      set panneau(acqfc,$visuNo,y2)                "$parametres(acqfc,$visuNo,y2)"
-
-      #--- Initialisation pour le mode video
-      set panneau(acqfc,$visuNo,showvideopreview) "0"
-      set panneau(acqfc,$visuNo,ratelist)         { 5 10 15 20 25 30 }
-      set panneau(acqfc,$visuNo,status)           "                              "
-      #--- Frequence images par defaut : 5 images/sec.
-      if { ! [ info exists panneau(acqfc,$visuNo,rate) ] } {
-         set panneau(acqfc,$visuNo,rate) "$parametres(acqfc,$visuNo,rate)"
-      }
-      #--- Duree du film par defaut : 10s
-      if { ! [ info exists panneau(acqfc,$visuNo,lg_film) ] } {
-         set panneau(acqfc,$visuNo,lg_film) "$parametres(acqfc,$visuNo,lg_film)"
-      }
-
       #--- Mise en place de l'interface graphique
       acqfcBuildIF $visuNo
 
       #--- Traitement du bouton Configuration pour la camera APN (DSLR)
-      if { ( $panneau(acqfc,$visuNo,mode) == "6" ) || ( $panneau(acqfc,$visuNo,mode) == "7" ) } {
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state disabled
-      } else {
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-      }
+      $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
 
       pack $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
 
@@ -156,8 +128,6 @@ namespace eval ::acqfc {
 
       #---
       destroy $panneau(acqfc,$visuNo,This)
-      destroy $panneau(acqfc,$visuNo,base).status_video.pose.but.menu
-      destroy $panneau(acqfc,$visuNo,base).status_video.rate.cb.menu
       destroy $panneau(acqfc,$visuNo,This).pose.but.menu
       destroy $panneau(acqfc,$visuNo,This).bin.but.menu
    }
@@ -351,8 +321,6 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,camItem) [::confVisu::getCamItem $visuNo]
       set panneau(acqfc,$visuNo,camNo)   [::confCam::getCamNo $panneau(acqfc,$visuNo,camItem)]
 
-      #--- Decoche le checkbutton Apercu des modes Video
-      set panneau(acqfc,$visuNo,showvideopreview) "0"
       #---
       set camNo $panneau(acqfc,$visuNo,camNo)
       if { $camNo == "0" } {
@@ -474,12 +442,6 @@ namespace eval ::acqfc {
       if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }            { set parametres(acqfc,$visuNo,bin)         "2x2" } ; #--- Binning : 2x2
       if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }            { set parametres(acqfc,$visuNo,obt)         "2" }   ; #--- Obturateur : Synchro
       if { ! [ info exists parametres(acqfc,$visuNo,mode) ] }           { set parametres(acqfc,$visuNo,mode)        "1" }   ; #--- Mode : Une image
-      if { ! [ info exists parametres(acqfc,$visuNo,lg_film) ] }        { set parametres(acqfc,$visuNo,lg_film)     "10" }  ; #--- Duree de la video : 10s
-      if { ! [ info exists parametres(acqfc,$visuNo,rate) ] }           { set parametres(acqfc,$visuNo,rate)        "5" }   ; #--- Images/sec. : 5
-      if { ! [ info exists parametres(acqfc,$visuNo,x1) ] }             { set parametres(acqfc,$visuNo,x1)          "100" } ; #--- Video fenetree : x1
-      if { ! [ info exists parametres(acqfc,$visuNo,y1) ] }             { set parametres(acqfc,$visuNo,y1)          "100" } ; #--- Video fenetree : y1
-      if { ! [ info exists parametres(acqfc,$visuNo,x2) ] }             { set parametres(acqfc,$visuNo,x2)          "350" } ; #--- Video fenetree : x2
-      if { ! [ info exists parametres(acqfc,$visuNo,y2) ] }             { set parametres(acqfc,$visuNo,y2)          "250" } ; #--- Video fenetree : y2
       if { ! [ info exists parametres(acqfc,$visuNo,avancement_acq) ] } {
          if { $visuNo == "1" } {
             set parametres(acqfc,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
@@ -506,12 +468,6 @@ namespace eval ::acqfc {
       set parametres(acqfc,$visuNo,bin)            $panneau(acqfc,$visuNo,bin)
       set parametres(acqfc,$visuNo,obt)            $panneau(acqfc,$visuNo,obt)
       set parametres(acqfc,$visuNo,mode)           $panneau(acqfc,$visuNo,mode)
-      set parametres(acqfc,$visuNo,lg_film)        $panneau(acqfc,$visuNo,lg_film)
-      set parametres(acqfc,$visuNo,rate)           $panneau(acqfc,$visuNo,rate)
-      set parametres(acqfc,$visuNo,x1)             $panneau(acqfc,$visuNo,x1)
-      set parametres(acqfc,$visuNo,y1)             $panneau(acqfc,$visuNo,y1)
-      set parametres(acqfc,$visuNo,x2)             $panneau(acqfc,$visuNo,x2)
-      set parametres(acqfc,$visuNo,y2)             $panneau(acqfc,$visuNo,y2)
       set parametres(acqfc,$visuNo,avancement_acq) $panneau(acqfc,$visuNo,avancement_acq)
       set parametres(acqfc,$visuNo,enregistrer)    $panneau(acqfc,$visuNo,enregistrer)
       #--- Sauvegarde des parametres
@@ -538,10 +494,6 @@ namespace eval ::acqfc {
          ::acqfc::Intervalle_continu_1 $visuNo
       } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
          ::acqfc::Intervalle_continu_2 $visuNo
-      } elseif { $panneau(acqfc,$visuNo,mode) == "6" } {
-         ::acqfc::selectVideoMode $visuNo
-      } elseif { $panneau(acqfc,$visuNo,mode) == "7" } {
-         ::acqfc::selectVideoMode $visuNo
       }
 
       pack $panneau(acqfc,$visuNo,This) -side left -fill y
@@ -559,10 +511,6 @@ namespace eval ::acqfc {
       #--- Destruction des fenetres auxiliaires et sauvegarde de leurs positions si elles existent
       ::acqfc::recup_position $visuNo
 
-      if { [ ::confVisu::getCamItem $visuNo ] != "" && $panneau(acqfc,$visuNo,showvideopreview) == "1" } {
-         stopVideoPreview $visuNo
-      }
-
       ArretAcqFC $visuNo
       pack forget $panneau(acqfc,$visuNo,This)
    }
@@ -574,9 +522,6 @@ namespace eval ::acqfc {
 
       pack forget $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
 
-      if { $panneau(acqfc,$visuNo,showvideopreview) == "1" } {
-         catch { stopVideoPreview $visuNo }
-      }
       set panneau(acqfc,$visuNo,mode) [ expr [ lsearch "$panneau(acqfc,$visuNo,list_mode)" "$panneau(acqfc,$visuNo,mode_en_cours)" ] + 1 ]
       if { $panneau(acqfc,$visuNo,mode) == "1" } {
          ::acqfc::recup_position $visuNo
@@ -593,14 +538,6 @@ namespace eval ::acqfc {
       } elseif { $panneau(acqfc,$visuNo,mode) == "5" } {
          ::acqfc::Intervalle_continu_2 $visuNo
          $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
-      } elseif { $panneau(acqfc,$visuNo,mode) == "6" } {
-         set panneau(acqfc,$visuNo,fenetre) "0"
-         ::acqfc::selectVideoMode $visuNo
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state disabled
-      } elseif { $panneau(acqfc,$visuNo,mode) == "7" } {
-         set panneau(acqfc,$visuNo,fenetre) "0"
-         ::acqfc::selectVideoMode $visuNo
-         $panneau(acqfc,$visuNo,This).obt.dslr configure -state disabled
       }
       pack $panneau(acqfc,$visuNo,mode,$panneau(acqfc,$visuNo,mode)) -anchor nw -fill x
    }
@@ -688,10 +625,10 @@ namespace eval ::acqfc {
            #--- Desactive le bouton Go, pour eviter un double appui
            $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
 
-           #------ Tests generaux d'integrite de la requete -------------------------
-
+           #------ Tests generaux de l'integrite de la requete
            set integre oui
-           #--- Teste si une camera est bien selectionnee
+
+           #--- Tester si une camera est bien selectionnee
            if { [ ::confVisu::getCamItem $visuNo ] == "" } {
               ::audace::menustate disabled
               set choix [ tk_messageBox -title $caption(acqfc,pb) -type ok \
@@ -731,7 +668,7 @@ namespace eval ::acqfc {
                               -message $caption(acqfc,saisind)
                           set integre non
                        }
-                       #--- Verifie que l'index est valide (entier positif)
+                       #--- Verifier que l'index est valide (entier positif)
                        if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,indinv)
@@ -755,31 +692,31 @@ namespace eval ::acqfc {
                           -message $caption(acqfc,nomblanc)
                        set integre non
                     }
-                    #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
+                    #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
                     if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,mauvcar)
                        set integre non
                     }
-                    #--- Verifie que le nombre de poses est valide (nombre entier)
+                    #--- Verifier que le nombre de poses est valide (nombre entier)
                     if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,nbinv)
                        set integre non
                     }
-                    #--- Verifie que l'index existe
+                    #--- Verifier que l'index existe
                     if { $panneau(acqfc,$visuNo,index) == "" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                            -message $caption(acqfc,saisind)
                        set integre non
                     }
-                    #--- Verifie que l'index est valide (entier positif)
+                    #--- Verifier que l'index est valide (entier positif)
                     if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,indinv)
                        set integre non
                     }
-                    #--- Envoie un warning si l'index n'est pas a 1
+                    #--- Envoyer un warning si l'index n'est pas a 1
                     if { $panneau(acqfc,$visuNo,index) != "1" } {
                        set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                           -message $caption(acqfc,indpasun)]
@@ -787,20 +724,20 @@ namespace eval ::acqfc {
                           set integre non
                        }
                     }
-                    #--- Verifie que le nom des fichiers n'existe pas deja...
+                    #--- Verifier que le nom des fichiers n'existe pas
                     set nom $panneau(acqfc,$visuNo,nom_image)
                     #--- Pour eviter un nom de fichier qui commence par un blanc
                     set nom [lindex $nom 0]
                     append nom $panneau(acqfc,$visuNo,index) $ext
                     if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                       #--- Dans ce cas, le fichier existe deja...
+                       #--- Dans ce cas, le fichier existe deja
                        set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                           -message $caption(acqfc,fichdeja)]
                        if { $confirmation == "no" } {
                           set integre non
                        }
                     }
-                    #--- Teste si un telescope est bien selectionnee si l'option decalage est selectionnee
+                    #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
                     if { $panneau(DlgShift,buttonShift) == "1" } {
                        if { [ ::tel::list ] == "" } {
                           ::audace::menustate disabled
@@ -832,25 +769,25 @@ namespace eval ::acqfc {
                              -message $caption(acqfc,nomblanc)
                           set integre non
                        }
-                       #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
+                       #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
                        if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,mauvcar)
                           set integre non
                        }
-                       #--- Verifie que l'index existe
+                       #--- Verifier que l'index existe
                        if { $panneau(acqfc,$visuNo,index) == "" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                               -message $caption(acqfc,saisind)
                           set integre non
                        }
-                       #--- Verifie que l'index est valide (entier positif)
+                       #--- Verifier que l'index est valide (entier positif)
                        if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,indinv)
                           set integre non
                        }
-                       #--- Envoie un warning si l'index n'est pas a 1
+                       #--- Envoyer un warning si l'index n'est pas a 1
                        if { $panneau(acqfc,$visuNo,index) != "1" } {
                           set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                              -message $caption(acqfc,indpasun)]
@@ -858,13 +795,13 @@ namespace eval ::acqfc {
                              set integre non
                           }
                        }
-                       #--- Verifie que le nom des fichiers n'existe pas deja...
+                       #--- Verifier que le nom des fichiers n'existe pas
                        set nom $panneau(acqfc,$visuNo,nom_image)
                        #--- Pour eviter un nom de fichier qui commence par un blanc
                        set nom [lindex $nom 0]
                        append nom $panneau(acqfc,$visuNo,index) $ext
                        if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                          #--- Dans ce cas, le fichier existe deja...
+                          #--- Dans ce cas, le fichier existe deja
                           set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                              -message $caption(acqfc,fichdeja)]
                           if { $confirmation == "no" } {
@@ -872,7 +809,7 @@ namespace eval ::acqfc {
                           }
                        }
                     }
-                    #--- Teste si un telescope est bien selectionnee si l'option decalage est selectionnee
+                    #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
                     if { $panneau(DlgShift,buttonShift) == "1" } {
                        if { [ ::tel::list ] == "" } {
                           ::audace::menustate disabled
@@ -902,31 +839,31 @@ namespace eval ::acqfc {
                           -message $caption(acqfc,nomblanc)
                        set integre non
                     }
-                    #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
+                    #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
                     if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,mauvcar)
                        set integre non
                     }
-                    #--- Verifie que le nombre de poses est valide (nombre entier)
+                    #--- Verifier que le nombre de poses est valide (nombre entier)
                     if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0"} {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,nbinv)
                        set integre non
                     }
-                    #--- Verifie que l'index existe
+                    #--- Verifier que l'index existe
                     if { $panneau(acqfc,$visuNo,index) == "" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                            -message $caption(acqfc,saisind)
                        set integre non
                     }
-                    #--- Verifie que l'index est valide (entier positif)
+                    #--- Verifier que l'index est valide (entier positif)
                     if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,indinv)
                        set integre non
                     }
-                    #--- Envoie un warning si l'index n'est pas a 1
+                    #--- Envoyer un warning si l'index n'est pas a 1
                     if { $panneau(acqfc,$visuNo,index) != "1" } {
                        set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                           -message $caption(acqfc,indpasun)]
@@ -934,37 +871,37 @@ namespace eval ::acqfc {
                           set integre non
                        }
                     }
-                    #--- Verifie que la simulation a ete lancee
+                    #--- Verifier que la simulation a ete lancee
                     if { $panneau(acqfc,$visuNo,intervalle) == "....." } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,interinv_2)
                        set integre non
-                    #--- Verifie que l'intervalle est valide (entier positif)
+                    #--- Verifier que l'intervalle est valide (entier positif)
                     } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_1) ] == "0" } {
                        tk_messageBox -title $caption(acqfc,pb) -type ok \
                           -message $caption(acqfc,interinv)
                        set integre non
-                    #--- Verifie que l'intervalle est superieur a celui calcule par la simulation
+                    #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
                     } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_1) ) && \
                       ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,interinv_1)
                           set integre non
                     }
-                    #--- Verifie que le nom des fichiers n'existe pas deja...
+                    #--- Verifier que le nom des fichiers n'existe pas
                     set nom $panneau(acqfc,$visuNo,nom_image)
                     #--- Pour eviter un nom de fichier qui commence par un blanc
                     set nom [lindex $nom 0]
                     append nom $panneau(acqfc,$visuNo,index) $ext
                     if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                       #--- Dans ce cas, le fichier existe deja...
+                       #--- Dans ce cas, le fichier existe deja
                        set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                           -message $caption(acqfc,fichdeja)]
                        if { $confirmation == "no" } {
                           set integre non
                        }
                     }
-                    #--- Teste si un telescope est bien selectionnee si l'option decalage est selectionnee
+                    #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
                     if { $panneau(DlgShift,buttonShift) == "1" } {
                        if { [ ::tel::list ] == "" } {
                           ::audace::menustate disabled
@@ -996,25 +933,25 @@ namespace eval ::acqfc {
                              -message $caption(acqfc,nomblanc)
                           set integre non
                        }
-                       #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
+                       #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
                        if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,mauvcar)
                           set integre non
                        }
-                       #--- Verifie que l'index existe
+                       #--- Verifier que l'index existe
                        if { $panneau(acqfc,$visuNo,index) == "" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                               -message $caption(acqfc,saisind)
                           set integre non
                        }
-                       #--- Verifie que l'index est valide (entier positif)
+                       #--- Verifier que l'index est valide (entier positif)
                        if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,indinv)
                           set integre non
                        }
-                       #--- Envoie un warning si l'index n'est pas a 1
+                       #--- Envoyer un warning si l'index n'est pas a 1
                        if { $panneau(acqfc,$visuNo,index) != "1" } {
                           set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                              -message $caption(acqfc,indpasun)]
@@ -1022,30 +959,30 @@ namespace eval ::acqfc {
                              set integre non
                           }
                        }
-                       #--- Verifie que la simulation a ete lancee
+                       #--- Verifier que la simulation a ete lancee
                        if { $panneau(acqfc,$visuNo,intervalle) == "....." } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,interinv_2)
                           set integre non
-                       #--- Verifie que l'intervalle est valide (entier positif)
+                       #--- Verifier que l'intervalle est valide (entier positif)
                        } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_2) ] == "0" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,interinv)
                           set integre non
-                       #--- Verifie que l'intervalle est superieur a celui calcule par la simulation
+                       #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
                        } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_2) ) && \
                          ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
                              tk_messageBox -title $caption(acqfc,pb) -type ok \
                                 -message $caption(acqfc,interinv_1)
                              set integre non
                        }
-                       #--- Verifie que le nom des fichiers n'existe pas deja...
+                       #--- Verifier que le nom des fichiers n'existe pas deja
                        set nom $panneau(acqfc,$visuNo,nom_image)
                        #--- Pour eviter un nom de fichier qui commence par un blanc
                        set nom [lindex $nom 0]
                        append nom $panneau(acqfc,$visuNo,index) $ext
                        if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                          #--- Dans ce cas, le fichier existe deja...
+                          #--- Dans ce cas, le fichier existe deja
                           set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                              -message $caption(acqfc,fichdeja)]
                           if { $confirmation == "no" } {
@@ -1053,17 +990,17 @@ namespace eval ::acqfc {
                           }
                        }
                     } else {
-                       #--- Verifie que la simulation a ete lancee
+                       #--- Verifier que la simulation a ete lancee
                        if { $panneau(acqfc,$visuNo,intervalle) == "....." } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,interinv_2)
                           set integre non
-                       #--- Verifie que l'intervalle est valide (entier positif)
+                       #--- Verifier que l'intervalle est valide (entier positif)
                        } elseif { [ TestEntier $panneau(acqfc,$visuNo,intervalle_2) ] == "0" } {
                           tk_messageBox -title $caption(acqfc,pb) -type ok \
                              -message $caption(acqfc,interinv)
                           set integre non
-                       #--- Verifie que l'intervalle est superieur a celui calcule par la simulation
+                       #--- Verifier que l'intervalle est superieur a celui calcule par la simulation
                        } elseif { ( $panneau(acqfc,$visuNo,intervalle) > $panneau(acqfc,$visuNo,intervalle_2) ) && \
                          ( $panneau(acqfc,$visuNo,intervalle) != "xxx" ) } {
                              tk_messageBox -title $caption(acqfc,pb) -type ok \
@@ -1071,7 +1008,7 @@ namespace eval ::acqfc {
                              set integre non
                        }
                     }
-                    #--- Teste si un telescope est bien selectionnee si l'option decalage est selectionnee
+                    #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
                     if { $panneau(DlgShift,buttonShift) == "1" } {
                        if { [ ::tel::list ] == "" } {
                           ::audace::menustate disabled
@@ -1087,142 +1024,9 @@ namespace eval ::acqfc {
                        }
                     }
                  }
-                 6  {
-                    #--- Mode video
-                    #--- Verifier qu'il s'agit bien d'une WebCam
-                    if { [::confCam::getPluginProperty $camItem "hasVideo"] != 1 } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [::confCam::getPluginProperty $camItem "product"] $caption(acqfc,pb_camera2)"
-                       set integre non
-                    }
-                    #--- Verifier qu'il y a bien un nom de fichier
-                    if { $panneau(acqfc,$visuNo,nom_image) == "" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,donnomfich)
-                       set integre non
-                    }
-                    #--- Verifier que le nom de fichier n'a pas d'espace
-                    if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,nomblanc)
-                       set integre non
-                    }
-                    #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
-                    if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,mauvcar)
-                       set integre non
-                    }
-                    if { $panneau(acqfc,$visuNo,indexer) == "1" } {
-                       #--- Verifie que l'index existe
-                       if { $panneau(acqfc,$visuNo,index) == "" } {
-                          tk_messageBox -title $caption(acqfc,pb) -type ok \
-                              -message $caption(acqfc,saisind)
-                          set integre non
-                       }
-                       #--- Verifie que l'index est valide (entier positif)
-                       if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-                          tk_messageBox -title $caption(acqfc,pb) -type ok \
-                             -message $caption(acqfc,indinv)
-                          set integre non
-                       }
-                       #--- Envoie un warning si l'index n'est pas a 1
-                       if { $panneau(acqfc,$visuNo,index) != "1" } {
-                          set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                             -message $caption(acqfc,indpasun)]
-                          if { $confirmation == "no" } {
-                             set integre non
-                          }
-                       }
-                    }
-                    #--- Verifie que le nom des fichiers n'existe pas deja...
-                    set nom $panneau(acqfc,$visuNo,nom_image)
-                    #--- Pour eviter un nom de fichier qui commence par un blanc
-                    set nom [lindex $nom 0]
-                    append nom $panneau(acqfc,$visuNo,index) ".avi"
-                    if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                       #--- Dans ce cas, le fichier existe deja...
-                       set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                          -message $caption(acqfc,fichdeja)]
-                       if { $confirmation == "no" } {
-                          set integre non
-                       }
-                    }
-                 }
-                 7  {
-                    #--- Mode video avec intervalle entre chaque video
-                    #--- Verifier qu'il s'agit bien d'une WebCam
-                    if { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message "$caption(acqfc,pb_camera1) [::confCam::getPluginProperty $camItem "product"] $caption(acqfc,pb_camera2)"
-                       set integre non
-                    }
-                    #--- Verifier qu'il y a bien un nom de fichier
-                    if { $panneau(acqfc,$visuNo,nom_image) == "" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,donnomfich)
-                       set integre non
-                    }
-                    #--- Verifier que le nom de fichier n'a pas d'espace
-                    if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,nomblanc)
-                       set integre non
-                    }
-                    #--- Verifie que le nom de fichier ne contient pas de caracteres interdits
-                    if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,mauvcar)
-                       set integre non
-                    }
-                    #--- Verifie que l'index existe
-                    if { $panneau(acqfc,$visuNo,index) == "" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                           -message $caption(acqfc,saisind)
-                       set integre non
-                    }
-                    #--- Verifie que l'index est valide (entier positif)
-                    if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,indinv)
-                       set integre non
-                    }
-                    #--- Envoie un warning si l'index n'est pas a 1
-                    if { $panneau(acqfc,$visuNo,index) != "1" } {
-                       set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                          -message $caption(acqfc,indpasun)]
-                       if { $confirmation == "no" } {
-                          set integre non
-                       }
-                    }
-                    #--- Verifie que l'intervalle est valide (entier positif)
-                    if { [ TestEntier $panneau(acqfc,$visuNo,intervalle_video) ] == "0" } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,interinv)
-                       set integre non
-                    #--- Verifie que l'intervalle est superieur a la duree du film
-                    } elseif { $panneau(acqfc,$visuNo,lg_film) > $panneau(acqfc,$visuNo,intervalle_video) } {
-                       tk_messageBox -title $caption(acqfc,pb) -type ok \
-                          -message $caption(acqfc,interinv_3)
-                       set integre non
-                    }
-                    #--- Verifie que le nom des fichiers n'existe pas deja...
-                    set nom $panneau(acqfc,$visuNo,nom_image)
-                    #--- Pour eviter un nom de fichier qui commence par un blanc
-                    set nom [lindex $nom 0]
-                    append nom $panneau(acqfc,$visuNo,index) ".avi"
-                    if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                       #--- Dans ce cas, le fichier existe deja...
-                       set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                          -message $caption(acqfc,fichdeja)]
-                       if { $confirmation == "no" } {
-                          set integre non
-                       }
-                    }
-                 }
               }
            }
-           #------ Fin des tests d'integrite de la requete ----------------------------
+           #------ Fin des tests de l'integrite de la requete
 
            #--- Apres les tests d'integrite, je reactive le bouton "GO"
            $panneau(acqfc,$visuNo,This).go_stop.but configure -state normal
@@ -1231,7 +1035,7 @@ namespace eval ::acqfc {
               #--- Modification du bouton, pour eviter un second lancement
               set panneau(acqfc,$visuNo,go_stop) stop
               $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,stop)
-              #--- Verouille tous les boutons et champs de texte pendant les acquisitions
+              #--- Verrouille tous les boutons et champs de texte pendant les acquisitions
               $panneau(acqfc,$visuNo,This).pose.but configure -state disabled
               $panneau(acqfc,$visuNo,This).pose.entr configure -state disabled
               $panneau(acqfc,$visuNo,This).bin.but configure -state disabled
@@ -1243,14 +1047,14 @@ namespace eval ::acqfc {
               set panneau(acqfc,$visuNo,pose_en_cours) "1"
               #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
               set camNo $panneau(acqfc,$visuNo,camNo)
-              if { ( [::confCam::getPluginProperty $camItem "hasVideo"] == 1  ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
+              if { ( [::confCam::getPluginProperty $camItem "hasVideo"] == 1 ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
                  set panneau(acqfc,$visuNo,pose) "0"
               }
               #--- Branchement selon le mode de prise de vue
               switch $panneau(acqfc,$visuNo,mode) {
                  1  {
                     #--- Mode une image
-                    #--- Verouille les boutons du mode "une image"
+                    #--- Verrouille les boutons du mode "une image"
                     $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state disabled
@@ -1260,7 +1064,7 @@ namespace eval ::acqfc {
                     Message $visuNo consolog $caption(acqfc,acquneim) \
                        $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $heure
                     acq $visuNo $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin)
-                    #--- Deverouille les boutons du mode "une image"
+                    #--- Deverrouille les boutons du mode "une image"
                     $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state normal
@@ -1271,7 +1075,7 @@ namespace eval ::acqfc {
                  }
                  2  {
                     #--- Mode serie
-                    #--- Verouille les boutons du mode "serie"
+                    #--- Verrouille les boutons du mode "serie"
                     $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state disabled
@@ -1296,11 +1100,11 @@ namespace eval ::acqfc {
                        #--- Pour eviter un nom de fichier qui commence par un blanc
                        set nom [lindex $nom 0]
                        if { $panneau(acqfc,$visuNo,simulation) == "0" } {
-                          #--- Verifie que le nom du fichier n'existe pas deja...
+                          #--- Verifie que le nom du fichier n'existe pas
                           set nom1 "$nom"
                           append nom1 $panneau(acqfc,$visuNo,index) $ext
                           if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                             #--- Dans ce cas, le fichier existe deja...
+                             #--- Dans ce cas, le fichier existe deja
                              set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                                 -message $caption(acqfc,fichdeja)]
                              if { $confirmation == "no" } {
@@ -1342,7 +1146,7 @@ namespace eval ::acqfc {
                        #--- Visualisation de l'image
                        ::audace::autovisu $visuNo
                     }
-                    #--- Deverouille les boutons du mode "serie"
+                    #--- Deverrouille les boutons du mode "serie"
                     $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state normal
@@ -1352,7 +1156,7 @@ namespace eval ::acqfc {
                  }
                  3  {
                     #--- Mode continu
-                    #--- Verouille les boutons du mode "continu"
+                    #--- Verrouille les boutons du mode "continu"
                     $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state disabled
@@ -1374,11 +1178,11 @@ namespace eval ::acqfc {
                           #--- Pour eviter un nom de fichier qui commence par un blanc
                           set nom [lindex $nom 0]
                           if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                             #--- Verifie que le nom du fichier n'existe pas deja...
+                             #--- Verifie que le nom du fichier n'existe pas
                              set nom1 "$nom"
                              append nom1 $panneau(acqfc,$visuNo,index) $ext
                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                                #--- Dans ce cas, le fichier existe deja...
+                                #--- Dans ce cas, le fichier existe deja
                                 set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                                    -message $caption(acqfc,fichdeja)]
                                 if { $confirmation == "no" } {
@@ -1412,7 +1216,7 @@ namespace eval ::acqfc {
                        #--- Visualisation de l'image
                        ::audace::autovisu $visuNo
                     }
-                    #--- Deverouille les boutons du mode "continu"
+                    #--- Deverrouille les boutons du mode "continu"
                     $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state normal
@@ -1422,7 +1226,7 @@ namespace eval ::acqfc {
                  }
                  4  {
                     #--- Mode series d'images en continu avec intervalle entre chaque serie
-                    #--- Verouille les boutons du mode "continu 1"
+                    #--- Verrouille les boutons du mode "continu 1"
                     $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state disabled
@@ -1441,11 +1245,11 @@ namespace eval ::acqfc {
                           set nom $panneau(acqfc,$visuNo,nom_image)
                           #--- Pour eviter un nom de fichier qui commence par un blanc
                           set nom [lindex $nom 0]
-                          #--- Verifie que le nom du fichier n'existe pas deja...
+                          #--- Verifie que le nom du fichier n'existe pas
                           set nom1 "$nom"
                           append nom1 $panneau(acqfc,$visuNo,index) $ext
                           if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                             #--- Dans ce cas, le fichier existe deja...
+                             #--- Dans ce cas, le fichier existe deja
                              set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                                 -message $caption(acqfc,fichdeja)]
                              if { $confirmation == "no" } {
@@ -1485,7 +1289,7 @@ namespace eval ::acqfc {
                        #--- Visualisation de l'image
                        ::audace::autovisu $visuNo
                     }
-                    #--- Deverouille les boutons du mode "continu 1"
+                    #--- Deverrouille les boutons du mode "continu 1"
                     $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state normal
@@ -1495,7 +1299,7 @@ namespace eval ::acqfc {
                  }
                  5  {
                     #--- Mode continu avec intervalle entre chaque image
-                    #--- Verouille les boutons du mode "continu 2"
+                    #--- Verrouille les boutons du mode "continu 2"
                     $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state disabled
                     $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state disabled
@@ -1519,11 +1323,11 @@ namespace eval ::acqfc {
                           #--- Pour eviter un nom de fichier qui commence par un blanc
                           set nom [lindex $nom 0]
                           if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                             #--- Verifie que le nom du fichier n'existe pas deja...
+                             #--- Verifie que le nom du fichier n'existe pas
                              set nom1 "$nom"
                              append nom1 $panneau(acqfc,$visuNo,index) $ext
                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                                #--- Dans ce cas, le fichier existe deja...
+                                #--- Dans ce cas, le fichier existe deja
                                 set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                                    -message $caption(acqfc,fichdeja)]
                                 if { $confirmation == "no" } {
@@ -1575,7 +1379,7 @@ namespace eval ::acqfc {
                        #--- Visualisation de l'image
                        ::audace::autovisu $visuNo
                     }
-                    #--- Deverouille les boutons du mode "continu 2"
+                    #--- Deverrouille les boutons du mode "continu 2"
                     $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state normal
@@ -1583,146 +1387,8 @@ namespace eval ::acqfc {
                     #--- Pose en cours
                     set panneau(acqfc,$visuNo,pose_en_cours) "0"
                  }
-                 6  {
-                    #--- Mode video
-                    #--- Verouille les boutons du mode "video"
-                    $panneau(acqfc,$visuNo,This).mode.video.nom.entr configure -state disabled
-                    $panneau(acqfc,$visuNo,This).mode.video.index.case configure -state disabled
-                    $panneau(acqfc,$visuNo,This).mode.video.index.entr configure -state disabled
-                    $panneau(acqfc,$visuNo,This).mode.video.index.but configure -state disabled
-                    $panneau(acqfc,$visuNo,This).mode.video.show.case configure -state disabled
-                    set heure $audace(tu,format,hmsint)
-                    Message $visuNo consolog $caption(acqfc,acqvideo) \
-                       $panneau(acqfc,$visuNo,lg_film) $panneau(acqfc,$visuNo,rate) $heure
-                    set nom $panneau(acqfc,$visuNo,nom_image)
-                    #--- Pour eviter un nom de fichier qui commence par un blanc
-                    set nom [lindex $nom 0]
-                    if { $panneau(acqfc,$visuNo,indexer) == "1" } {
-                       set nom [append nom $panneau(acqfc,$visuNo,index)]
-                    }
-                    set nom_rep [ file join $audace(rep_images) "$nom.avi" ]
-                    #--- Verifie que le nom du fichier n'existe pas deja...
-                    if { [ file exists $nom_rep ] == "1" } {
-                       #--- Dans ce cas, le fichier existe deja...
-                       set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                          -message $caption(acqfc,fichdeja)]
-                       if { $confirmation == "no" } {
-                          break
-                       }
-                    }
-                    #--- Je positionne la fenetre video
-                    if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-                       cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) \
-                          $panneau(acqfc,$visuNo,y1) $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
-                    }
-                    #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                    cam$panneau(acqfc,$visuNo,camNo) setvideostatusvariable panneau(acqfc,$visuNo,status)
-                    set result [ catch { cam$panneau(acqfc,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqfc,$visuNo,lg_film)" "$panneau(acqfc,$visuNo,rate)" "1" } msg ]
-                    if { $result == "1" } {
-                       #--- En cas d'erreur, j'affiche un message d'erreur
-                       #--- Et je passe a la suite sans attendre
-                       ::console::affiche_resultat "$caption(acqfc,start_capture_error) $msg \n"
-                    } else {
-                       #--- J'attends la fin de l'acquisition
-                       #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-                       set statusVariableName "::status_cam$panneau(acqfc,$visuNo,camNo)"
-                       if { [set $statusVariableName] == "exp" } {
-                          vwait status_cam$panneau(acqfc,$visuNo,camNo)
-                       }
-                    }
-                    if { $panneau(acqfc,$visuNo,indexer) == "1" } {
-                       incr panneau(acqfc,$visuNo,index)
-                    }
-                    set heure $audace(tu,format,hmsint)
-                    Message $visuNo consolog $caption(acqfc,enrim_video) $heure $nom
-                    #--- Deverouille les boutons du mode "video"
-                    $panneau(acqfc,$visuNo,This).mode.video.nom.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.index.case configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.index.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.index.but configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.show.case configure -state normal
-                    #--- Pose en cours
-                    set panneau(acqfc,$visuNo,pose_en_cours) "0"
-                 }
-                 7  {
-                    #--- Mode video avec intervalle entre chaque video
-                    #--- Verouille les boutons du mode "video"
-                    $panneau(acqfc,$visuNo,This).mode.video_1.nom.entr configure -state disabled
-                    $panneau(acqfc,$visuNo,This).mode.video_1.index.entr configure -state disabled
-                    $panneau(acqfc,$visuNo,This).mode.video_1.index.but configure -state disabled
-                    $panneau(acqfc,$visuNo,This).mode.video_1.show.case configure -state disabled
-                    set heure $audace(tu,format,hmsint)
-                    Message $visuNo consolog $caption(acqfc,acqvideo_cont) $panneau(acqfc,$visuNo,intervalle_video) \
-                       $panneau(acqfc,$visuNo,lg_film) $panneau(acqfc,$visuNo,rate) $heure
-                    while { ( $panneau(acqfc,$visuNo,demande_arret) == "0" ) && ( $panneau(acqfc,$visuNo,mode) == "7" ) } {
-                       set panneau(acqfc,$visuNo,deb_video) [ clock second ]
-                       set nom $panneau(acqfc,$visuNo,nom_image)
-                       #--- Pour eviter un nom de fichier qui commence par un blanc
-                       set nom [lindex $nom 0]
-                       set nom [append nom $panneau(acqfc,$visuNo,index)]
-                       set nom_rep [ file join $audace(rep_images) "$nom.avi" ]
-                       #--- Verifie que le nom du fichier n'existe pas deja...
-                       if { [ file exists $nom_rep ] == "1" } {
-                          #--- Dans ce cas, le fichier existe deja...
-                          set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                             -message $caption(acqfc,fichdeja)]
-                          if { $confirmation == "no" } {
-                             break
-                          }
-                       }
-                       #--- J'autorise le bouton "STOP"
-                       $panneau(acqfc,$visuNo,This).go_stop.but configure -state normal
-                       #--- Je positionne la fenetre video
-                       if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-                          cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) \
-                             $panneau(acqfc,$visuNo,y1) $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
-                       }
-                       #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                       cam$panneau(acqfc,$visuNo,camNo) setvideostatusvariable panneau(acqfc,$visuNo,status)
-                       set result [ catch { cam$panneau(acqfc,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqfc,$visuNo,lg_film)" "$panneau(acqfc,$visuNo,rate)" "1" } msg ]
-                       if { $result == "1" } {
-                          ::console::affiche_resultat "$caption(acqfc,start_capture_error) $msg \n"
-                       } else {
-                          #--- J'attends la fin de l'acquisition
-                          #--- Remarque : La commande [set $xxx] permet de recuperer le contenu d'une variable
-                          set statusVariableName "::status_cam$panneau(acqfc,$visuNo,camNo)"
-                          if { [set $statusVariableName] == "exp" } {
-                             vwait status_cam$panneau(acqfc,$visuNo,camNo)
-                          }
-                          #--- Je desactive le bouton "STOP"
-                          $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
-                       }
-                       incr panneau(acqfc,$visuNo,index)
-                       set heure $audace(tu,format,hmsint)
-                       Message $visuNo consolog $caption(acqfc,enrim_video) $heure $nom
-                       #--- Deplacement du telescope
-                       ::DlgShift::Decalage_Telescope
-                       set panneau(acqfc,$visuNo,attente_pose) "1"
-                       set panneau(acqfc,$visuNo,fin_video) [ clock second ]
-                       set panneau(acqfc,$visuNo,intervalle_film) [ expr $panneau(acqfc,$visuNo,fin_video) - $panneau(acqfc,$visuNo,deb_video) ]
-                       while { ( $panneau(acqfc,$visuNo,demande_arret) == "0" ) && ( $panneau(acqfc,$visuNo,intervalle_film) <= $panneau(acqfc,$visuNo,intervalle_video) ) } {
-                          after 500
-                          set panneau(acqfc,$visuNo,fin_video) [ clock second ]
-                          set panneau(acqfc,$visuNo,intervalle_film) [ expr $panneau(acqfc,$visuNo,fin_video) - $panneau(acqfc,$visuNo,deb_video) + 1 ]
-                          set t [ expr $panneau(acqfc,$visuNo,intervalle_video) - $panneau(acqfc,$visuNo,intervalle_film) ]
-                          ::acqfc::Avancement_pose $visuNo $t
-                       }
-                       set panneau(acqfc,$visuNo,attente_pose) "0"
-                    }
-                    set heure $audace(tu,format,hmsint)
-                    console::affiche_saut "\n"
-                    Message $visuNo consolog $caption(acqfc,arrcont) $heure
-                    Message $visuNo consolog $caption(acqfc,dersauve_video) $nom
-                    #--- Deverouille les boutons du mode "video"
-                    $panneau(acqfc,$visuNo,This).mode.video_1.nom.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video_1.index.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video_1.index.but configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video_1.show.case configure -state normal
-                    #--- Pose en cours
-                    set panneau(acqfc,$visuNo,pose_en_cours) "0"
-                 }
               }
-              #--- Deverouille tous les boutons et champs de texte pendant les acquisitions
+              #--- Deverrouille tous les boutons et champs de texte pendant les acquisitions
               $panneau(acqfc,$visuNo,This).pose.but configure -state normal
               $panneau(acqfc,$visuNo,This).pose.entr configure -state normal
               $panneau(acqfc,$visuNo,This).bin.but configure -state normal
@@ -1750,7 +1416,7 @@ namespace eval ::acqfc {
                        Message $visuNo consolog $caption(acqfc,arrprem) $heure
                        Message $visuNo consolog $caption(acqfc,lg_pose_arret) [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]
                     }
-                    #--- Deverouille les boutons du mode "une image"
+                    #--- Deverrouille les boutons du mode "une image"
                     $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.une.index.entr configure -state normal
@@ -1765,7 +1431,7 @@ namespace eval ::acqfc {
                        console::affiche_saut "\n"
                        Message $visuNo consolog $caption(acqfc,arrprem) $heure
                     }
-                    #--- Deverouille les boutons du mode "serie"
+                    #--- Deverrouille les boutons du mode "serie"
                     $panneau(acqfc,$visuNo,This).mode.serie.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie.nb.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state normal
@@ -1786,7 +1452,7 @@ namespace eval ::acqfc {
                           Message $visuNo consolog $caption(acqfc,lg_pose_arret) [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]
                        }
                     }
-                    #--- Deverouille les boutons du mode "continu"
+                    #--- Deverrouille les boutons du mode "continu"
                     $panneau(acqfc,$visuNo,This).mode.continu.sauve.case configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu.index.entr configure -state normal
@@ -1801,7 +1467,7 @@ namespace eval ::acqfc {
                        Message $visuNo consolog $caption(acqfc,arrprem) $heure
                        set i $panneau(acqfc,$visuNo,nb_images)
                     }
-                    #--- Deverouille les boutons du mode "continu 1"
+                    #--- Deverrouille les boutons du mode "continu 1"
                     $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie_1.nb.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.serie_1.index.entr configure -state normal
@@ -1817,43 +1483,14 @@ namespace eval ::acqfc {
                           Message $visuNo consolog $caption(acqfc,lg_pose_arret) [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]
                        }
                     }
-                    #--- Deverouille les boutons du mode "continu 2"
+                    #--- Deverrouille les boutons du mode "continu 2"
                     $panneau(acqfc,$visuNo,This).mode.continu_1.sauve.case configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu_1.nom.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu_1.index.entr configure -state normal
                     $panneau(acqfc,$visuNo,This).mode.continu_1.index.but configure -state normal
               }
-              6  {
-                 #--- Mode video
-                    #--- Message suite a l'arret
-                    set heure $audace(tu,format,hmsint)
-                    if { $panneau(acqfc,$visuNo,pose_en_cours) == "1" } {
-                       console::affiche_saut "\n"
-                       Message $visuNo consolog $caption(acqfc,arrprem) $heure
-                    }
-                    #--- Deverouille les boutons du mode "video"
-                    $panneau(acqfc,$visuNo,This).mode.video.nom.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.index.case configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.index.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.index.but configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video.show.case configure -state normal
-              }
-              7  {
-                 #--- Mode video avec intervalle entre chaque video
-                    #--- Message suite a l'arret
-                    set heure $audace(tu,format,hmsint)
-                    if { $panneau(acqfc,$visuNo,pose_en_cours) == "1" } {
-                       console::affiche_saut "\n"
-                       Message $visuNo consolog $caption(acqfc,arrprem) $heure
-                    }
-                    #--- Deverouille les boutons du mode "video 1"
-                    $panneau(acqfc,$visuNo,This).mode.video_1.nom.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video_1.index.entr configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video_1.index.but configure -state normal
-                    $panneau(acqfc,$visuNo,This).mode.video_1.show.case configure -state normal
-              }
            }
-           #--- Deverouille tous les boutons et champs de texte pendant les acquisitions
+           #--- Deverrouille tous les boutons et champs de texte pendant les acquisitions
            $panneau(acqfc,$visuNo,This).pose.but configure -state normal
            $panneau(acqfc,$visuNo,This).pose.entr configure -state normal
            $panneau(acqfc,$visuNo,This).bin.but configure -state normal
@@ -1973,6 +1610,11 @@ namespace eval ::acqfc {
       $panneau(acqfc,$visuNo,This).status.lab configure -text ""
       update
 
+      #--- Rajoute des mots clefs dans l'en-tete FITS
+      foreach keyword [ ::keyword::getCheckedKeywords $visuNo ] {
+         $buffer setkwd $keyword
+      }
+
       #--- Visualisation de l'image si on n'est pas en chargement differe
       if { $conf(dslr,telecharge_mode) != "3" || [ cam$camNo product ] != "dslr" } {
          if { $conf(dslr,telecharge_mode) == "1" && [ cam$camNo product ] == "dslr" } {
@@ -2001,92 +1643,7 @@ namespace eval ::acqfc {
    }
 #***** Fin de la procedure chargement differe d'image **********
 
-#***** Procedure d'apercu en mode video ************************
-   proc changerVideoPreview { visuNo } {
-      global panneau
-
-      if { $panneau(acqfc,$visuNo,showvideopreview) == 1 } {
-         ::acqfc::startVideoPreview $visuNo
-      } else {
-         ::acqfc::stopVideoPreview $visuNo
-      }
-   }
-
-#***** Demarre le mode video************************
-# retourne 0 si OK, 1 si erreur
-   proc startVideoPreview { visuNo } {
-      global audace caption conf panneau
-
-      set camItem [::confVisu::getCamItem $visuNo]
-
-      if { [ ::confCam::isReady $camItem ] == 0 } {
-         ::confCam::run
-         tkwait window $audace(base).confCam
-         #--- Je decoche la checkbox
-         set panneau(acqfc,$visuNo,showvideopreview) "0"
-         #--- Je decoche le fenetrage
-         if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-            set panneau(acqfc,$visuNo,fenetre) "0"
-            ::acqfc::optionWindowedFenster $visuNo
-         }
-         #---
-         return 1
-      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1 } {
-         tk_messageBox -title $caption(acqfc,pb) -type ok \
-            -message $caption(acqfc,no_video_mode)
-         #--- Je decoche la checkbox
-         set panneau(acqfc,$visuNo,showvideopreview) "0"
-         #--- Je decoche le fenetrage
-         if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-            set panneau(acqfc,$visuNo,fenetre) "0"
-            ::acqfc::optionWindowedFenster $visuNo
-         }
-         #---
-         return 1
-      }
-
-      #--- Je connecte la sortie de la camera a l'image
-      set result [::confVisu::setVideo $visuNo 1 ]
-      if { $result == "1" } {
-        #--- Je decoche la checkbox
-        set panneau(acqfc,$visuNo,showvideopreview) "0"
-        #--- Je decoche le fenetrage
-        if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-           set panneau(acqfc,$visuNo,fenetre) "0"
-           ::acqfc::optionWindowedFenster $visuNo
-        }
-        #---
-        return 1
-      }
-
-      set panneau(acqfc,$visuNo,showvideopreview) "1"
-      return 0
-   }
-#***** Fin de la procedure d'apercu en mode video ******************
-
-#***** Procedure fin d'apercu en mode video ************************
-   proc stopVideoPreview { visuNo } {
-      global audace conf panneau
-
-      #--- J'arrete l'aquisition fenetree si elle est active
-      if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-         ::acqfc::stopWindowedFenster $visuNo
-         set panneau(acqfc,$visuNo,fenetre) "0"
-         ::acqfc::optionWindowedFenster $visuNo
-      }
-      #---
-      set camNo $panneau(acqfc,$visuNo,camNo)
-      if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasVideo ] == "1" } {
-         #--- Arret de la visualisation video
-         cam$camNo stopvideoview
-         ::confVisu::setVideo $visuNo 0
-         set panneau(acqfc,$visuNo,showvideopreview) "0"
-      }
-   }
-#***** Fin de la procedure fin d'apercu en mode video **************
-
 #***** Procedure d'affichage d'une barre de progression ********
-#--- Cette routine permet d'afficher une barre de progression qui simule l'avancement de la pose
    proc Avancement_pose { visuNo { t } } {
       global audace caption color conf panneau
 
@@ -2138,10 +1695,6 @@ namespace eval ::acqfc {
                         $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
                            $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_2) $caption(acqfc,sec)"
                         set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_2) ]
-                     } elseif { $panneau(acqfc,$visuNo,mode) == "7" } {
-                        $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                           $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_video) $caption(acqfc,sec)"
-                        set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_video) ]
                      }
                      set cpt [expr 100 - $cpt]
                   }
@@ -2190,10 +1743,6 @@ namespace eval ::acqfc {
                         $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
                            $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_2) $caption(acqfc,sec)"
                         set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_2) ]
-                     } elseif { $panneau(acqfc,$visuNo,mode) == "7" } {
-                        $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,attente) [ expr $t + 1 ]\
-                           $caption(acqfc,sec) / $panneau(acqfc,$visuNo,intervalle_video) $caption(acqfc,sec)"
-                        set cpt [expr $t*100 / $panneau(acqfc,$visuNo,intervalle_video) ]
                      }
                      set cpt [expr 100 - $cpt]
                   }
@@ -2225,8 +1774,7 @@ namespace eval ::acqfc {
       #--- Positionne un indicateur de demande d'arret
       set panneau(acqfc,$visuNo,demande_arret) "1"
       #--- Force la numerisation pour l'indicateur d'avancement de la pose
-      if { ( $panneau(acqfc,$visuNo,mode) != "2" ) && ( $panneau(acqfc,$visuNo,mode) != "4" ) && ( $panneau(acqfc,$visuNo,mode) != "6" ) && \
-         ( $panneau(acqfc,$visuNo,mode) != "7" ) } {
+      if { ( $panneau(acqfc,$visuNo,mode) != "2" ) && ( $panneau(acqfc,$visuNo,mode) != "4" ) } {
          ::acqfc::Avancement_pose $visuNo "1"
       }
 
@@ -2235,22 +1783,13 @@ namespace eval ::acqfc {
       #--- Annulation de l'alarme de fin de pose
       catch { after cancel bell }
 
-      #--- Arret de la pose (image et video)
+      #--- Arret de la pose (image)
       if { ( $panneau(acqfc,$visuNo,mode) == "1" )
          || ( $panneau(acqfc,$visuNo,mode) == "3" )
          || ( $panneau(acqfc,$visuNo,mode) == "5" ) } {
          #--- J'arrete la capture de l'image
          catch { cam$panneau(acqfc,$visuNo,camNo) stop }
          after 200
-      } elseif { ( $panneau(acqfc,$visuNo,mode) == "6" )
-         || ( $panneau(acqfc,$visuNo,mode) == "7" ) } {
-         #--- J'arrete la capture de la video
-         catch { cam$panneau(acqfc,$visuNo,camNo) stopvideocapture }
-         #--- Je positionne la fenetre video
-         if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-            cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) \
-               $panneau(acqfc,$visuNo,y1) $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
-         }
       }
    }
 #***** Fin de la procedure d'arret de l'acquisition ************
@@ -2311,7 +1850,7 @@ namespace eval ::acqfc {
          append nom $panneau(acqfc,$visuNo,index)
       }
 
-      #--- Verifier que le nom du fichier n'existe pas deja
+      #--- Verifier que le nom du fichier n'existe pas
       set nom1 "$nom"
       append nom1 $ext
       if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
@@ -2430,7 +1969,7 @@ namespace eval ::acqfc {
       wm title $panneau(acqfc,$visuNo,base).intervalle_continu_1 "$caption(acqfc,continu_1)"
       wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_1 $conf(acqfc,continu1,position)
       wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_1 WM_DELETE_WINDOW " \
-         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu)\" ; \
+         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,serie)\" ; \
          ::acqfc::ChangeMode $visuNo \
       "
 
@@ -2598,511 +2137,7 @@ namespace eval ::acqfc {
    }
 #***** Fin de si une simulation a deja ete faite pour la fenetre Continu (2) ********
 
-#***** Fenetre de configuration video ****************************************************
-   proc selectVideoMode { visuNo } {
-      global audace caption conf panneau
-
-      ::acqfc::recup_position $visuNo
-
-      #--- Initialisation de la position de la fenetre
-      if { ! [ info exists conf(acqfc,video,position) ] } { set conf(acqfc,video,position) "+120+260" }
-
-      #--- Creation de la fenetre Video
-      toplevel $panneau(acqfc,$visuNo,base).status_video
-      wm transient $panneau(acqfc,$visuNo,base).status_video $panneau(acqfc,$visuNo,base)
-      wm resizable $panneau(acqfc,$visuNo,base).status_video 1 1
-      wm title $panneau(acqfc,$visuNo,base).status_video "$caption(acqfc,capture_video)"
-      wm geometry $panneau(acqfc,$visuNo,base).status_video $conf(acqfc,video,position)
-      wm protocol $panneau(acqfc,$visuNo,base).status_video WM_DELETE_WINDOW " \
-         if { $panneau(acqfc,$visuNo,mode) == \"7\" } { \
-            set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,video)\" ; \
-            ::acqfc::ChangeMode $visuNo \
-         } elseif { $panneau(acqfc,$visuNo,mode) == \"6\" } { \
-            set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,uneimage)\" ; \
-            ::acqfc::ChangeMode $visuNo \
-         } \
-      "
-
-      #--- Trame de l'intervalle entre les video
-      if { $panneau(acqfc,$visuNo,mode) == "7" } {
-         label $panneau(acqfc,$visuNo,base).status_video.lab1 -text "$caption(acqfc,titre_3)" -font $audace(font,arial_10_b)
-         pack $panneau(acqfc,$visuNo,base).status_video.lab1 -padx 10 -pady 5
-         frame $panneau(acqfc,$visuNo,base).status_video.a
-            label $panneau(acqfc,$visuNo,base).status_video.a.lab2 -text "$caption(acqfc,intervalle_video)"
-            pack $panneau(acqfc,$visuNo,base).status_video.a.lab2 -anchor center -expand 1 -fill none -side left \
-               -padx 10 -pady 5
-            entry $panneau(acqfc,$visuNo,base).status_video.a.ent1 -width 5 -font $audace(font,arial_10_b) -relief groove \
-               -textvariable panneau(acqfc,$visuNo,intervalle_video) -justify center
-            pack $panneau(acqfc,$visuNo,base).status_video.a.ent1 -anchor center -expand 1 -fill none -side left -padx 10
-         pack $panneau(acqfc,$visuNo,base).status_video.a -padx 10 -pady 5
-      }
-
-      #--- Trame de la duree du film
-      frame $panneau(acqfc,$visuNo,base).status_video.pose -borderwidth 2
-         menubutton $panneau(acqfc,$visuNo,base).status_video.pose.but -text $caption(acqfc,lg_film) \
-            -menu $panneau(acqfc,$visuNo,base).status_video.pose.but.menu -relief raised
-         pack $panneau(acqfc,$visuNo,base).status_video.pose.but -side left -ipadx 5 -ipady 0
-         set m [ menu $panneau(acqfc,$visuNo,base).status_video.pose.but.menu -tearoff 0 ]
-         foreach temps $panneau(acqfc,$visuNo,temps_pose) {
-            $m add radiobutton -label "$temps" \
-               -indicatoron "1" \
-               -value "$temps" \
-               -variable panneau(acqfc,$visuNo,lg_film) \
-               -command " "
-         }
-         entry $panneau(acqfc,$visuNo,base).status_video.pose.entr -width 5 -font $audace(font,arial_10_b) -relief groove \
-            -textvariable panneau(acqfc,$visuNo,lg_film) -justify center
-         pack $panneau(acqfc,$visuNo,base).status_video.pose.entr -side left -fill x -expand 0
-         label $panneau(acqfc,$visuNo,base).status_video.pose.lab -text $caption(acqfc,sec)
-         pack $panneau(acqfc,$visuNo,base).status_video.pose.lab -side left -anchor w -fill x -pady 0 -ipadx 5 -ipady 0
-      pack $panneau(acqfc,$visuNo,base).status_video.pose -anchor center -side top -pady 0 -ipadx 0 -ipady 0 -expand true
-
-      #--- Nombre d'images/seconde
-      frame $panneau(acqfc,$visuNo,base).status_video.rate -borderwidth 2
-         menubutton $panneau(acqfc,$visuNo,base).status_video.rate.cb -text $caption(acqfc,rate) \
-            -menu $panneau(acqfc,$visuNo,base).status_video.rate.cb.menu -relief raised
-         pack $panneau(acqfc,$visuNo,base).status_video.rate.cb -side left -ipadx 5 -ipady 0
-         set m [ menu $panneau(acqfc,$visuNo,base).status_video.rate.cb.menu -tearoff 0 ]
-         foreach rate $panneau(acqfc,$visuNo,ratelist) {
-            $m add radiobutton -label "$rate" \
-               -indicatoron "1" \
-               -value "$rate" \
-               -variable panneau(acqfc,$visuNo,rate) \
-               -command " "
-         }
-         entry $panneau(acqfc,$visuNo,base).status_video.rate.entr -width 5 -font $audace(font,arial_10_b) -relief groove \
-            -textvariable panneau(acqfc,$visuNo,rate) -justify center
-         pack $panneau(acqfc,$visuNo,base).status_video.rate.entr -side left -fill x -expand 0
-         label $panneau(acqfc,$visuNo,base).status_video.rate.unite -text $caption(acqfc,rate_unite)
-         pack $panneau(acqfc,$visuNo,base).status_video.rate.unite -anchor center -expand 0 -fill x -side left \
-            -ipadx 5 -ipady 0
-      pack $panneau(acqfc,$visuNo,base).status_video.rate -anchor center -side top -pady 0 -ipadx 0 -ipady 0 -expand true
-
-      #--- Label affichant le status de la camera en mode video
-      frame $panneau(acqfc,$visuNo,base).status_video.status -borderwidth 2 -relief ridge
-         label $panneau(acqfc,$visuNo,base).status_video.status.label -textvariable panneau(acqfc,$visuNo,status) -font $audace(font,arial_8_b) \
-            -wraplength 150 -height 4 -pady 0
-         pack $panneau(acqfc,$visuNo,base).status_video.status.label -anchor center -expand 0 -fill x -side top
-      pack $panneau(acqfc,$visuNo,base).status_video.status -anchor center -fill y -pady 0 -ipadx 5 -ipady 0
-
-      #--- Frame pour l'acquisition fenetree
-      frame $panneau(acqfc,$visuNo,base).status_video.fenetrer -borderwidth 2 -relief ridge
-
-         frame $panneau(acqfc,$visuNo,base).status_video.fenetrer.check -borderwidth 0 -relief ridge
-            checkbutton $panneau(acqfc,$visuNo,base).status_video.fenetrer.check.case -pady 0 \
-               -text "$caption(acqfc,acquisition_fenetree)" -variable panneau(acqfc,$visuNo,fenetre) \
-               -command "::acqfc::cmdAcqFenetree $visuNo"
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.check.case -anchor w -expand 0 -side top
-         pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.check -anchor w -expand 0 -fill x -side top
-
-         button $panneau(acqfc,$visuNo,base).status_video.fenetrer.but_select -borderwidth 1 \
-            -text $caption(acqfc,acq_fen_msg) -command "::acqfc::selectWindowedFenster $visuNo"
-         # pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.but_select -anchor w -expand 0 -fill x -side top
-         frame $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1 -borderwidth 0 -relief ridge
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1.largeur -text "$caption(acqfc,largeur_hauteur)"
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1.largeur -anchor w -expand 0 \
-               -side top -ipadx 15 -ipady 0
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1.x1 -text "$caption(acqfc,coord_x1_y1)"
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1.x1 -anchor w -expand 0 \
-               -side top -ipadx 15 -ipady 0
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1.x2 -text "$caption(acqfc,coord_x2_y2)"
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1.x2 -anchor w -expand 0 \
-               -side top -ipadx 15 -ipady 0
-         # pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1 -anchor w -expand 0 -fill x -side left
-         frame $panneau(acqfc,$visuNo,base).status_video.fenetrer.right -borderwidth 0 -relief ridge
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.right.hauteur -textvariable panneau(acqfc,$visuNo,largeur)
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right.hauteur -anchor center -expand 0 -fill x \
-               -side top -ipadx 10 -ipady 0
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.right.y1 -textvariable panneau(acqfc,$visuNo,x1)
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right.y1 -anchor center -expand 0 -fill x \
-               -side top -ipadx 10 -ipady 0
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.right.y2 -textvariable panneau(acqfc,$visuNo,x2)
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right.y2 -anchor center -expand 0 -fill x \
-               -side top -ipadx 10 -ipady 0
-         # pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right -anchor w -expand 0 -fill x -side left
-         frame $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1 -borderwidth 0 -relief ridge
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1.hauteur -textvariable panneau(acqfc,$visuNo,hauteur)
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1.hauteur -anchor center -expand 0 -fill x \
-               -side top -ipadx 10 -ipady 0
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1.y1 -textvariable panneau(acqfc,$visuNo,y1)
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1.y1 -anchor center -expand 0 -fill x \
-               -side top -ipadx 10 -ipady 0
-            label $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1.y2 -textvariable panneau(acqfc,$visuNo,y2)
-            pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1.y2 -anchor center -expand 0 -fill x \
-               -side top -ipadx 10 -ipady 0
-         # pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1 -anchor w -expand 0 -fill x -side left
-
-      pack $panneau(acqfc,$visuNo,base).status_video.fenetrer -anchor center -fill both -pady 0 -ipadx 5 -ipady 0
-
-      #--- New message window is on
-      focus $panneau(acqfc,$visuNo,base).status_video
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $panneau(acqfc,$visuNo,base).status_video
-
-      #--- J'active le preview
-      if { [::confCam::isReady $panneau(acqfc,$visuNo,camItem)] == 1 } {
-         if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) "hasVideo"] == 1 } {
-            set panneau(acqfc,$visuNo,showvideopreview) 1
-            changerVideoPreview $visuNo
-         }
-      }
-   }
-#***** Fin fenetre de configuration video ****************************************************
-
-#***** Procedure d'ouverture des options de fenetrage ****************************************
-   proc optionWindowedFenster { visuNo } {
-      global panneau
-
-      if { $panneau(acqfc,$visuNo,fenetre) == "0" } {
-         #--- Sans le fenetrage
-         pack forget $panneau(acqfc,$visuNo,base).status_video.fenetrer.but_select
-         pack forget $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1
-         pack forget $panneau(acqfc,$visuNo,base).status_video.fenetrer.right
-         pack forget $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1
-      } else {
-         #--- Avec le fenetrage
-         pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.but_select -anchor w -expand 0 -fill x -side top
-         pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.left1 -anchor w -expand 0 -fill x -side left
-         pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right -anchor w -expand 0 -fill x -side left
-         pack $panneau(acqfc,$visuNo,base).status_video.fenetrer.right1 -anchor w -expand 0 -fill x -side left
-      }
-   }
-#***** Fin de la procedure d'ouverture des options de fenetrage ******************************
-
-#***** Procedure de demarrage du fenetrage video *********************************************
-   proc startWindowedFenster { visuNo } {
-      global audace caption panneau
-
-      set camItem [::confVisu::getCamItem $visuNo]
-
-      #--- Active le mode preview
-      if { $panneau(acqfc,$visuNo,showvideopreview) == "0" } {
-         set result [ ::acqfc::startVideoPreview $visuNo ]
-      } else {
-         set result "0"
-      }
-      #---
-      if { $result == "0" } {
-         if { [ ::confVisu::getCamItem $visuNo ] == "" } {
-            ::confCam::run
-            tkwait window $audace(base).confCam
-            #--- Je decoche la checkbox
-            set panneau(acqfc,$visuNo,showvideopreview) "0"
-            #--- Je decoche le fenetrage
-            if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-               set panneau(acqfc,$visuNo,fenetre) "0"
-               ::acqfc::optionWindowedFenster $visuNo
-            }
-         } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
-            tk_messageBox -title $caption(acqfc,pb) -type ok \
-               -message $caption(acqfc,no_video_mode)
-            #--- Je decoche la checkbox
-            set panneau(acqfc,$visuNo,showvideopreview) "0"
-            #--- Je decoche le fenetrage
-            if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-               set panneau(acqfc,$visuNo,fenetre) "0"
-               ::acqfc::optionWindowedFenster $visuNo
-            }
-         } else {
-            #--- Je demarre le mode video fenetree
-            cam$panneau(acqfc,$visuNo,camNo) startvideocrop
-         }
-      } else {
-         set panneau(acqfc,$visuNo,fenetre) "0"
-      }
-   }
-#***** Fin de la procedure de demarrage du fenetrage video ***********************************
-
-#***** Procedure d'arret du fenetrage video **************************************************
-   proc stopWindowedFenster { visuNo } {
-      global caption panneau
-
-      set camItem [::confVisu::getCamItem $visuNo]
-
-      #---
-      if { [ winfo exists $panneau(acqfc,$visuNo,base).selectWindowedFenster ] } {
-         ::acqfc::closeWindowedFenster $visuNo
-      }
-      #---
-      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
-         #--- Je decoche la checkbox
-         set panneau(acqfc,$visuNo,showvideopreview) "0"
-         #--- Je decoche le fenetrage
-         if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-            set panneau(acqfc,$visuNo,fenetre) "0"
-            ::acqfc::optionWindowedFenster $visuNo
-         }
-      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1  } {
-         #--- Je decoche la checkbox
-         set panneau(acqfc,$visuNo,showvideopreview) "0"
-         #--- Je decoche le fenetrage
-         if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-            set panneau(acqfc,$visuNo,fenetre) "0"
-            ::acqfc::optionWindowedFenster $visuNo
-         }
-      } else {
-         #--- J'arrete le mode video fenetree
-         cam$panneau(acqfc,$visuNo,camNo) stopvideocrop
-      }
-   }
-#***** Fin de la procedure d'arret du fenetrage video ****************************************
-
-#***** Procedure de selection du fenetrage video *********************************************
-   proc selectWindowedFenster { visuNo } {
-      global audace caption conf panneau zone
-
-      #--- Une camera est connectee
-      if { [ ::confVisu::getCamItem $visuNo ] == "" } {
-         return
-      } elseif { [::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] "hasVideo"] != 1  } {
-         return
-      }
-
-      #---
-      if { [ winfo exists $panneau(acqfc,$visuNo,base).selectWindowedFenster ] } {
-         wm withdraw $panneau(acqfc,$visuNo,base).selectWindowedFenster
-         wm deiconify $panneau(acqfc,$visuNo,base).selectWindowedFenster
-         focus $panneau(acqfc,$visuNo,base).selectWindowedFenster
-         return
-      }
-
-      #--- Cree la fenetre $panneau(acqfc,$visuNo,base).selectWindowedFenster de niveau le plus haut
-      toplevel $panneau(acqfc,$visuNo,base).selectWindowedFenster -class Toplevel
-      wm geometry $panneau(acqfc,$visuNo,base).selectWindowedFenster $conf(acqfc,video,position)
-      wm resizable $panneau(acqfc,$visuNo,base).selectWindowedFenster 0 0
-      wm title $panneau(acqfc,$visuNo,base).selectWindowedFenster $caption(acqfc,acq_fen_msg)
-
-      #--- Creation des differents frames
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame1 -borderwidth 1 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame1 -side top -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame2 -borderwidth 1 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame2 -side top -fill x
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame3 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame3 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame1 -side top -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame4 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame4 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame1 -side top -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame5 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame5 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame4 -side left -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame6 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame6 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame4 -side left -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame7 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame7 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame5 -side top -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame8 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame8 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame5 -side top -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame9 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame9 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame6 -side top -fill both -expand 1
-
-      frame $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame10 -borderwidth 0 -relief raised
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame10 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame6 -side top -fill both -expand 1
-
-      #--- Rafraichir le nombre de pixels du CCD en x et en y
-      button $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_refresh -text "$caption(acqfc,refresh)" \
-         -borderwidth 2 -command "::acqfc::refreshNumberPixel $visuNo"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_refresh \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame3 -side top -anchor center -padx 3 -pady 3 -ipadx 5 -ipady 5
-
-      #--- Creation d'un canvas pour affichage de la fenetre dans la video
-      canvas $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame3.image1_color_invariant \
-         -width 340 -height 260 -highlightthickness 0
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame3.image1_color_invariant
-      set zone(image1) $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame3.image1_color_invariant
-
-      #--- Representation de la video
-      $zone(image1) create line 10 10 10 250 -fill $audace(color,textColor) -tags cadres -width 2.0
-      $zone(image1) create line 10 250 330 250 -fill $audace(color,textColor) -tags cadres -width 2.0
-      $zone(image1) create line 330 250 330 10 -fill $audace(color,textColor) -tags cadres -width 2.0
-      $zone(image1) create line 330 10 10 10 -fill $audace(color,textColor) -tags cadres -width 2.0
-
-      #--- Representation de la fenetre
-      $zone(image1) create line 50 80 50 200 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
-      $zone(image1) create line 50 200 250 200 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
-      $zone(image1) create line 250 200 250 80 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
-      $zone(image1) create line 250 80 50 80 -fill $audace(color,drag_rectangle) -tags cadres -width 2.0
-
-      #--- Largeur et hauteur de la video
-      ::acqfc::refreshNumberPixel $visuNo
-
-      #--- Abcisses et ordonnees des 4 coins de la fenetre
-      $zone(image1) create text 30 200 -text "(x1,y1)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
-      $zone(image1) create text 30 80 -text "(x1,y2)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
-      $zone(image1) create text 270 80 -text "(x2,y2)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
-      $zone(image1) create text 270 200 -text "(x2,y1)" \
-         -justify center -fill $audace(color,drag_rectangle) -tags cadres -font $audace(font,arial_8_b)
-
-      #--- Cree la zone a renseigner pour x1
-      label $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab1 -text "$caption(acqfc,x1)"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab1 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame7 -anchor w -side left -padx 30 -pady 3
-
-      entry $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent1 -textvariable panneau(acqfc,$visuNo,x1) \
-         -width 6 -justify center
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent1 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame7 -anchor w -side left -padx 0 -pady 3
-
-      #--- Cree la zone a renseigner pour y1
-      label $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab2 -text "$caption(acqfc,y1)"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab2 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame8 -anchor w -side left -padx 30 -pady 3
-
-      entry $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent2 -textvariable panneau(acqfc,$visuNo,y1) \
-         -width 6 -justify center
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent2 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame8 -anchor w -side left -padx 0 -pady 3
-
-      #--- Cree la zone a renseigner pour x2
-      label $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab3 -text "$caption(acqfc,x2)"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab3 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame9 -anchor w -side left -padx 10 -pady 3
-
-      entry $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent3 -textvariable panneau(acqfc,$visuNo,x2) \
-         -width 6 -justify center
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent3 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame9 -anchor w -side left -padx 20 -pady 3
-
-      #--- Cree la zone a renseigner pour y2
-      label $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab4 -text "$caption(acqfc,y2)"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.lab4 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame10 -anchor w -side left -padx 10 -pady 3
-
-      entry $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent4 -textvariable panneau(acqfc,$visuNo,y2) \
-         -width 6 -justify center
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.ent4 \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame10 -anchor w -side left -padx 20 -pady 3
-
-      #--- Cree le bouton 'OK'
-      button $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_ok -text "$caption(acqfc,ok)" -width 7 \
-         -borderwidth 2 -command "::acqfc::setvideocroprectWindowedFenster $visuNo ; ::acqfc::closeWindowedFenster $visuNo"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_ok \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
-
-      #--- Cree le bouton 'Appliquer'
-      button $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_appliquer -text "$caption(acqfc,appliquer)" -width 7 \
-         -borderwidth 2 -command "::acqfc::setvideocroprectWindowedFenster $visuNo"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_appliquer \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame2 -side left -anchor w -padx 3 -pady 3 -ipady 5
-
-      #--- Cree le bouton 'Fermer'
-      button $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_fermer -text "$caption(acqfc,fermer)" -width 7 \
-         -borderwidth 2 -command "::acqfc::closeWindowedFenster $visuNo"
-      pack $panneau(acqfc,$visuNo,base).selectWindowedFenster.but_fermer \
-         -in $panneau(acqfc,$visuNo,base).selectWindowedFenster.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
-
-      #--- La fenetre est active
-      focus $panneau(acqfc,$visuNo,base).selectWindowedFenster
-
-      #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
-      bind $panneau(acqfc,$visuNo,base).selectWindowedFenster <Key-F1> { ::console::GiveFocus }
-
-      #--- Mise a jour dynamique des couleurs
-      ::confColor::applyColor $panneau(acqfc,$visuNo,base).selectWindowedFenster
-   }
-#***** Fin de la procedure de selection du fenetrage video ***********************************
-
-#***** Procedure de rafraississement du nombre de pixels *************************************
-   proc refreshNumberPixel { visuNo } {
-      global audace panneau zone
-
-      #--- J'arrete le mode video fenetree
-      catch { cam$panneau(acqfc,$visuNo,camNo) stopvideocrop }
-
-      #--- Largeur et hauteur de l'image
-      set largeur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 0 ]
-      set hauteur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 1 ]
-
-      #--- Effacement de la largeur et la hauteur de la video
-      $zone(image1) delete label_nb_pixel_x_y
-
-      #--- Largeur et hauteur de la video
-      $zone(image1) create text 170 20 -text "$largeur" \
-         -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y -font $audace(font,arial_8_b)
-      $zone(image1) create text 25 130 -text "$hauteur" \
-         -justify center -fill $audace(color,textColor) -tags label_nb_pixel_x_y -font $audace(font,arial_8_b)
-
-      #--- Je demarre le mode video fenetree
-      catch { cam$panneau(acqfc,$visuNo,camNo) startvideocrop }
-   }
-#***** Fin de la procedure de rafraississement du nombre de pixels ***************************
-
-#***** Procedure d'acquisition du fenetrage video ********************************************
-   proc setvideocroprectWindowedFenster { visuNo } {
-      global panneau
-
-      #--- Largeur et hauteur de l'image
-      set largeur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 0 ]
-      set hauteur [ lindex [ cam$panneau(acqfc,$visuNo,camNo) nbpix ] 1 ]
-
-      #--- Controle la coordonnee x1
-      if { [ TestReel $panneau(acqfc,$visuNo,x1) ] == "0" } {
-         set panneau(acqfc,$visuNo,x1) "1"
-      }
-      if { ( $panneau(acqfc,$visuNo,x1) > $largeur ) || ( $panneau(acqfc,$visuNo,x1) ) < "1" } {
-         set panneau(acqfc,$visuNo,x1) "1"
-      }
-
-      #--- Controle la coordonnee y1
-      if { [ TestReel $panneau(acqfc,$visuNo,y1) ] == "0" } {
-         set panneau(acqfc,$visuNo,y1) "1"
-      }
-      if { ( $panneau(acqfc,$visuNo,y1) > $hauteur ) || ( $panneau(acqfc,$visuNo,y1) ) < "1" } {
-         set panneau(acqfc,$visuNo,y1) "1"
-      }
-
-      #--- Controle la coordonnee x2
-      if { [ TestReel $panneau(acqfc,$visuNo,x2) ] == "0" } {
-         set panneau(acqfc,$visuNo,x2) [ expr $largeur - 1 ]
-      }
-      if { ( $panneau(acqfc,$visuNo,x2) > $largeur ) || ( $panneau(acqfc,$visuNo,x2) < "1" ) } {
-         set panneau(acqfc,$visuNo,x2) [ expr $largeur - 1 ]
-      }
-
-      #--- Controle la coordonnee y2
-      if { [ TestReel $panneau(acqfc,$visuNo,y2) ] == "0" } {
-         set panneau(acqfc,$visuNo,y2) [ expr $hauteur - 1 ]
-      }
-      if { ( $panneau(acqfc,$visuNo,y2) > $hauteur ) || ( $panneau(acqfc,$visuNo,y2) < "1" ) } {
-         set panneau(acqfc,$visuNo,y2) [ expr $hauteur - 1 ]
-      }
-
-      #--- Largeur et hauteur de la fenetre vidieo
-      set panneau(acqfc,$visuNo,largeur) [ expr $panneau(acqfc,$visuNo,y2) - $panneau(acqfc,$visuNo,y1) ]
-      set panneau(acqfc,$visuNo,hauteur) [ expr $panneau(acqfc,$visuNo,x2) - $panneau(acqfc,$visuNo,x1) ]
-
-      #--- Je positionne la fenetre video
-      cam$panneau(acqfc,$visuNo,camNo) setvideocroprect $panneau(acqfc,$visuNo,x1) $panneau(acqfc,$visuNo,y1) \
-         $panneau(acqfc,$visuNo,x2) $panneau(acqfc,$visuNo,y2)
-   }
-#***** Fin de la procedure d'acquisition du fenetrage video **********************************
-
-#***** Procedure de fermeture de la fenetre du fenetrage video *******************************
-   proc closeWindowedFenster { visuNo } {
-      global panneau
-
-      #--- Fermeture de la fenetre
-      destroy $panneau(acqfc,$visuNo,base).selectWindowedFenster
-   }
-#***** Fin de la procedure de fermeture de la fenetre du fenetrage video *********************
-
-#***** Enregistrement de la position des fenetres Continu (1), Continu (2), Video et Video (1) ********
+#***** Enregistrement de la position des fenetres Continu (1) et Continu (2) *****************
    proc recup_position { visuNo } {
       global audace conf panneau
 
@@ -3126,18 +2161,8 @@ namespace eval ::acqfc {
          #--- Fermeture de la fenetre
          destroy $panneau(acqfc,$visuNo,base).intervalle_continu_2
       }
-      #--- Cas de la fenetre Video et Video (1)
-      if [ winfo exists $panneau(acqfc,$visuNo,base).status_video ] {
-         #--- Determination de la position de la fenetre
-         set geometry [ wm geometry $panneau(acqfc,$visuNo,base).status_video ]
-         set deb [ expr 1 + [ string first + $geometry ] ]
-         set fin [ string length $geometry ]
-         set conf(acqfc,video,position) "+[ string range $geometry $deb $fin ]"
-         #--- Fermeture de la fenetre
-         destroy $panneau(acqfc,$visuNo,base).status_video
-      }
    }
-#***** Fin enregistrement de la position des fenetres Continu (1), Continu (2), Video et Video (1) ****
+#***** Fin enregistrement de la position des fenetres Continu (1) et Continu (2) *************
 
 #***** Enregistrement de la position de la fenetre Avancement ********
    proc recup_position_1 { visuNo } {
@@ -3153,20 +2178,6 @@ namespace eval ::acqfc {
       }
    }
 #***** Fin enregistrement de la position de la fenetre Avancement ****
-
-#***** Aquisition fenetree avec une WebCam ***************************
-   proc cmdAcqFenetree { visuNo } {
-      global panneau
-
-      if { $panneau(acqfc,$visuNo,fenetre) == "1" } {
-         ::acqfc::optionWindowedFenster $visuNo
-         ::acqfc::startWindowedFenster $visuNo
-      } else {
-         ::acqfc::optionWindowedFenster $visuNo
-         ::acqfc::stopWindowedFenster $visuNo
-      }
-   }
-#***** Fin de l'aquisition fenetree avec une WebCam ******************
 
 #***** Affichage de la fenetre de configuration de WebCam ************
    proc webcamConfigure { visuNo } {
@@ -3256,7 +2267,7 @@ proc acqfcBuildIF { visuNo } {
       pack $panneau(acqfc,$visuNo,This).pose.entr -side left -fill both -expand true
    pack $panneau(acqfc,$visuNo,This).pose -side top -fill x
 
-   #--- Bouton de configuration de la WebCam en lieu et place du widget psoe
+   #--- Bouton de configuration de la WebCam en lieu et place du widget pose
    button $panneau(acqfc,$visuNo,This).pose.conf -text $caption(acqfc,pose) \
       -command "::acqfc::webcamConfigure $visuNo"
    pack $panneau(acqfc,$visuNo,This).pose.conf -fill x -expand true -ipady 3
@@ -3520,59 +2531,6 @@ proc acqfcBuildIF { visuNo } {
               -command "set panneau(acqfc,$visuNo,index) 1"
            pack $panneau(acqfc,$visuNo,This).mode.continu_1.index.but -side right -fill x
         pack $panneau(acqfc,$visuNo,This).mode.continu_1.index -side top -fill x
-
-      #--- Definition du sous-panneau "Mode : Video"
-      frame $panneau(acqfc,$visuNo,This).mode.video -borderwidth 0
-        frame $panneau(acqfc,$visuNo,This).mode.video.nom -relief ridge -borderwidth 2
-           label $panneau(acqfc,$visuNo,This).mode.video.nom.but -text $caption(acqfc,nom) -pady 0
-           pack $panneau(acqfc,$visuNo,This).mode.video.nom.but -fill x -side top
-           entry $panneau(acqfc,$visuNo,This).mode.video.nom.entr -width 10 -textvariable panneau(acqfc,$visuNo,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
-           pack $panneau(acqfc,$visuNo,This).mode.video.nom.entr -fill x -side top
-        pack $panneau(acqfc,$visuNo,This).mode.video.nom -side top -fill x
-        frame $panneau(acqfc,$visuNo,This).mode.video.index -relief ridge -borderwidth 2
-           checkbutton $panneau(acqfc,$visuNo,This).mode.video.index.case -pady 0 -text $caption(acqfc,index)\
-              -variable panneau(acqfc,$visuNo,indexer)
-           pack $panneau(acqfc,$visuNo,This).mode.video.index.case -side top -fill x
-           entry $panneau(acqfc,$visuNo,This).mode.video.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
-           pack $panneau(acqfc,$visuNo,This).mode.video.index.entr -side left -fill x -expand true
-           button $panneau(acqfc,$visuNo,This).mode.video.index.but -text "1" -width 3 \
-              -command "set panneau(acqfc,$visuNo,index) 1"
-           pack $panneau(acqfc,$visuNo,This).mode.video.index.but -side right -fill x
-        pack $panneau(acqfc,$visuNo,This).mode.video.index -side top -fill x
-        frame $panneau(acqfc,$visuNo,This).mode.video.show -relief ridge -borderwidth 2
-           checkbutton $panneau(acqfc,$visuNo,This).mode.video.show.case -text $caption(acqfc,show_video) \
-              -variable panneau(acqfc,$visuNo,showvideopreview) \
-              -command "::acqfc::changerVideoPreview $visuNo"
-           pack $panneau(acqfc,$visuNo,This).mode.video.show.case -side left -fill x -expand true
-        pack $panneau(acqfc,$visuNo,This).mode.video.show -side top -fill x
-
-      #--- Definition du sous-panneau "Mode : Video avec intervalle entre chaque video"
-      frame $panneau(acqfc,$visuNo,This).mode.video_1 -borderwidth 0
-        frame $panneau(acqfc,$visuNo,This).mode.video_1.nom -relief ridge -borderwidth 2
-           label $panneau(acqfc,$visuNo,This).mode.video_1.nom.but -text $caption(acqfc,nom) -pady 0
-           pack $panneau(acqfc,$visuNo,This).mode.video_1.nom.but -fill x -side top
-           entry $panneau(acqfc,$visuNo,This).mode.video_1.nom.entr -width 10 -textvariable panneau(acqfc,$visuNo,nom_image) \
-              -font $audace(font,arial_10_b) -relief groove
-           pack $panneau(acqfc,$visuNo,This).mode.video_1.nom.entr -fill x -side top
-        pack $panneau(acqfc,$visuNo,This).mode.video_1.nom -side top -fill x
-        frame $panneau(acqfc,$visuNo,This).mode.video_1.index -relief ridge -borderwidth 2
-           label $panneau(acqfc,$visuNo,This).mode.video_1.index.lab -text $caption(acqfc,index) -pady 0
-           pack $panneau(acqfc,$visuNo,This).mode.video_1.index.lab -side top -fill x
-           entry $panneau(acqfc,$visuNo,This).mode.video_1.index.entr -width 3 -textvariable panneau(acqfc,$visuNo,index) \
-              -font $audace(font,arial_10_b) -relief groove -justify center
-           pack $panneau(acqfc,$visuNo,This).mode.video_1.index.entr -side left -fill x -expand true
-           button $panneau(acqfc,$visuNo,This).mode.video_1.index.but -text "1" -width 3 \
-              -command "set panneau(acqfc,$visuNo,index) 1"
-           pack $panneau(acqfc,$visuNo,This).mode.video_1.index.but -side right -fill x
-        pack $panneau(acqfc,$visuNo,This).mode.video_1.index -side top -fill x
-        frame $panneau(acqfc,$visuNo,This).mode.video_1.show -relief ridge -borderwidth 2
-           checkbutton $panneau(acqfc,$visuNo,This).mode.video_1.show.case -text $caption(acqfc,show_video) \
-              -variable panneau(acqfc,$visuNo,showvideopreview) \
-              -command "::acqfc::changerVideoPreview $visuNo"
-           pack $panneau(acqfc,$visuNo,This).mode.video_1.show.case -side left -fill x -expand true
-        pack $panneau(acqfc,$visuNo,This).mode.video_1.show -side top -fill x
      pack $panneau(acqfc,$visuNo,This).mode -side top -fill x
 
       #--- Frame pour l'affichage de l'avancement de l'acqusition
