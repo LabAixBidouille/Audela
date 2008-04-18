@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.7 2007-11-29 22:12:22 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.8 2008-04-18 21:40:40 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(acqfcSetup,titre)                     "Acquisition - Setup"
+set caption(acqfcSetup,en-tete_fits)              "FITS Keywords"
 set caption(acqfcSetup,texte1)                    "Display messages on the Terminal:"
 set caption(acqfcSetup,texte2)                    "Record dates in the log file:"
 
@@ -19,6 +20,7 @@ set caption(acqfcSetup,texte2)                    "Record dates in the log file:
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisition - Configuration"
+   set caption(acqfcSetup,en-tete_fits)           "Mots clés FITS"
    set caption(acqfcSetup,texte1)                 "Afficher les messages sur la Console :"
    set caption(acqfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
 
@@ -26,6 +28,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisizione - Configurazione"
+   set caption(acqfcSetup,en-tete_fits)           "# Mots clés FITS"
    set caption(acqfcSetup,texte1)                 "Mostra messaggio sul terminale:"
    set caption(acqfcSetup,texte2)                 "Salvataggio date nel file di log:"
 
@@ -33,6 +36,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Adquisición - Configuración"
+   set caption(acqfcSetup,en-tete_fits)           "# Mots clés FITS"
    set caption(acqfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
    set caption(acqfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
 
@@ -40,6 +44,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Belichtung - Konfiguration"
+   set caption(acqfcSetup,en-tete_fits)           "# Mots clés FITS"
    set caption(acqfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen:"
    set caption(acqfcSetup,texte2)                 "Die Zeit in die Log Datei speichern:"
 
@@ -47,6 +52,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Aquisição - Configuração"
+   set caption(acqfcSetup,en-tete_fits)           "# Mots clés FITS"
    set caption(acqfcSetup,texte1)                 "Mostrar mensagens na Consola:"
    set caption(acqfcSetup,texte2)                 "Guardar datas no ficheiro log:"
 
@@ -54,6 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Acquisition - Setup"
+   set caption(acqfcSetup,en-tete_fits)           "FITS Keywords"
    set caption(acqfcSetup,texte1)                 "Display messages on the Terminal:"
    set caption(acqfcSetup,texte2)                 "Record dates in the log file:"
 
