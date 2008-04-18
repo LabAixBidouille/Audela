@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.83 2008-01-03 21:54:18 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.84 2008-04-18 21:43:24 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -180,6 +180,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace confvisu.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace sextractor.tcl ]\""
       uplevel #0 "source \"[ file join $audace(rep_audela) audace fullscreen.tcl ]\""
+      uplevel #0 "source \"[ file join $audace(rep_audela) audace keyword.tcl ]\""
 
       #---
       set audace(rep_audela) [pwd]
@@ -541,7 +542,7 @@ namespace eval ::audace {
          "::audace::copyjpeg $visuNo"
 
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" "::audace::header $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,entete)" "::keyword::header $visuNo"
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,select)..." ::selectWindow::run
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
