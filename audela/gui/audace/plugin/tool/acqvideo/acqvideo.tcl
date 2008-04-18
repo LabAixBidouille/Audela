@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.1 2008-04-17 20:39:34 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.2 2008-04-18 21:39:58 robertdelmas Exp $
 #
 
 #==============================================================
@@ -903,7 +903,6 @@ namespace eval ::acqvideo {
       set camNo $panneau(acqvideo,$visuNo,camNo)
       if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] hasVideo ] == "1" } {
          #--- Arret de la visualisation video
-         cam$camNo stopvideoview
          ::confVisu::setVideo $visuNo 0
          set panneau(acqvideo,$visuNo,showvideopreview) "0"
       }
