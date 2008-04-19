@@ -1,6 +1,6 @@
 #
 # Fichier : animate.cap
-# Mise a jour $Id: animate.cap,v 1.8 2007-01-27 14:27:34 robertdelmas Exp $
+# Mise a jour $Id: animate.cap,v 1.9 2008-04-19 08:56:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -108,7 +108,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(animate,animation)         "Animation"
-   set caption(animate,help_titre)        "Help For This Tool"
+   set caption(animate,help_titre)        "Hjælp til dette værktøj"
    set caption(animate,nom_generique)     "Fælles filnavn"
    set caption(animate,parcourir)         "..."
    set caption(animate,nb_images)         "Billedantal"
