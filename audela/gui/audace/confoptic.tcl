@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.25 2008-04-11 22:37:30 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.26 2008-04-19 00:05:35 michelpujol Exp $
 #
 
 namespace eval ::confOptic {
@@ -438,7 +438,7 @@ namespace eval ::confOptic {
       global conf
 
       #--- Je prepare les valeurs de la combobox de configuration du systeme optique A
-      set widget(A,config_instrument) ""
+      set widget(A,config_liste) ""
       foreach {key value} [ array get conf confoptic,combinaison_optique_A,* ] {
          if { "$value" == "" } continue
          #--- Je mets les valeurs dans un array (de-serialisation)
@@ -447,11 +447,11 @@ namespace eval ::confOptic {
          set line "$combinaison_optique_A(instrument) - $combinaison_optique_A(diametre) - $combinaison_optique_A(focale) -\
             $combinaison_optique_A(barlow_reduc)"
          #--- J'ajoute la ligne
-         lappend widget(A,config_instrument) "$line"
+         lappend widget(A,config_liste) "$line"
       }
 
       #--- Je prepare les valeurs de la combobox de configuration du systeme optique B
-      set widget(B,config_instrument) ""
+      set widget(B,config_liste) ""
       foreach {key value} [ array get conf confoptic,combinaison_optique_B,* ] {
          if { "$value" == "" } continue
          #--- Je mets les valeurs dans un array (de-serialisation)
@@ -460,11 +460,11 @@ namespace eval ::confOptic {
          set line "$combinaison_optique_B(instrument) - $combinaison_optique_B(diametre) - $combinaison_optique_B(focale) -\
             $combinaison_optique_B(barlow_reduc)"
          #--- J'ajoute la ligne
-         lappend widget(B,config_instrument) "$line"
+         lappend widget(B,config_liste) "$line"
       }
 
       #--- Je prepare les valeurs de la combobox de configuration du systeme optique C
-      set widget(C,config_instrument) ""
+      set widget(C,config_liste) ""
       foreach {key value} [ array get conf confoptic,combinaison_optique_C,* ] {
          if { "$value" == "" } continue
          #--- Je mets les valeurs dans un array (de-serialisation)
@@ -473,7 +473,7 @@ namespace eval ::confOptic {
          set line "$combinaison_optique_C(instrument) - $combinaison_optique_C(diametre) - $combinaison_optique_C(focale) -\
             $combinaison_optique_C(barlow_reduc)"
          #--- J'ajoute la ligne
-         lappend widget(C,config_instrument) "$line"
+         lappend widget(C,config_liste) "$line"
       }
 
       #--- Autre valeur sauvegardee dans conf()
@@ -488,6 +488,7 @@ namespace eval ::confOptic {
    proc widgetToConf { } {
       variable private
       variable widget
+      variable This
       global conf
 
       #--- Cas de la camera A
@@ -501,7 +502,6 @@ namespace eval ::confOptic {
       #--- Je mets a jour la combobox de configuration du systeme optique
       set widget(A,config_instrument) "$widget(A,instrument) - $widget(A,diametre) -\
          $widget(A,focale) - $widget(A,barlow_reduc)"
-      $widget(frm).comboboxModele configure -textvariable ::confOptic::widget(A,config_instrument)
 
       #--- Mise a jour des parametres calcules
       ::confOptic::afficheResultatCalculette A $widget(frm)
@@ -541,6 +541,21 @@ namespace eval ::confOptic {
          set conf(confoptic,combinaison_optique_A,$i) $templist_A($i)
       }
 
+      #--- je met a jour les valeurs dans la combobox
+      set config_liste ""
+      foreach {key value} [ array get conf confoptic,combinaison_optique_A,* ] {
+         if { "$value" == "" } continue
+         #--- Je mets les valeurs dans un array (de-serialisation)
+         array set combinaison_optique_A $value
+         #--- Je prepare la ligne a afficher dans la combobox
+         set line "$combinaison_optique_A(instrument) - $combinaison_optique_A(diametre) - $combinaison_optique_A(focale) -\
+            $combinaison_optique_A(barlow_reduc)"
+         #--- J'ajoute la ligne
+         lappend config_liste "$line"
+      }
+      set frm [$This.usr.onglet getframe fillConfigCameraA ]
+      $frm.comboboxModele configure  -values $config_liste
+
       #--- Cas de la camera B
       #--- Je formate les entry pour permettre le calcul decimal
       set widget(B,diametre) [ format "%.1f" $widget(B,diametre) ]
@@ -552,7 +567,6 @@ namespace eval ::confOptic {
       #--- Je mets a jour la combobox de configuration du systeme optique
       set widget(B,config_instrument) "$widget(B,instrument) - $widget(B,diametre) -\
          $widget(B,focale) - $widget(B,barlow_reduc)"
-      $widget(frm).comboboxModele configure -textvariable widget(B,config_instrument)
 
       #--- Mise a jour des parametres calcules
       ::confOptic::afficheResultatCalculette B $widget(frm)
@@ -587,10 +601,25 @@ namespace eval ::confOptic {
          }
       }
 
-      #-- Je copie templist dans conf
+      #--- Je copie templist dans conf
       for {set i 0} {$i < 10 } {incr i } {
          set conf(confoptic,combinaison_optique_B,$i) $templist_B($i)
       }
+
+      #--- je met a jour les valeurs dans la combobox
+      set config_liste ""
+      foreach {key value} [ array get conf confoptic,combinaison_optique_B,* ] {
+         if { "$value" == "" } continue
+         #--- Je mets les valeurs dans un array (de-serialisation)
+         array set combinaison_optique_B $value
+         #--- Je prepare la ligne a afficher dans la combobox
+         set line "$combinaison_optique_B(instrument) - $combinaison_optique_B(diametre) - $combinaison_optique_B(focale) -\
+            $combinaison_optique_B(barlow_reduc)"
+         #--- J'ajoute la ligne
+         lappend config_liste "$line"
+      }
+      set frm [$This.usr.onglet getframe fillConfigCameraB ]
+      $frm.comboboxModele configure  -values $config_liste
 
       #--- Cas de la camera C
       #--- Je formate les entry pour permettre le calcul decimal
@@ -603,7 +632,6 @@ namespace eval ::confOptic {
       #--- Je mets a jour la combobox de configuration du systeme optique
       set widget(C,config_instrument) "$widget(C,instrument) - $widget(C,diametre) -\
          $widget(C,focale) - $widget(C,barlow_reduc)"
-      $widget(frm).comboboxModele configure -textvariable ::confOptic::widget(C,config_instrument)
 
       #--- Mise a jour des parametres calcules
       ::confOptic::afficheResultatCalculette C $widget(frm)
@@ -638,10 +666,25 @@ namespace eval ::confOptic {
          }
       }
 
-      #-- Je copie templist dans conf
+      #--- Je copie templist dans conf
       for {set i 0} {$i < 10 } {incr i } {
          set conf(confoptic,combinaison_optique_C,$i) $templist_C($i)
       }
+
+      #--- je met a jour les valeurs dans la combobox
+      set config_liste ""
+      foreach {key value} [ array get conf confoptic,combinaison_optique_C,* ] {
+         if { "$value" == "" } continue
+         #--- Je mets les valeurs dans un array (de-serialisation)
+         array set combinaison_optique_C $value
+         #--- Je prepare la ligne a afficher dans la combobox
+         set line "$combinaison_optique_C(instrument) - $combinaison_optique_C(diametre) - $combinaison_optique_C(focale) -\
+            $combinaison_optique_C(barlow_reduc)"
+         #--- J'ajoute la ligne
+         lappend config_liste "$line"
+      }
+      set frm [$This.usr.onglet getframe fillConfigCameraC ]
+      $frm.comboboxModele configure  -values $config_liste
 
       #--- Je mets la position actuelle de la fenetre dans conf()
       set geom [ winfo geometry [winfo toplevel $widget(frm) ] ]
@@ -799,9 +842,8 @@ namespace eval ::confOptic {
          -relief sunken    \
          -borderwidth 2    \
          -editable 0       \
-         -textvariable ::confOptic::widget(A,config_instrument) \
          -modifycmd "::confOptic::cbCommand_A $widget(frm).comboboxModele" \
-         -values $widget(A,config_instrument)
+         -values $widget(A,config_liste)
       pack $widget(frm).comboboxModele -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labInstrument -text "$caption(confoptic,instrument)" -relief flat
@@ -1016,9 +1058,8 @@ namespace eval ::confOptic {
          -relief sunken    \
          -borderwidth 2    \
          -editable 0       \
-         -textvariable ::confOptic::widget(B,config_instrument) \
          -modifycmd "::confOptic::cbCommand_B $widget(frm).comboboxModele" \
-         -values $widget(B,config_instrument)
+         -values $widget(B,config_liste)
       pack $widget(frm).comboboxModele -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labInstrument -text "$caption(confoptic,instrument)" -relief flat
@@ -1233,9 +1274,8 @@ namespace eval ::confOptic {
          -relief sunken    \
          -borderwidth 2    \
          -editable 0       \
-         -textvariable ::confOptic::widget(C,config_instrument) \
          -modifycmd "::confOptic::cbCommand_C $widget(frm).comboboxModele" \
-         -values $widget(C,config_instrument)
+         -values $widget(C,config_liste)
       pack $widget(frm).comboboxModele -in $widget(frm).frame8 -anchor w -side top -padx 10 -pady 5
 
       label $widget(frm).labInstrument -text "$caption(confoptic,instrument)" -relief flat
@@ -1608,7 +1648,7 @@ namespace eval ::confOptic {
    #     cmd : commande TCL a lancer quand la configuration optique change
    #------------------------------------------------------------
    proc addOpticListener { cmd } {
-      trace add variable "::confOptic::private(A,instrument)" write $cmd
+      trace add variable "::conf(confoptic,combinaison_optique_C,0)" write $cmd
    }
 
    #------------------------------------------------------------
@@ -1619,7 +1659,7 @@ namespace eval ::confOptic {
    #     cmd : commande TCL a lancer quand la configuration optique change
    #------------------------------------------------------------
    proc removeOpticListener { cmd } {
-      trace remove variable "::confOptic::private(A,instrument)" write $cmd
+      trace remove variable "::conf(confoptic,combinaison_optique_C,0)" write $cmd
    }
 
    #------------------------------------------------------------
