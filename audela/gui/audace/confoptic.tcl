@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.26 2008-04-19 00:05:35 michelpujol Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.27 2008-04-19 18:11:00 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -536,12 +536,12 @@ namespace eval ::confOptic {
          }
       }
 
-      #-- Je copie templist dans conf
+      #--- Je copie templist dans conf
       for {set i 0} {$i < 10 } {incr i } {
          set conf(confoptic,combinaison_optique_A,$i) $templist_A($i)
       }
 
-      #--- je met a jour les valeurs dans la combobox
+      #--- je mets a jour les valeurs dans la combobox
       set config_liste ""
       foreach {key value} [ array get conf confoptic,combinaison_optique_A,* ] {
          if { "$value" == "" } continue
@@ -554,7 +554,7 @@ namespace eval ::confOptic {
          lappend config_liste "$line"
       }
       set frm [$This.usr.onglet getframe fillConfigCameraA ]
-      $frm.comboboxModele configure  -values $config_liste
+      $frm.comboboxModele configure -values $config_liste
 
       #--- Cas de la camera B
       #--- Je formate les entry pour permettre le calcul decimal
@@ -606,7 +606,7 @@ namespace eval ::confOptic {
          set conf(confoptic,combinaison_optique_B,$i) $templist_B($i)
       }
 
-      #--- je met a jour les valeurs dans la combobox
+      #--- je mets a jour les valeurs dans la combobox
       set config_liste ""
       foreach {key value} [ array get conf confoptic,combinaison_optique_B,* ] {
          if { "$value" == "" } continue
@@ -619,7 +619,7 @@ namespace eval ::confOptic {
          lappend config_liste "$line"
       }
       set frm [$This.usr.onglet getframe fillConfigCameraB ]
-      $frm.comboboxModele configure  -values $config_liste
+      $frm.comboboxModele configure -values $config_liste
 
       #--- Cas de la camera C
       #--- Je formate les entry pour permettre le calcul decimal
@@ -671,7 +671,7 @@ namespace eval ::confOptic {
          set conf(confoptic,combinaison_optique_C,$i) $templist_C($i)
       }
 
-      #--- je met a jour les valeurs dans la combobox
+      #--- je mets a jour les valeurs dans la combobox
       set config_liste ""
       foreach {key value} [ array get conf confoptic,combinaison_optique_C,* ] {
          if { "$value" == "" } continue
@@ -684,7 +684,7 @@ namespace eval ::confOptic {
          lappend config_liste "$line"
       }
       set frm [$This.usr.onglet getframe fillConfigCameraC ]
-      $frm.comboboxModele configure  -values $config_liste
+      $frm.comboboxModele configure -values $config_liste
 
       #--- Je mets la position actuelle de la fenetre dans conf()
       set geom [ winfo geometry [winfo toplevel $widget(frm) ] ]
@@ -1586,10 +1586,10 @@ namespace eval ::confOptic {
       #--- Calcul du pouvoir separateur du systeme optique
       $frm.labVal_PS configure -text $private($camItem,PS)
 
-      #--- Calcul du champ et de l'echantillonnage de la camera CCD
-      #--- Champ en x et en y en minutes d'arc
+      #--- Calcul du champ du CCD en x et en y en minutes d'arc
       $frm.labVal_Champ configure -text "$private($camItem,champ_x) x $private($camItem,champ_y)"
-      #--- Echantillonnage du CCD en x et en y en secondes d'arc par pixels
+
+      #--- Calcul de l'echantillonnage du CCD en x et en y en secondes d'arc par pixels
       $frm.labVal_Echantillonnage configure -text "$private($camItem,echantillonnage_x) x $private($camItem,echantillonnage_y)"
    }
 
