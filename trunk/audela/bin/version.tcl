@@ -38,7 +38,8 @@ package provide audela "$audela(major).$audela(minor).$audela(patch)"
 
 namespace eval ::audela {
    global caption
-   package provide audela 1.4.0
+   global audela
+   package provide audela "${audela(major)}.${audela(minor)}.${audela(patch)}"
 }
 
 proc ::audela::getPluginType { } {
