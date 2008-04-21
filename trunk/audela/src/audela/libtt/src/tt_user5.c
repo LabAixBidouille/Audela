@@ -1026,8 +1026,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
+//buf1 load "D:/images_pb_detections_a_tester/grosse_tache/IM_20070302_190016827_070228_15083000.fits.gz"
 //set chemin "D:/"
-//buf1 imaseries "GEOGTO filename=$chemin nom_trait=TOPHATE struct_elem=RECTANGLE x1=10 y1=1"
+//buf1 imaseries "GEOGTO filename=$chemin nom_trait=TOPHATE struct_elem=RECTANGLE x1=15 y1=1"
 //buf1 imaseries "GEOGTO filename=$chemin nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
 {
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp2,*p_tmp3,*p_tmp4;
@@ -1035,7 +1036,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	double xfin,yfin,xdebut=0.0,ydebut,l;
 	int result,nelem,index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,bord;
 	double dvalue,somme_value,somme_x,somme_y,somme_value2,somme_x2,somme_y2;
-	double mode2,mini2,maxi2,bg,seuil_gto,seuil_geo;
+	//double mode2,mini2,maxi2,seuil_gto,seuil_geo;
+	double bg;
 	char filenamegto[FLEN_FILENAME],filenamegeo[FLEN_FILENAME];
 	FILE *fic;
 	double *eq;
@@ -1083,17 +1085,17 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	//tt_imasaver(p_out,"D:/tophat.fit",16);
+	tt_imasaver(p_out,"D:/tophat.fit",16);
 	
 	//binarisation de l'image en fonction de l'histogramme
-	tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
+	/*tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 	tt_util_statima(p_out,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
 	tt_histocuts_myrtille(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 	if (strcmp (pseries->nom_trait,"TOPHATE")==0) {
-		/*seuil_gto=(pseries->hicut)+1.0*(pseries->sigma);
-		if (seuil_gto>((pseries->hicut)+(pseries->maxi-pseries->hicut)*1.0/4.0)) {
-			seuil_gto=(pseries->hicut)+(pseries->maxi-pseries->hicut)*1.0/4.0; 
-		}*/
+		//seuil_gto=(pseries->hicut)+1.0*(pseries->sigma);
+		//if (seuil_gto>((pseries->hicut)+(pseries->maxi-pseries->hicut)*1.0/4.0)) {
+		//	seuil_gto=(pseries->hicut)+(pseries->maxi-pseries->hicut)*1.0/4.0; 
+		//}
 		seuil_gto=(pseries->hicut)*0.78;
 		//seuil_geo=(pseries->hicut)*2.4;
 		//formule établie sur des tests sur des images...
@@ -1125,14 +1127,15 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 		}
 	}
 	
-	tt_util_bgk(p_out,&(pseries->bgmean),&(pseries->bgsigma));
+	tt_util_bgk(p_out,&(pseries->bgmean),&(pseries->bgsigma));*/
 
 	/* --- definition du seuil de detection --- */
-	if (strcmp (pseries->nom_trait,"TOPHATE")==0) {
+	/*if (strcmp (pseries->nom_trait,"TOPHATE")==0) {
 		bg=(pseries->bgmean)+2.5*(pseries->bgsigma);
 	} else {
 		bg=(pseries->bgmean)+2.5*(pseries->bgsigma);
-	}
+	}*/
+	bg=0;
 
 	//---------------------------------------------------/
 	//sauve images pour recherche de geo gto et défilants
@@ -1182,7 +1185,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					if ((k1>=n1-x0)||(k1<=x0)||(k2<=y0)||(k2>=n2-y0)) {
 						p_tmp3->p[n2*k2+k1]=0;
 					} else {
-						dvalue=(double)p_tmp2->p[naxis2*(k2+k3*n2+kk*n2/2)+k1+k5+kk*n1/2];
+						//dvalue=(double)p_tmp2->p[naxis2*(k2+k3*n2+kk*n2/2)+k1+k5+kk*n1/2];
+						dvalue=(double)p_out->p[naxis2*(k2+k3*n2+kk*n2/2)+k1+k5+kk*n1/2];
 						p_tmp3->p[n2*k2+k1]=(TT_PTYPE)(dvalue);
 					}
 				}
@@ -1380,7 +1384,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						//on prend une nouvelle imagette centrée sur le barycentre calculé précédement
 						for (k1=0;k1<n1;k1++) {
 							for (k2=0;k2<n2;k2++) {
-								dvalue=(double)p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+								//dvalue=(double)p_tmp2->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+								dvalue=(double)p_out->p[naxis2*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
 								p_tmp3->p[n2*k2+k1]=(TT_PTYPE)(dvalue);
 							}
 						}
@@ -1582,12 +1587,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									for (k1=(int)(eq[2]);k1<=(int)(eq[2]+10);k1++) {
 										if (k1<0) continue;
 										if (k1>=naxis1) break;
-										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										//if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										if (p_out->p[naxis1*k2+k1]>0) largxx++;
 									}
 										for (k1=(int)(eq[2]-10);k1<(int)(eq[2]);k1++) {						
 										if (k1<0) continue;
 										if (k1>=naxis1) break;
-										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										//if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										if (p_out->p[naxis1*k2+k1]>0) largxx++;
 									}
 									if (largxx!=0) {
 										largx+=largxx;
@@ -1597,12 +1604,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									for (k1=(int)((k2-eq[1])/eq[0]-10);k1<(int)((k2-eq[1])/eq[0]);k1++) {
 										if (k1<0) continue;
 										if (k1>=naxis1) break;
-										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										//if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										if (p_out->p[naxis1*k2+k1]>0) largxx++;
 									}
 									for (k1=(int)((k2-eq[1])/eq[0]);k1<=(int)((k2-eq[1])/eq[0]+10);k1++) {
 										if (k1<0) continue;
 										if (k1>=naxis1) break;
-										if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										//if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+										if (p_out->p[naxis1*k2+k1]>0) largxx++;
 									}
 									if (largxx!=0) {
 										largx+=largxx;
@@ -1621,12 +1630,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								for (k2=(int)(eq[0]*k1+eq[1]-10);k2<(int)(eq[0]*k1+eq[1]);k2++) {
 									if (k2<0) continue;
 									if (k2>=naxis2) break;
-									if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;									
+									//if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+									if (p_out->p[naxis1*k2+k1]>0) largxx++;
 								}
 								for (k2=(int)(eq[0]*k1+eq[1]);k2<=(int)(eq[0]*k1+eq[1]+10);k2++) {		
 									if (k2<0) continue;
 									if (k2>=naxis2) break;
-									if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+									//if (p_tmp2->p[naxis1*k2+k1]>0) largxx++;
+									if (p_out->p[naxis1*k2+k1]>0) largxx++;
 								}
 								if (largxx!=0) {
 									largx+=largxx;
@@ -1781,8 +1792,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 										if (k2<eq[0]*(k1-largx-2)+eq[1]) {continue;}
 										if (k2>eq[0]*(k1+largx+2)+eq[1]) break;
 									}
-									p_tmp1->p[naxis2*(k2)+k1]=0;
-									p_tmp2->p[naxis2*(k2)+k1]=0;
+									//p_tmp1->p[naxis2*(k2)+k1]=0;
+									//p_tmp2->p[naxis2*(k2)+k1]=0;
+									p_out->p[naxis2*(k2)+k1]=0;
 								}
 							}	
 						} else {//ydebut>yfin
@@ -1794,18 +1806,20 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									if (eq[0]<=-1) {
 										if (k2<eq[0]*(k1+largx+2)+eq[1]) {continue;}
 										if (k2>eq[0]*(k1-largx-2)+eq[1]) break;
-										p_tmp1->p[naxis2*(k2)+k1]=0;
-										p_tmp2->p[naxis2*(k2)+k1]=0;
+										//p_tmp1->p[naxis2*(k2)+k1]=0;
+										//p_tmp2->p[naxis2*(k2)+k1]=0;
+										p_out->p[naxis2*(k2)+k1]=0;
 									} else {
 										if (k2<eq[0]*k1+largx+2+eq[1]) {continue;}
 										if (k2>eq[0]*k1-largx-2+eq[1]) break;
-										p_tmp1->p[naxis2*(k2)+k1]=0;
-										p_tmp2->p[naxis2*(k2)+k1]=0;
+										//p_tmp1->p[naxis2*(k2)+k1]=0;
+										//p_tmp2->p[naxis2*(k2)+k1]=0;
+										p_out->p[naxis2*(k2)+k1]=0;
 									}
 								}
 							}
 						}
-						//tt_imasaver(p_tmp2,"D:/gto2.fit",16);
+						//tt_imasaver(p_out,"D:/gto2.fit",16);
 						/* ---------------------------------------------------- */
 						/* --- enregistrer l'equation de la droite détectée --- */
 						/* ---------------------------------------------------- */					
@@ -1835,31 +1849,57 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	//boucle de recherche sur l'image
 	for (y=y1+1;y<naxis2-y1-1;y++) {
 		for (x=x1+1;x<naxis1-x1-1;x++) {
-			if (p_tmp1->p[y*naxis2+x]==0) {	continue;}
+			//if (p_tmp1->p[y*naxis2+x]==0) {	continue;}
+			if (p_out->p[y*naxis2+x]<=0) {	continue;}
 			//elimine les cosmiques
 			fwhmx=0;
 			for (k=x;k<=(naxis1-2);k++) {
-				if ((p_in->p[naxis1*y+k]-p_in->p[naxis1*y+k+1])<=0) break;
+				//if ((p_in->p[naxis1*y+k]-p_in->p[naxis1*y+k+1])<=0) break;
+				if ((p_out->p[naxis1*y+k]-p_out->p[naxis1*y+k+1])<=0) break;
 				else fwhmx+=1;
 		    }		           
 		    for (k=x;k>=1+x1;k--) {
-				if ((p_in->p[naxis1*y+k]-p_in->p[naxis1*y+k-1])<=0) break;
+				//if ((p_in->p[naxis1*y+k]-p_in->p[naxis1*y+k-1])<=0) break;
+				if ((p_out->p[naxis1*y+k]-p_out->p[naxis1*y+k-1])<=0) break;
 		        else fwhmx+=1;
 		    }  
             fwhmx/=2.;
 		        
 		    fwhmy=0;
            	for (k=y;k<(naxis2-y1);k++) {
-				if ((p_in->p[naxis1*k+x]-p_in->p[naxis1*(k+1)+x])<=0) break;
+				//if ((p_in->p[naxis1*k+x]-p_in->p[naxis1*(k+1)+x])<=0) break;
+				if ((p_out->p[naxis1*k+x]-p_out->p[naxis1*(k+1)+x])<=0) break;
 		        else fwhmy+=1;
 		    }		         
 		    for (k=y;k>=1+y1;k--) {
-		        if ((p_in->p[naxis1*k+x]-p_in->p[naxis1*(k-1)+x])<=0) break;
+		        //if ((p_in->p[naxis1*k+x]-p_in->p[naxis1*(k-1)+x])<=0) break;
+				if ((p_out->p[naxis1*k+x]-p_out->p[naxis1*(k-1)+x])<=0) break;
 		        else fwhmy+=1;
 		    }
 			fwhmy/=2.;
 
-			if ((fwhmx>1.)&&(fwhmy>1.)) {//ce n'est pas un cosmique
+			if ((fwhmx>1.)&&(fwhmy>1.)) {//ce n'est pas un cosmique sur l'image de sortie
+				fwhmx=0;
+				for (k=x;k<=(naxis1-2);k++) {
+					if ((p_in->p[naxis1*y+k]-p_in->p[naxis1*y+k+1])<=0) break;
+					else fwhmx+=1;
+				}		           
+				for (k=x;k>=1+x1;k--) {
+					if ((p_in->p[naxis1*y+k]-p_in->p[naxis1*y+k-1])<=0) break;
+					else fwhmx+=1;
+				}  
+				fwhmx/=2.;
+					
+				fwhmy=0;
+           		for (k=y;k<(naxis2-y1);k++) {
+					if ((p_in->p[naxis1*k+x]-p_in->p[naxis1*(k+1)+x])<=0) break;
+					else fwhmy+=1;
+				}		         
+				for (k=y;k>=1+y1;k--) {
+					if ((p_in->p[naxis1*k+x]-p_in->p[naxis1*(k-1)+x])<=0) break;
+					else fwhmy+=1;
+				}
+				fwhmy/=2.;
 				/* --- parametres de mesure precise ---*/
                 xcc=(double)x;
                 ycc=(double)y;
@@ -2051,7 +2091,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				sizey=yy2-yy1+1;
 				for (j=0;j<sizey;j++) {  
 					for (i=0;i<sizex;i++) {	  
-						  p_tmp1->p[naxis1*(j+yy1)+i+xx1]=0;
+						  //p_tmp1->p[naxis1*(j+yy1)+i+xx1]=0;
+						p_out->p[naxis1*(j+yy1)+i+xx1]=0;
 					 }
 				}
 			}
@@ -2373,7 +2414,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		//tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 		//tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
 
-		tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouv_de_ferm.fit",16);
+		//tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouv_de_ferm.fit",16);
 		/* --- detection des geo et des traînées du bruit --- */
 		// coefficient trouvé par des tests sur plusieurs images (pseries->sigma)/(pseries->mean)*50
 		if (((pseries->sigma)/(pseries->bgsigma)+pseries->bgsigma/4)/2.0<8) {
@@ -2425,7 +2466,10 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma/2.0))*(float)255./(float)(2.0/1.0*pseries->bgsigma);
 					}
 				}
-				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];		
+				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];	
+				if (p_out->p[y*naxis1+x]<0) {
+					p_out->p[y*naxis1+x]=0;
+				}
 			}
 		}
 		//tt_imasaver(p_tmp2,"D:/init2.fit",8);
@@ -2604,9 +2648,9 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				}
 			}
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+			tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
-			seuil =(pseries->hicut)*0.4;
+			seuil =(pseries->hicut+mode2)/2.0;
 
 			/* --- calcul d'une image reduite de valeur de médiane de l'image initiale --- */
 			//size=(naxis1/taille_carre_med)*(naxis2/taille_carre_med)+(naxis1/taille_carre_med-1)*(naxis2/taille_carre_med-1);
