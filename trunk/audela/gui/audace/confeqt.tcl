@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.31 2007-12-15 08:53:19 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.32 2008-04-22 17:58:51 michelpujol Exp $
 #
 
 namespace eval ::confEqt {
@@ -499,8 +499,9 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
       frame $private(frame) -borderwidth 0 -relief raised
    }
 
-   #--- je cree la liste des plugin de type "focuser"
-   set pluginList [list ]
+
+   #--- je cree la liste des plugin de type "focuser" ,
+   set pluginList [list "" ]
    foreach pluginName $private(pluginNamespaceList) {
       if {  [::$pluginName\::getPluginType] == "focuser" } {
          lappend pluginList $pluginName
@@ -514,7 +515,8 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
       -borderwidth 1  \
       -textvariable $variablePluginName \
       -editable 0     \
-      -values $pluginList
+      -values $pluginList \
+      -modifycmd "::confEqt::activeFocuser $frm.configure $variablePluginName"
    pack $frm.list -in $frm -anchor center -side left -padx 0 -pady 10
 
    #--- bouton de configuration de l'equipement
@@ -522,7 +524,11 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
       -command "::confEqt::run $variablePluginName focuser"
    pack $frm.configure -in $frm -anchor center -side top -padx 10 -pady 10 -ipadx 10 -ipady 5 -expand true
 
+   #--- j'adapte l'affichage du bouton de configuration
+   ::confEqt::activeFocuser $frm.configure $variablePluginName
+
 }
+
 
 #------------------------------------------------------------
 # ::confEqt::createFrameFocuserTool
@@ -549,8 +555,8 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
       frame $private(frame) -borderwidth 0 -relief raised
    }
 
-   #--- je cree la liste des plugin de type "focuser"
-   set pluginList [list ]
+   #--- je cree la liste des plugin de type "focuser" 
+   set pluginList [list "" ]
    foreach pluginName $private(pluginNamespaceList) {
       if {  [::$pluginName\::getPluginType] == "focuser" } {
          lappend pluginList $pluginName
@@ -564,7 +570,8 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
       -borderwidth 1  \
       -textvariable $variablePluginName \
       -editable 0     \
-      -values $pluginList
+      -values $pluginList \
+      -modifycmd "::confEqt::activeFocuser $frm.configure $variablePluginName"
    pack $frm.list -in $frm -anchor center -side top -padx 0 -pady 2
 
    #--- bouton de configuration de l'equipement
@@ -573,6 +580,26 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    pack $frm.configure -in $frm -anchor center -side top -padx 0 -pady 2 -ipadx 10 -ipady 5 -expand true
 
 }
+
+#------------------------------------------------------------
+# ::confEqt::activeFrameFocuser
+#     active le bouton de configuration du focuser
+#    ou desactive le bouton si le nom du focuser est vide
+# Parametres :
+#    configureButton : chemin TK de la frame a creer
+#    focuserName     : nom du focuser
+# Return
+#    nothing
+#------------------------------------------------------------
+proc ::confEqt::activeFocuser { configureButton variablePluginName } {
+
+   if { [set $variablePluginName] == "" } {
+      $configureButton configure -state disabled
+   } else {
+      $configureButton configure -state normal
+   }
+}
+
 
 #------------------------------------------------------------
 # ::confEqt::startPlugin
