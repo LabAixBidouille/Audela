@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.20 2008-04-17 20:28:45 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.21 2008-04-22 18:08:44 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -16,6 +16,10 @@ namespace eval ::telescope {
       #--- Initialisation
       set audace(telescope,getra)      "00h00m00"
       set audace(telescope,getdec)     "+00d00m00"
+      set audace(telescope,targetRa)      "00h00m00"
+      set audace(telescope,targetDec)     "+00d00m00"
+      set audace(telescope,targetname)    ""
+      set audace(telescope,targetEquinox) "J2000"
       set audace(telescope,rate)       "1"
       set audace(telescope,labelspeed) "$caption(telescope,interro)"
       set audace(telescope,speed)      "1"
@@ -140,10 +144,15 @@ namespace eval ::telescope {
    #     0 si OK
    #     -1 si erreur (monture absente)
    #------------------------------------------------------------
-   proc goto { list_radec blocking { But_Goto "" } { But_Match "" } } {
+   proc goto { list_radec blocking { But_Goto "" } { But_Match "" } { objectName ""  } { radecEquinox "J2000"  }} {
       global audace caption cataGoto catalogue conf
 
       if { [ ::tel::list ] != "" } {
+         set audace(telescope,targetRa)      [lindex $list_radec 0]
+         set audace(telescope,targetDec)     [lindex $list_radec 1]
+         set audace(telescope,targetname)    $objectName
+         set audace(telescope,targetEquinox) $radecEquinox
+
          #---
          ::telescope::setTrackSpeed
          #--- Gestion des boutons Goto et Match
@@ -826,6 +835,129 @@ namespace eval ::telescope {
    proc removeSpeedListener { cmd } {
       trace remove variable "::audace(telescope,speed)" write $cmd
    }
+
+}
+
+#------------------------------------------------------------
+# getTargetRa
+#    retourne l'ascension droite l'objet cible
+#
+# parametres :
+#    aucun
+# return
+#    ascension droite
+#------------------------------------------------------------
+proc telescope::getTargetRa {  } {
+   global audace
+   return $audace(telescope,targetRa)
+}
+
+#------------------------------------------------------------
+# getTargetDec
+#    retourne la declinaison l'objet cible
+#
+# parametres :
+#    aucun
+# return
+#    declinaison
+#------------------------------------------------------------
+proc telescope::getTargetDec {  } {
+   global audace
+   return $audace(telescope,targetDec)
+}
+
+#------------------------------------------------------------
+# getTargetName
+#    retourne le nom de l'objet cible
+#
+# parametres :
+#    aucun
+# return
+#    nom de l'objet cible
+#------------------------------------------------------------
+proc telescope::getTargetName {  } {
+   global audace
+   return $audace(telescope,targetname)
+}
+
+#------------------------------------------------------------
+# getTargetEquinox
+#    retourne le equinoxe des coordonnees de lobjet cible
+#
+# parametres :
+#    aucun
+# return
+#    nom de l'objet cible
+#------------------------------------------------------------
+proc telescope::getTargetEquinox {  } {
+   global audace
+   return $audace(telescope,targetEquinox)
+}
+
+
+#------------------------------------------------------------
+# moveTelescope
+#    Deplace le telescope pendant un duree determinee
+#    Le deplacement est interrompu si private(acquisitionState)!=1
+#
+# parametres :
+#    direction : e w n s
+#    delay     : duree du deplacement en milliseconde (nombre entier)
+# return
+#    rien
+#------------------------------------------------------------
+proc telescope::moveTelescope { alphaDirection alphaDelay deltaDirection deltaDelay } {
+   variable private
+   global audace
+
+   set private(acquisitionState) 1
+
+   #--- laisse la main pour traiter une eventuelle demande d'arret
+   update
+
+   #--- je demarre le deplacement alpha
+   tel$audace(telNo) radec move $alphaDirection $audace(telescope,rate)
+   #--- j'attend l'expiration du delai par tranche de 1 seconde
+   set delay $alphaDelay
+   while { $delay > 0 } {
+      if { $private(acquisitionState) == 1 } {
+         if { $delay > 1000 } {
+            after 999
+            set delay [expr $delay - 1000 ]
+         } else {
+            after $delay
+            set delay 0
+         }
+      } else {
+         #--- j'interromp l'attente s'il y a une demande d'arret
+         set delay 0
+      }
+   }
+   #--- j'arrete le deplacement alpha
+   tel$audace(telNo) radec stop $alphaDirection
+
+   #--- laisse la main pour traiter une eventuelle demande d'arret
+   update
+   #--- je demarre le deplacement delta
+   tel$audace(telNo) radec move $deltaDirection $audace(telescope,rate))
+   #--- j'attend l'expiration du delai par tranche de 1 seconde
+   set delay $deltaDelay
+   while { $delay > 0 } {
+      if { $private(acquisitionState) == 1 } {
+         if { $delay > 10000 } {
+            after 9990
+            set delay [expr $delay - 10000 ]
+         } else {
+            after $delay
+            set delay 0
+         }
+      } else {
+         #--- j'interromp l'attente s'il y a une demande d'arret
+         set delay 0
+      }
+   }
+   #--- j'arrete le deplacement delta
+   tel$audace(telNo) radec stop $deltaDirection
 
 }
 
