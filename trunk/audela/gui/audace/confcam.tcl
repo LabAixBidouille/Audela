@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.110 2008-04-06 10:17:58 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.111 2008-04-22 17:57:06 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -42,6 +42,7 @@ proc ::confCam::init { } {
       }
    } else {
       set ::tcl_platform(threaded) 0
+      console::affiche_erreur "thread not present\n"
    }
 
    #--- Initalise le numero de camera a nul
@@ -382,35 +383,64 @@ proc ::confCam::createDialog { } {
 proc ::confCam::createThread { camItem bufNo } {
    variable private
 
+   set ::tcl_platform(threaded) 0
    #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
+   set camNo $private($camItem,camNo)
    if { $::tcl_platform(threaded)==1 } {
-      set camNo $private($camItem,camNo)
-
-      if { [info commands "cam$camNo"] == "cam$camNo" } {
          #--- creation dun nouvelle thread
          set threadNo [thread::create ]
-         #--- declaration de la variable globale mainThreadNo dans la thread de la camera
-         thread::send $threadNo "set mainThreadNo [thread::id]"
          #--- je copie la commande de la camera dans la thread de la camera
-         thread::copycommand $threadNo "cam$camNo"
-         #--- declaration de la variable globale camNo dans la thread de la camera
-         thread::send $threadNo "set camNo $camNo"
+         ::thread::copycommand $threadNo "cam$camNo"
          #--- je copie la commande du buffer dans la thread de la camera
-         thread::copycommand $threadNo "buf$bufNo"
-         #--- J'ajoute la commande de liaison longue pose dans la thread de la camera
+         ::thread::copycommand $threadNo "buf$bufNo"
+         ::thread::copycommand $threadNo "ttscript2"
+         #--- J'ajoute la commande de liaison longue pose
          if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
             if { [cam$camNo longueposelinkno] != 0} {
                thread::copycommand $threadNo "link[cam$camNo longueposelinkno]"
             }
          }
-      } else {
-         #--- si la commande cam$camNo n'existe pas alors il n'est pas necessaire de creer la thread
-         set threadNo "0"
-      }
+         #--- je charge camerathread.tcl dans l'intepreteur de la thread de la camera
+         ::thread::send $threadNo  "uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\""
+         ::thread::send $threadNo "::camerathread::init $camItem $camNo [thread::id]"
    } else {
-      set threadNo "0"
+         #--- creation d'un interpreteur esclave
+         set threadNo [interp create ]
+         $threadNo alias "::console::disp" "::console::disp"
+         $threadNo alias ::camera::addCameraEvent ::camera::addCameraEvent
+         $threadNo alias ttscript2 ttscript2
+         #--- je copie la commande de la camera dans la thread de la camera
+         copycommand $threadNo "cam$camNo"
+         #--- je copie la commande du buffer dans la thread de la camera
+         copycommand $threadNo "buf$bufNo"
+         #--- J'ajoute la commande de liaison longue pose
+         if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
+            if { [cam$camNo longueposelinkno] != 0} {
+               copycommand $threadNo "link[cam$camNo longueposelinkno]"
+            }
+         }
+         #--- je charge  camerathread.tcl dans l'intepreteur esclave
+         interp eval $threadNo uplevel #0 source "[file join $::audace(rep_audela) audace camerathread.tcl]"
+         interp eval $threadNo ::camerathread::init $camItem $camNo "0"
    }
    return $threadNo
+}
+
+#
+# ::confCam::deleteThread
+# Supprime la thread de la camera
+#
+proc ::confCam::deleteThread { camItem } {
+   variable private
+
+   if { $private($camItem,threadNo) != 0 } {
+      if { $::tcl_platform(threaded)==1 } {
+         thread::release $private($camItem,threadNo)
+      } else {
+         interp delete  $private($camItem,threadNo)
+      }
+      set private($camItem,threadNo) "0"
+   }
 }
 
 #------------------------------------------------------------
@@ -499,17 +529,43 @@ proc ::confCam::selectNotebook { camItem { camName "" } } {
 proc ::confCam::onRaiseNotebook { camName } {
    variable private
 
+   if { [winfo exists $private(frm).usr.onglet.c ] } {
    set font [$private(frm).usr.onglet.c itemcget "$camName:text" -font]
    lappend font "bold"
    #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
-   after 200 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
+      after 100 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
+   }
 }
 
-#------------------------------------------------------------
-# setShutter
-# Procedure de changement de l'obturateur de la camera
-#------------------------------------------------------------
-proc ::confCam::setShutter { camItem shutterState } {
+#----------------------------------------------------------------------------
+# ::confCam::setMount
+#   ajoute la commende tel$telNo dans l'interpreteur de la camera
+#----------------------------------------------------------------------------
+proc ::confCam::setMount { camItem telNo } {
+   variable private
+
+   if { [::confCam::isReady $camItem] && [confTel::isReady]  } {
+      set threadNo [::confCam::getThreadNo $camItem]
+      if { $::tcl_platform(threaded)==1 } {
+         #--- je copie la commande de la monture dans l'interpreteur de la camera
+         thread::copycommand $threadNo "tel$telNo"
+      } else {
+         #--- je copie la commande de la monture dans l'interpreteur de la camera
+         copycommand $threadNo "tel$telNo"
+      }
+   }
+}
+
+#----------------------------------------------------------------------------
+# ::confCam::setShutter
+# change l'etat de l'obturateur de la camera
+#
+# parametres :
+#    camItem    : item de la camera
+#    shutterState : etat de l'obturateur ( 0 1 2 )
+#    mode    :  mode de changement ("increment"=incrementation ou "set"= valeur  )
+#----------------------------------------------------------------------------
+proc ::confCam::setShutter { camItem shutterState  { mode "increment" } } {
    variable private
    global caption
 
@@ -517,13 +573,16 @@ proc ::confCam::setShutter { camItem shutterState } {
    set ShutterOptionList    [ ::confCam::getPluginProperty $camItem shutterList ]
    set lg_ShutterOptionList [ llength $ShutterOptionList ]
    #---
-   if { [ ::confCam::getPluginProperty $camItem hasShutter ] == "1" } {
-      incr shutterState
+   if { [ ::confCam::getPluginProperty $camItem hasShutter ] } {
+      if { $mode == "increment" } {
+         incr shutterState
+      }
       if { $lg_ShutterOptionList == "3" } {
          if { $shutterState == "3" } {
             set shutterState "0"
          }
       } elseif { $lg_ShutterOptionList == "2" } {
+         #--- je force l'etat = 1 si le shutter ne possede pas l'etat 0
          if { $shutterState == "3" } {
             set shutterState "1"
          }
@@ -537,8 +596,8 @@ proc ::confCam::setShutter { camItem shutterState } {
    return $shutterState
 }
 
-#------------------------------------------------------------
-# stopItem
+#----------------------------------------------------------------------------
+# ::confCam::stopItem
 # Arrete la camera camItem
 #------------------------------------------------------------
 proc ::confCam::stopItem { camItem } {
@@ -549,15 +608,8 @@ proc ::confCam::stopItem { camItem } {
       return
    }
    if { $private($camItem,camName) != "" } {
-      set camNo $private($camItem,camNo)
-
-      #--- Je supprime la thread de la camera si elle existe
-      if { $private($camItem,threadNo)!=0 } {
-         #--- Je supprime la thread
-         thread::release $private($camItem,threadNo)
-         set private($camItem,threadNo) "0"
-      }
-
+      #--- je supprime la thread
+      deleteThread $camItem
       #--- Je ferme les ressources specifiques de la camera
       ::$private($camItem,camName)::stop $camItem
    }
@@ -892,11 +944,7 @@ proc ::confCam::configureCamera { camItem } {
       set conf(camera,$camItem,start) "0"
 
       #--- Je supprime la thread de la camera si elle existe
-      if { $private($camItem,threadNo)!=0 } {
-        #--- Je supprime la thread
-         thread::release $private($camItem,threadNo)
-         set private($camItem,threadNo) "0"
-      }
+      ::confCam::deleteThread $camItem
 
       #--- En cas de probleme, camera par defaut
       set private($camItem,camName) ""
