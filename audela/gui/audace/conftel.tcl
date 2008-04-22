@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.46 2008-02-10 17:43:38 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.47 2008-04-22 18:01:53 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -364,6 +364,11 @@ proc ::confTel::stopPlugin { } {
       foreach visuNo [ ::visu::list ] {
          ::confVisu::setMount $visuNo
       }
+      #--- Je supprime l'association avec les cameras
+      foreach camItem { A B C } {
+         ::confCam::setMount $camItem $audace(telNo)
+      }
+
    }
    set private(mountName) ""
 }
@@ -393,6 +398,11 @@ proc ::confTel::configureMonture { } {
       #--- J'associe la monture avec les visus
       foreach visuNo [ ::visu::list ] {
          ::confVisu::setMount $visuNo
+      }
+
+      #--- J'associe la monture avec les cameras
+      foreach camItem { A B C } {
+         ::confCam::setMount $camItem $audace(telNo)
       }
 
    } errorMessage ]
