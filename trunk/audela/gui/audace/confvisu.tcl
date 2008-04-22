@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.75 2008-04-18 21:44:25 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.76 2008-04-22 18:07:00 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -593,23 +593,22 @@ namespace eval ::confVisu {
    proc setCamera { visuNo camItem camNo { model "" } } {
       variable private
       global caption
-      global color
 
-      set private($visuNo,camItem) $camItem
-      if { $camNo == 0 } {
-         if { [winfo exists $private($visuNo,This)] == 1} {
-            $private($visuNo,This).fra1.labCam_name_labURL configure \
-               -text "$caption(confVisu,2points) $caption(confVisu,non_connecte)" -fg $color(blue)
+      if { [winfo exists $private($visuNo,This)] == 1} {
+         if { $camNo == 0 } {
+            set description "$caption(confVisu,2points) $caption(confVisu,non_connecte)"
+         } else {
+            set camName [::confCam::getPluginProperty $camItem "name"]
+            set description "$private($visuNo,camItem)  $caption(confVisu,2points) $camName $model"
          }
-      } else {
-         set camName        [::confCam::getPluginProperty $camItem "name"]
-         #--- J'affiche le nom de la camera
-         $private($visuNo,This).fra1.labCam_name_labURL configure \
-            -text "$private($visuNo,camItem)  $caption(confVisu,2points) $camName $model" -fg $color(blue)
-         #--- Je renseigne la dynamique de la camera
-         set dynamic [ ::confCam::getPluginProperty $camItem "dynamic" ]
-         ::confVisu::visuDynamix $visuNo [ lindex $dynamic 0 ] [ lindex $dynamic 1 ]
       }
+      #--- J'affiche le nom de la camera
+      $private($visuNo,This).fra1.labCam_name_labURL configure -text $description
+      #--- Je renseigne la dynamique de la camera
+      set dynamic [ ::confCam::getPluginProperty $camItem "dynamic" ]
+      ::confVisu::visuDynamix $visuNo [ lindex $dynamic 0 ] [ lindex $dynamic 1 ]
+      #--- je memorise le camItem associe a cette visu
+      set private($visuNo,camItem) $camItem
    }
 
    #------------------------------------------------------------
@@ -834,7 +833,18 @@ namespace eval ::confVisu {
          visu$visuNo mode video
 
          #--- Je connecte la sortie de la camera a l'image
-         set result [ catch { cam$camNo startvideoview $visuNo } msg ]
+         set result [ catch { cam$camNo startvideoview $visuNo } ]
+         if { $result == 1 } {
+            #--- je restaure le mode photo
+            visu$visuNo mode photo
+            #--- j'active le reglage des seuils
+            $private($visuNo,This).fra1.sca1 configure -state normal
+            $private($visuNo,This).fra1.sca2 configure -state normal
+            ::console::affiche_erreur "$::errorInfo\n"
+            tk_messageBox -message "$::errorInfo. See console" -icon error
+            return
+         }
+
          visu$visuNo disp
 
          #--- je desactive le reglage des seuils
@@ -894,7 +904,8 @@ namespace eval ::confVisu {
    proc addFileNameListener { visuNo cmd } {
       variable private
 
-      trace add execution ::confVisu::setFileName leave $cmd
+      ##trace add execution ::confVisu::setFileName leave $cmd
+      trace add variable ::confVisu::private($visuNo,lastFileName) write $cmd
    }
 
    #------------------------------------------------------------
@@ -907,7 +918,8 @@ namespace eval ::confVisu {
    proc removeFileNameListener { visuNo cmd } {
       variable private
 
-      trace remove execution ::confVisu::setFileName leave $cmd
+      ###trace remove execution ::confVisu::setFileName leave $cmd
+      trace remove variable ::confVisu::private($visuNo,lastFileName) write $cmd
    }
 
    #------------------------------------------------------------
@@ -1007,48 +1019,59 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  selectTool
-   #     arrete l'outil courant si le nouvel outil n'a pa pas la prop display=window"
+   #     arrete l'outil courant si le nouvel outil n'a pas la prop display=window"
    #     demarre le nouvel outil
    #  parametres :
    #    visuNo: numero de la visu
    #    toolName : nom de l'outil a lancer
+   #  Remarque:
+   #    si toolName="" , alors l'outil courant est arrete. Aucun autre outil n'est pas demarré.
    #------------------------------------------------------------
    proc selectTool { visuNo toolName } {
       variable private
 
+      #--- j'arrete l'outil deja present
       if { "$private($visuNo,currentTool)" != "" } {
          #--- Cela veut dire qu'il y a deja un outil selectionne
          if { "$private($visuNo,currentTool)" != "$toolName" } {
-            if { [$toolName\::getPluginProperty "display" ] != "window"
-              && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
-               #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
+            if { $toolName != "" } {
+               if { [$toolName\::getPluginProperty "display" ] != "window"
+                  && [$private($visuNo,currentTool)::getPluginProperty "display" ] != "window" } {
+                  #--- Cela veut dire que l'utilisateur selectionne un nouvel outil
+                  stopTool $visuNo
+               }
+            } else {
+               #--- Cela veut dire que l'utilisateur veut arreter l'outil en cours
                stopTool $visuNo
             }
          }
       }
 
-      #--- je verifie que l'outils a deja une instance cree
-      if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
-         #--- je cree une instance de l'outil
-         set catchResult [catch {
-            namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo
-         }]
-         if { $catchResult == 1 } {
-            ::console::affiche_erreur "$::errorInfo\n"
-            tk_messageBox -message "$::errorInfo. See console" -icon error
-            return
+      if { $toolName != "" } {
+         #--- je verifie que l'outils a deja une instance cree
+         if { [lsearch -exact $private($visuNo,pluginInstanceList) $toolName ] == -1 } {
+            #--- je cree une instance de l'outil
+            set catchResult [catch {
+               namespace inscope $toolName createPluginInstance $private($visuNo,This) $visuNo
+            }]
+            if { $catchResult == 1 } {
+               ::console::affiche_erreur "$::errorInfo\n"
+               tk_messageBox -message "$::errorInfo. See console" -icon error
+               return
+            }
+            #--- j'ajoute cette intance dans la liste
+            lappend private($visuNo,pluginInstanceList) $toolName
          }
-         #--- j'ajoute cette intance dans la liste
-         lappend private($visuNo,pluginInstanceList) $toolName
+         #--- je demarre l'outil
+         namespace inscope $toolName startTool $visuNo
+
+         #--- je memorise le nom de l'outil en cours d'execution
+         if { [$toolName\::getPluginProperty "display" ] != "window" } {
+            set private($visuNo,currentTool) $toolName
+         }
+      } else {
+         set private($visuNo,currentTool) ""
       }
-      #--- je demarre l'outil
-      namespace inscope $toolName startTool $visuNo
-
-     #--- je memorise le nom de l'outil en cours d'execution
-     if { [$toolName\::getPluginProperty "display" ] != "window" } {
-        set private($visuNo,currentTool) $toolName
-     }
-
    }
 
    #------------------------------------------------------------
@@ -2251,16 +2274,31 @@ namespace eval ::confVisu {
       variable private
       global caption
 
-      #--- je mets a jour le nom du fichier
-      set private($visuNo,lastFileName) "$fileName"
-
       #--- je mets a jour le nom du fichier dans le titre de la fenetre
       if { $fileName != "" } {
         wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo) - $fileName"
       } else {
         wm title $private($visuNo,This) "$caption(audace,titre) (visu$visuNo)"
       }
+
+      #--- je mets a jour le nom du fichier
+      set private($visuNo,lastFileName) "$fileName"
    }
+
+   #------------------------------------------------------------
+   #  loadFile
+   #    charge et affiche un fichier
+   #  parametres :
+   #    visuNo : numero de la visu
+   #    fileName: nom du fichier
+   #------------------------------------------------------------
+   proc loadFile { visuNo fileName} {
+      variable private
+
+      loadima $fileName $visuNo
+      autovisu $visuNo
+   }
+
 }
 #--- namespace end
 
