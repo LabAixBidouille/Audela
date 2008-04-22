@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.39 2008-04-22 15:22:56 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.40 2008-04-22 22:10:06 robertdelmas Exp $
 #
 
 #
@@ -107,8 +107,8 @@ namespace eval confPosObs {
       global conf
 
       #--- Concatenation de variables pour l'en-tete FITS
-      set conf(posobs,estouest_long) "$conf(posobs,estouest)$conf(posobs,long)"
-      set conf(posobs,nordsud_lat)   "$conf(posobs,nordsud)$conf(posobs,lat)"
+      set conf(posobs,estouest_long) $conf(posobs,estouest)$conf(posobs,long)
+      set conf(posobs,nordsud_lat)   $conf(posobs,nordsud)$conf(posobs,lat)
 
       #--- Initialisation indispensable d'autres variables
       if { ! [ info exists conf(posobs,nom_observateur) ] }        { set conf(posobs,nom_observateur)        "" }
@@ -806,6 +806,10 @@ namespace eval confPosObs {
       set conf(posobs,station_uai)            $confgene(posobs,station_uai)
       set conf(posobs,observateur,mpc)        $confgene(posobs,observateur,mpc)
       set conf(posobs,observateur,mpcstation) $confgene(posobs,observateur,mpcstation)
+
+      #--- Concatenation de variables pour l'en-tete FITS
+      set conf(posobs,estouest_long)          $conf(posobs,estouest)$conf(posobs,long)
+      set conf(posobs,nordsud_lat)            $conf(posobs,nordsud)$conf(posobs,lat)
    }
 }
 
