@@ -246,8 +246,10 @@ int tt_tblsaver(TT_TBL *p,char *fullname,int binorascii)
    /* --- cree la nouvelle liste de mots cle ---*/
    tt_tbllistkeys(p,&nbkeys,(void***)(&keynames),(void***)(&values),(void***)(&comments),(void***)(&units),(void**)(&datatypes));
 
-   /* --- sauvegarde de la nouvelle liste de mots cle ---*/
-   hdunum_keys=(hdunum==NULL)?1:((*hdunum)+1);
+   /* --- sauvegarde de la nouvelle liste de mots cle dans le header de la table---*/
+   hdunum_keys=(hdunum==NULL)?2:((*hdunum)+1);
+
+
    if (nbkeys!=0) {
       /*
       printf("nbkeys=%d\n",nbkeys);
