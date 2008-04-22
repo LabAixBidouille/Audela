@@ -16,4 +16,4 @@ blank    Objet inconnu ou non identifie
 -        Objet non existant
 PD       Plaque photo defectueuse
 
-Coordonnees Equatoriales  Equinox 2000.
+Coordonnees Equatoriales  Equinoxe 2000.0
