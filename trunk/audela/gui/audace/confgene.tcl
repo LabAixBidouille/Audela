@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.38 2008-04-10 17:54:08 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.39 2008-04-22 15:22:56 robertdelmas Exp $
 #
 
 #
@@ -24,7 +24,7 @@ namespace eval confPosObs {
       variable This
 
       set This $this
-      createDialog
+      ::confPosObs::createDialog
       tkwait visibility $This
    }
 
@@ -33,8 +33,8 @@ namespace eval confPosObs {
    # Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer la position de l'observateur
    #
    proc ok { } {
-      appliquer
-      fermer
+      ::confPosObs::appliquer
+      ::confPosObs::fermer
    }
 
    #
@@ -42,8 +42,9 @@ namespace eval confPosObs {
    # Fonction 'Appliquer' pour memoriser et appliquer la configuration
    #
    proc appliquer { } {
+      ::confPosObs::MPC
       ::confPosObs::Position
-      widgetToConf
+      ::confPosObs::widgetToConf
    }
 
    #
@@ -65,70 +66,115 @@ namespace eval confPosObs {
       variable This
       global conf confgene
 
-      set confgene(posobs,altitude)                $conf(posobs,altitude)
+      set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
+      set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
       set confgene(posobs,estouest)                $conf(posobs,estouest)
-      set confgene(posobs,fichier_station_uai)     $conf(posobs,fichier_station_uai)
-      set confgene(posobs,lat)                     $conf(posobs,lat)
       set confgene(posobs,long)                    $conf(posobs,long)
       set confgene(posobs,nordsud)                 $conf(posobs,nordsud)
+      set confgene(posobs,lat)                     $conf(posobs,lat)
+      set confgene(posobs,altitude)                $conf(posobs,altitude)
+      set confgene(posobs,ref_geodesique)          $conf(posobs,ref_geodesique)
       set confgene(posobs,observateur,gps)         $conf(posobs,observateur,gps)
+      set confgene(posobs,station_uai)             $conf(posobs,station_uai)
+      set confgene(posobs,fichier_station_uai)     $conf(posobs,fichier_station_uai)
       set confgene(posobs,observateur,mpc)         $conf(posobs,observateur,mpc)
       set confgene(posobs,observateur,mpcstation)  $conf(posobs,observateur,mpcstation)
-      set confgene(posobs,ref_geodesique)          $conf(posobs,ref_geodesique)
-      set confgene(posobs,station_uai)             $conf(posobs,station_uai)
-      set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
-      set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
 
       destroy $This
    }
 
    #
    # confPosObs::initConf
-   # Initialisation des variables de position pour le lancement d'Aud'ACE
+   # Initialisation de variables de position dans aud.tcl (::audace::Recup_Config) pour le lancement d'Aud'ACE
    #
    proc initConf { } {
       global conf
 
-      if { ! [ info exists conf(posobs,observateur,gps) ] } { set conf(posobs,observateur,gps) "GPS 1.376722 E 43.659778 142" }
-      if { ! [ info exists conf(posobs,altitude) ] }        { set conf(posobs,altitude)        "142" }
+      #--- Observatoire du Pic du Midi
       if { ! [ info exists conf(posobs,estouest) ] }        { set conf(posobs,estouest)        "E" }
-      if { ! [ info exists conf(posobs,long) ] }            { set conf(posobs,long)            "1d22m36.2s" }
-      if { ! [ info exists conf(posobs,lat) ] }             { set conf(posobs,lat)             "43d39m35.2s" }
+      if { ! [ info exists conf(posobs,long) ] }            { set conf(posobs,long)            "0d8m32s2" }
       if { ! [ info exists conf(posobs,nordsud) ] }         { set conf(posobs,nordsud)         "N" }
-
-      #--- Concatenation de variables
-      set conf(posobs,estouest_long)                        "$conf(posobs,estouest)$conf(posobs,long)"
-      set conf(posobs,nordsud_lat)                          "$conf(posobs,nordsud)$conf(posobs,lat)"
+      if { ! [ info exists conf(posobs,lat) ] }             { set conf(posobs,lat)             "42d56m11s9" }
+      if { ! [ info exists conf(posobs,altitude) ] }        { set conf(posobs,altitude)        "2890.5" }
+      if { ! [ info exists conf(posobs,observateur,gps) ] } { set conf(posobs,observateur,gps) "GPS 0.142300 E 42.936639 2890.5" }
    }
 
+   #
+   # confPosObs::initConf1
+   # Initialisation d'autres variables de position
+   #
+   proc initConf1 { } {
+      global conf
+
+      #--- Concatenation de variables pour l'en-tete FITS
+      set conf(posobs,estouest_long) "$conf(posobs,estouest)$conf(posobs,long)"
+      set conf(posobs,nordsud_lat)   "$conf(posobs,nordsud)$conf(posobs,lat)"
+
+      #--- Initialisation indispensable d'autres variables
+      if { ! [ info exists conf(posobs,nom_observateur) ] }        { set conf(posobs,nom_observateur)        "" }
+      if { ! [ info exists conf(posobs,nom_observatoire) ] }       { set conf(posobs,nom_observatoire)       "Pic du Midi - France" }
+      if { ! [ info exists conf(posobs,ref_geodesique) ] }         { set conf(posobs,ref_geodesique)         "WGS84" }
+      if { ! [ info exists conf(posobs,station_uai) ] }            { set conf(posobs,station_uai)            "586" }
+      if { ! [ info exists conf(posobs,fichier_station_uai) ] }    { set conf(posobs,fichier_station_uai)    "obscodes.txt" }
+      if { ! [ info exists conf(posobs,observateur,mpc) ] }        { set conf(posobs,observateur,mpc)        "" }
+      if { ! [ info exists conf(posobs,observateur,mpcstation) ] } { set conf(posobs,observateur,mpcstation) "" }
+
+      #--- Observatoire du Pic du Midi - FRANCE
+      if { ! [ info exists conf(posobs,config_observatoire,0) ] } {
+         #--- Je prepare un exemple de configuration optique
+         array set config_observatoire { }
+         set config_observatoire(nom_observatoire) "Pic du Midi - France"
+         set config_observatoire(estouest)         "E"
+         set config_observatoire(long)             "0d8m32s2"
+         set config_observatoire(nordsud)          "N"
+         set config_observatoire(lat)              "42d56m11s9"
+         set config_observatoire(altitude)         "2890.5"
+         set config_observatoire(ref_geodesique)   "WGS84"
+         set config_observatoire(station_uai)      "586"
+
+         set conf(posobs,config_observatoire,0) [ array get config_observatoire ]
+      }
+
+      #--- Observatoire de Haute Provence - FRANCE
+      if { ! [ info exists conf(posobs,config_observatoire,1) ] } {
+         #--- Je prepare un exemple de configuration optique
+         array set config_observatoire { }
+         set config_observatoire(nom_observatoire) "Haute Provence - France"
+         set config_observatoire(estouest)         "E"
+         set config_observatoire(long)             "5d42m56s5"
+         set config_observatoire(nordsud)          "N"
+         set config_observatoire(lat)              "43d55m54s8"
+         set config_observatoire(altitude)         "633.9"
+         set config_observatoire(ref_geodesique)   "WGS84"
+         set config_observatoire(station_uai)      "511"
+
+         set conf(posobs,config_observatoire,1) [ array get config_observatoire ]
+      }
+
+      #---
+      if { ! [ info exists conf(posobs,config_observatoire,2) ] } { set conf(posobs,config_observatoire,2) "" }
+      if { ! [ info exists conf(posobs,config_observatoire,3) ] } { set conf(posobs,config_observatoire,3) "" }
+      if { ! [ info exists conf(posobs,config_observatoire,4) ] } { set conf(posobs,config_observatoire,4) "" }
+      if { ! [ info exists conf(posobs,config_observatoire,5) ] } { set conf(posobs,config_observatoire,5) "" }
+      if { ! [ info exists conf(posobs,config_observatoire,6) ] } { set conf(posobs,config_observatoire,6) "" }
+      if { ! [ info exists conf(posobs,config_observatoire,7) ] } { set conf(posobs,config_observatoire,7) "" }
+      if { ! [ info exists conf(posobs,config_observatoire,8) ] } { set conf(posobs,config_observatoire,8) "" }
+      if { ! [ info exists conf(posobs,config_observatoire,9) ] } { set conf(posobs,config_observatoire,9) "" }
+   }
+
+   #
+   # confPosObs::createDialog
+   # Creation de l'interface graphique
+   #
    proc createDialog { } {
       variable This
       global audace caption color conf confgene
 
       #--- initConf
-      #--- Initialisation indispensable d'une variable dans aud.tcl (::audace::Recup_Config)
-      if { ! [ info exists conf(posobs,fichier_station_uai) ] }    { set conf(posobs,fichier_station_uai)    "obscodes.txt" }
-      if { ! [ info exists conf(posobs,observateur,mpc) ] }        { set conf(posobs,observateur,mpc)        "" }
-      if { ! [ info exists conf(posobs,observateur,mpcstation) ] } { set conf(posobs,observateur,mpcstation) "" }
-      if { ! [ info exists conf(posobs,ref_geodesique) ] }         { set conf(posobs,ref_geodesique)         "WGS84" }
-      if { ! [ info exists conf(posobs,station_uai) ] }            { set conf(posobs,station_uai)            "" }
-      if { ! [ info exists conf(posobs,nom_observatoire) ] }       { set conf(posobs,nom_observatoire)       "" }
-      if { ! [ info exists conf(posobs,nom_observateur) ] }        { set conf(posobs,nom_observateur)        "" }
+      ::confPosObs::initConf1
 
       #--- confToWidget
-      set confgene(posobs,altitude)                $conf(posobs,altitude)
-      set confgene(posobs,estouest)                $conf(posobs,estouest)
-      set confgene(posobs,fichier_station_uai)     $conf(posobs,fichier_station_uai)
-      set confgene(posobs,lat)                     $conf(posobs,lat)
-      set confgene(posobs,long)                    $conf(posobs,long)
-      set confgene(posobs,nordsud)                 $conf(posobs,nordsud)
-      set confgene(posobs,observateur,gps)         $conf(posobs,observateur,gps)
-      set confgene(posobs,observateur,mpc)         $conf(posobs,observateur,mpc)
-      set confgene(posobs,observateur,mpcstation)  $conf(posobs,observateur,mpcstation)
-      set confgene(posobs,ref_geodesique)          $conf(posobs,ref_geodesique)
-      set confgene(posobs,station_uai)             $conf(posobs,station_uai)
-      set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
-      set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
+      ::confPosObs::confToWidget
 
       #---
       if { [winfo exists $This] } {
@@ -223,7 +269,15 @@ namespace eval confPosObs {
       label $This.lab0b -text "$caption(confgene,nom_observatoire)"
       pack $This.lab0b -in $This.frame2b -anchor w -side left -padx 10 -pady 5
 
-      entry $This.nom_observatoire -textvariable confgene(posobs,nom_observatoire) -width 35
+      ComboBox $This.nom_observatoire \
+         -width 42         \
+         -height 10        \
+         -relief sunken    \
+         -borderwidth 2    \
+         -editable 1       \
+         -textvariable confgene(posobs,nom_observatoire) \
+         -modifycmd "::confPosObs::cbCommand $This.nom_observatoire" \
+         -values $confgene(posobs,nom_observatoire_liste)
       pack $This.nom_observatoire -in $This.frame2b -anchor w -side right -padx 10 -pady 5
 
       #--- Longitude observateur
@@ -266,7 +320,7 @@ namespace eval confPosObs {
       label $This.lab3 -text "$caption(confgene,position_altitude)"
       pack $This.lab3 -in $This.frame11 -anchor w -side top -padx 10 -pady 5
 
-      entry $This.altitude -textvariable confgene(posobs,altitude) -width 6
+      entry $This.altitude -textvariable confgene(posobs,altitude) -width 7
       pack $This.altitude -in $This.frame15 -anchor w -side left -padx 10 -pady 5
 
       label $This.lab4 -text "$caption(confgene,position_metre)"
@@ -288,7 +342,7 @@ namespace eval confPosObs {
          -values $list_combobox
       pack $This.ref_geodesique -in $This.frame16 -anchor w -side top -padx 10 -pady 5
 
-      #--- Cree le bouton 'Mise � jour du format GPS'
+      #--- Cree le bouton 'Mise a jour du format GPS'
       button $This.but_gps -text "$caption(confgene,position_miseajour_gps)" -borderwidth 2 \
          -command { ::confPosObs::Position }
       pack $This.but_gps -in $This.frame4 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
@@ -307,7 +361,7 @@ namespace eval confPosObs {
       entry $This.station_uai -textvariable confgene(posobs,station_uai) -width 6
       pack $This.station_uai -in $This.frame18 -anchor w -side left -padx 10 -pady 5
 
-      #--- Cree le bouton 'Mise � jour des formats MPC'
+      #--- Cree le bouton 'Mise a jour des formats MPC'
       button $This.but_mpc -text "$caption(confgene,position_miseajour_mpc)" -borderwidth 2 \
          -command { ::confPosObs::MPC }
       pack $This.but_mpc -in $This.frame18 -anchor center -side left -padx 10 -pady 3 -ipadx 10 -ipady 5 -expand true
@@ -319,7 +373,7 @@ namespace eval confPosObs {
       entry $This.fichier_station_uai -textvariable confgene(posobs,fichier_station_uai) -width 16
       pack $This.fichier_station_uai -in $This.frame19 -anchor w -side left -padx 10 -pady 5
 
-      #--- Cree le bouton 'Mise � jour' du fichier des stations UAI
+      #--- Cree le bouton 'Mise a jour' du fichier des stations UAI
       button $This.but_maj -text "$caption(confgene,position_miseajour)" -borderwidth 2 \
          -command { ::confPosObs::MaJ }
       pack $This.but_maj -in $This.frame19 -anchor center -side left -padx 10 -pady 3 -ipadx 10 -ipady 5 -expand true
@@ -381,6 +435,10 @@ namespace eval confPosObs {
       ::confColor::applyColor $This
    }
 
+   #
+   # confPosObs::MaJ
+   # Creation de l'interface pour la mise a jour du fichier des observatoires
+   #
    proc MaJ { } {
       global audace caption color confgene
 
@@ -427,6 +485,10 @@ namespace eval confPosObs {
       }
    }
 
+   #
+   # confPosObs::Erreur
+   # Creation de l'interface graphique pour signifier une erreur
+   #
    proc Erreur { } {
       global audace caption
 
@@ -457,7 +519,7 @@ namespace eval confPosObs {
    }
 
    #
-   # Position
+   # confPosObs::Position
    # Fonction pour la mise a la forme GPS
    #
    proc Position { } {
@@ -509,7 +571,7 @@ namespace eval confPosObs {
    }
 
    #
-   # MPC
+   # confPosObs::MPC
    # Fonction pour la mise a la forme MPC et MPCSTATION
    #
    proc MPC { } {
@@ -548,6 +610,12 @@ namespace eval confPosObs {
          for {set i 0} {$i <= $long} {incr i} {
             set ligne_station_mpc [lindex $mpc $i]
             if { [string compare [lindex $ligne_station_mpc 0] $confgene(posobs,station_uai)] == "0" } {
+               #--- Formatage du nom de l'observatoire (c'est une textvariable)
+               set nom ""
+               for {set i 4} {$i <= [ llength $ligne_station_mpc ]} {incr i} {
+                  set nom "$nom[lindex $ligne_station_mpc $i] "
+               }
+               set confgene(posobs,nom_observatoire) "$nom"
                #--- Formatage MPC
                set confgene(posobs,observateur,mpc) "MPC [lindex $ligne_station_mpc 1] [lindex $ligne_station_mpc 2] [lindex $ligne_station_mpc 3]"
                $This.labURLRed11 configure -text "$confgene(posobs,observateur,mpc)" -fg $audace(color,textColor)
@@ -598,25 +666,146 @@ namespace eval confPosObs {
    }
 
    #
+   # confPosObs::cbCommand
+   # (appelee par la combobox a chaque changement de selection)
+   # Affiche les valeurs dans les widgets pour la configuration choisie
+   #
+   proc cbCommand { cb } {
+      global conf confgene
+
+      #--- Je recupere l'index de l'element selectionne
+      set index [ $cb getvalue ]
+      if { "$index" == "" } {
+         set index 0
+      }
+
+      #--- Je recupere les attributs de la configuration
+      array set config_observatoire $conf(posobs,config_observatoire,$index)
+
+      #--- Je copie les valeurs dans les widgets de la configuration choisie
+      set confgene(posobs,nom_observatoire) $config_observatoire(nom_observatoire)
+      set confgene(posobs,estouest)         $config_observatoire(estouest)
+      set confgene(posobs,long)             $config_observatoire(long)
+      set confgene(posobs,nordsud)          $config_observatoire(nordsud)
+      set confgene(posobs,lat)              $config_observatoire(lat)
+      set confgene(posobs,altitude)         $config_observatoire(altitude)
+      set confgene(posobs,ref_geodesique)   $config_observatoire(ref_geodesique)
+      set confgene(posobs,station_uai)      $config_observatoire(station_uai)
+
+      #--- Fonction pour la mise a la forme MPC et MPCSTATION
+      ::confPosObs::MPC
+
+      #--- Fonction pour la mise a la forme GPS
+      ::confPosObs::Position
+   }
+
+   #
+   # confPosObs::confToWidget
+   # Copie les parametres du tableau conf() dans les variables des widgets
+   #
+   proc confToWidget { } {
+      global conf confgene
+
+      #--- confToWidget
+      set confgene(posobs,nom_observateur)         $conf(posobs,nom_observateur)
+      set confgene(posobs,nom_observatoire)        $conf(posobs,nom_observatoire)
+      set confgene(posobs,estouest)                $conf(posobs,estouest)
+      set confgene(posobs,long)                    $conf(posobs,long)
+      set confgene(posobs,nordsud)                 $conf(posobs,nordsud)
+      set confgene(posobs,lat)                     $conf(posobs,lat)
+      set confgene(posobs,altitude)                $conf(posobs,altitude)
+      set confgene(posobs,ref_geodesique)          $conf(posobs,ref_geodesique)
+      set confgene(posobs,observateur,gps)         $conf(posobs,observateur,gps)
+      set confgene(posobs,station_uai)             $conf(posobs,station_uai)
+      set confgene(posobs,fichier_station_uai)     $conf(posobs,fichier_station_uai)
+      set confgene(posobs,observateur,mpc)         $conf(posobs,observateur,mpc)
+      set confgene(posobs,observateur,mpcstation)  $conf(posobs,observateur,mpcstation)
+
+      #--- Je prepare les valeurs de la combobox de configuration des noms d'observatoire
+      set confgene(posobs,nom_observatoire_liste) ""
+      foreach {key value} [ array get conf posobs,config_observatoire,* ] {
+         if { "$value" == "" } continue
+         #--- Je mets les valeurs dans un array (de-serialisation)
+         array set config_observatoire $value
+         #--- Je prepare la ligne a afficher dans la combobox
+         set line "$config_observatoire(nom_observatoire) $config_observatoire(estouest) $config_observatoire(long) \
+            $config_observatoire(nordsud) $config_observatoire(lat) $config_observatoire(altitude) \
+            $config_observatoire(ref_geodesique) $config_observatoire(station_uai)"
+         #--- J'ajoute la ligne
+         lappend confgene(posobs,nom_observatoire_liste) "$line"
+      }
+   }
+
+   #
    # confPosObs::widgetToConf
    # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
    #
    proc widgetToConf { } {
+      variable This
       global conf confgene
 
-      set conf(posobs,altitude)               $confgene(posobs,altitude)
+      #--- J'ajoute l'observatoire en tete dans le tableau des observatoires precedents s'il n'y est pas deja
+      array set config_observatoire { }
+      set config_observatoire(nom_observatoire) "$confgene(posobs,nom_observatoire)"
+      set config_observatoire(estouest)         "$confgene(posobs,estouest)"
+      set config_observatoire(long)             "$confgene(posobs,long)"
+      set config_observatoire(nordsud)          "$confgene(posobs,nordsud)"
+      set config_observatoire(lat)              "$confgene(posobs,lat)"
+      set config_observatoire(altitude)         "$confgene(posobs,altitude)"
+      set config_observatoire(ref_geodesique)   "$confgene(posobs,ref_geodesique)"
+      set config_observatoire(station_uai)      "$confgene(posobs,station_uai)"
+
+      #--- Je copie conf dans templist en mettant l'observatoire courant en premier
+      array set templist { }
+      set templist(0) [ array get config_observatoire ]
+      set j "1"
+      foreach {key value} [ array get conf posobs,config_observatoire,* ] {
+         if { "$value" == "" } {
+            set templist($j) ""
+            incr j
+         } else {
+            array set temp1 $value
+            if { "$temp1(nom_observatoire)" != "$config_observatoire(nom_observatoire)" } {
+               set templist($j) [ array get temp1 ]
+               incr j
+            }
+         }
+      }
+
+      #--- Je copie templist dans conf
+      for {set i 0} {$i < 10 } {incr i } {
+         set conf(posobs,config_observatoire,$i) $templist($i)
+      }
+
+      #--- Je mets a jour les valeurs dans la combobox
+      set confgene(posobs,nom_observatoire_liste) ""
+      foreach {key value} [ array get conf posobs,config_observatoire,* ] {
+         if { "$value" == "" } continue
+         #--- Je mets les valeurs dans un array (de-serialisation)
+         array set config_observatoire $value
+         #--- Je prepare la ligne a afficher dans la combobox
+         set line "$config_observatoire(nom_observatoire) $config_observatoire(estouest) $config_observatoire(long) \
+            $config_observatoire(nordsud) $config_observatoire(lat) $config_observatoire(altitude) \
+            $config_observatoire(ref_geodesique) $config_observatoire(station_uai)"
+         #--- J'ajoute la ligne
+         lappend confgene(posobs,nom_observatoire_liste) "$line"
+      }
+      $This.nom_observatoire configure -values $confgene(posobs,nom_observatoire_liste)
+
+      #---
+      set conf(posobs,nom_observateur)        $confgene(posobs,nom_observateur)
+      set conf(posobs,nom_observatoire)       $confgene(posobs,nom_observatoire)
       set conf(posobs,estouest)               $confgene(posobs,estouest)
-      set conf(posobs,fichier_station_uai)    $confgene(posobs,fichier_station_uai)
-      set conf(posobs,lat)                    $confgene(posobs,lat)
       set conf(posobs,long)                   $confgene(posobs,long)
       set conf(posobs,nordsud)                $confgene(posobs,nordsud)
+      set conf(posobs,lat)                    $confgene(posobs,lat)
+      set conf(posobs,altitude)               $confgene(posobs,altitude)
+      set conf(posobs,ref_geodesique)         $confgene(posobs,ref_geodesique)
       set conf(posobs,observateur,gps)        $confgene(posobs,observateur,gps)
+      set conf(posobs,fichier_station_uai)    $confgene(posobs,fichier_station_uai)
+      set conf(posobs,station_uai)            $confgene(posobs,station_uai)
       set conf(posobs,observateur,mpc)        $confgene(posobs,observateur,mpc)
       set conf(posobs,observateur,mpcstation) $confgene(posobs,observateur,mpcstation)
-      set conf(posobs,ref_geodesique)         $confgene(posobs,ref_geodesique)
-      set conf(posobs,station_uai)            $confgene(posobs,station_uai)
-      set conf(posobs,nom_observatoire)       $confgene(posobs,nom_observatoire)
-      set conf(posobs,nom_observateur)        $confgene(posobs,nom_observateur)
    }
 }
 
