@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.27 2008-04-19 00:03:53 michelpujol Exp $
+# Mise a jour $Id: dslr.tcl,v 1.28 2008-04-22 15:30:47 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -512,7 +512,7 @@ proc ::dslr::confDSLR { camItem } {
          if { [ ::dslr::isReady $camItem ] == 1 } {
             #--- Bouton de configuration de la camera APN (DSLR)
             $frm.frame11.config_telechargement configure -state normal
-            $frm.frame11.config_telechargement configure -command " ::dslr::setLoadParameters $camItem"
+            $frm.frame11.config_telechargement configure -command "::dslr::setLoadParameters $camItem"
             $frm.frame1.frame7.frame8.longuepose configure -command "::dslr::confDSLR $camItem"
          } else {
             #--- Bouton de configuration de la camera APN (DSLR)
