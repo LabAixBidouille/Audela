@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.tcl,v 1.5 2007-12-28 11:37:10 robertdelmas Exp $
+# Mise a jour $Id: tuto.tcl,v 1.6 2008-04-23 21:03:32 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -16,56 +16,56 @@ proc caption_def { langage } {
    global texte caption
    #--- definition of captions
    if {[string compare $langage english] ==0 } {
-     set caption(main_title) "Tuto : A Tutorial for CCD Beginners"
-     set caption(tuto_about) "About..."
-     set caption(tuto_quit)  "Quit"
-     set caption(tuto_tools) "Tools"
-     set texte(tuto_1)    "CCD Imagery for Beginners"
-     set texte(tuto_2)    "This tutorial helps you shoot your first images with your CCD camera.  It was created with the AudeLA software."
-     set texte(tuto_3)    "Plug and Test the Audine Camera"
-     set texte(tuto_4)    "Connect the Camera."
-     set texte(tuto_5)    "Electronic Tests for Audine."
-     set texte(tuto_6)    "First Dark Frame with Camera Uncooled."
-     set texte(tuto_7)    "First Image with Camera Uncooled."
-     set texte(tuto_8)    "Cooling the Camera."
-     set texte(tuto_9)    "Make Dark and Bias Reference Frames."
-     set texte(tuto_10_0) "Fit the CCD Camera to a Telescope"
-     set texte(tuto_10)   "Adapter Ring to fit the Audine Camera to an Eyepiece Holder."
-     set texte(tuto_11)   "Mechanical Installation on an Eyepiece Holder."
-     set texte(tuto_12)   "Aligning the Telescope."
-     set texte(tuto_13)   "Aiming at Celestial Objects."
-     set texte(tuto_14_0) "First Images of the Sky"
-     set texte(tuto_14)   "Focusing on a Bright Star."
-     set texte(tuto_15)   "Focusing on a Globular Cluster."
-     set texte(tuto_16)   "Acquisition of Images through Practice."
-     set texte(tuto_about0) "Audine Tutorial"
-     set texte(tuto_about1) "Tutorial for the Audine Camera\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
+      set caption(main_title) "Tuto : A Tutorial for CCD Beginners"
+      set caption(tuto_about) "About..."
+      set caption(tuto_quit)  "Quit"
+      set caption(tuto_tools) "Tools"
+      set texte(tuto_1)    "CCD Imagery for Beginners"
+      set texte(tuto_2)    "This tutorial helps you shoot your first images with your CCD camera.  It was created with the AudeLA software."
+      set texte(tuto_3)    "Plug and Test the Audine Camera"
+      set texte(tuto_4)    "Connect the Camera."
+      set texte(tuto_5)    "Electronic Tests for Audine."
+      set texte(tuto_6)    "First Dark Frame with Camera Uncooled."
+      set texte(tuto_7)    "First Image with Camera Uncooled."
+      set texte(tuto_8)    "Cooling the Camera."
+      set texte(tuto_9)    "Make Dark and Bias Reference Frames."
+      set texte(tuto_10_0) "Fit the CCD Camera to a Telescope"
+      set texte(tuto_10)   "Adapter Ring to fit the Audine Camera to an Eyepiece Holder."
+      set texte(tuto_11)   "Mechanical Installation on an Eyepiece Holder."
+      set texte(tuto_12)   "Aligning the Telescope."
+      set texte(tuto_13)   "Aiming at Celestial Objects."
+      set texte(tuto_14_0) "First Images of the Sky"
+      set texte(tuto_14)   "Focusing on a Bright Star."
+      set texte(tuto_15)   "Focusing on a Globular Cluster."
+      set texte(tuto_16)   "Acquisition of Images through Practice."
+      set texte(tuto_about0) "Audine Tutorial"
+      set texte(tuto_about1) "Tutorial for the Audine Camera\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
    }
    if {[string compare $langage french] ==0 } {
-     set caption(main_title) "Tuto : Un tutorial pour les débutants en CCD"
-     set caption(tuto_about) "A propos..."
-     set caption(tuto_quit)  "Quitter"
-     set caption(tuto_tools) "Outils"
-     set texte(tuto_1)    "Initiation à l'imagerie CCD"
-     set texte(tuto_2)    "Ce tutorial vous permettra de réaliser vos premières images avec une caméra CCD. Il a été réalisé avec le logiciel AudeLA."
-     set texte(tuto_3)    "Brancher et tester la caméra Audine"
-     set texte(tuto_4)    "Connexion des câbles de la caméra."
-     set texte(tuto_5)    "Tests électroniques pour le kit Audine."
-     set texte(tuto_6)    "Première image dans le noir, caméra non-refroidie."
-     set texte(tuto_7)    "Première lumière, caméra non-refroidie."
-     set texte(tuto_8)    "Refroidissement de la caméra."
-     set texte(tuto_9)    "Réaliser des images dark et bias de référence."
-     set texte(tuto_10_0) "Installer la caméra CCD sur un télescope"
-     set texte(tuto_10)   "Bague pour adapter Audine sur un porte-oculaire."
-     set texte(tuto_11)   "Adaptation mécanique sur le porte-oculaire."
-     set texte(tuto_12)   "Mise en station du télescope."
-     set texte(tuto_13)   "Pointage des objets célestes."
-     set texte(tuto_14_0) "Premières images sur le ciel"
-     set texte(tuto_14)   "Focalisation sur une étoile brillante."
-     set texte(tuto_15)   "Focalisation sur un amas globulaire."
-     set texte(tuto_16)   "L'acquisition par la pratique."
-     set texte(tuto_about0) "Tutorial Audine"
-     set texte(tuto_about1) "Tutorial pour la camera Audine\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
+      set caption(main_title) "Tuto : Un tutorial pour les débutants en CCD"
+      set caption(tuto_about) "A propos..."
+      set caption(tuto_quit)  "Quitter"
+      set caption(tuto_tools) "Outils"
+      set texte(tuto_1)    "Initiation à l'imagerie CCD"
+      set texte(tuto_2)    "Ce tutorial vous permettra de réaliser vos premières images avec une caméra CCD. Il a été réalisé avec le logiciel AudeLA."
+      set texte(tuto_3)    "Brancher et tester la caméra Audine"
+      set texte(tuto_4)    "Connexion des câbles de la caméra."
+      set texte(tuto_5)    "Tests électroniques pour le kit Audine."
+      set texte(tuto_6)    "Première image dans le noir, caméra non-refroidie."
+      set texte(tuto_7)    "Première lumière, caméra non-refroidie."
+      set texte(tuto_8)    "Refroidissement de la caméra."
+      set texte(tuto_9)    "Réaliser des images dark et bias de référence."
+      set texte(tuto_10_0) "Installer la caméra CCD sur un télescope"
+      set texte(tuto_10)   "Bague pour adapter Audine sur un porte-oculaire."
+      set texte(tuto_11)   "Adaptation mécanique sur le porte-oculaire."
+      set texte(tuto_12)   "Mise en station du télescope."
+      set texte(tuto_13)   "Pointage des objets célestes."
+      set texte(tuto_14_0) "Premières images sur le ciel"
+      set texte(tuto_14)   "Focalisation sur une étoile brillante."
+      set texte(tuto_15)   "Focalisation sur un amas globulaire."
+      set texte(tuto_16)   "L'acquisition par la pratique."
+      set texte(tuto_about0) "Tutorial Audine"
+      set texte(tuto_about1) "Tutorial pour la camera Audine\n\n\Aude (c) 1999\n\nIn order to change the language, you must edit the file langage.tcl and write another language.\n"
    }
 }
 
@@ -81,6 +81,18 @@ proc caption_def { langage } {
 # SCCS: @(#) widget 1.35 97/07/19 15:42:22
 
 global texte caption
+
+#--- si la fenetre secondaire existe deja, je la detruis
+if { [winfo exists .second] } {
+   destroy .second
+}
+
+#--- si la fenetre principale existe deja, je la deiconifie et je sors du script
+if { [winfo exists .main] } {
+   wm deiconify .main
+   focus .main
+   return
+}
 
 #--- selection of language
 if {[info exists langage] == "0"} {
@@ -107,8 +119,10 @@ set num(buf1) [buf::create]
 set num(cam1) [cam::create audine $lpt]
 
 #--- declare a new visu space to display the buffer
-set num(visu1) [visu::create $num(buf1) 1 ]
+set num(visu1) [visu::create $num(buf1) 100 ]
 
+#--- declare a new image
+set num(image1) $num(visu1)
 
 wm withdraw .
 if {[info command .main] == "" } {
@@ -122,7 +136,6 @@ wm maxsize .main [winfo screenwidth .main] [winfo screenheight .main]
 wm minsize .main ${screenwidth} ${screenheight}
 wm resizable .main 1 1
 set widgetDemo 1
-
 
 #----------------------------------------------------------------
 # The code below create the main window, consisting of a menu bar
@@ -145,7 +158,7 @@ if {[info command .main.menuBar] == "" } {
          -underline 0 -accelerator "<F1>"
       .main.menuBar.file add sep
    }
-   .main.menuBar.file add command -label $caption(tuto_quit) -command "exit" -underline 0 \
+   .main.menuBar.file add command -label $caption(tuto_quit) -command "tuto_exit" -underline 0 \
        -accelerator "Meta-Q"
    .main configure -menu .main.menuBar
    bind .main <F1> aboutBox
@@ -187,46 +200,46 @@ pack .main.textFrame -expand yes -fill both
 .main.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
 if {[winfo depth .main] == 1} {
-    .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
-       -underline 1
-    .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
-       -underline 1
-    .main.t tag configure hot -background black -foreground white
+   .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .main.t tag configure hot -background black -foreground white
 } else {
-    .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
-       -foreground blue -underline 1
-    .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
-       -foreground #303080 -underline 1
-    .main.t tag configure hot -foreground red -underline 1
+   .main.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -foreground blue -underline 1
+   .main.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -foreground #303080 -underline 1
+   .main.t tag configure hot -foreground red -underline 1
 }
 .main.t tag bind demo <ButtonRelease-1> {
-    invoke [.main.t index {@%x,%y}] .main
+   invoke [.main.t index {@%x,%y}] .main
 }
 set lastLine ""
 .main.t tag bind demo <Enter> {
-    set lastLine [.main.t index {@%x,%y linestart}]
-    .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-    .main.t config -cursor hand2
-    #showStatus [.main.t index {@%x,%y}]
+   set lastLine [.main.t index {@%x,%y linestart}]
+   .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+   .main.t config -cursor hand2
+   #showStatus [.main.t index {@%x,%y}]
 }
 .main.t tag bind demo <Leave> {
-    .main.t tag remove hot 1.0 end
-    .main.t config -cursor xterm
-    .main.statusBar.lab config -text ""
+   .main.t tag remove hot 1.0 end
+   .main.t config -cursor xterm
+   .main.statusBar.lab config -text ""
 }
 .main.t tag bind demo <Motion> {
-    set newLine [.main.t index {@%x,%y linestart}]
-    if {[string compare $newLine $lastLine] != 0} {
-       .main.t tag remove hot 1.0 end
-       set lastLine $newLine
+   set newLine [.main.t index {@%x,%y linestart}]
+   if {[string compare $newLine $lastLine] != 0} {
+      .main.t tag remove hot 1.0 end
+      set lastLine $newLine
 
-       set tags [.main.t tag names {@%x,%y}]
-       set i [lsearch -glob $tags demo-*]
-       if {$i >= 0} {
-          .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-       }
-    }
-    #showStatus [.main.t index {@%x,%y}]
+      set tags [.main.t tag names {@%x,%y}]
+      set i [lsearch -glob $tags demo-*]
+      if {$i >= 0} {
+         .main.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+      }
+   }
+   #showStatus [.main.t index {@%x,%y}]
 }
 
 # Create the text for the text widget.
@@ -269,7 +282,6 @@ set lastLine ""
 .main.t insert end "3. $texte(tuto_16)" {demo demo-audace}
 .main.t insert end " \n " {demospace}
 
-
 .main.t insert end " \n " {demospace}
 
 .main.t configure -state disabled
@@ -283,43 +295,43 @@ focus .main.s
 # index - The index of the character that the user clicked on.
 
 proc invoke {index base} {
-    global tk_library
-    set tags [$base.t tag names $index]
-    set i [lsearch -glob $tags demo-*]
-    if {$i < 0} {
-       return
-    }
-    set cursor [$base.t cget -cursor]
-    $base.t configure -cursor watch
-    update
-    set demo [string range [lindex $tags $i] 5 end]
+   global tk_library
+   set tags [$base.t tag names $index]
+   set i [lsearch -glob $tags demo-*]
+   if {$i < 0} {
+      return
+   }
+   set cursor [$base.t cget -cursor]
+   $base.t configure -cursor watch
+   update
+   set demo [string range [lindex $tags $i] 5 end]
 
-    #uplevel [list source [file join $tk_library demos $demo.tcl]]
-    #--- nettoie la zone
-    #.main.t insert end \n {} "tutu\n" title
-    #destroy .main
-    #foreach w [winfo children .main] {
-    #   .main.t insert end \n {} "$w\n" title
-    #   pack forget $w
-    #   destroy $w
-    #}
-    #.main.t configure -state disabled
-    if {$base == ".second" } {
-       wm deiconify .main
-       destroy .second
-    }
-    if {[string compare $demo "exit"] == 0 } {
-       #uplevel [list source tuto.tcl]
-       focus -force .main
-    } else {
-       uplevel [list source tuto.$demo.tcl]
-       focus -force .second
-    }
-    update
-    if {$base == ".main" } {
-       $base.t configure -cursor $cursor
-       $base.t tag add visited "$index linestart +1 chars" "$index lineend -1 chars"
-    }
+   #uplevel [list source [file join $tk_library demos $demo.tcl]]
+   #--- nettoie la zone
+   #.main.t insert end \n {} "tutu\n" title
+   #destroy .main
+   #foreach w [winfo children .main] {
+   #   .main.t insert end \n {} "$w\n" title
+   #   pack forget $w
+   #   destroy $w
+   #}
+   #.main.t configure -state disabled
+   if {$base == ".second" } {
+      wm deiconify .main
+      destroy .second
+   }
+   if {[string compare $demo "exit"] == 0 } {
+      #uplevel [list source tuto.tcl]
+      focus -force .main
+   } else {
+      uplevel [list source tuto.$demo.tcl]
+      focus -force .second
+   }
+   update
+   if {$base == ".main" } {
+      $base.t configure -cursor $cursor
+      $base.t tag add visited "$index linestart +1 chars" "$index lineend -1 chars"
+   }
 }
 
 # showStatus --
@@ -328,23 +340,22 @@ proc invoke {index base} {
 # is called when the user moves the cursor over a demo description.
 #
 proc showStatus index {
-    global tk_library
-    set tags [.main.t tag names $index]
-    set i [lsearch -glob $tags demo-*]
-    set cursor [.main.t cget -cursor]
-    if {$i < 0} {
-       .main.statusBar.lab config -text " "
-       set newcursor xterm
-    } else {
-       set demo [string range [lindex $tags $i] 5 end]
-       .main.statusBar.lab config -text "Run the \"$demo\" sample program"
-       set newcursor hand2
-    }
-    if [string compare $cursor $newcursor] {
-       .main.t config -cursor $newcursor
-    }
+   global tk_library
+   set tags [.main.t tag names $index]
+   set i [lsearch -glob $tags demo-*]
+   set cursor [.main.t cget -cursor]
+   if {$i < 0} {
+      .main.statusBar.lab config -text " "
+      set newcursor xterm
+   } else {
+      set demo [string range [lindex $tags $i] 5 end]
+      .main.statusBar.lab config -text "Run the \"$demo\" sample program"
+      set newcursor hand2
+   }
+   if [string compare $cursor $newcursor] {
+      .main.t config -cursor $newcursor
+   }
 }
-
 
 # aboutBox --
 #
@@ -352,12 +363,37 @@ proc showStatus index {
 #
 proc aboutBox {} {
    global texte
-    tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message \
-$texte(tuto_about1)
+   tk_messageBox -icon info -type ok -title $texte(tuto_about0) -message $texte(tuto_about1)
 }
 
 bind .main <Destroy> {
-   destroy .
-   exit
+   tuto_exit
+}
+
+proc tuto_exit { } {
+   global audace num
+   ::buf::delete $num(buf1)
+   ::visu::delete $num(visu1)
+   if { [ info exists num(cam1) ] == "1" } {
+      ::cam::delete $num(cam1)
+      unset num(cam1)
+   }
+   catch {
+      image delete image11
+      image delete image100
+      unset texte
+   }
+   if { [ info exists audace ] == "1" } {
+      if { [ winfo exists .main ] } {
+         if { [ winfo exists .second ] } {
+            destroy .second
+         }
+         destroy .main
+      }
+      cd [ file join $audace(rep_audela) ]
+   } else {
+      destroy .
+      exit
+   }
 }
 

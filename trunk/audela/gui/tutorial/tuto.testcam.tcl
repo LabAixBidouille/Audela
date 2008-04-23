@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.testcam.tcl,v 1.5 2007-12-28 11:37:10 robertdelmas Exp $
+# Mise a jour $Id: tuto.testcam.tcl,v 1.6 2008-04-23 21:03:53 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -8,27 +8,27 @@
 
 proc caption_def_firstdark { langage } {
    global texte caption
-#--- definition of captions
-if {[string compare $langage english] ==0 } {
-  set caption(main_title) "Snapshot:  First Steps in the CCD World"
-  set caption(description) "Push the red button to shoot a dark frame of"
-  set caption(go) "START"
-  set caption(wait) "Wait..."
-  set caption(compute) "Compute..."
-  set caption(exit) "Exit"
-  set caption(thermlevel) "Thermal Level ="
-  set caption(max_zero) "Connection Problem"
-  set caption(satured) "Some pixels are saturated"
-  set caption(maxdark) "Maximum Value ="
+   #--- definition of captions
+   if {[string compare $langage english] ==0 } {
+      set caption(main_title) "Snapshot:  First Steps in the CCD World"
+      set caption(description) "Push the red button to shoot a dark frame of"
+      set caption(go) "START"
+      set caption(wait) "Wait..."
+      set caption(compute) "Compute..."
+      set caption(exit) "Exit"
+      set caption(thermlevel) "Thermal Level ="
+      set caption(max_zero) "Connection Problem"
+      set caption(satured) "Some pixels are saturated"
+      set caption(maxdark) "Maximum Value ="
 
-  set caption(set0) "Set 0"
-  set caption(set255) "Set 255"
-  set caption(test) "Test"
-  set caption(test2) "Test2"
+      set caption(set0) "Set 0"
+      set caption(set255) "Set 255"
+      set caption(test) "Test"
+      set caption(test2) "Test2"
 
-  set texte(testcam_1) "CCD Imagery for Beginners"
-  set texte(testcam_2) "Electronic Tests for Audine"
-  set texte(testcam_3) "This series of tests is used to check the Audine camera kit assembly \
+      set texte(testcam_1) "CCD Imagery for Beginners"
+      set texte(testcam_2) "Electronic Tests for Audine"
+      set texte(testcam_3) "This series of tests is used to check the Audine camera kit assembly \
 without CCD chip as described in the documentation.\n
 Set 0\n
 This test enables you to perform the following settings:
@@ -44,17 +44,17 @@ the Number parameter.  This test is used to analyze the CCD input signals with a
 Test2 of the Number paramater\n
 This command performs a number of quick reading cycles of the CCD chip.  This test is used to analyze the\
 CCD input signals with an oscilloscope.\n"
-  set texte(testcam_exit) " Return to the main page."
-}
-if {[string compare $langage french] ==0 } {
-  set caption(set0) "Set 0"
-  set caption(set255) "Set 255"
-  set caption(test) "Test"
-  set caption(test2) "Test2"
+      set texte(testcam_exit) " Return to the main page."
+   }
+   if {[string compare $langage french] ==0 } {
+      set caption(set0) "Set 0"
+      set caption(set255) "Set 255"
+      set caption(test) "Test"
+      set caption(test2) "Test2"
 
-  set texte(testcam_1) "Initiation à l'imagerie CCD"
-  set texte(testcam_2) "Tests électroniques pour le kit Audine"
-  set texte(testcam_3) "Cette série de tests est proposée pour vérifier le montage du kit de la caméra Audine \
+      set texte(testcam_1) "Initiation à l'imagerie CCD"
+      set texte(testcam_2) "Tests électroniques pour le kit Audine"
+      set texte(testcam_3) "Cette série de tests est proposée pour vérifier le montage du kit de la caméra Audine \
 sans CCD comme décrit dans la documentation.\n
 Set 0\n
 Ce test permet de faire les réglages suivants :
@@ -70,10 +70,8 @@ paramètre nombre. Ce test est utile pour analyser les signaux d'entrée CCD avec 
 Test2 'nombre'\n
 Cette commande exécute un nombre de cycles de lecture rapide du CCD. Ce test est utile pour analyser les\
 signaux d'entrée CCD avec un oscilloscope.\n"
-
-  set texte(testcam_exit) " Retour à la page principale."
-
-}
+      set texte(testcam_exit) " Retour à la page principale."
+   }
 }
 
 # widget --
@@ -108,7 +106,14 @@ set color(back_image) #000000
 # all of the demos as hypertext items.
 #----------------------------------------------------------------
 
-catch {image1 blank}
+#--- si la fenetre principale existe deja, je la deiconifie et je sors du script
+if { [winfo exists .second] } {
+   wm deiconify .second
+   focus .second
+   return
+}
+
+catch {image100 blank}
 
 toplevel .second -class Toplevel
 wm title .second $texte(tuto_1)
@@ -133,25 +138,25 @@ menu .second.menuBar.file -tearoff 0
 
 # On the Mac use the specia .apple menu for the about item
 if {$::tcl_platform(platform) == "macintosh"} {
-    .second.menuBar add cascade -menu .menuBar.apple
-    menu .second.menuBar.apple -tearoff 0
-    .second.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
+   .second.menuBar add cascade -menu .menuBar.apple
+   menu .second.menuBar.apple -tearoff 0
+   .second.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
 } else {
-    .second.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
-       -underline 0 -accelerator "<F1>"
-    .second.menuBar.file add sep
+   .second.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
+      -underline 0 -accelerator "<F1>"
+   .second.menuBar.file add sep
 }
 
 .second.menuBar.file add command -label $caption(tuto_quit) -command "exit" -underline 0 \
-    -accelerator "Meta-Q"
+   -accelerator "Meta-Q"
 .second configure -menu .second.menuBar
 bind .second <F1> aboutBox
 
 frame .second.statusBar
 label .second.statusBar.lab -text "   " -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 label .second.statusBar.foo -width 8 -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
@@ -237,11 +242,11 @@ pack .second.second.frame_test2.optionmenu1 -side left -in .second.second.frame_
 frame .second.textFrame
 pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
-    -takefocus 1
+   -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
 text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
+#   -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -256,57 +261,54 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-       -underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-       -underline 1
-    .second.t tag configure hot -background black -foreground white
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure hot -background black -foreground white
 } else {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-       -foreground blue -underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-       -foreground #303080 -underline 1
-    .second.t tag configure hot -foreground red -underline 1
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -foreground blue -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -foreground #303080 -underline 1
+   .second.t tag configure hot -foreground red -underline 1
 }
 .second.t tag bind demo <ButtonRelease-1> {
-    invoke [.second.t index {@%x,%y}] .second
+   invoke [.second.t index {@%x,%y}] .second
 }
 set lastLine ""
 .second.t tag bind demo <Enter> {
-    set lastLine [.second.t index {@%x,%y linestart}]
-    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-    .second.t config -cursor hand2
-    #showStatus [.second.t index {@%x,%y}]
+   set lastLine [.second.t index {@%x,%y linestart}]
+   .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+   .second.t config -cursor hand2
+   #showStatus [.second.t index {@%x,%y}]
 }
 .second.t tag bind demo <Leave> {
-    .second.t tag remove hot 1.0 end
-    .second.t config -cursor xterm
-    .second.statusBar.lab config -text ""
+   .second.t tag remove hot 1.0 end
+   .second.t config -cursor xterm
+   .second.statusBar.lab config -text ""
 }
 .second.t tag bind demo <Motion> {
-    set newLine [.second.t index {@%x,%y linestart}]
-    if {[string compare $newLine $lastLine] != 0} {
-       .second.t tag remove hot 1.0 end
-       set lastLine $newLine
+   set newLine [.second.t index {@%x,%y linestart}]
+   if {[string compare $newLine $lastLine] != 0} {
+      .second.t tag remove hot 1.0 end
+      set lastLine $newLine
 
-       set tags [.second.t tag names {@%x,%y}]
-       set i [lsearch -glob $tags demo-*]
-       if {$i >= 0} {
-          .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-       }
-    }
-    #showStatus [.second.t index {@%x,%y}]
+      set tags [.second.t tag names {@%x,%y}]
+      set i [lsearch -glob $tags demo-*]
+      if {$i >= 0} {
+        .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+      }
+   }
+   #showStatus [.second.t index {@%x,%y}]
 }
 
 # Create the text for the text widget.
 
-
 # ====================
 # === Setting text ===
 # ====================
-
 
 .second.t insert end "$texte(testcam_1)\n" title
 .second.t insert end "$texte(testcam_2)\n\n" title
@@ -324,3 +326,4 @@ bind .second <Destroy> {
    wm deiconify .main
    destroy .second
 }
+

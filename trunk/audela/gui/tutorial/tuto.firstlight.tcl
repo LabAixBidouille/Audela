@@ -1,5 +1,5 @@
 #
-# Mise a jour $Id: tuto.firstlight.tcl,v 1.5 2007-12-28 11:37:09 robertdelmas Exp $
+# Mise a jour $Id: tuto.firstlight.tcl,v 1.6 2008-04-23 21:01:38 robertdelmas Exp $
 #
 
 #!/bin/sh
@@ -8,47 +8,46 @@
 
 proc caption_def_firstlight { langage } {
    global texte caption
-#--- definition of captions
-if {[string compare $langage english] ==0 } {
-  set caption(main_title) "Snapshot:  First Steps in the CCD World"
-  set caption(description) "Push the red button to shoot an image of"
-  set caption(go) "START"
-  set caption(wait) "Wait..."
-  set caption(compute) "Compute..."
-  set caption(exit) "Exit"
-  set caption(max_zero) "Connection Problem"
-  set caption(satured) "Some pixels are saturated"
-  set caption(maxlight) "Maximum Value ="
-  set caption(lowlevel) "Low Level ="
-  set caption(highlevel) "High Level ="
+   #--- definition of captions
+   if {[string compare $langage english] ==0 } {
+      set caption(main_title) "Snapshot:  First Steps in the CCD World"
+      set caption(description) "Push the red button to shoot an image of"
+      set caption(go) "START"
+      set caption(wait) "Wait..."
+      set caption(compute) "Compute..."
+      set caption(exit) "Exit"
+      set caption(max_zero) "Connection Problem"
+      set caption(satured) "Some pixels are saturated"
+      set caption(maxlight) "Maximum Value ="
+      set caption(lowlevel) "Low Level ="
+      set caption(highlevel) "High Level ="
 
-  set texte(firstlight_1) "CCD Imagery for Beginners"
-  set texte(firstlight_2) "First Image with Camera Uncooled"
-  set texte(firstlight_3) "Install your CCD equipment (camera linked to the computer) in a dark room.  The best is to do that during the night while the room you are in is only illuminated by the computer screen.  The camera is not cooled.\n
+      set texte(firstlight_1) "CCD Imagery for Beginners"
+      set texte(firstlight_2) "First Image with Camera Uncooled"
+      set texte(firstlight_3) "Install your CCD equipment (camera linked to the computer) in a dark room.  The best is to do that during the night while the room you are in is only illuminated by the computer screen.  The camera is not cooled.\n
 Click on the red button $caption(go) to shoot an image.\n"
-  set texte(firstlight_exit) " Return to the Main Page."
-}
-if {[string compare $langage french] ==0 } {
-  set caption(main_title) "Snapshot : Premiers pas dans le monde du CCD"
-  set caption(description) "Appuyer sur le bouton rouge pour faire une image de"
-  set caption(go) "DEMARRER"
-  set caption(wait) "En cours..."
-  set caption(compute) "Analyse..."
-  set caption(exit) "Quitter"
-  set caption(thermlevel) "Niveau thermique ="
-  set caption(max_zero) "Problème de connexion"
-  set caption(satured) "Des pixels sont saturés"
-  set caption(maxlight) "Valeur maximum ="
-  set caption(lowlevel) "Niveau bas ="
-  set caption(highlevel) "Niveau haut ="
+      set texte(firstlight_exit) " Return to the Main Page."
+   }
+   if {[string compare $langage french] ==0 } {
+      set caption(main_title) "Snapshot : Premiers pas dans le monde du CCD"
+      set caption(description) "Appuyer sur le bouton rouge pour faire une image de"
+      set caption(go) "DEMARRER"
+      set caption(wait) "En cours..."
+      set caption(compute) "Analyse..."
+      set caption(exit) "Quitter"
+      set caption(thermlevel) "Niveau thermique ="
+      set caption(max_zero) "Problème de connexion"
+      set caption(satured) "Des pixels sont saturés"
+      set caption(maxlight) "Valeur maximum ="
+      set caption(lowlevel) "Niveau bas ="
+      set caption(highlevel) "Niveau haut ="
 
-  set texte(firstlight_1) "Initiation à l'imagerie CCD"
-  set texte(firstlight_2) "Première lumière, caméra non-refroidie"
-  set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur l'ordinateur) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur. La caméra n'est pas refroidie.\n
+      set texte(firstlight_1) "Initiation à l'imagerie CCD"
+      set texte(firstlight_2) "Première lumière, caméra non-refroidie"
+      set texte(firstlight_3) "Installer votre matériel d'acquisition CCD (caméra branchée sur l'ordinateur) dans une pièce faiblement éclairée. Le mieux est de procéder pendant la nuit dans une pièce éclairée par l'écran de l'ordinateur. La caméra n'est pas refroidie.\n
 Cliquer sur le bouton rouge $caption(go) pour faire une image.\n"
-  set texte(firstlight_exit) " Retour à la page principale."
-
-}
+      set texte(firstlight_exit) " Retour à la page principale."
+   }
 }
 
 # widget --
@@ -68,7 +67,6 @@ global caption   # texts of captions
 global texte     # texts of text aeras
 global zone      # window name of usefull screen parts
 
-
 caption_def_firstlight $langage
 
 #--- definition of colors
@@ -77,14 +75,20 @@ set color(go)         #FF0000
 set color(text)       #0000FF
 set color(back_image) #000000
 
-
 #----------------------------------------------------------------
 # The code below creates the main window, consisting of a menu bar
 # and a text widget that explains how to use the program, plus lists
 # all of the demos as hypertext items.
 #----------------------------------------------------------------
 
-catch {image1 blank}
+#--- si la fenetre principale existe deja, je la deiconifie et je sors du script
+if { [winfo exists .second] } {
+   wm deiconify .second
+   focus .second
+   return
+}
+
+catch {image100 blank}
 
 toplevel .second -class Toplevel
 wm title .second $texte(tuto_1)
@@ -109,25 +113,25 @@ menu .second.menuBar.file -tearoff 0
 
 # On the Mac use the specia .apple menu for the about item
 if {$::tcl_platform(platform) == "macintosh"} {
-    .second.menuBar add cascade -menu .menuBar.apple
-    menu .second.menuBar.apple -tearoff 0
-    .second.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
+   .second.menuBar add cascade -menu .menuBar.apple
+   menu .second.menuBar.apple -tearoff 0
+   .second.menuBar.apple add command -label $caption(tuto_about) -command "aboutBox"
 } else {
-    .second.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
-       -underline 0 -accelerator "<F1>"
-    .second.menuBar.file add sep
+   .second.menuBar.file add command -label $caption(tuto_about) -command "aboutBox" \
+      -underline 0 -accelerator "<F1>"
+   .second.menuBar.file add sep
 }
 
 .second.menuBar.file add command -label $caption(tuto_quit) -command "exit" -underline 0 \
-    -accelerator "Meta-Q"
+   -accelerator "Meta-Q"
 .second configure -menu .second.menuBar
 bind .second <F1> aboutBox
 
 frame .second.statusBar
 label .second.statusBar.lab -text "   " -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 label .second.statusBar.foo -width 8 -relief sunken -bd 1 \
-    -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
+   -font -*-Helvetica-Medium-R-Normal--*-120-*-*-*-*-*-* -anchor w
 pack .second.statusBar.lab -side left -padx 2 -expand yes -fill both
 pack .second.statusBar.foo -side left -padx 2
 pack .second.statusBar -side bottom -fill x -pady 2
@@ -198,18 +202,18 @@ pack .second.snap.frame2 -in .second.snap -expand 1 -fill x -side top -anchor ce
 # === Setting the astronomical devices ===
 # ========================================
 #--- create a widget image in a canvas to display that of the visu space
-$zone(image1) create image 1 1 -image image1 -anchor nw -tag img1
+$zone(image1) create image 1 1 -image image100 -anchor nw -tag img1
 
 #
 
 frame .second.textFrame
 pack .second.textFrame -expand yes -fill both
 scrollbar .second.s -orient vertical -command {.second.t yview} -highlightthickness 0 \
-    -takefocus 1
+   -takefocus 1
 pack .second.s -in .second.textFrame -side right -fill y
 text .second.t -yscrollcommand {.second.s set} -wrap word -font $font
 #\
-#    -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
+#   -setgrid 1 -highlightthickness 0 -padx 4 -pady 2 -takefocus 0
 pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 
 # Create a bunch of tags to use in the text widget, such as those for
@@ -224,57 +228,54 @@ pack .second.t -in .second.textFrame -expand yes -fill both -padx 1
 #
 .second.t tag configure demospace -lmargin1 1c -lmargin2 1c
 
-
 if {[winfo depth .second] == 1} {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-       -underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-       -underline 1
-    .second.t tag configure hot -background black -foreground white
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -underline 1
+   .second.t tag configure hot -background black -foreground white
 } else {
-    .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
-       -foreground blue -underline 1
-    .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
-       -foreground #303080 -underline 1
-    .second.t tag configure hot -foreground red -underline 1
+   .second.t tag configure demo -lmargin1 1c -lmargin2 1c \
+      -foreground blue -underline 1
+   .second.t tag configure visited -lmargin1 1c -lmargin2 1c \
+      -foreground #303080 -underline 1
+   .second.t tag configure hot -foreground red -underline 1
 }
 .second.t tag bind demo <ButtonRelease-1> {
-    invoke [.second.t index {@%x,%y}] .second
+   invoke [.second.t index {@%x,%y}] .second
 }
 set lastLine ""
 .second.t tag bind demo <Enter> {
-    set lastLine [.second.t index {@%x,%y linestart}]
-    .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-    .second.t config -cursor hand2
-    #showStatus [.second.t index {@%x,%y}]
+   set lastLine [.second.t index {@%x,%y linestart}]
+   .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+   .second.t config -cursor hand2
+   #showStatus [.second.t index {@%x,%y}]
 }
 .second.t tag bind demo <Leave> {
-    .second.t tag remove hot 1.0 end
-    .second.t config -cursor xterm
-    .second.statusBar.lab config -text ""
+   .second.t tag remove hot 1.0 end
+   .second.t config -cursor xterm
+   .second.statusBar.lab config -text ""
 }
 .second.t tag bind demo <Motion> {
-    set newLine [.second.t index {@%x,%y linestart}]
-    if {[string compare $newLine $lastLine] != 0} {
-       .second.t tag remove hot 1.0 end
-       set lastLine $newLine
+   set newLine [.second.t index {@%x,%y linestart}]
+   if {[string compare $newLine $lastLine] != 0} {
+      .second.t tag remove hot 1.0 end
+      set lastLine $newLine
 
-       set tags [.second.t tag names {@%x,%y}]
-       set i [lsearch -glob $tags demo-*]
-       if {$i >= 0} {
-          .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
-       }
-    }
-    #showStatus [.second.t index {@%x,%y}]
+      set tags [.second.t tag names {@%x,%y}]
+      set i [lsearch -glob $tags demo-*]
+      if {$i >= 0} {
+         .second.t tag add hot "$lastLine +1 chars" "$lastLine lineend -1 chars"
+      }
+   }
+   #showStatus [.second.t index {@%x,%y}]
 }
 
 # Create the text for the text widget.
 
-
 # ====================
 # === Setting text ===
 # ====================
-
 
 .second.t insert end "$texte(firstlight_1)\n" title
 .second.t insert end "$texte(firstlight_2)\n\n" title
@@ -318,7 +319,7 @@ proc acquisition_firstlight {exposure} {
    cam$num(cam1) acq
    vwait status_cam$num(cam1)
 
-   #--- Change the red button text
+  #--- Change the red button text
    $zone(red_button) configure -text $caption(compute) -relief groove
    update
 
@@ -343,3 +344,4 @@ proc acquisition_firstlight {exposure} {
    $zone(red_button) configure -text $caption(go) -relief raised
 
 }
+
