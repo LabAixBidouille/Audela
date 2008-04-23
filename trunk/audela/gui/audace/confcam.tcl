@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.111 2008-04-22 17:57:06 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.112 2008-04-23 17:36:51 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -383,53 +383,53 @@ proc ::confCam::createDialog { } {
 proc ::confCam::createThread { camItem bufNo } {
    variable private
 
-   set ::tcl_platform(threaded) 0
+   ###set ::tcl_platform(threaded) 1
    #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
    set camNo $private($camItem,camNo)
    if { $::tcl_platform(threaded)==1 } {
-         #--- creation dun nouvelle thread
-         set threadNo [thread::create ]
-         #--- je copie la commande de la camera dans la thread de la camera
-         ::thread::copycommand $threadNo "cam$camNo"
-         #--- je copie la commande du buffer dans la thread de la camera
-         ::thread::copycommand $threadNo "buf$bufNo"
-         ::thread::copycommand $threadNo "ttscript2"
-         #--- J'ajoute la commande de liaison longue pose
-         if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
-            if { [cam$camNo longueposelinkno] != 0} {
-               thread::copycommand $threadNo "link[cam$camNo longueposelinkno]"
-            }
+      #--- creation dun nouvelle thread
+      set threadNo [thread::create ]
+      #--- je copie la commande de la camera dans la thread de la camera
+      ::thread::copycommand $threadNo "cam$camNo"
+      #--- je copie la commande du buffer dans la thread de la camera
+      ::thread::copycommand $threadNo "buf$bufNo"
+      ::thread::copycommand $threadNo "ttscript2"
+      #--- J'ajoute la commande de liaison longue pose
+      if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
+         if { [cam$camNo longueposelinkno] != 0} {
+            thread::copycommand $threadNo "link[cam$camNo longueposelinkno]"
          }
-         #--- je charge camerathread.tcl dans l'intepreteur de la thread de la camera
-         ::thread::send $threadNo  "uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\""
-         ::thread::send $threadNo "::camerathread::init $camItem $camNo [thread::id]"
+      }
+      #--- je charge camerathread.tcl dans l'intepreteur de la thread de la camera
+      ::thread::send $threadNo  [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
+      ::thread::send $threadNo "::camerathread::init $camItem $camNo [thread::id]"
    } else {
-         #--- creation d'un interpreteur esclave
-         set threadNo [interp create ]
-         $threadNo alias "::console::disp" "::console::disp"
-         $threadNo alias ::camera::addCameraEvent ::camera::addCameraEvent
-         $threadNo alias ttscript2 ttscript2
-         #--- je copie la commande de la camera dans la thread de la camera
-         copycommand $threadNo "cam$camNo"
-         #--- je copie la commande du buffer dans la thread de la camera
-         copycommand $threadNo "buf$bufNo"
-         #--- J'ajoute la commande de liaison longue pose
-         if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
-            if { [cam$camNo longueposelinkno] != 0} {
-               copycommand $threadNo "link[cam$camNo longueposelinkno]"
-            }
+      #--- creation d'un interpreteur esclave
+      set threadNo [interp create ]
+      $threadNo alias "::console::disp" "::console::disp"
+      $threadNo alias ::camera::addCameraEvent ::camera::addCameraEvent
+      $threadNo alias ttscript2 ttscript2
+      #--- je copie la commande de la camera dans la thread de la camera
+      copycommand $threadNo "cam$camNo"
+      #--- je copie la commande du buffer dans la thread de la camera
+      copycommand $threadNo "buf$bufNo"
+      #--- J'ajoute la commande de liaison longue pose
+      if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
+         if { [cam$camNo longueposelinkno] != 0} {
+            copycommand $threadNo "link[cam$camNo longueposelinkno]"
          }
-         #--- je charge  camerathread.tcl dans l'intepreteur esclave
-         interp eval $threadNo uplevel #0 source "[file join $::audace(rep_audela) audace camerathread.tcl]"
-         interp eval $threadNo ::camerathread::init $camItem $camNo "0"
+      }
+      #--- je charge  camerathread.tcl dans l'intepreteur esclave
+      interp eval $threadNo [list uplevel #0 source \"[file join $::audace(rep_audela) audace camerathread.tcl]\"]
+      interp eval $threadNo ::camerathread::init $camItem $camNo "0"
    }
    return $threadNo
 }
 
-#
-# ::confCam::deleteThread
+#------------------------------------------------------------
+# deleteThread
 # Supprime la thread de la camera
-#
+#------------------------------------------------------------
 proc ::confCam::deleteThread { camItem } {
    variable private
 
@@ -538,7 +538,7 @@ proc ::confCam::onRaiseNotebook { camName } {
 }
 
 #----------------------------------------------------------------------------
-# ::confCam::setMount
+# setMount
 #   ajoute la commende tel$telNo dans l'interpreteur de la camera
 #----------------------------------------------------------------------------
 proc ::confCam::setMount { camItem telNo } {
@@ -557,7 +557,7 @@ proc ::confCam::setMount { camItem telNo } {
 }
 
 #----------------------------------------------------------------------------
-# ::confCam::setShutter
+# setShutter
 # change l'etat de l'obturateur de la camera
 #
 # parametres :
@@ -597,7 +597,7 @@ proc ::confCam::setShutter { camItem shutterState  { mode "increment" } } {
 }
 
 #----------------------------------------------------------------------------
-# ::confCam::stopItem
+# stopItem
 # Arrete la camera camItem
 #------------------------------------------------------------
 proc ::confCam::stopItem { camItem } {
@@ -1063,7 +1063,7 @@ proc ::confCam::addCameraListener { camItem cmd } {
 }
 
 #------------------------------------------------------------
-# ::confCam::removeCameraListener
+# removeCameraListener
 # supprime une procedure a appeler si on change de camera
 #
 # parametres :
