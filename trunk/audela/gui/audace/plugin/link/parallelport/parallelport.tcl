@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.17 2007-12-04 22:42:50 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.18 2008-04-23 21:18:49 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -178,23 +178,55 @@ proc ::parallelport::deletePluginInstance { linkLabel deviceId usage } {
 #------------------------------------------------------------
 proc ::parallelport::fillConfigPage { frm } {
    variable private
-   global caption
+   global audace caption
 
    #--- Je memorise la reference de la frame
    set private(frm) $frm
 
-   #--- J'affiche la liste des links
+   #--- J'affiche la liste des links et le bouton pour rafraichir cette liste
    TitleFrame $frm.available -borderwidth 2 -relief ridge -text $caption(parallelport,available)
 
       listbox $frm.available.list
       pack $frm.available.list -in [$frm.available getframe] -side left -fill both -expand true
 
-   pack $frm.available -side left -fill both -expand true
+      Button $frm.available.refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
+         -text "$caption(parallelport,refresh)" -command { ::parallelport::refreshAvailableList }
+      pack $frm.available.refresh -in [$frm.available getframe] -side left
 
-   #--- J'affiche le bouton pour rafraichir la liste des links
-   Button $frm.refresh -highlightthickness 0 -padx 10 -pady 3 -state normal \
-      -text "$caption(parallelport,refresh)" -command { ::parallelport::refreshAvailableList }
-   pack $frm.refresh -side left
+   pack $frm.available -side top -fill both -expand true
+
+   #--- J'affiche les labels et le bouton associe au message Porttalk
+   frame $frm.porttalk -borderwidth 0 -relief raised
+
+      label $frm.porttalk.lab1 -text "$caption(parallelport,texte)"
+      pack $frm.porttalk.lab1 -in $frm.porttalk -side top -anchor w -padx 5 -pady 5
+
+      if { $::tcl_platform(os) == "Windows NT" } {
+         label $frm.porttalk.lab2 -anchor nw -highlightthickness 0 -text "$caption(parallelport,porttalk)" -padx 0 -pady 0
+         pack $frm.porttalk.lab2 -in $frm.porttalk -side left -padx 40 -pady 5
+
+         if { [ file exist [ file join $audace(rep_install) bin allowio.txt ] ] } {
+            button $frm.porttalk.but -text "$caption(parallelport,non)" -relief raised -state normal -command {
+               #--- Acces au message d'erreur Porttalk au prochain demarrage
+               catch {
+                  file delete [ file join $audace(rep_install) bin allowio.txt ]
+               }
+               ::confLink::fermer
+               ::confLink::run
+            }
+            pack $frm.porttalk.but -in $frm.porttalk -side left -padx 0 -pady 5 -ipadx 5 -ipady 5
+         } else {
+            button $frm.porttalk.but -text "$caption(parallelport,oui)" -relief raised -state normal -command {
+               set f [ open "[ file join $audace(rep_install) bin allowio.txt ]" w ]
+               close $f
+               ::confLink::fermer
+               ::confLink::run
+            }
+            pack $frm.porttalk.but -in $frm.porttalk -side left -padx 0 -pady 5 -ipadx 5 -ipady 5
+         }
+      }
+
+   pack $frm.porttalk -side top -fill x
 
    #--- Je mets a jour la liste
    refreshAvailableList
