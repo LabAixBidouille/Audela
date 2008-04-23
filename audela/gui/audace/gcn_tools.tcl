@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.2 2007-04-01 21:22:53 robertdelmas Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.3 2008-04-23 13:22:25 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -157,12 +157,13 @@ proc gcn_print { msg } {
    if {[info commands ::console::affiche_resultat]=="::console::affiche_resultat"} {
       ::console::affiche_resultat "$msg\n"
    } else {
-      gren_info "$msg"
+      #gren_info "$msg"
    }
 }
 
 proc gcn_decode { longs } {
    global gcn
+   global ros
    set errno [catch {
       # --- reinit gcn array
       set comments ""
@@ -345,6 +346,8 @@ proc gcn_decode { longs } {
             close $f
          }
       }
+      # --- use by ROS
+      catch { source $ros(root,ros)/src/majordome/gcn.tcl }
       # --- infos
       set items [array names gcn]
       set comments ""
@@ -432,6 +435,7 @@ proc gcn_pkt_indices { } {
 }
 
 proc gcn_pkt_type { pkt_type } {
+	# http://gcn.gsfc.nasa.gov/sock_pkt_def_doc.html
    set lignes {
       1       BATSE_ORIGINAL    NO LONGER AVAILABLE
       2       Test
@@ -583,7 +587,7 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type==126)||($pkt_type==83)||($pkt_type==51)} {
       set prompt 0
    }
-   if {($pkt_type==111)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)} {
+   if {($pkt_type==110)||($pkt_type==111)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)} {
       set prompt 1
    }
    if {($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)} {
