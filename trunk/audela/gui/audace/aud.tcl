@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.84 2008-04-18 21:43:24 robertdelmas Exp $
+# Mise a jour $Id: aud.tcl,v 1.85 2008-04-23 21:12:15 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -183,7 +183,7 @@ namespace eval ::audace {
       uplevel #0 "source \"[ file join $audace(rep_audela) audace keyword.tcl ]\""
 
       #---
-      set audace(rep_audela) [pwd]
+      set audace(rep_audela) "[pwd]"
 
       #--- On utilise les valeurs contenues dans le tableau conf pour l'initialisation
       set confgene(temps,hsysteme)         [ lindex "$caption(audace,temps_heurelegale) $caption(audace,temps_universel)" "$conf(temps,hsysteme)" ]
@@ -299,7 +299,7 @@ namespace eval ::audace {
    # Recherche d'un fichier dans un repertoire donnee
    #
    proc fichierPresent { fichier repertoire } {
-      set repertCourant [pwd]
+      set repertCourant "[pwd]"
       if { [ catch { cd $repertoire } erreur ] } {
          puts stderr $erreur
          return
@@ -550,7 +550,7 @@ namespace eval ::audace {
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,editer_script)..." ::audace::editScript
       Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,lancer_script)..." ::audace::runScript
       Menu_Separator $visuNo "$caption(audace,menu,fichier)"
-      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" "::audace::quitter"
+      Menu_Command   $visuNo "$caption(audace,menu,fichier)" "$caption(audace,menu,quitter)" ::audace::quitter
 
       Menu           $visuNo "$caption(audace,menu,affichage)"
       Menu_Command   $visuNo "$caption(audace,menu,affichage)" "$caption(audace,menu,nouvelle_visu)" ::confVisu::create
@@ -616,8 +616,7 @@ namespace eval ::audace {
             } \
          "
       Menu_Separator $visuNo "$caption(audace,menu,affichage)"
-      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[ ::Crosshair::getLabel ]..." \
-              "::Crosshair::run $visuNo"
+      Menu_Command   $visuNo "$caption(audace,menu,affichage)" "[ ::Crosshair::getLabel ]..." "::Crosshair::run $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,miroir_x)" {
@@ -741,8 +740,8 @@ namespace eval ::audace {
          { ::confChoixOutil::run "$audace(base).confChoixOutil" }
 
       Menu           $visuNo "$caption(audace,menu,configuration)"
-      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,general)..." \
-         { ::confGeneral::run "$audace(base).confGeneral" }
+      Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,langue)..." \
+         { ::confLangue::run "$audace(base).confLangue" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,repertoire)..." \
          { ::cwdWindow::run "$audace(base).cwdWindow" }
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,editeur)..." \
@@ -777,13 +776,15 @@ namespace eval ::audace {
          "::confCat::run"
       Menu_Separator $visuNo "$caption(audace,menu,configuration)"
       Menu_Command   $visuNo "$caption(audace,menu,configuration)" "$caption(audace,menu,sauve_config)" \
-         " ::audace::enregistrerConfiguration $visuNo "
+         "::audace::enregistrerConfiguration $visuNo"
 
       Menu           $visuNo "$caption(audace,menu,aide)"
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,sommaire)" \
          ::audace::showMain
       Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,fonctions)" \
          ::audace::showFunctions
+      Menu_Command   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,tutorial)" \
+         { cd [ file join $audace(rep_audela) ] ; cd ../gui/tutorial ; source tuto.tcl }
       Menu_Cascade   $visuNo "$caption(audace,menu,aide)" "$caption(audace,menu,site_audela)"
       Menu_Command   $visuNo "$caption(audace,menu,site_audela)" "$caption(audace,menu,site_internet)" {
          set filename "$caption(en-tete,a_propos_de_site)" ; ::audace::Lance_Site_htm $filename }
