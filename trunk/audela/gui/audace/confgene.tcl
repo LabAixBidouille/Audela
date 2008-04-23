@@ -1,11 +1,11 @@
 #
 # Fichier : confgene.tcl
-# Description : Configuration generale d'AudeLA et d'Aud'ACE (general, editeurs, repertoires, position
+# Description : Configuration generale d'AudeLA et d'Aud'ACE (langage, editeurs, repertoires, position
 #               de l'observateur, temps (heure systeme ou TU), fichiers image, alarme sonore de fin de
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.40 2008-04-22 22:10:06 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.41 2008-04-23 21:25:27 robertdelmas Exp $
 #
 
 #
@@ -2071,15 +2071,14 @@ namespace eval confTypeFenetre {
 }
 
 #
-# General
-# Description : Configuration generale pour l'acces au choix des langues, au tutorial et au message
-# d'erreur genere lors de l'installation de Porttalk s'il y a eu un probleme
+# Langage
+# Description : Configuration pour le choix des langues
 #
 
-namespace eval confGeneral {
+namespace eval confLangue {
 
    #
-   # confGeneral::run this
+   # confLangue::run this
    # Cree la fenetre de configuration
    # this = chemin de la fenetre
    #
@@ -2092,7 +2091,7 @@ namespace eval confGeneral {
    }
 
    #
-   # confGeneral::fermer
+   # confLangue::fermer
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc fermer { } {
@@ -2102,14 +2101,14 @@ namespace eval confGeneral {
    }
 
    #
-   # confGeneral::afficheAide
+   # confLangue::afficheAide
    # Fonction appellee lors de l'appui sur le bouton 'Aide'
    #
    proc afficheAide { } {
       global help
 
       #---
-      ::audace::showHelpItem "$help(dir,config)" "1010general.htm"
+      ::audace::showHelpItem "$help(dir,config)" "1010langue.htm"
    }
 
    proc createDialog { } {
@@ -2127,7 +2126,7 @@ namespace eval confGeneral {
       toplevel $This -class Toplevel
       wm geometry $This +180+50
       wm resizable $This 0 0
-      wm title $This $caption(confgene,general_titre)
+      wm title $This $caption(confgene,langue_titre)
 
       #--- Creation des differents frames
       frame $This.frame1 -borderwidth 1 -relief raised
@@ -2142,96 +2141,42 @@ namespace eval confGeneral {
       frame $This.frame4 -borderwidth 0
       pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
 
-      frame $This.frame5 -borderwidth 0
-      pack $This.frame5 -in $This.frame1 -side top -fill both -expand 1
-
-      frame $This.frame6 -borderwidth 0
-      pack $This.frame6 -in $This.frame1 -side top -fill both -expand 1
-
       #--- Cree le label pour les commentaires
-      label $This.lab1 -text "$caption(confgene,general_texte)"
+      label $This.lab1 -text "$caption(confgene,langue_texte)"
       pack $This.lab1 -in $This.frame3 -side top -anchor w -padx 5 -pady 5
 
       #--- Cree les boutons et les labels pour permettre le choix
-      label $This.lab2 -anchor nw -highlightthickness 0 -text "$caption(confgene,general_langues)" -padx 0 -pady 0
+      label $This.lab2 -anchor nw -highlightthickness 0 -text "$caption(confgene,langue_langues)" -padx 0 -pady 0
       pack $This.lab2 -in $This.frame4 -side left -padx 20 -pady 5
 
       if { [ file exist [ file join $audace(rep_install) bin audace.txt ] ] } {
-         button $This.but1 -text "$caption(confgene,general_non)" -relief raised -state normal -command {
+         button $This.but1 -text "$caption(confgene,langue_non)" -relief raised -state normal -command {
             #--- Acces au choix des langue et au tutorial au prochain demarrage
             catch {
                file delete [ file join $audace(rep_install) bin audace.txt ]
             }
-            ::confGeneral::fermer
-            ::confGeneral::run "$audace(base).confGeneral"
+            ::confLangue::fermer
+            ::confLangue::run "$audace(base).confLangue"
          }
          pack $This.but1 -in $This.frame4 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
       } else {
-         button $This.but1 -text "$caption(confgene,general_oui)" -relief raised -state normal -command {
+         button $This.but1 -text "$caption(confgene,langue_oui)" -relief raised -state normal -command {
             set f [ open "[ file join $audace(rep_install) bin audace.txt ]" w ]
             close $f
-            ::confGeneral::fermer
-            ::confGeneral::run "$audace(base).confGeneral"
+            ::confLangue::fermer
+            ::confLangue::run "$audace(base).confLangue"
          }
          pack $This.but1 -in $This.frame4 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
-      }
-
-      label $This.lab3 -anchor nw -highlightthickness 0 -text "$caption(confgene,general_tutorial)" -padx 0 -pady 0
-      pack $This.lab3 -in $This.frame5 -side left -padx 20 -pady 5
-
-      if { [ file exist [ file join $audace(rep_install) bin audace.txt ] ] } {
-         button $This.but2 -text "$caption(confgene,general_non)" -relief raised -state normal -command {
-            #--- Acces au choix des langue et au tutorial au prochain demarrage
-            catch {
-               file delete [ file join $audace(rep_install) bin audace.txt ]
-            }
-            ::confGeneral::fermer
-            ::confGeneral::run "$audace(base).confGeneral"
-         }
-         pack $This.but2 -in $This.frame5 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
-      } else {
-         button $This.but2 -text "$caption(confgene,general_oui)" -relief raised -state normal -command {
-            set f [ open "[ file join $audace(rep_install) bin audace.txt ]" w ]
-            close $f
-            ::confGeneral::fermer
-            ::confGeneral::run "$audace(base).confGeneral"
-         }
-         pack $This.but2 -in $This.frame5 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
-      }
-
-      if { $::tcl_platform(os) == "Windows NT" } {
-         label $This.lab4 -anchor nw -highlightthickness 0 -text "$caption(confgene,general_porttalk)" -padx 0 -pady 0
-         pack $This.lab4 -in $This.frame6 -side left -padx 20 -pady 5
-
-         if { [ file exist [ file join $audace(rep_install) bin allowio.txt ] ] } {
-            button $This.but3 -text "$caption(confgene,general_non)" -relief raised -state normal -command {
-               #--- Acces au message d'erreur Porttalk au prochain demarrage
-               catch {
-                  file delete [ file join $audace(rep_install) bin allowio.txt ]
-               }
-               ::confGeneral::fermer
-               ::confGeneral::run "$audace(base).confGeneral"
-            }
-            pack $This.but3 -in $This.frame6 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
-         } else {
-            button $This.but3 -text "$caption(confgene,general_oui)" -relief raised -state normal -command {
-               set f [ open "[ file join $audace(rep_install) bin allowio.txt ]" w ]
-               close $f
-               ::confGeneral::fermer
-               ::confGeneral::run "$audace(base).confGeneral"
-            }
-            pack $This.but3 -in $This.frame6 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
-         }
       }
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
-         -command { ::confGeneral::fermer }
+         -command { ::confLangue::fermer }
       pack $This.but_fermer -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- Cree le bouton 'Aide'
       button $This.but_aide -text "$caption(confgene,aide)" -width 7 -borderwidth 2 \
-         -command { ::confGeneral::afficheAide }
+         -command { ::confLangue::afficheAide }
       pack $This.but_aide -in $This.frame2 -side right -anchor w -padx 3 -pady 3 -ipady 5
 
       #--- La fenetre est active
