@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.11 2007-08-21 13:53:34 alainklotz Exp $
+# Update $Id: audela.tcl,v 1.12 2008-04-23 21:14:13 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -73,10 +73,10 @@ set langage [basecaption]
 #--- Create the toplevel window
 set base .choice
 toplevel $base -class Toplevel
-wm geometry $base 510x280+10+10
+wm geometry $base 510x220+10+10
 wm focusmodel $base passive
-wm maxsize $base 510 280
-wm minsize $base 510 280
+wm maxsize $base 510 220
+wm minsize $base 510 220
 wm overrideredirect $base 0
 wm resizable $base 1 1
 wm deiconify $base
@@ -135,12 +135,7 @@ label $base.lab1 \
 pack $base.lab1 \
    -in $base -anchor center -expand 1 -fill both -side top
 
-button $base.but1 -text $caption(audela,soft1) -width 12 -font $font -command \
-   { unset caption ; wm withdraw $base ; cd ../gui/tutorial ; source tuto.tcl }
-pack $base.but1 -anchor center -side top -fill x -padx 4 -pady 4 \
-   -in $base -anchor center -expand 1 -fill both -side top
-
-button $base.but2 -text $caption(audela,soft2) -width 12 -font $font -command \
+button $base.but2 -text $caption(audela,soft)  -width 12 -font $font -command \
    { if {$direct==1} { catch { set f [open audace.txt w] ; close $f} } ; unset caption ; wm withdraw $base ; \
      cd ../gui/audace ; source aud.tcl }
 pack $base.but2 -anchor center -side top -fill x -padx 4 -pady 4 \
@@ -191,8 +186,7 @@ while {1==1} {
    wm title $base $caption(audela,main_title)
    $base.fra1.text1 configure -text "$caption(audela,language)"
    $base.lab1 configure -text "$caption(audela,description)"
-   $base.but1 configure -text $caption(audela,soft1)
-   $base.but2 configure -text $caption(audela,soft2)
+   $base.but2 configure -text $caption(audela,soft)
    $base.frame1.but3 configure -text "$caption(audela,launch)"
    $base.frame2.lab1 configure -text "$caption(audela,direct_audace)"
 }
