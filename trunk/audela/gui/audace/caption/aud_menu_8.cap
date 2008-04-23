@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_8.cap
-# Mise a jour $Id: aud_menu_8.cap,v 1.4 2007-01-27 14:30:11 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_8.cap,v 1.5 2008-04-23 21:06:04 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -14,6 +14,7 @@ global caption langage
 set caption(audace,menu,aide)                         "Help"
 set caption(audace,menu,sommaire)                     "Contents"
 set caption(audace,menu,fonctions)                    "Function Index"
+set caption(audace,menu,tutorial)                     "Tutorial"
 set caption(audace,menu,site_audela)                  "Web Site"
 set caption(audace,menu,site_internet)                "Web Site (Internet)"
 set caption(audace,menu,site_dd)                      "Web Site (Hard Disk Copy)"
@@ -30,6 +31,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Aide"
    set caption(audace,menu,sommaire)                  "Sommaire"
    set caption(audace,menu,fonctions)                 "Index des fonctions"
+   set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Site Web"
    set caption(audace,menu,site_internet)             "Site Web (Internet)"
    set caption(audace,menu,site_dd)                   "Site Web (copie sur le disque dur)"
@@ -46,6 +48,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Aiuto"
    set caption(audace,menu,sommaire)                  "Sommario"
    set caption(audace,menu,fonctions)                 "Indice delle funzioni"
+   set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Sito Web"
    set caption(audace,menu,site_internet)             "Sito Web (Internet)"
    set caption(audace,menu,site_dd)                   "Sito Web (copia su hard disk)"
@@ -62,6 +65,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Ayuda"
    set caption(audace,menu,sommaire)                  "Tabla de Contenidos"
    set caption(audace,menu,fonctions)                 "Indice de funciones"
+   set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Sitio Web"
    set caption(audace,menu,site_internet)             "Sitio Web (Internet)"
    set caption(audace,menu,site_dd)                   "Sitio Web (copia de disco duro)"
@@ -78,6 +82,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Hilfe"
    set caption(audace,menu,sommaire)                  "Inhalt"
    set caption(audace,menu,fonctions)                 "Funktionen Register"
+   set caption(audace,menu,tutorial)                  "Abstützung"
    set caption(audace,menu,site_audela)               "Webseite"
    set caption(audace,menu,site_internet)             "Webseite (Internet)"
    set caption(audace,menu,site_dd)                   "Webseite (auf die Festplatte nachbilden)"
@@ -94,6 +99,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Ajuda"
    set caption(audace,menu,sommaire)                  "Conteúdos"
    set caption(audace,menu,fonctions)                 "Indice de funções"
+   set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Site Web"
    set caption(audace,menu,site_internet)             "Site Web (Internet)"
    set caption(audace,menu,site_dd)                   "Site Web (cópia de disco rígido)"
@@ -110,6 +116,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,menu,aide)                      "Hjælp"
    set caption(audace,menu,sommaire)                  "Indhold"
    set caption(audace,menu,fonctions)                 "Funktionsindex"
+   set caption(audace,menu,tutorial)                  "Tutorial"
    set caption(audace,menu,site_audela)               "Hjemmeside"
    set caption(audace,menu,site_internet)             "Hjemmeside (Internet)"
    set caption(audace,menu,site_dd)                   "Hjemmeside (harddisk-kopi)"
