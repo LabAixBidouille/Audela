@@ -89,119 +89,138 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    int argcc,res;
    FILE *f;
 
+	/* -ip 127.0.0.1 -port 1025 -type umac|pmac*/
    tel->tempo=200;
    f=fopen("mouchard_deltatau.txt","wt");
    fclose(f);
-   /* --- decode IP  --- */
-   ip[0] = 192;
-   ip[1] = 168;
-   ip[2] = 10;
-   ip[3] = 46;
+	/* --- decode type (umac by default) ---*/
+	strcpy(s,"umac");
    if (argc >= 1) {
       for (kk = 0; kk < argc; kk++) {
-         if (strcmp(argv[kk], "-ip") == 0) {
+         if (strcmp(argv[kk], "-type") == 0) {
             if ((kk + 1) <= (argc - 1)) {
-               strcpy(ipstring, argv[kk + 1]);
+               strcpy(s, argv[kk + 1]);
             }
          }
       }
    }
-   klen = (int) strlen(ipstring);
-   nbp = 0;
-   for (k = 0; k < klen; k++) {
-      if (ipstring[k] == '.') {
-         nbp++;
-      }
-   }
-   if (nbp == 3) {
-      kdeb = 0;
-      nbp = 0;
-      for (k = 0; k <= klen; k++) {
-         if ((ipstring[k] == '.') || (ipstring[k] == '\0')) {
-            ipstring[k] = '\0';
-            ip[nbp] = (unsigned short) (unsigned char) atoi(ipstring + kdeb);
-            kdeb = k + 1;
-            nbp++;
-         }
-      }
-   }
-   sprintf(tel->ip, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-   f=fopen("mouchard_deltatau.txt","at");
-   fprintf(f,"IP=%s\n",tel->ip);
-   fclose(f);
-   /* --- decode port  --- */
-   tel->port = 1025;
-   if (argc >= 1) {
-      for (kk = 0; kk < argc; kk++) {
-         if (strcmp(argv[kk], "-port") == 0) {
-            if ((kk + 1) <= (argc - 1)) {
-               strcpy(portstring, argv[kk + 1]);
-               tel->port = atoi(portstring);
-            }
-         }
-      }
-   }
-   f=fopen("mouchard_deltatau.txt","at");
-   fprintf(f,"PORT=%d\n",tel->port);
-   fclose(f);
-   /* --- open the port and record the channel name ---*/
-   sprintf(s,"socket \"%s\" \"%d\"",tel->ip,tel->port);
-   //strcpy(s,"open com1 w+");
-   if (mytel_tcleval(tel,s)==1) {
-      strcpy(tel->msg,tel->interp->result);
-      return 1;
-   }
-   strcpy(tel->channel,tel->interp->result);
-   /* --- configuration of the TCP socket ---*/
-   sprintf(s,"fconfigure %s -blocking 0 -buffering none -translation binary -encoding binary -buffersize 50",tel->channel); mytel_tcleval(tel,s);
-   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   /* --- decode init command list --- */
-   Tcl_DStringInit(&dsptr);
-   if (argc >= 1) {
-      for (kk = 0; kk < argc; kk++) {
-         if (strcmp(argv[kk], "-init") == 0) {
-            if ((kk + 1) <= (argc - 1)) {
-               Tcl_DStringAppend(&dsptr,argv[kk + 1],-1);
-            }
-         }
-      }
-   }
-   if (strcmp(Tcl_DStringValue(&dsptr),"")==0) {
-      Tcl_DStringAppend(&dsptr,"M132->X:\\\\$078200,18,1 M140->Y:\\\\$0000C0,0,1 M231->X:\\\\$078208,17,1 M232->X:\\\\$078208,18,1 M240->Y:\\\\$000140,0,1 M245->Y:\\\\$000140,10,1 M331->X:\\\\$078210,17,1 M332->X:\\\\$078210,18,1 M340->Y:\\\\$0001C0,0,1 M345->Y:\\\\$0001C0,10,1 M440->Y:\\\\$000240,0,1",-1);
-   }
-   /* --- execute init command list--- */
-   if (strcmp(Tcl_DStringValue(&dsptr),"")!=0) {
-      if (Tcl_SplitList(tel->interp,Tcl_DStringValue(&dsptr),&argcc,&argvv)==TCL_OK) {
-         for (k=0;k<argcc;k++) {
-            res=deltatau_put(tel,argvv[k]);
-            if (res==1) {
-               Tcl_Free((char *) argvv);
-               return TCL_ERROR;
-            }
-         }
-         Tcl_Free((char *) argvv);
-      }
-   }
-   /* --- sppeds --- */
-   tel->track_diurnal=0.004180983;
-   tel->speed_track_ra=tel->track_diurnal; /* (deg/s) */
-   tel->speed_track_dec=0.; /* (deg/s) */
-   tel->speed_slew_ra=20.; /* (deg/s) */
-   tel->speed_slew_dec=20.; /* (deg/s) */
-   tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
-   tel->radec_position_conversion=10000.; /* (ADU)/(deg) */
-   tel->radec_move_rate_max=1.0; /* deg/s */
-   /* --- Match --- */
-   tel->ha00=0.;
-   tel->roth00=1507500;
-   tel->dec00=-90;
-   tel->rotd00=1250000;
-   /* --- stops --- */
-   tel->stop_e_uc=350000;
-   tel->stop_w_uc=3090000;
-   /* --- Home --- */
-   strcpy(tel->home0,"GPS 70.732222 W -29.260406 2347");
-   tel->latitude=-29.260406;
+	if (strcmp(s,"umac")==0) {
+		tel->type=0;
+	} else {
+		tel->type=1;
+	}
+	if (tel->type==1) {
+		/* --- decode IP  --- */
+		ip[0] = 192;
+		ip[1] = 168;
+		ip[2] = 10;
+		ip[3] = 46;
+		if (argc >= 1) {
+			for (kk = 0; kk < argc; kk++) {
+				if (strcmp(argv[kk], "-ip") == 0) {
+					if ((kk + 1) <= (argc - 1)) {
+						strcpy(ipstring, argv[kk + 1]);
+					}
+				}
+			}
+		}
+		klen = (int) strlen(ipstring);
+		nbp = 0;
+		for (k = 0; k < klen; k++) {
+			if (ipstring[k] == '.') {
+				nbp++;
+			}
+		}
+		if (nbp == 3) {
+			kdeb = 0;
+			nbp = 0;
+			for (k = 0; k <= klen; k++) {
+				if ((ipstring[k] == '.') || (ipstring[k] == '\0')) {
+					ipstring[k] = '\0';
+					ip[nbp] = (unsigned short) (unsigned char) atoi(ipstring + kdeb);
+					kdeb = k + 1;
+					nbp++;
+				}
+			}
+		}
+		sprintf(tel->ip, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+		f=fopen("mouchard_deltatau.txt","at");
+		fprintf(f,"IP=%s\n",tel->ip);
+		fclose(f);
+		/* --- decode port  --- */
+		tel->port = 1025;
+		if (argc >= 1) {
+			for (kk = 0; kk < argc; kk++) {
+				if (strcmp(argv[kk], "-port") == 0) {
+					if ((kk + 1) <= (argc - 1)) {
+						strcpy(portstring, argv[kk + 1]);
+						tel->port = atoi(portstring);
+					}
+				}
+			}
+		}
+		f=fopen("mouchard_deltatau.txt","at");
+		fprintf(f,"PORT=%d\n",tel->port);
+		fclose(f);
+		/* --- open the port and record the channel name ---*/
+		sprintf(s,"socket \"%s\" \"%d\"",tel->ip,tel->port);
+		//strcpy(s,"open com1 w+");
+		if (mytel_tcleval(tel,s)==1) {
+			strcpy(tel->msg,tel->interp->result);
+			return 1;
+		}
+		strcpy(tel->channel,tel->interp->result);
+		/* --- configuration of the TCP socket ---*/
+		sprintf(s,"fconfigure %s -blocking 0 -buffering none -translation binary -encoding binary -buffersize 50",tel->channel); mytel_tcleval(tel,s);
+		sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+		/* --- decode init command list --- */
+		Tcl_DStringInit(&dsptr);
+		if (argc >= 1) {
+			for (kk = 0; kk < argc; kk++) {
+				if (strcmp(argv[kk], "-init") == 0) {
+					if ((kk + 1) <= (argc - 1)) {
+						Tcl_DStringAppend(&dsptr,argv[kk + 1],-1);
+					}
+				}
+			}
+		}
+		if (strcmp(Tcl_DStringValue(&dsptr),"")==0) {
+			Tcl_DStringAppend(&dsptr,"M132->X:\\\\$078200,18,1 M140->Y:\\\\$0000C0,0,1 M231->X:\\\\$078208,17,1 M232->X:\\\\$078208,18,1 M240->Y:\\\\$000140,0,1 M245->Y:\\\\$000140,10,1 M331->X:\\\\$078210,17,1 M332->X:\\\\$078210,18,1 M340->Y:\\\\$0001C0,0,1 M345->Y:\\\\$0001C0,10,1 M440->Y:\\\\$000240,0,1",-1);
+		}
+		/* --- execute init command list--- */
+		if (strcmp(Tcl_DStringValue(&dsptr),"")!=0) {
+			if (Tcl_SplitList(tel->interp,Tcl_DStringValue(&dsptr),&argcc,&argvv)==TCL_OK) {
+				for (k=0;k<argcc;k++) {
+					res=deltatau_put(tel,argvv[k]);
+					if (res==1) {
+						Tcl_Free((char *) argvv);
+						return TCL_ERROR;
+					}
+				}
+				Tcl_Free((char *) argvv);
+			}
+		}
+		/* --- sppeds --- */
+		tel->track_diurnal=0.004180983;
+		tel->speed_track_ra=tel->track_diurnal; /* (deg/s) */
+		tel->speed_track_dec=0.; /* (deg/s) */
+		tel->speed_slew_ra=20.; /* (deg/s) */
+		tel->speed_slew_dec=20.; /* (deg/s) */
+		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
+		tel->radec_position_conversion=10000.; /* (ADU)/(deg) */
+		tel->radec_move_rate_max=1.0; /* deg/s */
+		/* --- Match --- */
+		tel->ha00=0.;
+		tel->roth00=1507500;
+		tel->dec00=-90;
+		tel->rotd00=1250000;
+		/* --- stops --- */
+		tel->stop_e_uc=350000;
+		tel->stop_w_uc=3090000;
+		/* --- Home --- */
+		strcpy(tel->home0,"GPS 70.732222 W -29.260406 2347");
+		tel->latitude=-29.260406;
+	}
    /* --- sortie --- */
    Tcl_DStringFree(&dsptr);
    return 0;
