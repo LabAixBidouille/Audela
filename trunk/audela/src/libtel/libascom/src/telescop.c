@@ -107,6 +107,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    }
    strcpy(s,"$telcmd Tracking 1"); mytel_tcleval(tel,s);
    tel->rateunity=0.1;  /* deg/s when rate=1 */
+   strcpy(s,"$telcmd Unpark"); mytel_tcleval(tel,s);
    return 0;
 }
 
