@@ -35,6 +35,7 @@ struct telprop {
    COMMON_TELSTRUCT
    /* Ajoutez ici les variables necessaires a votre telescope */
    int tempo;
+	int type; /* =0:UMAC =1:PMAC-PCI */
    char ip[50];
    char home0[60]; /* home used by tel1 home */
    char home[60]; /* home */
