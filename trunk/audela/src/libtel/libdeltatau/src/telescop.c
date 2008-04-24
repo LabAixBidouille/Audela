@@ -24,6 +24,7 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+#include "runtime.h"
 #endif
 
 #include <stdlib.h>
@@ -35,6 +36,15 @@
 #include "telescop.h"
 #include <libtel/util.h>
 
+
+#if defined(OS_WIN)
+//Device
+OPENPMACDEVICE DeviceOpen;
+SETASCIICOMM DeviceSetAsciiComm;
+CLOSEPMACDEVICE DeviceClose;
+GETRESPONSEA DevicePutGet;
+SENDCOMMANDA DeviceSendCommandeA;
+#endif
 
  /*
  *  Definition of different cameras supported by this driver
@@ -109,7 +119,10 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	} else {
 		tel->type=1;
 	}
-	if (tel->type==1) {
+	/* ============ */
+	/* === UMAC === */
+	/* ============ */
+	if (tel->type==0) {
 		/* --- decode IP  --- */
 		ip[0] = 192;
 		ip[1] = 168;
@@ -221,6 +234,48 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		strcpy(tel->home0,"GPS 70.732222 W -29.260406 2347");
 		tel->latitude=-29.260406;
 	}
+	/* ============ */
+	/* === PMAC === */
+	/* ============ */
+#if defined(OS_WIN)
+	if (tel->type==1) {
+		tel->hPmacLib = LoadLibrary(DRIVERNAME);
+		if( tel->hPmacLib  == NULL ) {
+			strcpy(tel->msg,"RunTimeLink error");
+			return 1;
+		}
+		//Ouverture des Devices
+		DeviceOpen = (OPENPMACDEVICE)GetProcAddress(tel->hPmacLib,"OpenPmacDevice");
+		DeviceSetAsciiComm = (SETASCIICOMM)GetProcAddress(tel->hPmacLib,"PmacSetAsciiComm");
+		DeviceClose = (CLOSEPMACDEVICE)GetProcAddress(tel->hPmacLib,"ClosePmacDevice");
+		DevicePutGet = (GETRESPONSEA)GetProcAddress(tel->hPmacLib,"PmacGetResponseA");
+		DeviceSendCommandeA = (SENDCOMMANDA)GetProcAddress(tel->hPmacLib,"PmacSendCommandA");
+
+		if(!DeviceSetAsciiComm)	{
+			strcpy(tel->msg,"DeviceSetAsciiComm error");
+			return 1;
+		}
+		if(!DeviceClose) {
+			strcpy(tel->msg,"DeviceClose error");
+			return 1;
+		}
+		if(!DeviceSendCommandeA) {
+			strcpy(tel->msg,"DeviceSendCommandeA error");
+			return 1;
+		}
+		if(!DevicePutGet) {
+			strcpy(tel->msg,"DevicePutGet error");
+			return 1;
+		}
+		if(!DeviceOpen) {
+			strcpy(tel->msg,"DeviceOpen error");
+			return 1;
+		}
+		tel->PmacDevice=0;
+		sprintf(tel->channel,"%d",tel->PmacDevice);
+		res = (*DeviceSetAsciiComm)(tel->PmacDevice,BUS); /*Set configuration sur bus*/
+	}
+#endif
    /* --- sortie --- */
    Tcl_DStringFree(&dsptr);
    return 0;
@@ -622,49 +677,71 @@ int mytel_tcleval(struct telprop *tel,char *ligne)
 int deltatau_delete(struct telprop *tel)
 {
    char s[1024];
-   /* --- Fermeture du port com */
-   sprintf(s,"close %s ",tel->channel); mytel_tcleval(tel,s);
+	if (tel->type==0) {
+		/* --- Fermeture du port com */
+		sprintf(s,"close %s ",tel->channel); mytel_tcleval(tel,s);
+	}
+#if defined(OS_WIN)
+	if (tel->type==1) {
+		(*DeviceClose)(tel->PmacDevice); /* =0 pour une seule carte */
+	}
+#endif
    return 0;
 }
 
 int deltatau_put(struct telprop *tel,char *cmd)
 {
    char s[1024];
-	sprintf(s,"puts -nonewline %s [binary format H2H2H4H4S 40 BF 0000 0000 [string length \"%s\"]]%s",tel->channel,cmd,cmd);
-   if (mytel_tcleval(tel,s)==1) {
-      return 1;
-   }
+
+	if (tel->type==0) {
+		sprintf(s,"puts -nonewline %s [binary format H2H2H4H4S 40 BF 0000 0000 [string length \"%s\"]]%s",tel->channel,cmd,cmd);
+		if (mytel_tcleval(tel,s)==1) {
+			return 1;
+		}
+	}
+#if defined(OS_WIN)
+	if (tel->type==1) {
+		(*DevicePutGet)(tel->PmacDevice,tel->pmac_response,990,cmd);
+	}
+#endif
    return 0;
 }
 
 int deltatau_read(struct telprop *tel,char *res)
 {
    char s[2048];
-   /* --- trancoder l'hexadécimal de res en numérique ---*/
-   strcpy(s,"\
-   proc deltatau_transcode { channel } {\
-   	set res [read -nonewline $channel];\
-   	binary scan $res H* chaine;\
-   	set n [string length $chaine] ;\
-   	set resultat \"\" ;\
-   	for {set k 0} {$k<$n} {set k [expr $k+2]} {\
-		   set h [string range $chaine $k [expr $k+1]] ;\
-		   if {($h==\"0d\")||($h==\"06\")} {\
-   			break ;\
-		   };\
-		   set ligne \"format %c 0x$h\" ;\
-		   set res [eval $ligne] ;\
-		   append resultat $res ;\
-	   };\
-      return $resultat ;\
-   }");
-   mytel_tcleval(tel,s);
-   sprintf(s,"deltatau_transcode %s",tel->channel);
-   if (mytel_tcleval(tel,s)==1) {
-      strcpy(res,tel->interp->result);
-      return 1;
-   }
-   strcpy(res,tel->interp->result);
+	if (tel->type==0) {
+		/* --- trancoder l'hexadécimal de res en numérique ---*/
+		strcpy(s,"\
+		proc deltatau_transcode { channel } {\
+   		set res [read -nonewline $channel];\
+   		binary scan $res H* chaine;\
+   		set n [string length $chaine] ;\
+   		set resultat \"\" ;\
+   		for {set k 0} {$k<$n} {set k [expr $k+2]} {\
+				set h [string range $chaine $k [expr $k+1]] ;\
+				if {($h==\"0d\")||($h==\"06\")} {\
+   				break ;\
+				};\
+				set ligne \"format %c 0x$h\" ;\
+				set res [eval $ligne] ;\
+				append resultat $res ;\
+			};\
+			return $resultat ;\
+		}");
+		mytel_tcleval(tel,s);
+		sprintf(s,"deltatau_transcode %s",tel->channel);
+		if (mytel_tcleval(tel,s)==1) {
+			strcpy(res,tel->interp->result);
+			return 1;
+		}
+	   strcpy(res,tel->interp->result);
+	}
+#if defined(OS_WIN)
+	if (tel->type==1) {
+		sprintf(res,"%s",tel->pmac_response);
+	}
+#endif
    return 0;
 }
 

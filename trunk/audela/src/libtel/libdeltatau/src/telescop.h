@@ -54,6 +54,11 @@ struct telprop {
    int stop_e_uc; /* butee mecanique est */
    int stop_w_uc; /* butee mecanique ouest */
    double radec_move_rate_max; /* vitesse max (deg/s) pour move -rate 1 */
+#if defined(OS_WIN)
+	HINSTANCE hPmacLib; /* handler Pmac */
+	int PmacDevice;
+	char pmac_response[990];
+#endif
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
