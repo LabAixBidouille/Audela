@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.22 2008-04-24 17:47:35 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.23 2008-04-25 08:26:19 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -10,7 +10,12 @@ namespace eval ::telescope {
 
 #------------------------------------------------------------
 # init
-#    Initialisation
+#    Chargement des captions et initialisation de variables
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::init { } {
    global audace caption
@@ -35,7 +40,13 @@ proc ::telescope::init { } {
 
 #------------------------------------------------------------
 # initTel
-#    Initialisation en AD et Dec de la monture AudeCom
+#    Initialisation du pointage en AD et en Dec de la monture AudeCom
+#
+# Parametres :
+#    this   : Widget du bouton dedie
+#    visuNo : Numero de la visu
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::initTel { this visuNo } {
    variable Button_Init
@@ -89,9 +100,15 @@ proc ::telescope::initTel { this visuNo } {
 
 #------------------------------------------------------------
 # match
-#    synchronise la monture avec les coordonnees radec
+#    Synchronise la monture avec la liste de coordonnees radec
 #
-#    si modele = gemini
+#    Si modele = gemini, propose un alignement additionnel
+#    Sinon sur un seul objet
+#
+# Parametres :
+#    radec : Liste des coordonnees AD et Dec a pointer
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::match { radec } {
    variable private
@@ -141,10 +158,17 @@ proc ::telescope::match { radec } {
 
 #------------------------------------------------------------
 # goto
-#    verifie que la monture possede la fonction goto
-#    envoie l'ordre a la monture de pointer les coordonnees list_radec en mode blocant ou non
+#    Verifie que la monture possede la fonction goto
+#    Envoie l'ordre a la monture de pointer les coordonnees list_radec en mode blocant ou non
 #
-# return
+# Parametres :
+#    list_radec   : Liste des coordonnees AD et Dec a pointer
+#    blocking     : Mode blocant (1) ou non (0)
+#    But_Goto     : Widget du bouton Goto (optionnel)
+#    But_Match    : Widget du bouton Match (optionnel)
+#    objectName   : Nom de l'objet (optionnel)
+#    radecEquinox : Equinoxe des coordonnees de l'objet (optionnel)
+# Return :
 #    0 si OK
 #    -1 si erreur (monture absente)
 #------------------------------------------------------------
@@ -207,7 +231,14 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
 
 #------------------------------------------------------------
 # surveille_goto
-#    surveille si la fonction goto est active
+#    Surveille si la fonction goto est active
+#
+# Parametres :
+#    radec0    : Liste des coordonnees AD et Dec de l'objet
+#    But_Goto  : Widget du bouton Goto (optionnel)
+#    But_Match : Widget du bouton Match (optionnel)
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
    global audace
@@ -230,7 +261,12 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
 
 #------------------------------------------------------------
 # stopGoto
-#    arrete le mouvement du GOTO
+#    Arrete le mouvement du GOTO
+#
+# Parametres :
+#    Button_Stop : Widget du bouton Stop Goto (optionnel)
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::stopGoto { { Button_Stop "" } } {
    global audace conf
@@ -260,7 +296,12 @@ proc ::telescope::stopGoto { { Button_Stop "" } } {
 
 #------------------------------------------------------------
 # getSpeedLabelList
-#    retourne la liste des libelles des vitesses supportees par la monture
+#    Retourne la liste des libelles des vitesses supportees par la monture
+#
+# Parametres :
+#    Aucun
+# Return :
+#    La liste des libelles des vitesses supportees par la monture
 #------------------------------------------------------------
 proc ::telescope::getSpeedLabelList { } {
    global caption conf
@@ -277,7 +318,12 @@ proc ::telescope::getSpeedLabelList { } {
 
 #------------------------------------------------------------
 # getSpeedValueList
-#    retourne la liste des valeurs des vitesses supportees par la monture
+#    Retourne la liste des valeurs des vitesses supportees par la monture
+#
+# Parametres :
+#    Aucun
+# Return :
+#    La liste des valeurs des vitesses supportees par la monture
 #------------------------------------------------------------
 proc ::telescope::getSpeedValueList { } {
    global caption conf
@@ -294,7 +340,12 @@ proc ::telescope::getSpeedValueList { } {
 
 #------------------------------------------------------------
 # decodeSpeedDlgShift
-#    decode la vitesse de la monture pour les decalages de l'outil Acquisition
+#    Decode la vitesse de la monture pour les decalages de l'outil Acquisition
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::decodeSpeedDlgShift { } {
    global audace caption conf panneau
@@ -337,7 +388,12 @@ proc ::telescope::decodeSpeedDlgShift { } {
 
 #------------------------------------------------------------
 # decodeSpeedDlgShiftVideo
-#    decode la vitesse de la monture pour les decalages de l'outil Acquisition Video
+#    Decode la vitesse de la monture pour les decalages de l'outil Acquisition Video
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::decodeSpeedDlgShiftVideo { } {
    global audace caption conf panneau
@@ -380,8 +436,13 @@ proc ::telescope::decodeSpeedDlgShiftVideo { } {
 
 #------------------------------------------------------------
 # incrementSpeed
-#    incremente la vitesse de la monture
-#    et met la nouvelle valeur dans la variable audace(telescope,speed)
+#    Incremente la vitesse de la monture
+#    Met la nouvelle valeur dans la variable audace(telescope,speed)
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::incrementSpeed { } {
    global audace conf
@@ -446,9 +507,14 @@ proc ::telescope::incrementSpeed { } {
 
 #------------------------------------------------------------
 # setSpeed
-#    change la vitesse de la monture
-#    et met a jour les variables audace(telescope,speed), audace(telescope,labelspeed),
+#    Change la vitesse de la monture
+#    Met a jour les variables audace(telescope,speed), audace(telescope,labelspeed),
 #    audace(telescope,rate), statustel(speed)
+#
+# Parametres :
+#    value : Vitesse de la monture (optionnel)
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::setSpeed { { value "2" } } {
    global audace caption conf statustel
@@ -565,8 +631,13 @@ proc ::telescope::setSpeed { { value "2" } } {
 
 #------------------------------------------------------------
 # controleSuivi
-#    arrete ou met en marche la monture
-#    et met à jour la variable audace(telescope,controle)
+#    Arrete ou met en marche la monture
+#    Met à jour la variable audace(telescope,controle)
+#
+# Parametres :
+#    value : Marche (Suivi on) ou arret (Suivi off) du suivi (optionnel)
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::controleSuivi { { value " " } } {
    global audace caption conf
@@ -615,7 +686,12 @@ proc ::telescope::controleSuivi { { value " " } } {
 
 #------------------------------------------------------------
 # move
-#    demarre le mouvement dans une direction
+#    Demarre le mouvement dans une direction
+#
+# Parametres :
+#    direction : Direction du deplacement (n, s, e ou w)
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::move { direction } {
    variable AfterId
@@ -637,7 +713,12 @@ proc ::telescope::move { direction } {
 
 #------------------------------------------------------------
 # nextPulseTemma
-#    envoi des pulses des boutons cardinaux pour Temma
+#    Envoie des pulses des boutons cardinaux pour Temma
+#
+# Parametres :
+#    direction : Direction du deplacement (n, s, e ou w)
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::nextPulseTemma { direction } {
    variable AfterId
@@ -652,7 +733,12 @@ proc ::telescope::nextPulseTemma { direction } {
 
 #------------------------------------------------------------
 # stop
-#    arrete le mouvement dans une direction
+#    Arrete le mouvement dans une direction
+#
+# Parametres :
+#    direction : Direction du deplacement (n, s, e ou w)
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::stop { direction } {
    variable AfterId
@@ -691,6 +777,11 @@ proc ::telescope::stop { direction } {
 #------------------------------------------------------------
 # Boucle
 #    Boucle tant que la monture n'est pas arretee
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::Boucle { } {
    global audace
@@ -708,9 +799,14 @@ proc ::telescope::Boucle { } {
 
 #------------------------------------------------------------
 # afficheCoord
-#    met a jour l'affichage des coordonnees
-#    interroge la monture et met le resultat dans
+#    Met a jour l'affichage des coordonnees
+#    Interroge la monture et met le resultat dans
 #    les variables audace(telescope,getra) et audace(telescope,getdec)
+#
+# Parametres :
+#    Aucun
+# Return :
+#    radec : Liste des coordonnees AD et Dec a pointer
 #------------------------------------------------------------
 proc ::telescope::afficheCoord { } {
    global audace caption conf
@@ -751,6 +847,12 @@ proc ::telescope::afficheCoord { } {
 #------------------------------------------------------------
 # monture_allemande
 #    Permet d'initialiser la position du telescope sur la monture
+#    Le tube optique est a l'est ou a l'ouest de la monture
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::monture_allemande { } {
    global audace caption
@@ -772,6 +874,11 @@ proc ::telescope::monture_allemande { } {
 #------------------------------------------------------------
 # getSecondaryTelNo
 #    Retourne le numero de la monture secondaire, sinon retourne "0"
+#
+# Parametres :
+#    Aucun
+# Return :
+#    result : Le numero de la monture secondaire
 #------------------------------------------------------------
 proc ::telescope::getSecondaryTelNo { } {
    global conf
@@ -787,6 +894,11 @@ proc ::telescope::getSecondaryTelNo { } {
 #------------------------------------------------------------
 # slewpathLong2Short
 #    Commute le mode slewpath de long a short
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::slewpathLong2Short { } {
    global conf
@@ -799,6 +911,11 @@ proc ::telescope::slewpathLong2Short { } {
 #------------------------------------------------------------
 # slewpathShort2Long
 #    Commute le mode slewpath de short a long
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::slewpathShort2Long { } {
    global conf
@@ -811,6 +928,11 @@ proc ::telescope::slewpathShort2Long { } {
 #------------------------------------------------------------
 # setTrackSpeed
 #    Parametre la vitesse de suivi pour le Soleil ou la Lune
+#
+# Parametres :
+#    Aucun
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::setTrackSpeed { } {
    global conf
@@ -822,10 +944,12 @@ proc ::telescope::setTrackSpeed { } {
 
 #------------------------------------------------------------
 # addSpeedListener
-#    ajoute une procedure a appeler si on change de vitesse
+#    Ajoute une procedure a appeler si on change de vitesse
 #
-# parametres :
-#    cmd : commande TCL a lancer quand la camera change
+# Parametres :
+#    cmd : Commande TCL a lancer quand la camera change
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::addSpeedListener { cmd } {
    trace add variable "::audace(telescope,speed)" write $cmd
@@ -835,8 +959,10 @@ proc ::telescope::addSpeedListener { cmd } {
 # removeSpeedListener
 #    supprime une procedure a appeler si on change de vitesse
 #
-#  parametres :
-#    cmd : commande TCL a lancer quand la camera change
+#  Parametres :
+#    cmd : Commande TCL a lancer quand la camera change
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::removeSpeedListener { cmd } {
    trace remove variable "::audace(telescope,speed)" write $cmd
@@ -844,12 +970,12 @@ proc ::telescope::removeSpeedListener { cmd } {
 
 #------------------------------------------------------------
 # getTargetRa
-#    retourne l'ascension droite de l'objet cible
+#    Retourne l'ascension droite de l'objet cible
 #
-# parametres :
-#    aucun
-# return
-#    ascension droite
+# Parametres :
+#    Aucun
+# Return :
+#    Ascension droite
 #------------------------------------------------------------
 proc ::telescope::getTargetRa { } {
    global audace
@@ -859,12 +985,12 @@ proc ::telescope::getTargetRa { } {
 
 #------------------------------------------------------------
 # getTargetDec
-#    retourne la declinaison de l'objet cible
+#    Retourne la declinaison de l'objet cible
 #
-# parametres :
-#    aucun
-# return
-#    declinaison
+# Parametres :
+#    Aucun
+# Return :
+#    Declinaison
 #------------------------------------------------------------
 proc ::telescope::getTargetDec { } {
    global audace
@@ -874,12 +1000,12 @@ proc ::telescope::getTargetDec { } {
 
 #------------------------------------------------------------
 # getTargetName
-#    retourne le nom de l'objet cible
+#    Retourne le nom de l'objet cible
 #
-# parametres :
-#    aucun
-# return
-#    nom de l'objet cible
+# Parametres :
+#    Aucun
+# Return :
+#    Nom de l'objet cible
 #------------------------------------------------------------
 proc ::telescope::getTargetName { } {
    global audace
@@ -891,10 +1017,10 @@ proc ::telescope::getTargetName { } {
 # getTargetEquinox
 #    retourne l'equinoxe des coordonnees de l'objet cible
 #
-# parametres :
-#    aucun
-# return
-#    nom de l'objet cible
+# Parametres :
+#    Aucun
+# Return :
+#    Nom de l'objet cible
 #------------------------------------------------------------
 proc ::telescope::getTargetEquinox { } {
    global audace
@@ -907,11 +1033,13 @@ proc ::telescope::getTargetEquinox { } {
 #    Deplace le telescope pendant un duree determinee
 #    Le deplacement est interrompu si private(acquisitionState)!=1
 #
-# parametres :
-#    direction : e w n s
-#    delay     : duree du deplacement en milliseconde (nombre entier)
-# return
-#    rien
+# Parametres :
+#    alphaDirection : Direction (e, w, n, ou s) du movement en AD
+#    alphaDelay     : Duree du deplacement en milliseconde (nombre entier) en AD
+#    deltaDirection : Direction (e, w, n, ou s) du movement en Dec
+#    deltaDelay     : Duree du deplacement en milliseconde (nombre entier) en Dec
+# Return :
+#    Rien
 #------------------------------------------------------------
 proc ::telescope::moveTelescope { alphaDirection alphaDelay deltaDirection deltaDelay } {
    variable private
