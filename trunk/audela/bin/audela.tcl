@@ -1,5 +1,5 @@
 #
-# Update $Id: audela.tcl,v 1.12 2008-04-23 21:14:13 robertdelmas Exp $
+# Update $Id: audela.tcl,v 1.13 2008-04-26 11:06:13 robertdelmas Exp $
 #
 #--- Welcome to the AudeLA-Interfaces Easy Launcher
 #
@@ -28,13 +28,44 @@ source "version.tcl"
 if {[file exists audace.txt]==1} {
    set langage english
    catch {source langage.tcl}
-   cd ../gui/audace; source aud.tcl
+   cd ../gui/audace
+   source aud.tcl
    return
+}
+
+#--- Proc to select language
+proc selectLangage { langue } {
+   global base caption langage
+
+   $base.fra1.$::langage configure -borderwidth 0
+   set ::langage $langue
+   $base.fra1.$langue configure -borderwidth 3
+   set f [open "[ file join $::audela_start_dir langage.tcl ]" w]
+   puts $f "set langage \"$langue\""
+   close $f
+   basecaption "$langage"
+   wm title $base $caption(audela,main_title)
+   $base.fra1.text1 configure -text "$caption(audela,language)"
+   $base.but2 configure -text "$caption(audela,launch)"
+}
+
+#--- Proc to launch Aud'ACE
+proc apply { } {
+   global base caption
+
+   set f [open audace.txt w]
+   close $f
+   unset caption
+   cd ../gui/audace
+   after 10 [ list uplevel #0 source aud.tcl ]
+   wm withdraw .choice
+   unset base
 }
 
 #--- Proc to initialise the caption according to the language
 proc basecaption { {langage ""} } {
    global caption
+
    #--- Selection of langage
    if {[string compare $langage ""] ==0 } {
       #--- First time initialisations
@@ -67,16 +98,17 @@ proc basecaption { {langage ""} } {
 
 #--- Call the language initialisation
 global caption
+
 set caption(lg) { "french" "italian" "spanish" "german" "portuguese" "danish" "english" }
 set langage [basecaption]
 
 #--- Create the toplevel window
 set base .choice
 toplevel $base -class Toplevel
-wm geometry $base 510x220+10+10
+wm geometry $base 510x150+10+10
 wm focusmodel $base passive
-wm maxsize $base 510 220
-wm minsize $base 510 220
+wm maxsize $base 510 150
+wm minsize $base 510 150
 wm overrideredirect $base 0
 wm resizable $base 1 1
 wm deiconify $base
@@ -86,108 +118,60 @@ wm withdraw .
 focus -force $base
 
 #--- Create the flag menu to change the language interactively
-set font { Arial 12 bold }
-set fontsmall { Arial 8 }
 frame $base.fra1
    #--- Label
-   label $base.fra1.text1 -text "$caption(audela,language)" -font $font
+   label $base.fra1.text1 -text "$caption(audela,language)" -font { Arial 12 bold } -width 18
    pack $base.fra1.text1 -side left -padx 5 -pady 10
    #--- French
    image create photo imageflag1
    imageflag1 configure -file fr.gif -format gif
-   label $base.fra1.flag1 -image imageflag1
-   pack $base.fra1.flag1 -side left -padx 5 -pady 5
+   label $base.fra1.french -image imageflag1 -borderwidth 0 -relief solid
+   pack $base.fra1.french -side left -padx 5 -pady 5
    #--- Italian
    image create photo imageflag2
    imageflag2 configure -file it.gif -format gif
-   label $base.fra1.flag2 -image imageflag2
-   pack $base.fra1.flag2 -side left -padx 5 -pady 5
+   label $base.fra1.italian -image imageflag2 -borderwidth 0 -relief solid
+   pack $base.fra1.italian -side left -padx 5 -pady 5
    #--- Spanish
    image create photo imageflag3
    imageflag3 configure -file sp.gif -format gif
-   label $base.fra1.flag3 -image imageflag3
-   pack $base.fra1.flag3 -side left -padx 5 -pady 5
+   label $base.fra1.spanish -image imageflag3 -borderwidth 0 -relief solid
+   pack $base.fra1.spanish -side left -padx 5 -pady 5
    #--- German
    image create photo imageflag4
    imageflag4 configure -file de.gif -format gif
-   label $base.fra1.flag4 -image imageflag4
-   pack $base.fra1.flag4 -side left -padx 5 -pady 5
+   label $base.fra1.german -image imageflag4 -borderwidth 0 -relief solid
+   pack $base.fra1.german -side left -padx 5 -pady 5
    #--- Portuguese
    image create photo imageflag5
    imageflag5 configure -file pt.gif -format gif
-   label $base.fra1.flag5 -image imageflag5
-   pack $base.fra1.flag5 -side left -padx 5 -pady 5
+   label $base.fra1.portuguese -image imageflag5 -borderwidth 0 -relief solid
+   pack $base.fra1.portuguese -side left -padx 5 -pady 5
    #--- Danish
    image create photo imageflag6
    imageflag6 configure -file da.gif -format gif
-   label $base.fra1.flag6 -image imageflag6
-   pack $base.fra1.flag6 -side left -padx 5 -pady 5
+   label $base.fra1.danish -image imageflag6 -borderwidth 0 -relief solid
+   pack $base.fra1.danish -side left -padx 5 -pady 5
    #--- English
    image create photo imageflag7
    imageflag7 configure -file gb.gif -format gif
-   label $base.fra1.flag7 -image imageflag7
-   pack $base.fra1.flag7 -side left -padx 5 -pady 5
+   label $base.fra1.english -image imageflag7 -borderwidth 0 -relief solid
+   pack $base.fra1.english -side left -padx 5 -pady 5
 pack $base.fra1 -side top -in $base
 
-#--- Create the buttons
-label $base.lab1 \
-   -borderwidth 1 -text "$caption(audela,description)" -font $font
-pack $base.lab1 \
-   -in $base -anchor center -expand 1 -fill both -side top
+$base.fra1.$::langage configure -borderwidth 3
 
-button $base.but2 -text $caption(audela,soft)  -width 12 -font $font -command \
-   { if {$direct==1} { catch { set f [open audace.txt w] ; close $f} } ; unset caption ; wm withdraw $base ; \
-     cd ../gui/audace ; source aud.tcl }
+#--- Create the button
+button $base.but2 -text "$caption(audela,launch)" -width 12 -font { Arial 20 bold } -command { apply }
 pack $base.but2 -anchor center -side top -fill x -padx 4 -pady 4 \
    -in $base -anchor center -expand 1 -fill both -side top
 
-frame $base.frame1
-   button $base.frame1.but3 -text "$caption(audela,launch)" -width 12 -font $font -command \
-      { wm withdraw $base ; cd [lindex [split $caption(audela,dirtcl) " "] 0] ; \
-        set name [lindex [split $caption(audela,dirtcl) " "] 1] ; unset caption ; \
-        source $name }
-   pack $base.frame1.but3 -anchor center -side top -fill x -padx 4 -pady 4 \
-      -anchor center -expand 1 -fill both -side left
-   entry $base.frame1.ent1 -textvariable caption(audela,dirtcl) -width 12 -font $font
-   pack $base.frame1.ent1 -anchor center -side top -fill x -padx 4 -pady 4 \
-      -anchor center -expand 1 -fill both -side left
-pack $base.frame1 -anchor center -side top -fill x -padx 0 -pady 0 \
-   -in $base -anchor center -expand 1 -fill both -side top
-
-frame $base.frame2
-   checkbutton $base.frame2.check1 -variable direct
-   pack $base.frame2.check1 -anchor center -side top -padx 4 -pady 4 \
-      -anchor center -expand 0 -fill both -side left
-   label $base.frame2.lab1 -text "$caption(audela,direct_audace)" \
-      -font $fontsmall
-   pack $base.frame2.lab1 -fill x -padx 4 -pady 4 \
-      -anchor w -expand 1 -fill both -side left
-pack $base.frame2 -anchor center -side top -fill x -padx 0 -pady 0 \
-   -in $base -anchor center -expand 0 -fill none -side top
-
 #--- Bindings on flag images
-bind $base.fra1.flag1 <ButtonPress-1> { set langage "[lindex $caption(lg) 0]"  }
-bind $base.fra1.flag2 <ButtonPress-1> { set langage "[lindex $caption(lg) 1]"  }
-bind $base.fra1.flag3 <ButtonPress-1> { set langage "[lindex $caption(lg) 2]"  }
-bind $base.fra1.flag4 <ButtonPress-1> { set langage "[lindex $caption(lg) 3]"  }
-bind $base.fra1.flag5 <ButtonPress-1> { set langage "[lindex $caption(lg) 4]"  }
-bind $base.fra1.flag6 <ButtonPress-1> { set langage "[lindex $caption(lg) 5]"  }
-bind $base.fra1.flag7 <ButtonPress-1> { set langage "[lindex $caption(lg) 6]"  }
-
-#--- An infinite loop to change the language interactively
-while {1==1} {
-   vwait langage
-   catch {
-      set f [open "langage.tcl" w]
-      puts $f "set langage \"$langage\""
-      close $f
-   }
-   basecaption "$langage"
-   wm title $base $caption(audela,main_title)
-   $base.fra1.text1 configure -text "$caption(audela,language)"
-   $base.lab1 configure -text "$caption(audela,description)"
-   $base.but2 configure -text $caption(audela,soft)
-   $base.frame1.but3 configure -text "$caption(audela,launch)"
-   $base.frame2.lab1 configure -text "$caption(audela,direct_audace)"
-}
+bind $base.fra1.french <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 0]" }
+bind $base.fra1.italian <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 1]" }
+bind $base.fra1.spanish <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 2]" }
+bind $base.fra1.german <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 3]" }
+bind $base.fra1.portuguese <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 4]" }
+bind $base.fra1.danish <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 5]" }
+bind $base.fra1.english <ButtonPress-1> { selectLangage "[lindex $::caption(lg) 6]" }
 
