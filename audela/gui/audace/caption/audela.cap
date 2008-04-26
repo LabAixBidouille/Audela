@@ -1,6 +1,6 @@
 #
 # Fichier : audela.cap
-# Mise a jour $Id: audela.cap,v 1.6 2008-04-23 21:14:50 robertdelmas Exp $
+# Mise a jour $Id: audela.cap,v 1.7 2008-04-26 11:07:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -11,79 +11,51 @@ global caption
 
 # *************** Version anglaise ****************************
 
-set caption(audela,main_title)        "AudeLA: Interface Selection"
+set caption(audela,main_title)        "AudeLA"
 set caption(audela,language)          "Language Selection:"
-set caption(audela,description)       "Choose the interface you want to use:"
-set caption(audela,soft)              "Aud'ACE"
-set caption(audela,launch)            "Run"
-set caption(audela,dirtcl)            "../gui/test test.tcl"
-set caption(audela,direct_audace)     "Do not display this interface any more."
+set caption(audela,launch)            "Run AudeLA"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(audela,main_title)     "AudeLA : Sélection de l'interface utilisateur"
+   set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Sélection de la langue :"
-   set caption(audela,description)    "Sélectionnez l'interface que vous voulez utiliser :"
-   set caption(audela,soft)           "Aud'ACE"
-   set caption(audela,launch)         "Lancer"
-   set caption(audela,dirtcl)         "../gui/test test.tcl"
-   set caption(audela,direct_audace)  "Ne plus afficher cette interface."
+   set caption(audela,launch)         "Lancer AudeLA"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(audela,main_title)     "AudeLA: Scelta dell'interfaccia utente"
+   set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Scelta delle lingue:"
-   set caption(audela,description)    "Scegliere l'interfaccia d'uso:"
-   set caption(audela,soft)           "Aud'ACE"
-   set caption(audela,launch)         "Esegui"
-   set caption(audela,dirtcl)         "../gui/test test.tcl"
-   set caption(audela,direct_audace)  "Non visualizzare piu` questa interfaccia."
+   set caption(audela,launch)         "Esegui AudeLA"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(audela,main_title)     "AudeLA: Alternativas de interfaz de usuario"
+   set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Selecció de idioma:"
-   set caption(audela,description)    "Escoger la interfaz de usuario a utilizar:"
-   set caption(audela,soft)           "Aud'ACE"
-   set caption(audela,launch)         "Arrancar"
-   set caption(audela,dirtcl)         "../gui/test test.tcl"
-   set caption(audela,direct_audace)  "No mostrar esta interfaz más."
+   set caption(audela,launch)         "Arrancar AudeLA"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(audela,main_title)     "AudeLA: Benutzer Schnittstelle Wahl"
+   set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Sprache Wahl:"
-   set caption(audela,description)    "Wählen sie die Schnittstelle die sie wünschen:"
-   set caption(audela,soft)           "Aud'ACE"
-   set caption(audela,launch)         "Ausführen"
-   set caption(audela,dirtcl)         "../gui/test test.tcl"
-   set caption(audela,direct_audace)  "Diese Interface nicht mehr anzeigen."
+   set caption(audela,launch)         "Ausführen AudeLA"
 
 # *************** Version portugaise ****************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(audela,main_title)     "AudeLA: Selecção de interface"
+   set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Selecção de idioma:"
-   set caption(audela,description)    "Escolha o interface que pretende utilizar:"
-   set caption(audela,soft)           "Aud'ACE"
-   set caption(audela,launch)         "Executar"
-   set caption(audela,dirtcl)         "../gui/test test.tcl"
-   set caption(audela,direct_audace)  "Não mostrar novamente esta interface."
+   set caption(audela,launch)         "Executar AudeLA"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(audela,main_title)     "AudeLA: Valg af brugerflade"
+   set caption(audela,main_title)     "AudeLA"
    set caption(audela,language)       "Valg af sprog:"
-   set caption(audela,description)    "Vælg den brugerflade, du ønsker!"
-   set caption(audela,soft)           "Aud'ACE"
-   set caption(audela,launch)         "Kør"
-   set caption(audela,dirtcl)         "../gui/test test.tcl"
-   set caption(audela,direct_audace)  "Vis ikke denne meddelelse igen!"
+   set caption(audela,launch)         "Kør AudeLA"
 
 }
 
