@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.41 2008-04-23 21:25:27 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.42 2008-04-26 11:13:32 robertdelmas Exp $
 #
 
 #
@@ -2097,6 +2097,9 @@ namespace eval confLangue {
    proc fermer { } {
       variable This
 
+      for { set i 1 } { $i < 8 } { incr i } {
+         image delete imageflag$i
+      }
       destroy $This
    }
 
@@ -2141,33 +2144,68 @@ namespace eval confLangue {
       frame $This.frame4 -borderwidth 0
       pack $This.frame4 -in $This.frame1 -side top -fill both -expand 1
 
-      #--- Cree le label pour les commentaires
-      label $This.lab1 -text "$caption(confgene,langue_texte)"
+      frame $This.frame5 -borderwidth 0
+      pack $This.frame5 -in $This.frame1 -side top -fill both -expand 1
+
+      #--- Cree le label pour le commentaire
+      label $This.lab1 -text "$caption(confgene,langue_selection)"
       pack $This.lab1 -in $This.frame3 -side top -anchor w -padx 5 -pady 5
 
-      #--- Cree les boutons et les labels pour permettre le choix
-      label $This.lab2 -anchor nw -highlightthickness 0 -text "$caption(confgene,langue_langues)" -padx 0 -pady 0
-      pack $This.lab2 -in $This.frame4 -side left -padx 20 -pady 5
+      #--- Drapeau French
+      image create photo imageflag1
+      imageflag1 configure -file [ file join $::audela_start_dir fr.gif ] -format gif
+      button $This.french -image imageflag1 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue french }
+      pack $This.french -in $This.frame4 -side left -padx 5 -pady 5
 
-      if { [ file exist [ file join $audace(rep_install) bin audace.txt ] ] } {
-         button $This.but1 -text "$caption(confgene,langue_non)" -relief raised -state normal -command {
-            #--- Acces au choix des langue et au tutorial au prochain demarrage
-            catch {
-               file delete [ file join $audace(rep_install) bin audace.txt ]
-            }
-            ::confLangue::fermer
-            ::confLangue::run "$audace(base).confLangue"
-         }
-         pack $This.but1 -in $This.frame4 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
-      } else {
-         button $This.but1 -text "$caption(confgene,langue_oui)" -relief raised -state normal -command {
-            set f [ open "[ file join $audace(rep_install) bin audace.txt ]" w ]
-            close $f
-            ::confLangue::fermer
-            ::confLangue::run "$audace(base).confLangue"
-         }
-         pack $This.but1 -in $This.frame4 -side right -padx 10 -pady 5 -ipadx 5 -ipady 5
-      }
+      #--- Drapeau Italian
+      image create photo imageflag2
+      imageflag2 configure -file [ file join $::audela_start_dir it.gif ] -format gif
+      button $This.italian -image imageflag2 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue italian }
+      pack $This.italian -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Drapeau Spanish
+      image create photo imageflag3
+      imageflag3 configure -file [ file join $::audela_start_dir sp.gif ] -format gif
+      button $This.spanish -image imageflag3 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue spanish }
+      pack $This.spanish -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Drapeau German
+      image create photo imageflag4
+      imageflag4 configure -file [ file join $::audela_start_dir de.gif ] -format gif
+      button $This.german -image imageflag4 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue german }
+      pack $This.german -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Drapeau Portuguese
+      image create photo imageflag5
+      imageflag5 configure -file [ file join $::audela_start_dir pt.gif ] -format gif
+      button $This.portuguese -image imageflag5 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue portuguese }
+      pack $This.portuguese -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Drapeau Danish
+      image create photo imageflag6
+      imageflag6 configure -file [ file join $::audela_start_dir da.gif ] -format gif
+      button $This.danish -image imageflag6 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue danish }
+      pack $This.danish -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Drapeau English
+      image create photo imageflag7
+      imageflag7 configure -file [ file join $::audela_start_dir gb.gif ] -format gif
+      button $This.english -image imageflag7 -relief solid -borderwidth 0 \
+         -command { ::confLangue::choisirLangue english }
+      pack $This.english -in $This.frame4 -side left -padx 5 -pady 5
+
+      #--- Visualise la langue pre-selectionnee
+      $This.$::langage configure -borderwidth 3
+
+      #--- Cree le label pour le commentaire
+      label $This.lab2 -text "$caption(confgene,langue_texte)"
+      pack $This.lab2 -in $This.frame5 -side top -anchor w -padx 5 -pady 5
 
       #--- Cree le bouton 'Fermer'
       button $This.but_fermer -text "$caption(confgene,fermer)" -width 7 -borderwidth 2 \
@@ -2187,6 +2225,36 @@ namespace eval confLangue {
 
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $This
+   }
+
+   #
+   # confLangue::choisirLangue
+   # Selectionner un drapeau pour changer de langue
+   #
+   proc choisirLangue { langue } {
+      variable This
+      global audace caption
+
+      #--- Mise a jour du drapeau selectionne et de la langue
+      $This.$::langage configure -borderwidth 0
+      set ::langage $langue
+      $This.$langue configure -borderwidth 3
+      set f [open "[ file join $::audela_start_dir langage.tcl ]" w]
+      puts $f "set langage \"$langue\""
+      close $f
+
+      #--- Recharge confgene.cap pour que les textes soient dans la langue du drapeau selectionne
+      source [ file join $audace(rep_caption) confgene.cap ]
+
+      #--- Mise a jour des textes de la fenetre
+      wm title $This $caption(confgene,langue_titre)
+      $This.lab1 configure -text "$caption(confgene,langue_selection)"
+      $This.lab2 configure -text "$caption(confgene,langue_texte)"
+
+      #--- Mise a jour des boutons de la fenetre
+      .audace.confLangue.but_fermer configure -text "$caption(confgene,fermer)"
+     ### .audace.confLangue.but_aide configure -text "$caption(confgene,aide)" -state disabled
+      .audace.confLangue.but_aide configure -state disabled
    }
 }
 
