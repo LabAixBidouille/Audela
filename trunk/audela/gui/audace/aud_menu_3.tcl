@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.39 2008-01-03 22:02:38 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.40 2008-04-26 22:29:22 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -3631,7 +3631,8 @@ namespace eval ::faireImageRef {
          frame $This.usr.4 -borderwidth 1 -relief raised
             frame $This.usr.4.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.4.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-field,no-offset) -command { ::faireImageRef::griserActiver_5 }
+                  -variable faireImageRef(flat-field,no-offset) \
+                  -command { ::faireImageRef::griserActiver_5 }
                pack $This.usr.4.1.che1 -side left -padx 10 -pady 5
                label $This.usr.4.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.4.1.lab6 -side left -padx 5 -pady 5
@@ -3644,7 +3645,8 @@ namespace eval ::faireImageRef {
 
             frame $This.usr.4.2 -borderwidth 0 -relief flat
                checkbutton $This.usr.4.2.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(flat-field,no-dark) -command { ::faireImageRef::griserActiver_6 }
+                  -variable faireImageRef(flat-field,no-dark) \
+                  -command { ::faireImageRef::griserActiver_6 }
                pack $This.usr.4.2.che1 -side left -padx 10 -pady 5
                label $This.usr.4.2.lab6 -text "$caption(pretraitement,image_dark)"
                pack $This.usr.4.2.lab6 -side left -padx 5 -pady 5
@@ -3667,7 +3669,7 @@ namespace eval ::faireImageRef {
          frame $This.usr.3 -borderwidth 1 -relief raised
             frame $This.usr.3.1 -borderwidth 0 -relief flat
                checkbutton $This.usr.3.1.che1 -text "$caption(pretraitement,aucune)" \
-                  -variable faireImageRef(dark,no-offset) -command { ::faireImageRef::griserActiver_7 }
+                  -variable faireImageRef(dark,no-offset) -command { ::faireImageRef::griserActiver_8 }
                pack $This.usr.3.1.che1 -side left -padx 10 -pady 5
                label $This.usr.3.1.lab6 -text "$caption(pretraitement,image_offset)"
                pack $This.usr.3.1.lab6 -side left -padx 5 -pady 5
@@ -3913,13 +3915,16 @@ namespace eval ::faireImageRef {
                   sub2 $in $offset $temp $const $nb $first
                   if { $faireImageRef(methode) == "0" } {
                      #--- Somme
-                     sadd $temp $out $nb $first
+                     #--- Attention sub2 a cree les images temp a partir de 1
+                     sadd $temp $out $nb 1
                   } elseif { $faireImageRef(methode) == "1" } {
                      #--- Moyenne
-                     smean $temp $out $nb $first
+                     #--- Attention sub2 a cree les images temp a partir de 1
+                     smean $temp $out $nb 1
                   } elseif { $faireImageRef(methode) == "2" } {
                      #--- Mediane
-                     smedian $temp $out $nb $first
+                     #--- Attention sub2 a cree les images temp a partir de 1
+                     smedian $temp $out $nb 1
                   }
                   delete2 $temp $nb
                } elseif { $faireImageRef(dark,no-offset) == "1" } {
@@ -3994,8 +3999,8 @@ namespace eval ::faireImageRef {
                   ::buf::delete $buf_pretrait
                   #---
                   sub2 $in offset+dark $temp $const $nb $first
-                  noffset2 $temp $tempo $norm $nb $first
-                  smedian $tempo $out $nb $first
+                  noffset2 $temp $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                  smedian $tempo $out $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                   #--- Suppression des fichiers intermediaires
                   file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                   delete2 $temp $nb
@@ -4003,16 +4008,16 @@ namespace eval ::faireImageRef {
                } elseif { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "0" } {
                   #---
                   sub2 $in $dark $temp $const $nb $first
-                  noffset2 $temp $tempo $norm $nb $first
-                  smedian $tempo $out $nb $first
+                  noffset2 $temp $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                  smedian $tempo $out $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                   #--- Suppression des fichiers intermediaires
                   delete2 $temp $nb
                   delete2 $tempo $nb
                } elseif { $faireImageRef(flat-field,no-offset) == "0" && $faireImageRef(flat-field,no-dark) == "1" } {
                   #---
                   sub2 $in $offset $temp $const $nb $first
-                  noffset2 $temp $tempo $norm $nb $first
-                  smedian $tempo $out $nb $first
+                  noffset2 $temp $tempo $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                  smedian $tempo $out $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                   #--- Suppression des fichiers intermediaires
                   delete2 $temp $nb
                   delete2 $tempo $nb
@@ -4104,9 +4109,9 @@ namespace eval ::faireImageRef {
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
                      sub2 $in offset+dark $temp $const $nb $first
                      #--- Realisation de Y' = K * Y
-                     mult2 $temp $temp1 $norm $nb $first
+                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp1 $flat $out $const_mult $nb $first
+                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers intermediaires
                      file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                      delete2 $temp $nb
@@ -4129,9 +4134,9 @@ namespace eval ::faireImageRef {
                      #--- Realisation de Y = [ Generique d'entree - Offset ]
                      sub2 $in $offset $temp $const $nb $first
                      #--- Realisation de Y' = K * Y
-                     mult2 $temp $temp1 $norm $nb $first
+                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp1 $flat $out $const_mult $nb $first
+                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                      delete2 $temp1 $nb
@@ -4144,9 +4149,9 @@ namespace eval ::faireImageRef {
                      #--- Realisation de Y = [ Generique d'entree - Dark ]
                      sub2 $in $dark $temp $const $nb $first
                      #--- Realisation de Y' = K * Y
-                     mult2 $temp $temp1 $norm $nb $first
+                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp1 $flat $out $const_mult $nb $first
+                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                      delete2 $temp1 $nb
@@ -4159,7 +4164,7 @@ namespace eval ::faireImageRef {
                      #--- Realisation de Y' = K * Y
                      mult2 $in $temp $norm $nb $first
                      #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp $flat $out $const_mult $nb $first
+                     div2 $temp $flat $out $const_mult $nb 1 ; #--- Attention mult2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                   #--- Sans optimisation du noir - Aucun - Manque les offsets, les darks et les flats
@@ -4177,9 +4182,9 @@ namespace eval ::faireImageRef {
                      #--- Optimisation du noir
                      opt2 $in $dark $offset $temp $nb $first
                      #--- Multiplication par la constante K
-                     mult2 $temp $temp1 $norm $nb $first
+                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
                      #--- Division par le flat
-                     div2 $temp1 $flat $out $const_mult $nb $first
+                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                      delete2 $temp1 $nb
@@ -4217,6 +4222,13 @@ namespace eval ::faireImageRef {
                      #--- Ce cas n'est pas envisageable
                      set faireImageRef(avancement) ""
                      return
+                  }
+               }
+               #--- Renomme les fichiers image si 'first_index' est different de 1
+               if { $first != "1" } {
+                  for { set index "1" } { $index <= $nb } { incr index } {
+                     set new_index [ expr $index + ( $first - 1 ) ]
+                     file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
                   }
                }
                #---
@@ -4553,6 +4565,7 @@ namespace eval ::faireImageRef {
          $This.usr.4.1.explore configure -state disabled
          $This.usr.4.1.ent6 configure -state disabled
       }
+      ::faireImageRef::griserActiver_7
    }
 
    #
@@ -4570,13 +4583,29 @@ namespace eval ::faireImageRef {
          $This.usr.4.2.explore configure -state disabled
          $This.usr.4.2.ent6 configure -state disabled
       }
+      ::faireImageRef::griserActiver_7
    }
 
    #
    # ::faireImageRef::griserActiver_7
-   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite dark
+   # Fonction destinee a inhiber ou a activer l'affichage du champ cste de normalisation de la boite flat-field
    #
    proc griserActiver_7 { } {
+      variable This
+      global faireImageRef
+
+      if { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "1" } {
+         $This.usr.4.3.ent7 configure -state disabled
+      } else {
+         $This.usr.4.3.ent7 configure -state normal
+      }
+   }
+
+   #
+   # ::faireImageRef::griserActiver_8
+   # Fonction destinee a inhiber ou a activer l'affichage du champ offset de la boite dark
+   #
+   proc griserActiver_8 { } {
       variable This
       global faireImageRef
 
