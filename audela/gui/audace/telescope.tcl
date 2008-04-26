@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.23 2008-04-25 08:26:19 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.24 2008-04-26 14:52:15 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -95,7 +95,7 @@ proc ::telescope::initTel { this visuNo } {
       $Button_Init configure -relief raised -state normal
    }
    #--- Les coordonnees AD et Dec sont mises a jour
-   ::telescope::afficheCoord
+   afficheCoord
 }
 
 #------------------------------------------------------------
@@ -143,7 +143,7 @@ proc ::telescope::match { radec } {
             #--- Cas de la monture principale
             tel$audace(telNo) radec init $radec
             #--- Si Ouranos est une monture secondaire, envoie egalement le Match a l'interface Ouranos
-            set secondaryTelNo [ ::telescope::getSecondaryTelNo ]
+            set secondaryTelNo [ getSecondaryTelNo ]
             if { $secondaryTelNo != "0" } {
                tel$secondaryTelNo radec init $radec
             }
@@ -153,7 +153,7 @@ proc ::telescope::match { radec } {
       ::confTel::run
       tkwait window $audace(base).confTel
    }
-   ::telescope::afficheCoord
+   afficheCoord
 }
 
 #------------------------------------------------------------
@@ -181,7 +181,7 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       set audace(telescope,targetname)    $objectName
       set audace(telescope,targetEquinox) $radecEquinox
       #---
-      ::telescope::setTrackSpeed
+      setTrackSpeed
       #--- Gestion des boutons Goto et Match
       if { $But_Goto != "" } {
          $But_Goto configure -relief groove -state disabled
@@ -202,11 +202,11 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
          #--- Boucle tant que la monture n'est pas arretee
          set audace(telescope,goto) "1"
          set radec0 [ tel$audace(telNo) radec coord ]
-         ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
+         surveille_goto [ list $radec0 ] $But_Goto $But_Match
          #--- j'attends que la variable soit remise a zero
          vwait ::audace(telescope,goto)
          #--- je traite le mode slewpath (si long, je passe en short pour le rattrapage des jeux)
-         ::telescope::slewpathLong2Short
+         slewpathLong2Short
       }
       #---
       if { $audace(telescope,stopgoto) == "1" } {
@@ -217,11 +217,11 @@ proc ::telescope::goto { list_radec blocking { But_Goto "" } { But_Match "" } { 
       #--- Boucle tant que la monture n'est pas arretee
       set audace(telescope,goto) "1"
       set radec0 [ tel$audace(telNo) radec coord ]
-      ::telescope::surveille_goto [ list $radec0 ] $But_Goto $But_Match
+      surveille_goto [ list $radec0 ] $But_Goto $But_Match
       #--- j'attends que la variable soit remise a zero
       vwait ::audace(telescope,goto)
       #--- je restaure le mode slewpath si necessaire
-      ::telescope::slewpathShort2Long
+      slewpathShort2Long
       return 0
    } else {
       ::confTel::run
@@ -244,7 +244,7 @@ proc ::telescope::surveille_goto { radec0 { But_Goto "" } { But_Match "" } } {
    global audace
 
    set radec1 [ tel$audace(telNo) radec coord ]
-   ::telescope::afficheCoord
+   afficheCoord
    if { $radec1 != $radec0 } {
       after 1000 ::telescope::surveille_goto [ list $radec1 ] $But_Goto $But_Match
    } else {
@@ -291,7 +291,7 @@ proc ::telescope::stopGoto { { Button_Stop "" } } {
          update
       }
    }
-   ::telescope::afficheCoord
+   afficheCoord
 }
 
 #------------------------------------------------------------
@@ -681,7 +681,7 @@ proc ::telescope::controleSuivi { { value " " } } {
       ::confTel::run
       tkwait window $audace(base).confTel
    }
-   ::telescope::afficheCoord
+   afficheCoord
 }
 
 #------------------------------------------------------------
@@ -751,7 +751,7 @@ proc ::telescope::stop { direction } {
          if { $audace(telescope,speed) == "3" } {
             after 3700
          } else {
-            ::telescope::Boucle
+            Boucle
          }
       } elseif { $conf(telescope) == "lx200" } {
          tel$audace(telNo) radec stop $direction
@@ -771,7 +771,7 @@ proc ::telescope::stop { direction } {
       ::confTel::run
       tkwait window $audace(base).confTel
    }
-   ::telescope::afficheCoord
+   afficheCoord
 }
 
 #------------------------------------------------------------
@@ -829,7 +829,7 @@ proc ::telescope::afficheCoord { } {
             set audace(telescope,getdec) [ lindex $radec 1 ]
             if { $conf(telescope) == "temma" } {
                #--- Affichage de la position du telescope sur la monture equatoriale allemande
-               ::telescope::monture_allemande
+               monture_allemande
             }
          }
       } else {
