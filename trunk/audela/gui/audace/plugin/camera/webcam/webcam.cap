@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.2 2007-05-26 18:36:34 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.3 2008-04-27 20:07:20 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -14,6 +14,7 @@ global caption langage
 set caption(webcam,camera)                      "WebCam"
 
 set caption(webcam,canal_usb)                   "USB Video Channel"
+set caption(webcam,mode_video)                  "Video Mode"
 set caption(webcam,miroir_x)                    "Horizontal Mirror"
 set caption(webcam,miroir_y)                    "Vertical Mirror"
 set caption(webcam,longuepose)                  "S. Chambers Long Exposure Option"
@@ -43,6 +44,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "Canal vidéo USB"
+   set caption(webcam,mode_video)               "Mode vidéo"
    set caption(webcam,miroir_x)                 "Miroir horizontal"
    set caption(webcam,miroir_y)                 "Miroir vertical"
    set caption(webcam,longuepose)               "Option longue pose (S. Chambers)"
@@ -72,6 +74,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "Canale video USB"
+   set caption(webcam,mode_video)               "Modalita` video"
    set caption(webcam,miroir_x)                 "Specchio orizzontale"
    set caption(webcam,miroir_y)                 "Specchio verticale"
    set caption(webcam,longuepose)               "Opzione lunga posa (S. Chambers)"
@@ -101,6 +104,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "Canal vídeo USB"
+   set caption(webcam,mode_video)               "Modo vídeo"
    set caption(webcam,miroir_x)                 "Espejo horizontal"
    set caption(webcam,miroir_y)                 "Espejo vertical"
    set caption(webcam,longuepose)               "Opcion de exposición larga (S. Chambers)"
@@ -130,6 +134,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "USB Video Kanal"
+   set caption(webcam,mode_video)               "Video Modus"
    set caption(webcam,miroir_x)                 "Horizontale Spiegel"
    set caption(webcam,miroir_y)                 "Verticale Spiegel"
    set caption(webcam,longuepose)               "Lange Belichtung Option (S. Chambers)"
@@ -159,6 +164,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "Canal Video USB"
+   set caption(webcam,mode_video)               "Modo video"
    set caption(webcam,miroir_x)                 "Espelho Horizontal"
    set caption(webcam,miroir_y)                 "Espelho Vertical"
    set caption(webcam,longuepose)               "Opção de Longa Exposição S. Chambers"
@@ -188,6 +194,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,camera)                   "WebCam"
 
    set caption(webcam,canal_usb)                "USB Video Channel"
+   set caption(webcam,mode_video)               "Video måde"
    set caption(webcam,miroir_x)                 "Horisontal spejl"
    set caption(webcam,miroir_y)                 "Vertikal spejl"
    set caption(webcam,longuepose)               "S. Chambers Long Exposure Option"
