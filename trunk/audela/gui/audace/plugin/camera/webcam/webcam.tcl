@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.34 2008-04-27 15:45:03 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.35 2008-04-27 20:09:59 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -271,9 +271,10 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -values $list_combobox
    pack $frm.port -in $frm.frame8 -anchor center -side left -padx 0
 
-   if { $::tcl_platform(os) == "windows" } {
-      ##set list_combobox [ list "vfw" "directx" ]
-      #--- le mode videao DIRECTX n'est pas propose car il faut VisualC8 pour compiler les DLL de la webcam
+   #--- Choix du mode video
+   if { $::tcl_platform(platform) == "windows" } {
+      ###set list_combobox [ list "vfw" "directx" ]
+      #--- le mode video DIRECTX n'est pas propose car il faut VisualC8 pour compiler les DLL de la webcam
       set list_combobox [ list "vfw" ]
       #--- video mode
       ComboBox $frm.videomode \
@@ -286,6 +287,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
          -values $list_combobox
       pack $frm.videomode -in $frm.frame8 -anchor center -side left -padx 0
    }
+
    #--- Miroir en x et en y
    checkbutton $frm.mirx -text "$caption(webcam,miroir_x)" -highlightthickness 0 \
       -variable ::webcam::private($camItem,mirh)
@@ -459,7 +461,8 @@ proc ::webcam::configureCamera { camItem bufNo } {
          -sensorcolor [expr $conf(webcam,$camItem,ccd_N_B)==0 ] \
       ]
       console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
-         $caption(webcam,2points) $conf(webcam,$camItem,channel) videomode=$conf(webcam,$camItem,videomode)\n"
+         $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
+      console::affiche_erreur "$caption(webcam,mode_video) $caption(webcam,2points) $conf(webcam,$camItem,videomode)\n"
       console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
          $conf(webcam,$camItem,longuepose)\n"
       console::affiche_saut "\n"
@@ -470,13 +473,11 @@ proc ::webcam::configureCamera { camItem bufNo } {
       #--- Je configure l'oriention des miroirs par defaut
       cam$camNo mirrorh $conf(webcam,$camItem,mirh)
       cam$camNo mirrorv $conf(webcam,$camItem,mirv)
-
       #--- Je configure le format video (pour Linux uniquement)
       if { $::tcl_platform(os) == "Linux" } {
          cam$camNo videoformat $conf(webcam,$camItem,videoformat)
          cam$camNo framerate $conf(webcam,$camItem,framerate)
       }
-
       #--- Parametrage des longues poses
       if { $conf(webcam,$camItem,longuepose) == "1" } {
          switch [ ::confLink::getLinkNamespace $conf(webcam,$camItem,longueposeport) ] {
