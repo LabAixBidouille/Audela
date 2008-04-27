@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -79,7 +79,7 @@ int CmdDeletePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
       if(toto) {
          sprintf(ligne,"catch {%s%d close}",classname,numero);
          Tcl_Eval(interp,ligne);
-         Tcl_SetResult(interp,"",TCL_VOLATILE);
+         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
          pool->RetirerDev(toto);
          sprintf(ligne,"%s%d",classname,numero);
 			Tcl_DeleteCommand(interp,ligne);
@@ -298,7 +298,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
             // Instancie de l'objet en fonction du telescope demande
             toto = new CDevice();
             pool->Ajouter(numero,toto);
-            dontCreateCommand = 1;      
+            dontCreateCommand = 1;
             // Cree la nouvelle commande par le biais de l'unique
             // commande exportee de la librairie libtel.
             sprintf(ligne,"%s tel%d %s ",argv[1],toto->no,argv[2]);
@@ -371,7 +371,7 @@ int CmdCreatePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
                // Instancie de l'objet en fonction du link demande
                toto = new CDevice();
                pool->Ajouter(0,toto);
-               dontCreateCommand = 1;      
+               dontCreateCommand = 1;
                // Cree la nouvelle commande par le biais de l'unique
                // commande exportee de la librairie liblink.
                sprintf(ligne,"%s link%d %s ",argv[1],toto->no,argv[2]);

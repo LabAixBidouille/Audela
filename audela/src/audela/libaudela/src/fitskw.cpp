@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -52,11 +52,11 @@ CFitsKeyword::~CFitsKeyword()
 }
 
 void CFitsKeyword::SetKeyword(
-     char *a_nom,
+     const char *a_nom,
      void *a_data,
      int a_datatype,
-     char *a_comment,
-     char *a_unit
+     const char *a_comment,
+     const char *a_unit
      )
 {
    if(a_nom!=NULL) {
@@ -125,8 +125,8 @@ void CFitsKeyword::SetKeyword(
 
 /*
  * CFitsKeyword::GetIntValue
- *    retoune la valeur du mot cle sous forme d'un entier 
- *   
+ *    retoune la valeur du mot cle sous forme d'un entier
+ *
  */
 void CFitsKeyword::GetIntValue(int*data,int*default_data)
 {
@@ -140,9 +140,9 @@ void CFitsKeyword::GetIntValue(int*data,int*default_data)
 
 /*
  * CFitsKeyword::GetPtrValue
- *    retoune la valeur du mot cle sous forme d'un pointeur 
+ *    retoune la valeur du mot cle sous forme d'un pointeur
  *    sur la variable corresdant au datatype du mot clé
- *   
+ *
  */
 void * CFitsKeyword::GetPtrValue()
 {
@@ -262,10 +262,10 @@ CFitsKeywords::~CFitsKeywords()
 
 
 //------------------------------------------------------------------------------
-// CFitsKeywords::FindKeyword renvoie le pointeur du mot-cle s'il existe deja 
+// CFitsKeywords::FindKeyword renvoie le pointeur du mot-cle s'il existe deja
 // la liste. Sinon elle renvoie NULL.
 //
-CFitsKeyword* CFitsKeywords::FindKeyword(char*kw_name)
+CFitsKeyword* CFitsKeywords::FindKeyword(const char*kw_name)
 {
    CFitsKeyword *kwd;
 
@@ -300,7 +300,7 @@ CFitsKeyword* CFitsKeywords::FindKeyword(char*kw_name)
 // Fonction d'ajout d'un mot-cle a la liste chainee des mots-cles. Attention !
 // Si le mot-cle n'existe pas deja dans la liste, alors il est cree.
 //
-CFitsKeyword* CFitsKeywords::AddKeyword(char*kw_name)
+CFitsKeyword* CFitsKeywords::AddKeyword(const char*kw_name)
 {
    CFitsKeyword *kwd;
    kwd = FindKeyword(kw_name);
@@ -330,11 +330,11 @@ CFitsKeyword* CFitsKeywords::AddKeyword(char*kw_name)
 // ecrase.
 //
 void CFitsKeywords::Add(
-     char*a_nom,
+     const char*a_nom,
      void*a_data,
      int a_datatype,
-     char*a_comment,
-     char*a_unit
+     const char*a_comment,
+     const char*a_unit
      )
 {
    CFitsKeyword *kwd;
@@ -343,14 +343,14 @@ void CFitsKeywords::Add(
 }
 
 
-void CFitsKeywords::Add(char *nom, char *data, char *datatype, char *comment, char *unit)
+void CFitsKeywords::Add(const char *nom, const char *data, const char *datatype, const char *comment, const char *unit)
 {
    int iDatatype;
    int iInt;
    double dDouble;
    float fFloat;
    void *pvData;
-   
+
    if(strcmp(datatype,"float")==0) {
       iDatatype = TFLOAT;
       sscanf(data,"%f",&fFloat);
