@@ -1,7 +1,7 @@
 /** @file camtcl.h
- * 
+ *
  * Functions C-Tcl specifics for this camera.
- * 
+ *
  * Fonctions C-Tcl specifiques a cette camera. A programmer.
  *
  */
@@ -9,6 +9,7 @@
 #ifndef __CAMTCL_H__
 #define __CAMTCL_H__
 
+#include <tcl.h>
 
 #define COMMON_FUNCS \
    {"videoformat",          (Tcl_CmdProc *)cmdCamVideoFormat}, \
@@ -20,7 +21,8 @@
 
 #if defined(OS_WIN)
 #define OS_SPECIFIC_FUNCS \
-   {"videosource",          (Tcl_CmdProc *)cmdCamVideoSource}, \
+   {"widget",                    (Tcl_CmdProc *)cmdCamWidget}, \
+   {"videosource",               (Tcl_CmdProc *)cmdCamVideoSource}, \
    {"startvideoview",            (Tcl_CmdProc *)cmdCamStartVideoView}, \
    {"stopvideoview",             (Tcl_CmdProc *)cmdCamStopVideoView}, \
    {"startvideocapture",         (Tcl_CmdProc *)cmdCamStartVideoCapture}, \
@@ -28,11 +30,7 @@
    {"setvideostatusvariable",    (Tcl_CmdProc *)cmdCamSetVideoSatusVariable}, \
    {"startvideocrop",            (Tcl_CmdProc *)cmdCamStartVideoCrop}, \
    {"stopvideocrop",             (Tcl_CmdProc *)cmdCamStopVideoCrop}, \
-   {"setvideocroprect",          (Tcl_CmdProc *)cmdCamSetVideoCropRect}, \
-   {"startvideoguiding",         (Tcl_CmdProc *)cmdCamStartVideoGuiding}, \
-   {"stopvideoguiding",          (Tcl_CmdProc *)cmdCamStopVideoGuiding}, \
-   {"setvideoguidingcallback",   (Tcl_CmdProc *)cmdCamSetVideoGuidingCallback}, \
-   {"setvideoguidingtargetsize", (Tcl_CmdProc *)cmdCamSetVideoGuidingTargetSize},
+   {"setvideocroprect",          (Tcl_CmdProc *)cmdCamSetVideoCropRect},
 #endif
 
 #if defined(OS_LIN)
@@ -53,6 +51,7 @@ extern "C" {			/* Assume C declarations for C++ */
 #endif				/* __cplusplus */
 
     /* === Specific commands for that camera === */
+    int cmdCamWidget(ClientData clientData, Tcl_Interp * interp, int argc, Tcl_Obj *CONST objv[]);
     int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
@@ -80,10 +79,6 @@ extern "C" {			/* Assume C declarations for C++ */
     int cmdCamStartVideoCrop(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamStopVideoCrop(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamSetVideoCropRect(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamStartVideoGuiding(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamStopVideoGuiding(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamSetVideoGuidingCallback(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamSetVideoGuidingTargetSize(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 #endif	//defined(OS_WIN)
 
 

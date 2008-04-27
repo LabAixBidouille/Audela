@@ -54,7 +54,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib vfw32.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libwebcam.dll"
+# ADD LINK32 kernel32.lib gdi32.lib user32.lib winspool.lib comdlg32.lib shell32.lib uuid.lib tclstub84.lib vfw32.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libwebcam.dll" /libpath:"..\..\..\external\lib"
+# SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "libwebcam - Win32 Debug"
 
@@ -81,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ..\..\..\external\lib\tclstub84.lib vfw32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libwebcam.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib tclstub84.lib vfw32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libwebcam.dll" /libpath:"..\..\..\external\lib"
 
 !ENDIF 
 
@@ -106,15 +107,19 @@ SOURCE=..\src\Capture.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\CaptureListener.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\CaptureWinVfw.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\CropCapture.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\src\CropConfig.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\GuidingCapture.cpp
 # End Source File
 # Begin Source File
 
@@ -150,19 +155,7 @@ SOURCE=..\src\CaptureListener.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\CropCapture.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\CropConfig.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\GuidingCapture.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\GuidingCaptureListener.h
+SOURCE=..\src\CaptureWinVfw.h
 # End Source File
 # Begin Source File
 

@@ -2,31 +2,27 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_CROPCAPTURE_H__8F19E0F0_6A65_4531_97B5_A4FBB1C6BECC__INCLUDED_)
-#define AFX_CROPCAPTURE_H__8F19E0F0_6A65_4531_97B5_A4FBB1C6BECC__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif				// _MSC_VER > 1000
+#ifndef __CROP_CAPTURE_H__
+#define __CROP_CAPTURE_H__
 
 
 #include "CropConfig.h"
-#include "Capture.h"
+#include "CaptureWinVfw.h"
 
 class CCropCapture:public CCropConfig {
   public:
-    CCropCapture(CCapture * capture);
+    CCropCapture(CCaptureWinVfw * capture);
     virtual ~ CCropCapture();
 
     void startCropPreview(void);
     void stopCropPreview(void);
-    int startCropCapture();
+    int startCropCapture(unsigned short exptime, unsigned long microSecPerFrame, char * fileName);
     int stopCropCapture(void);
     static LRESULT CALLBACK previewCropCallbackProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     static LRESULT CALLBACK cropCallbackOnSequenceProc(HWND hwnd, VIDEOHDR * vhdr);
 
 
-     protected: CCapture * capture;
+     protected: CCaptureWinVfw * capture;
 
     // crop capture 
     BITMAPINFO inputbi;
