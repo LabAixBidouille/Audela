@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -113,78 +113,78 @@ int cmdAutocuts(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 
 static struct cmditem cmdlist[] = {
-   {"add", (Tcl_CmdProc *)cmdTtAdd},
-   {"autocuts", (Tcl_CmdProc *)cmdAutocuts},
-   {"barycenter", (Tcl_CmdProc *)cmdBarycenter},
-   {"binx", (Tcl_CmdProc *)cmdBinX},
-   {"biny", (Tcl_CmdProc *)cmdBinY},
-   {"bitpix", (Tcl_CmdProc *)cmdBitpix},
-   {"centro", (Tcl_CmdProc *)cmdAstroPhot},
-   {"cfa2rgb", (Tcl_CmdProc *)cmdCfa2rgb},
-   {"clear", (Tcl_CmdProc *)cmdClear},
-   {"clipmax", (Tcl_CmdProc *)cmdClipmax},
-   {"clipmin", (Tcl_CmdProc *)cmdClipmin},
-   {"compress", (Tcl_CmdProc *)cmdCompress},
-   {"copykwd", (Tcl_CmdProc *)cmdCopyKwd},
-   {"copyto", (Tcl_CmdProc *)cmdCopyTo},
-   {"create3d", (Tcl_CmdProc *)cmdCreate3d},
-   {"div", (Tcl_CmdProc *)cmdTtDiv},
-   {"delkwd",(Tcl_CmdProc *)cmdDelKwd},
-   {"delkwds",(Tcl_CmdProc *)cmdDelKwds},
-   {"extension", (Tcl_CmdProc *)cmdExtension},
-   {"fitellip", (Tcl_CmdProc *)cmdTtFitellip},
-   {"fitgauss", (Tcl_CmdProc *)cmdFitGauss},
-   {"fitgauss2d", (Tcl_CmdProc *)cmdFitGauss2d},
-   {"flux", (Tcl_CmdProc *)cmdAstroPhot},
-   {"fwhm", (Tcl_CmdProc *)cmdFwhm},
-   {"getkwd", (Tcl_CmdProc *)cmdGetKwd},
-   {"getkwds", (Tcl_CmdProc *)cmdGetKwds},
-   {"getnaxis",         (Tcl_CmdProc *)cmdGetNaxis},
-   {"getpix",           (Tcl_CmdProc *)cmdGetPix},
-   {"getpixels",        (Tcl_CmdProc *)cmdGetPixels},
-   {"getpixelsheight",  (Tcl_CmdProc *)cmdGetPixelsHeight},
-   {"getpixelswidth",   (Tcl_CmdProc *)cmdGetPixelsWidth},
-   {"histo", (Tcl_CmdProc *)cmdHistogram},
-   {"imaseries", (Tcl_CmdProc *)cmdImaSeries},
-   {"imageready", (Tcl_CmdProc *)cmdImageReady},
-   {"initialcut", (Tcl_CmdProc *)cmdRestoreInitialCut},
-   {"load", (Tcl_CmdProc *)cmdLoadSave},
-   {"load3d", (Tcl_CmdProc *)cmdLoad3d},
-   {"log", (Tcl_CmdProc *)cmdTtLog},
-   {"mergepixels", (Tcl_CmdProc *)cmdMergePixels},
-   {"mirrorx", (Tcl_CmdProc *)cmdTtMirrorX},
-   {"mirrory", (Tcl_CmdProc *)cmdTtMirrorY},
-   {"mult", (Tcl_CmdProc *)cmdMult},
-   {"ngain", (Tcl_CmdProc *)cmdTtNGain},
-   {"noffset", (Tcl_CmdProc *)cmdTtNOffset},
-   {"offset", (Tcl_CmdProc *)cmdTtOffset},
-   {"opt", (Tcl_CmdProc *)cmdTtOpt},
-   {"phot", (Tcl_CmdProc *)cmdAstroPhot},
-   {"photom", (Tcl_CmdProc *)cmdPhotom},
-   {"pointer", (Tcl_CmdProc *)cmdPointer},
-   {"radec2xy", (Tcl_CmdProc *)cmdRadec2xy},
-   {"rot", (Tcl_CmdProc *)cmdTtRot},
-   {"save", (Tcl_CmdProc *)cmdLoadSave},
-   {"save1d", (Tcl_CmdProc *)cmdSave1d},
-   {"save3d", (Tcl_CmdProc *)cmdSave3d},
-   {"savejpeg", (Tcl_CmdProc *)cmdSaveJpg},
-   {"scale", (Tcl_CmdProc *)cmdScale},
-   {"scar", (Tcl_CmdProc *)cmdScar},
-   {"setkwd", (Tcl_CmdProc *)cmdSetKwd},
-   {"setpix", (Tcl_CmdProc *)cmdSetPix},
-   {"setpixels", (Tcl_CmdProc *)cmdSetPixels},
-   {"slitcentro", (Tcl_CmdProc *)cmdSlitCentro},
-   {"sub", (Tcl_CmdProc *)cmdTtSub},
-   {"substars", (Tcl_CmdProc *)cmdSubStars},
-   {"stat", (Tcl_CmdProc *)cmdTtStat},
-   {"synthegauss", (Tcl_CmdProc *)cmdGauss},
-   {"type", (Tcl_CmdProc *)cmdType},
-   {"unsmear", (Tcl_CmdProc *)cmdTtUnsmear},
-   {"xy2radec", (Tcl_CmdProc *)cmdXy2radec},
-   {"window", (Tcl_CmdProc *)cmdWindow},
-   {"A_starlist",(Tcl_CmdProc *)cmdA_StarList},
-   {"ubg",(Tcl_CmdProc *)cmdUnifyBg},
-   {"region",(Tcl_CmdProc *)cmdRegion},
+   {(char*)"add", (Tcl_CmdProc *)cmdTtAdd},
+   {(char*)"autocuts", (Tcl_CmdProc *)cmdAutocuts},
+   {(char*)"barycenter", (Tcl_CmdProc *)cmdBarycenter},
+   {(char*)"binx", (Tcl_CmdProc *)cmdBinX},
+   {(char*)"biny", (Tcl_CmdProc *)cmdBinY},
+   {(char*)"bitpix", (Tcl_CmdProc *)cmdBitpix},
+   {(char*)"centro", (Tcl_CmdProc *)cmdAstroPhot},
+   {(char*)"cfa2rgb", (Tcl_CmdProc *)cmdCfa2rgb},
+   {(char*)"clear", (Tcl_CmdProc *)cmdClear},
+   {(char*)"clipmax", (Tcl_CmdProc *)cmdClipmax},
+   {(char*)"clipmin", (Tcl_CmdProc *)cmdClipmin},
+   {(char*)"compress", (Tcl_CmdProc *)cmdCompress},
+   {(char*)"copykwd", (Tcl_CmdProc *)cmdCopyKwd},
+   {(char*)"copyto", (Tcl_CmdProc *)cmdCopyTo},
+   {(char*)"create3d", (Tcl_CmdProc *)cmdCreate3d},
+   {(char*)"div", (Tcl_CmdProc *)cmdTtDiv},
+   {(char*)"delkwd",(Tcl_CmdProc *)cmdDelKwd},
+   {(char*)"delkwds",(Tcl_CmdProc *)cmdDelKwds},
+   {(char*)"extension", (Tcl_CmdProc *)cmdExtension},
+   {(char*)"fitellip", (Tcl_CmdProc *)cmdTtFitellip},
+   {(char*)"fitgauss", (Tcl_CmdProc *)cmdFitGauss},
+   {(char*)"fitgauss2d", (Tcl_CmdProc *)cmdFitGauss2d},
+   {(char*)"flux", (Tcl_CmdProc *)cmdAstroPhot},
+   {(char*)"fwhm", (Tcl_CmdProc *)cmdFwhm},
+   {(char*)"getkwd", (Tcl_CmdProc *)cmdGetKwd},
+   {(char*)"getkwds", (Tcl_CmdProc *)cmdGetKwds},
+   {(char*)"getnaxis",         (Tcl_CmdProc *)cmdGetNaxis},
+   {(char*)"getpix",           (Tcl_CmdProc *)cmdGetPix},
+   {(char*)"getpixels",        (Tcl_CmdProc *)cmdGetPixels},
+   {(char*)"getpixelsheight",  (Tcl_CmdProc *)cmdGetPixelsHeight},
+   {(char*)"getpixelswidth",   (Tcl_CmdProc *)cmdGetPixelsWidth},
+   {(char*)"histo", (Tcl_CmdProc *)cmdHistogram},
+   {(char*)"imaseries", (Tcl_CmdProc *)cmdImaSeries},
+   {(char*)"imageready", (Tcl_CmdProc *)cmdImageReady},
+   {(char*)"initialcut", (Tcl_CmdProc *)cmdRestoreInitialCut},
+   {(char*)"load", (Tcl_CmdProc *)cmdLoadSave},
+   {(char*)"load3d", (Tcl_CmdProc *)cmdLoad3d},
+   {(char*)"log", (Tcl_CmdProc *)cmdTtLog},
+   {(char*)"mergepixels", (Tcl_CmdProc *)cmdMergePixels},
+   {(char*)"mirrorx", (Tcl_CmdProc *)cmdTtMirrorX},
+   {(char*)"mirrory", (Tcl_CmdProc *)cmdTtMirrorY},
+   {(char*)"mult", (Tcl_CmdProc *)cmdMult},
+   {(char*)"ngain", (Tcl_CmdProc *)cmdTtNGain},
+   {(char*)"noffset", (Tcl_CmdProc *)cmdTtNOffset},
+   {(char*)"offset", (Tcl_CmdProc *)cmdTtOffset},
+   {(char*)"opt", (Tcl_CmdProc *)cmdTtOpt},
+   {(char*)"phot", (Tcl_CmdProc *)cmdAstroPhot},
+   {(char*)"photom", (Tcl_CmdProc *)cmdPhotom},
+   {(char*)"pointer", (Tcl_CmdProc *)cmdPointer},
+   {(char*)"radec2xy", (Tcl_CmdProc *)cmdRadec2xy},
+   {(char*)"rot", (Tcl_CmdProc *)cmdTtRot},
+   {(char*)"save", (Tcl_CmdProc *)cmdLoadSave},
+   {(char*)"save1d", (Tcl_CmdProc *)cmdSave1d},
+   {(char*)"save3d", (Tcl_CmdProc *)cmdSave3d},
+   {(char*)"savejpeg", (Tcl_CmdProc *)cmdSaveJpg},
+   {(char*)"scale", (Tcl_CmdProc *)cmdScale},
+   {(char*)"scar", (Tcl_CmdProc *)cmdScar},
+   {(char*)"setkwd", (Tcl_CmdProc *)cmdSetKwd},
+   {(char*)"setpix", (Tcl_CmdProc *)cmdSetPix},
+   {(char*)"setpixels", (Tcl_CmdProc *)cmdSetPixels},
+   {(char*)"slitcentro", (Tcl_CmdProc *)cmdSlitCentro},
+   {(char*)"sub", (Tcl_CmdProc *)cmdTtSub},
+   {(char*)"substars", (Tcl_CmdProc *)cmdSubStars},
+   {(char*)"stat", (Tcl_CmdProc *)cmdTtStat},
+   {(char*)"synthegauss", (Tcl_CmdProc *)cmdGauss},
+   {(char*)"type", (Tcl_CmdProc *)cmdType},
+   {(char*)"unsmear", (Tcl_CmdProc *)cmdTtUnsmear},
+   {(char*)"xy2radec", (Tcl_CmdProc *)cmdXy2radec},
+   {(char*)"window", (Tcl_CmdProc *)cmdWindow},
+   {(char*)"A_starlist",(Tcl_CmdProc *)cmdA_StarList},
+   {(char*)"ubg",(Tcl_CmdProc *)cmdUnifyBg},
+   {(char*)"region",(Tcl_CmdProc *)cmdRegion},
    {NULL, NULL}
 };
 
@@ -271,7 +271,7 @@ int cmdSetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          }
          Tcl_Free((char*)listArgv);
       }
-            
+
    }
    free(ligne);
    return retour;
@@ -339,13 +339,13 @@ int cmdGetKwd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
    if(argc!=3) {
       sprintf(ligne,"Usage: %s getkwd keyname",argv[0]);
-      retour = TCL_ERROR; 
+      retour = TCL_ERROR;
    } else {
       buffer = (CBuffer*)clientData;
       keywords = (CFitsKeywords*)buffer->GetKeywords();
       if(keywords==NULL) {
          strcpy(ligne,CError::message(ELIBSTD_NO_KWDS));
-         retour = TCL_ERROR; 
+         retour = TCL_ERROR;
       } else {
          kwd = keywords->FindKeyword(argv[2]);
          if(kwd==NULL) {
@@ -508,7 +508,7 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
  * buf$i imageready --
  *    Fonction permettant de savoir si une image est chargée dans le buffer
  *
- * Parameters: 
+ * Parameters:
  *    none
  * Results:
  *    returns 1 if pixels are ready, otherwise 0.
@@ -615,35 +615,35 @@ int cmdBitpix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       if(argc==2) {
          switch(buffer->GetSavingType()) {
             case BYTE_IMG:
-               Tcl_SetResult(interp,"byte",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"byte",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             case SHORT_IMG:
-               Tcl_SetResult(interp,"short",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"short",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             case USHORT_IMG:
-               Tcl_SetResult(interp,"ushort",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"ushort",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             case LONG_IMG:
-               Tcl_SetResult(interp,"long",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"long",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             case ULONG_IMG:
-               Tcl_SetResult(interp,"ulong",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"ulong",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             case FLOAT_IMG:
-               Tcl_SetResult(interp,"float",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"float",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             case DOUBLE_IMG:
-               Tcl_SetResult(interp,"double",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"double",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             default:
-               Tcl_SetResult(interp,"internal error",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"internal error",TCL_VOLATILE);
                retour = TCL_ERROR;
                break;
          }
@@ -651,22 +651,22 @@ int cmdBitpix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          if((strcmp(argv[2],"byte")==0)||(strcmp(argv[2],"8")==0)) {
             buffer->SetSavingType(BYTE_IMG);
             retour = TCL_OK;
-         } else if((strcmp(argv[2],"short")==0)||(strcmp(argv[2],"16")==0)) {
+         } else if((strcmp(argv[2],(char*)"short")==0)||(strcmp(argv[2],"16")==0)) {
             buffer->SetSavingType(SHORT_IMG);
             retour = TCL_OK;
-         } else if((strcmp(argv[2],"ushort")==0)||(strcmp(argv[2],"+16")==0)) {
+         } else if((strcmp(argv[2],(char*)"ushort")==0)||(strcmp(argv[2],"+16")==0)) {
             buffer->SetSavingType(USHORT_IMG);
             retour = TCL_OK;
-         } else if((strcmp(argv[2],"long")==0)||(strcmp(argv[2],"32")==0)) {
+         } else if((strcmp(argv[2],(char*)"long")==0)||(strcmp(argv[2],"32")==0)) {
             buffer->SetSavingType(LONG_IMG);
             retour = TCL_OK;
-         } else if((strcmp(argv[2],"ulong")==0)||(strcmp(argv[2],"+32")==0)) {
+         } else if((strcmp(argv[2],(char*)"ulong")==0)||(strcmp(argv[2],"+32")==0)) {
             buffer->SetSavingType(ULONG_IMG);
             retour = TCL_OK;
-         } else if((strcmp(argv[2],"float")==0)||(strcmp(argv[2],"-32")==0)) {
+         } else if((strcmp(argv[2],(char*)"float")==0)||(strcmp(argv[2],"-32")==0)) {
             buffer->SetSavingType(FLOAT_IMG);
             retour = TCL_OK;
-         } else if((strcmp(argv[2],"double")==0)||(strcmp(argv[2],"-64")==0)) {
+         } else if((strcmp(argv[2],(char*)"double")==0)||(strcmp(argv[2],"-64")==0)) {
             buffer->SetSavingType(DOUBLE_IMG);
             retour = TCL_OK;
          } else {
@@ -702,15 +702,15 @@ int cmdCompress(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       if(argc==2) {
          switch(buffer->GetCompressType()) {
             case BUFCOMPRESS_NONE:
-               Tcl_SetResult(interp,"none",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"none",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             case BUFCOMPRESS_GZIP:
-               Tcl_SetResult(interp,"gzip",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"gzip",TCL_VOLATILE);
                retour = TCL_OK;
                break;
             default:
-               Tcl_SetResult(interp,"internal error",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"internal error",TCL_VOLATILE);
                retour = TCL_ERROR;
                break;
          }
@@ -781,9 +781,9 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    char *ligne    = NULL;
    int retour;
    CBuffer *Buffer;
-   
+
    ligne = (char*)malloc(1000);
-   
+
    if(argc<3) {
       sprintf(ligne,"Usage: %s %s filename ?fits|gif|bmp|jpeg|tiff? ?options? ",argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -795,7 +795,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       path2 = (char*)calloc(256,sizeof(char));
       nom_fichier = (char*)calloc(1000,sizeof(char));
       Buffer = (CBuffer*)clientData;
-      
+
       // Decodage du nom de fichier : chemin, nom du fichier, etc.
       // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
       sprintf(ligne,"file dirname [encoding convertfrom identity {%s}]",argv[2]); Tcl_Eval(interp,ligne); strcpy(path2,interp->result);
@@ -803,25 +803,25 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       sprintf(ligne,"file extension \"%s\"",argv[2]); Tcl_Eval(interp,ligne);
       if(strcmp(interp->result, "")==0) {
          // set default extension
-         strcpy(extfits,Buffer->GetExtension()); 
-         strcpy(ext,Buffer->GetExtension()); 
+         strcpy(extfits,Buffer->GetExtension());
+         strcpy(ext,Buffer->GetExtension());
       } else {
          strcpy(extfits,"");
-         strcpy(ext,interp->result); 
+         strcpy(ext,interp->result);
          // je supprime le suffixe de l'extension (numero d'image d'un fichier fit en 3 dimensions)
-         sprintf(ligne,"string tolower [lindex [split \"%s\" \";\"] 0]",ext); 
+         sprintf(ligne,"string tolower [lindex [split \"%s\" \";\"] 0]",ext);
          Tcl_Eval(interp,ligne);
-         strcpy(ext,interp->result); 
+         strcpy(ext,interp->result);
       }
-      sprintf(ligne,"file join {%s} {%s%s}",path2,name,extfits); 
-      Tcl_Eval(interp,ligne); 
+      sprintf(ligne,"file join {%s} {%s%s}",path2,name,extfits);
+      Tcl_Eval(interp,ligne);
       strcpy(nom_fichier,interp->result);
-      
+
 
       try {
          if(strcmp(argv[1],"save")==0) {
             //  save  JPEG
-            if( strcmp(ext, ".jpg")== 0 || strcmp(ext, ".jpeg")== 0 ) {            
+            if( strcmp(ext, ".jpg")== 0 || strcmp(ext, ".jpeg")== 0 ) {
                unsigned char *palette[3];
                unsigned char pal0[256];
                unsigned char pal1[256];
@@ -833,7 +833,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                int mirrorx;
                int mirrory;
 
-               
+
                // je fabrique une palette par défaut
                palette[0] = pal0;
                palette[1] = pal1;
@@ -843,18 +843,18 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                      pal1[i]= i;
                      pal2[i]= i;
                   }
-            
+
                // je fabrique des seuils par defaut
-               kwd = Buffer->GetKeywords()->FindKeyword("MIPS-HI");
+               kwd = Buffer->GetKeywords()->FindKeyword((char*)"MIPS-HI");
                cuts[0] = kwd->GetFloatValue();
                cuts[2] = kwd->GetFloatValue();
                cuts[4] = kwd->GetFloatValue();
-               kwd = Buffer->GetKeywords()->FindKeyword("MIPS-LO");
+               kwd = Buffer->GetKeywords()->FindKeyword((char*)"MIPS-LO");
                cuts[1] = kwd->GetFloatValue();
                cuts[3] = kwd->GetFloatValue();
                cuts[5] = kwd->GetFloatValue();
-            
-               // je recupere la taille 
+
+               // je recupere la taille
                width = Buffer->GetW();
                height = Buffer->GetH();
                planes = Buffer->GetNaxis();
@@ -862,24 +862,24 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                quality = 80;
                mirrorx = 0;
                mirrory = 0;
-            
+
                Buffer->SaveJpg(nom_fichier, quality, cuts, palette, mirrorx , mirrory ) ;
 
             } else if( strcmp(ext, ".crw")== 0   // canon raw image
                     || strcmp(ext, ".nef")== 0   // nikon raw image
                     || strcmp(ext, ".cr2")== 0   // canon raw image
                     || strcmp(ext, ".dng")== 0   // nikon raw image
-                     ) {  
+                     ) {
                //--- SAVE RAW file (crw, nef, cr2 , dng )
                Buffer->SaveRawFile(nom_fichier);
                retour = TCL_OK;
-               
+
             } else {
                //--- FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
-               //--- save FITS file               
+               //--- save FITS file
                if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
                   // je supprime ".gz" à la fin du fichier si ".gz" est present
-                  // parce que libtt ne supporte pas l'extension ".gz" 
+                  // parce que libtt ne supporte pas l'extension ".gz"
                   // a cause de la deuxième passe pour l'enregistrement des nouveaux mots cles.
                   char * strfound = strstr(nom_fichier,".gz");
                   if ( strfound != NULL && strfound==nom_fichier+strlen(nom_fichier)-3 ) {
@@ -887,31 +887,31 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                   }
                }
                Buffer->SaveFits(nom_fichier);
-               // compression eventuelle du fichier               
+               // compression eventuelle du fichier
                if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
                   sprintf(ligne,"catch {file delete {%s.gz} }",nom_fichier); Tcl_Eval(interp,ligne);
-                  sprintf(ligne,"gzip {%s}",nom_fichier); 
+                  sprintf(ligne,"gzip {%s}",nom_fichier);
                   Tcl_Eval(interp,ligne);
                   if( Tcl_Eval(interp,ligne) != TCL_OK  ) {
                      throw CError("gzip %s",interp->result);
-                  } else { 
+                  } else {
                      // je verifie que gzip retourn "1"
                      if(strcmp(interp->result,"0")!=0) {
                         throw CError("gzip %s returns %s : Intermediate file not found ",nom_fichier,interp->result);
                      }
                   }
                }
-               
+
                retour = TCL_OK;
             }
          } else {
             // LoadFile (tous les formats)
-            
+
             Buffer->LoadFile(nom_fichier);
-         }      
-         
-         Tcl_SetResult(interp,"",TCL_VOLATILE);
-         retour = TCL_OK;         
+         }
+
+         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
+         retour = TCL_OK;
          free(name);
          free(extfits);
          free(ext);
@@ -1431,9 +1431,9 @@ int cmdGetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                         retour = TCL_OK;
                      }
                   }
-                  
+
                   if ( retour == TCL_OK) {
-                     try { 
+                     try {
                         buffer->GetPix(&plane,&val1,&val2,&val3,x,y);
                         buffer->GetDataType(&dt);
                      switch(dt) {
@@ -1539,7 +1539,7 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                            buffer->SetPix(PLANE_R, (TYPE_PIXELS)valred,x,y);
                            buffer->SetPix(PLANE_G, (TYPE_PIXELS)valgreen,x,y);
                            buffer->SetPix(PLANE_B, (TYPE_PIXELS)valblue,x,y);
-                        }                          
+                        }
                      } catch(const CError& e) {
                         sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
                         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
@@ -1560,7 +1560,7 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 }
 
 //==============================================================================
-// buf$i getpixels pixelsPtr 
+// buf$i getpixels pixelsPtr
 //
 // retourne une copie du tableau de pixels (format float, non compressé)
 // l'appelant doit avoir réservé l'espace mémoire dans lequel seront retournés les pixels
@@ -1571,7 +1571,7 @@ int cmdGetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    char *ligne;              // Ligne affectee dans le resultat de la commande TCL.
    int retour;               // Code d'erreur de retour.
    int pixels;
-   TColorPlane colorPlane; 
+   TColorPlane colorPlane;
 
    ligne = (char*)calloc(1000,sizeof(char));
    if(argc < 3  || argc > 4) {
@@ -1579,12 +1579,12 @@ int cmdGetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       free(ligne);
       return TCL_ERROR;
-   } else {    
+   } else {
       if(Tcl_GetInt(interp,argv[2],&pixels)!=TCL_OK) {
          sprintf(ligne,"Usage: %s %s pixelsPtr\nppixelsPtr must be an integer > 0",argv[0],argv[1]);
          retour =  TCL_ERROR;
-      }    
-      
+      }
+
       if((argc==4) ) {
          if( (colorPlane = CPixels::getColorPlane( argv[3] )) == PLANE_UNKNOWN ){
             sprintf(ligne,"Usage: %s %s pixelsPtr [PLANE_GREY|PLANE_RGB|PLANE_R|PLANE_G|PLANE_B]",argv[0],argv[1]);
@@ -1612,14 +1612,14 @@ int cmdGetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    }
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    free(ligne);
-   
+
    return retour;
 }
 
 //==============================================================================
 // buf$i getnaxis
 //   retuns image naxis
-//   
+//
 //
 int cmdGetNaxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -1646,7 +1646,7 @@ int cmdGetNaxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 //==============================================================================
 // buf$i getpixelsheight
 //   retuns image height
-//   
+//
 //
 int cmdGetPixelsHeight(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -1673,7 +1673,7 @@ int cmdGetPixelsHeight(ClientData clientData, Tcl_Interp *interp, int argc, char
 // buf$i getpixelswidth
 //   retruns image width
 //
-//   
+//
 //
 int cmdGetPixelsWidth(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -1699,15 +1699,15 @@ int cmdGetPixelsWidth(ClientData clientData, Tcl_Interp *interp, int argc, char 
 //==============================================================================
 // buf$i setpixels class width height bitpix compression pixelsPtr [-keep_keywords] --
 
-//  required parameters : 
+//  required parameters :
 //      class       CLASS_GRAY|CLASS_RGB
-//      width       columns number  
-//      height      lines number     
-//      format      FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT 
+//      width       columns number
+//      height      lines number
+//      format      FORMAT_BYTE|FORMAT_SHORT|FORMAT_USHORT|FORMAT_FLOAT
 //      compression COMPRESS_NONE|COMPRESS_I420|COMPRESS_JPEG|COMPRESS_RAW
-//      pixelData   pointer to pixels data  (if pixelData is null, set a black image ) 
-//  optional parameters     
-//      -keep_keywords  keep previous keywords of the buffer  
+//      pixelData   pointer to pixels data  (if pixelData is null, set a black image )
+//  optional parameters
+//      -keep_keywords  keep previous keywords of the buffer
 //      -pixelSize   size of pixelData (if COMPRESS_JPEG,COMPRESS_RAW, because with and height are unknown)
 //      -reverseX    if "1" , apply vertical mirror
 //      -reverseY    if "1" , apply horizontal mirror
@@ -1722,7 +1722,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
    TPixelFormat pixelFormat;
    TPixelCompression compression;
    int  pixelData;           // pointeur vers le le tableau de pixels
-   long pixelSize;           // taille du tableau de pixels 
+   long pixelSize;           // taille du tableau de pixels
    int keep_keywords;
    int i;
    int reverse_x =0;
@@ -1736,54 +1736,54 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       free(ligne);
       return TCL_ERROR;
    } else {
-      
+
       // parametres obligatoires
       if( (pixelClass = CPixels::getPixelClass( argv[2] )) == CLASS_UNKNOWN ){
          sprintf(ligne,"Usage: %s %s %s\n class must be CLASS_GRAY|CLASS_RGB|CLASS_3D|CLASS_VIDEO ",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       }
-      
+
       if((Tcl_GetInt(interp,argv[3],&width)!=TCL_OK)&&(retour==TCL_OK)) {
          sprintf(ligne,"Usage: %s %s %s\nwidth must be an integer > 0",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
-      } 
-      
+      }
+
       if((Tcl_GetInt(interp,argv[4],&height)!=TCL_OK)&&(retour==TCL_OK)) {
          sprintf(ligne,"Usage: %s %s %s\nheight must be an integer > 0",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
-      } 
-      
+      }
+
       if( ((pixelFormat = CPixels::getPixelFormat( argv[5] )) == FORMAT_UNKNOWN )&&(retour==TCL_OK)){
          sprintf(ligne,"Usage: %s %s %s\n bitpix must be FORMAT_BYTE|FORMAT_SHORT|FORMAT_FLOAT",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       }
-      
+
       if( ((compression = CPixels::getPixelCompression( argv[6] )) == COMPRESS_UNKNOWN)&&(retour==TCL_OK) ){
          sprintf(ligne,"Usage: %s %s %s\n compression must be COMPRESS_NONE|COMPRESS_I420",argv[0],argv[1],comment);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour =  TCL_ERROR;
       }
-      
+
       pixelData=0;
       if (argc>=8) {
          if((Tcl_GetInt(interp,argv[7],&pixelData)!=TCL_OK)&&(retour==TCL_OK)) {
             sprintf(ligne,"Usage: %s %s %s\nppixels must be an integer > 0",argv[0],argv[1],argv[2]);
          retour =  TCL_ERROR;
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      } 
+      }
       }
 
       keep_keywords = DONT_KEEP_KEYWORDS;
-   
+
       //  lecture des parametres optionels
       for (i = 8; i < argc; i++) {
    	   if (strcmp(argv[i], "-keep_keywords") == 0) {
             keep_keywords = KEEP_KEYWORDS;
-         } 
+         }
 
 	      if (strcmp(argv[i], "-pixels_size") == 0) {
 	         pixelSize = atol(argv[i + 1]);
@@ -1806,7 +1806,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 	      }
 	   }
    }
-    
+
    if( retour != TCL_ERROR ) {
       buffer = (CBuffer*)clientData;
       if(buffer==NULL) {
@@ -1819,7 +1819,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                buffer->SetPixels(PLANE_GREY, width, height, pixelFormat, compression, (void *) pixelData, pixelSize, reverse_x, reverse_y);
             } else {
                buffer->SetPixels(PLANE_RGB, width, height, pixelFormat, compression, (void *) pixelData, pixelSize, reverse_x, reverse_y);
-            } 
+            }
             retour = TCL_OK;
          } catch(const CError& e) {
             sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -1829,7 +1829,7 @@ int cmdSetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       }
    }
    free(ligne);
-   
+
    return retour;
 }
 
@@ -1843,7 +1843,7 @@ int cmdMergePixels(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    int retour;               // Code d'erreur de retour.
    TColorPlane colorPlane;
    int pixels;
-   
+
    ligne = (char*)calloc(1000,sizeof(char));
    if((argc != 4)) {
       sprintf(ligne,"Usage: %s %s colorpane pixels ",argv[0],argv[1]);
@@ -1854,12 +1854,12 @@ int cmdMergePixels(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       if( (colorPlane = CPixels::getColorPlane( argv[2] )) == PLANE_UNKNOWN ){
          sprintf(ligne,"Usage: %s %s colorpane pixels\n colorplane must be PLANE_RED|PLANE_GREEN|PLANE_BLUE",argv[0],argv[1]);
          retour =  TCL_ERROR;
-      }     
-      
+      }
+
       if(Tcl_GetInt(interp,argv[3],&pixels)!=TCL_OK) {
          sprintf(ligne,"Usage: %s %s colorpane width height bitpix compression pixels\nppixels must be an integer > 0",argv[0],argv[1]);
          retour =  TCL_ERROR;
-      } 
+      }
 
       buffer = (CBuffer*)clientData;
       if(buffer==NULL) {
@@ -1878,7 +1878,7 @@ int cmdMergePixels(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
    }
    Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    free(ligne);
-   
+
    return retour;
 }
 
@@ -1999,7 +1999,7 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                retour = TCL_ERROR;
             } else if((x1<=0)||(x1>naxis1)||(y1<=0)||(y1>naxis2)||
                       (x2<=0)||(x2>naxis1)||(y2<=0)||(y2>naxis2)) {
-               Tcl_SetResult(interp,"Cadre hors de l'image",TCL_VOLATILE);
+               Tcl_SetResult(interp,(char*)"Cadre hors de l'image",TCL_VOLATILE);
                retour = TCL_ERROR;
             } else {
                     /*
@@ -2008,7 +2008,7 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                      int plane;
                      TYPE_PIXELS val1, val2, val3;
                      buffer->GetPix(&plane, &val1, &val2, &val3, x1-1, y1-1);
-                     if ( plane == 1 ) { 
+                     if ( plane == 1 ) {
                         flux = val1;
                      } else {
                          flux = (val1 + val2 + val3 ) /3;
@@ -2028,11 +2028,11 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                   // Petit changement de repere pour avoir des coordonnees partant de (0,0)
                   // et non de (1,1).
                    x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
-                   
+
                    try {
                        // repere le pixel de valeur maximale et flux total
                        buffer->AstroFlux(x1, y1, x2, y2, &flux, &maxi, &xmax, &ymax, &moy, &seuil, &nbpix);
-                       
+
                        // Calcul du centroide.
                        if(cmd==CMD_CENTRO) {
                            buffer->AstroCentro(x1, y1, x2, y2, xmax, ymax, seuil, &sx, &sy, &r);
@@ -2073,17 +2073,17 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
 //
 // method=square : carre.
 //                 args= r1 r2 r3 (cotes des carres)
-//                 F1=somme(r<r1)-mediane(r2<r<r3) 
-//                 F2=mediane(r2<r<r3) 
-//                 F3=moyenne(r2<r<r3) 
+//                 F1=somme(r<r1)-mediane(r2<r<r3)
+//                 F2=mediane(r2<r<r3)
+//                 F3=moyenne(r2<r<r3)
 //                 F4=ecart_type(r2<r<r3) (entre 10% et 90%)
 //                 F5=nb_points(r<r1)
 //
 // method=circle : cercle.
 //                 args= r1 r2 r3 (rayons)
-//                 F1=somme(r<r1)-mediane(r2<r<r3) 
-//                 F2=mediane(r2<r<r3) 
-//                 F3=moyenne(r2<r<r3) 
+//                 F1=somme(r<r1)-mediane(r2<r<r3)
+//                 F2=mediane(r2<r<r3)
+//                 F3=moyenne(r2<r<r3)
 //                 F4=ecart_type(r2<r<r3) (entre 10% et 90%)
 //                 F5=nb_points(r<r1)
 //
@@ -2157,7 +2157,7 @@ int cmdPhotom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       if (x2<x1) { xx1=x1; x1=x2; x2=xx1; }
       if (y2<y1) { yy1=y1; y1=y2; y2=yy1; }
       if((x1<0)||(x1>=naxis1)||(y1<0)||(y1>=naxis2)||(x2<0)||(x2>=naxis1)||(y2<0)||(y2>=naxis2)) {
-         Tcl_SetResult(interp,"Cadre hors de l'image",TCL_VOLATILE);
+         Tcl_SetResult(interp,(char*)"Cadre hors de l'image",TCL_VOLATILE);
          return TCL_ERROR;
       }
       // --- decode la methode
@@ -2172,7 +2172,7 @@ int cmdPhotom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             r1=atof(argv[4]);
             r2=atof(argv[5]);
             r3=atof(argv[6]);
-            
+
             try {
                buffer->AstroPhotom(x1, y1, x2, y2, method, r1, r2, r3, &flux, &f23, &fmoy, &sigma,&n1);
                // - sortie des resultats
@@ -2262,7 +2262,7 @@ int cmdBarycenter(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       }
       x1 -= 1; y1 -= 1; x2 -= 1; y2 -= 1;
       if((x1<0)||(x1>=naxis1)||(y1<0)||(y1>=naxis2)||(x2<0)||(x2>=naxis1)||(y2<0)||(y2>=naxis2)) {
-         Tcl_SetResult(interp,"Cadre hors de l'image",TCL_VOLATILE);
+         Tcl_SetResult(interp,(char*)"Cadre hors de l'image",TCL_VOLATILE);
          return TCL_ERROR;
       }
       // --- barycentre
@@ -2344,19 +2344,19 @@ int cmdTtSub(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          char fileName[1024];
 
          // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
-         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
-         Tcl_Eval(interp,ligne); 
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
+         Tcl_Eval(interp,ligne);
          strcpy(fileName,interp->result);
-         
+
          // j'ajoute l'extension par defaut si necessaire
-         sprintf(ligne,"file extension \"%s\"",fileName); 
+         sprintf(ligne,"file extension \"%s\"",fileName);
          Tcl_Eval(interp,ligne);
          if(strcmp(interp->result, "")==0) {
-            strcat(fileName,buffer->GetExtension()); 
+            strcat(fileName,buffer->GetExtension());
          }
 
          buffer->Sub(fileName,(float)offset);
-         Tcl_SetResult(interp,"",TCL_VOLATILE);
+         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -2398,19 +2398,19 @@ int cmdTtAdd(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          char fileName[1024];
 
          // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
-         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
-         Tcl_Eval(interp,ligne); 
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
+         Tcl_Eval(interp,ligne);
          strcpy(fileName,interp->result);
-         
+
          // j'ajoute l'extension par defaut si necessaire
-         sprintf(ligne,"file extension \"%s\"",fileName); 
+         sprintf(ligne,"file extension \"%s\"",fileName);
          Tcl_Eval(interp,ligne);
          if(strcmp(interp->result, "")==0) {
-            strcat(fileName,buffer->GetExtension()); 
+            strcat(fileName,buffer->GetExtension());
          }
-         
+
          buffer->Add(fileName,(float)offset);
-         Tcl_SetResult(interp,"",TCL_VOLATILE);
+         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -2451,17 +2451,17 @@ int cmdTtDiv(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          char fileName[1024];
 
          // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
-         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
-         Tcl_Eval(interp,ligne); 
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
+         Tcl_Eval(interp,ligne);
          strcpy(fileName,interp->result);
-         
+
          // j'ajoute l'extension par defaut si necessaire
-         sprintf(ligne,"file extension \"%s\"",fileName); 
+         sprintf(ligne,"file extension \"%s\"",fileName);
          Tcl_Eval(interp,ligne);
          if(strcmp(interp->result, "")==0) {
-            strcat(fileName,buffer->GetExtension()); 
+            strcat(fileName,buffer->GetExtension());
          }
-         
+
          buffer->Div(fileName,(float)gain);
          retour = TCL_OK;
 
@@ -2616,27 +2616,27 @@ int cmdTtOpt(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          char offsetFileName[1024];
 
          // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
-         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
-         Tcl_Eval(interp,ligne); 
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
+         Tcl_Eval(interp,ligne);
          strcpy(darkFileName,interp->result);
-         
+
          // j'ajoute l'extension par defaut si necessaire
-         sprintf(ligne,"file extension \"%s\"",darkFileName); 
+         sprintf(ligne,"file extension \"%s\"",darkFileName);
          Tcl_Eval(interp,ligne);
          if(strcmp(interp->result, "")==0) {
-            strcat(darkFileName,buffer->GetExtension()); 
+            strcat(darkFileName,buffer->GetExtension());
          }
 
          // "encoding convertfrom identity" sert a traiter correctement les caracteres accentues
-         sprintf(ligne,"encoding convertfrom identity {%s}",argv[3]); 
-         Tcl_Eval(interp,ligne); 
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[3]);
+         Tcl_Eval(interp,ligne);
          strcpy(offsetFileName,interp->result);
-         
+
          // j'ajoute l'extension par defaut si necessaire
-         sprintf(ligne,"file extension \"%s\"",offsetFileName); 
+         sprintf(ligne,"file extension \"%s\"",offsetFileName);
          Tcl_Eval(interp,ligne);
          if(strcmp(interp->result, "")==0) {
-            strcat(offsetFileName,buffer->GetExtension()); 
+            strcat(offsetFileName,buffer->GetExtension());
          }
 
          buffer->Opt(darkFileName,offsetFileName);
@@ -2932,8 +2932,8 @@ int cmdClipmin(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       try {
-      buffer->Clipmin(value);
-      Tcl_SetResult(interp,"",TCL_VOLATILE);
+         buffer->Clipmin(value);
+         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -2974,8 +2974,8 @@ int cmdClipmax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
       // Appel a la methode du buffer
       buffer = (CBuffer*)clientData;
       try {
-      buffer->Clipmax(value);
-      Tcl_SetResult(interp,"",TCL_VOLATILE);
+         buffer->Clipmax(value);
+         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -3205,7 +3205,7 @@ int cmdRadec2xy(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
    if(argc<3) {
       sprintf(ligne,"Usage: %s %s {ra dec} ?order?",argv[0],argv[1]);
       retour = TCL_ERROR;
-   } else {      
+   } else {
       if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
          sprintf(ligne,"Position struct not valid (not a list?) : must be {ra dec}");
          retour = TCL_ERROR;
@@ -3694,7 +3694,7 @@ int cmdGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          } else {
             buffer = (CBuffer*)clientData;
             buffer->SyntheGauss(xc-1.,yc-1.,imax,imax,fwhmx,fwhmy,limitadu);
-            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
             retour = TCL_OK;
          }
          Tcl_Free((char*)listArgv);
@@ -3759,7 +3759,7 @@ int cmdScale(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          retour = TCL_ERROR;
       } else {
          if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
-            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
             return TCL_ERROR;
          }
          scalex=atof(listArgv[0]);
@@ -4043,7 +4043,7 @@ int cmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          buffer = (CBuffer*)clientData;
          try {
             buffer->Cfa2Rgb(method);
-            Tcl_SetResult(interp,"",TCL_VOLATILE);
+            Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
             retour = TCL_OK;
          } catch(const CError& e) {
             sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -4165,7 +4165,7 @@ int cmdMult(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       // Appel a la methode du buffer
       try {
          buffer->TtImaSeries(s);
-         strcpy(ligne,"");               
+         strcpy(ligne,"");
          retour = TCL_OK;
       } catch(const CError& e) {
          sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
@@ -4234,6 +4234,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    {
    CBuffer *buffer;
    char *ligne,*filename;
+   int fileFormat =1;
    int msg,retour=TCL_OK;
    double threshin=0;
 
@@ -4249,7 +4250,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    char **listArgv;          // Liste des argulents passes a getpix.
    int listArgc;             // Nombre d'elements dans la liste des coordonnees.
 
-   char usage[]="Usage: %s %s threshin ?filename? ?after_gauss? ?fwhm? ?radius? ?border? ?threshold?\n%s";
+   char usage[]="Usage: %s %s threshin ?filename? ?after_gauss? ?fwhm? ?radius? ?border? ?threshold? ?outputformat?\n%s";
 
 
    /*
@@ -4264,7 +4265,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    filename - where save the star list - ?optional?
 
    after_gauss - ?optional?, copy to buffer image after gauss filter, y or n - default n
-                 
+
    fwhm - ?optional?, default 3.0, best betwen 2.0 and 4.0
 
    radius - ?optional?, default 4, "radius" of gauss matrix  - size is (2*radius+1) x (2*radius+1)
@@ -4273,6 +4274,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 
    threshold - ?optional?, default 40.0, best betwen 30.0 and 50.0, is used after gauss filter
               when procerure is looking for stars, pixels below threshold are not taken
+   outputFormat - ?optional?, text file=1 (default), fits table =2
    */
 
    filename = NULL;
@@ -4280,13 +4282,13 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    ligne = new char[1024];
    buffer = (CBuffer*)clientData;
 
-   if(argc<3 || argc>10) {
+   if(argc<3 || argc>11) {
       sprintf(ligne,usage,argv[0],argv[1],"bad number of arguments");
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_ERROR;
    }
    else
-   {	   
+   {
 	   if(Tcl_GetDouble(interp,argv[2],&threshin)!=TCL_OK)
 	   {
 		   sprintf(ligne,usage,argv[0],argv[1],"threshin is not double");
@@ -4309,7 +4311,7 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
 				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 				   retour = TCL_ERROR;
 			   }
-		   if(argc>=6 && retour == TCL_OK)			   
+		   if(argc>=6 && retour == TCL_OK)
 			   if(Tcl_GetDouble(interp,argv[5],&fwhm)!=TCL_OK)
 			   {
 				   sprintf(ligne,usage,argv[0],argv[1],"fwhm is not double");
@@ -4367,27 +4369,40 @@ int cmdA_StarList(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                }
             }
          }
+		   if(argc>=11 && retour == TCL_OK)
+			   if(Tcl_GetInt(interp,argv[10],&fileFormat)!=TCL_OK)
+			   {
+				   sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
+				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				   retour = TCL_ERROR;
+            } else {
+               if ( fileFormat < 1 || fileFormat > 2 ) {
+				      sprintf(ligne,usage,argv[0],argv[1],"output format must be 1 or 2 (defaut=1)");
+				      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+				      retour = TCL_ERROR;
 
+               }
+            }
 
 		   if(retour == TCL_OK)
 		   {
             try {
-			   msg = buffer->A_StarList(x1,y1,x2,y2,threshin,filename,fwhm,radius,border,threshold,after_gauss);
+			   msg = buffer->A_StarList(x1-1,y1-1,x2-1,y2-1,threshin,filename, fileFormat, fwhm,radius,border,threshold,after_gauss);
 				   sprintf(ligne,"%d",msg);
                retour = TCL_OK;
             } catch(const CError& e) {
                sprintf(ligne,"%s %s %s ",argv[1],argv[2], e.gets());
 				   retour = TCL_ERROR;
-			   } 
+			   }
 				   Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 		   }
 	   }
    }
-   
+
    delete ligne;
    return retour;
 }
-   
+
 int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
    CBuffer *buffer;          // Buffer de travail pour cette fonction.
@@ -4538,7 +4553,7 @@ int cmdUnifyBg(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 //==============================================================================
 // buf$i region --
 //   calcul si un point (x y) est dans un polygone (x1 y1 x2 y2 .... )
-//   
+//
 //
 int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -4569,38 +4584,38 @@ int cmdRegion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
          if(Tcl_SplitList(interp,argv[2],&regionArgc,&regionArgv)!=TCL_OK) {
             throw CError("Region struct not valid (not a list?) : must be {x1 y1 x2 y2 ... }");
-         } 
+         }
          if(Tcl_SplitList(interp,argv[3],&pointArgc,&pointArgv)!=TCL_OK) {
             throw CError("Region struct not valid (not a list?) : must be { x y ... }");
-         } 
-         
+         }
+
          nbPoints = regionArgc/2;
          ppoints = (POINT *) malloc(nbPoints * sizeof(POINT));
          for(int i =0; i< nbPoints; i++ ) {
             if(Tcl_GetDouble(interp,regionArgv[i*2], &value)!=TCL_OK) {
                throw CError("Region not valid : point[%d].x=%s is not integer", i/2, regionArgv[i*2]);
-            } 
+            }
             ppoints[i].x = (long) value;
             if(Tcl_GetDouble(interp,regionArgv[i*2+1],&value)!=TCL_OK) {
                throw CError("Region struct not valid : point[%d].y=%s is not integer", i/2, regionArgv[i*2+1]);
-            } 
+            }
             ppoints[i].y = (long) value;
          }
 
          if(Tcl_GetDouble(interp,pointArgv[0],&value)!=TCL_OK) {
-            throw CError("Point not valid : point.x=%s is not integer", i, pointArgv[0]);
-         } 
+            throw CError("Point not valid : point.x=%s is not integer", pointArgv[0]);
+         }
          x = (int) value;
          if(Tcl_GetDouble(interp,pointArgv[1],&value)!=TCL_OK) {
             throw CError("Point not valid : y=%s is not integer", pointArgv[1]);
-         } 
+         }
          y = (int) value;
 
 
          region = CreatePolygonRgn( ppoints,  nbPoints, WINDING);
          isInRegion = PtInRegion(region, x, y);
          DeleteObject(region);
-      
+
 	      sprintf(ligne,"%d",isInRegion);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          retour = TCL_OK;
@@ -4640,7 +4655,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
    char **listArgv;                   // Liste des argulents passes a getpix.
    int listArgc;                      // Nombre d'elements dans la liste des coordonnees.
    char parameters[]= "{x1 y1 x2 y2} slitwidth signalRatio";
-   
+
    // On recupere les parametres (et eventuellement on en met par defaut).
    if(argc!=5) {
       sprintf(ligne,"Usage: %s %s %s ",argv[0],argv[1],parameters);
@@ -4684,7 +4699,7 @@ int cmdSlitCentro(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             double xc, yc;                     // centroide sur la fente
             double signal1, signal2;           // signal sur les levres basse et haute
             TYPE_PIXELS maxi;
-   
+
             buffer = (CBuffer*)clientData;
             try {
                if (x1 > x2) {
