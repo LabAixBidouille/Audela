@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.19 2008-04-12 20:39:32 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.20 2008-04-27 08:25:12 bmauclaire Exp $
 
 
 
@@ -1367,8 +1367,13 @@ proc spc_traite2srinstrum { args } {
 
        #--- Addition de $nbimg images :
        ::console::affiche_resultat "\n\n**** Addition de $nbimg images ****\n\n"
-       set fsadd [ spc_somme "$freg" ]
-       #set fsadd [ bm_smed $freg ]
+       if { $flag_nonstellaire==1 } {
+          #-- Somme des images pour les spectres non-stellaires car faibles :
+          set fsadd [ spc_somme "$freg" add ]
+       } else {
+          #-- Somme moyenne des images pour les spectres stellaires car brillants :
+          set fsadd [ spc_somme "$freg" moy ]
+       }
 
        if { $rmfpretrait=="o" } {
 	   delete2 "$fgeom" $nbimg
@@ -1820,7 +1825,7 @@ proc spc_traitenebula { args } {
        #--- Application aux spectre de l'étoile :
        #-- L'export au format PNG est ici réalisé en dehors de spc_traite2srinstrum : donc "n".
        #-- Pas de gestion de deux spectres de lampes de calibration : donc "n".
-       set spectre_traite [ spc_traite2srinstrum "$brut" "$noir_master" "$plu" "$noirplu_master" "$offset" "$lampe_traitee" "$rinstrum" $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $rmfpretrait "n" "n" $flag_2lamps $spc_windowcoords ]
+       set spectre_traite [ spc_traite2srinstrum "$brut" "$noir_master" "$plu" "$noirplu_master" "$offset" "$lampe_traitee" "$rinstrum" $methreg $methcos $methsel $methsky $methinv $methbin $methnorma $methsmo $ejbad $ejtilt $rmfpretrait "n" $flag_2lamps $spc_windowcoords ]
 
 
        #--- Export au format PNG :

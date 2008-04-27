@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.20 2008-04-12 20:39:32 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.21 2008-04-27 08:25:12 bmauclaire Exp $
 
 
 
@@ -299,6 +299,7 @@ proc spc_pretrait { args } {
 
        #-- Normalisation des flats pour les spectres sur la bande horizontale (naxis1) d'étude :
        if { $flag_nonstellaire==1 } {
+          # Ne pas faire de superflat normalisé ? A tester.
 	   set hauteur [ expr [ lindex $spc_windowcoords 3 ] - [ lindex $spc_windowcoords 1 ] ]
 	   set ycenter [ expr round(0.5*$hauteur)+[ lindex $spc_windowcoords 1 ] ]
 	   set flatnorma [ spc_normaflat "${pref_flat}-smd$nb_flat" $ycenter $hauteur ]
@@ -395,15 +396,26 @@ proc spc_pretrait { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 09-09-2007
 # Date de mise a jour : 09-09-2007
-# Argument : nom_generique_fichier (sans extension)
+# Argument : nom_generique_fichier (sans extension) ?methode somme?
 ###############################################################################
 
 proc spc_somme { args } {
    global audace
    global conf
 
-   if {[llength $args] == 1} {
-       set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
+   set nb_args [ llength $args] 
+   if { $nb_args <= 2 } {
+      if { $nb_args == 1 } {
+         set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
+         set methsomme "moy"
+      } elseif { $nb_args == 2 } {
+         set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
+         set methsomme [ lindex $args 1 ]
+      } else {
+         ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (add/moy)?\n\n"
+         return ""
+      }
+
        set liste_fichiers [ lsort -dictionary [ glob -dir $audace(rep_images) ${nom_generique}\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_generique}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
        set nb_file [ llength $liste_fichiers ]
 
@@ -422,8 +434,11 @@ proc spc_somme { args } {
        #--- Somme :
        ::console::affiche_resultat "Somme de $nb_file images...\n"
        renumerote "$nom_generique"
-       # sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
-       smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+      if { $methsomme == "add" } {
+         sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+      } elseif { $methsomme == "moy" } {
+         smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+      }
        
        #--- Calcul de EXPTIME et MID-HJD :
        #-- Extime :
@@ -455,7 +470,7 @@ proc spc_somme { args } {
        ::console::affiche_resultat "Somme sauvées sous ${nom_generique}-s$nb_file\n"
        return "${nom_generique}-s$nb_file"
    } else {
-       ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier\n\n"
+       ::console::affiche_erreur "Usage: spc_somme nom_generique_fichier ?méthode somme (add/moy)?\n\n"
    }
 }
 #-----------------------------------------------------------------------------#
@@ -1511,7 +1526,7 @@ proc spc_divri { args } {
 	    set xfin [ expr round($naxis1*(1.-$spcaudace(pourcent_bord))) ]
 	    set lresult_div_cut [ lrange $lresult_div $xdeb $xfin ]
 	    #-- Calcul la valeur maximale :
-	    set i_max [ lindex [ lsort -real -decreasing $lresult_div_cut ] ]
+	    set i_max [ lindex [ lsort -real -decreasing $lresult_div_cut ] 0 ]
 
 	    #-- Calcul la valeur moyenne de la zone de travail :
 	    #set windowcoords [ $xdeb 1 $xfin 1 ]
@@ -1531,7 +1546,7 @@ proc spc_divri { args } {
 		    set resultat_div [ expr 1.0*$ordo1/$ordo2 ]
 		    if { $cdelt1>=0.7 } {
 			if { $i<=$xdeb || $i>=$xfin } {
-			    if { $resultat_div >= $i_max*$spcaudace(imax_tolerence) } { 
+                           if { $resultat_div >= [ expr $i_max*$spcaudace(imax_tolerence) ] } { 
 				buf$audace(bufNo) setpix [list $i 1] 0.
 			    } else {
 				buf$audace(bufNo) setpix [list $i 1] $resultat_div
@@ -1668,7 +1683,10 @@ proc spc_1dto2d { args } {
 	buf$audace(bufNo) setkwd [ list NAXIS2 $hauteur int "" "" ]
 
 	#--- Traitement des résultats :
+        # Les nuances sont tres faibles, donc 32 bits.
+        buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${filename}_2d"
+        buf$audace(bufNo) bitpix short
 	::console::affiche_resultat "Profil élargi en 2D sauvé sauvée sous ${filename}_2d\n"
 	return "${filename}_2d"
     } else {
