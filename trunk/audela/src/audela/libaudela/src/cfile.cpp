@@ -272,6 +272,85 @@ void CFile::saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKey
    free(ppix);
 }
 
+void CFile::saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nbRow, int nbCol, char *columnType, char **columnTitle, char **columnUnits, char **columnData )
+{
+   int msg;                         // Code erreur de libtt
+   int nb_keys;
+   char **keynames=NULL;
+   char **values=NULL;
+   char **comments=NULL;
+   char **units=NULL;
+   int *datatypes=NULL;
+   char binary[20];
+
+   strcpy(binary,"ascii");
+   nb_keys = keywords->GetKeywordNb();   
+   // Allocation de l'espace memoire pour les tableaux de mots-cles
+   if (nb_keys>0) {
+      msg = Libtt_main(TT_PTR_ALLOKEYS,6,&nb_keys,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         throw CErrorLibtt(msg);
+      }
+   }
+   // Conversion keywords vers tableaux 'Made in Klotz'
+   keywords->SetToArray(&keynames,&values,&comments,&units,&datatypes);
+
+
+/**************************************************************************/
+/* Fonction d'interface pour sauver les tables (spectres...)              */
+/**************************************************************************/
+/* ------ entrees obligatoires                                            */
+/* arg1 : *fullname (char*)                                               */
+/* arg2 : *dtype (char* : datatypes des champs)                           */
+/*        short, int, float, double, un nombre de carateres               */
+/*        Permet de connaitre aussi le nombre de champs (tfields)         */
+/* arg3 : **tunit (char** : unite des champs)                             */
+/* arg4 : **ttype (char** : intitule des champs)                          */
+/*  A noter que **table, **tunit, **ttype ont ete dimensionnes par        */
+/*  tt_ptr_allotbl.                                                       */
+/* arg5 : "binary" ou "ascii" en fonction du format de sortie desire.     */
+/* ------ entrees facultatives pour l'entete                              */
+/* arg6 : *nbkeys (int*)                                                  */
+/* arg7 : **keynames (char**)                                             */
+/* arg8 : **values (char**)                                               */
+/* arg9 : **comments (char**)                                             */
+/* arg10 : **units (char**)                                               */
+/* arg11 : *datatype (int*)                                               */
+/* ------ entrees des donnees des colonnes                                */
+/* arg12 *char (char*) chaine de la premiere colonne.                     */
+/* arg13 *char (char*) chaine de la deuxieme colonne.                     */
+/* ...                                                                    */
+/**************************************************************************/
+
+   // j'enregistrement la table
+   if ( nbCol == 9 ) {
+      msg = Libtt_main(TT_PTR_SAVETBL,20,outputFileName,
+         columnType, columnUnits, columnTitle, binary, 
+         &nb_keys,keynames,values,comments,units,datatypes,
+         columnData[0],columnData[1],columnData[2],columnData[3],
+         columnData[4],columnData[5],columnData[6],columnData[7],columnData[8]);
+   }
+   if ( nbCol == 13 ) {
+      msg = Libtt_main(TT_PTR_SAVETBL,24,outputFileName,
+         columnType, columnUnits, columnTitle, binary, 
+         &nb_keys,keynames,values,comments,units,datatypes,
+         columnData[0],columnData[1],columnData[2],columnData[3],
+         columnData[4],columnData[5],columnData[6],columnData[7],columnData[8],
+         columnData[9],columnData[10],columnData[11],columnData[12],columnData[13]);
+   }
+   if(msg) {
+      throw CErrorLibtt(msg);
+   }
+   
+   // Liberation de la memoire allouee par libtt
+   if (nb_keys>0) {
+   msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      if(msg) {
+         throw CErrorLibtt(msg);
+      }
+   }
+}
+
 void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
 {
    unsigned char * decodedData;
@@ -316,7 +395,7 @@ void CFile::loadJpeg(char * filename, int dataTypeOut, CPixels **pixels, CFitsKe
       libdcjpeg_freeBuffer(decodedData);
    } else {
       throw CError("libjpeg_decodeBuffer error=%d", result);
-   }
+   }   
 }
 
 void CFile::saveJpeg(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,  int width, int height, int quality)
@@ -331,7 +410,6 @@ void CFile::saveJpeg(char * filename, unsigned char *dataIn, CFitsKeywords *keyw
 
 void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords)
 {
-
    unsigned short * decodedData;
    int   naxis, width, height;
    float initialMipsLo, initialMipsHi;
@@ -354,7 +432,7 @@ void CFile::loadRaw(char * filename, int dataTypeOut, CPixels **pixels, CFitsKey
       initialMipsLo = (float)dataInfo.black ;
       initialMipsHi = (float)dataInfo.maximum;
       // je recupere la date en temps GMT
-      tmtime = gmtime( &dataInfo.timestamp);
+      tmtime = gmtime( (const time_t *)&dataInfo.timestamp);
       strftime( gmtDate, 70, "%Y-%m-%dT%H:%M:%S", tmtime );
       // je recupere le nom de la camera
       sprintf(camera, "%s %s",dataInfo.make,dataInfo.model);  

@@ -42,6 +42,7 @@ public:
 
    static void loadFits(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
    static void saveFits(char * filename, int dataTypeOut, CPixels *pixels, CFitsKeywords *keywords);
+   static void saveFitsTable(char * outputFileName, CFitsKeywords *keywords, int nbRow, int nbCol, char *columnType, char **columnTitle, char **columnUnits, char **columnData );
 
    //static void loadBmp(char * filename, int dataTypeOut, CPixels **pixels, CFitsKeywords **keywords);
    //static void saveBmp(char * filename, unsigned char *dataIn, CFitsKeywords *keywords, int planes,int width, int height, int quality);
