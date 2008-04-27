@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.1 2008-04-22 17:55:34 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.2 2008-04-27 15:38:17 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -12,7 +12,6 @@ namespace eval ::camerathread {
 
 proc ::camerathread::init { camItem camNo mainThreadNo} {
    variable private
-
 
    set private(camItem)       $camItem
    set private(camNo)         $camNo
@@ -30,14 +29,11 @@ proc ::camerathread::init { camItem camNo mainThreadNo} {
 proc ::camerathread::stopAcquisition { } {
    variable private
 
-   ::camerathread::disp "::camerathread::stopAcquisition \n"
-
    set private(acquisitionState) "0"
    set statusVariableName "::status_cam$private(camNo)"
    if { [set $statusVariableName] == "exp" } {
       cam$private(camNo) stop
    }
-
 }
 
 
@@ -507,7 +503,7 @@ proc ::camerathread::processAcquisitionLoop { } {
 
             #--- je deplace le telescope
             if { $alphaDelay != 0 || $deltaDelay != 0 } {
-               ##::thread::send $private(mainThreadNo) [list ::telescope::moveTelescope $alphaDirection $alphaDelay $deltaDirection $deltaDelay  ]
+               ::thread::send $private(mainThreadNo) [list ::telescope::moveTelescope $alphaDirection $alphaDelay $deltaDirection $deltaDelay  ]
             }
          }
 
@@ -823,7 +819,7 @@ proc ::camerathread::notify { args } {
 
 #------------------------------------------------------------
 # disp
-#    envoiaffiche un message dans la console
+#    affiche un message dans la console
 #
 #
 # parametres :

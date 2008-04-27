@@ -2,13 +2,13 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.15 2008-04-22 17:50:37 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.16 2008-04-27 15:38:17 michelpujol Exp $
 #
 
 namespace eval camera {
    global audace
 
-   package require Thread
+
    #--- Chargement des captions
    source [ file join $audace(rep_caption) camera.cap ]
 

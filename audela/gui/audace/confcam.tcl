@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.112 2008-04-23 17:36:51 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.113 2008-04-27 15:40:15 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -32,17 +32,17 @@ proc ::confCam::init { } {
    if { [info exists ::tcl_platform(threaded)] } {
       if { $::tcl_platform(threaded)==1 } {
          #--- Je charge le package Thread
-         #--- La version minimale 2.6.3 pour disposer de la commande thread::copycommand
-         if { ! [catch {package require Thread 2.6.3}]} {
+         #--- La version minimale 2.6.5.1 pour disposer de la commande thread::copycommand
+         if { ! [catch {package require Thread 2.6.5.1}]} {
             #--- Je redirige les messages d'erreur vers la procedure ::confCam::dispThreadError
             thread::errorproc ::confCam::dispThreadError
          } else {
             set ::tcl_platform(threaded) 0
+            console::affiche_erreur "Thread 2.6.5.1 not present\n"
          }
       }
    } else {
       set ::tcl_platform(threaded) 0
-      console::affiche_erreur "thread not present\n"
    }
 
    #--- Initalise le numero de camera a nul
@@ -97,7 +97,7 @@ proc ::confCam::init { } {
 #------------------------------------------------------------
 # dispThreadError
 #------------------------------------------------------------
-proc ::confCam::dispThreadError { thread_id ErrorInfo } {
+proc ::confCam::dispThreadError { thread_id errorInfo } {
    ::console::disp "thread_id=$thread_id errorInfo=$errorInfo\n"
 }
 
