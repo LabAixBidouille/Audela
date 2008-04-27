@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.33 2008-04-06 08:59:46 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.34 2008-04-27 15:45:03 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -96,6 +96,7 @@ proc ::webcam::initPlugin { } {
       if { ! [ info exists conf(webcam,$camItem,ccd) ] }                  { set conf(webcam,$camItem,ccd)                  "" }
       if { ! [ info exists conf(webcam,$camItem,videoformat) ] }          { set conf(webcam,$camItem,videoformat)          "QCIF" }
       if { ! [ info exists conf(webcam,$camItem,port) ] }                 { set conf(webcam,$camItem,port)                 "/dev/video0" }
+      if { ! [ info exists conf(webcam,$camItem,videomode) ] }            { set conf(webcam,$camItem,videomode)            "vfw" }
 
       if { $::tcl_platform(os) == "Linux" } {
          if { ! [ info exists conf(webcam,$camItem,configWindowPosition)]} { set conf(webcam,$camItem,configWindowPosition) "+0+0" }
@@ -149,6 +150,7 @@ proc ::webcam::confToWidget { } {
       set private($camItem,ccd_N_B)              $conf(webcam,$camItem,ccd_N_B)
       set private($camItem,dim_ccd_N_B)          $conf(webcam,$camItem,dim_ccd_N_B)
       set private($camItem,ccd)                  $conf(webcam,$camItem,ccd)
+      set private($camItem,videomode)            $conf(webcam,$camItem,videomode)
 
       #--- je copie le port correspondant de la camera
       set private($camItem,port)                 $conf(webcam,$camItem,port)
@@ -178,6 +180,7 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,ccd_N_B)              $private($camItem,ccd_N_B)
    set conf(webcam,$camItem,dim_ccd_N_B)          $private($camItem,dim_ccd_N_B)
    set conf(webcam,$camItem,ccd)                  $private($camItem,ccd)
+   set conf(webcam,$camItem,videomode)            $private($camItem,videomode)
 
    #--- je copie la camera correspondant au port
    set conf(webcam,$camItem,port)                 $private($camItem,port)
@@ -256,6 +259,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
    #--- Je constitue la liste des canaux USB
    set list_combobox [ list 0 1 2 3 4 5 6 7 8 9 ]
 
+
    #--- Choix du canal USB
    ComboBox $frm.port \
       -width 5        \
@@ -267,6 +271,21 @@ proc ::webcam::fillConfigPage { frm camItem } {
       -values $list_combobox
    pack $frm.port -in $frm.frame8 -anchor center -side left -padx 0
 
+   if { $::tcl_platform(os) == "windows" } {
+      ##set list_combobox [ list "vfw" "directx" ]
+      #--- le mode videao DIRECTX n'est pas propose car il faut VisualC8 pour compiler les DLL de la webcam
+      set list_combobox [ list "vfw" ]
+      #--- video mode
+      ComboBox $frm.videomode \
+         -width 5        \
+         -height [ llength $list_combobox ] \
+         -relief sunken  \
+         -borderwidth 1  \
+         -textvariable ::webcam::private($camItem,videomode) \
+         -editable 0     \
+         -values $list_combobox
+      pack $frm.videomode -in $frm.frame8 -anchor center -side left -padx 0
+   }
    #--- Miroir en x et en y
    checkbutton $frm.mirx -text "$caption(webcam,miroir_x)" -highlightthickness 0 \
       -variable ::webcam::private($camItem,mirh)
@@ -436,10 +455,11 @@ proc ::webcam::configureCamera { camItem bufNo } {
          -lpport $conf(webcam,$camItem,longueposeport) \
          -name WEBCAM \
          -ccd $conf(webcam,$camItem,ccd) \
+         -videomode $conf(webcam,$camItem,videomode) \
          -sensorcolor [expr $conf(webcam,$camItem,ccd_N_B)==0 ] \
       ]
       console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
-         $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
+         $caption(webcam,2points) $conf(webcam,$camItem,channel) videomode=$conf(webcam,$camItem,videomode)\n"
       console::affiche_erreur "$caption(webcam,longuepose) $caption(webcam,2points)\
          $conf(webcam,$camItem,longuepose)\n"
       console::affiche_saut "\n"
@@ -492,7 +512,6 @@ proc ::webcam::configureCamera { camItem bufNo } {
          #--- Pas de liaison longue pose
          cam$camNo longuepose 0
       }
-
       #--- Gestion des widgets actifs/inactifs
       ::webcam::configWebCam $camItem
 
@@ -756,9 +775,6 @@ namespace eval ::webcam::config {
 proc ::webcam::config::run { visuNo camItem } {
    variable private
 
-   #--- je recupere le numero de la camera
-   set private($camItem,camNo) [::confCam::getVisuNo $camItem]
-
    if { $::tcl_platform(os) == "Linux" } {
       set private($visuNo,toplevel) "[confVisu::getBase $visuNo].webcamconfig"
       set private($visuNo,camItem) $camItem
@@ -776,7 +792,7 @@ proc ::webcam::config::run { visuNo camItem } {
       }
       set result 0
    } else {
-      set result [ after 10 "cam$private($camItem,camNo) videosource" ]
+      set result [ after 10 "cam$::webcam::private($camItem,camNo) videosource" ]
    }
    return $result
 }
@@ -883,7 +899,7 @@ proc ::webcam::config::onSelectFrameRate { visuNo tklist } {
    if { $index != "" } {
       set private($visuNo,framerate) [$tklist get $index ]
       set camItem $private($visuNo,camItem)
-      set camNo $private($camItem,camNo)
+      set camNo $::webcam::private($camItem,camNo)
       if { $private($visuNo,framerate) != $::conf(webcam,$camItem,framerate) } {
          set catchResult [ catch { cam$camNo framerate $private($visuNo,framerate) } catchMessage ]
          if { $catchResult == 0 } {
@@ -916,7 +932,7 @@ proc ::webcam::config::onSelectShutter { visuNo tklist value } {
 
    set camItem $private($visuNo,camItem)
    if { $private($visuNo,shutter) != $::conf(webcam,$camItem,shutter) } {
-      set camNo $private($camItem,camNo)
+      set camNo $::webcam::private($camItem,camNo)
       if { $private($visuNo,autoShutter) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
          append value "."
@@ -945,7 +961,7 @@ proc ::webcam::config::onSelectGain { visuNo tkscale value } {
    set camItem $private($visuNo,camItem)
 
    if { $private($visuNo,gain) != $::conf(webcam,$camItem,gain) } {
-      set camNo $private($camItem,camNo)
+      set camNo $::webcam::private($camItem,camNo)
       if { $private($visuNo,autoGain) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
          append value "."
@@ -979,7 +995,7 @@ proc ::webcam::config::onSetAutoShutter { visuNo tklist } {
    set camItem $private($visuNo,camItem)
 
    if { $private($visuNo,autoShutter) != $::conf(webcam,$camItem,autoShutter)  } {
-      set camNo $private($camItem,camNo)
+      set camNo $::webcam::private($camItem,camNo)
       if { $private($visuNo,autoShutter) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
          set value $::conf(webcam,$camItem,shutter)
@@ -1013,7 +1029,7 @@ proc ::webcam::config::onSetAutoGain { visuNo tkscale } {
    set camItem $private($visuNo,camItem)
 
     if { $private($visuNo,autoGain) != $::conf(webcam,$camItem,autoGain) } {
-      set camNo $private($camItem,camNo)
+      set camNo $::webcam::private($camItem,camNo)
       if { $private($visuNo,autoGain) == 0 } {
          #--- j'ajoute un point pour transformer en valeur decimale
          set value $::conf(webcam,$camItem,autoGain)
