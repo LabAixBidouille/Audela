@@ -1,7 +1,7 @@
 /** @file camtcl.c
  *
  * Functions C-Tcl specifics for this camera.
- * 
+ *
  * Fonctions C-Tcl specifiques a cette camera. A programmer.
  *
 */
@@ -16,14 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "camera.h"
-#include <libcam/libcam.h>
-#include "camtcl.h"
-#include <libcam/util.h>
 
-#if defined(OS_WIN)
-#include "GuidingCapture.h"
-#endif
 
 #if defined(OS_LIN)
 #include <unistd.h>
@@ -33,14 +26,37 @@
 #include <errno.h>
 #endif
 
+
+#include "camtcl.h"
+#include "camera.h"
+#include "Capture.h"
+#include <libcam/libcam.h>
+#include <libcam/util.h>
+//#include "tkvideo.h"
+
+
 /**
- * cmdCamVideoFormat - 
+ * cmdCamWidget -
+ * Sets image format, argument must be format name (one of):
+*/
+int cmdCamWidget(ClientData clientData, Tcl_Interp * interp,
+                         int argc, Tcl_Obj *CONST objv[])
+{
+   int result = TCL_OK;
+   //struct camprop *cam;
+
+   //result = VideoObjCmd(clientData, interp, argc, objv);
+
+   return result;
+}
+/**
+ * cmdCamVideoFormat -
  * Sets image format, argument must be format name (one of):
  * - SQCIF - 128x96
  * - QSIF - 160x120
- * - QCIF - 176x144 
+ * - QCIF - 176x144
  * - SSIF  - 240x176
- * - SIF - 320x240 
+ * - SIF - 320x240
  * - CIF - 352x288
  * - VGA - 640x480.
 */
@@ -130,14 +146,14 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
    } else  if (argc == 2 ) {
       // je retourne le numero du link
       sprintf(ligne,"%d",cam->longueposelinkno);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);      
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    } else {
       // je memorise le numero du link
       if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkno)!=TCL_OK) {
          sprintf(ligne,"Usage: %s %s linkno\n linkno = must be an integer > 0",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
-      } 
+      }
    }
    return result;
 }
@@ -145,7 +161,7 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
 
 /**
  * cmdCamLonguePoseLinkbit
- * Changes or returns the bit number 
+ * Changes or returns the bit number
 */
 int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
@@ -162,14 +178,14 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
    } else  if (argc == 2 ) {
       // je retourne le numero du bit
       sprintf(ligne,"%d",cam->longueposelinkbit);
-      Tcl_SetResult(interp,ligne,TCL_VOLATILE);      
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
    } else {
       // je memorise le numero du bit
       if(Tcl_GetInt(interp,argv[2],&cam->longueposelinkbit)!=TCL_OK) {
          sprintf(ligne,"Usage: %s %s  numbit\n numbit = must be an integer > 0",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
-      } 
+      }
    }
    return result;
 }
@@ -611,9 +627,9 @@ int cmdCamSetVideoParameter(ClientData clientData, Tcl_Interp * interp,
 #if defined(OS_LIN)
 
 /**
- * cmdCamFrameRate - 
+ * cmdCamFrameRate -
  * Sets frame rate capture:
- * 
+ *
 */
 int cmdCamFrameRate(ClientData clientData, Tcl_Interp * interp,
                          int argc, char *argv[])
@@ -634,7 +650,7 @@ int cmdCamFrameRate(ClientData clientData, Tcl_Interp * interp,
       } else {
          Tcl_SetResult(interp, "", TCL_VOLATILE);
          result = TCL_ERROR;
-      }         
+      }
    } else if (argc == 3) {
       if(Tcl_GetInt(interp,argv[2],&frameRate)==TCL_OK) {
          if (webcam_setFrameRate(cam, frameRate) == 0 ) {
@@ -667,38 +683,40 @@ int cmdCamFrameRate(ClientData clientData, Tcl_Interp * interp,
  * - number > 0 - set valid frame on number,
  * - number = 0 - set auto detection mode.
 */
-int cmdCamValidFrame(ClientData clientData, Tcl_Interp * interp, int argc,
-                     char *argv[])
+int cmdCamValidFrame(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[])
 {
-
    int result = TCL_OK;
-
    char ligne[256];
-   int pb = 0, value;
+   int  value;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
-   value = cam->validFrame;
 
    if ((argc < 2) || (argc > 3)) {
-      pb = 1;
-   } else if (argc == 2) {
-      pb = 0;
-   } else {
-      if ((value = atoi(argv[2])) < 0)
-         pb = 1;
-      else
-         pb = 0;
-   }
-   if (pb == 1) {
-      sprintf(ligne, "Usage: %s %s ?valid_frame_number?\n - %s",
-              argv[0], argv[1], "if = 0 autodetection");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      sprintf(ligne, "Usage: %s %s ?nb valid frame?", argv[0], argv[1]);
       result = TCL_ERROR;
+   } else if (argc == 2) {
+      if ( webcam_getVideoParameter(cam, ligne, GETVALIDFRAME)==0) {
+         result = TCL_OK;
+      } else {
+         strcpy(ligne, cam->msg);
+         result = TCL_ERROR;
+      }
    } else {
-      cam->validFrame = value;
-      sprintf(ligne, "%d", cam->validFrame);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      if ((value = atoi(argv[2])) < 0) {
+         sprintf(ligne, "error: %s is negative", argv[2]);
+         result = TCL_ERROR;
+      } else {
+         if ( webcam_setVideoParameter(cam, value, SETVALIDFRAME)==0 ) {
+            sprintf(ligne, "%d", value);
+            result = TCL_OK;
+         } else {
+            strcpy(ligne, cam->msg);
+            result = TCL_ERROR;
+         }
+      }
    }
+
+   Tcl_SetResult(interp, ligne, TCL_VOLATILE);
    return result;
 }
 
@@ -718,25 +736,17 @@ int cmdCamValidFrame(ClientData clientData, Tcl_Interp * interp, int argc,
  * cmdCamVideoSource.
  * Reglage des parametres de la camera
  *
- * Under Linux it calls <b>::confCam::confVideoSource</b> command
  * and shows VideoSource window dialog.
 */
 int cmdCamVideoSource(ClientData clientData, Tcl_Interp * interp, int argc,
                       char *argv[])
 {
-   int result = TCL_ERROR;
-   HWND hWnd = NULL;
+   int result;
+   struct camprop *cam = (struct camprop *) clientData;
 
-   struct camprop *cam;
-   cam = (struct camprop *) clientData;
-
-   if (cam->capture == NULL) {
-      result = TCL_ERROR;
-   } else {
-      cam->capture->openDlgVideoSource();
-      result = TCL_OK;
-   }
-   return result;
+   webcam_openDlgVideoSource(cam);
+   result = TCL_OK;
+   return TCL_OK;
 }
 
 
@@ -750,8 +760,8 @@ int cmdCamVideoSource(ClientData clientData, Tcl_Interp * interp, int argc,
  *  Parametres :
  *    imgno : numero de l'image de type "video" dans laquelle est affichee la video
  */
-int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp, 
-                int argc, char *argv[])
+int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
+                         int argc, char *argv[])
 {
    char ligne[256];
    struct camprop *cam;
@@ -774,7 +784,7 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
          sprintf(ligne, "Error connect webcam to image%d : %s", imgno, Tcl_GetStringResult(interp) );
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          return TCL_ERROR;
-      } else { 
+      } else {
          if ( strcmp(Tcl_GetStringResult(interp), "video") != 0 ) {
             // l'image n'est du type video
             sprintf(ligne, "Error connect webcam to image%d : %s wrong image type, must be video", imgno, Tcl_GetStringResult(interp) );
@@ -784,29 +794,31 @@ int cmdCamStartVideoView(ClientData clientData, Tcl_Interp * interp,
       }
    }
 
-   if( cam->capture->isPreviewEnabled() == 1 ) {
-      sprintf(ligne, "view already in use");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-   // je connecte la fenetre de visualisation a l'image TK
-   sprintf(ligne, "image%d configure -source %ld", imgno, (long)cam->capture->getHwndCapture());
+   // je recupere le handle de la fenetre d'afficher de la video
+   sprintf(ligne, "image%d cget -owner", imgno);
    if( Tcl_Eval(interp, ligne) == TCL_ERROR) {
       // je retourne le message d'erreur fourni par l'interpreteur
-      sprintf(ligne, "Error configure image%d : %s", imgno, Tcl_GetStringResult(interp) );
+      sprintf(ligne, "Error image%d cget -owner: %s", imgno, Tcl_GetStringResult(interp) );
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       return TCL_ERROR;
-   }
-   cam->videonum = imgno;
-
-
-   if ( startVideoPreview(cam, previewRate) == TRUE ) {
-      return TCL_OK;
    } else {
-      return TCL_ERROR;
+      int owner ;
+      if(Tcl_GetInt(interp,Tcl_GetStringResult(interp),&owner)!=TCL_OK) {
+         sprintf(ligne, "Error image%d cget -owner: %s", imgno, Tcl_GetStringResult(interp) );
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         return TCL_ERROR;
+      } else {
+         if ( startVideoPreview(cam, owner, previewRate) == TRUE ) {
+            cam->videonum = imgno;
+            return TCL_OK;
+         } else {
+            sprintf(ligne, "Error startVideoPreview: %s", cam->msg );
+            Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+            return TCL_ERROR;
+         }
+      }
    }
- 
+
 }
 
 /**
@@ -824,19 +836,10 @@ int cmdCamStopVideoView(ClientData clientData, Tcl_Interp * interp, int argc,
 
    cam = (struct camprop *) clientData;
 
-   if( cam->capture->isPreviewEnabled() == 0 ) {
-      // preview is already stopped
-      return TCL_OK;
-   }
-
+   stopVideoPreview(cam);
    // je deconnecte la fenetre de visualisation de l'image TK
    sprintf(ligne, "image%d configure -source %ld", cam->videonum, 0);
    Tcl_Eval(interp, ligne);
-
-
-   stopVideoPreview(cam);
-
-
    return TCL_OK;
 }
 
@@ -848,18 +851,18 @@ int cmdCamStopVideoView(ClientData clientData, Tcl_Interp * interp, int argc,
  *  demarre une aquisition video avec enregistrement dans un fichier AVI
  *
  *  Parametres :
- *    filename :  nom du fichier AVI (chemin complet avec l'extension) 
+ *    filename :  nom du fichier AVI (chemin complet avec l'extension)
  *    exptime  :  duree de la capture en secondes
  *    framerate:  frequence des images en image/seconde
  *    preallocdisk : pre-allouer le fichier sur disque (1=oui, 0=non)
- *    
+ *
  */
-int cmdCamStartVideoCapture(ClientData clientData, Tcl_Interp * interp, 
+int cmdCamStartVideoCapture(ClientData clientData, Tcl_Interp * interp,
                 int argc, char *argv[])
 {
    char ligne[256];
    struct camprop *cam;
-   
+
    unsigned long microSecPerFrame;
    double frameRate;
    unsigned short exptime;
@@ -869,8 +872,6 @@ int cmdCamStartVideoCapture(ClientData clientData, Tcl_Interp * interp,
    //unsigned long  fileSize;
 
    cam = (struct camprop *) clientData;
-
-   sprintf(ligne, "%ld %ld", cam->capture->getCaptureRate() , cam->capture->getTimeLimit());
 
    if ( argc != 6) {
       sprintf(ligne, "Usage: %s %s ?filename? ?exptime? ?framerate? ?preallocdisk?", argv[0], argv[1]);
@@ -911,15 +912,10 @@ int cmdCamStartVideoCapture(ClientData clientData, Tcl_Interp * interp,
          bPreallocDisk = 0;
       }
    }
-    
-   if( cam->capture->isCapturingNow() == 1 ) {
-      sprintf(ligne, "capture already in use");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
+
 
    result = startVideoCapture(cam, exptime, microSecPerFrame, fileName);
-   
+
    if(result == TRUE ) {
          result = TCL_OK;
    } else {
@@ -936,18 +932,13 @@ int cmdCamStartVideoCapture(ClientData clientData, Tcl_Interp * interp,
  *  Parametres :
  *    aucun
  */
-int cmdCamStopVideoCapture(ClientData clientData, Tcl_Interp * interp, 
+int cmdCamStopVideoCapture(ClientData clientData, Tcl_Interp * interp,
                 int argc, char *argv[])
-{   
+{
    struct camprop *cam;
    int result;
 
    cam = (struct camprop *) clientData;
-
-   if( cam->capture->isCapturingNow() == 0 ) {
-      // rien a faire la capture est deja arretee
-      result = TCL_OK;
-   }
 
    // j'arrete la capture
    if(stopVideoCapture(cam) == TRUE ) {
@@ -962,7 +953,7 @@ int cmdCamStopVideoCapture(ClientData clientData, Tcl_Interp * interp,
 
 /**
  * cmdCamSetVideoSatusVariable.
- * declare la variable TCL 
+ * declare la variable TCL
  *
  *  Parametres :
  *    variable : nom de la variable TCL qui reeoit le status pendant la capture
@@ -981,7 +972,7 @@ int cmdCamSetVideoSatusVariable(ClientData clientData, Tcl_Interp * interp,
       result = TCL_ERROR;
    } else {
       // store the TCL variable name
-      cam->captureListener->setTclStatusVariable(argv[2]);
+      webcam_setTclStatusVariable(cam,argv[2]);
       result = TCL_OK;
    }
    return result;
@@ -993,31 +984,22 @@ int cmdCamSetVideoSatusVariable(ClientData clientData, Tcl_Interp * interp,
  *  demarre le mode d'acquisition video fenetree
  *
  *  Parametres :
- *    
+ *
  */
-int cmdCamStartVideoCrop(ClientData clientData, Tcl_Interp * interp, 
+int cmdCamStartVideoCrop(ClientData clientData, Tcl_Interp * interp,
                 int argc, char *argv[])
 {
-   int result;
-   char ligne[256];
+   int result = TCL_ERROR;
    struct camprop *cam;
-   
+
    cam = (struct camprop *) clientData;
-    
-   if( cam->cropCapture != NULL ) {
-      sprintf(ligne, "cropped preview already enable");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
    result = startVideoCrop(cam);
-
    if(result == TRUE ) {
-         result = TCL_OK;
+      result = TCL_OK;
    } else {
+      Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
       result = TCL_ERROR;
    }
-
    return result;
 }
 
@@ -1026,31 +1008,22 @@ int cmdCamStartVideoCrop(ClientData clientData, Tcl_Interp * interp,
  *  arrete le mode d'acquisition video fenetree
  *
  *  Parametres :
- *    
+ *
  */
-int cmdCamStopVideoCrop(ClientData clientData, Tcl_Interp * interp, 
+int cmdCamStopVideoCrop(ClientData clientData, Tcl_Interp * interp,
                 int argc, char *argv[])
 {
-   int result;
-   char ligne[256];
+   int result = TCL_ERROR;
    struct camprop *cam;
-   
+
    cam = (struct camprop *) clientData;
-    
-   if( cam->cropCapture == NULL ) {
-      sprintf(ligne, "cropped preview already disabled");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
    result = stopVideoCrop(cam);
-
    if(result == TRUE ) {
-         result = TCL_OK;
+      result = TCL_OK;
    } else {
+      Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
       result = TCL_ERROR;
    }
-
    return result;
 }
 
@@ -1061,201 +1034,40 @@ int cmdCamStopVideoCrop(ClientData clientData, Tcl_Interp * interp,
  *  change la taille de la fenetre d'acquisition video fenetree
  *
  *  Parametres :
- *    
+ *
  */
-int cmdCamSetVideoCropRect(ClientData clientData, Tcl_Interp * interp, 
+int cmdCamSetVideoCropRect(ClientData clientData, Tcl_Interp * interp,
                 int argc, char *argv[])
 {
-   int result;
-   char ligne[256];
+    int result = TCL_ERROR;
+  char ligne[256];
    struct camprop *cam;
-   long     x1, y1, x2, y2;   
-   
-   cam = (struct camprop *) clientData;
-    
-   if( cam->cropCapture == NULL ) {
-      sprintf(ligne, "cropped mode is disabled");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
+   long     x1, y1, x2, y2;
 
+   cam = (struct camprop *) clientData;
    if ( argc != 6) {
       sprintf(ligne, "Usage: %s %s x1 y1 x2 y2 ", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       return TCL_ERROR;
    }
-   
+
    x1    =  atol(argv[2]);
    y1    =  atol(argv[3]);
    x2    =  atol(argv[4]);
    y2    =  atol(argv[5]);
-   
 
    result = setVideoCropRect(cam, x1, y1, x2, y2);
 
    if(result == TRUE ) {
       result = TCL_OK;
    } else {
+      Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
       result = TCL_ERROR;
    }
-
    return result;
 }
 
 
-/**
- *  cmdCamStartVideoGuiding
- *  demarre le mode d'acquisition video fenetree
- *
- *  Parametres :
- *    
- */
-int cmdCamStartVideoGuiding(ClientData clientData, Tcl_Interp * interp, 
-                int argc, char *argv[])
-{
-   char ligne[256];
-   struct camprop *cam;
-   
-   cam = (struct camprop *) clientData;
-    
-   if( cam->guidingCapture != NULL ) {
-      sprintf(ligne, "guiding preview already enable");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-   cam->guidingListener = new CGuidingListener(interp);
-   cam->guidingCapture = new CGuidingCapture(cam->capture);
-   cam->guidingCapture->setGuidingListener(cam->guidingListener);
-   cam->guidingCapture->startPreview();
-
-   return TCL_OK;
-}
-
-/**
- *  cmdCamStopVideoGuiding
- *  arrete le mode d'acquisition video fenetree
- *
- *  Parametres :
- *    
- */
-int cmdCamStopVideoGuiding(ClientData clientData, Tcl_Interp * interp, 
-                int argc, char *argv[])
-{
-   char ligne[256];
-   struct camprop *cam;
-   
-   cam = (struct camprop *) clientData;
-    
-   if( cam->guidingCapture == NULL ) {
-      sprintf(ligne, "guiding preview already disabled");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-   cam->guidingCapture->stopPreview();
-   delete cam->guidingCapture;
-   cam->guidingCapture = NULL;
-
-   delete  cam->guidingListener;
-   cam->guidingListener = NULL;
-
-
-   return TCL_OK;
-}
-
-/**
- * cmdCamSetVideoGuidingCallback.
- * renseigne la command TCL qui est appelee a la fin de la capture
- *
- *  Parametres :
- *    command : nom de la commande TCL 
- */
-int cmdCamSetVideoGuidingCallback(ClientData clientData, Tcl_Interp * interp,
-                               int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK;
-   struct camprop *cam;
-
-   cam = (struct camprop *) clientData;
-   if( cam->guidingCapture == NULL ) {
-      sprintf(ligne, "guiding is not started");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-   cam = (struct camprop *) clientData;
-   if (argc != 5) {
-      sprintf(ligne, "Usage: %s %s setvideoguidingcallback startProc changeOriginProc movePointproc", argv[0], argv[1]);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      // store the TCL procedure name
-      if( strcmp(argv[2], "null") == 0 ) {  
-         cam->guidingListener->setTclStartProc("");
-      } else {
-         cam->guidingListener->setTclStartProc(argv[2]);
-      }
-      if( strcmp(argv[3], "null") == 0 ) {         
-         cam->guidingListener->setTclChangeOriginProc("");
-      } else {
-         cam->guidingListener->setTclChangeOriginProc(argv[3]);
-      }
-      if( strcmp(argv[4], "null") == 0 ) {         
-         cam->guidingListener->setTclMoveTargetProc("");
-      } else {
-         cam->guidingListener->setTclMoveTargetProc(argv[4]);
-      }
-      result = TCL_OK;
-   }
-   return result;
-}
-
-/**
- * cmdCamSetVideoGuidingCallback.
- * renseigne la command TCL qui est appelee a la fin de la capture
- *
- *  Parametres :
- *    command : nom de la commande TCL 
- */
-int cmdCamSetVideoGuidingTargetSize(ClientData clientData, Tcl_Interp * interp,
-                               int argc, char *argv[])
-{
-   char ligne[256];
-   int result = TCL_OK;
-   struct camprop *cam;
-   int size;
-
-   cam = (struct camprop *) clientData;
-   if( cam->guidingCapture == NULL ) {
-      sprintf(ligne, "guiding is not started");
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      return TCL_ERROR;
-   }
-
-   cam = (struct camprop *) clientData;
-   if (argc != 3) {
-      sprintf(ligne, "Usage: %s %s setvideoguidingtargetsize size", argv[0], argv[1]);
-      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
-      if(Tcl_GetInt(interp,argv[2],&size)!=TCL_OK) {
-         sprintf(ligne,"Usage: %s %s setvideoguidingtargetsize size\nsize = must be an integer > 0",argv[0],argv[1]);
-         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         return TCL_ERROR;
-	  }		
-	  if (size > cam->imax || size > cam->jmax ) {
-        sprintf(ligne,"Usage: %s %s setvideoguidingtargetsize size\nsize = too large",argv[0],argv[1]);
-        Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-        return TCL_ERROR;
-     }
-      // store the size
-      cam->guidingCapture->setTargetSize(size);
-      result = TCL_OK;
-   }
-   return result;
-}
 
 
 /*****************************************************************/

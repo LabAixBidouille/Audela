@@ -13,7 +13,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCropCapture::CCropCapture(CCapture * capture)
+CCropCapture::CCropCapture(CCaptureWinVfw * capture)
 {
     
    CCropConfig();
@@ -51,11 +51,10 @@ CCropCapture::~CCropCapture()
  *    display statistics in the status bar
  *
  */
-int CCropCapture::startCropCapture(void ) {
+int CCropCapture::startCropCapture(unsigned short exptime, unsigned long microSecPerFrame, char * fileName ) {
     int             result;
     int             inputFormatSize;
     AVISTREAMINFO   outputAviStreamInfo; 
-    char            fileName[_MAX_PATH];
     char            message[256];
     HDC             hdc;
     unsigned long currentVideoFrame, currentTimeElapsedMS, droppedFrames;
@@ -258,7 +257,7 @@ LRESULT CALLBACK  CCropCapture::cropCallbackOnSequenceProc(HWND hWnd, VIDEOHDR *
     
     //CCapture * thisPtr = (CCapture *)getCallbackUserData(hwnd, 0);
 
-    CCropCapture  * thisPtr = (CCropCapture *) CCapture::getCallbackUserData(hWnd, 1);
+    CCropCapture  * thisPtr = (CCropCapture *) CCaptureWinVfw::getCallbackUserData(hWnd, 1);
     result = thisPtr->cropFrame( vhdr, hWnd );
 
     return result;

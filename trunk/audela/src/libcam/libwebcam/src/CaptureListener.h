@@ -1,18 +1,32 @@
-// IStatusBar.h: interface for the IStatusBar class.
+// CaptureListener.h: interface for the GuidingCaptureListener class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_ICAPTURELISTENER_H__A42D6880_78AD_42AD_AB5D_6D1BE7B7DAD4__INCLUDED_)
-#define AFX_ICAPTURELISTENER_H__A42D6880_78AD_42AD_AB5D_6D1BE7B7DAD4__INCLUDED_
+#ifndef __CAPTURE_LISTENER_H__
+#define __CAPTURE_LISTENER_H__
 
-#if _MSC_VER > 1000
-#pragma once
-#endif				// _MSC_VER > 1000
+#include <tcl.h>
+//#include "ICaptureListener.h"
 
-class ICaptureListener {
-  public:
-    virtual int onNewStatus(int statusID, char *message) = 0;
-    virtual int onNewError(int errID, char *message) = 0;
+/**
+ * class CCaptureListener
+ *    implemente l'interface ICaptureListener pour traiter
+ *    les erreurs et les messages signalant les changements d'�tat
+ */
+class CCaptureListener {
+
+      public:
+   CCaptureListener(Tcl_Interp * interp, int camno);
+   ~CCaptureListener();
+   int onNewStatus(int statusID, char *message);
+   int onNewError(int errID, char *message);
+   void setTclStatusVariable(char *value);
+
+      protected:
+   char *tclStatusVariable;
+   Tcl_Interp *interp;
+   int camno;
+
 };
 
-#endif				// !defined(AFX_ICAPTURELISTENER_H__A42D6880_78AD_42AD_AB5D_6D1BE7B7DAD4__INCLUDED_)
+#endif
