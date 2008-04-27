@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows uniquement
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv2.tcl,v 1.18 2007-12-04 20:43:41 robertdelmas Exp $
+# Mise a jour $Id: carteducielv2.tcl,v 1.19 2008-04-27 15:46:37 michelpujol Exp $
 #
 
 namespace eval carteducielv2 {
@@ -486,10 +486,11 @@ proc ::carteducielv2::selectObject { objectName } {
 #     recupere les coordonnees et le nom de l'objet selectionne dans Cartes du Ciel v2
 #     par communication DDE (en attendant une communication pas socket TCP ?)
 #
-#  return [list $ra $dec $objName ]
+#  return [list $ra $dec $objName $magnitude ]
 #     $ra : right ascension  (ex: "16h41m42")
 #     $dec : declinaison     (ex: "+36d28m00")
 #     $objName: object name  (ex: "M 13")
+#     $magnitude: object magnitude  (ex: "5.6")
 #
 #  Remarque : Si aucun objet n'est selectionne dans Cartes du Ciel v2,
 #  alors getSelectedObject retourne les coordonnees du centre de la carte
@@ -661,6 +662,7 @@ proc ::carteducielv2::getSelectedObject { } {
    set dec ""
    set objType ""
    set detail ""
+   set magnitude ""
    scan $ligne2 "%s %s %s %\[^\r\] " ra dec objType detail
 
   # console::disp "CDC ----------------\n"
@@ -679,6 +681,22 @@ proc ::carteducielv2::getSelectedObject { } {
    set dec  [string replace $dec 3 3 "d" ]
    #--- je supprime les diziemes de secondes apres le point decimal
    set dec [lindex [split $dec "."] 0]
+
+   #--- Mise en forme de la magnitude
+   set index [string first "mV:" $detail]
+   if { $index >= 0 } {
+      #--- j'extrait la chaine mV: xxxx
+      set magnitude [lindex [split [string range $detail $index end ]] 1]
+   } else {
+      #--- attention il faut prendre en compte l'espace avant m: pour le differencier de dim:
+      set index [string first " m:" $detail]
+      if { $index >= 0 } {
+         #--- j'extrait la chaine m:xxxx Attention, il n'y a pas d'espace entre ":" et la magnitude
+         #set magnitude [lindex [split [string range $detail $index end ]] 1]
+         set magnitude [lindex [split [string range $detail $index end ]] 1]
+         set magnitude [string map {"m:" ""} $magnitude ]
+      }
+  }
 
    #--- Mise en forme de objName
    if { $objType=="" } {
@@ -856,7 +874,7 @@ proc ::carteducielv2::getSelectedObject { } {
   # console::disp "CDC result dec=$dec\n"
   # console::disp "CDC result objName=$objName\n"
 
-   return [list $ra $dec $objName ]
+   return [list $ra $dec $objName $magnitude]
 }
 
 #------------------------------------------------------------
