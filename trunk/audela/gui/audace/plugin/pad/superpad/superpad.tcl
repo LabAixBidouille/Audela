@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.22 2008-02-06 22:49:17 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.23 2008-04-27 15:48:22 michelpujol Exp $
 #
 
 namespace eval ::superpad {
@@ -747,7 +747,7 @@ namespace eval ::AlignManager {
       variable private
 
       set result [::carte::getSelectedObject]
-      if { [llength $result] == 3 } {
+      if { [llength $result] == 4 } {
 
          set now now
          catch {set now [::audace::date_sys2ut now]}
@@ -958,6 +958,12 @@ namespace eval FrameFocusManager {
       set private(This) "$parentFrame.frameFocusManager"
       set This $private(This)
 
+      if { $::conf(superpad,focuserLabel) != "" } {
+         set state "normal"
+      } else {
+         set state "disabled"
+      }
+
       #--- create frame to display focus buttons
       frame $This -borderwidth 1 -relief groove -bg $colorpad(backpad)
 
@@ -975,6 +981,7 @@ namespace eval FrameFocusManager {
          -anchor center \
          -bg $colorpad(backkey) \
          -fg $colorpad(textkey) \
+         -state $state \
          -relief ridge
       pack $This.we.buttonMoins -in $This.we -expand 0 -side left -padx 4 -pady 8
 
@@ -984,6 +991,7 @@ namespace eval FrameFocusManager {
          -textvariable audace(focus,labelspeed) \
          -borderwidth 0 -relief groove -bg $colorpad(backpad) \
          -fg $colorpad(textkey) \
+         -state $state \
          -width 2
       pack $This.we.lab -in $This.we -side left -expand 1 -fill x -padx 2 -pady 8
 
@@ -994,6 +1002,7 @@ namespace eval FrameFocusManager {
          -bg $colorpad(backkey) \
          -fg $colorpad(textkey) \
          -anchor center \
+         -state $state \
          -relief ridge
       pack $This.we.buttonPlus -in $This.we -expand 0 -side left -padx 4 -pady 8
 
@@ -1002,28 +1011,29 @@ namespace eval FrameFocusManager {
 
       pack $This -in $parentFrame -fill x
 
-      #--- toggles speed
-      bind $This.we.lab <ButtonPress-1> { ::FrameFocusManager::cmdFocusSpeed }
-
-      #--- focus move
-      bind $zone(moins) <ButtonPress-1> {
-         ::focus::move $::conf(superpad,focuserLabel) "-"
-         [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backpad)
+      if { $::conf(superpad,focuserLabel) != "" } {
+        #--- toggles speed
+        bind $This.we.lab <ButtonPress-1> { ::FrameFocusManager::cmdFocusSpeed }
+  
+        #--- focus move
+        bind $zone(moins) <ButtonPress-1> {
+           ::focus::move $::conf(superpad,focuserLabel) "-"
+           [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backpad)
+        }
+        bind $zone(moins) <ButtonRelease-1> {
+           ::focus::move $::conf(superpad,focuserLabel) "stop"
+           [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backkey)
+        }
+  
+        bind $zone(plus) <ButtonPress-1> {
+           ::focus::move $::conf(superpad,focuserLabel) "+"
+           [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backpad)
+        }
+        bind $zone(plus) <ButtonRelease-1> {
+           ::focus::move $::conf(superpad,focuserLabel) "stop"
+           [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backkey)
+        }
       }
-      bind $zone(moins) <ButtonRelease-1> {
-         ::focus::move $::conf(superpad,focuserLabel) "stop"
-         [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backkey)
-      }
-
-      bind $zone(plus) <ButtonPress-1> {
-         ::focus::move $::conf(superpad,focuserLabel) "+"
-         [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backpad)
-      }
-      bind $zone(plus) <ButtonRelease-1> {
-         ::focus::move $::conf(superpad,focuserLabel) "stop"
-         [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backkey)
-      }
-
       #--- initialise et affiche la vitesse du focuser
       ::focus::setSpeed "$conf(superpad,focuserLabel)" "0"
    }
