@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.10 2007-10-05 17:20:05 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.11 2008-04-27 15:49:36 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -989,7 +989,7 @@ proc snacq_go { {sndebug 0} } {
             set rad [mc_angle2deg [lindex $ligne 1]h[lindex $ligne 2]m[lindex $ligne 3]s ]
             set decd [mc_angle2deg [lindex $ligne 4]d[lindex $ligne 5]m[lindex $ligne 6]s 90 ]
             #---
-            $buffer setkwd [list RA $rad float "right acension" deg]
+            $buffer setkwd [list RA $rad float "right ascension" deg]
             $buffer setkwd [list DEC $decd float "declination" deg]
             $buffer setkwd [list FOCLEN $snconf(foclen) float "focal length" m]
             $buffer setkwd [list PIXSIZE1 9 float "pixel size" um]
