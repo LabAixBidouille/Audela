@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.18 2007-12-04 20:45:55 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.19 2008-04-27 15:46:37 michelpujol Exp $
 #
 
 namespace eval carteducielv3 {
@@ -434,10 +434,11 @@ namespace eval carteducielv3 {
    #  getSelectedObject {}
    #     recupere les coordonnees et le nom de l'objet selectionne dans CarteDuCiel
    #
-   #  return [list $ra $dec $objName ]
+   #  return [list $ra $dec $objName $magnitude]
    #     $ra : right ascension  (ex : "16h41m42")
    #     $dec : declinaison     (ex : "+36d28m00")
    #     $objName : object name (ex : "M 13")
+   #     $magnitude: object magnitude  (ex: "5.6")
    #
    #     ou "" si erreur
    #
@@ -571,6 +572,7 @@ namespace eval carteducielv3 {
       set dec ""
       set objType ""
       set detail ""
+      set magnitude ""
       scan $ligne "%s %s %s %s %\[^\r\] " cr ra dec objType detail
 
      # console::disp "CDC ----------------\n"
@@ -592,6 +594,22 @@ namespace eval carteducielv3 {
       set dec [lindex [split $dec "."] 0]
       #--- j'ajoute l'unite des secondes
       append dec "s"
+
+      #--- Mise en forme de la magnitude
+      set index [string first "mV:" $detail]
+      if { $index >= 0 } {
+         #--- j'extrait la chaine mV: xxxx
+         set magnitude [lindex [split [string range $detail $index end ]] 1]
+      } else {
+         #--- attention il faut prendre en compte l'espace avant m: pour le differencier de dim:
+         set index [string first " m:" $detail]
+         if { $index >= 0 } {
+            #--- j'extrait la chaine m:xxxx Attention, il n'y a pas d'espace entre ":" et la magnitude
+            set magnitude [lindex [split [string range $detail $index end ]] 1]
+            set magnitude [string map {"m:" ""} $magnitude ]
+         }
+     }
+      
 
       #--- Mise en forme de objName
       if { $objType=="" || $objType=="port:" } {
@@ -626,7 +644,34 @@ namespace eval carteducielv3 {
          }
          set index [string first "BSC" $detail]
          if { $index >= 0 } {
-            set bsc [string trim [string range $detail [expr $index + 3] [expr [string first "mV:" $detail $index] -1] ] ]
+            #--- le nom BSC peut avoir les formes suivantes
+         
+            set bscList [string trim [string range $detail [expr $index + 3] [expr [string first "mV:" $detail $index] -1] ] ]
+            set bscList [split $bscList]
+            switch [llength $bscList] {
+               2 { 
+                  #--- BSC 15 Dra      => bsc = "15 Dra"
+                  set bsc "[lrange $bscList 0 1 ]" 
+               }
+               3 { 
+                  #--- BSC nu 2   Boo  => bsc = "nu 2 Boo"
+                  #--- BSC 22 Zet Dra  => bsc = "Zet Dra"
+                  if { [string is alpha [lindex $bscList 0]] == 1 } {
+                     set bsc "[lrange $bscList 0 2 ]" 
+                  } else {
+                     set bsc "[lrange $bscList 1 2 ]" 
+                  }
+               }               
+               4 { 
+                  #--- BSC 53 nu 2 Boo => bsc = "nu 2 Boo"
+                  set bsc "[lrange $bscList 1 3 ]" 
+               }
+               default  { 
+                  #--- BSC HR6025      => bsc = ""
+                  #--- BSC HD6025      => bsc = ""
+                  set bsc "" 
+               }
+            }
          }
          set index [string first "Fl:" $detail]
          if { $index >= 0 } {
@@ -650,19 +695,25 @@ namespace eval carteducielv3 {
          }
          set index [string first "TYC" $detail]
          if { $index >= 0 } {
-            set tyc [string range $detail $index [expr $index + 15 ] ]
+            #--- j'extrait la chaine apres TYC 
+            set tyc [string trim [lindex [split [string range $detail $index end ]] 1]]
+            set tyc "TYC$tyc"
          }
-         set index [string first "HD" $detail]
+         set index [string first "HD:" $detail]
          if { $index >= 0 } {
-            set hd [string range $detail $index [expr $index + 8 ] ]
+            #--- j'extrait la chaine HD:xxxx
+            set hd [lindex [split [string range $detail $index end ]] 0]
+            set hd [string map {":" ""}  $hd ]
          }
          set index [string first "BD" $detail]
          if { $index >= 0 } {
             set bd [string range $detail $index [expr $index + 10 ] ]
          }
-         set index [string first "HR" $detail]
+         set index [string first "HR:" $detail]
          if { $index >= 0 } {
-            set hr [string range $detail $index [expr $index + 7 ] ]
+            #--- j'extrait la chaine HR:xxxx
+            set hr [lindex [split [string range $detail $index end ]] 0]
+            set hr [string map {":" ""}  $hr ]
          }
          set index [string first "SAO" $detail]
          if { $index >= 0 } {
@@ -703,6 +754,8 @@ namespace eval carteducielv3 {
             set objName $usualName
          } elseif { $bsc != "" } {
             set objName "$bsc"
+         } elseif { $hd != "" } {
+            set objName "$hd"
          } elseif { $ba != "" } {
             set objName "$ba $const"
          } elseif { $fl != "" } {
@@ -715,8 +768,6 @@ namespace eval carteducielv3 {
             set objName "$hr"
          } elseif { $tyc != "" } {
             set objName "$tyc"
-         } elseif { $hd != "" } {
-            set objName "$hd"
          } elseif { $bd != "" } {
             set objName "$bd"
          }
@@ -762,7 +813,7 @@ namespace eval carteducielv3 {
      # console::disp "CDC result dec=$dec\n"
      # console::disp "CDC result objName=$objName\n"
 
-      return [list $ra $dec $objName ]
+      return [list $ra $dec $objName $magnitude]
    }
 
    #------------------------------------------------------------
