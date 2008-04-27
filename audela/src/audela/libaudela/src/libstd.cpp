@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -53,7 +53,6 @@
       #include <time.h>
    #endif
    #include <winsock.h>
-   #include <iostream.h>
    #include <porttalk_interface.h>
 #endif
 
@@ -78,9 +77,8 @@ int CmdTestGetClicks(ClientData clientData, Tcl_Interp *interp, int argc, char *
 int CmdHistory(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdLibstdId(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int CmdAudelaVersion(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-
+int CmdCopyCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int ping(char * hostName, int nbTry, int receivedTimeOut, char *result);
-
 extern int CmdCfa2rgb(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 static char audela_version[] = AUDELA_VERSION;
 
@@ -194,7 +192,7 @@ int CmdHostaddress(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
       return TCL_OK;
    }
 #endif
-   if (gethostname(ip,sizeof(ip))==0) {
+if (gethostname(ip,sizeof(ip))==0) {
       p=gethostbyname(ip);
       strcpy(result,"");
       if (p!=NULL) {
@@ -395,9 +393,44 @@ int CmdHistory(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 
 int CmdLibstdId(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
-   Tcl_SetResult(interp,__DATE__,TCL_VOLATILE);
+   Tcl_SetResult(interp,(char*)__DATE__,TCL_VOLATILE);
    return TCL_OK;
 }
+
+/**
+* CmdCopyCommand
+*   copy une commande de l'interpreteur principal (master) dans un interpreteur esclave (slave)
+*/
+int CmdCopyCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+{
+   char ligne[256];
+   Tcl_Interp * slaveInterp;
+   Tcl_CmdInfo cmdInfo;
+
+   if(argc<3) {
+      sprintf(ligne,"Usage: %s slaveName command",argv[0]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+
+   slaveInterp = Tcl_GetSlave(interp, argv[1]);
+   if ( slaveInterp == NULL ) {
+      sprintf(ligne,"%s invalid slave interpreter name",argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+   if ( Tcl_GetCommandInfo(interp, argv[2], &cmdInfo) != 1) {
+      sprintf(ligne,"Tcl_GetCommandInfo %s error",argv[2]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      return TCL_ERROR;
+   }
+
+   // je duplique la commande dans l'interpreteur
+   Tcl_CreateCommand(slaveInterp,argv[2],(Tcl_CmdProc *)cmdInfo.proc,cmdInfo.clientData,cmdInfo.deleteProc);
+
+   return TCL_OK;
+}
+
 
 void audelaInit(Tcl_Interp *interp)
 {
@@ -436,11 +469,11 @@ void audelaInit(Tcl_Interp *interp)
    strcpy(audela_start_dir,interp->result);
    Tcl_SetVar(interp,"audela_start_dir",audela_start_dir,TCL_GLOBAL_ONLY);
 
-   // libstd.cpp : Fonctions de traitement par lots 
+   // libstd.cpp : Fonctions de traitement par lots
    Tcl_CreateCommand(interp,"libstd_id",(Tcl_CmdProc *)CmdLibstdId,NULL,NULL);
    Tcl_CreateCommand(interp,"historik",(Tcl_CmdProc *)CmdHistory,NULL,NULL);
 
-   // tt.cpp : Fonctions de traitement par lots 
+   // tt.cpp : Fonctions de traitement par lots
    Tcl_CreateCommand(interp,"ttscript",(Tcl_CmdProc *)CmdTtScript3,NULL,NULL);
    Tcl_CreateCommand(interp,"ttscript2",(Tcl_CmdProc *)CmdTtScript2,NULL,NULL);
 
@@ -454,6 +487,9 @@ void audelaInit(Tcl_Interp *interp)
 
    // file_tcl.cpp : Gestion des fichiers RAW, JPEG, PNG
    Tcl_CreateCommand(interp,"cfa2rgb",(Tcl_CmdProc *)CmdCfa2rgb,(void*)link_pool,NULL);
+
+   // copie une commande dans un interpreteur esclave
+   Tcl_CreateCommand(interp,"copycommand",(Tcl_CmdProc *)CmdCopyCommand,NULL,NULL);
 
    // Access aux port parallele et serie pour Windows NT, 2000, XP
    Tcl_CreateCommand(interp,"porttalk",(Tcl_CmdProc *)CmdPortTalk,NULL,NULL);
@@ -510,7 +546,7 @@ extern "C" int Audela_Init(Tcl_Interp*interp)
    if(interp==NULL) return TCL_ERROR;
 
    if(Tcl_InitStubs(interp,"8.3",0)==NULL) {
-      Tcl_SetResult(interp,"Tcl Stubs initialization failed in libaudela.",TCL_STATIC);
+      Tcl_SetResult(interp,(char*)"Tcl Stubs initialization failed in libaudela.",TCL_STATIC);
       return TCL_ERROR;
    }
    if((s=(char*)Tcl_GetVar(interp,"audelog_filename",0))==NULL) s = default_log_filename;
