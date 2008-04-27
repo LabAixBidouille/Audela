@@ -20,14 +20,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <iostream>
-
 #include <math.h>
-
-#include <fstream.h>
 #include <time.h>
-
-using namespace std;
 
 #include "libstd.h"       // pour buf_pool
 #include "cbuffer.h"
@@ -55,6 +49,10 @@ CBuffer::CBuffer() : CDevice()
 
    strcpy(fitsextension,".fit");
 
+   pthread_mutexattr_init(&mutexAttr);
+   pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_RECURSIVE);
+   pthread_mutex_init(&mutex, &mutexAttr);
+
    // On fait de la place avant de recreer le contenu du buffer
    FreeBuffer(DONT_KEEP_KEYWORDS);
 
@@ -64,11 +62,15 @@ CBuffer::CBuffer() : CDevice()
    initialMipsLo = 0;
    initialMipsHi = 0;
 
+
 }
 
 
 CBuffer::~CBuffer()
 {
+   pthread_mutexattr_destroy(&mutexAttr);
+   pthread_mutex_destroy(&mutex);
+
    if (fitsextension != NULL) {
       delete fitsextension;
    }
@@ -148,7 +150,6 @@ int CBuffer::GetCompressType()
    return compress_type;
 }
 
-
 /**
  *----------------------------------------------------------------------
  * IsPixelsReady
@@ -210,8 +211,6 @@ void CBuffer::LoadFile(char *filename)
    CFitsKeywords *kwds;
    CFitsKeyword *k;
 
-   FreeBuffer(DONT_KEEP_KEYWORDS);
-
    // je charge le fichier
    CFile::loadFile(filename, TFLOAT, &pixels, &kwds);
 
@@ -220,6 +219,8 @@ void CBuffer::LoadFile(char *filename)
    if(k == NULL  ) {
       throw CError("LoadFile error : keyword NAXIS not found");
    }
+
+   FreeBuffer(DONT_KEEP_KEYWORDS);
 
    this->pix = pixels;
    this->keywords = kwds;
@@ -615,7 +616,6 @@ void CBuffer::Save1d(char *filename,int iaxis2)
    char **comments=NULL;
    char **units=NULL;
    int *datatypes=NULL;
-   TYPE_PIXELS *ppix=NULL;
    TYPE_PIXELS *ppix1=NULL;
 
    datatype=TFLOAT;
@@ -627,6 +627,8 @@ void CBuffer::Save1d(char *filename,int iaxis2)
       iaxis2=0;
    }
    nnaxis1=naxis1;
+   x2 = 0;  //for gcc warning: ?x2? may be used uninitialized in this function
+   y2 = 0;
    if (pix->getPixelClass()==CLASS_GRAY) {
       if (naxis1==1) {
          x1=0;
@@ -650,10 +652,10 @@ void CBuffer::Save1d(char *filename,int iaxis2)
          x2=naxis1-1;
          nnaxis1=naxis1;
       }
-   }
-   ppix1 = (TYPE_PIXELS *) malloc(nnaxis1 * sizeof(float));
-   if (pix->getPixelClass()==CLASS_GRAY) {
+      ppix1 = (TYPE_PIXELS *) malloc(nnaxis1 * sizeof(float));
       pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_RGB, (int) ppix1);
+   } else {
+      throw CError("save1d not implemented for RGB image");
    }
 
    // Collecte de renseignements pour la suite
@@ -1505,7 +1507,6 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
             } else {
                throw CError("libdcraw_decodeBuffer error=%d", result);
             }
-
             break;
          }
       default:
@@ -1549,6 +1550,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
    }
 
+   pthread_mutex_lock(&mutex);
    // s'il n'y a pas eu d'exception pendant la creation de pixTemp, je detruis l'ancienne image
 	if (this->pix != NULL) {
 	   delete this->pix ;
@@ -1557,7 +1559,7 @@ void CBuffer::SetPixels(TColorPlane plane, int width, int height, TPixelFormat p
 
    // j'affecte la nouvelle image
    this->pix = pixTemp;
-
+   pthread_mutex_unlock(&mutex);
 }
 
 
@@ -1578,6 +1580,7 @@ void CBuffer::SetPixels(int width, int height, int pixelSize, int offset[4], int
 
    pixTemp = new CPixelsRgb(width, height, pixelSize, offset, pitch, pixels);
 
+   pthread_mutex_lock(&mutex);
    // s'il n'y a pas eu d'exception pendant la creation de pixTemp, je detruis l'ancienne image
 	if (pix != NULL) {
 	   delete pix ;
@@ -1585,6 +1588,7 @@ void CBuffer::SetPixels(int width, int height, int pixelSize, int offset[4], int
 	}
 
    pix = pixTemp;
+   pthread_mutex_unlock(&mutex);
 }
 
 
@@ -1976,7 +1980,14 @@ void CBuffer::Div(char *filename, float constante)
  */
 void CBuffer::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y)
 {
-   pix->GetPix(plane , val1, val2, val3, x, y);
+   pthread_mutex_lock(&mutex);
+   try {
+      pix->GetPix(plane , val1, val2, val3, x, y);
+   } catch(const CError& e) {
+      pthread_mutex_unlock(&mutex);
+      throw e;
+   }
+   pthread_mutex_unlock(&mutex);
 }
 
 
@@ -1998,7 +2009,9 @@ void CBuffer::GetPixels(TYPE_PIXELS *pixels)
 {
    int width = pix->GetWidth();
    int height = pix->GetHeight();
+   pthread_mutex_lock(&mutex);
    pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (int) pixels);
+   pthread_mutex_unlock(&mutex);
 }
 
 void CBuffer::GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane)
@@ -2022,10 +2035,12 @@ void CBuffer::GetPixelsVisu( int x1,int y1,int x2, int y2,
                   float *cuts,
             unsigned char *palette[3], unsigned char *ptr)
 {
+   pthread_mutex_lock(&mutex);
    pix->GetPixelsVisu(x1,y1,x2, y2, mirrorX, mirrorY,
       //hicutRed, locutRed, hicutGreen, locutGreen, hicutBlue, locutBlue,
       cuts,
       palette, ptr);
+   pthread_mutex_unlock(&mutex);
 }
 
 void CBuffer::Log(float coef, float offset)
@@ -2138,6 +2153,7 @@ void CBuffer::TtImaSeries(char *s)
    CPixels * newPixels = NULL;
    CFitsKeywords *newKeywords = new CFitsKeywords();
 
+   pthread_mutex_lock(&mutex);
    try {
       naxis1 = pix->GetWidth();
       naxis2 = pix->GetHeight();
@@ -2290,6 +2306,7 @@ void CBuffer::TtImaSeries(char *s)
       }
       // Liberation de la memoire allouee par libtt
       msg = Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
+      pthread_mutex_unlock(&mutex);
 
    } catch (const CError& e) {
       // je libere la memoire
@@ -2301,7 +2318,8 @@ void CBuffer::TtImaSeries(char *s)
       Libtt_main(TT_PTR_FREEPTR,1,&pixOutG);
       Libtt_main(TT_PTR_FREEPTR,1,&pixOutB);
       Libtt_main(TT_PTR_FREEKEYS,5,&keynames,&values,&comments,&units,&datatypes);
-      // je transmets l'exception
+      pthread_mutex_unlock(&mutex);
+    // je transmets l'exception
       throw e;
    }
 
@@ -2325,12 +2343,14 @@ void CBuffer::Stat( int x1,int y1,int x2,int y2,
    datatype = TFLOAT;
    if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
       // x1=y1=x2=y2=-1 si l'on souhaite traiter toute l'image
+      pthread_mutex_lock(&mutex);
       ppix = (TYPE_PIXELS*)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
       if (ppix==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
       pix->GetPixels(0, 0, naxis1-1, naxis2-1 , FORMAT_FLOAT, PLANE_GREY, (int) ppix);
       msg = Libtt_main(TT_PTR_STATIMA,13,ppix,&datatype,&naxis1,&naxis2,
                   &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
       free(ppix);
+      pthread_mutex_unlock(&mutex);
       if(msg) throw CErrorLibtt(msg);
    } else {
       // traite une fenetre dans l'image
@@ -2340,12 +2360,14 @@ void CBuffer::Stat( int x1,int y1,int x2,int y2,
       if(y1>y2) {i = y2; y2 = y1; y1 = i;}
       naxis11 = x2-x1+1;
       naxis22 = y2-y1+1;
+      pthread_mutex_lock(&mutex);
       ppix = (TYPE_PIXELS*)malloc(naxis11*naxis22 * sizeof(TYPE_PIXELS));
       if (ppix==NULL) throw CError(ELIBSTD_NO_MEMORY_FOR_PIXELS);
       pix->GetPixels(x1, y1, x2, y2 , FORMAT_FLOAT, PLANE_GREY, (int) ppix);
       msg = Libtt_main(TT_PTR_STATIMA,13,ppix,&datatype,&naxis11,&naxis22,
                   &dlocut,&dhicut,&dmaxi,&dmini,&dmean,&dsigma,&dbgmean,&dbgsigma,&dcontrast);
       free(ppix);
+      pthread_mutex_unlock(&mutex);
       if(msg) throw CErrorLibtt(msg);
    }
 
@@ -2627,10 +2649,12 @@ void CBuffer::Fwhm(int x1, int y1, int x2, int y2,
                   double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
 				  double fwhmx0, double fwhmy0)
 {
+   pthread_mutex_lock(&mutex);
    pix->Fwhm(x1, y1, x2, y2,
                   maxx, posx, fwhmx, fondx, errx,
                   maxy, posy, fwhmy, fondy, erry,
 				  fwhmx0, fwhmy0);
+   pthread_mutex_unlock(&mutex);
 }
 
 
@@ -2710,7 +2734,7 @@ void CBuffer::Window(int x1, int y1, int x2, int y2)
 {
    pix->Window(x1, y1, x2, y2);
 }
-int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename,double fwhm,int radius,
+int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename, int fileFormat, double fwhm,int radius,
 						int border,double threshold,int after_gauss)
 {
    int i,retour;
@@ -2734,7 +2758,7 @@ int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *fi
    }
    width  = x2-x1+1;
    height = y2-y1+1;
-   
+
    ppix = (TYPE_PIXELS *) malloc(width * height * sizeof(float));
    pix->GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
 
@@ -2748,9 +2772,9 @@ int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *fi
       free(temp_pic);
       throw CError(ELIBSTD_NO_MEMORY_FOR_KWDS);
    }
-   
+
    retour = A_filtrGauss ((TYPE_PIXELS)fwhm, radius, (TYPE_PIXELS)threshin,
-      (TYPE_PIXELS)threshold, filename,
+      (TYPE_PIXELS)threshold, filename, fileFormat,
       ppix,temp_pic,gauss_matrix,
       width,height,gmsize,border);
 
@@ -2773,7 +2797,7 @@ int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *fi
 
 
 int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
-						   TYPE_PIXELS threshold, char *filename,
+						   TYPE_PIXELS threshold, char *filename, int fileFormat,
 						   TYPE_PIXELS *picture,TYPE_PIXELS *temp_pic,TYPE_PIXELS *gauss_matrix,
 						   int size_x,int size_y,int gmsize,int border)
 {
@@ -2817,7 +2841,7 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
 	   }
    }
 
-//   long pixcount=0; //stores 'how many pixel were calculated' information
+   long pixcount=0; //stores 'how many pixel were calculated' information
 
    /* For each pixel that is above 'threshin' multiply surrounding
    pixels by corresponding 'gauss_matrix' values and store
@@ -2834,7 +2858,7 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
 						temp_pic[x+y*size_x] +=
 							picture[x-center+i+(y-center+j)*size_x]*gauss_matrix[i+j*gmsize];
 					}
-//					pixcount++;
+					pixcount++;
 			}
 			else temp_pic[x+y*size_x] = (float)0.0;
 		}
@@ -2843,44 +2867,169 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
    int border1 = border + 1;    // +1 because when searching for maksimum,
    // we use surrounding pixels
 
-   ofstream fout;
+   if ( fileFormat == 1 ) {
+      FILE *fout;
+      fout=fopen(filename,"wt");
+      if (fout == NULL) {
+         return ELIBSTD_CANT_OPEN_FILE;
+      }
 
-   if(filename != NULL)
-   {
-	   fout.open( filename );
-	   if (!fout)
-		   return ELIBSTD_CANT_OPEN_FILE; //
-	   fout<<"Lp.    X     Y          light      22-2.5log10(light)"<<endl<<endl;
+      //looking for stars (max. values), now is not very precise
+      for (y=border1; y < size_y-border1; y++) {
+         for (x=border1; x < size_x-border1; x++)
+         {
+            TYPE_PIXELS temp_p=temp_pic[x+y*size_x];
+            if(
+               (threshold < temp_p)
+               && (temp_pic[x-1+y*size_x] < temp_p)
+               && (temp_pic[x+1+y*size_x] < temp_p)
+               && (temp_pic[x+(y-1)*size_x] < temp_p)
+               && (temp_pic[x+(y+1)*size_x] < temp_p)
+               && (temp_pic[x+1+(y+1)*size_x] < temp_p)
+               && (temp_pic[x-1+(y+1)*size_x] < temp_p)
+               && (temp_pic[x-1+(y-1)*size_x] < temp_p)
+               && (temp_pic[x+1+(y-1)*size_x] < temp_p)
+               )
+            {
+               if(fout != NULL) {
+                  fprintf(fout, "%d     %d     %d     %f     %f\n",i,x, y,temp_p , (22-2.5*log10(temp_p)) );
+               }
+               i++;
+            }
+         }
+      }
+
+      if(fout != NULL) {
+         fclose(fout);
+      }
    }
 
-   //looking for stars (max. values), now is not very precise
-   for (y=border1; y < size_y-border1; y++)
-	   for (x=border1; x < size_x-border1; x++)
-	   {
-		   TYPE_PIXELS temp_p=temp_pic[x+y*size_x];
-		   if(
-			   (threshold < temp_p)
-			   && (temp_pic[x-1+y*size_x] < temp_p)
-			   && (temp_pic[x+1+y*size_x] < temp_p)
-			   && (temp_pic[x+(y-1)*size_x] < temp_p)
-			   && (temp_pic[x+(y+1)*size_x] < temp_p)
-			   && (temp_pic[x+1+(y+1)*size_x] < temp_p)
-			   && (temp_pic[x-1+(y+1)*size_x] < temp_p)
-			   && (temp_pic[x-1+(y-1)*size_x] < temp_p)
-			   && (temp_pic[x+1+(y-1)*size_x] < temp_p)
-			   )
-		   {
-			   if(filename != NULL)
-				   fout<<i<<"     "<< x <<"     "<< y <<"       "
-				   <<temp_p<<"       "
-				   <<(22-2.5*log10(temp_p))
-				   <<endl;
-			   i++;
-		   }
-	   }
+   if ( fileFormat == 2 ) {
+      int nstar =pixcount;
+      char *columnData[13];
+      char value[100];
+      double xmax, ymax;
+      int nbRow2, nbCol, col;
+      char columnTypes[100];
+      char **columnUnits;
+      char **columnTitle;
+      int msg;
 
-   if(filename != NULL)
-		   fout.close();
+      nbCol =13;
+
+      strcpy(columnTypes,"DOUBLE DOUBLE SHORT DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE");
+
+      if (nbCol>0) {
+         msg = Libtt_main(TT_PTR_ALLOTBL,4,columnTypes,&nbCol,&columnUnits,&columnTitle);
+         if(msg) {
+            throw CErrorLibtt(msg);
+         }
+      }
+
+      strcpy(columnUnits[0],"pixel");
+      strcpy(columnUnits[1],"pixel");
+      strcpy(columnUnits[2],"identification symbol");
+      strcpy(columnUnits[3],"adu");
+      strcpy(columnUnits[4],"deg");
+      strcpy(columnUnits[5],"deg");
+      strcpy(columnUnits[6],"mag");
+      strcpy(columnUnits[7],"adu");
+      strcpy(columnUnits[8],"pixel");
+      strcpy(columnUnits[9],"pixel");
+      strcpy(columnUnits[10],"adu");
+      strcpy(columnUnits[11],"none");
+      strcpy(columnUnits[12],"deg");
+
+      strcpy(columnTitle[0],"x coordinate");
+      strcpy(columnTitle[1],"y coordinate");
+      strcpy(columnTitle[2],"pixel identification");
+      strcpy(columnTitle[3],"flux");
+      strcpy(columnTitle[4],"right ascension");
+      strcpy(columnTitle[5],"declination");
+      strcpy(columnTitle[6],"magnitude");
+      strcpy(columnTitle[7],"background");
+      strcpy(columnTitle[8],"fwhmx");
+      strcpy(columnTitle[9],"fwhmy");
+      strcpy(columnTitle[10],"intensity");
+      strcpy(columnTitle[11],"ab ratio");
+      strcpy(columnTitle[12],"position angle");
+
+      for (col=0 ; col < nbCol; col++ ) {
+         columnData[col] = (char*) calloc(nstar, 13);
+         if (columnData[col] == NULL ){ throw CError("Could not calloc %d bytes for columnData", nstar*12); }
+      }
+
+
+      xmax = pix->GetWidth();
+      ymax = pix->GetHeight();
+      nbRow2 = 0;
+
+      //looking for stars (max. values), now is not very precise
+      for (y=border1; y < size_y-border1; y++) {
+         for (x=border1; x < size_x-border1; x++)
+         {
+            TYPE_PIXELS temp_p=temp_pic[x+y*size_x];
+            if(
+               (threshold < temp_p)
+               && (temp_pic[x-1+y*size_x] < temp_p)
+               && (temp_pic[x+1+y*size_x] < temp_p)
+               && (temp_pic[x+(y-1)*size_x] < temp_p)
+               && (temp_pic[x+(y+1)*size_x] < temp_p)
+               && (temp_pic[x+1+(y+1)*size_x] < temp_p)
+               && (temp_pic[x-1+(y+1)*size_x] < temp_p)
+               && (temp_pic[x-1+(y-1)*size_x] < temp_p)
+               && (temp_pic[x+1+(y-1)*size_x] < temp_p)
+               )
+            {
+               //printf(fout, "%d     %d     %d     %d     %f\n",i,x, y,temp_p , (22-2.5*log10(temp_p)) );
+               nbRow2++;
+               sprintf(value,"%11.4e ", ((double)x));
+               strcat(columnData[0],value);
+               sprintf(value,"%11.4e ", ((double)y));
+               strcat(columnData[1],value);
+               strcat(columnData[2],"1 ");
+               sprintf(value,"%11.4e ", temp_p);
+               strcat(columnData[3],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[4],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[5],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[6],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[7],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[8],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[9],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[10],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[11],value);
+               sprintf(value,"%11.4e ", 1.0);
+               strcat(columnData[12],value);
+            }
+         }
+      }
+
+
+      try {
+         CFile::saveFitsTable(filename, this->keywords, nbRow2, nbCol, columnTypes, columnUnits,  columnTitle, columnData);
+      } catch (const CError& e) {
+         for (col=0 ; col < nbCol; col++ ) {
+            free(columnData[col]);
+         }
+         msg = Libtt_main(TT_PTR_FREETBL,2,&columnUnits,&columnTitle);
+         throw e;
+      }
+
+      for (col=0 ; col < nbCol; col++ ) {
+         free(columnData[col]);
+      }
+
+      Libtt_main(TT_PTR_FREETBL,2,&columnUnits,&columnTitle);
+   }
+
 
    return i-1;  //number of stars
 }
@@ -3018,7 +3167,7 @@ void CBuffer::SubStars(FILE *fascii, int indexcol_x, int indexcol_y, int indexco
             bg=0.;
             BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
             BoxBackground(ppix,xc2,yc2,radius,percent,&nb,&bg2); if (nb>2) { bgg[np]=bg2; np++; }
-            if (np>0) { 
+            if (np>0) {
                util_qsort_double(bgg,0,np,NULL);
                bg=bgg[0];
             }
@@ -3029,7 +3178,7 @@ void CBuffer::SubStars(FILE *fascii, int indexcol_x, int indexcol_y, int indexco
             xc1=x  ; yc1=y-d; BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
             xc1=x+d; yc1=y;   BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
             xc1=x  ; yc1=y+d; BoxBackground(ppix,xc1,yc1,radius,percent,&nb,&bg1); if (nb>2) { bgg[np]=bg1; np++; }
-            if (np>0) { 
+            if (np>0) {
                util_qsort_double(bgg,0,np,NULL);
                bg=bgg[0];
             } else {

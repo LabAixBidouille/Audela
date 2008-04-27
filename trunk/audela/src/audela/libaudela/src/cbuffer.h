@@ -33,6 +33,7 @@
 
 #include "cdevice.h"
 //#include "libstd.h"
+#include "pthread.h"
 #include "cpixels.h"
 #include "fitskw.h"
 
@@ -105,6 +106,8 @@ protected:
    float          initialMipsHi;
    static char    *FileFormatName [];
    char           temporaryRawFileName[255];
+   pthread_mutex_t mutex; 
+   pthread_mutexattr_t mutexAttr;
    void BoxBackground(TYPE_PIXELS *ppix, double xc,double yc,double radius,double percent,int *nb, double *bg);
    int util_qsort_double(double *x,int kdeb,int n,int *index);
 
@@ -112,10 +115,10 @@ public:
    CBuffer();
    ~CBuffer();
    int A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
-						   TYPE_PIXELS threshold, char *filename,
+						   TYPE_PIXELS threshold, char *filename, int fileFormat,
 						   TYPE_PIXELS *picture,TYPE_PIXELS *temp_pic,TYPE_PIXELS *gauss_matrix,
 						   int size_x,int size_y,int gmsize,int border);
-   int A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename,double fwhm,int radius,
+   int A_StarList(int x1, int y1, int x2, int y2, double threshin,char *filename, int fileFormat, double fwhm,int radius,
 						int border,double threshold,int after_gauss);
    void Add(char *filename, float offset);
    void AstroFlux(int x1, int y1, int x2, int y2, 
