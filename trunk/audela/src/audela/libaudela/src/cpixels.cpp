@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -28,10 +28,10 @@
 #include "cerror.h"
 
 
-char  *  CPixels::PixelClassName  []= {"CLASS_GRAY", "CLASS_RGB", "CLASS_3D", "CLASS_VIDEO"} ;
-char  *  CPixels::PixelFormatName []= {"FORMAT_BYTE", "FORMAT_SHORT", "FORMAT_USHORT", "FORMAT_FLOAT"} ;
-char  *  CPixels::CompressionName []= {"COMPRESS_NONE", "COMPRESS_RGB", "COMPRESS_I420", "COMPRESS_JPEG", "COMPRESS_RAW", "COMPRESS_UNKNOWN"} ;
-char  *  CPixels::ColorPlaneName  []= {"PLANE_GRAY", "PLANE_RGB", "PLANE_RED", "PLANE_GREEN","PLANE_BLUE", "PLANE_UNKNOWN"} ;
+const char  *  CPixels::PixelClassName  []= {"CLASS_GRAY", "CLASS_RGB", "CLASS_3D", "CLASS_VIDEO"} ;
+const char  *  CPixels::PixelFormatName []= {"FORMAT_BYTE", "FORMAT_SHORT", "FORMAT_USHORT", "FORMAT_FLOAT"} ;
+const char  *  CPixels::CompressionName []= {"COMPRESS_NONE", "COMPRESS_RGB", "COMPRESS_I420", "COMPRESS_JPEG", "COMPRESS_RAW", "COMPRESS_UNKNOWN"} ;
+const char  *  CPixels::ColorPlaneName  []= {"PLANE_GRAY", "PLANE_RGB", "PLANE_RED", "PLANE_GREEN","PLANE_BLUE", "PLANE_UNKNOWN"} ;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ void CPixels::AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
    GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
-   
+
    *yc=0.;
    *xc=0.;
    flux = (float)0;
@@ -82,13 +82,13 @@ void CPixels::AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double
    if (flux!=0.) {
       *xc = sx / flux ;
       *yc = sy / flux ;
-   }            
+   }
    free(pixTemp);
 }
 
 
 
-void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax, 
+void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
                                 TYPE_PIXELS seuil, float* somx, float* somy, float* somr) {
    int i, j;                          // Index de parcours de l'image
    TYPE_PIXELS flux = (TYPE_PIXELS)0;
@@ -146,9 +146,9 @@ void CPixels::AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
    free(pixTemp);
 }
 
-void CPixels::AstroFlux(int x1, int y1, int x2, int y2, 
-                        TYPE_PIXELS* flux, TYPE_PIXELS* maxi, 
-                        int *xmax, int* ymax, TYPE_PIXELS *moy, 
+void CPixels::AstroFlux(int x1, int y1, int x2, int y2,
+                        TYPE_PIXELS* flux, TYPE_PIXELS* maxi,
+                        int *xmax, int* ymax, TYPE_PIXELS *moy,
                         TYPE_PIXELS *seuil, int *nbpix) {
    int i, j;                          // Index de parcours de l'image
    TYPE_PIXELS *offset;
@@ -195,14 +195,14 @@ void CPixels::AstroFlux(int x1, int y1, int x2, int y2,
          }
       }
    }
-   
+
    util_qsort_double(vec,0,*nbpix-2,NULL);
    // calcule la valeur du fond pour 20 pourcent de l'histogramme
    fond=(float)vec[(int)(0.2*(*nbpix-1))];
    // calcule la valeur du fond photometrique a 60 pourcent de l'histogramme
    *moy=(float)vec[(int)(0.6*(*nbpix-1))];
    // calcule le seuil de coupure pour le centroide et le phot
-   *seuil=fond+(TYPE_PIXELS)0.7*(*maxi-fond);  
+   *seuil=fond+(TYPE_PIXELS)0.7*(*maxi-fond);
 
    // changement de coordonnees (fenetre -> image entiere)
    *xmax += x1;
@@ -213,7 +213,7 @@ void CPixels::AstroFlux(int x1, int y1, int x2, int y2,
 }
 
 
-void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax, 
+void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
                                TYPE_PIXELS moy, double *dFlux, int* ntot) {
    int i, j;                          // Index de parcours de l'image
    TYPE_PIXELS flux = (TYPE_PIXELS)0;
@@ -237,7 +237,7 @@ void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
    naxis2 = y2-y1+1;
    pixTemp = (TYPE_PIXELS *) malloc(naxis1 * naxis2 * sizeof(float));
    GetPixels(x1, y1, x2, y2, FORMAT_FLOAT, PLANE_GREY, (int) pixTemp);
-   
+
    //changement de coordonnees  (image entiere -> fenetre)
    xmax -= x1;
    ymax -= y1;
@@ -297,11 +297,11 @@ void CPixels::AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
 }
 
 
-void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2, 
-                                int method, double r1, double r2,double r3, 
-                                double *flux, double* f23, double* fmoy, 
+void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
+                                int method, double r1, double r2,double r3,
+                                double *flux, double* f23, double* fmoy,
                                 double* sigma, int *n1) {
-   
+
    int i, j;                          // Index de parcours de l'image
    TYPE_PIXELS *offset;
    int n23, xx1,xx2,yy1,yy2,n,xxx1,xxx2,yyy1,yyy2,n23d,n23f;
@@ -364,7 +364,7 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
    if (*flux!=0.) {
       xc = sx / *flux ;
       yc = sy / *flux ;
-   }            
+   }
    // --- mesure flux integre dans le carre central
    xx1=(int)(xc-r1);
    xx2=(int)(xc+r1);
@@ -383,7 +383,7 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
    if (method==0) {
       for (j=yy1;j<=yy2;j++) {
          offset = pixTemp + j * naxis1;
-         for (i=xx1;i<=xx2;i++) {				  
+         for (i=xx1;i<=xx2;i++) {
             f1 += (double)*(offset+i);
             n1++;
          }
@@ -394,7 +394,7 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
          offset = pixTemp + j * naxis1;
          dy=1.*j-yc;
          dy2=dy*dy;
-         for (i=xx1;i<=xx2;i++) {				  
+         for (i=xx1;i<=xx2;i++) {
             dx=1.*i-xc;
             dx2=dx*dx;
             if ((dx2+dy2)<=r11) {
@@ -474,7 +474,7 @@ void CPixels::AstroPhotometry(int x1, int y1, int x2, int y2,
          offset = pixTemp + j * naxis1;
          dy=1.*j-yc;
          dy2=dy*dy;
-         for (i=xx1;i<=xx2;i++) {				  
+         for (i=xx1;i<=xx2;i++) {
             dx=1.*i-xc;
             dx2=dx*dx;
             d2=dx2+dy2;
@@ -962,12 +962,12 @@ TPixelClass CPixels::getPixelClass(char * className) {
          }
       }
    }
-   
+
    return result;
 }
 
 char * CPixels::getPixelClassName(TPixelClass value) {
-   return PixelClassName[value];
+   return (char*) PixelClassName[value];
 }
 
 
@@ -975,9 +975,9 @@ char * CPixels::getPixelClassName(TPixelClass value) {
 /**
  * getPixelCompression
  *   retourne l'identifiant de la methode de compression
- *   
- * Parameters: 
- *    value  : name  
+ *
+ * Parameters:
+ *    value  : name
  * Results:
  *    returns  ident or FORMAT_UNKNOWN if name is not found
  * Side effects:
@@ -985,7 +985,7 @@ char * CPixels::getPixelClassName(TPixelClass value) {
  */
 TPixelFormat CPixels::getPixelFormat(char * formatName) {
    TPixelFormat result = FORMAT_UNKNOWN;
-   
+
    if (formatName != NULL ) {
       for(int i=0; i < FORMAT_UNKNOWN; i++) {
          if( strcmp(formatName, PixelFormatName[i] ) == 0 ) {
@@ -1001,7 +1001,7 @@ TPixelFormat CPixels::getPixelFormat(char * formatName) {
  * getPixelFormatName
  *   retourne le nom du format des pixels (byte, ushort, ...)
  *
- * Parameters: 
+ * Parameters:
  *    value  : identifiant
  * Results:
  *    returns  name
@@ -1009,16 +1009,16 @@ TPixelFormat CPixels::getPixelFormat(char * formatName) {
  *    none
  */
 char * CPixels::getPixelFormatName(TPixelFormat value) {
-   return PixelFormatName[value];
+   return (char*) PixelFormatName[value];
 }
 
 //---------------------------------------------------------------------
 /**
  * getPixelCompression
  *   retourne l'identifiant de la methode de compression
- *   
- * Parameters: 
- *    value  : name  
+ *
+ * Parameters:
+ *    value  : name
  * Results:
  *    returns  ident or COMPRESS_UNKNOWN if name is not found
  * Side effects:
@@ -1026,14 +1026,14 @@ char * CPixels::getPixelFormatName(TPixelFormat value) {
  */
 TPixelCompression CPixels::getPixelCompression(char * compressionName) {
    TPixelCompression result= COMPRESS_UNKNOWN;
-   
+
    if (compressionName != NULL ) {
       for(int i=0; i < COMPRESS_UNKNOWN; i++) {
          if( strcmp(compressionName, CompressionName[i] ) == 0 ) {
             result = (TPixelCompression)i;
          }
       }
-   }   
+   }
    return result;
 }
 
@@ -1042,7 +1042,7 @@ TPixelCompression CPixels::getPixelCompression(char * compressionName) {
  * getPixelCompressionName
  *   retourne le nom de la methode de compression
  *
- * Parameters: 
+ * Parameters:
  *    value  : identifiant
  * Results:
  *    returns  name
@@ -1050,17 +1050,17 @@ TPixelCompression CPixels::getPixelCompression(char * compressionName) {
  *    none
  */
 char * CPixels::getPixelCompressionName(TPixelCompression value) {
-   return CompressionName[value];
+   return (char*) CompressionName[value];
 }
 
 
 //---------------------------------------------------------------------
 /**
  * getColorPlane
- *   retourne l'identifiant du plan 
- *   
- * Parameters: 
- *    value  : name  
+ *   retourne l'identifiant du plan
+ *
+ * Parameters:
+ *    value  : name
  * Results:
  *    returns  ident or PLANE_UNKNOWN if name is not found
  * Side effects:
@@ -1068,7 +1068,7 @@ char * CPixels::getPixelCompressionName(TPixelCompression value) {
  */
 TColorPlane CPixels::getColorPlane(char * planeName) {
    TColorPlane result = PLANE_UNKNOWN;
-   
+
    if (planeName != NULL ) {
       for(int i=0; i < PLANE_UNKNOWN; i++) {
          if( strcmp(planeName, ColorPlaneName[i] ) == 0 ) {
@@ -1086,7 +1086,7 @@ TColorPlane CPixels::getColorPlane(char * planeName) {
  * Histogram
  *   calcule l'histogramme de l'image
  *
- * Parameters: 
+ * Parameters:
  *    none
  * Results:
  *    returns 1 if pixels are ready, otherwise 0.
@@ -1097,7 +1097,7 @@ void CPixels::Histogram(int n, float *adus, float *meanadus, long *histo,
                        int ismini,float mini,int ismaxi,float maxi)
 {
 
-   
+
    int nelem,k,kk;
    double delta;
    TYPE_PIXELS *pixTemp;

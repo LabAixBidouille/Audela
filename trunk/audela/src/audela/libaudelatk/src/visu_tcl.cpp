@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -36,7 +36,7 @@
  * the corresponding C function.
  */
 struct cmditem {
-   char *cmd;
+   const char *cmd;
    Tcl_CmdProc *func;
 };
 
@@ -253,10 +253,10 @@ int cmdVisuPal(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
          ((CVisu*)clientData)->CreatePalette(Pal_Blue1);
       } else if(strcmp(argv[2],"blue2")==0) {
          ((CVisu*)clientData)->CreatePalette(Pal_Blue2);
-      } else {         
+      } else {
          // je traite les noms de repertoires contenant des caractères accentués
-         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
-         Tcl_Eval(interp,ligne); 
+         sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
+         Tcl_Eval(interp,ligne);
          res = ((CVisu*)clientData)->CreatePaletteFromFile(interp->result);
          if(res!=0) {
             Tcl_SetResult(interp,CError::message(res),TCL_VOLATILE);
@@ -288,8 +288,8 @@ int cmdVisuPalDir(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       visu = (CVisu*)clientData;
 
       // je traite les noms de repertoires contenant des caractères accentués
-      sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]); 
-      Tcl_Eval(interp,ligne); 
+      sprintf(ligne,"encoding convertfrom identity {%s}",argv[2]);
+      Tcl_Eval(interp,ligne);
       visu->SetPaletteDir(interp->result);
       free(ligne);
    }
@@ -329,7 +329,8 @@ int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
             Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          }
       } else {
-         Tcl_SetResult(interp,"visu cut error : no buffer",TCL_VOLATILE);
+         sprintf(ligne,"visu cut error : no buffer");
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
       }
    } else {
@@ -350,7 +351,7 @@ int cmdVisuCut(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
             fsh = (float)dSh;
             fsb = (float)dSb;
             visu = (CVisu*)clientData;
-            visu->SetGrayCuts(fsh, fsb);            
+            visu->SetGrayCuts(fsh, fsb);
             }
          Tcl_Free((char*)listArgv);
       } else if (listArgc == 6 ){
@@ -683,7 +684,8 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                      result = TCL_OK;
                      break;
                   case ELIBSTD_SUB_WINDOW_ALREADY_EXIST:
-                     Tcl_SetResult(interp,"a window already exists",TCL_VOLATILE);
+                     sprintf(ligne,"a window already exists");
+                     Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                      result = TCL_ERROR;
                      break;
                   }
@@ -788,7 +790,7 @@ int cmdVisuMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       } else if (strcmp(argv[2],"video")==0 ) {
 #if defined(OS_WIN)
          visu->SetMode(2);
-#else 
+#else
          sprintf(ligne,"video is not available with LINUX");
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
@@ -797,7 +799,7 @@ int cmdVisuMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          sprintf(ligne,"Usage: %s %s ?photo|video?",argv[0],argv[1]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
          result = TCL_ERROR;
-      } 
+      }
    }
    free(ligne);
    return result;
@@ -808,9 +810,9 @@ int cmdVisuMode(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 /**
  * cmdThickness
  *   set or get thickness of 1D picture
- *   
- * Parameters: 
- *    value  : name  
+ *
+ * Parameters:
+ *    value  : name
  * Results:
  *    returns  ident or FORMAT_UNKNOWN if name is not found
  * Side effects:

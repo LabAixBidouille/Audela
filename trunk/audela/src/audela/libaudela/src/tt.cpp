@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -117,7 +117,7 @@ void load_libtt(void)
 class Ctt_params {
       protected:
    char *current_dir;
-   void allocate(char**,char*);
+   void allocate(char**,const char*);
       public:
    char *parametres[NB_TT_PARAMS];
    Ctt_params(Tcl_Interp*);
@@ -183,7 +183,7 @@ Ctt_params::~Ctt_params()
    if(current_dir) free(current_dir);
 }
 
-void Ctt_params::allocate(char**s_to,char*s_from)
+void Ctt_params::allocate(char**s_to,const char*s_from)
 {
    if(s_from==0) {
       if(*s_to) {
@@ -507,7 +507,7 @@ int CmdFits2ColorJpg(ClientData clientData, Tcl_Interp *interp, int argc, char *
          return retour;
 		}
 
-      Tcl_SetResult(interp,"",TCL_VOLATILE);
+      Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
       retour = TCL_OK;
 
       Libtt_main(TT_PTR_FREEPTR,1,&pr);
@@ -553,7 +553,7 @@ int CmdTtScript2(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       return TCL_ERROR;
    }
 
-   Tcl_SetResult(interp,"",TCL_VOLATILE);
+   Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -584,7 +584,7 @@ int CmdTtScript3(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
       return TCL_ERROR;
    }
 
-   Tcl_SetResult(interp,"",TCL_VOLATILE);
+   Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -697,7 +697,7 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    float *ptot=NULL,*p=NULL;
    int nelem,naxis=3;
    CFitsKeywords *keywords;
- 
+
    int nb_arg_min = 5;        // Nombre minimal d'arguments
 
    if(argc<nb_arg_min) {
@@ -707,7 +707,7 @@ int CmdFitsConvert3d(ClientData clientData, Tcl_Interp *interp, int argc, char *
    }
    nb=atoi(argv[2]);
    if (nb<=0) {
-      Tcl_SetResult(interp,"number of images must be positive",TCL_VOLATILE);
+      Tcl_SetResult(interp,(char*)"number of images must be positive",TCL_VOLATILE);
       return TCL_ERROR;
    }
    naxis10=1;

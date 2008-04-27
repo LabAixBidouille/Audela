@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -55,7 +55,7 @@ class LIBAUDELA_API CFitsKeyword {
    CFitsKeyword *next;
    CFitsKeyword();
    ~CFitsKeyword();
-   void SetKeyword(char*a_nom,void*a_value,int a_datatype,char*a_comment,char*a_unit);
+   void SetKeyword(const char*a_nom,void*a_value,int a_datatype,const char*a_comment,const char*a_unit);
    void PutToArray(int,char***,char***,char***,char***,int**);
    void GetFromArray(int,char***,char***,char***,char***,int**);
    void GetIntValue(int*data,int*default_data);
@@ -78,12 +78,12 @@ class LIBAUDELA_API CFitsKeywords {
       public:
    CFitsKeywords();
    ~CFitsKeywords();
-   CFitsKeyword* FindKeyword(char*kw_name);
-   CFitsKeyword* AddKeyword(char*name);
+   CFitsKeyword* FindKeyword(const char* kw_name);
+   CFitsKeyword* AddKeyword(const char* name);
    int Delete(char*kw_name);
 	int DeleteAll();
-   void Add(char*a_nom,void*a_data,int a_datatype,char*a_comment,char*a_unit);
-   void Add(char *nom, char *data, char *datatype, char *comment, char *unit);
+   void Add(const char*a_nom,void*a_data,int a_datatype,const char*a_comment,const char*a_unit);
+   void Add(const char *nom, const char *data, const char *datatype, const char *comment, const char *unit);
    void AddFromArray(int,char***,char***,char***,char***,int**);
    void GetFromArray(int,char***,char***,char***,char***,int**);
    void SetToArray(char***,char***,char***,char***,int**);

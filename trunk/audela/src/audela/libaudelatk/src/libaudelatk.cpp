@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -28,7 +28,7 @@
 #include "cbuffer.h"
 #include "cvisu.h"
 
-extern "C" int Tkimgvideo_Init(Tcl_Interp *interp);   
+extern "C" int Tkimgvideo_Init(Tcl_Interp *interp);
 
 #define VISU_PREFIXE "visu"
 
@@ -62,10 +62,10 @@ extern "C" int Audelatk_Init(Tcl_Interp *interp)
    if(Tcl_InitStubs(interp,"8.3",0)==NULL) {
       return TCL_ERROR;
    }
-   if(Tk_InitStubs(interp,"8.3",0)==NULL) {
+   if(Tk_InitStubs(interp,(char*)"8.3",0)==NULL) {
       return TCL_ERROR;
    }
-   
+
    Tcl_PkgProvide(interp,"libaudelatk","1.0");
    visu_pool = new CPool(VISU_PREFIXE);
    Tcl_CreateCommand(interp,"::visu::create",(Tcl_CmdProc *)CmdCreateVisuItem,(void*)visu_pool,NULL);
@@ -125,7 +125,7 @@ int CmdDeleteVisuItem(ClientData clientData, Tcl_Interp *interp, int argc, char 
       if(toto) {
          sprintf(ligne,"catch {%s%d close}",classname,numero);
          Tcl_Eval(interp,ligne);
-         Tcl_SetResult(interp,"",TCL_VOLATILE);
+         Tcl_SetResult(interp,(char*)"",TCL_VOLATILE);
          pool->RetirerDev(toto);
          sprintf(ligne,"%s%d",classname,numero);
 			Tcl_DeleteCommand(interp,ligne);

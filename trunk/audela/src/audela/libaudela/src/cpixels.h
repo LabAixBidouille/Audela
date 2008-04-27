@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -42,7 +42,7 @@ typedef enum { FORMAT_BYTE, FORMAT_SHORT, FORMAT_USHORT, FORMAT_FLOAT, FORMAT_UN
 typedef enum { COMPRESS_NONE, COMPRESS_RGB, COMPRESS_I420, COMPRESS_JPEG, COMPRESS_RAW, COMPRESS_UNKNOWN} TPixelCompression;
 typedef enum { PLANE_GREY, PLANE_RGB, PLANE_R, PLANE_G, PLANE_B, PLANE_UNKNOWN} TColorPlane;
 
-class LIBAUDELA_API CPixels 
+class LIBAUDELA_API CPixels
 {
 public:
    virtual ~CPixels();
@@ -50,12 +50,12 @@ public:
    void AstroBaricenter(int x1, int y1, int x2, int y2, double *xc, double *yc);
    void AstroCentro(int x1, int y1, int x2, int y2, int xmax, int ymax,
                      TYPE_PIXELS seuil,float* sx, float* sy, float* r);
-   void AstroFlux(int x1, int y1, int x2, int y2, 
-                     TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax, 
+   void AstroFlux(int x1, int y1, int x2, int y2,
+                     TYPE_PIXELS* flux, TYPE_PIXELS* maxi, int *xmax, int* ymax,
                      TYPE_PIXELS *moy, TYPE_PIXELS *seuil, int * nbpix);
-   void AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax, 
+   void AstroPhoto(int x1, int y1, int x2, int y2, int xmax, int ymax,
                      TYPE_PIXELS moy, double *dFlux, int* ntot);
-   void AstroPhotometry(int x1, int y1, int x2, int y2, int method, double r1, double r2,double r3, 
+   void AstroPhotometry(int x1, int y1, int x2, int y2, int method, double r1, double r2,double r3,
                       double *flux, double* f23, double* fmoy, double* sigma, int *n1);
    virtual void Autocut(double *phicut,double *plocut,double *pmode)=0;
    virtual void BinX(int x1, int x2, int width)=0;
@@ -120,12 +120,12 @@ protected:
    void fitgauss1d_a(int n,double *y,double *p,double *ecart);
    void fitgauss2d(int sizex, int sizey,double **y,double *p,double *ecart);
 
-   
-   static char  *  PixelClassName [];
-   static char  *  PixelFormatName [];
-   static char  *  CompressionName [];
-   static char  *  ColorPlaneName[];
-  
+
+   static const char  *  PixelClassName [];
+   static const char  *  PixelFormatName [];
+   static const char  *  CompressionName [];
+   static const char  *  ColorPlaneName[];
+
 
 };
 
