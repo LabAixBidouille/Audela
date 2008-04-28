@@ -2142,7 +2142,7 @@ void CBuffer::TtImaSeries(char *s)
    char **units=NULL;
    int *datatypes=NULL;
    int datatypeIn = 0;
-   int datatypeOut = NULL;
+   int datatypeOut = 0;
 //   char valchar[80];
    TYPE_PIXELS *pixOut=NULL;
    TYPE_PIXELS *pixIn=NULL;
