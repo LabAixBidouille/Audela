@@ -23,7 +23,7 @@
 // Librairie   : LIBJM
 // Fichier     : JM_PHOTO.CPP 
 // Auteur      : Jacques Michelet
-// Description : Fonctions relatives à la photométrie
+// Description : Fonctions relatives ï¿½ la photomï¿½trie
 // ==================================================
 
 #include "jm.h"
@@ -41,7 +41,7 @@ static int hauteur_image;
 
 // ***************** InitTamponImage *******************
 // 
-// Met en mémoire des éléments du tampon d'image courant
+// Met en mï¿½moire des ï¿½lï¿½ments du tampon d'image courant
 // *****************************************************
 int InitTamponImage(long pointeur, int largeur, int hauteur)
 {
@@ -306,144 +306,145 @@ void CalculValeursPrincipales (int x1, int y1, int x2, int y2, double *x_source,
 /*      |Ro| < 1                      */
 void Gauss(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_w, gsl_matrix *mat_x, gsl_vector *vect_c, gsl_matrix *mat_cov, double *chi2, double *me1, struct ajustement *p, struct ajustement *incert, int *iter, int *convergence)
 {
-  int x, y;
-  double dy, dy2, gy, dx, dx2, gx, hxy, fxy;
-  size_t i;
-  struct ajustement t;
-  int erreur;
+	int x, y = 0;
+	double dy, dy2, gy, dx, dx2, gx, hxy, fxy = 0.0;
+	size_t i = 0;
+	int erreur = 0;
+
+	struct ajustement t;
+	memset (&t, 0, sizeof(struct ajustement));
+
+	//  printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
   
-  //  printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
-  
-  size_t nxy = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1); 
+	size_t nxy = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
  
-  gsl_vector *vect_y = gsl_vector_alloc(nxy);
-  gsl_multifit_linear_workspace *bac = gsl_multifit_linear_alloc(nxy, 7);
-  gsl_matrix *temp_cov = gsl_matrix_alloc(7, 7);
+	gsl_vector *vect_y = gsl_vector_alloc(nxy);
+	gsl_multifit_linear_workspace *bac = gsl_multifit_linear_alloc(nxy, 7);
+	gsl_matrix *temp_cov = gsl_matrix_alloc(7, 7);
 
-  double ancien_chi2 = 1e9;
-  double chi2_temporaire = 1e9;
+	double ancien_chi2 = 1e9;
+	double chi2_temporaire = 1e9;
    
-  *convergence = -1;
-  *iter = 0;
-  while (*convergence < 0)
-    {
-      i = 0;
-      (*iter) ++;
-      for (y = y1; y <= y2; y++)
+	*convergence = -1;
+	*iter = 0;
+	while (*convergence < 0)
 	{
-	  dy = ((double)y - p->Y0) / p->Sigma_Y;
-	  dy2 = dy * dy;
-	  gy = exp(-dy2);
-	  for (x = x1; x <= x2; x++)
-	    {
-	      dx = ((double)x - p->X0) / p->Sigma_X;
-	      dx2 = dx * dx;
-	      gx = exp(-dx2);
-	      hxy = exp(2.0 * p->Ro * dx * dy);
+		i = 0;
+		(*iter) ++;
+		for (y = y1; y <= y2; y++)
+		{
+			dy = ((double)y - p->Y0) / p->Sigma_Y;
+			dy2 = dy * dy;
+			gy = exp(-dy2);
+			for (x = x1; x <= x2; x++)
+			{
+				dx = ((double)x - p->X0) / p->Sigma_X;
+				dx2 = dx * dx;
+				gx = exp(-dx2);
+				hxy = exp(2.0 * p->Ro * dx * dy);
+				fxy = gx * gy * hxy;
 
-	      fxy = gx * gy * hxy;
-	      
-	      /* Matrice des points a faire correspondre */
-	      gsl_vector_set(vect_y, i, (gsl_vector_get(vect_s, i) - (p->Signal * fxy + p->Fond)));
-	      
-	      /* Matrice du modele (Jacobien) */
-	      /* dF/dX0 */
-	      gsl_matrix_set(mat_x, i, 0, (2.0 * p->Signal * fxy * ((dx - p->Ro * dy) / p->Sigma_X)));
-	      /* dF/dY0 */
-	      gsl_matrix_set(mat_x, i, 1, (2.0 * p->Signal * fxy * ((dy - p->Ro * dx) / p->Sigma_Y)));
-	      /* dF/dS0 */
-	      gsl_matrix_set(mat_x, i, 2, fxy);
-	      /* dF/dB */
-	      gsl_matrix_set(mat_x, i, 3, 1.0);
-	      /* dF/dFwhmX */
-	      gsl_matrix_set(mat_x, i, 4, (2.0 * p->Signal * fxy * ((dx2 / p->Sigma_X) - (p->Ro * dx * dy / p->Sigma_X))));
-	      /* dF/dFwhmY */
-	      gsl_matrix_set(mat_x, i, 5, (2.0 * p->Signal * fxy * ((dy2 / p->Sigma_Y) - (p->Ro * dx * dy / p->Sigma_Y))));
-	      /* dF/dRo */
-	      gsl_matrix_set(mat_x, i, 6, (2.0 * p->Signal * fxy * dx * dy));
-	      
-	      i++;
-	      
-	    }
-	  }
-      erreur = gsl_multifit_wlinear(mat_x, vect_w, vect_y, vect_c, temp_cov, chi2, bac);
-      if (erreur) {
-    	*convergence = 0;
-	    return;
-      }
+				/* Matrice des points a faire correspondre */
+				gsl_vector_set(vect_y, i, (gsl_vector_get(vect_s, i) - (p->Signal * fxy + p->Fond)));
 
-      t.X0 = p->X0 + gsl_vector_get(vect_c,0);
-      t.Y0 = p->Y0 + gsl_vector_get(vect_c,1);
-      t.Signal = p->Signal + gsl_vector_get(vect_c,2);
-      t.Fond = p->Fond + gsl_vector_get(vect_c,3);
-      t.Sigma_X = p->Sigma_X + gsl_vector_get(vect_c,4);
-      t.Sigma_Y = p->Sigma_Y + gsl_vector_get(vect_c,5);
-      if (fabs(t.Ro) > .9) {
-	t.Ro = p->Ro + (gsl_vector_get(vect_c,6) / 10.0);
-      } else {
-	t.Ro = p->Ro + gsl_vector_get(vect_c,6);
-      }
+				/* Matrice du modele (Jacobien) */
+				/* dF/dX0 */
+				gsl_matrix_set(mat_x, i, 0, (2.0 * p->Signal * fxy * ((dx - p->Ro * dy) / p->Sigma_X)));
+				/* dF/dY0 */
+				gsl_matrix_set(mat_x, i, 1, (2.0 * p->Signal * fxy * ((dy - p->Ro * dx) / p->Sigma_Y)));
+				/* dF/dS0 */
+				gsl_matrix_set(mat_x, i, 2, fxy);
+				/* dF/dB */
+				gsl_matrix_set(mat_x, i, 3, 1.0);
+				/* dF/dFwhmX */
+				gsl_matrix_set(mat_x, i, 4, (2.0 * p->Signal * fxy * ((dx2 / p->Sigma_X) - (p->Ro * dx * dy / p->Sigma_X))));
+				/* dF/dFwhmY */
+				gsl_matrix_set(mat_x, i, 5, (2.0 * p->Signal * fxy * ((dy2 / p->Sigma_Y) - (p->Ro * dx * dy / p->Sigma_Y))));
+				/* dF/dRo */
+				gsl_matrix_set(mat_x, i, 6, (2.0 * p->Signal * fxy * dx * dy));
+ 
+				i++;
 
-      /* Detection des cas d'arret */
-      /* !! on ne compare que les chi2 "pairs". En effet, dans certains cas, la modelisation */
-      /* oscille sans fin entre 2 valeurs, vraisemblablement a cause de problemes d'arrondis */
-      /* C'est pourquoi existe la variable chi2_temporaire */
-      if (fabs(ancien_chi2 - *chi2) < 1e-10)
-      {
-        *convergence = 1;
-      }
-      
-      if ((t.X0 < x1)         /* la modelisation sort du cadre entourant l'image */
-	  || (t.X0 > x2)
-	  || (t.Y0 < y1)
-	  || (t.Y0 > y2)
-	  || (t.Sigma_X < 0.0)    /* l'ecart-type ne peut pas etre negatif */
-	  || (t.Sigma_Y < 0.0)
-	  || (t.Signal < 0.0)     /* le signal doit rester dans les limites de la numerisation */
-	  || (t.Signal > 32767.0)
-	  || (t.Fond > 32767.0)
-	  || (fabs(t.Ro) >= 0.98)  /* |ro| est forcement < 1 */
-	  || (*iter > 100)       /* Convergence qui prend un temps "infini" */
-	  || ((t.Sigma_X / t.Sigma_Y) >= 10.0)
-	  || ((t.Sigma_Y / t.Sigma_X) >= 10.0)
-	  || (t.Sigma_X < 0.25)
-	  || (t.Sigma_Y < 0.25))
-      {
-        *convergence = 0;
-      } else {
-        ancien_chi2 = chi2_temporaire;
-        chi2_temporaire = *chi2;
-        p->X0 = t.X0;
-        p->Y0 = t.Y0;
-        p->Signal = t.Signal;
-        p->Fond = t.Fond;
-        p->Sigma_X = t.Sigma_X;
-        p->Sigma_Y = t.Sigma_Y;
-        p->Ro = t.Ro;
+			}
+		}
+		erreur = gsl_multifit_wlinear(mat_x, vect_w, vect_y, vect_c, temp_cov, chi2, bac);
+		if (erreur) {
+			*convergence = 0;
+			return;
+		}
 
-        gsl_matrix_memcpy(mat_cov, temp_cov);
+		t.X0 = p->X0 + gsl_vector_get(vect_c,0);
+		t.Y0 = p->Y0 + gsl_vector_get(vect_c,1);
+		t.Signal = p->Signal + gsl_vector_get(vect_c,2);
+		t.Fond = p->Fond + gsl_vector_get(vect_c,3);
+		t.Sigma_X = p->Sigma_X + gsl_vector_get(vect_c,4);
+		t.Sigma_Y = p->Sigma_Y + gsl_vector_get(vect_c,5);
+		if (fabs(t.Ro) > .9) {
+			t.Ro = p->Ro + (gsl_vector_get(vect_c,6) / 10.0);
+		} else {
+			t.Ro = p->Ro + gsl_vector_get(vect_c,6);
+		}
 
-        //	printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
-      }
-   }
+		/* Detection des cas d'arret */
+		/* !! on ne compare que les chi2 "pairs". En effet, dans certains cas, la modelisation */
+		/* oscille sans fin entre 2 valeurs, vraisemblablement a cause de problemes d'arrondis */
+		/* C'est pourquoi existe la variable chi2_temporaire */
+		if (fabs(ancien_chi2 - *chi2) < 1e-10)
+		{
+			*convergence = 1;
+		}
 
-   *chi2 = ancien_chi2;
-   *me1 = sqrt(*chi2 / (nxy - 7));
+		if ((t.X0 < x1)         /* la modelisation sort du cadre entourant l'image */
+		|| (t.X0 > x2)
+		|| (t.Y0 < y1)
+		|| (t.Y0 > y2)
+		|| (t.Sigma_X < 0.0)    /* l'ecart-type ne peut pas etre negatif */
+		|| (t.Sigma_Y < 0.0)
+		|| (t.Signal < 0.0)     /* le signal doit rester dans les limites de la numerisation */
+		|| (t.Signal > 32767.0)
+		|| (t.Fond > 32767.0)
+		|| (fabs(t.Ro) >= 0.98)  /* |ro| est forcement < 1 */
+		|| (*iter > 100)       /* Convergence qui prend un temps "infini" */
+		|| ((t.Sigma_X / t.Sigma_Y) >= 10.0)
+		|| ((t.Sigma_Y / t.Sigma_X) >= 10.0)
+		|| (t.Sigma_X < 0.25)
+		|| (t.Sigma_Y < 0.25))
+		{
+			*convergence = 0;
+		} else {
+			ancien_chi2 = chi2_temporaire;
+			chi2_temporaire = *chi2;
+			p->X0 = t.X0;
+			p->Y0 = t.Y0;
+			p->Signal = t.Signal;
+			p->Fond = t.Fond;
+			p->Sigma_X = t.Sigma_X;
+			p->Sigma_Y = t.Sigma_Y;
+			p->Ro = t.Ro;
 
-   incert->X0 = *me1 * sqrt(gsl_matrix_get(mat_cov, 0, 0));
-   incert->Y0 = *me1 * sqrt(gsl_matrix_get(mat_cov, 1, 1));
-   incert->Signal = *me1 * sqrt(gsl_matrix_get(mat_cov, 2, 2));
-   incert->Fond = *me1 * sqrt(gsl_matrix_get(mat_cov, 3, 3));
-   incert->Sigma_X = *me1 * sqrt(gsl_matrix_get(mat_cov, 4, 4));
-   incert->Sigma_Y = *me1 * sqrt(gsl_matrix_get(mat_cov, 5, 5));
-   incert->Ro = *me1 * sqrt(gsl_matrix_get(mat_cov, 6, 6));
+			gsl_matrix_memcpy(mat_cov, temp_cov);
 
-   //  printf("iX0=%g|iY0=%g|iS=%g|iB=%g|iSx=%g|iSy=%g|iRo=%g\n", incert->X0, incert->Y0, incert->Signal, incert->Fond, incert->Sigma_X, incert->Sigma_Y, incert->Ro);
-   //  printf("Iter = %d\n", *iter);
+			//	printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
+		}
+	}
 
-   gsl_multifit_linear_free(bac);
-   gsl_vector_free(vect_y);
-   gsl_matrix_free(temp_cov);
+	*chi2 = ancien_chi2;
+	*me1 = sqrt(*chi2 / (nxy - 7));
+
+	incert->X0 = *me1 * sqrt(gsl_matrix_get(mat_cov, 0, 0));
+	incert->Y0 = *me1 * sqrt(gsl_matrix_get(mat_cov, 1, 1));
+	incert->Signal = *me1 * sqrt(gsl_matrix_get(mat_cov, 2, 2));
+	incert->Fond = *me1 * sqrt(gsl_matrix_get(mat_cov, 3, 3));
+	incert->Sigma_X = *me1 * sqrt(gsl_matrix_get(mat_cov, 4, 4));
+	incert->Sigma_Y = *me1 * sqrt(gsl_matrix_get(mat_cov, 5, 5));
+	incert->Ro = *me1 * sqrt(gsl_matrix_get(mat_cov, 6, 6));
+
+	//  printf("iX0=%g|iY0=%g|iS=%g|iB=%g|iSx=%g|iSy=%g|iRo=%g\n", incert->X0, incert->Y0, incert->Signal, incert->Fond, incert->Sigma_X, incert->Sigma_Y, incert->Ro);
+	//  printf("Iter = %d\n", *iter);
+
+	gsl_multifit_linear_free(bac);
+	gsl_vector_free(vect_y);
+	gsl_matrix_free(temp_cov);
 }
 
 
