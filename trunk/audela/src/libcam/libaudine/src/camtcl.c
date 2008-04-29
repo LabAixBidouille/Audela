@@ -1161,6 +1161,8 @@ void AudineScanCallback(ClientData clientData)
     }
 
     if (TheScanStruct->stop == 1) {	/* Arret a la demande de l'utilisateur */
+	libcam_GetCurrentFITSDate(TheScanStruct->interp, TheScanStruct->dateend);
+	libcam_GetCurrentFITSDate_function(TheScanStruct->interp, TheScanStruct->dateend, "::audace::date_sys2ut");
 	AudineScanTerminateSequence(clientData, cam->camno, "User aborted exposure.");
     } else if (TheScanStruct->y < TheScanStruct->height) {	/* On continue : */
 	n1 = TheScanStruct->t0;
