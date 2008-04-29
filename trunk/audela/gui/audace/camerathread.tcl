@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.2 2008-04-27 15:38:17 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.3 2008-04-29 17:40:04 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -18,6 +18,7 @@ proc ::camerathread::init { camItem camNo mainThreadNo} {
    set private(mainThreadNo)  $mainThreadNo
    set private(bufNo)         [cam$camNo buf]
    set private(acquisitionState)  0
+   set private(test)          0
 }
 
 
@@ -131,7 +132,7 @@ proc ::camerathread::centerBrightestStar { exptime binning originCoord targetCoo
 }
 
 #------------------------------------------------------------
-proc ::camerathread::centerRadec { exptime binning originCoord radec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon } {
+proc ::camerathread::centerRadec { exptime binning originCoord radec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon catalogueName cataloguePath } {
    variable private
 
    if { $private(acquisitionState) == 1 } {
@@ -144,6 +145,9 @@ proc ::camerathread::centerRadec { exptime binning originCoord radec angle targe
    set private(binning)       $binning
    set private(detection)     "CALIBRE"
    set private(radec)         $radec
+   set private(catalogueName) $catalogueName
+   set private(cataloguePath) $cataloguePath
+
    set private(originCoord)   $originCoord
    set private(targetCoord)   $originCoord
    set private(targetBoxSize) $targetBoxSize
@@ -285,7 +289,7 @@ proc ::camerathread::processAcquisitionLoop { } {
    variable private
 
    #--- je fais une acquisition
-   if { 1 } {
+   if { $private(test) == 0 } {
       cam$private(camNo) acq
       set statusVariableName "::status_cam$private(camNo)"
       if { [set $statusVariableName] == "exp" } {
@@ -365,7 +369,8 @@ proc ::camerathread::processAcquisitionLoop { } {
             set pixsize1   [expr [lindex [cam$private(camNo) celldim] 0] * 1000000]
             set pixsize2   [expr [lindex [cam$private(camNo) celldim] 1] * 1000000]
 
-            calibre $bufNo $tempPath $fileName $private(detection) $private(catalogue) \
+            calibre $bufNo $tempPath $fileName $private(detection) \
+               $private(catalogueName) $private(cataloguePath) \
                $crval1 $crval2 $crpix1 $crpix2 \
                $pixsize1 $pixsize2 \
                $private(foclen) $private(angle) \
@@ -687,7 +692,7 @@ proc ::camerathread::searchStar { searchBox threshin fwhm radius threshold } {
 #   calibration astrometrique de l'image
 #------------------------------------------------------------
 
-proc ::camerathread::calibre { bufNo tempPath fileName detection catalogue crval1 crval2 crpix1 crpix2 pixsize1 pixsize2 foclen crota2 kappa threshin fwhm radius threshold maxMagnitude delta epsilon } {
+proc ::camerathread::calibre { bufNo tempPath fileName detection catalogueName cataloguePath crval1 crval2 crpix1 crpix2 pixsize1 pixsize2 foclen crota2 kappa threshin fwhm radius threshold maxMagnitude delta epsilon } {
    variable private
    global conf
 
@@ -730,8 +735,6 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogue crval
    #           OBJEKEY = 2007-11-15T10:47:28:24901 Link key for objefile
    #           TT1 = IMA/SERIES STAT TT History
    #     idummy.fit  contenant la table des etoiles trouvées dans l'image
-   ###ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName0\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" STAT \"objefile=${tempPath}/x$fileName$ext\" detect_kappa=5"
-
    set resultFile "${tempPath}/i$fileName$ext"
    if { $detection=="STAT" } {
       buf$bufNo save "${tempPath}/${fileName}$ext"
@@ -757,26 +760,8 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogue crval
    #     cdummy.fit   contenant la table des etoiles trouvées dans le catalogue
    #     cdummy.jpg  ( superposition des étoiles du catalogue sur l'image de départ
    #     usno.lst
-   ###ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${tempPath}/c$fileName$ext\" \"jpegfile_chart2=$tempPath/${fileName}a.jpg\" \"magrlim=10.0\" \"magblim=10.0\""
-   if { $catalogue=="MICROCAT" } {
-      set cattype "MicroCat"
-      set cdpath "D:/audela-1.4.0/temp/microcat/"
-      ###set cattype "USNO"
-      ###set cdpath "E:/"
-      ###set tempPath "$::audace(rep_images)"
-      ###set cdpath "$::conf(astrometry,catfolder)"
-      ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cdpath\" astromcatalog=$cattype \"catafile=${tempPath}/c$fileName$ext\" \"magrlim=$maxMagnitude\" \"magblim=$maxMagnitude\""
-      #--- je compte les etoiles trouvees dans le catalogue
-      set fcom [open "usno.lst" r]
-      set nbCatalogueStar 0
-      # je traite le fichier de coordonnes
-      while {-1 != [gets $fcom line1]} {
-         incr nbCatalogueStar
-      }
-      close $fcom
-   } else {
-      buf$bufNo catstar "${tempPath}/c$fileName$ext"
-   }
+   ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" CATCHART \"path_astromcatalog=$cataloguePath\" astromcatalog=$catalogueName \"catafile=${tempPath}/c$fileName$ext\" \"magrlim=$maxMagnitude\" \"magblim=$maxMagnitude\""
+
 
    #---- appariement du catalogue
    #  input :
@@ -791,7 +776,6 @@ proc ::camerathread::calibre { bufNo tempPath fileName detection catalogue crval
    #     usno.lst
    #     xy.lst
 
-   #ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" ASTROMETRY delta=2 epsilon=0.0002"
    ttscript2 "IMA/SERIES \"$tempPath\" \"$fileName\" . . \"$ext\" \"$tempPath\" \"$fileName\" . \"$ext\" ASTROMETRY delta=$delta epsilon=$epsilon"
 }
 
