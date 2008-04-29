@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.16 2008-04-27 15:38:17 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.17 2008-04-29 17:40:04 michelpujol Exp $
 #
 
 namespace eval camera {
@@ -494,16 +494,16 @@ proc ::camera::centerBrightestStar { camItem callback exptime binning originCoor
 #
 # parametres :
 #------------------------------------------------------------
-proc ::camera::centerRadec { camItem callback exptime binning originCoord raDec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon } {
+proc ::camera::centerRadec { camItem callback exptime binning originCoord raDec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon  catalogueName cataloguePath } {
    variable private
 
    set private($camItem,callback) $callback
    set camThreadNo [::confCam::getThreadNo $camItem ]
    ###console::disp "::camera::centerRadec raDec=$raDec targetBoxSize=$targetBoxSize\n"
    if { $::tcl_platform(threaded) == 0 } {
-      after 10 [list interp eval $camThreadNo           [list ::camerathread::centerRadec $exptime $binning $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon ]]
+      after 10 [list interp eval $camThreadNo           [list ::camerathread::centerRadec $exptime $binning $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon $catalogueName $cataloguePath]]
    } else {
-      ::thread::send -async $camThreadNo [list ::camerathread::centerRadec $exptime $binning $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon]
+      ::thread::send -async $camThreadNo [list ::camerathread::centerRadec $exptime $binning $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon $catalogueName $cataloguePath]
    }
 }
 
