@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.24 2008-04-26 14:52:15 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.25 2008-04-29 17:40:52 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -110,7 +110,7 @@ proc ::telescope::initTel { this visuNo } {
 # Return :
 #    Rien
 #------------------------------------------------------------
-proc ::telescope::match { radec } {
+proc ::telescope::match { radec { radecEquinox "J2000" } } {
    variable private
    global audace caption conf
 
