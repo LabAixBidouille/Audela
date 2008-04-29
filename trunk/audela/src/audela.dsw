@@ -411,18 +411,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libkitty"=".\libcam\libkitty\vc60\libkitty.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "liblx200"=".\libtel\liblx200\vc60\liblx200.dsp" - Package Owner=<4>
 
 Package=<5>
