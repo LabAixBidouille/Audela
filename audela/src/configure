@@ -6335,7 +6335,7 @@ fi
 
 LIBCAMS="libaudinet libethernaude"
 if test x"$TARGET" = x"Linux" ; then
-	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libhisis libk2 libkitty libquicka libsbig libstarlight libsynonyme"
+	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libhisis libk2 libquicka libsbig libstarlight libsynonyme"
 fi
 if test x"$WEBCAM_ENABLE" = x"1" ; then
 	LIBCAMS="$LIBCAMS libwebcam"
