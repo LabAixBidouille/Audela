@@ -91,7 +91,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "external_pthread"=".\external\pthread\vc60\pthread.dsp" - Package Owner=<4>
+Project: "external_pthread"=".\external\pthread\external_pthread.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
