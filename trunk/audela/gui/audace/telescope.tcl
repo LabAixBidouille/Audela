@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.25 2008-04-29 17:40:52 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.26 2008-05-01 12:52:58 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -68,7 +68,7 @@ proc ::telescope::initTel { this visuNo } {
       wm title $base.inittel "$caption(telescope,inittelscp0)"
       set posx_inittel [ lindex [ split [ wm geometry $base ] "+" ] 1 ]
       set posy_inittel [ lindex [ split [ wm geometry $base ] "+" ] 2 ]
-      wm geometry $base.inittel +[ expr $posx_inittel + 120 ]+[ expr $posy_inittel + 105 ]
+      wm geometry $base.inittel +[ expr $posx_inittel + 150 ]+[ expr $posy_inittel + 105 ]
       #--- Cree l'affichage du message
       label $base.inittel.lab1 -text "$caption(telescope,inittelscp1)\n$caption(telescope,inittelscp2)\n \
          $caption(telescope,inittelscp3)\n$caption(telescope,inittelscp4)\n$caption(telescope,inittelscp5)\n \
@@ -106,7 +106,8 @@ proc ::telescope::initTel { this visuNo } {
 #    Sinon sur un seul objet
 #
 # Parametres :
-#    radec : Liste des coordonnees AD et Dec a pointer
+#    radec        : Liste des coordonnees AD et Dec a pointer
+#    radecEquinox : Equinoxe des coordonnees de l'objet (optionnel)
 # Return :
 #    Rien
 #------------------------------------------------------------
