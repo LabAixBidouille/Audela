@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.40 2008-04-26 22:29:22 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.41 2008-05-01 16:06:19 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -119,11 +119,11 @@ namespace eval ::pretraitement {
       set pretraitement(afficher_image) "$caption(pretraitement,afficher_image_fin)"
       set pretraitement(avancement)     ""
 
-      #--- Initialisation des variables de la fonction re-échantillonnage
+      #--- Initialisation des variables de la fonction re-echantillonnage
       set pretraitement(scaleWindow_multx) $conf(multx)
       set pretraitement(scaleWindow_multy) $conf(multy)
 
-      #--- Initialisation des variables de la fonction écrêtage
+      #--- Initialisation des variables de la fonction ecretage
       set pretraitement(clipWindow_mini) $conf(clip_mini)
       set pretraitement(clipWindow_maxi) $conf(clip_maxi)
 
@@ -2153,7 +2153,7 @@ namespace eval ::pretraitement {
    proc afficherNomGenerique { filename } {
       global audace caption conf
 
-      #--- Est-ce un nom générique de fichiers ?
+      #--- Est-ce un nom generique de fichiers ?
       set nom_generique  [ lindex [ decomp $filename ] 1 ]
       set index_serie    [ lindex [ decomp $filename ] 2 ]
       set ext_serie      [ lindex [ decomp $filename ] 3 ]
@@ -4086,14 +4086,12 @@ namespace eval ::faireImageRef {
                   ::faireImageRef::calculCsteMult
                }
                #---
-               set offset     $faireImageRef(offset)
-               set dark       $faireImageRef(dark)
-               set flat       $faireImageRef(flat-field)
-               set norm       $faireImageRef(norm)
-               set const      "0"
-               set const_mult "1"
-               set temp       "temp"
-               set temp1      "temp1"
+               set offset $faireImageRef(offset)
+               set dark   $faireImageRef(dark)
+               set flat   $faireImageRef(flat-field)
+               set norm   $faireImageRef(norm)
+               set const  "0"
+               set temp   "temp"
                #--- Formule : Generique de sortie = K * [ Generique d'entree - ( Offset + Dark ) ] / Flat-field
                #--- Deux familles de pretraitement : Sans ou avec optimisation du noir
                if { $faireImageRef(opt) == "0" } {
@@ -4108,14 +4106,11 @@ namespace eval ::faireImageRef {
                      ::buf::delete $buf_pretrait
                      #--- Realisation de Y = [ Generique d'entree - ( X ) ]
                      sub2 $in offset+dark $temp $const $nb $first
-                     #--- Realisation de Y' = K * Y
-                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     #--- Realisation de Z = K * Y / Flat-field
+                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers intermediaires
                      file delete [ file join $audace(rep_images) offset+dark$conf(extension,defaut) ]
                      delete2 $temp $nb
-                     delete2 $temp1 $nb
                   #--- Sans optimisation du noir - Offset et dark disponibles - Manque les flats
                   } elseif { $faireImageRef(option) == "001" } {
                      #--- Realisation de X = ( Offset + Dark )
@@ -4133,13 +4128,10 @@ namespace eval ::faireImageRef {
                   } elseif { $faireImageRef(option) == "010" } {
                      #--- Realisation de Y = [ Generique d'entree - Offset ]
                      sub2 $in $offset $temp $const $nb $first
-                     #--- Realisation de Y' = K * Y
-                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     #--- Realisation de Z = K * Y / Flat-field
+                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
-                     delete2 $temp1 $nb
                   #--- Sans optimisation du noir - Offset disponible - Manque les darks et les flats
                   } elseif { $faireImageRef(option) == "011" } {
                      #--- Realisation de Z = [ Generique d'entree - Offset ]
@@ -4148,23 +4140,18 @@ namespace eval ::faireImageRef {
                   } elseif { $faireImageRef(option) == "100" } {
                      #--- Realisation de Y = [ Generique d'entree - Dark ]
                      sub2 $in $dark $temp $const $nb $first
-                     #--- Realisation de Y' = K * Y
-                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
-                     #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
+                     #--- Realisation de Z = K * Y / Flat-field
+                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention sub2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
-                     delete2 $temp1 $nb
                   #--- Sans optimisation du noir - Dark disponible - Manque les offsets et les flats
                   } elseif { $faireImageRef(option) == "101" } {
                      #--- Realisation de Z = [ Generique d'entree - Dark ]
                      sub2 $in $dark $out $const $nb $first
                   #--- Sans optimisation du noir - Flat disponible - Manque les offsets et les darks
                   } elseif { $faireImageRef(option) == "110" } {
-                     #--- Realisation de Y' = K * Y
-                     mult2 $in $temp $norm $nb $first
-                     #--- Realisation de Z = Y' / Flat-field
-                     div2 $temp $flat $out $const_mult $nb 1 ; #--- Attention mult2 a cree les images temp a partir de 1
+                     #--- Realisation de Z = K * Y / Flat-field
+                     div2 $in $flat $out $norm $nb $first
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
                   #--- Sans optimisation du noir - Aucun - Manque les offsets, les darks et les flats
@@ -4181,13 +4168,10 @@ namespace eval ::faireImageRef {
                   if { $faireImageRef(option) == "000" } {
                      #--- Optimisation du noir
                      opt2 $in $dark $offset $temp $nb $first
-                     #--- Multiplication par la constante K
-                     mult2 $temp $temp1 $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
-                     #--- Division par le flat
-                     div2 $temp1 $flat $out $const_mult $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
+                     #--- Division par le flat et multiplication par la constante K
+                     div2 $temp $flat $out $norm $nb 1 ; #--- Attention opt2 a cree les images temp a partir de 1
                      #--- Suppression des fichiers temporaires
                      delete2 $temp $nb
-                     delete2 $temp1 $nb
                   #--- Optimisation du noir - Offset et dark disponibles - Manque les flats
                   } elseif { $faireImageRef(option) == "001" } {
                      #--- Optimisation du noir
@@ -4452,7 +4436,7 @@ namespace eval ::faireImageRef {
       set buf_pretrait [ ::buf::create ]
       buf$buf_pretrait extension $conf(extension,defaut)
       buf$buf_pretrait load [ file join $audace(rep_images) $faireImageRef(flat-field) ]
-      #--- Fenetre à la dimension de l'image du flat
+      #--- Fenetre a la dimension de l'image du flat
       set naxis1 [ expr [ lindex [ buf$buf_pretrait getkwd NAXIS1 ] 1 ]-0 ]
       set naxis2 [ expr [ lindex [ buf$buf_pretrait getkwd NAXIS2 ] 1 ]-0 ]
       set box [ list 1 1 $naxis1 $naxis2 ]
