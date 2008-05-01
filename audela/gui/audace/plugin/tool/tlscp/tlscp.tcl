@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.6 2008-04-29 18:11:36 michelpujol Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.7 2008-05-01 12:51:44 robertdelmas Exp $
 #
 
 #============================================================
@@ -17,23 +17,31 @@ namespace eval ::tlscp {
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] tlscp.cap ]
 
-   set caption(tlscp,brightest)     "Etoile brillante"
-   set caption(tlscp,astrometry)    "Astrometrie"
-   set caption(tlscp,stat)          "statistique"
-   set caption(tlscp,bogumil)       "Bogumil"
-   set caption(tlscp,kappa)         "Kappa"
-   set caption(tlscp,maxMagnitude)  "Mag. maxi"
-   set caption(tlscp,delta)         "Delta"
-   set caption(tlscp,epsilon)       "Epsilon"
-   set caption(tlscp,foclen)        "Focale(m)"
-   set caption(tlscp,chart)         "Carte"
-   set caption(tlscp,mount)         "Monture"
-   set caption(tlscp,center)        "centrage"
-   set caption(tlscp,catalogue)     "Catalogue"
-   set caption(tlscp,matching)      "Appariement"
-   set caption(tlscp,detection)     "Detection image"
-   set caption(tlscp,cataloguePath) "Réperoire"
-   set caption(tlscp,selectPath)    "Choix du repertoire du catalogue"
+   set caption(tlscp,ret_nord)        "Nord"
+   set caption(tlscp,ret_sud)         "Sud"
+   set caption(tlscp,ret_est)         "Est"
+   set caption(tlscp,ret_ouest)       "Ouest"
+   set caption(tlscp,centrer)         "Centrer"
+   set caption(tlscp,rechercher)      "Rechercher"
+   set caption(tlscp,nettoyer)        "Nettoyer"
+   set caption(tlscp,stop_rechercher) "Stop Rechercher"
+   set caption(tlscp,brightest)       "Etoile brillante"
+   set caption(tlscp,astrometry)      "Astrométrie"
+   set caption(tlscp,stat)            "Statistique"
+   set caption(tlscp,bogumil)         "Bogumil"
+   set caption(tlscp,kappa)           "Kappa"
+   set caption(tlscp,maxMagnitude)    "Magnitude maxi"
+   set caption(tlscp,delta)           "Delta"
+   set caption(tlscp,epsilon)         "Epsilon"
+   set caption(tlscp,foclen)          "Focale (m)"
+   set caption(tlscp,chart)           "Carte"
+   set caption(tlscp,mount)           "Monture"
+   set caption(tlscp,center)          "Centrage"
+   set caption(tlscp,catalogue)       "Catalogue"
+   set caption(tlscp,matching)        "Appariement"
+   set caption(tlscp,detection)       "Détection image"
+   set caption(tlscp,cataloguePath)   "Répertoire"
+   set caption(tlscp,selectPath)      "Choix du répertoire du catalogue"
 }
 
 #------------------------------------------------------------
@@ -111,51 +119,51 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace caption conf
 
    #--- parametres de la camera
-   if { ! [ info exists conf(tlscp,binning)] }               { set conf(tlscp,binning)               "1x1" }
-   if { ! [ info exists conf(tlscp,expTime)] }               { set conf(tlscp,expTime)               "1" }
-   if { ! [ info exists conf(tlscp,mountEnabled)] }          { set conf(tlscp,mountEnabled)          "1" }
+   if { ! [ info exists conf(tlscp,binning)] }                { set conf(tlscp,binning)                "1x1" }
+   if { ! [ info exists conf(tlscp,expTime)] }                { set conf(tlscp,expTime)                "1" }
+   if { ! [ info exists conf(tlscp,mountEnabled)] }           { set conf(tlscp,mountEnabled)           "1" }
 
    #--- parametres pour le centrage
-   if { ! [ info exists conf(tlscp,alphaSpeed)] }           { set conf(tlscp,alphaSpeed)           "1" }
-   if { ! [ info exists conf(tlscp,deltaSpeed)] }           { set conf(tlscp,deltaSpeed)           "1" }
-   if { ! [ info exists conf(tlscp,alphaReverse)] }         { set conf(tlscp,alphaReverse)         "0" }
-   if { ! [ info exists conf(tlscp,deltaReverse)] }         { set conf(tlscp,deltaReverse)         "0" }
-   if { ! [ info exists conf(tlscp,seuilx)] }               { set conf(tlscp,seuilx)               "1" }
-   if { ! [ info exists conf(tlscp,seuily)] }               { set conf(tlscp,seuily)               "1" }
-   if { ! [ info exists conf(tlscp,angle)] }                { set conf(tlscp,angle)                "0" }
-   if { ! [ info exists conf(tlscp,showAxis)] }             { set conf(tlscp,showAxis)             "1" }
-   if { ! [ info exists conf(tlscp,showTarget)] }           { set conf(tlscp,showTarget)           "1" }
-   if { ! [ info exists conf(tlscp,originCoord)] }          { set conf(tlscp,originCoord)          "" }
-   if { ! [ info exists conf(tlscp,targetBoxSize)] }        { set conf(tlscp,targetBoxSize)        "16" }
-   if { ! [ info exists conf(tlscp,searchBoxSize)] }        { set conf(tlscp,searchBoxSize)        "64" }
-   if { ! [ info exists conf(tlscp,configWindowPosition)] } { set conf(tlscp,configWindowPosition) "+0+0" }
-   if { ! [ info exists conf(tlscp,cumulEnabled)] }         { set conf(tlscp,cumulEnabled)         "0" }
-   if { ! [ info exists conf(tlscp,cumulNb)] }              { set conf(tlscp,cumulNb)              "5" }
-   if { ! [ info exists conf(tlscp,darkEnabled)] }          { set conf(tlscp,darkEnabled)          "0" }
-   if { ! [ info exists conf(tlscp,darkFileName)] }         { set conf(tlscp,darkFileName)         "dark.fit" }
-   if { ! [ info exists conf(tlscp,centerSpeed)] }          { set conf(tlscp,centerSpeed)          "2" }
-   if { ! [ info exists conf(tlscp,searchThreshin)] }       { set conf(tlscp,searchThreshin)       "10" }
-   if { ! [ info exists conf(tlscp,searchFwmh)] }           { set conf(tlscp,searchFwmh)           "3" }
-   if { ! [ info exists conf(tlscp,searchRadius)] }         { set conf(tlscp,searchRadius)         "4" }
-   if { ! [ info exists conf(tlscp,searchThreshold)] }      { set conf(tlscp,searchThreshold)      "40" }
+   if { ! [ info exists conf(tlscp,alphaSpeed)] }             { set conf(tlscp,alphaSpeed)             "1" }
+   if { ! [ info exists conf(tlscp,deltaSpeed)] }             { set conf(tlscp,deltaSpeed)             "1" }
+   if { ! [ info exists conf(tlscp,alphaReverse)] }           { set conf(tlscp,alphaReverse)           "0" }
+   if { ! [ info exists conf(tlscp,deltaReverse)] }           { set conf(tlscp,deltaReverse)           "0" }
+   if { ! [ info exists conf(tlscp,seuilx)] }                 { set conf(tlscp,seuilx)                 "1" }
+   if { ! [ info exists conf(tlscp,seuily)] }                 { set conf(tlscp,seuily)                 "1" }
+   if { ! [ info exists conf(tlscp,angle)] }                  { set conf(tlscp,angle)                  "0" }
+   if { ! [ info exists conf(tlscp,showAxis)] }               { set conf(tlscp,showAxis)               "1" }
+   if { ! [ info exists conf(tlscp,showTarget)] }             { set conf(tlscp,showTarget)             "1" }
+   if { ! [ info exists conf(tlscp,originCoord)] }            { set conf(tlscp,originCoord)            "" }
+   if { ! [ info exists conf(tlscp,targetBoxSize)] }          { set conf(tlscp,targetBoxSize)          "16" }
+   if { ! [ info exists conf(tlscp,searchBoxSize)] }          { set conf(tlscp,searchBoxSize)          "64" }
+   if { ! [ info exists conf(tlscp,configWindowPosition)] }   { set conf(tlscp,configWindowPosition)   "+0+0" }
+   if { ! [ info exists conf(tlscp,cumulEnabled)] }           { set conf(tlscp,cumulEnabled)           "0" }
+   if { ! [ info exists conf(tlscp,cumulNb)] }                { set conf(tlscp,cumulNb)                "5" }
+   if { ! [ info exists conf(tlscp,darkEnabled)] }            { set conf(tlscp,darkEnabled)            "0" }
+   if { ! [ info exists conf(tlscp,darkFileName)] }           { set conf(tlscp,darkFileName)           "dark.fit" }
+   if { ! [ info exists conf(tlscp,centerSpeed)] }            { set conf(tlscp,centerSpeed)            "2" }
+   if { ! [ info exists conf(tlscp,searchThreshin)] }         { set conf(tlscp,searchThreshin)         "10" }
+   if { ! [ info exists conf(tlscp,searchFwmh)] }             { set conf(tlscp,searchFwmh)             "3" }
+   if { ! [ info exists conf(tlscp,searchRadius)] }           { set conf(tlscp,searchRadius)           "4" }
+   if { ! [ info exists conf(tlscp,searchThreshold)] }        { set conf(tlscp,searchThreshold)        "40" }
 
-   if { ! [ info exists conf(tlscp,foclen)] }               { set conf(tlscp,foclen)      "1" }
-   if { ! [ info exists conf(tlscp,methode)] }              { set conf(tlscp,methode)     "BRIGHTEST" }
-   if { ! [ info exists conf(tlscp,detection)] }            { set conf(tlscp,detection)   "STAT" }
-   if { ! [ info exists conf(tlscp,catalogue)] }            { set conf(tlscp,catalogue)   "MICROCAT" }
-   if { ! [ info exists conf(tlscp,kappa)] }                { set conf(tlscp,kappa)       "3" }
-   if { ! [ info exists conf(tlscp,threshin)] }             { set conf(tlscp,threshin)    "6" }
-   if { ! [ info exists conf(tlscp,fwhm)] }                 { set conf(tlscp,fwhm)        "6" }
-   if { ! [ info exists conf(tlscp,radius)] }               { set conf(tlscp,radius)      "10" }
-   if { ! [ info exists conf(tlscp,threshold)] }            { set conf(tlscp,threshold)   "6" }
-   if { ! [ info exists conf(tlscp,maxMagnitude)] }         { set conf(tlscp,maxMagnitude) "10" }
-   if { ! [ info exists conf(tlscp,delta)] }                { set conf(tlscp,delta)       "4" }
-   if { ! [ info exists conf(tlscp,epsilon)] }              { set conf(tlscp,epsilon)     "0.002" }
-   if { ! [ info exists conf(tlscp,notebook)] }             { set conf(tlscp,notebook)   "mount" }
+   if { ! [ info exists conf(tlscp,foclen)] }                 { set conf(tlscp,foclen)                 "1" }
+   if { ! [ info exists conf(tlscp,methode)] }                { set conf(tlscp,methode)                "BRIGHTEST" }
+   if { ! [ info exists conf(tlscp,detection)] }              { set conf(tlscp,detection)              "STAT" }
+   if { ! [ info exists conf(tlscp,catalogue)] }              { set conf(tlscp,catalogue)              "MICROCAT" }
+   if { ! [ info exists conf(tlscp,kappa)] }                  { set conf(tlscp,kappa)                  "3" }
+   if { ! [ info exists conf(tlscp,threshin)] }               { set conf(tlscp,threshin)               "6" }
+   if { ! [ info exists conf(tlscp,fwhm)] }                   { set conf(tlscp,fwhm)                   "6" }
+   if { ! [ info exists conf(tlscp,radius)] }                 { set conf(tlscp,radius)                 "10" }
+   if { ! [ info exists conf(tlscp,threshold)] }              { set conf(tlscp,threshold)              "6" }
+   if { ! [ info exists conf(tlscp,maxMagnitude)] }           { set conf(tlscp,maxMagnitude)           "10" }
+   if { ! [ info exists conf(tlscp,delta)] }                  { set conf(tlscp,delta)                  "4" }
+   if { ! [ info exists conf(tlscp,epsilon)] }                { set conf(tlscp,epsilon)                "0.002" }
+   if { ! [ info exists conf(tlscp,notebook)] }               { set conf(tlscp,notebook)               "mount" }
 
-   if { ! [ info exists conf(tlscp,catalogueName)] }        { set conf(tlscp,catalogueName)   "MicroCat" }
+   if { ! [ info exists conf(tlscp,catalogueName)] }          { set conf(tlscp,catalogueName)          "MicroCat" }
    if { ! [ info exists conf(tlscp,cataloguePath,MicroCat)] } { set conf(tlscp,cataloguePath,MicroCat) ""  }
-   if { ! [ info exists conf(tlscp,cataloguePath,USNO)] }     { set conf(tlscp,cataloguePath,USNO) ""  }
+   if { ! [ info exists conf(tlscp,cataloguePath,USNO)] }     { set conf(tlscp,cataloguePath,USNO)     ""  }
 
    #--- Initialisation des variables
    set private($visuNo,This)      "[::confVisu::getBase $visuNo].tlscp"
@@ -163,20 +171,20 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,menu)      "$caption(tlscp,coord)"
    set private($visuNo,camItem)   ""
 
-   set private($visuNo,updateAxis)       ""
-   set private($visuNo,targetCoord)      ""
-   set private($visuNo,hCanvas)          [::confVisu::getCanvas $visuNo]
-   set private($visuNo,dx)               [format "%##0.1f" "0"]
-   set private($visuNo,dy)               [format "%##0.1f" "0"]
-   set private($visuNo,acquisitionState) ""
-   set private($visuNo,mode)             "acq"
-   set private($visuNo,acquisitionResult)     ""
-   set private($visuNo,acquisitionResult)     ""
+   set private($visuNo,updateAxis)        ""
+   set private($visuNo,targetCoord)       ""
+   set private($visuNo,hCanvas)           [::confVisu::getCanvas $visuNo]
+   set private($visuNo,dx)                [format "%##0.1f" "0"]
+   set private($visuNo,dy)                [format "%##0.1f" "0"]
+   set private($visuNo,acquisitionState)  ""
+   set private($visuNo,mode)              "acq"
+   set private($visuNo,acquisitionResult) ""
+   set private($visuNo,acquisitionResult) ""
 
    #--- Coordonnees J2000.0 de M104
-   set private($visuNo,nomObjet) "M104"
-   set private($visuNo,raObjet)  "12h40m0s"
-   set private($visuNo,decObjet) "-11d37m22"
+   set private($visuNo,nomObjet)     "M104"
+   set private($visuNo,raObjet)      "12h40m0s"
+   set private($visuNo,decObjet)     "-11d37m22"
    set private($visuNo,equinoxObjet) "J2000"
 
    #--- Frame principal
@@ -219,14 +227,11 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
          entry $private($visuNo,This).fra2.ra -font $audace(font,arial_8_b) \
             -textvariable ::tlscp::private($visuNo,raObjet) -relief groove -width 16
          pack $private($visuNo,This).fra2.ra -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
+         DynamicHelp::add $private($visuNo,This).fra2.ra -text "$caption(tlscp,formataddec1)"
          entry $private($visuNo,This).fra2.dec -font $audace(font,arial_8_b) \
             -textvariable ::tlscp::private($visuNo,decObjet) -relief groove -width 16
          pack $private($visuNo,This).fra2.dec -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
-
-         bind $private($visuNo,This).fra2.ra <Enter> "::tlscp::FormatADDec $visuNo"
-         bind $private($visuNo,This).fra2.ra <Leave> "destroy [::confVisu::getBase $visuNo].formataddec"
-         bind $private($visuNo,This).fra2.dec <Enter> "::tlscp::FormatADDec $visuNo"
-         bind $private($visuNo,This).fra2.dec <Leave> "destroy [::confVisu::getBase $visuNo].formataddec"
+         DynamicHelp::add $private($visuNo,This).fra2.dec -text "$caption(tlscp,formataddec2)"
 
          frame $private($visuNo,This).fra2.fra1a
 
@@ -448,7 +453,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
                -textvariable ::conf(tlscp,binning)) \
                -values $list_combobox
 
-               ##-modifycmd "::tlscp::selectBinning $visuNo"
+               ###-modifycmd "::tlscp::selectBinning $visuNo"
 
             pack $private($visuNo,This).camera.binning.combo -anchor center -side left -fill x -expand 1
 
@@ -457,15 +462,15 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
             -command "::tlscp::startAcquisition $visuNo"
 
          #--- Bouton center
-         button $private($visuNo,This).camera.center -borderwidth 2 -text "Center" \
+         button $private($visuNo,This).camera.center -borderwidth 2 -text "$caption(tlscp,centrer)" \
             -command " ::tlscp::startCenter $visuNo"
 
          #--- Bouton search
-         button $private($visuNo,This).camera.search -borderwidth 2 -text "Search" \
+         button $private($visuNo,This).camera.search -borderwidth 2 -text "$caption(tlscp,rechercher)" \
             -command " ::tlscp::startSearchStar $visuNo"
 
          #--- Bouton clear
-         button $private($visuNo,This).camera.clear -borderwidth 2 -text "Clear" \
+         button $private($visuNo,This).camera.clear -borderwidth 2 -text "$caption(tlscp,nettoyer)" \
             -command " ::tlscp::clearSearchStar $visuNo"
 
          #--- checkbutton monture active
@@ -570,7 +575,6 @@ proc ::tlscp::adaptPanel { visuNo args } {
       $private($visuNo,This).camera.search configure -state normal
       $private($visuNo,This).camera.clear  configure -state normal
    }
-
 
    if { [::confCam::getPluginProperty $camItem hasBinning] == "0" } {
      $This.camera.binning.label configure -state disabled
@@ -693,7 +697,6 @@ proc ::tlscp::stopTool { visuNo } {
    #--- j'active la mise a jour automatique de l'affichage quand on change de miroir
    ::confVisu::removeMirrorListener $visuNo "::tlscp::onChangeDisplay $visuNo"
 
-
    trace remove variable ::conf(telescope) write "::tlscp::adaptPanel $visuNo"
    trace remove variable ::temma::private(modele) write "::tlscp::adaptPanel $visuNo"
    pack forget $private($visuNo,This)
@@ -780,7 +783,6 @@ proc ::tlscp::cmdGoto { visuNo } {
    update
 }
 
-
 #------------------------------------------------------------
 #  cmdSkyMap
 #     Recupere les coordonnees et le nom de l'objet selectionne dans une carte
@@ -853,7 +855,7 @@ proc ::tlscp::PlusLong { visuNo } {
       wm title $This "$caption(tlscp,attention)"
       set posx_pluslong [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 1 ]
       set posy_pluslong [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 2 ]
-      wm geometry $This +[ expr $posx_pluslong + 120 ]+[ expr $posy_pluslong + 105 ]
+      wm geometry $This +[ expr $posx_pluslong + 150 ]+[ expr $posy_pluslong + 150 ]
 
       #--- Cree l'affichage du message
       label $This.lab1 -text "$caption(tlscp,pluslong1)"
@@ -885,43 +887,6 @@ proc ::tlscp::cmdInitTel { visuNo } {
    $private($visuNo,This).fra2.but3 configure -relief groove -state disabled
    update
    ::telescope::initTel $private($visuNo,This).fra2.but3 $visuNo
-}
-
-proc ::tlscp::FormatADDec { visuNo } {
-   global caption
-
-   set This "[::confVisu::getBase $visuNo].formataddec"
-
-   if [ winfo exists $This ] {
-      destroy $This
-   }
-
-   #---
-   toplevel $This
-   wm transient $This [::confVisu::getBase $visuNo]
-   wm title $This "$caption(tlscp,attention)"
-   set posx_formataddec [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 1 ]
-   set posy_formataddec [ lindex [ split [ wm geometry [::confVisu::getBase $visuNo] ] "+" ] 2 ]
-   wm geometry $This +[ expr $posx_formataddec + 120 ]+[ expr $posy_formataddec + 90 ]
-   wm resizable $This 0 0
-
-   #--- Cree l'affichage du message
-   label $This.lab1 -text "$caption(tlscp,formataddec1)"
-   pack $This.lab1 -padx 10 -pady 2
-   label $This.lab2 -text "$caption(tlscp,formataddec2)"
-   pack $This.lab2 -padx 10 -pady 2
-   label $This.lab3 -text "$caption(tlscp,formataddec3)"
-   pack $This.lab3 -padx 10 -pady 2
-   label $This.lab4 -text "$caption(tlscp,formataddec4)"
-   pack $This.lab4 -padx 10 -pady 2
-   label $This.lab5 -text "$caption(tlscp,formataddec5)"
-   pack $This.lab5 -padx 10 -pady 2
-
-   #--- La nouvelle fenetre est active
-   focus $This
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $This
 }
 
 proc ::tlscp::cmdCtlSuivi { { value " " } } {
@@ -1001,7 +966,7 @@ proc ::tlscp::startCenter { visuNo  } {
 
    #--- je configure la camera
    set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
-   set private($visuNo,acquisitionState)  "center"
+   set private($visuNo,acquisitionState) "center"
 
    #--- je configure le tescope
    if { $::audace(telNo) != 0 } {
@@ -1059,12 +1024,12 @@ proc ::tlscp::startCenter { visuNo  } {
    }
 
    #--- j'affiche le bouton CENTER
-   $private($visuNo,This).camera.center configure -text "Center" -command "::tlscp::startCenter $visuNo" -state normal
+   $private($visuNo,This).camera.center configure -text "$::caption(tlscp,centrer)" \
+      -command "::tlscp::startCenter $visuNo" -state normal
    bind all <Key-Escape>
 
    return $private($visuNo,acquisitionResult)
 }
-
 
 #------------------------------------------------------------
 # startSearchStar
@@ -1091,7 +1056,7 @@ proc ::tlscp::startSearchStar { visuNo } {
    set private($visuNo,acquisitionResult) ""
 
    #--- j'affiche le bouton STOP SEARCH
-   $private($visuNo,This).camera.search configure -text "Stop search (ESC)" -command "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.search"
+   $private($visuNo,This).camera.search configure -text "$::caption(tlscp,stop_rechercher) (ESC)" -command "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.search"
    #--- J'associe la commande d'arret a la touche ESCAPE
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.search"
 
@@ -1126,7 +1091,8 @@ proc ::tlscp::startSearchStar { visuNo } {
    }
 
    #--- j'affiche le bouton SEARCH
-   $private($visuNo,This).camera.search configure -text "Search" -command "::tlscp::startSearchStar $visuNo" -state normal
+   $private($visuNo,This).camera.search configure -text "$::caption(tlscp,rechercher)" \
+      -command "::tlscp::startSearchStar $visuNo" -state normal
    bind all <Key-Escape>
 
    return $brigthestStarCoord
@@ -1145,7 +1111,6 @@ proc ::tlscp::clearSearchStar { visuNo } {
 
    [::confVisu::getCanvas $visuNo] delete tlscpstar
 }
-
 
 #------------------------------------------------------------
 # stopAcquisition
@@ -1267,7 +1232,6 @@ proc ::tlscp::onChangeDisplay { visuNo args } {
    ::tlscp::changeShowAxis $visuNo
    #--- je redessine la cible
    ::tlscp::moveTarget $visuNo $private($visuNo,targetCoord)
-
 
    set hCanvas [::confVisu::getCanvas $visuNo]
    foreach itemId [$hCanvas find withtag "mpastrometrystar"] {
@@ -1501,12 +1465,15 @@ proc ::tlscp::setTargetCoord { visuNo x y } {
 #------------------------------------------------------------
 proc ::tlscp::createAlphaDeltaAxis { visuNo originCoord angle } {
    variable private
+
    #--- je supprime les axes s'ils existent deja
    deleteAlphaDeltaAxis $visuNo
+
    #--- je dessine l'axe alpha
-   drawAxis $visuNo $originCoord $angle "Est" "West"
+   drawAxis $visuNo $originCoord $angle "$::caption(tlscp,ret_est)" "$::caption(tlscp,ret_ouest)"
+
    #--- je dessine l'axe delta
-   drawAxis $visuNo $originCoord [expr $angle+90] "South" "North"
+   drawAxis $visuNo $originCoord [expr $angle+90] "$::caption(tlscp,ret_sud)" "$::caption(tlscp,ret_nord)"
 
    #--- je calcule les coordonnees dans le buffer
    set x  [lindex $originCoord 0]
@@ -1634,8 +1601,8 @@ proc ::tlscp::drawAxis { visuNo coord angle label1 label2} {
    set coord2 [::confVisu::picture2Canvas $visuNo [list $x2 $y2]]
    #--- je trace l'axe et les libelles des extremites
    $private($visuNo,hCanvas) create line [lindex $coord1 0] [lindex $coord1 1] [lindex $coord2 0] [lindex $coord2 1] -fill $::audace(color,drag_rectangle) -tag axis -state normal
-   $private($visuNo,hCanvas) create text [lindex $coord1 0] [lindex $coord1 1] -text $label1 -tag axis  -state normal -fill $::audace(color,drag_rectangle)
-   $private($visuNo,hCanvas) create text [lindex $coord2 0] [lindex $coord2 1] -text $label2 -tag axis  -state normal -fill $::audace(color,drag_rectangle)
+   $private($visuNo,hCanvas) create text [lindex $coord1 0] [lindex $coord1 1] -text $label1 -tag axis -state normal -fill $::audace(color,drag_rectangle)
+   $private($visuNo,hCanvas) create text [lindex $coord2 0] [lindex $coord2 1] -text $label2 -tag axis -state normal -fill $::audace(color,drag_rectangle)
 }
 
 #------------------------------------------------------------
@@ -1678,7 +1645,6 @@ proc ::tlscp::setOrigin { visuNo x y } {
    #---
    ::camera::setParam $private($visuNo,camItem) "originCoord" $::conf(tlscp,originCoord)
 }
-
 
 ################################################################################
 namespace eval ::tlscp::config {
@@ -1923,7 +1889,6 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
       pack $frm.method.radioBrightest  -anchor w -side left -fill x -expand 0
       pack $frm.method.radioAstrom     -anchor w -side left -fill x -expand 0
 
-
    TitleFrame $frm.brightest -borderwidth 2 -text "$caption(tlscp,searchTitle)"
       LabelEntry $frm.brightest.searchBoxSize -label $caption(tlscp,searchBoxSize) \
          -labeljustify left -labelwidth 16 -width 4 -justify right \
@@ -1932,7 +1897,6 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
          -variable ::tlscp::config::widget($visuNo,showAxis)
       pack $frm.brightest.searchBoxSize -in [$frm.brightest getframe] -anchor w -side top -fill x -expand 0
       pack $frm.brightest.showSearchBox -in [$frm.brightest getframe] -anchor w -side top -fill x -expand 0
-
 
    TitleFrame $frm.astrom -borderwidth 2 -text "$caption(tlscp,detection)"
       frame $frm.astrom.detection
@@ -2020,7 +1984,6 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
    ::tlscp::config::onSelectMethod $visuNo $notebookCenter
 
    pack $notebook -in $private($visuNo,frm) -fill both -expand 1 -padx 2 -pady 2
-
 
    if { [info exists private($visuNo,selectedNotebook)] == 0 } {
       set private($visuNo,selectedNotebook) "mount"
