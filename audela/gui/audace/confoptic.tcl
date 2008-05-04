@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.27 2008-04-19 18:11:00 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.28 2008-05-04 06:25:03 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -1429,7 +1429,7 @@ namespace eval ::confOptic {
    #------------------------------------------------------------
    #  MAJ_Binning
    #     Affichage des binnings disponibles selon les cameras
-   #     args : valeurs fournies par le gestionnaire de listener
+   #     args : Valeurs fournies par le gestionnaire de listener
    #
    #------------------------------------------------------------
    proc MAJ_Binning { camItem frm args } {
@@ -1495,8 +1495,8 @@ namespace eval ::confOptic {
       if { [ winfo exists $audace(base).confOptic ] } {
          $frm.labURL_PixDim configure -text $pix_dim($camItem)
       }
-      #--- Calcul des parametres du systeme optique
-      ::confOptic::Calculette $camItem $widget($camItem,focale) $widget($camItem,barlow_reduc) $widget($camItem,diametre)
+      #--- Calcul et affichage des parametres du systeme optique
+      ::confOptic::afficheResultatCalculette $camItem $frm
    }
 
    #------------------------------------------------------------
@@ -1508,9 +1508,9 @@ namespace eval ::confOptic {
       variable private
       global conf
 
-      set combinaison(focale) $focale
+      set combinaison(focale)       $focale
       set combinaison(barlow_reduc) $barlow_reduc
-      set combinaison(diametre) $diametre
+      set combinaison(diametre)     $diametre
 
       #--- Calcul de la focale resultante du systeme optique
       set private($camItem,focale_resultante) [ expr $combinaison(focale) * $combinaison(barlow_reduc) ]
@@ -1529,7 +1529,7 @@ namespace eval ::confOptic {
          set camNo ""
       }
 
-      #--- Calcul du champ et de l'echantillonnage de la camera CCD
+      #--- Calculs du champ et de l'echantillonnage de la camera CCD
       if { $camNo != "" && $camNo != "0" } {
          #--- Nombres de pixels en x et en y
          set nb_xy($camItem) [ cam$camNo nbpix ]
@@ -1577,19 +1577,19 @@ namespace eval ::confOptic {
       #--- Je calcule les valeurs
       ::confOptic::Calculette $camItem $widget($camItem,focale) $widget($camItem,barlow_reduc) $widget($camItem,diametre)
 
-      #--- Calcul de la focale resultante du systeme optique
+      #--- Affichage du calcul de la focale resultante du systeme optique
       $frm.labVal_Foc_Result configure -text $private($camItem,focale_resultante)
 
-      #--- Calcul du rapport ouverture du systeme optique
+      #--- Affichage du calcul du rapport ouverture du systeme optique
       $frm.labVal_ouverture configure -text $private($camItem,ouverture)
 
-      #--- Calcul du pouvoir separateur du systeme optique
+      #--- Affichage du calcul du pouvoir separateur du systeme optique
       $frm.labVal_PS configure -text $private($camItem,PS)
 
-      #--- Calcul du champ du CCD en x et en y en minutes d'arc
+      #--- Affichage du calcul du champ du CCD en x et en y en minutes d'arc
       $frm.labVal_Champ configure -text "$private($camItem,champ_x) x $private($camItem,champ_y)"
 
-      #--- Calcul de l'echantillonnage du CCD en x et en y en secondes d'arc par pixels
+      #--- Affichage du calcul de l'echantillonnage du CCD en x et en y en secondes d'arc par pixels
       $frm.labVal_Echantillonnage configure -text "$private($camItem,echantillonnage_x) x $private($camItem,echantillonnage_y)"
    }
 
@@ -1674,10 +1674,10 @@ namespace eval ::confOptic {
    proc getConfOptic { camItem } {
       variable private
 
-      #--- je recupere la première combinaison selectionnee
+      #--- Je recupere la premiere combinaison selectionnee
       array set combinaison $::conf(confoptic,combinaison_optique_$camItem,0)
 
-      #--- je calcule la focale resultante
+      #--- Je calcule la focale resultante
       ::confOptic::Calculette $camItem $combinaison(focale) $combinaison(barlow_reduc) $combinaison(diametre)
 
       return [list $combinaison(instrument) $combinaison(diametre) $private($camItem,focale_resultante)]
