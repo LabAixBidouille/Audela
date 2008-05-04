@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.29 2008-01-23 16:14:09 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.30 2008-05-04 22:12:39 robertdelmas Exp $
 #
 # add  operand value
 # add1  in operand out const ?tt_options?
@@ -112,7 +112,7 @@ proc add1 {args} {
       }
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" ADD \"file=$operand\" offset=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: add1 in operand out const ?tt_options?"
    }
@@ -151,7 +151,7 @@ proc add2 {args} {
       set ni [expr [lindex $args 4]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" ADD \"file=$operand\" offset=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: add2 in operand out const number ?first_index? ?tt_options?"
    }
@@ -187,7 +187,7 @@ proc convgauss2 {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CONV kernel_type=gaussian sigma=$[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 2] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: convgauss2 in out number sigma ?first_index? ?tt_options?"
    }
@@ -273,7 +273,7 @@ proc div1 {args} {
       }
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" DIV \"file=$operand\" constant=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: div1 in operand out const ?tt_options?"
    }
@@ -312,7 +312,7 @@ proc div2 {args} {
       set ni [expr [lindex $args 4]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" DIV \"file=$operand\" constant=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: div2 in operand out const number ?first_index? ?tt_options?"
    }
@@ -343,7 +343,7 @@ proc mult1 {args} {
       }
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" MULT constant=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: mult1 in out const ?tt_options?"
    }
@@ -366,7 +366,7 @@ proc mult2 {args} {
       set ni [expr [lindex $args 3]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" MULT constant=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: mult2 in out const number ?first_index? ?tt_options?"
    }
@@ -384,7 +384,7 @@ proc ngain1 {args} {
          set options "[lrange $args 3 end]"
       }
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" NORMGAIN normgain_value=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: ngain1 in out const ?tt_options?"
    }
@@ -407,7 +407,7 @@ proc ngain2 {args} {
       }
       set ni [expr [lindex $args 3]+$first-1]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" NORMGAIN normgain_value=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: ngain2 in out const number ?first_index? ?tt_options?"
    }
@@ -425,7 +425,7 @@ proc noffset1 {args} {
          set options "[lrange $args 3 end]"
       }
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" NORMOFFSET normoffset_value=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: noffset1 in out const ?tt_options?"
    }
@@ -448,7 +448,7 @@ proc noffset2 {args} {
       }
       set ni [expr [lindex $args 3]+$first-1]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" NORMOFFSET normoffset_value=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: noffset2 in out const number ?first_index? ?tt_options?"
    }
@@ -479,7 +479,7 @@ proc offset1 {args} {
          set options "[lrange $args 3 end]"
       }
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" OFFSET offset=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: offset1 in out const ?tt_options?"
    }
@@ -502,7 +502,7 @@ proc offset2 {args} {
       }
       set ni [expr [lindex $args 3]+$first-1]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" OFFSET offset=[lindex $args 2] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 3] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: offset2 in out const number ?first_index? ?tt_options?"
    }
@@ -595,7 +595,7 @@ proc opt1 {args} {
       set offset "$operand"
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" . \"$ext\" OPT \"dark=$dark\" \"bias=$offset\" $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 3]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 3]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: opt1 in dark offset out ?tt_options?"
    }
@@ -652,7 +652,7 @@ proc opt2 {args} {
       set offset "$operand"
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" 1 \"$ext\" OPT \"dark=$dark\" \"bias=$offset\" $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 3]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 3]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 3]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: opt2 in dark offset out number ?first_index? ?tt_options?"
    }
@@ -824,7 +824,7 @@ proc registerbox {args} {
          lappend y [lindex $res 1]
          ::console::affiche_resultat "$k : $res\n"
       }
-      console::affiche_saut "\n"
+      ::console::affiche_saut "\n"
       set tx0 [lindex $x 0]
       set ty0 [lindex $y 0]
       for {set k 1} {$k<=$number} {incr k} {
@@ -910,7 +910,7 @@ proc sadd {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" ADD $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: sadd in out number ?first_index? ?tt_options?"
    }
@@ -972,7 +972,7 @@ proc smean {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" MEAN $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: smean in out number ?first_index? ?tt_options?"
    }
@@ -995,7 +995,7 @@ proc smedian {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" MED $options"
-      ###ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: smedian in out number ?first_index? ?tt_options?"
    }
@@ -1018,7 +1018,7 @@ proc sprod {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" PROD $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: sprod in out number ?first_index? ?tt_options?"
    }
@@ -1041,7 +1041,7 @@ proc spythagore {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" PYTHAGORE $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: spythagore in out number ?first_index? ?tt_options?"
    }
@@ -1064,7 +1064,7 @@ proc ssigma {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" SIG $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: ssigma in out number ?first_index? ?tt_options?"
    }
@@ -1087,7 +1087,7 @@ proc ssk {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" SK kappa=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: ssk in out number kappa ?first_index? ?tt_options?"
    }
@@ -1110,7 +1110,7 @@ proc ssort {args} {
       set ni [expr [lindex $args 2]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/STACK \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" SORT percent=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: ssort in out number percent ?first_index? ?tt_options?"
    }
@@ -1171,7 +1171,7 @@ proc sub1 {args} {
       }
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" . . \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: sub1 in operand out const ?tt_options?"
    }
@@ -1210,7 +1210,7 @@ proc sub2 {args} {
       set ni [expr [lindex $args 4]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 2]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: sub2 in operand out const number ?first_index? ?tt_options?"
    }
@@ -1273,9 +1273,9 @@ proc subdark2 {args} {
 
       set ni [expr [lindex $args 4]+$first-1]
       set ext [buf$audace(bufNo) extension]
-      ###ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 2]\" 1 \"$ext\" SUB \"file=$operand\" offset=[lindex $args 3] $options"
       set command "IMA/SERIES \"$audace(rep_images)\" \"$in\" $first $ni \"$ext\" \"$audace(rep_images)\" \"$out\" 1 \"$ext\" SUBDARK \"dark=$dark\" \"bias=$offset\" \"exptime=$exptime\" \"dexptime=$dexptime\" "
-      ::console::disp "subdark2: $command\n"
+      ::console::disp "subdark2 : $command\n"
       ttscript2 $command
    } else {
       #---                    0  1     2     3    4       5      6           7            8
@@ -1337,7 +1337,7 @@ proc subsky1 {args} {
    set script "IMA/SERIES \"$path\" \"$in\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" BACK back_kernel=$back_kernel back_threshold=$back_threshold sub $options"
    #::console::affiche_resultat "$script\n"
    ttscript2 $script
-   ttscript2  "IMA/SERIES \"$path\" \"$out\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
+  ### ttscript2  "IMA/SERIES \"$path\" \"$out\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
 }
 
 proc subsky2 {args} {
@@ -1375,7 +1375,7 @@ proc subsky2 {args} {
    set script "IMA/SERIES \"$path\" \"$in\" $first $ni \"$ext\" \"$path\" \"$out\" 1 \"$ext\" BACK back_kernel=$back_kernel back_threshold=$back_threshold sub $options"
    #::console::affiche_resultat "$script\n"
    ttscript2 $script
-   ttscript2  "IMA/SERIES \"$path\" \"$out\" 1 $number \"$ext\" \"$path\" \"$out\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
+  ### ttscript2  "IMA/SERIES \"$path\" \"$out\" 1 $number \"$ext\" \"$path\" \"$out\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
 }
 
 proc trans {args} {
@@ -1408,7 +1408,7 @@ proc trans2 {args} {
       set ni [expr [lindex $args 4]+$first-1]
       set ext [buf$audace(bufNo) extension]
       ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 0]\" $first $ni \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" TRANS trans_x=[lindex $args 2] trans_y=[lindex $args 3] $options"
-      ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
+     ### ttscript2 "IMA/SERIES \"$audace(rep_images)\" \"[lindex $args 1]\" 1 [lindex $args 4] \"$ext\" \"$audace(rep_images)\" \"[lindex $args 1]\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO keytype=INT $options"
    } else {
       error "Usage: trans2 in out dx dy number ?first_index? ?tt_options?"
    }
@@ -1485,7 +1485,7 @@ proc window1 {args} {
    set script "IMA/SERIES \"$path\" \"$in\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\"  WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 $options"
    #::console::affiche_resultat "$script\n"
    ttscript2 $script
-   ttscript2  "IMA/SERIES \"$path\" \"$out\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
+  ### ttscript2  "IMA/SERIES \"$path\" \"$out\" . . \"$ext\" \"$path\" \"$out\" . \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
 }
 
 proc window2 {args} {
@@ -1530,6 +1530,6 @@ proc window2 {args} {
    set script "IMA/SERIES \"$path\" \"$in\" $first $ni \"$ext\" \"$path\" \"$out\" 1 \"$ext\"  WINDOW x1=$x1 x2=$x2 y1=$y1 y2=$y2 $options"
    #::console::affiche_resultat "$script\n"
    ttscript2 $script
-   ttscript2  "IMA/SERIES \"$path\" \"$out\" 1 $number \"$ext\" \"$path\" \"$out\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
+  ### ttscript2  "IMA/SERIES \"$path\" \"$out\" 1 $number \"$ext\" \"$path\" \"$out\" 1 \"$ext\" CUTS hicut=MIPS-HI locut=MIPS-LO $options"
 }
 
