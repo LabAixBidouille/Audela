@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.17 2008-04-29 17:40:04 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.18 2008-05-06 09:44:57 michelpujol Exp $
 #
 
 namespace eval camera {
@@ -460,6 +460,10 @@ proc ::camera::processCameraEvent { camItem } {
 #------------------------------------------------------------
 proc ::camera::acquisition { camItem callback exptime binning } {
    variable private
+
+   #--- je connecte la camera
+   ::confCam::setConnection  $camItem 1
+   #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo [::confCam::getThreadNo $camItem ]
    if { $::tcl_platform(threaded) == 0 } {
@@ -477,6 +481,9 @@ proc ::camera::acquisition { camItem callback exptime binning } {
 #------------------------------------------------------------
 proc ::camera::centerBrightestStar { camItem callback exptime binning originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily } {
    variable private
+   #--- je connecte la camera
+   ::confCam::setConnection  $camItem 1
+   #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo [::confCam::getThreadNo $camItem ]
    ###console::disp "::camera::centerBrightestStar targetCoord=$targetCoord targetBoxSize=$targetBoxSize\n"
@@ -497,6 +504,9 @@ proc ::camera::centerBrightestStar { camItem callback exptime binning originCoor
 proc ::camera::centerRadec { camItem callback exptime binning originCoord raDec angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily foclen detection catalogue kappa threshin fwhm radius threshold maxMagnitude delta epsilon  catalogueName cataloguePath } {
    variable private
 
+   #--- je connecte la camera
+   ::confCam::setConnection  $camItem 1
+   #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo [::confCam::getThreadNo $camItem ]
    ###console::disp "::camera::centerRadec raDec=$raDec targetBoxSize=$targetBoxSize\n"
@@ -531,6 +541,10 @@ proc ::camera::centerRadec { camItem callback exptime binning originCoord raDec 
 #------------------------------------------------------------
 proc ::camera::guide { camItem callback exptime binning detection originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily slitWidth slitRatio intervalle } {
    variable private
+
+   #--- je connecte la camera
+   ::confCam::setConnection  $camItem 1
+   #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo [::confCam::getThreadNo $camItem ]
    if { $::tcl_platform(threaded) == 0 } {
@@ -549,6 +563,9 @@ proc ::camera::guide { camItem callback exptime binning detection originCoord ta
 #------------------------------------------------------------
 proc ::camera::searchBrightestStar { camItem callback exptime binning originCoord targetBoxSize searchThreshin searchFwmh searchRadius searchThreshold} {
    variable private
+   #--- je connecte la camera
+   ::confCam::setConnection  $camItem 1
+   #--- je renseigne la procedure de retour
    set private($camItem,callback) $callback
    set camThreadNo [::confCam::getThreadNo $camItem ]
    if { $::tcl_platform(threaded) == 0 } {
@@ -582,6 +599,15 @@ proc ::camera::setParam { camItem  paramName paramValue } {
    }
 }
 
+#------------------------------------------------------------
+# setParam
+#    modifie un parametre de la camera
+#
+# parametres :
+#    direction : e w n s
+# return
+#    rien
+#------------------------------------------------------------
 proc ::camera::stopAcquisition { camItem } {
    set camThreadNo [::confCam::getThreadNo $camItem ]
    if { $::tcl_platform(threaded) == 0  } {
