@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.76 2008-04-22 18:07:00 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.77 2008-05-06 09:47:29 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -581,25 +581,23 @@ namespace eval ::confVisu {
 
    #------------------------------------------------------------
    #  setCamera
-   #     associe une camera a la visu
+   #     memorise la camera associee a la visu
    #  parametres :
    #    visuNo  : numero de la visu
-   #    camItem : instance de la camera
-   #    camNo   : numero de la camera
-   #    model   : libelle de la camera a afficher dans la visu
-   #  exemple : setCamera 2 A 3 "EOS 300D" cree l'association entre visu2 et cam3 pour la camera A
-   #            setCamera 2 A 0            supprime l'association
+   #    camItem : instance de la camera, ou "" s'il n'y a pas de camera
+   #  exemple :
+   #    setCamera 2 A
    #------------------------------------------------------------
-   proc setCamera { visuNo camItem camNo { model "" } } {
+   proc setCamera { visuNo camItem  } {
       variable private
       global caption
 
       if { [winfo exists $private($visuNo,This)] == 1} {
-         if { $camNo == 0 } {
+         if { $camItem == "" } {
             set description "$caption(confVisu,2points) $caption(confVisu,non_connecte)"
          } else {
             set camName [::confCam::getPluginProperty $camItem "name"]
-            set description "$private($visuNo,camItem)  $caption(confVisu,2points) $camName $model"
+            set description "$camItem $caption(confVisu,2points) $camName"
          }
       }
       #--- J'affiche le nom de la camera
