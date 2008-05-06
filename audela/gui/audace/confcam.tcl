@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.113 2008-04-27 15:40:15 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.114 2008-05-06 09:42:02 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -460,10 +460,10 @@ proc ::confCam::createUrlLabel { tkparent title url } {
 }
 
 #------------------------------------------------------------
-# connectCamera
+# displayConnectCamera
 # Affichage d'un message d'alerte pendant la connexion de la camera au demarrage
 #------------------------------------------------------------
-proc ::confCam::connectCamera { } {
+proc ::confCam::displayConnectCamera { } {
    variable private
    global audace caption color
 
@@ -536,6 +536,25 @@ proc ::confCam::onRaiseNotebook { camName } {
       after 100 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
    }
 }
+
+#----------------------------------------------------------------------------
+# setConnection
+#    connecte ou deconnecte la camera
+#
+# parametres :
+#    camItem : item de la camera
+#    state :   1=connecter la camera , 0= deconnecter la camera
+# return
+#    rien
+#----------------------------------------------------------------------------
+proc ::confCam::setConnection { camItem state } {
+   variable private
+
+   if { [namespace which -command ::$private($camItem,camName)::setConnection] == "::$private($camItem,camName)::setConnection" } {
+      ::$private($camItem,camName)::setConnection $camItem $state
+   }
+}
+
 
 #----------------------------------------------------------------------------
 # setMount
@@ -618,7 +637,7 @@ proc ::confCam::stopItem { camItem } {
    set private($camItem,camNo) "0"
    #--- Je desassocie la camera de la visu
    if { $private($camItem,visuNo) != 0 } {
-      ::confVisu::setCamera $private($camItem,visuNo) "" 0
+      ::confVisu::setCamera $private($camItem,visuNo) ""
       set private($camItem,visuNo) "0"
    }
    #---
@@ -815,27 +834,6 @@ proc ::confCam::getVisuNo { camItem } {
 }
 
 #------------------------------------------------------------
-# closeCamera
-# Ferme la camera
-#
-# Parametres :
-#    camNo : Numero de la camera
-#------------------------------------------------------------
-proc ::confCam::closeCamera { camNo } {
-   variable private
-
-   if { $private(A,camNo) == $camNo } {
-      stopItem "A"
-   }
-   if { $private(B,camNo) == $camNo } {
-      stopItem "B"
-   }
-   if { $private(C,camNo) == $camNo } {
-      stopItem "C"
-   }
-}
-
-#------------------------------------------------------------
 # configureCamera
 # Configure la camera en fonction des donnees contenues dans le tableau conf :
 # private($camItem,camName) -> type de camera employe
@@ -849,7 +847,7 @@ proc ::confCam::configureCamera { camItem } {
    set erreur "1"
 
    #--- Affichage d'un message d'alerte si necessaire
-   ::confCam::connectCamera
+   ::confCam::displayConnectCamera
 
    #--- J'enregistre le numero de la visu associee a la camera
    if { "$private($camItem,camName)" != "" } {
@@ -915,7 +913,7 @@ proc ::confCam::configureCamera { camItem } {
       }
 
       #--- J'associe la camera avec la visu
-      ::confVisu::setCamera $private($camItem,visuNo) $camItem $private($camItem,camNo)
+      ::confVisu::setCamera $private($camItem,visuNo) $camItem
 
       #--- Desactive le blocage pendant l'acquisition (cli/sti)
       catch {
