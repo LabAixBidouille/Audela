@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.19 2008-04-26 14:08:19 robertdelmas Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.20 2008-05-07 13:12:20 michelpujol Exp $
 #
 
 namespace eval parallelport {
@@ -238,13 +238,12 @@ proc ::parallelport::fillConfigPage { frm } {
 
    pack $frm.available -side top -fill both -expand true
 
-   #--- J'affiche les labels et le bouton associe au message Porttalk
-   frame $frm.porttalk -borderwidth 0 -relief raised
+   if { $::tcl_platform(os) == "Windows NT" } {
+      #--- J'affiche les labels et le bouton associe au message Porttalk
+      frame $frm.porttalk -borderwidth 0 -relief raised
 
-      label $frm.porttalk.lab1 -text "$caption(parallelport,texte)"
-      pack $frm.porttalk.lab1 -in $frm.porttalk -side top -anchor w -padx 5 -pady 5
-
-      if { $::tcl_platform(os) == "Windows NT" } {
+         label $frm.porttalk.lab1 -text "$caption(parallelport,texte)"
+         pack $frm.porttalk.lab1 -in $frm.porttalk -side top -anchor w -padx 5 -pady 5
 
          label $frm.porttalk.lab2 -anchor nw -highlightthickness 0 -text "$caption(parallelport,porttalk)" -padx 0 -pady 0
          pack $frm.porttalk.lab2 -in $frm.porttalk -side left -padx 40 -pady 5
@@ -255,13 +254,13 @@ proc ::parallelport::fillConfigPage { frm } {
             set porttalkButton "$caption(parallelport,oui)"
          }
 
-      }
+         button $frm.porttalk.but -text $porttalkButton -relief raised -state normal \
+            -command "::parallelport::afficheMsgPorttalk"
+         pack $frm.porttalk.but -in $frm.porttalk -side left -padx 0 -pady 5 -ipadx 5 -ipady 5
 
-      button $frm.porttalk.but -text $porttalkButton -relief raised -state normal \
-         -command "::parallelport::afficheMsgPorttalk"
-      pack $frm.porttalk.but -in $frm.porttalk -side left -padx 0 -pady 5 -ipadx 5 -ipady 5
+      pack $frm.porttalk -side top -fill x
 
-   pack $frm.porttalk -side top -fill x
+   }
 
    #--- Je mets a jour la liste
    refreshAvailableList
