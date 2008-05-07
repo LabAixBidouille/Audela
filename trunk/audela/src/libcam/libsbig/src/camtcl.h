@@ -23,8 +23,9 @@
 #ifndef __CAMTCL_H__
 #define __CAMTCL_H__
 
+//    {"close", (Tcl_CmdProc *) cmdSbigClose}, \
+
 #define SPECIFIC_CMDLIST \
-    {"close", (Tcl_CmdProc *) cmdSbigClose}, \
     {"infotemp", (Tcl_CmdProc *) cmdSbigInfotemp}, \
     {"activaterelay", (Tcl_CmdProc *) cmdSbigActivateRelay}, \
     {"pulseout", (Tcl_CmdProc *) cmdSbigPulseOut}, \
@@ -39,8 +40,8 @@
 
 
  /* === Specific commands for that camera === */
-int cmdSbigClose(ClientData clientData, Tcl_Interp * interp, int argc,
-		 char *argv[]);
+//int cmdSbigClose(ClientData clientData, Tcl_Interp * interp, int argc,
+//		 char *argv[]);
 int cmdSbigInfotemp(ClientData clientData, Tcl_Interp * interp, int argc,
 		    char *argv[]);
 int cmdSbigActivateRelay(ClientData clientData, Tcl_Interp * interp,

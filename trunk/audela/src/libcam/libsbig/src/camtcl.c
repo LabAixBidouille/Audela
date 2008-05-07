@@ -38,7 +38,7 @@ extern struct camini CAM_INI[];
 
 static void AcqReadTrack(ClientData clientData);
 
-
+/*
 int cmdSbigClose(ClientData clientData, Tcl_Interp * interp, int argc,
 		 char *argv[])
 {
@@ -48,6 +48,7 @@ int cmdSbigClose(ClientData clientData, Tcl_Interp * interp, int argc,
     Tcl_SetResult(interp, "", TCL_VOLATILE);
     return TCL_OK;
 }
+*/
 
 int cmdSbigInfotemp(ClientData clientData, Tcl_Interp * interp, int argc,
 		    char *argv[])
