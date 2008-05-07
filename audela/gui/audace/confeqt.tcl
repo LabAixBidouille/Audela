@@ -2,16 +2,16 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.32 2008-04-22 17:58:51 michelpujol Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.33 2008-05-07 18:12:13 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
 }
 
 #------------------------------------------------------------
-# ::confEqt::init (est lance automatiquement au chargement de ce fichier tcl)
-# initialise les variable conf(..) et caption(..)
-# demarrer le plugin selectionne par defaut
+# init (est lance automatiquement au chargement de ce fichier tcl)
+#    initialise les variable conf(..) et caption(..)
+#    demarrer le plugin selectionne par defaut
 #------------------------------------------------------------
 proc ::confEqt::init { } {
    variable private
@@ -38,8 +38,8 @@ proc ::confEqt::init { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::getLabel
-# retourne le titre de la fenetre
+# getLabel
+#    retourne le titre de la fenetre
 #
 # return "Titre de la fenetre de choix (dans la langue de l'utilisateur)"
 #------------------------------------------------------------
@@ -50,8 +50,8 @@ proc ::confEqt::getLabel { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::run
-# Affiche la fenetre de choix et de configuration
+# run
+#    Affiche la fenetre de choix et de configuration
 #------------------------------------------------------------
 proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { configurationTitle "" } } {
    variable private
@@ -106,9 +106,9 @@ proc ::confEqt::run { { variablePluginName "" } { authorizedPluginType "" } { co
 }
 
 #------------------------------------------------------------
-# ::confEqt::ok
-# Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-# la configuration, et fermer la fenetre de reglage
+# ok
+#    Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
+#    la configuration, et fermer la fenetre de reglage
 #------------------------------------------------------------
 proc ::confEqt::ok { } {
    variable private
@@ -121,9 +121,9 @@ proc ::confEqt::ok { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::appliquer
-# Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
-# memoriser et appliquer la configuration
+# appliquer
+#    Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
+#    memoriser et appliquer la configuration
 #------------------------------------------------------------
 proc ::confEqt::appliquer { } {
    variable private
@@ -161,8 +161,8 @@ proc ::confEqt::appliquer { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::afficheAide
-# Fonction appellee lors de l'appui sur le bouton 'Aide'
+# afficheAide
+#    Fonction appellee lors de l'appui sur le bouton 'Aide'
 #------------------------------------------------------------
 proc ::confEqt::afficheAide { } {
    variable private
@@ -175,8 +175,8 @@ proc ::confEqt::afficheAide { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::fermer
-# Fonction appellee lors de l'appui sur le bouton 'Fermer'
+# fermer
+#    Fonction appellee lors de l'appui sur le bouton 'Fermer'
 #------------------------------------------------------------
 proc ::confEqt::fermer { } {
    variable private
@@ -189,9 +189,9 @@ proc ::confEqt::fermer { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::recupPosDim
-# Permet de recuperer et de sauvegarder la position et la
-# dimension de la fenetre de configuration de l'equipement
+# recupPosDim
+#    Permet de recuperer et de sauvegarder la position et la
+#    dimension de la fenetre de configuration de l'equipement
 #------------------------------------------------------------
 proc ::confEqt::recupPosDim { } {
    variable private
@@ -202,8 +202,8 @@ proc ::confEqt::recupPosDim { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::createUrlLabel
-# cree un widget "label" avec une URL du site WEB
+# createUrlLabel
+#    cree un widget "label" avec une URL du site WEB
 #------------------------------------------------------------
 proc ::confEqt::createUrlLabel { tkparent title url } {
    global audace color
@@ -216,8 +216,8 @@ proc ::confEqt::createUrlLabel { tkparent title url } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::configurePlugin
-# configure le plugin
+# configurePlugin
+#    configure le plugin
 #------------------------------------------------------------
 proc ::confEqt::configurePlugin { pluginLabel } {
    if { $pluginLabel != "" } {
@@ -226,11 +226,12 @@ proc ::confEqt::configurePlugin { pluginLabel } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::createDialog
-# Affiche la fenetre a onglet
+# createDialog
+#    Affiche la fenetre a onglet
 #    authorizedEquipementType : Liste des types d'equipement a afficher
 #       Si la liste est vide les onglets de tous les types d'equipements sont affiches
-#    configurationTitle : Titre complementaire de la fenetre de dialogue
+#    configurationTitle       : Titre complementaire de la fenetre de dialogue
+#
 # retrun 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
 proc ::confEqt::createDialog { } {
@@ -305,10 +306,10 @@ proc ::confEqt::createDialog { } {
    return 0
 }
 
-#----------------------------------------------------------------------------
-# ::confEqt::selectNotebook
-# Selectionne un onglet
-#----------------------------------------------------------------------------
+#------------------------------------------------------------
+# selectNotebook
+#    Selectionne un onglet
+#------------------------------------------------------------
 proc ::confEqt::selectNotebook { { equipment "" } } {
    variable private
 
@@ -320,10 +321,10 @@ proc ::confEqt::selectNotebook { { equipment "" } } {
    }
 }
 
-#----------------------------------------------------------------------------
-# ::confEqt::onRaiseNotebook
-# Affiche en gras le nom de l'onglet
-#----------------------------------------------------------------------------
+#------------------------------------------------------------
+# onRaiseNotebook
+#    Affiche en gras le nom de l'onglet
+#------------------------------------------------------------
 proc ::confEqt::onRaiseNotebook { equipmentName } {
    variable private
 
@@ -334,8 +335,8 @@ proc ::confEqt::onRaiseNotebook { equipmentName } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::createPlugin
-# cree le plugin dont le nom est donne en parametre
+# createPlugin
+#    cree le plugin dont le nom est donne en parametre
 #------------------------------------------------------------
 proc ::confEqt::createPlugin { pluginLabel } {
    if { $pluginLabel != "" } {
@@ -345,8 +346,8 @@ proc ::confEqt::createPlugin { pluginLabel } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::deletePlugin
-# supprime le plugin
+# deletePlugin
+#    supprime le plugin
 #
 # return rien
 #------------------------------------------------------------
@@ -357,18 +358,18 @@ proc ::confEqt::deletePlugin { pluginLabel } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::findPlugin
-# recherche les plugins presents
+# findPlugin
+#    recherche les plugins presents
 #
 # conditions :
-#  - le plugin doit avoir une procedure getPluginType qui retourne
-#    "equipment" ou "focuser" ou "spectroscope"
-#  - le plugin doit avoir une procedure getPluginTitle
-#  - etc.
+#    - le plugin doit avoir une procedure getPluginType qui retourne
+#      "equipment" ou "focuser" ou "spectroscope"
+#    - le plugin doit avoir une procedure getPluginTitle
+#    - etc.
 #
-# si le plugin remplit les conditions
-# son namespace est ajoute dans namespaceList
-# sinon le fichier tcl est ignore car ce n'est pas un plugin
+#    si le plugin remplit les conditions
+#    son namespace est ajoute dans namespaceList
+#    sinon le fichier tcl est ignore car ce n'est pas un plugin
 #
 # retrun 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
@@ -434,8 +435,8 @@ proc ::confEqt::findPlugin { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::connectEquipement
-# Affichage d'un message d'alerte pendant la connexion d'un equipement au demarrage
+# connectEquipement
+#    Affichage d'un message d'alerte pendant la connexion d'un equipement au demarrage
 #------------------------------------------------------------
 proc ::confEqt::connectEquipement { } {
    variable private
@@ -475,17 +476,17 @@ proc ::confEqt::connectEquipement { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::createFrameFocuser
-# Cree une frame pour selectionner le focuser
-# Cette frame est destinee a etre inseree dans une fenetre
-# Parametres :
-#    frm     : chemin TK de la frame a creer
-#    variablePluginName : contient le nom de la variable dans laquelle sera
-#                         copie le nom du focuser selectionné
+# createFrameFocuser
+#    Cree une frame pour selectionner le focuser
+#    Cette frame est destinee a etre inseree dans une fenetre
 #
-# Return
+# Parametres :
+#    frm                : chemin TK de la frame a creer
+#    variablePluginName : contient le nom de la variable dans laquelle sera
+#                         copie le nom du focuser selectionne
+# Return :
 #    nothing
-# Exemple:
+# Exemple :
 #    ::confEqt::createFrameFocuser $frm.focuserList ::panneau(foc,focuser)
 #    pack $frm.focuserList -in $frm -anchor center -side right -padx 10
 #------------------------------------------------------------
@@ -499,8 +500,7 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
       frame $private(frame) -borderwidth 0 -relief raised
    }
 
-
-   #--- je cree la liste des plugin de type "focuser" ,
+   #--- je cree la liste des plugins de type "focuser"
    set pluginList [list "" ]
    foreach pluginName $private(pluginNamespaceList) {
       if {  [::$pluginName\::getPluginType] == "focuser" } {
@@ -526,22 +526,20 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
 
    #--- j'adapte l'affichage du bouton de configuration
    ::confEqt::activeFocuser $frm.configure $variablePluginName
-
 }
 
-
 #------------------------------------------------------------
-# ::confEqt::createFrameFocuserTool
+# createFrameFocuserTool
 #    Cree une frame pour selectionner le focuser pour un outil
 #    Cette frame est destinee a etre inseree dans une fenetre
-# Parametres :
-#    frm     : chemin TK de la frame a creer
-#    variablePluginName : contient le nom de la variable dans laquelle sera
-#                         copie le nom du focuser selectionné
 #
-# Return
+# Parametres :
+#    frm                : chemin TK de la frame a creer
+#    variablePluginName : contient le nom de la variable dans laquelle sera
+#                         copie le nom du focuser selectionne
+# Return :
 #    nothing
-# Exemple:
+# Exemple :
 #    ::confEqt::createFrameFocuserTool $frm.focuserList ::panneau(foc,focuser)
 #    pack $frm.focuserList -in $frm -anchor center -side right -padx 10
 #------------------------------------------------------------
@@ -555,7 +553,7 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
       frame $private(frame) -borderwidth 0 -relief raised
    }
 
-   #--- je cree la liste des plugin de type "focuser" 
+   #--- je cree la liste des plugins de type "focuser"
    set pluginList [list "" ]
    foreach pluginName $private(pluginNamespaceList) {
       if {  [::$pluginName\::getPluginType] == "focuser" } {
@@ -578,17 +576,17 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    button $frm.configure -text "$caption(confeqt,configurer) ..." \
       -command "::confEqt::run $variablePluginName focuser"
    pack $frm.configure -in $frm -anchor center -side top -padx 0 -pady 2 -ipadx 10 -ipady 5 -expand true
-
 }
 
 #------------------------------------------------------------
-# ::confEqt::activeFrameFocuser
-#     active le bouton de configuration du focuser
+# activeFrameFocuser
+#    active le bouton de configuration du focuser
 #    ou desactive le bouton si le nom du focuser est vide
+#
 # Parametres :
 #    configureButton : chemin TK de la frame a creer
 #    focuserName     : nom du focuser
-# Return
+# Return :
 #    nothing
 #------------------------------------------------------------
 proc ::confEqt::activeFocuser { configureButton variablePluginName } {
@@ -600,10 +598,9 @@ proc ::confEqt::activeFocuser { configureButton variablePluginName } {
    }
 }
 
-
 #------------------------------------------------------------
-# ::confEqt::startPlugin
-# lance tous les plugins
+# startPlugin
+#    lance tous les plugins
 #------------------------------------------------------------
 proc ::confEqt::startPlugin { } {
    variable private
@@ -629,8 +626,8 @@ proc ::confEqt::startPlugin { } {
 }
 
 #------------------------------------------------------------
-# ::confEqt::stopPlugin
-# arrete tous les plugins qui sont en service
+# stopPlugin
+#    arrete tous les plugins qui sont en service
 #------------------------------------------------------------
 proc ::confEqt::stopPlugin { } {
    variable private
