@@ -613,12 +613,7 @@ void EthernaudeScanTransfer(ClientData clientData)
             util_log(ligne, 0);
             return;
          }
-         if ((cam->timerExpiration != NULL) && (cam->timerExpiration->dateobs != NULL)) {
-            strcpy(cam->timerExpiration->dateobs, cam->interp->result);
-         }
-         if (cam->date_obs != NULL) {
-            strcpy(cam->date_obs, cam->interp->result);
-         }
+         strcpy(cam->date_obs, cam->interp->result);
          sprintf(ligne, "buf%d setkwd {DATE-OBS %s string \"Begin of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_obs);
          if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
             sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
@@ -646,9 +641,7 @@ void EthernaudeScanTransfer(ClientData clientData)
             util_log(ligne, 0);
             return;
          }
-         if (cam->date_end != NULL) {
-            strcpy(cam->date_end, cam->interp->result);
-         }
+         strcpy(cam->date_end, cam->interp->result);
          sprintf(ligne, "buf%d setkwd {DATE-END %s string \"End of scan exposure (GPS).\" \"\"}", cam->bufno, cam->date_end);
          if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
             sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);

@@ -330,11 +330,7 @@ int cmdAudineRead(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    Tcl_Eval(interp, s);
    sprintf(s, "buf%d setkwd [list GPS-DATE 0 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
    Tcl_Eval(interp, s);
-   if (cam->timerExpiration != NULL) {
-      sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
-   } else {
-      sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
-   }
+   sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
    Tcl_Eval(interp, s);
    if (cam->timerExpiration != NULL) {
       sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, cam->exptime);
@@ -361,7 +357,7 @@ int cmdAudineRead(ClientData clientData, Tcl_Interp * interp, int argc, char *ar
    cam->clockbegin = 0;
    
    if (cam->timerExpiration != NULL) {
-      free(cam->timerExpiration->dateobs);
+//      free(cam->timerExpiration->dateobs);
       free(cam->timerExpiration);
       cam->timerExpiration = NULL;
    }

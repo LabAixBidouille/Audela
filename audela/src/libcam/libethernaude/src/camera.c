@@ -578,12 +578,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
             util_log(ligne, 0);
             return;
          }
-         if ((cam->timerExpiration != NULL) && (cam->timerExpiration->dateobs != NULL)) {
-            strcpy(cam->timerExpiration->dateobs, cam->interp->result);
-         }
-         if (cam->date_obs != NULL) {
-            strcpy(cam->date_obs, cam->interp->result);
-         }
+         strcpy(cam->date_obs, cam->interp->result);
       } else {
          sprintf(ligne,"Keyword 'Date' not found");
          util_log(ligne, 0);
@@ -601,9 +596,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
             util_log(ligne, 0);
             return;
          }
-         if (cam->date_end != NULL) {
-            strcpy(cam->date_end, cam->interp->result);
-         }
+         strcpy(cam->date_end, cam->interp->result);
       } else {
          sprintf(ligne,"Keyword 'Date' not found");
          util_log(ligne, 0);

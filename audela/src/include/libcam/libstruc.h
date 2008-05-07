@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libstruc.h,v 1.9 2006-11-05 11:12:47 alainklotz Exp $
+ * $Id: libstruc.h,v 1.10 2008-05-07 11:33:20 denismarchais Exp $
  */
 
 #ifndef __LIBSTRUC_H__
@@ -44,8 +44,6 @@ extern "C" {
  * Ne pas modifier.
  */
 struct TimerExpirationStruct {
-    char *dateobs;
-    int datebegin;
     ClientData clientData;
     Tcl_Interp *interp;
     Tcl_TimerToken TimerToken;

@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: camtcl.c,v 1.7 2006-12-16 23:23:45 michelpujol Exp $
+// $Id: camtcl.c,v 1.8 2008-05-07 11:27:29 denismarchais Exp $
 
 #include "sysexp.h"
 
@@ -349,11 +349,7 @@ int cmdCamLoadLastImage(ClientData clientData, Tcl_Interp * interp, int argc, ch
       Tcl_Eval(interp, s);
       sprintf(s, "buf%d setkwd {CAMERA \"%s %s %s\" string \"\" \"\"}", cam->bufno, CAM_INI[cam->index_cam].name, CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
       Tcl_Eval(interp, s);
-      if (cam->timerExpiration != NULL) {
-         sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
-      } else {
-         sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
-      }
+      sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
       Tcl_Eval(interp, s);
       if (cam->timerExpiration != NULL) {
          sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}", cam->bufno, cam->exptime);
