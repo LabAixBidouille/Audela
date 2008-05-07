@@ -455,20 +455,15 @@ void AcqReadTrack(ClientData clientData)
     sprintf(s, "buf%d setkwd {BIN2 %d int \"\" \"\"}", cam->bufnotrack,
 	    bin2);
     Tcl_Eval(interp, s);
-    if (cam->timerExpirationTrack != NULL) {
-	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}",
-		cam->bufnotrack, cam->timerExpirationTrack->dateobs);
-    } else {
-	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}",
-		cam->bufnotrack, cam->date_obs);
-    }
+    sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}",
+	    cam->bufnotrack, cam->date_obstrack);
     Tcl_Eval(interp, s);
     if (cam->timerExpirationTrack != NULL) {
 	sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}",
-		cam->bufnotrack, cam->exptime);
+		cam->bufnotrack, cam->exptimetrack);
     } else {
 	sprintf(s, "expr (([mc_date2jd %s]-[mc_date2jd %s])*86400.)",
-		cam->date_end, cam->date_obs);
+		cam->date_endtrack, cam->date_obstrack);
 	Tcl_Eval(interp, s);
 	exptime = atof(interp->result);
 	sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}",
@@ -495,7 +490,6 @@ void AcqReadTrack(ClientData clientData)
     cam->clockbegin = 0;
 
     if (cam->timerExpirationTrack != NULL) {
-	free(cam->timerExpirationTrack->dateobs);
 	free(cam->timerExpirationTrack);
 	cam->timerExpirationTrack = NULL;
     }
@@ -534,17 +528,11 @@ int cmdSbigAcqTrack(ClientData clientData, Tcl_Interp * interp, int argc,
 							       TimerExpirationStruct));
 	    cam->timerExpirationTrack->clientData = clientData;
 	    cam->timerExpirationTrack->interp = interp;
-	    cam->timerExpirationTrack->dateobs =
-		(char *) calloc(32, sizeof(char));
 	    sbig_cam_start_exptrack(cam, "amplioff");
 	    Tcl_Eval(interp, "clock seconds");
 	    cam->clockbegin = (unsigned long) atoi(interp->result);
-	    libcam_GetCurrentFITSDate(interp,
-				      cam->timerExpirationTrack->dateobs);
-	    libcam_GetCurrentFITSDate_function(interp,
-					       cam->timerExpirationTrack->
-					       dateobs,
-					       "::audace::date_sys2ut");
+	    libcam_GetCurrentFITSDate(interp, cam->date_obstrack);
+	    libcam_GetCurrentFITSDate_function(interp, cam->date_obstrack, "::audace::date_sys2ut");
 	    /* Creation du timer pour realiser le temps de pose. */
 	    cam->timerExpirationTrack->TimerToken =
 		Tcl_CreateTimerHandler(i, AcqReadTrack, (ClientData) cam);
@@ -569,7 +557,11 @@ int cmdSbigStopTrack(ClientData clientData, Tcl_Interp * interp, int argc,
     int retour = TCL_OK;
     cam = (struct camprop *) clientData;
     if (cam->timerExpirationTrack) {
-	Tcl_DeleteTimerHandler(cam->timerExpirationTrack->TimerToken);
+	if (cam->timerExpirationTrack != NULL) {
+            Tcl_DeleteTimerHandler(cam->timerExpirationTrack->TimerToken);
+	    free(cam->timerExpirationTrack);
+            cam->timerExpirationTrack = NULL;
+	}
 	sbig_cam_stop_exptrack(cam);
 	AcqReadTrack((ClientData) cam);
     } else {
@@ -603,7 +595,7 @@ int cmdSbigExptimeTrack(ClientData clientData, Tcl_Interp * interp,
 	    retour = TCL_ERROR;
 	} else {
 	    cam = (struct camprop *) clientData;
-	    cam->exptime = (float) d_exptime;
+	    cam->exptimetrack = (float) d_exptime;
 	    sprintf(ligne, "%.2f", cam->exptimetrack);
 	    Tcl_SetResult(interp, ligne, TCL_VOLATILE);
 	}
