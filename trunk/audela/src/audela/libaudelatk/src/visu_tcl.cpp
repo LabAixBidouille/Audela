@@ -661,13 +661,13 @@ int cmdVisuWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                   x1 = i;
                }
                buffer = CBuffer::Chercher(visu->bufnum);
-               naxis1 = buffer->GetW();
+               naxis1 = buffer->GetWidth();
 
                // s'il n'y qu'une ligne, naxis2 vaut thickness
-               if( buffer->GetH() == 1 ) {
+               if( buffer->GetHeight() == 1 ) {
                   naxis2 = visu->GetThickness();
                } else {
-                  naxis2 = buffer->GetH();
+                  naxis2 = buffer->GetHeight();
                }
 
                if(y1>y2) {

@@ -155,7 +155,7 @@ public:
             double *maxy, double *posy, double *fwhmy, double *fondy, double *erry,
 		    double fwhmx0, double fwhmy0);
    void GetDataType(TDataType *dt);
-   int  GetH();
+   int  GetHeight();
    CFitsKeywords* GetKeywords() {return keywords;};
    int  GetNaxis();
    void GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS *val3,int x, int y);
@@ -172,7 +172,7 @@ public:
    int  GetSavingType();
    int  GetCompressType();
    char * GetExtension();
-   int  GetW();
+   int  GetWidth();
    int  IsPixelsReady(void) ;
    void Histogram(int n, float *adus, float *meanadus, long *histo,
                      int ismini,float mini,int ismaxi,float maxi);
