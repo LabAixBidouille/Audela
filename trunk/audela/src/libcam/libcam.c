@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.18 2008-04-27 14:47:06 michelpujol Exp $
+ * $Id: libcam.c,v 1.19 2008-05-07 11:26:45 denismarchais Exp $
  */
 
 #include "sysexp.h"
@@ -963,11 +963,7 @@ static void AcqRead(ClientData clientData )
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
-      if (cam->timerExpiration != NULL) {
-         sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->timerExpiration->dateobs);
-      } else {
-         sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
-      }
+      sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
       libcam_log(LOG_DEBUG, s);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
@@ -1031,7 +1027,6 @@ static void AcqRead(ClientData clientData )
    cam->clockbegin = 0;
 
    if (cam->timerExpiration != NULL) {
-      free(cam->timerExpiration->dateobs);
       free(cam->timerExpiration);
       cam->timerExpiration = NULL;
    }
@@ -1065,7 +1060,6 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          cam->timerExpiration = (struct TimerExpirationStruct *) calloc(1, sizeof(struct TimerExpirationStruct));
          cam->timerExpiration->clientData = clientData;
          cam->timerExpiration->interp = interp;
-         cam->timerExpiration->dateobs = (char *) calloc(32, sizeof(char));
          strcpy(cam->msg,"");
 
          Tcl_Eval(interp, "clock seconds");
@@ -1077,7 +1071,6 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
             // erreur pendant start_exp
             if (cam->timerExpiration != NULL) {
                Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
-               free(cam->timerExpiration->dateobs);
                free(cam->timerExpiration);
                cam->timerExpiration = NULL;
             }
@@ -1086,8 +1079,8 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          } else {
             // je teste cam->timerExpiration car il peut être nul si cmdCamStop a ete appele entre temps
             if( cam->timerExpiration != NULL ) {
-               libcam_GetCurrentFITSDate(interp, cam->timerExpiration->dateobs);
-               libcam_GetCurrentFITSDate_function(interp, cam->timerExpiration->dateobs, "::audace::date_sys2ut");
+               libcam_GetCurrentFITSDate(interp, cam->date_obs);
+               libcam_GetCurrentFITSDate_function(interp, cam->date_obs, "::audace::date_sys2ut");
                /* Creation du timer pour realiser le temps de pose. */
                i = (int) (1000 * cam->exptimeTimer);
                cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
@@ -1118,15 +1111,13 @@ static int cmdCamStop(ClientData clientData, Tcl_Interp * interp, int argc, char
 
    cam = (struct camprop *) clientData;
    if (cam->timerExpiration) {
-      strcpy(cam->date_obs, cam->timerExpiration->dateobs);
       Tcl_DeleteTimerHandler(cam->timerExpiration->TimerToken);
-      CAM_DRV.stop_exp(cam);
-      AcqRead((ClientData) cam);
       if (cam->timerExpiration != NULL) {
-         free(cam->timerExpiration->dateobs);
          free(cam->timerExpiration);
          cam->timerExpiration = NULL;
       }
+      CAM_DRV.stop_exp(cam);
+      AcqRead((ClientData) cam);
    } else {
       Tcl_SetResult(interp, "No current exposure", TCL_VOLATILE);
       retour = TCL_ERROR;

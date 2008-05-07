@@ -23,7 +23,7 @@
 /*
  * Fonctions C-Tcl specifiques a cette camera. A programmer.
  *
- * $Id: camtcl.c,v 1.3 2006-12-08 17:28:05 michelpujol Exp $
+ * $Id: camtcl.c,v 1.4 2008-05-07 11:27:46 denismarchais Exp $
  */
 
 #include "sysexp.h"
@@ -180,13 +180,8 @@ int cmdAudinetRead(ClientData clientData, Tcl_Interp * interp, int argc,
 	    cam->bufno, CAM_INI[cam->index_cam].name,
 	    CAM_INI[cam->index_cam].ccd, CAM_LIBNAME);
     Tcl_Eval(interp, s);
-    if (cam->timerExpiration != NULL) {
-	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}",
-		cam->bufno, cam->timerExpiration->dateobs);
-    } else {
 	sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}",
 		cam->bufno, cam->date_obs);
-    }
     Tcl_Eval(interp, s);
     if (cam->timerExpiration != NULL) {
 	sprintf(s, "buf%d setkwd {EXPOSURE %f float \"\" \"s\"}",
@@ -220,7 +215,7 @@ int cmdAudinetRead(ClientData clientData, Tcl_Interp * interp, int argc,
     cam->clockbegin = 0;
 
     if (cam->timerExpiration != NULL) {
-	free(cam->timerExpiration->dateobs);
+//	free(cam->timerExpiration->dateobs);
 	free(cam->timerExpiration);
 	cam->timerExpiration = NULL;
     }
