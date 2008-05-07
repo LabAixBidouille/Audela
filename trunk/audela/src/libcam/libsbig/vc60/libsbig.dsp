@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /machine:IX86
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib ..\..\..\external\lib\tclstub84.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libsbig.dll"
+# ADD LINK32 tclstub84.lib SBIGUDrv.lib /nologo /subsystem:windows /dll /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libsbig.dll" /libpath:"..\..\..\external\lib\\"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "libsbig - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib ..\..\..\external\lib\tclstub84.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libsbig.dll"
+# ADD LINK32 tclstub84.lib SBIGUDrv.lib /nologo /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"..\..\..\..\bin\libsbig.dll" /libpath:"..\..\..\external\lib\\"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -116,6 +116,34 @@ SOURCE=..\..\util.c
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
+# Begin Source File
+
+SOURCE=..\src\camera.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\camtcl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\include\libcam\libcam.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\libname.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\include\libcam\libstruc.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\external\include\Sbigudrv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\external\include\win\tcl.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
