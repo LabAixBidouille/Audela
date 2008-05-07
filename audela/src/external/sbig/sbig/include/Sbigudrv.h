@@ -9,14 +9,16 @@
 
 		ST-7E/8E/9E/10E
 		ST-5C/237/237A (PixCel255/237)
-		ST-1K
-        TCE-1
-        AO-7
-        STV
+		ST-1K, ST-2K, ST-4K
+		ST-L Large Format Cameras
+		ST-402 Family of Cameras
+        AO-7, AOL, AO-8
+		CFW-8, CFW-9, CFW-10, CFW-L
+		ST Focuser
+ 
+    Version 4.57 - September 17, 2007
 
-    Version 4.24 - October 17, 2002
-
-	(c)1995-2002 - Santa Barbara Instrument Group
+	(c)1995-2007 - Santa Barbara Instrument Group
 
 */
 #ifndef _PARDRV_
@@ -28,24 +30,15 @@
 
 */
 #ifndef TARGET
-#define ENV_DOS		0	/* Target for DOS environment */
-#define ENV_WIN		1	/* Target for Windows environment */
-#define ENV_WINVXD		2	/* SBIG Use Only, Win 9X VXD */
-#define ENV_WINSYS		3	/* SBIG Use Only, Win NT SYS */
-#define ENV_ESRVJK		4	/* SBIG Use Only, Ethernet Remote */
-#define ENV_ESRVWIN	5	/* SBIG Use Only, Ethernet Remote */
-#define TARGET			ENV_LIN	/* Set for your target */
+ #define ENV_WIN		1				/* Target for Windows environment */
+ #define ENV_WINVXD		2				/* SBIG Use Only, Win 9X VXD */
+ #define ENV_WINSYS		3				/* SBIG Use Only, Win NT SYS */
+ #define ENV_ESRVJK		4				/* SBIG Use Only, Ethernet Remote */
+ #define ENV_ESRVWIN	5				/* SBIG Use Only, Ethernet Remote */
+ #define ENV_MACOSX     6				/* SBIG Use Only, Mac OSX */
+ #define ENV_LINUX		7				/* SBIG Use Only, Linux */
+ #define TARGET			ENV_WIN		    /* Set for your target */
 #endif
-
-/*
-
-	In the initial release (4.0) of the SBIG Universal Driver
-	and until further notice the TCE and STV support routines
-	are not been included.
-
-*/
-#define INCLUDE_TCE		0	/* Set to 1 to include TCE routines */
-#define INCLUDE_STV		0	/* Set to 1 to include STV routines */
 
 /*
 
@@ -73,44 +66,49 @@
 
 */
 typedef enum {
-    /*
+	/*
 
-       General Use Commands
+		General Use Commands
 
-     */
-    /* 1 - 10 */
-    CC_START_EXPOSURE = 1, CC_END_EXPOSURE, CC_READOUT_LINE,
-    CC_DUMP_LINES, CC_SET_TEMPERATURE_REGULATION,
-    CC_QUERY_TEMPERATURE_STATUS, CC_ACTIVATE_RELAY, CC_PULSE_OUT,
-    CC_ESTABLISH_LINK, CC_GET_DRIVER_INFO,
+	*/
+	CC_NULL,
 
-    /* 11 - 20 */
-    CC_GET_CCD_INFO, CC_QUERY_COMMAND_STATUS, CC_MISCELLANEOUS_CONTROL,
-    CC_READ_SUBTRACT_LINE, CC_UPDATE_CLOCK, CC_READ_OFFSET,
-    CC_OPEN_DRIVER, CC_CLOSE_DRIVER,
-    CC_TX_SERIAL_BYTES, CC_GET_SERIAL_STATUS,
+	/* 1 - 10 */
+	CC_START_EXPOSURE=1, CC_END_EXPOSURE, CC_READOUT_LINE,
+	CC_DUMP_LINES, CC_SET_TEMPERATURE_REGULATION,
+	CC_QUERY_TEMPERATURE_STATUS, CC_ACTIVATE_RELAY, CC_PULSE_OUT,
+	CC_ESTABLISH_LINK, CC_GET_DRIVER_INFO,
 
-    /* 21 - 30 */
-    CC_AO_TIP_TILT, CC_AO_SET_FOCUS, CC_AO_DELAY,
+	/* 11 - 20 */
+	CC_GET_CCD_INFO, CC_QUERY_COMMAND_STATUS, CC_MISCELLANEOUS_CONTROL,
+	CC_READ_SUBTRACT_LINE, CC_UPDATE_CLOCK, CC_READ_OFFSET,
+	CC_OPEN_DRIVER, CC_CLOSE_DRIVER,
+	CC_TX_SERIAL_BYTES, CC_GET_SERIAL_STATUS,
+
+	/* 21 - 30 */
+	CC_AO_TIP_TILT, CC_AO_SET_FOCUS, CC_AO_DELAY,
     CC_GET_TURBO_STATUS, CC_END_READOUT, CC_GET_US_TIMER,
-    CC_OPEN_DEVICE, CC_CLOSE_DEVICE, CC_SET_IRQL, CC_GET_IRQL,
+	CC_OPEN_DEVICE, CC_CLOSE_DEVICE, CC_SET_IRQL, CC_GET_IRQL,
 
-    /* 31 - 40 */
-    CC_GET_LINE, CC_GET_LINK_STATUS, CC_GET_DRIVER_HANDLE,
-    CC_SET_DRIVER_HANDLE, CC_START_READOUT, CC_GET_ERROR_STRING,
-    CC_SET_DRIVER_CONTROL, CC_GET_DRIVER_CONTROL,
-    CC_USB_AD_CONTROL,
+	/* 31 - 40 */
+	CC_GET_LINE, CC_GET_LINK_STATUS, CC_GET_DRIVER_HANDLE,
+	CC_SET_DRIVER_HANDLE, CC_START_READOUT, CC_GET_ERROR_STRING,
+	CC_SET_DRIVER_CONTROL, CC_GET_DRIVER_CONTROL,
+	CC_USB_AD_CONTROL, CC_QUERY_USB,
 
-    /*
+	/* 41 - 50 */
+	CC_GET_PENTIUM_CYCLE_COUNT, CC_RW_USB_I2C, CC_CFW, CC_BIT_IO,
+	CC_USER_EEPROM, CC_AO_CENTER, CC_BTDI_SETUP, CC_MOTOR_FOCUS,
 
-       SBIG Use Only Commands
+	/*
 
-     */
-    CC_SEND_BLOCK = 90, CC_SEND_BYTE, CC_GET_BYTE, CC_SEND_AD,
-    CC_GET_AD, CC_CLOCK_AD, CC_SYSTEM_TEST,
-    CC_GET_DRIVER_OPTIONS, CC_SET_DRIVER_OPTIONS,
-    CC_LAST_COMMAND
-} PAR_COMMAND;
+		SBIG Use Only Commands
+
+	*/
+	CC_SEND_BLOCK=90, CC_SEND_BYTE, CC_GET_BYTE, CC_SEND_AD,
+	CC_GET_AD, CC_CLOCK_AD, CC_SYSTEM_TEST,
+	CC_GET_DRIVER_OPTIONS, CC_SET_DRIVER_OPTIONS,
+	CC_LAST_COMMAND} PAR_COMMAND;
 
 /*
 
@@ -122,31 +120,31 @@ typedef enum {
 
 */
 #ifndef CE_ERROR_BASE
-#define CE_ERROR_BASE 1
+ #define CE_ERROR_BASE 1
 #endif
+
 typedef enum {
-    /* 0 - 10 */
-    CE_NO_ERROR, CE_CAMERA_NOT_FOUND = CE_ERROR_BASE,
-    CE_EXPOSURE_IN_PROGRESS, CE_NO_EXPOSURE_IN_PROGRESS,
-    CE_UNKNOWN_COMMAND, CE_BAD_CAMERA_COMMAND, CE_BAD_PARAMETER,
-    CE_TX_TIMEOUT, CE_RX_TIMEOUT, CE_NAK_RECEIVED, CE_CAN_RECEIVED,
+	/* 0 - 10 */
+	CE_NO_ERROR, CE_CAMERA_NOT_FOUND=CE_ERROR_BASE,
+	CE_EXPOSURE_IN_PROGRESS, CE_NO_EXPOSURE_IN_PROGRESS,
+	CE_UNKNOWN_COMMAND, CE_BAD_CAMERA_COMMAND, CE_BAD_PARAMETER,
+	CE_TX_TIMEOUT, CE_RX_TIMEOUT, CE_NAK_RECEIVED, CE_CAN_RECEIVED,
 
-    /* 11 - 20 */
-    CE_UNKNOWN_RESPONSE, CE_BAD_LENGTH,
-    CE_AD_TIMEOUT, CE_KBD_ESC, CE_CHECKSUM_ERROR, CE_EEPROM_ERROR,
-    CE_SHUTTER_ERROR, CE_UNKNOWN_CAMERA,
-    CE_DRIVER_NOT_FOUND, CE_DRIVER_NOT_OPEN,
+	/* 11 - 20 */
+	CE_UNKNOWN_RESPONSE, CE_BAD_LENGTH,
+	CE_AD_TIMEOUT, CE_KBD_ESC, CE_CHECKSUM_ERROR, CE_EEPROM_ERROR,
+	CE_SHUTTER_ERROR, CE_UNKNOWN_CAMERA,
+	CE_DRIVER_NOT_FOUND, CE_DRIVER_NOT_OPEN,
 
-    /* 21 - 30 */
-    CE_DRIVER_NOT_CLOSED, CE_SHARE_ERROR, CE_TCE_NOT_FOUND, CE_AO_ERROR,
-    CE_ECP_ERROR, CE_MEMORY_ERROR, CE_DEVICE_NOT_FOUND,
-    CE_DEVICE_NOT_OPEN, CE_DEVICE_NOT_CLOSED,
-    CE_DEVICE_NOT_IMPLEMENTED,
-
-    /* 31 - 40 */
-    CE_DEVICE_DISABLED, CE_OS_ERROR, CE_SOCK_ERROR, CE_SERVER_NOT_FOUND,
-    CE_NEXT_ERROR
-} PAR_ERROR;
+	/* 21 - 30 */
+	CE_DRIVER_NOT_CLOSED, CE_SHARE_ERROR, CE_TCE_NOT_FOUND, CE_AO_ERROR,
+	CE_ECP_ERROR, CE_MEMORY_ERROR, CE_DEVICE_NOT_FOUND,
+	CE_DEVICE_NOT_OPEN, CE_DEVICE_NOT_CLOSED,
+	CE_DEVICE_NOT_IMPLEMENTED,
+	
+	/* 31 - 40 */
+	CE_DEVICE_DISABLED, CE_OS_ERROR, CE_SOCK_ERROR, CE_SERVER_NOT_FOUND,
+	CE_CFW_ERROR, CE_MF_ERROR, CE_NEXT_ERROR  } PAR_ERROR;
 
 /*
 
@@ -158,8 +156,7 @@ typedef enum {
 
 */
 typedef enum { CS_IDLE, CS_IN_PROGRESS, CS_INTEGRATING,
-    CS_INTEGRATION_COMPLETE
-} PAR_COMMAND_STATUS;
+	CS_INTEGRATION_COMPLETE } PAR_COMMAND_STATUS;
 #define CS_PULSE_IN_ACTIVE 0x8000
 #define CS_WAITING_FOR_TRIGGER 0x8000
 
@@ -182,86 +179,117 @@ typedef enum { CS_IDLE, CS_IN_PROGRESS, CS_INTEGRATING,
 	AD_SIZE, FILTER_TYPE - Used with the GetCCDInfo3 Command
 	AO_FOCUS_COMMAND - Used with the AO Set Focus Command
 	SBIG_DEVICE_TYPE - Used with Open Device Command
-	DRIVER_CONTROL_PARAMS - Used with Get/SetDriverControl
+	DRIVER_CONTROL_PARAMS - Used with Get/SetDriverControl Command
+	USB_AD_CONTROL_COMMAND - Used with UsbADControl Command
+	CFW_MODEL_SELECT, CFW_STATUS, CFW_ERROR - Used with CFW command
+	CFW_POSITION, CFW_GET_INFO_SELECT - Used with CFW Command
+	BIT_IO_OPERATION, BIT_IO_NMAE - Used with BitIO command
+	MF_MODEL_SELECT, MF_STATUS, MF_ERROR, MF_GET_INFO_SELECT - Used with Motor Focus Command
+
 
 */
-typedef enum { ABG_LOW7, ABG_CLK_LOW7, ABG_CLK_MED7,
-	ABG_CLK_HI7 } ABG_STATE7;
+typedef enum { ABG_LOW7, ABG_CLK_LOW7, ABG_CLK_MED7, ABG_CLK_HI7 } ABG_STATE7;
 typedef unsigned short MY_LOGICAL;
 #define FALSE 0
 #define TRUE 1
-typedef enum { DRIVER_STD, DRIVER_EXTENDED } DRIVER_REQUEST;
-typedef enum { CCD_IMAGING, CCD_TRACKING } CCD_REQUEST;
+typedef enum { DRIVER_STD, DRIVER_EXTENDED, DRIVER_USB_LOADER } DRIVER_REQUEST;
+typedef enum { CCD_IMAGING, CCD_TRACKING, CCD_EXT_TRACKING } CCD_REQUEST;
+typedef enum { RM_1X1, RM_2X2, RM_3X3, RM_NX1, RM_NX2, RM_NX3, RM_1X1_VOFFCHIP,
+	RM_2X2_VOFFCHIP, RM_3X3_VOFFCHIP, RM_9X9 } READOUT_BINNING_MODE;  
 typedef enum { CCD_INFO_IMAGING, CCD_INFO_TRACKING,
-    CCD_INFO_EXTENDED, CCD_INFO_EXTENDED_5C, CCD_INFO_EXTENDED2_IMAGING,
-    CCD_INFO_EXTENDED2_TRACKING
-} CCD_INFO_REQUEST;
+	CCD_INFO_EXTENDED, CCD_INFO_EXTENDED_5C, CCD_INFO_EXTENDED2_IMAGING,
+	CCD_INFO_EXTENDED2_TRACKING } CCD_INFO_REQUEST;
 typedef enum { ABG_NOT_PRESENT, ABG_PRESENT } IMAGING_ABG;
-typedef enum { BR_AUTO, BR_9600, BR_19K, BR_38K, BR_57K,
-	BR_115K } PORT_RATE;
-typedef enum { ST7_CAMERA = 4, ST8_CAMERA, ST5C_CAMERA, TCE_CONTROLLER,
-    ST237_CAMERA, STK_CAMERA, ST9_CAMERA, STV_CAMERA, ST10_CAMERA,
-    ST1K_CAMERA, ST2K_CAMERA
-} CAMERA_TYPE;
+typedef enum { BR_AUTO, BR_9600, BR_19K, BR_38K, BR_57K, BR_115K } PORT_RATE;
+typedef enum { ST7_CAMERA=4, ST8_CAMERA, ST5C_CAMERA, TCE_CONTROLLER,
+  ST237_CAMERA, STK_CAMERA, ST9_CAMERA, STV_CAMERA, ST10_CAMERA,
+  ST1K_CAMERA, ST2K_CAMERA, STL_CAMERA, ST402_CAMERA, STH_CAMERA,
+  ST4K_CAMERA, NEXT_CAMERA, NO_CAMERA=0xFFFF } CAMERA_TYPE;
 typedef enum { SC_LEAVE_SHUTTER, SC_OPEN_SHUTTER, SC_CLOSE_SHUTTER,
-    SC_INITIALIZE_SHUTTER
-} SHUTTER_COMMAND;
+	 SC_INITIALIZE_SHUTTER, SC_OPEN_EXT_SHUTTER, SC_CLOSE_EXT_SHUTTER} SHUTTER_COMMAND;
 typedef enum { SS_OPEN, SS_CLOSED, SS_OPENING, SS_CLOSING } SHUTTER_STATE7;
 typedef enum { REGULATION_OFF, REGULATION_ON,
-    REGULATION_OVERRIDE, REGULATION_FREEZE, REGULATION_UNFREEZE,
-    REGULATION_ENABLE_AUTOFREEZE, REGULATION_DISABLE_AUTOFREEZE
-} TEMPERATURE_REGULATION;
+	REGULATION_OVERRIDE, REGULATION_FREEZE, REGULATION_UNFREEZE,
+	REGULATION_ENABLE_AUTOFREEZE, REGULATION_DISABLE_AUTOFREEZE } TEMPERATURE_REGULATION;
 #define REGULATION_FROZEN_MASK 0x8000
 typedef enum { LED_OFF, LED_ON, LED_BLINK_LOW, LED_BLINK_HIGH } LED_STATE;
 typedef enum { FILTER_LEAVE, FILTER_SET_1, FILTER_SET_2, FILTER_SET_3,
-    FILTER_SET_4, FILTER_SET_5, FILTER_STOP, FILTER_INIT
-} FILTER_COMMAND;
+	FILTER_SET_4, FILTER_SET_5, FILTER_STOP, FILTER_INIT } FILTER_COMMAND;
 typedef enum { FS_MOVING, FS_AT_1, FS_AT_2, FS_AT_3,
-    FS_AT_4, FS_AT_5, FS_UNKNOWN
-} FILTER_STATE;
+	FS_AT_4, FS_AT_5, FS_UNKNOWN } FILTER_STATE;
 typedef enum { AD_UNKNOWN, AD_12_BITS, AD_16_BITS } AD_SIZE;
-typedef enum { FW_UNKNOWN, FW_EXTERNAL, FW_VANE,
-	FW_FILTER_WHEEL } FILTER_TYPE;
+typedef enum { FW_UNKNOWN, FW_EXTERNAL, FW_VANE, FW_FILTER_WHEEL } FILTER_TYPE;
 typedef enum { AOF_HARD_CENTER, AOF_SOFT_CENTER, AOF_STEP_IN,
-    AOF_STEP_OUT
-} AO_FOCUS_COMMAND;
+  AOF_STEP_OUT } AO_FOCUS_COMMAND;
 typedef enum { DEV_NONE, DEV_LPT1, DEV_LPT2, DEV_LPT3,
-    DEV_USB = 0x7F00, DEV_ETH
-} SBIG_DEVICE_TYPE;
+  DEV_USB=0x7F00, DEV_ETH, DEV_USB1, DEV_USB2, DEV_USB3, DEV_USB4 } SBIG_DEVICE_TYPE;
 typedef enum { DCP_USB_FIFO_ENABLE, DCP_CALL_JOURNAL_ENABLE,
-    DCP_IVTOH_RATIO, DCP_USB_FIFO_SIZE, DCP_LAST
-} DRIVER_CONTROL_PARAM;
-typedef enum { USB_AD_IMAGING_GAIN, USB_AD_IMAGING_OFFSET,
-	USB_AD_TRACKING_GAIN,
-    USB_AD_TRACKING_OFFSET
-} USB_AD_CONTROL_COMMAND;
+	DCP_IVTOH_RATIO, DCP_USB_FIFO_SIZE, DCP_USB_DRIVER, DCP_KAI_RELGAIN,
+	DCP_USB_PIXEL_DL_ENABLE, DCP_HIGH_THROUGHPUT, DCP_VDD_OPTIMIZED,
+	DCP_AUTO_AD_GAIN, DCP_NO_HCLKS_FOR_INTEGRATION, DCP_TDI_MODE_ENABLE, 
+	DCP_VERT_FLUSH_CONTROL_ENABLE, DCP_ETHERNET_PIPELINE_ENABLE, DCP_LAST } DRIVER_CONTROL_PARAM;
+typedef enum { USB_AD_IMAGING_GAIN, USB_AD_IMAGING_OFFSET, USB_AD_TRACKING_GAIN,
+	USB_AD_TRACKING_OFFSET } USB_AD_CONTROL_COMMAND;
+typedef enum { USBD_SBIGE, USBD_SBIGI, USBD_SBIGM, USBD_NEXT } ENUM_USB_DRIVER;
+typedef enum { CFWSEL_UNKNOWN, CFWSEL_CFW2, CFWSEL_CFW5, CFWSEL_CFW8, CFWSEL_CFWL,
+	CFWSEL_CFW402, CFWSEL_AUTO, CFWSEL_CFW6A, CFWSEL_CFW10,
+	CFWSEL_CFW10_SERIAL, CFWSEL_CFW9, CFWSEL_CFWL8, CFWSEL_CFWL8G } CFW_MODEL_SELECT;
+typedef enum { CFWC_QUERY, CFWC_GOTO, CFWC_INIT, CFWC_GET_INFO,
+			   CFWC_OPEN_DEVICE, CFWC_CLOSE_DEVICE } CFW_COMMAND;
+typedef enum { CFWS_UNKNOWN, CFWS_IDLE, CFWS_BUSY } CFW_STATUS;
+typedef enum { CFWE_NONE, CFWE_BUSY, CFWE_BAD_COMMAND, CFWE_CAL_ERROR, CFWE_MOTOR_TIMEOUT,
+				CFWE_BAD_MODEL, CFWE_DEVICE_NOT_CLOSED, CFWE_DEVICE_NOT_OPEN,
+				CFWE_I2C_ERROR } CFW_ERROR;
+typedef enum { CFWP_UNKNOWN, CFWP_1, CFWP_2, CFWP_3, CFWP_4, CFWP_5, CFWP_6,
+				CFWP_7, CFWP_8, CFWP_9, CFWP_10} CFW_POSITION;
+typedef enum { CFWPORT_COM1=1, CFWPORT_COM2, CFWPORT_COM3, CFWPORT_COM4 } CFW_COM_PORT;
+typedef enum { CFWG_FIRMWARE_VERSION, CFWG_CAL_DATA, CFWG_DATA_REGISTERS } CFW_GETINFO_SELECT;
+typedef enum { BITIO_WRITE, BITIO_READ } BITIO_OPERATION;
+typedef enum { BITI_PS_LOW, BITO_IO1, BITO_IO2, BITI_IO3, BITO_FPGA_WE } BITIO_NAME;
+typedef enum { BTDI_SCHEDULE_ERROR=1, BTDI_OVERRUN_ERROR=2 } BTDI_ERROR;
+typedef enum { MFSEL_UNKNOWN, MFSEL_AUTO, MFSEL_STF } MF_MODEL_SELECT;
+typedef enum { MFC_QUERY, MFC_GOTO, MFC_INIT, MFC_GET_INFO, MFC_ABORT } MF_COMMAND;
+typedef enum { MFS_UNKNOWN, MFS_IDLE, MFS_BUSY } MF_STATUS;
+typedef enum { MFE_NONE, MFE_BUSY, MFE_BAD_COMMAND, MFE_CAL_ERROR, MFE_MOTOR_TIMEOUT,
+				MFE_BAD_MODEL, MFE_I2C_ERROR, MFE_NOT_FOUND } MF_ERROR;
+typedef enum { MFG_FIRMWARE_VERSION, MFG_DATA_REGISTERS } MF_GETINFO_SELECT;
+
 
 /*
 
 	General Purpose Flags
 
 */
-#define END_SKIP_DELAY 0x8000	/* set in ccd parameter of EndExposure
-				   command to skip synchronization
-				   delay - Use this to increase the
-				   rep rate when taking darks to later
-				   be subtracted from SC_LEAVE_SHUTTER
-				   exposures such as when tracking and
-				   imaging */
-#define START_SKIP_VDD	0x8000	/* set in ccd parameter of StartExposure
-				   command to skip lowering Imaging CCD
-				   Vdd during integration. - Use this to
-				   increase the rep rate when you don't
-				   care about glow in the upper-left
-				   corner of the imaging CCD */
-#define EXP_WAIT_FOR_TRIGGER_IN 0x80000000	/* set in exposureTime to wait
-						   for trigger in pulse */
-#define EXP_SEND_TRIGGER_OUT    0x40000000	/* set in exposureTime to send
-						   trigger out Y- */
+#define END_SKIP_DELAY			0x8000       /* set in ccd parameter of EndExposure
+											   command to skip synchronization
+											   delay - Use this to increase the
+											   rep rate when taking darks to later
+											   be subtracted from SC_LEAVE_SHUTTER
+											   exposures such as when tracking and
+											   imaging */
+#define START_SKIP_VDD			0x8000		/* set in ccd parameter of StartExposure
+											   command to skip lowering Imaging CCD
+											   Vdd during integration. - Use this to
+											   increase the rep rate when you don't
+											   care about glow in the upper-left
+											   corner of the imaging CCD */
+#define START_MOTOR_ALWAYS_ON	0x4000		/* set in ccd parameter of StartExposure
+											   and EndExposure commands to force shutter
+											   motor to stay on all the time which reduces
+											   delays in Start and End Exposure timing and
+											   yields higher image throughput.  Don't
+											   do this too often or camera head will
+											   heat up */
+#define EXP_WAIT_FOR_TRIGGER_IN 0x80000000  /* set in exposureTime to wait
+											   for trigger in pulse */
+#define EXP_SEND_TRIGGER_OUT    0x40000000  /* set in exposureTime to send
+											   trigger out Y- */
 #define EXP_LIGHT_CLEAR			0x20000000	/* set to do light clear of the
-							   CCD (Kaiser only) */
-#define EXP_TIME_MASK           0x00FFFFFF	/* mask with exposure time to
-						   remove flags */
+											   CCD */
+#define EXP_MS_EXPOSURE			0x10000000	/* set to interpret exposure time
+											   as milliseconds */
+#define EXP_TIME_MASK           0x00FFFFFF  /* mask with exposure time to
+											   remove flags */
 
 /*
 
@@ -269,16 +297,31 @@ typedef enum { USB_AD_IMAGING_GAIN, USB_AD_IMAGING_OFFSET,
 	capabilitiesBits in the GetCCDInfoResults4 struct.
 
 */
-#define CB_CCD_TYPE_MASK			0x0001	/* mask for CCD type */
-#define CB_CCD_TYPE_FULL_FRAME		0x0000	/* b0=0 is full frame CCD */
-#define CB_CCD_TYPE_FRAME_TRANSFER	0x0001	/* b0=1 is frame transfer CCD */
+#define CB_CCD_TYPE_MASK			0x0001			/* mask for CCD type */
+#define CB_CCD_TYPE_FULL_FRAME		0x0000			/* b0=0 is full frame CCD */
+#define CB_CCD_TYPE_FRAME_TRANSFER	0x0001			/* b0=1 is frame transfer CCD */
+#define CB_CCD_ESHUTTER_MASK		0x0002			/* mask for electronic shutter type */
+#define CB_CCD_ESHUTTER_NO			0x0000			/* b1=0 indicates no electronic shutter */
+#define CB_CCD_ESHUTTER_YES			0x0002			/* b1=1 indicates electronic shutter */
+#define CB_CCD_EXT_TRACKER_MASK		0x0004			/* mask for external tracker support */
+#define CB_CCD_EXT_TRACKER_NO		0x0000			/* b2=0 indicates no external tracker support */
+#define CB_CCD_EXT_TRACKER_YES		0x0004			/* b2=1 indicates external tracker support */
+#define CB_CCD_BTDI_MASK			0x0008			/* mask for BTDI support */
+#define CB_CCD_BTDI_NO				0x0000			/* b3=0 indicates no BTDI support */
+#define CB_CCD_BTDI_YES				0x0008			/* b3=1 indicates BTDI support */
+#define CB_AO8_MASK					0x0010			/* mask for AO-8 detected */
+#define CB_AO8_NO					0x0000			/* b4=0 indicates no AO-8 detected */
+#define CB_AO8_YES					0x0010			/* b4=1 indicates AO-8 detected */
 
 /*
 
 	Defines
 
 */
-#define MIN_ST7_EXPOSURE    12	/* Minimum exposure is 12/100ths second */
+#define MIN_ST7_EXPOSURE    12  /* Minimum exposure in 1/100ths second */
+#define MIN_ST402_EXPOSURE	 4	/* Minimum exposure in 1/100ths second */
+#define MIN_ST3200_EXPOSURE	 9	/* Minimum exposure in 1/100ths second */
+#define MIN_STH_EXPOSURE	 1	/* Minimum exposure in 1/100ths second */
 
 /*
 
@@ -288,623 +331,381 @@ typedef enum { USB_AD_IMAGING_GAIN, USB_AD_IMAGING_OFFSET,
 	as that is how the driver was built.
 
 */
-typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-    unsigned long exposureTime;
-    unsigned short /* ABG_STATE7 */ abgState;
-    unsigned short /* SHUTTER_COMMAND */ openShutter;
-} StartExposureParams;
+/* Force 8 Byte Struct Align */
+#if TARGET == ENV_MACOSX || TARGET == ENV_LINUX
+ #pragma pack(push,8)
+#else
+ #pragma pack(push)
+ #pragma pack(8)
+#endif
 
 typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-} EndExposureParams;
+	unsigned short /* CCD_REQUEST */ ccd;
+	unsigned long exposureTime;
+	unsigned short /* ABG_STATE7 */ abgState;
+	unsigned short /* SHUTTER_COMMAND */ openShutter;
+	} StartExposureParams;
 
 typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-    unsigned short readoutMode;
-    unsigned short pixelStart;
-    unsigned short pixelLength;
-} ReadoutLineParams;
+	unsigned short /* CCD_REQUEST */ ccd;
+	} EndExposureParams;
 
 typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-    unsigned short readoutMode;
-    unsigned short lineLength;
-} DumpLinesParams;
+	unsigned short /* CCD_REQUEST */ ccd;
+	unsigned short readoutMode;
+	unsigned short pixelStart;
+	unsigned short pixelLength;
+	} ReadoutLineParams;
 
 typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-} EndReadoutParams;
+	unsigned short /* CCD_REQUEST */ ccd;
+	unsigned short readoutMode;
+	unsigned short lineLength;
+	} DumpLinesParams;
 
 typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-    unsigned short readoutMode;
-    unsigned short top;
-    unsigned short left;
-    unsigned short height;
-    unsigned short width;
+	unsigned short /* CCD_REQUEST */ ccd;
+	} EndReadoutParams;
+
+typedef struct {
+	unsigned short /* CCD_REQUEST */ ccd;
+	unsigned short readoutMode;
+	unsigned short top;
+	unsigned short left;
+	unsigned short height;
+	unsigned short width;
 } StartReadoutParams;
 
 typedef struct {
-    unsigned short /* TEMPERATURE_REGULATION */ regulation;
-    unsigned short ccdSetpoint;
-} SetTemperatureRegulationParams;
+	unsigned short /* TEMPERATURE_REGULATION */ regulation;
+	unsigned short ccdSetpoint;
+	} SetTemperatureRegulationParams;
 
 typedef struct {
-    MY_LOGICAL enabled;
-    unsigned short ccdSetpoint;
-    unsigned short power;
-    unsigned short ccdThermistor;
-    unsigned short ambientThermistor;
-} QueryTemperatureStatusResults;
+	MY_LOGICAL enabled;
+	unsigned short ccdSetpoint;
+	unsigned short power;
+	unsigned short ccdThermistor;
+	unsigned short ambientThermistor;
+	} QueryTemperatureStatusResults;
 
 typedef struct {
-    unsigned short tXPlus;
-    unsigned short tXMinus;
-    unsigned short tYPlus;
-    unsigned short tYMinus;
-} ActivateRelayParams;
+	unsigned short tXPlus;
+	unsigned short tXMinus;
+	unsigned short tYPlus;
+	unsigned short tYMinus;
+	} ActivateRelayParams;
 
 typedef struct {
-    unsigned short numberPulses;
-    unsigned short pulseWidth;
-    unsigned short pulsePeriod;
-} PulseOutParams;
+	unsigned short numberPulses;
+	unsigned short pulseWidth;
+	unsigned short pulsePeriod;
+	} PulseOutParams;
 
 typedef struct {
-    unsigned short dataLength;
-    unsigned char data[256];
-} TXSerialBytesParams;
+	unsigned short dataLength;
+	unsigned char data[256];
+	} TXSerialBytesParams;
 
 typedef struct {
-    unsigned short bytesSent;
-} TXSerialBytesResults;
+	unsigned short bytesSent;
+	} TXSerialBytesResults;
 
 typedef struct {
-    MY_LOGICAL clearToCOM;
-} GetSerialStatusResults;
+	MY_LOGICAL clearToCOM;
+	} GetSerialStatusResults;
 
 typedef struct {
-    unsigned short sbigUseOnly;
-} EstablishLinkParams;
+	unsigned short sbigUseOnly;
+	} EstablishLinkParams;
 
 typedef struct {
-    unsigned short /* CAMERA_TYPE */ cameraType;
-} EstablishLinkResults;
+	unsigned short /* CAMERA_TYPE */ cameraType;
+	} EstablishLinkResults;
 
 typedef struct {
-    unsigned short /* DRIVER_REQUEST */ request;
-} GetDriverInfoParams;
-typedef struct {
-    unsigned short version;
-    char name[64];
-    unsigned short maxRequest;
-} GetDriverInfoResults0;
+	unsigned short /* DRIVER_REQUEST */ request;
+	} GetDriverInfoParams;
 
 typedef struct {
-    unsigned short /* CCD_INFO_REQUEST */ request;
-} GetCCDInfoParams;
+	unsigned short version;
+	char name[64];
+	unsigned short maxRequest;
+	} GetDriverInfoResults0;
+
 typedef struct {
-    unsigned short mode;
-    unsigned short width;
-    unsigned short height;
-    unsigned short gain;
-    unsigned long pixel_width;
-    unsigned long pixel_height;
-} READOUT_INFO;
+	unsigned short /* CCD_INFO_REQUEST */ request;
+	} GetCCDInfoParams;
+
 typedef struct {
-    unsigned short firmwareVersion;
-    unsigned short /* CAMERA_TYPE */ cameraType;
-    char name[64];
-    unsigned short readoutModes;
-    struct {
 	unsigned short mode;
 	unsigned short width;
 	unsigned short height;
 	unsigned short gain;
-	unsigned long pixelWidth;
-	unsigned long pixelHeight;
-    } readoutInfo[20];
-} GetCCDInfoResults0;
+	unsigned long pixel_width;
+	unsigned long pixel_height;
+	} READOUT_INFO;
+
 typedef struct {
-    unsigned short badColumns;
-    unsigned short columns[4];
-    unsigned short /* IMAGING_ABG */ imagingABG;
-    char serialNumber[10];
-} GetCCDInfoResults2;
+	unsigned short firmwareVersion;
+	unsigned short /* CAMERA_TYPE */ cameraType;
+	char name[64];
+	unsigned short readoutModes;
+	struct {
+		unsigned short mode;
+		unsigned short width;
+		unsigned short height;
+		unsigned short gain;
+		unsigned long pixelWidth;
+		unsigned long pixelHeight;
+		} readoutInfo[20];
+	} GetCCDInfoResults0;
+
 typedef struct {
-    unsigned short /* AD_SIZE */ adSize;
-    unsigned short /* FILTER_TYPE */ filterType;
-} GetCCDInfoResults3;
+	unsigned short badColumns;
+	unsigned short columns[4];
+	unsigned short /* IMAGING_ABG */ imagingABG;
+	char serialNumber[10];
+	} GetCCDInfoResults2;
+
 typedef struct {
-    unsigned short capabilitiesBits;
-    unsigned short dumpExtra;
+	unsigned short /* AD_SIZE */ adSize;
+	unsigned short /* FILTER_TYPE */ filterType;
+	} GetCCDInfoResults3;
+
+typedef struct {
+	unsigned short capabilitiesBits;
+	unsigned short dumpExtra;
 } GetCCDInfoResults4;
-typedef struct {
-    unsigned short command;
-} QueryCommandStatusParams;
-typedef struct {
-    unsigned short status;
-} QueryCommandStatusResults;
 
 typedef struct {
-    MY_LOGICAL fanEnable;
-    unsigned short /* SHUTTER_COMMAND */ shutterCommand;
-    unsigned short /* LED_STATE */ ledState;
-} MiscellaneousControlParams;
+	unsigned short command;
+	} QueryCommandStatusParams;
 
 typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-} ReadOffsetParams;
+	unsigned short status;
+	} QueryCommandStatusResults;
 
 typedef struct {
-    unsigned short offset;
-} ReadOffsetResults;
+	MY_LOGICAL fanEnable;
+	unsigned short /* SHUTTER_COMMAND */ shutterCommand;
+	unsigned short /* LED_STATE */ ledState;
+	} MiscellaneousControlParams;
 
 typedef struct {
-    unsigned short xDeflection;
-    unsigned short yDeflection;
-} AOTipTiltParams;
+	unsigned short /* CCD_REQUEST */ ccd;
+	} ReadOffsetParams;
 
 typedef struct {
-    unsigned short /* AO_FOCUS_COMMAND */ focusCommand;
-} AOSetFocusParams;
+	unsigned short offset;
+	} ReadOffsetResults;
 
 typedef struct {
-    unsigned long delay;
-} AODelayParams;
+	unsigned short xDeflection;
+	unsigned short yDeflection;
+	} AOTipTiltParams;
 
 typedef struct {
-    MY_LOGICAL turboDetected;
-} GetTurboStatusResults;
+	unsigned short /* AO_FOCUS_COMMAND */ focusCommand;
+	} AOSetFocusParams;
 
 typedef struct {
-    unsigned short deviceType;	/* SBIG_DEVICE_TYPE, specifies LPT, Ethernet, etc */
-    unsigned short lptBaseAddress;	/* DEV_LPTN: Windows 9x Only, Win NT uses deviceSelect */
-    unsigned long ipAddress;	/* DEV_ETH:  Ethernet address */
-} OpenDeviceParams;
+	unsigned long delay;
+    } AODelayParams;
 
 typedef struct {
-    unsigned short level;
-} SetIRQLParams;
+	MY_LOGICAL turboDetected;
+    } GetTurboStatusResults;
 
 typedef struct {
-    unsigned short level;
-} GetIRQLResults;
+	unsigned short	deviceType;		/* SBIG_DEVICE_TYPE, specifies LPT, Ethernet, etc */
+	unsigned short	lptBaseAddress;	/* DEV_LPTN: Windows 9x Only, Win NT uses deviceSelect */
+	unsigned long	ipAddress;		/* DEV_ETH:  Ethernet address */
+	} OpenDeviceParams;
 
 typedef struct {
-    MY_LOGICAL linkEstablished;
-    unsigned short baseAddress;
-    unsigned short /* CAMERA_TYPE */ cameraType;
+	unsigned short level;
+	} SetIRQLParams;
+
+typedef struct {
+	unsigned short level;
+	} GetIRQLResults;
+
+typedef struct {
+	MY_LOGICAL	linkEstablished;
+	unsigned short baseAddress;
+	unsigned short /* CAMERA_TYPE */ cameraType;
     unsigned long comTotal;
     unsigned long comFailed;
-} GetLinkStatusResults;
+    } GetLinkStatusResults;
 
 typedef struct {
-    unsigned long count;
-} GetUSTimerResults;
+	unsigned long count;
+	} GetUSTimerResults;
 
 typedef struct {
-    unsigned short port;
-    unsigned short length;
-    unsigned char *source;
-} SendBlockParams;
+	unsigned short port;
+	unsigned short length;
+	unsigned char *source;
+	} SendBlockParams;
 
 typedef struct {
-    unsigned short port;
-    unsigned short data;
-} SendByteParams;
+	unsigned short port;
+	unsigned short data;
+	} SendByteParams;
 
 typedef struct {
-    unsigned short /* CCD_REQUEST */ ccd;
-    unsigned short readoutMode;
-    unsigned short pixelStart;
-    unsigned short pixelLength;
-} ClockADParams;
+	unsigned short /* CCD_REQUEST */ ccd;
+	unsigned short readoutMode;
+	unsigned short pixelStart;
+	unsigned short pixelLength;
+    } ClockADParams;
 
 typedef struct {
-    unsigned short testClocks;
-    unsigned short testMotor;
+	unsigned short testClocks;
+	unsigned short testMotor;
     unsigned short test5800;
-} SystemTestParams;
+	unsigned short stlAlign;
+	unsigned short motorAlwaysOn;
+	} SystemTestParams;
 
 typedef struct {
     unsigned short outLength;
     unsigned char *outPtr;
     unsigned short inLength;
     unsigned char *inPtr;
-} SendSTVBlockParams;
+	} SendSTVBlockParams;
 
 typedef struct {
-    unsigned short errorNo;
-} GetErrorStringParams;
+	unsigned short errorNo;
+	} GetErrorStringParams;
 
 typedef struct {
-    char errorString[64];
-} GetErrorStringResults;
+	char errorString[64];
+	} GetErrorStringResults;
 
 typedef struct {
-    short handle;
-} SetDriverHandleParams;
+	short handle;
+	} SetDriverHandleParams;
 
 typedef struct {
-    short handle;
-} GetDriverHandleResults;
+	short handle;
+	} GetDriverHandleResults;
 
 typedef struct {
-    unsigned short /* DRIVER_CONTROL_PARAM */ controlParameter;
-    unsigned long controlValue;
-} SetDriverControlParams;
+	unsigned short /* DRIVER_CONTROL_PARAM */ controlParameter;
+	unsigned long controlValue;
+} SetDriverControlParams; 
 
 typedef struct {
-    unsigned short /* DRIVER_CONTROL_PARAM */ controlParameter;
-} GetDriverControlParams;
+	unsigned short /* DRIVER_CONTROL_PARAM */ controlParameter;
+} GetDriverControlParams; 
 
 typedef struct {
-    unsigned long controlValue;
+	unsigned long controlValue;
 } GetDriverControlResults;
 
 typedef struct {
-    unsigned short /* USB_AD_CONTROL_COMMAND */ command;
-    short data;
+	unsigned short /* USB_AD_CONTROL_COMMAND */ command;
+	short data;
 } USBADControlParams;
 
-
-/*
-
-	TCE Defines
-
-*/
-#if INCLUDE_TCE
-
-/*
-
-	Commands - These are the various commands the TCE supports.
-			   They are all prefaced with TCEC_ so commands with
-			   the same name will not conflict with the Universal
-			   CPU or ST-7/8 commands.
-
-*/
-typedef enum { TCEC_NO_COMMAND, TCEC_GET_ENCODERS, TCEC_SYNC_ENCODERS,
-    TCEC_RESET_ENCODERS, TCEC_GET_EXTENDED_ERROR, TCEC_GET_ACTIVITY_STATUS,
-    TCEC_MOVE, TCEC_ABORT, TCEC_GOTO, TCEC_COMMUTATE, TCEC_INITIALIZE,
-    TCEC_PARK, TCEC_ENABLE_COMMUTATION, TCEC_ACTIVATE_FOCUS,
-    TCEC_ENABLE_PEC, TCEC_TRAIN_PEC, TCEC_OUTPUT_DEW,
-    TCEC_TX_TO_EXP, TCEC_ENABLE_LIMIT, TCEC_SET_EXP_CONTROL,
-    TCEC_GET_EXP_STATUS, TCEC_GET_RESULT_BUF, TCEC_LIMIT_STATUS,
-    TCEC_WRITE_BLOCK, TCEC_READ_BLOCK, TCEC_GET_ROM_VERSION,
-    TCEC_SET_COM_BAUD, TCEC_SET_MOTION_CONTROL, TCEC_GET_MOTION_CONTROL,
-    TCEC_READ_THERMISTOR, TCEC_GET_MOTION_STATE, TCEC_SET_SIDEREAL_CLOCK,
-    TCEC_GET_SIDEREAL_CLOCK, TCEC_LOOPBACK_EXP_TEST, TCEC_GET_KEY,
-    TCEC_GET_KEYS, TCEC_GET_EEPROM_DATA, TCEC_GET_TCE_INFO,
-    TCEC_SET_EEPROM_DATA,
-
-    TCEC_OPEN_DRIVER = 0x50, TCEC_CLOSE_DRIVER, TCEC_GET_DRIVER_INFO,
-    TCEC_ESTABLISH_LINK, TCEC_HARDWARE_RESET,
-
-    /*
-
-       SBIG Use Only commands - These commands are for use by
-       SBIG for production testing of the TCE.
-
-     */
-    TCEC_READ_EE_BLOCK = 0x30, TCEC_WRITE_EE_BLOCK, TCEC_MICRO_OUT,
-    TCEC_READ_R0, TCEC_WRITE_R0, TCEC_READ_GA, TCEC_WRITE_GA,
-    TCEC_GET_EBS,
-
-    TCEC_SEND_BLOCK = 0x40,
-} TCE_COMMAND;
-
-/*
-
-	These enumerated constants are used with the various
-	TCE commands.
-
-*/
-/*
-	Move and Goto speeds - Use with the TCEC_MOVE and TCEC_GOTO commands
-*/
-typedef enum { MOVE_STOP, MOVE_BASE, MOVE_LEAVE, MOVE_0R5X, MOVE_1X,
-    MOVE_2X, MOVE_4X, MOVE_8X, MOVE_16X, MOVE_32X, MOVE_64X,
-    MOVE_128X, MOVE_256X, MOVE_SLEW
-} MOVE_SPEED;
-/*
-	Move Directions
-*/
-typedef enum { MOVE_FORWARD, MOVE_REVERSE } MOVE_DIRECTION;
-/*
-	Command Status Values - Returned by the TCEC_GET_ACTIVITY_STATUS cmd
-*/
-#define TCES_IDLE_STATUS	0	/* command is idle */
-#define TCES_IN_PROGRESS	1	/* command is in progress */
-#define TCES_DISABLED		0	/* feature is disabled */
-#define TCES_ENABLED		1	/* feature is enabled */
-#define TCES_EXTENDED_ERROR	99	/* this indicates an extended error occured
-					   and the TCEC_GET_EXTENDED_ERROR command
-					   should be called for further info */
-typedef enum { PS_UNPARKED, PS_PARKED, PS_UNPARKING, PS_PARKING,
-    PS_PARK_LOST, PS_INITIALIZING,
-} TCES_PARK_STATUS;
-typedef enum { MS_BASE_RATE, MS_OTHER_RATE, } TCES_MOVE_STATUS;
-/*
-	Extended Error Codes - Returned by the TCEC_GET_EXTENDED_ERROR cmd
-*/
-typedef enum { TCEEE_NO_ERROR, TCEEE_LIMIT_HIT, TCEEE_USER_ABORT,
-    TCEEE_RA_TIMEOUT, TCEEE_DEC_TIMEOUT, TCEEE_COM_MOTION_TIMEOUT,
-    TCEEE_RA_COM_ERROR, TCEE_DEC_COM_ERROR
-} TCE_EXTENDED_ERRORS;
-
-/*
-
-	Structs
-
-	These struct type defines are used with the various commands.
-	There are two types of structs, those ending with _DATA and
-	those ending with _RESPONSE.
-
-	The XX_DATA structs are used to feed data to the TCE for those
-	commands that require data.
-
-	The XX_RESPONSE structs are used to receive data back from the
-	TCE in response to some command.
-
-	Finally, the struct definitions start with TCE_ to avoid
-	conflicts with any similarly names structs used with the
-	Universal CPU and the center of the struct name echos
-	the command the struct is associated with.
-
-*/
 typedef struct {
-    long rawRA;
-    long rawDEC;
-    long siderealRA;
-    long siderealDEC;
-    unsigned short isSynced;
-} TCEGetEncodersResults;
+	MY_LOGICAL cameraFound;
+	unsigned short /* CAMERA_TYPE */ cameraType;
+	char name[64];
+	char serialNumber[10];
+} QUERY_USB_INFO;
 
 typedef struct {
-    long siderealRA;
-    long siderealDEC;
-} TCESyncEncodersParams;
+	unsigned short camerasFound;
+	QUERY_USB_INFO usbInfo[4];
+} QueryUSBResults;
 
 typedef struct {
-    unsigned short error;
-} TCEGetExtendedErrorResults;
+	unsigned short rightShift;
+} GetPentiumCycleCountParams;
 
 typedef struct {
-    unsigned short command;
-} TCEGetActivityStatusParams;
+	unsigned long countLow;
+	unsigned long countHigh;
+} GetPentiumCycleCountResults;
 
 typedef struct {
-    unsigned short command;
-    unsigned short status;
-} TCEGetActivityStatusResults;
+	unsigned char address;
+	unsigned char data;
+	MY_LOGICAL write;
+	unsigned char deviceAddress;
+	} RWUSBI2CParams;
 
 typedef struct {
-    unsigned short raRate;
-    unsigned short decRate;
-    unsigned short raDirection;
-    unsigned short decDirection;
-} TCEMoveParams;
+	unsigned char data;
+	} RWUSBI2CResults;
 
 typedef struct {
-    long deltaRA;
-    long deltaDEC;
-    unsigned short rate;
-} TCEGotoParams;
+	unsigned short /* CFW_MODEL_SELECT */ cfwModel;
+	unsigned short /* CFW_COMMAND */ cfwCommand;
+	unsigned long cfwParam1;
+	unsigned long cfwParam2;
+    unsigned short outLength;
+    unsigned char *outPtr;
+    unsigned short inLength;
+    unsigned char *inPtr;
+} CFWParams;
 
 typedef struct {
-    unsigned short raRatio;
-    unsigned short decRatio;
-    unsigned short raDirection;
-    unsigned short decDirection;
-} TCEInitializeParams;
+	unsigned short /* CFW_MODEL_SELECT */ cfwModel;
+	unsigned short /* CFW_POSITION */ cfwPosition;
+	unsigned short /* CFW_STATUS */ cfwStatus;
+	unsigned short /* CFW_ERROR */ cfwError;
+	unsigned long cfwResult1;
+	unsigned long cfwResult2;
+} CFWResults;
 
 typedef struct {
-    unsigned short enable;
-} TCEEnableCommutationParams;
+	unsigned short /* BITIO_OPERATION */ bitOperation;
+	unsigned short /* BITIO_NAME */ bitName;
+	MY_LOGICAL setBit;
+} BitIOParams;
 
 typedef struct {
-    unsigned short tPlus;
-    unsigned short tMinus;
-} TCEActivateFocusParams;
+	MY_LOGICAL bitIsSet;
+} BitIOResults;
 
 typedef struct {
-    unsigned short enable;
-} TCEEnablePECParams;
+	MY_LOGICAL	writeData;
+	unsigned char data[32];
+} UserEEPROMParams, UserEEPROMResults;
 
 typedef struct {
-    unsigned short power;
-} TCEOutputDewParams;
+	unsigned char rowPeriod;
+} BTDISetupParams;
 
 typedef struct {
-    unsigned char *dataPtr;
-    unsigned short dataLen;
-} TCETxToEXPParams;
+	unsigned char btdiErrors;
+} BTDISetupResults;
 
 typedef struct {
-    unsigned short enable;
-} TCEEnableLimitParams;
+	unsigned short /* MF_MODEL_SELECT */ mfModel;
+	unsigned short /* MF_COMMAND */ mfCommand;
+	long mfParam1;
+	long mfParam2;
+    unsigned short outLength;
+    unsigned char *outPtr;
+    unsigned short inLength;
+    unsigned char *inPtr;
+} MFParams;
 
 typedef struct {
-    unsigned long baud;
-    unsigned short control;
-} TCESetEXPControlParams;
+	unsigned short /* MF_MODEL_SELECT */ mfModel;
+	long mfPosition;
+	unsigned short /* MF_STATUS */ mfStatus;
+	unsigned short /* MF_ERROR */ mfError;
+	long mfResult1;
+	long mfResult2;
+} MFResults;
 
-typedef struct {
-    unsigned short errs;
-} TCEGetEXPStatusResults;
-
-typedef struct {
-    unsigned short command;
-} TCEGetResultBufParams;
-
-typedef struct {
-    unsigned short detected;
-    unsigned short inLimit;
-    long rawLimitRA;
-    long rawLimitDEC;
-    long siderealLimitRA;
-    long siderealLimitDEC;
-    long limitTime;
-} TCELimitStatusResults;
-
-typedef struct {
-    unsigned short offset;
-    unsigned short segment;
-    unsigned char *dataPtr;
-    unsigned short dataLen;
-} TCEWriteBlockParams;
-
-typedef struct {
-    unsigned short offset;
-    unsigned short segment;
-    unsigned short length;
-} TCEReadBlockParams;
-
-typedef struct {
-    unsigned short version;
-} TCEGetROMVersionResults;
-
-typedef struct {
-    unsigned long baud;
-} TCESetCOMBaudParams;
-
-typedef struct {
-    unsigned short permanent;
-    unsigned short enableCOMTimeout;
-    long raBase;
-    long decBase;
-    long acceleration;
-    long maxRate;
-} TCESetMotionControlParams;
-
-typedef struct {
-    unsigned short comTimeoutEnabled;
-    long raBase;
-    long decBase;
-    long acceleration;
-    long maxRate;
-    unsigned short raRatio;
-    unsigned short decRatio;
-    unsigned short raDirection;
-    unsigned short decDirection;
-} TCEGetMotionControlResults;
-
-typedef struct {
-    unsigned short thermistor;
-} TCEReadThermistorResults;
-
-typedef struct {
-    unsigned short park;
-} TCEParkParams;
-
-typedef struct {
-    long raRate;
-    long decRate;
-    short deltaRA;
-    short deltaDEC;
-} TCEGetMotionStateResults;
-
-typedef struct {
-    long time;
-} TCEGetSiderealClockResults;
-
-typedef struct {
-    long time;
-} TCESetSiderealClockParams;
-
-typedef struct {
-    long baud;
-} TCELoopbackEXPTestParams;
-
-typedef struct {
-    short command;
-    short sent;
-    short errors;
-} TCELoopbackEXPTestResults;
-
-typedef struct {
-    unsigned short keyStatus;
-    unsigned short keyHit;
-} TCEGetKeyResults;
-
-typedef struct {
-    unsigned short number;
-    unsigned short keyStatus;
-    unsigned short keysHit[16];
-} TCEGetKeysResults;
-
-typedef struct {
-    char serialNumber[10];
-    unsigned char data[24];
-} TCEGetEEPROMDataResults;
-
-typedef struct {
-    unsigned short version;
-    unsigned short cpu;
-    unsigned short firmwareVersion;
-    unsigned short raROM;
-    unsigned short decROM;
-    unsigned short handPaddleROM;
-    char name[32];
-} TCEGetTCEInfoResults;
-
-typedef struct {
-    unsigned char data[24];
-} TCESetEEPROMDataParams;
-
-/*
-
-	SBIG Use Only Structs
-
-	These are for use by SBIG in production testing of the TCE.
-
-*/
-typedef struct {
-    unsigned short address;
-    unsigned char *dataPtr;
-    unsigned short dataLen;
-} TCEWriteEEBlockParams;
-
-typedef struct {
-    unsigned short address;
-    unsigned short length;
-} TCEReadEEBlockParams;
-
-typedef struct {
-    unsigned short value;
-} TCEWriteR0Params;
-
-typedef struct {
-    unsigned short value;
-} TCEReadR0Results;
-
-typedef struct {
-    short command;
-    unsigned short raEB;
-    unsigned short decEB;
-} TCEGetEBSResults;
-
-typedef struct {
-    unsigned char motor;
-    unsigned char data[5];
-} TCEMicroOutParams;
-
-typedef struct {
-    unsigned short command;
-    unsigned char result;
-    unsigned char data[5];
-} TCEMicroOutResults;
-
-typedef struct {
-    unsigned short value;
-} TCEWriteGAParams;
-
-typedef struct {
-    unsigned short value;
-} TCEReadGAResults;
-#endif
+#pragma pack(pop)	/* Restore previous struct align */
 
 /*
 
@@ -912,10 +713,8 @@ typedef struct {
 
 	This are the driver interface functions.
 
-    SBIGUnivDrvCommand() - Supports ST-7/8/9/10, ST-5C/237, PixCel255/237
-    					   ST-1K and AO-7
-    TCEDrvCommand() - Supports the TCE-1
-    STVDrvCommand() - Supports the STV
+    SBIGUnivDrvCommand() - Supports Parallel, USB and Ethernet
+				           based cameras.
 
 	Each function takes a command parameter and pointers
 	to parameters and results structs.
@@ -925,50 +724,19 @@ typedef struct {
 	read them and fill them in respectively.
 
 */
-#if TARGET == ENV_DOS
-#ifdef __cplusplus
-extern "C" short SBIGUnivDrvCommand(short command, void *Params,
-				    void *Results);
-#if INCLUDE_TCE
-extern "C" short TCEDrvCommand(short command, void *Params, void *Results);
-#endif
-#if INCLUDE_STV
-extern "C" short STVDrvCommand(short command, void *Params, void *Results);
-#endif
+#if TARGET == ENV_WIN
+  #ifdef __cplusplus
+  	extern "C" short __stdcall SBIGUnivDrvCommand(short command, void *Params, void *Results);
+  #else
+	extern short __stdcall SBIGUnivDrvCommand(short command, void *Params, void *Results);
+  #endif
 #else
-extern short SBIGUnivDrvCommand(short command, void *Params,
-				void *Results);
-#if INCLUDE_TCE
-extern short TCEDrvCommand(short command, void *Params, void *Results);
-#endif
-#if INCLUDE_STV
-extern short STVDrvCommand(short command, void *Params, void *Results);
-#endif
-#endif
-#elif TARGET == ENV_WIN
-#ifdef __cplusplus
-extern "C" short __stdcall SBIGUnivDrvCommand(short command, void *Params,
-					      void *Results);
-#if INCLUDE_TCE
-extern "C" short __stdcall TCEDrvCommand(short command, void *Params,
-					 void *Results);
-#endif
-#if INCLUDE_STV
-extern "C" short __stdcall STVDrvCommand(short command, void *Params,
-					 void *Results);
-#endif
-#else
-extern short __stdcall SBIGUnivDrvCommand(short command, void *Params,
-					  void *Results);
-#if INCLUDE_TCE
-extern short __stdcall TCEDrvCommand(short command, void *Params,
-				     void *Results);
-#endif
-#if INCLUDE_STV
-extern short __stdcall STVDrvCommand(short command, void *Params,
-				     void *Results);
-#endif
-#endif
+  #ifdef __cplusplus
+  	extern "C" short SBIGUnivDrvCommand(short command, void *Params, void *Results);
+  #else
+    extern short SBIGUnivDrvCommand(short command, void *Params, void *Results);
+  #endif
 #endif
 
-#endif
+#endif /* ifndef _PARDRV_ */
+
