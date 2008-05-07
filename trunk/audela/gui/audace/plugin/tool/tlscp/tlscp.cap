@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.2 2008-05-01 12:49:22 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.3 2008-05-07 18:05:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -354,7 +354,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(tlscp,configuration)      "Configuração"
 
-   set caption(tlscp,center)             "# Centrage d'une étoile"
+   set caption(tlscp,center)             "Centragem de uma estrela"
    set caption(tlscp,AD)                 "Ascenção Recta"
    set caption(tlscp,vitesse)            "Velocidade (ms/pixel)"
    set caption(tlscp,seuil)              "Limiar (pixels)"
@@ -362,13 +362,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,deltaReverse)       "Inverter sentido"
    set caption(tlscp,declinaison)        "Declinação"
    set caption(tlscp,angle)              "Ângulo (°)"
-   set caption(tlscp,continu)            "# Continu"
-   set caption(tlscp,mountEnabled)       "# Monture active"
+   set caption(tlscp,continu)            "Contínuo"
+   set caption(tlscp,mountEnabled)       "Montagem activa"
    set caption(tlscp,stopccd)            "Stop CCD"
-   set caption(tlscp,defaultSpeed)       "# Vitesse de centrage"
+   set caption(tlscp,defaultSpeed)       "Velocidade de centragem"
    set caption(tlscp,searchTitle)        "Pesquisa de estrela"
    set caption(tlscp,searchBoxSize)      "Tamanho da zona"
-   set caption(tlscp,showSearchBox)      "# Afficher la zone"
+   set caption(tlscp,showSearchBox)      "Mostrar a zona"
    set caption(tlscp,searchThreshin)     "Luminosidade min. (1)"
    set caption(tlscp,searchFwmh)         "Fwhm min."
    set caption(tlscp,searchRadius)       "Raio de pesquisa (pixel)"

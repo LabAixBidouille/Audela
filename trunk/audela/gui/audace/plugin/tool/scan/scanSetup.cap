@@ -1,6 +1,6 @@
 #
 # Fichier : scanSetup.cap
-# Mise a jour $Id: scanSetup.cap,v 1.1 2007-04-10 19:30:52 robertdelmas Exp $
+# Mise a jour $Id: scanSetup.cap,v 1.2 2008-05-07 18:04:10 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -12,6 +12,7 @@ global caption langage
 # *************** Version anglaise ****************************
 
 set caption(scanSetup,configuration)             "Setup"
+set caption(scanSetup,en-tete_fits)              "FITS Keywords"
 set caption(scanSetup,titre)                     "Duration between motor cut-off and start of exposure:"
 set caption(scanSetup,sans_scan)                 "Delay Off"
 set caption(scanSetup,avec_scan)                 "Delay On"
@@ -27,6 +28,7 @@ set caption(scanSetup,aide)                      "Help"
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Configuration"
+   set caption(scanSetup,en-tete_fits)           "Mots clés FITS"
    set caption(scanSetup,titre)                  "Temporisation entre l'arrêt du moteur d'A.D. et le début de la pose :"
    set caption(scanSetup,sans_scan)              "Aucune temporisation"
    set caption(scanSetup,avec_scan)              "Active la temporisation"
@@ -42,6 +44,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Configurazione"
+   set caption(scanSetup,en-tete_fits)           "Parole chiave FITS"
    set caption(scanSetup,titre)                  "Ritardo tra l'arresto del motore di A.R. e l'inizio della posa:"
    set caption(scanSetup,sans_scan)              "Ritardo nullo"
    set caption(scanSetup,avec_scan)              "Attivazione ritardo"
@@ -57,6 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Configuración"
+   set caption(scanSetup,en-tete_fits)           "# Mots clés FITS"
    set caption(scanSetup,titre)                  "Retardo entre la parada del motor de AR y el principio de la exposición:"
    set caption(scanSetup,sans_scan)              "Retardo desactivado"
    set caption(scanSetup,avec_scan)              "Retardo activado"
@@ -72,6 +76,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Konfiguration"
+   set caption(scanSetup,en-tete_fits)           "FITS Stichwörter"
    set caption(scanSetup,titre)                  "Zwischen den RA Motor halten und den Anfang des Bildleuchtung abwarten:"
    set caption(scanSetup,sans_scan)              "Kein Abwarten"
    set caption(scanSetup,avec_scan)              "Mit Abwarten"
@@ -87,6 +92,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Configuração"
+   set caption(scanSetup,en-tete_fits)           "Palavras-chave FITS"
    set caption(scanSetup,titre)                  "Intervalo entre a paragem do motor de AR e o início da exposição:"
    set caption(scanSetup,sans_scan)              "Atraso desactivado"
    set caption(scanSetup,avec_scan)              "Atraso activado"
@@ -102,6 +108,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Setup"
+   set caption(scanSetup,en-tete_fits)           "FITS nøgleord"
    set caption(scanSetup,titre)                  "Varighed mellem RA-motor standsning og start på eksponering:"
    set caption(scanSetup,sans_scan)              "Ingen forsinkelse"
    set caption(scanSetup,avec_scan)              "Med forsinkelse"

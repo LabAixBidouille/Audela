@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.1 2008-04-18 21:48:18 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.2 2008-05-07 18:02:38 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -54,7 +54,7 @@ set caption(keyword,description,INSTRUME)              "Equipment"
 set caption(keyword,description,OBJNAME)               "Object Name"
 set caption(keyword,description,RA)                    "Right Ascension"
 set caption(keyword,description,DEC)                   "Declination"
-set caption(keyword,description,EQUINOX)               "Equinox Coordinates"
+set caption(keyword,description,EQUINOX)               "Coordinates Equinox"
 set caption(keyword,description,RADECSYS)              "Coordinates System"
 set caption(keyword,description,IMAGETYP)              "Image Type"
 set caption(keyword,description,SWCREATE)              "Acquisition Software"
@@ -118,7 +118,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    #--- Fenetre de configuration
-   set caption(keyword,titre)                          "# Mots clés FITS"
+   set caption(keyword,titre)                          "Parole chiave FITS"
    set caption(keyword,camera)                         "Camera"
    set caption(keyword,parcourir)                      "..."
    set caption(keyword,rafraichir)                     "Rinfresca"
@@ -128,7 +128,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,fermer)                         "Chiudi"
 
    #--- Titres des colonnes
-   set caption(keyword,colonne,categorie)              "# Catégorie"
+   set caption(keyword,colonne,categorie)              "Categorie"
    set caption(keyword,colonne,description)            "Descrizione"
    set caption(keyword,colonne,motclef)                "Keyword"
    set caption(keyword,colonne,valeur)                 "Valore"
@@ -152,19 +152,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,TELESCOP)           "Telescopio (nome, barlow, riduttore)"
    set caption(keyword,description,FOCLEN)             "Focale risultante (m)"
    set caption(keyword,description,APTDIA)             "Diametro (m)"
-   set caption(keyword,description,XPIXSZ)             "# Largeur du pixel (µm)"
-   set caption(keyword,description,YPIXSZ)             "# Hauteur du pixel (µm)"
-   set caption(keyword,description,SET_TEMP)           "# Consigne de température"
+   set caption(keyword,description,XPIXSZ)             "Larghezza dei pixel (µm)"
+   set caption(keyword,description,YPIXSZ)             "Altezza dei pixel (µm)"
+   set caption(keyword,description,SET_TEMP)           "Set Temperatura"
    set caption(keyword,description,CCD_TEMP)           "CCD Temperatura"
    set caption(keyword,description,INSTRUME)           "Equipaggiamento"
    set caption(keyword,description,OBJNAME)            "Nome oggetto"
    set caption(keyword,description,RA)                 "Ascensione Retta"
    set caption(keyword,description,DEC)                "Declinazione"
-   set caption(keyword,description,EQUINOX)            "# Equinoxe des coordonnées"
-   set caption(keyword,description,RADECSYS)           "# Système de coordonnées"
-   set caption(keyword,description,IMAGETYP)           "# Type d'image"
-   set caption(keyword,description,SWCREATE)           "# Logiciel d'acquisition"
-   set caption(keyword,description,SWMODIFY)           "# Logiciel de traitement"
+   set caption(keyword,description,EQUINOX)            "Epoca delle coordinate"
+   set caption(keyword,description,RADECSYS)           "Sistema di coordinate"
+   set caption(keyword,description,IMAGETYP)           "Tipo di immagine"
+   set caption(keyword,description,SWCREATE)           "Software di acquisizione"
+   set caption(keyword,description,SWMODIFY)           "Software del elaborazione"
    set caption(keyword,description,COMMENT)            "Commenti"
 
 # *************** Version espagnole ***************************
@@ -224,7 +224,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    #--- Fenetre de configuration
-   set caption(keyword,titre)                          "# Mots clés FITS"
+   set caption(keyword,titre)                          "FITS Stichwörter"
    set caption(keyword,camera)                         "Kamera"
    set caption(keyword,parcourir)                      "..."
    set caption(keyword,rafraichir)                     "Aktualisieren"
@@ -234,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,fermer)                         "Schließen"
 
    #--- Titres des colonnes
-   set caption(keyword,colonne,categorie)              "# Catégorie"
+   set caption(keyword,colonne,categorie)              "Kategorie"
    set caption(keyword,colonne,description)            "Beschreibung"
    set caption(keyword,colonne,motclef)                "Schlüsselbegriffen"
    set caption(keyword,colonne,valeur)                 "Wert"
@@ -258,26 +258,26 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,TELESCOP)           "Teleskop (Nahmen, Barlow, Verkleinerter)"
    set caption(keyword,description,FOCLEN)             "Folgende Brennweite (m)"
    set caption(keyword,description,APTDIA)             "Durchmesser (m)"
-   set caption(keyword,description,XPIXSZ)             "# Largeur du pixel (µm)"
-   set caption(keyword,description,YPIXSZ)             "# Hauteur du pixel (µm)"
-   set caption(keyword,description,SET_TEMP)           "# Consigne de température"
+   set caption(keyword,description,XPIXSZ)             "Pixel Breite (µm)"
+   set caption(keyword,description,YPIXSZ)             "Pixel Höhe (µm)"
+   set caption(keyword,description,SET_TEMP)           "Temperatur Einstellung"
    set caption(keyword,description,CCD_TEMP)           "Temperatur CCD"
    set caption(keyword,description,INSTRUME)           "Einrichtung"
    set caption(keyword,description,OBJNAME)            "Objekt Nahmen"
    set caption(keyword,description,RA)                 "Rektaszension"
    set caption(keyword,description,DEC)                "Deklination"
-   set caption(keyword,description,EQUINOX)            "# Equinoxe des coordonnées"
-   set caption(keyword,description,RADECSYS)           "# Système de coordonnées"
-   set caption(keyword,description,IMAGETYP)           "# Type d'image"
-   set caption(keyword,description,SWCREATE)           "# Logiciel d'acquisition"
-   set caption(keyword,description,SWMODIFY)           "# Logiciel de traitement"
+   set caption(keyword,description,EQUINOX)            "Equinox Koordinaten"
+   set caption(keyword,description,RADECSYS)           "Koordinaten System"
+   set caption(keyword,description,IMAGETYP)           "Bild Art"
+   set caption(keyword,description,SWCREATE)           "Software Belichtung"
+   set caption(keyword,description,SWMODIFY)           "Aufbereitung Software"
    set caption(keyword,description,COMMENT)            "Kommentar"
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    #--- Fenetre de configuration
-   set caption(keyword,titre)                          "# Mots clés FITS"
+   set caption(keyword,titre)                          "Palavras-chave FITS"
    set caption(keyword,camera)                         "Câmara"
    set caption(keyword,parcourir)                      "..."
    set caption(keyword,rafraichir)                     "Actualizar"
@@ -287,7 +287,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,fermer)                         "Fechar"
 
    #--- Titres des colonnes
-   set caption(keyword,colonne,categorie)              "# Catégorie"
+   set caption(keyword,colonne,categorie)              "Categoria"
    set caption(keyword,colonne,description)            "Descrição"
    set caption(keyword,colonne,motclef)                "Palavras-chave"
    set caption(keyword,colonne,valeur)                 "Valor"
@@ -311,19 +311,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,TELESCOP)           "Telescópio (nome, barlow, redutor)"
    set caption(keyword,description,FOCLEN)             "Focal resultante (m)"
    set caption(keyword,description,APTDIA)             "Diâmetro (m)"
-   set caption(keyword,description,XPIXSZ)             "# Largeur du pixel (µm)"
-   set caption(keyword,description,YPIXSZ)             "# Hauteur du pixel (µm)"
-   set caption(keyword,description,SET_TEMP)           "# Consigne de température"
+   set caption(keyword,description,XPIXSZ)             "Largura do pixel (µm)"
+   set caption(keyword,description,YPIXSZ)             "Altura do pixel (µm)"
+   set caption(keyword,description,SET_TEMP)           "Definir temperatura"
    set caption(keyword,description,CCD_TEMP)           "Temperatura do CCD"
    set caption(keyword,description,INSTRUME)           "Equipamento"
    set caption(keyword,description,OBJNAME)            "Nome do objecto"
    set caption(keyword,description,RA)                 "Ascenção Recta"
    set caption(keyword,description,DEC)                "Declinação"
-   set caption(keyword,description,EQUINOX)            "# Equinoxe des coordonnées"
-   set caption(keyword,description,RADECSYS)           "# Système de coordonnées"
-   set caption(keyword,description,IMAGETYP)           "# Type d'image"
-   set caption(keyword,description,SWCREATE)           "# Logiciel d'acquisition"
-   set caption(keyword,description,SWMODIFY)           "# Logiciel de traitement"
+   set caption(keyword,description,EQUINOX)            "Equinócio de coordenadas"
+   set caption(keyword,description,RADECSYS)           "Sistema de coordenadas"
+   set caption(keyword,description,IMAGETYP)           "Tipo de imagem"
+   set caption(keyword,description,SWCREATE)           "Software de aquisição"
+   set caption(keyword,description,SWMODIFY)           "Software de processamento"
    set caption(keyword,description,COMMENT)            "Comentário"
 
 # *************** Version danoise *****************************
@@ -372,7 +372,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,OBJNAME)            "Object Name"
    set caption(keyword,description,RA)                 "Right Ascension"
    set caption(keyword,description,DEC)                "Declination"
-   set caption(keyword,description,EQUINOX)            "Equinox Coordinates"
+   set caption(keyword,description,EQUINOX)            "Coordinates Equinox"
    set caption(keyword,description,RADECSYS)           "Coordinates System"
    set caption(keyword,description,IMAGETYP)           "Image Type"
    set caption(keyword,description,SWCREATE)           "Acquisition Software"
