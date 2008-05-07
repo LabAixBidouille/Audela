@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.77 2008-05-06 09:47:29 michelpujol Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.78 2008-05-07 21:49:20 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -585,10 +585,11 @@ namespace eval ::confVisu {
    #  parametres :
    #    visuNo  : numero de la visu
    #    camItem : instance de la camera, ou "" s'il n'y a pas de camera
+   #    model   : modele de la camera (optionnel)
    #  exemple :
    #    setCamera 2 A
    #------------------------------------------------------------
-   proc setCamera { visuNo camItem  } {
+   proc setCamera { visuNo camItem { model "" } } {
       variable private
       global caption
 
@@ -597,7 +598,7 @@ namespace eval ::confVisu {
             set description "$caption(confVisu,2points) $caption(confVisu,non_connecte)"
          } else {
             set camName [::confCam::getPluginProperty $camItem "name"]
-            set description "$camItem $caption(confVisu,2points) $camName"
+            set description "$camItem $caption(confVisu,2points) $camName $model"
          }
       }
       #--- J'affiche le nom de la camera
@@ -803,8 +804,7 @@ namespace eval ::confVisu {
 
       #--- j'elimine les erreur d'arrondi quand zoom <1
       if { $left < 0 } { set left 0 }
-      if { $top < 0 }  { set top 0 }
-
+      if { $top < 0 }  { set top  0 }
 
       $private($visuNo,hCanvas) configure -scrollregion [list $left $top $right $bottom]
    }
