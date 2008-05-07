@@ -1,17 +1,17 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.47 2008-04-22 18:01:53 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.48 2008-05-07 18:14:41 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
 }
 
-#
-# ::confTel::init (est lance automatiquement au chargement de ce fichier tcl)
-# Initialise les variables conf(...) et caption(...)
-# Demarre le plugin selectionne par defaut
-#
+#------------------------------------------------------------
+# init (est lance automatiquement au chargement de ce fichier tcl)
+#    Initialise les variables conf(...) et caption(...)
+#    Demarre le plugin selectionne par defaut
+#------------------------------------------------------------
 proc ::confTel::init { } {
    variable private
    global audace conf
@@ -54,10 +54,10 @@ proc ::confTel::init { } {
    }
 }
 
-#
-# ::confTel::run
-# Cree la fenetre de choix et de configuration des montures
-#
+#------------------------------------------------------------
+# run
+#    Cree la fenetre de choix et de configuration des montures
+#------------------------------------------------------------
 proc ::confTel::run { } {
    variable private
    global conf
@@ -67,11 +67,11 @@ proc ::confTel::run { } {
    selectNotebook $conf(telescope)
 }
 
-#
-# ::confTel::ok
-# Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
-# la configuration, et fermer la fenetre de configuration
-#
+#------------------------------------------------------------
+# ok
+#    Fonction appellee lors de l'appui sur le bouton 'OK' pour appliquer
+#    la configuration, et fermer la fenetre de configuration
+#------------------------------------------------------------
 proc ::confTel::ok { } {
    variable private
 
@@ -82,11 +82,11 @@ proc ::confTel::ok { } {
    fermer
 }
 
-#
-# ::confTel::appliquer
-# Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
-# memoriser et appliquer la configuration
-#
+#------------------------------------------------------------
+# appliquer
+#    Fonction appellee lors de l'appui sur le bouton 'Appliquer' pour
+#    memoriser et appliquer la configuration
+#------------------------------------------------------------
 proc ::confTel::appliquer { } {
    variable private
    global audace caption conf
@@ -107,10 +107,10 @@ proc ::confTel::appliquer { } {
    $private(frm).cmd.fermer configure -state normal
 }
 
-#
-# ::confTel::afficherAide
-# Fonction appellee lors de l'appui sur le bouton 'Aide'
-#
+#------------------------------------------------------------
+# afficherAide
+#    Fonction appellee lors de l'appui sur le bouton 'Aide'
+#------------------------------------------------------------
 proc ::confTel::afficherAide { } {
    variable private
 
@@ -121,10 +121,10 @@ proc ::confTel::afficherAide { } {
    ::audace::showHelpPlugin "$pluginTypeDirectory" "$selectedPluginName" "$pluginHelp"
 }
 
-#
-# ::confTel::fermer
-# Fonction appellee lors de l'appui sur le bouton 'Fermer'
-#
+#------------------------------------------------------------
+# fermer
+#    Fonction appellee lors de l'appui sur le bouton 'Fermer'
+#------------------------------------------------------------
 proc ::confTel::fermer { } {
    variable private
 
@@ -132,10 +132,10 @@ proc ::confTel::fermer { } {
    destroy $private(frm)
 }
 
-#
-# ::confTel::recupPosDim
-# Permet de recuperer et de sauvegarder la position de la fenetre de configuration
-#
+#------------------------------------------------------------
+# recupPosDim
+#    Permet de recuperer et de sauvegarder la position de la fenetre de configuration
+#------------------------------------------------------------
 proc ::confTel::recupPosDim { } {
    variable private
    global conf
@@ -144,10 +144,10 @@ proc ::confTel::recupPosDim { } {
    set conf(telescope,geometry) $private(geometry)
 }
 
-#
-# ::confTel::createDialog
-# Creation de la boite avec les onglets
-#
+#------------------------------------------------------------
+# createDialog
+#    Creation de la boite avec les onglets
+#------------------------------------------------------------
 proc ::confTel::createDialog { } {
    variable private
    global caption conf
@@ -220,10 +220,10 @@ proc ::confTel::createDialog { } {
    ::confColor::applyColor $private(frm)
 }
 
-#
-# ::confTel::createUrlLabel
-# Cree un widget "label" avec une URL du site WEB
-#
+#------------------------------------------------------------
+# createUrlLabel
+#    Cree un widget "label" avec une URL du site WEB
+#------------------------------------------------------------
 proc ::confTel::createUrlLabel { tkparent title url } {
    global audace color
 
@@ -236,10 +236,10 @@ proc ::confTel::createUrlLabel { tkparent title url } {
    return $tkparent.labURL
 }
 
-#
-# ::confTel::createPdfLabel
-# Cree un widget "label" pour un document pdf
-#
+#------------------------------------------------------------
+# createPdfLabel
+#    Cree un widget "label" pour un document pdf
+#------------------------------------------------------------
 proc ::confTel::createPdfLabel { tkparent title pdf } {
    global audace color
 
@@ -253,10 +253,10 @@ proc ::confTel::createPdfLabel { tkparent title pdf } {
    return  $tkparent.labURL
 }
 
-#
-# ::confTel::connectMonture
-# Affichage d'un message d'alerte pendant la connexion de la monture au demarrage
-#
+#------------------------------------------------------------
+# connectMonture
+#    Affichage d'un message d'alerte pendant la connexion de la monture au demarrage
+#------------------------------------------------------------
 proc ::confTel::connectMonture { } {
    variable private
    global audace caption color
@@ -295,10 +295,10 @@ proc ::confTel::connectMonture { } {
    ::confColor::applyColor $audace(base).connectMonture
 }
 
-#
-# ::confTel::selectNotebook
-# Selectionne un onglet
-#
+#------------------------------------------------------------
+# selectNotebook
+#    Selectionne un onglet
+#------------------------------------------------------------
 proc ::confTel::selectNotebook { mountName } {
    variable private
    global conf
@@ -316,10 +316,10 @@ proc ::confTel::selectNotebook { mountName } {
    }
 }
 
-#
-# ::confTel::onRaiseNotebook
-# Affiche en gras le nom de l'onglet
-#
+#------------------------------------------------------------
+# onRaiseNotebook
+#    Affiche en gras le nom de l'onglet
+#------------------------------------------------------------
 proc ::confTel::onRaiseNotebook { mountName } {
    variable private
 
@@ -329,10 +329,10 @@ proc ::confTel::onRaiseNotebook { mountName } {
    after 200 $private(frm).usr.onglet.c itemconfigure "$mountName:text" -font [list $font]
 }
 
-#
-# ::confTel::startPlugin
-# Ouvre les montures
-#
+#------------------------------------------------------------
+# startPlugin
+#    Ouvre les montures
+#------------------------------------------------------------
 proc ::confTel::startPlugin { } {
    variable private
    global conf
@@ -345,10 +345,10 @@ proc ::confTel::startPlugin { } {
    }
 }
 
-#
-# ::confTel::stopPlugin
-# Ferme la monture ouverte
-#
+#------------------------------------------------------------
+# stopPlugin
+#    Ferme la monture ouverte
+#------------------------------------------------------------
 proc ::confTel::stopPlugin { } {
    variable private
    global audace
@@ -368,15 +368,14 @@ proc ::confTel::stopPlugin { } {
       foreach camItem { A B C } {
          ::confCam::setMount $camItem $audace(telNo)
       }
-
    }
    set private(mountName) ""
 }
 
-#
-# ::confTel::configureMonture
-# Configure la monture en fonction des donnees contenues dans le tableau conf(..)
-#
+#------------------------------------------------------------
+# configureMonture
+#    Configure la monture en fonction des donnees contenues dans le tableau conf(..)
+#------------------------------------------------------------
 proc ::confTel::configureMonture { } {
    variable private
    global audace conf
@@ -439,10 +438,10 @@ proc ::confTel::configureMonture { } {
    }
 }
 
-#
-# ::confTel::widgetToConf
-# Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
-#
+#------------------------------------------------------------
+# widgetToConf
+#    Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+#------------------------------------------------------------
 proc ::confTel::widgetToConf { } {
    variable private
    global conf
@@ -455,13 +454,13 @@ proc ::confTel::widgetToConf { } {
    ::$private(mountName)::widgetToConf
 }
 
-#
-# ::confTel::getPluginProperty
+#------------------------------------------------------------
+# getPluginProperty
 #    Retourne la valeur d'une propriete de la monture
 #
-#  Parametres :
-#     propertyName : Propriete
-#
+# Parametres :
+#    propertyName : Propriete
+#------------------------------------------------------------
 proc ::confTel::getPluginProperty { propertyName } {
    variable private
 
@@ -502,10 +501,10 @@ proc ::confTel::getPluginProperty { propertyName } {
    return $result
 }
 
-#
-# ::confTel::isReady
+#------------------------------------------------------------
+# isReady
 #    Retourne "1" si la monture est demarree, sinon retourne "0"
-#
+#------------------------------------------------------------
 proc ::confTel::isReady { } {
    variable private
 
@@ -519,17 +518,17 @@ proc ::confTel::isReady { } {
 }
 
 #------------------------------------------------------------
-# ::confTel::findPlugin
-# recherche les plugins de type "mount"
+# findPlugin
+#    recherche les plugins de type "mount"
 #
 # conditions :
-#   - le plugin doit avoir une procedure getPluginType qui retourne "mount"
-#   - le plugin doit avoir une procedure getPluginTitle
-#   - etc.
+#    - le plugin doit avoir une procedure getPluginType qui retourne "mount"
+#    - le plugin doit avoir une procedure getPluginTitle
+#    - etc.
 #
-# si le plugin remplit les conditions :
-# son label est ajoute dans la liste pluginTitleList et son namespace est ajoute dans pluginNamespaceList
-# sinon le fichier tcl est ignore car ce n'est pas un plugin
+#    si le plugin remplit les conditions :
+#    son label est ajoute dans la liste pluginTitleList et son namespace est ajoute dans pluginNamespaceList
+#    sinon le fichier tcl est ignore car ce n'est pas un plugin
 #
 # return 0 = OK, 1 = error (no plugin found)
 #------------------------------------------------------------
@@ -570,7 +569,7 @@ proc ::confTel::findPlugin { } {
       }
    }
 
-   #--- je trie les plugins par ordre alphabétique des libelles
+   #--- je trie les plugins par ordre alphabetique des libelles
    set pluginList ""
    for { set i 0} {$i< [llength $private(pluginLabelList)] } {incr i } {
       lappend pluginList [list [lindex $private(pluginLabelList) $i] [lindex $private(pluginNamespaceList) $i] ]
