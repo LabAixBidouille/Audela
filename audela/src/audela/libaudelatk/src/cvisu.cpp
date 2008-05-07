@@ -396,8 +396,8 @@ int CVisu::GetWindow(int *xx1, int *yy1, int *xx2, int *yy2)
       if(buffer==NULL) {
          return ELIBSTD_BUF_EMPTY;
       }
-      naxis1 = buffer->GetW();
-      naxis2 = buffer->GetH();
+      naxis1 = buffer->GetWidth();
+      naxis2 = buffer->GetHeight();
 
       *xx1 = 1;
       *yy1 = 1;
@@ -623,8 +623,8 @@ int CVisu::UpdateDisplay()
       return ELIBSTD_NO_ASSOCIATED_BUFFER;
    }
 
-   orgw = buffer->GetW();
-   orgh = buffer->GetH();
+   orgw = buffer->GetWidth();
+   orgh = buffer->GetHeight();
 
    // calcul des bornes en fonction du fentrage
    if(full==1) {
@@ -640,7 +640,7 @@ int CVisu::UpdateDisplay()
    }
 
    // calcul de largeur et de la hauteur d'affichage
-   if( buffer->GetH()==1) {
+   if( buffer->GetHeight()==1) {
       // une image 1D est étalée sur plusieurs lignes
       orgww = xx2 - xx1 + 1; // Largeur 
       orgwh = thickness_1d;
@@ -670,7 +670,7 @@ int CVisu::UpdateDisplay()
       pal.pal, ptr);
 
    // s'il n'y a qu'une ligne , je duplique la ligne "thickness" fois a l'affichae
-   if( buffer->GetH()==1 ) {
+   if( buffer->GetHeight()==1 ) {
       unsigned char *ptr2;
       ptr2 = (unsigned char*)calloc(orgww*thickness_1d,3);
       if(ptr2==NULL) {

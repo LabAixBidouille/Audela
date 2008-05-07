@@ -621,8 +621,8 @@ void CBuffer::Save1d(char *filename,int iaxis2)
    datatype=TFLOAT;
    bitpix = saving_type;
 
-   naxis1  = pix->GetWidth();
-   naxis2  = pix->GetHeight();
+   naxis1  = GetWidth();
+   naxis2  = GetHeight();
    if (iaxis2<0) {
       iaxis2=0;
    }
@@ -714,8 +714,8 @@ void CBuffer::Save3d(char *filename,int naxis3,int iaxis3_beg,int iaxis3_end)
    datatype=TFLOAT;
    bitpix = saving_type;
 
-   naxis1  = pix->GetWidth();
-   naxis2  = pix->GetHeight();
+   naxis1  = GetWidth();
+   naxis2  = GetHeight();
    if (pix->getPixelClass()==CLASS_GRAY) {
       nnaxis2 = naxis2/(iaxis3_end-iaxis3_beg+1);
    } else {
@@ -790,8 +790,8 @@ void CBuffer::SaveJpg(char *filename,int quality,int sbsh, double sb,double sh)
 
    datatype=TFLOAT;
 
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
    pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
 
@@ -824,8 +824,8 @@ void CBuffer::SaveJpg(char *filename,int quality, float *cuts, unsigned char *pa
    int width, height, planes;
 
    // je recupere la taille
-   width = GetW();
-   height = GetH();
+   width = GetWidth();
+   height = GetHeight();
    planes = this->pix->GetPlanes();
 
    // je cree le buffer pour preparer l'image a 256 niveaux
@@ -921,7 +921,7 @@ int CBuffer::GetNaxis()
  * int CBuffer::GetW() --
  *  Renvoie la largeur de l'image.
  */
-int CBuffer::GetW()
+int CBuffer::GetWidth()
 {
    return pix->GetWidth();
 }
@@ -930,7 +930,7 @@ int CBuffer::GetW()
  * int CBuffer::GetH() --
  *  Renvoie la hauteur de l'image.
  */
-int CBuffer::GetH()
+int CBuffer::GetHeight()
 {
    return pix->GetHeight();
 }
@@ -1630,8 +1630,8 @@ void CBuffer::CopyTo(CBuffer*dest)
 
 
    if(dest==NULL) throw CError(ELIBSTD_DEST_BUF_NOT_FOUND);
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    plane  = pix->GetPlanes();
    ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * plane * sizeof(float));
 
@@ -1775,8 +1775,8 @@ void CBuffer::AstroSlitCentro(int x1, int y1, int x2, int y2, int slitWidth, dou
    double gauss[4], ecart;
    //double sumRatio;
 
-   naxis1 = this->pix->GetWidth();
-   naxis2 = this->pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    if (x1<0) {x1=0;}
    if (x2<0) {x2=0;}
    if (y1<0) {y1=0;}
@@ -2007,8 +2007,8 @@ void CBuffer::GetPix(int *plane, TYPE_PIXELS *val1,TYPE_PIXELS *val2,TYPE_PIXELS
  */
 void CBuffer::GetPixels(TYPE_PIXELS *pixels)
 {
-   int width = pix->GetWidth();
-   int height = pix->GetHeight();
+   int width = GetWidth();
+   int height = GetHeight();
    pthread_mutex_lock(&mutex);
    pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, PLANE_GREY, (int) pixels);
    pthread_mutex_unlock(&mutex);
@@ -2016,8 +2016,8 @@ void CBuffer::GetPixels(TYPE_PIXELS *pixels)
 
 void CBuffer::GetPixels(TYPE_PIXELS *pixels, TColorPlane colorPlane)
 {
-   int width = pix->GetWidth();
-   int height = pix->GetHeight();
+   int width = GetWidth();
+   int height = GetHeight();
    pix->GetPixels(0, 0, width -1, height -1, FORMAT_FLOAT, colorPlane, (int) pixels);
 }
 
@@ -2155,8 +2155,8 @@ void CBuffer::TtImaSeries(char *s)
 
    pthread_mutex_lock(&mutex);
    try {
-      naxis1 = pix->GetWidth();
-      naxis2 = pix->GetHeight();
+      naxis1 = GetWidth();
+      naxis2 = GetHeight();
       nb_keys = keywords->GetKeywordNb();
 
       // Allocation de l'espace memoire pour les tableaux de mots-cles
@@ -2169,8 +2169,8 @@ void CBuffer::TtImaSeries(char *s)
       switch ( this->pix->getPixelClass() ) {
       case CLASS_GRAY :
          // je recupere les pixels GREY
-         naxis1 = pix->GetWidth();
-         naxis2 = pix->GetHeight();
+         naxis1 = GetWidth();
+         naxis2 = GetHeight();
          naxis3 = 0;
          pixIn = (TYPE_PIXELS *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
          this->pix->GetPixels(0, 0, naxis1 -1, naxis2 -1, FORMAT_FLOAT, PLANE_GREY, (int) pixIn);
@@ -2232,8 +2232,8 @@ void CBuffer::TtImaSeries(char *s)
 
        case CLASS_RGB :
          // je repete le traitement pour chacun des 3 plans
-         naxis1 = pix->GetWidth();
-         naxis2 = pix->GetHeight();
+         naxis1 = GetWidth();
+         naxis2 = GetHeight();
          pixIn = (TYPE_PIXELS *)malloc(naxis1*naxis2 * sizeof(TYPE_PIXELS));
          datatypeIn = TFLOAT;
          datatypeOut = TFLOAT;
@@ -2242,14 +2242,14 @@ void CBuffer::TtImaSeries(char *s)
                   &nb_keys,&keynames,&values,&comments,&units,&datatypes);
          if(msg) throw CErrorLibtt(msg);
 
-         naxis1 = pix->GetWidth();  // je reinitialise naxis1, naxis2 au cas ou le traitement les aurait modifies
-         naxis2 = pix->GetHeight();
+         naxis1 = GetWidth();  // je reinitialise naxis1, naxis2 au cas ou le traitement les aurait modifies
+         naxis2 = GetHeight();
          this->pix->GetPixels(0, 0, naxis1 -1, naxis2 -1, FORMAT_FLOAT, PLANE_G, (int) pixIn);
          msg = Libtt_main(TT_PTR_IMASERIES,7,&pixIn,&datatypeIn,&naxis1,&naxis2,&pixOutG,&datatypeOut,s);
          if(msg) throw CErrorLibtt(msg);
 
-         naxis1 = pix->GetWidth(); // je reinitialise naxis1, naxis2 au cas ou le traitement les aurait modifies
-         naxis2 = pix->GetHeight();
+         naxis1 = GetWidth(); // je reinitialise naxis1, naxis2 au cas ou le traitement les aurait modifies
+         naxis2 = GetHeight();
          this->pix->GetPixels(0, 0, naxis1 -1, naxis2 -1, FORMAT_FLOAT, PLANE_B, (int) pixIn);
          msg = Libtt_main(TT_PTR_IMASERIES,7,&pixIn,&datatypeIn,&naxis1,&naxis2,&pixOutB,&datatypeOut,s);
          if(msg) throw CErrorLibtt(msg);
@@ -2337,8 +2337,8 @@ void CBuffer::Stat( int x1,int y1,int x2,int y2,
    int i,naxis11,naxis22;
    TYPE_PIXELS *ppix= NULL;
 
-   naxis1=GetW();
-   naxis2=GetH();
+   naxis1=GetWidth();
+   naxis2=GetHeight();
 
    datatype = TFLOAT;
    if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
@@ -2403,15 +2403,12 @@ void CBuffer::Scar( int x1,int y1,int x2,int y2)
    TYPE_PIXELS *ppix= NULL;
    int xx1,xx2,yy1,yy2;
 
-   naxis1=GetW();
-   naxis2=GetH();
-
    // seulement pour les images non couleur
    if( pix->getPixelClass() != CLASS_GRAY) {
       throw CError(ELIBSTD_NOT_IMPLEMENTED);
    }
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
    pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
 
@@ -2472,15 +2469,12 @@ void CBuffer::SyntheGauss(double xc, double yc, double imax, double jmax, double
    double sigx,sigy,rx,ry,r,intmax;
    TYPE_PIXELS *ppix= NULL;
 
-   naxis1=GetW();
-   naxis2=GetH();
-
    // seulement pour les images non couleur
    if( pix->getPixelClass() != CLASS_GRAY) {
       throw CError(ELIBSTD_NOT_IMPLEMENTED);
    }
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
    pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
 
@@ -2666,8 +2660,8 @@ void CBuffer::MedX(int x1, int x2, int width)
    TYPE_PIXELS value;
    TYPE_PIXELS *out;
 
-   w=GetW();
-   h=GetH();
+   w=GetWidth();
+   h=GetHeight();
 
    if (width < 0)
    {
@@ -2705,8 +2699,8 @@ void CBuffer::MedY(int y1, int y2, int height)
    TYPE_PIXELS *out;
 
    if(pix==NULL) {return ELIBSTD_BUF_EMPTY;}
-   w=GetW();
-   h=GetH();
+   w=GetWidth();
+   h=GetHeight();
 
 
    if (height < 0)
@@ -2743,8 +2737,8 @@ int CBuffer::A_StarList(int x1, int y1, int x2, int y2, double threshin,char *fi
    TYPE_PIXELS *ppix= NULL;
    int naxis1,naxis2,width,height;
 
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    if ((x1==-1)&&(y1==-1)&&(x2==-1)&&(y2==-1)) {
       x1 = 0;
       y1 = 0;
@@ -2960,8 +2954,8 @@ int CBuffer::A_filtrGauss (TYPE_PIXELS fwhm, int radius, TYPE_PIXELS threshin,
       }
 
 
-      xmax = pix->GetWidth();
-      ymax = pix->GetHeight();
+      xmax = GetWidth();
+      ymax = GetHeight();
       nbRow2 = 0;
 
       //looking for stars (max. values), now is not very precise
@@ -3080,15 +3074,12 @@ void CBuffer::SubStars(FILE *fascii, int indexcol_x, int indexcol_y, int indexco
    double xc1,xc2,yc1,yc2,a,b,c,aa,bb,sdelta,vx,vy,d,percent;
    int nb;
 
-   naxis1=GetW();
-   naxis2=GetH();
-
    // seulement pour les images non couleur
    if( pix->getPixelClass() != CLASS_GRAY) {
       throw CError(ELIBSTD_NOT_IMPLEMENTED);
    }
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    ppix = (TYPE_PIXELS *) malloc(naxis1* naxis2 * sizeof(float));
    pix->GetPixels(0, 0, naxis1-1, naxis2-1, FORMAT_FLOAT, PLANE_GREY, (int) ppix);
 
@@ -3226,8 +3217,8 @@ void CBuffer::BoxBackground(TYPE_PIXELS *ppix,double xc,double yc,double radius,
    if (percent<0) { percent=0.; }
    if (percent>1) { percent=1.; }
    vec=(double*)calloc((int)((2*ceil(radius)+1)*(2*ceil(radius)+1)),sizeof(double));
-   naxis1 = pix->GetWidth();
-   naxis2 = pix->GetHeight();
+   naxis1 = GetWidth();
+   naxis2 = GetHeight();
    x1=(int)floor(xc-radius);
    x2=(int)ceil(xc+radius);
    y1=(int)floor(yc-radius);

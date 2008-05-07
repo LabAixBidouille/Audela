@@ -855,8 +855,8 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                cuts[5] = kwd->GetFloatValue();
 
                // je recupere la taille
-               width = Buffer->GetW();
-               height = Buffer->GetH();
+               width = Buffer->GetWidth();
+               height = Buffer->GetHeight();
                planes = Buffer->GetNaxis();
 
                quality = 80;
@@ -1323,7 +1323,7 @@ int cmdCopyTo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             buffer_dest = (CBuffer*)buf_pool->Chercher(dest);
          }
          try {
-            naxis1 = buffer->GetW();
+            naxis1 = buffer->GetWidth();
             if (naxis1>0) {
                buffer->CopyTo(buffer_dest);
             }
@@ -1408,8 +1408,8 @@ int cmdGetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                   retour = TCL_ERROR;
                } else {
                   int plane =0;
-                  naxis1 = buffer->GetW();
-                  naxis2 = buffer->GetH();
+                  naxis1 = buffer->GetWidth();
+                  naxis2 = buffer->GetHeight();
                   // Test sur la position du point par rapport aux coins.
                   if( buffer->GetNaxis() == 1  ) {
                      if( x<=0||x>naxis1) {
@@ -1519,8 +1519,8 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                   sprintf(ligne,"Buffer is NULL : abnormal error.");
                   retour = TCL_ERROR;
                } else {
-                  naxis1 = buffer->GetW();
-                  naxis2 = buffer->GetH();
+                  naxis1 = buffer->GetWidth();
+                  naxis2 = buffer->GetHeight();
                   // Test sur la position du point par rapport aux coins.
                   if((x<=0)||(x>naxis1)||(y<=0)||(y>naxis2)) {
                      sprintf(ligne,"Out of limits point ((%d,%d) in (1,1),(%d,%d)).",x,y,naxis1,naxis2);
@@ -1645,7 +1645,7 @@ int cmdGetNaxis(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 
 //==============================================================================
 // buf$i getpixelsheight
-//   retuns image height
+//   returns image height
 //
 //
 int cmdGetPixelsHeight(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -1661,7 +1661,7 @@ int cmdGetPixelsHeight(ClientData clientData, Tcl_Interp *interp, int argc, char
       retour = TCL_ERROR;
    } else {
       buffer = (CBuffer*)clientData;
-      sprintf(ligne,"%d",buffer->GetH());
+      sprintf(ligne,"%d",buffer->GetHeight());
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_OK;
    }
@@ -1671,7 +1671,7 @@ int cmdGetPixelsHeight(ClientData clientData, Tcl_Interp *interp, int argc, char
 
 //==============================================================================
 // buf$i getpixelswidth
-//   retruns image width
+//   returns image width
 //
 //
 //
@@ -1688,7 +1688,7 @@ int cmdGetPixelsWidth(ClientData clientData, Tcl_Interp *interp, int argc, char 
       retour = TCL_ERROR;
    } else {
       buffer = (CBuffer*)clientData;
-      sprintf(ligne,"%d",buffer->GetW());
+      sprintf(ligne,"%d",buffer->GetWidth());
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       retour = TCL_OK;
    }
@@ -1973,8 +1973,8 @@ int cmdAstroPhot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
                }
             }
             buffer = (CBuffer*)clientData;
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -2116,8 +2116,8 @@ int cmdPhotom(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       retour = TCL_ERROR;
    } else {
       buffer = (CBuffer*)clientData;
-      naxis1 = buffer->GetW();
-      naxis2 = buffer->GetH();
+      naxis1 = buffer->GetWidth();
+      naxis2 = buffer->GetHeight();
       //pix    = buffer->pix;
       // --- decode la fenetre
       if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
@@ -2223,8 +2223,8 @@ int cmdBarycenter(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
       retour = TCL_ERROR;
    } else {
       buffer = (CBuffer*)clientData;
-      naxis1 = buffer->GetW();
-      naxis2 = buffer->GetH();
+      naxis1 = buffer->GetWidth();
+      naxis2 = buffer->GetHeight();
       //pix    = buffer->pix;
       // --- decode la fenetre
       if(Tcl_SplitList(interp,argv[2],&listArgc,&listArgv)!=TCL_OK) {
@@ -2704,8 +2704,8 @@ int cmdTtStat(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_ERROR;
             }
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -3380,8 +3380,8 @@ int cmdFwhm(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -3465,8 +3465,8 @@ int cmdScar(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -3572,8 +3572,8 @@ int cmdFitGauss(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -3826,7 +3826,7 @@ int cmdBinX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
-            naxis1 = buffer->GetW();
+            naxis1 = buffer->GetWidth();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (x1>naxis1) {x1=naxis1;}
@@ -3881,7 +3881,7 @@ int cmdBinY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
-            naxis2 = buffer->GetH();
+            naxis2 = buffer->GetHeight();
             if (y1<1) {y1=1;}
             if (y2<1) {y2=1;}
             if (y1>naxis2) {y1=naxis2;}
@@ -3936,7 +3936,7 @@ int cmdMedX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
-            naxis1 = buffer->GetW();
+            naxis1 = buffer->GetWidth();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (x1>naxis1) {x1=naxis1;}
@@ -3991,7 +3991,7 @@ int cmdMedY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
       } else {
          buffer = (CBuffer*)clientData;
          try {
-            naxis2 = buffer->GetH();
+            naxis2 = buffer->GetHeight();
             if (y1<1) {y1=1;}
             if (y2<1) {y2=1;}
             if (y1>naxis2) {y1=naxis2;}
@@ -4102,8 +4102,8 @@ int cmdWindow(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          } else {
             buffer = (CBuffer*)clientData;
             // Collecte de renseignements pour la suite
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -4471,8 +4471,8 @@ int cmdFitGauss2d(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
             retour = TCL_ERROR;
          } else {
             buffer = (CBuffer*)clientData;
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
@@ -4863,8 +4863,8 @@ int cmdTtFitellip(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
                Tcl_SetResult(interp,ligne,TCL_VOLATILE);
                retour = TCL_ERROR;
             }
-            naxis1 = buffer->GetW();
-            naxis2 = buffer->GetH();
+            naxis1 = buffer->GetWidth();
+            naxis2 = buffer->GetHeight();
             if (x1<1) {x1=1;}
             if (x2<1) {x2=1;}
             if (y1<1) {y1=1;}
