@@ -1,6 +1,6 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.17 2007-10-11 19:28:23 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.18 2008-05-07 18:03:12 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -31,7 +31,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(serialport,titre)        "Porta seriale"
    set caption(serialport,available)    "Porta seriale disponibile"
-   set caption(serialport,used)         "# Ports séries utilisés"
+   set caption(serialport,used)         "Porte seriali utilizzate"
    set caption(serialport,refresh)      "Rinfresca"
    set caption(serialport,port_exclus)  "Porta COM da escludere (modem interno, ecc.)"
 
@@ -49,7 +49,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(serialport,titre)        "Serial Anschlüss"
    set caption(serialport,available)    "Serial Anschlüssen verfügbar"
-   set caption(serialport,used)         "# Ports séries utilisés"
+   set caption(serialport,used)         "Serielle Schnittstelle"
    set caption(serialport,refresh)      "Aktualisieren"
    set caption(serialport,port_exclus)  "COM Port zu ausschließen (inneren Modem, etc.)"
 
@@ -58,7 +58,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(serialport,titre)        "Porta série"
    set caption(serialport,available)    "Portas série disponiveis"
-   set caption(serialport,used)         "# Ports séries utilisés"
+   set caption(serialport,used)         "Portas série utilizadas"
    set caption(serialport,refresh)      "Actualizar"
    set caption(serialport,port_exclus)  "Porta COM a excluir (modem interno, etc.)"
 
@@ -67,7 +67,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(serialport,titre)        "Seriel port"
    set caption(serialport,available)    "Serielle porte disponible"
-   set caption(serialport,used)         "# Ports séries utilisés"
+   set caption(serialport,used)         "Anvendte serielle porte"
    set caption(serialport,refresh)      "Genindlæs"
    set caption(serialport,port_exclus)  "COM-port som fravælges (indbygget modem osv.)"
 

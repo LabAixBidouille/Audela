@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.21 2008-04-26 11:12:55 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.22 2008-05-07 18:01:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -22,8 +22,8 @@ set caption(confgene,fichier_image)                         "Image Files"
 set caption(confgene,fichier_image_fits)                    "FITS Files"
 set caption(confgene,fichier_images_seuils_visu)            "Save Image with Display Thresholds"
 set caption(confgene,fichier_images_choix_format)           "Save images as:"
-set caption(confgene,fichier_images_entier)                 "Integer"
-set caption(confgene,fichier_images_flottant)               "Floating"
+set caption(confgene,fichier_images_entier)                 "Integer (16 bits)"
+set caption(confgene,fichier_images_flottant)               "Floating (32 bits)"
 set caption(confgene,fichier_image_ext_defaut)              "Default Filename Extension:"
 set caption(confgene,fichier_image_new_ext)                 "You can choose the filename extension:"
 set caption(confgene,fichier_image_compres)                 "Compressed Image Files (.gz)"
@@ -94,7 +94,7 @@ set caption(confgene,choix_outils_3)                        "The tool associated
 
 set caption(confgene,langue_titre)                          "Language"
 set caption(confgene,langue_selection)                      "Language Selection:"
-set caption(confgene,langue_texte)                          "# La nouvelle langue sera prise en compte au prochain démarrage."
+set caption(confgene,langue_texte)                          "The new language will be installed when AudeLA is restarted."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -110,8 +110,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_fits)                 "Fichiers FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Enregistrer les images avec les seuils de la visu"
    set caption(confgene,fichier_images_choix_format)        "Enregistrer les images au format :"
-   set caption(confgene,fichier_images_entier)              "Entier"
-   set caption(confgene,fichier_images_flottant)            "Flottant"
+   set caption(confgene,fichier_images_entier)              "Entier (16 bits)"
+   set caption(confgene,fichier_images_flottant)            "Flottant (32 bits)"
    set caption(confgene,fichier_image_ext_defaut)           "Extension par défaut :"
    set caption(confgene,fichier_image_new_ext)              "Vous pouvez choisir votre extension :"
    set caption(confgene,fichier_image_compres)              "Fichiers image compressés (.gz)"
@@ -182,7 +182,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,langue_titre)                       "Langue"
    set caption(confgene,langue_selection)                   "Sélection de la langue :"
-   set caption(confgene,langue_texte)                       "La nouvelle langue sera prise en compte au prochain démarrage."
+   set caption(confgene,langue_texte)                       "La nouvelle langue sera prise en compte au prochain démarrage d'AudeLA."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -198,8 +198,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_fits)                 "Files FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Salvare le immagini con la soglia di visualizzazione"
    set caption(confgene,fichier_images_choix_format)        "Salvare immagini come:"
-   set caption(confgene,fichier_images_entier)              "Intero"
-   set caption(confgene,fichier_images_flottant)            "Virgola mobile"
+   set caption(confgene,fichier_images_entier)              "Intero (16 bits)"
+   set caption(confgene,fichier_images_flottant)            "Virgola mobile (32 bits)"
    set caption(confgene,fichier_image_ext_defaut)           "Estensione di default:"
    set caption(confgene,fichier_image_new_ext)              "Potete cambiare l'estensione:"
    set caption(confgene,fichier_image_compres)              "Files immagini compresse (.gz)"
@@ -270,7 +270,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,langue_titre)                       "Lingue"
    set caption(confgene,langue_selection)                   "Scelta delle lingue:"
-   set caption(confgene,langue_texte)                       "# La nouvelle langue sera prise en compte au prochain démarrage."
+   set caption(confgene,langue_texte)                       "La nuova lingua sara` utilizzabile al prossimo avvio di AudeLA."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -286,8 +286,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_fits)                 "Ficheros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar imagen con los umbrales de visualización"
    set caption(confgene,fichier_images_choix_format)        "Guardar imagenes en formato:"
-   set caption(confgene,fichier_images_entier)              "Entero"
-   set caption(confgene,fichier_images_flottant)            "Flotante"
+   set caption(confgene,fichier_images_entier)              "Entero (16 bits)"
+   set caption(confgene,fichier_images_flottant)            "Flotante (32 bits)"
    set caption(confgene,fichier_image_ext_defaut)           "Extension por defecto del fichero:"
    set caption(confgene,fichier_image_new_ext)              "Se puede elegir la extensión de fichero:"
    set caption(confgene,fichier_image_compres)              "Ficheros de imágenes comprimidos (.gz)"
@@ -358,7 +358,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecció de idioma:"
-   set caption(confgene,langue_texte)                       "# La nouvelle langue sera prise en compte au prochain démarrage."
+   set caption(confgene,langue_texte)                       "# La nouvelle langue sera prise en compte au prochain démarrage d'AudeLA."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -374,8 +374,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_fits)                 "FITS Datei"
    set caption(confgene,fichier_images_seuils_visu)         "Bilder mit Entfaltung Schwellen speichern"
    set caption(confgene,fichier_images_choix_format)        "Bilder im Format speichern:"
-   set caption(confgene,fichier_images_entier)              "Ganz"
-   set caption(confgene,fichier_images_flottant)            "Fließkomma"
+   set caption(confgene,fichier_images_entier)              "Ganz (16 bits)"
+   set caption(confgene,fichier_images_flottant)            "Fließkomma (32 bits)"
    set caption(confgene,fichier_image_ext_defaut)           "Mangel Streckung:"
    set caption(confgene,fichier_image_new_ext)              "Sie können eure Streckung wählen:"
    set caption(confgene,fichier_image_compres)              "Verminderte Bild Datei (.gz)"
@@ -446,7 +446,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,langue_titre)                       "Sprache"
    set caption(confgene,langue_selection)                   "Sprache Wahl:"
-   set caption(confgene,langue_texte)                       "# La nouvelle langue sera prise en compte au prochain démarrage."
+   set caption(confgene,langue_texte)                       "Die neue Sprache wird am nächsten AudeLA Start berücksichtigt."
 
 # *************** Version portugaise ***************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -462,8 +462,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_fits)                 "Ficheiros FITS"
    set caption(confgene,fichier_images_seuils_visu)         "Guardar as imagens com os limiares de visualização"
    set caption(confgene,fichier_images_choix_format)        "Guardar as imagens em formato:"
-   set caption(confgene,fichier_images_entier)              "Inteiro"
-   set caption(confgene,fichier_images_flottant)            "Flutuante"
+   set caption(confgene,fichier_images_entier)              "Inteiro (16 bits)"
+   set caption(confgene,fichier_images_flottant)            "Flutuante (32 bits)"
    set caption(confgene,fichier_image_ext_defaut)           "Extensão por defeito do ficheiro:"
    set caption(confgene,fichier_image_new_ext)              "Pode escolher a extensão do fichero:"
    set caption(confgene,fichier_image_compres)              "Ficheiros de imagem comprimidos (.gz)"
@@ -534,7 +534,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecção de idioma:"
-   set caption(confgene,langue_texte)                       "# La nouvelle langue sera prise en compte au prochain démarrage."
+   set caption(confgene,langue_texte)                       "A nova língua será tomada em conta quando AudeLA for reiniciado."
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -550,8 +550,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,fichier_image_fits)                 "FITS Filer"
    set caption(confgene,fichier_images_seuils_visu)         "Gem billedet med vist tærskelværdi"
    set caption(confgene,fichier_images_choix_format)        "Gem billeder som:"
-   set caption(confgene,fichier_images_entier)              "Helt tal"
-   set caption(confgene,fichier_images_flottant)            "Flydende"
+   set caption(confgene,fichier_images_entier)              "Helt tal (16 bits)"
+   set caption(confgene,fichier_images_flottant)            "Flydende (32 bits)"
    set caption(confgene,fichier_image_ext_defaut)           "Standand filtype (extension):"
    set caption(confgene,fichier_image_new_ext)              "Valg af filtype (extension):"
    set caption(confgene,fichier_image_compres)              "Komprimeret billedfil(.gz)"
@@ -622,7 +622,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,langue_titre)                       "Sprog"
    set caption(confgene,langue_selection)                   "Valg af sprog:"
-   set caption(confgene,langue_texte)                       "# La nouvelle langue sera prise en compte au prochain démarrage."
+   set caption(confgene,langue_texte)                       "Det valgte sprog installeres, når AudeLA genstartes."
 
 }
 
