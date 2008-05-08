@@ -221,6 +221,7 @@ foreach make $makes {
 			cd ${base}src/tools/innosetup/Output
 			set err [catch {eval $lignexe} msg]
 			cd $pwd0
+			file rename -force -- "${base}src/tools/innosetup/Output/audela_${make}-${version}.zip" "${base}src/tools/innosetup/audela_${make}-${version}.zip"
 		} else {
 			set dossiers [glob ${base}src/tools/innosetup/Output/*]
 			foreach dossier $dossiers {
@@ -233,6 +234,7 @@ foreach make $makes {
 				set err [catch {eval $lignexe} msg]
 				cd $pwd0
 			}
+			file rename -force -- "${base}src/tools/innosetup/Output/audela_${make}-${version}.zip" "${base}src/tools/innosetup/audela_${make}-${version}.zip"
 		}
 		foreach ligne $lignes {
 			if {[string length $ligne]<1} {
