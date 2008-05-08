@@ -330,6 +330,7 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 #endif
    strcpy(cam->msg, "");
    if (cam->authorized == 1) {
+      cam->exptime_when_acq_stopped = -1.0f;
       sortie = 0;
       while (sortie == 0) {
          failed = 0;
@@ -443,7 +444,6 @@ void cam_start_exp(struct camprop *cam, char *amplionoff)
 
 void cam_stop_exp(struct camprop *cam)
 {
-   char keyword[MAXLENGTH + 1];
    char value[MAXLENGTH + 1];
    char result[MAXLENGTH];
    int paramtype;
@@ -466,9 +466,8 @@ void cam_stop_exp(struct camprop *cam)
       }
       
    }
-   strcpy(keyword, "TimeDone");
-   if (util_param_search(&ParamCCDOut, keyword, value, &paramtype) == 0) {
-      cam->exptime = (float) (atof(value) / 1000.0);
+   if (util_param_search(&ParamCCDOut, "TimeDone", value, &paramtype) == 0) {
+      cam->exptime_when_acq_stopped = (float) (atof(value) / 1000.0);
    }
    cam->CCDStatus = 0;
 }
@@ -490,7 +489,7 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       return;
 
    if (cam->authorized != 1)
-	  return;
+      return;
 
    /*- boucle d'attente de fin de pose -*/
    if (cam->CCDStatus == 1) {
@@ -604,9 +603,21 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
       
       sprintf(ligne, "buf%d setkwd [list GPS-DATE 1 int {1 if datation is derived from GPS, else 0} {}]", cam->bufno);
       Tcl_Eval(cam->interp, ligne);
+   } else {
+      // Sans eventaude, en cas d'arret premature il faut mettre a jour date_end car c'est lui qui permet de calculer
+      // le temps de pose reel.
+      if ( cam->exptime_when_acq_stopped >= 0.0 ) {
+         sprintf(ligne, "mc_date2iso8601 [ mc_datescomp %s + [expr %f/86400.] ]", cam->date_obs, cam->exptime_when_acq_stopped);
+         if (Tcl_Eval(cam->interp, ligne) == TCL_ERROR) {
+            sprintf(ligne,"Error line %s@%d: interpretation of '%s'", __FILE__, __LINE__, ligne);
+            util_log(ligne, 0);
+            return;
+         }
+         strcpy(cam->date_end, cam->interp->result);
+      }
    }
 
-
+   
    /* --- mirroir de l'image ? --- */
    /*pdim=cam->w*cam->h;
    for (k=0;k<pdim;k++) {

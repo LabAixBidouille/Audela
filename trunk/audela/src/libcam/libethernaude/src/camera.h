@@ -46,7 +46,7 @@ struct camprop {
     struct new_ethernaude_inp inparams;
     /* --- direct driver --- */
     int direct;
-
+    float exptime_when_acq_stopped;
 };
 
 /* DIRECT DRIVER */
