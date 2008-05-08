@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.19 2008-05-07 11:26:45 denismarchais Exp $
+ * $Id: libcam.c,v 1.20 2008-05-08 07:29:54 denismarchais Exp $
  */
 
 #include "sysexp.h"
@@ -964,6 +964,11 @@ static void AcqRead(ClientData clientData )
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
       }
       sprintf(s, "buf%d setkwd {DATE-OBS %s string \"\" \"\"}", cam->bufno, cam->date_obs);
+      libcam_log(LOG_DEBUG, s);
+      if (Tcl_Eval(interp, s) == TCL_ERROR) {
+         libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
+      }
+      sprintf(s, "buf%d setkwd {DATE-END %s string \"\" \"\"}", cam->bufno, cam->date_end);
       libcam_log(LOG_DEBUG, s);
       if (Tcl_Eval(interp, s) == TCL_ERROR) {
          libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
