@@ -134,7 +134,7 @@ int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, ch
    char*classname;
    pool = (CPool*)clientData;
    classname = pool->GetClassname();
-   ligne = (char*)calloc(200,sizeof(char));
+   ligne = (char*)calloc(500,sizeof(char));
    if(argc==2) {
       // chargement de la lib'argv[1]'
       sprintf(ligne,"load \"%s/lib%s[info sharedlibextension]\"",audela_start_dir,argv[1]);
@@ -142,8 +142,7 @@ int CmdAvailablePoolItem(ClientData clientData, Tcl_Interp *interp, int argc, ch
       if(Tcl_Eval(interp,ligne)==TCL_ERROR) {
          sprintf(ligne,"error when loading driver lib%s ", interp->result);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         free(ligne);
-         return TCL_ERROR;
+         result = TCL_ERROR;
       } else {
          sprintf(ligne,"%s available",argv[1]);
          Tcl_Eval(interp,ligne);
