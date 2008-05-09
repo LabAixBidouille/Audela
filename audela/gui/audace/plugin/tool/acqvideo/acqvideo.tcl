@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.2 2008-04-18 21:39:58 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.3 2008-05-09 17:40:51 michelpujol Exp $
 #
 
 #==============================================================
@@ -177,7 +177,7 @@ namespace eval ::acqvideo {
    #     retourne le ou les OS de fonctionnement du plugin
    #------------------------------------------------------------
    proc getPluginOS { } {
-      return [ list Windows Linux Darwin ]
+      return [ list Windows Darwin ]
    }
 
    #------------------------------------------------------------
