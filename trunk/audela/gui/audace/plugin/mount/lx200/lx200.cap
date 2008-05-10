@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.3 2008-02-11 18:52:53 robertdelmas Exp $
+# Mise a jour $Id: lx200.cap,v 1.4 2008-05-10 11:59:08 michelpujol Exp $
 #
 
 #=========================================================================
@@ -24,6 +24,7 @@ set caption(lx200,modele_skysensor)              "SkySensor 2000 PC"
 set caption(lx200,modele_gemini)                 "Losmandy Gemini"
 set caption(lx200,modele_ite-lente)              "Ite-lente"
 set caption(lx200,modele_mel_bartels)            "Mel BARTELS"
+set caption(lx200,modele_astro_physics)          "Astro-Physics"
 set caption(lx200,format)                        "Format"
 set caption(lx200,maj_lx200)                     "Update time, longitude, latitude and altitude of LX200"
 set caption(lx200,ite-lente_tempo)               "Tempo"
@@ -52,10 +53,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_gemini)              "Losmandy Gemini"
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
+   set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Mise à jour heure, longitude, latitude et altitude du LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,raquette_tel)               "Raquette à l'écran"
+   set caption(lx200,park)                       "Park"
+   set caption(lx200,unpark)                     "Unpark"
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Port LX200"
@@ -80,6 +84,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_gemini)              "Losmandy Gemini"
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
+   set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
@@ -108,6 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_gemini)              "Losmandy Gemini"
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
+   set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Actualizar hora, longitud, latitud y altitud del LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
@@ -136,6 +142,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_gemini)              "Losmandy Gemini"
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
+   set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Zeit, Länge, Breite, Höhe des LX200 Aktualisierung"
    set caption(lx200,ite-lente_tempo)            "Tempo"
@@ -164,6 +171,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_gemini)              "Losmandy Gemini"
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
+   set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Formato"
    set caption(lx200,maj_lx200)                  "Actualizar tempo, longitude, latitude e altitude do LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
@@ -192,6 +200,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,modele_gemini)              "Losmandy Gemini"
    set caption(lx200,modele_ite-lente)           "Ite-lente"
    set caption(lx200,modele_mel_bartels)         "Mel BARTELS"
+   set caption(lx200,modele_astro_physics)       "Astro-Physics"
    set caption(lx200,format)                     "Format"
    set caption(lx200,maj_lx200)                  "Update time, longitude, latitude and altitude of LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
