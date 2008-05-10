@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.11 2008-02-12 15:08:55 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.12 2008-05-10 12:01:10 michelpujol Exp $
 #
 
 namespace eval ::lx200 {
@@ -245,8 +245,9 @@ proc ::lx200::fillConfigPage { frm } {
    label $frm.lab3 -text "$caption(lx200,modele)"
    pack $frm.lab3 -in $frm.frame10 -anchor center -side left -padx 10 -pady 10
 
-   set list_combobox [ list $caption(lx200,modele_lx200) $caption(lx200,modele_audecom) \
-      $caption(lx200,modele_skysensor) $caption(lx200,modele_gemini) $caption(lx200,modele_ite-lente) \
+   set list_combobox [ list $caption(lx200,modele_lx200) $caption(lx200,modele_astro_physics) \
+      $caption(lx200,modele_audecom) $caption(lx200,modele_skysensor) \
+      $caption(lx200,modele_gemini) $caption(lx200,modele_ite-lente) \
       $caption(lx200,modele_mel_bartels) ]
    ComboBox $frm.modele \
       -width 17         \
@@ -296,6 +297,14 @@ proc ::lx200::fillConfigPage { frm } {
    #--- Frame raquette
    ::confPad::createFramePad $frm.nom_raquette "::confTel::private(nomRaquette)"
    pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
+
+   #--- Bouton park
+   button $frm.park -text "$caption(lx200,park)" -relief raised -command "::telescope::park 1" -state disabled
+   pack $frm.park -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
+
+   #--- Bouton unpark
+   button $frm.unpark -text "$caption(lx200,unpark)" -relief raised -command "::telescope::park 0" -state disabled
+   pack $frm.unpark -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
    #--- Site web officiel du LX200
    label $frm.lab103 -text "$caption(lx200,titre_site_web)"
@@ -427,31 +436,28 @@ proc ::lx200::confLX200 { } {
       set frm $private(frm)
       if { [ winfo exists $frm ] } {
          if { [ ::lx200::isReady ] == 1 } {
-            if { $conf(lx200,modele) == "$caption(lx200,modele_lx200)" } {
-               #--- Bouton Mise a jour de la monture actif
-               $frm.majpara configure -state normal -command {
-                  tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-                  tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
-               }
-            } elseif { $conf(lx200,modele) == "$caption(lx200,modele_skysensor)" } {
-               #--- Bouton Mise a jour de la monture actif
-               $frm.majpara configure -state normal -command {
-                  tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-                  tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
-               }
-            } elseif { $conf(lx200,modele) == "$caption(lx200,modele_gemini)" } {
-               #--- Bouton Mise a jour de la monture actif
-               $frm.majpara configure -state normal -command {
-                  tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
-                  tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
-               }
-            } else {
-               #--- Bouton Mise a jour de la monture inactif
-               $frm.majpara configure -state disabled
+            if { [ ::confTel::getPluginProperty hasUpdateDate ] == "1" } {
+               #--- Bouton Mise a jour de la date et du lieu
+               $frm.majpara configure -state normal
+            }
+            #--- Cas des modeles qui ont la fonction "park"
+            if { [ ::confTel::getPluginProperty hasPark ] == "1" } {
+               #--- Bouton park
+               $frm.park configure -state normal
+            }
+
+            #--- Cas des modeles qui ont la fonction "unpark"
+            if { [ ::confTel::getPluginProperty hasUnpark ] == "1" } {
+               #--- Bouton unpark
+               $frm.unpark configure -state normal
             }
          } else {
             #--- Bouton Mise a jour de la monture inactif
             $frm.majpara configure -state disabled
+            #--- Bouton unpark
+            $frm.unpark configure -state disabled
+            #--- Bouton unpark
+            $frm.unpark configure -state disabled
          }
       }
    }
@@ -464,14 +470,14 @@ proc ::lx200::confLX200 { } {
 proc ::lx200::confLX200Inactif { } {
    variable private
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm ] } {
-         if { [ ::lx200::isReady ] == 1 } {
-            #--- Bouton Mise a jour de la monture inactif
-            $frm.majpara configure -state disabled
-         }
-      }
+   set frm $private(frm)
+   if { [winfo exists $frm ] } {
+      #--- Bouton Mise a jour de la monture inactif
+      $frm.majpara configure -state disabled
+      #--- Bouton unpark
+      $frm.park configure -state disabled
+      #--- Bouton unpark
+      $frm.unpark configure -state disabled
    }
 }
 
@@ -536,6 +542,8 @@ proc ::lx200::confModele { } {
 # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
+# hasPark                 Retourne la possibilite de parquer la monture
+# hasUpdatedate           Retourne la possibilite de mettre a jour la date et le lieu
 #
 proc ::lx200::getPluginProperty { propertyName } {
    variable private
@@ -576,7 +584,63 @@ proc ::lx200::getPluginProperty { propertyName } {
             return 1
          }
       }
+      hasPark {
+         if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
+            || $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
+            return 1
+         } else {
+            return 0
+         }
+      }
+      hasUnpark {
+         if { $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
+            return 1
+         } else {
+            return 0
+         }
+      }
+      hasUpdateDate {
+         if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200)
+            || $::conf(lx200,modele) == $::caption(lx200,modele_skysensor)
+            || $::conf(lx200,modele) == $::caption(lx200,modele_gemini)
+            || $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
+            return 1
+         } else {
+            return 0
+         }
+      }
       backlash                { return 0 }
    }
 }
 
+#------------------------------------------------------------
+# park
+#    parque la monture
+#
+# Parametres :
+#    state : 1= park , 0=un-park
+# Return :
+#    rien
+#------------------------------------------------------------
+proc ::lx200::park { state } {
+   variable private
+
+   if {  $::conf(lx200,modele) == $::caption(lx200,modele_lx200) } {
+      if { $state == 1 } {
+         #--- je parque la monture
+         tel$private(telNo) command ":hP#" none
+      } elseif { $state == 0 } {
+         #--- je ne fais rien car Meade n'a pas la fonction un-park
+      }
+   } elseif { $::conf(lx200,modele) == $::caption(lx200,modele_astro_physics)} {
+      if { $state == 1 } {
+         #--- je parque la monture
+         tel$private(telNo) command ":KA#" none
+      } elseif { $state == 0 } {
+         #--- j'envoie l'heure courante
+         tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
+         #--- je de-parque la monture
+         tel$private(telNo) command ":PO#" none
+      }
+   }
+}
