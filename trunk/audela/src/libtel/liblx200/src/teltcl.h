@@ -28,6 +28,6 @@ int cmdTelLongFormat(ClientData clientData, Tcl_Interp *interp, int argc, char *
 int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelRadecInitAdditional(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-
+int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 #endif

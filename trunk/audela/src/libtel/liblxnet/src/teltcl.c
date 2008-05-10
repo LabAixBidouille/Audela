@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -25,7 +25,7 @@
  *
  * Fonctions C-Tcl specifiques a ce telescope. A programmer.
  *
- * $Id: teltcl.c,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
+ * $Id: teltcl.c,v 1.3 2008-05-10 11:55:16 michelpujol Exp $
  *
  */
 
@@ -130,7 +130,7 @@ int cmdTelTempo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
 /**
  * cmdTelAutoFlush
  *   set tel->autoflush value (0= no flush, 1= do flush)
- */ 
+ */
 int cmdTelAutoFlush(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
    int result = TCL_OK,pb=0;
@@ -164,8 +164,8 @@ int cmdTelAutoFlush(ClientData clientData, Tcl_Interp *interp, int argc, char *a
  * -----------------------------------------------------------------------------
  *  cmdHost()
  *
- * Change or returns the IP host 
- * 
+ * Change or returns the IP host
+ *
  * -----------------------------------------------------------------------------
  */
 int cmdTelHost(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
@@ -223,7 +223,7 @@ int cmdTelSetIP(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
       if( argc >= 5) {
          STRNCPY(networkmask, argv[4] );
          STRNCPY(gateway, argv[5] );
-         result = setip(ipAddress, macAddress, networkmask, gateway, errorMessage);         
+         result = setip(ipAddress, macAddress, networkmask, gateway, errorMessage);
       }
       else {
          result = setip(ipAddress, macAddress, NULL, NULL, errorMessage);
@@ -240,11 +240,63 @@ int cmdTelSetIP(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          #endif
          result = TCL_OK;
       } else {
-         sprintf(errorMessage, "ERROR setip ipadress=%s macadress=%s ", ipAddress, macAddress); 
+         sprintf(errorMessage, "ERROR setip ipadress=%s macadress=%s ", ipAddress, macAddress);
          result = TCL_ERROR;
-      } 
+      }
       Tcl_SetResult(interp, errorMessage,TCL_VOLATILE);
    }
    return result;
 }
+
+
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdTelSendCommand()
+ *
+ *  envoie une commande qu
+ *
+ * -----------------------------------------------------------------------------
+ */
+int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+   char ligne[256];
+   int result;
+   char *usage= "Usage: %s %s command ?command? ?returnType:none|ok|sharp?";
+   struct telprop *tel;
+   tel = (struct telprop *)clientData;
+   if(argc!=3) {
+      sprintf(ligne,usage,argv[0],argv[1]);
+      Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else {
+      int returnType = -1;
+
+      if ( strcmp(argv[3],"none")==0) {
+         returnType =0;
+      } else if (strcmp(argv[3],"ok")==0) {
+         returnType =1;
+      } else if (strcmp(argv[3],"sharp")==0) {
+         returnType =2;
+      }
+
+      if (returnType == -1 ) {
+         sprintf(ligne,"%s . Error: bad return type %s ",usage, argv[3]);
+         Tcl_SetResult(interp,ligne,TCL_VOLATILE);
+         result = TCL_ERROR;
+      } else {
+         int result;
+         char response[1024];
+         result = mytel_sendLX(tel, argv[2], returnType, response);
+         if ( result == 1 ) {
+            Tcl_SetResult(interp,(char*)response,TCL_VOLATILE);
+            result = TCL_OK;
+         } else {
+            // le libelle de l'erreur est dans le parametre response
+            Tcl_SetResult(interp,(char*)response,TCL_VOLATILE);
+            result = TCL_ERROR;
+         }
+      }
+   }
+   return result;
+}
+
 

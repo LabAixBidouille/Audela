@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: telcmd.h,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
+ * $Id: telcmd.h,v 1.3 2008-05-10 11:55:15 michelpujol Exp $
  */
 
 static struct cmditem cmdlist[] = {
@@ -33,6 +33,7 @@ static struct cmditem cmdlist[] = {
    {"autoflush", (Tcl_CmdProc *)cmdTelAutoFlush},\
    {"host", (Tcl_CmdProc *)cmdTelHost},\
    {"setip", (Tcl_CmdProc *)cmdTelSetIP},\
+   {"command", (Tcl_CmdProc *)cmdTelSendCommand},\
    /* === Last function terminated by NULL pointers ===*/
    {NULL, NULL}
 };
