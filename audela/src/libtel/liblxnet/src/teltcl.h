@@ -23,7 +23,7 @@
 /*
  * Fonctions C-Tcl specifiques a ce telescope. A programmer.
  *
- * $Id: teltcl.h,v 1.2 2006-02-05 10:27:21 michelpujol Exp $
+ * $Id: teltcl.h,v 1.3 2008-05-10 11:55:16 michelpujol Exp $
  */
 
 #ifndef __TELTCL_H__
@@ -36,5 +36,5 @@ int cmdTelAutoFlush(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 
 int cmdTelHost(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 int cmdTelSetIP(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
-
+int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 #endif
