@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.4 2008-05-10 11:59:08 michelpujol Exp $
+# Mise a jour $Id: lx200.cap,v 1.5 2008-05-10 12:29:03 michelpujol Exp $
 #
 
 #=========================================================================
@@ -29,6 +29,8 @@ set caption(lx200,format)                        "Format"
 set caption(lx200,maj_lx200)                     "Update time, longitude, latitude and altitude of LX200"
 set caption(lx200,ite-lente_tempo)               "Tempo"
 set caption(lx200,raquette_tel)                  "Hand controller on screen"
+set caption(lx200,park)                          "Park"
+set caption(lx200,unpark)                        "Unpark"
 
 set caption(lx200,host_audinet)                  "Host AudiNet/LXnet"
 set caption(lx200,port_lx200)                    "LX200 Port"
