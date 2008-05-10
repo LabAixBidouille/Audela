@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -903,4 +903,59 @@ int mytel_correct(struct telprop *tel,char *direction, int duration)
    char s[200];
    sprintf(s,"puts -nonewline %s \"#:Mg%s%04d#\"",tel->channel, direction, duration); mytel_tcleval(tel,s);
    return 0;
+}
+
+/**
+ * sendLX : send a command to the telescop
+ *  params :
+ *      command : "xxxxx#" string terminated by #
+ *      returntype : type of string returned by LX
+ *			0 (return nothing)
+ *			1 (return one char)
+ *			2 (return string terminated by #)
+ *
+ * return :
+ *  if recvWithTimeout OK
+ *		cr= 1
+ *    if returnType = 0  response = ""
+ *    if returnType = 1  response = "0" or "1"
+ *    if returnType = 2  response = "...#"
+ * if openSocket() or sendRequest() or recvWithTimeout() error
+ *		cr = 0
+ *
+ *  return cr
+ */
+int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *response) {
+	char s[1024];
+	int cr = 0;
+
+   // j'initialise a reponse a vide
+   strcpy(response,"");
+
+   // j'envoie la commande
+   sprintf(s,"puts -nonewline %s %s",tel->channel,command); mytel_tcleval(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+
+   // je lis la reponse
+   if ( returnType == 0 ) {
+      // je n'attends pas de réponse
+      cr = 1;
+   } else if ( returnType == 1 ) {
+      // j'attend la reponse "1" ou "0"
+      sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+      strcpy(response,tel->interp->result);
+   }  else if ( returnType == 2 ) {
+      // j'attend une reponse qui se termine par diese
+      do {
+         sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+         strcpy(s,tel->interp->result);
+         if ( strcmp(s,"#")!= 0 ) {
+            // j'ajoute le caractere lu si ce n'est pas un diese
+            strcat(response,s);
+         }
+      } while ( strcmp(s,"#")!= 0 ) ;
+      cr = 1;
+   }
+
+	return cr;
 }
