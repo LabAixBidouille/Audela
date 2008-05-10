@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.20 2008-05-08 07:29:54 denismarchais Exp $
+ * $Id: libcam.c,v 1.21 2008-05-10 05:54:43 jacquesmichelet Exp $
  */
 
 #include "sysexp.h"
@@ -789,10 +789,8 @@ static void AcqRead(ClientData clientData )
    char s[30000];
    unsigned short *p;		/* cameras de 1 a 16 bits non signes */
    double exptime=0.;
-   /*
    double ra, dec;
    int status;
-   */
    struct camprop *cam;
    Tcl_Interp *interp;
 
@@ -860,7 +858,7 @@ static void AcqRead(ClientData clientData )
    if (strlen(cam->msg) == 0) {
       // --- application du miroir horizontal
       if( cam->mirrorh == 1 ) {
-         // j'inverse l'orientation de l'image par rapport à un miroir horizontal
+         // j'inverse l'orientation de l'image par rapport ï¿½ un miroir horizontal
          // les pixels seront inverses lors de la recopie dans le buffer par "buf1 setpixels ..."
          if( cam->pixels_reverse_y == 1 ) {
             cam->pixels_reverse_y = 0;
@@ -871,7 +869,7 @@ static void AcqRead(ClientData clientData )
 
       // --- application du miroir vertical
       if( cam->mirrorv == 1 ) {
-         // j'inverse l'orientation de l'image par rapport à un miroir vertical
+         // j'inverse l'orientation de l'image par rapport ï¿½ un miroir vertical
          // les pixels seront inverses lors de la recopie dans le buffer par "buf1 setpixels ..."
          if( cam->pixels_reverse_x == 1 ) {
             cam->pixels_reverse_x = 0;
@@ -1002,18 +1000,17 @@ static void AcqRead(ClientData clientData )
             libcam_log(LOG_ERROR, "(libcam.c @ %d) error in command '%s': result='%s'", __LINE__, s, interp->result);
          }
       }
-/*
+
       if ( cam->radecFromTel  == 1 ) {
          libcam_get_tel_coord(interp, &ra, &dec, cam, &status);
          if (status == 0) {
             // Add FITS keywords
-            sprintf(s, "buf%d setkwd {RA %f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
+            sprintf(s, "buf%d setkwd {RA %7.3f float \"Right ascension telescope encoder\" \"\"}", cam->bufno, ra);
             Tcl_Eval(interp, s);
-            sprintf(s, "buf%d setkwd {DEC %f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
+            sprintf(s, "buf%d setkwd {DEC %7.3f float \"Declination telescope encoder\" \"\"}", cam->bufno, dec);
             Tcl_Eval(interp, s);
          }
       }
-*/
    } else {
       // erreur d'acquisition, on enregistre une image vide
       sprintf(s, "buf%d clear", cam->bufno );
@@ -1082,7 +1079,7 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
             Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
             result = TCL_ERROR;
          } else {
-            // je teste cam->timerExpiration car il peut être nul si cmdCamStop a ete appele entre temps
+            // je teste cam->timerExpiration car il peut ï¿½tre nul si cmdCamStop a ete appele entre temps
             if( cam->timerExpiration != NULL ) {
                libcam_GetCurrentFITSDate(interp, cam->date_obs);
                libcam_GetCurrentFITSDate_function(interp, cam->date_obs, "::audace::date_sys2ut");
