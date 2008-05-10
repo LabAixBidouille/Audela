@@ -28,7 +28,7 @@
  * La structure "telprop" peut etre adaptee
  * dans le fichier telescop.h
  *
- * $Id: telescop.c,v 1.3 2007-07-03 20:40:20 michelpujol Exp $
+ * $Id: telescop.c,v 1.4 2008-05-10 11:56:54 michelpujol Exp $
  *
  */
 
@@ -955,6 +955,7 @@ int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *respo
    /* j'ouvre la socket tcp */
    if ( ! socktcp_open( tel->host, tel->httpPort) ) {
       logError("mytel_sendLX socktcp_open");
+      strcpy(response, "socket open error");
       cr = FALSE;
    }
    else {
@@ -978,10 +979,12 @@ int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *respo
          	   cr = TRUE;
 			   }
             else {
+               sprintf(response, "Error: mytel_sendLX n=%d result=%s", n, result);
                logError("mytel_sendLX n=%d result=%s", n, result);
             }
          }
          else {
+           sprintf(response, "Error: mytel_sendLX n=%d result=%s", n, result);
            logError("mytel_sendLX n=%d result=%s", n, result);
          }
 		}
@@ -990,6 +993,7 @@ int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *respo
 	}
 	return cr;
 }
+
 
 
 
