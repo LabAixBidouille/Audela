@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.26 2008-05-01 12:52:58 robertdelmas Exp $
+# Mise a jour $Id: telescope.tcl,v 1.27 2008-05-10 12:39:28 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -1094,6 +1094,23 @@ proc ::telescope::moveTelescope { alphaDirection alphaDelay deltaDirection delta
    }
    #--- j'arrete le deplacement delta
    tel$audace(telNo) radec stop $deltaDirection
+}
+
+#------------------------------------------------------------
+# park
+#    parque la monture
+#
+# Parametres :
+#    state : 1= park , 0=un-park
+# Return :
+#    rien
+#------------------------------------------------------------
+proc ::telescope::park { state } {
+
+   if { [ ::confTel::getPluginProperty hasPark ] == "1" } {
+      #--- j'appelle la procedure du telescope
+      $::conf(telescope)::park $state
+   }
 }
 
 ::telescope::init
