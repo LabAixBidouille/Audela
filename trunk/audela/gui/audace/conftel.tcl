@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.48 2008-05-07 18:14:41 robertdelmas Exp $
+# Mise a jour $Id: conftel.tcl,v 1.49 2008-05-10 12:37:29 michelpujol Exp $
 #
 
 namespace eval ::confTel {
@@ -474,6 +474,9 @@ proc ::confTel::getPluginProperty { propertyName } {
    # hasControlSuivi         Retourne la possibilite d'arreter le suivi sideral
    # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
    # backlash                Retourne la possibilite de faire un rattrapage des jeux
+   # hasPark                 Retourne la possibilite de parquer la monture
+   # hasUnpark               Retourne la possibilite de de-parquer la monture
+   # hasUpdatedate           Retourne la possibilite de mettre a jour la date et le lieu
 
    #--- je recherche la valeur par defaut de la propriete
    #--- si la valeur par defaut de la propriete n'existe pas, je retourne une chaine vide
@@ -488,6 +491,9 @@ proc ::confTel::getPluginProperty { propertyName } {
       hasControlSuivi         { set result 0 }
       hasCorrectionRefraction { set result 0 }
       backlash                { set result 0 }
+      hasPark                 { set result 0 }
+      hasUnpark               { set result 0 }
+      hasUpdatedate           { set result 0 }
       default                 { set result 0 }
    }
 
