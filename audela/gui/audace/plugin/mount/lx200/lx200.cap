@@ -1,6 +1,6 @@
 #
 # Fichier : lx200.cap
-# Mise a jour $Id: lx200.cap,v 1.5 2008-05-10 12:29:03 michelpujol Exp $
+# Mise a jour $Id: lx200.cap,v 1.6 2008-05-11 21:01:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -91,6 +91,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,maj_lx200)                  "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,raquette_tel)               "Pulsantiera a schermo"
+   set caption(lx200,park)                       "Park"
+   set caption(lx200,unpark)                     "Unpark"
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Porta LX200"
@@ -120,6 +122,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,maj_lx200)                  "Actualizar hora, longitud, latitud y altitud del LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,raquette_tel)               "Controlador virtual"
+   set caption(lx200,park)                       "Park"
+   set caption(lx200,unpark)                     "Unpark"
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Puerto LX200"
@@ -149,6 +153,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,maj_lx200)                  "Zeit, Länge, Breite, Höhe des LX200 Aktualisierung"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,raquette_tel)               "Hand Kontroller am Bildschirm"
+   set caption(lx200,park)                       "Park"
+   set caption(lx200,unpark)                     "Unpark"
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "LX200 Port"
@@ -178,6 +184,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,maj_lx200)                  "Actualizar tempo, longitude, latitude e altitude do LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,raquette_tel)               "Controlador de mão no ecrã"
+   set caption(lx200,park)                       "Park"
+   set caption(lx200,unpark)                     "Unpark"
 
    set caption(lx200,host_audinet)               "Servidor AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "Porta LX200"
@@ -207,6 +215,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(lx200,maj_lx200)                  "Update time, longitude, latitude and altitude of LX200"
    set caption(lx200,ite-lente_tempo)            "Tempo"
    set caption(lx200,raquette_tel)               "Hand controller on screen"
+   set caption(lx200,park)                       "Park"
+   set caption(lx200,unpark)                     "Unpark"
 
    set caption(lx200,host_audinet)               "Host AudiNet/LXnet"
    set caption(lx200,port_lx200)                 "LX200 Port"
