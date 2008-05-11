@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.12 2008-05-10 12:01:10 michelpujol Exp $
+# Mise a jour $Id: lx200.tcl,v 1.13 2008-05-11 21:05:16 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -14,7 +14,7 @@ namespace eval ::lx200 {
 }
 
 #
-# ::lx200::getPluginTitle
+# getPluginTitle
 #    Retourne le label du plugin dans la langue de l'utilisateur
 #
 proc ::lx200::getPluginTitle { } {
@@ -24,15 +24,15 @@ proc ::lx200::getPluginTitle { } {
 }
 
 #
-#  ::lx200::getPluginHelp
-#     Retourne la documentation du plugin
+# getPluginHelp
+#    Retourne la documentation du plugin
 #
 proc ::lx200::getPluginHelp { } {
    return "lx200.htm"
 }
 
 #
-# ::lx200::getPluginType
+# getPluginType
 #    Retourne le type du plugin
 #
 proc ::lx200::getPluginType { } {
@@ -40,7 +40,7 @@ proc ::lx200::getPluginType { } {
 }
 
 #
-# ::lx200::getPluginOS
+# getPluginOS
 #    Retourne le ou les OS de fonctionnement du plugin
 #
 proc ::lx200::getPluginOS { } {
@@ -48,7 +48,7 @@ proc ::lx200::getPluginOS { } {
 }
 
 #
-# ::lx200::getTelNo
+# getTelNo
 #    Retourne le numero de la monture
 #
 proc ::lx200::getTelNo { } {
@@ -58,7 +58,7 @@ proc ::lx200::getTelNo { } {
 }
 
 #
-# ::lx200::isReady
+# isReady
 #    Indique que la monture est prete
 #    Retourne "1" si la monture est prete, sinon retourne "0"
 #
@@ -75,7 +75,7 @@ proc ::lx200::isReady { } {
 }
 
 #
-# ::lx200::getSecondaryTelNo
+# getSecondaryTelNo
 #    Retourne le numero de la monture secondaire, sinon retourne "0"
 #
 proc ::lx200::getSecondaryTelNo { } {
@@ -84,7 +84,7 @@ proc ::lx200::getSecondaryTelNo { } {
 }
 
 #
-# ::lx200::initPlugin
+# initPlugin
 #    Initialise les variables conf(lx200,...)
 #
 proc ::lx200::initPlugin { } {
@@ -106,7 +106,7 @@ proc ::lx200::initPlugin { } {
 }
 
 #
-# ::lx200::confToWidget
+# confToWidget
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::lx200::confToWidget { } {
@@ -123,7 +123,7 @@ proc ::lx200::confToWidget { } {
 }
 
 #
-# ::lx200::widgetToConf
+# widgetToConf
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::lx200::widgetToConf { } {
@@ -140,7 +140,7 @@ proc ::lx200::widgetToConf { } {
 }
 
 #
-# ::lx200::fillConfigPage
+# fillConfigPage
 #    Interface de configuration de la monture LX200
 #
 proc ::lx200::fillConfigPage { frm } {
@@ -280,7 +280,8 @@ proc ::lx200::fillConfigPage { frm } {
       tel$::lx200::private(telNo) date [ mc_date2jd [ ::audace::date_sys2ut now ] ]
       tel$::lx200::private(telNo) home $audace(posobs,observateur,gps)
    }
-   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 -expand true
+   pack $frm.majpara -in $frm.frame2 -anchor center -side top -padx 10 -pady 5 -ipadx 10 -ipady 5 \
+      -expand true
 
    #--- Entree de la tempo Ite-lente
    label $frm.lab4 -text "$caption(lx200,ite-lente_tempo)"
@@ -290,7 +291,7 @@ proc ::lx200::fillConfigPage { frm } {
    pack $frm.tempo -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
    #--- Le checkbutton pour la visibilite de la raquette a l'ecran
-  checkbutton $frm.raquette -text "$caption(lx200,raquette_tel)" \
+   checkbutton $frm.raquette -text "$caption(lx200,raquette_tel)" \
       -highlightthickness 0 -variable ::lx200::private(raquette)
    pack $frm.raquette -in $frm.frame3 -anchor center -side left -padx 10 -pady 10
 
@@ -299,11 +300,13 @@ proc ::lx200::fillConfigPage { frm } {
    pack $frm.nom_raquette -in $frm.frame3 -anchor center -side left -padx 0 -pady 10
 
    #--- Bouton park
-   button $frm.park -text "$caption(lx200,park)" -relief raised -command "::telescope::park 1" -state disabled
+   button $frm.park -text "$caption(lx200,park)" -relief raised -command "::telescope::park 1" \
+      -state disabled
    pack $frm.park -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
    #--- Bouton unpark
-   button $frm.unpark -text "$caption(lx200,unpark)" -relief raised -command "::telescope::park 0" -state disabled
+   button $frm.unpark -text "$caption(lx200,unpark)" -relief raised -command "::telescope::park 0" \
+      -state disabled
    pack $frm.unpark -in $frm.frame4a -anchor center -side left -padx 10 -pady 10
 
    #--- Site web officiel du LX200
@@ -322,7 +325,7 @@ proc ::lx200::fillConfigPage { frm } {
 }
 
 #
-# ::lx200::configureMonture
+# configureMonture
 #    Configure la monture LX200 en fonction des donnees contenues dans les variables conf(lx200,...)
 #
 proc ::lx200::configureMonture { } {
@@ -395,7 +398,7 @@ proc ::lx200::configureMonture { } {
 }
 
 #
-# ::lx200::stop
+# stop
 #    Arrete la monture LX200
 #
 proc ::lx200::stop { } {
@@ -425,7 +428,7 @@ proc ::lx200::stop { } {
 }
 
 #
-# ::lx200::confLX200
+# confLX200
 # Permet d'activer ou de désactiver le bouton
 #
 proc ::lx200::confLX200 { } {
@@ -445,7 +448,6 @@ proc ::lx200::confLX200 { } {
                #--- Bouton park
                $frm.park configure -state normal
             }
-
             #--- Cas des modeles qui ont la fonction "unpark"
             if { [ ::confTel::getPluginProperty hasUnpark ] == "1" } {
                #--- Bouton unpark
@@ -464,7 +466,7 @@ proc ::lx200::confLX200 { } {
 }
 
 #
-# ::lx200::confLX200Inactif
+# confLX200Inactif
 #    Permet de desactiver le bouton a l'arret de la monture
 #
 proc ::lx200::confLX200Inactif { } {
@@ -482,7 +484,7 @@ proc ::lx200::confLX200Inactif { } {
 }
 
 #
-# ::lx200::confModele
+# confModele
 # Permet d'activer ou de désactiver les champs lies au modele
 #
 proc ::lx200::confModele { } {
@@ -525,7 +527,7 @@ proc ::lx200::confModele { } {
 }
 
 #
-# ::lx200::getPluginProperty
+# getPluginProperty
 #    Retourne la valeur de la propriete
 #
 # Parametre :
@@ -543,6 +545,7 @@ proc ::lx200::confModele { } {
 # hasCorrectionRefraction Retourne la possibilite de calculer les corrections de refraction
 # backlash                Retourne la possibilite de faire un rattrapage des jeux
 # hasPark                 Retourne la possibilite de parquer la monture
+# hasUnpark               Retourne la possibilite de de-parquer la monture
 # hasUpdatedate           Retourne la possibilite de mettre a jour la date et le lieu
 #
 proc ::lx200::getPluginProperty { propertyName } {
@@ -644,3 +647,4 @@ proc ::lx200::park { state } {
       }
    }
 }
+
