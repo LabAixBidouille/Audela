@@ -2,7 +2,7 @@
 # Fichier : sextractor.tcl
 # Description : Functions to initialize configuration files for sextractor
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sextractor.tcl,v 1.6 2007-05-20 09:57:19 robertdelmas Exp $
+# Mise a jour $Id: sextractor.tcl,v 1.7 2008-05-11 06:11:03 bmauclaire Exp $
 #
 
 global audace
@@ -272,7 +272,8 @@ proc sextractor { args } {
    set exefile [ file join ${pathbin} sextractor.exe ]
    set k [file exists "$exefile"]
    if {$k==0} {
-      set exefile [ file join ${pathbin} sex.exe ]
+      # set exefile [ file join ${pathbin} sex.exe ]
+      set exefile [ file join ${pathbin} sex ]
       set k [file exists "$exefile"]
    }
    if {$k==0} {
