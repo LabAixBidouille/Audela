@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: util.c,v 1.2 2006-01-29 18:30:25 michelpujol Exp $
+ * $Id: util.c,v 1.3 2008-05-11 06:39:17 denismarchais Exp $
  */
 
 
@@ -34,11 +34,9 @@
 #   include <dlfcn.h>
 #   include <unistd.h>
 #   include <stdio.h>
-#   include <asm/io.h>
-#   include <asm/segment.h>
+#   include <sys/io.h>
 #   include "system.h"		// au lieu de <asm/system.h> (pb redhat)
 #   include <sys/time.h>
-#   include <sys/perm.h>
 #endif
 #if defined(OS_MACOS)
 #   include <stdio.h>
