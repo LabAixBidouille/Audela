@@ -6,7 +6,7 @@
 #
 
 
-DAILY=20080509
+DAILY=20080510
 
 BUILD_DIR=audela-0.0.$DAILY
 INST_DIR=/usr/lib/audela/0.0.$DAILY
@@ -50,11 +50,19 @@ cp -r ../../bin $DIRECTORY
 cp -r ../../lib $DIRECTORY
 cp -r ../../gui $DIRECTORY
 cp -r ../../images $DIRECTORY
-
-# Petit menage
 cp ../COPYING $DIRECTORY
 cp ../../readme.txt $DIRECTORY
-rm $DIRECTORY/bin/version.tcl.in
+
+# Petit menage
+rm -f $DIRECTORY/bin/version.tcl.in
+rm -f $DIRECTORY/bin/audace.txt
+rm -f $DIRECTORY/bin/langage.tcl
+rm -f $DIRECTORY/bin/Makefile
+rm -f $DIRECTORY/gui/config.param
+rm -f $DIRECTORY/gui/config.sex
+rm -f $DIRECTORY/gui/default.nww
+
+
 find $DIRECTORY | grep CVS | xargs rm -rf
 
 # Creation du fichier de demarrage de audela
@@ -71,6 +79,7 @@ sudo dpkg -b $BUILD_DIR $BUILD_DIR.deb
 # Creation du rpm
 mkdir rpm
 cd rpm
-alien -v --to-rpm --scripts ../$BUILD_DIR.deb
+sudo alien -v --to-rpm --scripts ../$BUILD_DIR.deb
 mv *.rpm ..
+cd ..
 rm -rf rpm
