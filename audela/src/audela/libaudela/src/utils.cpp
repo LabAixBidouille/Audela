@@ -1,7 +1,7 @@
 /* utils.cpp
  *
  * This file is part of the AudeLA project : <http://software.audela.free.fr>
- * Copyright (C) 1998-2004 The AudeLA Core Team
+ * Copyright (C) 1998-2008 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
  * 
@@ -20,49 +20,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <string.h>
+#include <stdlib.h>
 
 #include "sysexp.h"
 
 #if defined(OS_LIN) || defined(OS_MACOS)
-   #include <ctype.h>
-   //#include <stdlib.h>
-   //#include <dlfcn.h>
-   //#include <stdio.h>
-   //#include <asm/io.h>
-   //#include <asm/segment.h>
-   //#include "../../common/system.h"
    #include <sys/time.h>
-   #include <unistd.h>
-   //#include <sys/perm.h>
 #endif
 
 #if defined(OS_WIN)
    #include <windows.h>
 #endif
-
-
-void audela_strupr(char *s)
-{
-   int k;
-   char a;
-   for (k=0;k<(int)strlen(s);k++) {
-      a=s[k];
-      if ((a>='a')&&(a<='z')) {
-         s[k]=(char)(a-32);
-      }
-   }
-}
-int audela_strcasecmp(char *a, char *b)
-{
-	while(toupper(*a)==toupper(*b)) {
-		if(*a==0) return 0;
-		a++;
-		b++;
-	}
-	return 1;
-}
-
 
 unsigned long audela_getms()
 {
@@ -78,101 +46,3 @@ unsigned long audela_getms()
    return 0;
 #endif
 }
-
-/*
-
-void audela_out(unsigned short a, unsigned char d)
-{
-#if defined(PF_PC)
-   #if defined(OS_WIN)
-      _asm {
-         mov dx, a
-         mov al, d
-         out dx, al
-      }
-   #elif defined(OS_LIN)
-      outb(d,a);
-   #endif
-#endif
-}
-
-unsigned char audela_in(unsigned short a)
-{
-#if defined(PF_PC)
-   #if defined(OS_WIN)
-      _asm {
-         mov dx, a
-         in al, dx
-      }
-   #elif defined(OS_LIN)
-      return inb(a);
-   #endif
-#else
-   return (unsigned char)0;
-#endif
-}
-
-unsigned short audela_inw(unsigned short a)
-{
-#if defined(PF_PC)
-   #if defined(OS_WIN)
-      _asm {
-         mov dx, a
-         in ax, dx
-      }
-   #elif defined(OS_LIN)
-      return inw(a);
-   #endif
-#else
-   return (unsigned char)0;
-#endif
-}
-
-*/
-
-void audela_sleep(int ms)
-{
-#if defined(OS_LIN) || defined(OS_UNX) || defined(OS_MACOS)
-   usleep(ms*1000);
-#elif defined(OS_WIN)
-   Sleep(ms);
-#endif
-}
-
-void bloquer()
-{
-#if defined(PF_PC)
-   #if defined(OS_WIN)
-      _asm {
-         cli
-      }
-   #elif defined(OS_LIN)
-/*
-      int toto;
-      toto=iopl(3);
-      if(toto!=0) {
-         fprintf(stderr,"Impossible d'acceder au port parallele.\n");
-         exit(1);
-      }
-      cli();
-*/
-   #endif
-#endif
-}
-
-
-void debloquer()
-{
-#if defined(PF_PC)
-   #if defined(OS_WIN)
-      _asm {
-         sti
-      }
-   #elif defined(OS_LIN)
-/*
-      sti();
-*/
-   #endif
-#endif
-}
-
