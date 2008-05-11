@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.14 2008-02-03 10:16:14 robertdelmas Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.15 2008-05-11 15:59:59 jberthier Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -308,26 +308,28 @@ proc vo_skybot { args } {
       array set skybot_xml {
         skybot {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
- xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
- xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xmlns:xsd="http://www.w3.org/2001/XMLSchema"
- xmlns:ns1="http://www.imcce.fr/webservices/skybot">
- <SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-  <ns1:skybot>
-   <inputArray>
-    <epoch>${epoch}</epoch>
-    <alpha>${RA}</alpha>
-    <delta>${DEC}</delta>
-    <radius>$radius</radius>
-    <mime>$mime</mime>
-    <output>$out</output>
-    <observer>$observer</observer>
-    <filter>$filter</filter>
-   </inputArray>
-  </ns1:skybot>
- </SOAP-ENV:Body>
-   </SOAP-ENV:Envelope>}
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
+    xmlns:ns1="http://www.imcce.fr/webservices/skybot"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" 
+    SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <SOAP-ENV:Header><ns1:clientID><ns1:from>DEBUG</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID></SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns1:skybotconesearch>
+      <inputArray xsi:type="ns1:skybotConeSearchRequest">
+        <epoch xsi:type="xsd:double">${epoch}</epoch>
+        <alpha xsi:type="xsd:double">${RA}</alpha>
+        <delta xsi:type="xsd:double">${DEC}</delta>
+        <radius xsi:type="xsd:string">$radius</radius>
+        <mime xsi:type="xsd:string">$mime</mime>
+        <output xsi:type="xsd:string">$out</output>
+        <observer xsi:type="xsd:string">$observer</observer>
+        <filter xsi:type="xsd:double">$filter</filter>
+      </inputArray>
+    </ns1:skybotconesearch>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>}
 }
       SOAP::create skybot \
          -uri "http://www.imcce.fr/webservices/skybot" \
@@ -407,22 +409,26 @@ proc vo_skybotresolver { args } {
       array set skybot_xml {
         skybotresolver {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
- xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
- xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xmlns:xsd="http://www.w3.org/2001/XMLSchema"
- xmlns:ns1="http://www.imcce.fr/webservices/skybot-dev">
- <SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-  <ns1:skybotresolver>
-   <inputArray>
-     <epoch>${epoch}</epoch>
-     <name>${target}</name>
-     <mime>${mime}</mime>
-     <output>${out}</output>
-     <observer>${observer}</observer>
-   </inputArray>
-  </ns1:skybotresolver>
- </SOAP-ENV:Body>
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
+    xmlns:ns1="http://www.imcce.fr/webservices/skybot" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" 
+    SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <SOAP-ENV:Header>
+    <ns1:clientID><ns1:from>debug</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns1:skybotresolver>
+      <inputArray xsi:type="ns1:skybotResolverRequest">
+        <epoch xsi:type="xsd:double">${epoch}</epoch>
+        <name xsi:type="xsd:string">$target</name>
+        <mime xsi:type="xsd:string">$mime</mime>
+        <output xsi:type="xsd:string">$out</output>
+        <observer xsi:type="xsd:string">$observer</observer>
+      </inputArray>
+    </ns1:skybotresolver>
+  </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>}
       }
 
