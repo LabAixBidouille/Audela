@@ -25,7 +25,7 @@
  *
  * Fonctions C-Tcl specifiques a ce telescope. A programmer.
  *
- * $Id: teltcl.c,v 1.3 2008-05-10 11:55:16 michelpujol Exp $
+ * $Id: teltcl.c,v 1.4 2008-05-11 12:46:11 jacquesmichelet Exp $
  *
  */
 
@@ -263,7 +263,7 @@ int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char 
    char *usage= "Usage: %s %s command ?command? ?returnType:none|ok|sharp?";
    struct telprop *tel;
    tel = (struct telprop *)clientData;
-   if(argc!=3) {
+   if(argc!=4) {
       sprintf(ligne,usage,argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
       result = TCL_ERROR;
