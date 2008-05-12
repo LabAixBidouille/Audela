@@ -20,10 +20,31 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: util.h,v 1.1 2006-09-29 19:58:15 michelpujol Exp $
+// $Id: util.h,v 1.2 2008-05-12 07:32:57 denismarchais Exp $
 
 #ifndef __PARALLEL_UTIL_H__
 #define __PARALLEL_UTIL_H__
+
+#include "sysexp.h"
+
+#if defined(OS_WIN)
+#define OS_WIN_USE_PARRALLEL_OLD_STYLE
+#include <windows.h>
+#include <winspool.h>   // for EnumPorts
+#endif
+
+#include <math.h>
+
+#if defined(OS_LIN)
+#define OS_LIN_USE_PARRALLEL_OLD_STYLE
+#   include <stdlib.h>
+#   include <string.h>
+#   include <dlfcn.h>
+#   include <unistd.h>
+#   include <stdio.h>
+#   include <sys/io.h>
+#   include "system.h"          // au lieu de <asm/system.h> (pb redhat)
+#endif
 
 #ifdef __cplusplus
 extern "C" {

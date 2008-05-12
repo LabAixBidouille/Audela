@@ -20,11 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: cparallel.cpp,v 1.3 2006-09-28 19:38:24 michelpujol Exp $
+// $Id: cparallel.cpp,v 1.4 2008-05-12 07:32:56 denismarchais Exp $
 
 
 #include "sysexp.h"
 
+/*
 #if defined(OS_WIN)
 
    // J'active OS_WIN_USE_PARRALLEL_OLD_STYLE car le nouveau style ne fonctionne pas correctement :
@@ -39,6 +40,7 @@
    #define OS_LIN_USE_PARRALLEL_OLD_STYLE
 #   include <asm/io.h>     // for inb()
 #endif
+*/
 
 #include <stdio.h>
 #include <string.h>
