@@ -24,7 +24,7 @@ http://fr.groups.yahoo.com/group/audeladev/
 
 AudeLA est capable de piloter les cameras CCD suivantes :
 - AndorTech,
-- APN (Appareil Photo Numerique),
+- APN (Appareil Photo Numerique, CANON et NIKON),
 - Audine (Kaf series 400, 401, 401E, 1600, 1602, 1602E et 3200E),
 - CB245,
 - Cemes,
