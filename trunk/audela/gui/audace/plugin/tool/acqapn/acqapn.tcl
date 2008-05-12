@@ -2,7 +2,7 @@
 # Fichier : acqapn.tcl
 # Description : Outil d'acquisition pour APN Nikon CoolPix
 # Auteur : Raymond ZACHANTKE
-# Mise a jour $Id: acqapn.tcl,v 1.31 2007-12-15 08:09:43 robertdelmas Exp $
+# Mise a jour $Id: acqapn.tcl,v 1.32 2008-05-12 15:39:09 robertdelmas Exp $
 #
 
 #============================================================
@@ -351,6 +351,46 @@ namespace eval ::acqapn {
       $This.fra4.connect configure -text $caption(acqapn,sw,encours) -command { }
       ::acqapn::ConfigEtat disabled
 
+      #--- Connexion impossible si une camera utilise deja la visu1
+      if { [ ::confVisu::getCamItem 1 ] != "" } {
+         tk_messageBox -title $caption(acqapn,titre,pb) -type ok -message $caption(acqapn,msg,camera_visu1)
+         $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) \
+            -command { ::acqapn::connect } -state normal
+         return
+      }
+
+      #--- Recherche les camItem utilises
+      set list_camItem [list ]
+      foreach visuNo [ ::visu::list ] {
+         set camItem [ ::confVisu::getCamItem $visuNo ]
+         if { $camItem != "" } {
+            lappend list_camItem "$camItem"
+         }
+      }
+      set list_camItem [ lsort $list_camItem ]
+
+      #--- Propose un camItem non-utilise
+      if { $list_camItem == "" } {
+         set camItem "A"
+      } elseif { $list_camItem == "A" } {
+         set camItem "B"
+      } elseif { $list_camItem == "B" } {
+         set camItem "A"
+      } elseif { $list_camItem == "C" } {
+         set camItem "A"
+      } elseif { $list_camItem == "A B" } {
+         set camItem "C"
+      } elseif { $list_camItem == "A C" } {
+         set camItem "B"
+      } elseif { $list_camItem == "B C" } {
+         set camItem "A"
+      } elseif { $list_camItem == "A B C" } {
+         tk_messageBox -title $caption(acqapn,titre,pb) -type ok -message $caption(acqapn,msg,no_camItem)
+         $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) \
+            -command { ::acqapn::connect } -state normal
+         return
+      }
+
       #--- Recherche du port serie sur lequel la camera repond
       set port [::acqapn::IdCom]
       if { $port!="no port" && $port!="not found" } {
@@ -358,7 +398,7 @@ namespace eval ::acqapn {
          ::console::affiche_erreur "$conf(coolpix,model) $caption(acqapn,msg,connect) $port\n"
          ::console::affiche_erreur "$caption(acqapn,msg,apn_baud) $conf(coolpix,baud)\n"
          ::console::affiche_saut "\n"
-         ::confVisu::setCamera "$audace(visuNo)" [ ::confVisu::getCamItem 1 ] "$audace(camNo)" "$conf(coolpix,model)"
+         ::confVisu::setCamera "$audace(visuNo)" "$camItem" "$conf(coolpix,model)"
       } else {
          $This.fra4.connect configure -text $caption(acqapn,sw_connect,on) -command { ::acqapn::connect }
          if { $port=="not found" } { set msg 1 } else { set msg 2 }
@@ -1441,7 +1481,10 @@ namespace eval ::acqapn {
    #--- Arrete la camera Nikon CoolPix
    #
    proc deconnect { } {
+      global audace
+
       ::acqapn::Off
+      ::confVisu::setCamera "$audace(visuNo)" ""
    }
 
    #--- Namespace pour la boite de configuration de la vitesse de communication
