@@ -2,7 +2,7 @@
 # Fichier : parallelport.tcl
 # Description : Interface de liaison Port Parallele
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: parallelport.tcl,v 1.20 2008-05-07 13:12:20 michelpujol Exp $
+# Mise a jour $Id: parallelport.tcl,v 1.21 2008-05-12 16:55:49 robertdelmas Exp $
 #
 
 namespace eval parallelport {
@@ -238,8 +238,10 @@ proc ::parallelport::fillConfigPage { frm } {
 
    pack $frm.available -side top -fill both -expand true
 
+   #--- J'affiche le frame de Porttalk uniquement pour Windows
    if { $::tcl_platform(os) == "Windows NT" } {
-      #--- J'affiche les labels et le bouton associe au message Porttalk
+
+      #--- J'affiche les labels et le bouton associes au message Porttalk
       frame $frm.porttalk -borderwidth 0 -relief raised
 
          label $frm.porttalk.lab1 -text "$caption(parallelport,texte)"
