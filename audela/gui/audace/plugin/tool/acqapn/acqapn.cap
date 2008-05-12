@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.12 2007-11-11 10:50:56 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.13 2008-05-12 15:37:15 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -74,6 +74,8 @@ set caption(acqapn,msg,no_resolution)        "Format and compression not compati
 set caption(acqapn,msg,no_save)              "Settings not saved\n"
 set caption(acqapn,msg,pas_detecte)          "not detected.\n"
 set caption(acqapn,msg,pose)                 "This is not an exposure time."
+set caption(acqapn,msg,camera_visu1)         "# Une caméra est déjà connectée à la visu1.\nVous devez déconnecter cette caméra."
+set caption(acqapn,msg,no_camItem)           "# Vous devez déconnecter une des 3 caméras utilisées."
 set caption(acqapn,port_serie)               "Serial Port"
 set caption(acqapn,poses,delai)              "Delay"
 set caption(acqapn,poses,nom)                "Name"
@@ -160,6 +162,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Paramètres non sauvegardés\n"
    set caption(acqapn,msg,pas_detecte)       "non détecté.\n"
    set caption(acqapn,msg,pose)              "Ceci n'est pas un temps de pose."
+   set caption(acqapn,msg,camera_visu1)      "Une caméra est déjà connectée à la visu1.\nVous devez déconnecter cette caméra."
+   set caption(acqapn,msg,no_camItem)        "Vous devez déconnecter une des 3 caméras utilisées."
    set caption(acqapn,port_serie)            "Port série"
    set caption(acqapn,poses,delai)           "Délai"
    set caption(acqapn,poses,nom)             "Nom"
@@ -246,6 +250,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Parametri non salvati\n"
    set caption(acqapn,msg,pas_detecte)       "non trovato.\n"
    set caption(acqapn,msg,pose)              "Questo non e` un tempo di esposizione."
+   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la visu1.\nVous devez déconnecter cette caméra."
+   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
    set caption(acqapn,port_serie)            "Porta seriale"
    set caption(acqapn,poses,delai)           "Intervallo"
    set caption(acqapn,poses,nom)             "Nome"
@@ -332,6 +338,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Configuración no guardada\n"
    set caption(acqapn,msg,pas_detecte)       "no detectado.\n"
    set caption(acqapn,msg,pose)              "Esto no es un tiempo de exposición."
+   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la visu1.\nVous devez déconnecter cette caméra."
+   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
    set caption(acqapn,port_serie)            "Puerto Serie"
    set caption(acqapn,poses,delai)           "Retraso"
    set caption(acqapn,poses,nom)             "Nombre"
@@ -418,6 +426,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Parametern nicht geschpeichert\n"
    set caption(acqapn,msg,pas_detecte)       "nicht aufgefunden.\n"
    set caption(acqapn,msg,pose)              "Das ist kein Belichtung Zeit."
+   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la visu1.\nVous devez déconnecter cette caméra."
+   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
    set caption(acqapn,port_serie)            "Seriell Port"
    set caption(acqapn,poses,delai)           "Zeitraum"
    set caption(acqapn,poses,nom)             "Namen"
@@ -504,6 +514,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Parâmetros não salvaguardados\n"
    set caption(acqapn,msg,pas_detecte)       "não detectado.\n"
    set caption(acqapn,msg,pose)              "Este não é um tempo de exposição."
+   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la visu1.\nVous devez déconnecter cette caméra."
+   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
    set caption(acqapn,port_serie)            "Porta série"
    set caption(acqapn,poses,delai)           "Atraso"
    set caption(acqapn,poses,nom)             "Nome"
@@ -590,6 +602,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Settings not saved\n"
    set caption(acqapn,msg,pas_detecte)       "not detected.\n"
    set caption(acqapn,msg,pose)              "This is not an exposure time."
+   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la visu1.\nVous devez déconnecter cette caméra."
+   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
    set caption(acqapn,port_serie)            "Serial Port"
    set caption(acqapn,poses,delai)           "Delay"
    set caption(acqapn,poses,nom)             "Name"
