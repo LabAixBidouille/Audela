@@ -20,7 +20,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// $Id: util.c,v 1.2 2006-02-05 10:28:47 michelpujol Exp $
+// $Id: util.c,v 1.3 2008-05-12 07:11:44 denismarchais Exp $
 
 #include "sysexp.h"
 
@@ -34,9 +34,7 @@
 #   include "system.h" // au lieu de <asm/system.h> (pb redhat)
 #   include <sys/time.h>
 #   if defined(OS_LIN)
-#      include <asm/io.h>
-#      include <asm/segment.h>
-#      include <sys/perm.h>
+#      include <sys/io.h>
 #   endif
 #endif
 #if defined(OS_WIN)
