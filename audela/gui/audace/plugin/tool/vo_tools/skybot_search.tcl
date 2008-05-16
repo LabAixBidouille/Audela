@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.17 2008-04-18 21:45:16 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.18 2008-05-16 21:29:03 jberthier Exp $
 #
 
 namespace eval skybot_Search {
@@ -1660,7 +1660,7 @@ namespace eval skybot_Search {
       #--- Interrogation de la base de donnees
       set erreur [ catch { vo_skybotstatus } statut ]
       #---
-      if { $erreur == "0" && $statut != "failed" } {
+      if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
 
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]
@@ -1698,7 +1698,12 @@ namespace eval skybot_Search {
 
       } else {
 
-         tk_messageBox -title $caption(search,msg_erreur) -type ok -message $caption(search,msg_internet)
+         set msgError $caption(search,msg_internet)
+         if {$statut == "error"} {
+            set msgError $caption(search,msg_skybot)
+         }
+
+         tk_messageBox -title $caption(search,msg_erreur) -type ok -message $msgError
          $::skybot_Search::This configure -cursor arrow
          $::skybot_Search::This.frame6.but_recherche configure -relief raised -state normal
          return

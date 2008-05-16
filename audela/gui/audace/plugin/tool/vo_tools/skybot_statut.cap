@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_statut.cap
-# Mise a jour $Id: skybot_statut.cap,v 1.11 2007-01-27 14:54:16 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.cap,v 1.12 2008-05-16 21:29:03 jberthier Exp $
 #
 
 #=========================================================================
@@ -26,6 +26,7 @@ set caption(statut,fermer)            "Close"
 
 set caption(statut,msg_erreur)        "Error"
 set caption(statut,msg_internet)      "An Internet connexion is required to access SkyBoT database."
+set caption(statut,msg_skybot)        "The SkyBoT server is unreachable; please, try again later."
 
 # *************** Version française **** ***********************
 if { [ string compare $langage "french" ] == "0" } {
@@ -45,6 +46,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(statut,msg_erreur)     "Erreur"
    set caption(statut,msg_internet)   "Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
+   set caption(statut,msg_skybot)     "Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -64,6 +66,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(statut,msg_erreur)     "# Erreur"
    set caption(statut,msg_internet)   "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
+   set caption(statut,msg_skybot)     "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -83,6 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(statut,msg_erreur)     "# Erreur"
    set caption(statut,msg_internet)   "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
+   set caption(statut,msg_skybot)     "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -102,6 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(statut,msg_erreur)     "# Erreur"
    set caption(statut,msg_internet)   "# Une connexion à Internet opérationnelle est nécessaire pour accéder à la base de données SkyBoT."
+   set caption(statut,msg_skybot)     "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -121,6 +126,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(statut,msg_erreur)     "Erro"
    set caption(statut,msg_internet)   "Uma conexão à Internet operacional é necessária para aceder à base de dados SkyBoT."
+   set caption(statut,msg_skybot)     "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -140,6 +146,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(statut,msg_erreur)     "Error"
    set caption(statut,msg_internet)   "An Internet connexion is required to access SkyBoT database."
+   set caption(statut,msg_skybot)     "The SkyBoT server is unreachable; please, try again later."
 
 }
 

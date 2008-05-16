@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Mise a jour $Id: skybot_resolver.cap,v 1.10 2007-01-27 14:53:36 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.cap,v 1.11 2008-05-16 21:29:03 jberthier Exp $
 #
 
 #=========================================================================
@@ -49,7 +49,9 @@ set caption(resolver,msg_date_min)          "# La date saisie doit être une date
 set caption(resolver,msg_reel_ad)           "# L'ascension droite doit être un nombre réel compris entre 0.0° et 360.0°"
 set caption(resolver,msg_reel_dec)          "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
 set caption(resolver,msg_reel_fov)          "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
-set caption(resolver,msg_internet)          "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
+set caption(resolver,msg_internet)          "An Internet connexion is required to access SkyBoT and Sesame services."
+set caption(resolver,msg_skybot)            "The SkyBoT or Sesame server is unreachable; please, try again later."
+
 set caption(resolver,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
 set caption(resolver,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
@@ -119,6 +121,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(resolver,msg_reel_dec)       "La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
+   set caption(resolver,msg_skybot)         "Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
    set caption(resolver,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
    set caption(resolver,msg_nbre_objet)     "::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
@@ -188,6 +191,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
+   set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
    set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
    set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
@@ -257,6 +261,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
+   set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
    set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
    set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
@@ -326,6 +331,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
+   set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
    set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
    set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
@@ -395,6 +401,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_dec)       "A declinação deve ser um número real compreendido entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "As dimensões do campo de visão devem ser um número real positivo, não nulo e inferior a 36000 segundos de grau (10°)"
    set caption(resolver,msg_internet)       "Uma ligação à Internet operacional é necessária para aceder aos serviços SkyBoT e Sesame."
+   set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
    set caption(resolver,msg_nbre_objets)    "::SkyBoT:: Número de objectos do Sistema Solar encontrados no FOV :"
    set caption(resolver,msg_nbre_objet)     "::SkyBoT:: Um só objecto do Sistema Solar encontrado no FOV"
 
@@ -464,6 +471,7 @@ indicado não serão mostrados. Escolher 0 para não aplicar filtro"
    set caption(resolver,msg_reel_dec)       "# La déclinaison doit être un nombre réel compris entre -90.0° et 90.0°"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
+   set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
    set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
    set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
 
