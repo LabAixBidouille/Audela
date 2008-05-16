@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_search.cap
-# Mise a jour $Id: skybot_search.cap,v 1.12 2007-01-27 14:53:56 robertdelmas Exp $
+# Mise a jour $Id: skybot_search.cap,v 1.13 2008-05-16 21:29:03 jberthier Exp $
 #
 
 #=========================================================================
@@ -97,7 +97,8 @@ set caption(search,msg_format)            "# Format de la saisie"
 set caption(search,msg_openfile)          "Couldn't open "
 set caption(search,msg_savefile)          "Couldn't save "
 set caption(search,msg_notgoodfile)       "File session not valid..."
-set caption(search,msg_internet)          "# Une connexion à Internet opérationnelle est nécessaire pour accéder au service SkyBoT."
+set caption(search,msg_internet)          "An Internet connexion is required to access SkyBoT database."
+set caption(search,msg_skybot)            "The SkyBoT server is unreachable; please, try again later."
 
 set caption(search,filtres)               "# Filtres"
 set caption(search,filtre_none)           "# Aucun filtre"
@@ -228,6 +229,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(search,msg_savefile)       "Sauvegarde impossible "
    set caption(search,msg_notgoodfile)    "Fichier de session non conforme..."
    set caption(search,msg_internet)       "Une connexion à Internet opérationnelle est nécessaire pour accéder au service SkyBoT."
+   set caption(search,msg_skybot)         "Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
    set caption(search,filtres)            "Filtres"
    set caption(search,filtre_none)        "Aucun filtre"
@@ -359,6 +361,7 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,msg_savefile)       "# Sauvegarde impossible "
    set caption(search,msg_notgoodfile)    "# Fichier de session non conforme..."
    set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder au service SkyBoT."
+   set caption(search,msg_skybot)         "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
    set caption(search,filtres)            "# Filtres"
    set caption(search,filtre_none)        "# Aucun filtre"
@@ -490,6 +493,7 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,msg_savefile)       "# Sauvegarde impossible "
    set caption(search,msg_notgoodfile)    "# Fichier de session non conforme..."
    set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder au service SkyBoT."
+   set caption(search,msg_skybot)         "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
    set caption(search,filtres)            "# Filtres"
    set caption(search,filtre_none)        "# Aucun filtre"
@@ -621,6 +625,7 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,msg_savefile)       "# Sauvegarde impossible "
    set caption(search,msg_notgoodfile)    "# Fichier de session non conforme..."
    set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder au service SkyBoT."
+   set caption(search,msg_skybot)         "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
    set caption(search,filtres)            "# Filtres"
    set caption(search,filtre_none)        "# Aucun filtre"
@@ -752,6 +757,7 @@ un des codes reconnus : Mars, Spirit, Opportunity"
    set caption(search,msg_savefile)       "Salvaguarda impossível "
    set caption(search,msg_notgoodfile)    "Ficheiro de sessão não está conforme..."
    set caption(search,msg_internet)       "Uma conexão à Internet operacional é necessária para aceder ao serviço SkyBoT."
+   set caption(search,msg_skybot)         "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
    set caption(search,filtres)            "Filtros"
    set caption(search,filtre_none)        "Nenhum filtro"
@@ -883,6 +889,7 @@ um dos códigos reconhecidos : Marte, Spirit, Opportunity"
    set caption(search,msg_savefile)       "# Sauvegarde impossible "
    set caption(search,msg_notgoodfile)    "# Fichier de session non conforme..."
    set caption(search,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder au service SkyBoT."
+   set caption(search,msg_skybot)         "# Le serveur SkyBoT n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
 
    set caption(search,filtres)            "# Filtres"
    set caption(search,filtre_none)        "# Aucun filtre"

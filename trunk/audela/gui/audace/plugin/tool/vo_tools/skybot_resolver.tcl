@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.17 2007-10-05 16:55:47 robertdelmas Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.18 2008-05-16 21:29:03 jberthier Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -760,7 +760,7 @@ namespace eval skybot_Resolver {
       set erreur [ catch { vo_skybotstatus } statut ]
 
       #---
-      if { $erreur == "0" && $statut != "failed" } {
+      if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
          #--- Mise en forme du resultat
          set statut [lindex [split $statut ";"] 1]
          regsub -all "\'" $statut "" statut
@@ -799,7 +799,11 @@ namespace eval skybot_Resolver {
 
       } else {
 
-         return $caption(resolver,msg_internet)
+         set msgError $caption(resolver,msg_internet)
+         if {$statut == "error"} {
+            set msgError $caption(resolver,msg_skybot)
+         }
+         return $msgError
 
       }
 

@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.10 2007-10-05 16:57:02 robertdelmas Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.11 2008-05-16 21:29:03 jberthier Exp $
 #
 
 namespace eval skybot_Statut {
@@ -92,7 +92,7 @@ namespace eval skybot_Statut {
       set erreur [ catch { vo_skybotstatus } statut ]
 
       #--- Gestion des erreurs
-      if { $erreur == "0" && $statut != "failed"} {
+      if { $erreur == "0" && $statut != "failed" && $statut != "error"} {
 
          #---
          toplevel $This -class Toplevel
@@ -224,9 +224,14 @@ namespace eval skybot_Statut {
 
       } else {
 
-         tk_messageBox -title $caption(statut,msg_erreur) -type ok -message $caption(statut,msg_internet)
+         set msgError $caption(statut,msg_internet)
+         if {$statut == "error"} {
+            set msgError $caption(statut,msg_skybot)
+         }
+         tk_messageBox -title $caption(statut,msg_erreur) -type ok -message $msgError
          $audace(base).vo_tools.fra5.but1 configure -relief raised -state normal
          return
+            
 
       }
 
