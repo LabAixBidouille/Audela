@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.15 2008-05-11 15:59:59 jberthier Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.16 2008-05-16 21:26:00 jberthier Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -504,13 +504,23 @@ proc vo_skybotstatus { args } {
 
       set erreur [ catch { skybotstatus $mime } response ]
 
-      if { $erreur == "0" } {
+      # cas ou le serveur repond avec une erreur
+      if {[string range $response 0 11] == "SKYBOTStatus"} {
+         set erreur 99
+      }
+
+      # construction de la reponse
+      if {$erreur == "0"}  {
          return $response
       } else {
          if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
-            tk_messageBox -title "error" -type ok -message $response
+            tk_messageBox -title "error" -type ok -message [concat "Error: " $response]
          }
-         return "failed"
+         if {$erreur == "99"} {
+            return "error"
+         } else {
+            return "failed"
+         }
       }
 
    } else {
