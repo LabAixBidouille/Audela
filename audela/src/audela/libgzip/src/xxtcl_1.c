@@ -82,7 +82,7 @@ int Cmd_xxtcl_gzip(ClientData clientData, Tcl_Interp *interp, int argc, char *ar
          strcpy(lignetcl,"set gzip_name");
          Tcl_Eval(interp,lignetcl);
          sprintf(lignetcl,"%s \"%s\"",argv[0],Tcl_GetStringResult(interp));
-         Tcl_SplitList(interp,lignetcl,&argcc,(const char***)&argvv);
+         Tcl_SplitList(interp,lignetcl,&argcc,(char***)&argvv);
          result=gzipmain(argcc,argvv);
          if (result!=2) {
             nb++;
