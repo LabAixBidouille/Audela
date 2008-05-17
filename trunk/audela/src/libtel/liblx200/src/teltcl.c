@@ -35,7 +35,7 @@
 #include <libtel/util.h>
 
 /*
- *   structure pour les fonctions étendues
+ *   structure pour les fonctions ï¿½tendues
  */
 char *tel_longformat[] = {
    "on",
@@ -205,14 +205,14 @@ int cmdTelCorrect(ClientData clientData, Tcl_Interp *interp, int argc, char *arg
  */
 int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
    char ligne[256];
-   int result;
+   int retour;
    char *usage= "Usage: %s %s ?command? ?returnType:none|ok|sharp?";
    struct telprop *tel;
    tel = (struct telprop *)clientData;
    if(argc!=4) {
       sprintf(ligne,usage,argv[0],argv[1]);
       Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-      result = TCL_ERROR;
+      retour = TCL_ERROR;
    } else {
       int returnType = -1;
 
@@ -227,21 +227,22 @@ int cmdTelSendCommand(ClientData clientData, Tcl_Interp *interp, int argc, char 
       if (returnType == -1 ) {
          sprintf(ligne,"%s . Error: bad return type %s ",usage, argv[3]);
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
-         result = TCL_ERROR;
+         retour = TCL_ERROR;
       } else {
          int result;
          char response[1024];
          result = mytel_sendLX(tel, argv[2], returnType, response);
          if ( result == 1 ) {
-            Tcl_SetResult(interp,(char*)response,TCL_VOLATILE);
-            result = TCL_OK;
-         } else {
+            Tcl_SetResult(interp, response, TCL_VOLATILE);
+            retour = TCL_OK;
+         }
+		else {
             // le libelle de l'erreur est dans le parametre response
-            Tcl_SetResult(interp,(char*)response,TCL_VOLATILE);
-            result = TCL_ERROR;
+            Tcl_SetResult(interp, response, TCL_VOLATILE);
+            retour = TCL_ERROR;
          }
       }
    }
-   return result;
+   return retour;
 }
 
