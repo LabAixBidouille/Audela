@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.3 2008-05-09 17:40:51 michelpujol Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.4 2008-05-17 16:56:16 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1068,12 +1068,10 @@ namespace eval ::acqvideo {
       wm title $panneau(acqvideo,$visuNo,base).status_video "$caption(acqvideo,capture_video)"
       wm geometry $panneau(acqvideo,$visuNo,base).status_video $conf(acqvideo,video,position)
       wm protocol $panneau(acqvideo,$visuNo,base).status_video WM_DELETE_WINDOW " \
-         if { $panneau(acqvideo,$visuNo,mode) == \"2\" } { \
-            set panneau(acqvideo,$visuNo,mode_en_cours) \"$caption(acqvideo,video)\" ; \
-            ::acqvideo::ChangeMode $visuNo \
-         } elseif { $panneau(acqvideo,$visuNo,mode) == \"1\" } { \
-            set panneau(acqvideo,$visuNo,mode_en_cours) \"$caption(acqvideo,video)\" ; \
-            ::acqvideo::ChangeMode $visuNo \
+         if { $panneau(acqvideo,$visuNo,mode) == \"1\" } { \
+            set panneau(acqvideo,$visuNo,mode_en_cours) \"$caption(acqvideo,video)\" \
+         } elseif { $panneau(acqvideo,$visuNo,mode) == \"2\" } { \
+            set panneau(acqvideo,$visuNo,mode_en_cours) \"$caption(acqvideo,video1)\" \
          } \
       "
 
