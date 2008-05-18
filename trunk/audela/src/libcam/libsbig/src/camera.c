@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Denis MARCHAIS <denis.marchais@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -117,15 +117,16 @@ struct camini CAM_INI[] = {
 };
 
 static char *cam_extports[] = {
-    "lpt1",
-    "lpt2",
-    "lpt3",
+    "LPT1:",
+    "LPT2:",
+    "LPT3:",
     "USB",
     "Ethernet",
     NULL
 };
 
 static int cam_init(struct camprop *cam, int argc, char **argv);
+static int cam_close(struct camprop *cam);
 static void cam_start_exp(struct camprop *cam, char *amplionoff);
 static void cam_stop_exp(struct camprop *cam);
 static void cam_read_ccd(struct camprop *cam, unsigned short *p);
@@ -142,7 +143,7 @@ static void cam_update_window(struct camprop *cam);
 
 struct cam_drv_t CAM_DRV = {
     cam_init,
-    NULL,
+    cam_close,
     cam_set_binning,
     cam_update_window,
     cam_start_exp,
@@ -185,345 +186,389 @@ int cam_init(struct camprop *cam, int argc, char **argv)
 /* --------------------------------------------------------- */
 /* --------------------------------------------------------- */
 {
-    double temp_setpoint, temp_ccd, temp_ambient;
-    int temp_reg, temp_power;
-    OpenDeviceParams odp;
-    short h1 = (short) INVALID_HANDLE_VALUE;
-    EstablishLinkParams elp;
-    EstablishLinkResults elr;
-    GetDriverInfoParams gdip;
-    GetDriverInfoResults0 gdir;
-    EndExposureParams eep;
-    EndReadoutParams erp;
-    StartExposureParams params;
-    GetCCDInfoParams gcip;
-    GetCCDInfoResults0 gcir0;
-    int k, kk, kip, len;
-    char text[256], car;
-    unsigned long ipAddress, ip[50];
-
-    /* --- init variables --- */
-    cam->drv_status = CE_NO_ERROR;
-    cam->opendevice = 0;
-    cam->shutterindex = 1;
-    cam->drv_init = 0;
-    /* --- Decode the link type with argv[2] --- */
-    cam->deviceType = (unsigned short) 0;
-    cam->port = (unsigned short) 0;
-    if (argc >= 2) {
-	if (strcmp(argv[2], cam_extports[0]) == 0) {
-	    cam->deviceType = (unsigned short) 1;
-	    cam->port = (unsigned short) 0x378;
-	}
-	if (strcmp(argv[2], cam_extports[1]) == 0) {
-	    cam->deviceType = (unsigned short) 2;
-	    cam->port = (unsigned short) 0x278;
-	}
-	if (strcmp(argv[2], cam_extports[2]) == 0) {
-	    cam->deviceType = (unsigned short) 3;
-	    cam->port = (unsigned short) 0x178;
-	}
-	if (strcmp(argv[2], cam_extports[3]) == 0) {
-	    cam->deviceType = (unsigned short) 0x7F00;
-	}
-	if (strcmp(argv[2], cam_extports[4]) == 0) {
-	    cam->deviceType = (unsigned short) 0x7F01;
-	}
-    }
-    /* --- Decode options of cam::create in argv[>=3] --- */
-    strcpy(cam->ip, "192.168.0.2");
-    if (argc >= 2) {
-	for (kk = 3; kk < argc - 1; kk++) {
-	    if (strcmp(argv[kk], "-ip") == 0) {
-		if (kk + 1 < argc) {
-		    strcmp(cam->ip, argv[kk + 1]);
-		}
-	    }
-	}
-    }
-    /* --- transcode the ip nulber in an integer --- */
-    for (k = 0; k < 5; k++) {
-	ip[k] = (unsigned long) 0;
-    }
-    len = (int) strlen(cam->ip);
-    strcpy(text, "");
-    for (kip = 0, kk = 0, k = 0; k < len; k++) {
-	car = cam->ip[k];
-	if (car == '.') {
-	    ip[kip++] = (unsigned long) atoi(text);
-	    text[0] = '\0';
-	    kk = 0;
-	} else {
-	    text[kk] = car;
-	    text[kk + 1] = '\0';
-	    kk++;
-	}
-    }
-    ipAddress = (unsigned long) ip[3];
-    ipAddress += (unsigned long) (ip[2] * 256);
-    ipAddress += (unsigned long) (ip[1] * 256 * 256);
-    ipAddress += (unsigned long) (ip[0] * 256 * 256 * 256);
+   double temp_setpoint, temp_ccd, temp_ambient;
+   int temp_reg, temp_power;
+   OpenDeviceParams odp;
+   short h1 = (short) INVALID_HANDLE_VALUE;
+   //EstablishLinkParams elp;
+   EstablishLinkResults elr;
+   GetDriverInfoParams gdip;
+   GetDriverInfoResults0 gdir;
+   EndExposureParams eep;
+   //EndReadoutParams erp;
+   StartExposureParams params;
+   GetCCDInfoParams gcip;
+   GetCCDInfoResults0 gcir0;
+   int k, kk, kip, len;
+   char text[256], car;
+   unsigned long ipAddress, ip[50];
+   QueryCommandStatusParams qcsp;
+   QueryCommandStatusResults qcsr;
+   ReadoutLineParams rlp;
 
 
-#if defined(OS_WIN)
-    /* --- open the Sbig DLL --- */
-    hdll = LoadLibrary(SBIG_DLL_NAME);
-    if (hdll == INVALID_HANDLE_VALUE) {
-	sprintf(cam->msg, "Library %s not found", SBIG_DLL_NAME);
-	return 1;
-    }
+   ipAddress = 0;
 
-    /* --- import the Entry point of the Sbig DLL --- */
-    pardrvcommand =
-	(PARDRVCOMMAND *) GetProcAddress(hdll, "SBIGUnivDrvCommand");
-    if (pardrvcommand == NULL) {
-	sprintf(cam->msg,
-		"Function SBIGUnivDrvCommand not found in the library %s",
-		SBIG_DLL_NAME);
-	FreeLibrary(hdll);
-	return 2;
-    }
-#endif
+   /* --- init variables --- */
+   cam->drv_status = CE_NO_ERROR;
+   cam->opendevice = 0;
+   cam->shutterindex = 1;
+   cam->drv_init = 0;
+   /* --- Decode the link type with argv[2] --- */
+   cam->deviceType = (unsigned short) 0;
+   cam->port = (unsigned short) 0;
+   if (argc >= 2) {
+      if (strcmp(argv[2], cam_extports[0]) == 0) {
+         cam->deviceType = (unsigned short) DEV_LPT1;
+         cam->port = (unsigned short) 0x378;
+      }
+      if (strcmp(argv[2], cam_extports[1]) == 0) {
+         cam->deviceType = (unsigned short) DEV_LPT2;
+         cam->port = (unsigned short) 0x278;
+      }
+      if (strcmp(argv[2], cam_extports[2]) == 0) {
+         cam->deviceType = (unsigned short) DEV_LPT3;
+         cam->port = (unsigned short) 0x178;
+      }
+      if (strcmp(argv[2], cam_extports[3]) == 0) {
+         cam->deviceType = (unsigned short) DEV_USB;
+      }
+      if (strcmp(argv[2], cam_extports[4]) == 0) {
+         cam->deviceType = (unsigned short) DEV_ETH;
+      }
+   }
+   /* --- Decode options of cam::create in argv[>=3] --- */
+   strcpy(cam->ip, "192.168.0.2");
+   if (argc >= 2) {
+      for (kk = 3; kk < argc - 1; kk++) {
+         if (strcmp(argv[kk], "-ip") == 0) {
+            if (kk + 1 < argc) {
+               strcmp(cam->ip, argv[kk + 1]);
+            }
+         }
+         if (strcmp(argv[kk], "-lptaddress") == 0) {
+            if (kk + 1 < argc) {
+               if ( strcmp(argv[kk + 1],"") != 0 && cam->deviceType <= DEV_LPT3 ) {
+                  sscanf(argv[kk + 1],"%x", &cam->port);
+               }
+            }
+         }
+      }
+   }
 
-#if defined(OS_LIN)
-    /* --- import the Entry point of the Sbig library Udrv4.0.a --- */
-    pardrvcommand = SBIGUnivDrvCommand;
-#endif
+   if ( cam->deviceType == DEV_ETH) {
+      //* --- transcode the ip number in an integer
+      for (k = 0; k < 5; k++) {
+         ip[k] = (unsigned long) 0;
+      }
+      len = (int) strlen(cam->ip);
+      strcpy(text, "");
+      for (kip = 0, kk = 0, k = 0; k < len; k++) {
+         car = cam->ip[k];
+         if (car == '.') {
+            ip[kip++] = (unsigned long) atoi(text);
+            text[0] = '\0';
+            kk = 0;
+         } else {
+            text[kk] = car;
+            text[kk + 1] = '\0';
+            kk++;
+         }
+      }
+      ipAddress = (unsigned long) ip[3];
+      ipAddress += (unsigned long) (ip[2] * 256);
+      ipAddress += (unsigned long) (ip[1] * 256 * 256);
+      ipAddress += (unsigned long) (ip[0] * 256 * 256 * 256);
+   }
 
-    /* --- Open Driver --- */
-    cam->drv_status = pardrvcommand(CC_OPEN_DRIVER, NULL, NULL);
-    if (cam->drv_status) {
-	sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-		sbig_get_status(cam->drv_status));
-#if defined(OS_WIN)
-	FreeLibrary(hdll);
-#endif
-	return 3;
-    }
+   /* --- import the Entry point of the Sbig library Udrv4.0.a --- */
+   pardrvcommand = SBIGUnivDrvCommand;
 
-    /* --- Get Driver Info --- */
-    gdip.request = DRIVER_STD;
-    cam->drv_status = pardrvcommand(CC_GET_DRIVER_INFO, &gdip, &gdir);
-    if (cam->drv_status) {
-	sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-		sbig_get_status(cam->drv_status));
-	sbig_cam_close(cam);
-	return 4;
-    }
+   /* --- Open Driver --- */
+   cam->drv_status = pardrvcommand(CC_OPEN_DRIVER, NULL, NULL);
+   if (cam->drv_status) {
+      sprintf(cam->msg, "Error %d at line %d. sbig_status=%s",cam->drv_status, __LINE__,
+         sbig_get_status(cam->drv_status));
+      return 3;
+   }
 
-    /* --- Open Device (= open the communication port) --- */
-    odp.deviceType = cam->deviceType;
-    odp.lptBaseAddress = cam->port;
-    odp.ipAddress = ipAddress;
-    cam->drv_status = pardrvcommand(CC_OPEN_DEVICE, &odp, NULL);
-    if (cam->drv_status) {
-	sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-		sbig_get_status(cam->drv_status));
-	sbig_cam_close(cam);
-	return 5;
-    }
-    cam->opendevice = 1;
 
-    /* --- Establish Link (= The communication is done with the camera) --- */
-    elp.sbigUseOnly = (unsigned short) 0;
-    cam->drv_status = pardrvcommand(CC_ESTABLISH_LINK, &elp, &elr);
-    if (cam->drv_status) {
-	sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-		sbig_get_status(cam->drv_status));
-	sbig_cam_close(cam);
-	return 6;
-    }
+   /* --- Open Device (= open the communication port) --- */
+   switch ( cam->deviceType ) {
+      case DEV_LPT1:
+         odp.deviceType = cam->deviceType;
+   	   odp.lptBaseAddress = cam->port;
+         break;
+      case DEV_LPT2:
+         odp.deviceType = cam->deviceType;
+   	   odp.lptBaseAddress = cam->port;
+         break;
+      case DEV_LPT3:
+         odp.deviceType = cam->deviceType;
+   	   odp.lptBaseAddress = cam->port;
+         break;
+      case DEV_USB:
+         odp.deviceType = cam->deviceType;
+         break;
+      case DEV_ETH:
+         odp.deviceType = cam->deviceType;
+         odp.ipAddress = ipAddress;
+         break;
+      default:
+         sprintf(cam->msg, "Error incorrect port name %s. Must be LPT1 or LPT2 or USB", cam->portname);
+         return 4;
+   }
+   cam->drv_status = pardrvcommand(CC_OPEN_DEVICE, &odp, NULL);
+   if (cam->drv_status) {
+      sprintf(cam->msg, "Error status=%d at line %d. sbig_status=%s deviceType=%d",
+         cam->drv_status, __LINE__, sbig_get_status(cam->drv_status), odp.deviceType);
+      cam_close(cam);
+      return 5;
+   } else {
+       cam->opendevice = 1;
+   }
 
-    /* --- Get Driver Handle (use in case of multi links. Not our case) --- */
-    cam->drv_status = pardrvcommand(CC_GET_DRIVER_HANDLE, NULL, &h1);
-    if (cam->drv_status) {
-	sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-		sbig_get_status(cam->drv_status));
-	sbig_cam_close(cam);
-	return 7;
-    }
+   /* --- Get Driver Info --- */
+   gdip.request = DRIVER_STD;
+   cam->drv_status = pardrvcommand(CC_GET_DRIVER_INFO, &gdip, &gdir);
+   if (cam->drv_status) {
+      sprintf(cam->msg, "Error CC_GET_DRIVER_INFO sbig_status=%s", sbig_get_status(cam->drv_status));
+      cam_close(cam);
+      return 6;
+   }
 
-    /* --- Get CCD Infos (to update the CAM_INI struct with the linked camera) --- */
-    gcip.request = CCD_INFO_IMAGING;
-    cam->drv_status = pardrvcommand(CC_GET_CCD_INFO, &gcip, &gcir0);
-    if (cam->drv_status) {
-	sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-		sbig_get_status(cam->drv_status));
-	sbig_cam_close(cam);
-	return 8;
-    }
 
-    /* --- Conversion of Sbig parameters to AudeLA CAM_INI structure --- */
-    cam->index_cam = 0;
-    strcpy(CAM_INI[cam->index_cam].name, gcir0.name);
-    cam->cameraType = gcir0.cameraType;
-    if (gcir0.cameraType == ST7_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf400");
-    } else if (gcir0.cameraType == ST8_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf1600");
-    } else if (gcir0.cameraType == ST5C_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "ST5C_CAMERA");
-    } else if (gcir0.cameraType == TCE_CONTROLLER) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "TCE_CONTROLLER");
-    } else if (gcir0.cameraType == ST237_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "TC237");
-    } else if (gcir0.cameraType == STK_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "STK_CAMERA");
-    } else if (gcir0.cameraType == ST9_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf0261");
-    } else if (gcir0.cameraType == STV_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "TC237");
-    } else if (gcir0.cameraType == ST10_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf3200");
-    } else if (gcir0.cameraType == ST1K_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf1001");
-    } else if (gcir0.cameraType == ST2K_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kai4021");
-   /*
-    } else if (gcir0.cameraType == STL_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kai11000");
-    } else if (gcir0.cameraType == ST402_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "Kaf402");
-    } else if (gcir0.cameraType == NEXT_CAMERA) {
-	strcpy(CAM_INI[cam->index_cam].ccd, "NEXT_CAMERA");
-   */
-    } else {
-	strcpy(CAM_INI[cam->index_cam].ccd, "unknown");
-    }
-    CAM_INI[cam->index_cam].maxx = gcir0.readoutInfo[0].width;
-    CAM_INI[cam->index_cam].maxy = gcir0.readoutInfo[0].height;
-    CAM_INI[cam->index_cam].overscanxbeg = 0;
-    CAM_INI[cam->index_cam].overscanxend = 0;
-    CAM_INI[cam->index_cam].overscanybeg = 0;
-    CAM_INI[cam->index_cam].overscanyend = 0;
-    CAM_INI[cam->index_cam].celldimx =
-	((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-6;
-    CAM_INI[cam->index_cam].celldimy =
-	((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-6;
-    CAM_INI[cam->index_cam].gain = (double) (gcir0.readoutInfo[0].gain);
-    CAM_INI[cam->index_cam].maxconvert = pow(2, (double) 16) - 1.;
+   /* --- Establish Link (= The communication is done with the camera) --- */
+   //elp.sbigUseOnly = (unsigned short) 0;
+   cam->drv_status = pardrvcommand(CC_ESTABLISH_LINK, NULL, &elr);
+   if (cam->drv_status) {
+      switch ( odp.deviceType) {
+         case DEV_LPT1:
+         case DEV_LPT2:
+         case DEV_LPT3:
+            sprintf(cam->msg, "Error %d at line %d CC_ESTABLISH_LINK sbig_status=%s LPT address=%X",
+               cam->drv_status,  __LINE__, sbig_get_status(cam->drv_status),odp.lptBaseAddress);
+            break;
+         case DEV_USB:
+            sprintf(cam->msg, "Error %d at line %d CC_ESTABLISH_LINK sbig_status=%s",
+               cam->drv_status,  __LINE__, sbig_get_status(cam->drv_status));
+            break;
+         case DEV_ETH:
+            sprintf(cam->msg, "Error %d at line %d CC_ESTABLISH_LINK sbig_status=%s IP address=%s",
+               cam->drv_status,  __LINE__, sbig_get_status(cam->drv_status),cam->ip);
+            break;
 
-    /* --- intialisation of elements of the structure cam === */
-    cam->nb_photox = CAM_INI[cam->index_cam].maxx;	/* nombre de photosites sur X */
-    cam->nb_photoy = CAM_INI[cam->index_cam].maxy;	/* nombre de photosites sur Y */
-    if (cam->overscanindex == 0) {
-        /* nb photosites masques autour du CCD */
-        cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
-        cam->nb_deadendphotox = CAM_INI[cam->index_cam].overscanxend;
-        cam->nb_deadbeginphotoy = CAM_INI[cam->index_cam].overscanybeg;
-        cam->nb_deadendphotoy = CAM_INI[cam->index_cam].overscanyend;
-    } else {
-        cam->nb_photox +=
-            (CAM_INI[cam->index_cam].overscanxbeg +
-             CAM_INI[cam->index_cam].overscanxend);
-        cam->nb_photoy +=
-            (CAM_INI[cam->index_cam].overscanybeg +
-            CAM_INI[cam->index_cam].overscanyend);
-        /* nb photosites masques autour du CCD */
-        cam->nb_deadbeginphotox = 0;
-        cam->nb_deadendphotox = 0;
-        cam->nb_deadbeginphotoy = 0;
-        cam->nb_deadendphotoy = 0;
-    }
-    cam->celldimx = CAM_INI[cam->index_cam].celldimx;	/* taille d'un photosite sur X (en metre) */
-    cam->celldimy = CAM_INI[cam->index_cam].celldimy;	/* taille d'un photosite sur Y (en metre) */
-    cam->x2 = cam->nb_photox - 1;
-    cam->y2 = cam->nb_photoy - 1;
-    cam_set_binning(1, 1, cam);
-    cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
-    sbig_get_info_temperatures(cam, &temp_setpoint, &temp_ccd, &temp_ambient, &temp_reg, &temp_power);
-    cam->coolerindex = temp_reg;
-    cam->temperature = temp_ccd;
-    cam->check_temperature = temp_setpoint;
+      }
+      cam_close(cam);
+      return 6;
+   }
 
-    /* --- Get track CCD Infos  --- */
-    if ((ST237_CAMERA != gcir0.cameraType) && (ST1K_CAMERA != gcir0.cameraType)) {
-        gcip.request = CCD_INFO_TRACKING;
-        cam->drv_status = pardrvcommand(CC_GET_CCD_INFO, &gcip, &gcir0);
-        if (cam->drv_status) {
-            sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-                sbig_get_status(cam->drv_status));
-            sbig_cam_close(cam);
-            return 9;
-        }
-        cam->cameraTypetrack = gcir0.cameraType;	/* name of the main CCD, not the tracking */
-        cam->nb_photoxtrack = gcir0.readoutInfo[0].width;
-        cam->nb_photoytrack = gcir0.readoutInfo[0].height;
-        cam->nb_deadbeginphotoxtrack = 0;
-        cam->nb_deadendphotoxtrack = 0;
-        cam->nb_deadbeginphotoytrack = 0;
-        cam->nb_deadendphotoytrack = 0;
-        cam->celldimxtrack = ((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-6;
-        cam->celldimytrack = ((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-6;
-        cam->x1track = 0;
-        cam->y1track = 0;
-        cam->x2track = cam->nb_photoxtrack - 1;
-        cam->y2track = cam->nb_photoytrack - 1;
-        sbig_cam_set_binningtrack(1, 1, cam);
-        sbig_cam_update_windowtrack(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
-        cam->bufnotrack = 1;
-        cam->exptimetrack = (float) 1.;
-    }
+   /* --- Get Driver Handle (use in case of multi links. Not our case) --- */
+   cam->drv_status = pardrvcommand(CC_GET_DRIVER_HANDLE, NULL, &h1);
+   if (cam->drv_status) {
+      sprintf(cam->msg, "Error %d at line %d. sbig_status=%s", cam->drv_status, __LINE__,
+         sbig_get_status(cam->drv_status));
+      cam_close(cam);
+      return 7;
+   }
 
-    /* --- Start a dummy Exposure (=test of communication) --- */
-    params.ccd = CCD_IMAGING;
-    params.exposureTime = (unsigned long) (100. * cam->exptime);
-    params.abgState = ABG_LOW7;
-    params.openShutter = SC_OPEN_SHUTTER;
-    cam->drv_status = pardrvcommand(CC_START_EXPOSURE, &params, NULL);
-    if (cam->drv_status) {
-        sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-            sbig_get_status(cam->drv_status));
-        sbig_cam_close(cam);
-        return 10;
-    }
 
-    /* --- End the dummy Exposure (=test of communication) --- */
-    eep.ccd = CCD_IMAGING;
-    cam->drv_status = pardrvcommand(CC_END_EXPOSURE, &eep, NULL);
-    if (cam->drv_status) {
-        sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-            sbig_get_status(cam->drv_status));
-        sbig_cam_close(cam);
-        return 11;
-    }
+   /* --- Get CCD Infos (to update the CAM_INI struct with the linked camera) --- */
+   gcip.request = CCD_INFO_IMAGING;
+   cam->drv_status = pardrvcommand(CC_GET_CCD_INFO, &gcip, &gcir0);
+   if (cam->drv_status) {
+      sprintf(cam->msg, "Error %d at line %d. sbig_status=%s", cam->drv_status,__LINE__,
+         sbig_get_status(cam->drv_status));
+      cam_close(cam);
+      return 8;
+   }
 
-    /* --- End the Readout (=test of communication) --- */
-    erp.ccd = CCD_IMAGING;
-    cam->drv_status = pardrvcommand(CC_END_READOUT, &erp, NULL);
-    if (cam->drv_status) {
-        sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-            sbig_get_status(cam->drv_status));
-        sbig_cam_close(cam);
-        return 12;
-    }
-    pardrvcommand(CC_UPDATE_CLOCK, NULL, NULL);
 
-    return 0;
+   /* --- Conversion of Sbig parameters to AudeLA CAM_INI structure --- */
+   cam->index_cam = 0;
+   strcpy(CAM_INI[cam->index_cam].name, gcir0.name);
+   cam->cameraType = gcir0.cameraType;
+   if (gcir0.cameraType == ST7_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kaf400");
+   } else if (gcir0.cameraType == ST8_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kaf1600");
+   } else if (gcir0.cameraType == ST5C_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "ST5C_CAMERA");
+   } else if (gcir0.cameraType == TCE_CONTROLLER) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "TCE_CONTROLLER");
+   } else if (gcir0.cameraType == ST237_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "TC237");
+   } else if (gcir0.cameraType == STK_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "STK_CAMERA");
+   } else if (gcir0.cameraType == ST9_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kaf0261");
+   } else if (gcir0.cameraType == STV_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "TC237");
+   } else if (gcir0.cameraType == ST10_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kaf3200");
+   } else if (gcir0.cameraType == ST1K_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kaf1001");
+   } else if (gcir0.cameraType == ST2K_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kai4021");
+   } else if (gcir0.cameraType == STL_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kai11000");
+   } else if (gcir0.cameraType == ST402_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "Kaf402");
+   } else if (gcir0.cameraType == NEXT_CAMERA) {
+      strcpy(CAM_INI[cam->index_cam].ccd, "NEXT_CAMERA");
+   } else {
+      strcpy(CAM_INI[cam->index_cam].ccd, "unknown");
+   }
+
+
+   CAM_INI[cam->index_cam].maxx = gcir0.readoutInfo[0].width;
+   CAM_INI[cam->index_cam].maxy = gcir0.readoutInfo[0].height;
+   CAM_INI[cam->index_cam].overscanxbeg = 0;
+   CAM_INI[cam->index_cam].overscanxend = 0;
+   CAM_INI[cam->index_cam].overscanybeg = 0;
+   CAM_INI[cam->index_cam].overscanyend = 0;
+   CAM_INI[cam->index_cam].celldimx =
+      ((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-6;
+   CAM_INI[cam->index_cam].celldimy =
+      ((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-6;
+   CAM_INI[cam->index_cam].gain = (double) (gcir0.readoutInfo[0].gain);
+   CAM_INI[cam->index_cam].maxconvert = pow(2, (double) 16) - 1.;
+
+   /* --- initialisation of elements of the structure cam === */
+   cam->nb_photox = CAM_INI[cam->index_cam].maxx;	/* nombre de photosites sur X */
+   cam->nb_photoy = CAM_INI[cam->index_cam].maxy;	/* nombre de photosites sur Y */
+   if (cam->overscanindex == 0) {
+      /* nb photosites masques autour du CCD */
+      cam->nb_deadbeginphotox = CAM_INI[cam->index_cam].overscanxbeg;
+      cam->nb_deadendphotox = CAM_INI[cam->index_cam].overscanxend;
+      cam->nb_deadbeginphotoy = CAM_INI[cam->index_cam].overscanybeg;
+      cam->nb_deadendphotoy = CAM_INI[cam->index_cam].overscanyend;
+   } else {
+      cam->nb_photox +=
+         (CAM_INI[cam->index_cam].overscanxbeg +
+         CAM_INI[cam->index_cam].overscanxend);
+      cam->nb_photoy +=
+         (CAM_INI[cam->index_cam].overscanybeg +
+         CAM_INI[cam->index_cam].overscanyend);
+      /* nb photosites masques autour du CCD */
+      cam->nb_deadbeginphotox = 0;
+      cam->nb_deadendphotox = 0;
+      cam->nb_deadbeginphotoy = 0;
+      cam->nb_deadendphotoy = 0;
+   }
+   cam->celldimx = CAM_INI[cam->index_cam].celldimx;	/* taille d'un photosite sur X (en metre) */
+   cam->celldimy = CAM_INI[cam->index_cam].celldimy;	/* taille d'un photosite sur Y (en metre) */
+   cam->x2 = cam->nb_photox - 1;
+   cam->y2 = cam->nb_photoy - 1;
+   cam_set_binning(1, 1, cam);
+   cam_update_window(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+   sbig_get_info_temperatures(cam, &temp_setpoint, &temp_ccd, &temp_ambient, &temp_reg, &temp_power);
+   cam->coolerindex = temp_reg;
+   cam->temperature = temp_ccd;
+   cam->check_temperature = temp_setpoint;
+
+
+   /* --- Get track CCD Infos  --- */
+   if ((ST237_CAMERA != gcir0.cameraType) && (ST1K_CAMERA != gcir0.cameraType) && (ST402_CAMERA != gcir0.cameraType) ) {
+      gcip.request = CCD_INFO_TRACKING;
+      cam->drv_status = pardrvcommand(CC_GET_CCD_INFO, &gcip, &gcir0);
+      if (cam->drv_status) {
+         sprintf(cam->msg, "Error %d CCD_INFO_TRACKING. sbig_status=%s NEXT_CAMERA=%d", cam->drv_status,
+            sbig_get_status(cam->drv_status), NEXT_CAMERA);
+         cam_close(cam);
+         return 9;
+      }
+
+      cam->cameraTypetrack = gcir0.cameraType;	/* name of the main CCD, not the tracking */
+      cam->nb_photoxtrack = gcir0.readoutInfo[0].width;
+      cam->nb_photoytrack = gcir0.readoutInfo[0].height;
+      cam->nb_deadbeginphotoxtrack = 0;
+      cam->nb_deadendphotoxtrack = 0;
+      cam->nb_deadbeginphotoytrack = 0;
+      cam->nb_deadendphotoytrack = 0;
+      cam->celldimxtrack = ((double) (gcir0.readoutInfo[0].pixelWidth)) * 1e-6;
+      cam->celldimytrack = ((double) (gcir0.readoutInfo[0].pixelHeight)) * 1e-6;
+      cam->x1track = 0;
+      cam->y1track = 0;
+      cam->x2track = cam->nb_photoxtrack - 1;
+      cam->y2track = cam->nb_photoytrack - 1;
+      sbig_cam_set_binningtrack(1, 1, cam);
+      sbig_cam_update_windowtrack(cam);	/* met a jour x1,y1,x2,y2,h,w dans cam */
+      cam->bufnotrack = 1;
+      cam->exptimetrack = (float) 1.;
+   }
+
+   /* --- Start a dummy Exposure (=test of communication) --- */
+   params.ccd = CCD_IMAGING;
+   params.exposureTime = (unsigned long) (100. * cam->exptime);
+   params.abgState = ABG_LOW7;
+   //params.openShutter = SC_OPEN_SHUTTER;
+   params.openShutter = TRUE;
+   cam->drv_status = pardrvcommand(CC_START_EXPOSURE, &params, NULL);
+   if (cam->drv_status != CE_NO_ERROR) {
+      sprintf(cam->msg, "Error %d CC_START_EXPOSURE at line %d. sbig_status=%s", cam->drv_status,__LINE__,
+         sbig_get_status(cam->drv_status));
+      cam_close(cam);
+      return 10;
+   }
+
+
+   // --- Wait end exposure
+   qcsp.command = CC_START_EXPOSURE;
+   do {
+   	cam->drv_status = SBIGUnivDrvCommand(CC_QUERY_COMMAND_STATUS, &qcsp, &qcsr);
+      if(cam->drv_status != CE_NO_ERROR){
+         printf(cam->msg, "Error %d CC_QUERY_COMMAND_STATUS at line %d. sbig_status=%s", cam->drv_status,__LINE__,
+         sbig_get_status(cam->drv_status));
+         return 10;
+      }
+   } while(qcsr.status != CS_INTEGRATION_COMPLETE);
+
+
+
+   // --- End the dummy Exposure (=test of communication)
+   eep.ccd = CCD_IMAGING;
+   cam->drv_status = pardrvcommand(CC_END_EXPOSURE, &eep, NULL);
+   if (cam->drv_status != CE_NO_ERROR ) {
+      sprintf(cam->msg, "Error %d at line %d. sbig_status=%s", cam->drv_status, __LINE__,
+         sbig_get_status(cam->drv_status));
+      cam_close(cam);
+      return 11;
+   }
+
+
+   // --- End the Readout (=test of communication)
+    rlp.ccd = CCD_IMAGING;
+    rlp.readoutMode = 0;
+    rlp.pixelStart  = 0;
+    rlp.pixelLength = 765;
+
+   cam->drv_status = pardrvcommand(CC_END_READOUT, &rlp, NULL);
+   if (cam->drv_status != CE_NO_ERROR ) {
+      sprintf(cam->msg, "Error %d at line %d. sbig_status=%s", cam->drv_status, __LINE__,
+         sbig_get_status(cam->drv_status));
+      cam_close(cam);
+      return 12;
+   }
+
+   pardrvcommand(CC_UPDATE_CLOCK, NULL, NULL);
+
+   return 0;
 }
 
-int sbig_cam_close(struct camprop *cam)
+
+int cam_close(struct camprop *cam)
 {
-    /* --- close the driver --- */
-#if defined(OS_WIN)
-    if (hdll != NULL) {
-        if (cam->opendevice == 1) {
-            pardrvcommand(CC_CLOSE_DEVICE, NULL, NULL);
-            cam->opendevice = 0;
-        }
-        pardrvcommand(CC_CLOSE_DRIVER, NULL, NULL);
-        FreeLibrary(hdll);
-        hdll = INVALID_HANDLE_VALUE;
-    }
-#endif
-#if defined(OS_LIN)
-    if (cam->opendevice == 1) {
-        pardrvcommand(CC_CLOSE_DEVICE, NULL, NULL);
-        cam->opendevice = 0;
-    }
-    pardrvcommand(CC_CLOSE_DRIVER, NULL, NULL);
-#endif
-    return 0;
+   // --- close the device
+   if (cam->opendevice == 1) {
+      pardrvcommand(CC_CLOSE_DEVICE, NULL, NULL);
+      cam->opendevice = 0;
+   }
+
+   // --- close the device
+   pardrvcommand(CC_CLOSE_DRIVER, NULL, NULL);
+
+   return 0;
 }
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
@@ -567,75 +612,75 @@ void cam_stop_exp(struct camprop *cam)
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
-    EndReadoutParams erp;
-    ReadoutLineParams rlp;
-    DumpLinesParams dlp;
-    EndExposureParams eep;
-    int i;
-    int x1, y1, binx, biny, h, w;
-    unsigned short *pix;
+   EndReadoutParams erp;
+   ReadoutLineParams rlp;
+   DumpLinesParams dlp;
+   EndExposureParams eep;
+   int i;
+   int x1, y1, binx, biny, h, w;
+   unsigned short *pix;
 
-    if (p == NULL)
-	return;
+   if (p == NULL)
+      return;
 
-    x1 = cam->x1;
-    y1 = cam->y1;
-    binx = cam->binx;
-    biny = cam->biny;
-    h = cam->h;
-    w = cam->w;
-    pix = p;
+   x1 = cam->x1;
+   y1 = cam->y1;
+   binx = cam->binx;
+   biny = cam->biny;
+   h = cam->h;
+   w = cam->w;
+   pix = p;
 
-    /*
-       // Pour tester la disponibilité de la fonction :
-       // en envoyant un paramètre NULL, elle retourne :
-       // 0 si la commande est supportée,
-       // -1 si la fonction est non supportée.
-     */
+   /*
+   // Pour tester la disponibilité de la fonction :
+   // en envoyant un paramètre NULL, elle retourne :
+   // 0 si la commande est supportée,
+   // -1 si la fonction est non supportée.
+   */
 
-    cam_stop_exp(cam);
+   cam_stop_exp(cam);
 
-    eep.ccd = CCD_IMAGING;
-    cam->drv_status = pardrvcommand(CC_END_EXPOSURE, &eep, NULL);
-    if (cam->drv_status) {
-        sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
+   eep.ccd = CCD_IMAGING;
+   cam->drv_status = pardrvcommand(CC_END_EXPOSURE, &eep, NULL);
+   if (cam->drv_status) {
+      sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
+         sbig_get_status(cam->drv_status));
+      return;
+   }
+
+   if (y1 > 1) {
+      dlp.ccd = CCD_IMAGING;
+      dlp.readoutMode = (unsigned short) (binx - 1);
+      dlp.lineLength = (unsigned short) (y1 / biny);
+      cam->drv_status = pardrvcommand(CC_DUMP_LINES, &dlp, NULL);
+      if (cam->drv_status) {
+         sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
             sbig_get_status(cam->drv_status));
-        return;
-    }
+         return;
+      }
+   }
 
-    if (y1 > 1) {
-        dlp.ccd = CCD_IMAGING;
-        dlp.readoutMode = (unsigned short) (binx - 1);
-        dlp.lineLength = (unsigned short) (y1 / biny);
-        cam->drv_status = pardrvcommand(CC_DUMP_LINES, &dlp, NULL);
-        if (cam->drv_status) {
-            sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-                sbig_get_status(cam->drv_status));
-            return;
-        }
-    }
-
-    rlp.ccd = (unsigned short) CCD_IMAGING;
-    rlp.readoutMode = (unsigned short) (binx - 1);
-    rlp.pixelStart = (unsigned short) (x1 / binx);	// Les pixels commencent à 0
-    rlp.pixelLength = (unsigned short) w;
-    for (i = 0; i < h; i++) {
-	cam->drv_status =
-	    pardrvcommand(CC_READOUT_LINE, &rlp, (void *) (pix + i * w));
-        if (cam->drv_status) {
-            sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
-                sbig_get_status(cam->drv_status));
-            return;
-        }
-    }
-    erp.ccd = CCD_IMAGING;
-    cam->drv_status = pardrvcommand(CC_END_READOUT, &erp, NULL);
-    if (cam->drv_status) {
-        sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
+   rlp.ccd = (unsigned short) CCD_IMAGING;
+   rlp.readoutMode = (unsigned short) (binx - 1);
+   rlp.pixelStart = (unsigned short) (x1 / binx);	// Les pixels commencent à 0
+   rlp.pixelLength = (unsigned short) w;
+   for (i = h-1; i >= 0; i--) {
+      cam->drv_status =
+         pardrvcommand(CC_READOUT_LINE, &rlp, (void *) (pix + i * w));
+      if (cam->drv_status) {
+         sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
             sbig_get_status(cam->drv_status));
-        return;
-    }
-    cam->drv_status = pardrvcommand(CC_UPDATE_CLOCK, NULL, NULL);
+         return;
+      }
+   }
+   erp.ccd = CCD_IMAGING;
+   cam->drv_status = pardrvcommand(CC_END_READOUT, &erp, NULL);
+   if (cam->drv_status) {
+      sprintf(cam->msg, "Error %d at line %d. %s", __LINE__, cam->drv_status,
+         sbig_get_status(cam->drv_status));
+      return;
+   }
+   cam->drv_status = pardrvcommand(CC_UPDATE_CLOCK, NULL, NULL);
 }
 
 void cam_shutter_on(struct camprop *cam)
@@ -1005,7 +1050,7 @@ char *sbig_get_status(int st)
     if (pardrvcommand(CC_GET_ERROR_STRING, &st, &gesr.errorString) == 0) {
         strcpy(msg, gesr.errorString);
     } else {
-        strcpy(msg, "Sorry, no text description for this error");
+        sprintf(msg, "Sorry, no text description for this error %d",st);
     }
     return msg;
 }

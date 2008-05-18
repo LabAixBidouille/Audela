@@ -113,7 +113,6 @@ void sbig_get_info_temperatures(struct camprop *cam, double *setpoint,
 				int *power);
 char *sbig_get_status(int st);
 
-int sbig_cam_close(struct camprop *cam);
 void sbig_cam_update_windowtrack(struct camprop *cam);
 void sbig_cam_start_exptrack(struct camprop *cam, char *amplionoff);
 void sbig_cam_stop_exptrack(struct camprop *cam);
