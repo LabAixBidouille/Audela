@@ -24,6 +24,7 @@
 
 #define SPECIFIC_CMDLIST \
     {"outtime", (Tcl_CmdProc *) cmdK2OutTime}, \
+    {"abl", (Tcl_CmdProc *) cmdK2SetAntiBlooming}, \
     {"sx28version", (Tcl_CmdProc *) cmdK2SX28Version}, \
     {"sx28test", (Tcl_CmdProc *) cmdK2SX28Test}, \
     {"testdg642", (Tcl_CmdProc *) cmdK2TestDG642}, \
@@ -33,6 +34,8 @@
  /* === Specific commands for that camera === */
 int cmdK2OutTime(ClientData clientData, Tcl_Interp * interp, int argc,
 		 char *argv[]);
+int cmdK2SetAntiBlooming(ClientData clientData, Tcl_Interp * interp, int argc,
+		     char *argv[]);
 int cmdK2SX28Version(ClientData clientData, Tcl_Interp * interp, int argc,
 		     char *argv[]);
 int cmdK2SX28Test(ClientData clientData, Tcl_Interp * interp, int argc,
