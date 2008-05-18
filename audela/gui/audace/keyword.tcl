@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.1 2008-04-18 21:47:07 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.2 2008-05-18 13:51:35 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -237,11 +237,17 @@ proc ::keyword::run { visuNo this } {
 proc ::keyword::onChangeConfOptic { visuNo args } {
    variable private
 
-   set combinaison [ ::confOptic::getConfOptic [ ::confVisu::getCamItem $visuNo ] ]
-
-   set private(instrument)        [lindex $combinaison 0]
-   set private(diametre)          [lindex $combinaison 1]
-   set private(focale_resultante) [lindex $combinaison 2]
+   set camItem [ ::confVisu::getCamItem $visuNo ]
+   if { $camItem != "" } {
+      set combinaison [ ::confOptic::getConfOptic $camItem ]
+      set private(instrument)        [lindex $combinaison 0]
+      set private(diametre)          [lindex $combinaison 1]
+      set private(focale_resultante) [lindex $combinaison 2]
+   } else {
+      set private(instrument)        ""
+      set private(diametre)          ""
+      set private(focale_resultante) ""
+   }
 }
 
 #------------------------------------------------------------------------------
