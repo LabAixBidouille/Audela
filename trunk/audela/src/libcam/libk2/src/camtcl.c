@@ -32,8 +32,6 @@
 #include "camtcl.h"
 #include <libcam/util.h>
 
-int cmdK2OutTime(ClientData clientData, Tcl_Interp * interp, int argc,
-		 char *argv[])
 /*
  * -----------------------------------------------------------------------------
  *  cmdK2OutTime()
@@ -42,6 +40,8 @@ int cmdK2OutTime(ClientData clientData, Tcl_Interp * interp, int argc,
  *
  * -----------------------------------------------------------------------------
  */
+int cmdK2OutTime(ClientData clientData, Tcl_Interp * interp, int argc,
+		 char *argv[])
 {
     char ligne[100];
     int retour = TCL_OK;
@@ -81,36 +81,50 @@ int cmdK2OutTime(ClientData clientData, Tcl_Interp * interp, int argc,
     return retour;
 }
 
-int cmdK2SX28Version(ClientData clientData, Tcl_Interp * interp, int argc,
+/*
+ * -----------------------------------------------------------------------------
+ *  cmdK2SetAntiBlooming()
+ *
+ * Return the SX28 software version of the microcontroler
+ *
+ * -----------------------------------------------------------------------------
+ */
+int cmdK2SetAntiBlooming(ClientData clientData, Tcl_Interp * interp, int argc,
 		     char *argv[])
+{
+    struct camprop *cam;
+    cam = (struct camprop *) clientData;
+    Tcl_SetResult(interp, k2_SetABL(cam, argc, argv), TCL_VOLATILE);
+    return TCL_OK;
+}
 /*
  * -----------------------------------------------------------------------------
  *  cmdK2SX28Version()
  *
- * Return the SX28 software version of the microcontraler
+ * Return the SX28 software version of the microcontroler
  *
  * -----------------------------------------------------------------------------
  */
+int cmdK2SX28Version(ClientData clientData, Tcl_Interp * interp, int argc,
+		     char *argv[])
 {
-    /*char ligne[100]; */
     struct camprop *cam;
     cam = (struct camprop *) clientData;
     Tcl_SetResult(interp, k2_Version(cam), TCL_VOLATILE);
     return TCL_OK;
 }
 
-int cmdK2SX28Test(ClientData clientData, Tcl_Interp * interp, int argc,
-		  char *argv[])
 /*
  * -----------------------------------------------------------------------------
- *  cmdK2SX28Version()
+ *  cmdK2SX28Test()
  *
- * Return the SX28 software version of the microcontraler
+ * Make the led on the interface blinking.
  *
  * -----------------------------------------------------------------------------
  */
+int cmdK2SX28Test(ClientData clientData, Tcl_Interp * interp, int argc,
+		  char *argv[])
 {
-    /*char ligne[100]; */
     struct camprop *cam;
     cam = (struct camprop *) clientData;
     k2_TestSX28(cam);

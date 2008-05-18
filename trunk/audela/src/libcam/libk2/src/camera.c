@@ -39,30 +39,32 @@
  *  (see declaration in libstruc.h)
  */
 
-struct camini CAM_INI[] = {
-    {"KITTYK2",	/* camera name */
-     "kitty",	   /* camera product */
-     "tc237",			/* ccd name */
-     650, 490,			/* maxx maxy */
-     29, 0,			/* overscans x */
-     4, 0,			/* overscans y */
-     7.4e-6, 7.4e-6,		/* photosite dim (m) */
-     4095.,			/* observed saturation */
-     1.,			/* filling factor */
-     11.,			/* gain (e/adu) */
-     11.,			/* readnoise (e) */
-     1, 1,			/* default bin x,y */
-     1.,			/* default exptime */
-     1,				/* default state of shutter (1=synchro) */
-     1,				/* default num buf for the image */
-     1,				/* default num tel for the coordinates taken */
-     0,				/* default port index (0=lpt1) */
-     1,				/* default cooler index (1=on) */
-     -15.,			/* default value for temperature checked */
-     1,				/* default color mask if exists (1=cfa) */
-     0,				/* default overscan taken in acquisition (0=no) */
-     1.				/* default focal lenght of front optic system */
-     },
+struct camini CAM_INI[] =
+{
+    {
+		"K2",			/* camera name */
+		"K2",	 	   /* camera product */
+        "tc237",			/* ccd name */
+        650, 490,			/* maxx maxy */
+        29, 0,			/* overscans x */
+        4, 0,			/* overscans y */
+        7.4e-6, 7.4e-6,		/* photosite dim (m) */
+        4095.,			/* observed saturation */
+        1.,			/* filling factor */
+        11.,			/* gain (e/adu) */
+        11.,			/* readnoise (e) */
+        1, 1,			/* default bin x,y */
+        1.,			/* default exptime */
+        1,				/* default state of shutter (1=synchro) */
+        1,				/* default num buf for the image */
+        1,				/* default num tel for the coordinates taken */
+        0,				/* default port index (0=lpt1) */
+        1,				/* default cooler index (1=on) */
+        -15.,			/* default value for temperature checked */
+        1,				/* default color mask if exists (1=cfa) */
+        0,				/* default overscan taken in acquisition (0=no) */
+        1.				/* default focal lenght of front optic system */
+    },
     CAM_INI_NULL
 };
 
@@ -82,23 +84,24 @@ static void cam_cooler_check(struct camprop *cam);
 static void cam_set_binning(int binx, int biny, struct camprop *cam);
 static void cam_update_window(struct camprop *cam);
 
-struct cam_drv_t CAM_DRV = {
-    cam_init,			/* init */
-    NULL,			/* close */
-    cam_set_binning,		/* set_binning */
-    cam_update_window,		/* update_window */
-    cam_start_exp,		/* start_exp */
-    cam_stop_exp,		/* stop_exp */
-    cam_read_ccd,		/* read_ccd */
-    cam_shutter_on,		/* shutter_on */
-    cam_shutter_off,		/* shutter_off */
-    NULL,			/* ampli_on */
-    NULL,			/* ampli_off */
-    cam_measure_temperature,	/* measure_temperature */
-    cam_cooler_on,		/* cooler_on */
-    cam_cooler_off,		/* cooler_off */
-    cam_cooler_check		/* cooler_check */
-};
+struct cam_drv_t CAM_DRV =
+    {
+        cam_init,			/* init */
+        NULL,			/* close */
+        cam_set_binning,		/* set_binning */
+        cam_update_window,		/* update_window */
+        cam_start_exp,		/* start_exp */
+        cam_stop_exp,		/* stop_exp */
+        cam_read_ccd,		/* read_ccd */
+        cam_shutter_on,		/* shutter_on */
+        cam_shutter_off,		/* shutter_off */
+        NULL,			/* ampli_on */
+        NULL,			/* ampli_off */
+        cam_measure_temperature,	/* measure_temperature */
+        cam_cooler_on,		/* cooler_on */
+        cam_cooler_off,		/* cooler_off */
+        cam_cooler_check		/* cooler_check */
+    };
 
 
 static void SendCmd(struct camprop *cam, unsigned char data);
@@ -115,14 +118,14 @@ static void TransfertLargX(int LargeurX, struct camprop *cam);
 static void TransfertVidageY(int VidageY, struct camprop *cam);
 static void TransfertLargY(int LargeurY, struct camprop *cam);
 static void TransfertBinXY(unsigned char BinningX, unsigned char BinningY,
-			   struct camprop *cam);
+                           struct camprop *cam);
 static void SendDelay(struct camprop *cam);
 static void SendPose(struct camprop *cam);
 static void Pose_CCD(struct camprop *cam);
 static void Read_CCD(struct camprop *cam, unsigned short *buf);
 static double LectureLM35(struct camprop *cam);
 
-
+static unsigned char k2_AntiBlooming = 0;
 
 /* ========================================================= */
 /* ========================================================= */
@@ -162,18 +165,18 @@ void cam_update_window(struct camprop *cam)
     maxx = CAM_INI[cam->index_cam].maxx;
     maxy = CAM_INI[cam->index_cam].maxy;
     if (cam->x1 > cam->x2)
-	libcam_swap(&(cam->x1), &(cam->x2));
+        libcam_swap(&(cam->x1), &(cam->x2));
     if (cam->x1 < 0)
-	cam->x1 = 0;
+        cam->x1 = 0;
     if (cam->x2 > maxx - 1)
-	cam->x2 = maxx - 1;
+        cam->x2 = maxx - 1;
 
     if (cam->y1 > cam->y2)
-	libcam_swap(&(cam->y1), &(cam->y2));
+        libcam_swap(&(cam->y1), &(cam->y2));
     if (cam->y1 < 0)
-	cam->y1 = 0;
+        cam->y1 = 0;
     if (cam->y2 > maxy - 1)
-	cam->y2 = maxy - 1;
+        cam->y2 = maxy - 1;
 
     cam->w = (cam->x2 - cam->x1) / cam->binx + 1;
     cam->x2 = cam->x1 + cam->w * cam->binx - 1;
@@ -183,18 +186,19 @@ void cam_update_window(struct camprop *cam)
 
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
-    if (cam->authorized == 1) {
-	/* Bloquage des interruptions */
-	if (cam->interrupt == 1)
-	    libcam_bloquer();
-	/* vidage de la matrice, lance la pose et transfert de la trame */
-	Pose_CCD(cam);
-	/* Debloquage des interruptions */
-	if (cam->interrupt == 1)
-	    libcam_debloquer();
-	/* Remise a l'heure de l'horloge de Windows */
-	if (cam->interrupt == 1)
-	    update_clock();
+    if (cam->authorized == 1)
+    {
+        /* Bloquage des interruptions */
+        if (cam->interrupt == 1)
+            libcam_bloquer();
+        /* vidage de la matrice, lance la pose et transfert de la trame */
+        Pose_CCD(cam);
+        /* Debloquage des interruptions */
+        if (cam->interrupt == 1)
+            libcam_debloquer();
+        /* Remise a l'heure de l'horloge de Windows */
+        if (cam->interrupt == 1)
+            update_clock();
     }
 }
 
@@ -207,7 +211,7 @@ void cam_stop_exp(struct camprop *cam)
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
 
     c = DLE_1 | ChangeSRCK(0) | RSTR_0 | FIOE_0;
     libcam_out(port2, c);
@@ -218,30 +222,29 @@ void cam_stop_exp(struct camprop *cam)
 
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 
 }
 
 void cam_read_ccd(struct camprop *cam, unsigned short *p)
 {
     if (p == NULL)
-	return;
-    if (cam->authorized == 1) {
-	Read_CCD(cam, p);
+        return;
+    if (cam->authorized == 1)
+    {
+        Read_CCD(cam, p);
     }
 }
 
 void cam_shutter_on(struct camprop *cam)
-{
-}
+{}
 
 void cam_shutter_off(struct camprop *cam)
-{
-}
+{}
 
 void cam_measure_temperature(struct camprop *cam)
 {
@@ -257,22 +260,23 @@ void cam_cooler_on(struct camprop *cam)
     c = DLE_1 | ChangeSRCK(0) | RSTR_0 | FIOE_0;
     libcam_out(port2, c);
 
-    switch ((int) cam->check_temperature) {
+    switch ((int) cam->check_temperature)
+    {
     case 1:
-	cam->vent = VENT_MIN;
-	break;
+        cam->vent = VENT_MIN;
+        break;
     case 2:
-	cam->vent = VENT_MOY;
-	break;
+        cam->vent = VENT_MOY;
+        break;
     case 3:
-	cam->vent = VENT_FOR;
-	break;
+        cam->vent = VENT_FOR;
+        break;
     case 4:
-	cam->vent = VENT_MAX;
-	break;
+        cam->vent = VENT_MAX;
+        break;
     default:
-	cam->vent = VENT_MAX;
-	break;
+        cam->vent = VENT_MAX;
+        break;
     }
     d = FIFO2_0 | FIFO1_0 | cam->vent;
     libcam_out(port, d);
@@ -330,7 +334,7 @@ void SendCmd(struct camprop *cam, unsigned char data)
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
 
     data = data & 15;		/* masque 00001111 pour eviter les erreurs */
     d = FIFO2_0 | FIFO1_0 | vent;
@@ -338,14 +342,15 @@ void SendCmd(struct camprop *cam, unsigned char data)
     libcam_out(port2, c);
     d = FIFO2_0 | FIFO1_0 | vent | PCSTART;
     libcam_out(port, d);
-    for (i = 0; i < 4; i++) {
-	d = FIFO2_0 | FIFO1_0 | vent | b;
-	libcam_out(port, d);
-	b = (data << i) & 8 ? 1 : 0;
-	d = FIFO2_0 | FIFO1_0 | vent | b | PCSCLK;
-	libcam_out(port, d);
-	d = FIFO2_0 | FIFO1_0 | vent | b;
-	libcam_out(port, d);
+    for (i = 0; i < 4; i++)
+    {
+        d = FIFO2_0 | FIFO1_0 | vent | b;
+        libcam_out(port, d);
+        b = (data << i) & 8 ? 1 : 0;
+        d = FIFO2_0 | FIFO1_0 | vent | b | PCSCLK;
+        libcam_out(port, d);
+        d = FIFO2_0 | FIFO1_0 | vent | b;
+        libcam_out(port, d);
     }
     d = FIFO2_0 | FIFO1_0 | vent;
     libcam_out(port, d);
@@ -354,11 +359,11 @@ void SendCmd(struct camprop *cam, unsigned char data)
 
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 }
 
 /****************************************************/
@@ -374,21 +379,22 @@ void SendData(struct camprop *cam, unsigned char data)
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
 
     d = FIFO2_0 | FIFO1_0 | vent;
     c = DLE_1 | ChangeSRCK(0) | RSTR_0 | FIOE_0;
     libcam_out(port2, c);
     d = FIFO2_0 | FIFO1_0 | vent | PCSTART;
     libcam_out(port, d);
-    for (i = 0; i < 8; i++) {
-	d = FIFO2_0 | FIFO1_0 | vent | b;
-	libcam_out(port, d);
-	b = (data << i) & 128 ? 1 : 0;
-	d = FIFO2_0 | FIFO1_0 | vent | b | PCSCLK;
-	libcam_out(port, d);
-	d = FIFO2_0 | FIFO1_0 | vent | b;
-	libcam_out(port, d);
+    for (i = 0; i < 8; i++)
+    {
+        d = FIFO2_0 | FIFO1_0 | vent | b;
+        libcam_out(port, d);
+        b = (data << i) & 128 ? 1 : 0;
+        d = FIFO2_0 | FIFO1_0 | vent | b | PCSCLK;
+        libcam_out(port, d);
+        d = FIFO2_0 | FIFO1_0 | vent | b;
+        libcam_out(port, d);
     }
     d = FIFO2_0 | FIFO1_0 | vent;
     libcam_out(port, d);
@@ -397,11 +403,11 @@ void SendData(struct camprop *cam, unsigned char data)
 
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 }
 
 /***************************************************************/
@@ -416,29 +422,32 @@ int ReadData(struct camprop *cam, int nbbits)
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
 
-    for (i = 0; i < nbbits; i++) {
-	tmp = libcam_in(port);
-	while ((tmp & 128) != 0x0) {	/* boucle d'attente de \SXSCLK à 1 */
-	    if (timeout++ > 1000)
-		return -1;	/* time out */
-	    tmp = libcam_in(port);
-	}
-	res |= tmp & 64 ? (1 << (nbbits - 1)) >> i : 0;
-	while ((libcam_in(port) & 128) == 0x0) {	/* boucle d'attente de \SXSCLK à 0 */
-	    if (timeout++ > 1000)
-		return -1;	/* time out */
-	}
+    for (i = 0; i < nbbits; i++)
+    {
+        tmp = libcam_in(port);
+        while ((tmp & 128) != 0x0)
+        {	/* boucle d'attente de \SXSCLK à 1 */
+            if (timeout++ > 1000)
+                return -1;	/* time out */
+            tmp = libcam_in(port);
+        }
+        res |= tmp & 64 ? (1 << (nbbits - 1)) >> i : 0;
+        while ((libcam_in(port) & 128) == 0x0)
+        {	/* boucle d'attente de \SXSCLK à 0 */
+            if (timeout++ > 1000)
+                return -1;	/* time out */
+        }
     }
 
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 
     return res;
 }
@@ -451,24 +460,29 @@ void WaitFifo(struct camprop *cam)
 {
     unsigned short port = cam->port + 1;
     unsigned char status, busy;
+	FILE *f;
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
 
-    do {
-	status = libcam_in(port) & 0xC0;
-	busy = status & 0x80;
-	status &= 0x40;
-    } while (busy == 0 && status == 1);
+    do
+    {
+        status = libcam_in(port) & 0xC0;
+//        busy = status & 0x80;
+        //status &= 0x40;
+    }
+	while (status != 0x80);
+//    while (!busy && status);
+	libcam_sleep(200);
 
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 }
 
 unsigned char ChangeSRCK(int change)
@@ -476,9 +490,9 @@ unsigned char ChangeSRCK(int change)
     static int s = 0;
 
     if (change)
-	s = ~s;
+        s = ~s;
     if (s)
-	return SRCK_1;
+        return SRCK_1;
     return SRCK_0;
 }
 
@@ -487,8 +501,8 @@ void MoveSRCK(struct camprop *cam)
     unsigned short port2 = cam->port + 2;
 
     libcam_out(port2,
-	       (unsigned char) (32 | FIOE_1 | RSTR_0 | ChangeSRCK(1) |
-				DLE_0));
+               (unsigned char) (32 | FIOE_1 | RSTR_0 | ChangeSRCK(1) |
+                                DLE_0));
 }
 
 void InitFifo(struct camprop *cam)
@@ -499,7 +513,7 @@ void InitFifo(struct camprop *cam)
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
 
     /* Init FIFO 1 */
     libcam_out(port2, FIOE_0 | RSTR_0 | ChangeSRCK(0) | DLE_1);
@@ -508,7 +522,7 @@ void InitFifo(struct camprop *cam)
 
     libcam_out(port2, 32 | FIOE_1 | RSTR_0 | ChangeSRCK(0) | DLE_0);
     for (i = 0; i < 80; i++)
-	libcam_out(port2, 32 | FIOE_1 | RSTR_0 | ChangeSRCK(1) | DLE_0);	/* 80 impulsions SRCK */
+        libcam_out(port2, 32 | FIOE_1 | RSTR_0 | ChangeSRCK(1) | DLE_0);	/* 80 impulsions SRCK */
 
     libcam_out(port2, FIOE_0 | RSTR_1 | ChangeSRCK(0) | DLE_0);	/* Reset */
     libcam_out(port2, FIOE_0 | RSTR_1 | ChangeSRCK(1) | DLE_0);
@@ -521,7 +535,7 @@ void InitFifo(struct camprop *cam)
 
     libcam_out(port2, 32 | FIOE_1 | RSTR_0 | ChangeSRCK(0) | DLE_0);
     for (i = 0; i < 80; i++)
-	libcam_out(port2, 32 | FIOE_1 | RSTR_0 | ChangeSRCK(1) | DLE_0);	/* 80 impulsions SRCK */
+        libcam_out(port2, 32 | FIOE_1 | RSTR_0 | ChangeSRCK(1) | DLE_0);	/* 80 impulsions SRCK */
 
     libcam_out(port2, FIOE_0 | RSTR_1 | ChangeSRCK(0) | DLE_0);	/* Reset */
     libcam_out(port2, FIOE_0 | RSTR_1 | ChangeSRCK(1) | DLE_0);
@@ -529,11 +543,11 @@ void InitFifo(struct camprop *cam)
 
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 }
 
 void ResetFifo(struct camprop *cam)
@@ -552,9 +566,9 @@ void SelectFifo(struct camprop *cam, int num)
 
     libcam_out(port2, FIOE_0 | RSTR_0 | ChangeSRCK(0) | DLE_1);
     if (num == 1)
-	libcam_out(port, FIFO1_1 | FIFO2_0 | cam->vent);
+        libcam_out(port, FIFO1_1 | FIFO2_0 | cam->vent);
     else
-	libcam_out(port, FIFO1_0 | FIFO2_1 | cam->vent);
+        libcam_out(port, FIFO1_0 | FIFO2_1 | cam->vent);
     libcam_out(port2, FIOE_0 | RSTR_0 | ChangeSRCK(0) | DLE_0);
 
     libcam_out(port2, FIOE_1 | RSTR_0 | ChangeSRCK(0) | DLE_0);
@@ -645,7 +659,7 @@ void TransfertLargY(int LargeurY, struct camprop *cam)
 /*   Envoi d'une trame: %1100 + BinXY + ABG  */
 /*********************************************/
 void TransfertBinXY(unsigned char BinningX, unsigned char BinningY,
-		    struct camprop *cam)
+                    struct camprop *cam)
 {
     unsigned char data;
     /* === PC-DATA 1100 === */
@@ -654,7 +668,7 @@ void TransfertBinXY(unsigned char BinningX, unsigned char BinningY,
     /* === PC-DATA binning + pas d'antiblooming === */
     data = (BinningX << 4) | BinningY;
     SendData(cam, data);
-    SendData(cam, 0);
+    SendData(cam, k2_AntiBlooming);
 }
 
 /*****************************************/
@@ -674,9 +688,11 @@ void SendPose(struct camprop *cam)
 {
     unsigned char data;
     unsigned int pose;
+    double tmp;
 
     /* on convertit le temps de pose en millisecondes */
-    pose = (unsigned int) ceil(cam->exptime * 1000.);
+    tmp = cam->exptime * 1000.0;
+    pose = (unsigned int) tmp;
     /* === PC-DATA 1101 === */
     SendCmd(cam, 0xD);
     /* === PC-DATA temps de pose === */
@@ -701,38 +717,42 @@ void Pose_CCD(struct camprop *cam)
     unsigned char BinningX, BinningY;
     int LargeurX, LargeurY, VidageX, VidageY;
     unsigned int tmp = 0;
-    FILE *f;
+    //FILE *f;
 
     BinningX = (unsigned char) (cam->binx);
-    if (cam->binx < 1) {
-	BinningX = 1;
+    if (cam->binx < 1)
+    {
+        BinningX = 1;
     }
-    if (cam->binx > 4) {
-	BinningX = 4;
+    if (cam->binx > 4)
+    {
+        BinningX = 4;
     }
     BinningY = (unsigned char) (cam->biny);
-    if (cam->biny < 1) {
-	BinningY = 1;
+    if (cam->biny < 1)
+    {
+        BinningY = 1;
     }
-    if (cam->biny > 4) {
-	BinningY = 4;
+    if (cam->biny > 4)
+    {
+        BinningY = 4;
     }
 
-    f = fopen("k2.txt", "a");
+    /*f = fopen("k2.txt", "a");
     fprintf(f, "====== DEBUT Pose_CCD\n");
     fprintf(f, "       binning=%dx%d\n", cam->binx, cam->biny);
     fprintf(f, "       %dx%d -> %dx%d w=%d h=%d\n", cam->x1, cam->y1,
-	    cam->x2, cam->y2, cam->w, cam->h);
+     cam->x2, cam->y2, cam->w, cam->h);
     fprintf(f, "       cam->exptime*1000=%f flottant\n",
-	    cam->exptime * 1000);
+     cam->exptime * 1000);*/
 
     LargeurX = (cam->x2 - cam->x1 + 1) / BinningX;
     LargeurY = (cam->y2 - cam->y1 + 1) / BinningY;
     VidageX = cam->x1 + 26;
     VidageY = cam->y1 + 7;
 
-    fprintf(f, "       Vidage X = %d Largeur X = %d\n", cam->x1, LargeurX);
-    fprintf(f, "       Vidage Y = %d Largeur Y = %d\n", cam->y1, LargeurY);
+    //fprintf(f, "       Vidage X = %d Largeur X = %d\n", cam->x1, LargeurX);
+    //fprintf(f, "       Vidage Y = %d Largeur Y = %d\n", cam->y1, LargeurY);
 
     SendPose(cam);
     SendDelay(cam);
@@ -744,9 +764,9 @@ void Pose_CCD(struct camprop *cam)
     /* === PC-DATA 0100 Lancement de la pose === */
     SendCmd(cam, 4);
 
-    fprintf(f, "       pose mesuré : %dms\n", tmp);
+    /*fprintf(f, "       pose mesuré : %dms\n", tmp);
     fprintf(f, "       FIN Pose_CCD\n");
-    fclose(f);
+    fclose(f);*/
 }
 
 /***************************************************************/
@@ -758,61 +778,78 @@ void Read_CCD(struct camprop *cam, unsigned short *buf)
     unsigned char BinningX, BinningY;
     int LargX, LargY;
     int x, y, impair = 0;
-    unsigned short port, d;
+    unsigned short port, d, *tmp;
 
-    port = cam->port;
+   port = cam->port;
     BinningX = (unsigned char) (cam->binx);
     if (cam->binx < 1)
-	BinningX = 1;
+        BinningX = 1;
     if (cam->binx > 4)
-	BinningX = 4;
+        BinningX = 4;
     BinningY = (unsigned char) (cam->biny);
     if (cam->biny < 1)
-	BinningY = 1;
+        BinningY = 1;
     if (cam->biny > 4)
-	BinningY = 4;
+        BinningY = 4;
     LargX = (cam->x2 - cam->x1 + 1) / BinningX;
     LargY = (cam->y2 - cam->y1 + 1) / BinningY;
     if (LargX & 1)
-	impair = 1;
+        impair = 1;
     LargX &= 0xFFFE;
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
+
+	/*tmp = buf;
+    for (y = 0; y < LargY; y++)
+    {
+        for (x = 0; x < LargX; x++)
+        {
+            *buf = 0;
+            buf++;
+            if (impair && x == LargX - 2)
+                *buf++ = 0;
+        }
+    }
+	buf = tmp;
+	impair = 0;*/
 
     WaitFifo(cam);
     ResetFifo(cam);
     SelectFifo(cam, 1);
-    for (y = 0; y < LargY; y++) {
-	if (y == 250) {
-	    ResetFifo(cam);
-	    SelectFifo(cam, 2);
-	}
-	for (x = 0; x < LargX; x += 2) {
-	    d = (unsigned short) libcam_in(port);
-	    *buf = (d << 4) & 0xFF0;
-	    MoveSRCK(cam);
-	    d = (unsigned short) libcam_in(port);
-	    *buf |= (d >> 4) & 0x00F;
-	    buf++;
-	    *buf = (d << 8) & 0xF00;
-	    MoveSRCK(cam);
-	    d = (unsigned short) libcam_in(port);
-	    *buf |= d & 0x0FF;
-	    MoveSRCK(cam);
-	    buf++;
-	    if (impair && x == LargX - 2)
-		*buf++ = 0;
-	}
+    for (y = 0; y < LargY; y++)
+    {
+        if (y == 250)
+        {
+            ResetFifo(cam);
+            SelectFifo(cam, 2);
+        }
+        for (x = 0; x < LargX; x += 2)
+        {
+            d = (unsigned short) libcam_in(port);
+            *buf = (d << 4) & 0xFF0;
+            MoveSRCK(cam);
+            d = (unsigned short) libcam_in(port);
+            *buf |= (d >> 4) & 0x00F;
+            buf++;
+            *buf = (d << 8) & 0xF00;
+            MoveSRCK(cam);
+            d = (unsigned short) libcam_in(port);
+            *buf |= d & 0x0FF;
+            MoveSRCK(cam);
+            buf++;
+            if (impair && x == LargX - 2)
+                *buf++ = 0;
+        }
     }
     ResetFifo(cam);
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 }
 
 /**********************************************************/
@@ -833,17 +870,32 @@ double LectureLM35(struct camprop *cam)
     temp2 = (temp * 500 / 4096) - 100;
     temp1 = (temp * 5000 / 4096) - 1000 - 10 * temp2;
     temperature = (double) temp2;
-    if ((temperature > 150) || (temperature < -50)) {
-	temperature = 0.;
-    } else {
-	sprintf(s, "%d.%d", temp2, temp1);
-	temperature = (double) atof(s);
+    if ((temperature > 150) || (temperature < -50))
+    {
+        temperature = 0.;
+    }
+    else
+    {
+        sprintf(s, "%d.%d", temp2, temp1);
+        temperature = (double) atof(s);
     }
 
     return (temperature);
 }
 
 /************************************************************/
+/* Version : Lecture de la version du logiciel (ex : K2.02) */
+/*  Retourne une chaine de 5 caracteres                     */
+/************************************************************/
+char *k2_SetABL(struct camprop *cam,int argc, char *argv[])
+{
+	if (argc < 3) return k2_AntiBlooming ? "on" : "off";
+	if (argv[2][1] == 'n') k2_AntiBlooming = 1;			// on
+	else if (argv[2][1] == 'f') k2_AntiBlooming = 0;	// off
+	return k2_AntiBlooming ? "on" : "off";
+}
+
+/***********************é*************************************/
 /* Version : Lecture de la version du logiciel (ex : K2.02) */
 /*  Retourne une chaine de 5 caracteres                     */
 /************************************************************/
@@ -857,11 +909,12 @@ char *k2_Version(struct camprop *cam)
     /* === PC-DATA 0110 === */
     SendCmd(cam, 6);
 
-    for (k = 0; k < 5; k++) {
-	if ((t = ReadData(cam, 8)) < 0)
-	    v[k] = '-';
-	else
-	    v[k] = t;
+    for (k = 0; k < 5; k++)
+    {
+        if ((t = ReadData(cam, 8)) < 0)
+            v[k] = '-';
+        else
+            v[k] = t;
     }
     v[k] = '\0';
 
@@ -888,19 +941,20 @@ void k2_TestSX28(struct camprop *cam)
 void k2_test_out(struct camprop *cam, unsigned long nb_out)
 {
     unsigned short port;
-    if (cam->authorized == 1) {
-	port = cam->port;
-	/* Bloquage des interruptions */
-	if (cam->interrupt == 1)
-	    libcam_bloquer();
-	/* Mesure du temps de out */
-	test_out_time(port, nb_out, (unsigned long) 0);
-	/* Debloquage des interruptions */
-	if (cam->interrupt == 1)
-	    libcam_debloquer();
-	/* Remise a l'heure de l'horloge de Windows */
-	if (cam->interrupt == 1)
-	    update_clock();
+    if (cam->authorized == 1)
+    {
+        port = cam->port;
+        /* Bloquage des interruptions */
+        if (cam->interrupt == 1)
+            libcam_bloquer();
+        /* Mesure du temps de out */
+        test_out_time(port, nb_out, (unsigned long) 0);
+        /* Debloquage des interruptions */
+        if (cam->interrupt == 1)
+            libcam_debloquer();
+        /* Remise a l'heure de l'horloge de Windows */
+        if (cam->interrupt == 1)
+            update_clock();
     }
 }
 
@@ -933,43 +987,45 @@ char *k2_TestFifo(struct camprop *cam, unsigned char o)
 
     /* Bloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_bloquer();
+        libcam_bloquer();
 
     libcam_sleep(2);
     SelectFifo(cam, 1);
-    for (y = 0; y < 250000; y++) {
-	d = libcam_in(port);
-	if (d != o)
-	    bad++;
-	MoveSRCK(cam);
+    for (y = 0; y < 250000; y++)
+    {
+        d = libcam_in(port);
+        if (d != o)
+            bad++;
+        MoveSRCK(cam);
     }
     ResetFifo(cam);
     if (bad)
-	sprintf(msg, "FIFO1 : %d bad bytes", bad);
+        sprintf(msg, "FIFO1 : %d bad bytes", bad);
     else
-	sprintf(msg, "FIFO1 Ok");
+        sprintf(msg, "FIFO1 Ok");
     bad = 0;
     SelectFifo(cam, 2);
-    for (y = 0; y < 250000; y++) {
-	d = libcam_in(port);
-	if (d != o)
-	    bad++;
-	MoveSRCK(cam);
+    for (y = 0; y < 250000; y++)
+    {
+        d = libcam_in(port);
+        if (d != o)
+            bad++;
+        MoveSRCK(cam);
     }
     ResetFifo(cam);
 
     /* Debloquage des interruptions */
     if (cam->interrupt == 1)
-	libcam_debloquer();
+        libcam_debloquer();
 
     /* Remise a l'heure de l'horloge de Windows */
     if (cam->interrupt == 1)
-	update_clock();
+        update_clock();
 
     if (bad)
-	sprintf(msg, "%s FIFO2 : %d bad bytes", msg, bad);
+        sprintf(msg, "%s FIFO2 : %d bad bytes", msg, bad);
     else
-	sprintf(msg, "%s FIFO2 Ok", msg);
+        sprintf(msg, "%s FIFO2 Ok", msg);
 
     return msg;
 }

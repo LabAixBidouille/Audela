@@ -104,6 +104,7 @@ unsigned char ChangeSRCK(int change);
 */
 
 void k2_TestSX28(struct camprop *cam);
+char *k2_SetABL(struct camprop *cam,int arc, char *argv[]);
 char *k2_Version(struct camprop *cam);
 char *k2_TestFifo(struct camprop *cam, unsigned char o);
 void k2_test_out(struct camprop *cam, unsigned long nb_out);
