@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.10 2008-04-18 21:41:35 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.11 2008-05-18 13:54:35 michelpujol Exp $
 #
 
 namespace eval acqfcSetup {
@@ -126,11 +126,11 @@ namespace eval acqfcSetup {
       set camItem [ ::confVisu::getCamItem $visuNo ]
 
       #--- Configure le bouton d'acces au configurateur d'en-tete FITS
-      if { [ ::confCam::isReady $camItem ] == 0 } {
-         $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state disabled
-      } else {
-         $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state normal
-      }
+      ###if { [ ::confCam::isReady $camItem ] == 0 } {
+      ###   $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state disabled
+      ###} else {
+      ###   $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state normal
+      ###}
    }
 
    #
