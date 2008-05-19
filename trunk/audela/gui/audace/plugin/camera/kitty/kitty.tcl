@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.17 2008-04-12 16:40:32 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.18 2008-05-19 16:52:26 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -404,7 +404,7 @@ proc ::kitty::confKitty { camItem } {
          pack $frm.frame3.frame10 -side top -fill both -expand 1
          pack $frm.frame3.frame10.test -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
          #--- Widgets de configuration de la Kitty K2 actif
-         if { [ ::confCam::getPluginProperty $camItem "name" ] == "KITTYK2" } {
+         if { [ ::confCam::getPluginProperty $camItem "name" ] == "K2" } {
             #--- Widgets de configuration de la Kitty K2 actif
             $frm.frame2.frame5.frame8.radio_on configure -state normal
             $frm.frame2.frame5.frame8.radio_off configure -state normal
