@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.13 2008-05-11 21:05:16 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.14 2008-05-19 18:00:13 michelpujol Exp $
 #
 
 namespace eval ::lx200 {
@@ -472,14 +472,16 @@ proc ::lx200::confLX200 { } {
 proc ::lx200::confLX200Inactif { } {
    variable private
 
-   set frm $private(frm)
-   if { [winfo exists $frm ] } {
-      #--- Bouton Mise a jour de la monture inactif
-      $frm.majpara configure -state disabled
-      #--- Bouton unpark
-      $frm.park configure -state disabled
-      #--- Bouton unpark
-      $frm.unpark configure -state disabled
+   if { [ info exists private(frm) ] } {
+      set frm $private(frm)
+      if { [winfo exists $frm ] } {
+         #--- Bouton Mise a jour de la monture inactif
+         $frm.majpara configure -state disabled
+         #--- Bouton unpark
+         $frm.park configure -state disabled
+         #--- Bouton unpark
+         $frm.unpark configure -state disabled
+      }
    }
 }
 
