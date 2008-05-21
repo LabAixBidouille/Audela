@@ -1,6 +1,6 @@
 #
 # Fichier : serialport.cap
-# Mise a jour $Id: serialport.cap,v 1.18 2008-05-07 18:03:12 robertdelmas Exp $
+# Mise a jour $Id: serialport.cap,v 1.19 2008-05-21 18:14:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -40,7 +40,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(serialport,titre)        "Puerto serie"
    set caption(serialport,available)    "Puertos serie disponibles"
-   set caption(serialport,used)         "# Ports séries utilisés"
+   set caption(serialport,used)         "Puertos serie utilizados"
    set caption(serialport,refresh)      "Recargar"
    set caption(serialport,port_exclus)  "Puerto COM a excluir (modem interno, etc.)"
 

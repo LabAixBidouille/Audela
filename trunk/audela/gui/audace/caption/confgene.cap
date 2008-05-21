@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.22 2008-05-07 18:01:56 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.23 2008-05-21 18:12:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -358,7 +358,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(confgene,langue_titre)                       "Idioma"
    set caption(confgene,langue_selection)                   "Selecció de idioma:"
-   set caption(confgene,langue_texte)                       "# La nouvelle langue sera prise en compte au prochain démarrage d'AudeLA."
+   set caption(confgene,langue_texte)                       "El nuevo idioma sera reconocido tras la reinicialización de AudeLA."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {

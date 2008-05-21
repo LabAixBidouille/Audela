@@ -1,6 +1,6 @@
 #
 # Fichier : gps.cap
-# Mise a jour $Id: gps.cap,v 1.10 2008-05-07 18:03:34 robertdelmas Exp $
+# Mise a jour $Id: gps.cap,v 1.11 2008-05-21 18:13:19 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -245,8 +245,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(gps,intervalle_synchro)       "Sincro (s)"
    set caption(gps,help,titre)               "Ayuda para esta herramienta"
    set caption(gps,non_rs232)                "Esto no es un puerto serie RS232."
-   set caption(gps,droit_acces)              "# Insufficient privileges for setting the system clock.\nYou need to be an administrator of this computer."
-   set caption(gps,pas_synchro)              "# No synchronisation"
+   set caption(gps,droit_acces)              "No tiene los permisos de acceso necesarios para modificar la hora del sistema.\nTiene que ser administrador del ordenador."
+   set caption(gps,pas_synchro)              "Sin sincronización"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
