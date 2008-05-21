@@ -1,6 +1,6 @@
 #
 # Fichier : acqfcSetup.cap
-# Mise a jour $Id: acqfcSetup.cap,v 1.9 2008-05-07 18:01:21 robertdelmas Exp $
+# Mise a jour $Id: acqfcSetup.cap,v 1.10 2008-05-21 18:12:11 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -36,7 +36,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(acqfcSetup,titre)                  "Adquisición - Configuración"
-   set caption(acqfcSetup,en-tete_fits)           "# Mots clés FITS"
+   set caption(acqfcSetup,en-tete_fits)           "Palabras clave FITS"
    set caption(acqfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
    set caption(acqfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
 

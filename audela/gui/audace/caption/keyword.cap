@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.2 2008-05-07 18:02:38 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.3 2008-05-21 18:13:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -171,7 +171,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    #--- Fenetre de configuration
-   set caption(keyword,titre)                          "# Mots clés FITS"
+   set caption(keyword,titre)                          "Palabras clave FITS"
    set caption(keyword,camera)                         "Cámara"
    set caption(keyword,parcourir)                      "..."
    set caption(keyword,rafraichir)                     "Recargar"
@@ -181,7 +181,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,fermer)                         "Cerrar"
 
    #--- Titres des colonnes
-   set caption(keyword,colonne,categorie)              "# Catégorie"
+   set caption(keyword,colonne,categorie)              "Categoría"
    set caption(keyword,colonne,description)            "Descripción"
    set caption(keyword,colonne,motclef)                "Claves"
    set caption(keyword,colonne,valeur)                 "Valor"
@@ -205,19 +205,19 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,TELESCOP)           "Telescopio (nombre, barlow, reductor)"
    set caption(keyword,description,FOCLEN)             "Focal resultante (m)"
    set caption(keyword,description,APTDIA)             "Diámtro (m)"
-   set caption(keyword,description,XPIXSZ)             "# Largeur du pixel (µm)"
-   set caption(keyword,description,YPIXSZ)             "# Hauteur du pixel (µm)"
-   set caption(keyword,description,SET_TEMP)           "# Consigne de température"
+   set caption(keyword,description,XPIXSZ)             "Tamaño de píxel (µm)"
+   set caption(keyword,description,YPIXSZ)             "Altura de Píxel (µm)"
+   set caption(keyword,description,SET_TEMP)           "Establezca la temperatura"
    set caption(keyword,description,CCD_TEMP)           "Temperatura CCD"
    set caption(keyword,description,INSTRUME)           "Equipo"
    set caption(keyword,description,OBJNAME)            "Nombre del objecto"
    set caption(keyword,description,RA)                 "Ascensión Recta"
    set caption(keyword,description,DEC)                "Declinación"
-   set caption(keyword,description,EQUINOX)            "# Equinoxe des coordonnées"
-   set caption(keyword,description,RADECSYS)           "# Système de coordonnées"
-   set caption(keyword,description,IMAGETYP)           "# Type d'image"
-   set caption(keyword,description,SWCREATE)           "# Logiciel d'acquisition"
-   set caption(keyword,description,SWMODIFY)           "# Logiciel de traitement"
+   set caption(keyword,description,EQUINOX)            "Equinoccio de coordenadas"
+   set caption(keyword,description,RADECSYS)           "Sistema de coordenadas"
+   set caption(keyword,description,IMAGETYP)           "Tipo de imagen"
+   set caption(keyword,description,SWCREATE)           "Programa de adquisición"
+   set caption(keyword,description,SWMODIFY)           "Programa de tratamiento"
    set caption(keyword,description,COMMENT)            "Comentarios"
 
 # *************** Version allemande ***************************

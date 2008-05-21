@@ -1,6 +1,6 @@
 #
 # Fichier : scanSetup.cap
-# Mise a jour $Id: scanSetup.cap,v 1.2 2008-05-07 18:04:10 robertdelmas Exp $
+# Mise a jour $Id: scanSetup.cap,v 1.3 2008-05-21 18:14:23 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -60,7 +60,7 @@ if { [ string compare $langage "french" ] == "0" } {
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(scanSetup,configuration)          "Configuración"
-   set caption(scanSetup,en-tete_fits)           "# Mots clés FITS"
+   set caption(scanSetup,en-tete_fits)           "Palabras clave FITS"
    set caption(scanSetup,titre)                  "Retardo entre la parada del motor de AR y el principio de la exposición:"
    set caption(scanSetup,sans_scan)              "Retardo desactivado"
    set caption(scanSetup,avec_scan)              "Retardo activado"
