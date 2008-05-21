@@ -142,16 +142,17 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    tel->device_rtc_version_minor=(unsigned char)0;
    tel->device_rtc_version=(double)0;
    /* get the informations : version */
-   sprintf(s,"puts -nonewline %s \"v\"",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"puts -nonewline %s \"V\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 150"); mytel_tcleval(tel,s);
    sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
-   tel->version_major=(unsigned char)ss[0];
-   tel->version_minor=(unsigned char)ss[1];
-   sprintf(a,"%c.%c",ss[0],ss[1]);
+   sprintf(a,"%d.%d",ss[0],ss[1]);
+   tel->version_major=(int)ss[0];
+   tel->version_minor=(int)ss[1];
    tel->version=atof(a);
    /* get the informations : device versions */
    if (tel->version>=1.6) {
+      sprintf(s,"read %s 20",tel->channel); mytel_tcleval(tel,s);
       a[0]=1;
       a[1]=16;
       a[2]=254;
@@ -163,38 +164,41 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       sprintf(s,"after 150"); mytel_tcleval(tel,s);
       sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
       strcpy(ss,tel->interp->result);
-      tel->device_azmra_motor_version_major=(unsigned char)ss[0];
-      tel->device_azmra_motor_version_minor=(unsigned char)ss[1];
-      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_azmra_motor_version_major=(int)ss[0];
+      tel->device_azmra_motor_version_minor=(int)ss[1];
+      sprintf(a,"%d.%d",ss[0],ss[1]);
       tel->device_azmra_motor_version=atof(a);
       a[1]=17;
       sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
       sprintf(s,"after 150"); mytel_tcleval(tel,s);
       sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
       strcpy(ss,tel->interp->result);
-      tel->device_altdec_motor_version_major=(unsigned char)ss[0];
-      tel->device_altdec_motor_version_minor=(unsigned char)ss[1];
-      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_altdec_motor_version_major=(int)ss[0];
+      tel->device_altdec_motor_version_minor=(int)ss[1];
+      sprintf(a,"%d.%d",ss[0],ss[1]);
       tel->device_altdec_motor_version=atof(a);
       a[1]=176;
       sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
       sprintf(s,"after 150"); mytel_tcleval(tel,s);
       sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
       strcpy(ss,tel->interp->result);
-      tel->device_gps_unit_version_major=(unsigned char)ss[0];
-      tel->device_gps_unit_version_minor=(unsigned char)ss[1];
-      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_gps_unit_version_major=(int)ss[0];
+      tel->device_gps_unit_version_minor=(int)ss[1];
+      sprintf(a,"%d.%d",ss[0],ss[1]);
       tel->device_gps_unit_version=atof(a);
       a[1]=178;
       sprintf(s,"puts -nonewline %s \"P%c%c%c%c%c%c%c\"",tel->channel,a[0],a[1],a[2],a[3],a[4],a[5],a[6]); mytel_tcleval(tel,s);
       sprintf(s,"after 150"); mytel_tcleval(tel,s);
       sprintf(s,"read %s 3",tel->channel); mytel_tcleval(tel,s);
       strcpy(ss,tel->interp->result);
-      tel->device_rtc_version_major=(unsigned char)ss[0];
-      tel->device_rtc_version_minor=(unsigned char)ss[1];
-      sprintf(a,"%c.%c",ss[0],ss[1]);
+      tel->device_rtc_version_major=(int)ss[0];
+      tel->device_rtc_version_minor=(int)ss[1];
+      sprintf(a,"%d.%d",ss[0],ss[1]);
       tel->device_rtc_version=atof(a);
    }
+	tel->raoff=0.;
+	tel->decoff=0.;
+   mytel_flush(tel);
    return 0;
 }
 
@@ -209,7 +213,7 @@ int tel_testcom(struct telprop *tel)
    sprintf(s,"after 150"); mytel_tcleval(tel,s);
    sprintf(s,"read %s 2",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
-   if (s[0]=='x') {
+   if (s[0]==a[0]) {
       return 1;
    } else {
       return 0;
@@ -374,9 +378,19 @@ int tel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,d
 int mytel_radec_init(struct telprop *tel)
 /* it corresponds to the "sync" function of a Nexstar */
 {
-   char s[1024],ls[100],command[5];
+   char s[1024],command[5];
+   char coord0[50];
    int nbits;
    if (tel->version<4.1) {
+		tel->raoff=0.;
+		tel->decoff=0.;
+      tel_radec_coord(tel,coord0);
+	   sprintf(s,"expr (%.7f)-[mc_angle2deg [lindex {%s} 0]]",tel->ra0,coord0); mytel_tcleval(tel,s);
+		strcpy(s,tel->interp->result);
+      tel->raoff=atof(s);
+	   sprintf(s,"expr (%.7f)-[mc_angle2deg [lindex {%s} 1]]",tel->dec0,coord0); mytel_tcleval(tel,s);
+		strcpy(s,tel->interp->result);
+      tel->decoff=atof(s);
       return 0;
    }
    /* get the short|long format */
@@ -389,7 +403,7 @@ int mytel_radec_init(struct telprop *tel)
       strcpy(command,"s");
    }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   sprintf(s,"mc_angles2nexstar %f %f %d",tel->ra0,tel->dec0,ls); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angles2nexstar %f %f %d",tel->ra0,tel->dec0,nbits); mytel_tcleval(tel,s);
    /* Send S or s */
    sprintf(s,"puts -nonewline %s \"%s%s\"",tel->channel,command,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
@@ -404,25 +418,32 @@ int mytel_radec_state(struct telprop *tel,char *result)
    char s[1024];
    char coord0[50],coord1[50];
    tel_radec_coord(tel,coord0);
-   sprintf(s,"after 350"); mytel_tcleval(tel,s);
-   tel_radec_coord(tel,coord1);
-   if (strcmp(coord0,coord1)==0) {strcpy(result,"tracking");}
+	sprintf(s,"after 350"); mytel_tcleval(tel,s);
+	tel_radec_coord(tel,coord1);
+	sprintf(s,"expr 3600.*[lindex [mc_anglesep [list %s %s]] 0]",coord0,coord1); mytel_tcleval(tel,s);
+	strcpy(s,tel->interp->result);
+   if (atof(s)<10.) {strcpy(result,"tracking");}
    else {strcpy(result,"pointing");}
    return 0;
 }
 
 int mytel_radec_goto(struct telprop *tel)
 {
-   char s[1024],ls[100],ss[100],command[5];
+   char s[1024],ss[100],command[5];
    char coord0[50],coord1[50];
    int time_in=0,time_out=240,nbits;
    char tracking_mode=0;
+	double radeg,decdeg;
    /* get the tracking mode */
    sprintf(s,"puts -nonewline %s \"t\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 150"); mytel_tcleval(tel,s);
    sprintf(s,"read %s 2",tel->channel); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
-   tracking_mode=ss[0];
+	if (strcmp(ss,"")==0) {
+	   tracking_mode=1;
+	} else {
+	   tracking_mode=ss[0];
+	}
    /* get the short|long format */
    mytel_get_format(tel);
    if ((tel->longformatindex==0)||(tel->version<2.2)) {
@@ -441,10 +462,16 @@ int mytel_radec_goto(struct telprop *tel)
       }
    }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
-   sprintf(s,"mc_angles2nexstar %f %f %d",tel->ra0,tel->dec0,ls); mytel_tcleval(tel,s);
+	radeg=tel->ra0-tel->raoff;
+	if (radeg>360.) { radeg-=360.; }
+	if (radeg<0.) { radeg+=360.; }
+	decdeg=tel->dec0+tel->decoff;
+	if (decdeg>90.) { decdeg=90.; }
+	if (decdeg<-90.) { decdeg=-90.; }
+   sprintf(s,"mc_angles2nexstar %.7f %.7f %d",radeg,decdeg,nbits); mytel_tcleval(tel,s);
    /* Send Goto */
    sprintf(s,"puts -nonewline %s \"%s%s\"",tel->channel,command,tel->interp->result); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
+   sprintf(s,"after 150"); mytel_tcleval(tel,s);
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
@@ -453,7 +480,9 @@ int mytel_radec_goto(struct telprop *tel)
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
          tel_radec_coord(tel,coord1);
-         if (strcmp(coord0,coord1)==0) {break;}
+		   sprintf(s,"expr 3600.*[lindex [mc_anglesep [list %s %s]] 0]",coord0,coord1); mytel_tcleval(tel,s);
+			strcpy(s,tel->interp->result);
+         if (atof(s)<10.) {break;}
          strcpy(coord0,coord1);
 	     if (time_in>=time_out) {break;}
       }
@@ -563,14 +592,14 @@ int mytel_radec_stop(struct telprop *tel,char *direction)
 
 int mytel_radec_motor(struct telprop *tel)
 {
-   char s[1024],ss[100],latns;
+   char s[1024],ss[100],latns='0';
    if (tel->version<1.6) {
       return 0;
    }
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    if (tel->radec_motor==1) {
       /* stop the motor */
-      sprintf(s,"puts -nonewline %s \"T0\"",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"puts -nonewline %s \"T[format %%c 0]\"",tel->channel); mytel_tcleval(tel,s);
    } else {
       /* start the motor */
       mytel_flush(tel);
@@ -584,20 +613,23 @@ int mytel_radec_motor(struct telprop *tel)
          latns=(char)0;
       }
       if (latns=='1') {
-         sprintf(s,"puts -nonewline %s \"T3\"",tel->channel); mytel_tcleval(tel,s);
+         sprintf(s,"puts -nonewline %s \"T[format %%c 3]\"",tel->channel); mytel_tcleval(tel,s);
       } else {
-         sprintf(s,"puts -nonewline %s \"T2\"",tel->channel); mytel_tcleval(tel,s);
+         sprintf(s,"puts -nonewline %s \"T[format %%c 2]\"",tel->channel); mytel_tcleval(tel,s);
       }
    }
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
+   sprintf(s,"after 150"); mytel_tcleval(tel,s);
+   mytel_flush(tel);
    return 0;
 }
 
 int mytel_radec_coord(struct telprop *tel,char *result)
 {
    char s[1024],ss[1024],ra[100],dec[100],command[5];
+	double radeg,decdeg;
    int nbits;
    char tracking_mode=0;
+   mytel_flush(tel);
    strcpy(result,"");
    if (tel->version<1.2) {
       return 0;
@@ -630,20 +662,32 @@ int mytel_radec_coord(struct telprop *tel,char *result)
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    /* Send E or e */
    sprintf(s,"puts -nonewline %s \"%s\"",tel->channel,command); mytel_tcleval(tel,s);
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
+   sprintf(s,"after 200"); mytel_tcleval(tel,s);
    /* Receive results and # if it is OK */
    if (tel->longformatindex==0) {
-      sprintf(s,"read %s 10",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
    } else {
-      sprintf(s,"read %s 18",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"read %s 17",tel->channel); mytel_tcleval(tel,s);
    }
    sprintf(s,"mc_nexstar2angles %s",tel->interp->result); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
-   sprintf(s,"mc_angle2hms [lindex %s 0] 360 zero 2 auto string",ss); mytel_tcleval(tel,s);
+	
+   sprintf(s,"mc_angle2deg [lindex {%s} 0]",ss); mytel_tcleval(tel,s);
+	radeg=atof(tel->interp->result)+tel->raoff;
+	if (radeg>360.) { radeg-=360.; }
+	if (radeg<0.) { radeg+=360.; }
+
+   sprintf(s,"mc_angle2deg [lindex {%s} 1]",ss); mytel_tcleval(tel,s);
+	decdeg=atof(tel->interp->result)+tel->decoff;
+	if (decdeg>90.) { decdeg=90.; }
+	if (decdeg<-90.) { decdeg=-90.; }
+
+   sprintf(s,"mc_angle2hms %.7f 360 zero 2 auto string",radeg); mytel_tcleval(tel,s);
    strcpy(ra,tel->interp->result);
-   sprintf(s,"mc_angle2dms [lindex %s 0] 90 zero 1 + string",ss); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2dms %.7f 90 zero 1 + string",decdeg); mytel_tcleval(tel,s);
    strcpy(dec,tel->interp->result);
    sprintf(result,"%s %s",ra,dec);
+   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
    return 0;
 }
 

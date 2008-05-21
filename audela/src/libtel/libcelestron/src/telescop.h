@@ -36,21 +36,23 @@ struct telprop {
    /* Ajoutez ici les variables necessaires a votre telescope */
    int longformatindex;
    int tempo;
-   unsigned char version_major;
-   unsigned char version_minor;
+   int version_major;
+   int version_minor;
    double version;
-   unsigned char device_azmra_motor_version_major;
-   unsigned char device_azmra_motor_version_minor;
+   int device_azmra_motor_version_major;
+   int device_azmra_motor_version_minor;
    double device_azmra_motor_version;
-   unsigned char device_altdec_motor_version_major;
-   unsigned char device_altdec_motor_version_minor;
+   int device_altdec_motor_version_major;
+   int device_altdec_motor_version_minor;
    double device_altdec_motor_version;
-   unsigned char device_gps_unit_version_major;
-   unsigned char device_gps_unit_version_minor;
+   int device_gps_unit_version_major;
+   int device_gps_unit_version_minor;
    double device_gps_unit_version;
-   unsigned char device_rtc_version_major;
-   unsigned char device_rtc_version_minor;
+   int device_rtc_version_major;
+   int device_rtc_version_minor;
    double device_rtc_version;
+	double raoff;
+	double decoff;
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
