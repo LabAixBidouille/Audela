@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.59 2008-04-18 16:51:30 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.60 2008-05-23 07:14:39 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1969,8 +1969,7 @@ namespace eval ::acqfc {
       wm title $panneau(acqfc,$visuNo,base).intervalle_continu_1 "$caption(acqfc,continu_1)"
       wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_1 $conf(acqfc,continu1,position)
       wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_1 WM_DELETE_WINDOW " \
-         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,serie)\" ; \
-         ::acqfc::ChangeMode $visuNo \
+         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_1)\" \
       "
 
       #--- Create the message
@@ -2062,8 +2061,7 @@ namespace eval ::acqfc {
       wm title $panneau(acqfc,$visuNo,base).intervalle_continu_2 "$caption(acqfc,continu_2)"
       wm geometry $panneau(acqfc,$visuNo,base).intervalle_continu_2 $conf(acqfc,continu2,position)
       wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_2 WM_DELETE_WINDOW " \
-         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu)\" ; \
-         ::acqfc::ChangeMode $visuNo \
+         set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_2)\" \
       "
 
       #--- Create the message
