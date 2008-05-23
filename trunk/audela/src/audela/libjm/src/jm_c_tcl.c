@@ -131,7 +131,7 @@ int CmdDms2deg(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Sortie du résultat sur la console
+  // Sortie du rï¿½sultat sur la console
   // ---------------------------------
   sprintf(s,"%f",angle);
   Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -146,7 +146,7 @@ int CmdJd(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
   char s[256];
   double jj;
 
-  // Vérifie que la commande a le bon nombre d'argument
+  // Vï¿½rifie que la commande a le bon nombre d'argument
   // --------------------------------------------------
   if (argc!=4)
     {
@@ -164,7 +164,7 @@ int CmdJd(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Sortie du résultat sur la console
+  // Sortie du rï¿½sultat sur la console
   // ---------------------------------
   sprintf(s,"%f",jj);
   Tcl_SetResult(interp,s,TCL_VOLATILE);
@@ -183,7 +183,7 @@ int CmdJd2(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
   // --------------------------------------------------
   if (argc!=8)
     {
-      sprintf(s,"Usage: %s année mois jour heure minute seconde milliseconde", argv[0]);
+      sprintf(s,"Usage: %s annï¿½e mois jour heure minute seconde milliseconde", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
     }
@@ -265,7 +265,7 @@ int CmdHeurePC(ClientData clienData, Tcl_Interp *interp, int argc, char *argv[])
   int annee, mois, jour, heure, minute, seconde, milli;
   int erreur;
 
-  // Vérifie que la commande a le bon nombre d'argument
+  // Vï¿½rifie que la commande a le bon nombre d'argument
   // --------------------------------------------------
   if ((argc != 1) && (argc != 8))
     {
@@ -303,7 +303,7 @@ int CmdHeurePC(ClientData clienData, Tcl_Interp *interp, int argc, char *argv[])
         }
       if (erreur == PB2)
         {
-          strcpy(s,"Problème de droit d'accès pour la fonction EcritHeurePC");
+          strcpy(s,"Problï¿½me de droit d'accï¿½s pour la fonction EcritHeurePC");
           Tcl_SetResult(interp,s,TCL_VOLATILE);
           return TCL_ERROR;
         }
@@ -339,7 +339,7 @@ int CmdReglageHeurePC(ClientData clienData, Tcl_Interp *interp, int argc, char *
     }
   if (erreur == PB2)
     {
-       strcpy(s,"Problème de droit d'accès pour la fonction ReglageHeurePC");
+       strcpy(s,"Problï¿½me de droit d'accï¿½s pour la fonction ReglageHeurePC");
        Tcl_SetResult(interp,s,TCL_VOLATILE);
        return TCL_ERROR;
     }
@@ -504,7 +504,7 @@ int CmdLecturePixel(ClientData clientData, Tcl_Interp *interp, int argc, char *a
     }
   else
     {
-      sprintf(s, "Usage: %s abscisse ordonnée", argv[0]);
+      sprintf(s, "Usage: %s abscisse ordonnï¿½e", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       return TCL_ERROR;
     }
@@ -670,10 +670,11 @@ int DecodeListeInt(Tcl_Interp *interp, char *list, int *tableau, int *n)
      /*                                                                           */
      /*****************************************************************************/
 {
-  char **argv=NULL;
+  char **argv;
   int argc,code;
   int nn,k;
 
+  argv = NULL;
   *n=0;
   code=Tcl_SplitList(interp,list,&argc,&argv);
   if (argc<=0) {
@@ -695,10 +696,11 @@ int DecodeListeDouble(Tcl_Interp *interp, char *list, double *tableau, int *n)
      /*                                                                           */
      /*****************************************************************************/
 {
-  char **argv=NULL;
+  char **argv;
   int argc,code;
   int nn,k;
 
+  argv = NULL;
   *n=0;
   code=Tcl_SplitList(interp,list,&argc,&argv);
   if (argc<=0) {
