@@ -306,12 +306,26 @@ void CalculValeursPrincipales (int x1, int y1, int x2, int y2, double *x_source,
 /*      |Ro| < 1                      */
 void Gauss(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_w, gsl_matrix *mat_x, gsl_vector *vect_c, gsl_matrix *mat_cov, double *chi2, double *me1, struct ajustement *p, struct ajustement *incert, int *iter, int *convergence)
 {
-	int x, y = 0;
-	double dy, dy2, gy, dx, dx2, gx, hxy, fxy = 0.0;
-	size_t i = 0;
-	int erreur = 0;
-
+	int x, y;
+	double dy, dy2, gy, dx, dx2, gx, hxy, fxy;
+	size_t i;
+	int erreur;
 	struct ajustement t;
+
+	// Initialisations
+	x = 0;
+	y = 0;
+	dy = 0.0;
+	dy2 = 0.0;
+	gy = 0.0;
+	dx = 0.0;
+	dx2 = 0.0;
+	gx = 0.0;
+	hxy = 0.0;
+	fxy = 0.0;
+	i = 0;
+	erreur = 0;
+
 	memset (&t, 0, sizeof(struct ajustement));
 
 	//  printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
