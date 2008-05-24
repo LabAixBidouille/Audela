@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.18 2008-05-19 16:52:26 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.19 2008-05-24 10:46:01 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -80,7 +80,7 @@ proc ::kitty::isReady { camItem } {
 #
 proc ::kitty::initPlugin { } {
    variable private
-   global conf
+   global conf caption
 
    #--- Initialise les variables de la camera Kitty
    if { ! [ info exists conf(kitty,mirh) ] }    { set conf(kitty,mirh)    "0" }
@@ -92,6 +92,7 @@ proc ::kitty::initPlugin { } {
    set private(A,camNo) "0"
    set private(B,camNo) "0"
    set private(C,camNo) "0"
+   set private(ccdTemp) "$caption(kitty,temperature_CCD)"
 }
 
 #
@@ -248,8 +249,8 @@ proc ::kitty::fillConfigPage { frm camItem } {
       frame $frm.frame3.frame9 -borderwidth 0 -relief raised
 
          #--- Definition de la temperature du capteur CCD
-         label $frm.frame3.frame9.temp_ccd -text "$caption(kitty,temperature_CCD)"
-         pack $frm.frame3.frame9.temp_ccd -side left -fill x -padx 10 -pady 0
+         label $frm.frame3.frame9.ccdtemp -textvariable ::kitty::private(ccdTemp)
+         pack $frm.frame3.frame9.ccdtemp -side left -fill x -padx 10 -pady 0
 
       pack $frm.frame3.frame9 -side top -fill both -expand 1
 
@@ -320,7 +321,7 @@ proc ::kitty::configureCamera { camItem bufNo } {
       ::kitty::confKitty $camItem
       #--- Je mesure la temperature du capteur CCD
       if { [ info exists private(aftertemp) ] == "0" } {
-         ::kitty::KittyDispTemp $camItem
+         ::kitty::dispTempKitty $camItem
       }
    } ]
 
@@ -354,33 +355,22 @@ proc ::kitty::stop { camItem } {
 }
 
 #
-# ::kitty::KittyDispTemp
+# ::kitty::dispTempKitty
 #    Affiche la temperature du CCD
 #
-proc ::kitty::KittyDispTemp { camItem } {
+proc ::kitty::dispTempKitty { camItem } {
    variable private
    global caption
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm.frame3.frame9.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-         set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         $frm.frame3.frame9.temp_ccd configure \
-            -text "$caption(kitty,temperature_CCD) $temp_ccd $caption(kitty,deg_c)"
-         set private(aftertemp) [ after 5000 ::kitty::KittyDispTemp $camItem ]
-      } elseif { [ winfo exists $frm.frame3.frame9.temp_ccd ] == "0" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-         set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         set private(aftertemp) [ after 5000 ::kitty::KittyDispTemp $camItem ]
-      } elseif { [ winfo exists $frm.frame3.frame9.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "1" } {
-         set temp_ccd ""
-         $frm.frame3.frame9.temp_ccd configure -text "$caption(kitty,temperature_CCD) $temp_ccd"
-         if { [ info exists private(aftertemp) ] == "1" } {
-            unset private(aftertemp)
-         }
-      } else {
-         if { [ info exists private(aftertemp) ] == "1" } {
-            unset private(aftertemp)
-         }
+   if { [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
+      set temp_ccd [ format "%+5.2f" $temp_ccd ]
+      set private(ccdTemp)   "$caption(kitty,temperature_CCD) $temp_ccd $caption(kitty,deg_c)"
+      set private(aftertemp) [ after 5000 ::kitty::dispTempKitty $camItem ]
+   } else {
+      set temp_ccd ""
+      set private(ccdTemp) "$caption(kitty,temperature_CCD) $temp_ccd"
+      if { [ info exists private(aftertemp) ] == "1" } {
+         unset private(aftertemp)
       }
    }
 }
@@ -400,7 +390,7 @@ proc ::kitty::confKitty { camItem } {
          pack $frm.frame2.frame5.frame8.radio_on -side left -padx 5 -pady 5 -ipady 0
          pack $frm.frame2.frame5.frame8.radio_off -side left -padx 5 -pady 5 -ipady 0
          pack $frm.frame3.frame9 -side top -fill both -expand 1
-         pack $frm.frame3.frame9.temp_ccd -side left -fill x -padx 10 -pady 0
+         pack $frm.frame3.frame9.ccdtemp -side left -fill x -padx 10 -pady 0
          pack $frm.frame3.frame10 -side top -fill both -expand 1
          pack $frm.frame3.frame10.test -side left -padx 10 -pady 0 -ipadx 10 -ipady 5
          #--- Widgets de configuration de la Kitty K2 actif
@@ -408,14 +398,14 @@ proc ::kitty::confKitty { camItem } {
             #--- Widgets de configuration de la Kitty K2 actif
             $frm.frame2.frame5.frame8.radio_on configure -state normal
             $frm.frame2.frame5.frame8.radio_off configure -state normal
-            $frm.frame3.frame9.temp_ccd configure -state normal
+            $frm.frame3.frame9.ccdtemp configure -state normal
             $frm.frame3.frame10.test configure -state normal
             $frm.frame3.frame10.test configure -command "::kitty::testK2 $camItem"
          } else {
             #--- Widgets de configuration de la Kitty K2 inactif
             $frm.frame2.frame5.frame8.radio_on configure -state disabled
             $frm.frame2.frame5.frame8.radio_off configure -state disabled
-            $frm.frame3.frame9.temp_ccd configure -state disabled
+            $frm.frame3.frame9.ccdtemp configure -state disabled
             $frm.frame3.frame10.test configure -state disabled
          }
       }
@@ -438,7 +428,7 @@ proc ::kitty::confKittyK2Inactif { camItem } {
          #--- Widgets de configuration de la Kitty K2 inactif
          $frm.frame2.frame5.frame8.radio_on configure -state disabled
          $frm.frame2.frame5.frame8.radio_off configure -state disabled
-         $frm.frame3.frame9.temp_ccd configure -state disabled
+         $frm.frame3.frame9.ccdtemp configure -state disabled
          $frm.frame3.frame10.test configure -state disabled
       }
    }
@@ -472,6 +462,7 @@ proc ::kitty::testK2 { camItem } {
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -494,6 +485,7 @@ proc ::kitty::getPluginProperty { camItem propertyName } {
       hasScan          { return 0 }
       hasShutter       { return 0 }
       hasTempSensor    { return 1 }
+      hasSetTemp       { return 0 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }

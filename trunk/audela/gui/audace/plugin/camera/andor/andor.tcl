@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.15 2008-04-12 16:39:23 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.16 2008-05-24 10:45:11 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -80,7 +80,7 @@ proc ::andor::isReady { camItem } {
 #
 proc ::andor::initPlugin { } {
    variable private
-   global audace conf
+   global audace conf caption
 
    #--- Initialise les variables de la camera Andor
    if { ! [ info exists conf(andor,cool) ] }        { set conf(andor,cool)        "0" }
@@ -96,6 +96,7 @@ proc ::andor::initPlugin { } {
    set private(A,camNo) "0"
    set private(B,camNo) "0"
    set private(C,camNo) "0"
+   set private(ccdTemp) "$caption(andor,temperature_CCD)"
 }
 
 #
@@ -272,8 +273,8 @@ proc ::andor::fillConfigPage { frm camItem } {
          frame $frm.frame2.frame6.frame11 -borderwidth 0 -relief raised
 
             #--- Definition de la temperature du capteur CCD
-            label $frm.frame2.frame6.frame11.temp_ccd -text "$caption(andor,temperature_CCD)"
-            pack $frm.frame2.frame6.frame11.temp_ccd -side left -fill x -padx 20 -pady 5
+            label $frm.frame2.frame6.frame11.ccdtemp -textvariable ::andor::private(ccdTemp)
+            pack $frm.frame2.frame6.frame11.ccdtemp -side left -fill x -padx 20 -pady 5
 
          pack $frm.frame2.frame6.frame11 -side top -fill x -padx 30
 
@@ -350,7 +351,7 @@ proc ::andor::configureCamera { camItem bufNo } {
       cam$camNo closingtime $conf(andor,ferm_obtu)
       #--- Je mesure la temperature du capteur CCD
       if { [ info exists private(aftertemp) ] == "0" } {
-         ::andor::AndorDispTemp $camItem
+         ::andor::dispTempAndor $camItem
       }
    } ]
 
@@ -377,33 +378,22 @@ proc ::andor::stop { camItem } {
 }
 
 #
-# ::andor::AndorDispTemp
+# ::andor::dispTempAndor
 #    Affiche la temperature du CCD
 #
-proc ::andor::AndorDispTemp { camItem } {
+proc ::andor::dispTempAndor { camItem } {
    variable private
    global caption
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm.frame2.frame6.frame11.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-         set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         $frm.frame2.frame6.frame11.temp_ccd configure \
-            -text "$caption(andor,temperature_CCD) $temp_ccd $caption(andor,deg_c)"
-         set private(aftertemp) [ after 5000 ::andor::AndorDispTemp $camItem ]
-      } elseif { [ winfo exists $frm.frame2.frame6.frame11.temp_ccd ] == "0" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-         set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         set private(aftertemp) [ after 5000 ::andor::AndorDispTemp $camItem ]
-      } elseif { [ winfo exists $frm.frame2.frame6.frame11.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "1" } {
-         set temp_ccd ""
-         $frm.frame2.frame6.frame11.temp_ccd configure -text "$caption(andor,temperature_CCD) $temp_ccd"
-         if { [ info exists private(aftertemp) ] == "1" } {
-            unset private(aftertemp)
-         }
-      } else {
-         if { [ info exists private(aftertemp) ] == "1" } {
-            unset private(aftertemp)
-         }
+   if { [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
+      set temp_ccd [ format "%+5.2f" $temp_ccd ]
+      set private(ccdTemp)   "$caption(andor,temperature_CCD) $temp_ccd $caption(andor,deg_c)"
+      set private(aftertemp) [ after 5000 ::andor::dispTempAndor $camItem ]
+   } else {
+      set temp_ccd ""
+      set private(ccdTemp) "$caption(andor,temperature_CCD) $temp_ccd"
+      if { [ info exists private(aftertemp) ] == "1" } {
+         unset private(aftertemp)
       }
    }
 }
@@ -421,14 +411,24 @@ proc ::andor::checkConfigRefroidissement { } {
          if { $::andor::private(cool) == "1" } {
             pack $frm.frame2.frame6.frame10.temp -anchor center -side left -padx 5 -pady 5
             pack $frm.frame2.frame6.frame10.tempdeg -side left -fill x -padx 0 -pady 5
-            $frm.frame2.frame6.frame11.temp_ccd configure -state normal
+            $frm.frame2.frame6.frame11.ccdtemp configure -state normal
          } else {
             pack forget $frm.frame2.frame6.frame10.temp
             pack forget $frm.frame2.frame6.frame10.tempdeg
-            $frm.frame2.frame6.frame11.temp_ccd configure -state disabled
+            $frm.frame2.frame6.frame11.ccdtemp configure -state disabled
          }
       }
    }
+}
+
+#
+# ::andor::setTempCCD
+#    Procedure pour retourner la consigne de temperature du CCD
+#
+proc ::andor::setTempCCD { } {
+   global conf
+
+   return "$conf(andor,temp)"
 }
 
 #
@@ -479,6 +479,7 @@ proc ::andor::setShutter { camItem shutterState ShutterOptionList } {
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -501,6 +502,7 @@ proc ::andor::getPluginProperty { camItem propertyName } {
       hasScan          { return 0 }
       hasShutter       { return 1 }
       hasTempSensor    { return 1 }
+      hasSetTemp       { return 1 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
