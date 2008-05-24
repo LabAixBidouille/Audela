@@ -2,7 +2,7 @@
 # Fichier : alaudine_nt.tcl
 # Description : Permet de controler l'alimentation AlAudine NT avec port I2C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: alaudine_nt.tcl,v 1.16 2008-04-12 16:45:29 robertdelmas Exp $
+# Mise a jour $Id: alaudine_nt.tcl,v 1.17 2008-05-24 10:48:43 robertdelmas Exp $
 #
 
 namespace eval AlAudine_NT {
@@ -82,6 +82,9 @@ namespace eval AlAudine_NT {
       variable private
       global audace caption color conf
 
+      #--- Chargement des captions
+      source [ file join $audace(rep_plugin) link ethernaude alaudine_nt.cap ]
+
       #--- initConf
       if { ! [ info exists conf(alaudine_nt,position) ] }          { set conf(alaudine_nt,position)          "+600+490" }
       if { ! [ info exists conf(alaudine_nt,evaluation) ] }        { set conf(alaudine_nt,evaluation)        "25.0" }
@@ -93,6 +96,9 @@ namespace eval AlAudine_NT {
       set private(evaluation)        $conf(alaudine_nt,evaluation)
       set private(delta_t_max)       $conf(alaudine_nt,delta_t_max)
       set private(temp_ccd_souhaite) $conf(alaudine_nt,temp_ccd_souhaite)
+
+      #--- Initialisation
+      set private(temp_ccd_mesure)   $caption(alaudine_nt,temp_ccd_mesure)
 
       #---
       if { [ winfo exists $This ] } {
@@ -110,9 +116,6 @@ namespace eval AlAudine_NT {
          set fin [ string length $private(geometry) ]
          set private(position) "+[ string range $private(geometry) $deb $fin ]"
       }
-
-      #--- Chargement des captions
-      source [ file join $audace(rep_plugin) link ethernaude alaudine_nt.cap ]
 
       #--- Cree la fenetre $This de niveau le plus haut
       toplevel $This -class Toplevel
@@ -177,7 +180,7 @@ namespace eval AlAudine_NT {
       scale $This.temp_ccd_souhaite_variant -from $tmp_ccd_min -to $tmp_ccd_max -length 300 \
          -orient horizontal -showvalue true -tickinterval 5 -resolution 0.1 \
          -borderwidth 2 -relief groove -variable ::AlAudine_NT::private(temp_ccd_souhaite) -width 10 \
-         -command { ::AlAudine_NT::ReglageTemp }
+         -command { ::AlAudine_NT::reglageTemp }
       pack $This.temp_ccd_souhaite_variant -in $This.frame6 -anchor center -side left -padx 5 -pady 0
 
       entry $This.temp_ccd_souhaite -textvariable ::AlAudine_NT::private(temp_ccd_souhaite) -width 5 -justify center
@@ -187,7 +190,7 @@ namespace eval AlAudine_NT {
       pack $This.lab6 -in $This.frame6 -anchor center -side left -padx 5 -pady 0
 
       #--- Temperature du CCD mesurée
-      label $This.lab7 -text "$caption(alaudine_nt,temp_ccd_mesure)"
+      label $This.lab7 -textvariable ::AlAudine_NT::private(temp_ccd_mesure)
       pack $This.lab7 -in $This.frame7 -anchor center -side left -padx 5 -pady 5
 
       #--- Site web officiel de l'AlAudine
@@ -232,7 +235,7 @@ namespace eval AlAudine_NT {
 
       #---
       if { [ info exists private(aftertemp) ] == "0" } {
-         ::AlAudine_NT::AlAudine_NTDispTemp
+         ::AlAudine_NT::dispTempAlAudine_NT
       }
 
       #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
@@ -274,10 +277,10 @@ namespace eval AlAudine_NT {
    }
 
    #
-   # AlAudine_NT::ReglageTemp
+   # AlAudine_NT::reglageTemp
    # Fonction pour regler la temperature du CCD via l'AlAudine NT
    #
-   proc ReglageTemp { temp_ccd_souhaite } {
+   proc reglageTemp { temp_ccd_souhaite } {
       set camNo [ ::confCam::getCamNo [ ::confCam::getCurrentCamItem ] ]
       if { $camNo != "0" } {
          cam$camNo cooler check $temp_ccd_souhaite
@@ -287,11 +290,10 @@ namespace eval AlAudine_NT {
    }
 
    #
-   # AlAudine_NT::AlAudine_NTDispTemp
+   # AlAudine_NT::dispTempAlAudine_NT
    # Fonction de mesure de la temperature reelle du CCD via l'AlAudine NT
    #
-   proc AlAudine_NTDispTemp { } {
-      variable This
+   proc dispTempAlAudine_NT { } {
       variable private
       global caption
 
@@ -307,19 +309,42 @@ namespace eval AlAudine_NT {
       }
       if { [set $statusVariableName] == "exp" } {
          #--- Si on lit une image de la camera, il ne faut pas lire la temperature
-         set private(aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
+         set private(aftertemp) [ after 5000 ::AlAudine_NT::dispTempAlAudine_NT ]
       } else {
-         if { [ winfo exists $This.lab7 ] == "1" && [ catch { set temp_ccd_mesure [ cam$camNo temperature ] } ] == "0" } {
+         if { [ catch { set temp_ccd_mesure [ cam$camNo temperature ] } ] == "0" } {
             set temp_ccd_mesure [ format "%+5.1f" $temp_ccd_mesure ]
-            $This.lab7 configure \
-               -text "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
-            set private(aftertemp) [ after 5000 ::AlAudine_NT::AlAudine_NTDispTemp ]
+            set private(temp_ccd_mesure) "$caption(alaudine_nt,temp_ccd_mesure) $temp_ccd_mesure $caption(alaudine_nt,degres)"
+            set private(aftertemp) [ after 5000 ::AlAudine_NT::dispTempAlAudine_NT ]
          } else {
+            set private(temp_ccd_mesure) "$caption(alaudine_nt,temp_ccd_mesure)"
             if { [ info exists private(aftertemp) ] == "1" } {
                unset private(aftertemp)
             }
          }
       }
    }
+
+   #------------------------------------------------------------
+   #  addAlAudineNTListener
+   #     ajoute une procedure a appeler si on change un parametre
+   #
+   #  parametres :
+   #     cmd : commande TCL a lancer quand la temperature de consigne change
+   #------------------------------------------------------------
+   proc addAlAudineNTListener { cmd } {
+      trace add variable "::conf(alaudine_nt,temp_ccd_souhaite)" write $cmd
+   }
+
+   #------------------------------------------------------------
+   #  removeAlAudineNTListener
+   #     supprime une procedure a appeler si on change un parametre
+   #
+   #  parametres :
+   #     cmd : commande TCL a lancer quand la temperature de consigne change
+   #------------------------------------------------------------
+   proc removeAlAudineNTListener { cmd } {
+      trace remove variable "::conf(alaudine_nt,temp_ccd_souhaite)" write $cmd
+   }
+
 }
 
