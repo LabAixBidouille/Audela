@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Mise a jour $Id: skybot_resolver.cap,v 1.11 2008-05-16 21:29:03 jberthier Exp $
+# Mise a jour $Id: skybot_resolver.cap,v 1.12 2008-05-24 22:44:47 jberthier Exp $
 #
 
 #=========================================================================
@@ -61,7 +61,7 @@ set caption(resolver,format_target)         "# Saisir le nom d'un objet céleste:
 set caption(resolver,format_epoch)          "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
 set caption(resolver,format_loc)            "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
 un des codes reconnus : Mars, Spirit, Opportunity"
-set caption(resolver,format_dim_fov)        "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+set caption(resolver,format_dim_fov)        "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel: s'il est omis alors on considère un champ circulaire de rayon la valeur saisie"
 set caption(resolver,format_filter)         "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(resolver,format_epoch)       "Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
 un des codes reconnus : Mars, Spirit, Opportunity"
-   set caption(resolver,format_dim_fov)     "Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(resolver,format_dim_fov)     "Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel: s'il est omis alors on considère un champ circulaire de rayon la valeur saisie"
    set caption(resolver,format_filter)      "Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
@@ -201,7 +201,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
 un des codes reconnus : Mars, Spirit, Opportunity"
-   set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel: s'il est omis alors on considère un champ circulaire de rayon la valeur saisie"
    set caption(resolver,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
@@ -271,7 +271,7 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
 un des codes reconnus : Mars, Spirit, Opportunity"
-   set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel: s'il est omis alors on considère un champ circulaire de rayon la valeur saisie"
    set caption(resolver,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 
@@ -481,7 +481,7 @@ indicado não serão mostrados. Escolher 0 para não aplicar filtro"
    set caption(resolver,format_epoch)       "# Saisir la date d'observation dans un des formats reconnus par Audela :\n   aaaa-mm-jjThh:mm:ss.sss, now, jd, etc.\n\n(cf. type 'Date' de la libMC)"
    set caption(resolver,format_loc)         "# Saisir le code correspondant à la localisation de l'observateur : code UAI de l'observatoire (code 500 = géocentre) ou \
 un des codes reconnus : Mars, Spirit, Opportunity"
-   set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel (on considère alors un champ circulaire de rayon la valeur saisie)"
+   set caption(resolver,format_dim_fov)     "# Saisir les dimensions RAxDEC du champ de vue exprimées en secondes de degré.\nLe deuxième paramètre est optionnel: s'il est omis alors on considère un champ circulaire de rayon la valeur saisie"
    set caption(resolver,format_filter)      "# Saisir la valeur du filtre, en secondes de degrés, sur les erreurs de position des objets. Les corps dont l'erreur en position est supérieure à la valeur\
 indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
 

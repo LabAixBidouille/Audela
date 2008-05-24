@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.18 2008-05-16 21:29:03 jberthier Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.19 2008-05-24 22:44:47 jberthier Exp $
 #
 
 namespace eval skybot_Search {
@@ -1712,7 +1712,7 @@ namespace eval skybot_Search {
 
       #--- Invocation du web service skybot
       set ok(skybot) 0
-      set erreur [ catch { vo_skybot $voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) \
+      set erreur [ catch { vo_skybotconesearch $voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) \
                                      $voconf(taille_champ_calcul) "text" "basic" $voconf(observer) $voconf(filter) } voconf(skybot) ]
       if { $erreur == "0" } {
          if { [ lindex $voconf(skybot) 0 ] != "SKYBOT" } {
@@ -1722,7 +1722,7 @@ namespace eval skybot_Search {
          }
       } else {
          set ok(skybot) 3
-         set voconf(skybot) [concat "SKYBOT -> $erreur"]
+         set voconf(skybot) [concat "SKYBOT ->  $voconf(skybot)"]
       }
 
       #--- Gestion des erreurs
