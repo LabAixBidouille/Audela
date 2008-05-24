@@ -2,7 +2,7 @@
 # Fichier : scanSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scanSetup.tcl,v 1.6 2008-05-12 16:51:58 robertdelmas Exp $
+# Mise a jour $Id: scanSetup.tcl,v 1.7 2008-05-24 10:40:28 robertdelmas Exp $
 #
 
 namespace eval scanSetup {
@@ -130,8 +130,6 @@ proc ::scanSetup::afficheAide { } {
 proc ::scanSetup::fermer { } {
    variable This
 
-   #--- Je desactive la surveillance de la connexion d'une camera
-   ::confVisu::removeCameraListener 1 ::scanSetup::configBox
    #--- Je detruis la fenetre
    destroy $This
 }
@@ -161,9 +159,10 @@ proc ::scanSetup::createDialog { } {
    toplevel $This -class Toplevel
    set posx_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
    set posy_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-   wm geometry $This +[ expr $posx_config + 135 ]+[ expr $posy_config + 70 ]
+   wm geometry $This +[ expr $posx_config + 145 ]+[ expr $posy_config + 60 ]
    wm resizable $This 0 0
    wm title $This $caption(scanSetup,configuration)
+   wm protocol $This WM_DELETE_WINDOW ::scanSetup::fermer
 
    #--- Creation des differents frames
    frame $This.frame1 -borderwidth 1 -relief raised
@@ -183,7 +182,7 @@ proc ::scanSetup::createDialog { } {
 
    #--- Bouton du configurateur d'en-tete FITS
    button $This.but1 -text "$caption(scanSetup,en-tete_fits)" \
-      -command "::keyword::run 1 $::scan::This.keyword"
+      -command "::keyword::run 1"
    pack $This.but1 -in $This.frame3 -side top -fill x
 
    #--- Commentaire sur la temporisation
@@ -235,12 +234,6 @@ proc ::scanSetup::createDialog { } {
    #--- La fenetre est active
    focus $This
 
-   #--- Configure le bouton de la fenetre de configuration
-   configBox
-
-   #--- Surveillance de la connexion d'une camera
-   ::confVisu::addCameraListener 1 ::scanSetup::configBox
-
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
 
@@ -263,29 +256,6 @@ proc ::scanSetup::widgetToConf { } {
 
    set ::scan::parametres(scan,delai)  $panneau(scan,delai)
    set ::scan::parametres(scan,active) $panneau(scan,active)
-}
-
-#------------------------------------------------------------
-# configBox
-#    Configure le bouton de la fenetre de configuration
-#
-# Parametres :
-#    args : Pour le fonctionnement du listener
-# Return :
-#    Rien
-#------------------------------------------------------------
-proc ::scanSetup::configBox { args } {
-   variable This
-
-  #--- Retourne l'item de la camera associee a la visu 1
-   set camItem [ ::confVisu::getCamItem 1 ]
-
-   #--- Configure le bouton d'acces au configurateur d'en-tete FITS
-   if { [ ::confCam::isReady $camItem ] == 0 } {
-      $This.but1 configure -state disabled
-   } else {
-      $This.but1 configure -state normal
-   }
 }
 
 #--- Initialisation au demarrage
