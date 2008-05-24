@@ -2,7 +2,7 @@
 # Fichier : acqfcSetup.tcl
 # Description : Configuration de certains parametres de l'outil Acquisition
 # Auteur : Robert DELMAS
-# Mise a jour $Id: acqfcSetup.tcl,v 1.11 2008-05-18 13:54:35 michelpujol Exp $
+# Mise a jour $Id: acqfcSetup.tcl,v 1.12 2008-05-24 10:39:49 robertdelmas Exp $
 #
 
 namespace eval acqfcSetup {
@@ -101,8 +101,6 @@ namespace eval acqfcSetup {
    # Fonction appellee lors de l'appui sur le bouton 'Fermer'
    #
    proc closeWindow { visuNo } {
-      #--- Je desactive la surveillance de la connexion d'une camera
-      ::confVisu::removeCameraListener $visuNo "::acqfcSetup::configBox $visuNo"
    }
 
    #
@@ -113,24 +111,6 @@ namespace eval acqfcSetup {
       global caption
 
       return "$caption(acqfcSetup,titre)"
-   }
-
-   #
-   # acqfcSetup::configBox
-   # Configure le bouton de la fenetre de configuration
-   #
-   proc configBox { visuNo args } {
-      global panneau
-
-      #--- Retourne l'item de la camera associee a la visu
-      set camItem [ ::confVisu::getCamItem $visuNo ]
-
-      #--- Configure le bouton d'acces au configurateur d'en-tete FITS
-      ###if { [ ::confCam::isReady $camItem ] == 0 } {
-      ###   $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state disabled
-      ###} else {
-      ###   $panneau(acqfc,$visuNo,acqfcSetup).frame3.but configure -state normal
-      ###}
    }
 
    #
@@ -151,7 +131,7 @@ namespace eval acqfcSetup {
 
          #--- Bouton du configurateur d'en-tete FITS
          button $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -text $caption(acqfcSetup,en-tete_fits) \
-            -command "::keyword::run $visuNo $panneau(acqfc,$visuNo,This).keyword"
+            -command "::keyword::run $visuNo"
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.but -side top -fill x
 
          #--- Frame pour le commentaire 1
@@ -193,12 +173,6 @@ namespace eval acqfcSetup {
          pack $panneau(acqfc,$visuNo,acqfcSetup).frame3.frame5 -side top -fill both -expand 1
 
       pack $panneau(acqfc,$visuNo,acqfcSetup).frame3 -side top -fill both -expand 1
-
-      #--- Configure le bouton de la fenetre de configuration
-      ::acqfcSetup::configBox $visuNo
-
-      #--- Surveillance de la connexion d'une camera
-      ::confVisu::addCameraListener $visuNo "::acqfcSetup::configBox $visuNo"
    }
 
 }
