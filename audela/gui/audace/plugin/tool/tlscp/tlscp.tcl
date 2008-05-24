@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.7 2008-05-01 12:51:44 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.8 2008-05-24 10:53:20 robertdelmas Exp $
 #
 
 #============================================================
@@ -16,32 +16,6 @@ namespace eval ::tlscp {
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
    source [ file join [file dirname [info script]] tlscp.cap ]
-
-   set caption(tlscp,ret_nord)        "Nord"
-   set caption(tlscp,ret_sud)         "Sud"
-   set caption(tlscp,ret_est)         "Est"
-   set caption(tlscp,ret_ouest)       "Ouest"
-   set caption(tlscp,centrer)         "Centrer"
-   set caption(tlscp,rechercher)      "Rechercher"
-   set caption(tlscp,nettoyer)        "Nettoyer"
-   set caption(tlscp,stop_rechercher) "Stop Rechercher"
-   set caption(tlscp,brightest)       "Etoile brillante"
-   set caption(tlscp,astrometry)      "Astrométrie"
-   set caption(tlscp,stat)            "Statistique"
-   set caption(tlscp,bogumil)         "Bogumil"
-   set caption(tlscp,kappa)           "Kappa"
-   set caption(tlscp,maxMagnitude)    "Magnitude maxi"
-   set caption(tlscp,delta)           "Delta"
-   set caption(tlscp,epsilon)         "Epsilon"
-   set caption(tlscp,foclen)          "Focale (m)"
-   set caption(tlscp,chart)           "Carte"
-   set caption(tlscp,mount)           "Monture"
-   set caption(tlscp,center)          "Centrage"
-   set caption(tlscp,catalogue)       "Catalogue"
-   set caption(tlscp,matching)        "Appariement"
-   set caption(tlscp,detection)       "Détection image"
-   set caption(tlscp,cataloguePath)   "Répertoire"
-   set caption(tlscp,selectPath)      "Choix du répertoire du catalogue"
 }
 
 #------------------------------------------------------------
@@ -617,7 +591,7 @@ proc ::tlscp::adaptPanel { visuNo args } {
    #--- j'intialise les coordonnees de axes
    if { $camItem != "" } {
       set bufNo [::confVisu::getBufNo $visuNo]
-      if { [buf$bufNo imageready] == 0  } {
+      if { [buf$bufNo imageready] == 0 } {
          #--- je cree une image de la taille de l'image de la camera
          set windowCam [cam[::confCam::getCamNo $private($visuNo,camItem)] window]
          buf$bufNo setpixels "CLASS_GRAY" [expr [lindex $windowCam 2] - [lindex $windowCam 0] +1] [expr [lindex $windowCam 3] - [lindex $windowCam 1] +1] "FORMAT_FLOAT" "COMPRESS_NONE" 0
@@ -986,8 +960,8 @@ proc ::tlscp::startCenter { visuNo  } {
    set private($visuNo,acquisitionResult) ""
 
    set bufNo [::confVisu::getBufNo $visuNo]
-   set ra      [string trim [mc_angle2deg $private($visuNo,raObjet) ]]
-   set dec     [string trim [mc_angle2deg $private($visuNo,decObjet)]]
+   set ra    [string trim [mc_angle2deg $private($visuNo,raObjet) ]]
+   set dec   [string trim [mc_angle2deg $private($visuNo,decObjet)]]
 
    if { $::conf(tlscp,methode) == "BRIGHTEST" } {
       ###console::disp "::tlscp::startCenter targetCoord=$private($visuNo,targetCoord) targetBoxSize=$::conf(tlscp,targetBoxSize)\n"
@@ -1016,8 +990,8 @@ proc ::tlscp::startCenter { visuNo  } {
 
       #--- je cree un cercle rouge autour de l'étoile centree
       set coord [::confVisu::picture2Canvas $visuNo $private($visuNo,acquisitionResult) ]
-      set x  [lindex $coord 0]
-      set y  [lindex $coord 1]
+      set x [lindex $coord 0]
+      set y [lindex $coord 1]
       [::confVisu::getCanvas $visuNo] create oval [expr $x-8] [expr $y-8] [expr $x+8] [expr $y+8] -fill {} -outline red -width 2 -activewidth 3 -tag tlscpstar
 
       ::confVisu::setAvailableScale $visuNo "xy_radec"
@@ -1814,6 +1788,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
 
    #--- notebookMount
    set frm $notebookMount
+
    #--- Frame ascension droite
    TitleFrame $frm.alpha -borderwidth 2 -relief ridge -text "$caption(tlscp,AD)"
       LabelEntry $frm.alpha.gainprop -label "$caption(tlscp,vitesse)" \
@@ -1863,15 +1838,22 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
 
    #--- notebookCamera
    set frm $notebookCamera
-      #--- Frame camera
-      TitleFrame $frm.camera -borderwidth 2 -text "$caption(tlscp,camera)"
-         LabelEntry $frm.camera.angle -label "$caption(tlscp,angle)" \
-            -labeljustify left -labelwidth 14 -width 5 -justify right \
-            -validate all -validatecommand { ::tlscp::validateNumber %W %V %P %s -360 360} \
-            -textvariable ::tlscp::config::widget($visuNo,angle)
-         pack $frm.camera.angle -in [$frm.camera getframe] -anchor w -side top -fill x -expand 0
 
-   pack $frm.camera -in $frm -anchor w -side top -fill x -expand 0
+   #--- Frame camera
+   frame $frm.fits
+      button $frm.fits.buttonFits -text "$caption(tlscp,en-tete_fits)" \
+         -command "::keyword::run $visuNo"
+      pack $frm.fits.buttonFits -anchor n -side top -fill x
+
+   TitleFrame $frm.camera -borderwidth 2 -text "$caption(tlscp,camera)"
+      LabelEntry $frm.camera.angle -label "$caption(tlscp,angle)" \
+         -labeljustify left -labelwidth 14 -width 5 -justify right \
+         -validate all -validatecommand { ::tlscp::validateNumber %W %V %P %s -360 360} \
+         -textvariable ::tlscp::config::widget($visuNo,angle)
+      pack $frm.camera.angle -in [$frm.camera getframe] -anchor w -side top -fill x -expand 0
+
+   pack $frm.fits   -in $frm -anchor w -side top -fill x -expand 0
+   pack $frm.camera -in $frm -anchor w -side top -fill x -expand 0 -pady 5
 
    #--- onglet centrer
    set frm $notebookCenter
@@ -1954,7 +1936,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
             -labeljustify left -labelwidth 22 -justify left -padx 2 \
             -textvariable ::tlscp::config::widget($visuNo,cataloguePath)
          pack $frm.catalogue.path.value -anchor w -side left -fill x -expand 1
-         button $frm.catalogue.path.button -text "..." -command "::tlscp::config::onChooseDirectory $visuNo "
+         button $frm.catalogue.path.button -text "..." -command "::tlscp::config::onChooseDirectory $visuNo"
          pack $frm.catalogue.path.button -anchor w -side right -fill none -expand 0
       pack $frm.catalogue.path  -in [$frm.catalogue getframe] -anchor w -side top -fill x -expand 1
 
