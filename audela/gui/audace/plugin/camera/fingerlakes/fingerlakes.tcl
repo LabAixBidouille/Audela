@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.25 2008-04-12 16:40:08 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.26 2008-05-24 10:45:44 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -80,7 +80,7 @@ proc ::fingerlakes::isReady { camItem } {
 #
 proc ::fingerlakes::initPlugin { } {
    variable private
-   global conf
+   global conf caption
 
    #--- Initialise les variables de la camera FLI
    if { ! [ info exists conf(fingerlakes,cool) ] }     { set conf(fingerlakes,cool)     "0" }
@@ -93,6 +93,7 @@ proc ::fingerlakes::initPlugin { } {
    set private(A,camNo) "0"
    set private(B,camNo) "0"
    set private(C,camNo) "0"
+   set private(ccdTemp) "$caption(fingerlakes,temperature_CCD)"
 }
 
 #
@@ -192,8 +193,8 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
             frame $frm.frame1.frame3.frame5.frame7 -borderwidth 0 -relief raised
 
                #--- Definition de la temperature du capteur CCD
-               label $frm.frame1.frame3.frame5.frame7.temp_ccd -text "$caption(fingerlakes,temperature_CCD)"
-               pack $frm.frame1.frame3.frame5.frame7.temp_ccd -side left -fill x -padx 20 -pady 5
+               label $frm.frame1.frame3.frame5.frame7.ccdtemp -textvariable ::fingerlakes::private(ccdTemp)
+               pack $frm.frame1.frame3.frame5.frame7.ccdtemp -side left -fill x -padx 20 -pady 5
 
             pack $frm.frame1.frame3.frame5.frame7 -side top -fill x -padx 30
 
@@ -288,7 +289,7 @@ proc ::fingerlakes::configureCamera { camItem bufNo } {
       cam$camNo mirrorv $conf(fingerlakes,mirv)
       #--- Je mesure la temperature du capteur CCD
       if { [ info exists private(aftertemp) ] == "0" } {
-         ::fingerlakes::FLIDispTemp $camItem
+         ::fingerlakes::dispTempFLI $camItem
       }
    } ]
 
@@ -315,33 +316,22 @@ proc ::fingerlakes::stop { camItem } {
 }
 
 #
-# ::fingerlakes::FLIDispTemp
+# ::fingerlakes::dispTempFLI
 #    Affiche la temperature du CCD
 #
-proc ::fingerlakes::FLIDispTemp { camItem } {
+proc ::fingerlakes::dispTempFLI { camItem } {
    variable private
    global caption
 
-   if { [ info exists private(frm) ] } {
-      set frm $private(frm)
-      if { [ winfo exists $frm.frame1.frame3.frame5.frame7.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-         set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         $frm.frame1.frame3.frame5.frame7.temp_ccd configure \
-            -text "$caption(fingerlakes,temperature_CCD) $temp_ccd $caption(fingerlakes,deg_c)"
-         set private(aftertemp) [ after 5000 ::fingerlakes::FLIDispTemp $camItem ]
-      } elseif { [ winfo exists $frm.frame1.frame3.frame5.frame7.temp_ccd ] == "0" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
-         set temp_ccd [ format "%+5.2f" $temp_ccd ]
-         set private(aftertemp) [ after 5000 ::fingerlakes::FLIDispTemp $camItem ]
-      } elseif { [ winfo exists $frm.frame1.frame3.frame5.frame7.temp_ccd ] == "1" && [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "1" } {
-         set temp_ccd ""
-         $frm.frame1.frame3.frame5.frame7.temp_ccd configure -text "$caption(fingerlakes,temperature_CCD) $temp_ccd"
-         if { [ info exists private(aftertemp) ] == "1" } {
-            unset private(aftertemp)
-         }
-      } else {
-         if { [ info exists private(aftertemp) ] == "1" } {
-            unset private(aftertemp)
-         }
+   if { [ catch { set temp_ccd [ cam$private($camItem,camNo) temperature ] } ] == "0" } {
+      set temp_ccd [ format "%+5.2f" $temp_ccd ]
+      set private(ccdTemp)   "$caption(fingerlakes,temperature_CCD) $temp_ccd $caption(fingerlakes,deg_c)"
+      set private(aftertemp) [ after 5000 ::fingerlakes::dispTempFLI $camItem ]
+   } else {
+      set temp_ccd ""
+      set private(ccdTemp) "$caption(fingerlakes,temperature_CCD) $temp_ccd"
+      if { [ info exists private(aftertemp) ] == "1" } {
+         unset private(aftertemp)
       }
    }
 }
@@ -359,14 +349,24 @@ proc ::fingerlakes::checkConfigRefroidissement { } {
          if { $::fingerlakes::private(cool) == "1" } {
             pack $frm.frame1.frame3.frame5.frame6.temp -anchor center -side left -padx 5 -pady 5
             pack $frm.frame1.frame3.frame5.frame6.tempdeg -side left -fill x -padx 0 -pady 5
-            $frm.frame1.frame3.frame5.frame7.temp_ccd configure -state normal
+            $frm.frame1.frame3.frame5.frame7.ccdtemp configure -state normal
          } else {
             pack forget $frm.frame1.frame3.frame5.frame6.temp
             pack forget $frm.frame1.frame3.frame5.frame6.tempdeg
-            $frm.frame1.frame3.frame5.frame7.temp_ccd configure -state disabled
+            $frm.frame1.frame3.frame5.frame7.ccdtemp configure -state disabled
          }
       }
    }
+}
+
+#
+# ::fingerlakes::setTempCCD
+#    Procedure pour retourner la consigne de temperature du CCD
+#
+proc ::fingerlakes::setTempCCD { } {
+   global conf
+
+   return "$conf(fingerlakes,temp)"
 }
 
 #
@@ -417,6 +417,7 @@ proc ::fingerlakes::setShutter { camItem shutterState ShutterOptionList } {
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -439,6 +440,7 @@ proc ::fingerlakes::getPluginProperty { camItem propertyName } {
       hasScan          { return 0 }
       hasShutter       { return 1 }
       hasTempSensor    { return 1 }
+      hasSetTemp       { return 1 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
