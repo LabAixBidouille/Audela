@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.16 2008-05-16 21:26:00 jberthier Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.17 2008-05-24 22:40:55 jberthier Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -253,18 +253,18 @@ proc vo_skybotXML {procVarName args} {
 }
 
 # ------------------------------------------------------------------------------------
-# proc        : vo_skybot { [JD] [RA] [DEC] [radius] [mime] [out] [observer] [filter] }
+# proc        : vo_skybot { [JD] [RA] [DEC] [radius] [mime] [output] [observer] [filter] }
 #                 avec  JD       = jour julien de l'epoque consideree
 #                       RA,DEC   = coordonnees equatoriales J2000 du centre du FOV (degres)
 #                       radius   = rayon du FOV en arcsec
 #                       mime     = format de la reponse ('text', 'votable', 'html')
-#                       out      = choix des donnees en sortie ('object', 'basic','all')
+#                       output   = choix des donnees en sortie ('object', 'basic','all')
 #                       observer = code UAI de l'observatoire
 #                       filter   = filtre sur l'erreur de position
 #
 # Description : Skybot webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 11 juin 2006
+# Update      : 21 mai 2008  
 #
 # Ce script interroge la base SkyBoT afin de fournir la liste et les coordonnees
 # de tous les corps du systeme solaire contenus dans le FOV a l'epoque et aux
@@ -276,13 +276,13 @@ proc vo_skybotXML {procVarName args} {
 # Plus d'info: http://skybot.imcce.fr
 #
 # Dans la console, une fois la cmde executee, on peut executer:
-#    SOAP::dump -request skybotresolver
-#    SOAP::dump -reply skybotresolver
+#    SOAP::dump -request skybotconesearch
+#    SOAP::dump -reply skybotconesearch
 # afin de visualiser le texte de la requete et de la reponse SOAP.
 #
 # ------------------------------------------------------------------------------------
 
-proc vo_skybot { args } {
+proc vo_skybotconesearch { args } {
    global audace
    global conf
 
@@ -290,6 +290,7 @@ proc vo_skybot { args } {
 
    set argc [llength $args]
    if {$argc >= 4} {
+      # reception des arguments
       set jd [mc_date2jd [lindex $args 0]]
       set RA [mc_angle2deg [lindex $args 1]]
       set DEC [mc_angle2deg [lindex $args 2] 90]
@@ -303,10 +304,10 @@ proc vo_skybot { args } {
       set filter "0"
       if {$argc >= 8} { set filter [lindex $args 7] }
 
-      # The XML below is ripped straight from the generated SkyBoTBinding.skybotresolver.req.xml
+      # The XML below is ripped straight from the generated request
       variable skybot_xml
       array set skybot_xml {
-        skybot {<?xml version="1.0" encoding="UTF-8"?>
+        skybotconesearch {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
     xmlns:ns1="http://www.imcce.fr/webservices/skybot"
@@ -314,7 +315,9 @@ proc vo_skybot { args } {
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" 
     SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-  <SOAP-ENV:Header><ns1:clientID><ns1:from>DEBUG</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID></SOAP-ENV:Header>
+  <SOAP-ENV:Header>
+    <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
+  </SOAP-ENV:Header>
   <SOAP-ENV:Body>
     <ns1:skybotconesearch>
       <inputArray xsi:type="ns1:skybotConeSearchRequest">
@@ -331,22 +334,28 @@ proc vo_skybot { args } {
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>}
 }
-      SOAP::create skybot \
+
+      # instance du client soap
+      SOAP::create skybotconesearch \
          -uri "http://www.imcce.fr/webservices/skybot" \
          -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
-         -name "skybot" \
+         -name "skybotconesearch" \
          -wrapProc vo_skybotXML \
-         -params { epoch double alpha double delta double radius string mime string out string observer string filter string }
+         -params { epoch double alpha double delta double radius string mime string output string observer string filter string }
 
-      set erreur [ catch { skybot epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter } response ]
+      # invocation du web service
+      set erreur [ catch { skybotconesearch epoch $jd RA $RA DEC $DEC radius $radius mime $mime out $out observer $observer filter $filter } response ]
 
-      set flag [lindex 1]
+      # recuperation des resultats
+      set flag [lindex $response 1]
       set result [lindex $response 5]
+
+      # retour du resultat et gestion des cas d'erreur
       if { $erreur == "0" && $flag >= 0 } {
          return $result
       } else {
          if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
-            tk_messageBox -title "error" -type ok -message $result
+            tk_messageBox -title "error" -type ok -message [concat "skybotconesearch: error: " $response]
          }
          return "failed"
       }
@@ -359,16 +368,16 @@ proc vo_skybot { args } {
 }
 
 # ------------------------------------------------------------------------------------
-# proc        : vo_skybotresolver { [JD] [target] [mime] [out] [observer] }
+# proc        : vo_skybotresolver { [JD] [name] [mime] [out] [observer] }
 #                 avec  JD       = jour julien de l'epoque consideree
-#                       target   = nom ou numero ou designation provisoire de l'objet
+#                       name     = nom ou numero ou designation provisoire de l'objet
 #                       mime     = format de la reponse ('text', 'votable', 'html')
 #                       out      = choix des donnees en sortie ('object', 'basic','all')
 #                       observer = code UAI de l'observatoire
 #
 # Description : SkybotResolver webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 11 juin 2006
+# Update      : 21 mai 2008  
 #
 # Ce script interroge la base SkyBoT afin de resoudre le nom d'un corps
 # du systeme solaire en ses coordonnees a l'epoque consideree.
@@ -391,20 +400,19 @@ proc vo_skybotresolver { args } {
 
    package require SOAP
 
-   # reception des arguments
    set argc [llength $args]
    if {$argc >= 2} {
-
+      # reception des arguments
       set jd [mc_date2jd [lindex $args 0]]
-      set target [lindex $args 1]
+      set name [lindex $args 1]
       set mime "text"
       if {$argc >= 3} { set mime [lindex $args 2] }
-      set out "basic"
-      if {$argc >= 4} { set out [lindex $args 3] }
+      set output "basic"
+      if {$argc >= 4} { set output [lindex $args 3] }
       set observer "500"
       if {$argc >= 5} { set observer [lindex $args 4] }
 
-      # The XML below is ripped straight from the generated SkyBoTBinding.skybotresolver.req.xml
+      # The XML below is ripped straight from the generated request
       variable skybot_xml
       array set skybot_xml {
         skybotresolver {<?xml version="1.0" encoding="UTF-8"?>
@@ -416,15 +424,15 @@ proc vo_skybotresolver { args } {
     xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" 
     SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <SOAP-ENV:Header>
-    <ns1:clientID><ns1:from>debug</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
+    <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
   </SOAP-ENV:Header>
   <SOAP-ENV:Body>
     <ns1:skybotresolver>
       <inputArray xsi:type="ns1:skybotResolverRequest">
-        <epoch xsi:type="xsd:double">${epoch}</epoch>
-        <name xsi:type="xsd:string">$target</name>
+        <epoch xsi:type="xsd:double">$epoch</epoch>
+        <name xsi:type="xsd:string">$name</name>
         <mime xsi:type="xsd:string">$mime</mime>
-        <output xsi:type="xsd:string">$out</output>
+        <output xsi:type="xsd:string">$output</output>
         <observer xsi:type="xsd:string">$observer</observer>
       </inputArray>
     </ns1:skybotresolver>
@@ -432,29 +440,34 @@ proc vo_skybotresolver { args } {
 </SOAP-ENV:Envelope>}
       }
 
+      # instance du client soap
       SOAP::create skybotresolver \
-         -uri "http://www.imcce.fr/webservices/skybot-dev"\
-         -proxy "http://www.imcce.fr/webservices/skybot-dev/skybot.php" \
+         -uri "http://www.imcce.fr/webservices/skybot" \
+         -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
          -name "skybotresolver" \
          -wrapProc vo_skybotXML \
-         -params { epoch double target string mime string out string observer string }
+         -params { epoch double name string mime string output string observer string }
 
-      set erreur [ catch { skybotresolver epoch $jd target $target mime $mime out $out observer $observer } response ]
+      # invocation du web service
+      set erreur [ catch { skybotresolver epoch $jd name $name mime $mime output $output observer $observer } response ]
 
-      set flag [lindex 1]
+      # recuperation des resultats
+      set flag [lindex $response 1]
       set result [lindex $response 5]
+
+      # retour du resultat et gestion des cas d'erreur
       if { $erreur == "0" && $flag >= 0 } {
          return $result
       } else {
          if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
-            tk_messageBox -title "error" -type ok -message $result
+            tk_messageBox -title "error" -type ok -message [concat "skybotresolver: error: " $response]
          }
          return "failed"
       }
 
    } else {
 
-      error "Usage: vo_skybotresolver Epoch Target ?text|votable|html? ?object|basic|all? Observer"
+      error "Usage: vo_skybotresolver Epoch Name ?text|votable|html? ?object|basic|all? Observer"
 
    }
 }
@@ -465,7 +478,7 @@ proc vo_skybotresolver { args } {
 #
 # Description : SkybotStatus webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 11 juin 2006
+# Update      : 21 mai 2008  
 #
 # Ce script interroge la base SkyBoT afin d'en connaitre le statut
 #
@@ -493,16 +506,42 @@ proc vo_skybotstatus { args } {
 
    set argc [llength $args]
    if {$argc >= 0} {
+      # reception des arguments
       set mime "text"
       if {$argc >= 1} { set mime [lindex $args 0] }
 
+      # The XML below is ripped straight from the generated request
+      variable skybot_xml
+      array set skybot_xml {
+        skybotstatus {<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope
+   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+   xmlns:ns1="http://www.imcce.fr/webservices/skybot"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+   SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+ <SOAP-ENV:Header>
+  <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
+ </SOAP-ENV:Header>
+ <SOAP-ENV:Body>
+  <ns1:skybotstatus>
+   <mime xsi:type="xsd:string">$mime</mime>
+  </ns1:skybotstatus>
+ </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>}
+      }
+
+      # instance du client soap
       SOAP::create skybotstatus \
          -uri "http://www.imcce.fr/webservices/skybot" \
          -proxy "http://www.imcce.fr/webservices/skybot/skybot.php" \
          -name "skybotstatus" \
+         -wrapProc vo_skybotXML \
          -params { "mime" "string" }
 
-      set erreur [ catch { skybotstatus $mime } response ]
+      # invocation du web service
+      set erreur [ catch { skybotstatus mime $mime } response ]
 
       # cas ou le serveur repond avec une erreur
       if {[string range $response 0 11] == "SKYBOTStatus"} {
@@ -514,7 +553,7 @@ proc vo_skybotstatus { args } {
          return $response
       } else {
          if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
-            tk_messageBox -title "error" -type ok -message [concat "Error: " $response]
+            tk_messageBox -title "error" -type ok -message [concat "skybotstatus: error: " $response]
          }
          if {$erreur == "99"} {
             return "error"
