@@ -2,7 +2,7 @@
 # Fichier : scanfastSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scanfastSetup.tcl,v 1.5 2008-05-12 16:52:17 robertdelmas Exp $
+# Mise a jour $Id: scanfastSetup.tcl,v 1.6 2008-05-24 10:41:06 robertdelmas Exp $
 #
 
 namespace eval scanfastSetup {
@@ -130,8 +130,6 @@ proc ::scanfastSetup::afficheAide { } {
 proc ::scanfastSetup::fermer { } {
    variable This
 
-   #--- Je desactive la surveillance de la connexion d'une camera
-   ::confVisu::removeCameraListener 1 ::scanfastSetup::configBox
    #--- Je detruis la fenetre
    destroy $This
 }
@@ -161,9 +159,10 @@ proc ::scanfastSetup::createDialog { } {
    toplevel $This -class Toplevel
    set posx_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
    set posy_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-   wm geometry $This +[ expr $posx_config + 135 ]+[ expr $posy_config + 70 ]
+   wm geometry $This +[ expr $posx_config + 145 ]+[ expr $posy_config + 60 ]
    wm resizable $This 0 0
    wm title $This $caption(scanfastSetup,configuration)
+   wm protocol $This WM_DELETE_WINDOW ::scanfastSetup::fermer
 
    #--- Creation des differents frames
    frame $This.frame1 -borderwidth 1 -relief raised
@@ -183,7 +182,7 @@ proc ::scanfastSetup::createDialog { } {
 
    #--- Bouton du configurateur d'en-tete FITS
    button $This.but1 -text "$caption(scanfastSetup,en-tete_fits)" \
-      -command "::keyword::run 1 $::scanfast::This.keyword"
+      -command "::keyword::run 1"
    pack $This.but1 -in $This.frame3 -side top -fill x
 
    #--- Commentaire sur la temporisation
@@ -235,12 +234,6 @@ proc ::scanfastSetup::createDialog { } {
    #--- La fenetre est active
    focus $This
 
-   #--- Configure le bouton de la fenetre de configuration
-   configBox
-
-   #--- Surveillance de la connexion d'une camera
-   ::confVisu::addCameraListener 1 ::scanfastSetup::configBox
-
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
    bind $This <Key-F1> { ::console::GiveFocus }
 
@@ -263,29 +256,6 @@ proc ::scanfastSetup::widgetToConf { } {
 
    set ::scanfast::parametres(scanfast,delai)  $panneau(scanfast,delai)
    set ::scanfast::parametres(scanfast,active) $panneau(scanfast,active)
-}
-
-#------------------------------------------------------------
-# configBox
-#    Configure le bouton de la fenetre de configuration
-#
-# Parametres :
-#    args : Pour le fonctionnement du listener
-# Return :
-#    Rien
-#------------------------------------------------------------
-proc ::scanfastSetup::configBox { args } {
-   variable This
-
-  #--- Retourne l'item de la camera associee a la visu 1
-   set camItem [ ::confVisu::getCamItem 1 ]
-
-   #--- Configure le bouton d'acces au configurateur d'en-tete FITS
-   if { [ ::confCam::isReady $camItem ] == 0 } {
-      $This.but1 configure -state disabled
-   } else {
-      $This.but1 configure -state normal
-   }
 }
 
 #--- Initialisation au demarrage
