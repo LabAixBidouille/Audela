@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.60 2008-05-23 07:14:39 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.61 2008-05-24 10:35:09 robertdelmas Exp $
 #
 
 #==============================================================
@@ -1611,7 +1611,7 @@ namespace eval ::acqfc {
       update
 
       #--- Rajoute des mots clefs dans l'en-tete FITS
-      foreach keyword [ ::keyword::getCheckedKeywords $visuNo ] {
+      foreach keyword [ ::keyword::getKeywords $visuNo ] {
          $buffer setkwd $keyword
       }
 
