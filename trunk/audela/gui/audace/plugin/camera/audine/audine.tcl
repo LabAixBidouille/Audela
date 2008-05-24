@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.15 2008-04-12 16:48:14 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.16 2008-05-24 10:46:52 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -635,6 +635,16 @@ proc ::audine::confAudineInactif { camItem } {
 }
 
 #
+# ::audine::setTempCCD
+#    Procedure pour retourner la consigne de temperature du CCD
+#
+proc ::audine::setTempCCD { } {
+   global conf
+
+   return $conf(alaudine_nt,temp_ccd_souhaite)
+}
+
+#
 # ::audine::setShutter
 #    Procedure pour la commande de l'obturateur
 #
@@ -682,6 +692,7 @@ proc ::audine::setShutter { camItem shutterState ShutterOptionList } {
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -735,6 +746,12 @@ proc ::audine::getPluginProperty { camItem propertyName } {
       }
       hasShutter       { return 1 }
       hasTempSensor         {
+         switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
+            "ethernaude" { return 1 }
+            default      { return 0 }
+         }
+      }
+      hasSetTemp            {
          switch [ ::confLink::getLinkNamespace $::conf(audine,port) ] {
             "ethernaude" { return 1 }
             default      { return 0 }

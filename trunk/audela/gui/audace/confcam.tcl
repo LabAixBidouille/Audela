@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.114 2008-05-06 09:42:02 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.115 2008-05-24 10:50:15 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -383,7 +383,6 @@ proc ::confCam::createDialog { } {
 proc ::confCam::createThread { camItem bufNo } {
    variable private
 
-   ###set ::tcl_platform(threaded) 1
    #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
    set camNo $private($camItem,camNo)
    if { $::tcl_platform(threaded)==1 } {
@@ -543,7 +542,7 @@ proc ::confCam::onRaiseNotebook { camName } {
 #
 # parametres :
 #    camItem : item de la camera
-#    state :   1=connecter la camera , 0= deconnecter la camera
+#    state   : 1 = connecter la camera , 0 = deconnecter la camera
 # return
 #    rien
 #----------------------------------------------------------------------------
@@ -555,10 +554,31 @@ proc ::confCam::setConnection { camItem state } {
    }
 }
 
+#------------------------------------------------------------
+# setTempCCD
+# Retourne la temperature de consigne du CCD
+# Si la camera n'a pas cette fonctionnalite, retourne une chaine vide
+#
+# Parametres :
+#    camItem : Item de la camera
+#------------------------------------------------------------
+proc ::confCam::setTempCCD { camItem } {
+   global conf
+
+   if { [ ::confCam::getPluginProperty $camItem hasSetTemp ] == "1" } {
+      return [ format "%+4.1f" [ ::$conf(camera,$camItem,camName)::setTempCCD ] ]
+   } else {
+      return ""
+   }
+}
 
 #----------------------------------------------------------------------------
 # setMount
-#   ajoute la commende tel$telNo dans l'interpreteur de la camera
+# Ajoute la commande tel$telNo dans l'interpreteur de la camera
+#
+# Parametres :
+#    camItem : item de la camera
+#    telNo   : numero du telescope
 #----------------------------------------------------------------------------
 proc ::confCam::setMount { camItem telNo } {
    variable private
@@ -577,9 +597,9 @@ proc ::confCam::setMount { camItem telNo } {
 
 #----------------------------------------------------------------------------
 # setShutter
-# change l'etat de l'obturateur de la camera
+# Change l'etat de l'obturateur de la camera
 #
-# parametres :
+# Parametres :
 #    camItem    : item de la camera
 #    shutterState : etat de l'obturateur ( 0 1 2 )
 #    mode    :  mode de changement ("increment"=incrementation ou "set"= valeur  )
@@ -693,6 +713,7 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
    # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
    # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
    # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+   # hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
    # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
    # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
    # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -714,6 +735,7 @@ proc ::confCam::getPluginProperty { camItem propertyName } {
       hasScan          { set result 0 }
       hasShutter       { set result 0 }
       hasTempSensor    { set result 0 }
+      hasSetTemp       { set result 0 }
       hasVideo         { set result 0 }
       hasWindow        { set result 0 }
       longExposure     { set result 1 }
