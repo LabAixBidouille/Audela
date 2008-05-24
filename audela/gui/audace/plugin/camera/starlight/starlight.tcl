@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.12 2008-04-06 08:58:59 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.13 2008-05-24 10:29:28 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -370,6 +370,7 @@ proc ::starlight::stop { camItem } {
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -392,6 +393,7 @@ proc ::starlight::getPluginProperty { camItem propertyName } {
       hasScan          { return 0 }
       hasShutter       { return 0 }
       hasTempSensor    { return 0 }
+      hasSetTemp       { return 0 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
