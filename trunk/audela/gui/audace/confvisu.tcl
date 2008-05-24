@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.78 2008-05-07 21:49:20 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.79 2008-05-24 10:33:22 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -214,8 +214,9 @@ namespace eval ::confVisu {
 
       }
 
-      #--- je supprime la fenetre
+      #--- je supprime la fenetre et la variable
       destroy $private($visuNo,This)
+      unset private($visuNo,This)
 
    }
 
@@ -640,7 +641,12 @@ namespace eval ::confVisu {
    proc getCamItem { visuNo } {
       variable private
 
-      return $private($visuNo,camItem)
+      #--- je teste l'existance de la variable au cas ou la visu n'existe pas
+      if { [ info exists private($visuNo,camItem) ] == "1" } {
+         return $private($visuNo,camItem)
+      } else {
+         return ""
+      }
    }
 
    #------------------------------------------------------------
@@ -1081,7 +1087,12 @@ namespace eval ::confVisu {
    proc getBase { visuNo } {
       variable private
 
-      return $private($visuNo,This)
+      #--- je teste l'existance de la variable au cas ou la visu n'existe pas
+      if { [ info exists private($visuNo,This) ] == "1" } {
+         return $private($visuNo,This)
+      } else {
+         error "Visu$visuNo does not exit."
+      }
    }
 
    #------------------------------------------------------------
