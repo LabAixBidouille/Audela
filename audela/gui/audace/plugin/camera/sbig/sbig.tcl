@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.16 2008-05-19 17:19:20 michelpujol Exp $
+# Mise a jour $Id: sbig.tcl,v 1.17 2008-05-24 10:49:09 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -83,22 +83,22 @@ proc ::sbig::initPlugin { } {
    global conf caption
 
    #--- Initialise les variables de la camera SBIG
-   if { ! [ info exists conf(sbig,cool) ] }     { set conf(sbig,cool)     "0" }
-   if { ! [ info exists conf(sbig,foncobtu) ] } { set conf(sbig,foncobtu) "2" }
-   if { ! [ info exists conf(sbig,host) ] }     { set conf(sbig,host)     "192.168.0.2" }
-   if { ! [ info exists conf(sbig,mirh) ] }     { set conf(sbig,mirh)     "0" }
-   if { ! [ info exists conf(sbig,mirv) ] }     { set conf(sbig,mirv)     "0" }
-   if { ! [ info exists conf(sbig,port) ] }     { set conf(sbig,port)     "LPT1:" }
-   if { ! [ info exists conf(sbig,temp) ] }     { set conf(sbig,temp)     "0" }
-   if { ! [ info exists conf(sbig,lptAddressValue) ]  }  { set conf(sbig,lptAddressValue)  "" }
+   if { ! [ info exists conf(sbig,cool) ] }              { set conf(sbig,cool)              "0" }
+   if { ! [ info exists conf(sbig,foncobtu) ] }          { set conf(sbig,foncobtu)          "2" }
+   if { ! [ info exists conf(sbig,host) ] }              { set conf(sbig,host)              "192.168.0.2" }
+   if { ! [ info exists conf(sbig,mirh) ] }              { set conf(sbig,mirh)              "0" }
+   if { ! [ info exists conf(sbig,mirv) ] }              { set conf(sbig,mirv)              "0" }
+   if { ! [ info exists conf(sbig,port) ] }              { set conf(sbig,port)              "LPT1:" }
+   if { ! [ info exists conf(sbig,temp) ] }              { set conf(sbig,temp)              "0" }
+   if { ! [ info exists conf(sbig,lptAddressValue) ] }   { set conf(sbig,lptAddressValue)   "" }
    if { ! [ info exists conf(sbig,lptAddressEnabled) ] } { set conf(sbig,lptAddressEnabled) "0" }
 
    #--- Initialisation
    set private(A,camNo) "0"
    set private(B,camNo) "0"
    set private(C,camNo) "0"
-   set private(power) "$caption(sbig,puissance_peltier_--)"
-   set private(ccdTemp) $caption(sbig,temp_ext)
+   set private(power)   "$caption(sbig,puissance_peltier_--)"
+   set private(ccdTemp) "$caption(sbig,temp_ext)"
 }
 
 #
@@ -106,18 +106,17 @@ proc ::sbig::initPlugin { } {
 #    Copie les variables de configuration dans des variables locales
 #
 proc ::sbig::confToWidget { } {
-   variable private
    variable widget
    global caption conf
 
-   #--- Recupere la configuration de la camera SBIG dans le tableau private(...)
-   set widget(cool)     $conf(sbig,cool)
-   set widget(foncobtu) [ lindex "$caption(sbig,obtu_ouvert) $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" $conf(sbig,foncobtu) ]
-   set widget(host)     $conf(sbig,host)
-   set widget(mirh)     $conf(sbig,mirh)
-   set widget(mirv)     $conf(sbig,mirv)
-   set widget(port)     $conf(sbig,port)
-   set widget(temp)     $conf(sbig,temp)
+   #--- Recupere la configuration de la camera SBIG dans le tableau widget(...)
+   set widget(cool)              $conf(sbig,cool)
+   set widget(foncobtu)          [ lindex "$caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" $conf(sbig,foncobtu) ]
+   set widget(host)              $conf(sbig,host)
+   set widget(mirh)              $conf(sbig,mirh)
+   set widget(mirv)              $conf(sbig,mirv)
+   set widget(port)              $conf(sbig,port)
+   set widget(temp)              $conf(sbig,temp)
    set widget(lptAddressValue)   $conf(sbig,lptAddressValue)
    set widget(lptAddressEnabled) $conf(sbig,lptAddressEnabled)
 }
@@ -127,18 +126,17 @@ proc ::sbig::confToWidget { } {
 #    Copie les variables locales dans des variables de configuration
 #
 proc ::sbig::widgetToConf { camItem } {
-   variable private
    variable widget
    global caption conf
 
    #--- Memorise la configuration de la camera SBIG dans le tableau conf(sbig,...)
-   set conf(sbig,cool)     $widget(cool)
-   set conf(sbig,foncobtu) [ lsearch "$caption(sbig,obtu_ouvert) $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" "$widget(foncobtu)" ]
-   set conf(sbig,host)     $widget(host)
-   set conf(sbig,mirh)     $widget(mirh)
-   set conf(sbig,mirv)     $widget(mirv)
-   set conf(sbig,port)     $widget(port)
-   set conf(sbig,temp)     $widget(temp)
+   set conf(sbig,cool)              $widget(cool)
+   set conf(sbig,foncobtu)          [ lsearch "$caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro)" "$widget(foncobtu)" ]
+   set conf(sbig,host)              $widget(host)
+   set conf(sbig,mirh)              $widget(mirh)
+   set conf(sbig,mirv)              $widget(mirv)
+   set conf(sbig,port)              $widget(port)
+   set conf(sbig,temp)              $widget(temp)
    set conf(sbig,lptAddressValue)   $widget(lptAddressValue)
    set conf(sbig,lptAddressEnabled) $widget(lptAddressEnabled)
 }
@@ -151,6 +149,7 @@ proc ::sbig::fillConfigPage { frm camItem } {
    variable private
    variable widget
    global caption
+
    #--- Initialise une variable locale
    set private(frm) $frm
 
@@ -163,11 +162,11 @@ proc ::sbig::fillConfigPage { frm camItem } {
    }
 
    #--- Je constitue la liste des liaisons pour l'acquisition des images
+   set list_combobox [ ::confLink::getLinkLabels { "parallelport" } ]
    if { $::tcl_platform(os) == "Linux" } {
-      set list_combobox [list [::confLink::getLinkLabels { "parallelport"  } ] $caption(sbig,usb)]
+      lappend list_combobox $caption(sbig,usb)
    } else {
-      set list_combobox [list [::confLink::getLinkLabels { "parallelport" } ] \
-         $caption(sbig,usb) $caption(sbig,ethernet) ]
+      lappend list_combobox $caption(sbig,usb) $caption(sbig,ethernet)
    }
 
    #--- Je verifie le contenu de la liste
@@ -210,24 +209,36 @@ proc ::sbig::fillConfigPage { frm camItem } {
          -modifycmd "::sbig::configurePort"
       pack $frm.frame1.port -anchor center -side left -padx 10
 
+      #--- Frame pour la definition de l'adresse optionnelle de LPT et du host pour une connexion Ethernet
       frame $frm.frame1.address -borderwidth 0 -relief raised
+
+         #--- Frame pour la definition de l'adresse optionnelle de LPT
          frame $frm.frame1.address.lpt -borderwidth 0 -relief flat
-            #--- Definition du l'adresse optionnelle de LPT
-            checkbutton $frm.frame1.address.lpt.checkbutton -text "Adresse LPT personnalisée" -highlightthickness 0 \
-               -variable ::sbig::widget(lptAddressEnabled) -command "::sbig::configurePort"
+
+            #--- Definition de l'adresse optionnelle de LPT
+            checkbutton $frm.frame1.address.lpt.checkbutton -text "$caption(sbig,lpt_custom)" \
+               -highlightthickness 0 -variable ::sbig::widget(lptAddressEnabled) \
+               -command "::sbig::configurePort"
             pack  $frm.frame1.address.lpt.checkbutton -anchor center -side left -padx 10
+
             entry $frm.frame1.address.lpt.entry -width 18 -textvariable ::sbig::widget(lptAddressValue)
-            pack  $frm.frame1.address.lpt.entry -anchor center -side left -padx 10
-         pack $frm.frame1.address.lpt -anchor center -side top -padx 2
+            pack  $frm.frame1.address.lpt.entry -anchor center -side right -padx 10
+
+         pack $frm.frame1.address.lpt -anchor center -side top -padx 10 -fill both -expand 1
+
+         #--- Frame pour la definition du host pour une connexion Ethernet
          frame $frm.frame1.address.ethernet -borderwidth 0 -relief flat
+
             #--- Definition du host pour une connexion Ethernet
             label $frm.frame1.address.ethernet.lab2 -text "$caption(sbig,host)"
             pack  $frm.frame1.address.ethernet.lab2 -anchor center -side left -padx 10
-            entry $frm.frame1.address.ethernet.host -width 18 -textvariable ::sbig::widget(host)
-            pack  $frm.frame1.address.ethernet.host -anchor center -side left -padx 10
-         pack $frm.frame1.address.ethernet -anchor center -side right -padx 10
-      pack $frm.frame1.address -anchor center -side right -padx 2
 
+            entry $frm.frame1.address.ethernet.host -width 18 -textvariable ::sbig::widget(host)
+            pack  $frm.frame1.address.ethernet.host -anchor center -side right -padx 10
+
+         pack $frm.frame1.address.ethernet -anchor center -side top -padx 10 -fill both -expand 1
+
+      pack $frm.frame1.address -anchor center -side right -padx 2
 
    pack $frm.frame1 -side top -fill both -expand 1
 
@@ -294,7 +305,7 @@ proc ::sbig::fillConfigPage { frm camItem } {
       label $frm.frame3.lab3 -text "$caption(sbig,fonc_obtu)"
       pack $frm.frame3.lab3 -anchor center -side left -padx 10
 
-      set list_combobox [ list $caption(sbig,obtu_ouvert) $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro) ]
+      set list_combobox [ list $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro) ]
       ComboBox $frm.frame3.foncobtu \
          -width 11                  \
          -height [ llength $list_combobox ] \
@@ -341,13 +352,12 @@ proc ::sbig::configureCamera { camItem bufNo } {
          error "" "CameraUnique"
       }
      ### set conf(sbig,host) [ ::audace::verifip $conf(sbig,host) ]
-
+      #--- Je configure l'adresse LPT personnalisee
       if { $conf(sbig,lptAddressEnabled) == 1 } {
          set lptAddress $conf(sbig,lptAddressValue)
       } else {
          set lptAddress ""
       }
-
       #--- Je cree la camera
       set camNo [ cam::create sbig $conf(sbig,port) -ip $conf(sbig,host) -lptaddress $lptAddress ]
       console::affiche_erreur "$caption(sbig,port_camera) ([ cam$camNo name ]) $caption(sbig,2points) $conf(sbig,port)\n"
@@ -381,7 +391,7 @@ proc ::sbig::configureCamera { camItem bufNo } {
       cam$camNo mirrorv $conf(sbig,mirv)
       #--- Je mesure la temperature du capteur CCD
       if { [ info exists private(aftertemp) ] == "0" } {
-         ::sbig::SbigDispTemp $camItem
+         ::sbig::dispTempSbig $camItem
       }
    } ]
 
@@ -412,29 +422,29 @@ proc ::sbig::stop { camItem } {
 }
 
 #
-# ::sbig::SbigDispTemp
+# ::sbig::dispTempSbig
 #    Affiche la temperature du CCD
 #
-proc ::sbig::SbigDispTemp { camItem } {
+proc ::sbig::dispTempSbig { camItem } {
    variable private
    global caption
 
    if { [ catch { set tempstatus [ cam$private($camItem,camNo) infotemp ] } ] == "0" } {
-      set temp_check   [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
-      set temp_ccd     [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
-      set temp_ambiant [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
-      set regulation   [ lindex $tempstatus 3 ]
+      set temp_check         [ format "%+5.2f" [ lindex $tempstatus 0 ] ]
+      set temp_ccd           [ format "%+5.2f" [ lindex $tempstatus 1 ] ]
+      set temp_ambiant       [ format "%+5.2f" [ lindex $tempstatus 2 ] ]
+      set regulation         [ lindex $tempstatus 3 ]
       set private(power)     "$caption(sbig,puissance_peltier) [ format "%3.0f" [ expr 100.*[ lindex $tempstatus 4 ]/255. ] ] %"
       set private(ccdTemp)   "$caption(sbig,temp_ext) $temp_ccd $caption(sbig,deg_c) / $temp_ambiant $caption(sbig,deg_c)"
-      set private(aftertemp) [ after 5000 ::sbig::SbigDispTemp $camItem ]
+      set private(aftertemp) [ after 5000 ::sbig::dispTempSbig $camItem ]
    } else {
-      set temp_check   ""
-      set temp_ccd     ""
-      set temp_ambiant ""
-      set regulation   ""
-      set power        "--"
-      set private(power)   "$caption(sbig,puissance_peltier) --"
-      set private(ccdTemp) "$caption(sbig,temp_ext) $temp_ccd "
+      set temp_check       ""
+      set temp_ccd         ""
+      set temp_ambiant     ""
+      set regulation       ""
+      set power            "--"
+      set private(power)   "$caption(sbig,puissance_peltier) $power"
+      set private(ccdTemp) "$caption(sbig,temp_ext) $temp_ccd"
       if { [ info exists private(aftertemp) ] == "1" } {
         unset private(aftertemp)
       }
@@ -448,7 +458,6 @@ proc ::sbig::SbigDispTemp { camItem } {
 proc ::sbig::configurePort { } {
    variable private
    variable widget
-
    global caption
 
    if { [ info exists private(frm) ] } {
@@ -465,7 +474,6 @@ proc ::sbig::configurePort { } {
             } else {
                $frm.frame1.address.ethernet.host configure -state disabled
             }
-
             if { [string equal -length 3 $widget(port) "LPT"] == 1 } {
                $frm.frame1.address.lpt.checkbutton configure -state normal
                if { $widget(lptAddressEnabled) == 1 } {
@@ -509,6 +517,16 @@ proc ::sbig::checkConfigRefroidissement { } {
 }
 
 #
+# ::sbig::setTempCCD
+#    Procedure pour retourner la consigne de temperature du CCD
+#
+proc ::sbig::setTempCCD { } {
+   global conf
+
+   return "$conf(sbig,temp)"
+}
+
+#
 # ::sbig::setShutter
 #    Procedure pour la commande de l'obturateur
 #
@@ -523,14 +541,10 @@ proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
       #--- Gestion du mode de fonctionnement
       switch -exact -- $shutterState {
          0  {
-            set widget(foncobtu) $caption(sbig,obtu_ouvert)
-            cam$camNo shutter "opened"
-         }
-         1  {
             set widget(foncobtu) $caption(sbig,obtu_ferme)
             cam$camNo shutter "closed"
          }
-         2  {
+         1  {
             set widget(foncobtu) $caption(sbig,obtu_synchro)
             cam$camNo shutter "synchro"
          }
@@ -556,13 +570,14 @@ proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
 # multiCamera :      Retourne la possibilite de connecter plusieurs cameras identiques (1 : Oui, 0 : Non)
 # name :             Retourne le modele de la camera
 # product :          Retourne le nom du produit
-# shutterList :      Retourne l'etat de l'obturateur (O : Ouvert, F : Ferme, S : Synchro)
+# shutterList :      Retourne l'etat de l'obturateur (F : Ferme, S : Synchro)
 #
 proc ::sbig::getPluginProperty { camItem propertyName } {
    variable private
@@ -578,6 +593,7 @@ proc ::sbig::getPluginProperty { camItem propertyName } {
       hasScan          { return 0 }
       hasShutter       { return 1 }
       hasTempSensor    { return 1 }
+      hasSetTemp       { return 1 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
