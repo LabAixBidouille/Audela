@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.12 2008-04-06 09:03:19 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.13 2008-05-24 10:28:49 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
@@ -791,6 +791,7 @@ proc ::hisis::setShutter { camItem shutterState ShutterOptionList } {
 # hasScan :          Retourne l'existence du mode scan (1 : Oui, 0 : Non)
 # hasShutter :       Retourne l'existence d'un obturateur (1 : Oui, 0 : Non)
 # hasTempSensor      Retourne l'existence du capteur de temperature (1 : Oui, 0 : Non)
+# hasSetTemp         Retourne l'existence d'une consigne de temperature (1 : Oui, 0 : Non)
 # hasVideo :         Retourne l'existence du mode video (1 : Oui, 0 : Non)
 # hasWindow :        Retourne la possibilite de faire du fenetrage (1 : Oui, 0 : Non)
 # longExposure :     Retourne l'etat du mode longue pose (1: Actif, 0 : Inactif)
@@ -825,6 +826,7 @@ proc ::hisis::getPluginProperty { camItem propertyName } {
          }
       }
       hasTempSensor    { return 0 }
+      hasSetTemp       { return 0 }
       hasVideo         { return 0 }
       hasWindow        { return 1 }
       longExposure     { return 1 }
