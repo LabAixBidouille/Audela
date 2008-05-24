@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.39 2008-05-12 16:54:32 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.40 2008-05-24 10:36:31 robertdelmas Exp $
 #
 
 #============================================================
@@ -581,19 +581,12 @@ proc ::scan::cmdGo { { motor motoron } } {
          scan $w $h $bin $binY $dt $f
 
          #--- Rajoute des mots clefs dans l'en-tete FITS
-         foreach keyword [ ::keyword::getCheckedKeywords 1 ] {
+         foreach keyword [ ::keyword::getKeywords 1 ] {
             buf$audace(bufNo) setkwd $keyword
          }
 
-         #--- Rajoute la date de debut de pose en jour julien dans l'en-tete FITS
-         set date_obs [lindex [buf$audace(bufNo) getkwd DATE-OBS] 1]
-         set date_obs [ mc_date2jd $date_obs ]
-         buf$audace(bufNo) setkwd [list JDAY-OBS $date_obs string "Julian Day for begin of scan exposure" ""]
-
-         #--- Rajoute la date de fin de pose en jour julien dans l'en-tete FITS
-         set date_end [lindex [buf$audace(bufNo) getkwd DATE-END] 1]
-         set date_end [ mc_date2jd $date_end ]
-         buf$audace(bufNo) setkwd [list JDAY-END $date_end string "Julian Day for end of scan exposure" ""]
+         #--- Rajoute la date de debut et de fin de pose en jour julien dans l'en-tete FITS
+         ::keyword::addJDayOBSandEND
 
          #--- Gestion graphique du bouton GO CCD
          $This.fra4.but1 configure -relief groove -text $panneau(scan,go2) -state disabled
