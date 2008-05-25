@@ -1,6 +1,6 @@
 #
 # Fichier : acqfen.cap
-# Mise a jour $Id: acqfen.cap,v 1.10 2007-05-12 15:01:15 robertdelmas Exp $
+# Mise a jour $Id: acqfen.cap,v 1.11 2008-05-25 10:16:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -32,6 +32,7 @@ set caption(acqfen,stop)               "STOP"
 
 #--- Textes réglages acquisitions série et continu
 set caption(acqfen,fenreglfen)         "Setting Window for Windowed Acquisitions"
+set caption(acqfen,en-tete_fits)       "FITS Keywords"
 set caption(acqfen,fenreglfen1)        "Nb of CCD Flushing before Each Acquisition"
 set caption(acqfen,fenreglfen11)       "Default"
 set caption(acqfen,fenreglfen12)       "Audine only, Nb of Flushing Processes:"
@@ -93,6 +94,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Fenêtre de réglages des acquisitions fenêtrées"
+   set caption(acqfen,en-tete_fits)    "Mots clés FITS"
    set caption(acqfen,fenreglfen1)     "Nombre d'effacements du CCD avant chaque acquisition"
    set caption(acqfen,fenreglfen11)    "Par défaut"
    set caption(acqfen,fenreglfen12)    "Audine uniquement, nombre d'effacements :"
@@ -154,6 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Finestra per regolazioni acquisizione parziale"
+   set caption(acqfen,en-tete_fits)    "Parole chiave FITS"
    set caption(acqfen,fenreglfen1)     "Numero di cicli pulitura CCD prima di ogni esposizione"
    set caption(acqfen,fenreglfen11)    "Default"
    set caption(acqfen,fenreglfen12)    "Solo Audine, numero di cicli pulitura:"
@@ -215,6 +218,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Panel de ajustes para adqusicion de sub-cuadro"
+   set caption(acqfen,en-tete_fits)    "Palabras clave FITS"
    set caption(acqfen,fenreglfen1)     "Número de pasadas de limpieza del CCD"
    set caption(acqfen,fenreglfen11)    "Por defecto"
    set caption(acqfen,fenreglfen12)    "Sólo Audine: Número de procesos de limpieza:"
@@ -276,6 +280,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Einstellung Fenster für die Fenster Belichtungen"
+   set caption(acqfen,en-tete_fits)    "FITS Stichwörter"
    set caption(acqfen,fenreglfen1)     "CCD Löschung Zahl vor jede Belichtung"
    set caption(acqfen,fenreglfen11)    "Mangel Wahl"
    set caption(acqfen,fenreglfen12)    "Nur Audine, Löschung Zahl:"
@@ -337,6 +342,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Janela de ajuste das aquisições em janela"
+   set caption(acqfen,en-tete_fits)    "Palavras-chave FITS"
    set caption(acqfen,fenreglfen1)     "Número de vezes que o CCD deve ser apagado antes de cada aquisição"
    set caption(acqfen,fenreglfen11)    "Por defeito"
    set caption(acqfen,fenreglfen12)    "Audine unicamente, número de vezes que apaga :"
@@ -398,6 +404,7 @@ if { [ string compare $langage "french" ] == "0" } {
 
 #--- Textes réglages acquisitions série et continu
    set caption(acqfen,fenreglfen)      "Setting Window for Windowed Acquisitions"
+   set caption(acqfen,en-tete_fits)    "FITS Keywords"
    set caption(acqfen,fenreglfen1)     "Nb of CCD Flushing before Each Acquisition"
    set caption(acqfen,fenreglfen11)    "Default"
    set caption(acqfen,fenreglfen12)    "Audine only, Nb of Flushing Processes:"
