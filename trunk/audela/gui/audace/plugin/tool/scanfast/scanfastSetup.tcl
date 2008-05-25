@@ -2,7 +2,7 @@
 # Fichier : scanfastSetup.tcl
 # Description : Configuration de la temporisation entre l'arret du moteur d'AD et le debut de la pose du scan
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scanfastSetup.tcl,v 1.6 2008-05-24 10:41:06 robertdelmas Exp $
+# Mise a jour $Id: scanfastSetup.tcl,v 1.7 2008-05-25 09:33:35 robertdelmas Exp $
 #
 
 namespace eval scanfastSetup {
@@ -182,7 +182,7 @@ proc ::scanfastSetup::createDialog { } {
 
    #--- Bouton du configurateur d'en-tete FITS
    button $This.but1 -text "$caption(scanfastSetup,en-tete_fits)" \
-      -command "::keyword::run 1"
+      -command "::keyword::run $audace(visuNo)"
    pack $This.but1 -in $This.frame3 -side top -fill x
 
    #--- Commentaire sur la temporisation
