@@ -19,12 +19,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Projet      : AudeLA 
-// Librairie   : LIBJM
-// Fichier     : JM_PHOTO.CPP 
-// Auteur      : Jacques Michelet
-// Description : Fonctions relatives � la photom�trie
-// ==================================================
+/*
+ *  Projet      : AudeLA
+ * Librairie   : LIBJM
+ * Fichier     : JM_PHOTO.C
+ * Auteur      : Jacques Michelet
+ * Description : Fonctions relatives à la photométrie
+ * ==================================================
+*/
 
 #include "jm.h"
 #include <math.h>
@@ -39,10 +41,13 @@ static float *pointeur_image;
 static int largeur_image;
 static int hauteur_image;
 
-// ***************** InitTamponImage *******************
-// 
-// Met en m�moire des �l�ments du tampon d'image courant
-// *****************************************************
+/*
+   ***************** InitTamponImage *******************
+   *
+   * Met en mémoire des éléments du tampon d'image courant
+   *****************************************************
+*/
+
 int InitTamponImage(long pointeur, int largeur, int hauteur)
 {
   pointeur_image = (float *) pointeur;
@@ -51,10 +56,12 @@ int InitTamponImage(long pointeur, int largeur, int hauteur)
   return 0;
 }
 
-// ***************** LecturePixel ************
-// 
-// Retourne la valeur d'un pixel
-// *******************************************
+/*
+   ***************** LecturePixel ************
+   *
+   * Retourne la valeur d'un pixel
+   *******************************************
+*/
 int LecturePixel(int x, int y, int *pixel)
 {
   float *pointeur;
@@ -70,10 +77,12 @@ int LecturePixel(int x, int y, int *pixel)
   return 0;
 }
 
-// ***************** EcriturePixel ************
-// 
-// Ecrit la valeur d'un pixel
-// ********************************************
+/*
+   ***************** EcriturePixel ************
+   *
+   * Ecrit la valeur d'un pixel
+   ********************************************
+*/
 int EcriturePixel(int x, int y, int pixel)
 {
   float *pointeur;
@@ -89,10 +98,12 @@ int EcriturePixel(int x, int y, int pixel)
   return 0;
 }
 
-// ***************** FluxEllipse ****************
-// 
-// Calcul le flux dans une ellipse
-// **********************************************
+/*
+   ***************** FluxEllipse ****************
+   * 
+   *Calcul le flux dans une ellipse
+   **********************************************
+*/
 int FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double r2, double r3, int c, double *flux, double *nb_pixel, double *fond, double *nb_pixel_fond, double *sigma_fond)
 {
   double y;
@@ -103,7 +114,7 @@ int FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double 
   double delta_x, delta_y, t;
   int pixel;
   
-  // Initialisations
+  /* Initialisations */
   flux_fond = 0.0;
   flux_fond2 = 0.0;
   (*nb_pixel_fond) = 0.0;
@@ -112,8 +123,8 @@ int FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double 
   cinv = 1.0 / (double)c;
   cinv2 = cinv * cinv;
   
-  // Recuperation des pixels de la couronne entre r2 et r3
-  // ** Bas de la couronne
+  /* Recuperation des pixels de la couronne entre r2 et r3 */
+  /* Bas de la couronne */
   for (y = (y0 - r3); y <= (y0 - r2); y++)
     {
       x3 = (r3 * r3) - ((y - y0) * (y - y0));
@@ -133,7 +144,7 @@ int FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double 
 	}
     }
   
-  // ** Milieu de la couronne (parties gauche et droite)
+  /* Milieu de la couronne (parties gauche et droite) */
   for (y = (y0 - r2); y <= (y0 + r2); y++)
     {
       x3 = (r3 * r3) - ((y - y0) * (y - y0));
@@ -168,7 +179,7 @@ int FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double 
 	}
     }
   
-  // ** Haut de la couronne
+  /* Haut de la couronne */
   for (y = (y0 + r2); y <= (y0 + r3); y++)
     {
       x3 = (r3 * r3) - ((y - y0) * (y - y0));
@@ -188,14 +199,14 @@ int FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double 
 	}
     }
   
-  // La valeur du flux de fond est la moyenne de toutes les valeurs lues dans la couronne.
+  /* La valeur du flux de fond est la moyenne de toutes les valeurs lues dans la couronne. */
   *fond = flux_fond / (double) (*nb_pixel_fond);
   
   
-  // Calcul de l'ecart-type (formule de Koenig)
+  /* Calcul de l'ecart-type (formule de Koenig) */
   *sigma_fond = sqrt((flux_fond2 / *nb_pixel_fond) - (*fond) * (*fond));
   
-  // Calcul du flux dans l'ellipse (r1x, r1y)
+  /* Calcul du flux dans l'ellipse (r1x, r1y) */
 
 
 /*  for (y = (y0 - r1y); y <= (y0 + r1y); y += cinv)
@@ -217,7 +228,7 @@ int FluxEllipse(double x0, double y0, double r1x, double r1y, double ro, double 
     }
 */
     
-  // Calcul du flux dans l'ellipse (r1x, r1y, ro)
+  /* Calcul du flux dans l'ellipse (r1x, r1y, ro) */
     delta_y = r1y / sqrt(1 - ro*ro);
     delta_x = r1x / sqrt(1 - ro*ro);
     for (y = (y0 - delta_y); y <= (y0 + delta_y); y += cinv)
@@ -311,8 +322,15 @@ void Gauss(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_
 	size_t i;
 	int erreur;
 	struct ajustement t;
+	size_t nxy;
+	gsl_vector *vect_y;
+	gsl_multifit_linear_workspace *bac;
+	gsl_matrix *temp_cov;
 
-	// Initialisations
+	double ancien_chi2;
+	double chi2_temporaire;
+ 
+	/* Initialisations */
 	x = 0;
 	y = 0;
 	dy = 0.0;
@@ -328,19 +346,23 @@ void Gauss(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_
 
 	memset (&t, 0, sizeof(struct ajustement));
 
-	//  printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
-  
-	size_t nxy = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
+	/*
+    * printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
+	*/
  
-	gsl_vector *vect_y = gsl_vector_alloc(nxy);
-	gsl_multifit_linear_workspace *bac = gsl_multifit_linear_alloc(nxy, 7);
-	gsl_matrix *temp_cov = gsl_matrix_alloc(7, 7);
+	nxy = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
+ 
+	vect_y = gsl_vector_alloc(nxy);
+	bac = gsl_multifit_linear_alloc(nxy, 7);
+	temp_cov = gsl_matrix_alloc(7, 7);
 
-	double ancien_chi2 = 1e9;
-	double chi2_temporaire = 1e9;
+	ancien_chi2 = 1e9;
+	chi2_temporaire = 1e9;
    
 	*convergence = -1;
 	*iter = 0;
+
+	/* Boucle principale */
 	while (*convergence < 0)
 	{
 		i = 0;
@@ -438,7 +460,9 @@ void Gauss(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_
 
 			gsl_matrix_memcpy(mat_cov, temp_cov);
 
-			//	printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
+			/*
+			* printf("X0=%g|Y0=%g|S=%g|B=%g|Sx=%g|Sy=%g|Ro=%g\n", p->X0, p->Y0, p->Signal, p->Fond, p->Sigma_X, p->Sigma_Y, p->Ro);
+			*/
 		}
 	}
 
@@ -453,8 +477,10 @@ void Gauss(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_
 	incert->Sigma_Y = *me1 * sqrt(gsl_matrix_get(mat_cov, 5, 5));
 	incert->Ro = *me1 * sqrt(gsl_matrix_get(mat_cov, 6, 6));
 
-	//  printf("iX0=%g|iY0=%g|iS=%g|iB=%g|iSx=%g|iSy=%g|iRo=%g\n", incert->X0, incert->Y0, incert->Signal, incert->Fond, incert->Sigma_X, incert->Sigma_Y, incert->Ro);
-	//  printf("Iter = %d\n", *iter);
+	/*
+	* printf("iX0=%g|iY0=%g|iS=%g|iB=%g|iSx=%g|iSy=%g|iRo=%g\n", incert->X0, incert->Y0, incert->Signal, incert->Fond, incert->Sigma_X, incert->Sigma_Y, incert->Ro);
+	* printf("Iter = %d\n", *iter);
+	*/
 
 	gsl_multifit_linear_free(bac);
 	gsl_vector_free(vect_y);
@@ -468,7 +494,6 @@ void Gauss(int x1, int y1, int x2, int y2, gsl_vector *vect_s, gsl_vector *vect_
 /**************************************************************/
 int AjustementGaussien(int *carre, double *param, struct ajustement *valeurs, struct ajustement *incertitudes, int *iter, double *chi2, int *convergence)
 {
-  //  int mini, maxi;
   int x1, y1, x2, y2, nx, ny;
   double x_source, y_source;
   double sx, sx2, sy, sy2, alpha2, alpha, p, q, sxp, syp, ro;
@@ -605,7 +630,9 @@ int AjustementGaussien(int *carre, double *param, struct ajustement *valeurs, st
   valeurs->Alpha = 57.29578 * alpha;
   incertitudes->Alpha = 57.29578 * dalpha;
 
-  //  printf("Iter = %d | ME1 = %f |Chi2 = %f | ecart_type = %f| ecart_fond = %f\n", *iter, me1, *chi2, param[5], param[7]);
+  /*
+  * printf("Iter = %d | ME1 = %f |Chi2 = %f | ecart_type = %f| ecart_fond = %f\n", *iter, me1, *chi2, param[5], param[7]);
+  */
 
   gsl_matrix_free(mat_cov);
   gsl_matrix_free(mat_x);

@@ -19,11 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Projet      : AudeLA 
-// Librairie   : LIBJM
-// Fichier     : JM_TEMPS.CPP 
-// Description : Fonctions de gestion de l'heure
-// =============================================
+/* Projet      : AudeLA
+ * Librairie   : LIBJM
+ * Fichier     : JM_TEMPS.CPP
+ * Description : Fonctions de gestion de l'heure
+ * =============================================
+*/
 
 #include "jm.h"
 
@@ -33,10 +34,10 @@
 extern int errno;
 #endif
 
-// ***************** LitHeurePC ****************
-// LitHeurePC
-// Lecture de l'heure d'un PC
-// *********************************************
+/* ***************** LitHeurePC ****************
+ * LitHeurePC
+ * Lecture de l'heure d'un PC
+ * *********************************************/
 int LitHeurePC(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli)
 {
 #if defined(OS_WIN)
@@ -59,7 +60,7 @@ int LitHeurePC(int *annee, int *mois, int *jour, int *heure, int *minute, int *s
 
 	gettimeofday(&temps_pc, &fuseau);
 	
-	/* conversion en jour décimaux et ajout du jj du 01/01/1970 */
+	/* conversion en jour dÃ©cimaux et ajout du jj du 01/01/1970 */
 	jj = (double)temps_pc.tv_sec / 86400.0 + 2440587.5;
 
 	/* conversion en jour calendaire */
@@ -77,10 +78,10 @@ int LitHeurePC(int *annee, int *mois, int *jour, int *heure, int *minute, int *s
 	return OK;
 }
 
-// ***************** EcritHeurePC ****************
-// EcritHeurePC
-// Ecriture de l'heure d'un PC
-// ***********************************************
+/* ***************** EcritHeurePC ****************
+ * EcritHeurePC
+ * Ecriture de l'heure d'un PC
+ * ***********************************************/
 int EcritHeurePC(int annee, int mois, int jour, int heure, int minute, int seconde, int milli)
 {
 #if defined(OS_WIN)
@@ -101,7 +102,7 @@ int EcritHeurePC(int annee, int mois, int jour, int heure, int minute, int secon
 	struct timezone fuseau;
 	double jour_decimal, jj;
 	
-	/* La lecture sert à initialiser le fuseau */
+	/* La lecture sert Ã  initialiser le fuseau */
 	gettimeofday(&temps_pc, &fuseau);
 	
 	/* Conversion en jj et retrait du jj correspondant au 01/01/1970 */
@@ -122,10 +123,10 @@ int EcritHeurePC(int annee, int mois, int jour, int heure, int minute, int secon
 	return OK;
 }
 
-// ***************** ReglageHeurePC ****************
-// ReglageHeurePC
-// Reglage de l'heure d'un PC
-// *************************************************
+/* ***************** ReglageHeurePC ****************
+ * ReglageHeurePC
+ * Reglage de l'heure d'un PC
+ * *************************************************/
 int ReglageHeurePC(long *decalage_reel, long decalage)
 {
 #if defined(OS_WIN)
@@ -148,7 +149,7 @@ int ReglageHeurePC(long *decalage_reel, long decalage)
 	jour_decimal = (double)(jour + (heure / 24.0) + (minute / 1440.0) + (seconde / 86400.0) + (milli / 86400000.0));
 	jd(annee, mois, jour_decimal, &jj);
 
-	/* Mise en mémoire */
+	/* Mise en mÃ©moire */
 	jj1 = jj;
 
 	/* Ajout de la correction */
@@ -204,10 +205,10 @@ int ReglageHeurePC(long *decalage_reel, long decalage)
 	/* conversion en secondes */
 	jj = ((double)temps_pc.tv_sec + (double)temps_pc.tv_usec / 1000000.0);
 
-	/* Mise en mémoire */
+	/* Mise en mï¿½moire */
 	jj1 = jj;
 
-	/* Ajout de la correction (le décalage est en ms)*/
+	/* Ajout de la correction (le dï¿½calage est en ms)*/
 	jj += ((double)decalage / 1000.0);
 
 	temps_pc.tv_sec = (long)floor(jj);

@@ -19,11 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Projet      : AudeLA 
-// Librairie   : LIBJM
-// Fichier     : JM_C_TCL.H
-// Description : Prototype des fonctions interfaces Tcl et le C  
-// ============================================================
+/*
+ * Projet      : AudeLA
+ * Librairie   : LIBJM
+ * Fichier     : JM_C_TCL.H
+ * Description : Prototype des fonctions interfaces Tcl et le C
+ * ============================================================
+*/
 
 #include "libjm.h"
 

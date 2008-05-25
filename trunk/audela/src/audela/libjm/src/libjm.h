@@ -1,6 +1,6 @@
 /* libjm.h
  *
- * This file is part of the libjm libfrary for AudeLA project.
+ * This file is part of the libjm library for AudeLA project.
  *
  * Initial author : Jacques MICHELET <jacques.michelet@laposte.net>
  *
@@ -19,11 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Projet      : AudeLA
-// Librairie   : LIBJM
-// Fichier     : LIBJM.H
-// Description : Point d'entrée de la librairie
-// ============================================
+/*
+ * Projet      : AudeLA
+ * Librairie   : LIBJM
+ * Fichier     : LIBJM.H
+ * Description : Point d'entrÃ©e de la librairie
+ * ============================================
+*/
 
 #define NUMERO_VERSION "3.1"
 
