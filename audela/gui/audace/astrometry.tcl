@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.20 2008-04-21 16:45:56 michelpujol Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.21 2008-05-25 17:16:56 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -532,7 +532,10 @@ namespace eval ::astrometry {
       $astrom(This).status.lab configure -text "$caption(astrometry,start,0)"
       update
       set ext [buf$audace(bufNo) extension]
-      set mypath "${audace(rep_images)}"
+      #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
+      #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
+      #--- espaces et ayant une longueur superieure a 70 caracteres
+      set mypath "."
       set sky0 dummy0
       if {$astrom(currenttypecal)=="catalog"} {
          set cattype $::astrometry::catvalues(cattype)
@@ -944,8 +947,12 @@ namespace eval ::astrometry {
       #--- Nom de la fenetre
       set astrom(This_check) "$audace(base).check_astro"
 
+      #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
+      #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
+      #--- espaces et ayant une longueur superieure a 70 caracteres
+      set mypath "."
+
       #--- Initialisation du fichier image du controle de la calibration
-      set mypath "${audace(rep_images)}"
       set sky "dummy"
 
       #--- Creation de l'image et calcul de sa dimension
@@ -1052,8 +1059,12 @@ namespace eval ::astrometry {
    proc delete_dummy { } {
       global audace
 
-      set mypath "${audace(rep_images)}"
+      #--- Remplacement de "$audace(rep_images)" par "." dans "mypath" - Cela permet a
+      #--- Sextractor de ne pas etre sensible aux noms de repertoire contenant des
+      #--- espaces et ayant une longueur superieure a 70 caracteres
+      set mypath "."
       set sky "dummy"
+
       #--- Suppression des images temporaires
       set ext [ buf$audace(bufNo) extension ]
       if { [ file exists [ file join $mypath ${sky}a.jpg ] ] } {
