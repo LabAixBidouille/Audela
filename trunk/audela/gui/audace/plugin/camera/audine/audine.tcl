@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.16 2008-05-24 10:46:52 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.17 2008-05-25 15:32:08 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -495,7 +495,7 @@ proc ::audine::configureCamera { camItem bufNo } {
          }
       }
       #--- J'affiche un message d'information dans la Console
-      console::affiche_erreur "$caption(audine,camera) [ cam$camNo name ] ([ cam$camNo ccd ])\n"
+      console::affiche_erreur "$caption(audine,camera) ([ cam$camNo ccd ])\n"
       console::affiche_erreur "$caption(audine,port_liaison)\
          ([ ::[ ::confLink::getLinkNamespace $conf(audine,port) ]::getPluginTitle ])\
          $caption(audine,2points) $conf(audine,port)\n"
