@@ -21,9 +21,7 @@ set cmconf(zenith11) {290 250}
 #--- Position of zenith in binning 2x2
 set cmconf(zenith22) {145 125}
 #--- FITS Keywords
-set cmconf(fits,OBSERVER) "ESO Paranal Observatory"
 set cmconf(fits,OPTICS) "180 Degrees Fisheye Lens"
-set cmconf(fits,INSTRUME) "MASCOT"
 set cmconf(fits,UT1) "Altaz position of UT1"
 set cmconf(fits,UT2) "Altaz position of UT2"
 set cmconf(fits,UT3) "Altaz position of UT3"
