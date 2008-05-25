@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.15 2007-10-05 15:32:40 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.16 2008-05-25 10:28:32 robertdelmas Exp $
 #
 
 # =========================================================
@@ -457,6 +457,11 @@ namespace eval ::acqfen {
                   if { [ lsearch [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] binningList ] $binningCamera ] != "-1" } {
                      buf$audace(bufNo) scale [list $panneau(acqfen,bin_centrage) $panneau(acqfen,bin_centrage)] 1
                   }
+               }
+
+               #--- Rajoute des mots clefs dans l'en-tete FITS
+               foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+                  buf$audace(bufNo) setkwd $keyword
                }
 
                #--- Affichage avec visu auto.
@@ -1224,6 +1229,11 @@ namespace eval ::acqfen {
          after [expr int(1000*$panneau(acqfen,pose))] [cam$audace(camNo) read]
       }
 
+      #--- Rajoute des mots clefs dans l'en-tete FITS
+      foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+         buf$audace(bufNo) setkwd $keyword
+      }
+
       #--- Fenetrage sur le buffer si la camera ne possede pas le mode fenetrage (APN et WebCam)
       if { [ ::confCam::getPluginProperty [ ::confVisu::getCamItem 1 ] window ] == "0" } {
          buf$audace(bufNo) window [list $panneau(acqfen,X1) $panneau(acqfen,Y1) \
@@ -1244,14 +1254,14 @@ namespace eval ::acqfen {
            } else {
               set panneau(acqfen,X1) [lindex $box 2]
               set panneau(acqfen,X2) [lindex $box 0]
-              }
+           }
            if {[lindex $box 1]<[lindex $box 3]} {
               set panneau(acqfen,Y1) [lindex $box 1]
               set panneau(acqfen,Y2) [lindex $box 3]
            } else {
               set panneau(acqfen,Y1) [lindex $box 3]
               set panneau(acqfen,Y2) [lindex $box 1]
-              }
+           }
 
            set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
            $This.acq.matrice_color_invariant.fen config  -height $hauteur \
@@ -1752,6 +1762,11 @@ proc Creefenreglfen { } {
       set panneau(acqfen,oldfenreglfen3)  $panneau(acqfen,fenreglfen3)
       set panneau(acqfen,oldfenreglfen4)  $panneau(acqfen,fenreglfen4)
 
+      #--- Bouton du configurateur d'en-tete FITS
+      button $audace(base).fenreglfen.but1 -text "$caption(acqfen,en-tete_fits)" \
+         -command "::keyword::run $audace(visuNo)"
+      pack $audace(base).fenreglfen.but1 -side top -fill x
+
       #--- Trame reglages
       frame $audace(base).fenreglfen.1
       pack $audace(base).fenreglfen.1 -expand true -fill x
@@ -1813,7 +1828,7 @@ proc Creefenreglfen { } {
       frame $audace(base).fenreglfen.4.1
       pack $audace(base).fenreglfen.4.1 -expand true -fill x
       radiobutton $audace(base).fenreglfen.4.1.but -text $caption(acqfen,fenreglfen41) \
-         -variable panneau(acqfen,fenreglfen4) -value 1
+        -variable panneau(acqfen,fenreglfen4) -value 1
       pack $audace(base).fenreglfen.4.1.but -side left
       frame $audace(base).fenreglfen.4.2
       pack $audace(base).fenreglfen.4.2 -expand true -fill x
@@ -1831,7 +1846,7 @@ proc Creefenreglfen { } {
             destroy $audace(base).fenreglfen
          }
       pack $audace(base).fenreglfen.buttons.ok -side left -expand true -padx 10 -pady 10
-      button $audace(base).fenreglfen.buttons.quit -command acqfen::fenreglfenquit \
+      button $audace(base).fenreglfen.buttons.quit -command ::acqfen::fenreglfenquit \
          -text $caption(acqfen,quitter) -width 19
       pack $audace(base).fenreglfen.buttons.quit -side left -expand true -padx 10 -pady 10
 
