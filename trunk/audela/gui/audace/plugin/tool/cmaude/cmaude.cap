@@ -1,6 +1,6 @@
 #
 # Fichier : cmaude.cap
-# Mise a jour $Id: cmaude.cap,v 1.19 2007-05-09 21:44:43 robertdelmas Exp $
+# Mise a jour $Id: cmaude.cap,v 1.20 2008-05-25 15:34:52 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,6 +13,7 @@ global caption langage
 
 set caption(cmaude,titre_mascot)                   "Acquisition (MASCOT)"
 set caption(cmaude,help_titre)                     "Help For This Tool"
+set caption(cmaude,configuration)                  "Setup"
 set caption(cmaude,bias)                           "Bias Image"
 set caption(cmaude,dark)                           "Dark Image"
 set caption(cmaude,overlay)                        "Overlay Image"
@@ -92,11 +93,15 @@ set caption(cmaude,texte_init)                     "Reset image counter to 1?"
 
 set caption(cmaude,fichier_html)                   "Creation or update of the HTML file:"
 
+set caption(cmaude,titre_config)                   "Acquisition (MASCOT) - Setup"
+set caption(cmaude,en-tete_fits)                   "FITS Keywords"
+
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
    set caption(cmaude,help_titre)                  "Aide pour cet outil"
+   set caption(cmaude,configuration)               "Configuration"
    set caption(cmaude,bias)                        "Image du bias"
    set caption(cmaude,dark)                        "Image du dark"
    set caption(cmaude,overlay)                     "Image d'overlay"
@@ -176,11 +181,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,fichier_html)                "Création ou mise à jour du fichier html :"
 
+   set caption(cmaude,titre_config)                "Acquisition (MASCOT) - Configuration"
+   set caption(cmaude,en-tete_fits)                "Mots clés FITS"
+
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Acquisizione (MASCOT)"
    set caption(cmaude,help_titre)                  "Aiuto per questo tool"
+   set caption(cmaude,configuration)               "Configurazione"
    set caption(cmaude,bias)                        "Immagine bias"
    set caption(cmaude,dark)                        "Immagine dark"
    set caption(cmaude,overlay)                     "Immagine d'overlay"
@@ -260,11 +269,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,fichier_html)                "Creazione o aggiornamento del file html:"
 
+   set caption(cmaude,titre_config)                "Acquisizione (MASCOT) - Configurazione"
+   set caption(cmaude,en-tete_fits)                "Parole chiave FITS"
+
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Adquisición (MASCOT)"
    set caption(cmaude,help_titre)                  "Ayuda para esta herramienta"
+   set caption(cmaude,configuration)               "Configuración"
    set caption(cmaude,bias)                        "Imagen de Bias"
    set caption(cmaude,dark)                        "Imagen de Dark"
    set caption(cmaude,overlay)                     "Imagen Overlay"
@@ -344,11 +357,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,fichier_html)                "Creación o actualización del fichero html:"
 
+   set caption(cmaude,titre_config)                "Adquisición (MASCOT) - Configuración"
+   set caption(cmaude,en-tete_fits)                "Palabras clave FITS"
+
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Belichtung (MASCOT)"
    set caption(cmaude,help_titre)                  "Hilfe für dieses Gerät"
+   set caption(cmaude,configuration)               "Konfiguration"
    set caption(cmaude,bias)                        "Bias Bild"
    set caption(cmaude,dark)                        "Dark Bild"
    set caption(cmaude,overlay)                     "0verlay Bild"
@@ -428,11 +445,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,fichier_html)                "Schaffung oder Aktualisierung der HTML-Datei:"
 
+   set caption(cmaude,titre_config)                "Belichtung (MASCOT) - Konfiguration"
+   set caption(cmaude,en-tete_fits)                "FITS Stichwörter"
+
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Aquisição (MASCOT)"
    set caption(cmaude,help_titre)                  "Ajuda para esta ferramenta"
+   set caption(cmaude,configuration)               "Configuração"
    set caption(cmaude,bias)                        "Imagem de polarização"
    set caption(cmaude,dark)                        "Imagem dark"
    set caption(cmaude,overlay)                     "Imagem de overlay"
@@ -512,11 +533,15 @@ if { [ string compare $langage "french" ] == "0" } {
 
    set caption(cmaude,fichier_html)                "Criação ou actualização do ficheiro html:"
 
+   set caption(cmaude,titre_config)                "Aquisição (MASCOT) - Configuração"
+   set caption(cmaude,en-tete_fits)                "Palavras-chave FITS"
+
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(cmaude,titre_mascot)                "Acquisition (MASCOT)"
    set caption(cmaude,help_titre)                  "Help For This Tool"
+   set caption(cmaude,configuration)               "Setup"
    set caption(cmaude,bias)                        "Bias Image"
    set caption(cmaude,dark)                        "Dark Image"
    set caption(cmaude,overlay)                     "Overlay Image"
@@ -595,6 +620,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(cmaude,texte_init)                  "Reset image counter to 1?"
 
    set caption(cmaude,fichier_html)                "Creation or update of the HTML file:"
+
+   set caption(cmaude,titre_config)                "Acquisition (MASCOT) - Setup"
+   set caption(cmaude,en-tete_fits)                "FITS Keywords"
 
 }
 
