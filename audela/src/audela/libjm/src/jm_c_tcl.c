@@ -19,12 +19,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Projet      : AudeLA
-// Librairie   : LIBJM
-// Fichier     : JM_C_TCL.CPP
-// Auteur      : Jacques Michelet
-// Description : Fonctions interfaces entre TCL et C
-// =================================================
+/*
+ * Projet      : AudeLA
+ * Librairie   : LIBJM
+ * Fichier     : JM_C_TCL.CPP
+ * Auteur      : Jacques Michelet
+ * Description : Fonctions interfaces entre TCL et C
+ * =================================================
+*/
 
 #include "jm_c_tcl.h"
 
@@ -113,8 +115,9 @@ int CmdDms2deg(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
   char s[256];
   double angle;
 
-  // Verifie que la commande a le bon nombre d'argument
-  // --------------------------------------------------
+  /* Verifie que la commande a le bon nombre d'argument
+   * --------------------------------------------------
+   */
   if (argc!=4)
     {
       sprintf(s,"Usage: %s d m s", argv[0]);
@@ -122,8 +125,9 @@ int CmdDms2deg(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Calcul de la convertion
-  // -----------------------
+  /* Calcul de la convertion
+   * -----------------------
+   */
   if (dms2deg(atoi(argv[1]),atoi(argv[2]),atof(argv[3]),&angle)==PB)
     {
       strcpy(s,"Erreur dans la fonction dms2deg");
@@ -131,8 +135,9 @@ int CmdDms2deg(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Sortie du r�sultat sur la console
-  // ---------------------------------
+  /* Sortie du résultat sur la console
+   * ---------------------------------
+   */
   sprintf(s,"%f",angle);
   Tcl_SetResult(interp,s,TCL_VOLATILE);
   return TCL_OK;
@@ -146,8 +151,9 @@ int CmdJd(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
   char s[256];
   double jj;
 
-  // V�rifie que la commande a le bon nombre d'argument
-  // --------------------------------------------------
+  /* Vérifie que la commande a le bon nombre d'argument
+   * --------------------------------------------------
+   */
   if (argc!=4)
     {
       sprintf(s,"Usage: %s annee mois jour", argv[0]);
@@ -155,8 +161,9 @@ int CmdJd(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Calcul de la conversion
-  // -----------------------
+  /* Calcul de la conversion
+   * -----------------------
+   */
   if (jd(atoi(argv[1]),atoi(argv[2]),atof(argv[3]),&jj)==PB)
     {
       strcpy(s,"Erreur dans la fonction jd");
@@ -164,8 +171,9 @@ int CmdJd(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Sortie du r�sultat sur la console
-  // ---------------------------------
+  /* Sortie du résultat sur la console
+   * ---------------------------------
+   */
   sprintf(s,"%f",jj);
   Tcl_SetResult(interp,s,TCL_VOLATILE);
   return TCL_OK;
@@ -179,8 +187,9 @@ int CmdJd2(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
   char s[256];
   double jj;
 
-  // Verifie que la commande a le bon nombre d'argument
-  // --------------------------------------------------
+  /* Vérifie que la commande a le bon nombre d'argument
+   * --------------------------------------------------
+   */
   if (argc!=8)
     {
       sprintf(s,"Usage: %s ann�e mois jour heure minute seconde milliseconde", argv[0]);
@@ -188,8 +197,9 @@ int CmdJd2(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Calcul de la conversion
-  // -----------------------
+  /* Calcul de la conversion
+   * -----------------------
+   */
   if (jd2(atoi(argv[1]),atoi(argv[2]),atoi(argv[3]),atoi(argv[4]),
           atoi(argv[5]),atoi(argv[6]),atoi(argv[7]),&jj)==PB)
     {
@@ -198,8 +208,9 @@ int CmdJd2(ClientData clientData,Tcl_Interp *interp,int argc,char *argv[])
       return TCL_ERROR;
     }
 
-  // Sortie du resultat sur la console
-  // ---------------------------------
+  /* Sortie du resultat sur la console
+   * ---------------------------------
+   */
   sprintf(s,"%f",jj);
   Tcl_SetResult(interp,s,TCL_VOLATILE);
   return TCL_OK;
@@ -265,8 +276,9 @@ int CmdHeurePC(ClientData clienData, Tcl_Interp *interp, int argc, char *argv[])
   int annee, mois, jour, heure, minute, seconde, milli;
   int erreur;
 
-  // V�rifie que la commande a le bon nombre d'argument
-  // --------------------------------------------------
+  /* Vérifie que la commande a le bon nombre d'argument
+   * --------------------------------------------------
+   */
   if ((argc != 1) && (argc != 8))
     {
       sprintf(s, "Usage: %s ?yyyy MM dd hh mm ss lll?", argv[0]);
@@ -274,9 +286,10 @@ int CmdHeurePC(ClientData clienData, Tcl_Interp *interp, int argc, char *argv[])
       return TCL_ERROR;
     }
 
-  // Lecture de l'heure
-  // ------------------
-  if (argc == 1)
+  /* Lecture de l'heure
+   * ------------------
+   */
+   if (argc == 1)
     {
       if (LitHeurePC(&annee, &mois, &jour, &heure, &minute, &seconde, &milli) == PB)
         {
@@ -289,8 +302,7 @@ int CmdHeurePC(ClientData clienData, Tcl_Interp *interp, int argc, char *argv[])
       return TCL_OK;
     }
 
-  // Lecture de l'heure
-  // ------------------
+  /* Lecture de l'heure */
   if (argc == 8)
     {
       erreur = EcritHeurePC(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]));
@@ -469,7 +481,7 @@ int CmdInfoImage(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
     /* --- recherche les infos ---*/
     result=tcl_InfoImage(interp,numbuf,&image);
     /* --- met en forme le resultat dans une chaine de caracteres ---*/
-    sprintf(s,"%p %d %d %s",image.ptr_audela,image.naxis1,image.naxis2,image.dateobs);
+    sprintf(s,"%p %d %d %s",(void*)image.ptr_audela,image.naxis1,image.naxis2,image.dateobs);
     /* --- on ajoute cette chaine a la dynamic string ---*/
     Tcl_DStringAppend(&dsptr,s,-1);
     /* --- a la fin, on envoie le contenu de la dynamic string dans */

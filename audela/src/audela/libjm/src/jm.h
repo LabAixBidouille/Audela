@@ -19,11 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Projet      : AudeLA 
-// Librairie   : LIBJM
-// Fichier     : JM.H
-// Description : Déclaration des fonctions exportées
-// =================================================
+/*
+ * Projet      : AudeLA
+ * Librairie   : LIBJM
+ * Fichier     : JM.H
+ * Description : DÃ©claration des fonctions exportÃ©es
+ =================================================
+*/
 
 #include "sysexp.h"
 #include <string.h>
@@ -63,7 +65,7 @@ typedef struct {
 } descripteur_image;
 
 
-// --- Déclaration des fonctions ---
+/* --- DÃ©claration des fonctions --- */
 int dms2deg(int d,int m,double s,double *angle);
 int jd(int annee,int jour,double heure,double *jj);
 int jd2(int annee, int mois, int jour, int heure, int minute, int seconde, int milli,double*jj);

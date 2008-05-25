@@ -19,32 +19,32 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/// Projet      : AudeLA 
-// Librairie   : LIBJM
-// Fichier     : JM_UTIL.CPP 
-// Description : Fonctions utilitaires
-// ===================================
+/* Projet      : AudeLA
+ * Librairie   : LIBJM
+ * Fichier     : JM_UTIL.C
+ * Description : Fonctions utilitaires
+ */
 
 #include "jm.h"
 
-// ***************** dms2deg *******************
-// dms2deg
-// Convertie un angle en degrés/minutes/secondes
-// en degrés décimaux
-// *********************************************
+/* ***************** dms2deg *******************
+ * dms2deg
+ * Convertie un angle en degrÃ©s/minutes/secondes
+ * en degrÃ©s dÃ©cimaux
+ * *********************************************/
 int dms2deg(int d,int m,double s,double *angle)
 {
 	*angle=((s/60.0+(double)m)/60)+(double)d;
 return OK;
 }
 
-// ******************* jd *********************
-// Donne le jour julien correspondant a la date            
-// annee : valeur de l'annee correspondante                
-// mois  : valeur du mois correspondant                    
-// jour  : valeur du jour decimal correspondant            
-// *jj   : valeur du jour julien converti           
-// ********************************************
+/* ******************* jd *********************
+ * Donne le jour julien correspondant a la date
+ * annee : valeur de l'annee correspondante
+ * mois  : valeur du mois correspondant
+ * jour  : valeur du jour decimal correspondant
+ * *jj   : valeur du jour julien converti
+ * ********************************************/
 int jd(int annee,int mois,double jour,double *jj)
 {
 double a,m,j,aa,bb;
@@ -65,17 +65,17 @@ bb=2-aa+floor(aa/4);
 return OK;
 }
 
-// ******************* jd2 *********************
-// Donne le jour julien correspondant a la date            
-// annee   : valeur de l'annee correspondante                
-// mois    : valeur du mois correspondant                    
-// jour    : valeur du jour correspondant            
-// heure   : valeur des heures correspondantes
-// minute  : valeur des minutes correspondantes
-// minute  : valeur des secondes correspondantes
-// seconde : valeur des milli-secondes correspondantes
-// *jj   : valeur du jour julien converti           
-// ********************************************
+/* ******************* jd2 *********************
+ * Donne le jour julien correspondant a la date
+ * annee   : valeur de l'annee correspondante
+ * mois    : valeur du mois correspondant
+ * jour    : valeur du jour correspondant
+ * heure   : valeur des heures correspondantes
+ * minute  : valeur des minutes correspondantes
+ * minute  : valeur des secondes correspondantes
+ * seconde : valeur des milli-secondes correspondantes
+ * *jj   : valeur du jour julien converti
+ * ********************************************/
 int jd2 (int annee,int mois,int jour,int heure,int minute,int seconde,int milli,double *jj)
 {
 	double jour_decimal;
@@ -118,9 +118,9 @@ int jc (int *annee, int *mois, double *jour, double jj)
 	return OK;
 }
 
-// ***************** jc2 ****************************
-// Conversion d'un jour julien en jour calendaire
-// **************************************************
+/* ***************** jc2 ****************************
+ * Conversion d'un jour julien en jour calendaire
+ * **************************************************/
 int jc2(int *annee, int *mois, int *jour, int *heure, int *minute, int *seconde, int *milli, double jj)
 {
   double jour_decimal, t;

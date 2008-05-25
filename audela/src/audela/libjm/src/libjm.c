@@ -19,18 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Librairie : LIBJM
-// Fichier : LIBJM.CPP
-// Description : Point d'entree de la librairie
-// ============================================
+/* Librairie : LIBJM
+ * Fichier : LIBJM.CPP
+ * Description : Point d'entree de la librairie
+ * ============================================*/
 
 #define XTERN
 #include "sysexp.h"
 #include "libjm.h"
 
-// *********** JM_Init **********
-// Point d'entree de la librairie
-// ******************************
+/* *********** JM_Init **********
+ * Point d'entree de la librairie
+ * ******************************/
 #ifdef LIBRARY_DLL
    int __cdecl Jm_Init(Tcl_Interp *interp)
 #endif
@@ -44,13 +44,13 @@
       return TCL_ERROR;
    }
 
-  // Si les deux DLLs ont bien été chargées, on enregistre
-  // les fonctions de la bibliothèque qui seront alors disponibles
-  // depuis l'interpreteur TCL, de la meme maniere que toutes les
-  // autres fonctions TCL.
-  // Ajoutez ici vos propres fonctions externes...
-  // -------------------------------------------------------------
-	  /* Premières versions */
+  /* Si les deux DLLs ont bien Ã©tÃ© chargÃ©es, on enregistre
+   * les fonctions de la bibliothÃ¨que qui seront alors disponibles
+   * depuis l'interpreteur TCL, de la meme maniere que toutes les
+   * autres fonctions TCL.
+   * Ajoutez ici vos propres fonctions externes...
+   */
+	  /* PremiÃ¨res versions */
       Tcl_CreateCommand(interp,"jm_dms2deg",(Tcl_CmdProc *)CmdDms2deg,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
       Tcl_CreateCommand(interp,"jm_jd",(Tcl_CmdProc *)CmdJd,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
       Tcl_CreateCommand(interp,"jm_jd2",(Tcl_CmdProc *)CmdJd2,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
