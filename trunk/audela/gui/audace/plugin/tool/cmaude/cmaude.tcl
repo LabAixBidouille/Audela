@@ -2,7 +2,7 @@
 # Fichier : cmaude.tcl
 # Description : Prototype for the Cloud Monitor panel
 # Auteur : Sylvain RONDI
-# Mise a jour $Id: cmaude.tcl,v 1.15 2007-11-02 23:20:48 michelpujol Exp $
+# Mise a jour $Id: cmaude.tcl,v 1.16 2008-05-25 15:54:33 robertdelmas Exp $
 #
 # Remarks :
 # The definition of some variables (binning, exp. time, rythm, etc.)
@@ -132,6 +132,7 @@ namespace eval ::cmaude {
       #--- Initialisation des variables panneau
       set panneau(cmaude,titre)           "$caption(cmaude,titre_mascot)"
       set panneau(cmaude,aide)            "$caption(cmaude,help_titre)"
+      set panneau(cmaude,config)          "$caption(cmaude,configuration)"
       set panneau(cmaude,parcourir)       "$caption(cmaude,parcourir)"
       set panneau(cmaude,label_bias)      "$caption(cmaude,bias)"
       set panneau(cmaude,bias)            "C:/images/bias/off_synth$cmconf(extension)"
@@ -512,12 +513,10 @@ namespace eval ::cmaude {
       ::cmaude::acq $panneau(cmaude,time) $panneau(cmaude,binning)
       set nameima "[string range [mc_date2jd $now] 0 6]-$compteur$cmconf(extension)"
       set cmconf(nameima) [ file join $cmconf(folder) [string range [mc_date2jd $now] 0 6]-$compteur ]
-      set sidertime [mc_date2lst now $localite]
-      #--- Keywords
-      buf$audace(bufNo) setkwd [list "OBSERVER" $cmconf(fits,OBSERVER) string "name of observer/observatory" " "]
-      buf$audace(bufNo) setkwd [list "OPTICS" $cmconf(fits,OPTICS) string "type of optics used" " "]
-      buf$audace(bufNo) setkwd [list "INSTRUME" $cmconf(fits,INSTRUME) string "type of instrument" " "]
-      buf$audace(bufNo) setkwd [list "SIDERAL" $sidertime string "local sideral time" " "]
+      set sidertime [ mc_date2lst now $localite ]
+      #--- Specific keywords
+      buf$audace(bufNo) setkwd [ list "OPTICS"   $cmconf(fits,OPTICS)   string "Type of optics used" " " ]
+      buf$audace(bufNo) setkwd [ list "SIDERAL"  $sidertime             string "Local Sideral Time" " " ]
 
       set textima "$caption(cmaude,image) $nameima $caption(cmaude,acquise_le) [string range [mc_date2iso8601 $actuel] 0 9] $caption(cmaude,a) [string range [mc_date2iso8601 $actuel] 11 18] $caption(cmaude,TU)"
       ::console::affiche_erreur "$textima\n"
@@ -592,6 +591,11 @@ namespace eval ::cmaude {
 
       #--- Attente de la fin de la pose
       vwait status_cam$numcam
+
+      #--- Rajoute des mots clefs dans l'en-tete FITS
+      foreach keyword [ ::keyword::getKeywords $audace(visuNo) ] {
+         buf$audace(bufNo) setkwd $keyword
+      }
 
       #--- Visualisation
       ::audace::autovisu $audace(visuNo)
@@ -673,6 +677,105 @@ namespace eval ::cmaude {
 
 }
 
+################################################################
+# namespace ::cmaude::config
+#    Fenetre de configuration de l'outil Acquisition MASCOT
+################################################################
+namespace eval ::cmaude::config {
+
+   #
+   # cmaude::config::initToConf
+   # Initialisation des variables de configuration
+   #
+   proc initToConf { } {
+   }
+
+   #
+   # cmaude::config::confToWidget
+   # Charge la configuration dans des variables locales
+   #
+   proc confToWidget { } {
+   }
+
+   #
+   # cmaude::config::widgetToConf
+   # Acquisition de la configuration, c'est a dire isolation des differentes variables dans le tableau conf(...)
+   #
+   proc widgetToConf { } {
+   }
+
+   #
+   # cmaude::config::run
+   # Cree la fenetre de configuration
+   #
+   proc run { } {
+      variable This
+      global audace
+
+      #---
+      set This "$audace(base).cmaudeSetup"
+      ::confGenerique::run $audace(visuNo) "$This" "::cmaude::config" -modal 0
+      set posx_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
+      set posy_config [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
+      wm geometry $This +[ expr $posx_config + 180 ]+[ expr $posy_config + 60 ]
+   }
+
+   #
+   # cmaude::config::apply
+   # Fonction 'Appliquer' pour memoriser et appliquer la configuration
+   #
+   proc apply { visuNo } {
+   }
+
+   #
+   # cmaude::config::showHelp
+   # Fonction appellee lors de l'appui sur le bouton 'Aide'
+   #
+   proc showHelp { } {
+      ::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::cmaude::getPluginType ] ] \
+         [ ::cmaude::getPluginDirectory ] cmaude.htm
+   }
+
+   #
+   # cmaude::config::closeWindow
+   # Fonction appellee lors de l'appui sur le bouton 'Fermer'
+   #
+   proc closeWindow { visuNo } {
+   }
+
+   #
+   # cmaude::config::getLabel
+   # Retourne le nom de la fenetre de configuration
+   #
+   proc getLabel { } {
+      global caption
+
+      return "$caption(cmaude,titre_config)"
+   }
+
+   #
+   # cmaude::config::fillConfigPage
+   # Creation de l'interface graphique
+   #
+   proc fillConfigPage { frm visuNo } {
+      variable This
+      global audace caption
+
+      #--- Frame pour le bouton
+      frame $This.frame3 -borderwidth 1 -relief raise
+
+         #--- Bouton du configurateur d'en-tete FITS
+         button $This.frame3.but -text $caption(cmaude,en-tete_fits) \
+            -command "::keyword::run $audace(visuNo)"
+         pack $This.frame3.but -side top -fill x
+
+      pack $This.frame3 -side top -fill both -expand 1
+   }
+
+}
+
+################################################################
+
 #------------------------------------------------------------
 # cmaudeBuildIF
 #    cree la fenetre de l'outil
@@ -694,6 +797,16 @@ global audace color panneau
          DynamicHelp::add $This.fra1.but1 -text $panneau(cmaude,aide)
 
       pack $This.fra1 -side top -fill x
+
+      #--- Frame du bouton de configuration
+      frame $This.fra1a -borderwidth 2 -relief groove
+
+         #--- Label du bouton Configuration
+         button $This.fra1a.but -borderwidth 1 -text $panneau(cmaude,config) \
+            -command { cmaude::config::run }
+         pack $This.fra1a.but -in $This.fra1a -anchor center -expand 1 -fill both -side top -ipadx 5
+
+      pack $This.fra1a -side top -fill x
 
       #--- General frame
       frame $This.fra2 -borderwidth 1 -relief groove
