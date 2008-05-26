@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.21 2008-05-25 17:16:56 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.22 2008-05-26 16:21:43 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -768,11 +768,13 @@ namespace eval ::astrometry {
       variable astrom
 
       frame $astrom(This).wcs.${wcs}.fra_${kwd}
-         label $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -text ${kwd}
+         label $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -text ${kwd} -width 10
          pack $astrom(This).wcs.${wcs}.fra_${kwd}.lab1 -side left
-         entry $astrom(This).wcs.${wcs}.fra_${kwd}.ent -textvariable ::astrometry::astrom(wcsvalues,${kwd})
+         entry $astrom(This).wcs.${wcs}.fra_${kwd}.ent \
+            -textvariable ::astrometry::astrom(wcsvalues,${kwd}) -width 26
          pack $astrom(This).wcs.${wcs}.fra_${kwd}.ent -side left
-         label $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 -text "$astrom(wcsunits,${kwd}) ($astrom(wcscomments,${kwd}))"
+         label $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 \
+            -text "$astrom(wcsunits,${kwd}) ($astrom(wcscomments,${kwd}))"
          pack $astrom(This).wcs.${wcs}.fra_${kwd}.lab2 -side left
       pack $astrom(This).wcs.${wcs}.fra_${kwd} -anchor center -fill x
    }
