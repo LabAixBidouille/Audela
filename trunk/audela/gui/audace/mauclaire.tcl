@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.20 2008-04-12 20:44:40 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.21 2008-05-27 17:52:56 bmauclaire Exp $
 #
 
 #
@@ -40,9 +40,180 @@
 # bm_ls                  : Liste les fichiers fits du répertoire de travail
 # bm_rm                  : efface des fichiers dans le repertoire courant
 # bm_mv                  : renome un fichier du repertoire courant
+# bm_cleanfit            : remet en conformite les caracteres des mots clefs du header
 #-----------------------------------------------------------------------------#
 
 
+
+###############################################################################
+# Description : liste les fichiers du repertoire de travail
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 03-05-2007
+# Date de mise a jour : 03-05-2007
+# Arguments : aucun
+###############################################################################
+
+proc bm_cleanfit { args } {
+   global conf audace
+
+   set nbargs [ llength $args ]
+   if { $nbargs <= 1 } {
+      if { $nbargs == 1 } {
+         set filename [ lindex $args 0 ]
+
+         #--- Charge les mots clef :
+         buf$audace(bufNo) load "$audace(rep_images)/$filename"
+         set listemotsclef [ buf$audace(bufNo) getkwds ]
+
+         #--- Corrige le contenu des mots clef : 
+         foreach mot $listemotsclef {
+            set type [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 2 ]
+            if { $type == "string" } {
+               #-- Recupere la valeur initiale :
+               set lemot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
+               set desc [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 3 ]
+               set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
+
+               #-- Remplace les caracteres :
+               regsub -all {[éèê]} $lemot "e" lemot
+               regsub -all {[àâ]} $lemot "a" lemot
+               regsub -all "ç" $lemot "c" lemot
+               regsub -all "'" $lemot " " lemot
+
+               #-- Met a jour :
+               buf$audace(bufNo) setkwd [ list "$mot" "$lemot" $type "$desc" "$unit" ]
+            } else {
+               continue
+            }
+         }
+
+         #--- Corrige les mots clef eux-meme :
+         foreach mot $listemotsclef {
+            #-- Recupere la valeur initiale :
+            set lemot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
+            set type [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 2 ]
+            set desc [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 3 ]
+            set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
+
+            #-- Gere les cas particuliers :
+            #- Gere le cas des "comment=" du T120 OHP :
+            if { $mot == "COMMENT=" && $lemot == 0 } {
+               buf$audace(bufNo) delkwd "$mot"
+               continue
+            }
+
+            #-- Efface les mots clef dont le contenu est vide et corrige les autres :
+            if { $lemot == "" } {
+               buf$audace(bufNo) delkwd "$mot"
+            } else {
+               regsub -all {[^0-9a-zA-Z_\-]} $mot "" nmot
+               #-- Met a jour :
+               if { $type == "string" } {
+                  buf$audace(bufNo) setkwd [ list "$nmot" "$lemot" $type "$desc" "$unit" ]
+               } else {
+                  buf$audace(bufNo) setkwd [ list "$nmot" $lemot $type "$desc" "$unit" ]
+               }
+            }
+         }
+
+
+         #--- Sauvegarde :
+         set ftype [ lindex [ buf$audace(bufNo) getkwd "BITPIX" ] 1 ]
+         if { $ftype == -32 } {
+            buf$audace(bufNo) bitpix float
+         } elseif { $ftype == 32 } {
+            buf$audace(bufNo) bitpix long
+         }
+         buf$audace(bufNo) save "$audace(rep_images)/$filename"
+         #-- Retour a la configuration initiale :
+         if { $conf(format_fichier_image) == "0" } {
+            buf$audace(bufNo) bitpix short
+         } else {
+            buf$audace(bufNo) bitpix float
+         }
+         ::console::affiche_resultat "Fichier sauvé sous $filename.\n\n"
+      } elseif { $nbargs == 0 } {
+         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails *$conf(extension,defaut) ] ]
+
+         set k 0
+         foreach filename $fliste {
+            #--- Charge les mots clef :
+            buf$audace(bufNo) load "$audace(rep_images)/$filename"
+            set listemotsclef [ buf$audace(bufNo) getkwds ]
+            
+            #--- Corrige chaque caractere non conforme au FITS :
+            foreach mot $listemotsclef {
+               set type [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 2 ]
+               if { $type == "string" } {
+                  #-- Recupere la valeur initiale :
+                  set lemot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
+                  set desc [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 3 ]
+                  set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
+                  
+                  #-- Remplace les caracteres :
+                  regsub -all {[éèê]} $lemot "e" lemot
+                  regsub -all {[àâ]} $lemot "a" lemot
+                  regsub -all "ç" $lemot "c" lemot
+                  regsub -all "'" $lemot " " lemot
+
+                  #-- Met a jour :
+                  buf$audace(bufNo) setkwd [ list "$mot" $lemot $type "$desc" "$unit" ]
+               } else {
+                  continue
+               }
+            }
+
+            #--- Corrige les mots clef eux-meme :
+            foreach mot $listemotsclef {
+               #-- Recupere la valeur initiale :
+               set lemot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
+               set type [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 2 ]
+               set desc [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 3 ]
+               set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
+               
+               #-- Gere les cas particuliers :
+               #- Gere le cas des "comment=" du T120 OHP :
+               if { $mot == "COMMENT=" && $lemot == 0 } {
+                  buf$audace(bufNo) delkwd "$mot"
+                  continue
+               }
+               
+               #-- Efface les mots clef dont le contenu est vide et corrige les autres :
+               if { $lemot == "" } {
+                  buf$audace(bufNo) delkwd "$mot"
+               } else {
+                  regsub -all {[^0-9a-zA-Z_\-]} $mot "" mot
+                  #-- Met a jour :
+                  buf$audace(bufNo) setkwd [ list "$mot" $lemot $type "$desc" "$unit" ]
+               }
+            }
+
+            #--- Sauvegarde :
+            set ftype [ lindex [ buf$audace(bufNo) getkwd "BITPIX" ] 1 ]
+            if { $ftype == -32 } {
+               buf$audace(bufNo) bitpix float
+            } elseif { $ftype == 32 } {
+               buf$audace(bufNo) bitpix long
+            }
+            buf$audace(bufNo) save "$audace(rep_images)/$filename"
+            #-- Retour a la configuration initiale :
+            if { $conf(format_fichier_image) == "0" } {
+               buf$audace(bufNo) bitpix short
+            } else {
+               buf$audace(bufNo) bitpix float
+            }
+            incr k
+         }
+         ::console::affiche_resultat "$k fichier(s) mis en conformité.\n\n"
+      } else {
+         console::affiche_erreur "Usage: bm_cleanfit ?fichier_fits?\n"
+         return ""
+      }
+   } else {
+      console::affiche_erreur "Usage: bm_cleanfit ?fichier_fits?\n"
+   }
+}
+#*****************************************************************************#
 
 ###############################################################################
 # Description : liste les fichiers du repertoire de travail
@@ -123,6 +294,41 @@ proc bm_mv { args } {
       }
    } else {
       console::affiche_erreur "Usage: bm_mv ancien_nom nouveau_nom\n"
+   }
+}
+#*****************************************************************************#
+
+###############################################################################
+# Description : efface des fichiers du repertoire courant
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2008-03-23
+# Date de mise a jour : 2008-03-23
+# Arguments : nom_fichiers
+###############################################################################
+
+proc bm_cp { args } {
+   global conf audace
+
+   if { [ llength $args ] == 2 } {
+      set path_et_fichier [ lindex $args 0 ]
+      set dest [ lindex $args 1 ]
+
+      #--- Traitement des arguments :
+      set filename [ file tail $path_et_fichier ]
+      set depart [ file dir $path_et_fichier ]
+      if { $depart==".." } {
+         set depart "${audace(rep_images)}/.."
+      }
+      if { $dest == "." } {
+         set dest "$audace(rep_images)"
+      }
+
+      #--- Copie :
+      #::console::affiche_resultat "${depart}/$filename ; ${dest}/$filename\n"
+      file copy -force "${depart}/$filename" "${dest}/$filename"
+      ::console::affiche_resultat "$filename copié.\n"
+   } else {
+      console::affiche_erreur "Usage: bm_cp chemin/fichier.extension chemin\n"
    }
 }
 #*****************************************************************************#
