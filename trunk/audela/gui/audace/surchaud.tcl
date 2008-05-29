@@ -2,7 +2,7 @@
 # Fichier : surchaud.tcl
 # Description : Surcharge des fonctions de AudeLA pour les rendre compatibles avec l'usage des repertoires de travail
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: surchaud.tcl,v 1.30 2008-05-04 22:12:39 robertdelmas Exp $
+# Mise a jour $Id: surchaud.tcl,v 1.31 2008-05-29 21:43:26 robertdelmas Exp $
 #
 # add  operand value
 # add1  in operand out const ?tt_options?
@@ -142,6 +142,7 @@ proc add2 {args} {
       }
       set options ""
       if {$n>=7} {
+         set first "[lindex $args 5]"
          set options "[lrange $args 6 end]"
       }
       set ext [file extension "$operand"]
@@ -182,6 +183,7 @@ proc convgauss2 {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -303,6 +305,7 @@ proc div2 {args} {
       }
       set options ""
       if {$n>=7} {
+         set first "[lindex $args 5]"
          set options "[lrange $args 6 end]"
       }
       set ext [file extension "$operand"]
@@ -361,6 +364,7 @@ proc mult2 {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 3]+$first-1]
@@ -403,6 +407,7 @@ proc ngain2 {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 3]+$first-1]
@@ -444,6 +449,7 @@ proc noffset2 {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 3]+$first-1]
@@ -498,6 +504,7 @@ proc offset2 {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 3]+$first-1]
@@ -642,6 +649,7 @@ proc opt2 {args} {
       }
       set options ""
       if {$n>=7} {
+         set first "[lindex $args 5]"
          set options "[lrange $args 6 end]"
       }
       set ext [file extension "$operand"]
@@ -745,7 +753,7 @@ proc register {args} {
       set tx0 [lindex $x 0]
       set ty0 [lindex $y 0]
       for {set k $first} {$k<=$number} {incr k} {
-         set kk [expr $k-1]
+         set kk [expr $k-$first]
          buf$audace(bufNo) load ${path}/${in}${k}${ext}
          set tx [expr round($tx0-[lindex $x $kk])]
          set ty [expr round($ty0-[lindex $y $kk])]
@@ -767,6 +775,7 @@ proc register2 {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -827,8 +836,8 @@ proc registerbox {args} {
       ::console::affiche_saut "\n"
       set tx0 [lindex $x 0]
       set ty0 [lindex $y 0]
-      for {set k 1} {$k<=$number} {incr k} {
-         set kk [expr $k-1]
+      for {set k $first} {$k<=$ni} {incr k} {
+         set kk [expr $k-$first]
          buf$audace(bufNo) load ${path}/${in}${k}${ext}
          set tx [expr round($tx0-[lindex $x $kk])]
          set ty [expr round($ty0-[lindex $y $kk])]
@@ -853,14 +862,20 @@ proc registerfine {args} {
       }
       set oversampling 10
       if {$n==5} {
+         set delta "[lindex $args 3]"
          set oversampling "[lindex $args 4]"
       }
       set first 1
       if {$n==6} {
+         set delta "[lindex $args 3]"
+         set oversampling "[lindex $args 4]"
          set first "[lindex $args 5]"
       }
       set options ""
       if {$n>=7} {
+         set delta "[lindex $args 3]"
+         set oversampling "[lindex $args 4]"
+         set first "[lindex $args 5]"
          set options "[lrange $args 6 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -883,6 +898,7 @@ proc registerwcs {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -905,6 +921,7 @@ proc sadd {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -945,6 +962,7 @@ proc scale2 {args} {
       }
       set options ""
       if {$n>=7} {
+         set first "[lindex $args 5]"
          set options "[lrange $args 6 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -967,6 +985,7 @@ proc smean {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -990,6 +1009,7 @@ proc smedian {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -1013,6 +1033,7 @@ proc sprod {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -1036,6 +1057,7 @@ proc spythagore {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -1059,6 +1081,7 @@ proc ssigma {args} {
       }
       set options ""
       if {$n>=5} {
+         set first "[lindex $args 3]"
          set options "[lrange $args 4 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -1082,6 +1105,7 @@ proc ssk {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -1105,6 +1129,7 @@ proc ssort {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
@@ -1201,6 +1226,7 @@ proc sub2 {args} {
       }
       set options ""
       if {$n>=7} {
+         set first "[lindex $args 5]"
          set options "[lrange $args 6 end]"
       }
       set ext [file extension "$operand"]
@@ -1403,6 +1429,7 @@ proc trans2 {args} {
       }
       set options ""
       if {$n>=7} {
+         set first "[lindex $args 5]"
          set options "[lrange $args 6 end]"
       }
       set ni [expr [lindex $args 4]+$first-1]
@@ -1439,6 +1466,7 @@ proc uncosmic2 {args} {
       }
       set options ""
       if {$n>=6} {
+         set first "[lindex $args 4]"
          set options "[lrange $args 5 end]"
       }
       set ni [expr [lindex $args 2]+$first-1]
