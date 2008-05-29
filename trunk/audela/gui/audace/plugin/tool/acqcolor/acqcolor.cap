@@ -1,6 +1,6 @@
 #
 # Fichier : acqcolor.cap
-# Mise a jour $Id: acqcolor.cap,v 1.8 2007-05-09 21:40:49 robertdelmas Exp $
+# Mise a jour $Id: acqcolor.cap,v 1.9 2008-05-29 21:29:16 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -131,7 +131,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqcolor,acqserie)            "Adq. de una serie"
    set caption(acqcolor,nbimage)             "Numero:"
    set caption(acqcolor,attente)             "Retraso (ms):"
-   set caption(acqcolor,seprvb)              "Separación RGB"
+   set caption(acqcolor,seprvb)              "Separación RVA"
    set caption(acqcolor,trichro)             "Proceso de tricromía"
    set caption(acqcolor,smedianrvb)          "Mediana"
    set caption(acqcolor,entete_fits)         "Cabecera FITS"

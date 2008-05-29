@@ -1,6 +1,6 @@
 #
 # Fichier : bermasaude.cap
-# Mise a jour $Id: bermasaude.cap,v 1.16 2007-11-03 15:54:33 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.cap,v 1.17 2008-05-29 21:30:01 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -151,7 +151,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(bermasaude,bermasaude_vert)             "Verde"
    set caption(bermasaude,bermasaude_rouge)            "Rojo"
    set caption(bermasaude,bermasaude_infrarouge)       "Infrarrojo"
-   set caption(bermasaude,bermasaude_cyan)             "Cyan"
+   set caption(bermasaude,bermasaude_cyan)             "Cian"
    set caption(bermasaude,bermasaude_magenta)          "Magenta"
    set caption(bermasaude,bermasaude_jaune)            "Amarillo"
    set caption(bermasaude,bermasaude_filtre_arrive_1)  "Filtro"
