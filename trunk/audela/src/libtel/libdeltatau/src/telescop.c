@@ -273,7 +273,55 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		}
 		tel->PmacDevice=0;
 		sprintf(tel->channel,"%d",tel->PmacDevice);
+		res = (*DeviceOpen)(tel->PmacDevice);
 		res = (*DeviceSetAsciiComm)(tel->PmacDevice,BUS); /*Set configuration sur bus*/
+		sprintf(s,"%s",BUS);
+
+		deltatau_put(tel,"M231->X:$0079,21,1");
+		deltatau_put(tel,"M232->X:$0079,22,1");
+		deltatau_put(tel,"M240->Y:$08D4,0,1");
+		deltatau_put(tel,"M245->Y:$08D4,10,1");
+		deltatau_put(tel,"M230->X:$08D4,11,1");
+
+		deltatau_put(tel,"M131->X:$003D,21,1");
+		deltatau_put(tel,"M132->X:$003D,22,1");
+		deltatau_put(tel,"M140->Y:$0814,0,1");
+		//deltatau_put(tel,"M145->Y:$0814,10,1");
+
+		deltatau_put(tel,"M331->X:$00B5,21,1");
+		deltatau_put(tel,"M332->X:$00B5,22,1");
+		deltatau_put(tel,"M340->Y:$0994,0,1");
+		deltatau_put(tel,"M345->Y:$0994,10,1");
+		/*
+#3I322=4
+#3j+
+#3home
+#3I322=3
+#3j=-34615.0
+#3homez
+*/
+
+		deltatau_put(tel,"M440->Y:$0A54,0,1"); 
+		/* --- sppeds --- */
+		tel->track_diurnal=0.004180983;
+		tel->speed_track_ra=tel->track_diurnal; /* (deg/s) */
+		tel->speed_track_dec=0.; /* (deg/s) */
+		tel->speed_slew_ra=20.; /* (deg/s) */
+		tel->speed_slew_dec=20.; /* (deg/s) */
+		tel->radec_speed_dec_conversion=10.; /* (ADU)/(deg) */
+		tel->radec_position_conversion=-10000.; /* (ADU)/(deg) */
+		tel->radec_move_rate_max=1.0; /* deg/s */
+		/* --- Match --- */
+		tel->ha00=0.;
+		tel->roth00=0;
+		tel->dec00=43.75203;
+		tel->rotd00=0;
+		/* --- stops --- */
+		tel->stop_e_uc=-1624651;
+		tel->stop_w_uc=1549515;
+		/* --- Home --- */
+		strcpy(tel->home0,"GPS 6.92353 E 43.75203 1320.0");
+		tel->latitude=43.75203;
 	}
 #endif
    /* --- sortie --- */
@@ -701,6 +749,7 @@ int deltatau_put(struct telprop *tel,char *cmd)
 	}
 #if defined(OS_WIN)
 	if (tel->type==1) {
+		strcpy(tel->pmac_response,"0");
 		(*DevicePutGet)(tel->PmacDevice,tel->pmac_response,990,cmd);
 	}
 #endif
@@ -963,19 +1012,19 @@ int deltatau_goto(struct telprop *tel)
    ha=fmod(ha,360.);
    p=(int)(tel->roth00+(ha-tel->ha00)*tel->radec_position_conversion);
    if (p>tel->stop_w_uc) {
-      p=(int)(p-360*tel->radec_position_conversion);
+      p=(int)(p-fabs(360*tel->radec_position_conversion));
       if (p<tel->stop_e_uc) {
          /* angle mort */
          retournement=1;
-         p=(int)(p+180*tel->radec_position_conversion);
+         p=(int)(p+180*fabs(tel->radec_position_conversion));
       }
    }
    if (p<tel->stop_e_uc) {
-      p=(int)(p+360*tel->radec_position_conversion);
+      p=(int)(p+360*fabs(tel->radec_position_conversion));
       if (p>tel->stop_w_uc) {
          /* angle mort */
          retournement=1;
-         p=(int)(p-180*tel->radec_position_conversion);
+         p=(int)(p-fabs(180*tel->radec_position_conversion));
       }
    }
    axe='1';
