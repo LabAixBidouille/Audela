@@ -23,7 +23,6 @@
 #include "tt.h"
 #include <math.h>
 
-
 /***** prototypes des fonctions internes du user5 ***********/
 int tt_ima_stack_5_tutu(TT_IMA_STACK *pstack);
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries);
@@ -1082,7 +1081,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);
+	//tt_imasaver(p_out,"D:/tophat.fit",16);
 	
 	bg=0;
 
@@ -1137,7 +1136,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 
 			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
@@ -1211,96 +1210,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					if (somme_y<0) somme_y=0;
 					if (somme_y>n2) somme_y=n2-1;
 
-					/* --- eliminer les GEO ou GTO rond --- */
-					/*x0=(int)somme_x;
-					y0=(int)somme_y;
-					fwhmx=0;
-					for (k=x0;k<=n1;k++) {
-						if (p_tmp3->p[n1*y0+k]==0) break;
-						else fwhmx+=1;
-					}		           
-					for (k=x0;k>=1;k--) {
-						if (p_tmp3->p[n1*y0+k]==0) break;
-						else fwhmx+=1;
-					}  
-					fwhmx/=2.;
-						
-					fwhmy=0;
-           			for (k=y0;k<n2;k++) {
-						if (p_tmp3->p[n1*k+x0]==0) break;
-						else fwhmy+=1;
-					}		         
-					for (k=y0;k>=1;k--) {
-						if (p_tmp3->p[n1*k+x0]==0) break;
-						else fwhmy+=1;
-					}
-					fwhmy/=2.;
-
-					fwhmxyp=0;
-           			for (k=0;k<n2;k++) {
-						if ((y0+k)>=n2) break;
-						if ((x0-k)<=0) break;
-						if (p_tmp3->p[n1*(y0+k)-k+x0]==0) break;
-						else fwhmxyp+=1;
-					}		         
-					for (k=0;k<n2;k++) {
-						if ((y0-k)<=0) break;
-						if ((x0+k)>=n1) break;
-						if (p_tmp3->p[n1*(y0-k)+k+x0]==0) break;
-						else fwhmxyp+=1;
-					}	
-					fwhmxyp/=2.;
-
-					fwhmxym=0;
-           			for (k=0;k<n2;k++) {
-						if ((y0+k)>=n2) break;
-						if ((x0+k)>=n1) break;
-						if (p_tmp3->p[n1*(y0+k)+k+x0]==0) break;
-						else fwhmxyp+=1;
-					}		         
-					for (k=0;k<n2;k++) {
-						if ((y0-k)<=0) break;
-						if ((x0-k)<=0) break;
-						if (p_tmp3->p[n1*(y0-k)-k+x0]==0) break;
-						else fwhmxyp+=1;
-					}	
-					fwhmxym/=2.;
-
-					if ((fwhmx!=0)&&(fwhmy!=0)) {
-						if (((fwhmx/fwhmy>0.5)&&(fwhmx/fwhmy<1))||((fwhmx/fwhmy<2)&&(fwhmx/fwhmy>1))) {
-							// -- enlever le GEO de la petite imagette --- //	
-							if (fwhmy<3) fwhmy=3;
-							if (fwhmx<3) fwhmx=3;
-							for (k1=(int)(somme_x-fwhmx-1);k1<=(int)(somme_x+fwhmx+1);k1++) {
-								if (k1<0) continue;
-								if (k1>=n1) break;
-								for (k2=(int)(somme_y-fwhmy-1);k2<=(int)(somme_y+fwhmy+1);k2++) {
-									if (k2<0) continue;
-									if (k2>=n2) break;
-									p_tmp3->p[n1*k2+k1]=0;	
-								}
-							}
-							detec_geo=1;
-							continue; 
-						}
-					} else {
-						if (fabs(fwhmx-fwhmy)<2) {
-							// -- enlever le GEO de la petite imagette --- //							
-							for (k1=(int)(somme_x-fwhmx-1);k1<=(int)(somme_x+fwhmx+1);k1++) {
-								if (fwhmy<3) fwhmy=3;
-								if (fwhmx<3) fwhmx=3;
-								if (k1<0) continue;
-								if (k1>=n1) break;
-								for (k2=(int)(somme_y-fwhmy-1);k2<=(int)(somme_y+fwhmy+1);k2++) {
-									if (k2<0) continue;
-									if (k2>=n2) break;
-									p_tmp3->p[n1*k2+k1]=0;	
-								}
-							}
-							detec_geo=1;
-							continue; 
-						}
-					}	*/				
 /* ===================================================== */
 /* === recherche du debut et de la fin de la trainee === */
 /* ===================================================== */
@@ -1587,7 +1496,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 				
 						tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
-						tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
+						//tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
 						//recupère les coordonnées de la droite détectée y=a0*x+b0
 						if ((eq[0]!=0)||(eq[1]!=0)||(eq[2]!=0)) {							
 						
@@ -1922,6 +1831,60 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					eq[2]=eq[2]+k5+kk*n1/2;
 				}
 				if ((somme_x!=0)&&(somme_y!=0)) {
+					//fitte une gaussienne pour calculé fwhmx et fwhmy 
+///////////////////////////////////////////////////////////////////////////
+//* --- a revoir car pas assez précis pour la discrimination GTO/GEO --- */
+///////////////////////////////////////////////////////////////////////////
+				/*	xx1=(int)(xdebut-3*largx);
+					xx2=(int)(xfin+3*largx);
+					if (ydebut>yfin) {
+						yy1=(int)(yfin-3*largx);
+						yy2=(int)(ydebut+3*largx);
+					} else {
+						yy1=(int)(ydebut-3*largx);
+						yy2=(int)(yfin+3*largx);
+					}
+					if (xx1<0) xx1=0;
+					if (xx1>=n1) xx1=n1-1;
+					if (xx2<0) xx2=0;
+					if (xx2>=n1) xx2=n1-1;
+					if (yy1<0) yy1=0;
+					if (yy1>=n2) yy1=n2-1;
+					if (yy2<0) yy2=0;
+					if (yy2>=n2) yy2=n2-1;
+  
+					pp = (double*)calloc(6,sizeof(double));
+					ecart = (double*)calloc(1,sizeof(double));
+					sizex=xx2-xx1+1;
+					sizey=yy2-yy1+1;
+
+					//fixe la taille de la fenêtre de travail: sizex et sizey
+					mat = (double**)calloc(sizex,sizeof(double));
+					for(k=0;k<sizex;k++) {
+						*(mat+k) = (double*)calloc(sizey,sizeof(double));
+					}
+					//--- Mise a zero des deux buffers 
+					for(k=0;k<sizex;k++) {
+						for(k2=0;k2<sizey;k2++) {
+							mat[k][k2]=(double)0.;
+						}
+					}
+					for (j=0;j<sizey;j++) {  
+					   for (i=0;i<sizex;i++) {	  
+						  mat[i][j]=p_tmp3->p[n1*(j+yy1)+i+xx1];
+					   }
+					}
+
+					tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
+					fwhmx=pp[2];
+					fwhmy=pp[5];
+					free(pp);
+					free(ecart);
+					free(mat);
+					fwhmxy=(fwhmx>fwhmy)?(fwhmx/fwhmy):(fwhmy/fwhmx);*/
+					fwhmxy=1.6;
+
+					//changement de repère
 					somme_x=somme_x+k5+kk*n1/2;
 					somme_y=somme_y+(k3)*256+kk*n2/2;
 					xdebut=xdebut+k5+kk*n1/2;
@@ -1932,8 +1895,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					/* --- calcul de la longueur de la traînée --- */
 					l=sqrt((xdebut-xfin)*(xdebut-xfin)+(ydebut-yfin)*(ydebut-yfin));
 					// calcul de la hauteur de la traînée pour la discrimination fine GTO <-> GEO
-	
-					if (l>4) {
+					
+
+					if ((l>4)&&(fwhmxy>1.5)) {
 /* ------------------------------------------ */
 /* --- ajustement par les moindres carrés --- */
 /* ------------------------------------------ */
@@ -2200,7 +2164,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			x0=(int)sommex;
 			y0=(int)sommey;
 
-			if ((p_out->p[naxis1*y0+x0+1]!=0)||(p_out->p[naxis1*y0+x0-1]!=0)||(p_out->p[naxis1*(y0-1)+x0-1]!=0)||(p_out->p[naxis1*(y0-1)+x0]!=0)||(p_out->p[naxis1*(y0-1)+x0+1]!=0)||(p_out->p[naxis1*(y0+1)+x0-1]!=0)||(p_out->p[naxis1*(y0+1)+x0]!=0)||(p_out->p[naxis1*(y0+1)+x0+1]!=0)) {
+			//if ((p_out->p[naxis1*y0+x0+1]!=0)||(p_out->p[naxis1*y0+x0-1]!=0)||(p_out->p[naxis1*(y0-1)+x0-1]!=0)||(p_out->p[naxis1*(y0-1)+x0]!=0)||(p_out->p[naxis1*(y0-1)+x0+1]!=0)||(p_out->p[naxis1*(y0+1)+x0-1]!=0)||(p_out->p[naxis1*(y0+1)+x0]!=0)||(p_out->p[naxis1*(y0+1)+x0+1]!=0)) {
 				fwhmx=0;
 				for (k=x0;k<=(naxis1-y1);k++) {
 					if ((p_in->p[naxis1*y0+k]-p_in->p[naxis1*y0+k+1])<=0) break;
@@ -2209,9 +2173,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				for (k=x0;k>=1+x1;k--) {
 					if ((p_in->p[naxis1*y0+k]-p_in->p[naxis1*y0+k-1])<=0) break;
 					else fwhmx+=1;
-				}  
-				fwhmx/=2.;
-					
+				}  					
 				fwhmy=0;
            		for (k=y0;k<(naxis2-y1);k++) {
 					if ((p_in->p[naxis1*k+x0]-p_in->p[naxis1*(k+1)+x0])<=0) break;
@@ -2221,13 +2183,16 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					if ((p_in->p[naxis1*k+x0]-p_in->p[naxis1*(k-1)+x0])<=0) break;
 					else fwhmy+=1;
 				}
-				fwhmy/=2.;
 				/* --- elimine les cosmiques --- */
-				if ((fwhmx<=1.)&&(fwhmy<=1.)) break; 
+				if ((fwhmx<=1.)&&(fwhmy<=1.)) break; 				
+			
+				fwhmx/=2.;
+				fwhmy/=2.;
 				/* --- parametres de mesure precise ---*/
                 xcc=sommex;
                 ycc=sommey;
                 fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
+				if (fwhmxy<2.) fwhmxy=2;
                 r1=1.5*fwhmxy;
                 r2=2.0*fwhmxy;
                 r3=2.5*fwhmxy;
@@ -2329,10 +2294,61 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
 				xcc=pp[1]+xx1;
 				ycc=pp[4]+yy1;
+				fwhmx=pp[2];
+				fwhmy=pp[5];
+				free(pp);
+				free(ecart);
+				free(mat);
 
+				if ((fabs(fwhmx-r2)<1.2)||(fabs(fwhmy-r2)<1.2)) {
+					r2=(fwhmx>fwhmy)?2.0*fwhmx:2.0*fwhmy;
+					//re-fitte une gaussienne avec une fenêtre plus grande
+					xx1=(int)(xcc-r2);
+					xx2=(int)(xcc+r2);
+					yy1=(int)(ycc-r2);
+					yy2=(int)(ycc+r2);
+					if (xx1<0) xx1=0;
+					if (xx1>=naxis1) xx1=naxis1-1;
+					if (xx2<0) xx2=0;
+					if (xx2>=naxis1) xx2=naxis1-1;
+					if (yy1<0) yy1=0;
+					if (yy1>=naxis2) yy1=naxis2-1;
+					if (yy2<0) yy2=0;
+					if (yy2>=naxis2) yy2=naxis2-1;
+  
+					pp = (double*)calloc(6,sizeof(double));
+					ecart = (double*)calloc(1,sizeof(double));
+					sizex=xx2-xx1+1;
+					sizey=yy2-yy1+1;
 
+					//fixe la taille de la fenêtre de travail: sizex et sizey
+					mat = (double**)calloc(sizex,sizeof(double));
+					for(k=0;k<sizex;k++) {
+						*(mat+k) = (double*)calloc(sizey,sizeof(double));
+					}
+					//--- Mise a zero des deux buffers 
+					for(k=0;k<sizex;k++) {
+						for(k2=0;k2<sizey;k2++) {
+							mat[k][k2]=(double)0.;
+						}
+					}
+					for (j=0;j<sizey;j++) {  
+					   for (i=0;i<sizex;i++) {	  
+						  mat[i][j]=p_in->p[naxis1*(j+yy1)+i+xx1];
+					   }
+					}
+
+					tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
+					xcc=pp[1]+xx1;
+					ycc=pp[4]+yy1;
+					fwhmx=pp[2];
+					fwhmy=pp[5];
+					free(pp);
+					free(ecart);
+					free(mat);
+				}
 				//avec le vrai centroide
-				fwhmx=0;
+				/*fwhmx=0;
 				for (k=(int)xcc;k<=(naxis1-2);k++) {
 					if ((p_in->p[naxis1*(int)ycc+k]-p_in->p[naxis1*(int)ycc+k+1])<=0) break;
 					else fwhmx+=1;
@@ -2352,12 +2368,21 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					if ((p_in->p[naxis1*k+(int)xcc]-p_in->p[naxis1*(k-1)+(int)xcc])<=0) break;
 					else fwhmy+=1;
 				}
-				fwhmy/=2.;
-				//if (((fwhmx<1.)&&(fwhmy<1.))||(fwhmx==0)||(fwhmy==0)) break;
+				fwhmy/=2.;*/
+
+				// elimine les bouts d'étoiles  : xcc et ycc eloignés de x et y de plus de r1; et les cosmiques
+				if ((fabs(xcc-x)>r1)||(fabs(ycc-y)>r1)) break;
+				if (((fwhmx<0.8)&&(fwhmy<0.8))||(fwhmx<0.3)||(fwhmy<0.3)) break;
+				/* --- elimine les bouts d'étoiles --- */
+				fwhmxy=(fwhmx>fwhmy)?fwhmx/fwhmy:fwhmy/fwhmx;
+				if ((fwhmxy>2.)&&((fwhmx>1.5)&&(fwhmy>1.5))) break;
+				if ((fwhmxy>1.5)&&((fwhmx>3)&&(fwhmy>3))) break;
+				if ((p_out->p[naxis1*y0+x0+1]==0)&&(p_out->p[naxis1*y0+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0]==0)&&(p_out->p[naxis1*(y0-1)+x0+1]==0)&&(p_out->p[naxis1*(y0+1)+x0-1]==0)&&(p_out->p[naxis1*(y0+1)+x0]==0)&&(p_out->p[naxis1*(y0+1)+x0+1]==0)&&((fwhmx>6.0)||(fwhmy>6.0))) break;
+				
 				fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
                 r1=1.5*fwhmxy;
                 r2=2.0*fwhmxy;
-            
+				
 				/* --- photometrie (flux) ---*/
                 xx1=(int)(xcc-r1);
                 xx2=(int)(xcc+r1);
@@ -2421,7 +2446,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						p_out->p[naxis1*(j+yy1)+i+xx1]=0;
 					 }
 				}
-			}
+			//}
 		}
 	}
 	fclose(fic);
@@ -2478,7 +2503,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	char *nom_trait, *struct_elem;
 	int x1,y1,x2=0,y2=0,result;
 	int cx,cy,xx,yy,nb_test,k_test,taille_carre_med;
-	double inf,hicut,locut;
+	double inf,hicut,locut,sb,sh;
 	
 	p_in=pseries->p_in; 
 	p_out=pseries->p_out;
@@ -2739,13 +2764,16 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 		//tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
 		/* --- detection des geo et des traînées du bruit --- */
-		if ((4+(pseries->hicut-pseries->locut)/100)<10) {
+		if ((4+(pseries->hicut-pseries->locut)/100)<8) {
 			seuil=(4+(pseries->hicut-pseries->locut)/100)*pseries->bgsigma;
 		} else {
-			seuil=10*pseries->bgsigma;
+			seuil=8*pseries->bgsigma;
 		}
 
 		//réduction de la dynamique des images
+		sb=pseries->bgsigma;
+		sh=(pseries->bgsigma)*5.1;
+		//sh=pseries->hicut-mode1;
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
 				if (mode1>mode2) {
@@ -2754,37 +2782,37 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				if (fabs (p_out->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x])<seuil) {
 					p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x];
 				} else {
-					if (p_out->p[y*naxis1+x]<mode1-pseries->bgsigma) {
+					if (p_out->p[y*naxis1+x]<mode1-sb) {
 						p_out->p[y*naxis1+x]=0;
-					} else if (p_out->p[y*naxis1+x]>mode1+(pseries->bgsigma)*5) {
+					} else if (p_out->p[y*naxis1+x]>mode1+sh) {
 					//} else if (p_out->p[y*naxis1+x]>hicut) {
 						p_out->p[y*naxis1+x]=255;
 					} else {
 						//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
 						if (p_out->p[y*naxis1+x]<mode1) {
 							if (pseries->locut/locut<1) {
-								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma))*(float)255./((float)(6.0/1.0*pseries->bgsigma))*(float)(pseries->locut/locut);
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./((float)(sb+sh))*(float)(pseries->locut/locut);
 							} else {
-								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma))*(float)255./((float)(6.0/1.0*pseries->bgsigma))*(float)(locut/pseries->locut);
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./((float)(sb+sh))*(float)(locut/pseries->locut);
 							}
 						} else if (p_out->p[y*naxis1+x]>mode1) {
 							if (pseries->hicut/hicut>1) {
-								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma))*(float)255./((float)(6.0/1.0*pseries->bgsigma))*(float)(pseries->hicut/hicut);
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./((float)(sb+sh))*(float)(pseries->hicut/hicut);
 							} else {
-								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma))*(float)255./((float)(6.0/1.0*pseries->bgsigma))*(float)(hicut/pseries->hicut);
+								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./((float)(sb+sh))*(float)(hicut/pseries->hicut);
 							}
 						} else {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma))*(float)255./((float)(6.0/1.0*pseries->bgsigma));
+							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./((float)(sb+sh));
 						}
 					}
 
 					
-					if (p_tmp2->p[y*naxis1+x]<mode1-pseries->bgsigma) {					
+					if (p_tmp2->p[y*naxis1+x]<mode1-sb) {					
 						p_tmp2->p[y*naxis1+x]=0;	
-					} else if (p_tmp2->p[y*naxis1+x]>mode1+(pseries->bgsigma)*5) {
+					} else if (p_tmp2->p[y*naxis1+x]>mode1+sh) {
 						p_tmp2->p[y*naxis1+x]=255;
 					} else {
-						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->bgsigma))*(float)255./(float)(6.0/1.0*pseries->bgsigma);
+						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./(float)(sb+sh);
 					}
 				}
 				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];	
@@ -3663,9 +3691,9 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		}
 	 }
 	//enregistre l'image de hough
-	tt_imasaver(pout,"D:/hough.fit",16);
-	//seuil de détection fixé arbitrairement à 25 points alignés
-	if (seuil_max>21) {
+	//tt_imasaver(pout,"D:/hough.fit",16);
+	//seuil de détection fixé arbitrairement à 20 points alignés
+	if (seuil_max>=20) {
 		threshold_ligne=seuil_max/2;
 		somme_value=0;
 		somme_theta=0;
@@ -3729,7 +3757,89 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 //###############################################################################################################################
 //###############################################################################################################################
 
+void tt_fitgauss1d(int n,double *y,double *p,double *ecart) {
 
+/***************************************************/
+/* Ajuste une gaussienne :                         */
+/* ENTREES :                                       */
+/*  y()=tableau des points                         */
+/*  n=nombre de points dans le tableau y           */
+/* SORTIES                                         */
+/*  p()=tableau des variables:                     */
+/*     p[0]=intensite maximum de la gaussienne     */
+/*     p[1]=indice du maximum de la gaussienne     */
+/*     p[2]=fwhm                                   */
+/*     p[3]=fond                                   */
+/*  ecart=ecart-type                               */
+/***************************************************/
+
+   int l,nbmax,m;
+   double l1,l2=0.,a0;
+   double e,er1,x,y0;
+   double m0,m1;
+   double e1[4];
+   int i,j;
+
+   p[0]=y[0];
+   p[1]=0.;
+   p[3]=1e9;
+   for (i=1;i<n;i++) {
+      if (y[i]>p[0]) {p[0]=y[i]; p[1]=1.*i; }
+      if (y[i]<p[3]) {p[3]=y[i]; }
+   }
+   p[0]-=p[3];
+   if (p[0]<=0.) {p[0]=10.;}
+   p[2]=2.;
+   *ecart=1.0;
+   l=4;               /* nombre d'inconnues */
+   e=(float).005;     /* erreur maxi. */
+   er1=(float).5;     /* dumping factor */
+   nbmax=250;         /* nombre maximum d'iterations */
+   for (i=0;i<l;i++) {
+      e1[i]=er1;
+   }
+   m=0;
+   l1=(double)1e10;
+fitgauss1d_b1:
+   for (i=0;i<l;i++) {
+      a0=p[i];
+      fitgauss1d_b2:
+      l2=0;
+      for (j=0;j<n;j++) {
+         x=(double)j;
+         if(fabs(p[2])>1e-3) {
+            y0=p[0]*exp(-(x-p[1])*(x-p[1])/p[2])+p[3];
+         } else {
+            y0=1e10;
+         }
+         l2=l2+(y[j]-y0)*(y[j]-y0);
+      }
+      m0=l2;
+      p[i]=a0*(1-e1[i]);
+      l2=0;
+      for (j=0;j<n;j++) {
+         x=(float)j;
+         if(fabs(p[2])>1e-3) {
+            y0=p[0]*exp(-(x-p[1])*(x-p[1])/p[2])+p[3];
+         } else {
+            y0=1e10;
+         }
+         l2=l2+(y[j]-y0)*(y[j]-y0);
+      }
+      *ecart=sqrt((double)l2/(n-l));
+      m1=l2;
+      if (m1>m0) e1[i]=-e1[i]/2;
+      if (m1<m0) e1[i]=(float)1.2*e1[i];
+      if (m1>m0) p[i]=a0;
+      if (m1>(m0*(1.+1e-15)) ) goto fitgauss1d_b2;
+   }
+   m++;
+   if (m==nbmax) {p[2]=sqrt(p[2])/.601; return; }
+   if (l2==0) {p[2]=sqrt(p[2])/.601; return; }
+   if (fabs((l1-l2)/l2)<e) {p[2]=sqrt(p[2])/.601; return; }
+   l1=l2;
+   goto fitgauss1d_b1;
+}
 
 
 /***************************************************/
