@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.14 2008-05-21 18:11:42 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.15 2008-05-31 15:47:42 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -250,8 +250,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Parametri non salvati\n"
    set caption(acqapn,msg,pas_detecte)       "non trovato.\n"
    set caption(acqapn,msg,pose)              "Questo non e` un tempo di esposizione."
-   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la fenêtre principale (visu1).\nVous devez déconnecter cette caméra."
-   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
+   set caption(acqapn,msg,camera_visu1)      "Una camera e` gia` connessa alla finestra principale (visu1).\nDovete sconnettere questa camera."
+   set caption(acqapn,msg,no_camItem)        "Dovete sconnettere una delle 3 camere utilizzate."
    set caption(acqapn,port_serie)            "Porta seriale"
    set caption(acqapn,poses,delai)           "Intervallo"
    set caption(acqapn,poses,nom)             "Nome"
