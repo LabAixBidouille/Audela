@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.41 2008-05-01 16:06:19 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.42 2008-05-31 15:56:22 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -610,6 +610,14 @@ namespace eval ::pretraitement {
                   }
                   set coordWindow [ list [ ::confVisu::getBox $audace(visuNo) ] ]
                   window2 $in $out $nb [ lindex $coordWindow 0 ] $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -701,6 +709,14 @@ namespace eval ::pretraitement {
                   if { [ expr $y ] > "$maxi" } { set y "$maxi" }
                   if { [ expr $y ] < "-$maxi" } { set y "-$maxi" }
                   scale2 $in $out $nb $x $y $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -745,6 +761,14 @@ namespace eval ::pretraitement {
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: offset2 in out const number ?first_index?\n\n"
                   offset2 $in $out $const $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -789,6 +813,14 @@ namespace eval ::pretraitement {
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: mult2 in out const number ?first_index?\n\n"
                   mult2 $in $out $const $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -962,6 +994,14 @@ namespace eval ::pretraitement {
                   if { [ expr $t ] < "0" } { set t "0" }
                   if { [ expr $t ] > "1" } { set t "1" }
                   subsky2 $in $out $nb $k $t $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -1006,6 +1046,14 @@ namespace eval ::pretraitement {
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: noffset2 in out const number ?first_index? ?tt_options?\n\n"
                   noffset2 $in $out $const $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -1050,6 +1098,14 @@ namespace eval ::pretraitement {
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: ngain2 in out const number ?first_index? ?tt_options?\n\n"
                   ngain2 $in $out $const $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -1108,6 +1164,14 @@ namespace eval ::pretraitement {
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: add2 in operand out const number ?first_index? ?tt_options?\n\n"
                   add2 $in $operand $out $const $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -1166,6 +1230,14 @@ namespace eval ::pretraitement {
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: sub2 in operand out const number ?first_index? ?tt_options?\n\n"
                   sub2 $in $operand $out $const $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -1224,6 +1296,14 @@ namespace eval ::pretraitement {
                   set const $pretraitement(const)
                   ::console::affiche_resultat "Usage: div2 in operand out const number ?first_index? ?tt_options?\n\n"
                   div2 $in $operand $out $const $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -1271,6 +1351,14 @@ namespace eval ::pretraitement {
                   set offset $pretraitement(offset)
                   ::console::affiche_resultat "Usage: opt2 in dark offset out number ?first_index? ?tt_options?\n\n"
                   opt2 $in $dark $offset $out $nb $first
+                  #--- Renomme les fichiers image si 'first_index' est different de 1
+                  if { $first != "1" } {
+                     for { set index "1" } { $index <= $nb } { incr index } {
+                        set new_index [ expr $index + ( $first - 1 ) ]
+                        file rename -force [ file join $audace(rep_images) $out$index$conf(extension,defaut) ] [ file join $audace(rep_images) $out$new_index$conf(extension,defaut) ]
+                     }
+                  }
+                  #---
                   if { $pretraitement(disp_2) == 1 } {
                      loadima $out$end
                   }
@@ -2399,10 +2487,11 @@ namespace eval ::traiteImage {
       variable widget
       global audace caption color conf traiteImage
 
-      #--- Initialisation de la variable principale
+      #--- Initialisation de variables
       set traiteImage(rvbWindow_r+v+b_filename) ""
       set traiteImage(rvbWindow_rvb_filename)   ""
       set traiteImage(avancement)               ""
+      ::traiteImage::initSeuils
 
       #---
       toplevel $This
@@ -2465,6 +2554,20 @@ namespace eval ::traiteImage {
                button $This.usr.2.23.btn1 -text "$caption(pretraitement,parcourir)" -command { ::traiteImage::parcourir 2 }
                pack $This.usr.2.23.btn1 -side left -padx 10 -pady 5 -ipady 5
            # pack $This.usr.2.23 -side top -fill both
+
+            frame $This.usr.2.24 -borderwidth 0 -relief flat
+               label $This.usr.2.24.lab5 -text "$caption(pretraitement,selection_zone_blanche)"
+               pack $This.usr.2.24.lab5 -side top -padx 5 -pady 10
+               button $This.usr.2.24.btn1 -text "$caption(pretraitement,confirmer_zone_blanche)" \
+                  -command { ::traiteImage::confirmerBlanc }
+               pack $This.usr.2.24.btn1 -side top -ipady 5 -fill x
+               label $This.usr.2.24.lab6 -text "$caption(pretraitement,selection_zone_noire)"
+               pack $This.usr.2.24.lab6 -side top -padx 5 -pady 10
+               button $This.usr.2.24.btn2 -text "$caption(pretraitement,confirmer_zone_noire)" \
+                  -command { ::traiteImage::confirmerNoir }
+               pack $This.usr.2.24.btn2 -side top -ipady 5 -fill x
+           # pack $This.usr.2.24 -side top -fill both
+
         # pack $This.usr.2 -side bottom -fill both
 
          frame $This.usr.1 -borderwidth 1 -relief raised
@@ -2472,7 +2575,7 @@ namespace eval ::traiteImage {
             pack $This.usr.1.lab1 -side left -padx 10 -pady 5
             #--- Liste des pretraitements disponibles
             set list_traiteImage [ list $caption(audace,menu,r+v+b2rvb) $caption(audace,menu,rvb2r+v+b) \
-               $caption(audace,menu,cfa2rgb) ]
+               $caption(audace,menu,cfa2rvb) $caption(audace,menu,balance_rvb) ]
             #---
             menubutton $This.usr.1.but1 -textvariable traiteImage(captionOperation) -menu $This.usr.1.but1.menu \
                -relief raised
@@ -2534,8 +2637,10 @@ namespace eval ::traiteImage {
          set traiteImage(captionOperation) "$caption(audace,menu,r+v+b2rvb)"
       } elseif { $type_pretraitement_image == "rvb2r+v+b" } {
          set traiteImage(captionOperation) "$caption(audace,menu,rvb2r+v+b)"
-      } elseif { $type_pretraitement_image == "cfa2rgb" } {
-         set traiteImage(captionOperation) "$caption(audace,menu,cfa2rgb)"
+      } elseif { $type_pretraitement_image == "cfa2rvb" } {
+         set traiteImage(captionOperation) "$caption(audace,menu,cfa2rvb)"
+      } elseif { $type_pretraitement_image == "balance_rvb" } {
+         set traiteImage(captionOperation) "$caption(audace,menu,balance_rvb)"
       }
    }
 
@@ -2551,8 +2656,10 @@ namespace eval ::traiteImage {
          set traiteImage(operation) "r+v+b2rvb"
       } elseif { $type_pretraitement_image == "$caption(audace,menu,rvb2r+v+b)" } {
          set traiteImage(operation) "rvb2r+v+b"
-      } elseif { $type_pretraitement_image == "$caption(audace,menu,cfa2rgb)" } {
-         set traiteImage(operation) "cfa2rgb"
+      } elseif { $type_pretraitement_image == "$caption(audace,menu,cfa2rvb)" } {
+         set traiteImage(operation) "cfa2rvb"
+      } elseif { $type_pretraitement_image == "$caption(audace,menu,balance_rvb)" } {
+         set traiteImage(operation) "balance_rvb"
       }
    }
 
@@ -2656,10 +2763,42 @@ namespace eval ::traiteImage {
                set traiteImage(avancement) ""
             }
          }
-         "cfa2rgb" {
+         "cfa2rvb" {
             set catchError [ catch {
                buf$audace(bufNo) cfa2rgb 1
                ::audace::autovisu $audace(visuNo)
+               set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
+            } m ]
+            if { $catchError == "1" } {
+               tk_messageBox -title "$caption(pretraitement,attention)" -icon error -message "$m"
+               set traiteImage(avancement) ""
+            }
+         }
+         "balance_rvb" {
+            set catchError [ catch {
+               #--- Affectation des niveaux maxi et mini pour le Rouge, le Vert et le Bleu
+               set mycuts [ list $traiteImage(blanc_R) $traiteImage(noir_R) $traiteImage(blanc_V) $traiteImage(noir_V) $traiteImage(blanc_B) $traiteImage(noir_B) ]
+               if { $traiteImage(blanc_R) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,pas_selection_blanc)"
+                  set traiteImage(avancement) ""
+                  return
+               } elseif { $traiteImage(noir_R) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,pas_selection_noir)"
+                  set traiteImage(avancement) ""
+                  return
+               } elseif { $traiteImage(blanc_V) == "" } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                     -message "$caption(pretraitement,pas_couleur)"
+                  ::traiteImage::initSeuils
+                  set traiteImage(avancement) ""
+                  return
+               }
+               visu$audace(visuNo) cut $mycuts
+               #--- Affichage de l'image
+               visu$audace(visuNo) disp
+               ::traiteImage::initSeuils
                set traiteImage(avancement) "$caption(pretraitement,fin_traitement)"
             } m ]
             if { $catchError == "1" } {
@@ -2695,8 +2834,10 @@ namespace eval ::traiteImage {
          set traiteImage(page_web) "1014r+v+b2rvb"
       } elseif { $traiteImage(operation) == "rvb2r+v+b" } {
          set traiteImage(page_web) "1016rvb2r+v+b"
-      } elseif { $traiteImage(operation) == "cfa2rgb" } {
+      } elseif { $traiteImage(operation) == "cfa2rvb" } {
          set traiteImage(page_web) "1017cfa2rvb"
+      } elseif { $traiteImage(operation) == "balance_rvb" } {
+         set traiteImage(page_web) "1018balance_rvb.htm"
       }
 
       #---
@@ -2727,6 +2868,7 @@ namespace eval ::traiteImage {
             pack $This.usr.2.21 -in $This.usr.2 -side top -fill both
             pack forget $This.usr.2.22
             pack forget $This.usr.2.23
+            pack forget $This.usr.2.24
             pack $This.usr.1 -side top -fill both
          }
          "rvb2r+v+b" {
@@ -2737,9 +2879,10 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.21
             pack $This.usr.2.22 -in $This.usr.2 -side top -fill both
             pack $This.usr.2.23 -in $This.usr.2 -side top -fill both
+            pack forget $This.usr.2.24
             pack $This.usr.1 -side top -fill both
          }
-         "cfa2rgb" {
+         "cfa2rvb" {
             pack forget $This.usr.0
             pack $This.usr.3 -side bottom -fill both
             pack forget $This.usr.2
@@ -2747,6 +2890,18 @@ namespace eval ::traiteImage {
             pack forget $This.usr.2.21
             pack forget $This.usr.2.22
             pack forget $This.usr.2.23
+            pack forget $This.usr.2.24
+            pack $This.usr.1 -side top -fill both
+         }
+         "balance_rvb" {
+            pack forget $This.usr.0
+            pack $This.usr.3 -side bottom -fill both
+            pack $This.usr.2 -side bottom -fill both
+            pack forget $This.usr.2.20
+            pack forget $This.usr.2.21
+            pack forget $This.usr.2.22
+            pack forget $This.usr.2.23
+            pack $This.usr.2.24 -side top -fill both
             pack $This.usr.1 -side top -fill both
          }
       }
@@ -2798,6 +2953,113 @@ namespace eval ::traiteImage {
       } else {
          set traiteImage(image_A) "$caption(pretraitement,image_affichee:)"
       }
+   }
+
+   #
+   # ::traiteImage::confirmerBlanc
+   # Confirme la selection de la zone blanche de l'image
+   #
+   proc confirmerBlanc { } {
+      global audace traiteImage
+
+      #--- Retourne les coordonnees de la zone selectionnee avec la souris
+      set box [ ::confVisu::getBox 1 ]
+      if { $box == "" } {
+         set traiteImage(blanc_R) ""
+         set traiteImage(blanc_V) ""
+         set traiteImage(blanc_B) ""
+         return
+      }
+
+      #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
+      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
+         set X1 [ lindex $box 0 ]
+         set X2 [ lindex $box 2 ]
+      } else {
+         set X1 [ lindex $box 2 ]
+         set X2 [ lindex $box 0 ]
+         }
+      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
+         set Y1 [ lindex $box 1 ]
+         set Y2 [ lindex $box 3 ]
+      } else {
+         set Y1 [ lindex $box 3 ]
+         set Y2 [ lindex $box 1 ]
+      }
+      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
+      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
+
+      #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
+      set intensite_blanc [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
+      set traiteImage(blanc_R) [ lindex $intensite_blanc 1 ]
+      set traiteImage(blanc_V) [ lindex $intensite_blanc 2 ]
+      set traiteImage(blanc_B) [ lindex $intensite_blanc 3 ]
+
+      #--- Suppression de la zone selectionnee avec la souris si elle existe
+      if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
+         ::confVisu::deleteBox 1
+      }
+   }
+
+   #
+   # ::traiteImage::confirmerNoir
+   # Confirme la selection de la zone noire de l'image
+   #
+   proc confirmerNoir { } {
+      global audace traiteImage
+
+      #--- Retourne les coordonnees de la zone selectionnee avec la souris
+      set box [ ::confVisu::getBox 1 ]
+      if { $box == "" } {
+         set traiteImage(noir_R) ""
+         set traiteImage(noir_V) ""
+         set traiteImage(noir_B) ""
+         return
+      }
+
+      #--- Calcule les coordonnees du centre de la zone selectionnee avec la souris
+      if { [ lindex $box 0 ] < [ lindex $box 2 ] } {
+         set X1 [ lindex $box 0 ]
+         set X2 [ lindex $box 2 ]
+      } else {
+         set X1 [ lindex $box 2 ]
+         set X2 [ lindex $box 0 ]
+         }
+      if { [ lindex $box 1 ] < [ lindex $box 3 ] } {
+         set Y1 [ lindex $box 1 ]
+         set Y2 [ lindex $box 3 ]
+      } else {
+         set Y1 [ lindex $box 3 ]
+         set Y2 [ lindex $box 1 ]
+      }
+      set Xmoy [ expr int( $X1 + ( $X2 - $X1 ) / 2. ) ]
+      set Ymoy [ expr int( $Y1 + ( $Y2 - $Y1 ) / 2. ) ]
+
+      #--- Retourne les intensites R, V et B du centre de la zone selectionnee avec la souris
+      set intensite_noir [ buf$audace(bufNo) getpix [ list $Xmoy $Ymoy ] ]
+      set traiteImage(noir_R) [ lindex $intensite_noir 1 ]
+      set traiteImage(noir_V) [ lindex $intensite_noir 2 ]
+      set traiteImage(noir_B) [ lindex $intensite_noir 3 ]
+
+      #--- Suppression de la zone selectionnee avec la souris si elle existe
+      if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
+         ::confVisu::deleteBox 1
+      }
+   }
+
+   #
+   # ::traiteImage::initSeuils
+   # Initialise a vide les seuils maxi et mini de chaque couleur
+   #
+   proc initSeuils { } {
+      global traiteImage
+
+      set traiteImage(blanc_R) ""
+      set traiteImage(blanc_V) ""
+      set traiteImage(blanc_B) ""
+      set traiteImage(noir_R)  ""
+      set traiteImage(noir_V)  ""
+      set traiteImage(noir_B)  ""
    }
 
 }
@@ -3970,17 +4232,20 @@ namespace eval ::faireImageRef {
                   }
                }
                #--- Tests sur la valeur de normalisation
-               if { $faireImageRef(norm) == "" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                     -message "$caption(pretraitement,definir_cte)"
-                  set faireImageRef(avancement) ""
-                  return
-               }
-               if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
-                  tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
-                     -message "$caption(pretraitement,cte_invalide)"
-                  set faireImageRef(avancement) ""
-                  return
+               if { $faireImageRef(flat-field,no-offset) == "1" && $faireImageRef(flat-field,no-dark) == "1" } {
+               } else {
+                  if { $faireImageRef(norm) == "" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                        -message "$caption(pretraitement,definir_cte)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
+                  if { [ string is double -strict $faireImageRef(norm) ] == "0" } {
+                     tk_messageBox -title "$caption(pretraitement,attention)" -icon error \
+                        -message "$caption(pretraitement,cte_invalide)"
+                     set faireImageRef(avancement) ""
+                     return
+                  }
                }
                #---
                set offset $faireImageRef(offset)
