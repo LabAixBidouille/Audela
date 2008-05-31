@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.6 2007-09-28 23:17:08 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.7 2008-05-31 16:00:16 robertdelmas Exp $
 #
 
 #
@@ -154,6 +154,25 @@ proc saveima { { filename "?" } { visuNo 1 } } {
       buf$bufNo initialcut
    }
 
+   #--- Je memorise les seuils initiaux dans des mots cles specifiques a chaque plan couleur
+   if { [ lindex [ buf$audace(bufNo) getkwd NAXIS ] 1 ] == "3" } {
+      #--- J'identifie les seuils de visualisation
+      set listSeuils [ visu$audace(visuNo) cut ]
+      set tmp_shR [ lindex $listSeuils 0 ]
+      set tmp_sbR [ lindex $listSeuils 1 ]
+      set tmp_shG [ lindex $listSeuils 2 ]
+      set tmp_sbG [ lindex $listSeuils 3 ]
+      set tmp_shB [ lindex $listSeuils 4 ]
+      set tmp_sbB [ lindex $listSeuils 5 ]
+      #--- Je les memorise dans des mots cles specifique a chaque plan couleur
+      buf$bufNo setkwd [ list "MIPS-HIR" $tmp_shR float "Red Hight Cut" "ADU" ]
+      buf$bufNo setkwd [ list "MIPS-LOR" $tmp_sbR float "Red Low Cut" "ADU" ]
+      buf$bufNo setkwd [ list "MIPS-HIG" $tmp_shG float "Green Hight Cut" "ADU" ]
+      buf$bufNo setkwd [ list "MIPS-LOG" $tmp_sbG float "Green Low Cut" "ADU" ]
+      buf$bufNo setkwd [ list "MIPS-HIB" $tmp_shB float "Blue Hight Cut" "ADU" ]
+      buf$bufNo setkwd [ list "MIPS-LOB" $tmp_sbB float "Blue Low Cut" "ADU" ]
+   }
+
    #--- Fenetre parent
    set fenetre [::confVisu::getBase $visuNo]
 
@@ -232,7 +251,8 @@ proc savejpeg { { filename "?" } } {
 #
 # visu [cuts]
 # Visualisation du buffer : Eventuellement on peut changer les seuils en passant
-# une liste de deux elements entiers, le seuil haut et le seuil bas
+# une liste de deux elements entiers par plan image, le seuil haut et le seuil bas
+# liste de 2 elements pour une image naxis 2 et de 6 elements pour une image naxis 3
 #
 # Exemple :
 # visu
