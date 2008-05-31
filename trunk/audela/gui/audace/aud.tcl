@@ -2,7 +2,7 @@
 # Fichier : aud.tcl
 # Description : Fichier principal de l'application Aud'ACE
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: aud.tcl,v 1.87 2008-04-27 15:36:08 michelpujol Exp $
+# Mise a jour $Id: aud.tcl,v 1.88 2008-05-31 15:52:39 robertdelmas Exp $
 
 #--- Chargement du package BWidget
 package require BWidget
@@ -642,8 +642,10 @@ namespace eval ::audace {
          { ::traiteImage::run "r+v+b2rvb" "$audace(base).traiteImage" }
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,rvb2r+v+b)..." \
          { ::traiteImage::run "rvb2r+v+b" "$audace(base).traiteImage" }
-      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rgb)..." \
-         { ::traiteImage::run "cfa2rgb" "$audace(base).traiteImage" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,cfa2rvb)..." \
+         { ::traiteImage::run "cfa2rvb" "$audace(base).traiteImage" }
+      Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,balance_rvb)..." \
+         { ::traiteImage::run "balance_rvb" "$audace(base).traiteImage" }
       Menu_Separator $visuNo "$caption(audace,menu,pretraite)"
       Menu_Command   $visuNo "$caption(audace,menu,pretraite)" "$caption(audace,menu,window1)..."\
          { ::pretraitement::run "multi_recadrer" "$audace(base).pretraitement" }
