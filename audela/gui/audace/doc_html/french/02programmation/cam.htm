@@ -7,9 +7,9 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 08 juin 2007</p>
+<p class="date">Date de mise &agrave; jour : 30 mai 2008</p>
 <h1>Cam&eacute;ra </h1>
-<p>Ces commandes permettent de contr&ocirc;ler l'acquisition d'images avec des cam&eacute;ras reconnues par AudeLA : Audine, Hi-SIS, ST7, CookBook 245, Starlight, Kitty, WebCam (port USB Windows uniquement), AudiNet (liaison Ethernet), EthernAude (liaison Ethernet), etc. Les commandes qui permettent de contr&ocirc;ler une cam&eacute;ra s'&eacute;crivent "<code>cam</code>" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;&eacute;es par la commande "<code>::cam::create ...</code>". Ainsi il est possible de piloter plusieurs cam&eacute;ras, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Lors d'une acquisition, l'image est stock&eacute;e dans un buffer (&agrave; renseigner avec la fonction <a href="#buf">cam1 buf</a>). En plus, si on pr&eacute;cise &agrave; quel t&eacute;lescope (automatique) est reli&eacute;e la cam&eacute;ra (&agrave; renseigner avec <a href="#tel">cam1 tel</a>), elle r&eacute;cup&egrave;re automatiquement ses coordonn&eacute;es, et les inscrit dans le header FITS. </p>
+<p>Ces commandes permettent de contr&ocirc;ler l'acquisition d'images avec des cam&eacute;ras reconnues par AudeLA : Audine, Hi-SIS, ST7, CookBook 245, Starlight, Kitty, WebCam (port USB Windows uniquement), AudiNet (liaison Ethernet), EthernAude (liaison Ethernet), etc. Les commandes qui permettent de contr&ocirc;ler une cam&eacute;ra s'&eacute;crivent "<code>cam</code>" suivi d'un num&eacute;ro. Ces commandes n'existent pas au d&eacute;marrage de AudeLA, mais sont cr&eacute;&eacute;es par la commande "<code>::cam::create ...</code>". Ainsi il est possible de piloter plusieurs cam&eacute;ras, mais il est laiss&eacute; &agrave; l'utilisateur le soin de ne pas ex&eacute;cuter des commandes simultan&eacute;ment. Lors d'une acquisition, l'image est stock&eacute;e dans un buffer (&agrave; renseigner avec la fonction <a href="#buf">cam1 buf</a>). En plus, si on pr&eacute;cise &agrave; quel t&eacute;lescope (automatique) est reli&eacute;e la cam&eacute;ra (&agrave; renseigner avec <a href="#tel">cam1 tel</a>), elle r&eacute;cup&egrave;re automatiquement ses coordonn&eacute;es, et les inscrit dans le header FITS si l'option <a href="#fromtel">cam1 radecfromtel</a> vaut 1. </p>
 <p>Il est important de savoir que les auteurs ne disposent pas personnellement de ces cam&eacute;ras, et donc qu'il peut y avoir des probl&egrave;mes avec certaines cam&eacute;ras. </p>
 <p>Les commandes sont divis&eacute;es en deux cat&eacute;gories : </p>
 <ul>
@@ -79,11 +79,11 @@
 <p>Cette commande permet de savoir, ou de modifier, le buffer dans lequel sera stock&eacute;e l'image d'acquisition. L'argument optionnel, tout comme la valeur renvoy&eacute;e est un nombre qui est le num&eacute;ro du buffer. Ainsi, si "cam1 buf" renvoie 2, la commande qui permet d'avoir acc&egrave;s &agrave; l'image acquise est "buf2 ...".</p>
 <h3> <a name="tel" id="tel"></a>cam1 tel ?<em>telNo</em>?</h3>
 <p>R&eacute;alise le m&ecirc;me genre de lien que pour la fonction "buf", mais avec le t&eacute;lescope. S'il est informatis&eacute;, alors &agrave; chaque prise de vue le t&eacute;lescope est interrog&eacute; sur ses coordonn&eacute;es, et elles sont inscrites dans le header FITS.</p>
-<h3><a name="tel" id="tel"></a>cam1 radecfromtel ?<em>1|0</em>? (defaut=1)</h3>
+<h3><a name="fromtel" id="fromtel"></a>cam1 radecfromtel ?<em>1|0</em>? (defaut=0)</h3>
 <p>Active (1) ou d&eacute;sactive (0) l'inscription des coordonn&eacute;es du
   t&eacute;lescope dans le header FITS de la prise de vue. </p>
 <p>La d&eacute;sactivation permet de gagner du temps ( 1,2 seconde pour un LX200
-  ) dans les cas d'une une s&eacute;rie d'acquisitions rapides o&ugrave; les coordonn&eacute;es
+  ) dans le cas d'une s&eacute;rie d'acquisitions rapides o&ugrave; les coordonn&eacute;es
   dans le header ne sont pas utiles, par exemple l'autoguidage ou la focalisation.</p>
 <h3></h3>
 <h3> <a name="shutter" id="shutter"></a>cam1 shutter ?<em>shut_mode</em>?</h3>
