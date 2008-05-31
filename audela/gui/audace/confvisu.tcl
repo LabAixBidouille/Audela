@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.79 2008-05-24 10:33:22 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.80 2008-05-31 16:05:17 robertdelmas Exp $
 #
 
 namespace eval ::confVisu {
@@ -307,7 +307,12 @@ namespace eval ::confVisu {
                }
                initiaux {
                   buf$bufNo initialcut
-                  visu $visuNo [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                  if { [ lindex [ buf$bufNo getkwd NAXIS ] 1 ] == "3" } {
+                     set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HIR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOR ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOG ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-HIB ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LOB ] 1 ] ]
+                  } else {
+                     set mycuts [ list [ lindex [ buf$bufNo getkwd MIPS-HI ] 1 ] [ lindex [ buf$bufNo getkwd MIPS-LO ] 1 ] ]
+                  }
+                  visu $visuNo $mycuts
                }
             }
          } else {
@@ -328,8 +333,9 @@ namespace eval ::confVisu {
 
    #
    # visu [l2i cuts]
-   # Visualisation du buffer : Eventuellement on peut changer les seuils en passant une liste de
-   # deux elements entiers : le seuil haut et le seuil bas
+   # Visualisation du buffer : Eventuellement on peut changer les seuils en passant
+   # une liste de deux elements entiers par plan image, le seuil haut et le seuil bas
+   # liste de 2 elements pour une image naxis 2 et de 6 elements pour une image naxis 3
    #
    # Exemple :
    # visu
@@ -344,12 +350,12 @@ namespace eval ::confVisu {
             set cuts [ lrange [ buf$bufNo autocuts ] 0 1 ]
          } elseif { $cuts == "current" } {
             #--- on ne touche pas aux seuils
-            #set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
-            #visu$visuNo cut $cuts
+           # set cuts [ list [getHiCutDisplay $visuNo] [getLoCutDisplay $visuNo] ]
+           # visu$visuNo cut $cuts
          } else {
-            console::affiche_erreur "confVisu::visu inexptected value cuts=$cuts \n"
+            console::affiche_erreur "confVisu::visu inexptected value cuts = $cuts \n"
          }
-      } elseif { [llength $cuts] == 2 } {
+      } elseif { [llength $cuts] >= 2 } {
          visu$visuNo cut $cuts
       }
 
