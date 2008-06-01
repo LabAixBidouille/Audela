@@ -2,7 +2,7 @@
 # Fichier : tri_fwmh.tcl
 # Description : Script pour le tri d'images par le critere de fwhm
 # Auteurs : Francois Cochard et Jacques Michelet
-# Mise a jour $Id: tri_fwhm.tcl,v 1.6 2008-05-26 16:55:29 robertdelmas Exp $
+# Mise a jour $Id: tri_fwhm.tcl,v 1.7 2008-06-01 14:00:36 robertdelmas Exp $
 #
 
 namespace eval ::TriFWHM {
@@ -137,9 +137,9 @@ namespace eval ::TriFWHM {
         toplevel $audace(base).saisie_tri -borderwidth 2 -relief groove
         wm geometry $audace(base).saisie_tri +638+0
         wm title $audace(base).saisie_tri $cap_tri(titre_saisie)
-		wm transient $audace(base).saisie_tri $audace(base)
+        wm transient $audace(base).saisie_tri $audace(base)
 
-		frame $audace(base).saisie_tri.trame1
+        frame $audace(base).saisie_tri.trame1
 
         foreach champ {extension source nombre indice_source destination indice_destination} {
             set texte_saisie($champ) $cap_tri($champ)
@@ -386,7 +386,7 @@ namespace eval ::TriFWHM {
         wm geometry $audace(base).selectetoile +638+0
         wm resizable $audace(base).selectetoile 0 0
         wm title $audace(base).selectetoile $cap_tri(selection)
-		wm transient $audace(base).selectetoile $audace(base)
+        wm transient $audace(base).selectetoile $audace(base)
 
         set texte_bouton(selection) $cap_tri(selection_etoile)
         set texte_bouton(lancement) $cap_tri(lancement_calcul)
@@ -1166,7 +1166,7 @@ namespace eval ::TriFWHM {
         wm minsize $audace(base).graphe_fwhm 320 280
         wm resizable $audace(base).graphe_fwhm 0 0
         wm title $audace(base).graphe_fwhm $cap_tri(graphe_fwhm)
-		wm transient $audace(base).graphe_fwhm $audace(base)
+        wm transient $audace(base).graphe_fwhm $audace(base)
         canvas $audace(base).graphe_fwhm.fond -width 450 -height 350
         pack $audace(base).graphe_fwhm.fond -in $audace(base).graphe_fwhm -expand 1 -side top -anchor center -fill both
 
