@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.9 2008-06-01 13:26:30 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.10 2008-06-01 14:25:55 robertdelmas Exp $
 #
 
 #============================================================
@@ -765,7 +765,7 @@ proc ::tlscp::cmdSkyMap { visuNo } {
       set ra      [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
       set dec     [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
       set name    "[ lindex $result 2 ]"
-      set equinox "J2000.0"
+      set equinox "now"
       ::tlscp::setRaDec $visuNo [list $ra $dec] $name $equinox
    }
 }
