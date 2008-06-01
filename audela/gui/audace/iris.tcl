@@ -2,12 +2,10 @@
 # Fichier : iris.tcl
 # Description : Ce script permet d'exécuter des commandes Iris depuis un script tcl
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: iris.tcl,v 1.7 2007-06-14 21:21:38 robertdelmas Exp $
+# Mise a jour $Id: iris.tcl,v 1.8 2008-06-01 16:29:41 robertdelmas Exp $
 #
 
-#
 #--- Documentation : Voir la page iris.htm dans le dossier doc_html
-#
 
 proc iris_initlinux { } {
    global audace
@@ -30,7 +28,7 @@ proc iris { {commande} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 "
          if {[file exist [file join $audace(rep_images) select.lst]]=="1"} {
             file delete [file join $audace(rep_images) select.lst]
          }
-       }
+      }
       "pregister" {
          if {[file exist [file join $audace(rep_images) $arg2${arg4}.fit]]=="1"} {
             file delete [file join $audace(rep_images) $arg2${arg4}.fit]
@@ -164,7 +162,8 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
    suppr_serie "tmp_maitre2_"
    #--- Traitement des images rouges
    console::affiche_resultat $caption(iris,ima_r)
-   if {$maitre==$r} {file rename [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)] [file join $subdir r$conf(extension,defaut)]
+   if {$maitre==$r} {
+      file rename [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)] [file join $subdir r$conf(extension,defaut)]
    } else {
       suppr_serie "tmp_r_"
       iris2_select $r "tmp_r_" $nb_select
@@ -177,7 +176,8 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
    }
    #--- Traitement des images vertes
    console::affiche_resultat $caption(iris,ima_v)
-   if {$maitre==$v} {file rename [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)] [file join $subdir v$conf(extension,defaut)]
+   if {$maitre==$v} {
+      file rename [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)] [file join $subdir v$conf(extension,defaut)]
    } else {
       suppr_serie "tmp_v_"
       iris2_select $v "tmp_v_" $nb_select
@@ -190,7 +190,8 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
    }
    #--- Traitement des images bleues
    console::affiche_resultat $caption(iris,ima_b)
-   if {$maitre==$b} {file rename [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)] [file join $audace(rep_images) b$conf(extension,defaut)]
+   if {$maitre==$b} {
+      file rename [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)] [file join $audace(rep_images) b$conf(extension,defaut)]
    } else {
       suppr_serie "tmp_b_"
       iris2_select $b "tmp_b_" $nb_select
@@ -203,16 +204,17 @@ proc iris2_compute_trichro1 { {maitre} {r} {v} {b} {taille} {nb_select} {nb_tota
    }
    #--- Suppression, si ce n'est déjà fait, du dernier fichier maître temporaire
    if {[file exist [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)]]=="1"} {
-      file delete [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)]}
-      #--- Inscription dans un fichier texte des caractéristiques du traitement
-      set fileId [open [file join $subdir iris2_compute_trichro1.txt] w]
-      puts $fileId $caption(iris,nom_maitre)$maitre
-      puts $fileId $caption(iris,nom_rouge)$r
-      puts $fileId $caption(iris,nom_vert)$v
-      puts $fileId $caption(iris,nom_bleu)$b
-      puts $fileId $caption(iris,taille_pregistr)$taille
-      puts $fileId $caption(iris,nb_tot)$nb_total
-      puts $fileId $caption(iris,nb_select)$nb_select
-      close $fileId
+      file delete [file join $audace(rep_images) tmp_maitre$conf(extension,defaut)]
    }
+   #--- Inscription dans un fichier texte des caractéristiques du traitement
+   set fileId [open [file join $subdir iris2_compute_trichro1.txt] w]
+   puts $fileId $caption(iris,nom_maitre)$maitre
+   puts $fileId $caption(iris,nom_rouge)$r
+   puts $fileId $caption(iris,nom_vert)$v
+   puts $fileId $caption(iris,nom_bleu)$b
+   puts $fileId $caption(iris,taille_pregistr)$taille
+   puts $fileId $caption(iris,nb_tot)$nb_total
+   puts $fileId $caption(iris,nb_select)$nb_select
+   close $fileId
+}
 
