@@ -3,7 +3,7 @@
 # Description : namespace generique des cartes (~ classe abstraite)
 #    Transmet les appels aux procedures du namespace de la carte choisie avec confcat.tcl
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carte.tcl,v 1.4 2007-01-27 15:08:05 robertdelmas Exp $
+# Mise a jour $Id: carte.tcl,v 1.5 2008-06-01 13:19:08 robertdelmas Exp $
 #
 
 namespace eval ::carte {
@@ -15,7 +15,7 @@ namespace eval ::carte {
    #------------------------------------------------------------
    #  showMapFromBuffer
    #     affiche la carte sur les coordonnees contenues dans le buffer de l'image
-   #     mots clés FITS "RA" et "DEC"
+   #     mots cles FITS "RA" et "DEC"
    #  parametres :
    #     buffer : buffer de l'image
    #  return 0 (OK) , 1(error)
@@ -62,7 +62,7 @@ namespace eval ::carte {
    #     nom_objet  : nom de l'objet   (ex : "NGC7000")
    #     ad         : ascension droite (ex : "16h41m42s")
    #     dec        : declinaison      (ex : "+36d28m00s")
-   #     zoom_objet : champ 1 à 10
+   #     zoom_objet : champ 1 a 10
    #     avant_plan : 1=mettre la carte au premier plan 0=ne pas mettre au premier plan
    #  return 0 (OK) , 1(error)
    #------------------------------------------------------------
@@ -97,12 +97,13 @@ namespace eval ::carte {
 
    #------------------------------------------------------------
    #  getSelectedObject {}
-   #     recupere les coordonnées et le nom de l'objet selectionne dans la carte
+   #     recupere les coordonnees et le nom de l'objet selectionne dans la carte
    #
-   #  return [list $ra $dec $objName ]
-   #     $ra      : right ascension (ex : "16h41m42s")
-   #     $dec     : declinaison     (ex : "+36d28m00s")
-   #     $objName : object name     (ex : "M 13")
+   #  return [list $ra $dec $objName $mag ]
+   #     $ra        : right ascension  (ex : "16h41m42s")
+   #     $dec       : declinaison      (ex : "+36d28m00s")
+   #     $objName   : object name      (ex : "M 13")
+   #     $magnitude : object magnitude (ex : "5.78")
    #  ou "" si erreur
    #------------------------------------------------------------
    proc getSelectedObject { } {
