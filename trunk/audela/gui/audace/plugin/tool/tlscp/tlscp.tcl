@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.8 2008-05-24 10:53:20 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.9 2008-06-01 13:26:30 robertdelmas Exp $
 #
 
 #============================================================
@@ -140,11 +140,10 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    if { ! [ info exists conf(tlscp,cataloguePath,USNO)] }     { set conf(tlscp,cataloguePath,USNO)     ""  }
 
    #--- Initialisation des variables
-   set private($visuNo,This)      "[::confVisu::getBase $visuNo].tlscp"
-   set private($visuNo,choix_bin) "1x1 2x2 4x4"
-   set private($visuNo,menu)      "$caption(tlscp,coord)"
-   set private($visuNo,camItem)   ""
-
+   set private($visuNo,This)              "[::confVisu::getBase $visuNo].tlscp"
+   set private($visuNo,choix_bin)         "1x1 2x2 4x4"
+   set private($visuNo,menu)              "$caption(tlscp,coord)"
+   set private($visuNo,camItem)           ""
    set private($visuNo,updateAxis)        ""
    set private($visuNo,targetCoord)       ""
    set private($visuNo,hCanvas)           [::confVisu::getCanvas $visuNo]
@@ -159,7 +158,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,nomObjet)     "M104"
    set private($visuNo,raObjet)      "12h40m0s"
    set private($visuNo,decObjet)     "-11d37m22"
-   set private($visuNo,equinoxObjet) "J2000"
+   set private($visuNo,equinoxObjet) "J2000.0"
 
    #--- Frame principal
    frame $private($visuNo,This) -borderwidth 2 -relief groove
@@ -193,7 +192,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
          ::cataGoto::createFrameCatalogue $private($visuNo,This).fra2.catalogue [list $private($visuNo,raObjet) $private($visuNo,decObjet)] $visuNo "::tlscp"
          pack $private($visuNo,This).fra2.catalogue -in $private($visuNo,This).fra2 -anchor nw -side top -padx 4 -pady 1
 
-         #--- Label de l'objet choisi
+         #--- Entry de l'objet choisi
          entry $private($visuNo,This).fra2.lab1 -textvariable ::tlscp::private($visuNo,nomObjet) -relief groove
          pack $private($visuNo,This).fra2.lab1 -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 1
 
@@ -206,6 +205,12 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
             -textvariable ::tlscp::private($visuNo,decObjet) -relief groove -width 16
          pack $private($visuNo,This).fra2.dec -in $private($visuNo,This).fra2 -anchor center -padx 2 -pady 2
          DynamicHelp::add $private($visuNo,This).fra2.dec -text "$caption(tlscp,formataddec2)"
+
+         #--- LabelEntry pour l'equinoxe des coordonnees
+         LabelEntry $private($visuNo,This).fra2.equinox -label "$caption(tlscp,equinoxe)" \
+            -labeljustify left -labelwidth 10 -width 5 -justify center \
+            -textvariable ::tlscp::private($visuNo,equinoxObjet)
+         pack $private($visuNo,This).fra2.equinox -anchor w -side top -fill x -expand 0
 
          frame $private($visuNo,This).fra2.fra1a
 
@@ -399,24 +404,8 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
 
 #         pack $private($visuNo,This).camera.fra1 -in $private($visuNo,This).camera -side top -fill x
 
-         #--- Menu pour binning
+         #--- Label pour binning
          frame $private($visuNo,This).camera.binning -borderwidth 0 -relief groove
-            ###menubutton $private($visuNo,This).camera.optionmenu1.but_bin -text $caption(tlscp,binning) \
-            ###   -menu $private($visuNo,This).camera.optionmenu1.but_bin.menu -relief raised
-            ###pack $private($visuNo,This).camera.optionmenu1.but_bin -in $private($visuNo,This).camera.optionmenu1 \
-            ###   -side left -fill none
-            ###set m [ menu $private($visuNo,This).camera.optionmenu1.but_bin.menu -tearoff 0 ]
-            ###foreach valbin $private($visuNo,choix_bin) {
-            ###   $m add radiobutton -label "$valbin" \
-            ###      -indicatoron "1" \
-            ###      -value "$valbin" \
-            ###      -variable ::conf(tlscp,binning) \
-            ###      -command { }
-            ###}
-            ###entry $private($visuNo,This).camera.optionmenu1.lab_bin -width 3 -font {arial 10 bold} -relief groove \
-            ###  -textvariable ::conf(tlscp,binning) -justify center -state disabled
-            ###pack $private($visuNo,This).camera.optionmenu1.lab_bin -in $private($visuNo,This).camera.optionmenu1 \
-            ###   -side left -fill both -expand true
 
             label $private($visuNo,This).camera.binning.label -text "$caption(tlscp,binning)"
             pack $private($visuNo,This).camera.binning.label -anchor center -side left -fill x -expand 1
@@ -678,7 +667,7 @@ proc ::tlscp::stopTool { visuNo } {
 
 #------------------------------------------------------------
 # cmdMatch
-#    aligne la monture avec les coordonnes de l'objet selectionné
+#    aligne la monture avec les coordonnes de l'objet selectionne
 #------------------------------------------------------------
 proc ::tlscp::cmdMatch { visuNo } {
    variable private
@@ -692,7 +681,7 @@ proc ::tlscp::cmdMatch { visuNo } {
 
 #------------------------------------------------------------
 # cmdGoto
-#    pointe la monture vers les coordonnes de l'objet selectionné
+#    pointe la monture vers les coordonnes de l'objet selectionne
 #------------------------------------------------------------
 proc ::tlscp::cmdGoto { visuNo } {
    variable private
@@ -715,8 +704,7 @@ proc ::tlscp::cmdGoto { visuNo } {
    }
 
    #--- Prise en compte des corrections de precession, de nutation et d'aberrations (annuelle et diurne)
-   if { $private($visuNo,menu) != "$caption(tlscp,coord)" && $private($visuNo,menu) != "$caption(tlscp,planete)" \
-      && $private($visuNo,menu) != "$caption(tlscp,asteroide)" && $private($visuNo,menu) != "$caption(tlscp,zenith)" } {
+   if { $private($visuNo,equinoxObjet) != "now" } {
       #--- Calcul des corrections et affichage dans la Console
       set ad_objet_cata  [ lindex $private($visuNo,list_radec) 0 ]
       set dec_objet_cata [ lindex $private($visuNo,list_radec) 1 ]
@@ -742,8 +730,7 @@ proc ::tlscp::cmdGoto { visuNo } {
       $private($visuNo,equinoxObjet)
 
    #--- Affichage des coordonnees pointees par le telescope dans la Console
-   if { $private($visuNo,menu) != "$caption(tlscp,coord)" && $private($visuNo,menu) != "$caption(tlscp,planete)" \
-      && $private($visuNo,menu) != "$caption(tlscp,asteroide)" && $private($visuNo,menu) != "$caption(tlscp,zenith)" } {
+   if { $private($visuNo,equinoxObjet) != "now" } {
       ::telescope::afficheCoord
       ::console::disp "$caption(tlscp,coord_pointees) \n"
       ::console::disp "$caption(tlscp,ad) $audace(telescope,getra) \n"
@@ -770,14 +757,16 @@ proc ::tlscp::cmdSkyMap { visuNo } {
    variable private
 
    set result [::carte::getSelectedObject]
+::console::disp "result = $result \n"
    if { [llength $result] == 4 } {
       ###set now now
       ###set now [::audace::date_sys2ut now]
       ###set result [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
-      set ra [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
-      set dec [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
-      set name "[ lindex $result 2 ]"
-      ::tlscp::setRaDec $visuNo [list $ra $dec] $name
+      set ra      [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
+      set dec     [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
+      set name    "[ lindex $result 2 ]"
+      set equinox "J2000.0"
+      ::tlscp::setRaDec $visuNo [list $ra $dec] $name $equinox
    }
 }
 
@@ -792,12 +781,13 @@ proc ::tlscp::cmdSkyMap { visuNo } {
 #  retour
 #    rien
 #------------------------------------------------------------
-proc ::tlscp::setRaDec { visuNo listRaDec nomObjet } {
+proc ::tlscp::setRaDec { visuNo listRaDec nomObjet equinox } {
    variable private
 
-   set private($visuNo,raObjet)   [lindex $listRaDec 0]
-   set private($visuNo,decObjet)  [lindex $listRaDec 1]
-   set private($visuNo,nomObjet) $nomObjet
+   set private($visuNo,raObjet)      [lindex $listRaDec 0]
+   set private($visuNo,decObjet)     [lindex $listRaDec 1]
+   set private($visuNo,nomObjet)     $nomObjet
+   set private($visuNo,equinoxObjet) $equinox
 }
 
 #------------------------------------------------------------
@@ -909,6 +899,12 @@ proc ::tlscp::startAcquisition { visuNo  } {
    #--- j'attend la fin de l'acquisition
    vwait ::tlscp::private($visuNo,acquisitionState)
 
+   #--- Rajoute des mots clefs dans l'en-tete FITS
+   set bufNo [ ::confVisu::getBufNo $visuNo ]
+   foreach keyword [ ::keyword::getKeywords $visuNo ] {
+      buf$bufNo setkwd $keyword
+   }
+
    #--- j'affiche le bouton GO CCD
    $private($visuNo,This).camera.goccd configure -text $::caption(tlscp,goccd) -command "::tlscp::startAcquisition $visuNo" -state normal
    bind all <Key-Escape>
@@ -917,7 +913,7 @@ proc ::tlscp::startAcquisition { visuNo  } {
 
 #------------------------------------------------------------
 # startCenter
-#    lance le centrage de l'étoile
+#    lance le centrage de l'etoile
 #
 # return :
 #    - les coordonnes (rad,dec) de l'etoile trouvee
@@ -981,14 +977,20 @@ proc ::tlscp::startCenter { visuNo  } {
    }
    vwait ::tlscp::private($visuNo,acquisitionState)
 
+   #--- Rajoute des mots clefs dans l'en-tete FITS
+   foreach keyword [ ::keyword::getKeywords $visuNo ] {
+      buf$bufNo setkwd $keyword
+   }
+
    #--- j'affiche les etoiles
    if { $private($visuNo,acquisitionResult) != "" } {
       #--- j'ajoute les mots cles dans l'image
-      buf$bufNo setkwd [list "RA"  $ra  double "reference coordinate for naxis1" "degree" ]
-      buf$bufNo setkwd [list "DEC" $dec double "reference coordinate for naxis2" "degree" ]
-      buf$bufNo setkwd [list "OBJECT" $private($visuNo,nomObjet) string "object name" "" ]
+      buf$bufNo setkwd [list "RA"  $ra  double "Reference coordinate for naxis1" "degree" ]
+      buf$bufNo setkwd [list "DEC" $dec double "Reference coordinate for naxis2" "degree" ]
+      buf$bufNo setkwd [list "OBJECT"  $private($visuNo,nomObjet) string "Object name" "" ]
+      buf$bufNo setkwd [list "EQUINOX" $private($visuNo,equinoxObjet) string "Coordinates equinox" "" ]
 
-      #--- je cree un cercle rouge autour de l'étoile centree
+      #--- je cree un cercle rouge autour de l'etoile centree
       set coord [::confVisu::picture2Canvas $visuNo $private($visuNo,acquisitionResult) ]
       set x [lindex $coord 0]
       set y [lindex $coord 1]
@@ -1007,7 +1009,7 @@ proc ::tlscp::startCenter { visuNo  } {
 
 #------------------------------------------------------------
 # startSearchStar
-#    cherche une l'étoile la plus brillante dans la zone
+#    cherche une l'etoile la plus brillante dans la zone
 # parametres
 #    visuNo : numero de visu
 # return :
@@ -1021,7 +1023,7 @@ proc ::tlscp::startSearchStar { visuNo } {
       return
    }
 
-   #--- j'efface les traces précédentes
+   #--- j'efface les traces precedentes
    clearSearchStar  $visuNo
 
    #--- je parametre la camera
@@ -1052,7 +1054,7 @@ proc ::tlscp::startSearchStar { visuNo } {
          ###$hCanvas create text [expr $x+12] [expr $y+6] -text "$xintensity $yintensity" -tag tlscpstar  -state normal -fill green
       }
 
-      #--- je cree un cercle rouge autour de l'étoile la plus brillante
+      #--- je cree un cercle rouge autour de l'etoile la plus brillante
       set brigthestStarCoord [lrange [lindex $private($visuNo,acquisitionResult) 0 ] 1 2]
       set private($visuNo,targetCoord) $brigthestStarCoord
       moveTarget $visuNo $brigthestStarCoord
@@ -1074,7 +1076,7 @@ proc ::tlscp::startSearchStar { visuNo } {
 
 #------------------------------------------------------------
 # clearSearchStar
-#    efface les cercles autour des étoiles
+#    efface les cercles autour des etoiles
 # parametres
 #    visuNo : numero de visu
 # return :
