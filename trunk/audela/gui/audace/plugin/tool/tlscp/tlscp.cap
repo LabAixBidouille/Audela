@@ -1,6 +1,6 @@
 #
 # Fichier : tlscp.cap
-# Mise a jour $Id: tlscp.cap,v 1.5 2008-05-24 10:26:24 robertdelmas Exp $
+# Mise a jour $Id: tlscp.cap,v 1.6 2008-06-01 13:20:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -17,6 +17,7 @@ set caption(tlscp,coord)                 "Coord."
 set caption(tlscp,planete)               "Planets"
 set caption(tlscp,asteroide)             "Asteroids"
 set caption(tlscp,zenith)                "Zenith"
+set caption(tlscp,equinoxe)              "Equinox"
 set caption(tlscp,match)                 "MATCH"
 set caption(tlscp,goto)                  "GOTO"
 set caption(tlscp,stop_goto)             "Stop"
@@ -76,14 +77,14 @@ set caption(tlscp,ret_est)               "East"
 set caption(tlscp,ret_ouest)             "West"
 set caption(tlscp,centrer)               "Center"
 set caption(tlscp,rechercher)            "Search"
-set caption(tlscp,nettoyer)              "# Nettoyer"
-set caption(tlscp,stop_rechercher)       "# Stop Rechercher"
-set caption(tlscp,brightest)             "# Etoile brillante"
-set caption(tlscp,astrometry)            "# Astrométrie"
-set caption(tlscp,stat)                  "# Statistique"
+set caption(tlscp,nettoyer)              "Clear"
+set caption(tlscp,stop_rechercher)       "Stop Search"
+set caption(tlscp,brightest)             "Bright Star"
+set caption(tlscp,astrometry)            "Astrometry"
+set caption(tlscp,stat)                  "Statistics"
 set caption(tlscp,bogumil)               "Bogumil"
 set caption(tlscp,kappa)                 "Kappa"
-set caption(tlscp,maxMagnitude)          "# Magnitude maxi"
+set caption(tlscp,maxMagnitude)          "Max. Magnitude"
 set caption(tlscp,delta)                 "Delta"
 set caption(tlscp,epsilon)               "Epsilon"
 set caption(tlscp,foclen)                "Focal Length (m)"
@@ -92,9 +93,9 @@ set caption(tlscp,mount)                 "Mount"
 set caption(tlscp,center)                "Centering"
 set caption(tlscp,catalogue)             "Catalog"
 set caption(tlscp,matching)              "Matching"
-set caption(tlscp,detection)             "# Détection image"
+set caption(tlscp,detection)             "Star Detection Method"
 set caption(tlscp,cataloguePath)         "Folder"
-set caption(tlscp,selectPath)            "# Choix du répertoire du catalogue"
+set caption(tlscp,selectPath)            "Select Catalogue Folder"
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -105,6 +106,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,planete)            "Planètes"
    set caption(tlscp,asteroide)          "Astéroïdes"
    set caption(tlscp,zenith)             "Zénith"
+   set caption(tlscp,equinoxe)           "Equinoxe"
    set caption(tlscp,match)              "MATCH"
    set caption(tlscp,goto)               "GOTO"
    set caption(tlscp,stop_goto)          "Stop"
@@ -180,9 +182,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,center)             "Centrage"
    set caption(tlscp,catalogue)          "Catalogue"
    set caption(tlscp,matching)           "Appariement"
-   set caption(tlscp,detection)          "Détection image"
+   set caption(tlscp,detection)          "Méthode de détection des étoiles"
    set caption(tlscp,cataloguePath)      "Répertoire"
-   set caption(tlscp,selectPath)         "Choix du répertoire du catalogue"
+   set caption(tlscp,selectPath)         "Choisir le répertoire du catalogue"
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -193,6 +195,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,planete)            "Pianeti"
    set caption(tlscp,asteroide)          "Asteroidi"
    set caption(tlscp,zenith)             "Zenit"
+   set caption(tlscp,equinoxe)           "Epoca"
    set caption(tlscp,match)              "MATCH"
    set caption(tlscp,goto)               "GOTO"
    set caption(tlscp,stop_goto)          "Stop"
@@ -253,7 +256,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,centrer)            "Centrare"
    set caption(tlscp,rechercher)         "Ricercare"
    set caption(tlscp,nettoyer)           "# Nettoyer"
-   set caption(tlscp,stop_rechercher)    "# Stop Rechercher"
+   set caption(tlscp,stop_rechercher)    "Stop Ricercare"
    set caption(tlscp,brightest)          "# Etoile brillante"
    set caption(tlscp,astrometry)         "# Astrométrie"
    set caption(tlscp,stat)               "# Statistique"
@@ -268,9 +271,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,center)             "Centraggio"
    set caption(tlscp,catalogue)          "Catalogo"
    set caption(tlscp,matching)           "Confronto"
-   set caption(tlscp,detection)          "# Détection image"
+   set caption(tlscp,detection)          "# Méthode de détection des étoiles"
    set caption(tlscp,cataloguePath)      "Directory"
-   set caption(tlscp,selectPath)         "# Choix du répertoire du catalogue"
+   set caption(tlscp,selectPath)         "# Choisir le répertoire du catalogue"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -281,6 +284,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,planete)            "Planetas"
    set caption(tlscp,asteroide)          "Asteroides"
    set caption(tlscp,zenith)             "Zenit"
+   set caption(tlscp,equinoxe)           "Equinoccio"
    set caption(tlscp,match)              "MATCH"
    set caption(tlscp,goto)               "GOTO"
    set caption(tlscp,stop_goto)          "Stop"
@@ -341,7 +345,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,centrer)            "Centro"
    set caption(tlscp,rechercher)         "Buscar"
    set caption(tlscp,nettoyer)           "# Nettoyer"
-   set caption(tlscp,stop_rechercher)    "# Stop Rechercher"
+   set caption(tlscp,stop_rechercher)    "Stop Buscar"
    set caption(tlscp,brightest)          "# Etoile brillante"
    set caption(tlscp,astrometry)         "# Astrométrie"
    set caption(tlscp,stat)               "# Statistique"
@@ -356,9 +360,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,center)             "Centrado"
    set caption(tlscp,catalogue)          "Catálogo"
    set caption(tlscp,matching)           "Comparación"
-   set caption(tlscp,detection)          "# Détection image"
+   set caption(tlscp,detection)          "# Méthode de détection des étoiles"
    set caption(tlscp,cataloguePath)      "Directorio"
-   set caption(tlscp,selectPath)         "# Choix du répertoire du catalogue"
+   set caption(tlscp,selectPath)         "# Choisir le répertoire du catalogue"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -369,6 +373,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,planete)            "Planeten"
    set caption(tlscp,asteroide)          "Asteroiden"
    set caption(tlscp,zenith)             "Zenit"
+   set caption(tlscp,equinoxe)           "Equinox"
    set caption(tlscp,match)              "MATCH"
    set caption(tlscp,goto)               "GOTO"
    set caption(tlscp,stop_goto)          "Stop"
@@ -429,7 +434,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,centrer)            "Zentrum"
    set caption(tlscp,rechercher)         "Suchen"
    set caption(tlscp,nettoyer)           "# Nettoyer"
-   set caption(tlscp,stop_rechercher)    "# Stop Rechercher"
+   set caption(tlscp,stop_rechercher)    "Stop Suchen"
    set caption(tlscp,brightest)          "# Etoile brillante"
    set caption(tlscp,astrometry)         "# Astrométrie"
    set caption(tlscp,stat)               "# Statistique"
@@ -444,9 +449,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,center)             "Zentrierung"
    set caption(tlscp,catalogue)          "Katalog"
    set caption(tlscp,matching)           "Zusammenstellung"
-   set caption(tlscp,detection)          "# Détection image"
+   set caption(tlscp,detection)          "# Méthode de détection des étoiles"
    set caption(tlscp,cataloguePath)      "Verzeichnis"
-   set caption(tlscp,selectPath)         "# Choix du répertoire du catalogue"
+   set caption(tlscp,selectPath)         "# Choisir le répertoire du catalogue"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -457,6 +462,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,planete)            "Planetas"
    set caption(tlscp,asteroide)          "Asteróides"
    set caption(tlscp,zenith)             "Zénite"
+   set caption(tlscp,equinoxe)           "Equinócio"
    set caption(tlscp,match)              "MATCH"
    set caption(tlscp,goto)               "GOTO"
    set caption(tlscp,stop_goto)          "Stop"
@@ -517,7 +523,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,centrer)            "Centrar"
    set caption(tlscp,rechercher)         "Procurar"
    set caption(tlscp,nettoyer)           "# Nettoyer"
-   set caption(tlscp,stop_rechercher)    "# Stop Rechercher"
+   set caption(tlscp,stop_rechercher)    "Stop Procurar"
    set caption(tlscp,brightest)          "# Etoile brillante"
    set caption(tlscp,astrometry)         "# Astrométrie"
    set caption(tlscp,stat)               "# Statistique"
@@ -532,9 +538,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,center)             "Centragem"
    set caption(tlscp,catalogue)          "Catálogo"
    set caption(tlscp,matching)           "Comparação"
-   set caption(tlscp,detection)          "# Détection image"
+   set caption(tlscp,detection)          "# Méthode de détection des étoiles"
    set caption(tlscp,cataloguePath)      "Directório"
-   set caption(tlscp,selectPath)         "# Choix du répertoire du catalogue"
+   set caption(tlscp,selectPath)         "# Choisir le répertoire du catalogue"
 
 # *************** Version danoise ***************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -545,6 +551,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,planete)            "Planets"
    set caption(tlscp,asteroide)          "Asteroids"
    set caption(tlscp,zenith)             "Zenith"
+   set caption(tlscp,equinoxe)           "Equinox"
    set caption(tlscp,match)              "MATCH"
    set caption(tlscp,goto)               "GOTO"
    set caption(tlscp,stop_goto)          "Stop"
@@ -604,14 +611,14 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,ret_ouest)          "West"
    set caption(tlscp,centrer)            "Center"
    set caption(tlscp,rechercher)         "Search"
-   set caption(tlscp,nettoyer)           "# Nettoyer"
-   set caption(tlscp,stop_rechercher)    "# Stop Rechercher"
-   set caption(tlscp,brightest)          "# Etoile brillante"
-   set caption(tlscp,astrometry)         "# Astrométrie"
-   set caption(tlscp,stat)               "# Statistique"
+   set caption(tlscp,nettoyer)           "Clear"
+   set caption(tlscp,stop_rechercher)    "Stop Search"
+   set caption(tlscp,brightest)          "Bright Star"
+   set caption(tlscp,astrometry)         "Astrometry"
+   set caption(tlscp,stat)               "Statistics"
    set caption(tlscp,bogumil)            "Bogumil"
    set caption(tlscp,kappa)              "Kappa"
-   set caption(tlscp,maxMagnitude)       "# Magnitude maxi"
+   set caption(tlscp,maxMagnitude)       "Max. Magnitude"
    set caption(tlscp,delta)              "Delta"
    set caption(tlscp,epsilon)            "Epsilon"
    set caption(tlscp,foclen)             "Focal Length (m)"
@@ -620,9 +627,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(tlscp,center)             "Centering"
    set caption(tlscp,catalogue)          "Catalog
    set caption(tlscp,matching)           "Matching"
-   set caption(tlscp,detection)          "# Détection image"
+   set caption(tlscp,detection)          "Star Detection Method"
    set caption(tlscp,cataloguePath)      "Folder"
-   set caption(tlscp,selectPath)         "# Choix du répertoire du catalogue"
+   set caption(tlscp,selectPath)         "Select Catalogue Folder"
 
 }
 
