@@ -2,7 +2,7 @@
 # Fichier : remotectrl.tcl
 # Description : Outil de controle a distance par RPC
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: remotectrl.tcl,v 1.20 2007-12-22 12:02:19 robertdelmas Exp $
+# Mise a jour $Id: remotectrl.tcl,v 1.21 2008-06-01 13:28:29 robertdelmas Exp $
 #
 
 #============================================================
@@ -158,6 +158,7 @@ namespace eval ::remotectrl {
       set panneau(remotectrl,binning)                      "2x2"
       set panneau(remotectrl,menu)                         "$caption(remotectrl,coord)"
       set panneau(remotectrl,nomObjet)                     ""
+      set panneau(remotectrl,equinox)                      ""
 
       #--- Coordonnees J2000.0 de M104
       set panneau(remotectrl,getobj)    "12h40m0 -11d37m22"
@@ -290,11 +291,12 @@ namespace eval ::remotectrl {
       ::remotectrl::cmdAfficheCoord
    }
 
-   proc setRaDec { 1 listRaDec nomObjet } {
+   proc setRaDec { 1 listRaDec nomObjet equinox } {
       global panneau
 
-      set panneau(remotectrl,getobj)   $listRaDec
-      set panneau(remotectrl,nomObjet) $nomObjet
+      set panneau(remotectrl,getobj)       $listRaDec
+      set panneau(remotectrl,nomObjet)     $nomObjet
+      set panneau(remotectrl,equinoxObjet) $equinox
    }
 
    proc cmdSpeed { { value " " } } {
