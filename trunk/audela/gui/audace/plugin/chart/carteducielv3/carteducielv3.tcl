@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.19 2008-04-27 15:46:37 michelpujol Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.20 2008-06-01 14:01:24 robertdelmas Exp $
 #
 
 namespace eval carteducielv3 {
@@ -609,7 +609,6 @@ namespace eval carteducielv3 {
             set magnitude [string map {"m:" ""} $magnitude ]
          }
      }
-      
 
       #--- Mise en forme de objName
       if { $objType=="" || $objType=="port:" } {
@@ -645,31 +644,30 @@ namespace eval carteducielv3 {
          set index [string first "BSC" $detail]
          if { $index >= 0 } {
             #--- le nom BSC peut avoir les formes suivantes
-         
             set bscList [string trim [string range $detail [expr $index + 3] [expr [string first "mV:" $detail $index] -1] ] ]
             set bscList [split $bscList]
             switch [llength $bscList] {
-               2 { 
+               2 {
                   #--- BSC 15 Dra      => bsc = "15 Dra"
-                  set bsc "[lrange $bscList 0 1 ]" 
+                  set bsc "[lrange $bscList 0 1 ]"
                }
-               3 { 
+               3 {
                   #--- BSC nu 2   Boo  => bsc = "nu 2 Boo"
                   #--- BSC 22 Zet Dra  => bsc = "Zet Dra"
                   if { [string is alpha [lindex $bscList 0]] == 1 } {
-                     set bsc "[lrange $bscList 0 2 ]" 
+                     set bsc "[lrange $bscList 0 2 ]"
                   } else {
-                     set bsc "[lrange $bscList 1 2 ]" 
+                     set bsc "[lrange $bscList 1 2 ]"
                   }
-               }               
-               4 { 
-                  #--- BSC 53 nu 2 Boo => bsc = "nu 2 Boo"
-                  set bsc "[lrange $bscList 1 3 ]" 
                }
-               default  { 
+               4 {
+                  #--- BSC 53 nu 2 Boo => bsc = "nu 2 Boo"
+                  set bsc "[lrange $bscList 1 3 ]"
+               }
+               default {
                   #--- BSC HR6025      => bsc = ""
                   #--- BSC HD6025      => bsc = ""
-                  set bsc "" 
+                  set bsc ""
                }
             }
          }
@@ -695,7 +693,7 @@ namespace eval carteducielv3 {
          }
          set index [string first "TYC" $detail]
          if { $index >= 0 } {
-            #--- j'extrait la chaine apres TYC 
+            #--- j'extrait la chaine apres TYC
             set tyc [string trim [lindex [split [string range $detail $index end ]] 1]]
             set tyc "TYC$tyc"
          }

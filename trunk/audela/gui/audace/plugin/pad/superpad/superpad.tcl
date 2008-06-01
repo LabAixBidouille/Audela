@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.23 2008-04-27 15:48:22 michelpujol Exp $
+# Mise a jour $Id: superpad.tcl,v 1.24 2008-06-01 14:01:53 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -1014,7 +1014,6 @@ namespace eval FrameFocusManager {
       if { $::conf(superpad,focuserLabel) != "" } {
         #--- toggles speed
         bind $This.we.lab <ButtonPress-1> { ::FrameFocusManager::cmdFocusSpeed }
-  
         #--- focus move
         bind $zone(moins) <ButtonPress-1> {
            ::focus::move $::conf(superpad,focuserLabel) "-"
@@ -1024,7 +1023,6 @@ namespace eval FrameFocusManager {
            ::focus::move $::conf(superpad,focuserLabel) "stop"
            [::FrameFocusManager::getFrame].we.buttonMoins configure -bg $colorpad(backkey)
         }
-  
         bind $zone(plus) <ButtonPress-1> {
            ::focus::move $::conf(superpad,focuserLabel) "+"
            [::FrameFocusManager::getFrame].we.buttonPlus configure -bg $colorpad(backpad)
