@@ -2,7 +2,7 @@
 # Fichier : acqfen.tcl
 # Description : Outil d'acquisition d'images fenetrees
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: acqfen.tcl,v 1.16 2008-05-25 10:28:32 robertdelmas Exp $
+# Mise a jour $Id: acqfen.tcl,v 1.17 2008-06-02 15:59:23 robertdelmas Exp $
 #
 
 # =========================================================
@@ -170,9 +170,9 @@ namespace eval ::acqfen {
          set panneau(acqfen,bouton_mode) "$caption(acqfen,continu)"
       }
 
+      #--- Variables diverses
       set panneau(acqfen,index)           1
       set panneau(acqfen,nb_images)       1
-
       set panneau(acqfen,enregistrer)     0
 
       #--- Reglages acquisitions serie et continu par defaut
@@ -209,10 +209,10 @@ namespace eval ::acqfen {
          source $fichier
       }
       if { ! [ info exists parametres(acqfen,pose_centrage) ] } { set parametres(acqfen,pose_centrage) ".2" }  ; #--- Temps de pose : 0.2s
-      if { ! [ info exists parametres(acqfen,bin_centrage) ] }  { set parametres(acqfen,bin_centrage)  "4" }   ; #--- Binning : 4x4
+      if { ! [ info exists parametres(acqfen,bin_centrage) ] }  { set parametres(acqfen,bin_centrage)  "4" }   ; #--- Binning       : 4x4
       if { ! [ info exists parametres(acqfen,pose) ] }          { set parametres(acqfen,pose)          ".05" } ; #--- Temps de pose : 0.05s
-      if { ! [ info exists parametres(acqfen,bin) ] }           { set parametres(acqfen,bin)           "1" }   ; #--- Binning : 1x1
-      if { ! [ info exists parametres(acqfen,mode) ] }          { set parametres(acqfen,mode)          "une" } ; #--- Mode : Une image
+      if { ! [ info exists parametres(acqfen,bin) ] }           { set parametres(acqfen,bin)           "1" }   ; #--- Binning       : 1x1
+      if { ! [ info exists parametres(acqfen,mode) ] }          { set parametres(acqfen,mode)          "une" } ; #--- Mode          : Une image
    }
 #***** Fin de la procedure Chargement_Var **********************
 
@@ -514,673 +514,673 @@ namespace eval ::acqfen {
          set ext [ buf$audace(bufNo) extension ]
          #---
          switch -exact -- $panneau(acqfen,go_stop) {
-         "go" {
-            #--- Modification du bouton, pour eviter un second lancement
-            set panneau(acqfen,go_stop) stop
-            $This.acq.but configure -text $caption(acqfen,stop)
-            $This.acqred.but configure -text $caption(acqfen,stop)
+            "go" {
+               #--- Modification du bouton, pour eviter un second lancement
+               set panneau(acqfen,go_stop) stop
+               $This.acq.but configure -text $caption(acqfen,stop)
+               $This.acqred.but configure -text $caption(acqfen,stop)
 
-            #--- on desactive toute demande d'arret
-            set panneau(acqfen,demande_arret) 0
+               #--- on desactive toute demande d'arret
+               set panneau(acqfen,demande_arret) 0
 
-            #--- Suppression de la zone selectionnee avec la souris
-            if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
-               ::confVisu::deleteBox
-            }
-
-            #--- Mise a jour en-tete audace
-            wm title $audace(base) "$caption(acqfen,audace)"
-
-            switch -exact -- $panneau(acqfen,mode) {
-            "une" {
-               set panneau(acqfen,enregistrer) 0
-               acqfen::acq_acqfen
-               #--- Affichage avec visu auto
-               audace::autovisu $audace(visuNo)
-            }
-            "serie" {
-               #--- On verifie l'integrite des parametres d'entree :
-
-               #--- On verifie qu'il y a bien un nom de fichier
-               if {$panneau(acqfen,nom_image) == ""} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,donnomfich)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que le nom de fichier n'a pas d'espace
-               if {[llength $panneau(acqfen,nom_image)] > 1} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,nomblanc)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
-               if {[acqfen::TestChaine $panneau(acqfen,nom_image)] == 0} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,mauvcar)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que l'index existe
-               if {$panneau(acqfen,index) == ""} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,saisind)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que l'index est bien un nombre entier
-               if {[acqfen::TestEntier $panneau(acqfen,index)] == 0} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,indinv)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- Envoie un warning si l'index n'est pas a 1
-               if { $panneau(acqfen,index) != "1" } {
-                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                     -message $caption(acqfen,indpasun)]
-                  if { $confirmation == "no" } {
-                     #--- On restitue l'affichage du bouton "GO" :
-                     set panneau(acqfen,go_stop) go
-                     $This.acq.but configure -text $caption(acqfen,GO)
-                     $This.acqred.but configure -text $caption(acqfen,GO)
-                     return
-                  }
-               }
-               #--- On verifie que le nombre d'images a faire existe
-               if {$panneau(acqfen,nb_images) == ""} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,saisnbim)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que le nombre d'images a faire est bien un nombre entier
-               if {[acqfen::TestEntier $panneau(acqfen,nb_images)] == 0} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,nbiminv)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- Verifie que le nom des fichiers n'existe pas deja...
-               set nom $panneau(acqfen,nom_image)
-               #--- Pour eviter un nom de fichier qui commence par un blanc
-               set nom [lindex $nom 0]
-               append nom $panneau(acqfen,index) $ext
-               if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                  #--- Dans ce cas, le fichier existe deja...
-                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                  -message $caption(acqfen,fichdeja)]
-                  if { $confirmation == "no" } {
-                     #--- On restitue l'affichage du bouton "GO" :
-                     set panneau(acqfen,go_stop) go
-                     $This.acq.but configure -text $caption(acqfen,GO)
-                     $This.acqred.but configure -text $caption(acqfen,GO)
-                     return
-                  }
+               #--- Suppression de la zone selectionnee avec la souris
+               if { [ lindex [ list [ ::confVisu::getBox 1 ] ] 0 ] != "" } {
+                  ::confVisu::deleteBox
                }
 
-               switch -exact -- $panneau(acqfen,fenreglfen2)$panneau(acqfen,fenreglfen3) {
-                  "11" {
-                     for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-                        if {$panneau(acqfen,demande_arret)==1} {break}
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage avec visu auto
-                        audace::autovisu $audace(visuNo)
-                        #--- Sauvegarde de l'image
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 $panneau(acqfen,index) $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
-                           }
-                        }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom $panneau(acqfen,index)]
-                        incr panneau(acqfen,index)
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                  }
-                  "21" {
-                     set nbint 1
-                     for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-                        if {$panneau(acqfen,demande_arret)==1} {break}
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage eventuel
-                        if {$nbint==$panneau(acqfen,fenreglfen22)} {
-                           audace::autovisu $audace(visuNo)
-                           set nbint 1
-                        } else {
-                           incr nbint
-                        }
-                        #--- Sauvegarde de l'image
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 $panneau(acqfen,index) $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
-                           }
-                        }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom $panneau(acqfen,index)]
-                        incr panneau(acqfen,index)
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                  }
-                  "31" {
-                     for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-                        if {$panneau(acqfen,demande_arret)==1} {break}
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Sauvegarde de l'image
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 $panneau(acqfen,index) $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
-                           }
-                        }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom $panneau(acqfen,index)]
-                        incr panneau(acqfen,index)
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
+               #--- Mise a jour en-tete audace
+               wm title $audace(base) "$caption(acqfen,audace)"
+
+               switch -exact -- $panneau(acqfen,mode) {
+                  "une" {
+                     set panneau(acqfen,enregistrer) 0
+                     acqfen::acq_acqfen
                      #--- Affichage avec visu auto
                      audace::autovisu $audace(visuNo)
                   }
-                  "12" {
-                     set liste_buffers ""
-                     for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-                        if {$panneau(acqfen,demande_arret)==1} {break}
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage avec visu auto
-                        audace::autovisu $audace(visuNo)
-                        #--- Sauvegarde temporaire de l'image
-                        set buftmp [buf::create]
-                        buf$buftmp extension $conf(extension,defaut)
-                        buf$audace(bufNo) copyto $buftmp
-                        lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
-                        incr panneau(acqfen,index)
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                     #--- Sauvegarde des images sur le disque
-                     foreach ima $liste_buffers {
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        buf[lindex $ima 0] copyto $audace(bufNo)
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 [lindex $ima 1] $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
-                           }
-                        }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom [lindex $ima 1]]
-                     }
-                     #--- On libere les buffers temporaires
-                     foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
-                  }
-                  "22" {
-                     set liste_buffers ""
-                     set nbint 1
-                     for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-                        if {$panneau(acqfen,demande_arret)==1} {break}
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage eventuel
-                        if {$nbint==$panneau(acqfen,fenreglfen22)} {
-                           audace::autovisu $audace(visuNo)
-                           set nbint 1
-                        } else {
-                           incr nbint
-                        }
-                        #--- Sauvegarde temporaire de l'image
-                        set buftmp [buf::create]
-                        buf$buftmp extension $conf(extension,defaut)
-                        buf$audace(bufNo) copyto $buftmp
-                        lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
-                        incr panneau(acqfen,index)
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                     #--- Sauvegarde des images sur le disque
-                     foreach ima $liste_buffers {
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        buf[lindex $ima 0] copyto $audace(bufNo)
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 [lindex $ima 1] $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
-                           }
-                        }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom [lindex $ima 1]]
-                     }
-                     #--- On libere les buffers temporaires
-                     foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
-                  }
-                  "32" {
-                     set liste_buffers ""
-                     for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
-                        if {$panneau(acqfen,demande_arret)==1} {break}
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Sauvegarde temporaire de l'image
-                        set buftmp [buf::create]
-                        buf$buftmp extension $conf(extension,defaut)
-                        buf$audace(bufNo) copyto $buftmp
-                        lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
-                        incr panneau(acqfen,index)
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                     #--- Sauvegarde des images sur le disque
-                     foreach ima $liste_buffers {
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        buf[lindex $ima 0] copyto $audace(bufNo)
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 [lindex $ima 1] $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
-                           }
-                        }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom [lindex $ima 1]]
-                     }
-                     #--- Affichage avec visu auto
-                     audace::autovisu $audace(visuNo)
-                  }
-                  #--- On libere les buffers temporaires
-                  foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
-               }
-            }
-            "continu" {
-               #--- On verifie l'integrite des parametres d'entree :
+                  "serie" {
+                     #--- On verifie l'integrite des parametres d'entree :
 
-               #--- On verifie qu'il y a bien un nom de fichier
-               if {$panneau(acqfen,nom_image) == ""} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,donnomfich)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que le nom de fichier n'a pas d'espace
-               if {[llength $panneau(acqfen,nom_image)] > 1} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,nomblanc)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
-               if {[acqfen::TestChaine $panneau(acqfen,nom_image)] == 0} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,mauvcar)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que l'index existe
-               if {$panneau(acqfen,index) == ""} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,saisind)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- On verifie que l'index est bien un nombre entier
-               if {[acqfen::TestEntier $panneau(acqfen,index)] == 0} {
-                  tk_messageBox -title $caption(acqfen,pb) -type ok \
-                     -message $caption(acqfen,indinv)
-                  #--- On restitue l'affichage du bouton "GO" :
-                  set panneau(acqfen,go_stop) go
-                  $This.acq.but configure -text $caption(acqfen,GO)
-                  $This.acqred.but configure -text $caption(acqfen,GO)
-                  return
-               }
-               #--- Envoie un warning si l'index n'est pas a 1
-               if { $panneau(acqfen,index) != "1" } {
-                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                     -message $caption(acqfen,indpasun)]
-                  if { $confirmation == "no" } {
-                     #--- On restitue l'affichage du bouton "GO" :
-                     set panneau(acqfen,go_stop) go
-                     $This.acq.but configure -text $caption(acqfen,GO)
-                     $This.acqred.but configure -text $caption(acqfen,GO)
-                     return
-                  }
-               }
-               #--- Verifie que le nom des fichiers n'existe pas deja...
-               set nom $panneau(acqfen,nom_image)
-               #--- Pour eviter un nom de fichier qui commence par un blanc
-               set nom [lindex $nom 0]
-               append nom $panneau(acqfen,index) $ext
-               if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                  #--- Dans ce cas, le fichier existe deja...
-                  set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                     -message $caption(acqfen,fichdeja)]
-                  if { $confirmation == "no" } {
-                     #--- On restitue l'affichage du bouton "GO" :
-                     set panneau(acqfen,go_stop) go
-                     $This.acq.but configure -text $caption(acqfen,GO)
-                     $This.acqred.but configure -text $caption(acqfen,GO)
-                     return
-                  }
-               }
+                     #--- On verifie qu'il y a bien un nom de fichier
+                     if {$panneau(acqfen,nom_image) == ""} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,donnomfich)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que le nom de fichier n'a pas d'espace
+                     if {[llength $panneau(acqfen,nom_image)] > 1} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,nomblanc)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
+                     if {[acqfen::TestChaine $panneau(acqfen,nom_image)] == 0} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,mauvcar)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que l'index existe
+                     if {$panneau(acqfen,index) == ""} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,saisind)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que l'index est bien un nombre entier
+                     if {[acqfen::TestEntier $panneau(acqfen,index)] == 0} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,indinv)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- Envoie un warning si l'index n'est pas a 1
+                     if { $panneau(acqfen,index) != "1" } {
+                        set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                           -message $caption(acqfen,indpasun)]
+                        if { $confirmation == "no" } {
+                           #--- On restitue l'affichage du bouton "GO" :
+                           set panneau(acqfen,go_stop) go
+                           $This.acq.but configure -text $caption(acqfen,GO)
+                           $This.acqred.but configure -text $caption(acqfen,GO)
+                           return
+                        }
+                     }
+                     #--- On verifie que le nombre d'images a faire existe
+                     if {$panneau(acqfen,nb_images) == ""} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,saisnbim)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que le nombre d'images a faire est bien un nombre entier
+                     if {[acqfen::TestEntier $panneau(acqfen,nb_images)] == 0} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,nbiminv)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- Verifie que le nom des fichiers n'existe pas deja...
+                     set nom $panneau(acqfen,nom_image)
+                     #--- Pour eviter un nom de fichier qui commence par un blanc
+                     set nom [lindex $nom 0]
+                     append nom $panneau(acqfen,index) $ext
+                     if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
+                        #--- Dans ce cas, le fichier existe deja...
+                        set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                        -message $caption(acqfen,fichdeja)]
+                        if { $confirmation == "no" } {
+                           #--- On restitue l'affichage du bouton "GO" :
+                           set panneau(acqfen,go_stop) go
+                           $This.acq.but configure -text $caption(acqfen,GO)
+                           $This.acqred.but configure -text $caption(acqfen,GO)
+                           return
+                        }
+                     }
 
-               switch -exact -- $panneau(acqfen,fenreglfen2)$panneau(acqfen,fenreglfen3) {
-                  "11" {
-                     while {$panneau(acqfen,demande_arret)==0} {
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage avec visu auto
-                        audace::autovisu $audace(visuNo)
-                        #--- Si demande, sauvegarde de l'image
-                        if {$panneau(acqfen,enregistrer)==1} {
-                           set nom $panneau(acqfen,nom_image)
-                           #--- Pour eviter un nom de fichier qui commence par un blanc :
-                           set nom [lindex $nom 0]
-                           #--- Verifie que le nom du fichier n'existe pas deja...
-                           set nom1 "$nom"
-                           append nom1 $panneau(acqfen,index) $ext
-                           if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                              #--- Dans ce cas, le fichier existe deja...
-                              set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                                 -message $caption(acqfen,fichdeja)]
-                              if { $confirmation == "no" } {
-                                 break
+                     switch -exact -- $panneau(acqfen,fenreglfen2)$panneau(acqfen,fenreglfen3) {
+                        "11" {
+                           for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                              if {$panneau(acqfen,demande_arret)==1} {break}
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage avec visu auto
+                              audace::autovisu $audace(visuNo)
+                              #--- Sauvegarde de l'image
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 $panneau(acqfen,index) $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
                               }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom $panneau(acqfen,index)]
+                              incr panneau(acqfen,index)
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                            }
-                           #--- Sauvegarde de l'image
-                           saveima [append nom $panneau(acqfen,index)]
-                           incr panneau(acqfen,index)
                         }
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                  }
-                  "21" {
-                     set nbint 1
-                     while {$panneau(acqfen,demande_arret)==0} {
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage eventuel
-                        if {$nbint==$panneau(acqfen,fenreglfen22)} {
-                           audace::autovisu $audace(visuNo)
+                        "21" {
                            set nbint 1
-                        } else {
-                           incr nbint
-                        }
-                        #--- Si demande, sauvegarde de l'image
-                        if {$panneau(acqfen,enregistrer)==1} {
-                           set nom $panneau(acqfen,nom_image)
-                           #--- Pour eviter un nom de fichier qui commence par un blanc :
-                           set nom [lindex $nom 0]
-                           #--- Verifie que le nom du fichier n'existe pas deja...
-                           set nom1 "$nom"
-                           append nom1 $panneau(acqfen,index) $ext
-                           if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                              #--- Dans ce cas, le fichier existe deja...
-                              set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                                 -message $caption(acqfen,fichdeja)]
-                              if { $confirmation == "no" } {
-                                 break
+                           for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                              if {$panneau(acqfen,demande_arret)==1} {break}
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage eventuel
+                              if {$nbint==$panneau(acqfen,fenreglfen22)} {
+                                 audace::autovisu $audace(visuNo)
+                                 set nbint 1
+                              } else {
+                                 incr nbint
                               }
-                           }
-                           #--- Sauvegarde de l'image
-                           saveima [append nom $panneau(acqfen,index)]
-                           incr panneau(acqfen,index)
-                        }
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                  }
-                  "31" {
-                     while {$panneau(acqfen,demande_arret)==0} {
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Si demande, sauvegarde de l'image
-                        if {$panneau(acqfen,enregistrer)==1} {
-                           set nom $panneau(acqfen,nom_image)
-                           #--- Pour eviter un nom de fichier qui commence par un blanc :
-                           set nom [lindex $nom 0]
-                           #--- Verifie que le nom du fichier n'existe pas deja...
-                           set nom1 "$nom"
-                           append nom1 $panneau(acqfen,index) $ext
-                           if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                              #--- Dans ce cas, le fichier existe deja...
-                              set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                                 -message $caption(acqfen,fichdeja)]
-                              if { $confirmation == "no" } {
-                                 break
+                              #--- Sauvegarde de l'image
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 $panneau(acqfen,index) $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
                               }
-                           }
-                           #--- Sauvegarde de l'image
-                           saveima [append nom $panneau(acqfen,index)]
-                           incr panneau(acqfen,index)
-                        }
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                     #--- Affichage avec visu auto
-                     audace::autovisu $audace(visuNo)
-                  }
-                  "12" {
-                     set liste_buffers ""
-                     while {$panneau(acqfen,demande_arret)==0} {
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage avec visu auto
-                        audace::autovisu $audace(visuNo)
-                        #--- Si demande, sauvegarde temporaire de l'image
-                        if {$panneau(acqfen,enregistrer)==1} {
-                           set buftmp [buf::create]
-                           buf$buftmp extension $conf(extension,defaut)
-                           buf$audace(bufNo) copyto $buftmp
-                           lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
-                           incr panneau(acqfen,index)
-                        }
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                     #--- Sauvegarde des images sur le disque
-                     foreach ima $liste_buffers {
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        buf[lindex $ima 0] copyto $audace(bufNo)
-                        #--- Verifie que le nom du fichier n'existe pas deja
-                        set nom1 "$nom"
-                        append nom1 [lindex $ima 1] $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
+                              #--- Sauvegarde de l'image
+                              saveima [append nom $panneau(acqfen,index)]
+                              incr panneau(acqfen,index)
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                            }
                         }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom [lindex $ima 1]]
-                     }
-                  }
-                  "22" {
-                     set nbint 1
-                     while {$panneau(acqfen,demande_arret)==0} {
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Affichage eventuel
-                        if {$nbint==$panneau(acqfen,fenreglfen22)} {
+                        "31" {
+                           for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                              if {$panneau(acqfen,demande_arret)==1} {break}
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Sauvegarde de l'image
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 $panneau(acqfen,index) $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
+                              }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom $panneau(acqfen,index)]
+                              incr panneau(acqfen,index)
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                           #--- Affichage avec visu auto
                            audace::autovisu $audace(visuNo)
-                           set nbint 1
-                        } else {
-                           incr nbint
                         }
-                        #--- Si demande, sauvegarde temporaire de l'image
-                        if {$panneau(acqfen,enregistrer)==1} {
-                           set buftmp [buf::create]
-                           buf$buftmp extension $conf(extension,defaut)
-                           buf$audace(bufNo) copyto $buftmp
-                           lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
-                           incr panneau(acqfen,index)
-                        }
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
-                     }
-                     #--- Sauvegarde des images sur le disque
-                     foreach ima $liste_buffers {
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        buf[lindex $ima 0] copyto $audace(bufNo)
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 [lindex $ima 1] $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
+                        "12" {
+                           set liste_buffers ""
+                           for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                              if {$panneau(acqfen,demande_arret)==1} {break}
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage avec visu auto
+                              audace::autovisu $audace(visuNo)
+                              #--- Sauvegarde temporaire de l'image
+                              set buftmp [buf::create]
+                              buf$buftmp extension $conf(extension,defaut)
+                              buf$audace(bufNo) copyto $buftmp
+                              lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
+                              incr panneau(acqfen,index)
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                            }
+                           #--- Sauvegarde des images sur le disque
+                           foreach ima $liste_buffers {
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              buf[lindex $ima 0] copyto $audace(bufNo)
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 [lindex $ima 1] $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
+                              }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom [lindex $ima 1]]
+                           }
+                           #--- On libere les buffers temporaires
+                           foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
                         }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom [lindex $ima 1]]
+                        "22" {
+                           set liste_buffers ""
+                           set nbint 1
+                           for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                              if {$panneau(acqfen,demande_arret)==1} {break}
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage eventuel
+                              if {$nbint==$panneau(acqfen,fenreglfen22)} {
+                                 audace::autovisu $audace(visuNo)
+                                 set nbint 1
+                              } else {
+                                 incr nbint
+                              }
+                              #--- Sauvegarde temporaire de l'image
+                              set buftmp [buf::create]
+                              buf$buftmp extension $conf(extension,defaut)
+                              buf$audace(bufNo) copyto $buftmp
+                              lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
+                              incr panneau(acqfen,index)
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                           #--- Sauvegarde des images sur le disque
+                           foreach ima $liste_buffers {
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              buf[lindex $ima 0] copyto $audace(bufNo)
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 [lindex $ima 1] $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
+                              }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom [lindex $ima 1]]
+                           }
+                           #--- On libere les buffers temporaires
+                           foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
+                        }
+                        "32" {
+                           set liste_buffers ""
+                           for {set i 1} {$i <= $panneau(acqfen,nb_images)} {incr i} {
+                              if {$panneau(acqfen,demande_arret)==1} {break}
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Sauvegarde temporaire de l'image
+                              set buftmp [buf::create]
+                              buf$buftmp extension $conf(extension,defaut)
+                              buf$audace(bufNo) copyto $buftmp
+                              lappend liste_buffers [list $buftmp $panneau(acqfen,index)]
+                              incr panneau(acqfen,index)
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                           #--- Sauvegarde des images sur le disque
+                           foreach ima $liste_buffers {
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              buf[lindex $ima 0] copyto $audace(bufNo)
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 [lindex $ima 1] $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
+                              }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom [lindex $ima 1]]
+                           }
+                           #--- Affichage avec visu auto
+                           audace::autovisu $audace(visuNo)
+                        }
+                        #--- On libere les buffers temporaires
+                        foreach ima $liste_buffers {buf::delete [lindex $ima 0]}
                      }
                   }
-                  "32" {
-                     while {$panneau(acqfen,demande_arret)==0} {
-                        #--- Acquisition
-                        acqfen::acq_acqfen
-                        #--- Si demande, sauvegarde temporaire de l'image
-                        if {$panneau(acqfen,enregistrer)==1} {
-                           set buftmp [buf::create]
-                           buf$buftmp extension $conf(extension,defaut)
-                           buf$audace(bufNo) copyto $buftmp
-                           lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
-                           incr panneau(acqfen,index)
-                        }
-                        #--- Corrections eventuelles de suivi
-                        if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                  "continu" {
+                     #--- On verifie l'integrite des parametres d'entree :
+
+                     #--- On verifie qu'il y a bien un nom de fichier
+                     if {$panneau(acqfen,nom_image) == ""} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,donnomfich)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
                      }
-                     #--- Sauvegarde des images sur le disque
-                     foreach ima $liste_buffers {
-                        set nom $panneau(acqfen,nom_image)
-                        #--- Pour eviter un nom de fichier qui commence par un blanc :
-                        set nom [lindex $nom 0]
-                        buf[lindex $ima 0] copyto $audace(bufNo)
-                        #--- Verifie que le nom du fichier n'existe pas deja...
-                        set nom1 "$nom"
-                        append nom1 [lindex $ima 1] $ext
-                        if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                           #--- Dans ce cas, le fichier existe deja...
-                           set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
-                              -message $caption(acqfen,fichdeja)]
-                           if { $confirmation == "no" } {
-                              break
+                     #--- On verifie que le nom de fichier n'a pas d'espace
+                     if {[llength $panneau(acqfen,nom_image)] > 1} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,nomblanc)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que le nom de fichier ne contient pas de caracteres interdits
+                     if {[acqfen::TestChaine $panneau(acqfen,nom_image)] == 0} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,mauvcar)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que l'index existe
+                     if {$panneau(acqfen,index) == ""} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,saisind)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- On verifie que l'index est bien un nombre entier
+                     if {[acqfen::TestEntier $panneau(acqfen,index)] == 0} {
+                        tk_messageBox -title $caption(acqfen,pb) -type ok \
+                           -message $caption(acqfen,indinv)
+                        #--- On restitue l'affichage du bouton "GO" :
+                        set panneau(acqfen,go_stop) go
+                        $This.acq.but configure -text $caption(acqfen,GO)
+                        $This.acqred.but configure -text $caption(acqfen,GO)
+                        return
+                     }
+                     #--- Envoie un warning si l'index n'est pas a 1
+                     if { $panneau(acqfen,index) != "1" } {
+                        set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                           -message $caption(acqfen,indpasun)]
+                        if { $confirmation == "no" } {
+                           #--- On restitue l'affichage du bouton "GO" :
+                           set panneau(acqfen,go_stop) go
+                           $This.acq.but configure -text $caption(acqfen,GO)
+                           $This.acqred.but configure -text $caption(acqfen,GO)
+                           return
+                        }
+                     }
+                     #--- Verifie que le nom des fichiers n'existe pas deja...
+                     set nom $panneau(acqfen,nom_image)
+                     #--- Pour eviter un nom de fichier qui commence par un blanc
+                     set nom [lindex $nom 0]
+                     append nom $panneau(acqfen,index) $ext
+                     if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
+                        #--- Dans ce cas, le fichier existe deja...
+                        set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                           -message $caption(acqfen,fichdeja)]
+                        if { $confirmation == "no" } {
+                           #--- On restitue l'affichage du bouton "GO" :
+                           set panneau(acqfen,go_stop) go
+                           $This.acq.but configure -text $caption(acqfen,GO)
+                           $This.acqred.but configure -text $caption(acqfen,GO)
+                           return
+                        }
+                     }
+
+                     switch -exact -- $panneau(acqfen,fenreglfen2)$panneau(acqfen,fenreglfen3) {
+                        "11" {
+                           while {$panneau(acqfen,demande_arret)==0} {
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage avec visu auto
+                              audace::autovisu $audace(visuNo)
+                              #--- Si demande, sauvegarde de l'image
+                              if {$panneau(acqfen,enregistrer)==1} {
+                                 set nom $panneau(acqfen,nom_image)
+                                 #--- Pour eviter un nom de fichier qui commence par un blanc :
+                                 set nom [lindex $nom 0]
+                                 #--- Verifie que le nom du fichier n'existe pas deja...
+                                 set nom1 "$nom"
+                                 append nom1 $panneau(acqfen,index) $ext
+                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                    #--- Dans ce cas, le fichier existe deja...
+                                    set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                       -message $caption(acqfen,fichdeja)]
+                                    if { $confirmation == "no" } {
+                                       break
+                                    }
+                                 }
+                                 #--- Sauvegarde de l'image
+                                 saveima [append nom $panneau(acqfen,index)]
+                                 incr panneau(acqfen,index)
+                              }
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
                            }
                         }
-                        #--- Sauvegarde de l'image
-                        saveima [append nom [lindex $ima 1]]
+                        "21" {
+                           set nbint 1
+                           while {$panneau(acqfen,demande_arret)==0} {
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage eventuel
+                              if {$nbint==$panneau(acqfen,fenreglfen22)} {
+                                 audace::autovisu $audace(visuNo)
+                                 set nbint 1
+                              } else {
+                                 incr nbint
+                              }
+                              #--- Si demande, sauvegarde de l'image
+                              if {$panneau(acqfen,enregistrer)==1} {
+                                 set nom $panneau(acqfen,nom_image)
+                                 #--- Pour eviter un nom de fichier qui commence par un blanc :
+                                 set nom [lindex $nom 0]
+                                 #--- Verifie que le nom du fichier n'existe pas deja...
+                                 set nom1 "$nom"
+                                 append nom1 $panneau(acqfen,index) $ext
+                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                    #--- Dans ce cas, le fichier existe deja...
+                                    set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                       -message $caption(acqfen,fichdeja)]
+                                    if { $confirmation == "no" } {
+                                       break
+                                    }
+                                 }
+                                 #--- Sauvegarde de l'image
+                                 saveima [append nom $panneau(acqfen,index)]
+                                 incr panneau(acqfen,index)
+                              }
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                        }
+                        "31" {
+                           while {$panneau(acqfen,demande_arret)==0} {
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Si demande, sauvegarde de l'image
+                              if {$panneau(acqfen,enregistrer)==1} {
+                                 set nom $panneau(acqfen,nom_image)
+                                 #--- Pour eviter un nom de fichier qui commence par un blanc :
+                                 set nom [lindex $nom 0]
+                                 #--- Verifie que le nom du fichier n'existe pas deja...
+                                 set nom1 "$nom"
+                                 append nom1 $panneau(acqfen,index) $ext
+                                 if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                    #--- Dans ce cas, le fichier existe deja...
+                                    set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                       -message $caption(acqfen,fichdeja)]
+                                    if { $confirmation == "no" } {
+                                       break
+                                    }
+                                 }
+                                 #--- Sauvegarde de l'image
+                                 saveima [append nom $panneau(acqfen,index)]
+                                 incr panneau(acqfen,index)
+                              }
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                           #--- Affichage avec visu auto
+                           audace::autovisu $audace(visuNo)
+                        }
+                        "12" {
+                           set liste_buffers ""
+                           while {$panneau(acqfen,demande_arret)==0} {
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage avec visu auto
+                              audace::autovisu $audace(visuNo)
+                              #--- Si demande, sauvegarde temporaire de l'image
+                              if {$panneau(acqfen,enregistrer)==1} {
+                                 set buftmp [buf::create]
+                                 buf$buftmp extension $conf(extension,defaut)
+                                 buf$audace(bufNo) copyto $buftmp
+                                 lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
+                                 incr panneau(acqfen,index)
+                              }
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                           #--- Sauvegarde des images sur le disque
+                           foreach ima $liste_buffers {
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              buf[lindex $ima 0] copyto $audace(bufNo)
+                              #--- Verifie que le nom du fichier n'existe pas deja
+                              set nom1 "$nom"
+                              append nom1 [lindex $ima 1] $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
+                              }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom [lindex $ima 1]]
+                           }
+                        }
+                        "22" {
+                           set nbint 1
+                           while {$panneau(acqfen,demande_arret)==0} {
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Affichage eventuel
+                              if {$nbint==$panneau(acqfen,fenreglfen22)} {
+                                 audace::autovisu $audace(visuNo)
+                                 set nbint 1
+                              } else {
+                                 incr nbint
+                              }
+                              #--- Si demande, sauvegarde temporaire de l'image
+                              if {$panneau(acqfen,enregistrer)==1} {
+                                 set buftmp [buf::create]
+                                 buf$buftmp extension $conf(extension,defaut)
+                                 buf$audace(bufNo) copyto $buftmp
+                                 lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
+                                 incr panneau(acqfen,index)
+                              }
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                           #--- Sauvegarde des images sur le disque
+                           foreach ima $liste_buffers {
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              buf[lindex $ima 0] copyto $audace(bufNo)
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 [lindex $ima 1] $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
+                              }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom [lindex $ima 1]]
+                           }
+                        }
+                        "32" {
+                           while {$panneau(acqfen,demande_arret)==0} {
+                              #--- Acquisition
+                              acqfen::acq_acqfen
+                              #--- Si demande, sauvegarde temporaire de l'image
+                              if {$panneau(acqfen,enregistrer)==1} {
+                                 set buftmp [buf::create]
+                                 buf$buftmp extension $conf(extension,defaut)
+                                 buf$audace(bufNo) copyto $buftmp
+                                 lappend $liste_buffers [list $buftmp $panneau(acqfen,index)]
+                                 incr panneau(acqfen,index)
+                              }
+                              #--- Corrections eventuelles de suivi
+                              if {$panneau(acqfen,fenreglfen4)=="2"} {acqfen::depl_fen}
+                           }
+                           #--- Sauvegarde des images sur le disque
+                           foreach ima $liste_buffers {
+                              set nom $panneau(acqfen,nom_image)
+                              #--- Pour eviter un nom de fichier qui commence par un blanc :
+                              set nom [lindex $nom 0]
+                              buf[lindex $ima 0] copyto $audace(bufNo)
+                              #--- Verifie que le nom du fichier n'existe pas deja...
+                              set nom1 "$nom"
+                              append nom1 [lindex $ima 1] $ext
+                              if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                                 #--- Dans ce cas, le fichier existe deja...
+                                 set confirmation [tk_messageBox -title $caption(acqfen,conf) -type yesno \
+                                    -message $caption(acqfen,fichdeja)]
+                                 if { $confirmation == "no" } {
+                                    break
+                                 }
+                              }
+                              #--- Sauvegarde de l'image
+                              saveima [append nom [lindex $ima 1]]
+                           }
+                           #--- Affichage avec visu auto
+                           audace::autovisu $audace(visuNo)
+                        }
                      }
-                     #--- Affichage avec visu auto
-                     audace::autovisu $audace(visuNo)
                   }
                }
+               #--- On restitue l'affichage du bouton "GO" :
+               set panneau(acqfen,go_stop) go
+               $This.acq.but configure -text $caption(acqfen,GO)
+               $This.acqred.but configure -text $caption(acqfen,GO)
             }
-         }
-         #--- On restitue l'affichage du bouton "GO" :
-         set panneau(acqfen,go_stop) go
-         $This.acq.but configure -text $caption(acqfen,GO)
-         $This.acqred.but configure -text $caption(acqfen,GO)
-         }
-         "stop" {
-            #--- On positionne un indicateur de demande d'arret
-            set panneau(acqfen,demande_arret) 1
-            #--- Annulation de l'alarme de fin de pose
-            catch { after cancel bell }
-            #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
-            ::camera::gestionPose $panneau(acqfen,pose) 0 cam$audace(camNo) buf$audace(bufNo)
-            #--- Arret de la pose
-            catch { cam$audace(camNo) stop }
+            "stop" {
+               #--- On positionne un indicateur de demande d'arret
+               set panneau(acqfen,demande_arret) 1
+               #--- Annulation de l'alarme de fin de pose
+               catch { after cancel bell }
+               #--- Gestion de la pose : Timer, avancement, attente fin, retournement image, fin anticipee
+               ::camera::gestionPose $panneau(acqfen,pose) 0 cam$audace(camNo) buf$audace(bufNo)
+               #--- Arret de la pose
+               catch { cam$audace(camNo) stop }
                after 200
             }
          }
@@ -1248,39 +1248,39 @@ namespace eval ::acqfen {
 
       set box [ ::confVisu::getBox $visuNo ]
       if { $box != "" } {
-           if {[lindex $box 0]<[lindex $box 2]} {
-              set panneau(acqfen,X1) [lindex $box 0]
-              set panneau(acqfen,X2) [lindex $box 2]
-           } else {
-              set panneau(acqfen,X1) [lindex $box 2]
-              set panneau(acqfen,X2) [lindex $box 0]
-           }
-           if {[lindex $box 1]<[lindex $box 3]} {
-              set panneau(acqfen,Y1) [lindex $box 1]
-              set panneau(acqfen,Y2) [lindex $box 3]
-           } else {
-              set panneau(acqfen,Y1) [lindex $box 3]
-              set panneau(acqfen,Y2) [lindex $box 1]
-           }
+         if {[lindex $box 0]<[lindex $box 2]} {
+            set panneau(acqfen,X1) [lindex $box 0]
+            set panneau(acqfen,X2) [lindex $box 2]
+         } else {
+            set panneau(acqfen,X1) [lindex $box 2]
+            set panneau(acqfen,X2) [lindex $box 0]
+         }
+         if {[lindex $box 1]<[lindex $box 3]} {
+            set panneau(acqfen,Y1) [lindex $box 1]
+            set panneau(acqfen,Y2) [lindex $box 3]
+         } else {
+            set panneau(acqfen,Y1) [lindex $box 3]
+            set panneau(acqfen,Y2) [lindex $box 1]
+         }
 
-           set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
-           $This.acq.matrice_color_invariant.fen config  -height $hauteur \
-              -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
-           $This.acqred.matrice_color_invariant.fen config  -height $hauteur \
-              -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
-           place forget $This.acq.matrice_color_invariant.fen
-           place forget $This.acqred.matrice_color_invariant.fen
-           place $This.acq.matrice_color_invariant.fen \
-              -x [expr $panneau(acqfen,mtx_x)*$panneau(acqfen,X1)/[lindex [cam$audace(camNo) nbcells] 0]] \
-              -y [expr $panneau(acqfen,mtx_y)*([lindex [cam$audace(camNo) nbcells] 1]-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]-$hauteur]
-           place $This.acqred.matrice_color_invariant.fen \
-              -x [expr $panneau(acqfen,mtx_x)*$panneau(acqfen,X1)/[lindex [cam$audace(camNo) nbcells] 0]] \
-              -y [expr $panneau(acqfen,mtx_y)*([lindex [cam$audace(camNo) nbcells] 1]-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]-$hauteur]
+         set hauteur [expr $panneau(acqfen,mtx_y)*($panneau(acqfen,Y2)-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]]
+         $This.acq.matrice_color_invariant.fen config  -height $hauteur \
+            -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
+         $This.acqred.matrice_color_invariant.fen config  -height $hauteur \
+            -width [expr $panneau(acqfen,mtx_x)*($panneau(acqfen,X2)-$panneau(acqfen,X1))/[lindex [cam$audace(camNo) nbcells] 0]]
+         place forget $This.acq.matrice_color_invariant.fen
+         place forget $This.acqred.matrice_color_invariant.fen
+         place $This.acq.matrice_color_invariant.fen \
+            -x [expr $panneau(acqfen,mtx_x)*$panneau(acqfen,X1)/[lindex [cam$audace(camNo) nbcells] 0]] \
+            -y [expr $panneau(acqfen,mtx_y)*([lindex [cam$audace(camNo) nbcells] 1]-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]-$hauteur]
+         place $This.acqred.matrice_color_invariant.fen \
+            -x [expr $panneau(acqfen,mtx_x)*$panneau(acqfen,X1)/[lindex [cam$audace(camNo) nbcells] 0]] \
+            -y [expr $panneau(acqfen,mtx_y)*([lindex [cam$audace(camNo) nbcells] 1]-$panneau(acqfen,Y1))/[lindex [cam$audace(camNo) nbcells] 1]-$hauteur]
 
-           #--- On modifie le bouton "Go" des acquisitions fenetrees
-           $This.acq.but configure -text $caption(acqfen,GO) -command {::acqfen::GoStop}
-           $This.acqred.but configure -text $caption(acqfen,GO) -command {::acqfen::GoStop}
-       }
+         #--- On modifie le bouton "Go" des acquisitions fenetrees
+         $This.acq.but configure -text $caption(acqfen,GO) -command {::acqfen::GoStop}
+         $This.acqred.but configure -text $caption(acqfen,GO) -command {::acqfen::GoStop}
+      }
    }
 
    #--- Procedure de gestion du mode d'acquisition
