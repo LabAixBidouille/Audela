@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.5 2008-06-01 13:59:50 robertdelmas Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.6 2008-06-04 10:01:34 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -602,244 +602,240 @@ proc gcn_pkt_type { pkt_type } {
 # ===================================
 
 proc grb_help {} {
-   grb_man
+	grb_man
 }
 
 proc grb_man {} {
-   ::console::affiche_resultat " \n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " AudeLA Menu -> Configuration -> Repertoires -> Images\n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " Vérifier que c'est un vrai GRB (This is a GRB)\n"
-   ::console::affiche_resultat " Vérifier la présentce d'un afterglow sur image somme\n"
-   ::console::affiche_resultat " Vérifier la valeur de l'extinction interstellaire galactique.\n"
-   ::console::affiche_resultat " Vérifier l'image traînée et la télécharger\n"
-   ::console::affiche_resultat " Vérifier la présence d'un afterglow sur premières images et les télécharger\n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " Renommer les images : grb_copy\n"
-   ::console::affiche_resultat " Renommer les images : grb_sum ic\n"
-   ::console::affiche_resultat " Renommer les images : grb_aladin ic\n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " Etoile de reference NOMAD1: (V-R)=+0.4+(Av-Ar)\n"
-   ::console::affiche_resultat " Mesurer les magnitudes avec Menu -> Analyse -> Ajuster une gaussienne\n"
-   ::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " \n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " AudeLA Menu -> Configuration -> Repertoires -> Images\n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " Vérifier que c'est un vrai GRB (This is a GRB)\n"
+	::console::affiche_resultat " Vérifier la présentce d'un afterglow sur image somme\n"
+	::console::affiche_resultat " Vérifier la valeur de l'extinction interstellaire galactique.\n"
+	::console::affiche_resultat " Vérifier l'image traînée et la télécharger\n"
+	::console::affiche_resultat " Vérifier la présence d'un afterglow sur premières images et les télécharger\n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " Renommer les images : grb_copy\n"
+	::console::affiche_resultat " Renommer les images : grb_sum ic\n"
+	::console::affiche_resultat " Renommer les images : grb_aladin ic\n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " Etoile de reference NOMAD1: (V-R)=+0.4+(Av-Ar)\n"
+	::console::affiche_resultat " Mesurer les magnitudes avec Menu -> Analyse -> Ajuster une gaussienne\n"
+	::console::affiche_resultat " ======================================================\n"
 }
 
 proc grb_copy { {first 1} {date_trigger ""} } {
 
-   global audace
-
-   set toto [info script]
-   set path $audace(rep_images)
-   ::console::affiche_resultat " \n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " COPY IMAGES OF $path\n"
-   ::console::affiche_resultat " ======================================================\n"
-
-   set methods ""
-   lappend methods window
-
-   set bufno $audace(bufNo)
-
-   # --- Recherche l'instant du trigger
-   set mjd0 2450000.
-   if {$date_trigger==""} {
-      set err [catch {
-         set fichiers [lsort [glob ${path}/GRB*.txt]]
-         set fichier [lindex $fichiers 0]
-         set f [open $fichier r]
-         set lignes [split [read $f] \n]
-         close $f
-         foreach ligne $lignes {
-            set kwd [lindex $ligne 0]
-            if {$kwd=="GRB_JD"} {
-               set tgrb [lindex $ligne 1]
-            }
-         }
-      } msg ]
-      if {$err==1} {
-         set tgrb 0
-      }
-   } else {
-      set tgrb [mc_date2jd $date_trigger]
-   }
-   set jdgrb [mc_date2jd $tgrb]
-
-   # --- recherche les images
-   set fichiers [lsort [glob ${path}/*.fits.gz]]
-
-   foreach method $methods {
-      if {$method=="window"} {
-         set naxis12 105
-         set fen 125
-         set xc [expr 129./2]
-         set yc [expr 129./2]
-         set box [list [expr int($xc-$fen)] [expr int($yc-$fen)] [expr int($xc+$fen)] [expr int($yc+$fen)]]
-         set n [llength $fichiers]
-         set kkc 0
-         set kkv 0
-         set kkr 0
-         set kki 0
-         if {$first==0} {
-            set k 0
-            set fichier "[lindex $fichiers $k]"
-            buf$bufno load "$fichier"
-            #set ligne [buf$bufno getkwd CRPIX2]  ; set crpix [expr 0+[lindex $ligne 1]] ; set ligne [lreplace $ligne 1 1 $crpix] ; buf$bufno setkwd $ligne
-            set exposure [lindex [buf$bufno getkwd EXPOSURE] 1]
-            set nbstars [lindex [buf$bufno getkwd NBSTARS] 1]
-            set date_obs [lindex [buf$bufno getkwd DATE-OBS] 1]
-            set filter [string trim [lindex [buf$bufno getkwd FILTER] 1]]
-            set tempccd [string trim [lindex [buf$bufno getkwd TEMPCCD] 1]]
-            if {($tgrb==0)&&($k==$first)} {
-               set tgrb $date_obs
-               set jdgrb [mc_date2jd $tgrb]
-            }
-            if {$filter=="C"} {
-               set series c
-            } elseif {$filter=="V"} {
-               set series v
-            } elseif {$filter=="R"} {
-               set series r
-            } elseif {$filter=="I"} {
-               set series i
-            }
-            set kk 0
-            ::console::affiche_resultat "[file tail $fichier] [expr 1440.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/60] mins $date_obs $exposure $nbstars ${tempccd}°C\n"
-            buf$bufno save ${path}/i${series}${kk}
-            ::console::affiche_resultat " => i${series}${kk} \n"
-         }
-         for {set k 1} {$k<$n} {incr k} {
-            set fichier "[lindex $fichiers $k]"
-            buf$bufno load "$fichier"
-            #set ligne [buf$bufno getkwd CRPIX2]  ; set crpix [expr 0+[lindex $ligne 1]] ; set ligne [lreplace $ligne 1 1 $crpix] ; buf$bufno setkwd $ligne
-            set exposure [lindex [buf$bufno getkwd EXPOSURE] 1]
-            set nbstars [lindex [buf$bufno getkwd NBSTARS] 1]
-            set date_obs [lindex [buf$bufno getkwd DATE-OBS] 1]
-            set filter [string trim [lindex [buf$bufno getkwd FILTER] 1]]
-            set tempccd [string trim [lindex [buf$bufno getkwd TEMPCCD] 1]]
-            if {($tgrb==0)&&($k==$first)} {
-               set tgrb $date_obs
-               set jdgrb [mc_date2jd $tgrb]
-            }
-            if {$filter=="C"} {
-               set series c
-               incr kkc
-               set kk $kkc
-            } elseif {$filter=="V"} {
-               set series v
-               incr kkv
-               set kk $kkv
-            } elseif {$filter=="R"} {
-               set series r
-               incr kkr
-               set kk $kkr
-            } elseif {$filter=="I"} {
-               set series i
-               incr kki
-               set kk $kki
-            }
-            #::console::affiche_resultat "[file tail $fichier] [expr 86400.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2] secs $date_obs $exposure $nbstars ${tempccd}°C\n"
-            ::console::affiche_resultat "[file tail $fichier] [expr 1440.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/60] mins $date_obs $exposure $nbstars ${tempccd}°C\n"
-            #::console::affiche_resultat "[file tail $fichier] [expr 24.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/3600.] hours $date_obs $exposure $nbstars ${tempccd}°C\n"
-            buf$bufno window $box
-            buf$bufno save ${path}/i${series}${kk}
-            set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
-            #
-            #set res [buf$bufno stat]
-            #set fond [lindex $res 6]
-            #set sigma [lindex $res 7]
-            set res [buf$bufno autocuts]
-            visu1 cut [lrange $res 0 1]
-            #subsky 10 0.2
-            visu1 disp
-            buf$bufno save ${path}/i${series}${kk}
-            ::console::affiche_resultat " => i${series}${kk} \n"
-         }
-      }
-   }
-   ::console::affiche_resultat " ======================================================\n"
+	global audace
+	
+	set toto [info script]
+	set path $audace(rep_images)
+	::console::affiche_resultat " \n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " COPY IMAGES OF $path\n"
+	::console::affiche_resultat " ======================================================\n"
+	if {$first=="?"} {
+		::console::affiche_resultat "Synatax : grb_copy ?first? ?date_trigger?\n"
+		return
+	}
+	
+	set methods ""
+	lappend methods window
+	
+	set bufno $audace(bufNo)
+	
+	# --- Recherche l'instant du trigger
+	set mjd0 2450000.
+	if {$date_trigger==""} {
+		set err [catch {
+			set fichiers [lsort [glob ${path}/GRB*.txt]]
+			set fichier [lindex $fichiers 0]
+			set f [open $fichier r]
+			set lignes [split [read $f] \n]
+			close $f
+			foreach ligne $lignes {
+				set kwd [lindex $ligne 0]
+				if {$kwd=="GRB_JD"} {
+					set tgrb [lindex $ligne 1]
+				}
+			}
+		} msg ]
+		if {$err==1} {
+			set tgrb 0
+		}
+	} else {
+		set tgrb [mc_date2jd $date_trigger]
+	}
+	set jdgrb [mc_date2jd $tgrb]
+	
+	# --- recherche les images
+	set fichiers [lsort [glob ${path}/*.fits.gz]]
+	
+	foreach method $methods {
+		if {$method=="window"} {
+			set naxis12 105
+			set fen 125
+			set xc [expr 129./2]
+			set yc [expr 129./2]
+			set box [list [expr int($xc-$fen)] [expr int($yc-$fen)] [expr int($xc+$fen)] [expr int($yc+$fen)]]
+			set n [llength $fichiers]
+			set kkc 0
+			set kkv 0
+			set kkr 0
+			set kki 0
+			set first [expr $first-1]
+			for {set k $first} {$k<$n} {incr k} {
+				set fichier "[lindex $fichiers $k]"
+				buf$bufno load "$fichier"
+				#set ligne [buf$bufno getkwd CRPIX2]  ; set crpix [expr 0+[lindex $ligne 1]] ; set ligne [lreplace $ligne 1 1 $crpix] ; buf$bufno setkwd $ligne
+				set exposure [lindex [buf$bufno getkwd EXPOSURE] 1]
+				set nbstars [lindex [buf$bufno getkwd NBSTARS] 1]
+				set date_obs [lindex [buf$bufno getkwd DATE-OBS] 1]
+				set filter [string trim [lindex [buf$bufno getkwd FILTER] 1]]
+				set tempccd [string trim [lindex [buf$bufno getkwd TEMPCCD] 1]]
+				set trackspa [string trim [lindex [buf$bufno getkwd TRACKSPA] 1]]
+				if {($tgrb==0)&&($k==$first)} {
+					set tgrb $date_obs
+					set jdgrb [mc_date2jd $tgrb]
+				}
+				set track ""
+				if {$filter=="C"} {
+					set series c
+					if {$trackspa<0.00418} {
+						set kkc 0
+						set track "(trailed image)"
+					} else {
+						incr kkc
+					}
+					set kk $kkc
+				} elseif {$filter=="V"} {
+					set series v
+					incr kkv
+					set kk $kkv
+				} elseif {$filter=="R"} {
+					set series r
+					incr kkr
+					set kk $kkr
+				} elseif {$filter=="I"} {
+					set series i
+					incr kki
+					set kk $kki
+				}
+				#::console::affiche_resultat "[file tail $fichier] [expr 86400.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2] secs $date_obs $exposure $nbstars ${tempccd}°C\n"
+				::console::affiche_resultat "[file tail $fichier] [expr 1440.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/60] mins $date_obs $exposure $nbstars ${tempccd}°C\n"
+				#::console::affiche_resultat "[file tail $fichier] [expr 24.*([mc_date2jd $date_obs]-$jdgrb)+$exposure/2/3600.] hours $date_obs $exposure $nbstars ${tempccd}°C\n"
+				buf$bufno window $box
+				buf$bufno save ${path}/i${series}${kk}
+				set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
+				#
+				#set res [buf$bufno stat]
+				#set fond [lindex $res 6]
+				#set sigma [lindex $res 7]
+				set res [buf$bufno autocuts]
+				visu1 cut [lrange $res 0 1]
+				#subsky 10 0.2
+				visu1 disp
+				buf$bufno save ${path}/i${series}${kk}
+				::console::affiche_resultat " => i${series}${kk} $track\n"
+			}
+		}
+	}
+	::console::affiche_resultat " ======================================================\n"
 }
 
 proc grb_register { {name ic} {number 0} } {
 
-   global audace
+	global audace
+	
+	set toto [info script]
+	set path $audace(rep_images)
+	::console::affiche_resultat " \n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " REGISTER IMAGES OF $path\n"
+	::console::affiche_resultat " ======================================================\n"
+	if {$name=="?"} {
+		::console::affiche_resultat "Synatax : grb_register ?name? ?number?\n"
+		return
+	}
+	
+	set bufno $audace(bufNo)
 
-   set toto [info script]
-   set path $audace(rep_images)
-   ::console::affiche_resultat " \n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " REGISTER IMAGES OF $path\n"
-   ::console::affiche_resultat " ======================================================\n"
-
-   set bufno $audace(bufNo)
-
-   set n 1
-   set sortie 0
-   while {$sortie==0} {
-      if {[file exists "$path/${name}$n.fit"]==0} {
-         incr n -1
-         set sortie 1
-         break
-      }
-      incr n
-   }
-   if {($number>0)&&($number<$n)} {
-      set n $number
-   }
-   ::console::affiche_resultat " $n images $name...\n"
-
-   registerfine $name $name $n 1 10 1 bitpix=-32
-
-   ::console::affiche_resultat " ======================================================\n"
+	set n 1
+	set sortie 0
+	while {$sortie==0} {
+		if {[file exists "$path/${name}$n.fit"]==0} {
+			incr n -1
+			set sortie 1
+			break
+		}
+		incr n
+	}
+	if {($number>0)&&($number<$n)} {
+		set n $number
+	}
+	::console::affiche_resultat " $n images $name...\n"
+	
+	registerfine $name $name $n 1 10 1 bitpix=-32
+	
+	::console::affiche_resultat " ======================================================\n"
 }
 
-proc grb_sum { {name ic} {number 0} } {
+proc grb_sum { {name ic} {first 1} {number 0} } {
 
-   global audace
+	global audace
+	
+	set toto [info script]
+	set path $audace(rep_images)
+	::console::affiche_resultat " \n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " SUM IMAGES OF $path\n"
+	::console::affiche_resultat " ======================================================\n"
+	if {$name=="?"} {
+		::console::affiche_resultat "Synatax : grb_sum ?name? ?first? ?number?\n"
+		return
+	}
+	
+	set bufno $audace(bufNo)
 
-   set toto [info script]
-   set path $audace(rep_images)
-   ::console::affiche_resultat " \n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " SUM IMAGES OF $path\n"
-   ::console::affiche_resultat " ======================================================\n"
-
-   set bufno $audace(bufNo)
-
-   set n 1
-   set sortie 0
-   while {$sortie==0} {
-      if {[file exists "$path/${name}$n.fit"]==0} {
-         incr n -1
-         set sortie 1
-         break
-      }
-      incr n
-   }
-   if {($number>0)&&($number<$n)} {
-      set n $number
-   }
-   ::console::affiche_resultat " $n images $name...\n"
-
-   sadd $name $name $n 1 bitpix=-32
-
-   ::console::affiche_resultat " ======================================================\n"
+	set n $first
+	set sortie 0
+	while {$sortie==0} {
+		if {[file exists "$path/${name}$n.fit"]==0} {
+			incr n -1
+			set sortie 1
+			break
+		}
+		incr n
+	}
+	if {($number>0)&&($number<$n)} {
+		set n $number
+	}
+	::console::affiche_resultat " $n images $name...\n"
+	
+	sadd $name $name $n $first bitpix=-32
+	
+	::console::affiche_resultat " ======================================================\n"
 }
 
-proc grb_aladin { {name ic} } {
+proc grb_aladin { {name ic} {catalogs "VizieR(NOMAD1)"} } {
 
-   global audace
+	global audace
+	
+	set toto [info script]
+	set path $audace(rep_images)
+	::console::affiche_resultat " \n"
+	::console::affiche_resultat " ======================================================\n"
+	::console::affiche_resultat " ALADIN OF $path\n"
+	::console::affiche_resultat " ======================================================\n"
+	if {$name=="?"} {
+		::console::affiche_resultat "Synatax : grb_aladin ?name? ?catalogs?\n"
+		return
+	}
+	
+	set bufno $audace(bufNo)
 
-   set toto [info script]
-   set path $audace(rep_images)
-   ::console::affiche_resultat " \n"
-   ::console::affiche_resultat " ======================================================\n"
-   ::console::affiche_resultat " ALADIN OF $path\n"
-   ::console::affiche_resultat " ======================================================\n"
-
-   set bufno $audace(bufNo)
-
-   vo_aladin load $name VizieR(NOMAD1)
-
-   ::console::affiche_resultat " ======================================================\n"
+	vo_aladin load $name $catalogs
+	
+	::console::affiche_resultat " ======================================================\n"
 }
