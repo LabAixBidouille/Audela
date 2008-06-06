@@ -43,7 +43,7 @@ typedef struct {
    double param1;
    char filename[30];
 } TT_USER5_IMA_SERIES;
-
+typedef double TYPE_PIXELS;
 /* --- Ajout de parametres pour la classe ima/stack --- */
 typedef struct {
    double param1;

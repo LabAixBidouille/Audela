@@ -1032,8 +1032,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 {
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp3,*p_tmp4;
 	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul,i,x0,y0;
-	double xfin,yfin,xdebut=0.0,ydebut,l;
-	int result,nelem,index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,bord;
+	double xfin,yfin,xdebut,ydebut,l;
+	int index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,bord,rotation;
 	double dvalue,somme_value,somme_x,somme_y,somme_value2,somme_x2,somme_y2;
 	double bg;
 	char filenamegto[FLEN_FILENAME],filenamegeo[FLEN_FILENAME];
@@ -1042,11 +1042,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	double bary_x[300], bary_y[300], somme[300];
 	double sommexy,sommex,sommey,sommexx;
 	double fwhmx,fwhmy, xcc,fwhmxy,ycc,r1,r2,r3,r11,r22,r33,dx,dy,dx2,dy2,d2,fmoy,fmed,f23,sigma,flux,ra,dec;
-	int nombre, taille,xx1,xx2,yy1,yy2,msg,n23,j,n23d,n23f,nsats,valid_ast;
+	int taille,xx1,xx2,yy1,yy2,msg,n23,j,n23d,n23f,nsats,valid_ast;
 	double *vec;
-	double **mat, *pp, *ecart;
+	//double **mat, 
+	double *pp, *ecart;
 	int sizex, sizey,nb,largxx,largx,seuil_nbnul;
 	TT_ASTROM p_ast;
+	TYPE_PIXELS *iX, *iY, pixel;
+	double *dX, *dY;
 
 	/* --- intialisations ---*/
 	p_in=pseries->p_in; 
@@ -1054,7 +1057,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	p_out=pseries->p_out;
 	p_tmp1=pseries->p_tmp1;
 	p_tmp3=pseries->p_tmp3;
-	nelem=pseries->nelements;
 	naxis1=p_in->naxis1;
 	naxis2=p_in->naxis2;
 	index=pseries->index;
@@ -1081,10 +1083,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	//tt_imasaver(p_out,"D:/tophat.fit",16);
+	tt_imasaver(p_out,"D:/tophat.fit",16);
 	
 	bg=0;
-
 
 //////////////////////////////////////////////
 /* ----------------------------------------- */
@@ -1136,67 +1137,50 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+			tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
-
+			
 			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
 			if ((eq[0]!=0)||(eq[1]!=0)||(eq[2]!=0)) {									
 /* ============================================================== */
 /* === recherche du barycentre de la trainee et de sa largeur === */
 /* ============================================================== */
-				somme_value=0;somme_x=0;somme_y=0;ydebut=0;ydebut=0;xfin=0;yfin=0;largx=0;nb=0;
-			
-				/* --- cas des droites faibles pentes ou horizontales --- */
-				if ((((eq[0]<=1)&&(eq[0]>=-1))||(eq[0]==0))&&(eq[2]==0)) {
-					for (k1=0;k1<n1;k1++) {	
-						largxx=0;
-						for (k2=(int)(eq[0]*k1+eq[1]-8);k2<=(int)(eq[0]*k1+eq[1]+8);k2++) {
-							if (k2<0) continue;
-							if (k2>=n2) break;
-							dvalue=(double)p_tmp3->p[n1*k2+k1];
-							somme_value= somme_value+dvalue;
-							somme_x=somme_x+k1*dvalue;	
-							somme_y=somme_y+k2*dvalue;
-							if (dvalue>0)	largxx++;
-						}
-						if (largxx!=0) {
-							largx+=largxx;
-							nb++;
-						}
-					}
-				}
-
-				/* --- cas des droites fortes pentes ou verticales --- */
-				else { // ((eq[0]<-1)||(eq[0]>1)||(eq[2]!=0)) 
-					for (k2=0;k2<n2;k2++) {
-						largxx=0;
-						if (((eq[0]>1)||(eq[0]<-1))&&(eq[0]!=0)) { // droite forte pente positive ou négative
-							for (k1=(int)((k2-eq[1])/eq[0]-8);k1<=(int)((k2-eq[1])/eq[0]+8);k1++) {
-								if (k1<0) continue;
-								if (k1>=n1) break;
-								dvalue=(double)p_tmp3->p[n1*k2+k1];
-								somme_value= somme_value+dvalue;
-								somme_x=somme_x+k1*dvalue;	
-								somme_y=somme_y+k2*dvalue;
-								if (dvalue>0)	largxx++;
-							}
-						} else { //droite vertical
-							for (k1=(int)(eq[2]-8);k1<=(int)(eq[2]+8);k1++) {
-								if (k1<0) continue;
-								if (k1>=n1) break;
-								dvalue=(double)p_tmp3->p[n1*k2+k1];
-								somme_value= somme_value+dvalue;
-								somme_x=somme_x+k1*dvalue;	
-								somme_y=somme_y+k2*dvalue;
-								if (dvalue>0)	largxx++;
+				rotation=0;
+				//pour les droites a fortes pentes
+				if ((eq[0]>1.0)||(eq[0]<-1.0)) {
+					//première imagette en bas à gauche, dernière en haut à droite
+					for (k1=0;k1<n1;k1++) {
+						for (k2=0;k2<n2;k2++) {
+							if ((k1>=n1-x0)||(k1<=x0)||(k2<=y0)||(k2>=n2-y0)) {
+								p_tmp3->p[n1*k2+k1]=0;
+							} else {
+								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+kk*n2/2)+k1+k5+kk*n1/2];
+								p_tmp3->p[n1*k1+255-k2]=(TT_PTYPE)(dvalue); //rotation de +90° de l'imagette (sens trigo)
 							}
 						}
-						if (largxx!=0) {
-							largx+=largxx;
-							nb++;
-						}
 					}
+					tt_imasaver(p_tmp3,"D:/gtopetite3.fit",16);
+					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
+					rotation=1;
 				}
+				somme_value=0;somme_x=0;somme_y=0;xdebut=0;ydebut=0;xfin=0;yfin=0;largx=0;nb=0;
+						
+				for (k1=0;k1<n1;k1++) {	
+					largxx=0;
+					for (k2=(int)(eq[0]*k1+eq[1]-8);k2<=(int)(eq[0]*k1+eq[1]+8);k2++) {
+						if (k2<0) continue;
+						if (k2>=n2) break;
+						dvalue=(double)p_tmp3->p[n1*k2+k1];
+						somme_value= somme_value+dvalue;
+						somme_x=somme_x+k1*dvalue;	
+						somme_y=somme_y+k2*dvalue;
+						if (dvalue>0)	largxx++;
+					}
+					if (largxx!=0) {
+						largx+=largxx;
+						nb++;
+					}
+				}			
 				if (nb != 0) {
 					largx=(int)(largx*1.0/(2.0*nb))+1;
 				}
@@ -1216,230 +1200,59 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					bord=0;xdebut=0;ydebut=0;xfin=0;yfin=0;
 					//  seuil pour recherche des extrémitées de la traînées
 					seuil_nbnul= 50;
-
-					/* --- cas des droites faibles pentes ou horizontales --- */
-
-					if ((((eq[0]<=1)&&(eq[0]>=-1))||(eq[0]==0))&&(eq[2]==0)) {
-						nbnul=0;
-						for (k1=(int)somme_x;k1>=0;k1--) {	// recherche du début					
-							for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
-								if (k2<0) continue;
-								if (k2>=n2) break;
-								if ((k1==0)&&(xdebut==0)&&(ydebut==0)) {
+					
+					nbnul=0;
+					for (k1=(int)somme_x;k1>=0;k1--) {	// recherche du début					
+						for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
+							if (k2<0) continue;
+							if (k2>=n2) break;
+							if ((k1==0)&&(xdebut==0)&&(ydebut==0)) {
+								xdebut=k1;
+								ydebut=k2;
+								bord=1;
+								break;
+							}
+							if ((nbnul>seuil_nbnul)&&(xdebut!=0)&&(ydebut!=0)) break;
+							//debut traînée quand p_out->p = fond de ciel
+							dvalue=(double)p_tmp3->p[n1*k2+k1];
+							if (dvalue<=bg) {
+								nbnul++;	
+							}
+							if (dvalue>bg) {
+								nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+								if (nbnul<=1) {
 									xdebut=k1;
 									ydebut=k2;
-									bord=1;
-									break;
-								}
-								if (nbnul>seuil_nbnul) break;
-								//debut traînée quand p_out->p = fond de ciel
-								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-								if (dvalue<=bg) {
-									nbnul++;
-									if (nbnul==1) {
-										xdebut=k1;
-										ydebut=k2;
-									} 
-								}
-								if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-								}		
-							}						
-						}
-						nbnul=0;bord=0;
-						for (k1=(int)somme_x;k1<n1;k1++) {	// recherche de la fin					
-							for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
-								if (k2<0) continue;
-								if (k2>=n2) break;
-								if ((k1==0)&&(xfin==0)&&(yfin==0)) {
+								} 	
+							}		
+						}						
+					}
+					nbnul=0;bord=0;
+					for (k1=(int)somme_x;k1<n1;k1++) {	// recherche de la fin					
+						for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
+							if (k2<0) continue;
+							if (k2>=n2) break;
+							if ((k1==n1-1)&&(xfin==0)&&(yfin==0)) {
+								xfin=k1;
+								yfin=k2;
+								bord=1;
+								break;
+							}
+							if ((nbnul>seuil_nbnul)&&(xfin!=0)&&(yfin!=0)) break;
+							dvalue=(double)p_tmp3->p[n1*k2+k1];
+							if (dvalue<=bg) {
+								nbnul++;	
+							}
+							if (dvalue>bg) {
+								nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+								if (nbnul<=1) {
 									xfin=k1;
 									yfin=k2;
-									bord=1;
-									break;
-								}
-								if (nbnul>seuil_nbnul) break;
-								//debut traînée quand p_out->p = fond de ciel
-								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-								if (dvalue<=bg) {
-									nbnul++;
-									if (nbnul==1) {
-										xfin=k1;
-										yfin=k2;
-									} 
-								}
-								if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-								}		
-							}						
-						}
-					}
-					/* --- cas des droites fortes pentes positives --- */
-					else if (eq[0]>1) { 
-						// recherche du début
-						nbnul=0;bord=0;
-						for (k2=(int)somme_y;k2>0;k2--) {
-							for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-								if (k1<0) continue;
-								if (k1>=n1) break;
-								if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-									xdebut=k1;
-									ydebut=k2;
-									bord=1;
-									break;
-								}
-								if (nbnul>seuil_nbnul) break;
-								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-								if (dvalue<=bg) {
-									nbnul++;
-									if (nbnul==1) {
-										xdebut=k1;
-										ydebut=k2;
-									} 
-								}
-								if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-								}									
+								} 
 							}		
-						}
-						// recherche de la fin
-						nbnul=0; bord=0;
-						for (k2=(int)somme_y;k2<n2;k2++) {
-							for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-								if (k1<0) continue;
-								if (k1>=n1) break;
-								if ((k2==0)&&(xfin==0)&&(yfin==0)) {
-									xfin=k1;
-									yfin=k2;
-									bord=1;
-									break;
-								}
-								if (nbnul>seuil_nbnul) break;
-								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-								if (dvalue<=bg) {
-									nbnul++;
-									if (nbnul==1) {
-										xfin=k1;
-										yfin=k2;
-									} 
-								}
-								if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-								}									
-							}		
-						}
-					} 
-
-					/* --- cas des droites fortes pentes négatives ou verticales --- */
-
-					else { 
-						// recherche du début
-						nbnul=0;bord=0;
-						for (k2=(int)somme_y;k2<n2;k2++) {
-							if (eq[0]<-1) { // droite forte pente negative
-								for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-									if (k1<0) continue;
-									if (k1>=n1) break;
-									if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-										xdebut=k1;
-										ydebut=k2;
-										bord=1;
-										break;
-									}
-									if (nbnul>seuil_nbnul) break;
-									//debut traînée quand p_out->p = fond de ciel
-									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-									if (dvalue<=bg) {
-										nbnul++;
-										if (nbnul==1) {
-											xdebut=k1;
-											ydebut=k2;
-										} 
-									}
-									if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-										nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-									}			
-									
-								}
-							} else { //droite vertical
-								for (k1=(int)(eq[2]-largx);k1<=(int)(eq[2]+largx);k1++) {
-									if (k1<0) continue;
-									if (k1>=n1) break;
-									if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-										xdebut=k1;
-										ydebut=k2;
-										bord=1;
-										break;
-									}
-									if (nbnul>seuil_nbnul) break;
-									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-									if (dvalue<=bg) {
-										nbnul++;
-										if (nbnul==1) {
-											xdebut=k1;
-											ydebut=k2;
-										} 
-									}
-									if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-										nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-									}												
-								}
-							}
-						}
-						// recherche de la fin
-						nbnul=0;bord=0;
-						for (k2=(int)somme_y;k2>=0;k2--) {
-							if (eq[0]<-1) { // droite forte pente negative
-								for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-									if (k1<0) continue;
-									if (k1>=n1) break;
-									if ((k2==0)&&(xfin==0)&&(yfin==0)) {
-										xfin=k1;
-										yfin=k2;
-										bord=1;
-										break;
-									}
-									if (nbnul>seuil_nbnul) break;
-									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-									if (dvalue<=bg) {
-										nbnul++;
-										if (nbnul==1) {
-											xfin=k1;
-											yfin=k2;
-										} 
-									}
-									if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-										nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-									}			
-									
-								}
-							} else { //droite vertical
-								for (k1=(int)(eq[2]-largx);k1<=(int)(eq[2]+largx);k1++) {
-									if (k1<0) continue;
-									if (k1>=n1) break;
-									if ((k2==0)&&(xfin==0)&&(yfin==0)) {
-										xfin=k1;
-										yfin=k2;
-										bord=1;
-										break;
-									}
-									if (nbnul>seuil_nbnul) break;
-									//debut traînée quand p_out->p = fond de ciel
-									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk)*n2/2)+k1+k5+(kk)*n1/2];
-									if (dvalue<=bg) {
-										nbnul++;
-										if (nbnul==1) {
-											xfin=k1;
-											yfin=k2;
-										} 
-									}
-									if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-										nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-									}												
-								}
-							}
-						}
+						}						
 					}
-
+				
 					if (xdebut<0) {xdebut=0;}
 					if (xfin<0) {xfin=0; xdebut=0;}
 					if (ydebut<0) {ydebut=0;}
@@ -1460,43 +1273,55 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				if ((xfin>n1-10)||(yfin>n2-10)||(xdebut<10)||(ydebut<10)||(xdebut>n1-10)||(ydebut>n2-10)||(xfin<10)||(yfin<10)) {	
 					bord=0;
 
-					if (kkk%nb_ss_image1==1) {
-						if (somme_y<n2/2) bord=1;
+					if (kkk%nb_ss_image1==0) {//bord gauche
+						if (rotation==1) {
+							if (somme_y<n2/2) bord=1;
+						} else {
+							if (somme_x<n1/2) bord=1;
+						}
 					}				
-					if (kkk%nb_ss_image1==(nb_ss_image1-1)) {
-						if (somme_y>n2/2) bord=1;
-					}
-
-					if (kkk<nb_ss_image1) {
-						if (somme_y<n2/2) bord=1;
-						if (kkk==0) {
-							if (somme_x<n1/2) bord=1;
-						}
-						if (kkk==7) {
+					if (kkk%nb_ss_image1==(nb_ss_image1-1)) {//bord droit
+						if (rotation==1) {
+							if (somme_y>n2/2) bord=1;
+						} else {
 							if (somme_x>n1/2) bord=1;
 						}
 					}
-					if (kkk>=nb_ss_image1*(nb_ss_image2-1)) {
-						if (somme_y>n2/2) bord=1;
-						if (kkk==nb_ss_image1*(nb_ss_image2-1)) {
-							if (somme_x<n1/2) bord=1;
-						}
-						if (kkk==nb_ss_image1*nb_ss_image2-1) {
+					if (kkk<nb_ss_image1) {//bord bas
+						if (rotation==1) {
 							if (somme_x>n1/2) bord=1;
+						} else {
+							if (somme_y<n2/2) bord=1;
+						}
+					}
+					if (kkk>=nb_ss_image1*(nb_ss_image2-1)) {//bord haut
+						if (rotation==1) {
+							if (somme_x<n1/2) bord=1;
+						} else {
+							if (somme_y>n2/2) bord=1;
 						}
 					}	
 					
 					if (bord!=1) {
 						//on prend une nouvelle imagette centrée sur le barycentre calculé précédement
-						for (k1=0;k1<n1;k1++) {
-							for (k2=0;k2<n2;k2++) {
-								dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
-								p_tmp3->p[n1*k2+k1]=(TT_PTYPE)(dvalue);
+						if (rotation==1) {
+							for (k1=0;k1<n1;k1++) {
+								for (k2=0;k2<n2;k2++) {
+									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk-1)*n2/2+255-(int)somme_x)+k1+k5+(int)somme_y+(kk-1)*n1/2];
+									p_tmp3->p[n1*k1+255-k2]=(TT_PTYPE)(dvalue);
+								}
+							}
+						} else {
+							for (k1=0;k1<n1;k1++) {
+								for (k2=0;k2<n2;k2++) {
+									dvalue=(double)p_out->p[naxis1*(k2+k3*n2+(kk-1)*n2/2+(int)somme_y)+k1+k5+(int)somme_x+(kk-1)*n1/2];
+									p_tmp3->p[n1*k2+k1]=(TT_PTYPE)(dvalue);
+								}
 							}
 						}
-				
+					
 						tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
-						//tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
+						tt_imasaver(p_tmp3,"D:/gtopetite2.fit",16);
 						//recupère les coordonnées de la droite détectée y=a0*x+b0
 						if ((eq[0]!=0)||(eq[1]!=0)||(eq[2]!=0)) {							
 						
@@ -1505,57 +1330,22 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /* ============================================================== */
 							somme_value2=0;somme_x2=0;somme_y2=0;xdebut=0;ydebut=0;xfin=0;yfin=0;largx=0;nb=0;
 			
-							/* --- cas des droites faibles pentes ou horizontales --- */
-							if ((((eq[0]<=1)&&(eq[0]>=-1))||(eq[0]==0))&&(eq[2]==0)) {
-								for (k1=0;k1<n1;k1++) {	
-									largxx=0;
-									for (k2=(int)(eq[0]*k1+eq[1]-8);k2<=(int)(eq[0]*k1+eq[1]+8);k2++) {
-										if (k2<0) continue;
-										if (k2>=n2) break;
-										dvalue=(double)p_tmp3->p[n1*k2+k1];
-										somme_value2= somme_value2+dvalue;
-										somme_x2=somme_x2+k1*dvalue;	
-										somme_y2=somme_y2+k2*dvalue;
-										if (dvalue>0)	largxx++;
-									}
-									if (largxx!=0) {
-										largx+=largxx;
-										nb++;
-									}
+							for (k1=0;k1<n1;k1++) {	
+								largxx=0;
+								for (k2=(int)(eq[0]*k1+eq[1]-8);k2<=(int)(eq[0]*k1+eq[1]+8);k2++) {
+									if (k2<0) continue;
+									if (k2>=n2) break;
+									dvalue=(double)p_tmp3->p[n1*k2+k1];
+									somme_value2= somme_value2+dvalue;
+									somme_x2=somme_x2+k1*dvalue;	
+									somme_y2=somme_y2+k2*dvalue;
+									if (dvalue>0)	largxx++;
 								}
-							}
-							/* --- cas des droites fortes pentes ou verticales --- */
-							else { // ((eq[0]<-1)||(eq[0]>1)||(eq[2]!=0)) 
-								for (k2=0;k2<n2;k2++) {
-									largxx=0;
-									if (((eq[0]>1)||(eq[0]<-1))&&(eq[0]!=0)) { // droite forte pente 
-										for (k1=(int)((k2-eq[1])/eq[0]-8);k1<=(int)((k2-eq[1])/eq[0]+8);k1++) {
-											if (k1<0) continue;
-											if (k1>=n1) break;
-											dvalue=(double)p_tmp3->p[n1*k2+k1];
-											somme_value2= somme_value2+dvalue;
-											somme_x2=somme_x2+k1*dvalue;	
-											somme_y2=somme_y2+k2*dvalue;
-											if (dvalue>0)	largxx++;
-										}
-									} else { //droite vertical
-										for (k1=(int)(eq[2]-8);k1<=(int)(eq[2]+8);k1++) {
-											if (k1<0) continue;
-											if (k1>=n1) break;
-											dvalue=(double)p_tmp3->p[n1*k2+k1];
-											somme_value2= somme_value2+dvalue;
-											somme_x2=somme_x2+k1*dvalue;	
-											somme_y2=somme_y2+k2*dvalue;
-											if (dvalue>0)	largxx++;
-										}
-
-									}
-									if (largxx!=0) {
-										largx+=largxx;
-										nb++;
-									}
+								if (largxx!=0) {
+									largx+=largxx;
+									nb++;
 								}
-							}
+							}							
 							if (nb != 0) {
 								largx=(int)(largx*1.0/(2.0*nb))+1;
 							}
@@ -1573,227 +1363,58 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /* === recherche du debut et de la fin de la trainee === */
 /* ===================================================== */
 								bord=0;xdebut=0;ydebut=0;xfin=0;yfin=0;
-
-								/* --- cas des droites faibles pentes ou horizontales --- */
-
-								if ((((eq[0]<=1)&&(eq[0]>=-1))||(eq[0]==0))&&(eq[2]==0)) {
-									nbnul=0;
-									for (k1=(int)somme_x2;k1>=0;k1--) {	// recherche du début					
-										for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
-											if (k2<0) continue;
-											if (k2>=n2) break;
-											if ((k1==0)&&(xdebut==0)&&(ydebut==0)) {
+								nbnul=0;
+								for (k1=(int)somme_x2;k1>=0;k1--) {	// recherche du début					
+									for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
+										if (k2<0) continue;
+										if (k2>=n2) break;
+										if ((k1==0)&&(xdebut==0)&&(ydebut==0)) {
+											xdebut=k1;
+											ydebut=k2;
+											bord=1;
+											break;
+										}
+										if ((nbnul>seuil_nbnul)&&(xdebut!=0)&&(ydebut!=0)) break;
+										//debut traînée quand p_out->p = fond de ciel
+										dvalue=(double)p_tmp3->p[n1*k2+k1];
+										if (dvalue<=bg) {
+											nbnul++;
+										}
+										if (dvalue>bg) {
+											nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+											if (nbnul<=1) {
 												xdebut=k1;
 												ydebut=k2;
-												bord=1;
-												break;
-											}
-											if (nbnul>seuil_nbnul) break;
-											//debut traînée quand p_out->p = fond de ciel
-											dvalue=(double)p_tmp3->p[n1*k2+k1];
-											if (dvalue<=bg) {
-												nbnul++;
-												if (nbnul==1) {
-													xdebut=k1;
-													ydebut=k2;
-												} 
-											}
-											if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-												nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-											}		
-										}						
-									}
-									nbnul=0;bord=0;
-									for (k1=(int)somme_x2;k1<n1;k1++) {	// recherche de la fin					
-										for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
-											if (k2<0) continue;
-											if (k2>=n2) break;
-											if ((k1==0)&&(xfin==0)&&(yfin==0)) {
+											} 	
+										}		
+									}						
+								}
+								nbnul=0;bord=0;
+								for (k1=(int)somme_x2;k1<n1;k1++) {	// recherche de la fin					
+									for (k2=(int)(eq[0]*k1+eq[1]-largx);k2<=(int)(eq[0]*k1+eq[1]+largx);k2++) {
+										if (k2<0) continue;
+										if (k2>=n2) break;
+										if ((k1==n1-1)&&(xfin==0)&&(yfin==0)) {
+											xfin=k1;
+											yfin=k2;
+											bord=1;
+											break;
+										}
+										if ((nbnul>seuil_nbnul)&&(xfin!=0)&&(yfin!=0)) break;
+										//debut traînée quand p_out->p = fond de ciel
+										dvalue=(double)p_tmp3->p[n1*k2+k1];
+										if (dvalue<=bg) {
+											nbnul++;
+										}
+										if (dvalue>bg) {
+											nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+											if (nbnul<=1) {
 												xfin=k1;
 												yfin=k2;
-												bord=1;
-												break;
-											}
-											if (nbnul>seuil_nbnul) break;
-											//debut traînée quand p_out->p = fond de ciel
-											dvalue=(double)p_tmp3->p[n1*k2+k1];
-											if (dvalue<=bg) {
-												nbnul++;
-												if (nbnul==1) {
-													xfin=k1;
-													yfin=k2;
-												} 
-											}
-											if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-												nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-											}		
-										}						
-									}
-								}
-								/* --- cas des droites fortes pentes positives --- */
-								else if (eq[0]>1) { 
-									// recherche du début
-									nbnul=0;bord=0;
-									for (k2=(int)somme_y2;k2>0;k2--) {
-										for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-											if (k1<0) continue;
-											if (k1>=n1) break;
-											if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-												xdebut=k1;
-												ydebut=k2;
-												bord=1;
-												break;
-											}
-											if (nbnul>seuil_nbnul) break;
-											dvalue=(double)p_tmp3->p[n1*k2+k1];
-											if (dvalue<=bg) {
-												nbnul++;
-												if (nbnul==1) {
-													xdebut=k1;
-													ydebut=k2;
-												} 
-											}
-											if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-												nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-											}									
+											} 
 										}		
-									}
-									// recherche de la fin
-									nbnul=0; bord=0;
-									for (k2=(int)somme_y2;k2<n2;k2++) {
-										for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-											if (k1<0) continue;
-											if (k1>=n1) break;
-											if ((k2==0)&&(xfin==0)&&(yfin==0)) {
-												xfin=k1;
-												yfin=k2;
-												bord=1;
-												break;
-											}
-											if (nbnul>seuil_nbnul) break;
-											dvalue=(double)p_tmp3->p[n1*k2+k1];
-											if (dvalue<=bg) {
-												nbnul++;
-												if (nbnul==1) {
-													xfin=k1;
-													yfin=k2;
-												} 
-											}
-											if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-												nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-											}									
-										}		
-									}
-								} 
-								/* --- cas des droites fortes pentes négatives ou verticales --- */
-								else { 
-									// recherche du début
-									nbnul=0;bord=0;
-									for (k2=(int)somme_y2;k2<n2;k2++) {
-										if (eq[0]<-1) { // droite forte pente negative
-											for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-												if (k1<0) continue;
-												if (k1>=n1) break;
-												if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-													xdebut=k1;
-													ydebut=k2;
-													bord=1;
-													break;
-												}
-												if (nbnul>seuil_nbnul) break;
-												//debut traînée quand p_out->p = fond de ciel
-												dvalue=(double)p_tmp3->p[n1*k2+k1];
-												if (dvalue<=bg) {
-													nbnul++;
-													if (nbnul==1) {
-														xdebut=k1;
-														ydebut=k2;
-													} 
-												}
-												if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-													nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-												}			
-												
-											}
-										} else { //droite vertical
-											for (k1=(int)(eq[2]-largx);k1<=(int)(eq[2]+largx);k1++) {
-												if (k1<0) continue;
-												if (k1>=n1) break;
-												if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-													xdebut=k1;
-													ydebut=k2;
-													bord=1;
-													break;
-												}
-												if (nbnul>seuil_nbnul) break;
-												dvalue=(double)p_tmp3->p[n1*k2+k1];
-												if (dvalue<=bg) {
-													nbnul++;
-													if (nbnul==1) {
-														xdebut=k1;
-														ydebut=k2;
-													} 
-												}
-												if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-													nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-												}												
-											}
-										}
-									}
-									// recherche de la fin
-									nbnul=0;bord=0;
-									for (k2=(int)somme_y2;k2>=0;k2--) {
-										if (eq[0]<-1) { // droite forte pente negative
-											for (k1=(int)((k2-eq[1])/eq[0]-largx);k1<=(int)((k2-eq[1])/eq[0]+largx);k1++) {
-												if (k1<0) continue;
-												if (k1>=n1) break;
-												if ((k2==0)&&(xfin==0)&&(yfin==0)) {
-													xfin=k1;
-													yfin=k2;
-													bord=1;
-													break;
-												}
-												if (nbnul>seuil_nbnul) break;
-												dvalue=(double)p_tmp3->p[n1*k2+k1];
-												if (dvalue<=bg) {
-													nbnul++;
-													if (nbnul==1) {
-														xfin=k1;
-														yfin=k2;
-													} 
-												}
-												if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-													nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-												}			
-												
-											}
-										} else { //droite vertical
-											for (k1=(int)(eq[2]-largx);k1<=(int)(eq[2]+largx);k1++) {
-												if (k1<0) continue;
-												if (k1>=n1) break;
-												if ((k2==0)&&(xfin==0)&&(yfin==0)) {
-													xfin=k1;
-													yfin=k2;
-													bord=1;
-													break;
-												}
-												if (nbnul>seuil_nbnul) break;
-												//debut traînée quand p_out->p = fond de ciel
-												dvalue=(double)p_tmp3->p[n1*k2+k1];
-												if (dvalue<=bg) {
-													nbnul++;
-													if (nbnul==1) {
-														xfin=k1;
-														yfin=k2;
-													} 
-												}
-												if ((dvalue>bg)&&(nbnul<seuil_nbnul)) {
-													nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
-												}												
-											}
-										}
-									}
-								}
+									}						
+								}							
 								if (xdebut<0) {xdebut=0;}
 								if (xfin<0) {xfin=0; xdebut=0;}
 								if (ydebut<0) {ydebut=0;}
@@ -1824,18 +1445,62 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					somme_x2=somme_x;
 					somme_y2=somme_y;
 				}
-				//changement de repère: petite image -> grande image
-				if (eq[2]==0) {
-					eq[1]=eq[1]-(k5+kk*n1/2)*eq[0]+(k3)*256+kk*n2/2;
-				} else {
-					eq[2]=eq[2]+k5+kk*n1/2;
-				}
+				
 				if ((somme_x!=0)&&(somme_y!=0)) {
+					if (rotation==1) {
+						//rotation inverse des coefficients: 
+						if (eq[0]!=0.0) {
+							dvalue=eq[0];
+							eq[0]=-1.0/eq[0];
+							//eq[1]=(255-eq[1])/eq[0];
+							eq[1]=255+eq[1]/dvalue;
+						} else {
+							eq[2]=255-eq[1];
+							eq[0]=eq[1]=0;						
+						}
+						//rotation inverse 
+						dvalue=somme_x;
+						somme_x=somme_y;
+						somme_y=255-dvalue;
+						dvalue=xdebut;
+						xdebut=ydebut;
+						ydebut=255-dvalue;
+						dvalue=xfin;
+						xfin=yfin;
+						yfin=255-dvalue;
+						if (xdebut>xfin) {
+							dvalue=xdebut;
+							xdebut=xfin;
+							xfin=dvalue;
+						}
+						if ((eq[0]>0)&&(ydebut>yfin)) {
+							dvalue=ydebut;
+							ydebut=yfin;
+							yfin=dvalue;
+						}
+						if ((eq[0]<0)&&(ydebut<yfin)) {
+							dvalue=ydebut;
+							ydebut=yfin;
+							yfin=dvalue;
+						}
+					}
+					//changement de repère: petite image -> grande image
+					if (eq[2]==0) {
+						eq[1]=eq[1]-(k5+kk*n1/2)*eq[0]+(k3)*255+kk*n2/2;
+					} else {
+						eq[2]=eq[2]+k5+kk*n1/2;
+					}
+					//changement de repère
+					somme_x=somme_x+k5+kk*n1/2;
+					somme_y=somme_y+(k3)*255+kk*n2/2;
+					xdebut=xdebut+k5+kk*n1/2;
+					ydebut=ydebut+(k3)*255+kk*n2/2;
+					xfin=xfin+k5+kk*n1/2;
+					yfin=yfin+(k3)*255+kk*n2/2;
+
 					//fitte une gaussienne pour calculé fwhmx et fwhmy 
-///////////////////////////////////////////////////////////////////////////
-//* --- a revoir car pas assez précis pour la discrimination GTO/GEO --- */
-///////////////////////////////////////////////////////////////////////////
-				/*	xx1=(int)(xdebut-3*largx);
+					//* ---  discrimination GTO/GEO --- */
+					xx1=(int)(xdebut-3*largx);
 					xx2=(int)(xfin+3*largx);
 					if (ydebut>yfin) {
 						yy1=(int)(yfin-3*largx);
@@ -1845,59 +1510,58 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						yy2=(int)(yfin+3*largx);
 					}
 					if (xx1<0) xx1=0;
-					if (xx1>=n1) xx1=n1-1;
+					if (xx1>=naxis1) xx1=naxis1-1;
 					if (xx2<0) xx2=0;
-					if (xx2>=n1) xx2=n1-1;
+					if (xx2>=naxis1) xx2=naxis1-1;
 					if (yy1<0) yy1=0;
-					if (yy1>=n2) yy1=n2-1;
+					if (yy1>=naxis2) yy1=naxis2-1;
 					if (yy2<0) yy2=0;
-					if (yy2>=n2) yy2=n2-1;
+					if (yy2>=naxis2) yy2=naxis2-1;
   
 					pp = (double*)calloc(6,sizeof(double));
 					ecart = (double*)calloc(1,sizeof(double));
 					sizex=xx2-xx1+1;
 					sizey=yy2-yy1+1;
 
-					//fixe la taille de la fenêtre de travail: sizex et sizey
-					mat = (double**)calloc(sizex,sizeof(double));
-					for(k=0;k<sizex;k++) {
-						*(mat+k) = (double*)calloc(sizey,sizeof(double));
-					}
-					//--- Mise a zero des deux buffers 
-					for(k=0;k<sizex;k++) {
-						for(k2=0;k2<sizey;k2++) {
-							mat[k][k2]=(double)0.;
-						}
-					}
-					for (j=0;j<sizey;j++) {  
-					   for (i=0;i<sizex;i++) {	  
-						  mat[i][j]=p_tmp3->p[n1*(j+yy1)+i+xx1];
+					//--- Mise a zero des deux buffers de binning
+				    iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
+				    dX = (double*)calloc(sizex,sizeof(double));
+				    iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
+				    dY = (double*)calloc(sizey,sizeof(double));	
+							
+				    for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
+					for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
+
+					for(j=0;j<sizey;j++) {
+					   for(i=0;i<sizex;i++) {
+							pixel = p_out->p[naxis1*(j+yy1)+i+xx1];
+							*(iX+i) += pixel;
+							*(iY+j) += pixel;
 					   }
 					}
 
-					tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
-					fwhmx=pp[2];
-					fwhmy=pp[5];
+					for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
+					for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
+
+					tt_fitgauss1d(sizex,dX,pp,ecart);      
+					fwhmx=pp[2];  
+					tt_fitgauss1d(sizey,dY,pp,ecart); 
+					fwhmy=pp[2];
+					dvalue=pp[1];
 					free(pp);
 					free(ecart);
-					free(mat);
-					fwhmxy=(fwhmx>fwhmy)?(fwhmx/fwhmy):(fwhmy/fwhmx);*/
-					fwhmxy=1.6;
+					free(iX);
+					free(dX);
+					free(iY);
+					free(dY);
+					fwhmxy=(fwhmx>fwhmy)?(fwhmx/fwhmy):(fwhmy/fwhmx);
 
-					//changement de repère
-					somme_x=somme_x+k5+kk*n1/2;
-					somme_y=somme_y+(k3)*256+kk*n2/2;
-					xdebut=xdebut+k5+kk*n1/2;
-					ydebut=ydebut+(k3)*256+kk*n2/2;
-					xfin=xfin+k5+kk*n1/2;
-					yfin=yfin+(k3)*256+kk*n2/2;
 					
 					/* --- calcul de la longueur de la traînée --- */
 					l=sqrt((xdebut-xfin)*(xdebut-xfin)+(ydebut-yfin)*(ydebut-yfin));
 					// calcul de la hauteur de la traînée pour la discrimination fine GTO <-> GEO
 					
-
-					if ((l>4)&&(fwhmxy>1.5)) {
+					if ((l>4)&&(fwhmxy>1.5)&&(dvalue>0)) {
 /* ------------------------------------------ */
 /* --- ajustement par les moindres carrés --- */
 /* ------------------------------------------ */
@@ -1971,7 +1635,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									}
 								}
 							} else { //droite vertical
-								for (k2=(int)ydebut;k2>=(int)yfin;k2--) {
+								for (k2=(int)yfin;k2>=(int)ydebut;k2--) {
 									for (k1=(int)(eq[2]-largx);k1<=(int)(eq[2]+largx);k1++) {
 										if (k1<0) continue;
 										if (k1>=naxis1) break;
@@ -2007,9 +1671,23 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								dvalue=eq[0];
 								eq[0]=(i*sommexy-sommex*sommey)/(i*sommexx-sommex*sommex);		
 								eq[1]=(sommey*sommexx-sommex*sommexy)/(i*sommexx-sommex*sommex);
+							} else {
+								eq[2]=sommex/i;
+								eq[0]=eq[1]=0;
+								if (ydebut<yfin) {
+									dvalue = yfin;
+									yfin=ydebut;
+									ydebut=dvalue;
+								}
 							}
-						} else if (eq[2]!=0) {
+						} else {
 							eq[2]=sommex/i;
+							eq[0]=eq[1]=0;
+							if (ydebut<yfin) {
+								dvalue = yfin;
+								yfin=ydebut;
+								ydebut=dvalue;
+							}
 						}
 						if (dvalue*eq[0]<0) { //il y a eu un changement de signe de eq[0]
 							dvalue = yfin;
@@ -2051,6 +1729,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								if (k1<0) continue;
 								if (eq[2]!=0) {// cas des droites verticales
 									for (k2=(int)yfin-largx-2;k2<(int)ydebut+largx+2;k2++) {
+										if (k2<0) continue;
+										if (k2>=naxis2) break;
 										p_out->p[naxis1*(k2)+k1]=0;
 									}
 								} else {
@@ -2084,7 +1764,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /* ------------------------------- */
 /////////////////////////////////////
 	//il faut eliminer les bords pour une largeur de SE
-	//tt_imasaver(p_tmp1,"D:/geo2.fit",16);
+	//tt_imasaver(p_out,"D:/geo2.fit",16);
 	fic=fopen(filenamegeo,"wt");
 	/* --- lit les parametres astrometriques de l'image ---*/
 	valid_ast=1;
@@ -2093,189 +1773,138 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	//boucle de recherche sur l'image
 	for (y=y1+1;y<naxis2-y1-1;y++) {
 		for (x=x1+1;x<naxis1-x1-1;x++) {
-			//if (p_tmp1->p[y*naxis2+x]==0) {	continue;}
-			if (p_out->p[y*naxis2+x]<=0) {	continue;}
-
-			//recherche grossière du photocentre x,y avec le barycentre
-			somme_value=0;
-			somme_x=p_out->p[y*naxis2+x];
-			somme_y=p_out->p[y*naxis2+x];
-			sommex=somme_x*x;
-			sommey=somme_y*y;
-			nb=1;
-			while ((x<naxis1)&&(y<naxis2)) {
-				for (k=0;k<=nb;k++) {
-					dvalue=p_out->p[(y+k)*naxis2+x+nb];
-					if ((nb>1)&&(dvalue!=0)) {
-						if (k==0) {
-							if ((p_out->p[(y+k)*naxis2+x+nb-1]==0)&&(p_out->p[(y+k+1)*naxis2+x+nb-1]==0)) {
-								dvalue=0;
-							}
-						} else if (k==nb) {
-							if ((p_out->p[(y+k)*naxis2+x+nb-1]==0)&&(p_out->p[(y+k-1)*naxis2+x+nb-1]==0)&&(p_out->p[(y+k-1)*naxis2+x+nb]==0)) {
-								dvalue=0;
-							}
-						} else {
-							if ((p_out->p[(y+k)*naxis2+x+nb-1]==0)&&(p_out->p[(y+k-1)*naxis2+x+nb-1]==0)&&(p_out->p[(y+k-1)*naxis2+x+nb]==0)&&(p_out->p[(y+k+1)*naxis2+x+nb-1]==0)) {
-								dvalue=0;
-							}
-						}
-					}
-					somme_x=somme_x+dvalue;
-					somme_value=somme_value+dvalue;
-					sommex=sommex+dvalue*(x+nb);
-					sommey=sommey+dvalue*(y+k);
-					
-				}
-				for (i=0;i<nb;i++) {
-					dvalue=p_out->p[(y+nb)*naxis2+x+i];
-					if ((nb>1)&&(dvalue!=0)) {
-						if (i==0) {
-							if ((p_out->p[(y+nb-1)*naxis2+x+i]==0)&&(p_out->p[(y+nb-1)*naxis2+x+1+i]==0)) {
-								dvalue=0;
-							}
-						} else if (i==nb) {
-							if ((p_out->p[(y+nb-1)*naxis2+x+i-1]==0)&&(p_out->p[(y+nb-1)*naxis2+x+i]==0)&&(p_out->p[(y+nb)*naxis2+x-1+i]==0)) {
-								dvalue=0;
-							}
-						} else {
-							if ((p_out->p[(y+nb-1)*naxis2+x+i-1]==0)&&(p_out->p[(y+nb-1)*naxis2+x+i]==0)&&(p_out->p[(y+nb)*naxis2+x+i-1]==0)&&(p_out->p[(y+nb-1)*naxis2+x+i+1]==0)) {
-								dvalue=0;
-							}
-						}
-					}
-					somme_x=somme_x+dvalue;
-					somme_value=somme_value+dvalue;
-					sommex=sommex+dvalue*(x+i);
-					sommey=sommey+dvalue*(y+nb);
-						
-				}
+			if (p_out->p[y*naxis1+x]<=0) {	continue;}
 			
-
-				if (somme_value>0) {
-					nb=nb+1;
-					somme_value=0;
-				} else { 
-					sommex=sommex/somme_x;
-					sommey=sommey/somme_x;
-					break;
+			// recherche du maximun local
+			x0=x;
+			y0=y;
+			somme_value=p_out->p[y*naxis1+x];
+			while ((x<naxis1)&&(y<naxis2)&&(x>0)&&(y>0)) { 
+				k=0;
+				for (k1=-1;k1<=1;k1++) {
+					for (k2=-1;k2<=1;k2++) {
+						if (p_out->p[(y+k1)*naxis1+x+k2]>somme_value) {
+							somme_value=p_out->p[(y+k1)*naxis1+x+k2];
+							x0=x+k2;
+							y0=y+k1;
+							k=1;
+						}
+					}
 				}
+				if (k==0) break;
 			}
-			x0=(int)sommex;
-			y0=(int)sommey;
 
-			//if ((p_out->p[naxis1*y0+x0+1]!=0)||(p_out->p[naxis1*y0+x0-1]!=0)||(p_out->p[naxis1*(y0-1)+x0-1]!=0)||(p_out->p[naxis1*(y0-1)+x0]!=0)||(p_out->p[naxis1*(y0-1)+x0+1]!=0)||(p_out->p[naxis1*(y0+1)+x0-1]!=0)||(p_out->p[naxis1*(y0+1)+x0]!=0)||(p_out->p[naxis1*(y0+1)+x0+1]!=0)) {
-				fwhmx=0;
-				for (k=x0;k<=(naxis1-y1);k++) {
-					if ((p_in->p[naxis1*y0+k]-p_in->p[naxis1*y0+k+1])<=0) break;
-					else fwhmx+=1;
-				}		           
-				for (k=x0;k>=1+x1;k--) {
-					if ((p_in->p[naxis1*y0+k]-p_in->p[naxis1*y0+k-1])<=0) break;
-					else fwhmx+=1;
-				}  					
-				fwhmy=0;
-           		for (k=y0;k<(naxis2-y1);k++) {
-					if ((p_in->p[naxis1*k+x0]-p_in->p[naxis1*(k+1)+x0])<=0) break;
-					else fwhmy+=1;
-				}		         
-				for (k=y0;k>=1+y1;k--) {
-					if ((p_in->p[naxis1*k+x0]-p_in->p[naxis1*(k-1)+x0])<=0) break;
-					else fwhmy+=1;
-				}
-				/* --- elimine les cosmiques --- */
-				if ((fwhmx<=1.)&&(fwhmy<=1.)) break; 				
-			
-				fwhmx/=2.;
-				fwhmy/=2.;
-				/* --- parametres de mesure precise ---*/
-                xcc=sommex;
-                ycc=sommey;
-                fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
-				if (fwhmxy<2.) fwhmxy=2;
-                r1=1.5*fwhmxy;
-                r2=2.0*fwhmxy;
-                r3=2.5*fwhmxy;
-                r11=r1*r1;
-                r22=r2*r2;
-                r33=r3*r3;
-                /* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
-                xx1=(int)(xcc-r3);
-                xx2=(int)(xcc+r3);
-                yy1=(int)(ycc-r3);
-                yy2=(int)(ycc+r3);
-                if (xx1<0) xx1=0;
-                if (xx1>=naxis1) xx1=naxis1-1;
-                if (xx2<0) xx2=0;
-                if (xx2>=naxis1) xx2=naxis1-1;
-                if (yy1<0) yy1=0;
-                if (yy1>=naxis2) yy1=naxis2-1;
-                if (yy2<0) yy2=0;
-                if (yy2>=naxis2) yy2=naxis2-1;
-                nombre=(xx2-xx1+1)*(yy2-yy1+1);
-                taille=sizeof(double);
-                vec=NULL;
-				if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&vec,&nombre,&taille,"vf"))!=OK_DLL) {
-                   fclose(fic);
-                   tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_util_geostat (pointer vec)");
-                   return(TT_ERR_PB_MALLOC);
-                }
-                n23=0;
-                f23=0.;
-                for (j=yy1;j<=yy2;j++) {
-                   dy=1.*j-ycc;
-                   dy2=dy*dy;
-                   for (i=xx1;i<=xx2;i++) {
-                      dx=1.*i-xcc;
-                      dx2=dx*dx;
-                      d2=dx2+dy2;
-                      if ((d2>=r22)&&(d2<=r33)) {
-	                      vec[n23]=(double)p_in->p[naxis1*j+i];
-                         f23 += (double)p_in->p[naxis1*j+i];
-                         n23++;
-                      }
-                   }
-                }
-                tt_util_qsort_double(vec,0,n23,NULL);
-                fmoy=vec[0];
-                if (n23!=0) {fmoy=f23/n23;}
-                /* calcule la valeur du fond pour 50 pourcent de l'histogramme*/
-                fmed=(float)vec[(int)(0.5*n23)];
-                /*  calcul de l'ecart type du fond de ciel*/
-                /*  en excluant les extremes a +/- 10 %*/
-                sigma=0.;
-                n23d=(int)(0.1*(n23-1));
-                n23f=(int)(0.9*(n23-1));
-                for (i=n23d;i<=n23f;i++) {
-                   d2=(vec[i]-fmed);
-                   sigma+=(d2*d2);
-                }
-                if ((n23f-n23d)!=0) {
-                   sigma=sqrt(sigma/(n23f-n23d));
-                }
-                free(vec);
-			
-				//fitte une gaussienne pour la recherche du centroide
-				xx1=(int)(xcc-r2);
-                xx2=(int)(xcc+r2);
-                yy1=(int)(ycc-r2);
-                yy2=(int)(ycc+r2);
-                if (xx1<0) xx1=0;
-                if (xx1>=naxis1) xx1=naxis1-1;
-                if (xx2<0) xx2=0;
-                if (xx2>=naxis1) xx2=naxis1-1;
-                if (yy1<0) yy1=0;
-                if (yy1>=naxis2) yy1=naxis2-1;
-                if (yy2<0) yy2=0;
-                if (yy2>=naxis2) yy2=naxis2-1;
-      
-				pp = (double*)calloc(6,sizeof(double));
-				ecart = (double*)calloc(1,sizeof(double));
-				sizex=xx2-xx1+1;
-				sizey=yy2-yy1+1;
+			fwhmx=0;
+			for (k=x0;k<=(naxis1-y1);k++) {
+				if ((p_in->p[naxis1*y0+k]-p_in->p[naxis1*y0+k+1])<=0) break;
+				else fwhmx+=1;
+			}		           
+			for (k=x0;k>=1+x1;k--) {
+				if ((p_in->p[naxis1*y0+k]-p_in->p[naxis1*y0+k-1])<=0) break;
+				else fwhmx+=1;
+			}  					
+			fwhmy=0;
+           	for (k=y0;k<(naxis2-y1);k++) {
+				if ((p_in->p[naxis1*k+x0]-p_in->p[naxis1*(k+1)+x0])<=0) break;
+				else fwhmy+=1;
+			}		         
+			for (k=y0;k>=1+y1;k--) {
+				if ((p_in->p[naxis1*k+x0]-p_in->p[naxis1*(k-1)+x0])<=0) break;
+				else fwhmy+=1;
+			}
+			/* --- elimine les cosmiques --- */
+			if ((fwhmx<=1.)&&(fwhmy<=1.)) break; 				
+		
+			fwhmx/=2.;
+			fwhmy/=2.;
+			/* --- parametres de mesure precise ---*/
+            xcc=x0;
+            ycc=y0;
+            fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
+			if (fwhmxy<2.) fwhmxy=2;
+            r1=1.5*fwhmxy;
+            r2=2.0*fwhmxy;
+            r3=2.5*fwhmxy;
+            r11=r1*r1;
+            r22=r2*r2;
+            r33=r3*r3;
+            /* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
+            xx1=(int)(xcc-r3);
+            xx2=(int)(xcc+r3);
+            yy1=(int)(ycc-r3);
+            yy2=(int)(ycc+r3);
+            if (xx1<0) xx1=0;
+            if (xx1>=naxis1) xx1=naxis1-1;
+            if (xx2<0) xx2=0;
+            if (xx2>=naxis1) xx2=naxis1-1;
+            if (yy1<0) yy1=0;
+            if (yy1>=naxis2) yy1=naxis2-1;
+            if (yy2<0) yy2=0;
+            if (yy2>=naxis2) yy2=naxis2-1;
+            nb=(xx2-xx1+1)*(yy2-yy1+1);
+            taille=sizeof(double);
+            vec=NULL;
+			if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&vec,&nb,&taille,"vf"))!=OK_DLL) {
+               fclose(fic);
+               tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_util_geostat (pointer vec)");
+               return(TT_ERR_PB_MALLOC);
+            }
+            n23=0;
+            f23=0.;
+            for (j=yy1;j<=yy2;j++) {
+               dy=1.*j-ycc;
+               dy2=dy*dy;
+               for (i=xx1;i<=xx2;i++) {
+                  dx=1.*i-xcc;
+                  dx2=dx*dx;
+                  d2=dx2+dy2;
+                  if ((d2>=r22)&&(d2<=r33)) {
+	                  vec[n23]=(double)p_in->p[naxis1*j+i];
+                     f23 += (double)p_in->p[naxis1*j+i];
+                     n23++;
+                  }
+               }
+            }
+            tt_util_qsort_double(vec,0,n23,NULL);
+            fmoy=vec[0];
+            if (n23!=0) {fmoy=f23/n23;}
+            /* calcule la valeur du fond pour 50 pourcent de l'histogramme*/
+            fmed=(float)vec[(int)(0.5*n23)];
+            /*  calcul de l'ecart type du fond de ciel*/
+            /*  en excluant les extremes a +/- 10 %*/
+            sigma=0.;
+            n23d=(int)(0.1*(n23-1));
+            n23f=(int)(0.9*(n23-1));
+            for (i=n23d;i<=n23f;i++) {
+               d2=(vec[i]-fmed);
+               sigma+=(d2*d2);
+            }
+            if ((n23f-n23d)!=0) {
+               sigma=sqrt(sigma/(n23f-n23d));
+            }
+            free(vec);
+			if (r1<5) r1=5;
+			//fitte une gaussienne pour la recherche du centroide
+			xx1=(int)(xcc-2*r1);
+            xx2=(int)(xcc+2*r1);
+            yy1=(int)(ycc-r1);
+            yy2=(int)(ycc+r1);
+            if (xx1<0) xx1=0;
+            if (xx1>=naxis1) xx1=naxis1-1;
+            if (xx2<0) xx2=0;
+            if (xx2>=naxis1) xx2=naxis1-1;
+            if (yy1<0) yy1=0;
+            if (yy1>=naxis2) yy1=naxis2-1;
+            if (yy2<0) yy2=0;
+            if (yy2>=naxis2) yy2=naxis2-1;
+  
+			pp = (double*)calloc(6,sizeof(double));
+			ecart = (double*)calloc(1,sizeof(double));
+			sizex=xx2-xx1+1;
+			sizey=yy2-yy1+1;
 
 				//fixe la taille de la fenêtre de travail: sizex et sizey
-				mat = (double**)calloc(sizex,sizeof(double));
+				/*mat = (double**)calloc(sizex,sizeof(double));
 				for(k=0;k<sizex;k++) {
 					*(mat+k) = (double*)calloc(sizey,sizeof(double));
 				}
@@ -2285,8 +1914,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						mat[k][k2]=(double)0.;
 					}
 				}
-				for (j=0;j<sizey;j++) {  
-				   for (i=0;i<sizex;i++) {	  
+				for (i=0;i<sizex;i++) {
+					for (j=0;j<sizey;j++) {  				   	  
 					  mat[i][j]=p_in->p[naxis1*(j+yy1)+i+xx1];
 				   }
 				}
@@ -2298,138 +1927,52 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				fwhmy=pp[5];
 				free(pp);
 				free(ecart);
-				free(mat);
-
-				if ((fabs(fwhmx-r2)<1.2)||(fabs(fwhmy-r2)<1.2)) {
-					r2=(fwhmx>fwhmy)?2.0*fwhmx:2.0*fwhmy;
-					//re-fitte une gaussienne avec une fenêtre plus grande
-					xx1=(int)(xcc-r2);
-					xx2=(int)(xcc+r2);
-					yy1=(int)(ycc-r2);
-					yy2=(int)(ycc+r2);
-					if (xx1<0) xx1=0;
-					if (xx1>=naxis1) xx1=naxis1-1;
-					if (xx2<0) xx2=0;
-					if (xx2>=naxis1) xx2=naxis1-1;
-					if (yy1<0) yy1=0;
-					if (yy1>=naxis2) yy1=naxis2-1;
-					if (yy2<0) yy2=0;
-					if (yy2>=naxis2) yy2=naxis2-1;
-  
-					pp = (double*)calloc(6,sizeof(double));
-					ecart = (double*)calloc(1,sizeof(double));
-					sizex=xx2-xx1+1;
-					sizey=yy2-yy1+1;
-
-					//fixe la taille de la fenêtre de travail: sizex et sizey
-					mat = (double**)calloc(sizex,sizeof(double));
-					for(k=0;k<sizex;k++) {
-						*(mat+k) = (double*)calloc(sizey,sizeof(double));
-					}
-					//--- Mise a zero des deux buffers 
-					for(k=0;k<sizex;k++) {
-						for(k2=0;k2<sizey;k2++) {
-							mat[k][k2]=(double)0.;
-						}
-					}
-					for (j=0;j<sizey;j++) {  
-					   for (i=0;i<sizex;i++) {	  
-						  mat[i][j]=p_in->p[naxis1*(j+yy1)+i+xx1];
-					   }
-					}
-
-					tt_fitgauss2d (sizex,sizey,mat,pp,ecart);
-					xcc=pp[1]+xx1;
-					ycc=pp[4]+yy1;
-					fwhmx=pp[2];
-					fwhmy=pp[5];
-					free(pp);
-					free(ecart);
-					free(mat);
-				}
-				//avec le vrai centroide
-				/*fwhmx=0;
-				for (k=(int)xcc;k<=(naxis1-2);k++) {
-					if ((p_in->p[naxis1*(int)ycc+k]-p_in->p[naxis1*(int)ycc+k+1])<=0) break;
-					else fwhmx+=1;
-				}		           
-				for (k=(int)xcc;k>=1+x1;k--) {
-					if ((p_in->p[naxis1*(int)ycc+k]-p_in->p[naxis1*(int)ycc+k-1])<=0) break;
-					else fwhmx+=1;
-				}  
-				fwhmx/=2.;
+				free(mat);*/
+			iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
+			dX = (double*)calloc(sizex,sizeof(double));
+			iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
+			dY = (double*)calloc(sizey,sizeof(double));	
 					
-				fwhmy=0;
-           		for (k=(int)ycc;k<(naxis2-y1);k++) {
-					if ((p_in->p[naxis1*k+(int)xcc]-p_in->p[naxis1*(k+1)+(int)xcc])<=0) break;
-					else fwhmy+=1;
-				}		         
-				for (k=(int)ycc;k>=1+y1;k--) {
-					if ((p_in->p[naxis1*k+(int)xcc]-p_in->p[naxis1*(k-1)+(int)xcc])<=0) break;
-					else fwhmy+=1;
-				}
-				fwhmy/=2.;*/
+			for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
+			for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
 
-				// elimine les bouts d'étoiles  : xcc et ycc eloignés de x et y de plus de r1; et les cosmiques
-				if ((fabs(xcc-x)>r1)||(fabs(ycc-y)>r1)) break;
-				if (((fwhmx<0.8)&&(fwhmy<0.8))||(fwhmx<0.3)||(fwhmy<0.3)) break;
-				/* --- elimine les bouts d'étoiles --- */
-				fwhmxy=(fwhmx>fwhmy)?fwhmx/fwhmy:fwhmy/fwhmx;
-				if ((fwhmxy>2.)&&((fwhmx>1.5)&&(fwhmy>1.5))) break;
-				if ((fwhmxy>1.5)&&((fwhmx>3)&&(fwhmy>3))) break;
-				if ((p_out->p[naxis1*y0+x0+1]==0)&&(p_out->p[naxis1*y0+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0]==0)&&(p_out->p[naxis1*(y0-1)+x0+1]==0)&&(p_out->p[naxis1*(y0+1)+x0-1]==0)&&(p_out->p[naxis1*(y0+1)+x0]==0)&&(p_out->p[naxis1*(y0+1)+x0+1]==0)&&((fwhmx>6.0)||(fwhmy>6.0))) break;
-				
-				fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
-                r1=1.5*fwhmxy;
-                r2=2.0*fwhmxy;
-				
-				/* --- photometrie (flux) ---*/
-                xx1=(int)(xcc-r1);
-                xx2=(int)(xcc+r1);
-                yy1=(int)(ycc-r1);
-                yy2=(int)(ycc+r1);
-                if (xx1<0) xx1=0;
-                if (xx1>=naxis1) xx1=naxis1-1;
-                if (xx2<0) xx2=0;
-                if (xx2>=naxis1) xx2=naxis1-1;
-                if (yy1<0) yy1=0;
-                if (yy1>=naxis2) yy1=naxis2-1;
-                if (yy2<0) yy2=0;
-                if (yy2>=naxis2) yy2=naxis2-1;
-                flux=0.;
-                for (j=yy1;j<=yy2;j++) {
-                   dy=1.*j-ycc;
-                   dy2=dy*dy;
-                   for (i=xx1;i<=xx2;i++) {
-                      dx=1.*i-xcc;
-                      dx2=dx*dx;
-                      d2=dx2+dy2;
-                      dvalue=(double)p_in->p[naxis1*j+i]-fmed;
-                      if ((d2<=r11)) {
-                         flux += dvalue;
-                      }
-                   }
-                }
-                /* --- astrometrie (ra,dec) ---*/
-                ra=0.;
-                dec=0.;
-                if (valid_ast==TT_YES) {
-                   tt_util_astrom_xy2radec(&p_ast,xcc,ycc,&ra,&dec);
-                }
-                ra*=180./(TT_PI);
-                dec*=180./(TT_PI);
-                /* --- sortie du resultat ---*/
-			    fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",nsats,xcc+1.,ycc+1.,flux,fmed,ra,dec,fwhmx,fwhmy);
-				nsats++;
+			for(j=0;j<sizey;j++) {
+			   for(i=0;i<sizex;i++) {
+					pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
+					*(iX+i) += pixel;
+					*(iY+j) += pixel;
+			   }
+			}
 
-				xx1=(int)(xcc-r2);
-				xx2=(int)(xcc+r2);
-				if (x<xx1) {xx1=(int)(x-r2);}
-				if (x>xx2) {xx2=(int)(x+r2);}
-				yy1=(int)(ycc-r2);
-				yy2=(int)(ycc+r2);
-				if (y<yy1) {yy1=(int)(y-r2);}
-				if (y>yy2) {yy2=(int)(y+r2);}
+			for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
+			for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
+
+			tt_fitgauss1d(sizex,dX,pp,ecart);      
+			xcc=pp[1]+xx1;  
+			fwhmx=pp[2];
+			tt_fitgauss1d(sizey,dY,pp,ecart); 
+			ycc=pp[1]+yy1;
+			fwhmy=pp[2];
+			free(iX);
+			free(dX);
+			free(iY);
+			free(dY);
+			free(pp);
+			free(ecart);
+
+			//fwhmxy=(fwhmx>fwhmy)?fwhmx/fwhmy:fwhmy/fwhmx;
+			if ((fwhmx>4*fwhmy)&&((fwhmx>0.5)&&(fwhmy>0.5))) break;
+			if ((fwhmx>3*fwhmy)&&((fwhmx>2)&&(fwhmy>2))) break;
+
+			if (((2*r1-fwhmx)<2)||((r1-fwhmy)<2)||(r1<fwhmy)||(2*r1<fwhmx)) {
+				r1=(fwhmx>fwhmy)?2*fwhmx:2*fwhmy;
+				if (r1<10) r1=10;
+				//re-fitte une gaussienne avec une fenêtre plus grande
+				//fitte une gaussienne pour la recherche du centroide			
+				xx1=(int)(xcc-1.5*r1);
+				xx2=(int)(xcc+1.5*r1);
+				yy1=(int)(ycc-r1);
+				yy2=(int)(ycc+r1);
 				if (xx1<0) xx1=0;
 				if (xx1>=naxis1) xx1=naxis1-1;
 				if (xx2<0) xx2=0;
@@ -2438,15 +1981,125 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				if (yy1>=naxis2) yy1=naxis2-1;
 				if (yy2<0) yy2=0;
 				if (yy2>=naxis2) yy2=naxis2-1;
+  
+				pp = (double*)calloc(6,sizeof(double));
+				ecart = (double*)calloc(1,sizeof(double));
 				sizex=xx2-xx1+1;
 				sizey=yy2-yy1+1;
-				for (j=0;j<sizey;j++) {  
-					for (i=0;i<sizex;i++) {	  
-						  //p_tmp1->p[naxis1*(j+yy1)+i+xx1]=0;
-						p_out->p[naxis1*(j+yy1)+i+xx1]=0;
-					 }
+
+				iX = (TYPE_PIXELS*)calloc(sizex,sizeof(TYPE_PIXELS));
+				dX = (double*)calloc(sizex,sizeof(double));
+				iY = (TYPE_PIXELS*)calloc(sizey,sizeof(TYPE_PIXELS));
+				dY = (double*)calloc(sizey,sizeof(double));	
+					
+				for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
+				for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
+
+				for(j=0;j<sizey;j++) {
+				   for(i=0;i<sizex;i++) {
+						pixel = p_in->p[naxis1*(j+yy1)+i+xx1];
+						*(iX+i) += pixel;
+						*(iY+j) += pixel;
+				   }
 				}
-			//}
+
+				for(i=0;i<sizex;i++) dX[i] = (double)*(iX+i);
+				for(i=0;i<sizey;i++) dY[i] = (double)*(iY+i);
+
+				tt_fitgauss1d(sizex,dX,pp,ecart);      
+				xcc=pp[1]+xx1;  
+				fwhmx=pp[2];
+				tt_fitgauss1d(sizey,dY,pp,ecart); 
+				ycc=pp[1]+yy1;
+				fwhmy=pp[2];
+				free(iX);
+				free(dX);
+				free(iY);
+				free(dY);
+				free(pp);
+				free(ecart);
+			}
+				
+			// elimine les bouts d'étoiles  : xcc et ycc eloignés de x et y de plus de r1; et les cosmiques
+			if ((fabs(xcc-x)>1.5*fwhmxy)||(fabs(ycc-y)>1.5*fwhmxy)) break;
+			if (((fwhmx<0.8)&&(fwhmy<0.8))||(fwhmx<0.3)||(fwhmy<0.3)) break;
+			/* --- elimine les bouts d'étoiles --- */
+			//fwhmxy=(fwhmx>fwhmy)?fwhmx/fwhmy:fwhmy/fwhmx;
+			if ((fwhmx>2.5*fwhmy)&&((fwhmx>1.5)&&(fwhmy>1.5))) break;
+			if ((fwhmx>1.5*fwhmy)&&((fwhmx>3)&&(fwhmy>3))) break;
+			if ((p_out->p[naxis1*y0+x0+1]==0)&&(p_out->p[naxis1*y0+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0]==0)&&(p_out->p[naxis1*(y0-1)+x0+1]==0)&&(p_out->p[naxis1*(y0+1)+x0-1]==0)&&(p_out->p[naxis1*(y0+1)+x0]==0)&&(p_out->p[naxis1*(y0+1)+x0+1]==0)&&((fwhmx>6.0)||(fwhmy>6.0))) break;
+			
+			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
+			r1=1.5*fwhmxy;
+            r2=2.0*fwhmxy;
+            r3=2.5*fwhmxy;
+            r11=r1*r1;
+            r22=r2*r2;
+            r33=r3*r3;				
+			/* --- photometrie (flux) ---*/
+            xx1=(int)(xcc-r1);
+            xx2=(int)(xcc+r1);
+            yy1=(int)(ycc-r1);
+            yy2=(int)(ycc+r1);
+            if (xx1<0) xx1=0;
+            if (xx1>=naxis1) xx1=naxis1-1;
+            if (xx2<0) xx2=0;
+            if (xx2>=naxis1) xx2=naxis1-1;
+            if (yy1<0) yy1=0;
+            if (yy1>=naxis2) yy1=naxis2-1;
+            if (yy2<0) yy2=0;
+            if (yy2>=naxis2) yy2=naxis2-1;
+            flux=0.;
+            for (j=yy1;j<=yy2;j++) {
+               dy=1.*j-ycc;
+               dy2=dy*dy;
+               for (i=xx1;i<=xx2;i++) {
+                  dx=1.*i-xcc;
+                  dx2=dx*dx;
+                  d2=dx2+dy2;
+                  dvalue=(double)p_in->p[naxis1*j+i]-fmed;
+                  if ((d2<=r11)) {
+                     flux += dvalue;
+                  }
+               }
+            }
+            /* --- astrometrie (ra,dec) ---*/
+            ra=0.;
+            dec=0.;
+            if (valid_ast==TT_YES) {
+               tt_util_astrom_xy2radec(&p_ast,xcc,ycc,&ra,&dec);
+            }
+            ra*=180./(TT_PI);
+            dec*=180./(TT_PI);
+            /* --- sortie du resultat ---*/
+			fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",nsats,xcc+1.,ycc+1.,flux,fmed,ra,dec,fwhmx,fwhmy);
+			nsats++;
+
+			xx1=(int)(xcc-r1);
+			xx2=(int)(xcc+r2);
+			if (x<xx1) {xx1=(int)(x-r1);}
+			if (x>xx2) {xx2=(int)(x+r1);}
+			yy1=(int)(ycc-r1);
+			yy2=(int)(ycc+r2);
+			if (y<yy1) {yy1=(int)(y-r1);}
+			if (y>yy2) {yy2=(int)(y+r2);}
+			if (xx1<0) xx1=0;
+			if (xx1>=naxis1) xx1=naxis1-1;
+			if (xx2<0) xx2=0;
+			if (xx2>=naxis1) xx2=naxis1-1;
+			if (yy1<0) yy1=0;
+			if (yy1>=naxis2) yy1=naxis2-1;
+			if (yy2<0) yy2=0;
+			if (yy2>=naxis2) yy2=naxis2-1;
+			sizex=xx2-xx1+1;
+			sizey=yy2-yy1+1;
+			for (j=0;j<sizey;j++) {  
+				for (i=0;i<sizex;i++) {	 
+					if ((j+yy1)>=naxis2) break;
+					if ((i+xx1)>=naxis1) break;
+					p_out->p[naxis1*(j+yy1)+i+xx1]=0;
+				 }
+			}
 		}
 	}
 	fclose(fic);
@@ -2455,8 +2108,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	pseries->jj_stack=pseries->jj[index-1];
 	pseries->exptime_stack=pseries->exptime[index-1];
 
-	result=0;
-	return result ;
+	return 0 ;
 }
 
 
@@ -2762,7 +2414,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		tt_util_cuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),TT_YES);
 		mode1=pseries->bgmean;
 
-		//tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
+		tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
 		/* --- detection des geo et des traînées du bruit --- */
 		if ((4+(pseries->hicut-pseries->locut)/100)<8) {
 			seuil=(4+(pseries->hicut-pseries->locut)/100)*pseries->bgsigma;
@@ -2772,13 +2424,11 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 		//réduction de la dynamique des images
 		sb=pseries->bgsigma;
-		sh=(pseries->bgsigma)*5.1;
+		sh=seuil;
 		//sh=pseries->hicut-mode1;
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
-				if (mode1>mode2) {
-					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;
-				}
+				if (mode1>mode2) p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;					
 				if (fabs (p_out->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x])<seuil) {
 					p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x];
 				} else {
@@ -2815,12 +2465,11 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./(float)(sb+sh);
 					}
 				}
-				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];	
-				if (p_out->p[y*naxis1+x]<0) {
-					p_out->p[y*naxis1+x]=0;
-				}
+				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];
+				if (p_out->p[y*naxis1+x]<seuil) p_out->p[y*naxis1+x]=0;	
 			}
 		}
+		//tt_imasaver(p_out,"D:/ouv_ferm_seuill.fit",16);
 		//tt_imasaver(p_tmp2,"D:/init2.fit",8);
 		//tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouv_de_ferm2.fit",8);
 	} 
@@ -3119,8 +2768,6 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 		}
 	}
 }
-
-
 
 
 int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
@@ -3691,9 +3338,9 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		}
 	 }
 	//enregistre l'image de hough
-	//tt_imasaver(pout,"D:/hough.fit",16);
-	//seuil de détection fixé arbitrairement à 20 points alignés
-	if (seuil_max>=20) {
+	tt_imasaver(pout,"D:/hough.fit",16);
+	//seuil de détection fixé arbitrairement à 15 points alignés
+	if (seuil_max>=10) {
 		threshold_ligne=seuil_max/2;
 		somme_value=0;
 		somme_theta=0;
@@ -3725,7 +3372,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		//theta0=(theta0-naxis12/2.)*(TT_PI)/180.;
 		theta0=(theta0/2.0-naxis12/4)*(TT_PI)/180.;
 		ro0=ro0-naxis22;
-
+		
 		//pour angle différent de 90°
 		if ((theta0==(TT_PI)/2.)||(theta0==-(TT_PI)/2.)) {
 			eq[0]=0;
