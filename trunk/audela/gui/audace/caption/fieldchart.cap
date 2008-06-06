@@ -1,6 +1,6 @@
 #
 # Fichier : fieldchart.cap
-# Mise a jour $Id: fieldchart.cap,v 1.4 2007-01-27 14:43:31 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.cap,v 1.5 2008-06-06 17:27:34 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -153,7 +153,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(fieldchart,champ_image)                "Bild Feld Parametern"
    set caption(fieldchart,catalogue)                  "Karte"
    set caption(fieldchart,cat_microcat)               "MicroCat Katalog"
-   set caption(fieldchart,magnitude_limite)           "Größe Grenze"
+   set caption(fieldchart,magnitude_limite)           "Größeklasse Grenze"
    set caption(fieldchart,largeur_image)              "Bild Breite"
    set caption(fieldchart,hauteur_image)              "Bild Höhe"
    set caption(fieldchart,prendre_image)              "Vom Bild nehmen"

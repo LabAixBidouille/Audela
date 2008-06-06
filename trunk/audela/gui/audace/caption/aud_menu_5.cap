@@ -1,6 +1,6 @@
 #
 # Fichier : aud_menu_5.cap
-# Mise a jour $Id: aud_menu_5.cap,v 1.6 2007-04-01 14:39:56 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_5.cap,v 1.7 2008-06-06 17:28:31 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -234,7 +234,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(audace,back_xy)                        "Hinter"
    set caption(audace,integflux)                      "Integrierter Fluss"
    set caption(audace,largeurequiv)                   "Gleichwertige Breite"
-   set caption(audace,mag_instrument)                 "Instrumental Größe -2.5*log10(Fluss)"
+   set caption(audace,mag_instrument)                 "Instrumental Größeklasse -2.5*log10(Fluss)"
    set caption(audace,RA)                             "RA"
    set caption(audace,DEC)                            "Dek."
    set caption(audace,MPC_format)                     "MPC Format:"
