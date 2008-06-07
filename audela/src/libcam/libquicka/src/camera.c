@@ -358,10 +358,51 @@ int quicka_start(struct camprop *cam)
     KAF = (short) (1 + cam->index_cam);
     bin_x = cam->binx;
     bin_y = cam->biny;
+
+    // Calcul des abscisses de la fenetre
     x1 = (short) (1 + 1. * cam->x1 / bin_x);
     x2 = (short) (1 + 1. * cam->x2 / bin_x);
+#if defined(LIBQUICKA_LOGFILE)
+    f = fopen("quicka.txt", "at");
+    fprintf(f,"<LIBQUICKA/quicka_start:%d> cam->mirrorv=%d",__LINE__,cam->mirrorv);
+    fprintf(f,"<LIBQUICKA/quicka_start:%d>   x1=%d, x2=%d",__LINE__,x1,x2);
+    fclose(f);
+#endif
+    if (cam->mirrorv == 1) {
+	int tmp;
+	x1 = cam->nb_photox / bin_x - ( x1 - 1 );
+	tmp = cam->nb_photox / bin_x - ( x2 - 1 );
+	x2 = x1;
+	x1 = tmp;
+    }
+#if defined(LIBQUICKA_LOGFILE)
+    f = fopen("quicka.txt", "at");
+    sprintf(f,"<LIBQUICKA/quicka_start:%d>   -> x1=%d, x2=%d",__LINE__,x1,x2);
+    fclose(f);
+#endif
+
+    // Calcul des ordonnees de la fenetre
     y1 = (short) (1 + 1. * cam->y1 / bin_y);
     y2 = (short) (1 + 1. * cam->y2 / bin_y);
+#if defined(LIBQUICKA_LOGFILE)
+    f = fopen("quicka.txt", "at");
+    fprintf(f,"<LIBQUICKA/quicka_start:%d> cam->mirrorh=%d",__LINE__,cam->mirrorh);
+    fprintf(f,"<LIBQUICKA/quicka_start:%d>   y1=%d, y2=%d",__LINE__,y1,y2);
+    fclose(f);
+#endif
+    if (cam->mirrorh == 1) {
+	int tmp;
+	y1 = cam->nb_photoy / bin_y - ( y1 - 1 );
+	tmp = cam->nb_photoy / bin_y - ( y2 - 1 );
+	y2 = y1;
+	y1 = tmp;
+    }
+#if defined(LIBQUICKA_LOGFILE)
+    f = fopen("quicka.txt", "at");
+    sprintf(f,"<LIBQUICKA/quicka_start:%d>   -> y1=%d, y2=%d",__LINE__,y1,y2);
+    fclose(f);
+#endif
+
     if (cam->shutterindex == 0) {
 	shutter = 0;
     } else {
