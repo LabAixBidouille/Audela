@@ -2,7 +2,7 @@
 # Fichier : visio.tcl
 # Description : Outil de visionnage d'images fits + gestion des series d'images
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: visio.tcl,v 1.15 2007-12-27 22:32:03 robertdelmas Exp $
+# Mise a jour $Id: visio.tcl,v 1.16 2008-06-07 09:17:03 robertdelmas Exp $
 #
 
 # ========================================================
@@ -10,7 +10,7 @@
 # ========================================================
 
 namespace eval ::visio {
-   package provide visio 2.6.2
+   package provide visio 2.6.5
    package require audela 1.4.0
 
    #--- Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -137,6 +137,9 @@ namespace eval ::visio {
          "Linux" {
             set panneau(visio,ext,fits_comp) [list "" ".gz" ".bz2"]
          }
+         "Darwin" {
+            set panneau(visio,ext,fits_comp) [list "" ".gz" ".bz2"]
+         }
          default {
             set panneau(visio,ext,fits_comp) [list "" ".gz"]
          }
@@ -144,6 +147,9 @@ namespace eval ::visio {
       #--- Liste des extensions de fichiers autres que FITS pris en charge
       switch $::tcl_platform(os) {
          "Linux" {
+            set panneau(visio,ext,nofits) [list ".gif" ".GIF" ".bmp" ".BMP" ".jpg" ".JPG" ".jpeg" ".JPEG" ".png" ".PNG" ".ps" ".eps" ".EPS" ".tif" ".TIF" ".tiff" ".TIFF" ".xbm" ".XBM" ".xpm" ".XPM"]
+         }
+         "Darwin" {
             set panneau(visio,ext,nofits) [list ".gif" ".GIF" ".bmp" ".BMP" ".jpg" ".JPG" ".jpeg" ".JPEG" ".png" ".PNG" ".ps" ".eps" ".EPS" ".tif" ".TIF" ".tiff" ".TIFF" ".xbm" ".XBM" ".xpm" ".XPM"]
          }
          default {
@@ -305,7 +311,7 @@ namespace eval ::visio {
 
       switch -exact -- $panneau(visio,onglet) {
          serie {set panneau(visio,onglet) zip}
-         zip {set panneau(visio,onglet) serie}
+         zip   {set panneau(visio,onglet) serie}
       }
 
       #--- Affichage du nouvel onglet
@@ -534,8 +540,8 @@ namespace eval ::visio {
          renumerote $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)
 
          #--- Affichage du premier fichier de la serie
-
          set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+
          #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
          if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
          set panneau(visio,index) [lindex $index_serie 0]
@@ -627,18 +633,18 @@ namespace eval ::visio {
 
       #--- On ne continue que s'il y a une disquette dans le lecteur
       if {[file exist $panneau(visio,lecteur_amovible)]==1} {
-      #--- On ferme la fenetre de lancement
-      destroy $audace(base).feninidisket
-      #--- Desactive les boutons
-      visio::desactive_boutons
-      #--- Supprime les fichiers existants sur la disquette
-      visio::clear_disket
-      #--- Creation du buffer temporaire
-      set num_buf_tmp [buf::create]
-      buf$num_buf_tmp extension $conf(extension,defaut)
-      set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
-      #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
-      if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
+         #--- On ferme la fenetre de lancement
+         destroy $audace(base).feninidisket
+         #--- Desactive les boutons
+         visio::desactive_boutons
+         #--- Supprime les fichiers existants sur la disquette
+         visio::clear_disket
+         #--- Creation du buffer temporaire
+         set num_buf_tmp [buf::create]
+         buf$num_buf_tmp extension $conf(extension,defaut)
+         set index_serie [lsort2 [liste_index $panneau(visio,nom_generique) -rep $panneau(visio,repertoire) -ext $panneau(visio,extension)]]
+         #--- Si possible on trie par ordre croissant (sauf dans le cas d'indexation 01, 02 .... par ex.)
+         if [catch [set index_serie [lsort2 -ascii $index_serie]]] {}
          set bits_utilises 0
          set panneau(visio,disquetteNo) 1
          foreach index $index_serie {
@@ -782,7 +788,7 @@ namespace eval ::visio {
                set valid 0
                break
             }
-               set indice [string range $element [expr $ks1+1] [expr $ks2-1]]
+            set indice [string range $element [expr $ks1+1] [expr $ks2-1]]
          } else {
             set indice $element
          }
@@ -803,6 +809,7 @@ namespace eval ::visio {
       #::console::affiche_resultat "APRES elements=$elements\n"
       return $elements
    }
+
 }
 
 # ==============================
@@ -979,7 +986,9 @@ proc CreeFenIniDisket { } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).feninidisket
 
-   } else {focus $audace(base).feninidisket}
+   } else {
+      focus $audace(base).feninidisket
+   }
 }
 
 #---Procedure d'affichage de la fenetre "disquette pleine"
@@ -1017,7 +1026,9 @@ proc CreeFenFullDisket { } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).fenfulldisket
 
-   } else {focus $audace(base).fenfulldisket}
+   } else {
+      focus $audace(base).fenfulldisket
+   }
 }
 
 #---Procedure d'affichage de la fenetre "confirmation de la suppression de la serie courante"
@@ -1051,7 +1062,9 @@ proc CreeFenConfirmSuppr { } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).fenconfirmsuppr
 
-   } else {focus $audace(base).fenconfirmsuppr}
+   } else {
+      focus $audace(base).fenconfirmsuppr
+   }
 }
 
 #---Procedure d'affichage de la fenetre "renommer serie courante"
@@ -1097,7 +1110,9 @@ proc CreeFenRenommer { } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).fenrenommer
 
-   } else {focus $audace(base).fenrenommer}
+   } else {
+      focus $audace(base).fenrenommer
+   }
 }
 
 #---Procedure d'affichage de la fenetre "confirmer renommer la serie courante"
@@ -1131,7 +1146,9 @@ proc CreeFenConfirmRenom { } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $audace(base).fenconfirmrenom
 
-   } else {focus $audace(base).fenconfirmrenom}
+   } else {
+      focus $audace(base).fenconfirmrenom
+   }
 }
 
 # =================================
