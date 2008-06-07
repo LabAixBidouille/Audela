@@ -2444,62 +2444,69 @@ int Cmd_mctcl_precessradec(ClientData clientData, Tcl_Interp *interp, int argc, 
 /****************************************************************************/
 /* Effectue la correction de precession pour changer equinoxe.              */
 /****************************************************************************/
-/* Entrees :                 		     					                */
-/* ListRaDec                 												*/
-/* Date_from                 												*/
-/* Date_to                 												    */
-/*																			*/
-/* Sorties :																*/
-/* ListRaDec en degres.                 									*/
+/* Entrees :                                                                */
+/* ListRaDec                                                                */
+/* Date_from (equinox)                                                      */
+/* Date_to                                                                  */
+/* Liste : mu_ra mu_dec Date_Epoch                                          */
+/*                                                                          */
+/* Sorties :                                                                */
+/* ListRaDec en degres.                                                     */
 /****************************************************************************/
-   double jjfrom=0.,jjto=0.,asd2=0.,dec2=0.,radeg,decdeg,pradeg,pdecdeg;
-   int result=TCL_ERROR;
+   double jjfrom=0.,jjto=0.,jjepoch=0.,asd2=0.,dec2=0.,radeg,decdeg,pradeg,pdecdeg;
+   int result=TCL_ERROR,valid=1;
    char s[100];
    char **argvv=NULL;
    int argcc;
 
-   if(argc<4) {
-      sprintf(s,"Usage: %s ListRaDec Date_from Date_to ?ProperMotions_ListRaDec?", argv[0]);
-      Tcl_SetResult(interp,s,TCL_VOLATILE);
-      result = TCL_ERROR;
-   } else {
+	valid=1;
+   if(argc>=4) {
       /* --- decode les dates ---*/
       mctcl_decode_date(interp,argv[2],&jjfrom);
       mctcl_decode_date(interp,argv[3],&jjto);
-      /*--- Calcul des coordonnees Ra,Dec */
+      /*--- decode les coordonnees Ra,Dec */
       if (Tcl_SplitList(interp,argv[1],&argcc,&argvv)==TCL_OK) {
-		 if (argcc>=2) {
-            mctcl_decode_angle(interp,argvv[0],&radeg);
-            mctcl_decode_angle(interp,argvv[1],&decdeg);
-            Tcl_Free((char *) argvv);
-			pradeg=0.;
-			pdecdeg=0.;
-			if (argc>=5) {
-               if (Tcl_SplitList(interp,argv[4],&argcc,&argvv)==TCL_OK) {
-		          if (argcc>=2) {
-                     mctcl_decode_angle(interp,argvv[0],&pradeg);
-                     mctcl_decode_angle(interp,argvv[1],&pdecdeg);
-				  }
-                  Tcl_Free((char *) argvv);
-               }
+			if (argcc>=2) {
+				mctcl_decode_angle(interp,argvv[0],&radeg);
+				mctcl_decode_angle(interp,argvv[1],&decdeg);
+			} else {
+				valid=0;
 			}
-			/* --- calcul de mouvement propre ---*/
-			radeg+=(jjto-jjfrom)/365.25*pradeg;
-			decdeg+=(jjto-jjfrom)/365.25*pdecdeg;
-            /* --- calcul de la precession ---*/
-            mc_precad(jjfrom,radeg*DR,decdeg*DR,jjto,&asd2,&dec2);
-            /* --- sortie des résultats ---*/
-	        sprintf(s,"%12f %12f",asd2/(DR),dec2/(DR));
-            Tcl_SetResult(interp,s,TCL_VOLATILE);
-            result = TCL_OK;
-         } else {
-            Tcl_Free((char *) argvv);
-            sprintf(s,"Usage: %s ListRaDec Date_from Date_to ?ProperMotions_ListRaDec?", argv[0]);
-            Tcl_SetResult(interp,s,TCL_VOLATILE);
-            result = TCL_ERROR;
-		 }
-	  }
-   }
+		}
+		Tcl_Free((char *) argvv);
+      /*--- decode les mouvements propres */
+		pradeg=0.;
+		pdecdeg=0.;
+		if (argc>=5) {
+			if (Tcl_SplitList(interp,argv[4],&argcc,&argvv)==TCL_OK) {
+				if (argcc>=3) {
+					mctcl_decode_angle(interp,argvv[0],&pradeg);
+					mctcl_decode_angle(interp,argvv[1],&pdecdeg);
+					mctcl_decode_date(interp,argv[2],&jjepoch);
+				} else {
+					valid=0;
+				}
+         }
+			Tcl_Free((char *) argvv);
+		}
+	} else {
+		valid=0;
+	}
+	if (valid=0) {
+      sprintf(s,"Usage: %s ListRaDec Date_from Date_to ?{ProperMotions_Ra ProperMotions_Dec Date_Epoch}?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+	} else {
+		/* --- calcul de mouvement propre ---*/
+		radeg+=(jjto-jjepoch)/365.25*pradeg;
+		decdeg+=(jjto-jjepoch)/365.25*pdecdeg;
+      /* --- calcul de la precession ---*/
+      mc_precad(jjfrom,radeg*DR,decdeg*DR,jjto,&asd2,&dec2);
+      /* --- sortie des résultats ---*/
+	   sprintf(s,"%12f %12f",asd2/(DR),dec2/(DR));
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_OK;
+	}
    return result;
 }
 
