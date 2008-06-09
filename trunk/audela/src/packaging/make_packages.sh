@@ -10,9 +10,13 @@
 
 
 #--- Variables de focntionnement :
-depends_debian="libc6, libgcc1, libgphoto2-2, libgsl0, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, tclthread, libx11-6, libxau6, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
-depends_ubuntu="libc6, libgcc1, libgphoto2-2, libgsl0ldbl, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
-depends_mandriva="libc6, libgcc1, libgphoto2-2, libgsl0ldbl, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
+depends_debian="tk8.4, libstdc++6, libgsl0, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
+# depends_debian="libc6, libgcc1, libgsl0, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, tclthread, libx11-6, libxau6, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
+depends_ubuntu="tk8.4, libstdc++6, libgsl0ldbl, gnuplot-x11, gzip, libusb-0.1-4, tclxml, tcllib, tclvfs, libtk-img, blt"
+# depends_ubuntu="libc6, libgcc1, libgsl0ldbl, libstdc++6, libusb-0.1-4, tcl8.4, tk8.4, gnuplot-x11, gzip, tclxml, tcllib, tclvfs, libtk-img, blt"
+depends_mandriva="libtk8.4, gsl, libstdc++6, gnuplot, gzip, libusb, tcl-tcllib, blt"
+# depends_mandriva="glibc, libgcc1, libgphoto, gsl, libstdc++6, libusb, libtcl8.4, libtk8.4, gnuplot, gzip, tcl-tcllib, blt"
+# unfound : gnuplot-x11 tclxml tclvfs, libtk-img
 
 
 #--- Choix de la distro et parametrage en consequence :
@@ -89,9 +93,19 @@ if test -e ../../bin/libtcl8.4.so*
 then
     nom_paquet="audela-thread"
     lesuffixe="thread"
+    liens="#
+# Libs .so.0 necessaires pour BLT :
+ln -s $INST_DIR/bin/libtcl8.4.so $INST_DIR/bin/libtcl8.4.so.0
+ln -s $INST_DIR/bin/libtk8.4.so $INST_DIR/bin/libtk8.4.so.0
+"
 else
     nom_paquet="audela-mono"
     lesuffixe="mono"
+    liens="#
+# Compense un probleme dans l'edition de lien d'Audela : il faut a Audela les lib.so (lien realise par le paquet de tk-dev) au lieu de .so.0 (pour BLT et dispo ds paquet binaire) Mais c'est MAL de faire ainsi !
+if test -e /usr/lib/libtcl8.4.so || test -h /usr/lib/libtcl8.4.so ; then echo "" ; elif test -e /usr/lib/libtcl8.4.so.0 ; then ln -s /usr/lib/libtcl8.4.so.0 /usr/lib/libtcl8.4.so ; fi
+if test -e /usr/lib/libtk8.4.so || test -h /usr/lib/libtk8.4.so ; then echo "" ; elif test -e /usr/lib/libtk8.4.so.0 ; then ln -s /usr/lib/libtk8.4.so.0 /usr/lib/libtk8.4.so ; fi
+"
 fi
 
 mkdir -p $BUILD_DIR/DEBIAN
@@ -108,12 +122,14 @@ Provides: audela
 Description: Logiciel libre multiplateforme (Win32, Linux, Mac), permettant les acquisitions CCD, le pilotage de telescopes, le traitement et l'exploitation des images. Automatisation possible grace aux scripts TCL. Il se couple avec Cartes du Ciel pour le pointage. Homepage : http://www.audela.org.
 " > $BUILD_DIR/DEBIAN/control
 
+# AudeLA is a TCL extension aimed at providing amateur astronomers with image processing, telescope controling, ccd camera driving, and various astronomical algorithms.
+
+
 echo "#!/bin/sh
 set -e
-ln -s $INST_DIR/bin/audela.sh /usr/bin/audela
-# Compense un probleme dans l'edition de lien d'Audela : il lui faut lib...so au lieu de .so.0. Mais c'est mal de faire ainsi !
-if test -e /usr/lib/libtcl8.4.so ; then echo "" ; else ln -s /usr/lib/libtcl8.4.so.0 /usr/lib/libtcl8.4.so ; fi
-if test -e /usr/lib/libtcl8.4.so ; then echo "" ; else ln -s /usr/lib/libtk8.4.so.0 /usr/lib/libtk8.4.so ; fi
+# Cree un lien symbolique pour la derniere version d'Audela instalee :
+if test -h /usr/bin/audela ; then rm -f /usr/bin/audela ; else ln -s $INST_DIR/bin/audela.sh /usr/bin/audela ; fi
+$liens
 # Automatically added by dh_installmenu
 if [ "$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
         update-menus
@@ -125,6 +141,7 @@ chmod 555 $BUILD_DIR/DEBIAN/postinst
 echo "#!/bin/sh
 set -e
 rm -f /usr/bin/audela
+if test -h $INST_DIR/bin/libtcl8.4.so.0 ; then rm -rf $INST_DIR ; fi
 # Automatically added by dh_installmenu
 if [ -x "`which update-menus 2>/dev/null`" ]; then update-menus ; fi
 # End automatically added section
@@ -164,6 +181,34 @@ sudo chown -R root.root $DIRECTORY/*
 #sudo chmod a+w $DIRECTORY/bin/audace.txt
 
 
+#--- Creation du fichier d'entree pour la presence d'Audela dans le menu du gestionnaire de fenetres :
+mkdir -p $BUILD_DIR/usr/share/applications/
+echo "[Desktop Entry]
+Name=AudeLA
+Comment=Astronomy image processing, telescope controling, and ccd camera driving software
+Comment[fr]=Logiciel de traitement d'image astronomique, de contôle de télescopes et de pilotage de caméra ccd
+Exec=audela
+Icon=audela.xpm
+Terminal=false
+Type=Application
+Categories=Astronomy;Science;Education;
+" > $BUILD_DIR/usr/share/applications/audela.desktop
+chmod a+r $BUILD_DIR/usr/share/applications/audela.desktop
+sudo chown -R root.root $BUILD_DIR/usr/share/*
+
+mkdir $BUILD_DIR/usr/share/menu
+echo "?package(audela):needs="X11" section="Apps/Science" \
+  section="Apps/Science" \
+  title="AudeLA" \
+  longtitle="AudeLA: astronomy software" \
+  hints="AudeLA: astronomy software" \
+  command="/usr/bin/audela" \
+  icon="/usr/share/pixmaps/audela.xpm"
+" > $BUILD_DIR/usr/share/menu/audela
+
+mkdir $BUILD_DIR/usr/share/pixmaps
+cp audela.xpm $BUILD_DIR/usr/share/pixmaps/
+
 #--- Creation du paquet :
 echo "Creation du paquet Debian..."
 sudo dpkg -b $BUILD_DIR $BUILD_DIR-$lesuffixe.deb
@@ -182,10 +227,11 @@ then
     sudo chown $luser.$luser *.rpm
     mv *.rpm ..
     cd ..
-    rm -rf rpm
+    rm -rf rpm *.deb
     echo "Paquet RPM cree."
 fi
 
+#rm -rf $BUILD_DIR
 
 #--- Fin du script :
 
