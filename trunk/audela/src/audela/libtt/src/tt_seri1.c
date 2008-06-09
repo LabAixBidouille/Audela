@@ -108,12 +108,12 @@ int tt_fct_ima_series(void *arg1)
    int nbkeys,nbima;
    int load_indice_fin,load_indice_deb,save_indice_deb;
    int load_level_index; /* =0 si pas d'indices */
-			 /* =1 pour un indice dans le nom */
-			 /* =2 pour un indice d'entete avec le meme nom */
+   /* =1 pour un indice dans le nom */
+   /* =2 pour un indice d'entete avec le meme nom */
    int save_level_index;
    char date_obs_stack[FLEN_VALUE];
    TT_IMA_SERIES pseries;
-
+   
    /* ======================================== */
    /* === decodage de la ligne d'arguments === */
    /* ======================================== */
@@ -121,7 +121,7 @@ int tt_fct_ima_series(void *arg1)
    /*printf("<%s>\n",ligne);*/
    tt_writelog(ligne);
    tt_decodekeys(ligne,(void***)&keys,&nbkeys);
-
+   
    /* ================================== */
    /* === verification des arguments === */
    /* ================================== */
@@ -159,7 +159,7 @@ int tt_fct_ima_series(void *arg1)
    printf("save_level_index=%d save_indice_deb=%d\n",save_level_index,save_indice_deb);
    */
    pseries.nbkeys=nbkeys;
-
+   
    /* ======================= */
    /* === initialisations === */
    /* ======================= */
@@ -167,92 +167,101 @@ int tt_fct_ima_series(void *arg1)
       tt_util_free_ptrptr((void**)keys,"keys");
       return(msg);
    }
-
+   
    /* =================================== */
    /* === boucle de la premiere passe === */
    /* =================================== */
-
+   
    pseries.nbimages=load_indice_fin-load_indice_deb+1;
    /* --- boucle sur les images ---*/
    for (kk=load_indice_deb;kk<=load_indice_fin;kk++) {
-
+      
       pseries.index=1+kk-load_indice_deb;
       /* --- cree le fullname in ---*/
       if (load_level_index==1) {
-	 strcpy(fullname,tt_indeximafilecater(keys[1],keys[2],kk,keys[5]));
+         strcpy(fullname,tt_indeximafilecater(keys[1],keys[2],kk,keys[5]));
       } else if (load_level_index==2) {
-	 sprintf(fullname,"%s;%d",tt_imafilecater(keys[1],keys[2],keys[5]),kk);
+         sprintf(fullname,"%s;%d",tt_imafilecater(keys[1],keys[2],keys[5]),kk);
+      } else if (load_level_index==3) {
+         char filename[(FLEN_FILENAME)+5];
+         if ( tt_verifargus_getFileName(keys[2],kk,filename) == 1 ) {
+            strcpy(fullname,tt_imafilecater(keys[1],filename,keys[5]));
+         } else {
+            tt_util_free_ptrptr((void**)keys,"keys");
+            tt_errlog(msg,"bad file name");
+            return(TT_ERR_NOT_ALLOWED_FILENAME);
+         }
       } else {
-	 sprintf(fullname,"%s",tt_imafilecater(keys[1],keys[2],keys[5]));
+         sprintf(fullname,"%s",tt_imafilecater(keys[1],keys[2],keys[5]));
       }
-
+      
       /* --- charge l'image ---*/
       if ((msg=tt_ima_series_loader_0(&pseries,fullname))!=0) {
-	 tt_util_free_ptrptr((void**)keys,"keys");
-	 tt_ima_series_destroyer(&pseries);
-	 return(msg);
+         tt_util_free_ptrptr((void**)keys,"keys");
+         tt_ima_series_destroyer(&pseries);
+         return(msg);
       }
       strcpy(fullname0,fullname);
-
+      
       /* --- appel du dispatcher de fonctions et des calculs ---*/
       pseries.index_out=0;
       msg=tt_ima_series_dispatch(keys,&pseries);
-
+      
       /* --- traite les erreurs ---*/
       if (msg!=OK_DLL) {
-	 tt_util_free_ptrptr((void**)keys,"keys");
-	 tt_ima_series_destroyer(&pseries);
-	 return(msg);
+         tt_util_free_ptrptr((void**)keys,"keys");
+         tt_ima_series_destroyer(&pseries);
+         return(msg);
       }
-
+      
       /* --- cree, calcule et sauve l'image finale ---*/
       if ((pseries.numfct!=0)&&(pseries.numfct!=TT_IMASERIES_DELETE)) {
-	 /* --- cree le fullname out ---*/
-	 if (pseries.index_out==0) {
-	    /* cas ou les indices de sortie sont dans l'ordre */
-	    index_out=kk-load_indice_deb+save_indice_deb;
-	 } else {
-	    /* cas ou les indices de sortie ne sont pas dans l'ordre */
-	    index_out=pseries.index_out-1+save_indice_deb;
-	 }
-	 if (save_level_index==0) {
-	    strcpy(fullname,tt_imafilecater(keys[6],keys[7],keys[9]));
-	 } else if (save_level_index==1) {
-	    strcpy(fullname,tt_indeximafilecater(keys[6],keys[7],index_out,keys[9]));
-	 } else if (save_level_index==2) {
-	    sprintf(fullname,"%s;%d",tt_imafilecater(keys[6],keys[7],keys[9]),index_out);
-	 }
-	 /* --- complete l'entete de l'image a sauver ---*/
-	 tt_jd2dateobs(pseries.jj_stack,date_obs_stack);
+         /* --- cree le fullname out ---*/
+         if (pseries.index_out==0) {
+            /* cas ou les indices de sortie sont dans l'ordre */
+            index_out=kk-load_indice_deb+save_indice_deb;
+         } else {
+            /* cas ou les indices de sortie ne sont pas dans l'ordre */
+            index_out=pseries.index_out-1+save_indice_deb;
+         }
+         if (save_level_index==0) {
+            strcpy(fullname,tt_imafilecater(keys[6],keys[7],keys[9]));
+         } else if (save_level_index==1) {
+            strcpy(fullname,tt_indeximafilecater(keys[6],keys[7],index_out,keys[9]));
+         } else if (save_level_index==2) {
+            sprintf(fullname,"%s;%d",tt_imafilecater(keys[6],keys[7],keys[9]),index_out);
+         }
+         /* --- complete l'entete de l'image a sauver ---*/
+         tt_jd2dateobs(pseries.jj_stack,date_obs_stack);
          pseries.jj_stack-=2400000.5;
-	 tt_imanewkey(pseries.p_out,"MJD-OBS",&(pseries.jj_stack),TDOUBLE,"Start of exposure","d");
+         tt_imanewkey(pseries.p_out,"MJD-OBS",&(pseries.jj_stack),TDOUBLE,"Start of exposure","d");
          pseries.jj_stack+=2400000.5;
-	 tt_imanewkey(pseries.p_out,"DATE-OBS",date_obs_stack,TSTRING,"Start of exposure. FITS standard","Iso 8601");
-	 tt_imanewkey(pseries.p_out,"EXPOSURE",&(pseries.exptime_stack),TDOUBLE,"Total time of exposure","s");
-
-	 /* --- complete l'entete avec celle de la premiere image ---*/
-	 if ((msg=tt_imarefheader(pseries.p_out,fullname0))!=0) {
-	    tt_util_free_ptrptr((void**)keys,"keys");
-	    tt_ima_series_destroyer(&pseries);
-	    sprintf(message,"Problem concerning file %s for reference keywords",fullname);
-	    tt_errlog(msg,message);
-	    return(msg);
-	 }
-
-	 /* --- complete l'entete avec l'historique de ce traitement ---*/
-	 if ((msg=tt_ima_series_history(keys,&pseries))!=OK_DLL) {
-	    tt_util_free_ptrptr((void**)keys,"keys");
-	    tt_ima_series_destroyer(&pseries);
-	    sprintf(message,"Problem concerning history");
-	    tt_errlog(msg,message);
-	    return(msg);
-	 }
-	 /* --- sauve l'image et les tables eventuelles ---*/
-	 if ((msg=tt_ima_series_saver_end(&pseries,fullname))!=0) {
-	    tt_util_free_ptrptr((void**)keys,"keys");
-	    tt_ima_series_destroyer(&pseries);
-	    return(msg);
-	 }
+         tt_imanewkey(pseries.p_out,"DATE-OBS",date_obs_stack,TSTRING,"Start of exposure. FITS standard","Iso 8601");
+         tt_imanewkey(pseries.p_out,"EXPOSURE",&(pseries.exptime_stack),TDOUBLE,"Total time of exposure","s");
+         
+         /* --- complete l'entete avec celle de la premiere image ---*/
+         if ((msg=tt_imarefheader(pseries.p_out,fullname0))!=0) {
+            tt_util_free_ptrptr((void**)keys,"keys");
+            tt_ima_series_destroyer(&pseries);
+            sprintf(message,"Problem concerning file %s for reference keywords",fullname);
+            tt_errlog(msg,message);
+            return(msg);
+         }
+         
+         /* --- complete l'entete avec l'historique de ce traitement ---*/
+         if ((msg=tt_ima_series_history(keys,&pseries))!=OK_DLL) {
+            tt_util_free_ptrptr((void**)keys,"keys");
+            tt_ima_series_destroyer(&pseries);
+            sprintf(message,"Problem concerning history");
+            tt_errlog(msg,message);
+            return(msg);
+         }
+         /* --- sauve l'image et les tables eventuelles ---*/
+         if ((msg=tt_ima_series_saver_end(&pseries,fullname))!=0) {
+            tt_util_free_ptrptr((void**)keys,"keys");
+            tt_ima_series_destroyer(&pseries);
+            return(msg);
+         }
       }
       tt_imadestroyer(pseries.p_out);
       tt_imabuilder(pseries.p_out);
@@ -260,7 +269,7 @@ int tt_fct_ima_series(void *arg1)
       tt_imadestroyer(pseries.p_in);
       tt_imabuilder(pseries.p_in);
    }
-
+   
    /* ======================================= */
    /* === on libere la memoire et on sort === */
    /* ======================================= */

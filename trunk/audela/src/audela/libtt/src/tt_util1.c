@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Alain KLOTZ <alain.klotz@free.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -288,6 +288,164 @@ char *tt_indeximafilecater(char *path, char *name, int index,char *suffix)
    return(chaine);
 }
 
+/***************************************************************************/
+
+
+int tt_verifargus_getFileNb(char *fileNames )
+/***************************************************************************/
+/* retourne le nombre de noms de fichier de la serie                       */
+/* parametres :                                                            */
+/*    fileNames (in) liste des noms de fichiers (separes par un espace)    */
+/*      les noms contant un espace doivent etre encadres par des accolades */
+/* return :                                                                */
+/*    nombre de noms de fichiers  ou -1 si erreur                          */
+/***************************************************************************/
+{
+   int levelBrace  =0;
+   int posString = 0;
+   int posBeginFileName = 0;
+   int posEndFileName   = -1;
+   int currentFileIndex = 0;
+   int result = -1;
+
+
+   while(fileNames[posString]!=0  && result == -1) {
+
+      if ( levelBrace == 0) {
+         // je chercher un delimiteur
+         if ( fileNames[posString] == '{' ) {
+            levelBrace = 1;
+            // le nom du fichier commence a partir du caractere suivant
+            posBeginFileName = posString + 1;
+         } else if ( fileNames[posString] == '}' ) {
+            // erreur parenthese fermee avant parenthese ouverte
+            return -1;
+         } else if ( fileNames[posString] == ' ' ) {
+            if ( posString == posBeginFileName) {
+               // je repousse le debut de fichier au caractere suivant
+               posBeginFileName = posString +1;
+            } else {
+              // c'est la fin d'un nom de fichier
+              // le nom du fichier se termine au caractere precedent
+              posEndFileName = posString -1;
+            }
+         }
+      } else {
+         if ( fileNames[posString] == '{' ) {
+            // je n'accepte pas les parantheses imbriquees
+            return -1;
+         } else if ( fileNames[posString] == '}' ) {
+           // c'est la fin d'un nom de fichier
+           // le nom du fichier se termine au caractere precedent
+           posEndFileName = posString -1;
+           levelBrace = 0;
+         }
+      }
+
+      // je verifie si c'est le dernier caractere
+      if ( fileNames[posString+1] == 0 && posEndFileName == -1 ) {
+         posEndFileName = posString;
+      }
+
+      if ( posEndFileName != -1 ) {
+         currentFileIndex++;
+         // je cherche le fichier suivant
+         posBeginFileName = posString + 1;
+         posEndFileName = -1;
+      }
+
+      posString++;
+   }
+
+   return currentFileIndex;
+
+
+}
+
+int tt_verifargus_getFileName(char *fileNames, int fileIndex , char* fileName)
+/***************************************************************************/
+/* retourne le n'ieme nom de fichier de la serie                           */
+/* parametres :                                                            */
+/*    fileNames (in) liste des noms de fichiers (separes par un espace)    */
+/*      les noms contant un espace doivent etre encadres par des accolades */
+/*    filIndex  (in)  numero du nom de fichier                             */
+/*    fileName  (out)  nom du fichier correspondant a fileIndex            */
+/* return :                                                                */
+/*    1 si ok, ou -1 si erreur                                             */
+/***************************************************************************/
+{
+   int levelBrace  =0;
+   int posString = 0;
+   int posBeginFileName = 0;
+   int posEndFileName   = -1;
+   int currentFileIndex = 0;
+   int result = -1;
+
+
+   while(fileNames[posString]!=0  && result == -1) {
+
+      if ( levelBrace == 0) {
+         // je chercher un delimiteur
+         if ( fileNames[posString] == '{' ) {
+            levelBrace = 1;
+            // le nom du fichier commence a partir du caractere suivant
+            posBeginFileName = posString + 1;
+         } else if ( fileNames[posString] == '}' ) {
+            // erreur parenthese fermee avant parenthese ouverte
+            return -1;
+         } else if ( fileNames[posString] == ' ' ) {
+           // c'est la fin d'un nom de fichier
+           // le nom du fichier se termine au caractere precedent
+           posEndFileName = posString -1;
+         }
+
+      } else {
+         if ( fileNames[posString] == '{' ) {
+            // je n'accepte pas les parantheses imbriquees
+            return -1;
+         } else if ( fileNames[posString] == '}' ) {
+            if ( posString == posBeginFileName) {
+               // je repousse le debut de fichier au caractere suivant
+               posBeginFileName = posString +1;
+            } else {
+              // c'est la fin d'un nom de fichier
+              // le nom du fichier se termine au caractere precedent
+              posEndFileName = posString -1;
+            }
+         }
+      }
+
+      // je verifie si c'est le dernier caractere
+      if ( fileNames[posString+1] == 0 && posEndFileName == -1 ) {
+         posEndFileName = posString;
+      }
+
+
+      if ( posEndFileName != -1 ) {
+          currentFileIndex++;
+         // j'ai cerne un nom de fichier
+         if ( currentFileIndex==fileIndex ) {
+            // c'est le bon fichier, je copie son nom dans la variable de sortie
+            strncpy(fileName, &fileNames[posBeginFileName], posEndFileName-posBeginFileName+1);
+            // j'ajoute le caractere de fin de chaine
+            fileName[posEndFileName-posBeginFileName+1]= 0;
+            result = 1;
+         } else {
+            // je cherche le fichier suivant
+            posBeginFileName = posString + 1;
+            posEndFileName = -1;
+         }
+      }
+
+      posString++;
+   }
+
+   return result;
+
+
+}
+
+
 int tt_verifargus_2indices(char **keys,int deb,int *level_index,int *indice_deb,int *indice_fin)
 /***************************************************************************/
 {
@@ -306,12 +464,20 @@ int tt_verifargus_2indices(char **keys,int deb,int *level_index,int *indice_deb,
    if (keys[deb+2][0]==';') {
       *level_index=2;
       if (keys[deb+2][1]=='\0') {
-	 *indice_deb=1;
+         *indice_deb=1;
       } else {
-	 *indice_deb=atoi(keys[deb+2]+(int)(1));
+         *indice_deb=atoi(keys[deb+2]+(int)(1));
       }
    } else if (keys[deb+2][0]=='.') {
       *level_index=0;
+   } else if (keys[deb+2][0]=='*') {
+      // si keys[deb+2]=*  alors  keys[deb+1] contient une liste de noms de fichiers
+      *level_index=3;
+      // je verifie que l'indice de fin vaut aussi *
+      if (keys[deb+3][0]!='*') {
+         return(TT_ERR_DECREASED_INDEXES);
+      }
+      *indice_deb=1;
    } else {
       *level_index=1;
       *indice_deb=atoi(keys[deb+2]);
@@ -319,25 +485,33 @@ int tt_verifargus_2indices(char **keys,int deb,int *level_index,int *indice_deb,
    /* --- deb+3 : indice de fin in ---*/
    if (keys[deb+3][0]==';') {
       if ((*level_index==2)||(*level_index==1)) {
-	 if (keys[deb+3][1]=='\0') {
-	    *indice_fin=1;
-	 } else {
-	    *indice_fin=atoi(keys[deb+3]+(int)(1));
-	 }
+         if (keys[deb+3][1]=='\0') {
+            *indice_fin=1;
+         } else {
+            *indice_fin=atoi(keys[deb+3]+(int)(1));
+         }
       } else {
-	 *indice_fin=atoi(keys[deb+3]);
+         *indice_fin=atoi(keys[deb+3]);
       }
    } else if (keys[deb+3][0]=='.') {
       if ((*level_index==1)||(*level_index==2)) {
-	 if (keys[deb+3][1]=='\0') {
-	    *indice_fin=*indice_deb;
-	 } else {
-	    *indice_fin=atoi(keys[deb+3]+(int)(1));
-	 }
+         if (keys[deb+3][1]=='\0') {
+            *indice_fin=*indice_deb;
+         } else {
+            *indice_fin=atoi(keys[deb+3]+(int)(1));
+         }
+      }
+   } else if (keys[deb+3][0]=='*') {
+      // l'indice a ete fixe dans l'analyse de keys[deb+2]
+      *indice_fin = tt_verifargus_getFileNb(keys[deb+1]);
+      if ( *indice_fin == -1 ) {
+         return(TT_ERR_DECREASED_INDEXES);
       }
    } else {
       *indice_fin=atoi(keys[deb+3]);
    }
+
+
    /* --- deb+4 : extension in ---*/
    if (strcmp(keys[deb+4],".")==0) {
       strcpy(keys[deb+4],"");
@@ -348,7 +522,7 @@ int tt_verifargus_2indices(char **keys,int deb,int *level_index,int *indice_deb,
    /* --- verif finale sur les indices ---*/
    if (*level_index!=0) {
       if (*indice_fin<*indice_deb) {
-	 return(TT_ERR_DECREASED_INDEXES);
+         return(TT_ERR_DECREASED_INDEXES);
       }
    }
    return(TT_YES);

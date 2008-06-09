@@ -1059,6 +1059,8 @@ int tt_ima_stack_pythagore_1(TT_IMA_STACK *pstack);
 int tt_decodekeys(char *ligne,void ***outkeys,int *numkeys);
 int tt_strupr(char *chaine);
 int tt_valid_filename(char *filename);
+int tt_verifargus_getFileNb(char *fileNames );
+int tt_verifargus_getFileName(char *fileNames, int fileIndex , char* fileName);
 int tt_verifargus_1indice(char **keys,int deb,int *level_index,int *indice_deb);
 int tt_verifargus_2indices(char **keys,int deb,int *level_index,int *indice_deb,int *indice_fin);
 char *tt_indeximafilecater(char *path, char *name, int index,char *suffix);
