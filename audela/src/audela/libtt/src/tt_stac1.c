@@ -108,8 +108,8 @@ int tt_fct_ima_stack(void *arg1)
    TT_IMA p_in,p_tmp,p_out;
    int load_indice_fin,load_indice_deb,save_indice_deb;
    int load_level_index; /* =0 si pas d'indices */
-			 /* =1 pour un indice dans le nom */
-			 /* =2 pour un indice d'entete avec le meme nom */
+   /* =1 pour un indice dans le nom */
+   /* =2 pour un indice d'entete avec le meme nom */
    int save_level_index;
    char date_obs_stack[FLEN_VALUE];
    char xvalue[FLEN_VALUE],yvalue[FLEN_VALUE];
@@ -124,7 +124,7 @@ int tt_fct_ima_stack(void *arg1)
    char sb[]="MIPS-LO";
    char sh[]="MIPS-HI";
    int nombre,taille;
-
+   
    /* ======================================== */
    /* === decodage de la ligne d'arguments === */
    /* ======================================== */
@@ -132,7 +132,7 @@ int tt_fct_ima_stack(void *arg1)
    /*printf("<%s>\n",ligne);*/
    tt_writelog(ligne);
    tt_decodekeys(ligne,(void***)(&keys),&nbkeys);
-
+   
    /* ================================== */
    /* === verification des arguments === */
    /* ================================== */
@@ -172,17 +172,26 @@ int tt_fct_ima_stack(void *arg1)
    */
    pstack.nbkeys=nbkeys;
    tt_ima_stack_builder(keys,&pstack);
-
+   
    /* ======================= */
    /* === initialisations === */
    /* ======================= */
-
+   
    /* --- analyse la premiere image et cree le tampon ---*/
    /* --- cree le fullname in ---*/
    if (load_level_index==1) {
       strcpy(fullname,tt_indeximafilecater(keys[1],keys[2],load_indice_deb,keys[5]));
    } else if (load_level_index==2) {
       sprintf(fullname,"%s;%d",tt_imafilecater(keys[1],keys[2],keys[5]),load_indice_deb);
+   } else if (load_level_index==3) {
+      char filename[(FLEN_FILENAME)+5];
+      if ( tt_verifargus_getFileName(keys[2],load_indice_deb,filename) == 1 ) {
+         strcpy(fullname,tt_imafilecater(keys[1],filename,keys[5]));
+      } else {
+         tt_util_free_ptrptr((void**)keys,"keys");
+         tt_errlog(msg,"bad file name");
+         return(TT_ERR_NOT_ALLOWED_FILENAME);
+      }
    } else {
       sprintf(fullname,"%s",tt_imafilecater(keys[1],keys[2],keys[5]));
    }
@@ -253,67 +262,76 @@ int tt_fct_ima_stack(void *arg1)
       tt_free(exptime,"exptime");
       return(TT_ERR_PB_MALLOC);
    }
-
+   
    /* =================================== */
    /* === boucle de la premiere passe === */
    /* =================================== */
-
+   
    /* --- boucle sur les zones ---*/
    for (nelem0=nelem,k=0;k<nbzones;k++) {
       /*printf("zone de stack=%d/%d\n",k,nbzones-1);*/
       firstelem=(long)(k)*nelem0;
       if ((firstelem+nelem0)>nelements) {
-	 nelem=nelements-firstelem;
+         nelem=nelements-firstelem;
       } else {
-	 nelem=nelem0;
+         nelem=nelem0;
       }
       /* --- boucle sur les images pour remplir le tampon ---*/
       for (kk=load_indice_deb;kk<=load_indice_fin;kk++) {
-	 /* --- cree le fullname in ---*/
-	 if (load_level_index==1) {
-	    strcpy(fullname,tt_indeximafilecater(keys[1],keys[2],kk,keys[5]));
-	 } else if (load_level_index==2) {
-	    sprintf(fullname,"%s;%d",tt_imafilecater(keys[1],keys[2],keys[5]),kk);
-	 } else {
-	    sprintf(fullname,"%s",tt_imafilecater(keys[1],keys[2],keys[5]));
-	 }
-	 /* --- charge une partie de l'image ---*/
-	 tt_imabuilder(&p_in);
-	 if ((msg=tt_imaloader(&p_in,fullname,firstelem+1,nelem))!=0) {
-	    sprintf(message,"Problem concerning file %s",fullname);
-	    tt_errlog(msg,message);
-	    tt_imadestroyer(&p_out);
-	    tt_imadestroyer(&p_tmp);
-	    tt_imadestroyer(&p_in);
-	    tt_util_free_ptrptr((void**)keys,"keys");
-	    tt_free(jj,"jj");
-	    tt_free(exptime,"exptime");
-	    tt_free(poids,"poids");
-	    return(msg);
-	 }
-	 /* --- verification des dimensions ---*/
-	 if (k==0) {
-	    if ((naxis1_1!=p_in.naxis1)||(naxis2_1!=p_in.naxis2)) {
-	       sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_in.naxis1,p_in.naxis2,fullname,naxis1_1,naxis2_1,fullname0);
-	       tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
-	       tt_imadestroyer(&p_out);
-	       tt_imadestroyer(&p_tmp);
-	       tt_imadestroyer(&p_in);
-	       tt_util_free_ptrptr((void**)keys,"keys");
-	       tt_free(jj,"jj");
-	       tt_free(exptime,"exptime");
-	       tt_free(poids,"poids");
-	       return(TT_ERR_IMAGES_NOT_SAME_SIZE);
-	    }
-	    tt_ima2jd(&p_in,2,&jj[kk-load_indice_deb]);
-	    tt_ima2exposure(&p_in,2,&exptime[kk-load_indice_deb]);
-	 }
-	 /* --- copie la zone de l'image vers le tampon ---*/
-	 base_adr=(int)(nelem0)*(kk-load_indice_deb);
-	 for (kkk=0;kkk<(int)(nelem);kkk++) {
-	    p_tmp.p[base_adr+kkk]=p_in.p[kkk];
-	 }
-	 tt_imadestroyer(&p_in);
+         /* --- cree le fullname in ---*/
+         if (load_level_index==1) {
+            strcpy(fullname,tt_indeximafilecater(keys[1],keys[2],kk,keys[5]));
+         } else if (load_level_index==2) {
+            sprintf(fullname,"%s;%d",tt_imafilecater(keys[1],keys[2],keys[5]),kk);
+         } else if (load_level_index==3) {
+            char filename[(FLEN_FILENAME)+5];
+            if ( tt_verifargus_getFileName(keys[2],kk,filename) == 1 ) {
+               strcpy(fullname,tt_imafilecater(keys[1],filename,keys[5]));
+            } else {
+               tt_util_free_ptrptr((void**)keys,"keys");
+               tt_errlog(msg,"bad file name");
+               return(TT_ERR_NOT_ALLOWED_FILENAME);
+            }
+         } else {
+            sprintf(fullname,"%s",tt_imafilecater(keys[1],keys[2],keys[5]));
+         }
+         /* --- charge une partie de l'image ---*/
+         tt_imabuilder(&p_in);
+         if ((msg=tt_imaloader(&p_in,fullname,firstelem+1,nelem))!=0) {
+            sprintf(message,"Problem concerning file %s",fullname);
+            tt_errlog(msg,message);
+            tt_imadestroyer(&p_out);
+            tt_imadestroyer(&p_tmp);
+            tt_imadestroyer(&p_in);
+            tt_util_free_ptrptr((void**)keys,"keys");
+            tt_free(jj,"jj");
+            tt_free(exptime,"exptime");
+            tt_free(poids,"poids");
+            return(msg);
+         }
+         /* --- verification des dimensions ---*/
+         if (k==0) {
+            if ((naxis1_1!=p_in.naxis1)||(naxis2_1!=p_in.naxis2)) {
+               sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",p_in.naxis1,p_in.naxis2,fullname,naxis1_1,naxis2_1,fullname0);
+               tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
+               tt_imadestroyer(&p_out);
+               tt_imadestroyer(&p_tmp);
+               tt_imadestroyer(&p_in);
+               tt_util_free_ptrptr((void**)keys,"keys");
+               tt_free(jj,"jj");
+               tt_free(exptime,"exptime");
+               tt_free(poids,"poids");
+               return(TT_ERR_IMAGES_NOT_SAME_SIZE);
+            }
+            tt_ima2jd(&p_in,2,&jj[kk-load_indice_deb]);
+            tt_ima2exposure(&p_in,2,&exptime[kk-load_indice_deb]);
+         }
+         /* --- copie la zone de l'image vers le tampon ---*/
+         base_adr=(int)(nelem0)*(kk-load_indice_deb);
+         for (kkk=0;kkk<(int)(nelem);kkk++) {
+            p_tmp.p[base_adr+kkk]=p_in.p[kkk];
+         }
+         tt_imadestroyer(&p_in);
       }
       /* --- heritage des donnees pour la structure de pstack ---*/
       pstack.p_tmp=&p_tmp;
@@ -325,41 +343,41 @@ int tt_fct_ima_stack(void *arg1)
       pstack.nbima=nbima;
       pstack.poids=poids;
       pstack.exptimes=exptime;
-
+      
       /* --- calcul de l'image finale pour la zone concernee ---*/
       if (pstack.numfct==TT_IMASTACK_MOY) {
-	 msg=tt_ima_stack_moy_1(&pstack);
+         msg=tt_ima_stack_moy_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_ADD) {
-	 msg=tt_ima_stack_add_1(&pstack);
+         msg=tt_ima_stack_add_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_MED) {
-	 msg=tt_ima_stack_med_1(&pstack);
+         msg=tt_ima_stack_med_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_SORT) {
-	 msg=tt_ima_stack_sort_1(&pstack);
+         msg=tt_ima_stack_sort_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_KS) {
-	 msg=tt_ima_stack_sk_1(&pstack);
+         msg=tt_ima_stack_sk_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_SIG) {
-	 msg=tt_ima_stack_sig_1(&pstack);
+         msg=tt_ima_stack_sig_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_SHUTTER) {
-	 msg=tt_ima_stack_shutter_1(&pstack);
+         msg=tt_ima_stack_shutter_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_PROD) {
-	 msg=tt_ima_stack_prod_1(&pstack);
+         msg=tt_ima_stack_prod_1(&pstack);
       } else if (pstack.numfct==TT_IMASTACK_PYTHAGORE) {
-	 msg=tt_ima_stack_pythagore_1(&pstack);
+         msg=tt_ima_stack_pythagore_1(&pstack);
       } else {
-	 tt_imadestroyer(&p_in);
-	 tt_imadestroyer(&p_tmp);
-	 tt_imadestroyer(&p_out);
-	 tt_util_free_ptrptr((void**)keys,"keys");
-	 tt_free(jj,"jj");
-	 tt_free(exptime,"exptime");
-	 tt_free(poids,"poids");
-	 sprintf(message,"Function %s is not implemented in IMA/STACK",keys[10]);
-	 tt_errlog(TT_ERR_FCT_NOT_FOUND_IN_IMASTACK,message);
-	 return(TT_ERR_FCT_NOT_FOUND_IN_IMASTACK);
+         tt_imadestroyer(&p_in);
+         tt_imadestroyer(&p_tmp);
+         tt_imadestroyer(&p_out);
+         tt_util_free_ptrptr((void**)keys,"keys");
+         tt_free(jj,"jj");
+         tt_free(exptime,"exptime");
+         tt_free(poids,"poids");
+         sprintf(message,"Function %s is not implemented in IMA/STACK",keys[10]);
+         tt_errlog(TT_ERR_FCT_NOT_FOUND_IN_IMASTACK,message);
+         return(TT_ERR_FCT_NOT_FOUND_IN_IMASTACK);
       }
    }
    tt_imadestroyer(&p_tmp);
-
+   
    /* --- cree le fullname out ---*/
    if (save_level_index==0) {
       strcpy(fullname,tt_imafilecater(keys[6],keys[7],keys[9]));
@@ -368,7 +386,7 @@ int tt_fct_ima_stack(void *arg1)
    } else if (save_level_index==2) {
       sprintf(fullname,"%s;%d",tt_imafilecater(keys[6],keys[7],keys[9]),save_indice_deb);
    }
-
+   
    /* --- complete l'entete de l'image a sauver ---*/
    exptime_stack=(double)(0);
    jj_stack=(double)(0.);
@@ -382,7 +400,7 @@ int tt_fct_ima_stack(void *arg1)
    tt_jd2dateobs(jj_stack,date_obs_stack);
    tt_imanewkey(&p_out,"DATE-OBS",date_obs_stack,TSTRING,"Start of exposure. FITS standard","Iso 8601");
    tt_imanewkey(&p_out,"EXPOSURE",&exptime_stack,TDOUBLE,"Total time of exposure","s");
-
+   
    /* --- complete l'entete avec celle de la premiere image ---*/
    if ((msg=tt_imarefheader(&p_out,fullname0))!=0) {
       tt_imadestroyer(&p_out);
@@ -394,7 +412,7 @@ int tt_fct_ima_stack(void *arg1)
       tt_errlog(msg,message);
       return(msg);
    }
-
+   
    /* --- complete l'entete avec l'historique de ce traitement ---*/
    sprintf(xvalue,"%s %s",keys[0],keys[10]);
    tt_imanewkeytt(&p_out,xvalue,"TT History","");
@@ -403,16 +421,16 @@ int tt_fct_ima_stack(void *arg1)
       sprintf(yvalue,"%d",(int)(poids[k]*100.));
       strcat(xvalue,yvalue);
       if (strlen(xvalue)>((FLEN_VALUE)-10)) {
-	 strcat(xvalue,"...");
-	 break;
+         strcat(xvalue,"...");
+         break;
       }
       strcat(xvalue," ");
    }
    tt_imanewkeytt(&p_out,xvalue,"TT History","");
-
+   
    /* --- on force le nombre d'axes = a celui de la premiere image  ---*/
    p_out.naxis=naxis;
-
+   
    /* --- sauve l'image ---*/
    if ((msg=tt_imasaver(&p_out,fullname,pstack.bitpix))!=0) {
       tt_imadestroyer(&p_out);
@@ -425,25 +443,25 @@ int tt_fct_ima_stack(void *arg1)
       return(msg);
    }
    tt_imadestroyer(&p_out);
-
+   
    /* --- sauve une image JPEG ---*/
    if (pstack.jpegfile_make==TT_YES) {
       strcpy(fullname2,pstack.jpegfile);
       if (strcmp(pstack.jpegfile,"")==0) {
-	 /* --- identification du nom de fichier ---*/
-	 if ((msg=tt_imafilenamespliter(fullname,path,name,suffix,&hdunum))!=0) { return(msg); }
-	 strcpy(suffix,".jpg");
-	 strcpy(fullname2,tt_imafilecater(path,name,suffix));
+         /* --- identification du nom de fichier ---*/
+         if ((msg=tt_imafilenamespliter(fullname,path,name,suffix,&hdunum))!=0) { return(msg); }
+         strcpy(suffix,".jpg");
+         strcpy(fullname2,tt_imafilecater(path,name,suffix));
       }
       choix=0;dimx=dimy=0;
       /*if ((msg=libfiles_main(FS_MACR_FITS2JPG,7,fullname,fullname2,&choix,&sb,&sh,&dimx,&dimy))!=OK_DLL) {*/
       if ((msg=libfiles_main(FS_MACR_FITS2JPG,7,fullname,fullname2,&choix,sb,sh,&dimx,&dimy))!=OK_DLL) {
-	 sprintf(message,"Problem concerning creation of JPEG file %s ",fullname2);
-	 tt_errlog(msg,message);
-	 return(msg);
+         sprintf(message,"Problem concerning creation of JPEG file %s ",fullname2);
+         tt_errlog(msg,message);
+         return(msg);
       }
    }
-
+   
    /* ======================================= */
    /* === on libere la memoire et on sort === */
    /* ======================================= */
