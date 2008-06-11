@@ -43,7 +43,7 @@ void dilate (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int s
 void erode (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey, int naxis1,int naxis2);
 int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2);
 int ouverture2 (TT_IMA* pout, int N,int naxis1,int naxis2);
-
+void tt_fitgauss1d(int n,double *y,double *p,double *ecart);
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
