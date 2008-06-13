@@ -1,6 +1,6 @@
 #
 # Fichier : catagoto.cap
-# Mise a jour $Id: catagoto.cap,v 1.7 2008-06-01 13:19:44 robertdelmas Exp $
+# Mise a jour $Id: catagoto.cap,v 1.8 2008-06-13 16:43:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -156,7 +156,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,haut_sup)               "superiore"
    set caption(catagoto,carte_champ)            "Creazione di una cartina del campo"
    set caption(catagoto,carte_champ_devant)     "Visualizzazione della cartina del campo in primo piano"
-   set caption(catagoto,ok_toujours_visible)    "# Bouton OK toujours visible dans la fenêtre"
+   set caption(catagoto,ok_toujours_visible)    "Bottone OK sempre visibile nella finestra"
    set caption(catagoto,ok)                     "OK"
    set caption(catagoto,fermer)                 "Chiudi"
    set caption(catagoto,rechercher)             "Ricercare"
@@ -208,7 +208,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,haut_sup)               "superior"
    set caption(catagoto,carte_champ)            "Creación de un mapa de campo"
    set caption(catagoto,carte_champ_devant)     "Mostrar el mapa en primer plano"
-   set caption(catagoto,ok_toujours_visible)    "# Bouton OK toujours visible dans la fenêtre"
+   set caption(catagoto,ok_toujours_visible)    "Botón OK siempre visible en la ventana"
    set caption(catagoto,ok)                     "OK"
    set caption(catagoto,fermer)                 "Cerrar"
    set caption(catagoto,rechercher)             "Buscar"
@@ -260,7 +260,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,haut_sup)               "Oberste"
    set caption(catagoto,carte_champ)            "Feldkarte schaffen"
    set caption(catagoto,carte_champ_devant)     "Die Feldkarte im Vorgrund anzeigen"
-   set caption(catagoto,ok_toujours_visible)    "# Bouton OK toujours visible dans la fenêtre"
+   set caption(catagoto,ok_toujours_visible)    "OK Knopf immer im Fenster sichtbar"
    set caption(catagoto,ok)                     "OK"
    set caption(catagoto,fermer)                 "Schließen"
    set caption(catagoto,rechercher)             "Suchen"
@@ -312,7 +312,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,haut_sup)               "Limite superior"
    set caption(catagoto,carte_champ)            "Criação de um mapa de campo"
    set caption(catagoto,carte_champ_devant)     "Mostrar o mapa em primeiro plano"
-   set caption(catagoto,ok_toujours_visible)    "# Bouton OK toujours visible dans la fenêtre"
+   set caption(catagoto,ok_toujours_visible)    "Botão OK sempre visível na janela"
    set caption(catagoto,ok)                     "OK"
    set caption(catagoto,fermer)                 "Fechar"
    set caption(catagoto,rechercher)             "Procurar"
@@ -364,7 +364,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,haut_sup)               "Øvre grænse"
    set caption(catagoto,carte_champ)            "Fremstil Feltkort"
    set caption(catagoto,carte_champ_devant)     "Vis Feltkort i forgrunden"
-   set caption(catagoto,ok_toujours_visible)    "# Bouton OK toujours visible dans la fenêtre"
+   set caption(catagoto,ok_toujours_visible)    "OK-knappen vises altid på skærmen"
    set caption(catagoto,ok)                     "OK"
    set caption(catagoto,fermer)                 "Luk"
    set caption(catagoto,rechercher)             "Søg"

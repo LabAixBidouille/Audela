@@ -1,6 +1,6 @@
 #
 # Fichier : sbig.cap
-# Mise a jour $Id: sbig.cap,v 1.4 2008-05-31 15:48:27 robertdelmas Exp $
+# Mise a jour $Id: sbig.cap,v 1.5 2008-06-13 16:43:57 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -145,7 +145,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,port)                      "Port"
    set caption(sbig,configurer)                "Konfigurieren"
    set caption(sbig,acquisition)               "Belichtung"
-   set caption(sbig,lpt_custom)                "# Adresse personnalisée du port LPT"
+   set caption(sbig,lpt_custom)                "LPT Port benutzerdefinierte Adresse"
    set caption(sbig,host)                      "Host SBIG (Nur für Ethernet)"
    set caption(sbig,refroidissement)           "Temperatur bis zu"
    set caption(sbig,deg_c)                     "°C"
@@ -176,7 +176,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(sbig,port)                      "Porto"
    set caption(sbig,configurer)                "Configurar"
    set caption(sbig,acquisition)               "Aquisição"
-   set caption(sbig,lpt_custom)                "# Adresse personnalisée du port LPT"
+   set caption(sbig,lpt_custom)                "Endereço personalizado da porta LPT"
    set caption(sbig,host)                      "Host SBIG (Só para Ethernet)"
    set caption(sbig,refroidissement)           "Arrefecendo até Temperatura"
    set caption(sbig,deg_c)                     "°C"
