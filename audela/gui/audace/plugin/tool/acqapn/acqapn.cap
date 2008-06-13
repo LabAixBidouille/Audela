@@ -1,6 +1,6 @@
 #
 # Fichier : acqapn.cap
-# Mise a jour $Id: acqapn.cap,v 1.15 2008-05-31 15:47:42 robertdelmas Exp $
+# Mise a jour $Id: acqapn.cap,v 1.16 2008-06-13 16:42:56 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -426,8 +426,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Parametern nicht geschpeichert\n"
    set caption(acqapn,msg,pas_detecte)       "nicht aufgefunden.\n"
    set caption(acqapn,msg,pose)              "Das ist kein Belichtung Zeit."
-   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la fenêtre principale (visu1).\nVous devez déconnecter cette caméra."
-   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
+   set caption(acqapn,msg,camera_visu1)      "Die Kamera ist an des Haupt Fenster schon verbunden (visu1).\nSie müssen diese Kamera auskuppeln."
+   set caption(acqapn,msg,no_camItem)        "Sie müssen die Drei benutzten Kameras auskuppeln."
    set caption(acqapn,port_serie)            "Seriell Port"
    set caption(acqapn,poses,delai)           "Zeitraum"
    set caption(acqapn,poses,nom)             "Namen"
@@ -514,8 +514,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqapn,msg,no_save)           "Parâmetros não salvaguardados\n"
    set caption(acqapn,msg,pas_detecte)       "não detectado.\n"
    set caption(acqapn,msg,pose)              "Este não é um tempo de exposição."
-   set caption(acqapn,msg,camera_visu1)      "# Une caméra est déjà connectée à la fenêtre principale (visu1).\nVous devez déconnecter cette caméra."
-   set caption(acqapn,msg,no_camItem)        "# Vous devez déconnecter une des 3 caméras utilisées."
+   set caption(acqapn,msg,camera_visu1)      "Uma câmara já se encontra conectada à janela principal (visu1).\nPor favor desconecte a câmara."
+   set caption(acqapn,msg,no_camItem)        "Por favor desconecte uma das 3 câmaras usadas."
    set caption(acqapn,port_serie)            "Porta série"
    set caption(acqapn,poses,delai)           "Atraso"
    set caption(acqapn,poses,nom)             "Nome"
