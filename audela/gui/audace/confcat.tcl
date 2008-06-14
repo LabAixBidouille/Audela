@@ -2,7 +2,7 @@
 # Fichier : confcat.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'chart'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confcat.tcl,v 1.24 2007-12-22 11:57:47 robertdelmas Exp $
+# Mise a jour $Id: confcat.tcl,v 1.25 2008-06-14 09:02:16 robertdelmas Exp $
 #
 
 namespace eval ::confCat {
@@ -182,6 +182,7 @@ proc ::confCat::createDialog { } {
    #---
    set private(confCat,geometry) $conf(confCat,geometry)
 
+   #--- Creation de la fenetre toplevel
    toplevel $private(frm)
    wm geometry $private(frm) $private(confCat,geometry)
    wm minsize $private(frm) 500 350
@@ -189,29 +190,6 @@ proc ::confCat::createDialog { } {
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confcat,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confCat::fermer"
-
-   #--- Frame de la fenetre de configuration
-   frame $private(frm).usr -borderwidth 0 -relief raised
-
-      #--- Creation de la fenetre a onglets
-      set notebook [ NoteBook $private(frm).usr.onglet ]
-      foreach namespace $private(pluginNamespaceList) {
-         set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confCat::onRaiseNotebook $namespace" ]
-         ::$namespace\::fillConfigPage $frm
-      }
-      pack $notebook -fill both -expand 1 -padx 4 -pady 4
-
-   pack $private(frm).usr -side top -fill both -expand 1
-
-   #--- Frame du checkbutton creer au demarrage
-   frame $private(frm).start -borderwidth 1 -relief raised
-
-      checkbutton $private(frm).start.chk -text "$caption(confcat,creer_au_demarrage)" \
-         -highlightthickness 0 -variable conf(confCat,start)
-      pack $private(frm).start.chk -side top -padx 3 -pady 3 -fill x
-
-   pack $private(frm).start -side top -fill x
 
    #--- Frame des boutons OK, Appliquer, Aide et Fermer
    frame $private(frm).cmd -borderwidth 1 -relief raised
@@ -234,9 +212,32 @@ proc ::confCat::createDialog { } {
          -command "::confCat::afficheAide"
       pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
 
-   pack $private(frm).cmd -side top -fill x
+   pack $private(frm).cmd -side bottom -fill x
 
-   #---
+   #--- Frame du checkbutton creer au demarrage
+   frame $private(frm).start -borderwidth 1 -relief raised
+
+      checkbutton $private(frm).start.chk -text "$caption(confcat,creer_au_demarrage)" \
+         -highlightthickness 0 -variable conf(confCat,start)
+      pack $private(frm).start.chk -side top -padx 3 -pady 3 -fill x
+
+   pack $private(frm).start -side bottom -fill x
+
+   #--- Frame de la fenetre de configuration
+   frame $private(frm).usr -borderwidth 0 -relief raised
+
+      #--- Creation de la fenetre a onglets
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      foreach namespace $private(pluginNamespaceList) {
+         set title [ ::$namespace\::getPluginTitle ]
+         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confCat::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
+
+   pack $private(frm).usr -side top -fill both -expand 1
+
+   #--- La fenetre est active
    focus $private(frm)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande

@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.33 2008-05-07 18:12:13 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.34 2008-06-14 09:02:33 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -249,6 +249,7 @@ proc ::confEqt::createDialog { } {
    #---
    set private(confEqt,geometry) $conf(confEqt,geometry)
 
+   #--- Creation de la fenetre toplevel
    toplevel $private(frm)
    wm geometry $private(frm) $private(confEqt,geometry)
    wm minsize $private(frm) 460 415
@@ -256,20 +257,6 @@ proc ::confEqt::createDialog { } {
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confeqt,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confEqt::fermer"
-
-   #--- Frame de la fenetre de configuration
-   frame $private(frm).usr -borderwidth 0 -relief raised
-
-      #--- Creation de la fenetre a onglets
-      set notebook [ NoteBook $private(frm).usr.onglet ]
-      foreach namespace $private(notebookNameList) {
-         set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confEqt::onRaiseNotebook $namespace" ]
-         ::$namespace\::fillConfigPage $frm
-      }
-      pack $notebook -fill both -expand 1 -padx 4 -pady 4
-
-   pack $private(frm).usr -side top -fill both -expand 1
 
    #--- Frame des boutons OK, Appliquer, Aide et Fermer
    frame $private(frm).cmd -borderwidth 1 -relief raised
@@ -292,9 +279,23 @@ proc ::confEqt::createDialog { } {
          -command "::confEqt::afficheAide"
       pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
 
-   pack $private(frm).cmd -side top -fill x
+   pack $private(frm).cmd -side bottom -fill x
 
-   #---
+   #--- Frame de la fenetre de configuration
+   frame $private(frm).usr -borderwidth 0 -relief raised
+
+      #--- Creation de la fenetre a onglets
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      foreach namespace $private(notebookNameList) {
+         set title [ ::$namespace\::getPluginTitle ]
+         set frm   [ $notebook insert end $namespace -text "$title    " -raisecmd "::confEqt::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
+
+   pack $private(frm).usr -side top -fill both -expand 1
+
+   #--- La fenetre est active
    focus $private(frm)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande

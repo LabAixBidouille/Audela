@@ -2,7 +2,7 @@
 # Fichier : confLink.tcl
 # Description : Gere des objets 'liaison' pour la communication
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: conflink.tcl,v 1.30 2007-12-15 08:56:01 robertdelmas Exp $
+# Mise a jour $Id: conflink.tcl,v 1.31 2008-06-14 09:02:51 robertdelmas Exp $
 #
 
 namespace eval ::confLink {
@@ -180,18 +180,46 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
       set private(position) "+[ string range $private(geometry) $deb $fin ]"
    }
 
+   #--- Creation de la fenetre toplevel
    toplevel $private(frm)
-   if { $::tcl_platform(os) == "Linux" } {
-      wm geometry $private(frm) 620x420$private(position)
-      wm minsize $private(frm) 620 420
-   } else {
-      wm geometry $private(frm) 580x420$private(position)
-      wm minsize $private(frm) 580 420
-   }
+   wm geometry $private(frm) 580x420$private(position)
+   wm minsize $private(frm) 580 420
    wm resizable $private(frm) 1 1
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(conflink,config) $configurationTitle"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confLink::fermer"
+
+   #--- Frame des boutons OK, Appliquer, Aide et Fermer
+   frame $private(frm).cmd -borderwidth 1 -relief raised
+
+      button $private(frm).cmd.ok -text "$caption(conflink,ok)" -relief raised -state normal -width 7 \
+         -command " ::confLink::ok "
+      if { $conf(ok+appliquer)=="1" } {
+         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+      }
+
+      button $private(frm).cmd.appliquer -text "$caption(conflink,appliquer)" -relief raised -state normal -width 8 \
+         -command " ::confLink::appliquer "
+      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.fermer -text "$caption(conflink,fermer)" -relief raised -state normal -width 7 \
+         -command " ::confLink::fermer "
+      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.aide -text "$caption(conflink,aide)" -relief raised -state normal -width 8 \
+         -command " ::confLink::afficheAide "
+      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $private(frm).cmd -side bottom -fill x
+
+   #--- Frame du checkbutton creer au demarrage
+   frame $private(frm).start -borderwidth 1 -relief raised
+
+      checkbutton $private(frm).start.chk -text "$caption(conflink,creer_au_demarrage)" \
+         -highlightthickness 0 -variable conf(confLink,start)
+      pack $private(frm).start.chk -side top -padx 3 -pady 3 -fill x
+
+   pack $private(frm).start -side bottom -fill x
 
    #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
@@ -207,32 +235,7 @@ proc ::confLink::createDialog { authorizedNamespaces configurationTitle } {
 
    pack $private(frm).usr -side top -fill both -expand 1
 
-   #--- frame checkbutton creer au demarrage
-   frame $private(frm).start -borderwidth 1 -relief raised
-      checkbutton $private(frm).start.chk -text "$caption(conflink,creer_au_demarrage)" \
-         -highlightthickness 0 -variable conf(confLink,start)
-      pack $private(frm).start.chk -side top -padx 3 -pady 3 -fill x
-   pack $private(frm).start -side top -fill x
-
-   #--- frame bouton ok, appliquer, fermer
-   frame $private(frm).cmd -borderwidth 1 -relief raised
-   button $private(frm).cmd.ok -text "$caption(conflink,ok)" -relief raised -state normal -width 7 \
-      -command " ::confLink::ok "
-   if { $conf(ok+appliquer)=="1" } {
-      pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-   }
-   button $private(frm).cmd.appliquer -text "$caption(conflink,appliquer)" -relief raised -state normal -width 8 \
-      -command " ::confLink::appliquer "
-   pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-   button $private(frm).cmd.fermer -text "$caption(conflink,fermer)" -relief raised -state normal -width 7 \
-      -command " ::confLink::fermer "
-   pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-   button $private(frm).cmd.aide -text "$caption(conflink,aide)" -relief raised -state normal -width 8 \
-      -command " ::confLink::afficheAide "
-   pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-   pack $private(frm).cmd -side top -fill x
-
-   #---
+   #--- La fenetre est active
    focus $private(frm)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande

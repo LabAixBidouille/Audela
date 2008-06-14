@@ -1,7 +1,7 @@
 #
 # Fichier : conftel.tcl
 # Description : Gere des objets 'monture' (ex-objets 'telescope')
-# Mise a jour $Id: conftel.tcl,v 1.49 2008-05-10 12:37:29 michelpujol Exp $
+# Mise a jour $Id: conftel.tcl,v 1.50 2008-06-14 09:03:51 robertdelmas Exp $
 #
 
 namespace eval ::confTel {
@@ -159,7 +159,8 @@ proc ::confTel::createDialog { } {
       focus $private(frm)
       return
    }
-   #---
+
+   #--- Creation de la fenetre toplevel
    toplevel $private(frm)
    wm geometry $private(frm) $private(geometry)
    wm minsize $private(frm) 540 500
@@ -167,6 +168,42 @@ proc ::confTel::createDialog { } {
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(conftel,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW ::confTel::fermer
+
+   #--- Frame des boutons OK, Appliquer, Aide et Fermer
+   frame $private(frm).cmd -borderwidth 1 -relief raised
+
+      button $private(frm).cmd.ok -text "$caption(conftel,ok)" -relief raised -state normal -width 7 \
+         -command { ::confTel::ok }
+      if { $conf(ok+appliquer) == "1" } {
+         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+      }
+
+      button $private(frm).cmd.appliquer -text "$caption(conftel,appliquer)" -relief raised -state normal -width 8 \
+         -command { ::confTel::appliquer }
+      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.fermer -text "$caption(conftel,fermer)" -relief raised -state normal -width 7 \
+         -command { ::confTel::fermer }
+      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.aide -text "$caption(conftel,aide)" -relief raised -state normal -width 7 \
+         -command { ::confTel::afficherAide }
+      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $private(frm).cmd -side bottom -fill x
+
+   #--- Frame du bouton Arreter et du checkbutton creer au demarrage
+   frame $private(frm).start -borderwidth 1 -relief raised
+
+      button $private(frm).start.stop -text "$caption(conftel,arreter)" -width 7 \
+         -command { ::confTel::stopPlugin }
+      pack $private(frm).start.stop -side left -padx 3 -pady 3 -expand true
+
+      checkbutton $private(frm).start.chk -text "$caption(conftel,creer_au_demarrage)" \
+         -highlightthickness 0 -variable conf(telescope,start)
+      pack $private(frm).start.chk -side left -padx 3 -pady 3 -expand true
+
+   pack $private(frm).start -side bottom -fill x
 
    #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
@@ -181,34 +218,6 @@ proc ::confTel::createDialog { } {
       pack $notebook -fill both -expand 1 -padx 4 -pady 4
 
    pack $private(frm).usr -side top -fill both -expand 1
-
-   #--- Frame du checkbutton creer au demarrage et le bouton Arreter
-   frame $private(frm).start -borderwidth 1 -relief raised
-      button $private(frm).start.stop -text "$caption(conftel,arreter)" -width 7 \
-         -command { ::confTel::stopPlugin }
-      pack $private(frm).start.stop -side left -padx 3 -pady 3 -expand true
-      checkbutton $private(frm).start.chk -text "$caption(conftel,creer_au_demarrage)" \
-         -highlightthickness 0 -variable conf(telescope,start)
-      pack $private(frm).start.chk -side left -padx 3 -pady 3 -expand true
-   pack $private(frm).start -side top -fill x
-
-   #--- Frame des boutons OK, Appliquer, Aide et Fermer
-   frame $private(frm).cmd -borderwidth 1 -relief raised
-      button $private(frm).cmd.ok -text "$caption(conftel,ok)" -relief raised -state normal -width 7 \
-         -command { ::confTel::ok }
-      if { $conf(ok+appliquer) == "1" } {
-         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-      }
-      button $private(frm).cmd.appliquer -text "$caption(conftel,appliquer)" -relief raised -state normal -width 8 \
-         -command { ::confTel::appliquer }
-      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.fermer -text "$caption(conftel,fermer)" -relief raised -state normal -width 7 \
-         -command { ::confTel::fermer }
-      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.aide -text "$caption(conftel,aide)" -relief raised -state normal -width 7 \
-         -command { ::confTel::afficherAide }
-      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-   pack $private(frm).cmd -side top -fill x
 
    #--- La fenetre est active
    focus $private(frm)
