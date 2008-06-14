@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.28 2008-05-04 06:25:03 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.29 2008-06-14 09:03:11 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -309,9 +309,11 @@ namespace eval ::confOptic {
          focus $This
          return
       }
+
       #--- J'initialise les valeurs des parametres
       confToWidget
-      #---
+
+      #--- Creation de la fenetre toplevel
       toplevel $This
       wm geometry $This 540x535$widget(confoptic,position)
       wm minsize $This 540 535
@@ -319,6 +321,29 @@ namespace eval ::confOptic {
       wm deiconify $This
       wm title $This "$caption(confoptic,config_optique)"
       wm protocol $This WM_DELETE_WINDOW "::confOptic::fermer $visuNo"
+
+      #--- Frame des boutons OK, Appliquer, Aide et Fermer
+      frame $This.cmd -borderwidth 1 -relief raised
+
+         button $This.cmd.ok -text "$caption(confoptic,ok)" -relief raised -state normal -width 7 \
+            -command "::confOptic::ok $visuNo"
+         if { $conf(ok+appliquer) == "1" } {
+            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+         }
+
+         button $This.cmd.appliquer -text "$caption(confoptic,appliquer)" -relief raised -state normal -width 8 \
+            -command "::confOptic::appliquer"
+         pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $This.cmd.fermer -text "$caption(confoptic,fermer)" -relief raised -state normal -width 7 \
+            -command "::confOptic::fermer $visuNo"
+         pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+         button $This.cmd.aide -text "$caption(confoptic,aide)" -relief raised -state normal -width 7 \
+            -command "::confOptic::afficherAide"
+         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      pack $This.cmd -side bottom -fill x
 
       #--- Frame des onglets
       frame $This.usr -borderwidth 0 -relief raised
@@ -338,24 +363,6 @@ namespace eval ::confOptic {
          $notebook raise [ $notebook page 0 ]
 
       pack $This.usr -side top -fill both -expand 1
-
-      #--- Definition des frames recevant les boutons
-      frame $This.cmd -borderwidth 1 -relief raised
-         button $This.cmd.ok -text "$caption(confoptic,ok)" -relief raised -state normal -width 7 \
-            -command "::confOptic::ok $visuNo"
-         if { $conf(ok+appliquer) == "1" } {
-            pack $This.cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-         }
-         button $This.cmd.appliquer -text "$caption(confoptic,appliquer)" -relief raised -state normal -width 8 \
-            -command "::confOptic::appliquer"
-         pack $This.cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.fermer -text "$caption(confoptic,fermer)" -relief raised -state normal -width 7 \
-            -command "::confOptic::fermer $visuNo"
-         pack $This.cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-         button $This.cmd.aide -text "$caption(confoptic,aide)" -relief raised -state normal -width 7 \
-            -command "::confOptic::afficherAide"
-         pack $This.cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-      pack $This.cmd -side top -fill x
 
       #--- Charge la procedure de surveillance de la connexion d'une camera
       ::confCam::addCameraListener "A" "::confOptic::MAJ_Binning A [ $This.usr.onglet getframe fillConfigCameraA ]"

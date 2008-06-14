@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.29 2007-12-22 11:58:44 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.30 2008-06-14 09:03:33 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -207,6 +207,7 @@ proc ::confPad::createDialog { } {
    #---
    set private(confPad,geometry) $conf(confPad,geometry)
 
+   #--- Creation de la fenetre toplevel
    toplevel $private(frm)
    wm geometry $private(frm) $private(confPad,geometry)
    wm minsize $private(frm) 440 240
@@ -214,20 +215,6 @@ proc ::confPad::createDialog { } {
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confpad,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW "::confPad::fermer"
-
-   #--- Frame de la fenetre de configuration
-   frame $private(frm).usr -borderwidth 0 -relief raised
-
-      #--- Creation de la fenetre a onglets
-      set notebook [ NoteBook $private(frm).usr.onglet ]
-      foreach namespace $private(pluginNamespaceList) {
-         set title [ ::$namespace\::getPluginTitle ]
-         set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confPad::onRaiseNotebook $namespace" ]
-         ::$namespace\::fillConfigPage $frm
-      }
-      pack $notebook -fill both -expand 1 -padx 4 -pady 4
-
-   pack $private(frm).usr -side top -fill both -expand 1
 
    #--- Frame des boutons OK, Appliquer, Aide et Fermer
    frame $private(frm).cmd -borderwidth 1 -relief raised
@@ -250,9 +237,23 @@ proc ::confPad::createDialog { } {
          -command "::confPad::afficheAide"
       pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
 
-   pack $private(frm).cmd -side top -fill x
+   pack $private(frm).cmd -side bottom -fill x
 
-   #---
+   #--- Frame de la fenetre de configuration
+   frame $private(frm).usr -borderwidth 0 -relief raised
+
+      #--- Creation de la fenetre a onglets
+      set notebook [ NoteBook $private(frm).usr.onglet ]
+      foreach namespace $private(pluginNamespaceList) {
+         set title [ ::$namespace\::getPluginTitle ]
+         set frm   [ $notebook insert end $namespace -text "$title " -raisecmd "::confPad::onRaiseNotebook $namespace" ]
+         ::$namespace\::fillConfigPage $frm
+      }
+      pack $notebook -fill both -expand 1 -padx 4 -pady 4
+
+   pack $private(frm).usr -side top -fill both -expand 1
+
+   #--- La fenetre est active
    focus $private(frm)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande

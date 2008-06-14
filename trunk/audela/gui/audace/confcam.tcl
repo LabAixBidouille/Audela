@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.116 2008-06-10 15:22:02 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.117 2008-06-14 09:01:56 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -26,7 +26,7 @@ proc ::confCam::init { } {
    if { ! [ info exists conf(camera,B,start) ] }   { set conf(camera,B,start)   "0" }
    if { ! [ info exists conf(camera,C,camName) ] } { set conf(camera,C,camName) "" }
    if { ! [ info exists conf(camera,C,start) ] }   { set conf(camera,C,start)   "0" }
-   if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "625x500+15+15" }
+   if { ! [ info exists conf(camera,geometry) ] }  { set conf(camera,geometry)  "605x440+15+15" }
 
    #--- Je charge le package Thread si l'option multitread est activive dans le TCL
    if { [info exists ::tcl_platform(threaded)] } {
@@ -239,7 +239,8 @@ proc ::confCam::createDialog { } {
       focus $private(frm)
       return
    }
-   #---
+
+   #--- Creation de la fenetre toplevel
    toplevel $private(frm)
    wm geometry $private(frm) $private(geometry)
    wm minsize $private(frm) 605 440
@@ -247,6 +248,132 @@ proc ::confCam::createDialog { } {
    wm deiconify $private(frm)
    wm title $private(frm) "$caption(confcam,config)"
    wm protocol $private(frm) WM_DELETE_WINDOW ::confCam::fermer
+
+   #--- Frame des boutons OK, Appliquer, Aide et Fermer
+   frame $private(frm).cmd -borderwidth 1 -relief raised
+
+      button $private(frm).cmd.ok -text "$caption(confcam,ok)" -width 7 -command "::confCam::ok"
+      if { $conf(ok+appliquer) == "1" } {
+         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
+      }
+
+      button $private(frm).cmd.appliquer -text "$caption(confcam,appliquer)" -width 8 -command "::confCam::appliquer"
+      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.fermer -text "$caption(confcam,fermer)" -width 7 -command "::confCam::fermer"
+      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+      button $private(frm).cmd.aide -text "$caption(confcam,aide)" -width 7 -command "::confCam::afficherAide"
+      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
+
+   pack $private(frm).cmd -side bottom -fill x
+
+   #--- Je recupere la liste des visu
+   set list_visu [list ]
+   foreach visuNo [::visu::list] {
+      lappend list_visu "visu$visuNo"
+   }
+   lappend list_visu $caption(confcam,nouvelle_visu)
+   set private(list_visu) $list_visu
+
+   #--- Frame des parametres de la camera C
+   frame $private(frm).startC -borderwidth 1 -relief raised
+
+      radiobutton $private(frm).startC.item -anchor w -highlightthickness 0 \
+         -text "C :" -value "C" -variable ::confCam::private(currentCamItem) \
+         -command "::confCam::selectNotebook C"
+      pack $private(frm).startC.item -side left -padx 3 -pady 3 -fill x
+
+      label $private(frm).startC.camNo -textvariable ::confCam::private(C,camNo)
+      pack $private(frm).startC.camNo -side left -padx 3 -pady 3 -fill x
+
+      label $private(frm).startC.name -textvariable ::confCam::private(C,camName)
+      pack $private(frm).startC.name -side left -padx 3 -pady 3 -fill x
+
+      ComboBox $private(frm).startC.visu \
+         -width 8          \
+         -height [ llength $private(list_visu) ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable ::confCam::private(C,visuName) \
+         -values $private(list_visu)
+      pack $private(frm).startC.visu -side left -padx 3 -pady 3 -fill x
+
+      button $private(frm).startC.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem C"
+      pack $private(frm).startC.stop -side left -padx 3 -pady 3 -expand true
+
+      checkbutton $private(frm).startC.chk -text "$caption(confcam,creer_au_demarrage)" \
+         -highlightthickness 0 -variable conf(camera,C,start)
+      pack $private(frm).startC.chk -side left -padx 3 -pady 3 -expand true
+
+   pack $private(frm).startC -side bottom -fill x
+
+   #--- Frame des parametres de la camera B
+   frame $private(frm).startB -borderwidth 1 -relief raised
+
+      radiobutton $private(frm).startB.item -anchor w -highlightthickness 0 \
+         -text "B :" -value "B" -variable ::confCam::private(currentCamItem) \
+         -command "::confCam::selectNotebook B"
+      pack $private(frm).startB.item -side left -padx 3 -pady 3 -fill x
+
+      label $private(frm).startB.camNo -textvariable ::confCam::private(B,camNo)
+      pack $private(frm).startB.camNo -side left -padx 3 -pady 3 -fill x
+
+      label $private(frm).startB.name -textvariable ::confCam::private(B,camName)
+      pack $private(frm).startB.name -side left -padx 3 -pady 3 -fill x
+
+      ComboBox $private(frm).startB.visu \
+         -width 8          \
+         -height [ llength $private(list_visu) ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable ::confCam::private(B,visuName) \
+         -values $private(list_visu)
+      pack $private(frm).startB.visu -side left -padx 3 -pady 3 -fill x
+
+      button $private(frm).startB.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem B"
+      pack $private(frm).startB.stop -side left -padx 3 -pady 3 -expand true
+
+      checkbutton $private(frm).startB.chk -text "$caption(confcam,creer_au_demarrage)" \
+         -highlightthickness 0 -variable conf(camera,B,start)
+      pack $private(frm).startB.chk -side left -padx 3 -pady 3 -expand true
+
+   pack $private(frm).startB -side bottom -fill x
+
+   #--- Frame des parametres de la camera A
+   frame $private(frm).startA -borderwidth 1 -relief raised
+
+      radiobutton $private(frm).startA.item -anchor w -highlightthickness 0 \
+         -text "A :" -value "A" -variable ::confCam::private(currentCamItem) \
+         -command "::confCam::selectNotebook A"
+      pack $private(frm).startA.item -side left -padx 3 -pady 3 -fill x
+
+      label $private(frm).startA.camNo -textvariable ::confCam::private(A,camNo)
+      pack $private(frm).startA.camNo -side left -padx 3 -pady 3 -fill x
+
+      label $private(frm).startA.name -textvariable ::confCam::private(A,camName)
+      pack $private(frm).startA.name -side left -padx 3 -pady 3 -fill x
+
+      ComboBox $private(frm).startA.visu \
+         -width 8          \
+         -height [ llength $private(list_visu) ] \
+         -relief sunken    \
+         -borderwidth 1    \
+         -editable 0       \
+         -textvariable ::confCam::private(A,visuName) \
+         -values $private(list_visu)
+      pack $private(frm).startA.visu -side left -padx 3 -pady 3 -fill x
+
+      button $private(frm).startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem A"
+      pack $private(frm).startA.stop -side left -padx 3 -pady 3 -expand true
+
+      checkbutton $private(frm).startA.chk -text "$caption(confcam,creer_au_demarrage)" \
+         -highlightthickness 0 -variable conf(camera,A,start)
+      pack $private(frm).startA.chk -side left -padx 3 -pady 3 -expand true
+
+   pack $private(frm).startA -side bottom -fill x
 
    #--- Frame de la fenetre de configuration
    frame $private(frm).usr -borderwidth 0 -relief raised
@@ -262,110 +389,7 @@ proc ::confCam::createDialog { } {
 
    pack $private(frm).usr -side top -fill both -expand 1
 
-   #--- Je recupere la liste des visu
-   set list_visu [list ]
-   foreach visuNo [::visu::list] {
-      lappend list_visu "visu$visuNo"
-   }
-   lappend list_visu $caption(confcam,nouvelle_visu)
-   set private(list_visu) $list_visu
-
-   #--- Parametres de la camera A
-   frame $private(frm).startA -borderwidth 1 -relief raised
-      radiobutton $private(frm).startA.item -anchor w -highlightthickness 0 \
-         -text "A :" -value "A" -variable ::confCam::private(currentCamItem) \
-         -command "::confCam::selectNotebook A"
-      pack $private(frm).startA.item -side left -padx 3 -pady 3 -fill x
-      label $private(frm).startA.camNo -textvariable ::confCam::private(A,camNo)
-      pack $private(frm).startA.camNo -side left -padx 3 -pady 3 -fill x
-      label $private(frm).startA.name -textvariable ::confCam::private(A,camName)
-      pack $private(frm).startA.name -side left -padx 3 -pady 3 -fill x
-
-      ComboBox $private(frm).startA.visu \
-         -width 8          \
-         -height [ llength $private(list_visu) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable ::confCam::private(A,visuName) \
-         -values $private(list_visu)
-      pack $private(frm).startA.visu -side left -padx 3 -pady 3 -fill x
-      button $private(frm).startA.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem A"
-      pack $private(frm).startA.stop -side left -padx 3 -pady 3 -expand true
-      checkbutton $private(frm).startA.chk -text "$caption(confcam,creer_au_demarrage)" \
-         -highlightthickness 0 -variable conf(camera,A,start)
-      pack $private(frm).startA.chk -side left -padx 3 -pady 3 -expand true
-   pack $private(frm).startA -side top -fill x
-
-   #--- Parametres de la camera B
-   frame $private(frm).startB -borderwidth 1 -relief raised
-      radiobutton $private(frm).startB.item -anchor w -highlightthickness 0 \
-         -text "B :" -value "B" -variable ::confCam::private(currentCamItem) \
-         -command "::confCam::selectNotebook B"
-      pack $private(frm).startB.item -side left -padx 3 -pady 3 -fill x
-      label $private(frm).startB.camNo -textvariable ::confCam::private(B,camNo)
-      pack $private(frm).startB.camNo -side left -padx 3 -pady 3 -fill x
-      label $private(frm).startB.name -textvariable ::confCam::private(B,camName)
-      pack $private(frm).startB.name -side left -padx 3 -pady 3 -fill x
-
-      ComboBox $private(frm).startB.visu \
-         -width 8          \
-         -height [ llength $private(list_visu) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable ::confCam::private(B,visuName) \
-         -values $private(list_visu)
-      pack $private(frm).startB.visu -side left -padx 3 -pady 3 -fill x
-      button $private(frm).startB.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem B"
-      pack $private(frm).startB.stop -side left -padx 3 -pady 3 -expand true
-      checkbutton $private(frm).startB.chk -text "$caption(confcam,creer_au_demarrage)" \
-         -highlightthickness 0 -variable conf(camera,B,start)
-      pack $private(frm).startB.chk -side left -padx 3 -pady 3 -expand true
-   pack $private(frm).startB -side top -fill x
-
-   #--- Parametres de la camera C
-   frame $private(frm).startC -borderwidth 1 -relief raised
-      radiobutton $private(frm).startC.item -anchor w -highlightthickness 0 \
-         -text "C :" -value "C" -variable ::confCam::private(currentCamItem) \
-         -command "::confCam::selectNotebook C"
-      pack $private(frm).startC.item -side left -padx 3 -pady 3 -fill x
-      label $private(frm).startC.camNo -textvariable ::confCam::private(C,camNo)
-      pack $private(frm).startC.camNo -side left -padx 3 -pady 3 -fill x
-      label $private(frm).startC.name -textvariable ::confCam::private(C,camName)
-      pack $private(frm).startC.name -side left -padx 3 -pady 3 -fill x
-
-      ComboBox $private(frm).startC.visu \
-         -width 8          \
-         -height [ llength $private(list_visu) ] \
-         -relief sunken    \
-         -borderwidth 1    \
-         -editable 0       \
-         -textvariable ::confCam::private(C,visuName) \
-         -values $private(list_visu)
-      pack $private(frm).startC.visu -side left -padx 3 -pady 3 -fill x
-      button $private(frm).startC.stop -text "$caption(confcam,arreter)" -width 7 -command "::confCam::stopItem C"
-      pack $private(frm).startC.stop -side left -padx 3 -pady 3 -expand true
-      checkbutton $private(frm).startC.chk -text "$caption(confcam,creer_au_demarrage)" \
-         -highlightthickness 0 -variable conf(camera,C,start)
-      pack $private(frm).startC.chk -side left -padx 3 -pady 3 -expand true
-   pack $private(frm).startC -side top -fill x
-
-   #--- Frame pour les boutons
-   frame $private(frm).cmd -borderwidth 1 -relief raised
-      button $private(frm).cmd.ok -text "$caption(confcam,ok)" -width 7 -command "::confCam::ok"
-      if { $conf(ok+appliquer) == "1" } {
-         pack $private(frm).cmd.ok -side left -padx 3 -pady 3 -ipady 5 -fill x
-      }
-      button $private(frm).cmd.appliquer -text "$caption(confcam,appliquer)" -width 8 -command "::confCam::appliquer"
-      pack $private(frm).cmd.appliquer -side left -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.fermer -text "$caption(confcam,fermer)" -width 7 -command "::confCam::fermer"
-      pack $private(frm).cmd.fermer -side right -padx 3 -pady 3 -ipady 5 -fill x
-      button $private(frm).cmd.aide -text "$caption(confcam,aide)" -width 7 -command "::confCam::afficherAide"
-      pack $private(frm).cmd.aide -side right -padx 3 -pady 3 -ipady 5 -fill x
-   pack $private(frm).cmd -side top -fill x
-
-   #---
+   #--- La fenetre est active
    focus $private(frm)
 
    #--- Raccourci qui donne le focus a la Console et positionne le curseur dans la ligne de commande
