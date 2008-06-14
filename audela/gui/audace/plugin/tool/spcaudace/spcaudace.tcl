@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.2 2008-06-14 21:12:28 robertdelmas Exp $
 
 
 ####################################################################################
@@ -44,11 +44,35 @@ proc ::spcaudace::getPluginTitle { } {
 }
 
 #------------------------------------------------------------
+# ::spcaudace::getPluginHelp
+#    retourne le nom du fichier d'aide principal
+#------------------------------------------------------------
+proc ::spcaudace::getPluginHelp { } {
+   return "spcaudace.htm"
+}
+
+#------------------------------------------------------------
 # ::spcaudace::getPluginType
 #    retourne le type de plugin
 #------------------------------------------------------------
 proc ::spcaudace::getPluginType { } {
    return "tool"
+}
+
+#------------------------------------------------------------
+# ::spcaudace::getPluginDirectory
+#    retourne le type de plugin
+#------------------------------------------------------------
+proc ::spcaudace::getPluginDirectory { } {
+   return "spcaudace"
+}
+
+#------------------------------------------------------------
+# ::spcaudace::getPluginOS
+#    retourne le ou les OS de fonctionnement du plugin
+#------------------------------------------------------------
+proc ::spcaudace::getPluginOS { } {
+   return [ list Windows Linux Darwin ]
 }
 
 #------------------------------------------------------------
@@ -62,7 +86,7 @@ proc ::spcaudace::getPluginType { } {
 proc ::spcaudace::getPluginProperty { propertyName } {
    switch $propertyName {
       function     { return "analysis" }
-      subfunction1 { return "spcaudace" }
+      subfunction1 { return "spectroscopy" }
       display      { return "window" }
    }
 }
@@ -123,7 +147,7 @@ proc ::spcaudace::stopTool { visuNo } {
 
 ###############################################################################
 #
-# Description : se met dans le répertoire de travail d'Audace pour éviter de 
+# Description : se met dans le répertoire de travail d'Audace pour éviter de
 #  mettre le chemin des images devant chaque image
 # Auteur : Benjamin MAUCLAIRE
 # Date création : 17-12-2005
