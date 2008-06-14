@@ -1,6 +1,6 @@
 #
 # Fichier : spcaudace.cap
-# Mise a jour $Id: spcaudace.cap,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.cap,v 1.2 2008-06-14 22:35:49 bmauclaire Exp $
 #
 
 #=========================================================================
@@ -11,7 +11,7 @@ global caption langage
 
 # *************** Version anglaise ****************************
 
-set caption(spcaudace,spc_audace)                         "SpcAud'ACE"
+set caption(spcaudace,spc_audace)                         "Spectropscopy: SpcAud'ACE"
 
 set caption(spcaudace,configure)                          "Set up"
 set caption(spcaudace,configure,titre)                    "Spectroscopy: Setup"
@@ -36,7 +36,7 @@ set caption(spcaudace,configure,config,comment)           "Comments"
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "SpcAud'ACE"
+   set caption(spcaudace,spc_audace)                      "Spectroscopie : SpcAud'ACE"
 
    set caption(spcaudace,configure)                       "Configurer"
    set caption(spcaudace,configure,titre)                 "Spectroscopie : Configuration"
@@ -61,7 +61,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "SpcAud'ACE"
+   set caption(spcaudace,spc_audace)                      "Spettroscopia : SpcAud'ACE"
 
    set caption(spcaudace,configure)                       "Configurare"
    set caption(spcaudace,configure,titre)                 "Spettroscopia: Configurazione"
@@ -86,7 +86,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "SpcAud'ACE"
+   set caption(spcaudace,spc_audace)                      "Espectroscopia : SpcAud'ACE"
 
    set caption(spcaudace,configure)                       "Configurar"
    set caption(spcaudace,configure,titre)                 "Espectroscopia: Configuración"
@@ -111,7 +111,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "SpcAud'ACE"
+   set caption(spcaudace,spc_audace)                      "Spektroskopie : SpcAud'ACE"
 
    set caption(spcaudace,configure)                       "Konfigurieren"
    set caption(spcaudace,configure,titre)                 "Spektroskopie: Konfiguration"
@@ -136,7 +136,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "SpcAud'ACE"
+   set caption(spcaudace,spc_audace)                      "Espectroscopia : SpcAud'ACE"
 
    set caption(spcaudace,configure)                       "Configurar"
    set caption(spcaudace,configure,titre)                 "Espectroscopia : Configuração"
@@ -161,7 +161,7 @@ if { [ string compare $langage "french" ] == "0" } {
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "SpcAud'ACE"
+   set caption(spcaudace,spc_audace)                      "Spectroscopy: SpcAud'ACE"
 
    set caption(spcaudace,configure)                       "Set up"
    set caption(spcaudace,configure,titre)                 "Spectroscopy: Setup"
