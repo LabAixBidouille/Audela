@@ -1,9 +1,9 @@
 
 # Procédures d'exploitation astrophysique des spectres
 # A130 : source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
-# A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_astrophys.tcl ]
+# A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_astrophys.tcl ]
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.2 2008-06-15 09:49:48 robertdelmas Exp $
 
 
 
@@ -38,7 +38,7 @@ proc spc_vdoppler { args } {
    if { [llength $args] == 2 } {
        set delta_lambda [ lindex $args 0 ]
        set lambda [lindex $args 1 ]
-       
+
        set vrad [ expr 299792.458*$delta_lambda/$lambda ]
        ::console::affiche_resultat "La vitesse Doppler de l'objet est : $vrad km/s\n"
        return $vrad
@@ -205,7 +205,7 @@ proc spc_vradiale { args } {
 
       #--- Centre gaussien de la raie étudié :
       set lambda_centre [ spc_autocentergaussl $spectre $lambda_approchee $typeraie ]
-      
+
       #--- Calcul la vitesse radiale : Acker p.101 Dunod 2005.
       set delta_lambda [ expr $lambda_centre-$lambda_ref ]
       set vrad [ expr 299792.458*$delta_lambda/$lambda_ref ]
@@ -213,7 +213,7 @@ proc spc_vradiale { args } {
       #set vradcorrigee [ expr $vrad+$vhelio ]
       #-- Erreur sur le calcul :
       set vraderr [ expr 299792.458*$dispersion/$lambda_ref ]
-      
+
       #--- Formatage du résultat :
       ::console::affiche_resultat "La vitesse radiale de l'objet le $jd JJ à la longueur d'onde $lambda_centre A :\n\# Vrad=$vrad +- $vraderr km/s\n"
       return $vrad
@@ -352,7 +352,7 @@ proc spc_npte { args } {
 	 return 0
      }
 
-     #--- Calcul de la température : 
+     #--- Calcul de la température :
      set R [ expr ($I_5007+$I_4959)/$I_4363 ]
      set Te [ expr (3.29*1E4)/(log($R/8.30)) ]
 
@@ -504,7 +504,7 @@ proc spc_npne2 { args } {
 	   ::console::affiche_resultat "Pas de calcul de dNe\n"
 	   set dNe 0
        }
-       
+
 
        #--- Affichage et formatage des resultats :
        ::console::affiche_resultat "Le densité électronique de la nébuleuse est : $Ne e-/cm^3 ; dNe=$dNe\nR(NII)=$R\n"
@@ -579,7 +579,7 @@ proc spc_npne { args } {
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 23-01-2007
 # Date de mise à jour : 23-01-2007
-# Arguments : 
+# Arguments :
 # Modèle utilisé : A. Acker, Astronomie, méthodes et calculs, MASSON, p.105.
 ##########################################################
 
@@ -747,7 +747,7 @@ proc spc_ewcourbe { args } {
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
 	puts $file_id2 "call \"$spcaudace(repgp)/gp_points_err.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
 	close $file_id2
-	if { $tcl_platform(os)=="Linux" } {	
+	if { $tcl_platform(os)=="Linux" } {
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	} else {
@@ -840,7 +840,7 @@ proc spc_ewcourbe_opt { args } {
 	set file_id2 [open "$audace(rep_images)/${ewfile}.gp" w+]
 	puts $file_id2 "call \"$spcaudace(repgp)/gp_points.cfg\" \"$audace(rep_images)/${ewfile}.dat\" \"$titre\" * * * * $invert_opt \"$audace(rep_images)/ew_courbe.png\" \"$legendex\" \"$legendey\" "
 	close $file_id2
-	if { $tcl_platform(os)=="Linux" } {	
+	if { $tcl_platform(os)=="Linux" } {
 	    set answer [ catch { exec gnuplot $audace(rep_images)/${ewfile}.gp } ]
 	    ::console::affiche_resultat "$answer\n"
 	} else {
@@ -965,7 +965,7 @@ proc spc_ew { args } {
 
 
 ##########################################################
-# Procedure de détermination de la largeur équivalente d'une raie spectrale modelisee par une gaussienne. 
+# Procedure de détermination de la largeur équivalente d'une raie spectrale modelisee par une gaussienne.
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date de création : 12-08-2005
@@ -984,7 +984,7 @@ proc spc_ew1 { args } {
        set lfin [ expr int([lindex $args 2]) ]
        set type [ lindex $args 3 ]
 
-       #--- Conversion des longeurs d'onde/pixels en pixels 
+       #--- Conversion des longeurs d'onde/pixels en pixels
        buf$audace(bufNo) load "$audace(rep_images)/$fichier"
        set crval [lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1]
        set cdelt [lindex [buf$audace(bufNo) getkwd "CDELT1"] 1]
@@ -1387,7 +1387,7 @@ proc spc_autoew4 { args } {
          set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
 
          #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
-         for { set i $i_lambda } { $i<$len } { incr i } { 
+         for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
             set ycont [ lindex $iconti $i ]
 	    if { [ expr abs($yval-$ycont) ] <= $precision } {
@@ -1397,7 +1397,7 @@ proc spc_autoew4 { args } {
          }
 
          #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
-         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
+         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
             set ycont [ lindex $iconti $i ]
 	    if { [ expr abs($yval-$ycont) ] <= $precision } {
@@ -1411,7 +1411,7 @@ proc spc_autoew4 { args } {
       #--- Détermination de la largeur équivalente :
       set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
-      
+
       #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
       set snr [ spc_snr $filename ]
       set rapport [ expr $ew/$deltal ]
@@ -1427,7 +1427,7 @@ proc spc_autoew4 { args } {
          set sigma 0
       }
 
-   if { 1==0 } {      
+   if { 1==0 } {
       #--- Effacement des fichiers temporaires :
       file delete -force "$audace(rep_images)/$filename_norma$conf(extension,defaut)"
       if { $nb_args == 2 } {
@@ -1442,7 +1442,7 @@ proc spc_autoew4 { args } {
       set ew_short [ expr 0.01*round($ew*100) ]
       set sigma_ew [ expr 0.01*round($sigma*100) ]
       set snr_short [ expr round($snr) ]
-      
+
       #--- Affichage des résultats :
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
@@ -1511,7 +1511,7 @@ proc spc_autoew3 { args } {
          set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
 
          #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
-         for { set i $i_lambda } { $i<$len } { incr i } { 
+         for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
                set lambda_fin [ lindex $lambdas $i ]
@@ -1520,7 +1520,7 @@ proc spc_autoew3 { args } {
          }
 
          #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
-         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
+         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
                set lambda_deb [ lindex $lambdas $i ]
@@ -1532,8 +1532,8 @@ proc spc_autoew3 { args } {
       #--- Détermination de la largeur équivalente :
       set ew [ spc_ew $filename_norma $lambda_deb $lambda_fin ]
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
-      
-      
+
+
       #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
       set snr [ spc_snr $filename ]
       set rapport [ expr $ew/$deltal ]
@@ -1548,7 +1548,7 @@ proc spc_autoew3 { args } {
          ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
          set sigma 0
       }
-      
+
       #--- Effacement des fichiers temporaires :
       file delete -force "$audace(rep_images)/$filename_norma$conf(extension,defaut)"
       if { $nb_args == 2 } {
@@ -1563,7 +1563,7 @@ proc spc_autoew3 { args } {
       set ew_short [ expr 0.01*round($ew*100) ]
       set sigma_ew [ expr 0.01*round($sigma*100) ]
       set snr_short [ expr round($snr) ]
-      
+
       #--- Affichage des résultats :
       ::console::affiche_resultat "\n"
       ::console::affiche_resultat "EW($delta_l=$l_deb-$l_fin)=$ew_short A.\n"
@@ -1618,17 +1618,17 @@ proc spc_autoew1 { args } {
          set lambdas [ lindex $listevals 0 ]
          set intensities [ lindex $listevals 1 ]
          set len [ llength $lambdas ]
-         
+
          #--- Trouve l'indice de la raie recherche dans la liste
          set i_lambda [ lsearch -glob $lambdas ${lambda_raie}* ]
          # ::console::affiche_resultat "Indice de la raie : $i_lambda\n"
-         
+
          #--- Déterminiation de la valeur du continuum :
          # set icont 1.0
          set icont [ spc_icontinuum $filename ]
 
          #--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
-         for { set i $i_lambda } { $i<$len } { incr i } { 
+         for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
                set lambda_fin [ lindex $lambdas $i ]
@@ -1637,7 +1637,7 @@ proc spc_autoew1 { args } {
          }
 
          #--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
-         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
+         for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr abs($yval-$icont) ] <= $precision } {
                set lambda_deb [ lindex $lambdas $i ]
@@ -1650,8 +1650,8 @@ proc spc_autoew1 { args } {
       #--- Détermination de la largeur équivalente :
       set ew [ spc_ew $filename $lambda_deb $lambda_fin ]
       set deltal [ expr abs($lambda_fin-$lambda_deb) ]
-      
-      
+
+
       #--- Calcul de l'erreur (sigma) sur la mesure (doc Ernst Pollmann) :
       set snr [ spc_snr $filename ]
       set rapport [ expr $ew/$deltal ]
@@ -1666,7 +1666,7 @@ proc spc_autoew1 { args } {
          ::console::affiche_resultat "Incertitude non calculable car SNR non calculable\n"
          set sigma 0
       }
-      
+
       #--- Formatage des résultats :
       set l_fin [ expr 0.01*round($lambda_fin*100) ]
       set l_deb [ expr 0.01*round($lambda_deb*100) ]
@@ -1674,7 +1674,7 @@ proc spc_autoew1 { args } {
       set ew_short [ expr 0.01*round($ew*100) ]
       set sigma_ew [ expr 0.01*round($sigma*100) ]
       set snr_short [ expr round($snr) ]
-      
+
       #--- Affichage des résultats :
       file delete -force "$audace(rep_images)/$filename$conf(extension,defaut)"
       ::console::affiche_resultat "\n"
@@ -1786,7 +1786,7 @@ proc spc_autoew2 { args } {
 	set icont [ spc_icontinuum $filename ]
 
 	#--- Recherche la longueur d'onde d'intersection du bord rouge de la raie avec le continuum normalisé à 1 :
-	for { set i $i_lambda } { $i<$len } { incr i } { 
+	for { set i $i_lambda } { $i<$len } { incr i } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr $yval-$icont ]<=$precision } {
 		set lambda_fin [ lindex $lambdas $i ]
@@ -1795,7 +1795,7 @@ proc spc_autoew2 { args } {
 	}
 
 	#--- Recherche la longueur d'onde d'intersection du bord bleu de la raie avec le continuum normalisé à 1 :
-	for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } { 
+	for { set i $i_lambda } { $i>=0 } { set i [ expr $i-1 ] } {
 	    set yval [ lindex $intensities $i ]
 	    if { [ expr $yval-$icont ]<=$precision } {
 		set lambda_deb [ lindex $lambdas $i ]
@@ -1898,19 +1898,19 @@ proc spc_vrmes { args } {
 	foreach abscisse $abscisses intensite $intensites {
 	    #-- 060224 : gestion de lambda debut plus proche par defaut
 	    set diff [ expr abs($xdeb-$abscisse) ]
-	    if { $diff < $disper } {   
+	    if { $diff < $disper } {
 		set xdebl [ expr $xdeb-$disper ]
 	    } else {
 		set xdebl $xdeb
 	    }
 	    #-- 060326 : gestion de lambda fin plus proche par exces
 	    set diff [ expr abs($xfin-$abscisse) ]
-	    if { $diff < $disper } {   
+	    if { $diff < $disper } {
 		set xfinl [ expr $xfin+$disper ]
 	    } else {
 		set xfinl $xfin
 	    }
-	    
+
 	    #if { $abscisse >= $xdebl && $abscisse <= $xfin } {
 	    #    lappend nabscisses $abscisse
 	    #    lappend nintensites $intensite
@@ -1937,19 +1937,19 @@ proc spc_vrmes { args } {
 	foreach abscisse $abscisses intensite $intensites {
 	    #-- 060224 : gestion de lambda debut plus proche par defaut
 	    set diff [ expr abs($xdeb-$abscisse) ]
-	    if { $diff < $disper } {   
+	    if { $diff < $disper } {
 		set xdebl [ expr $xdeb-$disper ]
 	    } else {
 		set xdebl $xdeb
 	    }
 	    #-- 060326 : gestion de lambda fin plus proche par exces
 	    set diff [ expr abs($xfin-$abscisse) ]
-	    if { $diff < $disper } {   
+	    if { $diff < $disper } {
 		set xfinl [ expr $xfin+$disper ]
 	    } else {
 		set xfinl $xfin
 	    }
-	    
+
 	    #if { $abscisse >= $xdebl && $abscisse <= $xfin } {
 	    #    lappend nabscisses $abscisse
 	    #    lappend nintensites $intensite
@@ -2004,7 +2004,7 @@ proc spc_vrmes { args } {
 	::console::affiche_erreur "Usage: spc_vrmes nom_profil_raies lambda_raie_Violet lambda_raie_Rouge largeur_raie ?pourcent_RMS_rejet (150)?\n"
     }
 }
-#***************************************************************************#    
+#***************************************************************************#
 
 
 

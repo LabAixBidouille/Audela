@@ -1,9 +1,9 @@
 ####################################################################
 # Spécification des variables utilisées par spcaudace
-# 
+#
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.2 2008-06-15 09:47:51 robertdelmas Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -30,9 +30,9 @@ set spcaudace(extvspec) ".spc"
 
 #--- Répertoire d'SpcAudace :
 if { [regexp {1.3.0} $audela(version) match resu ] } {
-    set spcaudace(repspc) [ file join $audace(rep_scripts) spcaudace ]
+   set spcaudace(repspc) [ file join $audace(rep_scripts) spcaudace ]
 } else {
-    set spcaudace(repspc) [ file join $audace(rep_plugin) tool spectro spcaudace ]
+   set spcaudace(repspc) [ file join $audace(rep_plugin) tool spcaudace ]
 }
 
 

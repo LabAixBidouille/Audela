@@ -6,11 +6,11 @@
 # Date de mise a jour : 21-02-2005
 # Chargement en script :
 # A130 : source $audace(rep_scripts)/spcaudace/spc_io.tcl
-# A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_io.tcl ]
+# A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_io.tcl ]
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_io.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_io.tcl,v 1.2 2008-06-15 09:49:02 robertdelmas Exp $
 
 
 # Remarque (par Benoît) : il faut mettre remplacer toutes les variables textes par des variables caption(mauclaire,...)

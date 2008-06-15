@@ -1,8 +1,8 @@
 # Chargement en script :
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
-# A140 : source [ file join $audace(rep_plugin) tool spectro spcaudace spc_metaf.tcl ]
+# A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.2 2008-06-15 09:48:41 robertdelmas Exp $
 
 
 
@@ -891,9 +891,9 @@ proc spc_lampe2calibre { args } {
          set lambda_raiemax [ lindex [ lindex $liste_raies $index_lproche ] 0 ]
       }
       ::console::affiche_resultat "Longueur d'onde la plus proche du centre du CCD est : $lambda_raiemax\n"
-      
+
       #-- Calcul de la resolution et l'ecrit dans le header :
-      set resolution [ spc_resolution $lampecalibree $lambda_raiemax ] 
+      set resolution [ spc_resolution $lampecalibree $lambda_raiemax ]
 
 
        #--- Message de fin du script :
