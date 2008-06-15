@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.117 2008-06-14 09:01:56 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.118 2008-06-15 16:31:27 michelpujol Exp $
 #
 
 namespace eval ::confCam {
@@ -407,6 +407,7 @@ proc ::confCam::createDialog { } {
 proc ::confCam::createThread { camItem bufNo } {
    variable private
 
+   ###set ::tcl_platform(threaded) 0
    #--- Je cree la thread de la camera, si l'option multithread est activee dans le TCL
    set camNo $private($camItem,camNo)
    if { $::tcl_platform(threaded)==1 } {
@@ -431,6 +432,7 @@ proc ::confCam::createThread { camItem bufNo } {
       set threadNo [interp create ]
       $threadNo alias "::console::disp" "::console::disp"
       $threadNo alias ::camera::addCameraEvent ::camera::addCameraEvent
+      $threadNo alias ::telescope::moveTelescope ::telescope::moveTelescope
       $threadNo alias ttscript2 ttscript2
       #--- je copie la commande de la camera dans la thread de la camera
       copycommand $threadNo "cam$camNo"
@@ -572,7 +574,10 @@ proc ::confCam::onRaiseNotebook { camName } {
 #----------------------------------------------------------------------------
 proc ::confCam::setConnection { camItem state } {
    variable private
-
+   if { $camItem == "" } {
+      #--- je retourne une erreur
+      error "No camera"
+   }
    if { [namespace which -command ::$private($camItem,camName)::setConnection] == "::$private($camItem,camName)::setConnection" } {
       ::$private($camItem,camName)::setConnection $camItem $state
    }
