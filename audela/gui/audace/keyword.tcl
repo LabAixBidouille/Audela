@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.3 2008-05-24 10:58:28 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.4 2008-06-15 16:40:30 michelpujol Exp $
 #
 
 namespace eval ::keyword {
@@ -164,6 +164,10 @@ proc ::keyword::init { } {
    set private(equinoxe)            ""
    set private(radecsys)            ""
    set private(typeImage)           ""
+   set private(seriesId)          ""
+   set private(expTime)           ""
+   set private(detectorName)      ""
+   set private(objName)           ""
    set private(name_software)       "$::audela(name) $::audela(version)"
    set private(commentaire)         ""
 
@@ -184,12 +188,15 @@ proc ::keyword::init { } {
    lappend private(infosMotsClefs) [ list "SET_TEMP" $::caption(keyword,instrument)  ::keyword::private(set_temperature_ccd) readonly $::caption(keyword,parcourir)  "::keyword::openSetTemperature"                "float"  "Set CCD temperature" "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "CCD_TEMP" $::caption(keyword,instrument)  ::keyword::private(temperature_ccd)     readonly $::caption(keyword,rafraichir) "::keyword::onChangeTemperature"               "float"  "Actual CCD temperature" "degres Celsius" ]
    lappend private(infosMotsClefs) [ list "INSTRUME" $::caption(keyword,instrument)  ::keyword::private(equipement)          normal   $::caption(keyword,parcourir)  ""                                             "string" "Instrument" "" ]
-   lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objet)               normal   ""                             ""                                             "string" "Object name" "" ]
+   lappend private(infosMotsClefs) [ list "DETNAM"   $::caption(keyword,instrument)  ::keyword::private(detectorName)      normal   ""                             ""                                                   "string" "Detector" "" ]
+   lappend private(infosMotsClefs) [ list "OBJNAME"  $::caption(keyword,cible)       ::keyword::private(objName)           normal   ""                             ""                                                   "string" "Object name" "" ]
    lappend private(infosMotsClefs) [ list "RA"       $::caption(keyword,cible)       ::keyword::private(ra)                  normal   ""                             ""                                             "string" "Object Right Ascension" "degres" ]
    lappend private(infosMotsClefs) [ list "DEC"      $::caption(keyword,cible)       ::keyword::private(dec)                 normal   ""                             ""                                             "string" "Object Declination" "degres" ]
    lappend private(infosMotsClefs) [ list "EQUINOX"  $::caption(keyword,cible)       ::keyword::private(equinoxe)            normal   ""                             ""                                             "string" "Coordinates equinox" "" ]
    lappend private(infosMotsClefs) [ list "RADECSYS" $::caption(keyword,cible)       ::keyword::private(radecsys)            normal   ""                             ""                                             "string" "Coordinates system" "" ]
    lappend private(infosMotsClefs) [ list "IMAGETYP" $::caption(keyword,acquisition) ::keyword::private(typeImage)           normal   ""                             ""                                             "string" "Image type" "" ]
+   lappend private(infosMotsClefs) [ list "SERIESID" $::caption(keyword,acquisition) ::keyword::private(seriesId)          normal   ""                             ""                                                   "string" "Series identifiant" "" ]
+   lappend private(infosMotsClefs) [ list "EXPTIME"  $::caption(keyword,acquisition) ::keyword::private(expTime)           normal   ""                             ""                                                   "float"  "Exposure time" "s" ]
    lappend private(infosMotsClefs) [ list "SWCREATE" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             "string" "Acquisition software: http://www.audela.org/" "" ]
    lappend private(infosMotsClefs) [ list "SWMODIFY" $::caption(keyword,logiciel)    ::keyword::private(name_software)       readonly ""                             ""                                             "string" "Processing software: http://www.audela.org/" "" ]
    lappend private(infosMotsClefs) [ list "COMMENT"  $::caption(keyword,divers)      ::keyword::private(commentaire)         normal   ""                             ""                                             "string" "Comment" "" ]
@@ -686,6 +693,31 @@ proc ::keyword::recupPosDim { visuNo } {
 
    set private($visuNo,geometry) [ wm geometry $private($visuNo,frm) ]
    set ::conf(keyword,geometry) $private($visuNo,geometry)
+}
+
+#------------------------------------------------------------------------------
+# setKeywordValue
+#   change la valeur d'un mot clef
+#
+# Parametres :
+#    visuNo       numero de la visu
+#    keywordName  nom du mot clef
+#    keywordValue valeur du mot clef
+# return
+#    rien
+#------------------------------------------------------------------------------
+proc ::keyword::setKeywordValue { visuNo keywordName keywordValue} {
+   variable private
+
+   foreach infosMotClef $private(infosMotsClefs) {
+      if { [ lindex $infosMotClef 0 ] == $keywordName } {
+         set textVariable [lindex $infosMotClef 2]
+         set $textVariable $keywordValue
+         return
+      }
+   }
+   #--- je retourne un message d'erreur si le mot clef n'a pas ete trouve
+   error "keyword $keywordName unknown"
 }
 
 #--- Initialisation
