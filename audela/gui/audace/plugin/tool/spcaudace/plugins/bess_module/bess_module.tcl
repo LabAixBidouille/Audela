@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.5 2008-06-15 09:07:27 bmauclaire Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.6 2008-06-15 09:50:18 robertdelmas Exp $
 # Mise à jour FC mars 2007
 # Dernière mise à jour: 24 mars 2007 - 11h00
 #
@@ -51,13 +51,13 @@ namespace eval ::bess {
    global audace audela
 
    if { [regexp {1.3.0} $audela(version) match resu ] } {
-       set repspc [ file join $audace(rep_scripts) spcaudace ]
-       source [file join $repspc plugins bess_module bess_module.cap]
-       source [file join $repspc spc_io.tcl]
+      set repspc [ file join $audace(rep_scripts) spcaudace ]
+      source [file join $repspc plugins bess_module bess_module.cap]
+      source [file join $repspc spc_io.tcl]
    } else {
-       set repspc [ file join $audace(rep_plugin) tool spectro spcaudace ]
-       source [file join $repspc plugins bess_module bess_module.cap]
-       source [file join $repspc spc_io.tcl]
+      set repspc [ file join $audace(rep_plugin) tool spcaudace ]
+      source [file join $repspc plugins bess_module bess_module.cap]
+      source [file join $repspc spc_io.tcl]
    }
 
    #*************************************************************************#
@@ -145,7 +145,7 @@ namespace eval ::bess {
       if {[info exists liste_observer]} {unset liste_observer}
 
       # Ouverture du fichier de paramètres
-      set fichier [file join $audace(rep_plugin) tool spectro spcaudace plugins bess_module BeSSParam.ini]
+      set fichier [file join $audace(rep_plugin) tool spcaudace plugins bess_module BeSSParam.ini]
 
       if {[file exists $fichier]} {
 # On ouvre le fichier
@@ -229,7 +229,7 @@ namespace eval ::bess {
             set racine [file tail [file rootname $fich_in]]
             set ::bess::fich_in $racine
             set fich_out $racine
-            
+
             switch [file extension $fich_in] {
                ".dat" {
                   spc_dat2fits $racine.dat
@@ -341,30 +341,30 @@ namespace eval ::bess {
 	      -font [ list {Arial} 16 bold ] -text $text_bess(titrePanneau) \
 	      -borderwidth 0 -relief flat -bg $bess_export_fg  \
 	      -fg $color(blue_pad)
-#label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg 
+#label $t.trame0.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
       pack $t.trame0.titre -in $t -fill x -side top -pady 15
       #pack $t.trame0.titre -side top -fill both -expand true
   }
 
       #--------------------------------------------------------------------------------
-      # Trame du nom des fichier à éditer et de sortie            
+      # Trame du nom des fichier à éditer et de sortie
       frame $t.trame1 -borderwidth 5 -relief groove -bg $bess_export_fg
-      
+
       label $t.trame1.titre -text $text_bess(titrePanneau) -font {helvetica 16 bold} -justify center -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame1.titre -in $t.trame1 -columnspan 2 -sticky w
-      
+
       label $t.trame1.l1 -text $text_bess(fich_in) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       entry $t.trame1.e1 -textvariable ::bess::fich_in -font $police(normal) -relief sunken -bg $bess_entry_fg
       button $t.trame1.b1 -text $text_bess(SelecFile) -command {::bess::SelectFile} -font $police(titre) -bg $bess_export_fg
       button $t.trame1.b2 -text $text_bess(ChargeFichier) -command {::bess::ChargeFichier $::bess::fich_in} -font $police(titre) -fg $color(blue_pad) -bg $bess_export_fg
       grid $t.trame1.l1 $t.trame1.e1 $t.trame1.b1 $t.trame1.b2
-      
+
       label $t.trame1.l2 -text $text_bess(fich_out) -font $police(gras) -fg $color(blue_pad) -bg $bess_export_fg
       entry $t.trame1.e2 -textvariable ::bess::fich_out -font $police(normal) -relief sunken -bg $bess_entry_fg
       grid $t.trame1.l2 $t.trame1.e2
 
       pack $t.trame1 -side top -fill both -expand true
-      
+
 
       #--------------------------------------------------------------------------------
       # Trame des renseignements généraux
@@ -407,7 +407,7 @@ namespace eval ::bess {
       pack $t.trame3.b2 -side left -padx 10 -pady 10
       pack $t.trame3.b3 -side right -padx 10 -pady 10
       pack $t.trame3.b4 -side right -padx 35 -pady 10
-      
+
 
       pack $t.trame3 -side top -fill both -expand true
 
@@ -426,9 +426,9 @@ namespace eval ::bess {
 
       global audace conf spcaudace
       variable text_bess
-      
+
      if { $conf(editsite_htm)!="" } {
-	      set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" & 
+	      set answer [ catch { exec $conf(editsite_htm) "$spcaudace(sitebess)" &
 	      } ]
       } else {
 	      set message_erreur $text_bess(pb_editweb)
@@ -446,15 +446,15 @@ namespace eval ::bess {
       variable liste_sites
       variable liste_observers
 
-      set fichier [file join $audace(rep_plugin) tool spectro spcaudace plugins bess_module BeSSParam.ini]
+      set fichier [file join $audace(rep_plugin) tool spcaudace plugins bess_module BeSSParam.ini]
       catch {
          exec $conf(editscript) $fichier
          tkwait visibility $audace(base).saisie
          LitFichesBeSSPredefinies
-         }
+      }
 
    }
-   
+
    #*************************************************************************#
    #*************  valideMotCle  ********************************************#
    #*************************************************************************#
