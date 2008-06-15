@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.10 2008-06-01 14:25:55 robertdelmas Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.11 2008-06-15 16:46:33 michelpujol Exp $
 #
 
 #============================================================
@@ -915,18 +915,32 @@ proc ::tlscp::startAcquisition { visuNo  } {
 # startCenter
 #    lance le centrage de l'etoile
 #
+# parametres
+#    visuNo : numero de la visu
+#    methode : "BRIGHTEST" ou "ASTROMETRY" ou ""
 # return :
 #    - les coordonnes (rad,dec) de l'etoile trouvee
 #    - ou une chaine vide si une etoile n'est pas trouvee
 #------------------------------------------------------------
-proc ::tlscp::startCenter { visuNo  } {
+proc ::tlscp::startCenter { visuNo { methode "" } } {
    variable private
 
+   #--- je verifie qu'il n'y a pas deja une sequence en cours
    if { $private($visuNo,acquisitionState) != "" } {
-      return
+      return ""
    }
 
-   if { $::conf(tlscp,methode) == "BRIGHTEST" } {
+   #--- je verifie que la camera existe
+   if { $private($visuNo,camItem) == "" } {
+      return ""
+   }
+
+   #--- je prends la methode par defaut si la methode n'est pas precisee dans les parametres
+   if { $methode == "" } {
+      set methode $::conf(tlscp,methode)
+   }
+
+   if { $methode == "BRIGHTEST" } {
       #--- je cherche l'etoile la plus brillante
       set brigthestStarCoord [::tlscp::startSearchStar $visuNo]
       if { $brigthestStarCoord == "" } {
@@ -934,7 +948,7 @@ proc ::tlscp::startCenter { visuNo  } {
       }
    }
 
-   #--- je configure la camera
+   #--- je recupere le binning de la camera
    set binning [list [string range $::conf(tlscp,binning) 0 0] [string range $::conf(tlscp,binning) 2 2]]
    set private($visuNo,acquisitionState) "center"
 
@@ -952,14 +966,17 @@ proc ::tlscp::startCenter { visuNo  } {
    #--- J'associe la commande d'arret a la touche ESCAPE
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.center"
 
+   #--- j'efface les marques dans la visu
    ::tlscp::clearSearchStar $visuNo
+
+   #--- RAZ su resultat
    set private($visuNo,acquisitionResult) ""
 
    set bufNo [::confVisu::getBufNo $visuNo]
    set ra    [string trim [mc_angle2deg $private($visuNo,raObjet) ]]
    set dec   [string trim [mc_angle2deg $private($visuNo,decObjet)]]
 
-   if { $::conf(tlscp,methode) == "BRIGHTEST" } {
+   if { $methode == "BRIGHTEST" } {
       ###console::disp "::tlscp::startCenter targetCoord=$private($visuNo,targetCoord) targetBoxSize=$::conf(tlscp,targetBoxSize)\n"
       ::camera::centerBrightestStar $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime) $binning $::conf(tlscp,originCoord) $private($visuNo,targetCoord) $::conf(tlscp,angle) $::conf(tlscp,targetBoxSize) $::conf(tlscp,mountEnabled) $::conf(tlscp,alphaSpeed) $::conf(tlscp,deltaSpeed) $::conf(tlscp,alphaReverse) $::conf(tlscp,deltaReverse) $::conf(tlscp,seuilx) $::conf(tlscp,seuily)
    } else {
@@ -985,9 +1002,10 @@ proc ::tlscp::startCenter { visuNo  } {
    #--- j'affiche les etoiles
    if { $private($visuNo,acquisitionResult) != "" } {
       #--- j'ajoute les mots cles dans l'image
-      buf$bufNo setkwd [list "RA"  $ra  double "Reference coordinate for naxis1" "degree" ]
-      buf$bufNo setkwd [list "DEC" $dec double "Reference coordinate for naxis2" "degree" ]
-      buf$bufNo setkwd [list "OBJECT"  $private($visuNo,nomObjet) string "Object name" "" ]
+      set bufNo [::confVisu::getBufNo $visuNo]
+      buf$bufNo setkwd [list "RA"  $ra  double "reference coordinate for naxis1" "degree" ]
+      buf$bufNo setkwd [list "DEC" $dec double "reference coordinate for naxis2" "degree" ]
+      buf$bufNo setkwd [list "OBJNAME" $private($visuNo,nomObjet) string "object name" "" ]
       buf$bufNo setkwd [list "EQUINOX" $private($visuNo,equinoxObjet) string "Coordinates equinox" "" ]
 
       #--- je cree un cercle rouge autour de l'etoile centree
@@ -1121,7 +1139,7 @@ proc ::tlscp::stopAcquisition { visuNo { tkButton "" } } {
 proc ::tlscp::callbackAcquisition { visuNo command args } {
    variable private
 
-   ##console::disp "::tlscp::callbackAcquisition visu=$visuNo command=$command args=$args\n"
+   ###console::disp "::tlscp::callbackAcquisition visu=$visuNo command=$command args=$args\n"
    switch $command  {
       "autovisu" {
          ::confVisu::autovisu $visuNo
@@ -1255,6 +1273,15 @@ proc ::tlscp::onChangeDisplay { visuNo args } {
       }
    }
 
+}
+
+#------------------------------------------------------------
+# getCenterMethod
+#   retourne le methode de centrage (ASTROMETRY ou BRIGHTEST)
+#
+#------------------------------------------------------------
+proc ::tlscp::getCenterMethod { visuNo } {
+   return $::conf(tlscp,methode)
 }
 
 #------------------------------------------------------------
