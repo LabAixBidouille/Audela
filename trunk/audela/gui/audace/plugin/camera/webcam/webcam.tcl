@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.36 2008-05-24 10:30:13 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.37 2008-06-15 16:44:03 michelpujol Exp $
 #
 
 namespace eval ::webcam {
@@ -11,6 +11,8 @@ namespace eval ::webcam {
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] webcam.cap ]
+
+   set caption(webcam,switchedConnexion) "Connexion alternée"
 }
 
 #
@@ -82,14 +84,17 @@ proc ::webcam::initPlugin { } {
    variable private
    global conf
 
-   #--- Initialise les variables de la webcams A
+   #--- Initialise les variable generales
+   if { ! [ info exists conf(webcam,switchedConnexion) ] }             { set conf(webcam,switchedConnexion)             "0" }
+
+   #--- Initialise les variables de chaque item
    foreach camItem { A B C } {
       if { ! [ info exists conf(webcam,$camItem,longuepose) ] }           { set conf(webcam,$camItem,longuepose)           "0" }
       if { ! [ info exists conf(webcam,$camItem,longueposeport) ] }       { set conf(webcam,$camItem,longueposeport)       "LPT1:" }
       if { ! [ info exists conf(webcam,$camItem,longueposelinkbit) ] }    { set conf(webcam,$camItem,longueposelinkbit)    "0" }
       if { ! [ info exists conf(webcam,$camItem,longueposestartvalue) ] } { set conf(webcam,$camItem,longueposestartvalue) "0" }
-      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                 { set conf(webcam,$camItem,mirh)                 "0" }
       if { ! [ info exists conf(webcam,$camItem,mirv) ] }                 { set conf(webcam,$camItem,mirv)                 "0" }
+      if { ! [ info exists conf(webcam,$camItem,mirh) ] }                 { set conf(webcam,$camItem,mirh)                 "0" }
       if { ! [ info exists conf(webcam,$camItem,channel) ] }              { set conf(webcam,$camItem,channel)              "0" }
       if { ! [ info exists conf(webcam,$camItem,ccd_N_B) ] }              { set conf(webcam,$camItem,ccd_N_B)              "0" }
       if { ! [ info exists conf(webcam,$camItem,dim_ccd_N_B) ] }          { set conf(webcam,$camItem,dim_ccd_N_B)          "1/4''" }
@@ -130,6 +135,41 @@ proc ::webcam::initPlugin { } {
    set private(portList) ""
 }
 
+#------------------------------------------------------------
+# setConnection
+#    connecte ou deconnecte la camera
+#
+# parametres :
+#    camItem : item de la camera
+#    state :   1=connecter la camera , 0= deconnecter la camera
+# return
+#    rien
+#------------------------------------------------------------
+proc ::webcam::setConnection { camItem state }  {
+   variable private
+
+   if { $::tcl_platform(platform) != "windows" }         return
+   if { $::conf(webcam,$camItem,videomode) != "directx" }  return
+   if { $::conf(webcam,switchedConnexion)  == 0 }        return
+   if { [::webcam::isReady $camItem] != 1 }              return
+   if { [cam$private($camItem,camNo) connect ] == 1 }    return
+
+console::disp "::webcam::setConnection $state \n"
+   if { $state == 1 } {
+      #--- Je deconnecte d'abord les autres cameras
+      foreach camItem2 { A B C } {
+         if { $camItem2 != $camItem && $private($camItem2,camNo) && $::conf(webcam,$camItem2,videomode) == "directx" != 0 } {
+            if { [cam$private($camItem2,camNo) connect ] == 1 } {
+               cam$private($camItem2,camNo) connect 0
+            }
+         }
+      }
+   }
+
+   #--- Je connecte ou deconnecte la camera
+   cam$private($camItem,camNo) connect $state
+}
+
 #
 # ::webcam::confToWidget
 #    Copie les variables de configuration dans des variables locales
@@ -144,6 +184,7 @@ proc ::webcam::confToWidget { } {
       set private($camItem,longueposeport)       $conf(webcam,$camItem,longueposeport)
       set private($camItem,longueposelinkbit)    $conf(webcam,$camItem,longueposelinkbit)
       set private($camItem,longueposestartvalue) $conf(webcam,$camItem,longueposestartvalue)
+      set private($camItem,switchedConnexion)    $conf(webcam,switchedConnexion)
       set private($camItem,mirh)                 $conf(webcam,$camItem,mirh)
       set private($camItem,mirv)                 $conf(webcam,$camItem,mirv)
       set private($camItem,channel)              $conf(webcam,$camItem,channel)
@@ -151,11 +192,9 @@ proc ::webcam::confToWidget { } {
       set private($camItem,dim_ccd_N_B)          $conf(webcam,$camItem,dim_ccd_N_B)
       set private($camItem,ccd)                  $conf(webcam,$camItem,ccd)
       set private($camItem,videomode)            $conf(webcam,$camItem,videomode)
-
-      #--- je copie le port correspondant de la camera
       set private($camItem,port)                 $conf(webcam,$camItem,port)
 
-      #--- je copie le label correspondant au format
+      #--- je copie le label correspondant au format video
       set formatIndex [lsearch -exact $private(videoFormatNames) $conf(webcam,$camItem,videoformat)]
       set private($camItem,videoformat) [lindex $private(videoFormatLabels) $formatIndex]
    }
@@ -174,6 +213,7 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,longueposeport)       $private($camItem,longueposeport)
    set conf(webcam,$camItem,longueposelinkbit)    $private($camItem,longueposelinkbit)
    set conf(webcam,$camItem,longueposestartvalue) $private($camItem,longueposestartvalue)
+   set conf(webcam,switchedConnexion)             $private($camItem,switchedConnexion)
    set conf(webcam,$camItem,mirh)                 $private($camItem,mirh)
    set conf(webcam,$camItem,mirv)                 $private($camItem,mirv)
    set conf(webcam,$camItem,channel)              $private($camItem,channel)
@@ -181,11 +221,9 @@ proc ::webcam::widgetToConf { camItem } {
    set conf(webcam,$camItem,dim_ccd_N_B)          $private($camItem,dim_ccd_N_B)
    set conf(webcam,$camItem,ccd)                  $private($camItem,ccd)
    set conf(webcam,$camItem,videomode)            $private($camItem,videomode)
-
-   #--- je copie la camera correspondant au port
    set conf(webcam,$camItem,port)                 $private($camItem,port)
 
-   #--- je copie la format correspondant au label
+      #--- je copie le label correspondant au format video
    set formatIndex [lsearch -exact $private(videoFormatLabels) $private($camItem,videoformat)]
    set conf(webcam,$camItem,videoformat) [lindex $private(videoFormatNames) $formatIndex]
 }
@@ -273,9 +311,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    #--- Choix du mode video
    if { $::tcl_platform(platform) == "windows" } {
-      ###set list_combobox [ list "vfw" "directx" ]
-      #--- le mode video DIRECTX n'est pas propose car il faut VisualC8 pour compiler les DLL de la webcam
-      set list_combobox [ list "vfw" ]
+      set list_combobox [ list "vfw" "directx" ]
       #--- video mode
       ComboBox $frm.videomode \
          -width 5        \
@@ -296,6 +332,11 @@ proc ::webcam::fillConfigPage { frm camItem } {
    checkbutton $frm.miry -text "$caption(webcam,miroir_y)" -highlightthickness 0 \
       -variable ::webcam::private($camItem,mirv)
    pack $frm.miry -in $frm.frame9 -anchor w -side top -padx 20 -pady 10
+
+   #--- Connexion alternee
+   checkbutton $frm.switchedConnexion -text "$caption(webcam,switchedConnexion)" -highlightthickness 0 \
+      -variable ::webcam::private($camItem,switchedConnexion)
+   pack $frm.switchedConnexion -in $frm.frame7 -anchor w -side top -padx 20 -pady 10
 
    #--- Boutons de configuration de la source
    if { $::tcl_platform(os) == "Linux" } {
@@ -451,6 +492,29 @@ proc ::webcam::configureCamera { camItem bufNo } {
    global caption conf
 
    set catchResult [ catch {
+
+      if { $conf(webcam,switchedConnexion) == 1 } {
+        #--- je deconnecte les autres cameras
+        #
+        foreach camItem2 { A B C } {
+            if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0  && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
+               if { [cam$private($camItem2,camNo) connect ] == 1 } {
+                  cam$private($camItem2,camNo) connect 0
+               }
+            }
+         }
+      }
+
+      if { $conf(webcam,$camItem,longuepose) == "1" } {
+         #--- Je cree la liaison longue pose
+         set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
+         #--- Je cree la liaison longue pose
+         set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
+      } else {
+         #--- Pas de liaison longue pose
+         set linkNo 0
+      }
+
       #--- Je cree la camera
       set camNo [ cam::create webcam "$conf(webcam,$camItem,port)" \
          -channel $conf(webcam,$camItem,channel) \
@@ -459,6 +523,10 @@ proc ::webcam::configureCamera { camItem bufNo } {
          -ccd $conf(webcam,$camItem,ccd) \
          -videomode $conf(webcam,$camItem,videomode) \
          -sensorcolor [expr $conf(webcam,$camItem,ccd_N_B)==0 ] \
+         -longuepose $conf(webcam,$camItem,longuepose) \
+         -longueposelinkno $linkNo \
+         -longueposelinkbit $conf(webcam,$camItem,longueposelinkbit) \
+         -longueposestart $conf(webcam,$camItem,longueposestartvalue) \
       ]
       console::affiche_erreur "$caption(webcam,canal_usb) ($caption(webcam,camera))\
          $caption(webcam,2points) $conf(webcam,$camItem,channel)\n"
@@ -477,41 +545,6 @@ proc ::webcam::configureCamera { camItem bufNo } {
       if { $::tcl_platform(os) == "Linux" } {
          cam$camNo videoformat $conf(webcam,$camItem,videoformat)
          cam$camNo framerate $conf(webcam,$camItem,framerate)
-      }
-      #--- Parametrage des longues poses
-      if { $conf(webcam,$camItem,longuepose) == "1" } {
-         switch [ ::confLink::getLinkNamespace $conf(webcam,$camItem,longueposeport) ] {
-            parallelport {
-               #--- Je cree la liaison longue pose
-               set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
-               #---
-               cam$camNo longuepose 1
-               cam$camNo longueposelinkno $linkNo
-               cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
-               cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
-               #--- si  longueposestartvalue=0 alors longueposestovalue=1
-               #--- si  longueposestartvalue=1 alors longueposestovalue=0
-               cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
-            }
-            quickremote {
-               #--- Je cree la liaison longue pose
-               set linkNo [ ::confLink::create $conf(webcam,$camItem,longueposeport) "cam$camNo" "longuepose" "bit $conf(webcam,$camItem,longueposelinkbit)" ]
-               #---
-               cam$camNo longuepose 1
-               cam$camNo longueposelinkno $linkNo
-               cam$camNo longueposelinkbit $conf(webcam,$camItem,longueposelinkbit)
-               cam$camNo longueposestartvalue $conf(webcam,$camItem,longueposestartvalue)
-               #--- si  longueposestartvalue=0 alors longueposestovalue=1
-               #--- si  longueposestartvalue=1 alors longueposestovalue=0
-               cam$camNo longueposestopvalue [expr $conf(webcam,$camItem,longueposestartvalue)==0]
-            }
-            default {
-               error "$conf(webcam,$camItem,longueposeport) long exposure driver not found."
-            }
-         }
-      } else {
-         #--- Pas de liaison longue pose
-         cam$camNo longuepose 0
       }
       #--- Gestion des widgets actifs/inactifs
       ::webcam::configWebCam $camItem
@@ -551,7 +584,7 @@ proc ::webcam::stop { camItem } {
 
    #--- Je ferme la liaison longuepose
    if { $conf(webcam,$camItem,longuepose) == 1 } {
-      ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam$private($camItem,camNo)" "longuepose"
+      ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose"
    }
 
    #--- J'arrete la camera
