@@ -1,6 +1,6 @@
 #
 # Fichier : spcaudace.cap
-# Mise a jour $Id: spcaudace.cap,v 1.2 2008-06-14 22:35:49 bmauclaire Exp $
+# Mise a jour $Id: spcaudace.cap,v 1.3 2008-06-15 09:31:45 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -13,175 +13,35 @@ global caption langage
 
 set caption(spcaudace,spc_audace)                         "Spectropscopy: SpcAud'ACE"
 
-set caption(spcaudace,configure)                          "Set up"
-set caption(spcaudace,configure,titre)                    "Spectroscopy: Setup"
-set caption(spcaudace,configure,titre2)                   "Spectroscopy: Setup"
-set caption(spcaudace,configure,load_button)              "Load Setup"
-set caption(spcaudace,configure,save_button)              "Save Setup"
-set caption(spcaudace,configure,return_button)            "OK"
-set caption(spcaudace,configure,load)                     "Load Setup"
-set caption(spcaudace,configure,save)                     "Save Setup"
-set caption(spcaudace,configure,config,code_obs)          "UAI Code for the observatory"
-set caption(spcaudace,configure,config,longitude)         "Observatory Longitude (deg.)"
-set caption(spcaudace,configure,config,sens)              "Observatory Longitude (E|W)"
-set caption(spcaudace,configure,config,latitude)          "Observatory Latitude (deg.)"
-set caption(spcaudace,configure,config,altitude)          "Observatory Altitude (m)"
-set caption(spcaudace,configure,config,desc_location)     "Observatory Name"
-set caption(spcaudace,configure,config,desc_camera)       "Camera Description"
-set caption(spcaudace,configure,config,desc_telescope)    "Telescope Description"
-set caption(spcaudace,configure,config,tel_diam)          "Telescope Diameter (m)"
-set caption(spcaudace,configure,config,tel_fd)            "Telescope F/D"
-set caption(spcaudace,configure,config,comment)           "Comments"
-
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
 
    set caption(spcaudace,spc_audace)                      "Spectroscopie : SpcAud'ACE"
 
-   set caption(spcaudace,configure)                       "Configurer"
-   set caption(spcaudace,configure,titre)                 "Spectroscopie : Configuration"
-   set caption(spcaudace,configure,titre2)                "Spectroscopie : Configuration"
-   set caption(spcaudace,configure,load_button)           "Charge la configuration"
-   set caption(spcaudace,configure,save_button)           "Enregistre la configuration"
-   set caption(spcaudace,configure,return_button)         "OK"
-   set caption(spcaudace,configure,load)                  "Charge la configuration"
-   set caption(spcaudace,configure,save)                  "Enregistre la configuration"
-   set caption(spcaudace,configure,config,code_obs)       "Code UAI de l'observatoire"
-   set caption(spcaudace,configure,config,longitude)      "Longitude de l'observatoire (deg.)"
-   set caption(spcaudace,configure,config,sens)           "Longitude de l'observatoire (E|W)"
-   set caption(spcaudace,configure,config,latitude)       "Latitude de l'observatoire (deg.)"
-   set caption(spcaudace,configure,config,altitude)       "Altitude de l'observatoire (m)"
-   set caption(spcaudace,configure,config,desc_location)  "Nom de l'observatoire"
-   set caption(spcaudace,configure,config,desc_camera)    "Description de la caméra"
-   set caption(spcaudace,configure,config,desc_telescope) "Description du télescope"
-   set caption(spcaudace,configure,config,tel_diam)       "Diamètre du télescope (m)"
-   set caption(spcaudace,configure,config,tel_fd)         "F/D du télescope"
-   set caption(spcaudace,configure,config,comment)        "Commentaire"
-
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "Spettroscopia : SpcAud'ACE"
-
-   set caption(spcaudace,configure)                       "Configurare"
-   set caption(spcaudace,configure,titre)                 "Spettroscopia: Configurazione"
-   set caption(spcaudace,configure,titre2)                "Spettroscopia: Configurazione"
-   set caption(spcaudace,configure,load_button)           "Caricamento della configurazione"
-   set caption(spcaudace,configure,save_button)           "Salvataggio della configurazione"
-   set caption(spcaudace,configure,return_button)         "OK"
-   set caption(spcaudace,configure,load)                  "Caricamento della configurazione"
-   set caption(spcaudace,configure,save)                  "Salvataggio della configurazione"
-   set caption(spcaudace,configure,config,code_obs)       "Codice UAI dell'osservatorio"
-   set caption(spcaudace,configure,config,longitude)      "Longitudine dell'osservatorio (deg.)"
-   set caption(spcaudace,configure,config,sens)           "Longitudine dell'osservatorio (E|W)"
-   set caption(spcaudace,configure,config,latitude)       "Latitudine dell'osservatorio (deg.)"
-   set caption(spcaudace,configure,config,altitude)       "Altitudine dell'osservatorio (m)"
-   set caption(spcaudace,configure,config,desc_location)  "Nome dell'osservatorio"
-   set caption(spcaudace,configure,config,desc_camera)    "Descrizione della camera"
-   set caption(spcaudace,configure,config,desc_telescope) "Descrizione del telescopio"
-   set caption(spcaudace,configure,config,tel_diam)       "Diametro del telescopio (m)"
-   set caption(spcaudace,configure,config,tel_fd)         "F/D del telescopio"
-   set caption(spcaudace,configure,config,comment)        "Commenti"
+   set caption(spcaudace,spc_audace)                      "Spettroscopia: SpcAud'ACE"
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "Espectroscopia : SpcAud'ACE"
-
-   set caption(spcaudace,configure)                       "Configurar"
-   set caption(spcaudace,configure,titre)                 "Espectroscopia: Configuración"
-   set caption(spcaudace,configure,titre2)                "Espectroscopia: Configuración"
-   set caption(spcaudace,configure,load_button)           "Cargar la configuración"
-   set caption(spcaudace,configure,save_button)           "Guardar la configuración"
-   set caption(spcaudace,configure,return_button)         "OK"
-   set caption(spcaudace,configure,load)                  "Cargar la configuración"
-   set caption(spcaudace,configure,save)                  "Guardar la configuración"
-   set caption(spcaudace,configure,config,code_obs)       "Código UAI del observatorio"
-   set caption(spcaudace,configure,config,longitude)      "Longitud del observatorio (grad.)"
-   set caption(spcaudace,configure,config,sens)           "Longitid del observatorio (E|W)"
-   set caption(spcaudace,configure,config,latitude)       "Latitud del observatorio (grad.)"
-   set caption(spcaudace,configure,config,altitude)       "Altura del observatorio (m)"
-   set caption(spcaudace,configure,config,desc_location)  "Nombre del observatorio"
-   set caption(spcaudace,configure,config,desc_camera)    "Descripción de la cámara"
-   set caption(spcaudace,configure,config,desc_telescope) "Descripción del telescopio"
-   set caption(spcaudace,configure,config,tel_diam)       "Diámetro del telescopio (m)"
-   set caption(spcaudace,configure,config,tel_fd)         "Relacion focal del telescopio"
-   set caption(spcaudace,configure,config,comment)        "Comentarios"
+   set caption(spcaudace,spc_audace)                      "Espectroscopia: SpcAud'ACE"
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "Spektroskopie : SpcAud'ACE"
-
-   set caption(spcaudace,configure)                       "Konfigurieren"
-   set caption(spcaudace,configure,titre)                 "Spektroskopie: Konfiguration"
-   set caption(spcaudace,configure,titre2)                "Spektroskopie: Konfiguration"
-   set caption(spcaudace,configure,load_button)           "Konfiguration laden"
-   set caption(spcaudace,configure,save_button)           "Konfiguration speichern"
-   set caption(spcaudace,configure,return_button)         "OK"
-   set caption(spcaudace,configure,load)                  "Konfiguration laden"
-   set caption(spcaudace,configure,save)                  "Konfiguration speichern"
-   set caption(spcaudace,configure,config,code_obs)       "Sternwarte UAI Code"
-   set caption(spcaudace,configure,config,longitude)      "Länge der Sternwarte (deg.)"
-   set caption(spcaudace,configure,config,sens)           "Länge der Sternwarte (E/W)"
-   set caption(spcaudace,configure,config,latitude)       "Breite der Sternwarte (deg.)"
-   set caption(spcaudace,configure,config,altitude)       "Höhe der Sternwarte (m)"
-   set caption(spcaudace,configure,config,desc_location)  "Nahmen der Sternwarte"
-   set caption(spcaudace,configure,config,desc_camera)    "Kamera Beschreibung"
-   set caption(spcaudace,configure,config,desc_telescope) "Teleskop Beschreibung"
-   set caption(spcaudace,configure,config,tel_diam)       "Teleskop Durchmesser (m)"
-   set caption(spcaudace,configure,config,tel_fd)         "Teleskop F/D"
-   set caption(spcaudace,configure,config,comment)        "Kommentar"
+   set caption(spcaudace,spc_audace)                      "Spektroskopie: SpcAud'ACE"
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
 
-   set caption(spcaudace,spc_audace)                      "Espectroscopia : SpcAud'ACE"
-
-   set caption(spcaudace,configure)                       "Configurar"
-   set caption(spcaudace,configure,titre)                 "Espectroscopia : Configuração"
-   set caption(spcaudace,configure,titre2)                "Espectroscopia : Configuração"
-   set caption(spcaudace,configure,load_button)           "Carregar a configuração"
-   set caption(spcaudace,configure,save_button)           "Guardar a configuração"
-   set caption(spcaudace,configure,return_button)         "OK"
-   set caption(spcaudace,configure,load)                  "Carregar a configuração"
-   set caption(spcaudace,configure,save)                  "Guardar a configuração"
-   set caption(spcaudace,configure,config,code_obs)       "Codigo UAI do observatório"
-   set caption(spcaudace,configure,config,longitude)      "Longitude do observatório (deg.)"
-   set caption(spcaudace,configure,config,sens)           "Longitude do observatório (E|W)"
-   set caption(spcaudace,configure,config,latitude)       "Latitude do observatório (deg.)"
-   set caption(spcaudace,configure,config,altitude)       "Altitude do observatório (m)"
-   set caption(spcaudace,configure,config,desc_location)  "Nome do observatório"
-   set caption(spcaudace,configure,config,desc_camera)    "Descrição da câmara"
-   set caption(spcaudace,configure,config,desc_telescope) "Descrição do telescópio"
-   set caption(spcaudace,configure,config,tel_diam)       "Diâmetro do telescópio (m)"
-   set caption(spcaudace,configure,config,tel_fd)         "F/D do telescópio"
-   set caption(spcaudace,configure,config,comment)        "Comentário"
+   set caption(spcaudace,spc_audace)                      "Espectroscopia: SpcAud'ACE"
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
 
    set caption(spcaudace,spc_audace)                      "Spectroscopy: SpcAud'ACE"
-
-   set caption(spcaudace,configure)                       "Set up"
-   set caption(spcaudace,configure,titre)                 "Spectroscopy: Setup"
-   set caption(spcaudace,configure,titre2)                "Spectroscopy: Setup"
-   set caption(spcaudace,configure,load_button)           "Load Setup"
-   set caption(spcaudace,configure,save_button)           "Save Setup"
-   set caption(spcaudace,configure,return_button)         "OK"
-   set caption(spcaudace,configure,load)                  "Load Setup"
-   set caption(spcaudace,configure,save)                  "Save Setup"
-   set caption(spcaudace,configure,config,code_obs)       "UAI Code for the observatory"
-   set caption(spcaudace,configure,config,longitude)      "Observatory Longitude (deg.)"
-   set caption(spcaudace,configure,config,sens)           "Observatory Longitude (E|W)"
-   set caption(spcaudace,configure,config,latitude)       "Observatory Latitude (deg.)"
-   set caption(spcaudace,configure,config,altitude)       "Observatory Altitude (m)"
-   set caption(spcaudace,configure,config,desc_location)  "Observatory Name"
-   set caption(spcaudace,configure,config,desc_camera)    "Camera Description"
-   set caption(spcaudace,configure,config,desc_telescope) "Telescope Description"
-   set caption(spcaudace,configure,config,tel_diam)       "Telescope Diameter (m)"
-   set caption(spcaudace,configure,config,tel_fd)         "Telescope F/D"
-   set caption(spcaudace,configure,config,comment)        "Comments"
 
 }
 
