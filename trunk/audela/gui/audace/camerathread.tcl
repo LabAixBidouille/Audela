@@ -3,7 +3,7 @@
 # Description : procedures d'acqusitition et de traitement avec
 #         plusieurs cameras simultanées exploitant le mode multithread
 # Auteur : Michel PUJOL
-# Mise a jour $Id: camerathread.tcl,v 1.3 2008-04-29 17:40:04 michelpujol Exp $
+# Mise a jour $Id: camerathread.tcl,v 1.4 2008-06-15 16:29:40 michelpujol Exp $
 #
 
 namespace eval ::camerathread {
@@ -301,10 +301,6 @@ proc ::camerathread::processAcquisitionLoop { } {
       set $statusVariableName "stand"
    }
 
-   if { $private(acquisitionState) != "1" } {
-      ::camerathread::notify "acquisitionResult" ""
-      return
-   }
 
    set catchError [ catch {
       set bufNo $private(bufNo)
@@ -315,6 +311,12 @@ proc ::camerathread::processAcquisitionLoop { } {
 
       #--- j'affiche l'image
       ::camerathread::notify "autovisu" $interval
+
+      if { $private(acquisitionState) != "1" } {
+         #--- je sors immediatement si une interruption a ete demandee
+         ::camerathread::notify "acquisitionResult" ""
+         return
+      }
 
       set istar ""
       set cstar ""
@@ -508,7 +510,13 @@ proc ::camerathread::processAcquisitionLoop { } {
 
             #--- je deplace le telescope
             if { $alphaDelay != 0 || $deltaDelay != 0 } {
-               ::thread::send $private(mainThreadNo) [list ::telescope::moveTelescope $alphaDirection $alphaDelay $deltaDirection $deltaDelay  ]
+               if { $private(mainThreadNo)==0 } {
+                  interp eval "" [list ::telescope::moveTelescope $alphaDirection $alphaDelay $deltaDirection $deltaDelay  ]
+               } else {
+                  ::thread::send $private(mainThreadNo) [list ::telescope::moveTelescope $alphaDirection $alphaDelay $deltaDirection $deltaDelay  ]
+               }
+
+
             }
          }
 
