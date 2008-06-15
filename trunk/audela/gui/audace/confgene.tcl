@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.42 2008-04-26 11:13:32 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.43 2008-06-15 16:33:30 michelpujol Exp $
 #
 
 #
@@ -2556,14 +2556,14 @@ proc ::confGenerique::createDialog { visuNo NameSpace This} {
    wm title $This "[$NameSpace\:\:getLabel] (visu$visuNo)"
    wm protocol $This WM_DELETE_WINDOW "::confGenerique::closeWindow $visuNo $NameSpace $This"
 
+   #--- Frame des boutons OK, Appliquer et Fermer
+   frame $This.frame2 -borderwidth 1 -relief raised
+   pack $This.frame2 -side bottom -fill x
+
    #--- Frame des parametres a configurer
    frame $This.frame1 -borderwidth 1 -relief raised
    $NameSpace\:\:fillConfigPage $This.frame1 $visuNo
    pack $This.frame1 -side top -fill both -expand 1
-
-   #--- Frame des boutons OK, Appliquer et Fermer
-   frame $This.frame2 -borderwidth 1 -relief raised
-   pack $This.frame2 -side top -fill x
 
    if { [info commands "$NameSpace\::apply"] !=  "" } {
       #--- Cree le bouton 'OK' si la procedure NameSpace::apply existe
