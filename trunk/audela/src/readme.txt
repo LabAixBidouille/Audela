@@ -1,4 +1,4 @@
-AudeLA-1.4.0 (20070711)
+AudeLA-1.5.0 (20080617)
 
 
 1. Sources
@@ -157,10 +157,10 @@ mode release.
 -----------------------------------------
 
 -> Pour linux, il vous faut extraire les sources de audela a partir de l'archive :
-	$ tar -xf audela-1.4.0-src.tar.gz
+	$ tar -xf audela-1.5.0-src.tar.gz
 
 -> Configurez le paquetage AudeLA :
-	$ cd audela-1.4.0/src
+	$ cd audela-1.5.0/src
 	$ ./configure
 
 	Par defaut, configure devrait detecter correctement les parametres de 
