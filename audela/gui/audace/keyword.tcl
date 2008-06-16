@@ -2,7 +2,7 @@
 # Fichier : keyword.tcl
 # Description : Procedures autour de l'en-tete FITS
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: keyword.tcl,v 1.5 2008-06-16 20:49:05 robertdelmas Exp $
+# Mise a jour $Id: keyword.tcl,v 1.6 2008-06-16 21:19:13 robertdelmas Exp $
 #
 
 namespace eval ::keyword {
@@ -168,7 +168,7 @@ proc ::keyword::init { } {
    set private(expTime)             ""
    set private(detectorName)        ""
    set private(objName)             ""
-   set private(name_software)       "$::audela(name) $::audela(version)"
+   set private(name_software)       "[ ::audela::getPluginTitle ] $::audela(version)"
    set private(commentaire)         ""
 
    #--- On cree la liste des caracteristiques (nom, categorie, variable et procedure) des mots cles

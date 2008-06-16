@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.43 2008-06-15 16:33:30 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.44 2008-06-16 21:18:50 robertdelmas Exp $
 #
 
 #
@@ -2313,7 +2313,7 @@ namespace eval confVersion {
       pack $This.frame2 -side top -fill x
 
       #--- Nom du logiciel et sa version
-      label $This.lab1 -text "$audela(name) $audela(version)" -font $audace(font,arial_15_b)
+      label $This.lab1 -text "[ ::audela::getPluginTitle ] $audela(version)" -font $audace(font,arial_15_b)
       pack $This.lab1 -in $This.frame1 -padx 30 -pady 5
 
       #--- Version Tcl/Tk utilisee
