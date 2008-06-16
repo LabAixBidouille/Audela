@@ -65,7 +65,7 @@ static void EthernaudeScanLibereStructure();
 static void EthernaudeScanTerminateSequence(ClientData clientData, int camno, char *reason);
 static void EthernaudeScanTransfer(ClientData clientData);
 
-static AskForExecuteCCDCommand_Dump(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
+static void AskForExecuteCCDCommand_Dump(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 {
    int k;
    char result[MAXLENGTH];
@@ -230,7 +230,7 @@ int cmdEthernaudeReinit(ClientData clientData, Tcl_Interp * interp, int argc, ch
   *    - height : hauteur de l'image
   *    - bin : facteur de binning (across scan)
   *    - dt : intervalle de temps entre chaque lecture de ligne (en ms, float)
-  *    - -firstpix index : la fenetre commence au pixel numéro (1 a DimX).
+  *    - -firstpix index : la fenetre commence au pixel numero (1 a DimX).
   *    - -biny int : binning vertical (along scan).
   *
   *  Retourne TCL_OK/TCL_ERROR pour indiquer soit le succes, soit l'echec
@@ -243,7 +243,6 @@ int cmdEthernaudeScan(ClientData clientData, Tcl_Interp * interp, int argc, char
    int b;			/* parametre d'appel : binning */
    int by = 1;			/* binning en along scan */
    double dt;			/* parametre d'appel : intervalle de temps */
-   int retour = TCL_OK;
    struct camprop *cam;
    char ligne[200];		/* Texte pour le retour */
    char ligne2[200];		/* Texte pour le retour */
