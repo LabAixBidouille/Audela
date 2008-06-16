@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.63 2008-06-16 16:43:11 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.64 2008-06-16 21:16:40 michelpujol Exp $
 #
 
 #==============================================================
@@ -526,7 +526,7 @@ namespace eval ::acqfc {
          ::acqfc::recup_position $visuNo
          $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
       } elseif { $panneau(acqfc,$visuNo,mode) == "2" } {
-         ::acqfc::recup_position $visuNo
+        ::acqfc::recup_position $visuNo
          $panneau(acqfc,$visuNo,This).obt.dslr configure -state normal
       } elseif { $panneau(acqfc,$visuNo,mode) == "3" } {
          ::acqfc::recup_position $visuNo
@@ -1189,13 +1189,13 @@ namespace eval ::acqfc {
 
       #--- Je desactive le bouton "STOP"
       $panneau(acqfc,$visuNo,This).go_stop.but configure -state disabled
-      #--- J'interrompt l'acquisition
-      set panneau(acqfc,$visuNo,demande_arret) "1"
       #--- On annule la sonnerie
       catch { after cancel $audace(after,bell,id) }
       #--- Annulation de l'alarme de fin de pose
       catch { after cancel bell }
 
+      #--- Je positionne l'indicateur d'interruption de pose
+      set panneau(acqfc,$visuNo,demande_arret) "1"
       #--- j'interromps la pose
       if { $panneau(acqfc,$visuNo,mode) == "1"  } {
          #--- J'arrete la capture de l'image
@@ -1209,65 +1209,6 @@ namespace eval ::acqfc {
             ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
          }
       }
-
-      #--- j'affiche un message dans la console
-      switch $panneau(acqfc,$visuNo,mode) {
-         1  {
-            #--- Mode une image
-            #--- Message suite a l'arret
-            set heure $audace(tu,format,hmsint)
-            if { $panneau(acqfc,$visuNo,pose_en_cours) == "1" } {
-               console::affiche_saut "\n"
-               Message $visuNo consolog $caption(acqfc,arrprem) $heure
-               Message $visuNo consolog $caption(acqfc,lg_pose_arret) [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]
-            }
-         }
-         2  {
-            #--- Mode serie
-            #--- Message suite a l'arret
-            set heure $audace(tu,format,hmsint)
-            if { $panneau(acqfc,$visuNo,pose_en_cours) == "1" } {
-               console::affiche_saut "\n"
-               Message $visuNo consolog $caption(acqfc,arrprem) $heure
-            }
-         }
-         3  {
-            #--- Mode continu
-            #--- Message suite a l'arret
-            set heure $audace(tu,format,hmsint)
-            if { $panneau(acqfc,$visuNo,pose_en_cours) == "1" } {
-               console::affiche_saut "\n"
-               Message $visuNo consolog $caption(acqfc,arrprem) $heure
-               if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
-                  set index [ expr $panneau(acqfc,$visuNo,index) - 1 ]
-                  set nom [lindex $panneau(acqfc,$visuNo,nom_image) 0]
-                  Message $visuNo consolog $caption(acqfc,dersauve) [append nom $index]
-               } else {
-                 Message $visuNo consolog $caption(acqfc,lg_pose_arret) [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]
-               }
-            }
-         }
-         4  {
-            #--- Mode series d'images en continu avec intervalle entre chaque serie
-            #--- Message suite a l'arret
-            set heure $audace(tu,format,hmsint)
-            if { $panneau(acqfc,$visuNo,pose_en_cours) == "1" } {
-               console::affiche_saut "\n"
-               Message $visuNo consolog $caption(acqfc,arrprem) $heure
-            }
-         }
-         5  {
-            #--- Mode continu avec intervalle entre chaque image
-            #--- Message suite a l'arret
-            set heure $audace(tu,format,hmsint)
-            if { $panneau(acqfc,$visuNo,pose_en_cours) == "1" } {
-               console::affiche_saut "\n"
-               if { $panneau(acqfc,$visuNo,enregistrer) == "0" } {
-                  Message $visuNo consolog $caption(acqfc,lg_pose_arret) [ lindex [ buf[ ::confVisu::getBufNo $visuNo ] getkwd EXPOSURE ] 1 ]
-               }
-            }
-         }
-      }
    }
 #***** Fin de la procedure Go/Stop *****************************
 
@@ -1275,20 +1216,16 @@ namespace eval ::acqfc {
    proc acq { visuNo } {
       global audace caption conf panneau
 
-      #--- Cas des petites poses : Force l'affichage de l'avancement de la pose avec le statut Lecture du CCD
-      if { $panneau(acqfc,$visuNo,pose) >= "0" && $panneau(acqfc,$visuNo,pose) < "2" } {
-         ###::acqfc::Avancement_pose $visuNo "1"
-      }
       #--- Je note l'heure (utile pour les series espacees)
       set panneau(acqfc,$visuNo,deb_im) [ clock second ]
       #--- Alarme sonore de fin de pose
       ::camera::alarme_sonore $panneau(acqfc,$visuNo,pose)
-      #--- Declenchement l'acquisition
+      #--- Declenchement l'acquisition (voir la suite dans callbackAcquition)
       ::camera::acquisition $panneau(acqfc,$visuNo,camItem) "::acqfc::callbackAcquisition $visuNo" $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,binning)
       after 10 ::acqfc::dispTime $visuNo
    }
 
-#***** Procedure appelee par ::camera pour retouner le resultat de l'acquisition ********************
+#***** Procedure appelee par ::camera::acquisition pour retouner des informations pendant et en fin de l'acquisition ********************
    proc callbackAcquisition { visuNo command args } {
       variable private
       switch $command  {
@@ -1323,8 +1260,17 @@ namespace eval ::acqfc {
       }
       wm title $panneau(acqfc,$visuNo,base) "$caption(acqfc,acquisition) $panneau(acqfc,$visuNo,pose) s"
 
-      #--- Recopie de l'extension des fichiers image
-      set ext $panneau(acqfc,$visuNo,extension)
+      #--- je trace la duree réelle de la pose s'il y a eu une interruption
+      if { $panneau(acqfc,$visuNo,demande_arret) == "1"  }  {
+         set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+         #--- je verifie qu'il y eu interruption vraiment pendant l'acquisition
+         if  { $exposure != $panneau(acqfc,$visuNo,pose) } {
+            set dateEnd [mc_date2ymdhms [ lindex [ buf$bufNo getkwd DATE-END ] 1 ]]
+            set dateEnd [format "%02dh %02dm %02ds" [lindex $dateEnd 3] [lindex $dateEnd 4] [expr int([lindex $dateEnd 5])]]
+            Message $visuNo consolog $caption(acqfc,arrprem) $dateEnd
+            Message $visuNo consolog $caption(acqfc,lg_pose_arret) $exposure
+         }
+      }
 
       #--- j'enregistre l'image et je lance l'acquistion suivante
       switch $panneau(acqfc,$visuNo,mode) {
@@ -1408,7 +1354,7 @@ namespace eval ::acqfc {
                if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                   #--- Verifie que le nom du fichier n'existe pas
                   set nom1 "$nom"
-                  append nom1 $panneau(acqfc,$visuNo,index) $ext
+                  append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                   if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
                      #--- Dans ce cas, le fichier existe deja
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1847,7 +1793,7 @@ namespace eval ::acqfc {
 
       #--- Verifier que le nom du fichier n'existe pas
       set nom1 "$nom"
-      append nom1 $ext
+      append nom1 $panneau(acqfc,$visuNo,extension)
       if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
          #--- Dans ce cas, le fichier existe deja
          set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
@@ -1876,8 +1822,7 @@ namespace eval ::acqfc {
       #--- Indiquer l'enregistrement dans le fichier log
       set heure $audace(tu,format,hmsint)
       Message $visuNo consolog $caption(acqfc,demsauv) $heure
-      Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $ext
-
+      Message $visuNo consolog $caption(acqfc,imsauvnom) $nom $panneau(acqfc,$visuNo,extension)
       #--- Sauvegarder l'image
       saveima $nom$panneau(acqfc,$visuNo,extension) $visuNo
 
