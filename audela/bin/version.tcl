@@ -23,8 +23,6 @@
 
 global audela
 
-set audela(name)    "AudeLA"
-
 set audela(major) "1"
 set audela(minor) "5"
 set audela(patch) "0"
@@ -32,13 +30,13 @@ set audela(extra) ""
 
 set audela(version) "1.5.0"
 
-set audela(date)    "17/06/2008"
+set audela(date) "17/06/2008"
 
 package provide audela "$audela(major).$audela(minor).$audela(patch)"
 
 namespace eval ::audela {
-   global caption
    global audela
+
    package provide audela "${audela(major)}.${audela(minor)}.${audela(patch)}"
 }
 
@@ -47,9 +45,6 @@ proc ::audela::getPluginType { } {
 }
 
 proc ::audela::getPluginTitle { } {
-   global caption
-
-   return "audela"
+   return "AudeLA"
 }
-
 
