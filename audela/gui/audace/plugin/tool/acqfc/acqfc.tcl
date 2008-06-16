@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.62 2008-06-15 16:26:57 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.63 2008-06-16 16:43:11 robertdelmas Exp $
 #
 
 #==============================================================
@@ -602,7 +602,6 @@ namespace eval ::acqfc {
    }
 #***** Fin de la procedure de test de validite d'un nombre reel *******
 
-
 #------------------------------------------------------------
 # testParametreAcquisition
 #   Tests generaux d'integrite de la requete
@@ -1028,7 +1027,6 @@ namespace eval ::acqfc {
 
       return $integre
 
-
    }
 
 #***** Procedure Go (appui sur le bouton Go/Stop) *********
@@ -1036,7 +1034,6 @@ namespace eval ::acqfc {
       global audace caption conf panneau
 
       set camItem [::confVisu::getCamItem $visuNo]
-
 
       #--- Ouverture du fichier historique
       if { $panneau(acqfc,$visuNo,save_file_log) == "1" } {
@@ -1051,7 +1048,6 @@ namespace eval ::acqfc {
       if { $integre != "oui" } {
          return
       }
-
 
       #--- Modification du bouton, pour eviter un second lancement
       $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,stop) -command "::acqfc::Stop $visuNo"
@@ -1283,8 +1279,10 @@ namespace eval ::acqfc {
       if { $panneau(acqfc,$visuNo,pose) >= "0" && $panneau(acqfc,$visuNo,pose) < "2" } {
          ###::acqfc::Avancement_pose $visuNo "1"
       }
-      #--- je note l'heure (utile pour les series espacees
+      #--- Je note l'heure (utile pour les series espacees)
       set panneau(acqfc,$visuNo,deb_im) [ clock second ]
+      #--- Alarme sonore de fin de pose
+      ::camera::alarme_sonore $panneau(acqfc,$visuNo,pose)
       #--- Declenchement l'acquisition
       ::camera::acquisition $panneau(acqfc,$visuNo,camItem) "::acqfc::callbackAcquisition $visuNo" $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,binning)
       after 10 ::acqfc::dispTime $visuNo
@@ -1314,8 +1312,6 @@ namespace eval ::acqfc {
       set camNo     $panneau(acqfc,$visuNo,camNo)
       set bufNo     [ ::confVisu::getBufNo $visuNo ]
 
-      #--- Alarme sonore de fin de pose
-      ::camera::alarme_sonore $panneau(acqfc,$visuNo,pose)
       #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
       if { $conf(dslr,telecharge_mode) == "3" && $panneau(acqfc,$visuNo,mode) >= "1" && $panneau(acqfc,$visuNo,mode) <= "5" } {
          after 10 ::acqfc::loadLastImage $visuNo $camNo
@@ -1646,7 +1642,6 @@ namespace eval ::acqfc {
       global caption panneau
 
       set t [cam$panneau(acqfc,$visuNo,camNo) timer -1 ]
-console::disp "dispTime t=$t\n"
       #--- je met a jour le status
       if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
          #--- je supprime la fentre s'il n'y a plus de pose en cours
@@ -1966,10 +1961,10 @@ console::disp "dispTime t=$t\n"
          set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_1)\" \
       "
 
-
       #--- Create the message
       label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -text "$caption(acqfc,titre_1)" -font $audace(font,arial_10_b)
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab1 -padx 20 -pady 5
+
       frame $panneau(acqfc,$visuNo,base).intervalle_continu_1.a
          label $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -text "$caption(acqfc,intervalle_1)"
          pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.lab2 -anchor center -expand 1 -fill none -side left \
@@ -1979,6 +1974,7 @@ console::disp "dispTime t=$t\n"
          pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a.ent1 -anchor center -expand 1 -fill none -side left \
             -padx 10
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.a -padx 10 -pady 5
+
       frame $panneau(acqfc,$visuNo,base).intervalle_continu_1.b
          checkbutton $panneau(acqfc,$visuNo,base).intervalle_continu_1.b.check_simu \
             -text "$caption(acqfc,simu_deja_faite)" \
@@ -1986,10 +1982,12 @@ console::disp "dispTime t=$t\n"
         pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.b.check_simu -anchor w -expand 1 -fill none \
            -side left -padx 10 -pady 5
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.b -side bottom -anchor w -padx 10 -pady 5
+
       button $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1 -text "$caption(acqfc,simulation)" \
          -command "::acqfc::Command_continu_1 $visuNo"
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1 -anchor center -expand 1 -fill none -side left \
          -ipadx 5 -ipady 3 -padx 10 -pady 5
+
       set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       label $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 -text "$simu1"
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 -anchor center -expand 1 -fill none -side left -padx 10
@@ -2062,6 +2060,7 @@ console::disp "dispTime t=$t\n"
       #--- Create the message
       label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -text "$caption(acqfc,titre_2)" -font $audace(font,arial_10_b)
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab1 -padx 10 -pady 5
+
       frame $panneau(acqfc,$visuNo,base).intervalle_continu_2.a
          label $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -text "$caption(acqfc,intervalle_2)"
          pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.lab2 -anchor center -expand 1 -fill none -side left \
@@ -2070,11 +2069,8 @@ console::disp "dispTime t=$t\n"
             -textvariable panneau(acqfc,$visuNo,intervalle_2) -justify center
          pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a.ent1 -anchor center -expand 1 -fill none -side left \
             -padx 10
-      wm protocol $panneau(acqfc,$visuNo,base).intervalle_continu_2 WM_DELETE_WINDOW " \
-            set panneau(acqfc,$visuNo,mode_en_cours) \"$caption(acqfc,continu_2)\" \
-      "
-
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.a -padx 10 -pady 5
+
       frame $panneau(acqfc,$visuNo,base).intervalle_continu_2.b
          checkbutton $panneau(acqfc,$visuNo,base).intervalle_continu_2.b.check_simu \
             -text "$caption(acqfc,simu_deja_faite)" \
@@ -2082,10 +2078,12 @@ console::disp "dispTime t=$t\n"
          pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.b.check_simu -anchor w -expand 1 -fill none \
             -side left -padx 10 -pady 5
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.b -side bottom -anchor w -padx 10 -pady 5
+
       button $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1 -text "$caption(acqfc,simulation)" \
          -command "::acqfc::Command_continu_2 $visuNo"
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1 -anchor center -expand 1 -fill none -side left \
          -ipadx 5 -ipady 3 -padx 10 -pady 5
+
       set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       label $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 -text "$simu2"
       pack $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 -anchor center -expand 1 -fill none -side left -padx 10
@@ -2553,3 +2551,4 @@ proc acqfcBuildIF { visuNo } {
       #--- Mise a jour dynamique des couleurs
       ::confColor::applyColor $panneau(acqfc,$visuNo,This)
 }
+
