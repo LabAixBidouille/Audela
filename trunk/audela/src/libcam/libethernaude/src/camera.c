@@ -61,7 +61,7 @@ struct camini CAM_INI[] = {
    CAM_INI_NULL
 };
 
-static AskForExecuteCCDCommand_Dump(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
+static void AskForExecuteCCDCommand_Dump(TParamCCD * ParamCCDIn, TParamCCD * ParamCCDOut)
 {
    int k;
    char result[MAXLENGTH];
@@ -78,7 +78,7 @@ static AskForExecuteCCDCommand_Dump(TParamCCD * ParamCCDIn, TParamCCD * ParamCCD
       util_log(result, 0);
    }
    util_log("\n", 0);
-} 
+}
 
 static int cam_init(struct camprop *cam, int argc, char **argv);
 static int cam_close(struct camprop *cam);
