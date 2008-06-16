@@ -1,4 +1,4 @@
-AudeLA-1.4.0 (20070711)
+AudeLA-1.5.0 (20080617)
 
 
 1. Introduction
@@ -405,5 +405,5 @@ Les Auteurs.
 
 AudeLA, page d'accueil : http://www.audela.org
 
-Copyright (C)1999-2007, The AudeLA Core Team.
+Copyright (C)1999-2008, The AudeLA Core Team.
 

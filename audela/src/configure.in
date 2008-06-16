@@ -1,4 +1,4 @@
-dnl (c) Denis Marchais 2005-2007
+dnl (c) Denis Marchais 2005-2008
 
 
 dnl INIT
@@ -11,10 +11,10 @@ AC_SUBST(DEV_ROOT)
 dnl Version de audela (a mettre a jour avant chaque release)
 dnl
 MAJOR=1
-MINOR=4
+MINOR=5
 PATCH=0
 EXTRA=
-REL_DATE=11/07/2007
+REL_DATE=17/06/2008
 
 AC_SUBST(MAJOR)
 AC_SUBST(MINOR)
