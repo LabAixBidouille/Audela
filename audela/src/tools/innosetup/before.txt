@@ -20,7 +20,7 @@ Ce logiciel est libre et gratuit. Reportez-vous
 à la licence pour plus de details.
 
 L'installation ne dure que quelques secondes
-et occupe environ 50 Mo sur votre disque dur.
+et occupe environ 63 Mo sur votre disque dur.
 
 ENGLISH : What is AudeLA?
 =========
@@ -42,4 +42,4 @@ This software is free and open-source. Read the
 license agreements for more details.
 
 The installation takes only few seconds and requires
-about 50 MB of free disk space.
+about 63 MB of free disk space.
