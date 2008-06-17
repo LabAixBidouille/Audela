@@ -7,7 +7,7 @@
 #
 # source [pwd]/../src/tools/innosetup/listfiles.tcl
 
-set version 1.5.0
+set version 1.5.0-beta1
 #set makes audela
 set makes {audela bin src ros ros_private_template}
 
