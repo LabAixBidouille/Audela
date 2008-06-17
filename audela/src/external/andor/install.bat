@@ -1,5 +1,6 @@
 set ANDOR=andor
 mkdir ..\include
+mkdir ..\include\win
 mkdir ..\lib
 copy %ANDOR%\include\Atmcd32d.h ..\include
 copy %ANDOR%\include\Atmcd32d.h ..\include\win
