@@ -2492,7 +2492,7 @@ int Cmd_mctcl_precessradec(ClientData clientData, Tcl_Interp *interp, int argc, 
 	} else {
 		valid=0;
 	}
-	if (valid=0) {
+	if (valid==0) {
       sprintf(s,"Usage: %s ListRaDec Date_from Date_to ?{ProperMotions_Ra ProperMotions_Dec Date_Epoch}?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
