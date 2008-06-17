@@ -1,0 +1,135 @@
+#
+# Fichier : superpad.cap
+# Mise a jour $Id: superpad.cap,v 1.8 2007-12-04 22:17:22 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(superpad,titre)                  "SuperPad"
+set caption(superpad,pad_size)               "Its size"
+set caption(superpad,center_speed)           "Centering Factor"
+set caption(superpad,telescope)              "Mount"
+set caption(superpad,non_connecte)           "not connected"
+set caption(superpad,ErrorMessageTitle)      "Error"
+set caption(superpad,CenterStarErrMsg)       "Centering impossible if no image is displayed."
+set caption(superpad,buttonSkyMap)           "Chart"
+set caption(superpad,buttonGoto)             "GOTO"
+set caption(superpad,buttonStopGoto)         "STOP"
+set caption(superpad,buttonCenter)           "Center"
+set caption(superpad,buttonAlign)            "Alignment"
+set caption(superpad,StarWindowTitle)        "Select one star"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Sa taille"
+   set caption(superpad,center_speed)        "Coefficient de centrage"
+   set caption(superpad,telescope)           "Monture"
+   set caption(superpad,non_connecte)        "non connectée"
+   set caption(superpad,ErrorMessageTitle)   "Erreur"
+   set caption(superpad,CenterStarErrMsg)    "Impossible de centrer tant qu'il n'y a pas d'image affichée."
+   set caption(superpad,buttonSkyMap)        "Carte"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Centrer"
+   set caption(superpad,buttonAlign)         "Alignement"
+   set caption(superpad,StarWindowTitle)     "Sélectionner une étoile"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Dimensioni"
+   set caption(superpad,center_speed)        "Coefficente per centraggio"
+   set caption(superpad,telescope)           "Montatura"
+   set caption(superpad,non_connecte)        "non connessa"
+   set caption(superpad,ErrorMessageTitle)   "Errore"
+   set caption(superpad,CenterStarErrMsg)    "Centraggio impossibile senza immagini visualizzate."
+   set caption(superpad,buttonSkyMap)        "Mappa"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Centrare"
+   set caption(superpad,buttonAlign)         "Allineamento"
+   set caption(superpad,StarWindowTitle)     "Selezionare una stella"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Su tamaño"
+   set caption(superpad,center_speed)        "Factor de centrado"
+   set caption(superpad,telescope)           "Montura"
+   set caption(superpad,non_connecte)        "no conectado"
+   set caption(superpad,ErrorMessageTitle)   "Error"
+   set caption(superpad,CenterStarErrMsg)    "El centrado es imposible si no se muestra una imagen."
+   set caption(superpad,buttonSkyMap)        "Mapa"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Centro"
+   set caption(superpad,buttonAlign)         "Alineamiento"
+   set caption(superpad,StarWindowTitle)     "Seleccionar una estrella"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Ihre Größe"
+   set caption(superpad,center_speed)        "Zentrierung Faktor"
+   set caption(superpad,telescope)           "Montierung"
+   set caption(superpad,non_connecte)        "nicht verbun."
+   set caption(superpad,ErrorMessageTitle)   "Irrtum"
+   set caption(superpad,CenterStarErrMsg)    "Zentrierung unmöglich wenn kein Bild gezeigt ist."
+   set caption(superpad,buttonSkyMap)        "Karte"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Zentrum"
+   set caption(superpad,buttonAlign)         "Ausrichtung"
+   set caption(superpad,StarWindowTitle)     "Ein Stern wählen"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Seu tamanho"
+   set caption(superpad,center_speed)        "Coeficiente de centragem"
+   set caption(superpad,telescope)           "Montagem"
+   set caption(superpad,non_connecte)        "não conectado"
+   set caption(superpad,ErrorMessageTitle)   "Erro"
+   set caption(superpad,CenterStarErrMsg)    "Impossivel de centrar sem imagem afixada."
+   set caption(superpad,buttonSkyMap)        "Carta"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Centrar"
+   set caption(superpad,buttonAlign)         "Alinhamento"
+   set caption(superpad,StarWindowTitle)     "Seleccionar uma estrela"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(superpad,titre)               "SuperPad"
+   set caption(superpad,pad_size)            "Dens størrelse"
+   set caption(superpad,center_speed)        "Centreringsfaktor"
+   set caption(superpad,telescope)           "Montering"
+   set caption(superpad,non_connecte)        "ikke tilsluttet"
+   set caption(superpad,ErrorMessageTitle)   "Fejl"
+   set caption(superpad,CenterStarErrMsg)    "Centrering umuligt, hvis billede ikke vises."
+   set caption(superpad,buttonSkyMap)        "Kort"
+   set caption(superpad,buttonGoto)          "GOTO"
+   set caption(superpad,buttonStopGoto)      "STOP"
+   set caption(superpad,buttonCenter)        "Centrere"
+   set caption(superpad,buttonAlign)         "Justering"
+   set caption(superpad,StarWindowTitle)     "Vælg en stjerne"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

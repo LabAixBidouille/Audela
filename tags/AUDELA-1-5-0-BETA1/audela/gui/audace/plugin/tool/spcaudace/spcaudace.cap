@@ -1,0 +1,51 @@
+#
+# Fichier : spcaudace.cap
+# Mise a jour $Id: spcaudace.cap,v 1.3 2008-06-15 09:31:45 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(spcaudace,spc_audace)                         "Spectropscopy: SpcAud'ACE"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Spectroscopie : SpcAud'ACE"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Spettroscopia: SpcAud'ACE"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Espectroscopia: SpcAud'ACE"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Spektroskopie: SpcAud'ACE"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Espectroscopia: SpcAud'ACE"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(spcaudace,spc_audace)                      "Spectroscopy: SpcAud'ACE"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

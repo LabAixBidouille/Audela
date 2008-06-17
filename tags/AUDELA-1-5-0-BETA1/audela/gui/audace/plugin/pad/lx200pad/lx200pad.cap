@@ -1,0 +1,58 @@
+#
+# Fichier : lx200pad.cap
+# Mise a jour $Id: lx200pad.cap,v 1.7 2007-12-04 22:16:56 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(lx200pad,titre)            "LX200"
+set caption(lx200pad,pad_size)         "Its size"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(lx200pad,titre)         "LX200"
+   set caption(lx200pad,pad_size)      "Sa taille"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(lx200pad,titre)         "LX200"
+   set caption(lx200pad,pad_size)      "Dimensioni"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(lx200pad,titre)         "LX200"
+   set caption(lx200pad,pad_size)      "Su tamaño"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(lx200pad,titre)         "LX200"
+   set caption(lx200pad,pad_size)      "Ihre Größe"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(lx200pad,titre)         "LX200"
+   set caption(lx200pad,pad_size)      "Seu tamanho"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(lx200pad,titre)         "LX200"
+   set caption(lx200pad,pad_size)      "Dens størrelse"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

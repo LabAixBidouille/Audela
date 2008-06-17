@@ -1,0 +1,128 @@
+#
+# Fichier : scanSetup.cap
+# Mise a jour $Id: scanSetup.cap,v 1.3 2008-05-21 18:14:23 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(scanSetup,configuration)             "Setup"
+set caption(scanSetup,en-tete_fits)              "FITS Keywords"
+set caption(scanSetup,titre)                     "Duration between motor cut-off and start of exposure:"
+set caption(scanSetup,sans_scan)                 "Delay Off"
+set caption(scanSetup,avec_scan)                 "Delay On"
+set caption(scanSetup,delai)                     "Delay Time"
+set caption(scanSetup,seconde)                   "sec."
+
+set caption(scanSetup,ok)                        "OK"
+set caption(scanSetup,appliquer)                 "Apply"
+set caption(scanSetup,fermer)                    "Close"
+set caption(scanSetup,aide)                      "Help"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(scanSetup,configuration)          "Configuration"
+   set caption(scanSetup,en-tete_fits)           "Mots clés FITS"
+   set caption(scanSetup,titre)                  "Temporisation entre l'arrêt du moteur d'A.D. et le début de la pose :"
+   set caption(scanSetup,sans_scan)              "Aucune temporisation"
+   set caption(scanSetup,avec_scan)              "Active la temporisation"
+   set caption(scanSetup,delai)                  "Délai de temporisation"
+   set caption(scanSetup,seconde)                "sec."
+
+   set caption(scanSetup,ok)                     "OK"
+   set caption(scanSetup,appliquer)              "Appliquer"
+   set caption(scanSetup,fermer)                 "Fermer"
+   set caption(scanSetup,aide)                   "Aide"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(scanSetup,configuration)          "Configurazione"
+   set caption(scanSetup,en-tete_fits)           "Parole chiave FITS"
+   set caption(scanSetup,titre)                  "Ritardo tra l'arresto del motore di A.R. e l'inizio della posa:"
+   set caption(scanSetup,sans_scan)              "Ritardo nullo"
+   set caption(scanSetup,avec_scan)              "Attivazione ritardo"
+   set caption(scanSetup,delai)                  "Ritardo della temporizzazione"
+   set caption(scanSetup,seconde)                "sec."
+
+   set caption(scanSetup,ok)                     "OK"
+   set caption(scanSetup,appliquer)              "Applica"
+   set caption(scanSetup,fermer)                 "Chiudi"
+   set caption(scanSetup,aide)                   "Aiuto"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(scanSetup,configuration)          "Configuración"
+   set caption(scanSetup,en-tete_fits)           "Palabras clave FITS"
+   set caption(scanSetup,titre)                  "Retardo entre la parada del motor de AR y el principio de la exposición:"
+   set caption(scanSetup,sans_scan)              "Retardo desactivado"
+   set caption(scanSetup,avec_scan)              "Retardo activado"
+   set caption(scanSetup,delai)                  "Tiempo de retardo"
+   set caption(scanSetup,seconde)                "seg."
+
+   set caption(scanSetup,ok)                     "OK"
+   set caption(scanSetup,appliquer)              "Aplicar"
+   set caption(scanSetup,fermer)                 "Cerrar"
+   set caption(scanSetup,aide)                   "Ayuda"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(scanSetup,configuration)          "Konfiguration"
+   set caption(scanSetup,en-tete_fits)           "FITS Stichwörter"
+   set caption(scanSetup,titre)                  "Zwischen den RA Motor halten und den Anfang des Bildleuchtung abwarten:"
+   set caption(scanSetup,sans_scan)              "Kein Abwarten"
+   set caption(scanSetup,avec_scan)              "Mit Abwarten"
+   set caption(scanSetup,delai)                  "Abwarten Zeit"
+   set caption(scanSetup,seconde)                "sek."
+
+   set caption(scanSetup,ok)                     "OK"
+   set caption(scanSetup,appliquer)              "Anwenden"
+   set caption(scanSetup,fermer)                 "Schließen"
+   set caption(scanSetup,aide)                   "Hilfe"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(scanSetup,configuration)          "Configuração"
+   set caption(scanSetup,en-tete_fits)           "Palavras-chave FITS"
+   set caption(scanSetup,titre)                  "Intervalo entre a paragem do motor de AR e o início da exposição:"
+   set caption(scanSetup,sans_scan)              "Atraso desactivado"
+   set caption(scanSetup,avec_scan)              "Atraso activado"
+   set caption(scanSetup,delai)                  "Tempo de atraso"
+   set caption(scanSetup,seconde)                "seg."
+
+   set caption(scanSetup,ok)                     "OK"
+   set caption(scanSetup,appliquer)              "Aplicar"
+   set caption(scanSetup,fermer)                 "Fechar"
+   set caption(scanSetup,aide)                   "Ajuda"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(scanSetup,configuration)          "Setup"
+   set caption(scanSetup,en-tete_fits)           "FITS nøgleord"
+   set caption(scanSetup,titre)                  "Varighed mellem RA-motor standsning og start på eksponering:"
+   set caption(scanSetup,sans_scan)              "Ingen forsinkelse"
+   set caption(scanSetup,avec_scan)              "Med forsinkelse"
+   set caption(scanSetup,delai)                  "Forsinkelsestid"
+   set caption(scanSetup,seconde)                "sek."
+
+   set caption(scanSetup,ok)                     "OK"
+   set caption(scanSetup,appliquer)              "Anvend"
+   set caption(scanSetup,fermer)                 "Luk"
+   set caption(scanSetup,aide)                   "Hjælp"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

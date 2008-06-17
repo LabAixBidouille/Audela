@@ -1,0 +1,142 @@
+#
+# Fichier : deltatau.cap
+# Mise a jour $Id: deltatau.cap,v 1.2 2007-12-20 19:29:02 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(deltatau,monture)                    "Delta Tau"
+set caption(deltatau,format_court_long)          "Short Long"
+set caption(deltatau,port)                       "Port"
+set caption(deltatau,configurer)                 "Set up"
+set caption(deltatau,controle)                   "Control"
+set caption(deltatau,format)                     "Format"
+set caption(deltatau,maj_deltatau)               "Update time, longitude, latitude and altitude of deltatau"
+set caption(deltatau,raquette_tel)               "Hand controller on screen"
+
+set caption(deltatau,port_deltatau)              "deltatau Port"
+set caption(deltatau,2points)                    ":"
+
+set caption(deltatau,titre_site_web)             "Reference Web Site:"
+set caption(deltatau,site_deltatau)              "http://www.deltatau.com/"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(deltatau,monture)                 "Delta Tau"
+   set caption(deltatau,format_court_long)       "court long"
+   set caption(deltatau,port)                    "Port"
+   set caption(deltatau,configurer)              "Configurer"
+   set caption(deltatau,controle)                "Contrôle"
+   set caption(deltatau,format)                  "Format"
+   set caption(deltatau,maj_deltatau)            "Mise à jour heure, longitude, latitude et altitude du deltatau"
+   set caption(deltatau,raquette_tel)            "Raquette à l'écran"
+
+   set caption(deltatau,port_deltatau)           "Port deltatau"
+   set caption(deltatau,2points)                 ":"
+
+   set caption(deltatau,titre_site_web)          "Site Web de référence :"
+   set caption(deltatau,site_deltatau)           "http://www.deltatau.com/"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(deltatau,monture)                 "Delta Tau"
+   set caption(deltatau,format_court_long)       "corto lungo"
+   set caption(deltatau,port)                    "Porte"
+   set caption(deltatau,configurer)              "Configurare"
+   set caption(deltatau,controle)                "Controllo"
+   set caption(deltatau,format)                  "Formato"
+   set caption(deltatau,maj_deltatau)            "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' deltatau"
+   set caption(deltatau,raquette_tel)            "Pulsantiera a schermo"
+
+   set caption(deltatau,port_deltatau)           "Porta deltatau"
+   set caption(deltatau,2points)                 ":"
+
+   set caption(deltatau,titre_site_web)          "Sito Web di riferimento:"
+   set caption(deltatau,site_deltatau)           "http://www.deltatau.com/"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(deltatau,monture)                 "Delta Tau"
+   set caption(deltatau,format_court_long)       "corto largo"
+   set caption(deltatau,port)                    "Puerto"
+   set caption(deltatau,configurer)              "Configurar"
+   set caption(deltatau,controle)                "Control"
+   set caption(deltatau,format)                  "Formato"
+   set caption(deltatau,maj_deltatau)            "Actualizar hora, longitud, latitud y altitud del deltatau"
+   set caption(deltatau,raquette_tel)            "Controlador virtual"
+
+   set caption(deltatau,port_deltatau)           "Puerto deltatau"
+   set caption(deltatau,2points)                 ":"
+
+   set caption(deltatau,titre_site_web)          "Sitio Web de referencia:"
+   set caption(deltatau,site_deltatau)           "http://www.deltatau.com/"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(deltatau,monture)                 "Delta Tau"
+   set caption(deltatau,format_court_long)       "kurz lang"
+   set caption(deltatau,port)                    "Port"
+   set caption(deltatau,configurer)              "Konfigurieren"
+   set caption(deltatau,controle)                "Kontroll"
+   set caption(deltatau,format)                  "Format"
+   set caption(deltatau,maj_deltatau)            "Zeit, Länge, Breite, Höhe des deltatau Aktualisierung"
+   set caption(deltatau,raquette_tel)            "Hand Kontroller am Bildschirm"
+
+   set caption(deltatau,port_deltatau)           "deltatau Port"
+   set caption(deltatau,2points)                 ":"
+
+   set caption(deltatau,titre_site_web)          "Referenz Webseite:"
+   set caption(deltatau,site_deltatau)           "http://www.deltatau.com/"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(deltatau,monture)                 "Delta Tau"
+   set caption(deltatau,format_court_long)       "Curto Longo"
+   set caption(deltatau,port)                    "Porta"
+   set caption(deltatau,configurer)              "Configuração"
+   set caption(deltatau,controle)                "Controlo"
+   set caption(deltatau,format)                  "Formato"
+   set caption(deltatau,maj_deltatau)            "Actualizar tempo, longitude, latitude e altitude do deltatau"
+   set caption(deltatau,raquette_tel)            "Controlador de mão no ecrã"
+
+   set caption(deltatau,port_deltatau)           "Porta deltatau"
+   set caption(deltatau,2points)                 ":"
+
+   set caption(deltatau,titre_site_web)          "Site Web de referência:"
+   set caption(deltatau,site_deltatau)           "http://www.deltatau.com/"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(deltatau,monture)                 "Delta Tau"
+   set caption(deltatau,format_court_long)       "Short Long"
+   set caption(deltatau,port)                    "Port"
+   set caption(deltatau,configurer)              "Set up"
+   set caption(deltatau,controle)                "Control"
+   set caption(deltatau,format)                  "Format"
+   set caption(deltatau,maj_deltatau)            "Update time, longitude, latitude and altitude of deltatau"
+   set caption(deltatau,raquette_tel)            "Hand controller on screen"
+
+   set caption(deltatau,port_deltatau)           "deltatau Port"
+   set caption(deltatau,2points)                 ":"
+
+   set caption(deltatau,titre_site_web)          "Reference Web Site:"
+   set caption(deltatau,site_deltatau)           "http://www.deltatau.com/"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,499 @@
+#
+# Fichier : caption.cap
+# Mise a jour $Id: caption.cap,v 1.51 2007-10-20 15:42:20 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(audace,porttalk_titre)                    "PortTalk:"
+set caption(audace,porttalk_erreur)                   "Porttalk Error"
+set caption(audace,porttalk_msg_erreur)               "Run uninstallporttalk.exe from bin, delete porttalk.sys from the system32/drivers folder and run AudeLA again."
+set caption(audace,porttalk_message)                  "Do not display this message next time."
+
+set caption(audace,port_com_dispo)                    "Available COM Ports:"
+set caption(audace,pas_port_com)                      "No Port"
+
+set caption(audace,titre)                             "Aud'ACE"
+
+set caption(console,titre)                            "Terminal"
+set caption(console,debug)                            "Debug"
+
+set caption(audace,ok)                                "OK"
+set caption(audace,console_rate)                      "Access not possible"
+set caption(audace,console_gagne)                     "Access OK"
+set caption(audace,console_annule)                    "Cancelled"
+
+set caption(audace,aide)                              "Aud'ACE Help"
+set caption(audace,pas_repertoire_aide)               "Help folder does not exist:"
+
+set caption(audace,reseau_execute)                    "Run:"
+set caption(audace,reseau_serveur)                    ""
+set caption(audace,reseau_detruit)                    "server destroyed"
+set caption(audace,reseau_client)                     ""
+set caption(audace,reseau_connecte)                   "client correctly connected"
+set caption(audace,reseau_serveur_retour)             "Image display server created"
+set caption(audace,reseau_deconnecte)                 "client disconnected"
+set caption(audace,reseau_deconnexion)                "Disconnection"
+set caption(audace,reseau_du_serveur)                 "of the server"
+set caption(audace,reseau_connexion_client)           "Connection through the client"
+set caption(audace,reseau_reponse_vers)               "Reply to"
+
+set caption(audace,temps_universel)                   "UT"
+set caption(audace,temps_heurelegale)                 "CT"
+
+set caption(audace,enregistrer_config1)               "Save new setup before quitting?"
+set caption(audace,enregistrer_config2)               "Save setup?"
+set caption(audace,enregistrer_config3)               "Setup saved."
+set caption(audace,enregistrer_config4)               "Setup saving not required."
+set caption(audace,enregistrer_config5)               "Saving aborted."
+
+set caption(confVisu,fermer)                          "Close"
+set caption(confVisu,seuil_haut)                      "H.T."
+set caption(confVisu,seuil_bas)                       "L.T."
+set caption(confVisu,seuil_auto)                      "Auto"
+set caption(confVisu,attention)                       "Warning"
+set caption(confVisu,tracer_boite)                    "Please draw a square with your mouse."
+set caption(confVisu,boite_seuil)                     "..."
+set caption(confVisu,RA)                              "RA"
+set caption(confVisu,DEC)                             "Dec."
+set caption(confVisu,tiret)                           "-"
+set caption(confVisu,2points)                         ":"
+set caption(confVisu,egale)                           "="
+set caption(confVisu,I)                               "I"
+set caption(confVisu,X)                               "X"
+set caption(confVisu,Y)                               "Y"
+set caption(confVisu,rouge)                           "R:"
+set caption(confVisu,vert)                            "G:"
+set caption(confVisu,bleu)                            "B:"
+set caption(confVisu,non_connecte)                    "Not connected"
+
+set caption(plotxy,figure)                            "Figure"
+
+set caption(sectiongraph,title)                       "Graph of the section"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(audace,porttalk_titre)                 "PortTalk :"
+   set caption(audace,porttalk_erreur)                "Erreur Porttalk"
+   set caption(audace,porttalk_msg_erreur)            "Lancer uninstallporttalk.exe depuis bin, supprimer porttalk.sys du répertoire system32/drivers et relancer AudeLA."
+   set caption(audace,porttalk_message)               "Ne plus afficher ce message la prochaine fois."
+
+   set caption(audace,port_com_dispo)                 "Ports com disponibles :"
+   set caption(audace,pas_port_com)                   "Pas de port"
+
+   set caption(audace,titre)                          "Aud'ACE"
+
+   set caption(console,titre)                         "Console"
+   set caption(console,debug)                         "Débug"
+
+   set caption(audace,ok)                             "OK"
+   set caption(audace,console_rate)                   "Accès non possible"
+   set caption(audace,console_gagne)                  "Accès réussi"
+   set caption(audace,console_annule)                 "Annulé"
+
+   set caption(audace,aide)                           "Aide Aud'ACE"
+   set caption(audace,pas_repertoire_aide)            "Le répertoire de l'aide n'existe pas :"
+
+   set caption(audace,reseau_execute)                 "Exécute :"
+   set caption(audace,reseau_serveur)                 "Serveur"
+   set caption(audace,reseau_detruit)                 "détruit"
+   set caption(audace,reseau_client)                  "Client"
+   set caption(audace,reseau_connecte)                "bien connecté"
+   set caption(audace,reseau_serveur_retour)          "Création d'un serveur de retour"
+   set caption(audace,reseau_deconnecte)              "déconnecté"
+   set caption(audace,reseau_deconnexion)             "Déconnexion"
+   set caption(audace,reseau_du_serveur)              "du serveur"
+   set caption(audace,reseau_connexion_client)        "Connexion par le client"
+   set caption(audace,reseau_reponse_vers)            "Réponse vers"
+
+   set caption(audace,temps_universel)                "TU"
+   set caption(audace,temps_heurelegale)              "HL"
+
+   set caption(audace,enregistrer_config1)            "Voulez-vous enregistrer la nouvelle configuration de Aud'ACE avant de quitter ?"
+   set caption(audace,enregistrer_config2)            "Enregistrer la configuration ?"
+   set caption(audace,enregistrer_config3)            "Configuration enregistrée."
+   set caption(audace,enregistrer_config4)            "Pas d'enregistrement de configuration nécessaire."
+   set caption(audace,enregistrer_config5)            "Enregistrement abandonné."
+
+   set caption(confVisu,fermer)                       "Fermer"
+   set caption(confVisu,seuil_haut)                   "S.h."
+   set caption(confVisu,seuil_bas)                    "S.b."
+   set caption(confVisu,seuil_auto)                   "Auto"
+   set caption(confVisu,attention)                    "Attention"
+   set caption(confVisu,tracer_boite)                 "Veuillez tracer un cadre à la souris."
+   set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,RA)                           "AD"
+   set caption(confVisu,DEC)                          "Déc."
+   set caption(confVisu,tiret)                        "-"
+   set caption(confVisu,2points)                      ":"
+   set caption(confVisu,egale)                        "="
+   set caption(confVisu,I)                            "I"
+   set caption(confVisu,X)                            "X"
+   set caption(confVisu,Y)                            "Y"
+   set caption(confVisu,rouge)                        "R:"
+   set caption(confVisu,vert)                         "V:"
+   set caption(confVisu,bleu)                         "B:"
+   set caption(confVisu,non_connecte)                 "Non connectée"
+
+   set caption(plotxy,figure)                         "Figure"
+
+   set caption(sectiongraph,title)                    "Graphe de la coupe"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(audace,porttalk_titre)                 "PortTalk:"
+   set caption(audace,porttalk_erreur)                "Errore Porttalk"
+   set caption(audace,porttalk_msg_erreur)            "Eseguire uninstallporttalk.exe in bin, eliminare porttalk.sys dalla cartella system32/drivers ed eseguire nuovamente AudeLA."
+   set caption(audace,porttalk_message)               "Non visualizzare piu` questo messaggio."
+
+   set caption(audace,port_com_dispo)                 "Porte COM disponibili:"
+   set caption(audace,pas_port_com)                   "Nessuna porta"
+
+   set caption(audace,titre)                          "Aud'ACE"
+
+   set caption(console,titre)                         "Console"
+   set caption(console,debug)                         "Debug"
+
+   set caption(audace,ok)                             "OK"
+   set caption(audace,console_rate)                   "Accesso non possibile"
+   set caption(audace,console_gagne)                  "Accesso riuscito"
+   set caption(audace,console_annule)                 "Cancellato"
+
+   set caption(audace,aide)                           "Aiuto Aud'ACE"
+   set caption(audace,pas_repertoire_aide)            "La cartella non esiste:"
+
+   set caption(audace,reseau_execute)                 "Esegui:"
+   set caption(audace,reseau_serveur)                 "Server"
+   set caption(audace,reseau_detruit)                 "distrutto"
+   set caption(audace,reseau_client)                  "Client"
+   set caption(audace,reseau_connecte)                "connesso correttamente"
+   set caption(audace,reseau_serveur_retour)          "Server immagini creato"
+   set caption(audace,reseau_deconnecte)              "sconnesso"
+   set caption(audace,reseau_deconnexion)             "Disconnessione del server"
+   set caption(audace,reseau_du_serveur)              ""
+   set caption(audace,reseau_connexion_client)        "Connessione tramite client"
+   set caption(audace,reseau_reponse_vers)            "Risposta a"
+
+   set caption(audace,temps_universel)                "TU"
+   set caption(audace,temps_heurelegale)              "O"
+
+   set caption(audace,enregistrer_config1)            "Volete salvare questa configurazione prima di uscire?"
+   set caption(audace,enregistrer_config2)            "Salvare la configurazione?"
+   set caption(audace,enregistrer_config3)            "Configurazione salvata."
+   set caption(audace,enregistrer_config4)            "Non e` richiesto il salvataggio della configurazione."
+   set caption(audace,enregistrer_config5)            "Salvataggio abbandonato."
+
+   set caption(confVisu,fermer)                       "Chiudi"
+   set caption(confVisu,seuil_haut)                   "S.mas."
+   set caption(confVisu,seuil_bas)                    "S.min."
+   set caption(confVisu,seuil_auto)                   "Auto"
+   set caption(confVisu,attention)                    "Attenzione"
+   set caption(confVisu,tracer_boite)                 "Disegnare un quadrato con il mouse."
+   set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,RA)                           "AR"
+   set caption(confVisu,DEC)                          "Dec."
+   set caption(confVisu,tiret)                        "-"
+   set caption(confVisu,2points)                      ":"
+   set caption(confVisu,egale)                        "="
+   set caption(confVisu,I)                            "I"
+   set caption(confVisu,X)                            "X"
+   set caption(confVisu,Y)                            "Y"
+   set caption(confVisu,rouge)                        "R:"
+   set caption(confVisu,vert)                         "V:"
+   set caption(confVisu,bleu)                         "B:"
+   set caption(confVisu,non_connecte)                 "Non connessa"
+
+   set caption(plotxy,figure)                         "Figura"
+
+   set caption(sectiongraph,title)                    "Grafico della sezione"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(audace,porttalk_titre)                 "PortTalk:"
+   set caption(audace,porttalk_erreur)                "Error de ¿¿¿ Porttalk ????"
+   set caption(audace,porttalk_msg_erreur)            "Ejecutar uninstallporttalk.exe desde bin, borrar porttalk.sys del directorio system32/drivers y ejecutar AudeLA otra vez."
+   set caption(audace,porttalk_message)               "No mostrar este mensaje otra vez."
+
+   set caption(audace,port_com_dispo)                 "Puertos Serie (COM) disponibles:"
+   set caption(audace,pas_port_com)                   "No hay puerto"
+
+   set caption(audace,titre)                          "Aud'ACE"
+
+   set caption(console,titre)                         "Consola"
+   set caption(console,debug)                         "Depurar"
+
+   set caption(audace,ok)                             "OK"
+   set caption(audace,console_rate)                   "El acceso no es posible"
+   set caption(audace,console_gagne)                  "Acceso correcto"
+   set caption(audace,console_annule)                 "Cancelado"
+
+   set caption(audace,aide)                           "Ayuda Aud'ACE"
+   set caption(audace,pas_repertoire_aide)            "La carpeta de ayudas no existe:"
+
+   set caption(audace,reseau_execute)                 "Ejecutar:"
+   set caption(audace,reseau_serveur)                 "Servidor"
+   set caption(audace,reseau_detruit)                 "borrado"
+   set caption(audace,reseau_client)                  "Cliente"
+   set caption(audace,reseau_connecte)                "conectado correctamente"
+   set caption(audace,reseau_serveur_retour)          "Creado un servidor de imágenes"
+   set caption(audace,reseau_deconnecte)              "desconectado"
+   set caption(audace,reseau_deconnexion)             "Desconexión de un servidor"
+   set caption(audace,reseau_du_serveur)              ""
+   set caption(audace,reseau_connexion_client)        "Conexion a través del cliente"
+   set caption(audace,reseau_reponse_vers)            "Responder a"
+
+   set caption(audace,temps_universel)                "TU"
+   set caption(audace,temps_heurelegale)              "HC"
+
+   set caption(audace,enregistrer_config1)            "¿ Guardar las nuevas preferencias antes de salir ?"
+   set caption(audace,enregistrer_config2)            "¿ Guardar preferencias ?"
+   set caption(audace,enregistrer_config3)            "Preferencias guardadas."
+   set caption(audace,enregistrer_config4)            "No hace falta guardar las preferencias."
+   set caption(audace,enregistrer_config5)            "Operación de guardar abortada."
+
+   set caption(confVisu,fermer)                       "Cerrar"
+   set caption(confVisu,seuil_haut)                   "U.a."
+   set caption(confVisu,seuil_bas)                    "U.b."
+   set caption(confVisu,seuil_auto)                   "Auto"
+   set caption(confVisu,attention)                    "Cuidado"
+   set caption(confVisu,tracer_boite)                 "Porfavor, dibuje un recuadro con el ratón."
+   set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,RA)                           "RA"
+   set caption(confVisu,DEC)                          "Dec."
+   set caption(confVisu,tiret)                        "-"
+   set caption(confVisu,2points)                      ":"
+   set caption(confVisu,egale)                        "="
+   set caption(confVisu,I)                            "I"
+   set caption(confVisu,X)                            "X"
+   set caption(confVisu,Y)                            "Y"
+   set caption(confVisu,rouge)                        "R:"
+   set caption(confVisu,vert)                         "V:"
+   set caption(confVisu,bleu)                         "A:"
+   set caption(confVisu,non_connecte)                 "No conectado"
+
+   set caption(plotxy,figure)                         "Figura"
+
+   set caption(sectiongraph,title)                    "Gráfica de la sección"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(audace,porttalk_titre)                 "PortTalk:"
+   set caption(audace,porttalk_erreur)                "Porttak Irrtum"
+   set caption(audace,porttalk_msg_erreur)            "uninstallporttalk.exe von bin anlassen, porttalk.sys vom system32/drivers Register löschen und AudeLA wieder laden."
+   set caption(audace,porttalk_message)               "Diese Meldung nächste mahl nicht mehr anzeigen."
+
+   set caption(audace,port_com_dispo)                 "Verfügbaren COM Porten:"
+   set caption(audace,pas_port_com)                   "Kein Port"
+
+   set caption(audace,titre)                          "Aud'ACE"
+
+   set caption(console,titre)                         "Konsole"
+   set caption(console,debug)                         "Debug"
+
+   set caption(audace,ok)                             "OK"
+   set caption(audace,console_rate)                   "Unmöglichen Zugang"
+   set caption(audace,console_gagne)                  "Zugriff gelungen"
+   set caption(audace,console_annule)                 "Annulliert"
+
+   set caption(audace,aide)                           "Aud'ACE Hilfe"
+   set caption(audace,pas_repertoire_aide)            "Das Hilferegister existiert nicht:"
+
+   set caption(audace,reseau_execute)                 "Ausführt:"
+   set caption(audace,reseau_serveur)                 "Anbieter"
+   set caption(audace,reseau_detruit)                 "Zerstört"
+   set caption(audace,reseau_client)                  "Kunde"
+   set caption(audace,reseau_connecte)                "Gut angeschlossen"
+   set caption(audace,reseau_serveur_retour)          "Rückwärts Anbieter bereiten"
+   set caption(audace,reseau_deconnecte)              "Abgeklemmt"
+   set caption(audace,reseau_deconnexion)             "Abklemmung"
+   set caption(audace,reseau_du_serveur)              "vom Anbieter"
+   set caption(audace,reseau_connexion_client)        "Anschluss durch den Kunden"
+   set caption(audace,reseau_reponse_vers)            "Antworten zu"
+
+   set caption(audace,temps_universel)                "WZ"
+   set caption(audace,temps_heurelegale)              "UZ"
+
+   set caption(audace,enregistrer_config1)            "Wollen sie die neue Aude'ACE Gestalt bevor beenden speichern?"
+   set caption(audace,enregistrer_config2)            "Gestalt speichern ?"
+   set caption(audace,enregistrer_config3)            "Gestalt gespeichert."
+   set caption(audace,enregistrer_config4)            "Keine Gestalt Speicherung notwendig."
+   set caption(audace,enregistrer_config5)            "Speichern annulliert."
+
+   set caption(confVisu,fermer)                       "Schließen"
+   set caption(confVisu,seuil_haut)                   "H.H."
+   set caption(confVisu,seuil_bas)                    "H.T."
+   set caption(confVisu,seuil_auto)                   "Auto"
+   set caption(confVisu,attention)                    "Achtung"
+   set caption(confVisu,tracer_boite)                 "Bitte, einen Rahmen mit der Mause zeichnen."
+   set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,RA)                           "RA"
+   set caption(confVisu,DEC)                          "Dek."
+   set caption(confVisu,tiret)                        "-"
+   set caption(confVisu,2points)                      ":"
+   set caption(confVisu,egale)                        "="
+   set caption(confVisu,I)                            "I"
+   set caption(confVisu,X)                            "X"
+   set caption(confVisu,Y)                            "Y"
+   set caption(confVisu,rouge)                        "R:"
+   set caption(confVisu,vert)                         "G:"
+   set caption(confVisu,bleu)                         "B:"
+   set caption(confVisu,non_connecte)                 "Nicht verbun"
+
+   set caption(plotxy,figure)                         "Figur"
+
+   set caption(sectiongraph,title)                    "Abschnitt Grafik"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(audace,porttalk_titre)                 "Comunicação de portas:"
+   set caption(audace,porttalk_erreur)                "Erro de comunicação de portas"
+   set caption(audace,porttalk_msg_erreur)            "Executar uninstallporttalk.exe desde bin, apagar porttalk.sys da pasta system32/drivers e correr o AudeLA novamente."
+   set caption(audace,porttalk_message)               "Não mostrar esta imagem outra vez."
+
+   set caption(audace,port_com_dispo)                 "Portas COM disponíveis:"
+   set caption(audace,pas_port_com)                   "Sem porta"
+
+   set caption(audace,titre)                          "Aud'ACE"
+
+   set caption(console,titre)                         "Consola"
+   set caption(console,debug)                         "Debug"
+
+   set caption(audace,ok)                             "OK"
+   set caption(audace,console_rate)                   "O acesso não é possivel"
+   set caption(audace,console_gagne)                  "Acesso OK"
+   set caption(audace,console_annule)                 "Cancelado"
+
+   set caption(audace,aide)                           "Ajuda Aud'ACE"
+   set caption(audace,pas_repertoire_aide)            "A pasta ajuda não existe:"
+
+   set caption(audace,reseau_execute)                 "Correr:"
+   set caption(audace,reseau_serveur)                 "Servidor"
+   set caption(audace,reseau_detruit)                 "Servidor destruído"
+   set caption(audace,reseau_client)                  "Cliente"
+   set caption(audace,reseau_connecte)                "Cliente conectado correctamente"
+   set caption(audace,reseau_serveur_retour)          "Servidor de imagens criado"
+   set caption(audace,reseau_deconnecte)              "Cliente disconectado"
+   set caption(audace,reseau_deconnexion)             "Desconectado"
+   set caption(audace,reseau_du_serveur)              "do servidor"
+   set caption(audace,reseau_connexion_client)        "Conexão através do cliente"
+   set caption(audace,reseau_reponse_vers)            "Responder a"
+
+   set caption(audace,temps_universel)                "UT"
+   set caption(audace,temps_heurelegale)              "CT"
+
+   set caption(audace,enregistrer_config1)            "Guardar nova configuração antes de sair?"
+   set caption(audace,enregistrer_config2)            "Guardar configuração?"
+   set caption(audace,enregistrer_config3)            "Configuração guardada com êxito."
+   set caption(audace,enregistrer_config4)            "Não é necessário guardar configuração."
+   set caption(audace,enregistrer_config5)            "Operação \"guardar\" abortada."
+
+   set caption(confVisu,fermer)                       "Fechar"
+   set caption(confVisu,seuil_haut)                   "H.T."
+   set caption(confVisu,seuil_bas)                    "L.T."
+   set caption(confVisu,seuil_auto)                   "Auto"
+   set caption(confVisu,attention)                    "Aviso"
+   set caption(confVisu,tracer_boite)                 "Por favor desenhe um quadrado com o seu rato."
+   set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,RA)                           "AR"
+   set caption(confVisu,DEC)                          "Dec."
+   set caption(confVisu,tiret)                        "-"
+   set caption(confVisu,2points)                      ":"
+   set caption(confVisu,egale)                        "="
+   set caption(confVisu,I)                            "I"
+   set caption(confVisu,X)                            "X"
+   set caption(confVisu,Y)                            "Y"
+   set caption(confVisu,rouge)                        "R:"
+   set caption(confVisu,vert)                         "G:"
+   set caption(confVisu,bleu)                         "B:"
+   set caption(confVisu,non_connecte)                 "Não conectado"
+
+   set caption(plotxy,figure)                         "Figura"
+
+   set caption(sectiongraph,title)                    "Gráfico da secção"
+
+# *************** Version danoise ***************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(audace,porttalk_titre)                 "PortTalk:"
+   set caption(audace,porttalk_erreur)                "Porttalk fejl"
+   set caption(audace,porttalk_msg_erreur)            "Kør uninstallporttalk.exe fra bin, slet porttalk.sys fra system32/drivers folderen og kør AudeLA igen."
+   set caption(audace,porttalk_message)               "Vis ikke denne besked igen!"
+
+   set caption(audace,port_com_dispo)                 "Tilgængelige COM-porte:"
+   set caption(audace,pas_port_com)                   "Ingen port!"
+
+   set caption(audace,titre)                          "Aud'ACE"
+
+   set caption(console,titre)                         "Konsol"
+   set caption(console,debug)                         "Debug"
+
+   set caption(audace,ok)                             "OK"
+   set caption(audace,console_rate)                   "Ingen adgang"
+   set caption(audace,console_gagne)                  "Adgang: OK!"
+   set caption(audace,console_annule)                 "Annulleret"
+
+   set caption(audace,aide)                           "Aud'ACE-Hjælp"
+   set caption(audace,pas_repertoire_aide)            "Hjælp-mappen findes ikke:"
+
+   set caption(audace,reseau_execute)                 "Kør:"
+   set caption(audace,reseau_serveur)                 "Software-Server"
+   set caption(audace,reseau_detruit)                 "Serverfejl"
+   set caption(audace,reseau_client)                  "Klient"
+   set caption(audace,reseau_connecte)                "Klient korrekt tilsluttet"
+   set caption(audace,reseau_serveur_retour)          "Image display server dannet"
+   set caption(audace,reseau_deconnecte)              "Klient afbrudt"
+   set caption(audace,reseau_deconnexion)             "Afbryd"
+   set caption(audace,reseau_du_serveur)              "Server"
+   set caption(audace,reseau_connexion_client)        "Forbindelse gennem klienten"
+   set caption(audace,reseau_reponse_vers)            "Svar til"
+
+   set caption(audace,temps_universel)                "UT"
+   set caption(audace,temps_heurelegale)              "CT"
+
+   set caption(audace,enregistrer_config1)            "Gem ny opsætning før afslutning?"
+   set caption(audace,enregistrer_config2)            "Gem opsætning?"
+   set caption(audace,enregistrer_config3)            "Opsætning gemt."
+   set caption(audace,enregistrer_config4)            "Gem opsætning - Er ikke nødvendig."
+   set caption(audace,enregistrer_config5)            "Gem - Annulleret."
+
+   set caption(confVisu,fermer)                       "Luk"
+   set caption(confVisu,seuil_haut)                   "H.t."
+   set caption(confVisu,seuil_bas)                    "L.t."
+   set caption(confVisu,seuil_auto)                   "Auto"
+   set caption(confVisu,attention)                    "Advarsel"
+   set caption(confVisu,tracer_boite)                 "Tegn en ramme med musen."
+   set caption(confVisu,boite_seuil)                  "..."
+   set caption(confVisu,RA)                           "RA"
+   set caption(confVisu,DEC)                          "Dec."
+   set caption(confVisu,tiret)                        "-"
+   set caption(confVisu,2points)                      ":"
+   set caption(confVisu,egale)                        "="
+   set caption(confVisu,I)                            "I"
+   set caption(confVisu,X)                            "X"
+   set caption(confVisu,Y)                            "Y"
+   set caption(confVisu,rouge)                        "R:"
+   set caption(confVisu,vert)                         "G:"
+   set caption(confVisu,bleu)                         "B:"
+   set caption(confVisu,non_connecte)                 "Ikke tilsluttet"
+
+   set caption(plotxy,figure)                         "Figur"
+
+   set caption(sectiongraph,title)                    "Graf af udsnittet"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

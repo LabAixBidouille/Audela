@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLISetDebugLevel</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLISetDebugLevel</A></H2><H2>(char* host,  <!1><A HREF="flidebug_t.html">flidebug_t</A> level)</H2><BLOCKQUOTE>
+ Enable debugging of API operations and communications.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Enable debugging of API operations and communications. Use this
+function in combination with FLIDebug to assist in diagnosing
+problems that may be encountered during programming.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>host</B> -  Name of the file to send debugging information to.
+This parameter is ignored under Linux where <TT>syslog(3)</TT> is
+used to send debug messages (see <TT>syslog.conf(5)</TT> for how to
+configure syslogd).
+
+<BR><B>level</B> -  Debug level.  A value of <TT>FLIDEBUG_NONE</TT> disables
+debugging.  Values of <TT>FLIDEBUG_FAIL</TT>, <TT>FLIDEBUG_WARN</TT>, and
+<TT>FLIDEBUG_INFO</TT> enable progressively more verbose debug messages.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

@@ -1,0 +1,345 @@
+#
+# Fichier : aud_menu_5.cap
+# Mise a jour $Id: aud_menu_5.cap,v 1.7 2008-06-06 17:28:31 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(audace,menu,analyse)                      "Analysis"
+set caption(audace,menu,histo)                        "Histogram"
+set caption(audace,menu,coupe)                        "Section"
+set caption(audace,menu,statwin)                      "Statistics in Window"
+set caption(audace,menu,fwhm)                         "Fwhm"
+set caption(audace,menu,fitgauss)                     "Fit a gaussian"
+set caption(audace,menu,centro)                       "Photocenter"
+set caption(audace,menu,phot)                         "Integrated Photometry"
+set caption(audace,menu,subfitgauss)                  "Fit and subtract a gaussian"
+set caption(audace,menu,scar)                         "Cosmetic Repair"
+set caption(audace,menu,astrometry)                   "Astrometric Calibration"
+set caption(audace,menu,carte_champ)                  "Field Chart"
+
+set caption(audace,histo_titre)                       "Image Histogram"
+set caption(audace,histo_adu)                         "ADU"
+set caption(audace,histo_nbpix)                       "Pixels Number"
+
+set caption(audace,maxi)                              "Max.: "
+set caption(audace,mini)                              "Min.: "
+set caption(audace,moyenne)                           "Mean: "
+set caption(audace,ecart_type)                        "Root-mean-square Deviation: "
+set caption(audace,moyenne_fond_ciel)                 "Sky Background Mean Value: "
+set caption(audace,ecart_type_fond_ciel)              "Sky Background Root-mean-square Deviation: "
+
+set caption(audace,fwhm_x)                            "Fwhmx"
+set caption(audace,fwhm_y)                            "Fwhmy"
+
+set caption(audace,titre_gauss)                       "=== Fit a gaussian ==="
+set caption(audace,coord_box)                         "Window Coordinates"
+set caption(audace,center_xy)                         "Center"
+set caption(audace,fwhm_xy)                           "Fwhm"
+set caption(audace,intens_xy)                         "Intensity"
+set caption(audace,back_xy)                           "Back"
+set caption(audace,integflux)                         "Integrated Flux"
+set caption(audace,largeurequiv)                      "Equivalent Width"
+set caption(audace,mag_instrument)                    "Instrument Magnitude -2.5*log10(Flux)"
+set caption(audace,RA)                                "RA"
+set caption(audace,DEC)                               "Dec."
+set caption(audace,MPC_format)                        "MPC Format:"
+set caption(audace,gauss_attention)                   "Warning:"
+set caption(audace,UAI_site_image)                    "UAI %s site must be where the image was acquired."
+
+set caption(audace,calculer)                          "Calculate"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(audace,menu,analyse)                   "Analyse"
+   set caption(audace,menu,histo)                     "Histogramme"
+   set caption(audace,menu,coupe)                     "Coupe"
+   set caption(audace,menu,statwin)                   "Statistiques dans la fenêtre"
+   set caption(audace,menu,fwhm)                      "Fwhm"
+   set caption(audace,menu,fitgauss)                  "Ajuster une gaussienne"
+   set caption(audace,menu,centro)                    "Photocentre"
+   set caption(audace,menu,phot)                      "Photométrie intégrale"
+   set caption(audace,menu,subfitgauss)               "Ajuster et soustraire une gaussienne"
+   set caption(audace,menu,scar)                      "Cicatriser"
+   set caption(audace,menu,astrometry)                "Calibration astrométrique"
+   set caption(audace,menu,carte_champ)               "Carte de champ"
+
+   set caption(audace,histo_titre)                    "Histogramme de l'image"
+   set caption(audace,histo_adu)                      "ADU"
+   set caption(audace,histo_nbpix)                    "Nombre de pixels"
+
+   set caption(audace,maxi)                           "Maxi. : "
+   set caption(audace,mini)                           "Mini. : "
+   set caption(audace,moyenne)                        "Moyenne : "
+   set caption(audace,ecart_type)                     "Ecart-type : "
+   set caption(audace,moyenne_fond_ciel)              "Moyenne du fond de ciel : "
+   set caption(audace,ecart_type_fond_ciel)           "Ecart-type du fond de ciel : "
+
+   set caption(audace,fwhm_x)                         "Fwhmx"
+   set caption(audace,fwhm_y)                         "Fwhmy"
+
+   set caption(audace,titre_gauss)                    "=== Ajuster une gaussienne ==="
+   set caption(audace,coord_box)                      "Coordonnées de la fenêtre"
+   set caption(audace,center_xy)                      "Centre"
+   set caption(audace,fwhm_xy)                        "Fwhm"
+   set caption(audace,intens_xy)                      "Intensité"
+   set caption(audace,back_xy)                        "Fond"
+   set caption(audace,integflux)                      "Flux intégré"
+   set caption(audace,largeurequiv)                   "Largeur équivalente"
+   set caption(audace,mag_instrument)                 "Magnitude instrumentale -2.5*log10(flux)"
+   set caption(audace,RA)                             "AD"
+   set caption(audace,DEC)                            "Déc."
+   set caption(audace,MPC_format)                     "Format MPC :"
+   set caption(audace,gauss_attention)                "Attention :"
+   set caption(audace,UAI_site_image)                 "Le site UAI %s doit être celui où l'image a été acquise."
+
+   set caption(audace,calculer)                       "Calculer"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(audace,menu,analyse)                   "Analisi"
+   set caption(audace,menu,histo)                     "Istogramma"
+   set caption(audace,menu,coupe)                     "Sezione"
+   set caption(audace,menu,statwin)                   "Statistiche zona selezionata"
+   set caption(audace,menu,fwhm)                      "Fwhm"
+   set caption(audace,menu,fitgauss)                  "Applicare una gaussiana"
+   set caption(audace,menu,centro)                    "Baricentro fotografico"
+   set caption(audace,menu,phot)                      "Fotometria integrale"
+   set caption(audace,menu,subfitgauss)               "Applicare e sottrarre una gaussiana"
+   set caption(audace,menu,scar)                      "Mascherare"
+   set caption(audace,menu,astrometry)                "Calibrazione astrometrica"
+   set caption(audace,menu,carte_champ)               "Mappa del campo"
+
+   set caption(audace,histo_titre)                    "Istogramma dell'immagine"
+   set caption(audace,histo_adu)                      "ADU"
+   set caption(audace,histo_nbpix)                    "Numero dei pixels"
+
+   set caption(audace,maxi)                           "Max.: "
+   set caption(audace,mini)                           "Min.: "
+   set caption(audace,moyenne)                        "Media: "
+   set caption(audace,ecart_type)                     "Deviazione media: "
+   set caption(audace,moyenne_fond_ciel)              "Media del fondo cielo: "
+   set caption(audace,ecart_type_fond_ciel)           "Deviazione media del fondo cielo: "
+
+   set caption(audace,fwhm_x)                         "Fwhmx"
+   set caption(audace,fwhm_y)                         "Fwhmy"
+
+   set caption(audace,titre_gauss)                    "=== Applicare una gaussiana ==="
+   set caption(audace,coord_box)                      "Coordinate della finestra"
+   set caption(audace,center_xy)                      "Centro"
+   set caption(audace,fwhm_xy)                        "Fwhm"
+   set caption(audace,intens_xy)                      "Intensita`"
+   set caption(audace,back_xy)                        "Fondo"
+   set caption(audace,integflux)                      "Flusso integrato"
+   set caption(audace,largeurequiv)                   "Larghezza equivalente"
+   set caption(audace,mag_instrument)                 "Magnitudine strumentale -2.5*log10(flusso)"
+   set caption(audace,RA)                             "AD"
+   set caption(audace,DEC)                            "Déc."
+   set caption(audace,MPC_format)                     "Formato MPC:"
+   set caption(audace,gauss_attention)                "Attenzione:"
+   set caption(audace,UAI_site_image)                 "Il sito UAI %s dovra` essere quello dove l'immagine sara` acquisita."
+
+   set caption(audace,calculer)                       "Calcolàre"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(audace,menu,analyse)                   "Análisis"
+   set caption(audace,menu,histo)                     "Histograma"
+   set caption(audace,menu,coupe)                     "Sección"
+   set caption(audace,menu,statwin)                   "Ventana de estadísticas"
+   set caption(audace,menu,fwhm)                      "Fwhm"
+   set caption(audace,menu,fitgauss)                  "Ajustar perfil Gauss"
+   set caption(audace,menu,centro)                    "Centro fotométrico"
+   set caption(audace,menu,phot)                      "Fotometría integrada"
+   set caption(audace,menu,subfitgauss)               "Ajustar y restar perfil gaussiano"
+   set caption(audace,menu,scar)                      "Scar"
+   set caption(audace,menu,astrometry)                "Calibración Astrométrica"
+   set caption(audace,menu,carte_champ)               "Mapa de campo"
+
+   set caption(audace,histo_titre)                    "Histograma de la imagen"
+   set caption(audace,histo_adu)                      "Unidades digitales (ADU)"
+   set caption(audace,histo_nbpix)                    "Número de píxeles"
+
+   set caption(audace,maxi)                           "Max.: "
+   set caption(audace,mini)                           "Min.: "
+   set caption(audace,moyenne)                        "Media: "
+   set caption(audace,ecart_type)                     "Desviación RMS (error cuadrático medio): "
+   set caption(audace,moyenne_fond_ciel)              "Media del fondo de cielo: "
+   set caption(audace,ecart_type_fond_ciel)           "Desviación RMS (error cuadrático medio) del fondo de cielo: "
+
+   set caption(audace,fwhm_x)                         "Fwhmx"
+   set caption(audace,fwhm_y)                         "Fwhmy"
+
+   set caption(audace,titre_gauss)                    "=== Ajustar perfil Gauss ==="
+   set caption(audace,coord_box)                      "Coordenadas de la ventana"
+   set caption(audace,center_xy)                      "Centro"
+   set caption(audace,fwhm_xy)                        "Fwhm"
+   set caption(audace,intens_xy)                      "Intensidad"
+   set caption(audace,back_xy)                        "Fondo"
+   set caption(audace,integflux)                      "Flujo intregrado"
+   set caption(audace,largeurequiv)                   "Anchura equivalente"
+   set caption(audace,mag_instrument)                 "Magnitud instrumental -2.5*log10(flujo)"
+   set caption(audace,RA)                             "RA"
+   set caption(audace,DEC)                            "Dec."
+   set caption(audace,MPC_format)                     "Formato MPC:"
+   set caption(audace,gauss_attention)                "Cuidado:"
+   set caption(audace,UAI_site_image)                 "El sitio UAI %s debe estar donde se ha adquirido la imagen."
+
+   set caption(audace,calculer)                       "Calcular"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(audace,menu,analyse)                   "Analyse"
+   set caption(audace,menu,histo)                     "Historische Kurve"
+   set caption(audace,menu,coupe)                     "Abschnitt"
+   set caption(audace,menu,statwin)                   "Statistiken in das Fenster"
+   set caption(audace,menu,fwhm)                      "Fwhm"
+   set caption(audace,menu,fitgauss)                  "Eine Gauss Kurve einstellen"
+   set caption(audace,menu,centro)                    "Photozentrum"
+   set caption(audace,menu,phot)                      "Integrale Photomessung"
+   set caption(audace,menu,subfitgauss)               "Eine Gauss Kurve einstellen und abziehen"
+   set caption(audace,menu,scar)                      "Verheilen"
+   set caption(audace,menu,astrometry)                "Astrometrische Kalibration"
+   set caption(audace,menu,carte_champ)               "Feld Karte"
+
+   set caption(audace,histo_titre)                    "Historische Kurve des Bild"
+   set caption(audace,histo_adu)                      "ADU"
+   set caption(audace,histo_nbpix)                    "Rasterpunkten Zahl"
+
+   set caption(audace,maxi)                           "Maxi.: "
+   set caption(audace,mini)                           "Mini.: "
+   set caption(audace,moyenne)                        "Mittelwert: "
+   set caption(audace,ecart_type)                     "Typische Abweichung: "
+   set caption(audace,moyenne_fond_ciel)              "Hinterhimmel Mittelwert: "
+   set caption(audace,ecart_type_fond_ciel)           "Hinterhimmel typische Abweichung: "
+
+   set caption(audace,fwhm_x)                         "Fwhmx"
+   set caption(audace,fwhm_y)                         "Fwhmy"
+
+   set caption(audace,titre_gauss)                    "=== Eine Gauss Kurve einstellen ==="
+   set caption(audace,coord_box)                      "Fenster Koordinaten"
+   set caption(audace,center_xy)                      "Zentrum"
+   set caption(audace,fwhm_xy)                        "Fwhm"
+   set caption(audace,intens_xy)                      "Lichtstärke"
+   set caption(audace,back_xy)                        "Hinter"
+   set caption(audace,integflux)                      "Integrierter Fluss"
+   set caption(audace,largeurequiv)                   "Gleichwertige Breite"
+   set caption(audace,mag_instrument)                 "Instrumental Größeklasse -2.5*log10(Fluss)"
+   set caption(audace,RA)                             "RA"
+   set caption(audace,DEC)                            "Dek."
+   set caption(audace,MPC_format)                     "MPC Format:"
+   set caption(audace,gauss_attention)                "Achtung:"
+   set caption(audace,UAI_site_image)                 "Die UAI %s Stelle muss die sein wo das Bild erworben wurde."
+
+   set caption(audace,calculer)                       "Rechnen"
+
+# *************** Version portugaise ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(audace,menu,analyse)                   "Análise"
+   set caption(audace,menu,histo)                     "Histograma"
+   set caption(audace,menu,coupe)                     "Secção"
+   set caption(audace,menu,statwin)                   "Janela de estatísticas"
+   set caption(audace,menu,fwhm)                      "Fwhm"
+   set caption(audace,menu,fitgauss)                  "Ajustar perfil gaussiano"
+   set caption(audace,menu,centro)                    "Centro fotométrico"
+   set caption(audace,menu,phot)                      "Fotometria integrada"
+   set caption(audace,menu,subfitgauss)               "Ajustar e subtrair perfil gaussiano"
+   set caption(audace,menu,scar)                      "Reparação cosmética (scar)"
+   set caption(audace,menu,astrometry)                "Calibração astrométrica"
+   set caption(audace,menu,carte_champ)               "Mapa de campo"
+
+   set caption(audace,histo_titre)                    "Histograma de imagens"
+   set caption(audace,histo_adu)                      "Unidades digitais (ADU)"
+   set caption(audace,histo_nbpix)                    "Número de pixeis"
+
+   set caption(audace,maxi)                           "Max.: "
+   set caption(audace,mini)                           "Min.: "
+   set caption(audace,moyenne)                        "Média: "
+   set caption(audace,ecart_type)                     "Desvio RMS (erro quadrático médio): "
+   set caption(audace,moyenne_fond_ciel)              "Valor Médio do Fundo do Céu: "
+   set caption(audace,ecart_type_fond_ciel)           "Desvio RMS (erro quadrático médio) do fundo do céu: "
+
+   set caption(audace,fwhm_x)                         "Fwhmx"
+   set caption(audace,fwhm_y)                         "Fwhmy"
+
+   set caption(audace,titre_gauss)                    "=== Ajustar perfil gaussiano ==="
+   set caption(audace,coord_box)                      "Coordenadas da janela"
+   set caption(audace,center_xy)                      "Centro"
+   set caption(audace,fwhm_xy)                        "Fwhm"
+   set caption(audace,intens_xy)                      "Intensidade"
+   set caption(audace,back_xy)                        "Fundo"
+   set caption(audace,integflux)                      "Fluxo Integrado"
+   set caption(audace,largeurequiv)                   "Largura equivalente"
+   set caption(audace,mag_instrument)                 "Magnitude Instrumental -2.5*log10(Flux)"
+   set caption(audace,RA)                             "AR"
+   set caption(audace,DEC)                            "Dec."
+   set caption(audace,MPC_format)                     "Formato MPC:"
+   set caption(audace,gauss_attention)                "Aviso:"
+   set caption(audace,UAI_site_image)                 "O sítio UAI %s deve estar onde foi adquirida a imagem."
+
+   set caption(audace,calculer)                       "Calcular"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(audace,menu,analyse)                   "Analyse"
+   set caption(audace,menu,histo)                     "Histogram"
+   set caption(audace,menu,coupe)                     "Udsnit"
+   set caption(audace,menu,statwin)                   "Statistik in Vindue"
+   set caption(audace,menu,fwhm)                      "Halvværdibredde (Fwhm)"
+   set caption(audace,menu,fitgauss)                  "Tilpas en Gausskurve"
+   set caption(audace,menu,centro)                    "Center på fotoet"
+   set caption(audace,menu,phot)                      "Integreret fotometri"
+   set caption(audace,menu,subfitgauss)               "Tilpas og subtraher en gausskurve"
+   set caption(audace,menu,scar)                      "Kosmetisk reparering"
+   set caption(audace,menu,astrometry)                "Astrometrisk kalibrering"
+   set caption(audace,menu,carte_champ)               "Felt kort"
+
+   set caption(audace,histo_titre)                    "Billed-histogram"
+   set caption(audace,histo_adu)                      "ADU"
+   set caption(audace,histo_nbpix)                    "Pixeltal"
+
+   set caption(audace,maxi)                           "Max.: "
+   set caption(audace,mini)                           "Min.: "
+   set caption(audace,moyenne)                        "Middelværdi: "
+   set caption(audace,ecart_type)                     "Standardafvigelse: "
+   set caption(audace,moyenne_fond_ciel)              "Himmelbaggrund-middelværdi: "
+   set caption(audace,ecart_type_fond_ciel)           "Himmelbaggrund-standardafvigelse: "
+
+   set caption(audace,fwhm_x)                         "Fwhmx"
+   set caption(audace,fwhm_y)                         "Fwhmy"
+
+   set caption(audace,titre_gauss)                    "=== Tilpas en Gausskurve ==="
+   set caption(audace,coord_box)                      "Window Koordinater"
+   set caption(audace,center_xy)                      "Centrum"
+   set caption(audace,fwhm_xy)                        "Fwhm"
+   set caption(audace,intens_xy)                      "Intensitet"
+   set caption(audace,back_xy)                        "Baggrund"
+   set caption(audace,integflux)                      "Integreret Flux"
+   set caption(audace,largeurequiv)                   "Ækvivalent bredde"
+   set caption(audace,mag_instrument)                 "Instrument magnitude -2.5*log10(Flux)"
+   set caption(audace,RA)                             "RA"
+   set caption(audace,DEC)                            "Dec."
+   set caption(audace,MPC_format)                     "MPC Format:"
+   set caption(audace,gauss_attention)                "Advarsel:"
+   set caption(audace,UAI_site_image)                 "Stedet UAI %s må være hvorfra billedet blev hentet."
+
+   set caption(audace,calculer)                       "Beregn"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

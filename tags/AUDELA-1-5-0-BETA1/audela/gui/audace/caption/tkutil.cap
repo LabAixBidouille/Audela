@@ -1,0 +1,261 @@
+#
+# Fichier : tkutil.cap
+# Mise a jour $Id: tkutil.cap,v 1.12 2007-05-20 09:20:34 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(tkutil,charger_image)         "Open Image"
+set caption(tkutil,sauver_image)          "Save Image"
+set caption(tkutil,sauver_image_jpeg)     "Save Image as Jpeg"
+set caption(tkutil,editer_script)         "Edit a script"
+set caption(tkutil,lancer_script)         "Run a script"
+set caption(tkutil,editer_notice)         "User Guides (.pdf)"
+set caption(tkutil,editer_site_web)       "Web Site"
+set caption(tkutil,editer_catalogue)      "Open a user catalog"
+set caption(tkutil,editeur_script)        "Script Editor:"
+set caption(tkutil,editeur_pdf)           "See User Guides (.pdf):"
+set caption(tkutil,editeur_page_web)      "Web Browser:"
+set caption(tkutil,editeur_image)         "Viewer:"
+set caption(tkutil,editer_modpoi)         "Choose a pointing model:"
+set caption(tkutil,editer_fichier)        "File To Be Searched:"
+
+set caption(tkutil,image_file)            "Image Files"
+set caption(tkutil,image_fits)            "FITS Files"
+set caption(tkutil,image_bmp)             "BMP Files"
+set caption(tkutil,image_gif)             "GIF Files"
+set caption(tkutil,image_jpeg)            "JPEG Files"
+set caption(tkutil,image_png)             "PNG Files"
+set caption(tkutil,image_tiff)            "TIFF Files"
+set caption(tkutil,image_xbm)             "XBM Files"
+set caption(tkutil,image_xpm)             "XPM Files"
+set caption(tkutil,image_postscript)      "Postscript Files"
+set caption(tkutil,image_raw)             "RAW Files"
+set caption(tkutil,fichier_tcl)           "TCL Scripts"
+set caption(tkutil,fichier_txt)           "Text Files"
+set caption(tkutil,fichier_tous)          "All Files"
+set caption(tkutil,fichier_pdf)           "User Guides"
+set caption(tkutil,fichier_html)          "HTML Files"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Ouvrir une image"
+   set caption(tkutil,sauver_image)       "Enregistrer une image"
+   set caption(tkutil,sauver_image_jpeg)  "Enregistrer une image en jpeg"
+   set caption(tkutil,editer_script)      "Editer un script"
+   set caption(tkutil,lancer_script)      "Lancer un script"
+   set caption(tkutil,editer_notice)      "Notices (.pdf)"
+   set caption(tkutil,editer_site_web)    "Site Web"
+   set caption(tkutil,editer_catalogue)   "Ouvrir un catalogue utilisateur"
+   set caption(tkutil,editeur_script)     "Editeur de scripts :"
+   set caption(tkutil,editeur_pdf)        "Voir les notices (.pdf) :"
+   set caption(tkutil,editeur_page_web)   "Navigateur Web :"
+   set caption(tkutil,editeur_image)      "Visualiseur d'images :"
+   set caption(tkutil,editer_modpoi)      "Sélectionner un modèle de pointage :"
+   set caption(tkutil,editer_fichier)     "Fichier à rechercher :"
+
+   set caption(tkutil,image_file)         "Fichiers Image"
+   set caption(tkutil,image_fits)         "Fichiers FITS"
+   set caption(tkutil,image_bmp)          "Fichiers BMP"
+   set caption(tkutil,image_gif)          "Fichiers GIF"
+   set caption(tkutil,image_jpeg)         "Fichiers JPEG"
+   set caption(tkutil,image_png)          "Fichiers PNG"
+   set caption(tkutil,image_tiff)         "Fichiers TIFF"
+   set caption(tkutil,image_xbm)          "Fichiers XBM"
+   set caption(tkutil,image_xpm)          "Fichiers XPM"
+   set caption(tkutil,image_postscript)   "Fichiers Postscript"
+   set caption(tkutil,image_raw)          "Fichiers RAW"
+   set caption(tkutil,fichier_tcl)        "Scripts TCL"
+   set caption(tkutil,fichier_txt)        "Fichiers textes"
+   set caption(tkutil,fichier_tous)       "Tous"
+   set caption(tkutil,fichier_pdf)        "Notices"
+   set caption(tkutil,fichier_html)       "Fichiers HTML"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Aprire un'immagine"
+   set caption(tkutil,sauver_image)       "Salvare un'immagine"
+   set caption(tkutil,sauver_image_jpeg)  "Salvare un'immagine in JPEG"
+   set caption(tkutil,editer_script)      "Edita uno script"
+   set caption(tkutil,lancer_script)      "Esegui uno script"
+   set caption(tkutil,editer_notice)      "Guida utente (.pdf)"
+   set caption(tkutil,editer_site_web)    "Sito Web"
+   set caption(tkutil,editer_catalogue)   "Aprire un catalogo utente"
+   set caption(tkutil,editeur_script)     "Editor script:"
+   set caption(tkutil,editeur_pdf)        "Vedi la guida utente (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Web browser:"
+   set caption(tkutil,editeur_image)      "Visualizzatore di immagini:"
+   set caption(tkutil,editer_modpoi)      "Selezionere un modello di puntamento:"
+   set caption(tkutil,editer_fichier)     "File da trovare:"
+
+   set caption(tkutil,image_file)         "File Immagini"
+   set caption(tkutil,image_fits)         "File FITS"
+   set caption(tkutil,image_bmp)          "File BMP"
+   set caption(tkutil,image_gif)          "File GIF"
+   set caption(tkutil,image_jpeg)         "File JPEG"
+   set caption(tkutil,image_png)          "File PNG"
+   set caption(tkutil,image_tiff)         "File TIFF"
+   set caption(tkutil,image_xbm)          "File XBM"
+   set caption(tkutil,image_xpm)          "File XPM"
+   set caption(tkutil,image_postscript)   "File Postscript"
+   set caption(tkutil,image_raw)          "File RAW"
+   set caption(tkutil,fichier_tcl)        "Script TCL"
+   set caption(tkutil,fichier_txt)        "File testo"
+   set caption(tkutil,fichier_tous)       "Tutti"
+   set caption(tkutil,fichier_pdf)        "Guida utente"
+   set caption(tkutil,fichier_html)       "File HTML"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Abrir imagen"
+   set caption(tkutil,sauver_image)       "Guardar imagen"
+   set caption(tkutil,sauver_image_jpeg)  "Guardar imagen JPEG"
+   set caption(tkutil,editer_script)      "Editar un script"
+   set caption(tkutil,lancer_script)      "Ejecutar un script"
+   set caption(tkutil,editer_notice)      "Manuales de Usuario (.pdf)"
+   set caption(tkutil,editer_site_web)    "Sitio Web"
+   set caption(tkutil,editer_catalogue)   "Abrir un catálogo de usuario"
+   set caption(tkutil,editeur_script)     "Editor de scripts:"
+   set caption(tkutil,editeur_pdf)        "Ver guia de usuario (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Navegador Web:"
+   set caption(tkutil,editeur_image)      "Visualizador de imágenes:"
+   set caption(tkutil,editer_modpoi)      "Elige un modelo de apuntado:"
+   set caption(tkutil,editer_fichier)     "Fichero a buscar:"
+
+   set caption(tkutil,image_file)         "Ficheros Imágenes"
+   set caption(tkutil,image_fits)         "Ficheros FITS"
+   set caption(tkutil,image_bmp)          "Ficheros BMP"
+   set caption(tkutil,image_gif)          "Ficheros GIF"
+   set caption(tkutil,image_jpeg)         "Ficheros JPEG"
+   set caption(tkutil,image_png)          "Ficheros PNG"
+   set caption(tkutil,image_tiff)         "Ficheros TIFF"
+   set caption(tkutil,image_xbm)          "Ficheros XBM"
+   set caption(tkutil,image_xpm)          "Ficheros XPM"
+   set caption(tkutil,image_postscript)   "Ficheros Postscript"
+   set caption(tkutil,image_raw)          "Ficheros RAW"
+   set caption(tkutil,fichier_tcl)        "Scripts TCL"
+   set caption(tkutil,fichier_txt)        "Ficheros de texto"
+   set caption(tkutil,fichier_tous)       "Todos"
+   set caption(tkutil,fichier_pdf)        "Guías de usuario"
+   set caption(tkutil,fichier_html)       "Ficheros HTML"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Ein Bild öffnen"
+   set caption(tkutil,sauver_image)       "Ein Bild speichern"
+   set caption(tkutil,sauver_image_jpeg)  "In JPEG ein Bild speichern"
+   set caption(tkutil,editer_script)      "Ein Skript editieren"
+   set caption(tkutil,lancer_script)      "Ein Skript ausführen"
+   set caption(tkutil,editer_notice)      "Hinweisen (.pdf)"
+   set caption(tkutil,editer_site_web)    "Webseite"
+   set caption(tkutil,editer_catalogue)   "Ein Benutzer Katalog öffnen"
+   set caption(tkutil,editeur_script)     "Skripten Editor:"
+   set caption(tkutil,editeur_pdf)        "Hinweisen ansehen (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Web Navigator:"
+   set caption(tkutil,editeur_image)      "Bild Zeichner:"
+   set caption(tkutil,editer_modpoi)      "Ein Schwenken Vorlage wählen:"
+   set caption(tkutil,editer_fichier)     "Datei zu suchen:"
+
+   set caption(tkutil,image_file)         "Bilder Datei"
+   set caption(tkutil,image_fits)         "FITS Datei"
+   set caption(tkutil,image_bmp)          "BMP Datei"
+   set caption(tkutil,image_gif)          "GIF Datei"
+   set caption(tkutil,image_jpeg)         "JPEG Datei"
+   set caption(tkutil,image_png)          "PNG Datei"
+   set caption(tkutil,image_tiff)         "TIFF Datei"
+   set caption(tkutil,image_xbm)          "XBM Datei"
+   set caption(tkutil,image_xpm)          "XPM Datei"
+   set caption(tkutil,image_postscript)   "Postscript Datei"
+   set caption(tkutil,image_raw)          "RAW Datei"
+   set caption(tkutil,fichier_tcl)        "TCL Skripten"
+   set caption(tkutil,fichier_txt)        "Text Datei"
+   set caption(tkutil,fichier_tous)       "Alle"
+   set caption(tkutil,fichier_pdf)        "Hinweisen"
+   set caption(tkutil,fichier_html)       "HTML Datei"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Abrir imagem"
+   set caption(tkutil,sauver_image)       "Guardar imagem"
+   set caption(tkutil,sauver_image_jpeg)  "Guardar imagem JPEG"
+   set caption(tkutil,editer_script)      "Editar um script"
+   set caption(tkutil,lancer_script)      "Executar um script"
+   set caption(tkutil,editer_notice)      "Manuais de Utilizador (.pdf)"
+   set caption(tkutil,editer_site_web)    "WebSite"
+   set caption(tkutil,editer_catalogue)   "Abrir um catálogo de utilizador"
+   set caption(tkutil,editeur_script)     "Editor de scripts:"
+   set caption(tkutil,editeur_pdf)        "Ver guia de utilizador (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Navegador Web:"
+   set caption(tkutil,editeur_image)      "Visualizador de imagens:"
+   set caption(tkutil,editer_modpoi)      "Seleccionar um modelo de apontamento:"
+   set caption(tkutil,editer_fichier)     "Ficheiro a procurar:"
+
+   set caption(tkutil,image_file)         "Ficheiros Imagens"
+   set caption(tkutil,image_fits)         "Ficheiros FITS"
+   set caption(tkutil,image_bmp)          "Ficheiros BMP"
+   set caption(tkutil,image_gif)          "Ficheiros GIF"
+   set caption(tkutil,image_jpeg)         "Ficheiros JPEG"
+   set caption(tkutil,image_png)          "Ficheiros PNG"
+   set caption(tkutil,image_tiff)         "Ficheiros TIFF"
+   set caption(tkutil,image_xbm)          "Ficheiros XBM"
+   set caption(tkutil,image_xpm)          "Ficheiros XPM"
+   set caption(tkutil,image_postscript)   "Ficheiros Postscript"
+   set caption(tkutil,image_raw)          "Ficheiros RAW"
+   set caption(tkutil,fichier_tcl)        "Scripts TCL"
+   set caption(tkutil,fichier_txt)        "Ficheiros de texto"
+   set caption(tkutil,fichier_tous)       "Todos"
+   set caption(tkutil,fichier_pdf)        "Guias de utilizador"
+   set caption(tkutil,fichier_html)       "Ficheiros HTML"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(tkutil,charger_image)      "Åbn billede"
+   set caption(tkutil,sauver_image)       "Gem billede"
+   set caption(tkutil,sauver_image_jpeg)  "Gem billede som Jpeg"
+   set caption(tkutil,editer_script)      "Rediger en skript"
+   set caption(tkutil,lancer_script)      "Kør en skript"
+   set caption(tkutil,editer_notice)      "Brugsanvisning (.pdf)"
+   set caption(tkutil,editer_site_web)    "Hjemmeside"
+   set caption(tkutil,editer_catalogue)   "Åbn et bruger-katalog"
+   set caption(tkutil,editeur_script)     "Script Editor:"
+   set caption(tkutil,editeur_pdf)        "Se brugsanvisning (.pdf):"
+   set caption(tkutil,editeur_page_web)   "Web Browser:"
+   set caption(tkutil,editeur_image)      "Billedvisning:"
+   set caption(tkutil,editer_modpoi)      "Vælg en guiding-model:"
+   set caption(tkutil,editer_fichier)     "Søg fil:"
+
+   set caption(tkutil,image_file)         "Billeder Filer"
+   set caption(tkutil,image_fits)         "FITS Filer"
+   set caption(tkutil,image_bmp)          "BMP Filer"
+   set caption(tkutil,image_gif)          "GIF Filer"
+   set caption(tkutil,image_jpeg)         "JPEG Filer"
+   set caption(tkutil,image_png)          "PNG Filer"
+   set caption(tkutil,image_tiff)         "TIFF Filer"
+   set caption(tkutil,image_xbm)          "XBM Filer"
+   set caption(tkutil,image_xpm)          "XPM Filer"
+   set caption(tkutil,image_postscript)   "Postscript Filer"
+   set caption(tkutil,image_raw)          "RAW Filer"
+   set caption(tkutil,fichier_tcl)        "TCL Skript"
+   set caption(tkutil,fichier_txt)        "Tekstfiler"
+   set caption(tkutil,fichier_tous)       "Alle"
+   set caption(tkutil,fichier_pdf)        "Brugsanvisning"
+   set caption(tkutil,fichier_html)       "HTML Filer"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

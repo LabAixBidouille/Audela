@@ -1,0 +1,72 @@
+#
+# Fichier : viseur_polaire_go.cap
+# Mise a jour $Id: viseur_polaire_go.cap,v 1.6 2007-01-27 14:59:23 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(viseur_polaire_go,titre)         "Polar Finder"
+set caption(viseur_polaire_go,help_titre)    "Help For This Tool"
+set caption(viseur_polaire_go,taka)          "Takahashi\nType"
+set caption(viseur_polaire_go,eq6)           "EQ6\nType"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(viseur_polaire_go,titre)      "Viseur polaire"
+   set caption(viseur_polaire_go,help_titre) "Aide pour cet outil"
+   set caption(viseur_polaire_go,taka)       "Type\nTakahashi"
+   set caption(viseur_polaire_go,eq6)        "Type\nEQ6"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(viseur_polaire_go,titre)      "Cercatore polare"
+   set caption(viseur_polaire_go,help_titre) "Aiuto per questo tool"
+   set caption(viseur_polaire_go,taka)       "Tipo\nTakahashi"
+   set caption(viseur_polaire_go,eq6)        "Tipo\nEQ6"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(viseur_polaire_go,titre)      "Buscador de la Polar"
+   set caption(viseur_polaire_go,help_titre) "Ayuda para esta herramienta"
+   set caption(viseur_polaire_go,taka)       "Tipo\nTakahashi"
+   set caption(viseur_polaire_go,eq6)        "Tipo\nEQ6"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(viseur_polaire_go,titre)      "Polar Sucher"
+   set caption(viseur_polaire_go,help_titre) "Hilfe für dieses Gerät"
+   set caption(viseur_polaire_go,taka)       "Takahashi\nModell"
+   set caption(viseur_polaire_go,eq6)        "EQ6\nModell"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(viseur_polaire_go,titre)      "Buscador polar"
+   set caption(viseur_polaire_go,help_titre) "Ajuda para esta ferramenta"
+   set caption(viseur_polaire_go,taka)       "Tipo\nTakahashi"
+   set caption(viseur_polaire_go,eq6)        "Tipo\nEQ6"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(viseur_polaire_go,titre)      "Polsøger"
+   set caption(viseur_polaire_go,help_titre) "Hjælp til dette værktøj"
+   set caption(viseur_polaire_go,taka)       "Takahashi\ntype"
+   set caption(viseur_polaire_go,eq6)        "EQ6\ntype"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

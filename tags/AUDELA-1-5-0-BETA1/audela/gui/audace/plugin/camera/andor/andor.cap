@@ -1,0 +1,219 @@
+#
+# Fichier : andor.cap
+# Mise a jour $Id: andor.cap,v 1.2 2007-10-18 21:08:25 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(andor,camera)                       "Andor"
+
+set caption(andor,obtu_ouvert)                  "Open"
+set caption(andor,obtu_ferme)                   "Closed"
+set caption(andor,obtu_synchro)                 "Synchro"
+
+set caption(andor,config)                       "Folder Containing Setup Files"
+set caption(andor,parcourir)                    "..."
+set caption(andor,dossier)                      "From Folder:"
+set caption(andor,miroir_x)                     "Horizontal Mirror"
+set caption(andor,miroir_y)                     "Vertical Mirror"
+set caption(andor,refroidissement)              "Cooling to Temperature"
+set caption(andor,deg_c)                        "°C"
+set caption(andor,refroidissement_1)            ""
+set caption(andor,temperature_CCD)              "CCD Temperature:"
+set caption(andor,fonc_obtu)                    "Shutter Operation"
+set caption(andor,ouvert_obtu)                  "Shutter Opening Delay"
+set caption(andor,ferm_obtu)                    "Shutter Closing Delay"
+set caption(andor,ms)                           "ms"
+
+set caption(andor,port_camera)                  "FLI Port"
+set caption(andor,2points)                      ":"
+
+set caption(andor,titre_site_web)               "Reference Web Site:"
+set caption(andor,site_web_ref)                 "http://www.andor-tech.com"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Ouvert"
+   set caption(andor,obtu_ferme)                "Fermé"
+   set caption(andor,obtu_synchro)              "Synchro"
+
+   set caption(andor,config)                    "Répertoire contenant les fichiers de configuration"
+   set caption(andor,parcourir)                 "..."
+   set caption(andor,dossier)                   "A partir du dossier :"
+   set caption(andor,miroir_x)                  "Miroir horizontal"
+   set caption(andor,miroir_y)                  "Miroir vertical"
+   set caption(andor,refroidissement)           "Refroidissement à la température de"
+   set caption(andor,deg_c)                     "°C"
+   set caption(andor,refroidissement_1)         ""
+   set caption(andor,temperature_CCD)           "Température du CCD :"
+   set caption(andor,fonc_obtu)                 "Fonctionnement de l'obturateur"
+   set caption(andor,ouvert_obtu)               "Délai d'ouverture de l'obturateur"
+   set caption(andor,ferm_obtu)                 "Délai de fermeture de l'obturateur"
+   set caption(andor,ms)                        "ms"
+
+   set caption(andor,port_camera)               "Port FLI"
+   set caption(andor,2points)                   ":"
+
+   set caption(andor,titre_site_web)            "Site Web de référence :"
+   set caption(andor,site_web_ref)              "http://www.andor-tech.com"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Aperto"
+   set caption(andor,obtu_ferme)                "Chiuso"
+   set caption(andor,obtu_synchro)              "Sincronizza"
+
+   set caption(andor,config)                    "Cartella contenente i file di configurazione"
+   set caption(andor,parcourir)                 "..."
+   set caption(andor,dossier)                   "Dalla cartella:"
+   set caption(andor,miroir_x)                  "Specchio orizzontale"
+   set caption(andor,miroir_y)                  "Specchio verticale"
+   set caption(andor,refroidissement)           "Raffreddamento alla temperatura di"
+   set caption(andor,deg_c)                     "°C"
+   set caption(andor,refroidissement_1)         ""
+   set caption(andor,temperature_CCD)           "CCD Temperatura:"
+   set caption(andor,fonc_obtu)                 "Funzionamento otturatore"
+   set caption(andor,ouvert_obtu)               "Ritardo apertura otturatore"
+   set caption(andor,ferm_obtu)                 "Ritardo di chiusura otturatore"
+   set caption(andor,ms)                        "ms"
+
+   set caption(andor,port_camera)               "Porta FLI"
+   set caption(andor,2points)                   ":"
+
+   set caption(andor,titre_site_web)            "Sito Web di riferimento:"
+   set caption(andor,site_web_ref)              "http://www.andor-tech.com"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Abierto"
+   set caption(andor,obtu_ferme)                "Cerrado"
+   set caption(andor,obtu_synchro)              "Sincro"
+
+   set caption(andor,config)                    "Doirectorio que contiene los ficheros de configuracion"
+   set caption(andor,parcourir)                 "..."
+   set caption(andor,dossier)                   "Desde la carpeta:"
+   set caption(andor,miroir_x)                  "Espejo horizontal"
+   set caption(andor,miroir_y)                  "Espejo vertical"
+   set caption(andor,refroidissement)           "Enfriar hasta temperatura"
+   set caption(andor,deg_c)                     "°C"
+   set caption(andor,refroidissement_1)         ""
+   set caption(andor,temperature_CCD)           "Temperatura CCD:"
+   set caption(andor,fonc_obtu)                 "Funcionamiento del obturador"
+   set caption(andor,ouvert_obtu)               "Retardo de apertura de obturador"
+   set caption(andor,ferm_obtu)                 "Retardo de cerrado de obturador"
+   set caption(andor,ms)                        "ms"
+
+   set caption(andor,port_camera)               "Puerto FLI"
+   set caption(andor,2points)                   ":"
+
+   set caption(andor,titre_site_web)            "Sitio Web de referencia:"
+   set caption(andor,site_web_ref)              "http://www.andor-tech.com"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Offen"
+   set caption(andor,obtu_ferme)                "Geschlossen"
+   set caption(andor,obtu_synchro)              "Synchro"
+
+   set caption(andor,config)                    "Register der die setup Dateien enthaltet"
+   set caption(andor,parcourir)                 "..."
+   set caption(andor,dossier)                   "Vom Unterlagen:"
+   set caption(andor,miroir_x)                  "Horizontale Spiegel"
+   set caption(andor,miroir_y)                  "Verticale Spiegel"
+   set caption(andor,refroidissement)           "Temperatur bis zu"
+   set caption(andor,deg_c)                     "°C"
+   set caption(andor,refroidissement_1)         "kühlen."
+   set caption(andor,temperature_CCD)           "Temperatur CCD:"
+   set caption(andor,fonc_obtu)                 "Verschluss Arbeiten"
+   set caption(andor,ouvert_obtu)               "Verschluss Öffnung Verspätung"
+   set caption(andor,ferm_obtu)                 "Verschluss Schließen Verspätung"
+   set caption(andor,ms)                        "ms"
+
+   set caption(andor,port_camera)               "FLI Port"
+   set caption(andor,2points)                   ":"
+
+   set caption(andor,titre_site_web)            "Referenz Webseite:"
+   set caption(andor,site_web_ref)              "http://www.andor-tech.com"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Aberto"
+   set caption(andor,obtu_ferme)                "Fechado"
+   set caption(andor,obtu_synchro)              "Sincro"
+
+   set caption(andor,config)                    "Pasta que contém os ficheiros de configuração"
+   set caption(andor,parcourir)                 "..."
+   set caption(andor,dossier)                   "Da Pasta:"
+   set caption(andor,miroir_x)                  "Espelho Horizontal"
+   set caption(andor,miroir_y)                  "Espelho Vertical"
+   set caption(andor,refroidissement)           "Arrefecendo até Temperatura"
+   set caption(andor,deg_c)                     "°C"
+   set caption(andor,refroidissement_1)         ""
+   set caption(andor,temperature_CCD)           "Temperatura do CCD:"
+   set caption(andor,fonc_obtu)                 "Operação do obturador"
+   set caption(andor,ouvert_obtu)               "Atraso de Abertura do obturador"
+   set caption(andor,ferm_obtu)                 "Atraso de encerramento do obturador"
+   set caption(andor,ms)                        "ms"
+
+   set caption(andor,port_camera)               "Porta FLI"
+   set caption(andor,2points)                   ":"
+
+   set caption(andor,titre_site_web)            "Site Web de referência:"
+   set caption(andor,site_web_ref)              "http://www.andor-tech.com"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(andor,camera)                    "Andor"
+
+   set caption(andor,obtu_ouvert)               "Open"
+   set caption(andor,obtu_ferme)                "Closed"
+   set caption(andor,obtu_synchro)              "Synchro"
+
+   set caption(andor,config)                    "Folder Containing Setup Files"
+   set caption(andor,parcourir)                 "..."
+   set caption(andor,dossier)                   "From Folder:"
+   set caption(andor,miroir_x)                  "Horisontal spejl"
+   set caption(andor,miroir_y)                  "Vertikal spejl"
+   set caption(andor,refroidissement)           "Cooling to Temperature"
+   set caption(andor,deg_c)                     "°C"
+   set caption(andor,refroidissement_1)         ""
+   set caption(andor,temperature_CCD)           "CCD Temperature:"
+   set caption(andor,fonc_obtu)                 "Shutter Operation"
+   set caption(andor,ouvert_obtu)               "Shutter Opening Delay"
+   set caption(andor,ferm_obtu)                 "Shutter Closing Delay"
+   set caption(andor,ms)                        "ms"
+
+   set caption(andor,port_camera)               "FLI Port"
+   set caption(andor,2points)                   ":"
+
+   set caption(andor,titre_site_web)            "Reference Web Site:"
+   set caption(andor,site_web_ref)              "http://www.andor-tech.com"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
