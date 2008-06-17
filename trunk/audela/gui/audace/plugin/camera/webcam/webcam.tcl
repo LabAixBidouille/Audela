@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.37 2008-06-15 16:44:03 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.38 2008-06-17 16:13:58 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -11,8 +11,6 @@ namespace eval ::webcam {
 
    #--- Charge le fichier caption
    source [ file join [file dirname [info script]] webcam.cap ]
-
-   set caption(webcam,switchedConnexion) "Connexion alternée"
 }
 
 #
@@ -118,8 +116,8 @@ proc ::webcam::initPlugin { } {
    set private(B,camNo) "0"
    set private(C,camNo) "0"
 
-   #--- definition des format video
-   #--- Attention : les valeurs de private(videoFormatLabels) et private(videoFormatNames)
+   #--- Definition des formats video
+   #--- Attention : Les valeurs de private(videoFormatLabels) et private(videoFormatNames)
    #---             doivent etre dans le meme ordre
    set private(videoFormatLabels) [ list \
       "VGA - 640 x 480"  \
@@ -495,7 +493,6 @@ proc ::webcam::configureCamera { camItem bufNo } {
 
       if { $conf(webcam,switchedConnexion) == 1 } {
         #--- je deconnecte les autres cameras
-        #
         foreach camItem2 { A B C } {
             if { $camItem2 != $camItem && $private($camItem2,camNo)!= 0  && $conf(webcam,$camItem2,videomode) == "directx" != 0 } {
                if { [cam$private($camItem2,camNo) connect ] == 1 } {
