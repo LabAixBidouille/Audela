@@ -15,5 +15,5 @@ Pour désinstaller AudeLA,
 
 1) ouvrir le Poste de travail
 2) se placer sur le dossier d'installation
-   (c:\program files\audela-1.4.0 en général)
+   (c:\program files\audela-1.5.0 en général)
 3) lancer uninst000.exe

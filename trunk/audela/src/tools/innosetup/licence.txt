@@ -17,7 +17,7 @@ Full texts of these lincenses can be found at:
 
 http://www.gnu.org/copyleft/copyleft.fr.html
 
-AudeLA : Copyright (C) 1999-2007 AudeLAdev
+AudeLA : Copyright (C) 1999-2008 AudeLAdev
 
 AudeLAdev developers are:
 D. Marchais, A. Klotz, R. Delmas,
