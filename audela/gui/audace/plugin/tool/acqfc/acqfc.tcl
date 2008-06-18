@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.64 2008-06-16 21:16:40 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.65 2008-06-18 17:26:19 michelpujol Exp $
 #
 
 #==============================================================
@@ -1086,7 +1086,7 @@ namespace eval ::acqfc {
 
       if { [::confCam::getPluginProperty $panneau(acqfc,$visuNo,camItem) hasFormat] == "1" } {
          #--- je selectionne la qualite
-         cam$camNo quality $binning
+         cam$camNo quality $panneau(acqfc,$visuNo,bin)
       }
 
       #--- Branchement selon le mode de prise de vue
