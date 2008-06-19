@@ -89,15 +89,16 @@ rm -rf rpm
 #--- Creation des fichiers necessaire a l'empaquetage :
 echo "Creation des fichiers necessaire a l'empaquetage..."
 
-if test -e ../../bin/libtcl8.4.so*
+if test -e ../../bin/libtcl8.4.so
 then
     nom_paquet="audela-thread"
     lesuffixe="thread"
-    liens="#
+    # liens="#
 # Libs .so.0 necessaires pour BLT :
-ln -s $INST_DIR/bin/libtcl8.4.so $INST_DIR/bin/libtcl8.4.so.0
-ln -s $INST_DIR/bin/libtk8.4.so $INST_DIR/bin/libtk8.4.so.0
-"
+#ln -s $INST_DIR/bin/libtcl8.4.so $INST_DIR/bin/libtcl8.4.so.0
+#ln -s $INST_DIR/bin/libtk8.4.so $INST_DIR/bin/libtk8.4.so.0
+#"
+    liens="#"
 else
     nom_paquet="audela-mono"
     lesuffixe="mono"
@@ -169,6 +170,18 @@ cp $DIRECTORY/readme.txt $DIRECTORY/bin/audela.txt
 #if test -e $DIRECTORY/bin/libtk8.4.so ; then rm -f $DIRECTORY/bin/libtk8.4.so ; fi
 
 
+#--- Gestion de libthread :
+dirlocal=`pwd`
+cd $DIRECTORY/lib/thread2.6
+if [ "$ladistro" = "debian" ] || [ "$ladistro" = "ubuntu" ]
+then
+    ln -s libthread2.6.5.1.so_debian libthread2.6.5.1.so
+elif test "$ladistro" = "mandriva"
+then
+    ln -s libthread2.6.5.1.so_mandriva libthread2.6.5.1.so
+fi
+cd $dirlocal
+
 
 #--- Creation du fichier de demarrage d'Audela :
 echo "#!/bin/sh
@@ -208,6 +221,7 @@ echo "?package(audela):needs="X11" section="Apps/Science" \
 
 mkdir $BUILD_DIR/usr/share/pixmaps
 cp audela.xpm $BUILD_DIR/usr/share/pixmaps/
+
 
 #--- Creation du paquet :
 echo "Creation du paquet Debian..."
