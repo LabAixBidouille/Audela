@@ -1099,8 +1099,12 @@ int tt_util_fichs_comdif(TT_ASTROM *p_ast,double cmag, char *nomfic_all,char *no
                &riend,&cas,&rien,&rien,&rien,&rien,&rien,&rien,&x_ra);
             ras[k]=x_ra;
             indexs[k]=k;
+#ifdef FILE_DOS
 			/*rajout Yassine: +1 a cause de \n*/
 			kd2=kd2+strlen(ligne)+1;
+#else
+			kd2=kd2+strlen(ligne);
+#endif
 			nb_carac_jus_fin_ligne[k]=kd2;
 			/*fin*/
             if (cas==casold) {
