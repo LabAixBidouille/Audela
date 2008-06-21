@@ -228,11 +228,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->dec00=-90;
 		tel->rotd00=1250000;
 		/* --- stops --- */
-		tel->stop_e_uc=350000;
+		tel->stop_e_uc=-13900;
 		tel->stop_w_uc=3090000;
 		/* --- Home --- */
-		strcpy(tel->home0,"GPS 70.732222 W -29.260406 2347");
 		tel->latitude=-29.260406;
+		sprintf(tel->home0,"GPS 70.732222 W %+.6f 2347",tel->latitude);
 	}
 	/* ============ */
 	/* === PMAC === */
@@ -320,8 +320,8 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 		tel->stop_e_uc=-1624651;
 		tel->stop_w_uc=1549515;
 		/* --- Home --- */
-		strcpy(tel->home0,"GPS 6.92353 E 43.75203 1320.0");
 		tel->latitude=43.75203;
+		sprintf(tel->home0,"GPS 6.92353 E %+.6f 1320.0",tel->latitude);
 	}
 #endif
    /* --- sortie --- */
@@ -511,7 +511,7 @@ int mytel_radec_state(struct telprop *tel,char *result)
 int mytel_radec_goto(struct telprop *tel)
 {
    char s[1024];
-   int time_in=0,time_out=1000;
+   int time_in=0,time_out=70;
    int nbgoto=2;
    int p10,p1,p20,p2;
    double tol;
@@ -522,7 +522,7 @@ int mytel_radec_goto(struct telprop *tel)
    if (tel->radec_goto_blocking==1) {
       /* A loop is actived until the telescope is stopped */
       deltatau_positions12(tel,&p10,&p20);
-      tol=(tel->radec_position_conversion)/3600.*3; /* tolerance +/- 3 arcsec */
+      tol=(tel->radec_position_conversion)/3600.*20; /* tolerance +/- 20 arcsec */
       while (1==1) {
    	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
@@ -532,10 +532,49 @@ int mytel_radec_goto(struct telprop *tel)
          p20=p2;
          if (time_in>=time_out) {break;}
       }
-      if (nbgoto>1) {
-         deltatau_goto(tel);
+	   if (nbgoto>1) {
+		   deltatau_goto(tel);
+			/* A loop is actived until the telescope is stopped */
+			deltatau_positions12(tel,&p10,&p20);
+			while (1==1) {
+   			time_in++;
+				sprintf(s,"after 350"); mytel_tcleval(tel,s);
+				deltatau_positions12(tel,&p1,&p2);
+				if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {break;}
+				p10=p1;
+				p20=p2;
+				if (time_in>=time_out) {break;}
+			}
+      }
+      deltatau_suivi_marche(tel);
+      sate_move_radec=' ';
+   }
+   return 0;
+}
+
+int mytel_hadec_goto(struct telprop *tel)
+{
+   char s[1024];
+   int time_in=0,time_out=70;
+   int nbgoto=1;
+   int p10,p1,p20,p2;
+   double tol;
+
+   deltatau_arret_pointage(tel);
+   deltatau_hadec_goto(tel);
+   sate_move_radec='A';
+   if (tel->radec_goto_blocking==1) {
+      /* A loop is actived until the telescope is stopped */
+      deltatau_positions12(tel,&p10,&p20);
+      tol=(tel->radec_position_conversion)/3600.*20; /* tolerance +/- 20 arcsec */
+      while (1==1) {
+   	   time_in++;
          sprintf(s,"after 350"); mytel_tcleval(tel,s);
-         deltatau_suivi_marche(tel);
+         deltatau_positions12(tel,&p1,&p2);
+         if ((fabs(p1-p10)<tol)&&(fabs(p2-p20)<tol)) {break;}
+         p10=p1;
+         p20=p2;
+         if (time_in>=time_out) {break;}
       }
       sate_move_radec=' ';
    }
@@ -693,6 +732,12 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    if (latitude<-90.) {latitude=-90.;}
    sprintf(tel->home0,"GPS %f %c %f %f",longitude,ew[0],latitude,altitude);
    tel->latitude=latitude;
+   return 0;
+}
+
+int mytel_hadec_coord(struct telprop *tel,char *result)
+{
+   deltatau_hadec_coord(tel,result);
    return 0;
 }
 
@@ -882,7 +927,79 @@ int deltatau_coord(struct telprop *tel,char *result)
    /* --- --- */
    sprintf(s,"mc_angle2hms %f 360 zero 0 auto string",ra); mytel_tcleval(tel,s);
    strcpy(ras,tel->interp->result);
-   sprintf(s,"mc_angle2dms %f 180 zero 0 + string",dec); mytel_tcleval(tel,s);
+   sprintf(s,"mc_angle2dms %f 90 zero 0 + string",dec); mytel_tcleval(tel,s);
+   strcpy(decs,tel->interp->result);
+   sprintf(result,"%s %s",ras,decs);
+   return 0;
+}
+
+int deltatau_hadec_coord(struct telprop *tel,char *result)
+/*
+*
+*/
+{
+   char s[1024],ss[1024],axe;
+   int res;
+   char ras[20];
+   char decs[20];   
+   int roth_uc,rotd_uc;
+   int retournement=0;
+   double ha,dec,ra;
+   /* --- Vide le buffer --- */
+   res=deltatau_read(tel,s);
+   /* --- Lecture AXE 2 (delta) en premier pour tester le retournement --- */
+   axe='2';
+   sprintf(ss,"#%cp",axe);
+   res=deltatau_put(tel,ss);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   res=deltatau_read(tel,s);
+   if (strcmp(s,"")==0) {
+      res=deltatau_put(tel,ss);
+      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+      res=deltatau_read(tel,s);
+   }
+   if (strcmp(s,"")==0) {
+      res=deltatau_put(tel,ss);
+      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+      res=deltatau_read(tel,s);
+   }
+   if (res==0) {
+      rotd_uc=atoi(s);
+      dec=tel->dec00-1.*(rotd_uc-tel->rotd00)/tel->radec_position_conversion;
+      if (fabs(dec)>90) {
+         retournement=1;
+         dec=(tel->latitude)/fabs(tel->latitude)*180-dec;
+      }
+   }
+   /* --- Lecture AXE 1 (horaire) --- */
+   axe='1';
+   sprintf(ss,"#%cp",axe);
+   res=deltatau_put(tel,ss);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   res=deltatau_read(tel,s);
+   if (strcmp(s,"")==0) {
+      res=deltatau_put(tel,ss);
+      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+      res=deltatau_read(tel,s);
+   }
+   if (strcmp(s,"")==0) {
+      res=deltatau_put(tel,ss);
+      sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+      res=deltatau_read(tel,s);
+   }
+   if (res==0) {
+      roth_uc=atoi(s);
+      ha=tel->ha00+1.*(roth_uc-tel->roth00)/tel->radec_position_conversion;
+      ra=ha+360*5;
+      if (retournement==1) {
+         ra+=180.;
+      }
+      ra=fmod(ra,360.);
+   }
+   /* --- --- */
+   sprintf(s,"mc_angle2hms %f 360 zero 0 auto string",ra); mytel_tcleval(tel,s);
+   strcpy(ras,tel->interp->result);
+   sprintf(s,"mc_angle2dms %f 90 zero 0 + string",dec); mytel_tcleval(tel,s);
    strcpy(decs,tel->interp->result);
    sprintf(result,"%s %s",ras,decs);
    return 0;
@@ -1041,7 +1158,62 @@ int deltatau_goto(struct telprop *tel)
    } else {
       v=tel->dec0;
    }
-   p=(int)(tel->rotd00-(tel->dec0-tel->dec00)*tel->radec_position_conversion);
+   p=(int)(tel->rotd00-(v-tel->dec00)*tel->radec_position_conversion);
+   axe='2';
+   v=tel->speed_slew_ra*tel->radec_speed_dec_conversion; 
+   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
+   res=deltatau_put(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   sprintf(s,"#%cj=%d",axe,p);
+   res=deltatau_put(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   /* --- --- */
+   return 0;
+}
+
+int deltatau_hadec_goto(struct telprop *tel)
+{
+   char s[1024],axe;
+   int res;
+   int retournement=0;
+   int p;
+   double v;
+   double ha;
+   /* --- Effectue le pointage RA --- */
+   ha=tel->ra0+360*5;
+   ha=fmod(ha,360.);
+   p=(int)(tel->roth00+(ha-tel->ha00)*tel->radec_position_conversion);
+   if (p>tel->stop_w_uc) {
+      p=(int)(p-fabs(360*tel->radec_position_conversion));
+      if (p<tel->stop_e_uc) {
+         /* angle mort */
+         retournement=1;
+         p=(int)(p+180*fabs(tel->radec_position_conversion));
+      }
+   }
+   if (p<tel->stop_e_uc) {
+      p=(int)(p+360*fabs(tel->radec_position_conversion));
+      if (p>tel->stop_w_uc) {
+         /* angle mort */
+         retournement=1;
+         p=(int)(p-fabs(180*tel->radec_position_conversion));
+      }
+   }
+   axe='1';
+   v=tel->speed_slew_ra*tel->radec_speed_dec_conversion;
+   sprintf(s,"#%cI%c22=%.12f",axe,axe,v);
+   res=deltatau_put(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   sprintf(s,"#%cj=%d",axe,p);
+   res=deltatau_put(tel,s);
+   sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
+   /* --- Effectue le pointage DEC --- */
+   if (retournement==1) {
+      v=(tel->latitude)/fabs(tel->latitude)*180-tel->dec0;
+   } else {
+      v=tel->dec0;
+   }
+   p=(int)(tel->rotd00-(v-tel->dec00)*tel->radec_position_conversion);
    axe='2';
    v=tel->speed_slew_ra*tel->radec_speed_dec_conversion; 
    sprintf(s,"#%cI%c22=%.12f",axe,axe,v);

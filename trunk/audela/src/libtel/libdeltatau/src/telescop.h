@@ -101,6 +101,8 @@ int mytel_date_get(struct telprop *tel,char *ligne);
 int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s);
 int mytel_home_get(struct telprop *tel,char *ligne);
 int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude,double altitude);
+int mytel_hadec_coord(struct telprop *tel,char *result);
+int mytel_hadec_goto(struct telprop *tel);
 
 int mytel_get_format(struct telprop *tel);
 int mytel_set_format(struct telprop *tel,int longformatindex);
@@ -129,6 +131,8 @@ int deltatau_initzenith(struct telprop *tel);
 int deltatau_stopgoto(struct telprop *tel);
 int deltatau_stategoto(struct telprop *tel,int *state);
 int deltatau_positions12(struct telprop *tel,int *p1,int *p2);
+int deltatau_hadec_coord(struct telprop *tel,char *result);
+int deltatau_hadec_goto(struct telprop *tel);
 
 int deltatau_angle_ra2hms(char *in, char *out);
 int deltatau_angle_dec2dms(char *in, char *out);
