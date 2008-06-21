@@ -315,6 +315,20 @@ Package=<4>
 {{{
 }}}
 
+###############################################################################
+
+Project: "libdeltatau"=".\libtel\libdeltatau\vc60\libdeltatau.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libdigicam"=".\libcam\libdigicam\vc60\libdigicam.dsp" - Package Owner=<4>
 
 Package=<5>
