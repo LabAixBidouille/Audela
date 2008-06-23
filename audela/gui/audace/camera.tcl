@@ -2,31 +2,24 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.18 2008-05-06 09:44:57 michelpujol Exp $
+# Mise a jour $Id: camera.tcl,v 1.19 2008-06-23 16:41:13 robertdelmas Exp $
 #
 
 namespace eval camera {
    global audace
-
 
    #--- Chargement des captions
    source [ file join $audace(rep_caption) camera.cap ]
 
    #--- Autorise d'exporter la procedure acq
    namespace export acq
-
 }
 
 #
-# acq exptime binning
-# Declenche l'acquisition et affiche l'image une fois l'acquisition terminee dans la visu 1
+# init
 #
-# Exemple :
-# acq 10 2
-#
-proc ::camera::init {  } {
+proc ::camera::init { } {
    variable private
-   global audace caption
 
    bind . "<<cameraEventA>>" "::camera::processCameraEvent A"
    bind . "<<cameraEventB>>" "::camera::processCameraEvent B"
@@ -35,8 +28,8 @@ proc ::camera::init {  } {
    set private(eventList,A) [list]
    set private(eventList,B) [list]
    set private(eventList,C) [list]
-
 }
+
 #
 # acq exptime binning
 # Declenche l'acquisition et affiche l'image une fois l'acquisition terminee dans la visu 1
@@ -481,6 +474,7 @@ proc ::camera::acquisition { camItem callback exptime binning } {
 #------------------------------------------------------------
 proc ::camera::centerBrightestStar { camItem callback exptime binning originCoord targetCoord angle targetBoxSize mountEnabled alphaSpeed deltaSpeed alphaReverse deltaReverse seuilx seuily } {
    variable private
+
    #--- je connecte la camera
    ::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
@@ -516,7 +510,6 @@ proc ::camera::centerRadec { camItem callback exptime binning originCoord raDec 
       ::thread::send -async $camThreadNo [list ::camerathread::centerRadec $exptime $binning $originCoord $raDec $angle $targetBoxSize $mountEnabled $alphaSpeed $deltaSpeed $alphaReverse $deltaReverse $seuilx $seuily $foclen $detection $catalogue $kappa $threshin $fwhm $radius $threshold $maxMagnitude $delta $epsilon $catalogueName $cataloguePath]
    }
 }
-
 
 #------------------------------------------------------------
 # guide
@@ -563,6 +556,7 @@ proc ::camera::guide { camItem callback exptime binning detection originCoord ta
 #------------------------------------------------------------
 proc ::camera::searchBrightestStar { camItem callback exptime binning originCoord targetBoxSize searchThreshin searchFwmh searchRadius searchThreshold} {
    variable private
+
    #--- je connecte la camera
    ::confCam::setConnection  $camItem 1
    #--- je renseigne la procedure de retour
@@ -574,7 +568,6 @@ proc ::camera::searchBrightestStar { camItem callback exptime binning originCoor
      ::thread::send -async $camThreadNo [list ::camerathread::searchBrightestStar $exptime $binning $originCoord $targetBoxSize $searchThreshin $searchFwmh $searchRadius $searchThreshold]
    }
 }
-
 
 #------------------------------------------------------------
 # setParam
@@ -593,7 +586,7 @@ proc ::camera::setParam { camItem  paramName paramValue } {
    #--- je notifie la camera
    if { $::tcl_platform(threaded) == 0  } {
       interp eval $camThreadNo  [list ::camerathread::setParam $paramName $paramValue]
-      update
+     update
    } else {
       ::thread::send -async $camThreadNo [list ::camerathread::setParam $paramName $paramValue]
    }
@@ -622,3 +615,4 @@ proc ::camera::stopAcquisition { camItem } {
 namespace import ::camera::acq
 
 ::camera::init
+
