@@ -2,7 +2,7 @@
 # Fichier : camera.tcl
 # Description : Utilitaires lies aux cameras CCD
 # Auteur : Robert DELMAS
-# Mise a jour $Id: camera.tcl,v 1.19 2008-06-23 16:41:13 robertdelmas Exp $
+# Mise a jour $Id: camera.tcl,v 1.20 2008-06-23 17:38:50 robertdelmas Exp $
 #
 
 namespace eval camera {
@@ -154,6 +154,8 @@ proc ::camera::Avancement_scan { tt Nb_Line_Total scan_Delai } {
                / $Nb_Line_Total $caption(camera,lignes)"
          }
       }
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $audace(base).progress_scan
    } else {
       if { $tt == "-10" } {
          if { $scan_Delai > "1" } {
@@ -172,11 +174,6 @@ proc ::camera::Avancement_scan { tt Nb_Line_Total scan_Delai } {
                / $Nb_Line_Total $caption(camera,lignes)"
          }
       }
-   }
-
-   #--- Mise a jour dynamique des couleurs
-   if  [ winfo exists $audace(base).progress_scan ] {
-      ::confColor::applyColor $audace(base).progress_scan
    }
 }
 
@@ -282,7 +279,8 @@ proc ::camera::Avancement_pose { { t } } {
    ::camera::recup_position_Avancement_Pose
 
    #--- Initialisation de la barre de progression
-   set cpt "100"
+   set cpt             "100"
+   set dureeExposition [ cam$audace(camNo) exptime ]
 
    #--- Initialisation de la position de la fenetre
    if { ! [ info exists conf(avancement_pose,position) ] } { set conf(avancement_pose,position) "+120+315" }
@@ -305,8 +303,8 @@ proc ::camera::Avancement_pose { { t } } {
          destroy $audace(base).progress_pose
       } elseif { $t > "1" } {
          $audace(base).progress_pose.lab_status configure -text "[ expr $t-1 ] $caption(camera,sec) / \
-            [ format "%d" [ expr int( [ cam$audace(camNo) exptime ] ) ] ] $caption(camera,sec)"
-         set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam$audace(camNo) exptime ] ) ] ]
+            [ format "%d" [ expr int( $dureeExposition ) ] ] $caption(camera,sec)"
+         set cpt [ expr ( $t-1 ) * 100 / [ expr int( $dureeExposition ) ] ]
          set cpt [ expr 100 - $cpt ]
       } else {
          $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
@@ -324,14 +322,16 @@ proc ::camera::Avancement_pose { { t } } {
             -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
          update
       }
+      #--- Mise a jour dynamique des couleurs
+      ::confColor::applyColor $audace(base).progress_pose
    } else {
       #--- t est un nombre entier
       if { $t <= "0" } {
          destroy $audace(base).progress_pose
       } elseif { $t > "1" } {
          $audace(base).progress_pose.lab_status configure -text "[ expr $t-1 ] $caption(camera,sec) / \
-            [ format "%d" [ expr int( [ cam$audace(camNo) exptime ] ) ] ] $caption(camera,sec)"
-         set cpt [ expr ( $t-1 ) * 100 / [ expr int( [ cam$audace(camNo) exptime ] ) ] ]
+            [ format "%d" [ expr int( $dureeExposition ) ] ] $caption(camera,sec)"
+         set cpt [ expr ( $t-1 ) * 100 / [ expr int( $dureeExposition ) ] ]
          set cpt [ expr 100 - $cpt ]
       } else {
          $audace(base).progress_pose.lab_status configure -text "$caption(camera,numerisation)"
@@ -342,11 +342,6 @@ proc ::camera::Avancement_pose { { t } } {
             -x 0 -y 0 -relwidth [ expr $cpt / 100.0 ]
          update
       }
-   }
-
-   #--- Mise a jour dynamique des couleurs
-   if  [ winfo exists $audace(base).progress_pose ] {
-      ::confColor::applyColor $audace(base).progress_pose
    }
 }
 
