@@ -9,7 +9,25 @@
 
 set version 1.5.0-beta1
 #set makes audela
-set makes {audela bin src ros ros_private_template}
+set makes {audela bin src ros}
+
+set rosfiles ""
+if {[lsearch -exact $makes ros]>=0} {
+	set base "[file dirname [info script]]/../../../"
+	set rosfiles [glob -nocomplain ${base}ros*]
+}
+set newlist ""
+foreach make $makes {
+	if {[string match ros* $make]==0} {
+		lappend newlist $make
+	}
+}
+foreach rosfile $rosfiles {
+	set rosfile [file tail $rosfile]
+	lappend newlist $rosfile
+}
+set makes $newlist
+
 
 proc analdir { base } {
    global tab result resultfile f base0 make
