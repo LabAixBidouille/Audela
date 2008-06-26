@@ -2,7 +2,7 @@
 # Fichier : confvisu.tcl
 # Description : Gestionnaire des visu
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confvisu.tcl,v 1.80 2008-05-31 16:05:17 robertdelmas Exp $
+# Mise a jour $Id: confvisu.tcl,v 1.81 2008-06-26 19:04:02 michelpujol Exp $
 #
 
 namespace eval ::confVisu {
@@ -173,6 +173,11 @@ namespace eval ::confVisu {
       if { [info commands "::visu$visuNo" ] == "::visu$visuNo" } {
          set bufNo [visu$visuNo buf]
 
+         #--- je ferme l'outil courant
+         if { [getTool $visuNo] != "" } {
+            ::[getTool $visuNo]::stopTool $visuNo
+         }
+
          #--- je ferme la camera associee a la visu
          ::confCam::stopItem $private($visuNo,camItem)
 
@@ -186,11 +191,6 @@ namespace eval ::confVisu {
          #--- je supprime le menubar et toutes ses entrees
          if { $private($visuNo,menu) != "" } {
             Menubar_Delete $visuNo
-         }
-
-         #--- je ferme l'outil courant
-         if { [getTool $visuNo] != "" } {
-            ::[getTool $visuNo]::stopTool $visuNo
          }
 
          #--- je detruis tous les outils
