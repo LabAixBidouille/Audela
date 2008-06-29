@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.4 2008-06-17 16:16:36 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.5 2008-06-29 17:58:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -25,8 +25,8 @@ set caption(webcam,longueposebit)               "Control Bit Number"
 set caption(webcam,longueposestart)             "Control when exposure begins"
 set caption(webcam,conf_source)                 "Video Source Selection"
 set caption(webcam,format_video)                "Video Format Selection"
-set caption(webcam,ccd_N_B)                     "B&W CCD Modified Webcam"
-set caption(webcam,switchedConnexion)           "Toggle between webcams"
+set caption(webcam,ccd_N_B)                     "B&W CCD Modified WebCam"
+set caption(webcam,switchedConnexion)           "Toggle between WebCams"
 
 set caption(webcam,shutter)                     "Shutter"
 set caption(webcam,gain)                        "Gain"
@@ -87,8 +87,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,longueposestart)          "Comando all'inizio della posa"
    set caption(webcam,conf_source)              "Selezione sorgente video"
    set caption(webcam,format_video)             "Selezione del formato video"
-   set caption(webcam,ccd_N_B)                  "Webcam modificata con CCD B&N"
-   set caption(webcam,switchedConnexion)        "# Utilisation en alternance des WebCams"
+   set caption(webcam,ccd_N_B)                  "WebCam modificata con CCD B&N"
+   set caption(webcam,switchedConnexion)        "Utilizzo alternato delle WebCams"
 
    set caption(webcam,shutter)                  "Otturatore"
    set caption(webcam,gain)                     "Gain"
@@ -118,8 +118,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,longueposestart)          "Control cuando empieza la exposición"
    set caption(webcam,conf_source)              "Selección de la entrada de vídeo"
    set caption(webcam,format_video)             "Selección de formato de vídeo"
-   set caption(webcam,ccd_N_B)                  "CCD Webcam Blanco y Negro modificada"
-   set caption(webcam,switchedConnexion)        "# Utilisation en alternance des WebCams"
+   set caption(webcam,ccd_N_B)                  "CCD WebCam Blanco y Negro modificada"
+   set caption(webcam,switchedConnexion)        "Utilización en alternancia de las WebCams"
 
    set caption(webcam,shutter)                  "Obturador"
    set caption(webcam,gain)                     "Ganancia"
@@ -149,7 +149,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,longueposestart)          "Anfang der Belichtung Antrieb"
    set caption(webcam,conf_source)              "Wahl der Videoquelle"
    set caption(webcam,format_video)             "Wahl des Videoformats"
-   set caption(webcam,ccd_N_B)                  "Veränderte Schwartz/Weiss Webcam CCD"
+   set caption(webcam,ccd_N_B)                  "Veränderte Schwartz/Weiss WebCam CCD"
    set caption(webcam,switchedConnexion)        "# Utilisation en alternance des WebCams"
 
    set caption(webcam,shutter)                  "Verschluss"
@@ -180,8 +180,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,longueposestart)          "Controlar o Início da Exposição"
    set caption(webcam,conf_source)              "Selecção de Fonte Video"
    set caption(webcam,format_video)             "Selecção do Formato Video"
-   set caption(webcam,ccd_N_B)                  "Webcam Modificada (CCD B&W)"
-   set caption(webcam,switchedConnexion)        "# Utilisation en alternance des WebCams"
+   set caption(webcam,ccd_N_B)                  "WebCam Modificada (CCD B&W)"
+   set caption(webcam,switchedConnexion)        "Utilização alternada de WebCams"
 
    set caption(webcam,shutter)                  "Obturador"
    set caption(webcam,gain)                     "Ganho"
@@ -211,8 +211,8 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,longueposestart)          "Control when exposure begins"
    set caption(webcam,conf_source)              "Video Source Selection"
    set caption(webcam,format_video)             "Video Format Selection"
-   set caption(webcam,ccd_N_B)                  "B&W CCD Modified Webcam"
-   set caption(webcam,switchedConnexion)        "Toggle between webcams"
+   set caption(webcam,ccd_N_B)                  "B&W CCD Modified WebCam"
+   set caption(webcam,switchedConnexion)        "Toggle between WebCams"
 
    set caption(webcam,shutter)                  "Shutter"
    set caption(webcam,gain)                     "Gain"
