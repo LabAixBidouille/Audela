@@ -2,7 +2,7 @@
 # Fichier : skybot_statut.tcl
 # Description : Affiche le statut de la base de donnees SkyBoT
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_statut.tcl,v 1.11 2008-05-16 21:29:03 jberthier Exp $
+# Mise a jour $Id: skybot_statut.tcl,v 1.12 2008-06-29 21:40:55 robertdelmas Exp $
 #
 
 namespace eval skybot_Statut {
@@ -231,7 +231,6 @@ namespace eval skybot_Statut {
          tk_messageBox -title $caption(statut,msg_erreur) -type ok -message $msgError
          $audace(base).vo_tools.fra5.but1 configure -relief raised -state normal
          return
-            
 
       }
 

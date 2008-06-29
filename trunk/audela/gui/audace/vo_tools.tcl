@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.17 2008-05-24 22:40:55 jberthier Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.18 2008-06-29 21:41:26 robertdelmas Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ proc vo_skybotXML {procVarName args} {
 #
 # Description : Skybot webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 mai 2008  
+# Update      : 21 mai 2008
 #
 # Ce script interroge la base SkyBoT afin de fournir la liste et les coordonnees
 # de tous les corps du systeme solaire contenus dans le FOV a l'epoque et aux
@@ -309,11 +309,11 @@ proc vo_skybotconesearch { args } {
       array set skybot_xml {
         skybotconesearch {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
-    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:ns1="http://www.imcce.fr/webservices/skybot"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
     SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <SOAP-ENV:Header>
     <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
@@ -377,7 +377,7 @@ proc vo_skybotconesearch { args } {
 #
 # Description : SkybotResolver webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 mai 2008  
+# Update      : 21 mai 2008
 #
 # Ce script interroge la base SkyBoT afin de resoudre le nom d'un corps
 # du systeme solaire en ses coordonnees a l'epoque consideree.
@@ -417,11 +417,11 @@ proc vo_skybotresolver { args } {
       array set skybot_xml {
         skybotresolver {<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
-    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
-    xmlns:ns1="http://www.imcce.fr/webservices/skybot" 
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" 
+    xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:ns1="http://www.imcce.fr/webservices/skybot"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
     SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <SOAP-ENV:Header>
     <ns1:clientID><ns1:from>AudeLA</ns1:from><ns1:hostip></ns1:hostip></ns1:clientID>
@@ -478,7 +478,7 @@ proc vo_skybotresolver { args } {
 #
 # Description : SkybotStatus webservice
 # Auteur      : Jerome BERTHIER &amp; Alain KLOTZ
-# Update      : 21 mai 2008  
+# Update      : 21 mai 2008
 #
 # Ce script interroge la base SkyBoT afin d'en connaitre le statut
 #
