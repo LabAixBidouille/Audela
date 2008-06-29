@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.4 2008-05-17 16:56:16 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.5 2008-06-29 13:10:23 robertdelmas Exp $
 #
 
 #==============================================================
@@ -208,7 +208,7 @@ namespace eval ::acqvideo {
       set file_log ""
       set ::acqvideo::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
 
-      #--- Ouverture
+      #--- Ouverture du fichier de log
       if { [ catch { open $::acqvideo::fichier_log a } ::acqvideo::log_id($visuNo) ] } {
          Message $visuNo console $caption(acqvideo,pbouvfichcons)
          tk_messageBox -title $caption(acqvideo,pb) -type ok \
@@ -240,6 +240,7 @@ namespace eval ::acqvideo {
          if { [ catch { Message $visuNo log $caption(acqvideo,finsess) $heure } bug ] } {
             Message $visuNo console $caption(acqvideo,pbfermfichcons)
          } else {
+            Message $visuNo console "\n"
             close $::acqvideo::log_id($visuNo)
             unset ::acqvideo::log_id($visuNo)
          }
