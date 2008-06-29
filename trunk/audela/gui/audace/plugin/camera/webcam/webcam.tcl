@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.38 2008-06-17 16:13:58 robertdelmas Exp $
+# Mise a jour $Id: webcam.tcl,v 1.39 2008-06-29 12:55:51 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -295,7 +295,6 @@ proc ::webcam::fillConfigPage { frm camItem } {
    #--- Je constitue la liste des canaux USB
    set list_combobox [ list 0 1 2 3 4 5 6 7 8 9 ]
 
-
    #--- Choix du canal USB
    ComboBox $frm.port \
       -width 5        \
@@ -312,7 +311,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
       set list_combobox [ list "vfw" "directx" ]
       #--- video mode
       ComboBox $frm.videomode \
-         -width 5        \
+         -width 6        \
          -height [ llength $list_combobox ] \
          -relief sunken  \
          -borderwidth 1  \
@@ -665,7 +664,6 @@ proc ::webcam::configWebCamInactif { } {
          }
       }
    }
-
 }
 
 #
