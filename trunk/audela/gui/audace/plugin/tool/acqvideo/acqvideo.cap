@@ -1,6 +1,6 @@
 #
 # Fichier : acqvideo.cap
-# Mise a jour $Id: acqvideo.cap,v 1.1 2008-04-17 20:39:33 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.cap,v 1.2 2008-06-29 12:59:27 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -37,7 +37,7 @@ set caption(acqvideo,pb)                        "Problem"
 set caption(acqvideo,pbouvfich)                 "Unable to open the log file.\n \
    Change the tool now and check\nyou can access the image folder."
 set caption(acqvideo,ouvsess)                   "----- Opening a New Acquisition Session (rev %s)\n"
-set caption(acqvideo,affheure)                  "%s, %s UT (all time values in this file are expressed in UT)\n\n"
+set caption(acqvideo,affheure)                  "%s, %s UT (all time values in this file are expressed in UT).\n\n"
 set caption(acqvideo,finsess)                   "----- Session ends at %s UT\n\n"
 set caption(acqvideo,pbfermfichcons)            "Problem when closing log file.\n"
 set caption(acqvideo,pbouvfichcons)             "Problem when opening the log file.\n"
@@ -187,7 +187,7 @@ if { [ string compare $langage "french" ] == "0" } {
       log.\nCambiare l'accessorio e verificare\nche \
       la cartella delle immagini sia accessibile."
    set caption(acqvideo,ouvsess)                "----- Apertura di una sessione di acquisizione (rev %s)\n"
-   set caption(acqvideo,affheure)               "%s, %s TU (tutti gli orari dei file di questa sessione sono in TU)\n\n"
+   set caption(acqvideo,affheure)               "%s, %s TU (tutti gli orari dei file di questa sessione sono in TU).\n\n"
    set caption(acqvideo,finsess)                "----- Termine della sessione a %s TU\n\n"
    set caption(acqvideo,pbfermfichcons)         "Problema durante la chiusura del file di log\n"
    set caption(acqvideo,pbouvfichcons)          "Problema durante l'apertura del file di log\n"
@@ -262,7 +262,7 @@ if { [ string compare $langage "french" ] == "0" } {
       de log.\nCambie la herramienta ahora y compruebe\nque \
       se puede acceder a la carpeta de imágenes."
    set caption(acqvideo,ouvsess)                "----- Apertura de una sesión de adquisición (rev %s)\n"
-   set caption(acqvideo,affheure)               "%s, %s TU (todas las horas de este fichero son en TU)\n\n"
+   set caption(acqvideo,affheure)               "%s, %s TU (todas las horas de este fichero son en TU).\n\n"
    set caption(acqvideo,finsess)                "----- Fin de sesión %s TU\n\n"
    set caption(acqvideo,pbfermfichcons)         "Problema durante el cierre del fichero log\n"
    set caption(acqvideo,pbouvfichcons)          "Problema durante la apertura del fichero log\n"
@@ -337,7 +337,7 @@ if { [ string compare $langage "french" ] == "0" } {
       öffnen.\nErst das Gerät wechseln, und dann kontrollieren\ndass \
       das Bild Register zugänglich ist."
    set caption(acqvideo,ouvsess)                "----- Eine Belichtung Session öffnen (rev %s)\n"
-   set caption(acqvideo,affheure)               "%s, %s WZ (alle Zeiten in diese Datei sind in WZ)\n\n"
+   set caption(acqvideo,affheure)               "%s, %s WZ (alle Zeiten in diese Datei sind in WZ).\n\n"
    set caption(acqvideo,finsess)                "----- Ende der Session um %s WZ\n\n"
    set caption(acqvideo,pbfermfichcons)         "Problem während der Verschluss der Datei log\n"
    set caption(acqvideo,pbouvfichcons)          "Problem während der Öffnung der Datei log\n"
@@ -486,7 +486,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(acqvideo,pbouvfich)              "Unable to open the log file.\n \
       Change the tool now and check\nyou can access the image folder."
    set caption(acqvideo,ouvsess)                "----- Opening a New Acquisition Session (rev %s)\n"
-   set caption(acqvideo,affheure)               "%s, %s UT (all time values in this file are expressed in UT)\n\n"
+   set caption(acqvideo,affheure)               "%s, %s UT (all time values in this file are expressed in UT).\n\n"
    set caption(acqvideo,finsess)                "----- Session ends at %s UT\n\n"
    set caption(acqvideo,pbfermfichcons)         "Problem when closing log file.\n"
    set caption(acqvideo,pbouvfichcons)          "Problem when opening the log file.\n"
