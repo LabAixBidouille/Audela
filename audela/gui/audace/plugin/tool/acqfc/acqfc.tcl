@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.65 2008-06-18 17:26:19 michelpujol Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.66 2008-06-29 18:00:49 robertdelmas Exp $
 #
 
 #==============================================================
@@ -217,7 +217,7 @@ namespace eval ::acqfc {
       set file_log ""
       set ::acqfc::fichier_log [ file join $audace(rep_images) [ append $file_log $nom_generique $formatdate ".log" ] ]
 
-      #--- Ouverture
+      #--- Ouverture du fichier de log
       if { [ catch { open $::acqfc::fichier_log a } ::acqfc::log_id($visuNo) ] } {
          Message $visuNo console $caption(acqfc,pbouvfichcons)
          tk_messageBox -title $caption(acqfc,pb) -type ok \
@@ -249,6 +249,7 @@ namespace eval ::acqfc {
          if { [ catch { Message $visuNo log $caption(acqfc,finsess) $heure } bug ] } {
             Message $visuNo console $caption(acqfc,pbfermfichcons)
          } else {
+            Message $visuNo console "\n"
             close $::acqfc::log_id($visuNo)
             unset ::acqfc::log_id($visuNo)
          }
@@ -718,19 +719,6 @@ namespace eval ::acqfc {
                      set integre non
                   }
                }
-               #--- Verifier que le nom des fichiers n'existe pas
-               set nom $panneau(acqfc,$visuNo,nom_image)
-               #--- Pour eviter un nom de fichier qui commence par un blanc
-               set nom [lindex $nom 0]
-               append nom $panneau(acqfc,$visuNo,index) $ext
-               if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                  #--- Dans ce cas, le fichier existe deja
-                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                     -message $caption(acqfc,fichdeja)]
-                  if { $confirmation == "no" } {
-                     set integre non
-                  }
-               }
                #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
                if { $panneau(DlgShift,buttonShift) == "1" } {
                   if { [ ::tel::list ] == "" } {
@@ -785,19 +773,6 @@ namespace eval ::acqfc {
                   if { $panneau(acqfc,$visuNo,index) != "1" } {
                      set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                         -message $caption(acqfc,indpasun)]
-                     if { $confirmation == "no" } {
-                        set integre non
-                     }
-                  }
-                  #--- Verifier que le nom des fichiers n'existe pas
-                  set nom $panneau(acqfc,$visuNo,nom_image)
-                  #--- Pour eviter un nom de fichier qui commence par un blanc
-                  set nom [lindex $nom 0]
-                  append nom $panneau(acqfc,$visuNo,index) $ext
-                  if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                     #--- Dans ce cas, le fichier existe deja
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message $caption(acqfc,fichdeja)]
                      if { $confirmation == "no" } {
                         set integre non
                      }
@@ -882,19 +857,6 @@ namespace eval ::acqfc {
                         -message $caption(acqfc,interinv_1)
                      set integre non
                }
-               #--- Verifier que le nom des fichiers n'existe pas
-               set nom $panneau(acqfc,$visuNo,nom_image)
-               #--- Pour eviter un nom de fichier qui commence par un blanc
-               set nom [lindex $nom 0]
-               append nom $panneau(acqfc,$visuNo,index) $ext
-               if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                  #--- Dans ce cas, le fichier existe deja
-                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                     -message $caption(acqfc,fichdeja)]
-                  if { $confirmation == "no" } {
-                     set integre non
-                  }
-               }
                #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
                if { $panneau(DlgShift,buttonShift) == "1" } {
                   if { [ ::tel::list ] == "" } {
@@ -969,19 +931,6 @@ namespace eval ::acqfc {
                         tk_messageBox -title $caption(acqfc,pb) -type ok \
                            -message $caption(acqfc,interinv_1)
                         set integre non
-                  }
-                  #--- Verifier que le nom des fichiers n'existe pas deja
-                  set nom $panneau(acqfc,$visuNo,nom_image)
-                  #--- Pour eviter un nom de fichier qui commence par un blanc
-                  set nom [lindex $nom 0]
-                  append nom $panneau(acqfc,$visuNo,index) $ext
-                  if { [ file exists [ file join $audace(rep_images) $nom ] ] == "1" } {
-                     #--- Dans ce cas, le fichier existe deja
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message $caption(acqfc,fichdeja)]
-                     if { $confirmation == "no" } {
-                        set integre non
-                     }
                   }
                } else {
                   #--- Verifier que la simulation a ete lancee
@@ -1061,6 +1010,8 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,demande_arret) "0"
       #--- Pose en cours
       set panneau(acqfc,$visuNo,pose_en_cours) "1"
+      #--- Enregistrement d'une image interrompue
+      set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
       #--- Cas particulier du passage WebCam LP en WebCam normale pour inhiber la barre progression
       set camNo $panneau(acqfc,$visuNo,camNo)
       if { ( [::confCam::getPluginProperty $camItem "hasVideo"] == 1 ) && ( [ confCam::getPluginProperty [ ::confVisu::getCamItem $visuNo ] longExposure ] == "0" ) } {
@@ -1114,15 +1065,13 @@ namespace eval ::acqfc {
             set heure $audace(tu,format,hmsint)
             if { $panneau(acqfc,$visuNo,simulation) == "1" } {
                Message $visuNo consolog $caption(acqfc,lance_simu)
+               #--- Heure de debut de la premiere pose
+               set panneau(acqfc,$visuNo,debut) [ clock second ]
             }
             Message $visuNo consolog $caption(acqfc,lanceserie) \
                $panneau(acqfc,$visuNo,nb_images) $heure
             Message $visuNo consolog $caption(acqfc,nomgen) $panneau(acqfc,$visuNo,nom_image) \
                $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $panneau(acqfc,$visuNo,index)
-            #--- Debut de la premiere pose
-            if { $panneau(acqfc,$visuNo,simulation) == "1" } {
-               set panneau(acqfc,$visuNo,debut) [ clock second ]
-            }
             set panneau(acqfc,$visuNo,compteurImageSerie) "1"
             acq $visuNo
          }
@@ -1155,8 +1104,6 @@ namespace eval ::acqfc {
                $panneau(acqfc,$visuNo,nb_images) $panneau(acqfc,$visuNo,intervalle_1) $heure
             Message $visuNo consolog $caption(acqfc,nomgen) $panneau(acqfc,$visuNo,nom_image) \
                $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $panneau(acqfc,$visuNo,index)
-
-            set panneau(acqfc,$visuNo,deb_im) [ clock second ]
             set panneau(acqfc,$visuNo,compteurImageSerie) "1"
             acq $visuNo
          }
@@ -1176,8 +1123,6 @@ namespace eval ::acqfc {
             } else {
                Message $visuNo consolog $caption(acqfc,sansenr)
             }
-
-            set panneau(acqfc,$visuNo,deb_im) [ clock second ]
             acq $visuNo
          }
       }
@@ -1197,16 +1142,21 @@ namespace eval ::acqfc {
       #--- Je positionne l'indicateur d'interruption de pose
       set panneau(acqfc,$visuNo,demande_arret) "1"
       #--- j'interromps la pose
-      if { $panneau(acqfc,$visuNo,mode) == "1"  } {
+      if { $panneau(acqfc,$visuNo,mode) == "1" } {
          #--- J'arrete la capture de l'image
          ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
       } else {
-          set choix [ tk_messageBox -title $::caption(acqfc,serie) -type yesno -icon info \
-              -message $::caption(acqfc,arret_serie) \
+          set choix [ tk_messageBox -title $caption(acqfc,serie) -type yesno -icon info \
+              -message $caption(acqfc,arret_serie) \
           ]
          if { $choix == "no" } {
+            #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+            set panneau(acqfc,$visuNo,sauve_img_interrompue) "1"
             #--- J'arrete la capture de l'image
             ::camera::stopAcquisition [::confVisu::getCamItem $visuNo]
+         } else {
+            #--- Je positionne l'indicateur d'enregistrement d'image interrompue
+            set panneau(acqfc,$visuNo,sauve_img_interrompue) "0"
          }
       }
    }
@@ -1246,8 +1196,8 @@ namespace eval ::acqfc {
    proc acqImageEnd { visuNo } {
       global audace caption conf panneau
 
-      set camNo     $panneau(acqfc,$visuNo,camNo)
-      set bufNo     [ ::confVisu::getBufNo $visuNo ]
+      set camNo $panneau(acqfc,$visuNo,camNo)
+      set bufNo [ ::confVisu::getBufNo $visuNo ]
 
       #--- Chargement de l'image precedente (si telecharge_mode = 3 et si mode = serie, continu, continu 1 ou continu 2)
       if { $conf(dslr,telecharge_mode) == "3" && $panneau(acqfc,$visuNo,mode) >= "1" && $panneau(acqfc,$visuNo,mode) <= "5" } {
@@ -1261,20 +1211,22 @@ namespace eval ::acqfc {
       wm title $panneau(acqfc,$visuNo,base) "$caption(acqfc,acquisition) $panneau(acqfc,$visuNo,pose) s"
 
       #--- je trace la duree réelle de la pose s'il y a eu une interruption
-      if { $panneau(acqfc,$visuNo,demande_arret) == "1"  }  {
+      if { $panneau(acqfc,$visuNo,demande_arret) == "1" } {
          set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
          #--- je verifie qu'il y eu interruption vraiment pendant l'acquisition
-         if  { $exposure != $panneau(acqfc,$visuNo,pose) } {
-            set dateEnd [mc_date2ymdhms [ lindex [ buf$bufNo getkwd DATE-END ] 1 ]]
-            set dateEnd [format "%02dh %02dm %02ds" [lindex $dateEnd 3] [lindex $dateEnd 4] [expr int([lindex $dateEnd 5])]]
+         set dateEnd [mc_date2ymdhms [ lindex [ buf$bufNo getkwd DATE-END ] 1 ]]
+         set dateEnd [format "%02dh %02dm %02ds" [lindex $dateEnd 3] [lindex $dateEnd 4] [expr int([lindex $dateEnd 5])]]
+         if { $exposure != $panneau(acqfc,$visuNo,pose) } {
             Message $visuNo consolog $caption(acqfc,arrprem) $dateEnd
             Message $visuNo consolog $caption(acqfc,lg_pose_arret) $exposure
+         } else {
+            Message $visuNo consolog $caption(acqfc,arrprem) $dateEnd
          }
       }
 
       #--- j'enregistre l'image et je lance l'acquistion suivante
       switch $panneau(acqfc,$visuNo,mode) {
-         1 {
+         1  {
             #--- Deverouille les boutons du mode "une image"
             $panneau(acqfc,$visuNo,This).mode.une.nom.entr configure -state normal
             $panneau(acqfc,$visuNo,This).mode.une.index.case configure -state normal
@@ -1284,7 +1236,7 @@ namespace eval ::acqfc {
             #--- Pose en cours
             set panneau(acqfc,$visuNo,pose_en_cours) "0"
          }
-         2 {
+         2  {
             #--- Je sauvegarde l'image
             set nom $panneau(acqfc,$visuNo,nom_image)
             #--- Pour eviter un nom de fichier qui commence par un blanc
@@ -1292,36 +1244,37 @@ namespace eval ::acqfc {
             if { $panneau(acqfc,$visuNo,simulation) == "0" } {
                #--- Verifie que le nom du fichier n'existe pas deja...
                set nom1 "$nom"
-               append nom1 $panneau(acqfc,$visuNo,index) "." $panneau(acqfc,$visuNo,extension)
+               append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                set sauvegardeValidee "1"
                if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
                   #--- Dans ce cas, le fichier existe deja...
                   set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                      -message $caption(acqfc,fichdeja)]
                   if { $confirmation == "no" } {
-                     #--- je ne sauvegarde pas l'image et j'arrete la serie d'acquisitions
+                     #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
                      set sauvegardeValidee "0"
                      set panneau(acqfc,$visuNo,demande_arret) "1"
                   }
                }
-               if { $sauvegardeValidee == "1" } {
+               #--- Sauvegarde de l'image
+               if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                   #--- Sauvegarde de l'image
                   saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
                   set heure $audace(tu,format,hmsint)
                   Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
+                  incr panneau(acqfc,$visuNo,index)
                }
             }
-            incr panneau(acqfc,$visuNo,index)
-
+            #---
             if { $panneau(acqfc,$visuNo,compteurImageSerie) < $panneau(acqfc,$visuNo,nb_images)
-            && $panneau(acqfc,$visuNo,demande_arret) == "0"  }  {
+            && $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                 #--- Deplacement du telescope
                 ::DlgShift::Decalage_Telescope
                 #--- j'incremente le compteur d'image
                 incr panneau(acqfc,$visuNo,compteurImageSerie)
                 #--- je lance la pose suivante
                 ::acqfc::acq $visuNo
-                #---- C'EST REPARTI POUR UN TOUR ....
+                #---- C'EST REPARTI POUR UN TOUR...
                 return
             } else {
                #--- Fin de la derniere pose et intervalle mini entre 2 poses ou 2 series
@@ -1344,44 +1297,43 @@ namespace eval ::acqfc {
                set panneau(acqfc,$visuNo,pose_en_cours) "0"
             }
          }
-         3 {
+         3  {
             #--- Je sauvegarde l'image
             if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
                $panneau(acqfc,$visuNo,This).status.lab configure -text $caption(acqfc,enreg)
                set nom $panneau(acqfc,$visuNo,nom_image)
                #--- Pour eviter un nom de fichier qui commence par un blanc
                set nom [lindex $nom 0]
-               if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
-                  #--- Verifie que le nom du fichier n'existe pas
-                  set nom1 "$nom"
-                  append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
-                  if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
-                     #--- Dans ce cas, le fichier existe deja
-                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                        -message $caption(acqfc,fichdeja)]
-                     if { $confirmation == "no" } {
-                        break
-                     }
+               #--- Verifie que le nom du fichier n'existe pas
+               set nom1 "$nom"
+               append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
+               set sauvegardeValidee "1"
+               if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
+                  #--- Dans ce cas, le fichier existe deja
+                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                     -message $caption(acqfc,fichdeja)]
+                  if { $confirmation == "no" } {
+                     #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
+                     set sauvegardeValidee "0"
+                     set panneau(acqfc,$visuNo,demande_arret) "1"
                   }
-                  #--- Sauvegarde de l'image
-                  saveima [append nom $panneau(acqfc,$visuNo,index)$panneau(acqfc,$visuNo,extension)] $visuNo
-               } else {
-                  set panneau(acqfc,$visuNo,index) [ expr $panneau(acqfc,$visuNo,index) - 1 ]
                }
-               incr panneau(acqfc,$visuNo,index)
-               $panneau(acqfc,$visuNo,This).status.lab configure -text ""
-               set heure $audace(tu,format,hmsint)
-               if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
+               #--- Sauvegarde de l'image
+               if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
+                  #--- Sauvegarde de l'image
+                  saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
+                  set heure $audace(tu,format,hmsint)
                   Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
+                  incr panneau(acqfc,$visuNo,index)
                }
             }
-
-            if { $panneau(acqfc,$visuNo,demande_arret) == "0"  }  {
+            #---
+            if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                 #--- Deplacement du telescope
                 ::DlgShift::Decalage_Telescope
                 #--- je lance la pose suivante
                 ::acqfc::acq $visuNo
-                #---- C'EST REPARTI POUR UN TOUR ....
+                #---- C'EST REPARTI POUR UN TOUR...
                 return
             } else {
                #--- Cas particulier des cameras APN (DSLR)
@@ -1398,7 +1350,7 @@ namespace eval ::acqfc {
                set panneau(acqfc,$visuNo,pose_en_cours) "0"
             }
          }
-         4 {
+         4  {
             #--- Je sauvegarde l'image
             set nom $panneau(acqfc,$visuNo,nom_image)
             #--- Pour eviter un nom de fichier qui commence par un blanc
@@ -1406,31 +1358,32 @@ namespace eval ::acqfc {
             if { $panneau(acqfc,$visuNo,simulation) == "0" } {
                #--- Verifie que le nom du fichier n'existe pas deja...
                set nom1 "$nom"
-               append nom1 $panneau(acqfc,$visuNo,index) "." $panneau(acqfc,$visuNo,extension)
+               append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                set sauvegardeValidee "1"
                if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
                   #--- Dans ce cas, le fichier existe deja...
                   set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                      -message $caption(acqfc,fichdeja)]
                   if { $confirmation == "no" } {
-                     #--- je ne sauvegarde pas l'image et j'arrete la serie d'acquisitions
+                     #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
                      set sauvegardeValidee "0"
                      set panneau(acqfc,$visuNo,demande_arret) "1"
                   }
                }
-               if { $sauvegardeValidee == "1" } {
+               #--- Sauvegarde de l'image
+               if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                   #--- Sauvegarde de l'image
                   saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
                   set heure $audace(tu,format,hmsint)
                   Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
+                  incr panneau(acqfc,$visuNo,index)
                }
             }
-            incr panneau(acqfc,$visuNo,index)
-
-            if { $panneau(acqfc,$visuNo,demande_arret) == "0"  }  {
+            #---
+            if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                #--- Deplacement du telescope
                ::DlgShift::Decalage_Telescope
-               if { $panneau(acqfc,$visuNo,compteurImageSerie) < $panneau(acqfc,$visuNo,nb_images) }  {
+               if { $panneau(acqfc,$visuNo,compteurImageSerie) < $panneau(acqfc,$visuNo,nb_images) } {
                   #--- j'incremente le compteur d'image
                   incr panneau(acqfc,$visuNo,compteurImageSerie)
                } else {
@@ -1445,23 +1398,21 @@ namespace eval ::acqfc {
                      set t [ expr $panneau(acqfc,$visuNo,intervalle_1) - $panneau(acqfc,$visuNo,intervalle_im_1) ]
                      ::acqfc::Avancement_pose $visuNo $t
                   }
-                 set panneau(acqfc,$visuNo,attente_pose) "0"
-                 #--- je reinitalise le compteur d'image
-                 set panneau(acqfc,$visuNo,compteurImageSerie) 1
+                  set panneau(acqfc,$visuNo,attente_pose) "0"
+                  #--- je reinitalise le compteur d'image
+                  set panneau(acqfc,$visuNo,compteurImageSerie) "1"
                }
-
-               if { $panneau(acqfc,$visuNo,demande_arret) == "0"  }  {
+               if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                   #--- je lance la pose suivante
                   ::acqfc::acq $visuNo
-                  #---- C'EST REPARTI POUR UN TOUR ....
+                  #---- C'EST REPARTI POUR UN TOUR...
                   return
                }
             }
-
             #--- Cas particulier des cameras APN (DSLR)
             if { $conf(dslr,telecharge_mode) == "3" } {
-                  #--- Chargement de la derniere image
-                  ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
+               #--- Chargement de la derniere image
+               ::acqfc::loadLastImage $visuNo $panneau(acqfc,$visuNo,camNo)
             }
             #--- Deverrouille les boutons du mode "continu 1"
             $panneau(acqfc,$visuNo,This).mode.serie_1.nom.entr configure -state normal
@@ -1471,7 +1422,7 @@ namespace eval ::acqfc {
             #--- Pose en cours
             set panneau(acqfc,$visuNo,pose_en_cours) "0"
          }
-         5 {
+         5  {
             #--- Je sauvegarde l'image
             set nom $panneau(acqfc,$visuNo,nom_image)
             #--- Pour eviter un nom de fichier qui commence par un blanc
@@ -1479,31 +1430,29 @@ namespace eval ::acqfc {
             if { $panneau(acqfc,$visuNo,enregistrer) == "1" } {
                #--- Verifie que le nom du fichier n'existe pas deja...
                set nom1 "$nom"
-               append nom1 $panneau(acqfc,$visuNo,index) "." $panneau(acqfc,$visuNo,extension)
+               append nom1 $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)
                set sauvegardeValidee "1"
                if { [ file exists [ file join $audace(rep_images) $nom1 ] ] == "1" } {
                   #--- Dans ce cas, le fichier existe deja...
                   set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
                      -message $caption(acqfc,fichdeja)]
                   if { $confirmation == "no" } {
-                     #--- je ne sauvegarde pas l'image et j'arrete la serie d'acquisitions
+                     #--- je ne sauvegarde pas l'image et j'arrete les acquisitions
                      set sauvegardeValidee "0"
-                    set panneau(acqfc,$visuNo,demande_arret) "1"
+                     set panneau(acqfc,$visuNo,demande_arret) "1"
                   }
-              }
-               if { $sauvegardeValidee == "1" } {
+               }
+               #--- Sauvegarde de l'image
+               if { $sauvegardeValidee == "1" && $panneau(acqfc,$visuNo,sauve_img_interrompue) == "0" } {
                   #--- Sauvegarde de l'image
                   saveima [append nom $panneau(acqfc,$visuNo,index) $panneau(acqfc,$visuNo,extension)] $visuNo
                   set heure $audace(tu,format,hmsint)
                   Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
+                  incr panneau(acqfc,$visuNo,index)
                }
             }
-
-            incr panneau(acqfc,$visuNo,index)
-
-            if { $panneau(acqfc,$visuNo,demande_arret) == "0"  }  {
-               set heure $audace(tu,format,hmsint)
-               Message $visuNo consolog $caption(acqfc,enrim) $heure $nom
+            #---
+            if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                #--- Deplacement du telescope
                ::DlgShift::Decalage_Telescope
                set panneau(acqfc,$visuNo,attente_pose) "1"
@@ -1517,15 +1466,13 @@ namespace eval ::acqfc {
                   ::acqfc::Avancement_pose $visuNo $t
                }
                set panneau(acqfc,$visuNo,attente_pose) "0"
-
-               if { $panneau(acqfc,$visuNo,demande_arret) == "0"  }  {
+               if { $panneau(acqfc,$visuNo,demande_arret) == "0" } {
                   #--- je lance la pose suivante
                   ::acqfc::acq $visuNo
-                  #---- C'EST REPARTI POUR UN TOUR ....
+                  #---- C'EST REPARTI POUR UN TOUR...
                   return
                }
             }
-
             #--- Cas particulier des cameras APN (DSLR)
             if { $conf(dslr,telecharge_mode) == "3" } {
                #--- Chargement de la derniere image
@@ -1590,7 +1537,7 @@ namespace eval ::acqfc {
       set t [cam$panneau(acqfc,$visuNo,camNo) timer -1 ]
       #--- je met a jour le status
       if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
-         #--- je supprime la fentre s'il n'y a plus de pose en cours
+         #--- je supprime la fenetre s'il n'y a plus de pose en cours
          set status ""
       } else {
          if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
@@ -1658,7 +1605,7 @@ namespace eval ::acqfc {
                } elseif { $t > 0 } {
                   $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$t $caption(acqfc,sec) /\
                      [ format "%d" [ expr int( $panneau(acqfc,$visuNo,pose) ) ] ] $caption(acqfc,sec)"
-                  set cpt [expr $t * 100 / int( $panneau(acqfc,$visuNo,pose)  ) ]
+                  set cpt [expr $t * 100 / int( $panneau(acqfc,$visuNo,pose) ) ]
                   set cpt [expr 100 - $cpt]
                } else {
                   $panneau(acqfc,$visuNo,base).progress.lab_status configure -text "$caption(acqfc,lect)"
@@ -1698,7 +1645,7 @@ namespace eval ::acqfc {
          ::confColor::applyColor $panneau(acqfc,$visuNo,base).progress
       } else {
          if { $panneau(acqfc,$visuNo,pose_en_cours) == 0 } {
-            #--- je supprime la fentre s'il n'y a plus de pose en cours
+            #--- je supprime la fenetre s'il n'y a plus de pose en cours
             destroy $panneau(acqfc,$visuNo,base).progress
          } else {
             if { $panneau(acqfc,$visuNo,attente_pose) == "0" } {
@@ -1952,11 +1899,15 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,intervalle) "....."
       set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
-      set panneau(acqfc,$visuNo,simulation) "1" ; set panneau(acqfc,$visuNo,mode) "2"
-      set index $panneau(acqfc,$visuNo,index) ; set nombre $panneau(acqfc,$visuNo,nb_images)
+      set panneau(acqfc,$visuNo,simulation) "1"
+      set panneau(acqfc,$visuNo,mode) "2"
+      set index $panneau(acqfc,$visuNo,index)
+      set nombre $panneau(acqfc,$visuNo,nb_images)
       ::acqfc::Go $visuNo
-      set panneau(acqfc,$visuNo,simulation) "0" ; set panneau(acqfc,$visuNo,mode) "4"
-      set panneau(acqfc,$visuNo,index) $index ; set panneau(acqfc,$visuNo,nb_images) $nombre
+      set panneau(acqfc,$visuNo,simulation) "0"
+      set panneau(acqfc,$visuNo,mode) "4"
+      set panneau(acqfc,$visuNo,index) $index
+      set panneau(acqfc,$visuNo,nb_images) $nombre
       set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
    }
@@ -2048,11 +1999,13 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,intervalle) "....."
       set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
-      set panneau(acqfc,$visuNo,simulation) "1" ; set panneau(acqfc,$visuNo,mode) "2"
+      set panneau(acqfc,$visuNo,simulation) "1"
+      set panneau(acqfc,$visuNo,mode) "2"
       set index $panneau(acqfc,$visuNo,index)
       set panneau(acqfc,$visuNo,nb_images) "1"
       ::acqfc::Go $visuNo
-      set panneau(acqfc,$visuNo,simulation) "0" ; set panneau(acqfc,$visuNo,mode) "5"
+      set panneau(acqfc,$visuNo,simulation) "0"
+      set panneau(acqfc,$visuNo,mode) "5"
       set panneau(acqfc,$visuNo,index) $index
       set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
