@@ -1522,7 +1522,7 @@ int Cmd_ydtcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
             return TCL_ERROR;
          }
          if (n_ref>0) {
-            f_in=fopen(filename_out,"rb");
+            f_out=fopen(filename_out,"rb");
             for (k=0;k<n_ref;k++) {
                fread(&htmrefs[k],1,sizeof(struct_htmref),f_out);
             }
@@ -1556,7 +1556,7 @@ int Cmd_ydtcl_filehtm2refzmgmes(ClientData clientData, Tcl_Interp *interp, int a
             return TCL_ERROR;
          }
          if (n_zmg>0) {
-            f_in=fopen(filename_out,"rb");
+            f_out=fopen(filename_out,"rb");
             for (k=0;k<n_zmg;k++) {
                fread(&htmzmgs[k],1,sizeof(struct_htmzmg),f_out);
             }
