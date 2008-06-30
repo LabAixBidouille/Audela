@@ -194,5 +194,6 @@ Makefile1
 Makefile.defs
 include/version.h
 ../bin/version.tcl
+../bin/pkgIndex.tcl
 ])
 
