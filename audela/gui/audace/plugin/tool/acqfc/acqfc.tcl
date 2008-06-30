@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.66 2008-06-29 18:00:49 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.67 2008-06-30 18:22:18 robertdelmas Exp $
 #
 
 #==============================================================
@@ -89,7 +89,7 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,nom_image)         ""
       set panneau(acqfc,$visuNo,extension)         "$conf(extension,defaut)"
       set panneau(acqfc,$visuNo,indexer)           "0"
-      set panneau(acqfc,$visuNo,nb_images)         "1"
+      set panneau(acqfc,$visuNo,nb_images)         "5"
       set panneau(acqfc,$visuNo,session_ouverture) "1"
       set panneau(acqfc,$visuNo,avancement_acq)    "$parametres(acqfc,$visuNo,avancement_acq)"
       set panneau(acqfc,$visuNo,enregistrer)       "$parametres(acqfc,$visuNo,enregistrer)"
@@ -675,48 +675,51 @@ namespace eval ::acqfc {
             }
             2  {
                #--- Mode serie
-               #--- Verifier qu'il y a bien un nom de fichier
-               if { $panneau(acqfc,$visuNo,nom_image) == "" } {
-                  tk_messageBox -title $caption(acqfc,pb) -type ok \
-                     -message $caption(acqfc,donnomfich)
-                  set integre non
-               }
-               #--- Verifier que le nom de fichier n'a pas d'espace
-               if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
-                  tk_messageBox -title $caption(acqfc,pb) -type ok \
-                     -message $caption(acqfc,nomblanc)
-                  set integre non
-               }
-               #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
-               if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
-                  tk_messageBox -title $caption(acqfc,pb) -type ok \
-                     -message $caption(acqfc,mauvcar)
-                  set integre non
-               }
-               #--- Verifier que le nombre de poses est valide (nombre entier)
-               if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0" } {
-                  tk_messageBox -title $caption(acqfc,pb) -type ok \
-                     -message $caption(acqfc,nbinv)
-                  set integre non
-               }
-               #--- Verifier que l'index existe
-               if { $panneau(acqfc,$visuNo,index) == "" } {
-                  tk_messageBox -title $caption(acqfc,pb) -type ok \
-                      -message $caption(acqfc,saisind)
-                  set integre non
-               }
-               #--- Verifier que l'index est valide (entier positif)
-               if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
-                  tk_messageBox -title $caption(acqfc,pb) -type ok \
-                     -message $caption(acqfc,indinv)
-                  set integre non
-               }
-               #--- Envoyer un warning si l'index n'est pas a 1
-               if { $panneau(acqfc,$visuNo,index) != "1" } {
-                  set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
-                     -message $caption(acqfc,indpasun)]
-                  if { $confirmation == "no" } {
+               #--- Les tests ne sont pas necessaires pendant une simulation
+               if { $panneau(acqfc,$visuNo,simulation) == "0" } {
+                  #--- Verifier qu'il y a bien un nom de fichier
+                  if { $panneau(acqfc,$visuNo,nom_image) == "" } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                        -message $caption(acqfc,donnomfich)
                      set integre non
+                  }
+                  #--- Verifier que le nom de fichier n'a pas d'espace
+                  if { [ llength $panneau(acqfc,$visuNo,nom_image) ] > "1" } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                        -message $caption(acqfc,nomblanc)
+                     set integre non
+                  }
+                  #--- Verifier que le nom de fichier ne contient pas de caracteres interdits
+                  if { [ TestChaine $panneau(acqfc,$visuNo,nom_image) ] == "0" } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                        -message $caption(acqfc,mauvcar)
+                     set integre non
+                  }
+                  #--- Verifier que le nombre de poses est valide (nombre entier)
+                  if { [ TestEntier $panneau(acqfc,$visuNo,nb_images) ] == "0" } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                        -message $caption(acqfc,nbinv)
+                     set integre non
+                  }
+                  #--- Verifier que l'index existe
+                  if { $panneau(acqfc,$visuNo,index) == "" } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                         -message $caption(acqfc,saisind)
+                     set integre non
+                  }
+                  #--- Verifier que l'index est valide (entier positif)
+                  if { [ TestEntier $panneau(acqfc,$visuNo,index) ] == "0" } {
+                     tk_messageBox -title $caption(acqfc,pb) -type ok \
+                        -message $caption(acqfc,indinv)
+                     set integre non
+                  }
+                  #--- Envoyer un warning si l'index n'est pas a 1
+                  if { $panneau(acqfc,$visuNo,index) != "1" } {
+                     set confirmation [tk_messageBox -title $caption(acqfc,conf) -type yesno \
+                        -message $caption(acqfc,indpasun)]
+                     if { $confirmation == "no" } {
+                        set integre non
+                     }
                   }
                }
                #--- Tester si un telescope est bien selectionnee si l'option decalage est selectionnee
@@ -1063,7 +1066,7 @@ namespace eval ::acqfc {
             $panneau(acqfc,$visuNo,This).mode.serie.index.entr configure -state disabled
             $panneau(acqfc,$visuNo,This).mode.serie.index.but configure -state disabled
             set heure $audace(tu,format,hmsint)
-            if { $panneau(acqfc,$visuNo,simulation) == "1" } {
+            if { $panneau(acqfc,$visuNo,simulation) != "0" } {
                Message $visuNo consolog $caption(acqfc,lance_simu)
                #--- Heure de debut de la premiere pose
                set panneau(acqfc,$visuNo,debut) [ clock second ]
@@ -1105,6 +1108,8 @@ namespace eval ::acqfc {
             Message $visuNo consolog $caption(acqfc,nomgen) $panneau(acqfc,$visuNo,nom_image) \
                $panneau(acqfc,$visuNo,pose) $panneau(acqfc,$visuNo,bin) $panneau(acqfc,$visuNo,index)
             set panneau(acqfc,$visuNo,compteurImageSerie) "1"
+            #--- Je note l'heure de debut de la premiere serie (utile pour les series espacees)
+            set panneau(acqfc,$visuNo,deb_serie) [ clock second ]
             acq $visuNo
          }
          5  {
@@ -1166,7 +1171,7 @@ namespace eval ::acqfc {
    proc acq { visuNo } {
       global audace caption conf panneau
 
-      #--- Je note l'heure (utile pour les series espacees)
+      #--- Je note l'heure de debut de l'image (utile pour les images espacees)
       set panneau(acqfc,$visuNo,deb_im) [ clock second ]
       #--- Alarme sonore de fin de pose
       ::camera::alarme_sonore $panneau(acqfc,$visuNo,pose)
@@ -1178,7 +1183,8 @@ namespace eval ::acqfc {
 #***** Procedure appelee par ::camera::acquisition pour retouner des informations pendant et en fin de l'acquisition ********************
    proc callbackAcquisition { visuNo command args } {
       variable private
-      switch $command  {
+
+      switch $command {
          "acquisitionResult" {
             ::acqfc::acqImageEnd $visuNo
          }
@@ -1279,8 +1285,40 @@ namespace eval ::acqfc {
             } else {
                #--- Fin de la derniere pose et intervalle mini entre 2 poses ou 2 series
                if { $panneau(acqfc,$visuNo,simulation) == "1" } {
+                  #--- Affichage de l'intervalle mini simule
                   set panneau(acqfc,$visuNo,fin) [ clock second ]
-                  set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
+                  set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+                  if { $exposure == $panneau(acqfc,$visuNo,pose) } {
+                     set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
+                  } else {
+                     set panneau(acqfc,$visuNo,intervalle) "....."
+                  }
+                  set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+                  $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
+                  #--- Je retablis les reglages initiaux
+                  set panneau(acqfc,$visuNo,simulation) "0"
+                  set panneau(acqfc,$visuNo,mode)       "4"
+                  set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
+                  set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
+                  #--- Fin de la simulation
+                  Message $visuNo consolog $caption(acqfc,fin_simu)
+               } elseif { $panneau(acqfc,$visuNo,simulation) == "2" } {
+                  #--- Affichage de l'intervalle mini simule
+                  set panneau(acqfc,$visuNo,fin) [ clock second ]
+                  set exposure [ lindex [ buf$bufNo getkwd EXPOSURE ] 1 ]
+                  if { $exposure == $panneau(acqfc,$visuNo,pose) } {
+                     set panneau(acqfc,$visuNo,intervalle) [ expr $panneau(acqfc,$visuNo,fin) - $panneau(acqfc,$visuNo,debut) ]
+                  } else {
+                     set panneau(acqfc,$visuNo,intervalle) "....."
+                  }
+                  set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
+                  $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
+                  #--- Je retablis les reglages initiaux
+                  set panneau(acqfc,$visuNo,simulation) "0"
+                  set panneau(acqfc,$visuNo,mode)       "5"
+                  set panneau(acqfc,$visuNo,index)      $panneau(acqfc,$visuNo,index_temp)
+                  set panneau(acqfc,$visuNo,nb_images)  $panneau(acqfc,$visuNo,nombre_temp)
+                  #--- Fin de la simulation
                   Message $visuNo consolog $caption(acqfc,fin_simu)
                }
                #--- Cas particulier des cameras APN (DSLR)
@@ -1390,15 +1428,17 @@ namespace eval ::acqfc {
                   #--- j'attends que la fin de la temporisation entre 2 series
                   set panneau(acqfc,$visuNo,attente_pose) "1"
                   set panneau(acqfc,$visuNo,fin_im) [ clock second ]
-                  set panneau(acqfc,$visuNo,intervalle_im_1) [ expr $panneau(acqfc,$visuNo,fin_im) - $panneau(acqfc,$visuNo,deb_im) ]
+                  set panneau(acqfc,$visuNo,intervalle_im_1) [ expr $panneau(acqfc,$visuNo,fin_im) - $panneau(acqfc,$visuNo,deb_serie) ]
                   while { ( $panneau(acqfc,$visuNo,demande_arret) == "0" ) && ( $panneau(acqfc,$visuNo,intervalle_im_1) <= $panneau(acqfc,$visuNo,intervalle_1) ) } {
                      after 500
                      set panneau(acqfc,$visuNo,fin_im) [ clock second ]
-                     set panneau(acqfc,$visuNo,intervalle_im_1) [ expr $panneau(acqfc,$visuNo,fin_im) - $panneau(acqfc,$visuNo,deb_im) + 1 ]
+                     set panneau(acqfc,$visuNo,intervalle_im_1) [ expr $panneau(acqfc,$visuNo,fin_im) - $panneau(acqfc,$visuNo,deb_serie) + 1 ]
                      set t [ expr $panneau(acqfc,$visuNo,intervalle_1) - $panneau(acqfc,$visuNo,intervalle_im_1) ]
                      ::acqfc::Avancement_pose $visuNo $t
                   }
                   set panneau(acqfc,$visuNo,attente_pose) "0"
+                  #--- Je note l'heure de debut des series suivantes (utile pour les series espacees)
+                  set panneau(acqfc,$visuNo,deb_serie) [ clock second ]
                   #--- je reinitalise le compteur d'image
                   set panneau(acqfc,$visuNo,compteurImageSerie) "1"
                }
@@ -1515,7 +1555,7 @@ namespace eval ::acqfc {
       $panneau(acqfc,$visuNo,This).obt.but configure -state normal
       $panneau(acqfc,$visuNo,This).mode.but configure -state normal
       #--- Je restitue l'affichage du bouton "GO"
-      $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,GO)  -state normal -command "::acqfc::Go $visuNo"
+      $panneau(acqfc,$visuNo,This).go_stop.but configure -text $caption(acqfc,GO) -state normal -command "::acqfc::Go $visuNo"
    }
 #***** Fin de la procedure de lancement d'acquisition **********
 
@@ -1831,7 +1871,7 @@ namespace eval ::acqfc {
    }
 #***** Fin du bouton pour le decalage du telescope *****************
 
-#***** Fenetre de configuration series d'images a intervalle regulier en continu *****
+#***** Fenetre de configuration series d'images a intervalle regulier en continu *********
    proc Intervalle_continu_1 { visuNo } {
       global audace caption conf panneau
 
@@ -1899,17 +1939,11 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,intervalle) "....."
       set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
-      set panneau(acqfc,$visuNo,simulation) "1"
-      set panneau(acqfc,$visuNo,mode) "2"
-      set index $panneau(acqfc,$visuNo,index)
-      set nombre $panneau(acqfc,$visuNo,nb_images)
+      set panneau(acqfc,$visuNo,simulation)  "1"
+      set panneau(acqfc,$visuNo,mode)        "2"
+      set panneau(acqfc,$visuNo,index_temp)  $panneau(acqfc,$visuNo,index)
+      set panneau(acqfc,$visuNo,nombre_temp) $panneau(acqfc,$visuNo,nb_images)
       ::acqfc::Go $visuNo
-      set panneau(acqfc,$visuNo,simulation) "0"
-      set panneau(acqfc,$visuNo,mode) "4"
-      set panneau(acqfc,$visuNo,index) $index
-      set panneau(acqfc,$visuNo,nb_images) $nombre
-      set simu1 "$caption(acqfc,int_mini_serie) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-      $panneau(acqfc,$visuNo,base).intervalle_continu_1.lab3 configure -text "$simu1"
    }
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (1) ********
 
@@ -1929,7 +1963,7 @@ namespace eval ::acqfc {
          focus $panneau(acqfc,$visuNo,base).intervalle_continu_1.but1
       }
    }
-#***** Fin de si une simulation a deja ete faite pour la fenetre Continu (1) ********
+#***** Fin de si une simulation a deja ete faite pour la fenetre Continu (1) *************
 
 #***** Fenetre de configuration images a intervalle regulier en continu ******************
    proc Intervalle_continu_2 { visuNo } {
@@ -1999,16 +2033,12 @@ namespace eval ::acqfc {
       set panneau(acqfc,$visuNo,intervalle) "....."
       set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
       $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
-      set panneau(acqfc,$visuNo,simulation) "1"
-      set panneau(acqfc,$visuNo,mode) "2"
-      set index $panneau(acqfc,$visuNo,index)
-      set panneau(acqfc,$visuNo,nb_images) "1"
+      set panneau(acqfc,$visuNo,simulation)  "2"
+      set panneau(acqfc,$visuNo,mode)        "2"
+      set panneau(acqfc,$visuNo,index_temp)  $panneau(acqfc,$visuNo,index)
+      set panneau(acqfc,$visuNo,nombre_temp) $panneau(acqfc,$visuNo,nb_images)
+      set panneau(acqfc,$visuNo,nb_images)   "1"
       ::acqfc::Go $visuNo
-      set panneau(acqfc,$visuNo,simulation) "0"
-      set panneau(acqfc,$visuNo,mode) "5"
-      set panneau(acqfc,$visuNo,index) $index
-      set simu2 "$caption(acqfc,int_mini_image) $panneau(acqfc,$visuNo,intervalle) $caption(acqfc,sec)"
-      $panneau(acqfc,$visuNo,base).intervalle_continu_2.lab3 configure -text "$simu2"
    }
 #***** Fin de la commande associee au bouton simulation de la fenetre Continu (2) ********
 
@@ -2028,9 +2058,9 @@ namespace eval ::acqfc {
          focus $panneau(acqfc,$visuNo,base).intervalle_continu_2.but1
       }
    }
-#***** Fin de si une simulation a deja ete faite pour la fenetre Continu (2) ********
+#***** Fin de si une simulation a deja ete faite pour la fenetre Continu (2) *************
 
-#***** Enregistrement de la position des fenetres Continu (1) et Continu (2) *****************
+#***** Enregistrement de la position des fenetres Continu (1) et Continu (2) *************
    proc recup_position { visuNo } {
       global audace conf panneau
 
@@ -2055,7 +2085,7 @@ namespace eval ::acqfc {
          destroy $panneau(acqfc,$visuNo,base).intervalle_continu_2
       }
    }
-#***** Fin enregistrement de la position des fenetres Continu (1) et Continu (2) *************
+#***** Fin enregistrement de la position des fenetres Continu (1) et Continu (2) *********
 
 #***** Enregistrement de la position de la fenetre Avancement ********
    proc recup_position_1 { visuNo } {
@@ -2211,7 +2241,7 @@ proc acqfcBuildIF { visuNo } {
    #--- Trame du bouton Go/Stop
    frame $panneau(acqfc,$visuNo,This).go_stop -borderwidth 2 -relief ridge
       Button $panneau(acqfc,$visuNo,This).go_stop.but -text $caption(acqfc,GO) -height 2 \
-        -font $audace(font,arial_12_b) -borderwidth 3 -command "::acqfc::Go $visuNo"
+         -font $audace(font,arial_12_b) -borderwidth 3 -command "::acqfc::Go $visuNo"
       pack $panneau(acqfc,$visuNo,This).go_stop.but -fill both -padx 0 -pady 0 -expand true
    pack $panneau(acqfc,$visuNo,This).go_stop -side top -fill x
 
