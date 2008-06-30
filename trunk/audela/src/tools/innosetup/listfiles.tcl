@@ -190,6 +190,7 @@ foreach make $makes {
 		append result "LicenseFile=licence.txt\n"
 		append result "InfoBeforeFile=before.txt\n"
 		append result "InfoAfterFile=after.txt\n"
+		append result "UsePreviousAppDir=no\n"
 		append result "; uncomment the following line if you want your installation to run on NT 3.51 too.\n"
 		append result "; MinVersion=4,3.51\n"
 		append result "\n"
