@@ -26,6 +26,9 @@
 #ifndef __TTUSER5H__
 #define __TTUSER5H__
 
+typedef unsigned char uint8_t;
+
+
 /* --- autorized between 5001 and 5999 ---*/
 #define TT_IMASERIES_USER5_TRAINEE     5001
 #define TT_IMASERIES_USER5_MORPHOMATH  5002
