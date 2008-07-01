@@ -41,8 +41,11 @@ double erf( double x );
 
 void dilate (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2);
 void erode (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey, int naxis1,int naxis2);
-int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2);
-int ouverture2 (TT_IMA* pout, int N,int naxis1,int naxis2);
+int erosionByAnchor_1D_horizontal_longSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix);
+int erosionByAnchor_1D_horizontal_courSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix);
+int openingByAnchor_1D_horizontal_longSE(TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix);
+int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix);
+
 void tt_fitgauss1d(int n,double *y,double *p,double *ecart);
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -301,7 +304,6 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
 }
 
 
-
 int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuila, double xc0, double yc0, double exposure)
 /***************************************************************************/
 /* detecte le début des trainées d'étoiles sur une image trainee           */
@@ -460,7 +462,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 			}
 		}
 	}
-	tt_imasaver(pout,"D:/pout_algo2.fit",16);
+	//tt_imasaver(pout,"D:/pout_algo2.fit",16);
 	free(matx);
 	free(para);
 	//free(temp);
@@ -1083,7 +1085,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);	
+	//tt_imasaver(p_out,"D:/tophat.fit",16);	
 	
 //////////////////////////////////////////////
 /* ----------------------------------------- */
@@ -1135,7 +1137,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-			tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
+			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 			
 			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
@@ -1157,7 +1159,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}
 						}
 					}
-					tt_imasaver(p_tmp3,"D:/gtopetite3.fit",16);
+					//tt_imasaver(p_tmp3,"D:/gtopetite3.fit",16);
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 					rotation=1;
 				}
@@ -2186,8 +2188,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	return 0 ;
 }
 
-
-//void morphomath (TT_IMA_SERIES *pseries,TT_IMA* p_in,TT_IMA* p_out,char* nom_trait, char* struct_elem,int x1,int y1)
 int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 /*********************************************************************************************/
 /* Trait morpho math sur image dans buffer													 */
@@ -2210,17 +2210,14 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 /* ATTENTION: si le centre n'est pas centre et le SE n'est pas symmétrique,					 */
 /* il faut revoir l'algo de dilation ( il faut utilisé le transposé de SE) !!				 */
 /*********************************************************************************************/
-
-
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=TOPHAT struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 imaseries "MORPHOMATH nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
 //pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
 // si le centre n'est pas centre et le SE n'est pas symmétrique, 
-// il faut revoir l'algo de dilation ( il faut utilisé le transposé de SE) !!
 
 {
-	TT_IMA *p_tmp1, *p_tmp2, *p_in, *p_out;
+	TT_IMA *p_tmp1,*p_tmp2, *p_in, *p_out;
 	int i,kkk,x,y,j;
 	int size, nelem,naxis1,naxis2,sizex,sizey, sizex2,sizey2,size2;
 	int *se = NULL,*medindice=NULL,*se2 = NULL;
@@ -2229,26 +2226,24 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	double mode1,mini1,maxi1,mode2,mini2,maxi2,seuil;
 	char *nom_trait, *struct_elem;
 	int x1,y1,x2=0,y2=0,result;
-	int cx,cy,xx,yy,nb_test,k_test,taille_carre_med;
+	int cx,cy,xx,yy,nb_test,k_test,taille_carre_med,bitpix;
 	double inf,hicut,locut,sb,sh;
-	
+
 	p_in=pseries->p_in; 
 	p_out=pseries->p_out;
 	p_tmp1=pseries->p_tmp1;
 	p_tmp2=pseries->p_tmp2;
 	nelem=pseries->nelements;
-	naxis1=p_in->naxis1;
-	naxis2=p_in->naxis2;
 	x1=pseries->x1;
 	y1=pseries->y1;
 	nom_trait=pseries->nom_trait;
 	struct_elem=pseries->struct_elem;
-
+	
 	/* --- intialisations ---*/
 	naxis1=p_in->naxis1;
 	naxis2=p_in->naxis2;
 	nelem=naxis1*naxis2;
-
+	bitpix=pseries->bitpix;
 
 	/* --- calcul de la fonction ---*/
 	if (p_out->naxis1==0) {
@@ -2257,14 +2252,15 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	if (p_tmp1->naxis1==0) {
 		tt_imacreater(p_tmp1,naxis1,naxis2);
 	}
-	tt_imacreater(p_tmp2,naxis1,naxis2);
+	if (p_tmp2->naxis1==0) {
+		tt_imacreater(p_tmp2,naxis1,naxis2);
+	}
 	for (kkk=0;kkk<(int)(nelem);kkk++) {
 		dvalue=(double)p_in->p[kkk];
 		p_out->p[kkk]=(TT_PTYPE)(dvalue);	
 		p_tmp1->p[kkk]=(TT_PTYPE)(dvalue);
 		p_tmp2->p[kkk]=(TT_PTYPE)(dvalue);
 	}
-	
 
 	if (x1%2 != 1) {
 		x1=x1+1;
@@ -2275,8 +2271,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 	/* ------------------------------------------- */
 	/* ---- creation de l'élément structurant ---- */
-	/* ------------------------------------------- */
-	
+	/* ------------------------------------------- */	
 	if (strcmp (struct_elem,"RECTANGLE")==0) {	
 		size=x1*y1;
 		se=calloc(size,sizeof(int));	
@@ -2349,38 +2344,91 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	i=strcmp (nom_trait,"DILATE");
 
 	if (i==0) {
+		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_in->p[kkk]=-p_in->p[kkk];
+			}
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+			}
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_out->p[kkk]=-p_out->p[kkk];
+			}
+		} else {
 			dilate (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		}
 	} 
+
 	i=strcmp (nom_trait,"ERODE");
 	if (i==0) {
+		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+			}
+		} else {
 			erode (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-	} 	
+			//tt_imasaver(p_out,"D:/erode.fit",16);
+		}
+	} 
+	
 	i=strcmp (nom_trait,"OPEN"); // ouverture basique
 	if (i==0) {
+		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+			if (x1<150) {
+				openingByAnchor_1D_horizontal_courSE(p_out,naxis1,naxis2, x1,bitpix);
+			} else {
+				openingByAnchor_1D_horizontal_longSE(p_out,naxis1,naxis2, x1,bitpix);
+			}
+		} else {
 			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		}
 	} 
+
 	i=strcmp (nom_trait,"CLOSE");
 	if (i==0) {
+		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_in->p[kkk]=-p_in->p[kkk];
+			}
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+			}
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+			}
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
+			}
+
+		} else {
 			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		}
 	} 
-	// ouverture très rapide pour des SE= ligne de longueur > 150 pixels
-	i=strcmp (nom_trait,"OUVERTURE");
-	if (i==0) {
-			ouverture (p_out,x1,naxis1,naxis2);
-	} 
-	// ouverture très rapide pour des SE= ligne de longueur <200 pixels
-	i=strcmp (nom_trait,"OUVERTURE2");
-	if (i==0) {
-			ouverture2 (p_out,x1,naxis1,naxis2);
-	} 
-	i=strcmp (nom_trait,"TOPHAT");
-	//filtre chapeau de haut forme classique
+
+
+	i=strcmp (nom_trait,"TOPHAT"); /* --- filtre chapeau de haut forme classique --- */
 	if (i==0) {
 		//ouverture de l'image initiale
-		erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-		dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+			if (x1<150) {
+				openingByAnchor_1D_horizontal_courSE(p_out,naxis1,naxis2, x1,bitpix);
+			} else {
+				openingByAnchor_1D_horizontal_longSE(p_out,naxis1,naxis2, x1,bitpix);
+			}
+		} else {
+			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		}
 
 		//réduction de la dynamique des images et calcul des seuils de visu
 		tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
@@ -2388,8 +2436,6 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		locut=pseries->locut;
 		tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode1,&mini1,&maxi1);
 		tt_util_statima(p_in,pseries->pixelsat_value,&(pseries->mean),&(pseries->sigma),&(pseries->mini),&(pseries->maxi),&(pseries->nbpixsat));
-		//reajustement de l'histogramme en 8bit
-		//tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouverture.fit",16);
 
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
@@ -2400,43 +2446,24 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				} else if (p_out->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
 					p_out->p[y*naxis1+x]=255;
 				} else {
-					//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
-					/*if (p_out->p[y*naxis1+x]<mode1) {
-						if (pseries->locut/locut<1) {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->locut/locut);
-						} else {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)0.97;
-						}
-					} else if (p_out->p[y*naxis1+x]>mode1) {
-						if (pseries->hicut/hicut>1) {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)(pseries->hicut/hicut);
-						} else {
-							p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma))*(float)1.06;
-						}
-					} else {*/
-						p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma));
-					//}
+					p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./((float)(3.0/2.0*pseries->sigma));
 				}
 
 				
-				if (p_tmp2->p[y*naxis1+x]<mode1-pseries->sigma) {					
-					p_tmp2->p[y*naxis1+x]=0;	
-				} else if (p_tmp2->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
-					p_tmp2->p[y*naxis1+x]=255;
+				if (p_in->p[y*naxis1+x]<mode1-pseries->sigma) {					
+					p_tmp1->p[y*naxis1+x]=0;	
+				} else if (p_in->p[y*naxis1+x]>mode1+(pseries->sigma)/2.0) {
+					p_tmp1->p[y*naxis1+x]=255;
 				} else {
-					p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(3.0/2.0*pseries->sigma);
+					p_tmp1->p[y*naxis1+x]=(p_in->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(3.0/2.0*pseries->sigma);
 				}
-				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];		
+				p_out->p[y*naxis1+x]=p_tmp1->p[y*naxis1+x]-p_out->p[y*naxis1+x];		
 			}
 		}
-		//tt_imasaver(p_tmp2,"D:/init2.fit",8);
-		//tt_imasaver(p_out,"D:/ouv_de_ferm2.fit",8);
-
 	}
 	
-	i=strcmp (nom_trait,"TOPHATE");
+	i=strcmp (nom_trait,"TOPHATE"); /* --- extension du tophat : ouverture d'une fermeture --- */
 	if (i==0) {
-		//extension du tophat : ouverture d'une fermeture
 		// pour traiter le cas des satellites proches (compromis entre tophat excellent et détection de satellites proches)
 		if (strcmp (struct_elem,"RECTANGLE")==0) {
 			x2=(int)(x1/3.0);
@@ -2466,14 +2493,40 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			sizex2 = x1;
 			sizey2 = y1;
 		}
-			//fermeture
-		dilate (p_tmp1,p_in,se2,x2,y2,sizex2,sizey2,naxis1,naxis2);
-		erode (p_out,p_tmp1,se2,x2,y2,sizex2,sizey2,naxis1,naxis2);
-			//ouverture
-		ouverture2 (p_out, x1, naxis1, naxis2);
-			// valable pour SE=ligne de pixels sinon faire
-		//erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);		
-		//dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		
+		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+			/* --- fermeture  --- */
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_in->p[kkk]=-p_in->p[kkk];
+			}
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+			}			
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+			}
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
+			}
+			/* --- ouverture --- */
+			if (x1<150) {
+				openingByAnchor_1D_horizontal_courSE(p_out,naxis1,naxis2, x1,bitpix);
+			} else {
+				openingByAnchor_1D_horizontal_longSE(p_out,naxis1,naxis2, x1,bitpix);
+			}
+
+		} else {
+			/* --- fermeture  --- */
+			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			/* --- ouverture --- */
+			erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		}
 		
 		/* --- Calcul des seuils de visualisation ---*/		
 	    // pour l'image du tophat
@@ -2489,7 +2542,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		tt_util_cuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),TT_YES);
 		mode1=pseries->bgmean;
 
-		tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
+		//tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
 		/* --- detection des geo et des traînées du bruit --- */
 		if ((4+(pseries->hicut-pseries->locut)/100)<8) {
 			seuil=(4+(pseries->hicut-pseries->locut)/100)*pseries->bgsigma;
@@ -2497,20 +2550,19 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			seuil=8*pseries->bgsigma;
 		}
 
-		//réduction de la dynamique des images
+		/* --- réduction de la dynamique des images --- */
 		sb=-pseries->bgsigma;
 		sh=8*pseries->bgsigma;
 		//sh=pseries->hicut-mode1;
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
 				if (mode1>mode2) p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;					
-				if (fabs (p_out->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x])<seuil) {
-					p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x];
+				if (fabs (p_out->p[y*naxis1+x]-p_in->p[y*naxis1+x])<seuil) {
+					p_out->p[y*naxis1+x]=p_in->p[y*naxis1+x];
 				} else {
 					if (p_out->p[y*naxis1+x]<mode1-sb) {
 						p_out->p[y*naxis1+x]=0;
 					} else if (p_out->p[y*naxis1+x]>mode1+sh) {
-					//} else if (p_out->p[y*naxis1+x]>hicut) {
 						p_out->p[y*naxis1+x]=255;
 					} else {
 						//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
@@ -2532,15 +2584,15 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					}
 
 					
-					if (p_tmp2->p[y*naxis1+x]<mode1-sb) {					
-						p_tmp2->p[y*naxis1+x]=0;	
-					} else if (p_tmp2->p[y*naxis1+x]>mode1+sh) {
-						p_tmp2->p[y*naxis1+x]=255;
+					if (p_in->p[y*naxis1+x]<mode1-sb) {					
+						p_tmp1->p[y*naxis1+x]=0;	
+					} else if (p_in->p[y*naxis1+x]>mode1+sh) {
+						p_tmp1->p[y*naxis1+x]=255;
 					} else {
-						p_tmp2->p[y*naxis1+x]=(p_tmp2->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./(float)(sb+sh);
+						p_tmp1->p[y*naxis1+x]=(p_in->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./(float)(sb+sh);
 					}
 				}
-				p_out->p[y*naxis1+x]=p_tmp2->p[y*naxis1+x]-p_out->p[y*naxis1+x];
+				p_out->p[y*naxis1+x]=p_tmp1->p[y*naxis1+x]-p_out->p[y*naxis1+x];
 				if (p_out->p[y*naxis1+x]<0) p_out->p[y*naxis1+x]=0;	
 			}
 		}
@@ -2551,23 +2603,66 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 
 	i=strcmp (nom_trait,"GRADIENT");
 	if (i==0) {
-		erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-		dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+			/* --- erosion --- */
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+			}
+			/* --- dilation --- */
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_in->p[kkk]=-p_in->p[kkk];
+			}
+			if (x1<150) {
+				erosionByAnchor_1D_horizontal_courSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+			} else {
+				erosionByAnchor_1D_horizontal_longSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+			}
+			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+				p_out->p[kkk]=-p_out->p[kkk];
+			}
+		} else {
+			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+		}
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
-				p_out->p[y*naxis1+x]=(float)0.5*(p_tmp1->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x]);
+				p_out->p[y*naxis1+x]=(float)0.5*(p_out->p[y*naxis1+x]-p_tmp1->p[y*naxis1+x]);
 			}
 		}
 	}
 
-	i=strcmp (nom_trait,"CIEL");//médiane sous condition pour faire une carte du fond de ciel
+	i=strcmp (nom_trait,"CIEL"); /* --- médiane sous condition pour faire une carte du fond de ciel --- */
 	if (i==0) {
 		//defini le nombre de fois que l'image subit ce traitement
 		nb_test=3;
 		//calcul du gradient morpho
 		for (k_test=1;k_test<=nb_test;k_test++) {
-			erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+				/* --- erosion --- */
+				if (x1<150) {
+					erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp2,naxis1,naxis2,x1,bitpix);
+				} else {
+					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp2,naxis1,naxis2,x1,bitpix);
+				}
+				/* --- dilation --- */
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_in->p[kkk]=-p_in->p[kkk];
+				}
+				if (x1<150) {
+					erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				} else {
+					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				}
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+					p_in->p[kkk]=-p_in->p[kkk];
+				}
+			} else {
+				erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+				dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			}
 			for (y=0;y<naxis2;y++) {
 				for (x=0;x<naxis1;x++) {
 					p_tmp1->p[y*naxis1+x]=(float)0.5*(p_tmp1->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x]);
@@ -2576,9 +2671,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 			seuil =(pseries->hicut)*0.4;
 			//tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-	
-			//enregistre l'image après le traitement de morphologie mathématique
-			//	tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
 			//erosion par la médiane si gradient supérieur à seuil
 			// définition du centre de l'élément structurant
@@ -2596,7 +2689,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			for (y=cy;y<(naxis2-cy-1);y++) {
 				for (x=cx;x<(naxis1-cx);x++) {
 					if (p_tmp1->p[y*naxis1+x]<seuil) {continue;}
-					//boucle dans la boite englobant le SE
+					/* --- boucle dans la boite englobant le SE --- */
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=-cx;xx<(sizex2-cx);xx++) {	
@@ -2617,7 +2710,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				for (x=naxis1-cx;x<naxis1;x++) {
 
 					if (p_tmp1->p[y*naxis1+x]<seuil*0.4) {continue;}
-					//boucle dans la boite englobant le SE
+					/* --- boucle dans la boite englobant le SE --- */
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=(1-sizex2);xx<=0;xx++) {	
@@ -2638,7 +2731,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				for (x=0;x<cx;x++) {
 
 					if (p_tmp1->p[y*naxis1+x]<seuil*0.4) {continue;}
-					//boucle dans la boite englobant le SE
+					/* --- boucle dans la boite englobant le SE --- */
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=x;xx<x+sizex2;xx++) {	
@@ -2658,7 +2751,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			for (y=0;y<cy;y++) {
 				for (x=cx;x<(naxis1-cx);x++) {
 					if (p_tmp1->p[y*naxis1+x]<seuil*0.4) {continue;}
-					//boucle dans la boite englobant le SE
+					/* --- boucle dans la boite englobant le SE --- */
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=(1-sizex2);xx<=0;xx++) {	
@@ -2678,7 +2771,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			for (y=(naxis2-cy-1);y<naxis2;y++) {
 				for (x=cx;x<(naxis1-cx);x++) {
 					if (p_tmp1->p[y*naxis1+x]<seuil*0.4) {continue;}
-					//boucle dans la boite englobant le SE
+					/* --- boucle dans la boite englobant le SE --- */
 					i=0;
 					for (yy=-cy;yy<(sizey2-cy);yy++) {
 						for (xx=x;xx<x+sizex2;xx++) {	
@@ -2706,22 +2799,44 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	}
-	i=strcmp (nom_trait,"CIEL2");//médiane sous condition pour faire une carte du fond de ciel
+	i=strcmp (nom_trait,"CIEL2");/* --- médiane sous condition pour faire une carte du fond de ciel --- */
 	if (i==0) {
 		//defini le nombre de fois que l'image subit ce traitement
 		nb_test=3;
-		taille_carre_med= 64;
-		//calcul du gradient morpho
+		taille_carre_med= 64;	
+		/* --- calcul du gradient morpho --- */
 		for (k_test=1;k_test<=nb_test;k_test++) {
-			erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
+				/* --- erosion --- */
+				if (x1<150) {
+					erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp2,naxis1,naxis2,x1,bitpix);
+				} else {
+					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp2,naxis1,naxis2,x1,bitpix);
+				}
+				/* --- dilation --- */
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_in->p[kkk]=-p_in->p[kkk];
+				}
+				if (x1<150) {
+					erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				} else {
+					erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				}
+				for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
+					p_tmp1->p[kkk]=-p_tmp1->p[kkk];
+					p_in->p[kkk]=-p_in->p[kkk];
+				}	
+			} else {
+				erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+				dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			}
 			for (y=0;y<naxis2;y++) {
 				for (x=0;x<naxis1;x++) {
 					p_tmp1->p[y*naxis1+x]=(float)0.5*(p_tmp1->p[y*naxis1+x]-p_tmp2->p[y*naxis1+x]);
 				}
 			}
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
 			seuil =(pseries->hicut+mode2)/2.0;
 
@@ -2760,7 +2875,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					}
 				}
 			}
-				
+			//tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
 			free(medindice);
 			free(med);
 			if (nb_test>k_test) {
@@ -2772,12 +2887,10 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	}
-	//enregistre l'image après le traitement de morphologie mathématique
 	//tt_imasaver(p_out,"D:/ima_morphomaths.fit",16);	
 	free(se);
 	result=0;
 	return result;
-
 }
 
 
@@ -2798,11 +2911,10 @@ void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int si
 	for (y=cy;y<(naxis2-cy);y++) {
 		for (x=cx;x<(naxis1-cx);x++) {
 			sup=pin->p[y*naxis1+x];
-			//boucle dans la boite englobant le SE
+			/* --- boucle dans la boite englobant le SE --- */
 			for (yy=0;yy<sizey;yy++) {
-				for (xx=0;xx<sizex;xx++) {
-					// si le pixel appartient a SE
-					if ((se[(yy)*dim1+xx]==1)&&(pin->p[(yy+y-cy)*naxis1+xx+x-cx]>sup)) {
+				for (xx=0;xx<sizex;xx++) {					
+					if ((se[(yy)*dim1+xx]==1)&&(pin->p[(yy+y-cy)*naxis1+xx+x-cx]>sup)) {// si le pixel appartient a SE
 						sup=pin->p[(yy+y-cy)*naxis1+xx+x-cx];
 					}
 				}
@@ -2832,9 +2944,8 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 			inf=pin->p[y*naxis1+x];
 			//boucle dans la boite englobant le SE
 			for (yy=0;yy<sizey;yy++) {
-				for (xx=0;xx<sizex;xx++) {
-					// si le pixel appartient a SE
-					if ((se[(yy)*dim1+xx]==1)&&(pin->p[(yy+y-cy)*naxis1+xx+x-cx]<inf)) {
+				for (xx=0;xx<sizex;xx++) {					
+					if ((se[(yy)*dim1+xx]==1)&&(pin->p[(yy+y-cy)*naxis1+xx+x-cx]<inf)) {// si le pixel appartient a SE
 						inf=pin->p[(yy+y-cy)*naxis1+xx+x-cx];
 					}
 				}
@@ -2844,7 +2955,548 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 	}
 }
 
-int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
+int erosionByAnchor_1D_horizontal_courSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
+/*********************************************************************************************/
+/* Trait morpho math : algo d'erosion optimisé pour SE ligne < 150 pixels					 */
+/*********************************************************************************************/
+/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codées en 16 bits				 */
+/*********************************************************************************************/
+/*						 algo de VAN DROOGENBROECK											 */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*						Journal of Mathematical Imaging and Vision,2005						 */
+/*					très rapide pour des petits SE: ligne < 150 pixels					     */
+/*********************************************************************************************/
+
+//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
+//buf1 imaseries "MORPHOMATH nom_trait=ERODE struct_elem=RECTANGLE x1=10 y1=1"
+//buf1 save "D:/ouverture2.fit"
+{
+	long inLeft,inRight,outLeft,outRight,current,sentinel; 
+	double min;
+	int i,j,imageWidthMinus1,sizeMinus1;
+	double *histo;
+	int	middle;
+
+	imageWidthMinus1 = imageWidth-1;
+	sizeMinus1 = size-1;
+	middle = size/2;
+
+	/* Initialisation of the histogram */
+	histo=calloc(size,sizeof(double));
+
+	/* Row by row */
+	for (j=0; j<imageHeight; j++){
+		/* Initialisation of both extremities of a line */
+		inLeft = (j*imageWidth);
+		outLeft = (j*imageWidth);
+		inRight = inLeft+imageWidthMinus1;
+		outRight = outLeft+imageWidthMinus1;
+
+		/* Handles the left border */ 
+		/* First half of the structuring element */
+		for (i=0; i<size;i++) {
+			histo[i]=0;
+		}	
+		min = (double)pin->p[inLeft];
+		for (i=0; i<middle; i++) {
+			inLeft++; 
+			histo[i]=(double)(pin->p[inLeft]);
+			if (pin->p[inLeft] < min) { min = (double)(pin->p[inLeft]); }
+		}
+		pout->p[outLeft] =(TT_PTYPE) min;
+
+		/* Second half of the structuring element */
+		for (i=middle; i<size; i++) {
+			inLeft++; outLeft++;
+			histo[i]=(double)(pin->p[inLeft]);
+			if (pin->p[inLeft] < min) { min = (double)pin->p[inLeft]; }
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* Use the histogram as long as we have not found a new minimum */
+		while ((inLeft<inRight) && (min<=(int)pin->p[inLeft+1])) {
+			inLeft++; outLeft++;
+			histo[size-1]=(double)(pin->p[inLeft]);
+			min = (double)histo[size-1];
+			for (i=0; i<size-1; i++) {
+				histo[i]=histo[i+1];
+				if (histo[i]<min) {// finds and allocates the minimum
+					min = histo[i];
+				}
+			}
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* Enters in the loop */
+		min = (int)pin->p[outLeft];
+
+startLine:
+		current = inLeft+1;
+		while ((current<inRight) && (pin->p[current]<=min)) { 
+			min=(double)pin->p[current]; 
+			outLeft++; 
+			pout->p[outLeft]=(TT_PTYPE)min; 
+			current++; 
+		}
+		inLeft = current-1;
+		sentinel = inLeft+size;
+		if (sentinel>inRight) { goto finishLine; }
+		outLeft++;
+		pout->p[outLeft] = (TT_PTYPE)min;
+
+		/* We ran "size" pixels ahead */ 
+		current++; 
+		while (current<sentinel) {
+			if (pin->p[current]<=min) /* We have found a new minimum */
+			{
+				min = (double)pin->p[current];
+				outLeft++; 
+				pout->p[outLeft] =(TT_PTYPE) min;
+				inLeft = current;
+				goto startLine; 
+			}
+			current++; 
+			outLeft++; 
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* We did not find a smaller value in the segment in reach
+		* of inLeft; current is the first position outside the 
+		* reach of inLeft 
+		*/
+		if (pin->p[current]<=min) {
+			min =(double) pin->p[current];
+			outLeft++; 
+			pout->p[outLeft] =(TT_PTYPE) min;
+			inLeft = current;
+			goto startLine; 
+		} else	/* We can not avoid computing the histogram */
+		{
+			//if (inLeft+size>=inRight) { goto finishLine; }
+
+			for (i=0; i<size;i++) {
+				histo[i]=0;
+			}	
+			inLeft++; outLeft++; 
+			for (i=0; i<size; i++) { 
+				histo[i]=(double)pin->p[inLeft+i]; 
+			}
+			min = (double)histo[0];
+			for (i=0; i<size; i++) {
+				if (histo[i]<min) {// finds and allocates the minimum
+					min = histo[i];
+				}
+			}
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* We just follow the pixels, update the histogram and look for
+		* the minimum */
+		while (current < inRight)  
+		{ 
+			current++; 
+			if (pin->p[current] <= min)
+			{
+				/* We have found a new mimum */
+				min = (double)pin->p[current];
+				outLeft++; 
+				pout->p[outLeft] =(TT_PTYPE) min;
+				inLeft = current;
+				goto startLine; 
+			} else {
+				inLeft++; outLeft++; 
+				/* Update the histogram */
+				for (i=0; i<size; i++) { 
+					histo[i]=(double)pin->p[inLeft+i]; 
+				}
+				min = (double)histo[0];
+				/* Recompute the minimum */
+				for (i=0; i<size; i++) {
+					if (histo[i]<min) {// finds and allocates the minimum
+						min = histo[i];
+					}
+				}
+				pout->p[outLeft]=(TT_PTYPE)min; 
+			}
+		}
+
+finishLine:
+		/* Handles the right border */ 
+		/* First half of the structuring element */
+		for (i=0; i<size;i++) {
+			histo[i]=0;
+		}	
+		min = (double)pin->p[inRight]; 
+		for (i=0; i<middle; i++) {
+			inRight--; 
+			histo[i]=(double)pin->p[inRight];
+			if (pin->p[inRight] < min) { min = (double)pin->p[inRight]; }
+		}
+		pout->p[outRight] =(TT_PTYPE) min;
+
+		/* Second half of the structuring element */
+		for (i=middle; (i<size) && (outLeft<outRight); i++) {
+			inRight--; outRight--;
+			histo[i]=(double)pin->p[inRight];
+			if (pin->p[inRight] < min) { min =(double) pin->p[inRight]; }
+			pout->p[outRight] = (TT_PTYPE)min;
+		}
+
+		/* Use the histogram as long as we have not found a new minimum */
+		while ( outLeft<outRight ) {
+			inRight--; outRight--;
+			
+			if (pin->p[inRight] < min) { min = (double)pin->p[inRight]; }
+			min = (double)histo[0];
+			for (i=0; i<size; i++) {
+				if (histo[i]<min) {// finds and allocates the minimum
+					min = histo[i];
+				}
+			}
+			pout->p[outRight] = (TT_PTYPE)min;
+		}
+    }
+
+  /* Free memory */
+  free(histo);
+
+  return 0;
+}
+
+int erosionByAnchor_1D_horizontal_longSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
+/*********************************************************************************************/
+/* Trait morpho math : algo d'erosion optimisé pour SE ligne > 150 pixels					 */
+/*********************************************************************************************/
+/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codées en 16 bits				 */
+/*********************************************************************************************/
+/*						 algo de VAN DROOGENBROECK											 */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*						Journal of Mathematical Imaging and Vision,2005						 */
+/*					très rapide pour des très gros SE: ligne > 150 pixels					 */
+/*********************************************************************************************/
+
+//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
+//buf1 imaseries "MORPHOMATH nom_trait=ERODE struct_elem=RECTANGLE x1=160 y1=1"
+//buf1 save "D:/ouverture2.fit"
+{
+	int aux;
+	long inLeft,inRight,outLeft,outRight,current,sentinel,nbrBytes; 
+	int min;
+	int i,j,imageWidthMinus1,sizeMinus1;
+	double *histo;
+	int	middle;
+
+	imageWidthMinus1 = imageWidth-1;
+	sizeMinus1 = size-1;
+	middle = size/2;
+
+	/* Initialisation of the histogram */
+	if (bitpix==0) {bitpix=16;}
+	nbrBytes =(long) pow(2,bitpix)*sizeof(int);
+	histo = (double *)malloc(nbrBytes);
+
+	/* Row by row */
+	for (j=0; j<imageHeight; j++){
+		/* Initialisation of both extremities of a line */
+		inLeft = (j*imageWidth);
+		outLeft = (j*imageWidth);
+		inRight = inLeft+imageWidthMinus1;
+		outRight = outLeft+imageWidthMinus1;
+
+		/* Handles the left border */ 
+		/* First half of the structuring element */
+		memset(histo, 0, nbrBytes);
+		min = (int)pin->p[inLeft]; histo[min]++;
+		for (i=0; i<middle; i++) {
+			inLeft++; 
+			histo[(int)(pin->p[inLeft])]++;
+			if (pin->p[inLeft] < min) { min = (int)(pin->p[inLeft]); }
+		}
+		pout->p[outLeft] =(TT_PTYPE) min;
+
+		/* Second half of the structuring element */
+		for (i=0; i<size-middle-1; i++) {
+			inLeft++; outLeft++;
+			histo[(int)(pin->p[inLeft])]++;
+			if (pin->p[inLeft] < min) { min = (int)pin->p[inLeft]; }
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* Use the histogram as long as we have not found a new minimum */
+		while ( (inLeft<inRight) && (min<=(int)pin->p[inLeft+1])) {
+			inLeft++; outLeft++;
+			histo[(int)(pin->p[inLeft-size])]--;
+			histo[(int)(pin->p[inLeft])]++;
+			while (histo[min]<=0) { min++; }
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* Enters in the loop */
+		min = (int)pin->p[outLeft];
+
+startLine:
+		current = inLeft+1;
+		while ((current<inRight) && (pin->p[current]<=min)) { 
+			min=(int)pin->p[current]; outLeft++; pout->p[outLeft]=(TT_PTYPE)min; current++; 
+		}
+		inLeft = current-1;
+		sentinel = inLeft+size;
+		if (sentinel>inRight) { goto finishLine; }
+		outLeft++;
+		pout->p[outLeft] = (TT_PTYPE)min;
+
+		/* We ran "size" pixels ahead */ 
+		current++; 
+		while (current<sentinel) {
+			if (pin->p[current]<=min) /* We have found a new minimum */
+			{
+				min = (int)pin->p[current];
+				outLeft++; 
+				pout->p[outLeft] =(TT_PTYPE) min;
+				inLeft = current;
+				goto startLine; 
+			}
+			current++; 
+			outLeft++; 
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* We did not find a smaller value in the segment in reach
+		* of inLeft; current is the first position outside the 
+		* reach of inLeft 
+		*/
+		if (pin->p[current]<=min) {
+			min =(int) pin->p[current];
+			outLeft++; 
+			pout->p[outLeft] =(TT_PTYPE) min;
+			inLeft = current;
+			goto startLine; 
+		} else	/* We can not avoid computing the histogram */
+		{
+			memset(histo, 0, nbrBytes);
+			inLeft++; outLeft++; 
+			for (aux=inLeft; aux<=current; aux++) { histo[(int)pin->p[aux]]++; }
+			min++; while (histo[min]<=0) { min++; }
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* We just follow the pixels, update the histogram and look for
+		* the minimum */
+		while (current < inRight)  
+		{ 
+			current++; 
+			if (pin->p[current] <= min)
+			{
+				/* We have found a new mimum */
+				min = (int)pin->p[current];
+				outLeft++; 
+				pout->p[outLeft] =(TT_PTYPE) min;
+				inLeft = current;
+				goto startLine; 
+			} else {
+				/* Update the histogram */
+				histo[(int)pin->p[current]]++;
+				histo[(int)pin->p[inLeft]]--;
+				/* Recompute the minimum */
+				while (histo[min]<=0) { min++; }
+				inLeft++; outLeft++; 
+				pout->p[outLeft]=(TT_PTYPE)min; 
+			}
+		}
+
+finishLine:
+		/* Handles the right border */ 
+		/* First half of the structuring element */
+		memset(histo, 0, nbrBytes);
+		min = (int)pin->p[inRight]; histo[min]++;
+		for (i=0; i<middle; i++) {
+			inRight--; 
+			histo[(int)pin->p[inRight]]++;
+			if (pin->p[inRight] < min) { min = (int)pin->p[inRight]; }
+		}
+		pout->p[outRight] =(TT_PTYPE) min;
+
+		/* Second half of the structuring element */
+		for (i=0; (i<size-middle-1) && (outLeft<outRight); i++) {
+			inRight--; outRight--;
+			histo[(int)pin->p[inRight]]++;
+			if (pin->p[inRight] < min) { min =(int) pin->p[inRight]; }
+			pout->p[outRight] = (TT_PTYPE)min;
+		}
+
+		/* Use the histogram as long as we have not found a new minimum */
+		while ( outLeft<outRight ) {
+			inRight--; outRight--;
+			histo[(int)pin->p[(inRight+size)]]--;
+			histo[(int)pin->p[inRight]]++;
+			if (pin->p[inRight] < min) { min = (int)pin->p[inRight]; }
+			while (histo[min]<=0) { min++; }
+			pout->p[outRight] = (TT_PTYPE)min;
+		}
+    }
+
+  /* Free memory */
+  free(histo);
+
+  return 0;
+}
+
+
+int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
+/*********************************************************************************************/
+/* Trait morpho math : algo d'ouverture optimisé pour SE ligne < 150 pixels					 */
+/*********************************************************************************************/
+/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE											 */
+/*********************************************************************************************/
+/*						 algo de VAN DROOGENBROECK											 */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*						Journal of Mathematical Imaging and Vision,2005						 */
+/*					très rapide pour des petits SE: ligne < 150 pixels					 */
+/*********************************************************************************************/
+
+//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
+//buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE struct_elem=RECTANGLE x1=10 y1=1"
+//buf1 save "D:/toqjd.fit"
+{
+	int i,end;
+	long outLeft,outRight,current,sentinel; 
+	double min;
+	int j,imageWidthMinus1,sizeMinus1;
+	double *histo;
+
+
+	imageWidthMinus1 = imageWidth-1;
+	sizeMinus1 = size-1;
+
+	/* Initialisation of the histogram */
+	histo=calloc(size,sizeof(double));
+
+	/* Row by row */
+	for (j=0; j<imageHeight; j++) {
+		/* Initialisation of both extremities of a line */
+		outLeft = (j*imageWidth);
+		outRight = outLeft+imageWidthMinus1;
+
+		/* Handling of both sides */
+		/* Left side */
+		while ( (outLeft < outRight) && (pout->p[outLeft] >= pout->p[outLeft+1]) )
+		{ outLeft++; }
+
+		/* Right side */
+		while ( (outLeft < outRight) && (pout->p[outRight-1] <= pout->p[outRight]) )
+		{ outRight--; }
+
+		/* Enters in the loop */
+		startLine:
+		min =(double) pout->p[outLeft];
+		current = outLeft+1;
+		while ((current<outRight) && (pout->p[current]<=min))
+		{ min=(double)pout->p[current]; outLeft++; current++; }
+		sentinel = outLeft+size;
+		if (sentinel>outRight) { goto finishLine; }
+
+		/* We ran "size" pixels ahead */ 
+		current++; 
+		while (current<sentinel) {
+			if (pout->p[current]<=min) { /* We have found a new minimum */
+				end = current;
+				outLeft++; 
+				while (outLeft < end) {pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+				outLeft = current; 
+				goto startLine; 
+			}
+			current++; 
+		}
+
+		/* We did not find a smaller value in the segment in reach
+		* of outLeft; current is the first position outside the 
+		* reach of outLeft 
+		*/
+		if (pout->p[current]<=min) {
+			end = current;
+			outLeft++; 
+			while (outLeft < end) { pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+			outLeft = current;
+			goto startLine; 
+		} else	/* We can not avoid computing the histogram */
+		{
+			for (i=0; i<size;i++) {
+				histo[i]=0;
+			}	
+			outLeft++; 
+			for (i=0; i<size; i++) { 
+				histo[i]=(double)pout->p[outLeft+i]; 
+			}
+			min = (int)histo[0];
+			for (i=0; i<size; i++) {
+				if (histo[i]<min) {// finds and allocates the minimum
+					min = histo[i];
+				}
+			}
+			pout->p[outLeft] = (TT_PTYPE)min;
+		}
+
+		/* We just follow the pixels, update the histogram and look for
+		* the minimum */
+		while (current < outRight)  { 
+			current++; 
+			if (pout->p[current] <= min) {
+				/* We have found a new mimum */
+				end = current;
+				outLeft++; 
+				while (outLeft < end) { pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+				outLeft = current; 
+				goto startLine; 
+			} else {
+				outLeft++; 
+				/* Update the histogram */
+				for (i=0; i<size; i++) { 
+					histo[i]=(double)pout->p[outLeft+i]; 
+				}
+				min = (double)histo[0];
+				/* Recompute the minimum */
+				for (i=0; i<size; i++) {
+					if (histo[i]<min) {// finds and allocates the minimum
+						min = histo[i];
+					}
+				}
+				pout->p[outLeft]=(TT_PTYPE)min; 
+			}
+		}
+
+		/* We have to finish the line */
+		while (outLeft < outRight) {
+			for (i=0; i<size; i++) { 
+					histo[i]=(double)pout->p[outLeft+i]; 
+			}
+			for (i=0; i<size; i++) {
+				if (histo[i]<min) {// finds and allocates the minimum
+					min = histo[i];
+				}
+			}
+			outLeft++; 		
+			pout->p[outLeft]=(TT_PTYPE)min; 
+		}
+
+		finishLine:
+		while (outLeft < outRight){
+			if (pout->p[outLeft]<=pout->p[outRight]) {
+				min=(double)pout->p[outRight]; outRight--; 
+				if (pout->p[outRight]>min) 	{ pout->p[outRight]=(TT_PTYPE)min; }
+			} else {
+				min=(double)pout->p[outLeft]; outLeft++; 
+				if (pout->p[outLeft]>min) 	{ pout->p[outLeft]=(TT_PTYPE)min; }
+			}
+		}
+	}
+
+	/* Free memory */
+	free(histo);
+	return 0;
+}
+
+
+int openingByAnchor_1D_horizontal_longSE(TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
 /*********************************************************************************************/
 /* Trait morpho math : algo d'ouverture optimisé pour SE ligne > 150 pixels					 */
 /*********************************************************************************************/
@@ -2859,272 +3511,131 @@ int ouverture (TT_IMA* pout, int N,int naxis1,int naxis2)
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 save "D:/toqjd.fit"
-{ 
-	int i,x,y,aux,z,resol;
-	int minimum;
+{
+	int aux,end;
+	long outLeft,outRight,current,sentinel,nbrBytes; 
+	int min;
+	int j,imageWidthMinus1,sizeMinus1;
 	double *histo;
-	//decodage des paramètres
-	//N est la longueur du segment SE
-	//pout doit être la copie de pin!!
 
-	//initialisation
-	//attention à la résolution!! 255, 65535...
-	resol=65535;
-	histo=calloc(resol,sizeof(double));
-	//en basse résolution
 
-	if (resol<65535) {
-		for (x=0; x<naxis1*naxis1-1; x++) {
-			y=(int)(pout->p[x]*resol/65535.0);
-			pout->p[x]=(float)y;
-		}
-		//tt_imasaver(pout,"D:/pin.fit",16);	
-	}
-	x=y=aux=0;
+	imageWidthMinus1 = imageWidth-1;
+	sizeMinus1 = size-1;
 
-	startline :
-	if (x>=naxis1*naxis1-1) {return 0;}
-	// gestion des bords pour un SE avec origine complétement à gauche
-	if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-		x++;
-		goto startline;
-	}
-	y=x+1;
-	
-	while ((y<x+N-1)&&(pout->p[y]<=pout->p[x])) {
-		x++;
-		y++;
-	}
-	y++;
-	// analysis of the window [x,x+N[
-	while (y<x+N) {
-		if (pout->p[y]<=pout->p[x]) { // a new minimum is found
-			minimum=(int)pout->p[x];
-			x++;
-			while (x<y) {
-				pout->p[x]=(TT_PTYPE)minimum;
-				x++;
+	/* Initialisation of the histogram */
+	if (bitpix==0) {bitpix=16;}
+	nbrBytes = (long) pow(2,bitpix)*sizeof(int);
+	histo = (double *)malloc(nbrBytes);
+
+	/* Row by row */
+	for (j=0; j<imageHeight; j++) {
+		/* Initialisation of both extremities of a line */
+		outLeft = (j*imageWidth);
+		outRight = outLeft+imageWidthMinus1;
+
+		/* Handling of both sides */
+		/* Left side */
+		while ( (outLeft < outRight) && (pout->p[outLeft] >= pout->p[outLeft+1]) )
+		{ outLeft++; }
+
+		/* Right side */
+		while ( (outLeft < outRight) && (pout->p[outRight-1] <= pout->p[outRight]) )
+		{ outRight--; }
+
+		/* Enters in the loop */
+		startLine:
+		min =(int) pout->p[outLeft];
+		current = outLeft+1;
+		while ((current<outRight) && (pout->p[current]<=min))
+		{ min=(int)pout->p[current]; outLeft++; current++; }
+		sentinel = outLeft+size;
+		if (sentinel>outRight) { goto finishLine; }
+
+		/* We ran "size" pixels ahead */ 
+		current++; 
+		while (current<sentinel) {
+			if (pout->p[current]<=min) { /* We have found a new minimum */
+				end = current;
+				outLeft++; 
+				while (outLeft < end) {pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+				outLeft = current; 
+				goto startLine; 
 			}
-			goto startline;
+			current++; 
 		}
-		y++;
-	}
-	//no new minimum has been found and y=x+N
-	if (pout->p[y]<=pout->p[x]) {
-		minimum=(int)pout->p[x];
-		x++;
-		while (x<y) {
-				pout->p[x]=(TT_PTYPE)minimum;
-				x++;
+
+		/* We did not find a smaller value in the segment in reach
+		* of outLeft; current is the first position outside the 
+		* reach of outLeft 
+		*/
+		if (pout->p[current]<=min) {
+			end = current;
+			outLeft++; 
+			while (outLeft < end) { pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+			outLeft = current;
+			goto startLine; 
+		} else	/* We can not avoid computing the histogram */
+		{
+			memset(histo, 0, nbrBytes);
+			outLeft++; 
+			for (aux=outLeft; aux<=current; aux++) { histo[(int)pout->p[aux]]++; }
+			min++; while (histo[min]<=0) { min++; }
+			histo[(int)pout->p[outLeft]]--;
+			pout->p[outLeft] = (TT_PTYPE)min;
+			histo[min]++;
 		}
-		goto startline;
-	}
-	//computing the histogram has become unavoidable
-	//resets the hitogram and computes the histogram over [x+1,y]
-	x++;
-	if (x>=naxis1*naxis1-1) {return 0;}
-	// gestion des bords pour un SE avec origine complétement à gauche
-	if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-		x++;
-		goto startline;
-	}
 
-	for (i=0; i<resol;i++) {
-			histo[i]=0;
-	}	
-	
-	aux=x;
-	while (aux<=y) {
-		z=(int)pout->p[aux];
-		histo[z]=histo[z]+1;
-		aux=aux+1;
-	}
-	// finds and allocates the minimum
-	minimum=(int)(pout->p[x-1]+1);
-	while (histo[minimum]<=0) {
-		minimum=minimum+1;
-	}
-	histo[(int)(pout->p[x])]=histo[(int)(pout->p[x])]-1;
-	pout->p[x]=(TT_PTYPE)minimum;
-
-	//moves [x,y] to the right, updates the histogram, and finds the minimum
-	while (y<x+N) {
-		y++;
-		if (pout->p[y]<=minimum) {// a new minimum is found
-			x++;
-			while (x<y) {
-				pout->p[x]=(TT_PTYPE)minimum;
-				x++;
-				if (x>=naxis1*naxis1-1) {return 0;}
-				// gestion des bords pour un SE avec origine complétement à gauche
-				if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-					x++;
-					goto startline;
-				}
+		/* We just follow the pixels, update the histogram and look for
+		* the minimum */
+		while (current < outRight)  { 
+			current++; 
+			if (pout->p[current] <= min) {
+				/* We have found a new mimum */
+				end = current;
+				outLeft++; 
+				while (outLeft < end) { pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+				outLeft = current; 
+				goto startLine; 
+			} else {
+				/* Update the histogram */
+				histo[(int)pout->p[current]]++;
+				histo[(int)pout->p[outLeft]]--;
+				/* Recompute the minimum */
+				while (histo[min]<=0) { min++; }
+				outLeft++; 
+				histo[(int)pout->p[outLeft]]--;
+				pout->p[outLeft]=(TT_PTYPE)min; 
+				histo[min]++;
 			}
-			goto startline;
 		}
-		//updates the histo and recomputes the minimum
-		//histo[(int)(pout->p[x])]=histo[(int)(pout->p[x])]-1;
-		histo[(int)pout->p[y]]=histo[(int)pout->p[y]]+1;
-		while (histo[minimum]<=0) {
-			minimum=minimum+1;
+
+		/* We have to finish the line */
+		while (outLeft < outRight) {
+			histo[(int)pout->p[outLeft]]--;
+			while (histo[min]<=0) { min++; }
+			outLeft++; 
+			histo[(int)pout->p[outLeft]]--;
+			pout->p[outLeft]=(TT_PTYPE)min; 
+			histo[min]++;
 		}
-		x++;
-		if (x>=naxis1*naxis1-1) {return 0;}
-		// gestion des bords pour un SE avec origine complétement à gauche
-		if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-			x++;
-			goto startline;
+
+		finishLine:
+		while (outLeft < outRight){
+			if (pout->p[outLeft]<=pout->p[outRight]) {
+				min=(int)pout->p[outRight]; outRight--; 
+				if (pout->p[outRight]>min) 	{ pout->p[outRight]=(TT_PTYPE)min; }
+			} else {
+				min=(int)pout->p[outLeft]; outLeft++; 
+				if (pout->p[outLeft]>min) 	{ pout->p[outLeft]=(TT_PTYPE)min; }
+			}
 		}
-		histo[(int)pout->p[x]]=histo[(int)pout->p[x]]-1;
-		pout->p[x]=(TT_PTYPE)minimum;
-		//histo[minimum]=histo[minimum]+1;
 	}
+
+	/* Free memory */
 	free(histo);
-
 	return 0;
 }
 
-
-
-int ouverture2 (TT_IMA* pout, int N,int naxis1,int naxis2)
-/*********************************************************************************************/
-/* Trait morpho math : algo d'ouverture optimisé pour SE ligne < 150 pixels					 */
-/*********************************************************************************************/
-/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codées en 16 bits				 */
-/*********************************************************************************************/
-/*						 algo de VAN DROOGENBROECK											 */
-/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
-/*						Journal of Mathematical Imaging and Vision,2005						 */
-/*					très rapide pour des très gros SE: ligne < 150 pixels					 */
-/*********************************************************************************************/
-/*						ATTENTION: pout doit être la copie de pin!!							 */
-/*********************************************************************************************/
-
-//buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
-//buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE2 struct_elem=RECTANGLE x1=10 y1=1"
-//buf1 save "D:/ouverture2.fit"
-
-{ 
-	int i,x,y,aux;
-	int minimum;
-	double *histo;
-
-	//N est la longueur du segment SE
-	//initialisation
-	x=y=aux=0;
-	histo=calloc(N,sizeof(double));
-	startline :
-	if (x>=naxis1*naxis1-1) {return 0;}
-	// gestion des bords pour un SE avec origine complétement à gauche
-	if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-		x++;
-		goto startline;
-	}
-	y=x+1;
-	
-	while ((y<x+N-1)&&(pout->p[y]<=pout->p[x])) {
-		x++;
-		y++;
-	}
-	y++;
-	// analysis of the window [x,x+N[
-	while (y<x+N) {
-		if (pout->p[y]<=pout->p[x]) { // a new minimum is found
-			minimum=(int)pout->p[x];
-			x++;
-			while (x<y) {
-				pout->p[x]=(TT_PTYPE)minimum;
-				x++;
-			}
-			goto startline;
-		}
-		y++;
-	}
-	//no new minimum has been found and y=x+N
-	if (pout->p[y]<=pout->p[x]) {
-		minimum=(int)pout->p[x];
-		x++;
-		while (x<y) {
-				pout->p[x]=(TT_PTYPE)minimum;
-				x++;
-		}
-		goto startline;
-	}
-	//computing the histogram has become unavoidable
-	//resets the hitogram and computes the histogram over [x+1,y]
-	x++;
-	if (x>=naxis1*naxis1-1) {return 0;}
-	// gestion des bords pour un SE avec origine complétement à gauche
-	if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-		x++;
-		goto startline;
-	}
-
-	for (i=0; i<N;i++) {
-		histo[i]=0;
-	}	
-	
-	aux=0;
-	minimum=(int)pout->p[aux+x];
-
-	for (aux=0; aux<N; aux++) {
-		if ((int)pout->p[aux+x]<minimum) {// finds and allocates the minimum
-			minimum = (int)pout->p[aux+x];
-		}
-		if ((aux>0)&&(aux<N)) {
-			histo[aux-1]=(int)pout->p[aux+x];
-		}
-	}
-	
-	pout->p[x]=(TT_PTYPE)minimum;
-
-	//moves [x,y] to the right, updates the histogram, and finds the minimum
-	while (y<x+N) {
-		y++;
-		if (pout->p[y]<=minimum) {// a new minimum is found
-			x++;
-			while (x<y) {
-				pout->p[x]=(TT_PTYPE)minimum;
-				x++;
-				if (x>=naxis1*naxis1-1) {return 0;}
-				// gestion des bords pour un SE avec origine complétement à gauche
-				if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-					x++;
-					goto startline;
-				}
-			}
-			goto startline;
-		}
-		//updates the histo and recomputes the minimum
-		//histo[(int)(pout->p[x])]=histo[(int)(pout->p[x])]-1;
-		histo[N-1]=(int)pout->p[y];
-		minimum = (int)histo[0];
-		for (aux=0; aux<N; aux++) {
-			if ((int)pout->p[aux+x+1]<minimum) {// finds and allocates the minimum
-				minimum = (int)pout->p[aux+x+1];
-			}
-		}
-		
-		x++;
-		if (x>=naxis1*naxis1-1) {return 0;}
-		// gestion des bords pour un SE avec origine complétement à gauche
-		if ((x>0)&&(((x+1)%(naxis1)==0)||((x+1)%(naxis1)>=naxis1-N))) {
-			x++;
-			goto startline;
-		}
-		histo[0]=0;
-		for (aux=0; aux<N-1; aux++) {
-			histo[aux]=histo[aux+1];
-		}
-		pout->p[x]=(TT_PTYPE)minimum;
-		//histo[minimum]=histo[minimum]+1;
-	}
-	free(histo);
-
-	return 0;
-}
 
 
 int tt_histocuts_myrtille(TT_IMA *p,TT_IMA_SERIES *pseries,double *hicut,double *locut,double *mode,double *mini,double *maxi)
@@ -3412,7 +3923,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 		}
 	 }
 	//enregistre l'image de hough
-	tt_imasaver(pout,"D:/hough.fit",16);
+	//tt_imasaver(pout,"D:/hough.fit",16);
 	//seuil de détection fixé arbitrairement à 15 points alignés
 	if (seuil_max>=10) {
 		threshold_ligne=seuil_max/2;
