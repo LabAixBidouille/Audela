@@ -472,6 +472,21 @@ typedef struct {
    double a; /* demi grand axe pour les asteroides doubles */
 } mc_cdr;
 
+/* --- Modele de pointage de telescopes */
+typedef struct {
+   int kl;
+   int kc;
+	double coef;
+} mc_modpoi_matx;
+
+/* --- Modele de pointage de telescopes */
+typedef struct {
+   int k;
+	char type[10];
+	double coef;
+} mc_modpoi_vecy;
+
+
 /***************************************************************************/
 /***************************************************************************/
 /**                    DEFINITION DES FONCTIONS                           **/

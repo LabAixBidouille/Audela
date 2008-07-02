@@ -140,6 +140,7 @@
  int Cmd_mctcl_optiparamlc(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
  int Cmd_mctcl_lightmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+ int Cmd_mctcl_meo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /*--- Point d'entree de la DLL */
 #ifdef LIBRARY_DLL

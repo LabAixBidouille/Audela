@@ -103,6 +103,7 @@
    Tcl_CreateCommand(interp,"mc_simumagbin",(Tcl_CmdProc *)Cmd_mctcl_simumagbin,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_optiparamlc",(Tcl_CmdProc *)Cmd_mctcl_optiparamlc,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
    Tcl_CreateCommand(interp,"mc_lightmap",(Tcl_CmdProc *)Cmd_mctcl_lightmap,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"mc_meo",(Tcl_CmdProc *)Cmd_mctcl_meo,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
    Tcl_PkgProvide(interp,"libmc","1.0");
 
