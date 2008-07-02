@@ -1,4 +1,4 @@
-# Mise a jour $Id: spcaudace.tcl,v 1.2 2008-06-14 21:12:28 robertdelmas Exp $
+# Mise a jour $Id: spcaudace.tcl,v 1.3 2008-07-02 23:00:38 bmauclaire Exp $
 
 
 ####################################################################################
@@ -111,6 +111,8 @@ proc ::spcaudace::initPlugin { tkbase } {
 proc ::spcaudace::createPluginInstance { { in "" } { visuNo 1 } } {
    global audace
 
+   #--- Chargement de la lib BLT :
+   package require BLT
    #--- Charge le source de la fenetre de spcaudace
    uplevel #0 "source \"[ file join $audace(rep_plugin) tool spcaudace spc_gui.tcl ]\""
 }
