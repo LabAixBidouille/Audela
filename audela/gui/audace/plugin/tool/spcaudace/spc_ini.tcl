@@ -1,12 +1,11 @@
 
 
-# Mise a jour $Id: spc_ini.tcl,v 1.2 2008-06-15 09:49:27 robertdelmas Exp $
+# Mise a jour $Id: spc_ini.tcl,v 1.3 2008-07-02 22:53:23 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
 ## ***** Chargement de la lib BLT *****
 package require BLT
-
 
 #--- Version d'SpcAudace :
 proc spc_version {} {
