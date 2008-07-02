@@ -20,7 +20,7 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.2 2008-06-15 09:48:18 robertdelmas Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.3 2008-07-02 22:49:08 bmauclaire Exp $
 
 
 
@@ -1857,40 +1857,7 @@ proc spc_loadfit { {filenamespc ""} } {
    }
 
   #--- Gestion de la commande getpix selon la version d'Audela :
-  if { [regexp {1.4.0} $audela(version) match resu ] } {
-   if { [ lsearch $listemotsclef "CRVAL1" ] ==-1 || $dispersion == 1. } {
-       # Spectre non calibré
-       ::console::affiche_resultat "Ouverture d'un profil de raies non calibré...\n $filenamespc\n"
-       for {set k 1} {$k<=$naxis1} {incr k} {
-	   lappend profilspc(pixels) $k
-	   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
-       }
-   } else {
-       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n$filenamespc\n"
-	   if { $spc_a < 0.01 } {
-	       for {set k 0} {$k<$naxis1} {incr k} {
-		   #- Ancienne formulation < 070104 :
-		   lappend profilspc(pixels) [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
-		   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
-	       }
-	   } else {
-	       for {set k 0} {$k<$naxis1} {incr k} {
-		   lappend profilspc(pixels) [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
-		   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
-	       }
-	   }
-	   #-- Calibration linéaire :
-       } else {
-	   # Spectre calibré linéairement
-	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré linéairement...\n$filenamespc\n"
-	   for {set k 0} {$k<$naxis1} {incr k} {
-	       lappend profilspc(pixels) [expr $lambda0+$k*$dispersion]
-	       lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
-	   }
-       }
-   }
-  } elseif { [regexp {1.3.0} $audela(version) match resu ] } {
+  if { [regexp {1.3.0} $audela(version) match resu ] } {
    if { [ lsearch $listemotsclef "CRVAL1" ] ==-1 || $dispersion == 1. } {
        # Spectre non calibré
        ::console::affiche_resultat "Ouverture d'un profil de raies non calibré...\n$filenamespc\n"
@@ -1927,6 +1894,40 @@ proc spc_loadfit { {filenamespc ""} } {
 	       set pixel [expr $lambda0+$k*$dispersion]
 	       lappend profilspc(pixels) $pixel
 	       lappend profilspc(intensite) [ buf$audace(bufNo) getpix [list $k 1] ]
+	   }
+       }
+   }
+  } else {
+  #-- Versions Audela >= 1.4.0 :
+   if { [ lsearch $listemotsclef "CRVAL1" ] ==-1 || $dispersion == 1. } {
+       # Spectre non calibré
+       ::console::affiche_resultat "Ouverture d'un profil de raies non calibré...\n $filenamespc\n"
+       for {set k 1} {$k<=$naxis1} {incr k} {
+	   lappend profilspc(pixels) $k
+	   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list $k 1] ] 1 ]
+       }
+   } else {
+       if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
+	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré nonlinéairement...\n$filenamespc\n"
+	   if { $spc_a < 0.01 } {
+	       for {set k 0} {$k<$naxis1} {incr k} {
+		   #- Ancienne formulation < 070104 :
+		   lappend profilspc(pixels) [expr $spc_a*$k*$k+$spc_b*$k+$spc_c ]
+		   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
+	       }
+	   } else {
+	       for {set k 0} {$k<$naxis1} {incr k} {
+		   lappend profilspc(pixels) [expr $spc_d*$k*$k*$k+$spc_c*$k*$k+$spc_b*$k+$spc_a ]
+		   lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
+	       }
+	   }
+	   #-- Calibration linéaire :
+       } else {
+	   # Spectre calibré linéairement
+	   ::console::affiche_resultat "Ouverture d'un profil de raies calibré linéairement...\n$filenamespc\n"
+	   for {set k 0} {$k<$naxis1} {incr k} {
+	       lappend profilspc(pixels) [expr $lambda0+$k*$dispersion]
+	       lappend profilspc(intensite) [ lindex [ buf$audace(bufNo) getpix [list [ expr $k+1 ] 1] ] 1 ]
 	   }
        }
    }
