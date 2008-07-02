@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.2 2008-07-02 22:51:18 bmauclaire Exp $
 
 
 
@@ -758,7 +758,9 @@ proc spc_autonorma { args } {
           set fichier [ file rootname [ lindex $args 0 ] ]
           if { [ lindex $args 1 ] == "n" } {
              set flag_rm 0
-          }
+          } else {
+	     set flag_rm 1
+	  }
        } elseif { [llength $args]==0 } {
 	   set spctrouve [ file rootname [ file tail [ tk_getOpenFile -filetypes [list [list "$caption(tkutil,image_fits)" "[buf$audace(bufNo) extension] [buf$audace(bufNo) extension].gz"] ] -initialdir $audace(rep_images) ] ] ]
 	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
