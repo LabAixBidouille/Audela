@@ -4823,3 +4823,345 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
       return result;     
    }
 }
+
+int Cmd_mctcl_meo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]) {
+/****************************************************************************/
+/* MEO utilities                                                            */
+/****************************************************************************/
+/* Entrees:							   									                */
+/* method:                                                                  */
+/*
+mc_meo corrected_positions STAR_COORD "c:/d/meo/positions.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 36 00] 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34 {GPS 6.92388042 E 43.75046555 1323.338}
+
+source c:/d/meo/meo_tools.tcl
+meo_corrected_positions "c:/d/meo/positions.txt"  [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD_TCL [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
+meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [list 2008 05 30 12 34 51] STAR_COORD     [list 12h45m15.34s +34°56'23.3 J2000.0 J2000.0 0.01 -0.03 34] 290 101325 "c:/d/meo/model.txt"
+
+*/
+/* Sorties :																                */
+/****************************************************************************/
+   char s[1024];
+	char action[50],InputType[50],OutputFile[1024],PointingModelFile[1024];
+	char home[60],ligne[1024];
+	double jddeb, jdfin,equinox,epoch;
+   int result,k,res;
+   //Tcl_DString dsptr;
+   double rhocosphip=0.,rhosinphip=0.;
+   double latitude,altitude,longitude;
+	double ra,cosdec,mura,mudec,parallax,temperature,pressure;
+	char sens[3];
+	double duree,date;
+	double dec,asd2,dec2,delta,mag,diamapp,elong,phase,r,diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north,long1_sun,lati_sun;
+	double ha,az,h,jd,djd,star_site,star_gise;
+	double sun_site,sun_gise,sep,distance,ra0,dec0;
+	double dt,parallactic,posangle,sod0,sod,refraction;
+	int nlignes,nlig=0,kl,valid,kk;
+	FILE *f;
+	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
+	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
+	int nb_coef,nb_star;
+	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,dh,daz;
+
+   if(argc<2) {
+      sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      result = TCL_ERROR;
+	   return(result);
+   } else {
+	   result=TCL_OK;
+	   //Tcl_DStringInit(&dsptr);
+      /* --- decode l'action ---*/
+		strcpy(action,argv[1]);
+		if (strcmp(action,"corrected_positions")==0) {
+			if (argc<3) {
+				strcpy(s,"InputType must be amongst STAR_COORD");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+
+			}
+			strcpy(InputType,argv[2]);
+	      /* --- decode InputType ---*/
+			if (strcmp(InputType,"STAR_COORD")==0) {
+				if (argc<13) {
+					sprintf(s,"Usage: %s corrected_positions STAR_COORD OutputFile DateDeb DateFin InputType InputData Home ?temperature? ?pressure? ?PointingModelFile?", argv[0]);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					result = TCL_ERROR;
+					return(result);
+				}
+		      /* --- decode les parametres de corrected_positions STAR_COORD ---*/
+				k=3;
+				strcpy(OutputFile,argv[k++]);
+	  	      mctcl_decode_date(interp,argv[k++],&jddeb);
+	  	      mctcl_decode_date(interp,argv[k++],&jdfin);
+            mctcl_decode_angle(interp,argv[k++],&ra);
+            ra*=(DR);
+            mctcl_decode_angle(interp,argv[k++],&dec);
+            dec*=(DR);
+				cosdec=cos(dec);
+	  	      mctcl_decode_date(interp,argv[k++],&equinox);
+	  	      mctcl_decode_date(interp,argv[k++],&epoch);
+				mura=atof(argv[k++])*1e-3/86400/cosdec;
+				mudec=atof(argv[k++])*1e-3/86400;
+				parallax=atof(argv[k++]);
+				strcpy(home,argv[k++]);
+				result=mctcl_decode_home(interp,home,&longitude,sens,&latitude,&altitude,&longitude,&rhocosphip,&rhosinphip);
+				if (result==TCL_ERROR) {
+					Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
+					result = TCL_ERROR;
+					return(result);
+				}
+				if (argc>14) {
+					temperature=atof(argv[k++]);
+				} else {
+					temperature=290.;
+				}
+				if (argc>15) {
+					pressure=atof(argv[k++]);
+				} else {
+					pressure=101325.;
+				}
+				if (argc>16) {
+					strcpy(PointingModelFile,argv[k++]);
+				} else {
+					strcpy(PointingModelFile,"");
+				}
+				/* --- charge le modele de pointage ---*/
+				if (strcmp(PointingModelFile,"")!=0) {
+					sprintf(s,"source \"%s\"",PointingModelFile);
+			      res=Tcl_Eval(interp,s);
+					if (res==TCL_ERROR) {
+						sprintf(s,"PointingModelFile %s not found (%s)",PointingModelFile,interp->result);
+						Tcl_SetResult(interp,s,TCL_VOLATILE);
+						result = TCL_ERROR;
+						return(result);
+					}
+		         strcpy(s,"llength $meo(modpoi,coefs,symbos)");
+		         res=Tcl_Eval(interp,s);
+					if (res==TCL_OK) {
+						nb_coef=atoi(interp->result);
+						nb_star=1;
+						matx=(mc_modpoi_matx*)malloc(2*nb_star*nb_coef*sizeof(mc_modpoi_matx));
+						vecy=(mc_modpoi_vecy*)malloc(nb_coef*sizeof(mc_modpoi_vecy));
+					}
+					if ((matx!=NULL)&&(vecy!=NULL)) {
+						for (k=0;k<nb_coef;k++) {
+							sprintf(s,"lindex $meo(modpoi,coefs,symbos) %d",k);
+							res=Tcl_Eval(interp,s);
+							strcpy(vecy[k].type,interp->result);
+							vecy[k].k=k;
+							sprintf(s,"lindex [lindex $meo(modpoi,matrices) 0] %d",k);
+							res=Tcl_Eval(interp,s);
+							vecy[k].coef=atof(interp->result); /* arcmin */
+						}
+					}
+				}
+				/* --- calculs ---*/
+				duree=(jdfin-jddeb);
+				if (duree<=0) {
+					sprintf(s,"error DateDeb(%s) > DateFin(%s)",argv[4],argv[5]);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					result = TCL_ERROR;
+					if (matx!=NULL) { free(matx); }
+					if (vecy!=NULL) { free(vecy); }
+					return(result);
+				}
+				date=(jddeb+jdfin)/2.;
+				sod0=(jddeb+0.5-floor(jddeb+0.5))*86400.;
+				/* --- date fixe ---*/
+				jd=date;
+				mc_adsolap(jd,longitude,rhocosphip,rhosinphip,&asd2,&dec2,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+				mc_ad2hd(jd,longitude,asd2,&ha);
+			   mc_hd2ah(ha,dec2,latitude,&az,&h);
+				sun_site=h;
+				sun_gise=az-PI;
+				// --- Transforme les coordonnées moyennes en coordonnees observées
+				// --- aberration annuelle
+				mc_aberration_annuelle(jd,ra,dec,&asd2,&dec2,1);
+				ra=asd2;
+				dec=dec2;
+				// --- correction de precession
+				/* --- calcul de mouvement propre ---*/
+				ra+=(jd-epoch)/365.25*mura;
+				dec+=(jd-epoch)/365.25*mudec;
+				/* --- calcul de la precession ---*/
+				mc_precad(equinox,ra,dec,jd,&asd2,&dec2);
+				ra=asd2;
+				dec=dec2;
+				/* --- correction de parallaxe stellaire*/
+				if (parallax>0) {
+		         mc_parallaxe_stellaire(jd,ra,dec,&asd2,&dec2,parallax);
+					ra=asd2;
+					dec=dec2;
+				}
+				/* --- correction de nutation */
+				mc_nutradec(jd,ra,dec,&asd2,&dec2,1);
+				ra=asd2;
+				dec=dec2;
+				/* --- aberration de l'aberration diurne*/
+				mc_aberration_diurne(jd,ra,dec,longitude,rhocosphip,rhosinphip,&asd2,&dec2,1);
+				ra=asd2;
+				dec=dec2;
+				// --- FIN DES CORRECTIONS FIXES
+				dt=0.00016667*1200 ; // time sampling of the positions to calculate
+				nlignes=(int)(floor(duree*86400/dt));
+				//
+				f=fopen(OutputFile,"wt");
+				if (f==NULL) {
+					sprintf(s,"Error opening file %s",OutputFile);
+					Tcl_SetResult(interp,s,TCL_VOLATILE);
+					result = TCL_ERROR;
+					if (matx!=NULL) { free(matx); }
+					if (vecy!=NULL) { free(vecy); }
+					return(result);
+				}
+				fprintf(f,"STAR_COORD\n");
+				fprintf(f,"STAR_COORD %.7f\n",jddeb-2400000.5);
+				fprintf(f,"  43.75463222   6.92157300 1323.338  43.75046555   6.92388042   .0000 3.9477997593 0. 0. 0. 6.300388098783  .5000\n");
+				ra0=ra;
+				dec0=dec;
+				//
+				for (kl=0;kl<nlignes;kl++) {
+					djd=dt*kl/86400.;
+					jd=jddeb+djd;
+					ra=ra0;
+					dec=dec0;
+					/* --- coordonnées horizontales---*/
+					mc_ad2hd(jd,longitude,ra,&ha);
+					mc_hd2ah(ha,dec,latitude,&az,&h);
+					star_site=h;
+					star_gise=az-PI;
+					mc_sepangle(star_gise,sun_gise,star_site,sun_site,&sep,&posangle);
+					valid=1;
+					if (sep<10) {
+						valid=0;
+					}
+					/* --- refraction ---*/
+					mc_refraction(h,1,temperature,pressure,&refraction);
+					h+=refraction;
+			      mc_hd2parallactic(ha,dec,latitude,&parallactic);
+					star_site=h;
+					// --- Transforme les coordonnees observées en coordonnées télescope
+					if ((strcmp(PointingModelFile,"")!=0)&&(matx!=NULL)&&(vecy!=NULL)) {
+						tane=tan(h);
+						cosa=cos(az);
+						sina=sin(az);
+						cose=cos(h);
+						sine=sin(h);
+						sece=1./cos(h);
+						cos2a=cos(2.*az);
+						sin2a=sin(2.*az);
+						cos3a=cos(3.*az);
+						sin3a=sin(3.*az);
+						kk=0;
+						for (k=0;k<nb_coef;k++) {
+							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
+							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sece; } 
+							if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina*tane; }
+							if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa*tane; }
+							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; } 
+							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
+							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; } 
+							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
+							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
+							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
+							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
+							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
+							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a*tane; }
+							if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a*tane; }
+							if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a*tane; }
+							if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a*tane; }
+							kk++;
+						}
+						daz=0.;
+						for (k=0;k<nb_coef;k++) {
+							daz+=(matx[k].coef*vecy[k].coef);
+						}
+						for (k=0;k<nb_coef;k++) {
+							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
+							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"CA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"AN")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; }
+							if (strcmp(vecy[k].type,"AW")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
+							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
+							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; } 
+							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sine; }
+							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
+							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
+							if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
+							if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
+							if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
+							kk++;
+						}
+						dh=0.;
+						for (k=0;k<nb_coef;k++) {
+							dh+=(matx[nb_coef+k].coef*vecy[k].coef);
+						}
+						az+=(daz/60.*DR);
+						h+=(dh/60.*DR);
+					}
+					/* --- final ---*/
+					star_site=h;
+					star_gise=az-PI+4*PI;
+					star_gise=fmod(star_gise,2*(PI));
+					/* --- conversion radian -> degres ---*/
+					star_site/=(DR);
+					star_gise/=(DR);
+					parallactic/=(DR);
+					// --- Calcule le SOD
+					sod=sod0+dt*kl;
+					if (sod>=86400) {
+						sod-=86400.;
+					}
+					if (star_gise<0) { star_gise+=360; }
+					// --- Mise en forme finale de la ligne
+					distance=-1;
+					sprintf(ligne,"%9.3f %9.6f %10.6f %13.6f %10.6f %d",sod,star_site,star_gise,distance,parallactic,valid);
+					fprintf(f,"%s\n",ligne);
+					nlig++;
+				}
+				fclose(f);
+				if (matx!=NULL) { free(matx); }
+				if (vecy!=NULL) { free(vecy); }
+				sprintf(s,"%d",nlig);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_OK;
+				return(result);
+
+			} else {
+				strcpy(s,"InputType must be amongst STAR_COORD");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				if (matx!=NULL) { free(matx); }
+				if (vecy!=NULL) { free(vecy); }
+				return(result);
+			}
+		} else {
+			strcpy(s,"Action must be amongst corrected_positions");
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			result = TCL_ERROR;
+			if (matx!=NULL) { free(matx); }
+			if (vecy!=NULL) { free(vecy); }
+			return(result);
+		}
+		/*
+      Tcl_DStringAppend(&dsptr,s,-1);
+      Tcl_DStringResult(interp,&dsptr);
+      Tcl_DStringFree(&dsptr);
+		*/
+		if (matx!=NULL) { free(matx); }
+		if (vecy!=NULL) { free(vecy); }
+      return result;     
+   }
+}
