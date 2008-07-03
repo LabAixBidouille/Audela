@@ -1,6 +1,6 @@
 #
 # Fichier : skybot_resolver.cap
-# Mise a jour $Id: skybot_resolver.cap,v 1.12 2008-05-24 22:44:47 jberthier Exp $
+# Mise a jour $Id: skybot_resolver.cap,v 1.13 2008-07-03 11:55:33 jberthier Exp $
 #
 
 #=========================================================================
@@ -52,8 +52,9 @@ set caption(resolver,msg_reel_fov)          "# Les dimensions du champ de vue do
 set caption(resolver,msg_internet)          "An Internet connexion is required to access SkyBoT and Sesame services."
 set caption(resolver,msg_skybot)            "The SkyBoT or Sesame server is unreachable; please, try again later."
 
-set caption(resolver,msg_nbre_objets)       "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
-set caption(resolver,msg_nbre_objet)        "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
+set caption(resolver,msg_nbre_objets)       "# Nombre d'objets du Système Solaire trouvés dans le FOV :"
+set caption(resolver,msg_nbre_objet)        "# Un seul objet  du Système Solaire trouvé dans le FOV"
+set caption(resolver,msg_no_objet)          "# Aucun objet du Système Solaire n'a été trouvé dans le FOV"
 
 set caption(resolver,param_none)            "# Pas d'information disponible !"
 set caption(resolver,format_target)         "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
@@ -112,7 +113,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(resolver,msg_format)         "Format de la saisie"
    set caption(resolver,msg_notarget)       "Veuillez saisir le nom d'une cible"
    set caption(resolver,msg_noresolver)     "Veuillez choisir au moins un resolver pour calculer l'éphémérides de la cible..."
-   set caption(resolver,msg_objnotfound)    "RESOLVER -> La cible n'a pas pu être résolue ni par SkyBoT@IMCCE ni par Sesame@"
+   set caption(resolver,msg_objnotfound)    "La cible n'a pas pu être résolue ni par SkyBoT@IMCCE ni par Sesame@"
    set caption(resolver,msg_nodata)         "Veuillez calculer l'éphémérides d'un corps céleste avant de lancer la recherche"
    set caption(resolver,msg_noepoch)        "Veuillez saisir une date"
    set caption(resolver,msg_date_max)       "La date saisie doit être une date antérieure au"
@@ -122,8 +123,9 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(resolver,msg_reel_fov)       "Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
    set caption(resolver,msg_skybot)         "Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
-   set caption(resolver,msg_nbre_objets)    "::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_no_objet)       "Aucun objet du Système Solaire n'a été trouvé dans le FOV"
 
    set caption(resolver,param_none)         "Pas d'information disponible !"
    set caption(resolver,format_target)      "Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
@@ -192,8 +194,9 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
    set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_no_objet)       "# Aucun objet du Système Solaire n'a été trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
@@ -262,8 +265,9 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
    set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_no_objet)       "# Aucun objet du Système Solaire n'a été trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
@@ -332,8 +336,9 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
    set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_no_objet)       "# Aucun objet du Système Solaire n'a été trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\
@@ -402,8 +407,9 @@ indiquée ne seront pas affichés. Saisir 0 pour ne pas appliquer de filtre"
    set caption(resolver,msg_reel_fov)       "As dimensões do campo de visão devem ser um número real positivo, não nulo e inferior a 36000 segundos de grau (10°)"
    set caption(resolver,msg_internet)       "Uma ligação à Internet operacional é necessária para aceder aos serviços SkyBoT e Sesame."
    set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
-   set caption(resolver,msg_nbre_objets)    "::SkyBoT:: Número de objectos do Sistema Solar encontrados no FOV :"
-   set caption(resolver,msg_nbre_objet)     "::SkyBoT:: Um só objecto do Sistema Solar encontrado no FOV"
+   set caption(resolver,msg_nbre_objets)    "Número de objectos do Sistema Solar encontrados no FOV :"
+   set caption(resolver,msg_nbre_objet)     "Um só objecto do Sistema Solar encontrado no FOV"
+   set caption(resolver,msg_no_objet)       "# Aucun objet du Système Solaire n'a été trouvé dans le FOV"
 
    set caption(resolver,param_none)         "Nenhuma informação disponivel !"
    set caption(resolver,format_target)      "Escolher o nome de um objecto celeste:\n - do Sistema Solar, entre os asteróides, planetas ou satélites naturais (ex.: Ceres, 1996 TO66, 15905, Marte, J-IV, etc.)\n\
@@ -472,8 +478,9 @@ indicado não serão mostrados. Escolher 0 para não aplicar filtro"
    set caption(resolver,msg_reel_fov)       "# Les dimensions du champ de vue doivent être un nombre réel positif, non nul et inférieur à 36000 secondes de degré (10°)"
    set caption(resolver,msg_internet)       "# Une connexion à Internet opérationnelle est nécessaire pour accéder aux services SkyBoT et Sesame."
    set caption(resolver,msg_skybot)         "# Le serveur SkyBoT ou Sesame n'est pas accessible. Veuillez recommencer l'opération ultérieurement."
-   set caption(resolver,msg_nbre_objets)    "# ::SkyBoT:: Nombre d'objets du Système Solaire trouvés dans le FOV :"
-   set caption(resolver,msg_nbre_objet)     "# ::SkyBoT:: Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_nbre_objets)    "# Nombre d'objets du Système Solaire trouvés dans le FOV :"
+   set caption(resolver,msg_nbre_objet)     "# Un seul objet  du Système Solaire trouvé dans le FOV"
+   set caption(resolver,msg_no_objet)       "# Aucun objet du Système Solaire n'a été trouvé dans le FOV"
 
    set caption(resolver,param_none)         "# Pas d'information disponible !"
    set caption(resolver,format_target)      "# Saisir le nom d'un objet céleste:\n - du Système Solaire parmis les astéroïdes, planètes ou satellites naturels (ex.: Ceres, 1996 TO66, 15905, mars, J-IV, etc.)\n\

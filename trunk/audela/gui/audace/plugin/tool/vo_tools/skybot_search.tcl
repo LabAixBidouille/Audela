@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.19 2008-05-24 22:44:47 jberthier Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.20 2008-07-03 11:55:34 jberthier Exp $
 #
 
 namespace eval skybot_Search {
@@ -1714,15 +1714,17 @@ namespace eval skybot_Search {
       set ok(skybot) 0
       set erreur [ catch { vo_skybotconesearch $voconf(date_image) $voconf(centre_ad_image) $voconf(centre_dec_image) \
                                      $voconf(taille_champ_calcul) "text" "basic" $voconf(observer) $voconf(filter) } voconf(skybot) ]
+
       if { $erreur == "0" } {
-         if { [ lindex $voconf(skybot) 0 ] != "SKYBOT" } {
-            set ok(skybot) 1
-         } else {
+         if { [ lindex $voconf(skybot) 0 ] == "no" } {
             set ok(skybot) 2
+            set voconf(skybot) $caption(search,msg_no_objet)
+         } else {
+            set ok(skybot) 1
          }
       } else {
          set ok(skybot) 3
-         set voconf(skybot) [concat "SKYBOT ->  $voconf(skybot)"]
+         set voconf(skybot) [concat "SKYBOT -> $voconf(skybot)"]
       }
 
       #--- Gestion des erreurs
@@ -1874,7 +1876,7 @@ namespace eval skybot_Search {
          if { $i > "1" } {
             ::console::disp "$caption(search,msg_nbre_objets) $i \n\n"
          } else {
-            ::console::disp "$caption(search,msg_nbre_objet) $i \n\n"
+            ::console::disp "$caption(search,msg_nbre_objet) \n\n"
          }
       }
    }

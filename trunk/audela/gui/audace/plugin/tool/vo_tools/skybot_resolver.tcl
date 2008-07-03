@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.19 2008-05-24 22:44:47 jberthier Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.20 2008-07-03 11:55:34 jberthier Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -890,12 +890,13 @@ namespace eval skybot_Resolver {
       if { $voconf(but_skybot) } {
          set erreur [ catch { vo_skybotresolver $date_calcul $voconf(nom_objet) text basic $voconf(iau_code_obs) } voconf(skybot) ]
          if { $erreur == "0" } {
-            if { [ lindex $voconf(skybot) 0 ] != "SKYBOTResolver" } {
+            if { [ lindex $voconf(skybot) 0 ] == "no" } {
+               set ok(skybot) 2
+               set voconf(skybot)  [ concat "SKYBOTResolver -> The solar system object '$voconf(nom_objet)' was not resolved by SkyBoT" ]
+               set voconf(type) "?"
+            } else {
                set ok(skybot) 1
                set voconf(type) "OSS"
-            } else {
-               set ok(skybot) 2
-               set voconf(type) "?"
             }
          } else {
             set ok(skybot) 3
@@ -1112,11 +1113,13 @@ namespace eval skybot_Resolver {
       set ok(skybot) 0
       set erreur [ catch { vo_skybotconesearch $date_calcul $voconf(ad_objet) $voconf(dec_objet) $voconf(taille_champ) \
                                      text basic $voconf(iau_code_obs) $voconf(filter) } voconf(skybot) ]
+
       if { $erreur == "0" } {
-         if { [ lindex $voconf(skybot) 0 ] != "SKYBOT" } {
-            set ok(skybot) 1
-         } else {
+         if { [ lindex $voconf(skybot) 0 ] == "no" } {
             set ok(skybot) 2
+            set voconf(skybot) $caption(search,msg_no_objet)
+         } else {
+            set ok(skybot) 1
          }
       } else {
          set ok(skybot) 3
