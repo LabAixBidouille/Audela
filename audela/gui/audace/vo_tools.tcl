@@ -2,7 +2,7 @@
 # Fichier : vo_tools.tcl
 # Description : Outils pour l'Observatoire Virtuel
 # Auteur : Alain KLOTZ et Jerome BERTHIER
-# Mise a jour $Id: vo_tools.tcl,v 1.18 2008-06-29 21:41:26 robertdelmas Exp $
+# Mise a jour $Id: vo_tools.tcl,v 1.19 2008-07-03 11:55:32 jberthier Exp $
 #
 
 # ------------------------------------------------------------------------------------
@@ -349,15 +349,19 @@ proc vo_skybotconesearch { args } {
       # recuperation des resultats
       set flag [lindex $response 1]
       set result [lindex $response 5]
-
+               
       # retour du resultat et gestion des cas d'erreur
-      if { $erreur == "0" && $flag >= 0 } {
+      if { $erreur == "0" && $flag >= 1 } {
          return $result
       } else {
-         if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
-            tk_messageBox -title "error" -type ok -message [concat "skybotconesearch: error: " $response]
+         if { $erreur == "0" && $flag == 0 } {
+            return "no"
+         } else {
+            if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+               tk_messageBox -title "error" -type ok -message [concat "skybotconesearch: error: " $response]
+            }
+            return "failed"
          }
-         return "failed"
       }
 
    } else {
@@ -456,13 +460,17 @@ proc vo_skybotresolver { args } {
       set result [lindex $response 5]
 
       # retour du resultat et gestion des cas d'erreur
-      if { $erreur == "0" && $flag >= 0 } {
+      if { $erreur == "0" && $flag >= 1 } {
          return $result
       } else {
-         if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
-            tk_messageBox -title "error" -type ok -message [concat "skybotresolver: error: " $response]
+         if { $erreur == "0" && $flag == 0 } {
+            return "no"
+         } else {
+            if {[set nameofexecutable [file tail [file rootname [info nameofexecutable]]]]=="audela"} {
+               tk_messageBox -title "error" -type ok -message [concat "skybotresolver: error: " $response]
+            }
+            return "failed"
          }
-         return "failed"
       }
 
    } else {
