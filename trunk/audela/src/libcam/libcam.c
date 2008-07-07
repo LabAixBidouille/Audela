@@ -21,7 +21,7 @@
  */
 
 /*
- * $Id: libcam.c,v 1.21 2008-05-10 05:54:43 jacquesmichelet Exp $
+ * $Id: libcam.c,v 1.22 2008-07-07 20:25:53 michelpujol Exp $
  */
 
 #include "sysexp.h"
@@ -795,7 +795,7 @@ static void AcqRead(ClientData clientData )
    Tcl_Interp *interp;
 
    cam = (struct camprop *) clientData;
-   interp = cam->interp;
+   interp = cam->interpCam;
 
    // Information par defaut concernant l'image
    // ATTENTION : la camera peut mettre a jour ces valeurs pendant l'execution de read_ccd()
@@ -810,8 +810,8 @@ static void AcqRead(ClientData clientData )
    // allocation par defaut du buffer
    p = (unsigned short *) calloc(cam->w * cam->h, sizeof(unsigned short));
 
-   libcam_GetCurrentFITSDate(interp, cam->date_end);
-   libcam_GetCurrentFITSDate_function(interp, cam->date_end, "::audace::date_sys2ut");
+   libcam_GetCurrentFITSDate(cam->interp, cam->date_end);
+   libcam_GetCurrentFITSDate_function(cam->interp, cam->date_end, "::audace::date_sys2ut");
 
    // Test de l'existence du buffer avant l'acquisition
    // DM: cela permet eventuellement a la fonction read_ccd de creer des
@@ -1057,7 +1057,7 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          sprintf(ligne, "status_cam%d", cam->camno);
          Tcl_SetVar(interp, ligne, "exp", TCL_GLOBAL_ONLY);
          // set current interp for multithread
-         cam->interp = interp;
+         cam->interpCam = interp;
          cam->exptimeTimer = cam->exptime;
          cam->timerExpiration = (struct TimerExpirationStruct *) calloc(1, sizeof(struct TimerExpirationStruct));
          cam->timerExpiration->clientData = clientData;
@@ -1081,8 +1081,8 @@ static int cmdCamAcq(ClientData clientData, Tcl_Interp * interp, int argc, char 
          } else {
             // je teste cam->timerExpiration car il peut �tre nul si cmdCamStop a ete appele entre temps
             if( cam->timerExpiration != NULL ) {
-               libcam_GetCurrentFITSDate(interp, cam->date_obs);
-               libcam_GetCurrentFITSDate_function(interp, cam->date_obs, "::audace::date_sys2ut");
+               libcam_GetCurrentFITSDate(cam->interp, cam->date_obs);
+               libcam_GetCurrentFITSDate_function(cam->interp, cam->date_obs, "::audace::date_sys2ut");
                /* Creation du timer pour realiser le temps de pose. */
                i = (int) (1000 * cam->exptimeTimer);
                cam->timerExpiration->TimerToken = Tcl_CreateTimerHandler(i, AcqRead, (ClientData) cam);
