@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_1.tcl
 # Description : Script regroupant les fonctionnalites du menu Fichier
-# Mise a jour $Id: aud_menu_1.tcl,v 1.23 2008-04-18 21:42:41 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_1.tcl,v 1.24 2008-07-07 17:51:39 michelpujol Exp $
 #
 
 namespace eval ::audace {
@@ -193,6 +193,17 @@ namespace eval ::audace {
          set conf(console,wmgeometry) "[wm geometry $audace(Console)]"
          if { [ winfo exists $audace(base).tjrsvisible ] == 1 } {
             set conf(ouranos,wmgeometry) "[wm geometry $audace(base).tjrsvisible]"
+         }
+
+         #--- tous les outils de la visu 1
+         ::confVisu::stopTool 1
+         #--- tous les outils des autres visu
+         foreach visuName [winfo children .] {
+            set visuNo ""
+            scan $visuName ".visu%d" visuNo
+            if { $visuNo != "" } {
+               ::confVisu::stopTool $visuNo
+            }
          }
          #--- Arrete les plugins camera
          ::confCam::stopPlugin
