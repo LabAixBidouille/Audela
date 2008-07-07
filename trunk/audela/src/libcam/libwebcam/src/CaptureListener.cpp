@@ -2,6 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#if defined(WIN32)
+#include <windows.h>
+#include <vfw.h>
+#endif
 #include <tcl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,7 +50,7 @@ void CCaptureListener::setTclStatusVariable(char * value) {
  *    The end will be notify by StatusCallbackProc
  */
 int  CCaptureListener::onNewStatus(int statusID, char * message) {
-#if defined(OS_WIN)
+#if defined(WIN32)
    switch (statusID) {
    case IDS_CAP_BEGIN :
 

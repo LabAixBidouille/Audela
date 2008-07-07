@@ -18,6 +18,10 @@ class CCaptureLinux : public CCapture {
     CCaptureLinux(char * portName);
     ~CCaptureLinux();
     BOOL initHardware(UINT uIndex, CCaptureListener * captureListener, char *errorMsg);
+    BOOL connect(BOOL longexposure, char *errorMsg);
+    BOOL disconnect(char *errorMsg);
+    BOOL isConnected();
+
 
     // status
     BOOL hasDlgVideoFormat();
@@ -53,7 +57,7 @@ class CCaptureLinux : public CCapture {
 
     // single frame capture
     BOOL grabFrameNoStop();
-    BOOL grabFrame(int longuepose, char *errorMessage);
+    BOOL grabFrame(char *errorMessage);
     unsigned char * getGrabbedFrame(char *errorMessage);
 
     // AVI capture command
@@ -69,6 +73,7 @@ class CCaptureLinux : public CCapture {
 private :
 
    int IsPhilips;
+   BOOL longExposure;
 /**
  * webcam device (only for Linux). uses pwc and pwcx modules
  * - default: /dev/video0

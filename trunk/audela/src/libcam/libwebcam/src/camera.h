@@ -27,6 +27,12 @@
 #include "libname.h"
 #include <libcam/libstruc.h>
 
+#if defined(OS_LIN)
+#if !defined(BOOL)
+#define BOOL  unsigned short
+#endif
+#endif
+
 
 #ifdef __cplusplus
 extern "C" {         /* Assume C declarations for C++ */
@@ -92,7 +98,7 @@ typedef struct _PrivateParams PrivateParams;
    int longueposelinkno;
    int longueposelinkbit;
    char longueposestart;
-   char longueposestop;
+   //char longueposestop;
 
 
 /**
@@ -128,6 +134,8 @@ typedef struct _PrivateParams PrivateParams;
 };  // end of  struct camprop
 
 
+int webcam_setConnectionState(struct camprop *cam, BOOL state);
+int webcam_getConnectionState(struct camprop *cam, BOOL *state);
 int webcam_initLongExposureDevice(struct camprop *cam);
 int webcam_setLongExposureDevice(struct camprop *cam, unsigned char value);
 int webcam_saveUser(struct camprop *cam);

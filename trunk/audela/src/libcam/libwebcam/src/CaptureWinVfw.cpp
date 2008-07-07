@@ -18,10 +18,10 @@
 
 CCaptureWinVfw::CCaptureWinVfw()
 {
-   
+
    lpwfex = NULL;
    hwndCap = NULL;
-   grabBuffer = NULL; 
+   grabBuffer = NULL;
    previousOwnerWindowProc = 0;
 }
 
@@ -56,16 +56,16 @@ BOOL CCaptureWinVfw::initHardware(UINT uIndex, CCaptureListener *captureListener
    BOOL    result;
 
    HWND hwndParent = GetDesktopWindow();
-   this->captureListener = captureListener; 
+   this->captureListener = captureListener;
+   this->index = uIndex;
 
    // create a capture window within vidframe.
-   // Leave vidframeLayout to do the layout
    hwndCap = capCreateCaptureWindow(
       NULL,
       WS_CHILD | WS_VISIBLE,
       0, 0, 160, 120,
       hwndParent,                 // parent window
-      1                           // child window id
+      uIndex                      // child window id
       );
    if (hwndCap == NULL) {
       return FALSE;
@@ -84,9 +84,25 @@ BOOL CCaptureWinVfw::initHardware(UINT uIndex, CCaptureListener *captureListener
    // declare callback functions
    capSetCallbackOnError(hwndCap,  errorCallbackProc) ;
    capSetCallbackOnStatus(hwndCap, statusCallbackProc) ;
+   result = TRUE;
+
+   return result;
+}
+
+/**
+*----------------------------------------------------------------------
+*
+* connect video stream
+*
+*----------------------------------------------------------------------
+*/
+BOOL CCaptureWinVfw::connect(BOOL longExposure, char *errorMsg) {
+   BOOL result;
+
+   this->longExposure = longExposure;
 
    // Try connecting to the capture driver
-   if (capDriverConnect(hwndCap, uIndex) == TRUE) {
+   if (capDriverConnect(hwndCap, 0) == TRUE) {
       // Get the capabilities of the capture driver
       capDriverGetCaps(hwndCap, &capDriverCaps, sizeof(CAPDRIVERCAPS)) ;
       // Get the settings for the capture window
@@ -97,11 +113,41 @@ BOOL CCaptureWinVfw::initHardware(UINT uIndex, CCaptureListener *captureListener
       result = FALSE;
    }
 
-
    return result;
 }
 
 
+/**
+*----------------------------------------------------------------------
+*
+* disconnect video stream
+*
+*----------------------------------------------------------------------
+*/
+BOOL CCaptureWinVfw::disconnect(char *errorMsg) {
+   BOOL   result = TRUE;
+
+   if( hwndCap != NULL ) {
+      capPreview(hwndCap, FALSE);
+      capDriverDisconnect (hwndCap);
+      // Get the capabilities of the capture driver
+      capDriverGetCaps(hwndCap, &capDriverCaps, sizeof(CAPDRIVERCAPS)) ;
+   }
+   return result;
+}
+
+/**
+*----------------------------------------------------------------------
+* isConnected
+*  returns connected sate
+*
+*----------------------------------------------------------------------
+*/
+BOOL CCaptureWinVfw::isConnected() {
+   BOOL   result;
+   result = capDriverCaps.fCaptureInitialized;
+   return result;
+}
 
 
 /**
@@ -112,7 +158,7 @@ BOOL CCaptureWinVfw::initHardware(UINT uIndex, CCaptureListener *captureListener
 *----------------------------------------------------------------------
 */
 
-unsigned int     CCaptureWinVfw::getImageWidth(){
+unsigned int CCaptureWinVfw::getImageWidth(){
 
    BITMAPINFO bi;
    int   formatSize;
@@ -166,16 +212,16 @@ BOOL CCaptureWinVfw::isPreviewEnabled()  {
 }
 
 LRESULT APIENTRY CCaptureWinVfwOwnerWindowProc(
-    HWND hwnd, 
-    UINT uMsg, 
-    WPARAM wParam, 
-    LPARAM lParam) 
-{ 
+    HWND hwnd,
+    UINT uMsg,
+    WPARAM wParam,
+    LPARAM lParam)
+{
    CCaptureWinVfw* capture = (CCaptureWinVfw*) GetWindowLong(hwnd, GWL_ID);
    //CCaptureWinVfw* capture = CCaptureWinVfw::userData;
    if ( capture == NULL) {
       return FALSE;
-   } 
+   }
    if (uMsg == WM_USER+1) {
       double zoom;
       if ( HIWORD(lParam) == 1 ) {
@@ -187,7 +233,7 @@ LRESULT APIENTRY CCaptureWinVfwOwnerWindowProc(
       int height = capture->getImageHeight();
 
       capture->setWindowSize((int) (width * zoom),(int)(height *zoom));
-      return TRUE; 
+      return TRUE;
    } else {
       //return DefWindowProc(hwnd, uMsg, wParam, lParam);
       if ( capture->previousOwnerWindowProc != 0 && capture->previousOwnerWindowProc != (LONG)CCaptureWinVfwOwnerWindowProc) {
@@ -197,7 +243,7 @@ LRESULT APIENTRY CCaptureWinVfwOwnerWindowProc(
          return TRUE;
       }
    }
-} 
+}
 
 void CCaptureWinVfw::setPreview(BOOL value, int owner) {
 
@@ -205,14 +251,14 @@ void CCaptureWinVfw::setPreview(BOOL value, int owner) {
    if( value == TRUE && previousOwnerWindowProc == 0) {
       ownerHwnd = owner;
       previousOwnerUserdata   = SetWindowLong((HWND)owner,GWL_ID,(LONG) this);
-      previousOwnerWindowProc = SetWindowLong((HWND)owner, GWL_WNDPROC, (LONG) CCaptureWinVfwOwnerWindowProc); 
+      previousOwnerWindowProc = SetWindowLong((HWND)owner, GWL_WNDPROC, (LONG) CCaptureWinVfwOwnerWindowProc);
       SetParent(hwndCap, (HWND) owner);
       ShowWindow(hwndCap, SW_SHOW);
-   } 
-   
+   }
+
    if( value == FALSE && previousOwnerWindowProc != 0 ) {
       SetParent(hwndCap, (HWND) NULL);
-      SetWindowLong((HWND)ownerHwnd, GWL_WNDPROC, previousOwnerWindowProc); 
+      SetWindowLong((HWND)ownerHwnd, GWL_WNDPROC, previousOwnerWindowProc);
       //SetWindowLong((HWND)ownerHwnd, GWL_USERDATA, previousOwnerUserdata );
       SetWindowLong((HWND)ownerHwnd, GWL_ID, previousOwnerUserdata );
       previousOwnerUserdata   = 0;
@@ -221,7 +267,7 @@ void CCaptureWinVfw::setPreview(BOOL value, int owner) {
    }
 
    // update local capStatus
-   capGetStatus(hwndCap, &capStatus, sizeof(CAPSTATUS));   
+   capGetStatus(hwndCap, &capStatus, sizeof(CAPSTATUS));
 }
 
 BOOL CCaptureWinVfw::getOverlay()  {
@@ -498,10 +544,10 @@ BOOL CCaptureWinVfw::openDlgVideoFormat() {
 BOOL CCaptureWinVfw::openDlgVideoSource() {
    BOOL result ;
 
+   int oldMode = Tcl_SetServiceMode(TCL_SERVICE_ALL);
    result = capDlgVideoSource(hwndCap);
+   Tcl_SetServiceMode(oldMode);
    if (result) {
-      // If successful,
-      // Get the new image dimension and center capture window
       capGetStatus(hwndCap, &capStatus, sizeof(CAPSTATUS)) ;
    }
    return result;
@@ -770,7 +816,7 @@ BOOL CCaptureWinVfw::isCapturingNow()
  *
  *
  * Parameters:
- *    longExposure : 
+ *    longExposure :
  * Results:
  *    TRUE or FALSE.
  * Side effects:
@@ -778,7 +824,7 @@ BOOL CCaptureWinVfw::isCapturingNow()
  *
  *----------------------------------------------------------------------
  */
-BOOL CCaptureWinVfw::grabFrame( int longExposure, char *errorMessage)
+BOOL CCaptureWinVfw::grabFrame(char *errorMessage)
 {
    BOOL result = FALSE;
 
@@ -803,7 +849,7 @@ BOOL CCaptureWinVfw::grabFrame( int longExposure, char *errorMessage)
  *  vhdr:            video header
  * Side effects:
  *    converts I420 frame to DIB frame with ICDecompress standard function
- *    stores capture->grabBuffer 
+ *    stores capture->grabBuffer
  */
 LRESULT CALLBACK  CCaptureWinVfw::grabFrameCallbackProc(HWND hWnd, VIDEOHDR *vhdr) {
     int        result;
@@ -883,11 +929,11 @@ LRESULT CALLBACK  CCaptureWinVfw::grabFrameCallbackProc(HWND hWnd, VIDEOHDR *vhd
  *    returns grabbeb frame
  *
  * Parameters:
- *    longExposure : 
+ *    longExposure :
  * Results:
  *    frame buffer , or NULL.
  * Side effects:
- *    
+ *
  *
  *----------------------------------------------------------------------
  */
@@ -939,9 +985,7 @@ int CCaptureWinVfw::setCallbackUserData(int position, long newUserData){
 *  callbackProc:  new callback proc
 *----------------------------------------------------------------------
 */
-long CCaptureWinVfw::getCallbackUserData(HWND hwnd, int position){
-
-
+long CCaptureWinVfw::getCallbackUserData(HWND hwnd, int position) {
    long * tablePtr =  (long*) capGetUserData(hwnd);
    long ptr = (long) (tablePtr[position]);
    return ptr;
@@ -1006,9 +1050,6 @@ LRESULT FAR PASCAL CCaptureWinVfw::statusCallbackProc(HWND hWnd, int nID, LPSTR 
    return result;
 }
 
-
-
-
 /**
  * setStatusMessage
  *    transmit message status
@@ -1027,4 +1068,3 @@ int CCaptureWinVfw::setStatusMessage( int statusType, char * message ) {
    return captureListener->onNewStatus(statusType, message);
 
 }
-

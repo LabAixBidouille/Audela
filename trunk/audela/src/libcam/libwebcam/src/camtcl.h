@@ -15,12 +15,10 @@
    {"videoformat",          (Tcl_CmdProc *)cmdCamVideoFormat}, \
    {"longuepose",           (Tcl_CmdProc *)cmdCamLonguePose}, \
    {"longueposelinkno",     (Tcl_CmdProc *)cmdCamLonguePoseLinkno}, \
-   {"longueposelinkbit",    (Tcl_CmdProc *)cmdCamLonguePoseLinkbit}, \
-   {"longueposestartvalue", (Tcl_CmdProc *)cmdCamLonguePoseStartValue}, \
-   {"longueposestopvalue",  (Tcl_CmdProc *)cmdCamLonguePoseStopValue},
 
 #if defined(OS_WIN)
 #define OS_SPECIFIC_FUNCS \
+   {"connect",                   (Tcl_CmdProc *)cmdCamConnect}, \
    {"widget",                    (Tcl_CmdProc *)cmdCamWidget}, \
    {"videosource",               (Tcl_CmdProc *)cmdCamVideoSource}, \
    {"startvideoview",            (Tcl_CmdProc *)cmdCamStartVideoView}, \
@@ -51,13 +49,11 @@ extern "C" {			/* Assume C declarations for C++ */
 #endif				/* __cplusplus */
 
     /* === Specific commands for that camera === */
+    int cmdCamConnect(ClientData clientData, Tcl_Interp * interp, int argc,char *argv[]);
     int cmdCamWidget(ClientData clientData, Tcl_Interp * interp, int argc, Tcl_Obj *CONST objv[]);
     int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
-    int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
 #if defined(OS_LIN)
     int cmdCamFrameRate(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
     int cmdCamValidFrame(ClientData clientData, Tcl_Interp * interp, int argc, char *argv[]);
