@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.35 2008-03-28 19:40:30 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.36 2008-07-07 22:10:35 michelpujol Exp $
 #
 
 namespace eval ::visio2 {
@@ -1024,9 +1024,20 @@ proc ::visio2::localTable::cmdButton1Click { visuNo tbl } {
       #--- j'arrete le slideshow
       set private($visuNo,slideShowState) 0
    }
-
+   update
    #--- je charge l'item selectionne
-   loadItem $visuNo [lindex $selection 0 ]
+   set catchResult [catch {
+     save_cursor
+     all_cursor watch
+     ::visio2::localTable::loadItem $visuNo [lindex $selection 0 ]
+   }]
+   set catchErrorInfo $::errorInfo
+   #--- je restaure le curseur
+   restore_cursor
+   #--- j'affiche l'erreur
+   if { $catchResult } {
+      error $catchErrorInfo
+   }
 }
 
 #------------------------------------------------------------------------------
@@ -1081,12 +1092,11 @@ proc ::visio2::localTable::loadItem { visuNo index { doubleClick 0 } } {
    if { [string first "$private(fileImage)" "$type" ] != -1 } {
       #--- j'affiche l'image
       loadima $filename $visuNo
-
       #--- je recupere naxis1 de l'image qui vient d'etre chargee
       set mynaxis [ lindex [ buf[::confVisu::getBufNo $visuNo] getkwd "NAXIS" ] 1 ]
       if { $mynaxis == 1 } {
          #--- j'ouvre la fenetre de spcaudace
-         ::confVisu::selectTool 1 ::spectro
+         ::confVisu::selectTool 1 ::spcaudace
          #--- j'affiche l'image 1D
          spc_load "$filename"
       } else {
