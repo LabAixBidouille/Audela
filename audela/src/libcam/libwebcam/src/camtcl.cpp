@@ -32,8 +32,54 @@
 #include "Capture.h"
 #include <libcam/libcam.h>
 #include <libcam/util.h>
-//#include "tkvideo.h"
 
+
+/**
+ * cmdCamLonguePose - Reglage du mode longue pose.
+ *
+ * Declare if use long or normal exposure,
+ * with no parameters returns actual setting.
+*/
+int cmdCamConnect(ClientData clientData, Tcl_Interp * interp, int argc,char *argv[])
+{
+   char ligne[256];
+   int result;
+   struct camprop *cam;
+   const char *usage = "Usage: %s %s 0|1";
+
+   cam = (struct camprop *) clientData;
+   if ((argc != 2) && (argc != 3)) {
+      sprintf(ligne, usage, argv[0], argv[1]);
+      Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      result = TCL_ERROR;
+   } else if (argc == 2) {
+      BOOL state;
+      result = webcam_getConnectionState(cam, &state);
+      if ( result == TCL_OK ) {
+         sprintf(ligne,"%d",state);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+      } else {
+         Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+      }
+   } else {
+      if (strcmp(argv[2], "0") == 0) {
+         result = webcam_setConnectionState(cam, FALSE);
+         if ( result == TCL_ERROR ) {
+            Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+         }
+      } else if (strcmp(argv[2], "1") == 0) {
+         result = webcam_setConnectionState(cam, TRUE);
+         if ( result == TCL_ERROR ) {
+            Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
+         }
+      } else {
+         sprintf(ligne, usage, argv[0], argv[1]);
+         Tcl_SetResult(interp, ligne, TCL_VOLATILE);
+         result = TCL_ERROR;
+      }
+   }
+   return result;
+}
 
 /**
  * cmdCamWidget -
@@ -93,6 +139,7 @@ int cmdCamVideoFormat(ClientData clientData, Tcl_Interp * interp,
  * Declare if use long or normal exposure,
  * with no parameters returns actual setting.
 */
+
 int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc,
                      char *argv[])
 {
@@ -100,7 +147,7 @@ int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc,
    int result = TCL_OK, pb = 0;
    struct camprop *cam;
    cam = (struct camprop *) clientData;
-   if ((argc != 2) && (argc != 3)) {
+   if ((argc != 2) ) {
       pb = 1;
    } else if (argc == 2) {
       pb = 0;
@@ -127,10 +174,12 @@ int cmdCamLonguePose(ClientData clientData, Tcl_Interp * interp, int argc,
    return result;
 }
 
+
 /**
  * cmdCamLonguePoseLinkno
  * Changes or returns the long exposure port number.
 */
+
 int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
@@ -139,7 +188,7 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
    struct camprop *cam;
    cam = (struct camprop *) clientData;
 
-   if (argc != 2 && argc != 3) {
+   if (argc != 2 ) {
       sprintf(ligne, "Usage: %s %s ?linkno?", argv[0], argv[1]);
       Tcl_SetResult(interp, ligne, TCL_VOLATILE);
       result = TCL_ERROR;
@@ -159,10 +208,12 @@ int cmdCamLonguePoseLinkno(ClientData clientData, Tcl_Interp * interp,
 }
 
 
+
 /**
  * cmdCamLonguePoseLinkbit
  * Changes or returns the bit number
 */
+/*
 int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
@@ -189,12 +240,13 @@ int cmdCamLonguePoseLinkbit(ClientData clientData, Tcl_Interp * interp,
    }
    return result;
 }
-
+*/
 
 
 /**
  * cmdCamLonguePoseStartValue - definition du caractere de debut de pose.
 */
+/*
 int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp,
                                int argc, char *argv[])
 {
@@ -221,10 +273,12 @@ int cmdCamLonguePoseStartValue(ClientData clientData, Tcl_Interp * interp,
    }
    return result;
 }
+*/
 
 /**
  * cmdCamLonguePoseStopValue - definition du caracter de fin de pose.
  */
+/*
 int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp,
                               int argc, char *argv[])
 {
@@ -251,7 +305,7 @@ int cmdCamLonguePoseStopValue(ClientData clientData, Tcl_Interp * interp,
    }
    return result;
 }
-
+*/
 
 
 /******************************************************************/
@@ -648,7 +702,7 @@ int cmdCamFrameRate(ClientData clientData, Tcl_Interp * interp,
          Tcl_SetResult(interp, ligne, TCL_VOLATILE);
          result = TCL_OK;
       } else {
-         Tcl_SetResult(interp, "", TCL_VOLATILE);
+         Tcl_SetResult(interp, (char*)"", TCL_VOLATILE);
          result = TCL_ERROR;
       }
    } else if (argc == 3) {
@@ -913,7 +967,6 @@ int cmdCamStartVideoCapture(ClientData clientData, Tcl_Interp * interp,
       }
    }
 
-
    result = startVideoCapture(cam, exptime, microSecPerFrame, fileName);
 
    if(result == TRUE ) {
@@ -941,14 +994,9 @@ int cmdCamStopVideoCapture(ClientData clientData, Tcl_Interp * interp,
    cam = (struct camprop *) clientData;
 
    // j'arrete la capture
-   if(stopVideoCapture(cam) == TRUE ) {
-      result = TCL_OK;
-   } else {
-      result = TCL_ERROR;
-   }
-
-
-   return result;
+   stopVideoCapture(cam);
+   result = TCL_OK;
+    return result;
 }
 
 /**
@@ -1018,12 +1066,7 @@ int cmdCamStopVideoCrop(ClientData clientData, Tcl_Interp * interp,
 
    cam = (struct camprop *) clientData;
    result = stopVideoCrop(cam);
-   if(result == TRUE ) {
-      result = TCL_OK;
-   } else {
-      Tcl_SetResult(interp, cam->msg, TCL_VOLATILE);
-      result = TCL_ERROR;
-   }
+   result = TCL_OK;
    return result;
 }
 

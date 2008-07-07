@@ -247,13 +247,14 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    strcpy(formatname, "SIF");
    strcpy(formatname, "VGA");
    cam->longuepose = 0;
+   cam->longueposelinkno = 0;
    cam->longueposestart = 0;
-   cam->longueposestop = 1;
    cam->sensorColor = 1;
+   cam->videoStatusVarNamePtr[0] = 0;
+   cam->videoEndCaptureCommandPtr[0] = 0;
    cam->params = (PrivateParams*)malloc(sizeof(PrivateParams));
-   /* default settings */
 
-/* Decode les options de cam::create */
+   // je decode les options de cam::create
    if (argc >= 5) {
       for (kk = 3; kk < argc - 1; kk++) {
          if (strcmp(argv[kk], "-channel") == 0) {
@@ -264,6 +265,18 @@ int cam_init(struct camprop *cam, int argc, char **argv)
          }
          if (strcmp(argv[kk], "-videomode") == 0) {
             strcpy(videomode, argv[kk + 1]);
+         }
+         if (strcmp(argv[kk], "-longuepose") == 0) {
+            cam->longuepose = atoi(argv[kk + 1]);
+         }
+         if (strcmp(argv[kk], "-longueposelinkno") == 0) {
+            cam->longueposelinkno = atoi(argv[kk + 1]);
+         }
+         if (strcmp(argv[kk], "-longueposelinkbit") == 0) {
+            cam->longueposelinkbit = atoi(argv[kk + 1]);
+         }
+         if (strcmp(argv[kk], "-longueposestart") == 0) {
+            cam->longueposestart = atoi(argv[kk + 1]);
          }
          if (strcmp(argv[kk], "-validframe") == 0) {
             validFrame = atoi(argv[kk + 1]);
@@ -286,9 +299,9 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       }
    }
 
-   // je cree fenetre preview
+   // je charge le driver
 #if defined(OS_WIN)
-   // WINDOWS
+   // WINDOWS :
    if ( strcmp(videomode,"vfw") == 0 ) {
       cam->params->capture = new CCaptureWinVfw();
    }else {
@@ -308,13 +321,22 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       strcpy(cam->msg, "capture is a null pointer. Video not initialized.");
       return 3;
    }
-   cam->params->captureListener = new CCaptureListener(cam->interp, cam->camno);
+
    // j'active le driver
+   cam->params->captureListener = new CCaptureListener(cam->interp, cam->camno);
    if (cam->params->capture->initHardware( cam->driver, cam->params->captureListener, cam->msg) == FALSE) {
       cam_close(cam);
       return 4;
    }
+
+   // je connecte le stream video
+   if (cam->params->capture->connect(cam->longuepose, cam->msg) == FALSE) {
+      cam_close(cam);
+      return 4;
+   }
+   // j'applique le format video
    if ( cam->params->capture->setVideoFormat(formatname, cam->msg) == FALSE ) {
+      cam_close(cam);
       return 5;
    }
 
@@ -325,22 +347,22 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    cam->imax = cam->nb_photox / cam->binx;
    cam->jmax = cam->nb_photoy / cam->biny;
 
-   // je arrete la capture audio
+   // je descative la capture audio
    cam->params->capture->setCaptureAudio(FALSE);
 
    if ( validFrame != -1 ) {
       if ( cam->params->capture->setVideoParameter(validFrame, SETVALIDFRAME, cam->msg) == FALSE ) {
+         cam_close(cam);
          return 6;
       }
 
    }
 
-   cam->videoStatusVarNamePtr[0] = 0;
-   cam->videoEndCaptureCommandPtr[0] = 0;
-
    cam_update_window(cam);
    return 0;
 }
+
+
 
 /**
  *----------------------------------------------------------------------
@@ -379,6 +401,69 @@ int cam_close(struct camprop *cam)
 
 
 /**
+ *----------------------------------------------------------------------
+ * webcam_setConnectionState
+ *   ouvre ou ferme le flux video
+ *
+ * Parameters:
+ *    cam       : camera
+ *    state     : TRUE=connecter , FALSE=deconnecter
+ * Results:
+ *    TCL_OK.
+ * Side effects:
+ *    ouvre ou ferme le flux video
+ *----------------------------------------------------------------------
+ */
+
+int webcam_setConnectionState(struct camprop *cam, BOOL state) {
+   int result;
+
+   if (cam->params->capture != NULL) {
+      if ( state == TRUE ) {
+         result = cam->params->capture->connect(cam->longuepose, cam->msg);
+      } else {
+         result = cam->params->capture->disconnect(cam->msg);
+      }
+   } else {
+      result = TRUE;
+   }
+
+   if ( result == TRUE ) {
+      return TCL_OK;
+   } else {
+      return TCL_ERROR;
+   }
+}
+
+/**
+ *----------------------------------------------------------------------
+ * webcam_getConnectionState
+ *   retourne l'etat de la connexion
+ *
+ * Parameters:
+ *    cam       : camera
+ *    state     : TRUE=connecter , FALSE=deconnecter
+ * Results:
+ *    TCL_OK.
+ * Side effects:
+ *    ouvre ou ferme le flux video
+ *----------------------------------------------------------------------
+ */
+
+int webcam_getConnectionState(struct camprop *cam, BOOL *pstate) {
+   int result;
+
+   if (cam->params->capture != NULL) {
+      *pstate = cam->params->capture->isConnected();
+      result = TCL_OK;
+   } else {
+      result = TCL_ERROR;
+   }
+   return result;
+}
+
+
+/**
  * Function cam_start_exp - starts the exposure.
  * Called by command "acq" (function: cmdCamAcq),
  * after <b>exptime</b> TCL calls cam_read_ccd (function: AcqRead).
@@ -395,13 +480,7 @@ int cam_close(struct camprop *cam)
 */
 void cam_start_exp(struct camprop *cam, char *amplionoff)
 {
-   if (cam->longuepose == 0) {
-      //standard exposure
-      if (cam->params->capture->grabFrame(cam->longuepose, cam->msg)==FALSE) {
-         //error description in cam->msg
-         return;
-      }
-   } else {
+   if (cam->longuepose == 1) {
       //long exposure
       if (webcam_setLongExposureDevice(cam, cam->longueposestart)) {
          //error description in cam->msg
@@ -414,13 +493,18 @@ void cam_stop_exp(struct camprop *cam)
 {
    if (cam->longuepose == 1) {
       //long exposure
-      if (webcam_setLongExposureDevice(cam, cam->longueposestop)) {
+      int stop;
+      if ( cam->longueposestart == 0 ) {
+         stop = 1;
+      } else {
+         stop = 0;
+      }
+      if (webcam_setLongExposureDevice(cam, stop)) {
          //error description in cam->msg
          return;
       }
-      cam->params->capture->grabFrame(cam->longuepose, cam->msg);
+      cam->params->capture->grabFrame(cam->msg);
    }
-
 }
 
 /**
@@ -444,12 +528,18 @@ void cam_read_ccd(struct camprop *cam, unsigned short *p)
 
    if (cam->longuepose == 1) {
       //long exposure
-      if (webcam_setLongExposureDevice(cam, cam->longueposestop)) {
+      int stop;
+      if ( cam->longueposestart == 0 ) {
+         stop = 1;
+      } else {
+         stop = 0;
+      }
+      if (webcam_setLongExposureDevice(cam, stop)) {
          //error description in cam->msg
          return;
       }
-      result = cam->params->capture->grabFrame(cam->longuepose, cam->msg);
    }
+   result = cam->params->capture->grabFrame(cam->msg);
 
    if ( cam->sensorColor == 1 ) {
       // Charge l'image 24 bits

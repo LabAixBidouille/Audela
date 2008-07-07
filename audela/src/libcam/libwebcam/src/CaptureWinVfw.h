@@ -47,6 +47,9 @@ class CCaptureWinVfw : public CCapture {
      virtual ~ CCaptureWinVfw();
 
     BOOL initHardware(UINT uIndex, CCaptureListener * captureListener, char *errorMsg);
+    BOOL connect(int longexposure, char *errorMsg);
+    BOOL disconnect(char *errorMsg);
+    BOOL isConnected();
 
     // status
     BOOL hasOverlay();
@@ -113,7 +116,7 @@ class CCaptureWinVfw : public CCapture {
     BOOL setVideoFormat(char *formatname, char *errorMessage);
 
     // single frame capture
-    BOOL grabFrame(int longuepose, char *errorMessage);
+    BOOL grabFrame(char *errorMessage);
     unsigned char * getGrabbedFrame(char *errorMessage);
 
     // AVI capture command
@@ -141,6 +144,7 @@ class CCaptureWinVfw : public CCapture {
     LONG              previousOwnerWindowProc;
 
 protected:
+    UINT index;
     HWND hwndCap;
     CCaptureListener *captureListener;
 
@@ -150,6 +154,7 @@ protected:
     LPWAVEFORMATEX lpwfex;
     //unsigned int wDeviceIndex;
     unsigned char *grabBuffer;
+    int           longExposure;
 
 
     static LRESULT CALLBACK grabFrameCallbackProc(HWND hWnd, VIDEOHDR *vhdr);

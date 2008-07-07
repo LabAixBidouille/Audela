@@ -47,6 +47,9 @@ class CCapture {
   public:
     virtual ~CCapture();
     virtual BOOL initHardware(UINT uIndex, CCaptureListener * captureListener, char *errorMsg)=0;
+    virtual BOOL connect(BOOL longexposure, char *errorMsg)=0;
+    virtual BOOL disconnect(char *errorMsg)=0;
+    virtual BOOL isConnected()=0;
 
     virtual BOOL hasDlgVideoFormat()=0;
     virtual BOOL hasDlgVideoSource()=0;
@@ -77,7 +80,7 @@ class CCapture {
     virtual unsigned int getImageHeight()=0;
 
     // single frame capture
-    virtual BOOL grabFrame(int longuepose, char *errorMessage)=0;
+    virtual BOOL grabFrame(char *errorMessage)=0;
     virtual unsigned char * getGrabbedFrame(char *errorMessage)=0;
 
     // AVI file capture command
@@ -92,4 +95,4 @@ class CCapture {
 
 };
 
-#endif
+#endif

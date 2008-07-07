@@ -106,6 +106,7 @@ CCaptureLinux::CCaptureLinux(char * portName)
    cam_fd = -1;
    IsPhilips = 0;
    shutterSpeed = -1;
+   longExposure = FALSE;
 
 }
 
@@ -218,8 +219,47 @@ BOOL CCaptureLinux::initHardware(UINT uIndex, CCaptureListener * captureListener
    return TRUE;
 }
 
+/**
+*----------------------------------------------------------------------
+*
+* connect video stream
+*
+*----------------------------------------------------------------------
+*/
+BOOL CCaptureLinux::connect(BOOL longExposure, char *errorMsg) {
+   BOOL result;
+
+   this->longExposure = longExposure;
+   result = TRUE;
+
+   return result;
+}
 
 
+/**
+*----------------------------------------------------------------------
+*
+* disconnect video stream
+*
+*----------------------------------------------------------------------
+*/
+BOOL CCaptureLinux::disconnect(char *errorMsg) {
+   BOOL   result = TRUE;
+
+   return result;
+}
+
+/**
+*----------------------------------------------------------------------
+* isConnected
+*  returns connected sate
+*
+*----------------------------------------------------------------------
+*/
+BOOL CCaptureLinux::isConnected() {
+   BOOL   result = TRUE;
+   return result;
+}
 
 /**
 *----------------------------------------------------------------------
@@ -675,11 +715,11 @@ BOOL            CCaptureLinux::getCaptureAudio() {
 void CCaptureLinux::setCaptureAudio(BOOL value){
 }
 
-BOOL    CCaptureLinux::grabFrame(int longuepose, char *errorMessage){
+BOOL    CCaptureLinux::grabFrame(char *errorMessage){
    int readResult;
    int i;
 
-   if (longuepose == 0)  {
+   if (longExposure == 0)  {
       if (mmap_buffer) {
          // j'active l'acces direct a la memoire video
          webcam_mmapCapture();
