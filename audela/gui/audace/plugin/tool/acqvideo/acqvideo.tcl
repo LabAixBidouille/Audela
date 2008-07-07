@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.5 2008-06-29 13:10:23 robertdelmas Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.6 2008-07-07 19:29:18 michelpujol Exp $
 #
 
 #==============================================================
@@ -277,6 +277,14 @@ namespace eval ::acqvideo {
          #--- Ce n'est pas une WebCam
          pack forget $panneau(acqvideo,$visuNo,This).pose.conf
       }
+
+      if { [::confCam::getPluginProperty $panneau(acqvideo,$visuNo,camItem) "hasVideo"] == 1 } {
+         set panneau(acqvideo,$visuNo,showvideopreview) 1
+         changerVideoPreview $visuNo
+         #--- Creation des fenetres auxiliaires
+         ::acqvideo::selectVideoMode $visuNo
+      }
+
    }
 #***** Fin de la procedure Adapt_Panneau_AcqVideo **************
 
@@ -347,21 +355,28 @@ namespace eval ::acqvideo {
    proc startTool { { visuNo 1 } } {
       global panneau
 
-      #--- Creation des fenetres auxiliaires
-      ::acqvideo::selectVideoMode $visuNo
-
-      #---
-      pack $panneau(acqvideo,$visuNo,This) -side left -fill y
-      ::acqvideo::Adapt_Panneau_AcqVideo $visuNo
-
       #--- J'active le preview
       if { [::confCam::isReady $panneau(acqvideo,$visuNo,camItem)] == 1 } {
+
+         #--- je met a jour les widgets du panneau
+         pack $panneau(acqvideo,$visuNo,This) -side left -fill y
+         ::acqvideo::Adapt_Panneau_AcqVideo $visuNo
+
          if { [::confCam::getPluginProperty $panneau(acqvideo,$visuNo,camItem) "hasVideo"] == 1 } {
-            set panneau(acqvideo,$visuNo,showvideopreview) 1
-            changerVideoPreview $visuNo
+            if { $panneau(acqvideo,$visuNo,showvideopreview) == 0 } {
+               set panneau(acqvideo,$visuNo,showvideopreview) 1
+               changerVideoPreview $visuNo
+            }
+            #--- Creation des fenetres auxiliaires
+            ::acqvideo::selectVideoMode $visuNo
          }
+      } else {
+         #--- je met a jour les widgets du panneau
+         pack $panneau(acqvideo,$visuNo,This) -side left -fill y
+         ::acqvideo::Adapt_Panneau_AcqVideo $visuNo
       }
    }
+
 #***** Fin de la procedure startTool ***************************
 
 #***** Procedure stopTool **************************************
@@ -631,7 +646,7 @@ namespace eval ::acqvideo {
                            $panneau(acqvideo,$visuNo,y1) $panneau(acqvideo,$visuNo,x2) $panneau(acqvideo,$visuNo,y2)
                      }
                      #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                     cam$panneau(acqvideo,$visuNo,camNo) setvideostatusvariable panneau(acqvideo,$visuNo,status)
+                     cam$panneau(acqvideo,$visuNo,camNo) setvideostatusvariable ::panneau(acqvideo,$visuNo,status)
                      set result [ catch { cam$panneau(acqvideo,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqvideo,$visuNo,lg_film)" "$panneau(acqvideo,$visuNo,rate)" "1" } msg ]
                      if { $result == "1" } {
                         #--- En cas d'erreur, j'affiche un message d'erreur
@@ -739,7 +754,7 @@ namespace eval ::acqvideo {
                               $panneau(acqvideo,$visuNo,y1) $panneau(acqvideo,$visuNo,x2) $panneau(acqvideo,$visuNo,y2)
                         }
                         #--- Je declare la variable qui sera mise a jour par le driver avec le decompte des frames
-                        cam$panneau(acqvideo,$visuNo,camNo) setvideostatusvariable panneau(acqvideo,$visuNo,status)
+                        cam$panneau(acqvideo,$visuNo,camNo) setvideostatusvariable ::panneau(acqvideo,$visuNo,status)
                         set result [ catch { cam$panneau(acqvideo,$visuNo,camNo) startvideocapture "$nom_rep" "$panneau(acqvideo,$visuNo,lg_film)" "$panneau(acqvideo,$visuNo,rate)" "1" } msg ]
                         if { $result == "1" } {
                            ::console::affiche_resultat "$caption(acqvideo,start_capture_error) $msg \n"
@@ -1286,7 +1301,7 @@ namespace eval ::acqvideo {
             set panneau(acqvideo,$visuNo,fenetre) "0"
             ::acqvideo::optionWindowedFenster $visuNo
          }
-      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] != 1 } {
+      } elseif { [::confCam::getPluginProperty $camItem "hasVideo"] == 0 } {
          #--- Je decoche la checkbox
          set panneau(acqvideo,$visuNo,showvideopreview) "0"
          #--- Je decoche le fenetrage
@@ -1295,8 +1310,10 @@ namespace eval ::acqvideo {
             ::acqvideo::optionWindowedFenster $visuNo
          }
       } else {
-         #--- J'arrete le mode video fenetree
-         cam$panneau(acqvideo,$visuNo,camNo) stopvideocrop
+         #--- J'arrete la capture si elle est encours
+         catch {
+            cam$panneau(acqvideo,$visuNo,camNo) stopvideocrop
+         }
       }
    }
 #***** Fin de la procedure d'arret du fenetrage video ****************************************
