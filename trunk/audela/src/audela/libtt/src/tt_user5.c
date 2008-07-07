@@ -39,8 +39,8 @@ void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb
 void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure);
 double erf( double x );
 
-void dilate (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2);
-void erode (TT_IMA* pout,TT_IMA* p_in,int* se,int dim1,int dim2,int sizex,int sizey, int naxis1,int naxis2);
+void dilate (TT_IMA* pin,TT_IMA* pout,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2);
+void erode (TT_IMA* pin,TT_IMA* pout,int* se,int dim1,int dim2,int sizex,int sizey, int naxis1,int naxis2);
 int erosionByAnchor_1D_horizontal_longSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix);
 int erosionByAnchor_1D_horizontal_courSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix);
 int openingByAnchor_1D_horizontal_longSE(TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix);
@@ -174,7 +174,7 @@ int tt_user5_ima_stack_dispatch1(TT_IMA_STACK *pstack,int *fct_found, int *msg)
 
 int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries)
 /***************************************************************************/
-/* remplace les trainees d'etoiles par le fond de ciel                     */
+/* remplace les trainées d'étoiles par le fond de ciel                     */
 /***************************************************************************/
 {
 	TT_IMA *p_in,*p_out;
@@ -237,7 +237,7 @@ int tt_ima_masque_catalogue(TT_IMA_SERIES *pseries)
 
 int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
-/* detecte les trainees d'etoiles sur une image trainee                    */
+/* detecte les trainées d'étoiles sur une image trainee                    */
 /***************************************************************************/
 /*														                   */
 /* sortie = fichier														   */
@@ -276,7 +276,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
    /* --- Calcul des seuils de visualisation ---*/
    tt_util_bgk(p_out,&(pseries->bgmean),&(pseries->bgsigma));
    
-   //seuils predefinis
+   //seuils prédéfinis
 	sigma=pseries->bgsigma;
 	seuil=pseries->bgmean+10*sigma;
 	seuila=pseries->bgmean+8.5*sigma;
@@ -306,7 +306,7 @@ int tt_ima_series_trainee_1(TT_IMA_SERIES *pseries)
 
 int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhmsat,double seuil,double seuila, double xc0, double yc0, double exposure)
 /***************************************************************************/
-/* detecte le debut des trainees d'etoiles sur une image trainee           */
+/* detecte le début des trainées d'étoiles sur une image trainee           */
 /***************************************************************************/
 /*														                   */
 /* 																		   */
@@ -359,7 +359,7 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 			if (matx[x]>=ltt*(seuil)) {	
 				fwhmyh=0;
 				fwhmyb=0;
-				//recherche approximative des parametres de la trainees
+				//recherche approximative des paramètres de la trainées
 				for (k=0;k<ltt;k++) {
 					for (k2=1;k2<40;k2++) {
 						if ((k2+y)>= ymax) break;
@@ -422,13 +422,13 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 				posx  = para[1]+1.0*x+1.0;
 				posy  = para[4]-(fwhmybi/1.5)-1.0*nb+1.0*y;
 				
-				/* --- pour ne pas avoir des etoiles doubles --- */
+				/* --- pour ne pas avoir des étoiles doubles --- */
 				if (((posx-posxanc)<0.05)&&((posy-posyanc)<0.05)) { continue;}
 	
 				posxanc=posx;
 				posyanc=posy;
 
-				//parametres calcules rapidement ou pas du tout, pour que le fichier de sortie ressemble a celui de SExtractor
+				//paramètres calculés rapidement ou pas du tout, pour que le fichier de sortie ressemble à celui de SExtractor
 				flux=carac[1];
 				fluxerr=0.2*flux;
 				if (flux<=50.0) { flux = 50;}
@@ -474,15 +474,15 @@ int tt_util_chercher_trainee(TT_IMA *pin,TT_IMA *pout,char *filename,double fwhm
 
 void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat,double *p,double *carac, double exposure) 
 /*********************************************************************************************/
-/* fitte les trainees avec une ellipse														 */
+/* fitte les trainées avec une ellipse														 */
 /*********************************************************************************************/
 /*	ENTREES													                                 */
-/* 		lt = longueur des trainees															 */
-/*		fwhm = largeur a mi-hauteur de la fonction d'etalement de l'etoile non trainee		 */
+/* 		lt = longueur des traînées															 */
+/*		fwhm = largeur à mi-hauteur de la fonction d'étalement de l'étoile non trainée		 */
 /*		sizex = nombre de points sur cote x de mat											 */
 /*		x = numero du pixel en x du debut de la zone										 */
 /*		sizey = nombre de points sur cote y de mat											 */
-/*		**mat = tableau 2d des valeurs des pixels de la zone a fitter						 */
+/*		**mat = tableau 2d des valeurs des pixels de la zone à fitter						 */
 /*	SORTIES																					 */
 /*  p()=tableau des variables:																 */
 /*     p[0]=intensite maximum de la gaussienne												 */
@@ -523,7 +523,7 @@ void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat
 
 	moyy=0;
 	inten=0.;
-	// recherche du max d'intensite pour chaque colonne et ligne pour avoir une valeur approchee du centre de l'etoile
+	// recherche du max d'intensité pour chaque colonne et ligne pour avoir une valeur approchée du centre de l'etoile
 	for (jx=0;jx<sizex;jx++) {
 		intensite=0.;
 		for (jy=0;jy<sizey;jy++) {
@@ -550,8 +550,8 @@ void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat
 			 
 		}
 	}
-	//posx et moyy representent le pixel d'intensite la plus forte sur la ligne definie par y=moyy
-	//moyy represente la ligne moyenne d'intensite maximale dans la zone 
+	//posx et moyy représentent le pixel d'intensité la plus forte sur la ligne définie par y=moyy
+	//moyy représente la ligne moyenne d'intensité maximale dans la zone 
 	posx=(double)posmaty;
 	p[1]=posx;
 	p[2]=1;//a calculer
@@ -621,14 +621,14 @@ void fittrainee (double lt, double fwhm,int x, int sizex, int sizey,double **mat
 
 void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb, int sizex, int sizey,double **mat,double *p,double *carac,double exposure) 
 /*********************************************************************************************/
-/* fitte les trainees avec une gaussienne convoluee avec une un trait (= forme d'une trainee)*/
+/* fitte les trainées avec une gaussienne convoluée avec une un trait (= forme d'une trainée)*/
 /*********************************************************************************************/
 /*	ENTREES													                                 */
-/* 		lt = longueur des trainees															 */
-/*		fwhm = largeur a mi-hauteur de la fonction d'etalement de l'etoile non trainee		 */
+/* 		lt = longueur des traînées															 */
+/*		fwhm = largeur à mi-hauteur de la fonction d'étalement de l'étoile non trainée		 */
 /*		sizex = nombre de points sur cote x de mat											 */
 /*		sizey = nombre de points sur cote y de mat											 */
-/*		**mat = tableau 2d des valeurs des pixels de la zone a fitter						 */
+/*		**mat = tableau 2d des valeurs des pixels de la zone à fitter						 */
 /*	SORTIES																					 */
 /*  p()=tableau des variables:																 */
 /*     p[0]=intensite maximum de la gaussienne												 */
@@ -852,15 +852,15 @@ void fittrainee2 (double seuil,double lt, double fwhm,double xc,double yc,int nb
 
 void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, int sizey,double **mat,double *p,double *carac,double exposure) 
 /*********************************************************************************************/
-/* fitte les trainees avec une gaussienne convolue avec une un trait (= forme d'une trainee) */
+/* fitte les trainées avec une gaussienne convolué avec une un trait (= forme d'une trainée) */
 /*	approximation de la fonction erf													     */
 /*********************************************************************************************/
 /*	ENTREES													                                 */
-/* 		lt = longueur des trainees															 */
-/*		fwhm = largeur a mi-hauteur de la fonction d'etalement de l'etoile non trainee		 */
+/* 		lt = longueur des traînées															 */
+/*		fwhm = largeur à mi-hauteur de la fonction d'étalement de l'étoile non trainée		 */
 /*		sizex = nombre de points sur cote x de mat											 */
 /*		sizey = nombre de points sur cote y de mat											 */
-/*		**mat = tableau 2d des valeurs des pixels de la zone a fitter						 */
+/*		**mat = tableau 2d des valeurs des pixels de la zone à fitter						 */
 /*	SORTIES																					 */
 /*  p()=tableau des variables:																 */
 /*     p[0]=intensite maximum de la gaussienne												 */
@@ -882,7 +882,7 @@ void fittrainee3 (double seuil,double lt,double xc,double yc,int nb,int sizex, i
    double rr2;
    double xx,yy;
 
-   //vitesse siderale
+   //vitesse sidérale
    vs = 0.004180983;
    ltt = (int) lt;
 
@@ -1011,19 +1011,19 @@ double erf( double x ) {
 
 int tt_geo_defilant_1(TT_IMA_SERIES *pseries) 
 /*********************************************************************************************/
-/* Recherche des GEO et des GTO dans les images trainees								     */
-/* traitement base sur le chapeau haut de forme de Morpho Maths							     */
+/* Recherche des GEO et des GTO dans les images traînées								     */
+/* traitement basé sur le chapeau haut de forme de Morpho Maths							     */
 /*********************************************************************************************/
-/* Entrees: chemin = repertoire pour suaver les resultats									 */
+/* Entrées: chemin = repertoire pour suaver les résultats									 */
 /*			nom_trait= nom du traitement de morpho maths (choix entre TOPHAT et TOPHATE)	 */
 /*					TOPHAT= chapeau haut de forme classique									 */
-/*					TOPHATE= chapeau haut etendu (ouverture d'une fermeture)				 */
+/*					TOPHATE= chapeau haut étendu (ouverture d'une fermeture)				 */
 /*			struct_elem = forme de l'element structurant (RECTANGLE, DAIMOND, CERCLE)		 */
 /*			x1 = longueur sur l'axe x de SE													 */
 /*			y1 = largeur sur l'axe y de SE													 */
-/*	Les resultats sont enregistres dans deux fichiers textes palces dans $chemin			 */														 
+/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 
 /*********************************************************************************************/
-/*      pour le moment les SE seront de dimensions impaires pour avoir un centre centre!     */
+/*      pour le moment les SE seront de dimensions impaires pour avoir un centre centré!     */
 /*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
@@ -1035,7 +1035,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp3,*p_tmp4;
 	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul,i,x0,y0;
 	double xfin,yfin,xdebut,ydebut,l;
-	int index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,bord,rotation;
+	int index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,rotation;
 	double dvalue,somme_value,somme_x,somme_y;
 	char filenamegto[FLEN_FILENAME],filenamegeo[FLEN_FILENAME];
 	FILE *fic;
@@ -1085,11 +1085,11 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	//tt_imasaver(p_out,"D:/tophat.fit",16);	
+	tt_imasaver(p_out,"D:/tophat.fit",16);	
 	
 //////////////////////////////////////////////
 /* ----------------------------------------- */
-/* --- recherche des trainees dans p_out --- */
+/* --- recherche des traînées dans p_out --- */
 /* ----------------------------------------- */
 ///////////////////////////////////////////////
 
@@ -1106,11 +1106,11 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	/* --- ouvre le fichier en ecriture ---*/
 	fic=fopen(filenamegto,"wt");
-	for (kk=0;kk<2;kk++) {//kk=1 pour imagette decalee, c'est le deuxieme passage
+	for (kk=0;kk<2;kk++) {//kk=1 pour imagette décalée, c'est le deuxième passage
 		k=0;
 		k3=0;k5=0;
 		for (kkk=0;kkk<(nb_ss_image1-2*kk)*(nb_ss_image2-2*kk);kkk++) {	
-			//gestion des bord du chapeau haut de forme = fausse detections
+			//gestion des bord du chapeau haut de forme = fausse détections
 			yy1=0, yy2=0, xx1=0, xx2=0, x0=0,y0=0;
 			if (kk==0) {
 				if (kkk<nb_ss_image1) {
@@ -1126,7 +1126,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					xx2=x1+1;
 				}
 			}
-			//premiere imagette en bas a gauche, derniere en haut a droite
+			//première imagette en bas à gauche, dernière en haut à droite
 			for (k1=0;k1<n1;k1++) {
 				for (k2=0;k2<n2;k2++) {
 					if ((k1>=n1-xx2)||(k1<=xx1)||(k2<=yy1)||(k2>=n2-yy2)) {
@@ -1140,7 +1140,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			//tt_imasaver(p_tmp3,"D:/gtopetite.fit",16);
 			tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 			
-			//recupere les coordonnees de la droite detectee y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
+			//recupère les coordonnées de la droite détectée y=a0*x+b0 y=eq[0]*x+eq[1] et eq[2]=0, si la droite est verticale x=eq[2] et eq[0]=eq[1]=0
 			if ((eq[0]!=0)||(eq[1]!=0)||(eq[2]!=0)) {									
 	/* -------------------------------------------------------------- */
 	/* --- recherche du barycentre de la trainee et de sa largeur --- */
@@ -1148,7 +1148,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				rotation=0;
 				//pour les droites a fortes pentes
 				if ((eq[0]>1.0)||(eq[0]<-1.0)) {
-					//premiere imagette en bas a gauche, derniere en haut a droite
+					//première imagette en bas à gauche, dernière en haut à droite
 					for (k1=0;k1<n1;k1++) {
 						for (k2=0;k2<n2;k2++) {
 							if ((k1<=xx1)||(k1>=n1-xx2)||(k2>=n2-yy2)||(k2<=yy1)) {
@@ -1189,14 +1189,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				}
 				if (largx<3) { largx=3;}
 				if (somme_value!=0) {
-					// coordonnees du centre 
+					// coordonnées du centre 
 					somme_x=somme_x*1.0/somme_value;
 					somme_y=somme_y*1.0/somme_value;
 					if (somme_x<0) somme_x=0;
 					if (somme_x>n1) somme_x=n1-1;
 					if (somme_y<0) somme_y=0;
 					if (somme_y>n2) somme_y=n2-1;
-					//cas d'un barycentre pas localise sur la trainee alors on cherche le maximum
+					//cas d'un barycentre pas localisé sur la traînée alors on cherche le maximum
 					if (p_tmp3->p[n1*(int)(floor(somme_y))+(int)(floor(somme_x))]<=0.0) {
 						somme_value=0;
 						for (k1=0;k1<n1;k1++) {								
@@ -1212,7 +1212,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}							
 						}		
 					}
-					/* --- changement de repere --- */
+					/* --- changement de repère --- */
 					if (rotation==1) {
 						//rotation inverse des coefficients: 
 						if (eq[0]!=0.0) {
@@ -1228,43 +1228,43 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						somme_x=somme_y;
 						somme_y=255-dvalue;
 					}
-					//changement de repere: petite image -> grande image
+					//changement de repère: petite image -> grande image
 					if (eq[2]==0) {
 						eq[1]=eq[1]-(k5+kk*n1/2)*eq[0]+(k3)*256+kk*n2/2;
 					} else {
 						eq[2]=eq[2]+k5+kk*n1/2;
 					}
-					//changement de repere
+					//changement de repère
 					somme_x=somme_x+k5+kk*n1/2;
 					somme_y=somme_y+(k3)*256+kk*n2/2;
 					
 	/* ----------------------------------------------------- */
 	/* --- recherche du debut et de la fin de la trainee --- */
 	/* ----------------------------------------------------- */
-					bord=0;xdebut=0;ydebut=0;xfin=0;yfin=0;
-					//  seuil pour recherche des extremitees de la trainees
-					seuil_nbnul= 60;
+					xdebut=0;ydebut=0;xfin=0;yfin=0;
+					//  seuil pour recherche des extrémitées de la traînées
+					seuil_nbnul= 20*(largx+1);
 
-					nbnul=0;
+					nbnul=0;nb=0;
 					if ((eq[0]<=1.0)&&(eq[0]>=-1.0)) {//droites faibles pentes 
-						for (k1=(int)(floor(somme_x));k1>=0;k1--) {	// recherche du debut					
+						for (k1=(int)(floor(somme_x));k1>=0;k1--) {	// recherche du début					
 							for (k2=(int)(eq[0]*k1+eq[1]-2*largx);k2<=(int)(eq[0]*k1+eq[1]+2*largx);k2++) {
 								if (k2<0) continue;
 								if (k2>=naxis2) break;
-								if ((k1==0)&&(xdebut==0)&&(ydebut==0)) {
-									xdebut=k1;
-									ydebut=k2;
-									bord=1;
+								if (nbnul>seuil_nbnul) {
+									if ((xdebut==0)&&(ydebut==0)) {
+										xdebut=somme_x;
+										ydebut=somme_y;
+									}
 									break;
 								}
-								if ((nbnul>seuil_nbnul)&&(xdebut!=0)&&(ydebut!=0)) break;
-
 								dvalue=p_out->p[naxis1*(k2)+k1];
 								if (dvalue<=0.0) {
 									nbnul++;	
 								}
 								if (dvalue>0.0) {
 									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+									nb++;
 									if (nbnul<=1) {
 										xdebut=k1;
 										ydebut=k2;
@@ -1272,24 +1272,25 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								}		
 							}						
 						}
-						nbnul=0;bord=0;
+						nbnul=0;
 						for (k1=(int)(floor(somme_x));k1<naxis1;k1++) {	// recherche de la fin					
 							for (k2=(int)(eq[0]*k1+eq[1]-2*largx);k2<=(int)(floor(eq[0]*k1+eq[1]+2*largx));k2++) {
 								if (k2<0) continue;
 								if (k2>=naxis2) break;
-								if ((k1==n1-1)&&(xfin==0)&&(yfin==0)) {
-									xfin=k1;
-									yfin=k2;
-									bord=1;
+								if (nbnul>seuil_nbnul) {
+									if ((xfin==0)&&(yfin==0)) {
+										xfin=somme_x;
+										yfin=somme_y;
+									}
 									break;
 								}
-								if ((nbnul>seuil_nbnul)&&(xfin!=0)&&(yfin!=0)) break;
 								dvalue=p_out->p[naxis1*(k2)+k1];
 								if (dvalue<=0.0) {
 									nbnul++;	
 								}
 								if (dvalue>0.0) {
 									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+									nb++;
 									if (nbnul<=1) {
 										xfin=k1;
 										yfin=k2;
@@ -1298,23 +1299,24 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}						
 						}
 					} else if (eq[0]!=0.0) {
-						for (k2=(int)(floor(somme_y));k2>=0;k2--) {	// recherche du debut					
+						for (k2=(int)(floor(somme_y));k2>=0;k2--) {	// recherche du début					
 							for (k1=(int)((k2-eq[1])/eq[0]-2*largx);k1<=(int)(floor((k2-eq[1])/eq[0]+2*largx));k1++) {
 								if (k1<0) continue;
 								if (k1>=naxis1) break;
-								if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-									xdebut=k1;
-									ydebut=k2;
-									bord=1;
+								if (nbnul>seuil_nbnul) {
+									if ((xdebut==0)&&(ydebut==0)) {
+										xdebut=somme_x;
+										ydebut=somme_y;
+									}
 									break;
-								} 
-								if ((nbnul>seuil_nbnul)&&(xdebut!=0)&&(ydebut!=0)) break;
+								}
 								dvalue=p_out->p[naxis1*(k2)+k1];
 								if (dvalue<=0.0) {
 									nbnul++;	
 								}
 								if (dvalue>0.0) {
 									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+									nb++;
 									if (nbnul<=1) {
 										xdebut=k1;
 										ydebut=k2;
@@ -1322,24 +1324,25 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								}		
 							}						
 						}
-						nbnul=0;bord=0;
+						nbnul=0;;
 						for (k2=(int)(floor(somme_y));k2<naxis1;k2++) {	// recherche de la fin					
 							for (k1=(int)((k2-eq[1])/eq[0]-2*largx);k1<=(int)(floor((k2-eq[1])/eq[0]+2*largx));k1++) {
 								if (k1<0) continue;
 								if (k1>=naxis1) break;
-								if ((k2==n1-1)&&(xfin==0)&&(yfin==0)) {
-									xfin=k1;
-									yfin=k2;
-									bord=1;
+								if (nbnul>seuil_nbnul) {
+									if ((xfin==0)&&(yfin==0)) {
+										xfin=somme_x;
+										yfin=somme_y;
+									}
 									break;
-								} 
-								if ((nbnul>seuil_nbnul)&&(xfin!=0)&&(yfin!=0)) break;
+								}
 								dvalue=p_out->p[naxis1*(k2)+k1];
 								if (dvalue<=0.0) {
 									nbnul++;	
 								}
 								if (dvalue>0.0) {
 									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+									nb++;
 									if (nbnul<=1) {
 										xfin=k1;
 										yfin=k2;
@@ -1348,23 +1351,24 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							}						
 						}
 					} else { //droite verticale
-						for (k2=(int)(floor(somme_y));k2>=0;k2--) {	// recherche du debut					
+						for (k2=(int)(floor(somme_y));k2>=0;k2--) {	// recherche du début					
 							for (k1=(int)(eq[2]-2*largx);k1<=(int)(floor(eq[2]+2*largx));k1++) {
 								if (k1<0) continue;
 								if (k1>=naxis1) break;
-								if ((k2==0)&&(xdebut==0)&&(ydebut==0)) {
-									xdebut=k1;
-									ydebut=k2;
-									bord=1;
+								if (nbnul>seuil_nbnul) {
+									if ((xdebut==0)&&(ydebut==0)) {
+										xdebut=somme_x;
+										ydebut=somme_y;
+									}
 									break;
-								} 
-								if ((nbnul>seuil_nbnul)&&(xdebut!=0)&&(ydebut!=0)) break;
+								}
 								dvalue=p_out->p[naxis1*(k2)+k1];
 								if (dvalue<=0.0) {
 									nbnul++;	
 								}
 								if (dvalue>0.0) {
 									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+									nb++;
 									if (nbnul<=1) {
 										xdebut=k1;
 										ydebut=k2;
@@ -1372,24 +1376,25 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								}		
 							}						
 						}
-						nbnul=0;bord=0;
+						nbnul=0;
 						for (k2=(int)(floor(somme_y));k2<naxis1;k2++) {	// recherche de la fin					
 							for (k1=(int)(eq[2]-2*largx);k1<=(int)(floor(eq[2]+2*largx));k1++) {
 								if (k1<0) continue;
 								if (k1>=naxis1) break;
-								if ((k2==n1-1)&&(xfin==0)&&(yfin==0)) {
-									xfin=k1;
-									yfin=k2;
-									bord=1;
+								if (nbnul>seuil_nbnul) {
+									if ((xfin==0)&&(yfin==0)) {
+										xfin=somme_x;
+										yfin=somme_y;
+									}
 									break;
-								} 
-								if ((nbnul>seuil_nbnul)&&(xfin!=0)&&(yfin!=0)) break;
+								}
 								dvalue=p_out->p[naxis1*(k2)+k1];
 								if (dvalue<=0.0) {
 									nbnul++;	
 								}
 								if (dvalue>0.0) {
 									nbnul=(int)(nbnul/(int)(seuil_nbnul/3.));
+									nb++;
 									if (nbnul<=1) {
 										xfin=k1;
 										yfin=k2;
@@ -1399,7 +1404,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 					}
 				
-					if (xdebut<0) {xdebut=0;}
+  					if (xdebut<0) {xdebut=0;}
 					if (xfin<0) {xfin=0; xdebut=0;}
 					if (ydebut<0) {ydebut=0;}
 					if (yfin<0) {yfin=0; ydebut=0;}
@@ -1431,56 +1436,20 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				}
 								
 				if ((somme_x!=0)&&(somme_y!=0)) {					
-					/* --- calcul de la longueur de la trainee --- */
+					/* --- calcul de la longueur de la traînée --- */
 					l=sqrt((xdebut-xfin)*(xdebut-xfin)+(ydebut-yfin)*(ydebut-yfin));
-					/* --- nombre de pixels non nul sur la ligne --- */
-					nb=0;
-					if (eq[0]>0) {
-						for (k1=(int)xdebut-largx-2;k1<(int)xfin+largx+2;k1++) {
-							if (k1>=naxis1) break;	
-							if (k1<0) continue;
-							for (k2=(int)ydebut-largx-2;k2<(int)yfin+largx+2;k2++) {
-								if (k2<0) continue;
-								if (k2>=naxis2) break;
-								dvalue=p_out->p[naxis1*(k2)+k1];
-								if (dvalue>0.0) {
-									nb++;
-								}
-							}
-						}	
-					} else {//ydebut>yfin
-						for (k1=(int)xdebut-largx-2;k1<(int)xfin+largx+2;k1++) {
-							if (k1>=naxis1) break;
-							if (k1<0) continue;
-							if (eq[2]!=0) {// cas des droites verticales
-								for (k2=(int)yfin-largx-2;k2<(int)ydebut+largx+2;k2++) {
-									if (k2<0) continue;
-									if (k2>=naxis2) break;
-										dvalue=p_out->p[naxis1*(k2)+k1];
-									if (dvalue>0.0) {
-										nb++;
-									}
-								}
-							} else {
-								for (k2=(int)yfin-largx-2;k2<(int)ydebut+largx+2;k2++) {
-									if (k2<0) continue;		
-									if (k2>=naxis2) break;										
-									dvalue=p_out->p[naxis1*(k2)+k1];
-									if (dvalue>0.0) {
-										nb++;
-									}	
-								}
-							}		
-						}
-					}
-					if ((l<=25)&&(nb>=l/2)) {
-						//fitte une gaussienne pour calcule fwhmx et fwhmy 
+
+					if ((l>=8)&&(l<=25)&&(nb>=l/2)) {
+						//fitte une gaussienne pour calculé fwhmx et fwhmy 
 						//* ---  discrimination GTO/GEO --- */
 						xx1=(int)(xdebut-2*largx);
 						xx2=(int)(xfin+2*largx);
 						if (ydebut>yfin) {
 							yy1=(int)(yfin-2*largx);
 							yy2=(int)(ydebut+2*largx);
+						} else if (ydebut==yfin){
+							yy1=(int)(yfin-3*largx);
+							yy2=(int)(ydebut+3*largx);
 						} else {
 							yy1=(int)(ydebut-2*largx);
 							yy2=(int)(yfin+2*largx);
@@ -1507,7 +1476,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								
 						for(i=0;i<sizex;i++) *(iX+i) = (double)0.;
 						for(i=0;i<sizey;i++) *(iY+i) = (double)0.;
-						// il faut prendre en compte l'orientation si 0.5<eq[0]<1.5 pour ameliorer le fit
+						// il faut prendre en compte l'orientation si 0.5<eq[0]<1.5 pour améliorer le fit
 						if (((eq[0]<1.5)&&(eq[0]>0.5))||((eq[0]>-1.5)&&(eq[0]<-0.5))) { // rotation de 45°
 							for(j=0;j<sizey;j++) {
 							   for(i=0;i<sizex;i++) {
@@ -1544,35 +1513,67 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						free(iY);
 						free(dY);
 						fwhmxy=(fwhmx>fwhmy)?(fwhmx/fwhmy):(fwhmy/fwhmx);
-						// elimine les etoiles :
+						// elimine les étoiles :
 						j=0;
 						for(i=(int)xcc;i<naxis1-x1;i++) {
-							if (p_in->p[naxis1*(int)(floor(ycc))+i]>=pseries->bgmean+5*pseries->bgsigma) j++;
+							if (p_in->p[naxis1*(int)(floor(ycc))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+							else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
 							else break;
 						}
 						for(i=(int)xcc;i>x1;i--) {
-							if (p_in->p[naxis1*(int)(floor(ycc))+i]>=pseries->bgmean+5*pseries->bgsigma) j++;
+							if (p_in->p[naxis1*(int)(floor(ycc))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+							else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
 							else break;
 						}
-						if (((floor(ycc-1))>=0.0)&&(eq[0]<=0.1)&&(eq[0]>=-0.1)&&(j<(int)(0.5*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
+						if (((floor(ycc-1))>=0.0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
 							j=0;
 							for(i=(int)xcc;i<naxis1-x1;i++) {
-								if (p_in->p[naxis1*(int)(floor(ycc-1))+i]>=pseries->bgmean+5*pseries->bgsigma) j++;
+								if (p_in->p[naxis1*(int)(floor(ycc-1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+								else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
 								else break;
 							}
 							for(i=(int)xcc;i>x1;i--) {
-								if (p_in->p[naxis1*(int)(floor(ycc-1))+i]>=pseries->bgmean+5*pseries->bgsigma) j++;
+								if (p_in->p[naxis1*(int)(floor(ycc-1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+								else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
 								else break;
 							}
-							if ((j<(int)(0.5*0.004180983*pseries->exposure/(9.1441235255136e-4)))&&((floor(ycc+1))<naxis2)) {
+							if ((j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))&&((floor(ycc+1))<naxis2)) {
 								j=0;
 								for(i=(int)xcc;i<naxis1-x1;i++) {
-									if (p_in->p[naxis1*(int)(floor(ycc+1))+i]>=pseries->bgmean+5*pseries->bgsigma) j++;
+									if (p_in->p[naxis1*(int)(floor(ycc+1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+									else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
 									else break;
 								}
 								for(i=(int)xcc;i>x1;i--) {
-									if (p_in->p[naxis1*(int)(floor(ycc+1))+i]>=pseries->bgmean+5*pseries->bgsigma) j++;
+									if (p_in->p[naxis1*(int)(floor(ycc+1))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+									else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
 									else break;
+								}
+							}
+							if ((eq[0]>-0.1)&&(eq[0]<0.1)&&((floor(ycc-2))>=0.0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
+								j=0;
+								for(i=(int)xcc;i<naxis1-x1;i++) {
+									if (p_in->p[naxis1*(int)(floor(ycc-2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+									else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+									else break;
+								}
+								for(i=(int)xcc;i>x1;i--) {
+									if (p_in->p[naxis1*(int)(floor(ycc-2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+									else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+									else break;
+								}
+								if ((j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))&&((floor(ycc+2))<naxis2)) {
+									j=0;
+									for(i=(int)xcc;i<naxis1-x1;i++) {
+										if (p_in->p[naxis1*(int)(floor(ycc+2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+										else if ((j==0)&&(i-xcc<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+										else break;
+									}
+									for(i=(int)xcc;i>x1;i--) {
+										if (p_in->p[naxis1*(int)(floor(ycc+2))+i]>=pseries->bgmean+4*pseries->bgsigma) j++;
+										else if ((j==0)&&(xcc-i<0.5*0.004180983*pseries->exposure/(9.1441235255136e-4))) continue;
+										else break;
+									}
 								}
 							}
 						}
@@ -1583,10 +1584,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						j=0;
 					}
 					
-					//longueur de la trainee des etoiles en fonction du temps d'exposition: 0.004180983*pseries->exposure/(9.1441235255136e-4)
+					//longueur de la traînée des étoiles en fonction du temps d'exposition: 0.004180983*pseries->exposure/(9.1441235255136e-4)
 					if ((l>8)&&(nb>=l/3)&&(fwhmxy>=1.5)&&(l*1./largxx>=1.5)&&(dvalue>0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
 	/* ------------------------------------------ */
-	/* --- ajustement par les moindres carres --- */
+	/* --- ajustement par les moindres carrés --- */
 	/* ------------------------------------------ */
 						for (nb=0;nb<2050;nb++) {
 								bary_x[nb]=0;
@@ -1595,7 +1596,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 						/* --- cas des droites faibles pentes ou horizontales --- */
 						i=0;j=0;
-						if ((((eq[0]<=0.2)&&(eq[0]>=-0.2))||(eq[0]==0))&&(eq[2]==0)) {
+						if ((((eq[0]<=0.8)&&(eq[0]>=-0.8))||(eq[0]==0))&&(eq[2]==0)) {
 							for (k1=(int)xdebut;k1<=(int)xfin;k1++) {										
 								for (k2=(int)(eq[0]*k1+eq[1]-largx-3);k2<=(int)(eq[0]*k1+eq[1]+largx+3);k2++) {
 									if (k2<0) continue;
@@ -1629,7 +1630,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 						/* --- cas des droites fortes pentes ou verticales --- */
 						else { 		
-							if ((eq[0]>0.2)&&(eq[0]!=0)) { // droite forte pente positive
+							if (eq[0]>0.8) { // droite forte pente positive
 								for (k2=(int)ydebut;k2<=(int)yfin;k2++) {
 									for (k1=(int)((k2-eq[1])/eq[0]-largx-3);k1<=(int)((k2-eq[1])/eq[0]+largx+3);k1++) {
 										if (k1<0) continue;
@@ -1645,7 +1646,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									}
 									i++;
 								}
-							} else if ((eq[0]<-0.2)&&(eq[0]!=0)) { // droite forte pente negative
+							} else if (eq[0]<-0.8) { // droite forte pente négative
 								for (k2=(int)ydebut;k2>=(int)yfin;k2--) {
 									for (k1=(int)((k2-eq[1])/eq[0]-largx-3);k1<=(int)((k2-eq[1])/eq[0]+largx+3);k1++) {
 										if (k1<0) continue;
@@ -1699,7 +1700,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 						
 						if ((eq[2]==0)&&((sommexx!=0)||(sommex!=0))) {
-							if ((i*sommexx-sommex*sommex)!=0) {	
+							if ((j*sommexx-sommex*sommex)!=0) {	
+								somme_value=eq[0];
 								eq[0]=(j*sommexy-sommex*sommey)/(j*sommexx-sommex*sommex);		
 								eq[1]=(sommey*sommexx-sommex*sommexy)/(j*sommexx-sommex*sommex);
 							} else {
@@ -1711,16 +1713,18 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									ydebut=dvalue;
 								}
 							}
-						} else {
+						} else if (j!=0) {
 							eq[2]=sommex/j;
-							eq[0]=eq[1]=0;
+							somme_value=eq[0]=eq[1]=0;
 							if (ydebut<yfin) {
 								dvalue = yfin;
 								yfin=ydebut;
 								ydebut=dvalue;
 							}
+						} else {
+							eq[2]=0;
 						}
-						if (dvalue*eq[0]<0) { //il y a eu un changement de signe de eq[0]
+						if (somme_value*eq[0]<0) { //il y a eu un changement de signe de eq[0]
 							dvalue = yfin;
 							yfin=ydebut;
 							ydebut=dvalue;
@@ -1742,7 +1746,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 							xdebut=eq[2];
 							xfin=eq[2];
 						}						
-						/* --- mise a zero pour la detection des geo --- */
+						/* --- mise a zero pour la détection des geo --- */
 						if (eq[0]>0) {
 							for (k1=(int)xdebut-largx-2;k1<(int)xfin+largx+2;k1++) {
 								if (k1>=naxis1) break;	
@@ -1750,7 +1754,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								for (k2=(int)ydebut-largx-2;k2<(int)yfin+largx+2;k2++) {
 									if (k2<0) continue;
 									if (k2>=naxis2) break;
-									//mettre a zero les pixels concernes pour ne pour ne pas avoir deux fois la trainees	
+									//mettre a zero les pixels concernés pour ne pour ne pas avoir deux fois la traînées	
 									p_out->p[naxis1*(k2)+k1]=0;
 								}
 							}	
@@ -1775,7 +1779,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						}
 						//tt_imasaver(p_out,"D:/gto2.fit",16);
 	/* ---------------------------------------------------- */
-	/* --- enregistrer l'equation de la droite detectee --- */
+	/* --- enregistrer l'equation de la droite détectée --- */
 	/* ---------------------------------------------------- */					
 						fprintf(fic,"%d %f %f %f %f %f %f %f %f %f\n",ngto,eq[0],eq[1],eq[2],somme_x,somme_y,xdebut,ydebut,xfin,yfin);	
 						ngto++;
@@ -1847,8 +1851,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				if (p_in->p[naxis1*(k-1)+x0]<=pseries->bgmean+0.5*pseries->bgsigma) break;
 				else fwhmy+=1;
 			}
-			/* --- elimine les cosmiques --- */
-			//if ((fwhmx<=1.)&&(fwhmy<=1.)) break; 				
 		
 			fwhmx/=2.;
 			fwhmy/=2.;
@@ -1918,10 +1920,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
                sigma=sqrt(sigma/(n23f-n23d));
             }
             free(vec);
-			if (r1<4) r1=4;
+			if (r1<5) r1=5;
 			//fitte une gaussienne pour la recherche du centroide
-			xx1=(int)(xcc-2*r1);
-            xx2=(int)(xcc+2*r1);
+			xx1=(int)(xcc-2.5*r1);
+            xx2=(int)(xcc+2.5*r1);
             yy1=(int)(ycc-r1);
             yy2=(int)(ycc+r1);
             if (xx1<0) xx1=0;
@@ -1969,11 +1971,13 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			free(pp);
 			free(ecart);
 
-			//elimine les trainees d'etoiles
+			//elimine les traînées d'étoiles 
 			if ((fwhmx>4*fwhmy)&&((fwhmx>0.5)&&(fwhmy>0.5))) break;
+			if ((fwhmx>3.5*fwhmy)&&((fwhmx>1)&&(fwhmy>1))) break;
 			if ((fwhmx>3*fwhmy)&&((fwhmx>2)&&(fwhmy>2))) break;
+
 			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
-			//la premiere fenêtre semble trop grande
+			//la première fenêtre semble trop grande
 			if ((fabs(xcc-x0)>=1.0*fwhmxy)||(fabs(ycc-y0)>=1.0*fwhmxy)) {
 				xcc=x0;
 				ycc=y0;
@@ -2027,8 +2031,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				free(pp);
 				free(ecart);
 
-			} else if (((2*r1-fwhmx)<2)||((r1-fwhmy)<2)||(r1<fwhmy)||(2*r1<fwhmx)) { //la premiere fenêtre semble trop petite
-				r1=(fwhmx>fwhmy)?1.5*fwhmx:1.5*fwhmy;
+			} else if (((2*r1-fwhmx)<2)||((r1-fwhmy)<2)||(r1<fwhmy)||(2*r1<fwhmx)) { //la première fenêtre semble trop petite
+				r1=(fwhmx>fwhmy)?1.2*fwhmx:1.2*fwhmy;
 				//if (r1<10) r1=10;
 				//re-fitte une gaussienne avec une fenêtre plus grande
 				//fitte une gaussienne pour la recherche du centroide			
@@ -2083,34 +2087,30 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 				free(ecart);
 			}
 				
-			// elimine les bouts d'etoiles  : xcc et ycc eloignes de x et y de plus de r1; 
-			if ((fabs(xcc-x)>1.2*fwhmxy)||(fabs(ycc-y)>1.2*fwhmxy)) break;
+			// elimine les bouts d'étoiles  : xcc et ycc eloignés de x et y de plus de r1; 
+			if (((fabs(xcc-x)>1.2*fwhmxy)||(fabs(ycc-y)>1.2*fwhmxy))&&(fwhmxy>2.5)) break;
+			if (((fabs(xcc-x)>1.5*fwhmxy)||(fabs(ycc-y)>1.5*fwhmxy))&&(fwhmxy<=2.5)) break;
 			// elimine les cosmiques
 			//if (((fwhmx<0.8)&&(fwhmy<0.8))||(fwhmx<0.3)||(fwhmy<0.3)) break;
-			/* --- elimine les bouts d'etoiles --- */
-			//fwhmxy=(fwhmx>fwhmy)?fwhmx/fwhmy:fwhmy/fwhmx;
-			if ((fwhmx>2.5*fwhmy)&&((fwhmx>1.5)&&(fwhmy>1.5))) break;
-			if ((fwhmx>1.5*fwhmy)&&((fwhmx>3)&&(fwhmy>3))) break;
-			if ((p_out->p[naxis1*y0+x0+1]==0)&&(p_out->p[naxis1*y0+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0-1]==0)&&(p_out->p[naxis1*(y0-1)+x0]==0)&&(p_out->p[naxis1*(y0-1)+x0+1]==0)&&(p_out->p[naxis1*(y0+1)+x0-1]==0)&&(p_out->p[naxis1*(y0+1)+x0]==0)&&(p_out->p[naxis1*(y0+1)+x0+1]==0)&&((fwhmx>6.0)||(fwhmy>6.0))) break;
+			/* --- elimine les bouts d'étoiles --- */
+			if ((fwhmx>5*fwhmy)&&((fwhmx>0.5)&&(fwhmy>0.5))) break;
+			if ((fwhmx>4*fwhmy)&&((fwhmx>1)&&(fwhmy>1))) break;
+			if ((fwhmx>3*fwhmy)&&((fwhmx>2)&&(fwhmy>2))) break;
+			
 			nb=0;
 			for(i=(int)xcc;i<naxis1-x1;i++) {
-				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+6*pseries->bgsigma) nb++;
+				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+4*pseries->bgsigma) nb++;
 				else break;
 			}
 			for(i=(int)xcc;i>x1;i--) {
-				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+6*pseries->bgsigma) nb++;
+				if (p_in->p[naxis1*(int)ycc+i]>=pseries->bgmean+4*pseries->bgsigma) nb++;
 				else break;
 			}
 			if (nb>(int)(0.6*0.004180983*pseries->exposure/(9.1441235255136e-4))) break;
+		
 			
-
 			fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
-			//r1=1.5*fwhmxy;
-            r2=2.5*fwhmxy;
-            //r3=2.5*fwhmxy;
-            //r11=r1*r1;
-            //r22=r2*r2;
-            //r33=r3*r3;				
+            r2=2.5*fwhmxy;	
 			/* --- photometrie (flux) ---*/
             xx1=(int)(xcc-r2);
             xx2=(int)(xcc+r2);
@@ -2151,32 +2151,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
             /* --- sortie du resultat ---*/
 			fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",nsats,xcc+1.,ycc+1.,flux,fmed,ra,dec,fwhmx,fwhmy);
 			nsats++;
-
-			/*xx1=(int)(xcc-r1);
-			xx2=(int)(xcc+r2);
-			if (x<xx1) {xx1=(int)(x-r1);}
-			if (x>xx2) {xx2=(int)(x+r1);}
-			yy1=(int)(ycc-r1);
-			yy2=(int)(ycc+r2);
-			if (y<yy1) {yy1=(int)(y-r1);}
-			if (y>yy2) {yy2=(int)(y+r2);}
-			if (xx1<0) xx1=0;
-			if (xx1>=naxis1) xx1=naxis1-1;
-			if (xx2<0) xx2=0;
-			if (xx2>=naxis1) xx2=naxis1-1;
-			if (yy1<0) yy1=0;
-			if (yy1>=naxis2) yy1=naxis2-1;
-			if (yy2<0) yy2=0;
-			if (yy2>=naxis2) yy2=naxis2-1;
-			sizex=xx2-xx1+1;
-			sizey=yy2-yy1+1;
-			for (j=0;j<sizey;j++) {  
-				for (i=0;i<sizex;i++) {	 
-					if ((j+yy1)>=naxis2) break;
-					if ((i+xx1)>=naxis1) break;
-					p_out->p[naxis1*(j+yy1)+i+xx1]=0;
-				 }
-			}*/
 		}
 	}
 	fclose(fic);
@@ -2192,29 +2166,29 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 /*********************************************************************************************/
 /* Trait morpho math sur image dans buffer													 */
 /*********************************************************************************************/
-/* Entrees:												  									 */
+/* Entrées:												  									 */
 /*			nom_trait= nom du traitement de morpho maths (ERODE, DILATE, OPEN, CLOSE,		 */
 /*					OUVERTURE, OUVERTURE2, TOPHAT, TOPHATE, GRADIENT, CIEL)					 */
-/*					OUVERTURE=ouverture tres rapide pour des SE:ligne de longueur>150 pixels */									
-/*					OUVERTURE2=ouverture tres rapide pour des SE:ligne de longueur<150 pixels*/
+/*					OUVERTURE=ouverture très rapide pour des SE:ligne de longueur>150 pixels */									
+/*					OUVERTURE2=ouverture très rapide pour des SE:ligne de longueur<150 pixels*/
 /*					TOPHAT= chapeau haut de forme classique									 */
-/*					TOPHATE= chapeau haut etendu (ouverture d'une fermeture)				 */
+/*					TOPHATE= chapeau haut étendu (ouverture d'une fermeture)				 */
 /*					CIEL= sort l'image du fond de ciel										 */
 /*			struct_elem = forme de l'element structurant (RECTANGLE, DAIMOND, CERCLE)		 */
 /*			x1 = longueur sur l'axe x de SE													 */
 /*			y1 = largeur sur l'axe y de SE													 */
-/*	Les resultats sont enregistres dans deux fichiers textes palces dans $chemin			 */														 
+/*	Les résultats sont enregistrés dans deux fichiers textes palcés dans $chemin			 */														 
 /*********************************************************************************************/
-/*      pour le moment les SE seront de dimensions impaires pour avoir un centre centre!     */
+/*      pour le moment les SE seront de dimensions impaires pour avoir un centre centré!     */
 /*********************************************************************************************/
-/* ATTENTION: si le centre n'est pas centre et le SE n'est pas symmetrique,					 */
-/* il faut revoir l'algo de dilation ( il faut utilise le transpose de SE) !!				 */
+/* ATTENTION: si le centre n'est pas centre et le SE n'est pas symmétrique,					 */
+/* il faut revoir l'algo de dilation ( il faut utilisé le transposé de SE) !!				 */
 /*********************************************************************************************/
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=TOPHAT struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 imaseries "MORPHOMATH nom_trait=$nom_Trait struct_elem=$struct_Elem x1=$dim1 y1=$dim2"
-//pour le moment les SE seront de dimensions impaires pour avoir un centre centre!
-// si le centre n'est pas centre et le SE n'est pas symmetrique, 
+//pour le moment les SE seront de dimensions impaires pour avoir un centre centré!
+// si le centre n'est pas centre et le SE n'est pas symmétrique, 
 
 {
 	TT_IMA *p_tmp1,*p_tmp2, *p_in, *p_out;
@@ -2270,7 +2244,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	}
 
 	/* ------------------------------------------- */
-	/* ---- creation de l'element structurant ---- */
+	/* ---- creation de l'élément structurant ---- */
 	/* ------------------------------------------- */	
 	if (strcmp (struct_elem,"RECTANGLE")==0) {	
 		size=x1*y1;
@@ -2323,8 +2297,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		sizey = x1;
 		
 	} else {
-		//forme libre a donner
-		//se[0] est en bas a gauche de SE
+		//forme libre à donner
+		//se[0] est en bas à gauche de SE
 
 		x1=13;
 		y1=1;
@@ -2346,18 +2320,18 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	if (i==0) {
 		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_in->p[kkk]=-p_in->p[kkk];
+				p_tmp1->p[kkk]=-p_in->p[kkk];
 			}
 			if (x1<150) {
-				erosionByAnchor_1D_horizontal_courSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_courSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
 			} else {
-				erosionByAnchor_1D_horizontal_longSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_longSE(p_tmp1, p_out,naxis1,naxis2,x1,bitpix);
 			}
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
 				p_out->p[kkk]=-p_out->p[kkk];
 			}
 		} else {
-			dilate (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_in,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		}
 	} 
 
@@ -2370,7 +2344,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				erosionByAnchor_1D_horizontal_longSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
 			}
 		} else {
-			erode (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_in,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			//tt_imasaver(p_out,"D:/erode.fit",16);
 		}
 	} 
@@ -2384,8 +2358,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				openingByAnchor_1D_horizontal_longSE(p_out,naxis1,naxis2, x1,bitpix);
 			}
 		} else {
-			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		}
 	} 
 
@@ -2393,12 +2367,12 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	if (i==0) {
 		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_in->p[kkk]=-p_in->p[kkk];
+				p_tmp2->p[kkk]=-p_in->p[kkk];
 			}
 			if (x1<150) {
-				erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_courSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			} else {
-				erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_longSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			}
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
 				p_tmp1->p[kkk]=-p_tmp1->p[kkk];
@@ -2410,8 +2384,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 
 		} else {
-			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		}
 	} 
 
@@ -2426,11 +2400,11 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				openingByAnchor_1D_horizontal_longSE(p_out,naxis1,naxis2, x1,bitpix);
 			}
 		} else {
-			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		}
 
-		//reduction de la dynamique des images et calcul des seuils de visu
+		//réduction de la dynamique des images et calcul des seuils de visu
 		tt_util_histocuts(p_out,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 		hicut=pseries->hicut;
 		locut=pseries->locut;
@@ -2464,7 +2438,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 	
 	i=strcmp (nom_trait,"TOPHATE"); /* --- extension du tophat : ouverture d'une fermeture --- */
 	if (i==0) {
-		// pour traiter le cas des satellites proches (compromis entre tophat excellent et detection de satellites proches)
+		// pour traiter le cas des satellites proches (compromis entre tophat excellent et détection de satellites proches)
 		if (strcmp (struct_elem,"RECTANGLE")==0) {
 			x2=(int)(x1/3.0);
 			y2=(int)(y1/3.0);
@@ -2497,12 +2471,12 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		if ((strcmp (struct_elem,"RECTANGLE")==0)&&(y1==1)) {
 			/* --- fermeture  --- */
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_in->p[kkk]=-p_in->p[kkk];
+				p_tmp2->p[kkk]=-p_in->p[kkk];
 			}
 			if (x1<150) {
-				erosionByAnchor_1D_horizontal_courSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_courSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			} else {
-				erosionByAnchor_1D_horizontal_longSE(p_in, p_tmp1,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_longSE(p_tmp2, p_tmp1,naxis1,naxis2,x1,bitpix);
 			}			
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
 				p_tmp1->p[kkk]=-p_tmp1->p[kkk];
@@ -2518,14 +2492,13 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			} else {
 				openingByAnchor_1D_horizontal_longSE(p_out,naxis1,naxis2, x1,bitpix);
 			}
-
 		} else {
 			/* --- fermeture  --- */
-			dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			erode (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_tmp1,p_tmp2,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			/* --- ouverture --- */
-			erode (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			dilate (p_out,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_tmp2,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_tmp1,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		}
 		
 		/* --- Calcul des seuils de visualisation ---*/		
@@ -2542,30 +2515,30 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		tt_util_cuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),TT_YES);
 		mode1=pseries->bgmean;
 
-		//tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
-		/* --- detection des geo et des trainees du bruit --- */
+		tt_imasaver(p_out,"D:/ouv_de_ferm.fit",16);
+		/* --- detection des geo et des traînées du bruit --- */
+		/* --- réduction de la dynamique des images --- */
 		if ((4+(pseries->hicut-pseries->locut)/100)<8) {
-			seuil=(4+(pseries->hicut-pseries->locut)/100)*pseries->bgsigma;
+			seuil=(4+(pseries->hicut-pseries->locut)/100)*pseries->bgsigma;	
 		} else {
 			seuil=8*pseries->bgsigma;
 		}
-
-		/* --- reduction de la dynamique des images --- */
-		sb=-pseries->bgsigma;
 		sh=8*pseries->bgsigma;
-		//sh=pseries->hicut-mode1;
+		sb=-pseries->bgsigma;
+
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
 				if (mode1>mode2) p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x])*(float)mode1/(float)mode2;					
-				if (fabs (p_out->p[y*naxis1+x]-p_in->p[y*naxis1+x])<seuil) {
-					p_out->p[y*naxis1+x]=p_in->p[y*naxis1+x];
+				if ((fabs (p_out->p[y*naxis1+x]-p_in->p[y*naxis1+x])<seuil)||(p_out->p[y*naxis1+x]>p_in->p[y*naxis1+x])) {
+					p_tmp1->p[y*naxis1+x]=p_out->p[y*naxis1+x];
+				} else if (x>naxis1-x1-1) {// gestion du bord droit de l'image après traitement morpho maths
+					p_tmp1->p[y*naxis1+x]=p_out->p[y*naxis1+x];
 				} else {
 					if (p_out->p[y*naxis1+x]<mode1-sb) {
 						p_out->p[y*naxis1+x]=0;
 					} else if (p_out->p[y*naxis1+x]>mode1+sh) {
 						p_out->p[y*naxis1+x]=255;
 					} else {
-						//p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-pseries->sigma))*(float)255./(float)(2.0*pseries->sigma);
 						if (p_out->p[y*naxis1+x]<mode1) {
 							if (pseries->locut/locut<1) {
 								p_out->p[y*naxis1+x]=(p_out->p[y*naxis1+x]-(float)(mode1-sb))*(float)255./((float)(sb+sh))*(float)(pseries->locut/locut);
@@ -2583,7 +2556,6 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 						}
 					}
 
-					
 					if (p_in->p[y*naxis1+x]<mode1-sb) {					
 						p_tmp1->p[y*naxis1+x]=0;	
 					} else if (p_in->p[y*naxis1+x]>mode1+sh) {
@@ -2598,7 +2570,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		}
 		//tt_imasaver(p_out,"D:/ouv_ferm_seuill.fit",16);
 		//tt_imasaver(p_tmp2,"D:/init2.fit",8);
-		//tt_imasaver(p_out,"F:/ima_a_tester_algo/GTO_MEO_a_tester/ouv_de_ferm2.fit",8);
+		//tt_imasaver(p_out,"D:/tophat.fit",8);
 	} 
 
 	i=strcmp (nom_trait,"GRADIENT");
@@ -2612,19 +2584,19 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 			/* --- dilation --- */
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
-				p_in->p[kkk]=-p_in->p[kkk];
+				p_tmp2->p[kkk]=-p_in->p[kkk];
 			}
 			if (x1<150) {
-				erosionByAnchor_1D_horizontal_courSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_courSE(p_tmp2, p_out,naxis1,naxis2,x1,bitpix);
 			} else {
-				erosionByAnchor_1D_horizontal_longSE(p_in, p_out,naxis1,naxis2,x1,bitpix);
+				erosionByAnchor_1D_horizontal_longSE(p_tmp2, p_out,naxis1,naxis2,x1,bitpix);
 			}
 			for (kkk=0;kkk<(int)(nelem);kkk++) {//inversion de l'image
 				p_out->p[kkk]=-p_out->p[kkk];
 			}
 		} else {
-			erode (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-			dilate (p_out,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			erode (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
+			dilate (p_in,p_out,se,x1,y1,sizex,sizey,naxis1,naxis2);
 		}
 		for (y=0;y<naxis2;y++) {
 			for (x=0;x<naxis1;x++) {
@@ -2633,7 +2605,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 		}
 	}
 
-	i=strcmp (nom_trait,"CIEL"); /* --- mediane sous condition pour faire une carte du fond de ciel --- */
+	i=strcmp (nom_trait,"CIEL"); /* --- médiane sous condition pour faire une carte du fond de ciel --- */
 	if (i==0) {
 		//defini le nombre de fois que l'image subit ce traitement
 		nb_test=3;
@@ -2660,8 +2632,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					p_in->p[kkk]=-p_in->p[kkk];
 				}
 			} else {
-				erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-				dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+				erode (p_in,p_tmp2,se,x1,y1,sizex,sizey,naxis1,naxis2);
+				dilate (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			}
 			for (y=0;y<naxis2;y++) {
 				for (x=0;x<naxis1;x++) {
@@ -2673,8 +2645,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			//tt_util_histocuts(p_in,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
 			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
-			//erosion par la mediane si gradient superieur a seuil
-			// definition du centre de l'element structurant
+			//erosion par la médiane si gradient supérieur à seuil
+			// définition du centre de l'élément structurant
 			// SE est au milieu du rectangle sizex*sizey
 			sizex2=3;
 			sizey2=90;
@@ -2685,7 +2657,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			for (i=0; i<size;i++) {
 				med[i]=1;
 			}
-			//on commence par le coin en bas a gauche de l'image p_out [0][0]
+			//on commence par le coin en bas à gauche de l'image p_out [0][0]
 			for (y=cy;y<(naxis2-cy-1);y++) {
 				for (x=cx;x<(naxis1-cx);x++) {
 					if (p_tmp1->p[y*naxis1+x]<seuil) {continue;}
@@ -2799,10 +2771,10 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 			}
 		}
 	}
-	i=strcmp (nom_trait,"CIEL2");/* --- mediane sous condition pour faire une carte du fond de ciel --- */
+	i=strcmp (nom_trait,"CIEL2");/* --- médiane sous condition pour faire une carte du fond de ciel --- */
 	if (i==0) {
 		//defini le nombre de fois que l'image subit ce traitement
-		nb_test=3;
+		nb_test=1;
 		taille_carre_med= 64;	
 		/* --- calcul du gradient morpho --- */
 		for (k_test=1;k_test<=nb_test;k_test++) {
@@ -2827,8 +2799,8 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 					p_in->p[kkk]=-p_in->p[kkk];
 				}	
 			} else {
-				erode (p_tmp2,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
-				dilate (p_tmp1,p_in,se,x1,y1,sizex,sizey,naxis1,naxis2);
+				erode (p_in,p_tmp2,se,x1,y1,sizex,sizey,naxis1,naxis2);
+				dilate (p_in,p_tmp1,se,x1,y1,sizex,sizey,naxis1,naxis2);
 			}
 			for (y=0;y<naxis2;y++) {
 				for (x=0;x<naxis1;x++) {
@@ -2836,11 +2808,11 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 				}
 			}
 			tt_util_histocuts(p_tmp1,pseries,&(pseries->hicut),&(pseries->locut),&mode2,&mini2,&maxi2);
-			//tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
+			tt_imasaver(p_tmp1,"D:/gradient.fit",16);	
 
 			seuil =(pseries->hicut+mode2)/2.0;
 
-			/* --- calcul d'une image reduite de valeur de mediane de l'image initiale --- */
+			/* --- calcul d'une image reduite de valeur de médiane de l'image initiale --- */
 			//size=(naxis1/taille_carre_med)*(naxis2/taille_carre_med)+(naxis1/taille_carre_med-1)*(naxis2/taille_carre_med-1);
 			size=(naxis1/taille_carre_med)*(naxis2/taille_carre_med);
 			med=calloc(size,sizeof(double));
@@ -2894,7 +2866,7 @@ int tt_morphomath_1 (TT_IMA_SERIES *pseries)
 }
 
 
-void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
+void dilate (TT_IMA* pin,TT_IMA* pout,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
 /*********************************************************************************************/
 /* Trait morpho math : algo de dilation classique: recherche du max dans SE					 */
 /*********************************************************************************************/
@@ -2902,12 +2874,12 @@ void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int si
 	int cx,cy,x,y,xx,yy;
 	double sup;
 
-	// definition du centre de l'element structurant
+	// définition du centre de l'élément structurant
 	// SE est au milieu du rectangle sizex*sizey
 	cx=(sizex-1)/2;
 	cy=(sizey-1)/2;
 
-	//on commence par le coin en bas a gauche de l'image p_out [0][0]
+	//on commence par le coin en bas à gauche de l'image p_out [0][0]
 	for (y=cy;y<(naxis2-cy);y++) {
 		for (x=cx;x<(naxis1-cx);x++) {
 			sup=pin->p[y*naxis1+x];
@@ -2925,20 +2897,20 @@ void dilate (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int si
 }
 
 
-void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
+void erode (TT_IMA* pin,TT_IMA* pout,int* se,int dim1,int dim2,int sizex,int sizey,int naxis1,int naxis2)
 /*********************************************************************************************/
-/* Trait morpho math : algo d'erosion classique: recherche du min dans SE					 */
+/* Trait morpho math : algo d'érosion classique: recherche du min dans SE					 */
 /*********************************************************************************************/
 {
 	int cx,cy,x,y,xx,yy;
 	double inf;
 
-	// definition du centre de l'element structurant
+	// définition du centre de l'élément structurant
 	// SE est au milieu du rectangle sizex*sizey
 	cx=(sizex-1)/2;
 	cy=(sizey-1)/2;
 	
-	//on commence par le coin en bas a gauche de l'image p_out [0][0]
+	//on commence par le coin en bas à gauche de l'image p_out [0][0]
 	for (y=cy;y<(naxis2-cy);y++) {
 		for (x=cx;x<(naxis1-cx);x++) {
 			inf=pin->p[y*naxis1+x];
@@ -2957,14 +2929,14 @@ void erode (TT_IMA* pout,TT_IMA* pin,int* se,int dim1,int dim2,int sizex,int siz
 
 int erosionByAnchor_1D_horizontal_courSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
 /*********************************************************************************************/
-/* Trait morpho math : algo d'erosion optimise pour SE ligne < 150 pixels					 */
+/* Trait morpho math : algo d'erosion optimisé pour SE ligne < 150 pixels					 */
 /*********************************************************************************************/
-/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codees en 16 bits				 */
+/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codées en 16 bits				 */
 /*********************************************************************************************/
 /*						 algo de VAN DROOGENBROECK											 */
-/*			ref: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
 /*						Journal of Mathematical Imaging and Vision,2005						 */
-/*					tres rapide pour des petits SE: ligne < 150 pixels					     */
+/*					très rapide pour des petits SE: ligne < 150 pixels					     */
 /*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
@@ -2985,7 +2957,7 @@ int erosionByAnchor_1D_horizontal_courSE(TT_IMA* pin, TT_IMA* pout, int imageWid
 	histo=calloc(size,sizeof(double));
 
 	/* Row by row */
-	for (j=0; j<imageHeight; j++){
+	for (j=0; j<imageHeight-1; j++){
 		/* Initialisation of both extremities of a line */
 		inLeft = (j*imageWidth);
 		outLeft = (j*imageWidth);
@@ -3165,14 +3137,14 @@ finishLine:
 
 int erosionByAnchor_1D_horizontal_longSE(TT_IMA* pin, TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
 /*********************************************************************************************/
-/* Trait morpho math : algo d'erosion optimise pour SE ligne > 150 pixels					 */
+/* Trait morpho math : algo d'erosion optimisé pour SE ligne > 150 pixels					 */
 /*********************************************************************************************/
-/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codees en 16 bits				 */
+/*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE et Images codées en 16 bits				 */
 /*********************************************************************************************/
 /*						 algo de VAN DROOGENBROECK											 */
-/*			ref: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
 /*						Journal of Mathematical Imaging and Vision,2005						 */
-/*					tres rapide pour des tres gros SE: ligne > 150 pixels					 */
+/*					très rapide pour des très gros SE: ligne > 150 pixels					 */
 /*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
@@ -3196,7 +3168,7 @@ int erosionByAnchor_1D_horizontal_longSE(TT_IMA* pin, TT_IMA* pout, int imageWid
 	histo = (double *)malloc(nbrBytes);
 
 	/* Row by row */
-	for (j=0; j<imageHeight; j++){
+	for (j=0; j<imageHeight-1; j++){
 		/* Initialisation of both extremities of a line */
 		inLeft = (j*imageWidth);
 		outLeft = (j*imageWidth);
@@ -3344,23 +3316,25 @@ finishLine:
 
 int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
 /*********************************************************************************************/
-/* Trait morpho math : algo d'ouverture optimise pour SE ligne < 150 pixels					 */
+/* Trait morpho math : algo d'ouverture optimisé pour SE ligne < 150 pixels					 */
 /*********************************************************************************************/
 /*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE											 */
 /*********************************************************************************************/
 /*						 algo de VAN DROOGENBROECK											 */
-/*			ref: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
 /*						Journal of Mathematical Imaging and Vision,2005						 */
-/*					tres rapide pour des petits SE: ligne < 150 pixels					 */
+/*					très rapide pour des petits SE: ligne < 150 pixels						 */
 /*********************************************************************************************/
-
+/*********************************************************************************************/
+/*								ATTENTION: IL FAUT POUT=PIN!!								 */
+/*********************************************************************************************/
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
 //buf1 imaseries "MORPHOMATH nom_trait=OUVERTURE struct_elem=RECTANGLE x1=10 y1=1"
 //buf1 save "D:/toqjd.fit"
 {
 	int i,end;
 	long outLeft,outRight,current,sentinel; 
-	double min;
+	int min;
 	int j,imageWidthMinus1,sizeMinus1;
 	double *histo;
 
@@ -3369,10 +3343,10 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 	sizeMinus1 = size-1;
 
 	/* Initialisation of the histogram */
-	histo=calloc(size,sizeof(double));
+	histo=calloc(size,sizeof(double));	
 
 	/* Row by row */
-	for (j=0; j<imageHeight; j++) {
+	for (j=0; j<imageHeight-1; j++) {
 		/* Initialisation of both extremities of a line */
 		outLeft = (j*imageWidth);
 		outRight = outLeft+imageWidthMinus1;
@@ -3383,15 +3357,15 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 		{ outLeft++; }
 
 		/* Right side */
-		while ( (outLeft < outRight) && (pout->p[outRight-1] <= pout->p[outRight]) )
-		{ outRight--; }
+		/*while ( (outLeft < outRight) && (pout->p[outRight-1] <= pout->p[outRight]) )
+		{ outRight--; }*/
 
 		/* Enters in the loop */
 		startLine:
-		min =(double) pout->p[outLeft];
+		min =(int) pout->p[outLeft];
 		current = outLeft+1;
 		while ((current<outRight) && (pout->p[current]<=min))
-		{ min=(double)pout->p[current]; outLeft++; current++; }
+		{ min=(int)pout->p[current]; outLeft++; current++; }
 		sentinel = outLeft+size;
 		if (sentinel>outRight) { goto finishLine; }
 
@@ -3401,7 +3375,7 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 			if (pout->p[current]<=min) { /* We have found a new minimum */
 				end = current;
 				outLeft++; 
-				while (outLeft < end) {pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+				while (outLeft < end) {pout->p[outLeft]=(TT_PTYPE)min; outLeft++;}
 				outLeft = current; 
 				goto startLine; 
 			}
@@ -3430,7 +3404,7 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 			min = (int)histo[0];
 			for (i=0; i<size; i++) {
 				if (histo[i]<min) {// finds and allocates the minimum
-					min = histo[i];
+					min =(int) histo[i];
 				}
 			}
 			pout->p[outLeft] = (TT_PTYPE)min;
@@ -3444,7 +3418,7 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 				/* We have found a new mimum */
 				end = current;
 				outLeft++; 
-				while (outLeft < end) { pout->p[outLeft]=(TT_PTYPE)min; outLeft++; }
+				while (outLeft < end) { pout->p[outLeft]=(TT_PTYPE)min; outLeft++; 	}
 				outLeft = current; 
 				goto startLine; 
 			} else {
@@ -3453,11 +3427,11 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 				for (i=0; i<size; i++) { 
 					histo[i]=(double)pout->p[outLeft+i]; 
 				}
-				min = (double)histo[0];
+				min = (int)histo[0];
 				/* Recompute the minimum */
 				for (i=0; i<size; i++) {
 					if (histo[i]<min) {// finds and allocates the minimum
-						min = histo[i];
+						min = (int)histo[i];
 					}
 				}
 				pout->p[outLeft]=(TT_PTYPE)min; 
@@ -3471,7 +3445,7 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 			}
 			for (i=0; i<size; i++) {
 				if (histo[i]<min) {// finds and allocates the minimum
-					min = histo[i];
+					min =(int) histo[i];
 				}
 			}
 			outLeft++; 		
@@ -3481,11 +3455,10 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 		finishLine:
 		while (outLeft < outRight){
 			if (pout->p[outLeft]<=pout->p[outRight]) {
-				min=(double)pout->p[outRight]; outRight--; 
-				if (pout->p[outRight]>min) 	{ pout->p[outRight]=(TT_PTYPE)min; }
+				min=(int)pout->p[outRight]; outRight--; 
+				if (pout->p[outRight]>min) 	{ pout->p[outRight]=(TT_PTYPE)min;}
 			} else {
-				min=(double)pout->p[outLeft]; outLeft++; 
-				if (pout->p[outLeft]>min) 	{ pout->p[outLeft]=(TT_PTYPE)min; }
+				min=(int)pout->p[outLeft]; outLeft++; 
 			}
 		}
 	}
@@ -3498,14 +3471,17 @@ int openingByAnchor_1D_horizontal_courSE(TT_IMA* pout, int imageWidth, int image
 
 int openingByAnchor_1D_horizontal_longSE(TT_IMA* pout, int imageWidth, int imageHeight, int size, int bitpix)
 /*********************************************************************************************/
-/* Trait morpho math : algo d'ouverture optimise pour SE ligne > 150 pixels					 */
+/* Trait morpho math : algo d'ouverture optimisé pour SE ligne > 150 pixels					 */
 /*********************************************************************************************/
 /*     ATTENTION: ALGO VALABLE QUE POUR SE=LIGNE											 */
 /*********************************************************************************************/
 /*						 algo de VAN DROOGENBROECK											 */
-/*			ref: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
+/*			réf: Morphological Erosions and Opening: Fast Algorithms Based on Anchors.       */
 /*						Journal of Mathematical Imaging and Vision,2005						 */
-/*					tres rapide pour des tres gros SE: ligne > 150 pixels					 */
+/*					très rapide pour des très gros SE: ligne > 150 pixels					 */
+/*********************************************************************************************/
+/*********************************************************************************************/
+/*								ATTENTION: IL FAUT POUT=PIN!!								 */
 /*********************************************************************************************/
 
 //buf1 load "F:/ima_a_tester_algo/IM_20070813_202524142_070813_20055300.fits.gz" 
@@ -3821,7 +3797,7 @@ int tt_histocuts_precis(TT_IMA *p,TT_IMA_SERIES *pseries,double percent_sb,doubl
 
 void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis2, int threshold , double *eq)
 /***************************************************************************/
-/* Transformee de Hough arrangee pour la detection des GTO                 */
+/* Transformee de Hough arrangée pour la detection des GTO                 */
 /***************************************************************************/
 /* - mots optionels utilisables et valeur par defaut :                     */
 /***************************************************************************/
@@ -3874,7 +3850,7 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
    }
    for(k=0;k<naxis12;k++) {
       //theta=(1.*k-90.)*(TT_PI)/180.;
-      theta=(1.*k/2-90.)*(TT_PI)/180.; //pour avoir une resolution 2 fois plus grande
+      theta=(1.*k/2-90.)*(TT_PI)/180.; //pour avoir une résolution 2 fois plus grande
       cost[k]=cos(theta);
       sint[k]=sin(theta);
    }
@@ -3924,17 +3900,17 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 	 }
 	//enregistre l'image de hough
 	//tt_imasaver(pout,"D:/hough.fit",16);
-	//seuil de detection fixe arbitrairement a 15 points alignes
+	//seuil de détection fixé arbitrairement à 15 points alignés
 	if (seuil_max>=10) {
 		threshold_ligne=seuil_max/2;
 		somme_value=0;
 		somme_theta=0;
 		somme_ro=0;
-		//recherche du barycentre de la trainee detectee
-		for (kl=-20; kl<=20;kl++) { //attention a ymax!
+		//recherche du barycentre de la traînée détectée
+		for (kl=-20; kl<=20;kl++) { //attention à ymax!
 			if (ymax+kl<0) continue;
 			if (ymax+kl>=naxis222) break;
-			for (kc=-20;kc<=20;kc++) { //attention a xmin!
+			for (kc=-20;kc<=20;kc++) { //attention à xmin!
 				if (xmax+kc<0) continue;
 				if (xmax+kc>=naxis12) break;
 				adr=kl*naxis12+adr_max+kc;
@@ -3953,12 +3929,12 @@ void tt_ima_series_hough_myrtille(TT_IMA* pin,TT_IMA* pout,int naxis1, int naxis
 			ro0=ymax;
 		}
 		
-		//coordonnees du point dans le plan de hough
+		//coordonnées du point dans le plan de hough
 		//theta0=(theta0-naxis12/2.)*(TT_PI)/180.;
 		theta0=(theta0/2.0-naxis12/4)*(TT_PI)/180.;
 		ro0=ro0-naxis22;
 		
-		//pour angle different de 90°
+		//pour angle différent de 90°
 		if ((theta0==(TT_PI)/2.)||(theta0==-(TT_PI)/2.)) {
 			eq[0]=0;
 			eq[1]=0;
