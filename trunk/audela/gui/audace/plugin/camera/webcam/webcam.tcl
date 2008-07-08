@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.40 2008-07-07 19:32:30 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.41 2008-07-08 18:09:28 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -583,8 +583,8 @@ proc ::webcam::stop { camItem } {
       ::confLink::delete $conf(webcam,$camItem,longueposeport) "cam $camItem" "longuepose"
    }
 
-   #--- j'arret le mode preview et la capture de film au cas ou ils seraientt actifs
-   cam$private($camItem,camNo)  stopvideoview
+   #--- J'arrete le mode preview et la capture de film au cas ou ils seraient actifs
+   cam$private($camItem,camNo) stopvideoview
    cam$private($camItem,camNo) stopvideocapture
 
    #--- J'arrete la camera
