@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.16 2008-02-02 12:38:00 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.17 2008-07-08 18:11:53 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -1542,7 +1542,7 @@ proc modpoi_catalogmean2apparent { rae dece equinox date { dra_dan "" } { ddec_d
    #--- Aberration annuelle
    set radec [mc_aberrationradec annual [list $rae $dece] $date ]
    #--- Correction de precession
-   set radec [mc_precessradec $radec $equinox $date [list $dra_dan $ddec_dan]]
+   set radec [mc_precessradec $radec $equinox $date [list $dra_dan $ddec_dan $equinox]]
    #--- Correction de nutation
    set radec [mc_nutationradec $radec $date]
    #--- Aberration de l'aberration diurne
