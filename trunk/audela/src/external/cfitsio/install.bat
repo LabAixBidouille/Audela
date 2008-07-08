@@ -1,7 +1,12 @@
-set FITSIO=cfitsio2510
-mkdir ..\include
-mkdir ..\lib
-copy %FITSIO%\cfitsio.dll ..\..\..\bin
-copy %FITSIO%\cfitsio.lib ..\lib
-copy %FITSIO%\fitsio.h ..\include
-copy %FITSIO%\longnam.h ..\include
+rem  parametre %1 = Release ou Debug
+
+rem Si pas de parametre , la valeur par defaut est Release
+if not "%1" == "" set CONFIG=%1
+if "%1" == "" set CONFIG=Release
+set FITSIO=..\cfitsio3090
+mkdir ..\..\include
+mkdir ..\..\lib
+copy %CONFIG%\cfitsio.dll ..\..\..\..\bin
+copy %CONFIG%\cfitsio.lib ..\..\lib
+copy %FITSIO%\fitsio.h ..\..\include
+copy %FITSIO%\longnam.h ..\..\include

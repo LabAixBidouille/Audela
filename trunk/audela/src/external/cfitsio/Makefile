@@ -1,6 +1,6 @@
 .PHONY: build install clean distclean
 
-DIR = cfitsio2510
+DIR = cfitsio3090
 
 build:
 	( cd $(DIR) ; chmod +x configure ; ./configure --prefix=`pwd`/../.. )
