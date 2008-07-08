@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 11 novembre 2004</p>
+<p class="date">Date de mise &agrave; jour : 08 juillet 2008</p>
 <h1>LIB MC - Une librairie de calculs de m&eacute;canique c&eacute;leste</h1>
 <h1>Manuel Utilisateur</h1>
 <p>Libmc est une librairie d'extension Tcl qui ajoute des fonctions utilitaires de m&eacute;canique c&eacute;leste. Ce guide de l'utilisateur s'adresse aux programmeurs de scripts Tcl qui d&eacute;sirent utiliser les fonctions de libmc. Les fonctions faisant appel aux "buffer" de AudeLA ne peuvent &ecirc;tre employ&eacute;es qu'avec la plate forme AudeLA. </p>
@@ -368,7 +368,7 @@ La liste des contraintes possibles est la suivante :
 <p> <a name="mc_xy2radec" id="mc_xy2radec"></a>mc_xy2radec x y <a href="#field">Field</a> : Retourne une liste au format {RA DEC} &agrave; partir des coordonn&eacute;es x et y.</p>
 <p> <a name="mc_radec2xy" id="mc_radec2xy"></a>mc_radec2xy ra dec <a href="#field">Field</a> : Retourne une liste au format {X Y} &agrave; partir des coordonn&eacute;es ra et dec.</p>
 <p><a name="mc_precessradec" id="mc_precessradec"></a>mc_precessradec <a href="#angle">ListAngles</a> <a href="#date">Date_eq1</a> <a href="#date">Date_eq2</a> ?<a
- href="#angle">ListAngles_proper</a>? : Retourne une liste d'angles en degr&eacute;s (Ra et Dec) corrig&eacute;s de la pr&eacute;cession &agrave; partir des coordonn&eacute;es de ListAngles au format {ra dec} de l'&eacute;quinoxe Date_eq1 vers l'&eacute;quinoxe Date_eq2. Il est possible d'ajouter les mouvements propres annuels par l'interm&eacute;diaire de ListAngles_proper (liste de types Dates). </p>
+ href="#angle">ListAngles_proper</a> <a href="#date">Date_eq1</a>? : Retourne une liste d'angles en degr&eacute;s (Ra et Dec) corrig&eacute;s de la pr&eacute;cession &agrave; partir des coordonn&eacute;es de ListAngles au format {ra dec} de l'&eacute;quinoxe Date_eq1 vers l'&eacute;quinoxe Date_eq2. Il est possible d'ajouter les mouvements propres annuels par l'interm&eacute;diaire de ListAngles_proper et de Date_eq1. </p>
 <p><a name="mc_nutationradec" id="mc_nutationradec"></a>mc_nutationradec <a
  href="#angle">ListAngles</a> <a href="#date">Date</a> ?-reverse? : Retourne une liste d'angles en degr&eacute;s (Ra et Dec) corrig&eacute;s de la nutation &agrave; partir des coordonn&eacute;es de ListAngles au format {ra dec}. L'option -reverse sert &agrave; effectuer le calcul inverse.</p>
 <p> <a name="mc_aberrationradec" id="mc_aberrationradec"></a>mc_aberrationradec annual|diurnal|eterms <a href="#angle">ListAngles</a> <a href="#date">Date</a> ?<a
