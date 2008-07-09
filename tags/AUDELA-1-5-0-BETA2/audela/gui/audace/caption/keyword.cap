@@ -1,0 +1,408 @@
+#
+# Fichier : keyword.cap
+# Mise a jour $Id: keyword.cap,v 1.5 2008-06-14 10:26:27 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+#--- Fenetre de configuration
+set caption(keyword,titre)                             "FITS Keywords"
+set caption(keyword,camera)                            "Camera"
+set caption(keyword,parcourir)                         "..."
+set caption(keyword,rafraichir)                        "Reload"
+set caption(keyword,ok)                                "OK"
+set caption(keyword,appliquer)                         "Apply"
+set caption(keyword,aide)                              "Help"
+set caption(keyword,fermer)                            "Close"
+
+#--- Titres des colonnes
+set caption(keyword,colonne,categorie)                 "Category"
+set caption(keyword,colonne,description)               "Description"
+set caption(keyword,colonne,motclef)                   "Keyword"
+set caption(keyword,colonne,valeur)                    "Value"
+
+#--- Categories des mots clefs
+set caption(keyword,lieu)                              "Location"
+set caption(keyword,instrument)                        "Instrument"
+set caption(keyword,cible)                             "Target"
+set caption(keyword,acquisition)                       "Acquisition"
+set caption(keyword,logiciel)                          "Software"
+set caption(keyword,divers)                            "Miscellaneous"
+
+#--- Mots clefs
+set caption(keyword,description,OBSERVER)              "Observer Name"
+set caption(keyword,description,SITENAME)              "Observatory Name"
+set caption(keyword,description,IAU_CODE)              "IAU Code for the observatory"
+set caption(keyword,description,SITELONG)              "Longitude"
+set caption(keyword,description,SITELAT)               "Latitude"
+set caption(keyword,description,SITEELEV)              "Altitude"
+set caption(keyword,description,GEODSYS)               "Geodetic Datum"
+set caption(keyword,description,TELESCOP)              "Telescope (name, barlow, reducer)"
+set caption(keyword,description,FOCLEN)                "Resulting Focal (m)"
+set caption(keyword,description,APTDIA)                "Diameter (m)"
+set caption(keyword,description,XPIXSZ)                "Pixel Width (µm)"
+set caption(keyword,description,YPIXSZ)                "Pixel Height (µm)"
+set caption(keyword,description,SET_TEMP)              "Set Temperature"
+set caption(keyword,description,CCD_TEMP)              "CCD Temperature"
+set caption(keyword,description,INSTRUME)              "Equipment"
+set caption(keyword,description,DETNAM)                "Camera"
+set caption(keyword,description,OBJNAME)               "Object Name"
+set caption(keyword,description,EXPTIME)               "Exposure Time"
+set caption(keyword,description,RA)                    "Right Ascension"
+set caption(keyword,description,DEC)                   "Declination"
+set caption(keyword,description,EQUINOX)               "Coordinates Equinox"
+set caption(keyword,description,RADECSYS)              "Coordinates System"
+set caption(keyword,description,IMAGETYP)              "Image Type"
+set caption(keyword,description,SERIESID)              "Serie Identifiant"
+set caption(keyword,description,SWCREATE)              "Acquisition Software"
+set caption(keyword,description,SWMODIFY)              "Processing Software"
+set caption(keyword,description,COMMENT)               "Comments"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   #--- Fenetre de configuration
+   set caption(keyword,titre)                          "Mots clés FITS"
+   set caption(keyword,camera)                         "Caméra"
+   set caption(keyword,parcourir)                      "..."
+   set caption(keyword,rafraichir)                     "Rafraîchir"
+   set caption(keyword,ok)                             "OK"
+   set caption(keyword,appliquer)                      "Appliquer"
+   set caption(keyword,aide)                           "Aide"
+   set caption(keyword,fermer)                         "Fermer"
+
+   #--- Titres des colonnes
+   set caption(keyword,colonne,categorie)              "Catégorie"
+   set caption(keyword,colonne,description)            "Description"
+   set caption(keyword,colonne,motclef)                "Mot clés"
+   set caption(keyword,colonne,valeur)                 "Valeur"
+
+   #--- Categories des mots clefs
+   set caption(keyword,lieu)                           "Lieu"
+   set caption(keyword,instrument)                     "Instrument"
+   set caption(keyword,cible)                          "Cible"
+   set caption(keyword,acquisition)                    "Acquisition"
+   set caption(keyword,logiciel)                       "Logiciel"
+   set caption(keyword,divers)                         "Divers"
+
+   #--- Mots clefs
+   set caption(keyword,description,OBSERVER)           "Nom de l'observateur"
+   set caption(keyword,description,SITENAME)           "Nom de l'observatoire"
+   set caption(keyword,description,IAU_CODE)           "Code UAI de l'observatoire"
+   set caption(keyword,description,SITELONG)           "Longitude"
+   set caption(keyword,description,SITELAT)            "Latitude"
+   set caption(keyword,description,SITEELEV)           "Altitude"
+   set caption(keyword,description,GEODSYS)            "Référentiel géodésique"
+   set caption(keyword,description,TELESCOP)           "Télescope (nom, barlow, réducteur)"
+   set caption(keyword,description,FOCLEN)             "Focale résultante (m)"
+   set caption(keyword,description,APTDIA)             "Diamètre (m)"
+   set caption(keyword,description,XPIXSZ)             "Largeur du pixel (µm)"
+   set caption(keyword,description,YPIXSZ)             "Hauteur du pixel (µm)"
+   set caption(keyword,description,SET_TEMP)           "Consigne de température"
+   set caption(keyword,description,CCD_TEMP)           "Température du CCD"
+   set caption(keyword,description,INSTRUME)           "Equipement"
+   set caption(keyword,description,DETNAM)             "Caméra"
+   set caption(keyword,description,OBJNAME)            "Nom de l'objet"
+   set caption(keyword,description,EXPTIME)            "Durée de pose"
+   set caption(keyword,description,RA)                 "Ascension droite"
+   set caption(keyword,description,DEC)                "Déclinaison"
+   set caption(keyword,description,EQUINOX)            "Equinoxe des coordonnées"
+   set caption(keyword,description,RADECSYS)           "Système de coordonnées"
+   set caption(keyword,description,IMAGETYP)           "Type d'image"
+   set caption(keyword,description,SERIESID)           "Identifiant de série"
+   set caption(keyword,description,SWCREATE)           "Logiciel d'acquisition"
+   set caption(keyword,description,SWMODIFY)           "Logiciel de traitement"
+   set caption(keyword,description,COMMENT)            "Commentaire"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   #--- Fenetre de configuration
+   set caption(keyword,titre)                          "Parole chiave FITS"
+   set caption(keyword,camera)                         "Camera"
+   set caption(keyword,parcourir)                      "..."
+   set caption(keyword,rafraichir)                     "Rinfresca"
+   set caption(keyword,ok)                             "OK"
+   set caption(keyword,appliquer)                      "Applica"
+   set caption(keyword,aide)                           "Aiuto"
+   set caption(keyword,fermer)                         "Chiudi"
+
+   #--- Titres des colonnes
+   set caption(keyword,colonne,categorie)              "Categorie"
+   set caption(keyword,colonne,description)            "Descrizione"
+   set caption(keyword,colonne,motclef)                "Keyword"
+   set caption(keyword,colonne,valeur)                 "Valore"
+
+   #--- Categories des mots clefs
+   set caption(keyword,lieu)                           "Luogo"
+   set caption(keyword,instrument)                     "Strumento"
+   set caption(keyword,cible)                          "Target"
+   set caption(keyword,acquisition)                    "Acquisizione"
+   set caption(keyword,logiciel)                       "Software"
+   set caption(keyword,divers)                         "Varie"
+
+   #--- Mots clefs
+   set caption(keyword,description,OBSERVER)           "Nome dell'osservatore"
+   set caption(keyword,description,SITENAME)           "Nome dell'osservatorio"
+   set caption(keyword,description,IAU_CODE)           "Codice UAI dell'osservatorio"
+   set caption(keyword,description,SITELONG)           "Longitudine"
+   set caption(keyword,description,SITELAT)            "Latitudine"
+   set caption(keyword,description,SITEELEV)           "Altitudine"
+   set caption(keyword,description,GEODSYS)            "Riferimento Geodesico"
+   set caption(keyword,description,TELESCOP)           "Telescopio (nome, barlow, riduttore)"
+   set caption(keyword,description,FOCLEN)             "Focale risultante (m)"
+   set caption(keyword,description,APTDIA)             "Diametro (m)"
+   set caption(keyword,description,XPIXSZ)             "Larghezza dei pixel (µm)"
+   set caption(keyword,description,YPIXSZ)             "Altezza dei pixel (µm)"
+   set caption(keyword,description,SET_TEMP)           "Set Temperatura"
+   set caption(keyword,description,CCD_TEMP)           "CCD Temperatura"
+   set caption(keyword,description,INSTRUME)           "Equipaggiamento"
+   set caption(keyword,description,DETNAM)             "Camera"
+   set caption(keyword,description,OBJNAME)            "Nome oggetto"
+   set caption(keyword,description,EXPTIME)            "Durata della posa"
+   set caption(keyword,description,RA)                 "Ascensione Retta"
+   set caption(keyword,description,DEC)                "Declinazione"
+   set caption(keyword,description,EQUINOX)            "Epoca delle coordinate"
+   set caption(keyword,description,RADECSYS)           "Sistema di coordinate"
+   set caption(keyword,description,IMAGETYP)           "Tipo di immagine"
+   set caption(keyword,description,SERIESID)           "ID di serie"
+   set caption(keyword,description,SWCREATE)           "Software di acquisizione"
+   set caption(keyword,description,SWMODIFY)           "Software del elaborazione"
+   set caption(keyword,description,COMMENT)            "Commenti"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   #--- Fenetre de configuration
+   set caption(keyword,titre)                          "Palabras clave FITS"
+   set caption(keyword,camera)                         "Cámara"
+   set caption(keyword,parcourir)                      "..."
+   set caption(keyword,rafraichir)                     "Recargar"
+   set caption(keyword,ok)                             "OK"
+   set caption(keyword,appliquer)                      "Aplicar"
+   set caption(keyword,aide)                           "Ayuda"
+   set caption(keyword,fermer)                         "Cerrar"
+
+   #--- Titres des colonnes
+   set caption(keyword,colonne,categorie)              "Categoría"
+   set caption(keyword,colonne,description)            "Descripción"
+   set caption(keyword,colonne,motclef)                "Claves"
+   set caption(keyword,colonne,valeur)                 "Valor"
+
+   #--- Categories des mots clefs
+   set caption(keyword,lieu)                           "Situación"
+   set caption(keyword,instrument)                     "Instrumento"
+   set caption(keyword,cible)                          "Objetivo"
+   set caption(keyword,acquisition)                    "Adquisición"
+   set caption(keyword,logiciel)                       "Software"
+   set caption(keyword,divers)                         "Miscelánea"
+
+   #--- Mots clefs
+   set caption(keyword,description,OBSERVER)           "Nombre del observador"
+   set caption(keyword,description,SITENAME)           "Nombre del observatorio"
+   set caption(keyword,description,IAU_CODE)           "Código UAI del observatorio"
+   set caption(keyword,description,SITELONG)           "Longitud"
+   set caption(keyword,description,SITELAT)            "Latitud"
+   set caption(keyword,description,SITEELEV)           "Altitud"
+   set caption(keyword,description,GEODSYS)            "Fecha geodésica"
+   set caption(keyword,description,TELESCOP)           "Telescopio (nombre, barlow, reductor)"
+   set caption(keyword,description,FOCLEN)             "Focal resultante (m)"
+   set caption(keyword,description,APTDIA)             "Diámtro (m)"
+   set caption(keyword,description,XPIXSZ)             "Tamaño de píxel (µm)"
+   set caption(keyword,description,YPIXSZ)             "Altura de Píxel (µm)"
+   set caption(keyword,description,SET_TEMP)           "Establezca la temperatura"
+   set caption(keyword,description,CCD_TEMP)           "Temperatura CCD"
+   set caption(keyword,description,INSTRUME)           "Equipo"
+   set caption(keyword,description,DETNAM)             "Cámara"
+   set caption(keyword,description,OBJNAME)            "Nombre del objecto"
+   set caption(keyword,description,EXPTIME)            "Tiempo de exposición"
+   set caption(keyword,description,RA)                 "Ascensión Recta"
+   set caption(keyword,description,DEC)                "Declinación"
+   set caption(keyword,description,EQUINOX)            "Equinoccio de coordenadas"
+   set caption(keyword,description,RADECSYS)           "Sistema de coordenadas"
+   set caption(keyword,description,IMAGETYP)           "Tipo de imagen"
+   set caption(keyword,description,SERIESID)           "Identificador de serie"
+   set caption(keyword,description,SWCREATE)           "Programa de adquisición"
+   set caption(keyword,description,SWMODIFY)           "Programa de tratamiento"
+   set caption(keyword,description,COMMENT)            "Comentarios"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   #--- Fenetre de configuration
+   set caption(keyword,titre)                          "FITS Stichwörter"
+   set caption(keyword,camera)                         "Kamera"
+   set caption(keyword,parcourir)                      "..."
+   set caption(keyword,rafraichir)                     "Aktualisieren"
+   set caption(keyword,ok)                             "OK"
+   set caption(keyword,appliquer)                      "Anwenden"
+   set caption(keyword,aide)                           "Hilfe"
+   set caption(keyword,fermer)                         "Schließen"
+
+   #--- Titres des colonnes
+   set caption(keyword,colonne,categorie)              "Kategorie"
+   set caption(keyword,colonne,description)            "Beschreibung"
+   set caption(keyword,colonne,motclef)                "Schlüsselbegriffen"
+   set caption(keyword,colonne,valeur)                 "Wert"
+
+   #--- Categories des mots clefs
+   set caption(keyword,lieu)                           "Standort"
+   set caption(keyword,instrument)                     "Instrument"
+   set caption(keyword,cible)                          "Ziel"
+   set caption(keyword,acquisition)                    "Belichtung"
+   set caption(keyword,logiciel)                       "Software"
+   set caption(keyword,divers)                         "Verschieden"
+
+   #--- Mots clefs
+   set caption(keyword,description,OBSERVER)           "Nahmen der Beobachter"
+   set caption(keyword,description,SITENAME)           "Nahmen der Sternwarte"
+   set caption(keyword,description,IAU_CODE)           "Sternwarte UAI Code"
+   set caption(keyword,description,SITELONG)           "Länge"
+   set caption(keyword,description,SITELAT)            "Breite"
+   set caption(keyword,description,SITEELEV)           "Höhe"
+   set caption(keyword,description,GEODSYS)            "Geodätischen Bezugsystem"
+   set caption(keyword,description,TELESCOP)           "Teleskop (Nahmen, Barlow, Verkleinerter)"
+   set caption(keyword,description,FOCLEN)             "Folgende Brennweite (m)"
+   set caption(keyword,description,APTDIA)             "Durchmesser (m)"
+   set caption(keyword,description,XPIXSZ)             "Pixel Breite (µm)"
+   set caption(keyword,description,YPIXSZ)             "Pixel Höhe (µm)"
+   set caption(keyword,description,SET_TEMP)           "Temperatur Einstellung"
+   set caption(keyword,description,CCD_TEMP)           "Temperatur CCD"
+   set caption(keyword,description,INSTRUME)           "Einrichtung"
+   set caption(keyword,description,DETNAM)             "Kamera"
+   set caption(keyword,description,OBJNAME)            "Objekt Nahmen"
+   set caption(keyword,description,EXPTIME)            "Aufnahme Zeit"
+   set caption(keyword,description,RA)                 "Rektaszension"
+   set caption(keyword,description,DEC)                "Deklination"
+   set caption(keyword,description,EQUINOX)            "Equinox Koordinaten"
+   set caption(keyword,description,RADECSYS)           "Koordinaten System"
+   set caption(keyword,description,IMAGETYP)           "Bild Art"
+   set caption(keyword,description,SERIESID)           "Reihen Ausweis"
+   set caption(keyword,description,SWCREATE)           "Software Belichtung"
+   set caption(keyword,description,SWMODIFY)           "Aufbereitung Software"
+   set caption(keyword,description,COMMENT)            "Kommentar"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   #--- Fenetre de configuration
+   set caption(keyword,titre)                          "Palavras-chave FITS"
+   set caption(keyword,camera)                         "Câmara"
+   set caption(keyword,parcourir)                      "..."
+   set caption(keyword,rafraichir)                     "Actualizar"
+   set caption(keyword,ok)                             "OK"
+   set caption(keyword,appliquer)                      "Aplicar"
+   set caption(keyword,aide)                           "Ajuda"
+   set caption(keyword,fermer)                         "Fechar"
+
+   #--- Titres des colonnes
+   set caption(keyword,colonne,categorie)              "Categoria"
+   set caption(keyword,colonne,description)            "Descrição"
+   set caption(keyword,colonne,motclef)                "Palavras-chave"
+   set caption(keyword,colonne,valeur)                 "Valor"
+
+   #--- Categories des mots clefs
+   set caption(keyword,lieu)                           "Localização"
+   set caption(keyword,instrument)                     "Instrumento"
+   set caption(keyword,cible)                          "Alvo"
+   set caption(keyword,acquisition)                    "Aquisição"
+   set caption(keyword,logiciel)                       "Software"
+   set caption(keyword,divers)                         "Diversos"
+
+   #--- Mots clefs
+   set caption(keyword,description,OBSERVER)           "Nome do observador"
+   set caption(keyword,description,SITENAME)           "Observators navn"
+   set caption(keyword,description,IAU_CODE)           "Código UAI do observatório"
+   set caption(keyword,description,SITELONG)           "Longitude"
+   set caption(keyword,description,SITELAT)            "Latitude"
+   set caption(keyword,description,SITEELEV)           "Altitude"
+   set caption(keyword,description,GEODSYS)            "Referência geodésica"
+   set caption(keyword,description,TELESCOP)           "Telescópio (nome, barlow, redutor)"
+   set caption(keyword,description,FOCLEN)             "Focal resultante (m)"
+   set caption(keyword,description,APTDIA)             "Diâmetro (m)"
+   set caption(keyword,description,XPIXSZ)             "Largura do pixel (µm)"
+   set caption(keyword,description,YPIXSZ)             "Altura do pixel (µm)"
+   set caption(keyword,description,SET_TEMP)           "Definir temperatura"
+   set caption(keyword,description,CCD_TEMP)           "Temperatura do CCD"
+   set caption(keyword,description,INSTRUME)           "Equipamento"
+   set caption(keyword,description,DETNAM)             "Câmara"
+   set caption(keyword,description,OBJNAME)            "Nome do objecto"
+   set caption(keyword,description,EXPTIME)            "Tempo de exposição"
+   set caption(keyword,description,RA)                 "Ascenção Recta"
+   set caption(keyword,description,DEC)                "Declinação"
+   set caption(keyword,description,EQUINOX)            "Equinócio de coordenadas"
+   set caption(keyword,description,RADECSYS)           "Sistema de coordenadas"
+   set caption(keyword,description,IMAGETYP)           "Tipo de imagem"
+   set caption(keyword,description,SERIESID)           "Identificador de série"
+   set caption(keyword,description,SWCREATE)           "Software de aquisição"
+   set caption(keyword,description,SWMODIFY)           "Software de processamento"
+   set caption(keyword,description,COMMENT)            "Comentário"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   #--- Fenetre de configuration
+   set caption(keyword,titre)                          "FITS Keywords"
+   set caption(keyword,camera)                         "Camera"
+   set caption(keyword,parcourir)                      "..."
+   set caption(keyword,rafraichir)                     "Reload"
+   set caption(keyword,ok)                             "OK"
+   set caption(keyword,appliquer)                      "Apply"
+   set caption(keyword,aide)                           "Help"
+   set caption(keyword,fermer)                         "Close"
+
+   #--- Titres des colonnes
+   set caption(keyword,colonne,categorie)              "Category"
+   set caption(keyword,colonne,description)            "Description"
+   set caption(keyword,colonne,motclef)                "Keyword"
+   set caption(keyword,colonne,valeur)                 "Value"
+
+   #--- Categories des mots clefs
+   set caption(keyword,lieu)                           "Location"
+   set caption(keyword,instrument)                     "Instrument"
+   set caption(keyword,cible)                          "Target"
+   set caption(keyword,acquisition)                    "Acquisition"
+   set caption(keyword,logiciel)                       "Software"
+   set caption(keyword,divers)                         "Miscellaneous"
+
+   #--- Mots clefs
+   set caption(keyword,description,OBSERVER)           "Observer Name"
+   set caption(keyword,description,SITENAME)           "Observatory Name"
+   set caption(keyword,description,IAU_CODE)           "IAU Code for the observatory"
+   set caption(keyword,description,SITELONG)           "Longitude"
+   set caption(keyword,description,SITELAT)            "Latitude"
+   set caption(keyword,description,SITEELEV)           "Altitude"
+   set caption(keyword,description,GEODSYS)            "Geodetic Datum"
+   set caption(keyword,description,TELESCOP)           "Telescope (name, barlow, reducer)"
+   set caption(keyword,description,FOCLEN)             "Resulting Focal (m)"
+   set caption(keyword,description,APTDIA)             "Diameter (m)"
+   set caption(keyword,description,XPIXSZ)             "Pixel Width (µm)"
+   set caption(keyword,description,YPIXSZ)             "Pixel Height (µm)"
+   set caption(keyword,description,SET_TEMP)           "Set Temperature"
+   set caption(keyword,description,CCD_TEMP)           "CCD Temperature"
+   set caption(keyword,description,INSTRUME)           "Equipment"
+   set caption(keyword,description,DETNAM)             "Camera"
+   set caption(keyword,description,OBJNAME)            "Object Name"
+   set caption(keyword,description,EXPTIME)            "Exposure Time"
+   set caption(keyword,description,RA)                 "Right Ascension"
+   set caption(keyword,description,DEC)                "Declination"
+   set caption(keyword,description,EQUINOX)            "Coordinates Equinox"
+   set caption(keyword,description,RADECSYS)           "Coordinates System"
+   set caption(keyword,description,IMAGETYP)           "Image Type"
+   set caption(keyword,description,SERIESID)           "Serie Identifiant"
+   set caption(keyword,description,SWCREATE)           "Acquisition Software"
+   set caption(keyword,description,SWMODIFY)           "Processing Software"
+   set caption(keyword,description,COMMENT)            "Comments"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

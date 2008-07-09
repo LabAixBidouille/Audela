@@ -1,0 +1,586 @@
+#
+# Fichier : plotxy.tcl
+# Description : Realisation de graphes a partir de 2 listes de nombres
+# Auteur : Alain KLOTZ
+# Mise a jour $Id: plotxy.tcl,v 1.6 2008-01-03 22:05:08 robertdelmas Exp $
+#
+# La syntaxe est la plus proche possible de Matlab
+#
+# # here are two vectors
+# set x {1 2 3 4 5 6 7 8 9}
+# set y {4 6 8 3 2 5 8 5 4 }
+# # plot a red crosses of 10 points linked by dashed lines
+# ::plotxy::plot $x $y r+: 10
+# # the next plot will be overlayed
+# ::plotxy::hold on
+# # the y vector has changed a little
+# set y {4.6 6.8 8.1 3.3 2.6 5.8 8.5 5.3 4.1 }
+# # plot a blue disks of 10 points linked by solid lines
+# ::plotxy::plot $x $y bo- 5
+# # ajust the graph to 500x500 pixel window
+# ::plotxy::geometry 500 500
+# # the background will be dark green
+# ::plotxy::bgcolor #557711
+# # set the axes limits (xmin,xmax,ymin,ymax)
+# ::plotxy::axis {1 10 0 10 }
+# # invert the direction along the y axis
+# ::plotxy::ydir reverse
+# # decorations of axis
+# ::plotxy::xlabel "time"
+# ::plotxy::ylabel "intensity"
+# ::plotxy::title "a big test"
+#
+
+global plotxy
+
+catch {unset plotxy}
+
+if {[info commands ::console::affiche_resultat]!="::console::affiche_resultat"} {
+   set plotxy(audace) 0
+} else {
+   set plotxy(audace) 1
+}
+
+namespace eval ::plotxy {
+   global plotxy
+
+   #=== select a figure index to display a graphic
+   proc figure { {num ""} {parentframe ""} } {
+      global audace
+      global caption
+      global plotxy
+
+      if {$num!=""} {
+         set plotxy(currentfigure) $num
+         if {([info exists plotxy(fig$num,ydir)]==0)&&($num>0)} {
+            set plotxy(figure,$num) 1
+            #--- init public variables of properties for this figure
+            set plotxy(fig$num,ydir) normal
+            set plotxy(fig$num,xdir) normal
+            if {$plotxy(audace)==1} {
+               set plotxy(fig$num,plotbackground) $audace(color,entryTextColor)
+               set plotxy(fig$num,bgcolor)        $audace(color,backColor)
+               set plotxy(fig$num,fgcolor)        $audace(color,textColor)
+               set plotxy(fig$num,caption) "$caption(plotxy,figure) $num"
+            } else {
+               set plotxy(fig$num,plotbackground) #FFFFFF
+               set plotxy(fig$num,bgcolor)        #FFFFFF
+               set plotxy(fig$num,fgcolor)        #000000
+               set plotxy(fig$num,caption) "Figure $num"
+            }
+            set plotxy(fig$num,position) {40 40 400 400}
+            set plotxy(fig$num,hide)      1
+            set plotxy(fig$num,hold)      off
+            set plotxy(fig$num,axis)      ""
+            set plotxy(fig$num,linewidth) 1
+            set plotxy(fig$num,xlabel)    "x data"
+            set plotxy(fig$num,ylabel)    "y data"
+            set plotxy(fig$num,title)     ""
+            #--- init private variables of properties for this figure
+            set plotxy(fig0,privates) {lastline}
+            set plotxy(fig$num,lastline) 0
+            #--- init frame for this figure
+            if {$parentframe==""} {
+               if {$plotxy(audace)==1} {
+                  set plotxy(fig$num,parent) $audace(base).plotxy$plotxy(currentfigure)
+               } else {
+                  set plotxy(fig$num,parent) .plotxy$plotxy(currentfigure)
+               }
+            } else {
+               set plotxy(fig$num,parent) ${parentframe}.plotxy$plotxy(currentfigure)
+            }
+            #--- init the graphic interface
+            set baseplotxy $plotxy(fig$num,parent)
+            toplevel $baseplotxy
+            wm withdraw $baseplotxy
+            wm maxsize $baseplotxy [winfo screenwidth .] [winfo screenheight .]
+            wm minsize $baseplotxy 200 200
+            wm resizable $baseplotxy 1 1
+            set texte "wm protocol $baseplotxy WM_DELETE_WINDOW { ::plotxy::clf $num }"
+            eval $texte
+            ::blt::graph $baseplotxy.xy
+            #--- update the graphics
+            ::plotxy::setgcf $num [::plotxy::getgcf $num]
+            set plotxy(fig$num,hide) 0
+            #---
+            if {$plotxy(audace)==1} {
+               #--- Focus
+               focus $baseplotxy
+               #--- Raccourci qui donne le focus a la Console et positionne le curseur dans
+                              #--- la ligne de commande
+               bind $baseplotxy <Key-F1> { ::console::GiveFocus }
+               #--- Mise a jour dynamique des couleurs
+               ::confColor::applyColor $baseplotxy
+               ::confColor::applyColor $baseplotxy.xy
+                        }
+         }
+      }
+      return $plotxy(currentfigure)
+   }
+
+   #=== destroy a figure index to display a graphic
+   proc clf { { num "" } } {
+      global audace
+      global plotxy
+
+      set nums ""
+      #--- search the figure indexes to destroy
+      if {$num!=""} {
+         set nums $num
+      } else {
+         set names [array names plotxy]
+         foreach name $names {
+            set kend [string first , $name ]
+            if {$kend>=0} {
+               set name1 [string range $name 0 [expr $kend-1] ]
+               set name2 [string range $name [expr 1+$kend] end]
+               if {$name1=="figure"} {
+                  lappend nums $name2
+               }
+            }
+         }
+      }
+      #--- loop over the figure indexes to destroy
+      foreach num $nums {
+         if {[info exists plotxy(figure,$num)]==0} {
+            continue
+         }
+         destroy $plotxy(fig$num,parent)
+         set name0 fig$num
+         set names [array names plotxy]
+         unset plotxy(figure,$num)
+         foreach name $names {
+            set kend [string first , $name ]
+            if {$kend>=0} {
+               set name1 [string range $name 0 [expr $kend-1] ]
+               set name2 [string range $name [expr 1+$kend] end]
+               if {$name1==$name0} {
+                  unset plotxy($name1,$name2)
+               }
+            }
+         }
+      }
+      #--- search the figure indexes that left
+      set names [array names plotxy]
+      set nums 0
+      foreach name $names {
+         set kend [string first , $name ]
+         if {$kend>=0} {
+            set name1 [string range $name 0 [expr $kend-1] ]
+            set name2 [string range $name [expr 1+$kend] end]
+            if {$name1=="figure"} {
+               lappend nums $name2
+            }
+         }
+      }
+      set num [lindex $nums end]
+      set plotxy(currentfigure) $num
+   }
+
+   #=== get properties of the figure index
+   proc getgcf { num } {
+      global audace
+      global plotxy
+
+      set name0 fig$num
+      set names [array names plotxy]
+      set listoptions ""
+      foreach name $names {
+         set kend [string first , $name ]
+         if {$kend>=0} {
+            set name1 [string range $name 0 [expr $kend-1] ]
+            set name2 [string range $name [expr 1+$kend] end]
+            if {$name1==$name0} {
+               if {[lsearch -exact $plotxy(fig0,privates) $name2]==-1} {
+                  lappend listoptions [list $name2 $plotxy($name1,$name2)]
+               }
+            }
+         }
+      }
+      return $listoptions
+   }
+
+   #=== set properties of the figure index
+   proc setgcf { num listoptions } {
+      global audace
+      global plotxy
+
+      set name1 fig$num
+      set baseplotxy $plotxy(fig$num,parent)
+      #--- case of only one option to be changed
+      set n [llength $listoptions]
+      if {$n==2} {
+         set res [lindex [lindex 0] 1]
+         if {$res==""} {
+            set listoptions [list $listoptions]
+         }
+      }
+      #--- loop over options
+      foreach listoption $listoptions {
+         set name2 [string tolower [lindex $listoption 0]]
+         set value [lindex $listoption 1]
+         if {[info exists plotxy($name1,$name2)]==1} {
+            if {$name2=="position"} {
+               set pos $value
+               set pos [lindex $pos 2]x[lindex $pos 3]+[lindex $pos 0]+[lindex $pos 1]
+               wm geometry $baseplotxy $pos
+            } elseif {$name2=="bgcolor"} {
+               $baseplotxy.xy configure -bg $value
+            } elseif {$name2=="fgcolor"} {
+               $baseplotxy.xy configure -fg $value
+               $baseplotxy.xy axis configure x  -hide no -color $value -titlecolor $value
+               $baseplotxy.xy axis configure x2 -hide no -color $value -titlecolor $value
+               $baseplotxy.xy axis configure y -hide no -color $value -titlecolor $value
+               $baseplotxy.xy axis configure y2 -hide no -color $value -titlecolor $value
+            } elseif {$name2=="plotbackground"} {
+               $baseplotxy.xy configure -plotbackground $value
+            } elseif {$name2=="axis"} {
+               if {$value!=""} {
+                  $baseplotxy.xy axis configure x -min [lindex $value 0] -max [lindex $value 1]
+                  $baseplotxy.xy axis configure y -min [lindex $value 2] -max [lindex $value 3]
+                  $baseplotxy.xy axis configure x2 -min [lindex $value 0] -max [lindex $value 1]
+                  $baseplotxy.xy axis configure y2 -min [lindex $value 2] -max [lindex $value 3]
+               }
+            } elseif {$name2=="ydir"} {
+               if {$value=="reverse"} {
+                  set yesno yes
+               } else {
+                  set yesno no
+               }
+               set texte "\$baseplotxy.xy axis configure y -descending $yesno"
+               eval $texte
+               set texte "\$baseplotxy.xy axis configure y2 -descending $yesno"
+               eval $texte
+            } elseif {$name2=="xdir"} {
+               if {$value=="reverse"} {
+                  set yesno yes
+               } else {
+                  set yesno no
+               }
+               set texte "\$baseplotxy.xy axis configure x -descending $yesno"
+               eval $texte
+               set texte "\$baseplotxy.xy axis configure x2 -descending $yesno"
+               eval $texte
+            } elseif {$name2=="hide"} {
+               if {$value==1} {
+                  wm withdraw $baseplotxy
+               } else {
+                  wm deiconify $baseplotxy
+               }
+            } elseif {$name2=="caption"} {
+               wm title $baseplotxy "$value"
+            } elseif {$name2=="xlabel"} {
+               $baseplotxy.xy axis configure x -hide no -title "$value"
+            } elseif {$name2=="ylabel"} {
+               $baseplotxy.xy axis configure y -hide no -title "$value"
+            } elseif {$name2=="title"} {
+               $baseplotxy.xy configure -title "$value"
+            }
+            set plotxy($name1,$name2) $value
+         }
+      }
+      update
+   }
+
+   #=== Matlab equivalents pour colorsymbol
+   #       y     yellow        .     point
+   #       m     magenta       o     circle
+   #       c     cyan          x     x-mark
+   #       r     red           +     plus
+   #       g     green         -     solid
+   #       b     blue          *     star
+   #       w     white         :     dotted
+   #       k     black
+   #
+   proc plot { { x { 0 1 2 } } { y { 0 1 4 } } { colorsymbol b+- } {sizesymbol 4} {options ""} } {
+      global audace
+      global plotxy
+
+      #--- choice figure 1 for the first entrance un plot
+      if {$plotxy(currentfigure)==0} {
+         ::plotxy::figure 1
+      }
+      #--- extract the current index of the figure
+      set num $plotxy(currentfigure)
+      #--- retains the current figure parameters
+      set plotxy(fig$num,axis) ""
+      set params [::plotxy::getgcf $num]
+      set mylinewidth $plotxy(fig$num,linewidth)
+      set baseplotxy $plotxy(fig$num,parent)
+      set lastline $plotxy(fig$num,lastline)
+      #--- show the graph of hide=0
+      if { [ winfo exists $baseplotxy ] } {
+         if {$plotxy(fig$num,hide)==0} {
+            wm deiconify $baseplotxy
+         }
+      }
+      #--- decode the selected color
+      set colorstring rgbk
+      set colorlist {red green blue black}
+      set len [string length $colorsymbol]
+      set mycolor [lindex $colorlist 0]
+      for {set k 0} {$k<$len} {incr k} {
+         set kk [string first [string index $colorsymbol $k] $colorstring]
+         if {$kk!=-1} {
+            set mycolor [lindex $colorlist $kk]
+         }
+      }
+      #--- decode the selected symbol
+      set symbolstring +xo*
+      set symbollist {splus scross circle diamond}
+      set mysymbol [lindex $symbollist 0]
+      for {set k 0} {$k<$len} {incr k} {
+         set kk [string first [string index $colorsymbol $k] $symbolstring]
+         if {$kk!=-1} {
+            set mysymbol [lindex $symbollist $kk]
+         }
+      }
+      #--- decode the selected line style
+      set linestring -.:
+      set linelist [list [list -linewidth $mylinewidth] [list -linewidth 0] \
+               [list -dashes dot -linewidth $mylinewidth] ]
+      set myline [lindex $linelist 0]
+      for {set k 0} {$k<$len} {incr k} {
+         set kk [string first [string index $colorsymbol $k] $linestring]
+         if {$kk!=-1} {
+            set myline [lindex $linelist $kk]
+         }
+      }
+      #--- hold on to overplot
+      set hold off
+      if {$plotxy(fig$num,hold)=="on"} {
+         set hold on
+         incr lastline
+      } else {
+         for {set k 1} {$k<=$lastline} {incr k} {
+            catch {$baseplotxy.xy element delete line$k }
+            catch {::blt::vector delete vx_fig${num}_${lastline} }
+            catch {::blt::vector delete vy_fig${num}_${lastline} }
+         }
+         ::plotxy::clf $num
+         ::plotxy::figure $num
+         ::plotxy::setgcf $num $params
+         set lastline $plotxy(fig$num,lastline)
+      }
+      set plotxy(fig$num,lastline) $lastline
+      #--- create the new vectors
+      ::blt::vector create vx_fig${num}_${lastline}
+      vx_fig${num}_${lastline} set $x
+      ::blt::vector create vy_fig${num}_${lastline}
+      vy_fig${num}_${lastline} set $y
+      set isybar [lsearch $options -ybars]
+      set isxbar [lsearch $options -xbars]
+      set texte "$baseplotxy.xy element create line_fig${num}_${lastline} -xdata vx_fig${num}_${lastline} \
+               -ydata vy_fig${num}_${lastline} -symbol $mysymbol -color $mycolor -pixel $sizesymbol"
+      #--- bar option
+      foreach mylin $myline {
+         append texte " $mylin"
+      }
+      if {$isxbar>=0} {
+         set bars [lindex $options [expr 1+$isxbar]]
+         set nbars [llength $bars]
+         set xhigh ""
+         set xlow ""
+         for {set k 0} {$k<$nbars} {incr k} {
+            set x0 [lindex $x $k]
+            set bar [lindex $bars $k]
+            lappend xlow [expr $x0-$bar/2.]
+            lappend xhigh [expr $x0+$bar/2.]
+         }
+         append texte " -errorbarwidth 1 -errorbarcolor $mycolor -xhigh \{$xhigh\} -xlow \{$xlow\}"
+      }
+      if {$isybar>=0} {
+         set bars [lindex $options [expr 1+$isybar]]
+         set nbars [llength $bars]
+         set yhigh ""
+         set ylow ""
+         for {set k 0} {$k<$nbars} {incr k} {
+            set y0 [lindex $y $k]
+            set bar [lindex $bars $k]
+            lappend ylow [expr $y0-$bar/2.]
+            lappend yhigh [expr $y0+$bar/2.]
+         }
+         append texte " -errorbarwidth 1 -errorbarcolor $mycolor -yhigh \{$yhigh\} -ylow \{$ylow\}"
+      }
+      eval $texte
+      #
+      $baseplotxy.xy legend configure -hide yes
+      $baseplotxy.xy axis configure -title $plotxy(fig$num,title)
+      $baseplotxy.xy axis configure x -hide no -title $plotxy(fig$num,xlabel)
+      $baseplotxy.xy axis configure y -hide no -title $plotxy(fig$num,ylabel)
+      if {$plotxy(audace)!=1} {
+         $baseplotxy.xy axis configure y2 -hide no -color $plotxy(fig$num,fgcolor)
+      }
+      set ly [$baseplotxy.xy axis limits y]
+      $baseplotxy.xy axis configure y2 -min [lindex $ly 0] -max [lindex $ly 1]
+      if {$plotxy(audace)!=1} {
+         $baseplotxy.xy axis configure x2 -hide no -color $plotxy(fig$num,fgcolor)
+      }
+      set lx [$baseplotxy.xy axis limits x]
+      $baseplotxy.xy axis configure x2 -min [lindex $lx 0] -max [lindex $lx 1]
+      if {$plotxy(audace)!=1} {
+         $baseplotxy.xy configure -bg $plotxy(fig$num,bgcolor)
+      }
+      pack $baseplotxy.xy -expand 1 -fill both
+      #
+      set plotxy(fig$num,axis) [list [lindex $lx 0] [lindex $lx 1] [lindex $ly 0] [lindex $ly 1]]
+      #
+      $baseplotxy.xy crosshairs on
+      $baseplotxy.xy crosshairs configure -color black -dashes 2
+      #bind $baseplotxy.xy <Motion> {
+      #   $baseplotxy.xy crosshairs configure -position @%x,%y
+      #}
+   }
+
+   proc fileread { filename {linestoskip 0} } {
+      global plotxy
+
+      set tty [open $filename r]
+      set res [read $tty]
+      close $tty
+      set res [split $res \n]
+      set res [lrange $res $linestoskip end]
+      set nrow [llength $res]
+      set ncol [llength [lindex $res 0]]
+      set rest ""
+      for {set kc 0} {$kc<$ncol} {incr kc} {
+         set col ""
+         for {set kr 0} {$kr<$nrow} {incr kr} {
+            lappend col "[lindex [lindex $res $kr] $kc]"
+         }
+         lappend rest $col
+      }
+      return $rest
+   }
+
+   proc writegif { filename } {
+      global audace
+      global plotxy
+
+      set num $plotxy(currentfigure)
+      set baseplotxy $plotxy(fig$num,parent)
+      #--- Determination de la dimension
+      set geometry [ wm geometry $baseplotxy ]
+      set deb1 0
+      set fin1 [ expr [ string first x $geometry ]-1 ]
+      set deb2 [expr $fin1+2]
+      set fin2 [ expr [ string first + $geometry ]-1 ]
+      set dimx "[ string range $geometry $deb1 $fin1 ]"
+      set dimy "[ string range $geometry $deb2 $fin2 ]"
+      set plotxyimage [image create photo -height $dimy -width $dimx]
+      $baseplotxy.xy snap $plotxyimage
+      $plotxyimage write $filename -format GIF
+      image delete $plotxyimage
+   }
+
+   proc updategcf { name value } {
+      global plotxy
+
+      set num $plotxy(currentfigure)
+      if {$num==0} { return }
+      if {$value==""} {
+         set res [::plotxy::getgcf $num]
+         foreach re $res {
+            if {[lindex $re 0]==$name} {
+               set value [lindex $re 1]
+               break
+            }
+         }
+      } else {
+         ::plotxy::setgcf $num [list [list $name $value] ]
+      }
+      return $value
+   }
+
+   proc xlabel { {value "" } } {
+      set name xlabel
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc ylabel { {value "" } } {
+      set name ylabel
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc title { {value "" } } {
+      set name title
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc hide { {value "" } } {
+      set name hide
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc axis { {value "" } } {
+      set name axis
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc bgcolor { {value "" } } {
+      set name bgcolor
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc fgcolor { {value "" } } {
+      set name fgcolor
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc plotbackground { {value "" } } {
+      set name plotbackground
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc ydir { {value "" } } {
+      set name ydir
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc xdir { {value "" } } {
+      set name xdir
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc caption { {value "" } } {
+      set name caption
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc hold { {value "" } } {
+      set name hold
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+   proc position { {value "" } } {
+      set name position
+      set res [::plotxy::updategcf $name $value]
+      return $res
+   }
+
+}
+
+# ::plotxy::clf ; source audace/plotxy.tcl ; ::plotxy::figure 1 ; ::plotxy::getgcf 1
+# ::plotxy::clf ; source audace/plotxy.tcl ; ::plotxy::figure 1 ; set res [::plotxy::getgcf 1] ; ::plotxy::setgcf 1 $res
+
+set err [catch {package require BLT} msg]
+if {$err==1} {
+   if {$plotxy(audace)==1} {
+      ::console::affiche_erreur "Warning: $msg\n"
+   }
+} else {
+   ::plotxy::figure 0
+}
+

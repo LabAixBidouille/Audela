@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Fonctions de la librairie libjm</title>
+</head>
+<body>
+
+<p>Date de mise &agrave; jour : 10 avril 2005</p>
+<h1>Fonctions de la librairie libjm </h1>
+<p><strong>Liste des fonctions utilisables :</strong></p>
+
+<h3> <a name="jm_versionlib" id="jm_versionlib"></a>jm_versionlib </h3>
+<p>Retourne le num&eacute;ro de version de la librairie au format <code>major.minor</code></p>
+
+<h3> <a name="jm_heurepc" id="jm_heurepc"></a>jm_heurepc <em>[{ann&eacute;e mois quanti&egrave;me heure minute seconde milliseconde}]</em></h3>
+<p>En l'absence de param&egrave;tres, lit l'heure syst&egrave;me d'un PC. Retourne la liste {<code>ann&eacute;e mois quanti&egrave;me heure minute seconde milliseconde</code>}. Si la liste {<code>ann&eacute;e mois quanti&egrave;me heure minute seconde milliseconde</code>} est donn&eacute;e en argument , fixe l'heure syst&egrave;me d'un PC avec les valeurs de la liste. Retourne la liste {<code>ann&eacute;e mois quanti&egrave;me heure minute seconde milliseconde</code>} apr&egrave;s la mise &agrave; l'heure. <strong>ATTENTION</strong> : Dans ce cas, l'utilisation de cette commande requiert que le processus qui la lance ait les droits d'administrateur sur la machine.</p>
+
+<h3> <a name="jm_reglageheurepc" id="jm_reglageheurepc"></a>jm_reglageheurepc <em>decalage en ms</em></h3>
+<p>D&eacute;cale l'heure syst&egrave;me d'un PC de la valeur num&eacute;rique du param&egrave;tre <code>decalage_en_ms</code>. Ce param&egrave;tre peut &ecirc;tre positif (avance dans le temps) ou n&eacute;gatif (retard). <strong>ATTENTION</strong> : L'utilisation de cette commande requiert que le processus qui la lance ait les droits d'administrateur sur la machine.</p>
+
+<h3> <a name="jm_fluxellipse" id="jm_fluxellipse"></a>jm_fluxellipse <em>b x0 y0 r1x r1y ro r2 r3 [n]</em></h3>
+<p>Dans l'image contenue dans le buffer <code>b</code>, calcule le flux d'une &eacute;toile contenue dans une ellipse de centre (x0, y0) d'axe principaux <code>r1x</code> et <code>r1y</code> et de facteur d'allongement <code>ro</code>. Les param&egrave;tres <code>r2</code> et <code>r3</code> d&eacute;finissent les rayons des cercles (couronne) autour de cette ellipse dans lesquels sera calcul&eacute; le flux du fond de ciel. Le param&egrave;tre <code>n</code> d&eacute;finit des sous-pixels artificiels, afin d'augmenter la pr&eacute;cision des calculs. Les pixels sont d&eacute;coup&eacute;s en <i>n&#178;</i> sous-pixels, mais le temps de calcul sera multipli&eacute; par la m&ecirc;me valeur...</p>
+<p>L'ellipse a pour &eacute;quation centr&eacute;e : <code>(x-x0)&#178;/r1x&#178; + (y-y0)&#178;/r1y&#178; - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y) = 1</code>, avec <code>|ro| &lt; 1</code>.</p>
+<p>Cette fonction retourne la liste <code>{flux_etoile nb_pixels_etoile flux_fond nb_pixels_fond sigma_fond}</code>.</p>
+<p><code>flux_etoile</code> est le flux apport&eacute; par l'&eacute;toile, c'est &agrave; dire le flux contenu dans l'ellipse de taille <code>nb_pixels</code>, flux auquel on a soustrait la quantit&eacute; <code>flux_fond*nb_pixels</code>.</p>
+<p><code>flux_fond</code> est le flux moyen par pixel du fond de ciel calcul&eacute; sur les <code>nb_pixels_fond</code> de la couronne d&eacute;limit&eacute;e par <code>r2</code> et <code>r3</code>. <code>sigma_fond</code> est l'&eacute;cart-type du flux de fond de ciel.</p>
+
+<h3> <a name="jm_fitgauss2d" id="jm_fitgauss2d"></a>jm_fitgauss2d <em>b {x1 y1 x2 y2} [-sub]</em></h3>
+<p>Dans un carr&eacute; d&eacute;finit par la liste <code>{x1 y1 x2 y2}</code> dans l'image contenue dans le buffer <code>b</code>, mod&eacute;lise une nappe gaussienne repr&eacute;sentant les valeurs de niveaux de gris d'une &eacute;toile. Cette nappe est optimale au sens des moindres carr&eacute;s. La mod&eacute;lisation cherche &agrave; d&eacute;terminer les param&egrave;tres <code>x0, y0, r1x, r1y et ro</code> d'une nappe donn&eacute;e par <code>z=A*[(x-x0)&#178;/r1x&#178; + (y-y0)&#178;/r1y&#178; - 2.0*ro*(x-x0)*(y-y0)/(r1x*r1y)] + B</code>, o&ugrave; <code>(x0, y0)</code> sont les coordonn&eacute;es du centro&iuml;de de l'&eacute;toile, <code>r1x et r2x</code> les grands axes de l'ellipse, <code>ro</code> son facteur d'allongement, <code>A</code> le niveau de gris maximum de l'&eacute;toile et <code>B</code> le niveau de gris du fond de ciel. Le mot-cl&eacute; <code>-sub</code> va soustraire l'&eacute;toile mod&eacute;lis&eacute;e &agrave; celle encadr&eacute;e dans le rectangle <code>{x1 y1 x2 y2}</code>. Cette fonction retourne une liste de 24 param&egrave;tres {p0 p1 p2 ... p23}
+  <ul>
+    <li>p0 vaut 1 si la mod&eacute;lisation a r&eacute;ussi, 0 dans le cas contraire; auquel cas, tous les autres param&egrave;tres sont sans signification.</li>
+    <li>p1 indique le nombre d'it&eacute;rations n&eacute;cessaires pour faire la mod&eacute;lisation.</li>
+    <li>(p2, p3) sont les coordonn&eacute;es du centro&iuml;de de l'&eacute;toile (<code>x0</code> et <code>y0</code>), (p13, p14) sont les incertitudes sur ces 2 coordonn&eacute;es.</li>
+    <li>p4 est le niveau de gris maximum de l'&eacute;toile (<i>A</i>), p15 l'incertitude sur cette valeur.</li>
+    <li>p5 est le niveau de gris du fond de ciel (<i>B</i>), p16 l'incertitude sur cette valeur.</li>
+    <li>(p6, p7) sont les valeurs des grand axe et petit axe de l'ellipse (<i>r1x</i> et <i>r1y</i>), (p17, p18) sont les incertitudes sur ces 2 valeurs.</li>
+    <li>p8 est le facteur <i>ro</i> d'allongement de l'ellipse, p19 l'incertitude sur cette valeur.</li>
+  </ul>
+<p>Les valeurs suivantes sont des valeurs d&eacute;duites des pr&eacute;c&eacute;dentes :</p>
+  <ul>
+    <li>p9 est l'angle exprim&eacute; en degr&eacute;s d&eacute;cimaux que font les axes principaux de l'ellipse par rapport aux axes de l'image, p20 l'incertitude sur cette valeur. p9 et p20 n'ont pas de sens si r1x et r1y sont identiques ou si ro vaut 0.</li>
+    <li>(p10, p11) sont les FWHMs de l'&eacute;toile mod&eacute;lis&eacute;e sur ses axes principaux, (p21, p22) sont les incertitudes sur ces 2 valeurs.</li>
+    <li>p12 est le flux int&eacute;gr&eacute; de l'&eacute;toile (hors fond de ciel), p23 l'incertitude sur cette valeur.</li>
+  </ul>
+</p>
+</body>
+
+</html>

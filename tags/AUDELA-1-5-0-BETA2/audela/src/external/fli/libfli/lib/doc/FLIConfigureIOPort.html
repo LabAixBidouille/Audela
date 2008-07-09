@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLIConfigureIOPort</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLIConfigureIOPort</A></H2><H2>(<!1><A HREF="flidev_t.html">flidev_t</A> dev,  long ioportset)</H2><BLOCKQUOTE>
+ Configure the I/O port of a given camera.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Configure the I/O port of a given camera.  This function configures
+the I/O port on camera <TT>dev</TT> with the value
+<TT>ioportset</TT>.
+
+The I/O configuration of each pin on a given camera is determined by the
+value of <TT>ioportset</TT>.  Setting a respective I/O bit enables the
+port bit for output while clearing an I/O bit enables to port bit for
+input. By default, all I/O ports are configured as inputs.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>dev</B> -  Camera to configure the I/O port of.
+
+<BR><B>ioportset</B> -  Data to configure the I/O port with.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD><!1><A HREF="FLIReadIOPort.html">FLIReadIOPort</A>
+<BR><!1><A HREF="FLIWriteIOPort.html">FLIWriteIOPort</A>
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

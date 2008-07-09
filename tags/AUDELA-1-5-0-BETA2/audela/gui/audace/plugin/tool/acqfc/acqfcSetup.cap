@@ -1,0 +1,72 @@
+#
+# Fichier : acqfcSetup.cap
+# Mise a jour $Id: acqfcSetup.cap,v 1.10 2008-05-21 18:12:11 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(acqfcSetup,titre)                     "Acquisition - Setup"
+set caption(acqfcSetup,en-tete_fits)              "FITS Keywords"
+set caption(acqfcSetup,texte1)                    "Display messages on the Terminal:"
+set caption(acqfcSetup,texte2)                    "Record dates in the log file:"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Acquisition - Configuration"
+   set caption(acqfcSetup,en-tete_fits)           "Mots clés FITS"
+   set caption(acqfcSetup,texte1)                 "Afficher les messages sur la Console :"
+   set caption(acqfcSetup,texte2)                 "Enregistrer les dates dans le fichier log :"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Acquisizione - Configurazione"
+   set caption(acqfcSetup,en-tete_fits)           "Parole chiave FITS"
+   set caption(acqfcSetup,texte1)                 "Mostra messaggio sul terminale:"
+   set caption(acqfcSetup,texte2)                 "Salvataggio date nel file di log:"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Adquisición - Configuración"
+   set caption(acqfcSetup,en-tete_fits)           "Palabras clave FITS"
+   set caption(acqfcSetup,texte1)                 "Mostrar mensajes en la Consola:"
+   set caption(acqfcSetup,texte2)                 "Grabar fechas en el fichero de log:"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Belichtung - Konfiguration"
+   set caption(acqfcSetup,en-tete_fits)           "FITS Stichwörter"
+   set caption(acqfcSetup,texte1)                 "Die Nachrichten am Bildschirm zeigen:"
+   set caption(acqfcSetup,texte2)                 "Die Zeit in die Log Datei speichern:"
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Aquisição - Configuração"
+   set caption(acqfcSetup,en-tete_fits)           "Palavras-chave FITS"
+   set caption(acqfcSetup,texte1)                 "Mostrar mensagens na Consola:"
+   set caption(acqfcSetup,texte2)                 "Guardar datas no ficheiro log:"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(acqfcSetup,titre)                  "Acquisition - Setup"
+   set caption(acqfcSetup,en-tete_fits)           "FITS Keywords"
+   set caption(acqfcSetup,texte1)                 "Display messages on the Terminal:"
+   set caption(acqfcSetup,texte2)                 "Record dates in the log file:"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Fonctions utilitaires</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 28 septembre 2007</p>
+<h1>Fonctions utilitaires </h1>
+<p>Les fonctions qui suivent sont dans le namespace ::</p>
+<p>Elles peuvent &ecirc;tre ex&eacute;cut&eacute;es directement dans la console Aud'ACE.</p>
+<h2><a name="loadima" id="loadima"></a> loadima ?nom? ?affichage?</h2>
+<p>Charge une image en m&eacute;moire. Les deux arguments sont optionnels : le premier est le nom du fichier &agrave; charger. S'il n'est pas pr&eacute;cis&eacute; alors il prend la valeur "?" par d&eacute;faut, ce qui a pour effet d'ouvrir un explorateur pour aller chercher l'image &agrave; la main. Le second argument doit prendre la valeur "-novisu" pour ne pas afficher l'image, ce qui peut &ecirc;tre pratique pour aller plus vite lors de traitements.</p>
+<p>Remarque : faire attention aux caract&egrave;res \ sous Windows car ce sont des caract&egrave;res de substitution pour le TCL. Il faut en mettre deux au lieu de un, ou alors il vaut mieux les remplacer par le caract&egrave;re /, qui lui est compatible. Par exemple, les deux expressions suivantes sont &eacute;quivalentes :</p>
+<code> loadima c:\\images\\m57.fit</code> <code> loadima c:/images/m57.fit</code>
+<p>Il faut &eacute;galement faire attention aux espaces dans les noms de r&eacute;pertoires, car les espaces servent &agrave; d&eacute;limiter les arguments d'une commande en TCL. Il faut soit mettre des guillemets, soit des accolades :</p>
+<code> loadima "c:/mes documents/images/m57.fit"</code> <code> loadima {c:/mes documents/images/m57.fit}</code>
+<h2><a name="saveima" id="saveima"></a> saveima ?nom?</h2>
+<p>Enregistre l'image actuellement en m&eacute;moire. L'argument optionnel est le nom de l'image : s'il n'est pas pr&eacute;cis&eacute; alors un explorateur permet de naviguer sur le disque pour indiquer le nom du fichier. Sinon, l'image est enregistr&eacute;e avec le nom donn&eacute;, dans le r&eacute;pertoire images d'Aud'ACE.</p>
+<p>Les r&egrave;gles li&eacute;es aux \ et aux espaces sont identiques &agrave; loadima.</p>
+<h2><a name="visu" id="visu"></a> visu ?seuils?</h2>
+<p>Cette fonction permet d'afficher l'image actuellement en m&eacute;moire dans AudeLA. Le param&egrave;tre qui suit &eacute;ventuellement correspond &agrave; la liste des seuils de visualisation souhait&eacute;s. S'ils ne sont pas pr&eacute;cis&eacute;s alors l'affichage est simplement rafra&icirc;chi. Les seuils doivent &ecirc;tre donn&eacute;s dans l'ordre 'seuil haut' 'seuil bas'. Deux possibilit&eacute;s existent pour faire une telle liste (n&eacute;cessaire &agrave; cette fonction) :</p>
+<code> visu {1897 345}</code> <code> visu [list 1897 345]</code>
+<p>Si le seuil haut est plus faible que le seuil bas alors l'image est vue en n&eacute;gatif.</p>
+<h2><a name="stat" id="stat"></a> stat</h2>
+<p>Cette fonction renvoie une liste compos&eacute;e de 9 valeurs, caract&eacute;risant l'image. Ces valeurs sont d&eacute;crites dans le tableau suivant, dans l'ordre o&ugrave; elles apparaissent dans la liste.</p>
+<ul>
+  <li>seuil haut. Ce seuil haut est celui calcul&eacute; &agrave; partir des valeurs du fond de ciel, et du bruit du fond de ciel : ce n'est pas forc&eacute;ment le seuil actuel, mais un type de seuil qui correspond bien &agrave; la visualisation du fond d'une image</li>
+  <li>seuil bas. C'est le seuil bas correspondant. Ils sont calcul&eacute;s tels que :</li>
+  <ul>
+    <li>seuil haut = fond du ciel + 10 * bruit du fond de ciel</li>
+    <li>seuil bas = fond du ciel - 3 * bruit du fond de ciel</li>
+  </ul>
+  <li>datamin. C'est la valeur minimale des pixels de l'image</li>
+  <li>datamax. C'est la valeur maximale des pixels de l'image</li>
+  <li>moyenne. Moyenne de l'ensemble des pixels de l'image</li>
+  <li>ecart-type. Ecart-type de l'ensemble des pixels de l'image</li>
+  <li>moyenne du fond de ciel. Moyenne des pixels qui composent uniquement le fond de ciel</li>
+  <li>ecart-type du fond de ciel. Ecart-type des pixels qui composent uniquement le fond de ciel</li>
+  <li>contrast. Contraste de l'image</li>
+</ul>
+<h2> <a name="acq" id="acq"></a>acq duree binning</h2>
+<p>Cette fonction effectue une acquisition avec la cam&eacute;ra s&eacute;lectionn&eacute;e dans les r&eacute;glages de AudACE. Les deux param&egrave;tres. Les deux param&egrave;tres de la ligne de commande correspondent respectivement &agrave; la dur&eacute;e de l'image, et au binning (n&eacute;cessairement identique dans les deux directions).</p>
+<p>Exemple d'acquisition d'une image de 60s en binning 2x2 : acq 60 2</p>
+<h2><a name="fwhm" id="fwhm"></a> fwhm coord</h2>
+<p>Fonction de traitement d'images. Elle calcule la fwhm d'une &eacute;toile dans un rectangle dont les quatre coordonn&eacute;es des coins sont donn&eacute;es dans l'argument boite sous la forme d'une liste x1 y1 x2 y2. Par exemple fwhm {10 100 25 98}. Pourquoi une &eacute;criture aussi peu naturelle ? Parce que l'interface Aud'ACE met &agrave; disposition une fonction [ ::confVisu::getBox $visu ] qui contient les quatre coordonn&eacute;es de la bo&icirc;te trac&eacute;e sur l'image. Par exemple, tracez une bo&icirc;te sur l'image de la visu 1, et entrez dans la console fwhm [ ::confVisu::getBox 1 ] ...</p>
+<p>Le r&eacute;sultat de cette commande est une liste de deux &eacute;l&eacute;ments: la fwhm suivant l'axe horizontal, et l'axe vertical.</p>
+<h2><a name="offset" id="offset"></a> offset val</h2>
+<p>Fonction de traitement d'images. Elle r&eacute;alise un offset sur l'image actuellement en m&eacute;moire, c'est &agrave; dire un ajout ou retrait d'une constante &agrave; tous les pixels de l'image. La valeur fournie en argument correspond &agrave; la valeur dont on veut d&eacute;caler l'image.</p>
+<h2><a name="noffset" id="noffset"></a> noffset val</h2>
+<p>Fonction de traitement d'images. R&eacute;alise une normalisation par offset : la moyenne du fond de ciel de l'image est ajust&eacute;e &agrave; la valeur pass&eacute;e en argument en r&eacute;alisant un offset de l'image.</p>
+<h2> <a name="ngain" id="ngain"></a>ngain val</h2>
+<p>Fonction de traitement d'images. R&eacute;alise une normalisation par gain : la moyenne du fond de ciel de l'image est ajust&eacute;e &agrave; la valeur pass&eacute;e en argument par une multiplication de l'image par une constante d&eacute;termin&eacute;e &agrave; l'occasion.</p>
+<h2><a name="add" id="add"></a> add nom val</h2>
+<p>Fonction de traitement d'images. Ajoute l'image contenue dans le fichier nom &agrave; l'image courante, en ajoutant la constante val. L'extension du nom de fichier doit &ecirc;tre pr&eacute;sente.</p>
+<code> add aster1.fit 0</code>
+<h2> <a name="sub" id="sub"></a>sub nom val</h2>
+<p>Fonction de traitement d'images. R&eacute;alise la soustraction entre l'image courante et l'image nom, en ajoutant la constante val. Cette fonction peut servir en premi&egrave;re approche &agrave; soustraire une image thermique ou une image d'offset. L'extension du nom de fichier doit &ecirc;tre pr&eacute;sente.</p>
+<code> sub noir/noir30.fit 0</code>
+<h2> <a name="div" id="div"></a>div nom val</h2>
+<p>Fonction de traitement d'images. Divise l'image courante par l'image contenue dans le fichier nom, et multiplie par la constante num&eacute;rique val.</p>
+<code> div flat/flat.fit 1</code>
+<h2><a name="opt" id="opt"></a> opt noir offset</h2>
+<p>Fonction de traitement d'images. Soustrait la contribution thermique d'une image brute. Les deux param&egrave;tres &agrave; passer sont les noms des images de noir, et d'offset. L'image de noir doit contenir l'offset : il s'agit par exemple d'une image acquise avec la cam&eacute;ra obtur&eacute;e (un noir), ou aussi d'une image m&eacute;diane d'une s&eacute;rie de noirs.</p>
+<code> opt dark.fit bias.fit</code>
+<h2> <a name="deconvflat" id="deconvflat"></a>deconvflat coef</h2>
+<p>Fonction de traitement d'images. Retire l'effet de smearing d'un image. Le coefficient coef correspond au rapport du temps de lecture d'une ligne par rapport a l'image enti&egrave;re.</p>
+<code> deconvflat 0.0005</code>
+<h2> <a name="rot" id="rot"></a>rot x0 y0 angle</h2>
+<p>Fonction de traitement d'images. Tourne l'image autour du point de coordonn&eacute;es (x0,y0), d'un angle donn&eacute; en degr&eacute;s dans la commande. L'exemple suivant tourne une image autour du premier pixel dans le coin inf&eacute;rieur gauche de l'image, d'un angle de 10 degr&eacute;s :</p>
+<code> rot 1 1 10</code>
+<h2><a name="log" id="log"></a> log coef ?offset?</h2>
+<p>Fonction de traitement d'images. Applique une transformation logarithmique &agrave; l'image, c'est &agrave; dire que chaque pixel (intensit&eacute; p) prend la valeur coef*log10(p-offset).</p>
+<h2> <a name="binx" id="binx"></a>binx x1 y1 ?w?</h2>
+<p>Fonction de traitement d'images. Cr&eacute;&eacute; une nouvelle image dont la hauteur est celle de l'image originale et la largeur w (valeur par d&eacute;faut = 20), et dont les pixels sont d&eacute;finis de la mani&egrave;re suivante : les pixels de chaque ligne de l'image de d&eacute;part, compris entre x1 et x2 sont somm&eacute;s, et stock&eacute;s dans la ligne correspondante de l'image reconstitu&eacute;e. Ainsi tous les pixels d'une ligne de l'image reconstitu&eacute;e sont &eacute;gaux. C'est une fonction d'analyse des images d'occultation par ast&eacute;ro&iuml;de, par la m&eacute;thode de drift-scan.</p>
+<h2> <a name="biny" id="biny"></a>biny y1 y2 ?h?</h2>
+<p>Fonction de traitement d'images. Cr&eacute;&eacute; une nouvelle image dont la largeur est celle de l'image originale et la hauteur h (valeur par d&eacute;faut = 20), et dont les pixels sont d&eacute;finis de la mani&egrave;re suivante : les pixels de chaque colonne de l'image de d&eacute;part, compris entre y1 et y2 sont somm&eacute;s, et stock&eacute;s dans la m&ecirc;me colonne de l'image reconstitu&eacute;e. Ainsi tous les pixels d'une colonne de l'image reconstitu&eacute;e sont &eacute;gaux.</p>
+<h2><a name="window" id="window"></a> window ?coord?</h2>
+<p>Fonction de traitement d'images. Extrait une sous-fen&ecirc;tre de l'image affich&eacute;e, dont les coordonn&eacute;es sont renvoy&eacute;es par la fonction [ ::confVisu::getBox $visu ]. Par exemple pour extraire un objet entour&eacute; par la bo&icirc;te de s&eacute;lection dans la visu 1 : window [ ::confVisu::getBox 1 ].</p>
+<h2><a name="mirrorx" id="mirrorx"></a> mirrorx</h2>
+<p>Fonction de traitement d'images. Retourne l'image par un effet de miroir horizontal : les pixels se situent sur une m&ecirc;me ligne avant et apr&egrave;s le traitement.</p>
+<code> mirrorx</code>
+<h2><a name="mirrory" id="mirrory"></a> mirrory</h2>
+<p>Fonction de traitement d'images. Retourne l'image par un effet de miroir vertical : les pixels se situent sur une m&ecirc;me colonne avant et apr&egrave;s le traitement.</p>
+<code> mirrory</code>
+<h2><a name="delete2" id="delete2"></a> delete2 generic nb</h2>
+<p>Efface les nb fichiers dont le nom est generic suivi d'un nombre compris entre 1 et nb. Par exemple, "delete2 i 5" efface les images i1.fit &agrave; i5.fit</p>
+<h2><a name="extract_flat" id="extract_flat"></a>
+  <p>extract_flat in dark offset out nb</p>
+</h2>
+Fonction de traitement d'images. Extrait le flat directement des images. "extract_flat m57- noir offs flat 5" extrait le fichier flat des images m57-1.fit &agrave; m57-5.fit.
+</p>
+<h2><a name="fitsdate" id="fitsdate"></a> fitsdate</h2>
+<p>Renvoie la date courante sous le format normalis&eacute; utilis&eacute; par les fichiers FITS :</p>
+<code>2000-10-05T00:11:44.00</code> <code>YYYY-MM-DDThh:mm:ss.cs</code>
+<h2><a name="dir" id="dir"></a> dir ?regexp?</h2>
+<p>Liste le contenu d'un r&eacute;pertoire, telle la commande DOS. Par exemple pour lister les images du sous r&eacute;pertoire nuit, il faut utiliser la commande "dir nuit/*.fit".</p>
+</body>
+
+</html>

@@ -1,0 +1,199 @@
+dnl (c) Denis Marchais 2005-2008
+
+
+dnl INIT
+dnl
+AC_INIT
+DEV_ROOT=`pwd`
+AC_SUBST(DEV_ROOT)
+
+
+dnl Version de audela (a mettre a jour avant chaque release)
+dnl
+MAJOR=1
+MINOR=5
+PATCH=0
+EXTRA=-beta2
+REL_DATE=09/07/2008
+
+AC_SUBST(MAJOR)
+AC_SUBST(MINOR)
+AC_SUBST(PATCH)
+AC_SUBST(EXTRA)
+AC_SUBST(REL_DATE)
+
+dnl Check for TCL
+dnl
+SC_PATH_TCLCONFIG
+SC_LOAD_TCLCONFIG
+SC_PATH_TKCONFIG
+SC_LOAD_TKCONFIG
+dnl Visiblement les 8.3 ne declarent pas TCl_INCLUDE_SPEC, il faut
+dnl donc le reconstruire a partir de TCL_INC_DIR / TK_INC_DIR...
+if test x"${TCL_INCLUDE_SPEC}" = x ; then
+   if test x"${TCL_INC_DIR}" = x; then
+      exit 0
+   else
+      TCL_INCLUDE_SPEC="-I${TCL_INC_DIR} -I${TK_INC_DIR}"
+   fi
+fi
+AC_SUBST(TCL_INCLUDE_SPEC)
+AC_SUBST(TK_XINCLUDES)
+AC_SUBST(TK_LIB_SPEC)
+AC_SUBST(TK_STUB_LIB_SPEC)
+
+
+dnl Check for GSL
+dnl
+AM_PATH_GSL
+if test "$no_gsl" = "yes" ; then
+AC_MSG_RESULT([GSL not found])
+  GSL_FOUND=0
+else
+AC_MSG_RESULT([GSL found])
+  GSL_FOUND=1
+fi
+AC_SUBST(GSL_FOUND)
+
+
+dnl Checking for --with args
+dnl
+
+
+dnl AutoChecks
+dnl
+
+
+dnl
+dnl Checks for programs.
+dnl
+AC_PROG_CC
+AC_PROG_CXX
+
+
+dnl Checks for libraries.
+dnl
+DL_LIB=
+AC_CHECK_FUNCS(dlopen,,[
+AC_CHECK_LIB(dl, dlopen, DL_LIB="-ldl",[
+AC_CHECK_LIB(dld, shl_load, DL_LIB="-ldld",[
+AC_CHECK_FUNCS(dlopen, DL_LIB="",
+AC_MSG_ERROR(Dynamic linking is not available on this platform.
+))
+])])])
+AC_SUBST(DL_LIB)
+
+
+dnl Checks for header files.
+dnl
+CXXFLAGS=""
+LDFLAGS=""
+AC_HEADER_STDC
+AC_MSG_CHECKING(for kernel headers)
+if test ! -f /usr/include/asm/system.h ; then
+    if test -f /usr/src/linux-headers-`uname -r`/include/asm/system.h ; then
+        CXXFLAGS+="-I /usr/src/linux-headers-`uname -r`/include "
+        msg="yes (/usr/src/linux-headers-`uname -r`)"
+        AC_MSG_RESULT($msg)
+    fi
+    if test -f /usr/src/linux-`uname -r`/include/asm/system.h ; then
+        CXXFLAGS+="-I /usr/src/linux-`uname -r`/include "
+        msg="yes (/usr/src/linux-`uname -r`)"
+        AC_MSG_RESULT($msg)
+    fi
+fi
+
+dnl Check for webcam headers presence
+dnl
+WEBCAM_ENABLE=1
+AC_CHECK_HEADER([linux/videodev.h],,[WEBCAM_ENABLE=0])
+AC_CHECK_HEADER([linux/ppdev.h],,[WEBCAM_ENABLE=0])
+AC_CHECK_HEADER([linux/parport.h],,[WEBCAM_ENABLE=0])
+AC_MSG_CHECKING([if webcam is supported])
+if test x"$WEBCAM_ENABLE" = x"1" ; then
+        AC_MSG_RESULT([yes.])
+else
+        AC_MSG_RESULT([no, disabling libwebcam driver.])
+fi
+AC_SUBST(WEBCAM_ENABLE)
+
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+dnl
+
+
+dnl Checks for library functions.
+dnl
+
+
+dnl Check the platform and preconfigure CXXFLAGS and LDFLAGS
+TARGET=`uname -s`
+echo "Found target $TARGET"
+if test $TARGET = "Darwin"; then
+	CXXFLAGS += "-fno-common "
+	LDFLAGS += "-dynamiclib "
+fi
+if test $TARGET = "Linux"; then
+	CXXFLAGS=$CXXFLAGS" -fPIC "
+	LDFLAGS=$LDFLAGS" -shared "
+fi
+AC_SUBST(CXXFLAGS)
+AC_SUBST(LDFLAGS)
+
+GCC_STACK_PROTECT_DISABLE_CC
+GCC_STACK_PROTECT_DISABLE_CXX
+
+dnl
+dnl Configure the modules to be compiled.
+dnl
+
+EXTERNAL="andor cfitsio gzip jpeg6b libdcjpeg libdcraw libftd2xx libgphoto2 libusb porttalk sbig sextractor tcl"
+
+CONTRIB="ethernaude libgs"
+if test x"$GSL_FOUND" = x"1" ; then
+	CONTRIB="$CONTRIB libbm"
+fi
+dnl CONTRIB="$CONTRIB quicka"
+dnl quicka only works on Windows for the moment.  
+
+AUDELA="audela libaudela libaudelatk libgzip libmc librgb libsext libtt"
+if test x"$GSL_FOUND" = x"1" ; then
+	AUDELA="$AUDELA libak libgsltcl libjm libyd"
+fi
+
+LIBCAMS="libaudinet libethernaude"
+if test x"$TARGET" = x"Linux" ; then
+	LIBCAMS="$LIBCAMS libaudine libcamth libcookbook libhisis libk2 libquicka libsbig libstarlight libsynonyme"
+fi
+if test x"$WEBCAM_ENABLE" = x"1" ; then
+	LIBCAMS="$LIBCAMS libwebcam"
+fi
+
+LIBTELS="libaudecom libcombit liblx200  liblxnet libouranos libtemma"
+
+LIBLINKS="libparallelport libquickremote"
+
+AC_MSG_RESULT([EXTERNAL = $EXTERNAL])
+AC_MSG_RESULT([CONTRIB  = $CONTRIB])
+AC_MSG_RESULT([AUDELA   = $AUDELA])
+AC_MSG_RESULT([LIBCAMS  = $LIBCAMS])
+AC_MSG_RESULT([LIBTELS  = $LIBTELS])
+AC_MSG_RESULT([LIBLINKS = $LIBLINKS])
+
+AC_SUBST(EXTERNAL)
+AC_SUBST(CONTRIB)
+AC_SUBST(AUDELA)
+AC_SUBST(LIBCAMS)
+AC_SUBST(LIBTELS)
+AC_SUBST(LIBLINKS)
+
+dnl Output
+dnl
+AC_OUTPUT([
+Makefile1
+Makefile.defs
+include/version.h
+../bin/version.tcl
+../bin/pkgIndex.tcl
+])
+

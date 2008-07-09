@@ -1,0 +1,142 @@
+#
+# Fichier : etel.cap
+# Mise a jour $Id: etel.cap,v 1.2 2007-12-20 19:29:26 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(etel,monture)                        "Etel"
+set caption(etel,format_court_long)              "Short Long"
+set caption(etel,port)                           "Port"
+set caption(etel,configurer)                     "Set up"
+set caption(etel,controle)                       "Control"
+set caption(etel,format)                         "Format"
+set caption(etel,maj_etel)                       "Update time, longitude, latitude and altitude of Etel"
+set caption(etel,raquette_tel)                   "Hand controller on screen"
+
+set caption(etel,port_etel)                      "Etel Port"
+set caption(etel,2points)                        ":"
+
+set caption(etel,titre_site_web)                 "Reference Web Site:"
+set caption(etel,site_etel)                      "http://www.etel.ch/"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,format_court_long)           "court long"
+   set caption(etel,port)                        "Port"
+   set caption(etel,configurer)                  "Configurer"
+   set caption(etel,controle)                    "Contrôle"
+   set caption(etel,format)                      "Format"
+   set caption(etel,maj_etel)                    "Mise à jour heure, longitude, latitude et altitude du Etel"
+   set caption(etel,raquette_tel)                "Raquette à l'écran"
+
+   set caption(etel,port_etel)                   "Port Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Site Web de référence :"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,format_court_long)           "corto lungo"
+   set caption(etel,port)                        "Porte"
+   set caption(etel,configurer)                  "Configurare"
+   set caption(etel,controle)                    "Controllo"
+   set caption(etel,format)                      "Formato"
+   set caption(etel,maj_etel)                    "Aggiornamento di ora, longitudine, latitudine ed altitudine dell' Etel"
+   set caption(etel,raquette_tel)                "Pulsantiera a schermo"
+
+   set caption(etel,port_etel)                   "Porta Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Sito Web di riferimento:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,format_court_long)           "corto largo"
+   set caption(etel,port)                        "Puerto"
+   set caption(etel,configurer)                  "Configurar"
+   set caption(etel,controle)                    "Control"
+   set caption(etel,format)                      "Formato"
+   set caption(etel,maj_etel)                    "Actualizar hora, longitud, latitud y altitud del Etel"
+   set caption(etel,raquette_tel)                "Controlador virtual"
+
+   set caption(etel,port_etel)                   "Puerto Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Sitio Web de referencia:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,format_court_long)           "kurz lang"
+   set caption(etel,port)                        "Port"
+   set caption(etel,configurer)                  "Konfigurieren"
+   set caption(etel,controle)                    "Kontroll"
+   set caption(etel,format)                      "Format"
+   set caption(etel,maj_etel)                    "Zeit, Länge, Breite, Höhe des Etel Aktualisierung"
+   set caption(etel,raquette_tel)                "Hand Kontroller am Bildschirm"
+
+   set caption(etel,port_etel)                   "Etel Port"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Referenz Webseite:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,format_court_long)           "Curto Longo"
+   set caption(etel,port)                        "Porta"
+   set caption(etel,configurer)                  "Configuração"
+   set caption(etel,controle)                    "Controlo"
+   set caption(etel,format)                      "Formato"
+   set caption(etel,maj_etel)                    "Actualizar tempo, longitude, latitude e altitude do Etel"
+   set caption(etel,raquette_tel)                "Controlador de mão no ecrã"
+
+   set caption(etel,port_etel)                   "Porta Etel"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Site Web de referência:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(etel,monture)                     "Etel"
+   set caption(etel,format_court_long)           "Short Long"
+   set caption(etel,port)                        "Port"
+   set caption(etel,configurer)                  "Set up"
+   set caption(etel,controle)                    "Control"
+   set caption(etel,format)                      "Format"
+   set caption(etel,maj_etel)                    "Update time, longitude, latitude and altitude of Etel"
+   set caption(etel,raquette_tel)                "Hand controller on screen"
+
+   set caption(etel,port_etel)                   "Etel Port"
+   set caption(etel,2points)                     ":"
+
+   set caption(etel,titre_site_web)              "Reference Web Site:"
+   set caption(etel,site_etel)                   "http://www.etel.ch/"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

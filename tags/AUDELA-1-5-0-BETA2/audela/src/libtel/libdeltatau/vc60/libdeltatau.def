@@ -1,0 +1,2 @@
+LIBRARY libdeltau
+EXPORTS Deltatau_Init @1

@@ -1,0 +1,170 @@
+#
+# Fichier : confgene_en-tete.cap
+# Mise a jour $Id: confgene_en-tete.cap,v 1.15 2008-04-10 17:49:59 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(en-tete,interface_audace_audela)          "Aud'ACE Interface for AudeLA"
+
+set caption(en-tete,a_propos_de)                      "About..."
+set caption(en-tete,a_propos_de_version_Tcl/Tk)       "Tcl/Tk Version Found: V"
+set caption(en-tete,a_propos_de_maj)                  "Release of"
+set caption(en-tete,a_propos_de_libre)                "This software is open source and freeware."
+set caption(en-tete,a_propos_de_site)                 "http://www.audela.org/"
+set caption(en-tete,a_propos_de_copyright1)           "Copyright (C) 1999-2008"
+set caption(en-tete,a_propos_de_copyright2)           "Development Team: D. Marchais, A. Klotz, R. Delmas,"
+set caption(en-tete,a_propos_de_copyright3)           "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+set caption(en-tete,a_propos_de_copyright4)           "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+set caption(en-tete,a_propos_de_copyright5)           "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+set caption(en-tete,a_propos_de_copyright6)           "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+set caption(en-tete,a_propos_de_copyright7)           "J. Berthier, S. Girard, J. Cadien"
+set caption(en-tete,a_propos_de_copyright8)           "Translations: (GB) C. Jasinski + D. Futak + D. Holler"
+set caption(en-tete,a_propos_de_copyright9)           "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+set caption(en-tete,a_propos_de_copyright10)          "(D) Ph. Kauffmann + J. Hoebelmann"
+set caption(en-tete,a_propos_de_copyright11)          "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(en-tete,interface_audace_audela)       "Interface Aud'ACE pour AudeLA"
+
+   set caption(en-tete,a_propos_de)                   "A propos de ..."
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Version Tcl/Tk trouvée : V"
+   set caption(en-tete,a_propos_de_maj)               "Mise à jour du"
+   set caption(en-tete,a_propos_de_libre)             "Ce logiciel est libre et gratuit."
+   set caption(en-tete,a_propos_de_site)              "http://www.audela.org/"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2008"
+   set caption(en-tete,a_propos_de_copyright2)        "Contributions : D. Marchais, A. Klotz, R. Delmas,"
+   set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+   set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+   set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+   set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright8)        "Traductions : (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+   set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(en-tete,interface_audace_audela)       "Interfaccia Aud'ACE per AudeLA"
+
+   set caption(en-tete,a_propos_de)                   "About..."
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Versione Tcl/Tk trovata: V"
+   set caption(en-tete,a_propos_de_maj)               "Aggiornato al"
+   set caption(en-tete,a_propos_de_libre)             "Questo software e` libero e gratuito."
+   set caption(en-tete,a_propos_de_site)              "http://www.audela.org/"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2008"
+   set caption(en-tete,a_propos_de_copyright2)        "Sviluppatori: D. Marchais, A. Klotz, R. Delmas,"
+   set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+   set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+   set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+   set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright8)        "Traduttori: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+   set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(en-tete,interface_audace_audela)       "Interface Aud'ACE para AudeLA"
+
+   set caption(en-tete,a_propos_de)                   "Sobre..."
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Version de Tcl/Tk encontrada: V"
+   set caption(en-tete,a_propos_de_maj)               "Publicado el"
+   set caption(en-tete,a_propos_de_libre)             "Este software es gratis y con código fuente disponible."
+   set caption(en-tete,a_propos_de_site)              "http://www.audela.org/"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2008"
+   set caption(en-tete,a_propos_de_copyright2)        "Equipo de Desarrollo: D. Marchais, A. Klotz, R. Delmas,"
+   set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+   set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+   set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+   set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright8)        "Traducciones: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+   set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(en-tete,interface_audace_audela)       "Aud'ACE Interface für AudeLA"
+
+   set caption(en-tete,a_propos_de)                   "Über AudeLA"
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk Ausführung gefunden: V"
+   set caption(en-tete,a_propos_de_maj)               "Aufarbeitung vom"
+   set caption(en-tete,a_propos_de_libre)             "Diesen Software ist frei und kostenlos."
+   set caption(en-tete,a_propos_de_site)              "http://www.audela.org/"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2008"
+   set caption(en-tete,a_propos_de_copyright2)        "Beitrag: D. Marchais, A. Klotz, R. Delmas,"
+   set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+   set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+   set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+   set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright8)        "Übersetzungen: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+   set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+
+# *************** Version portugais ****************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(en-tete,interface_audace_audela)       "Interface Aud'ACE Para AudeLA"
+
+   set caption(en-tete,a_propos_de)                   "Sobre..."
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk Versão Encontrada: V"
+   set caption(en-tete,a_propos_de_maj)               "Versão de 14 de Julho de 2005."
+   set caption(en-tete,a_propos_de_libre)             "Este software é do tipo freeware e open source."
+   set caption(en-tete,a_propos_de_site)              "http://www.audela.org/"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2008"
+   set caption(en-tete,a_propos_de_copyright2)        "Equipa de desenvolvimento: D. Marchais, A. Klotz, R. Delmas,"
+   set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+   set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+   set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+   set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright8)        "Traduções: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+   set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(en-tete,interface_audace_audela)       "Aud'ACE Brugerflade til AudeLA"
+
+   set caption(en-tete,a_propos_de)                   "Om..."
+   set caption(en-tete,a_propos_de_version_Tcl/Tk)    "Tcl/Tk version fundet: V"
+   set caption(en-tete,a_propos_de_maj)               "Frigivet"
+   set caption(en-tete,a_propos_de_libre)             "Denne software er open source og freeware."
+   set caption(en-tete,a_propos_de_site)              "http://www.audela.org/"
+   set caption(en-tete,a_propos_de_copyright1)        "Copyright (C) 1999-2008"
+   set caption(en-tete,a_propos_de_copyright2)        "Udviklings-team: D. Marchais, A. Klotz, R. Delmas,"
+   set caption(en-tete,a_propos_de_copyright3)        "M. Pujol, C. Jasinski, J. Michelet, F. Cochard, O. Thizy,"
+   set caption(en-tete,a_propos_de_copyright4)        "R. Zachantke, Ph. Kauffmann, G. Spitzer, B. Maugis,"
+   set caption(en-tete,a_propos_de_copyright5)        "P. Thierry, P. Chevalley, A. Kalicki, M. Meunier, V. Cotrez"
+   set caption(en-tete,a_propos_de_copyright6)        "B. Mauclaire, H. Rischbieter, X. Rey-Robert, R. Behrend"
+   set caption(en-tete,a_propos_de_copyright7)        "J. Berthier, S. Girard, J. Cadien"
+   set caption(en-tete,a_propos_de_copyright8)        "Oversættere: (GB) C. Jasinski + D. Futak + D. Holler"
+   set caption(en-tete,a_propos_de_copyright9)        "(I) F. Manenti, (E) R. G. Fuentetaja + C. Garcia"
+   set caption(en-tete,a_propos_de_copyright10)       "(D) Ph. Kauffmann + J. Hoebelmann"
+   set caption(en-tete,a_propos_de_copyright11)       "(P) L. Gouveia + L. Fonseca, (DK) K. Strandbaek"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <TITLE>LIBFLIAPI FLIGrabRow</TITLE>
+   <META NAME="GENERATOR" CONTENT="DOC++ 3.4.8">
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<H2>LIBFLIAPI <A HREF="#DOC.DOCU">FLIGrabRow</A></H2><H2>(<!1><A HREF="flidev_t.html">flidev_t</A> dev,  void* buff,  size_t width)</H2><BLOCKQUOTE>
+ Grab a row of an image.</BLOCKQUOTE>
+
+<A NAME="DOC.DOCU"></A>
+<HR>
+<H2>Documentation</H2>
+<BLOCKQUOTE>
+Grab a row of an image.  This function grabs the next available row
+of the image from camera device <TT>dev</TT>.  The row of width
+<TT>width</TT> is placed in the buffer pointed to by <TT>buff</TT>.
+The size of the buffer pointed to by <TT>buff</TT> must take into
+account the bit depth of the image, meaning the buffer size must be
+at least <TT>width</TT> bytes for an 8-bit image, and at least
+2*<TT>width</TT> for a 16-bit image.
+
+</BLOCKQUOTE>
+<DL><DT><DT><B>Parameters:</B><DD><B>dev</B> -  Camera whose image to grab the next available row from.
+
+<BR><B>buff</B> -  Pointer to where the next available row will be placed.
+
+<BR><B>width</B> -  Row width in pixels.
+
+<BR><DT><B>Returns:</B><DD>  Zero on success.
+<BR>  Non-zero on failure.
+
+<BR><DT><B>See Also:</B><DD>FLIGrabFrame
+<BR><DD></DL><P><P><I><A HREF="index.html">Alphabetic index</A></I></P><HR>
+<BR>
+This page was generated with the help of <A HREF="http://docpp.sourceforge.net">DOC++</A>.
+</BODY>
+</HTML>

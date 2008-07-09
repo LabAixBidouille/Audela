@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Autoguidage</title>
+</head>
+
+<body>
+<p class="date">Date de mise &agrave; jour : 26 avril 2007</p>
+<h1>Autoguidage </h1>
+<p>L'outil d'autoguidage permet d'automatiser le guidage d'une monture &agrave; 
+  partir d'images prises en continu par une cam&eacute;ra. </p>
+<p>Les images peuvent &ecirc;tre acquises avec n'importe quelle cam&eacute;ra 
+  support&eacute;e par AudeLA : Webcam, Webcam Longue Pose, cam&eacute;ra vid&eacute;o (ex : 
+  Watek), Audine, etc.</p>
+<p>La monture peut &ecirc;tre n'importe quel syst&egrave;me support&eacute; par 
+  AudeLA autorisant les commandes de rattrapage en mode lent : LX200, SkySensor, 
+  Gemini, Ite-lente, Mel Bartels, Celestron, Temma, Ouranos, AudeCom ou via 
+  le driver Ascom.</p>
+<p><i>Cet outil n'est encore qu'un <b>prototype</b> susceptible d'&eacute;voluer 
+  rapidement en fonction des remarques des premiers utilisateurs. </i></p>
+<h1><a name="session"></a>D&eacute;marrer une session d'autoguidage</h1>
+<blockquote> 
+  <p>1) Choisir une cam&eacute;ra et une monture avec le menu &quot;Configuration&quot; 
+    de AudeLA.</p>
+  <p>2) Choisir l'outil &quot;Autoguidage&quot; avec le menu &quot;Outils&quot; 
+    de AudeLA.</p>
+  <p><a href="#param_principal">3) R&eacute;gler les param&egrave;tres d'acquisition 
+    des images.</a></p>
+  <p>4) Configurer l'autoguidage.</p>
+  <blockquote> 
+    <p><a href="#autoguidage_etoile"> a) Autoguidage sur une &eacute;toile.</a></p>
+    <blockquote> 
+      <p><a href="#principe_etoile">Principe de l'autoguidage sur une &eacute;toile.</a></p>
+      <p><a href="#configuration_etoile">Configuration de l'autoguidage sur une 
+        &eacute;toile.</a></p>
+    </blockquote>
+    <p><a href="#autoguidage_fente">b) Autoguidage sur la fente d'un spectrographe.</a></p>
+    <blockquote> 
+      <p><a href="#recommandation">Principe </a><a href="#principe_fente">de l'autoguidage 
+        sur la fente.</a></p>
+      <p><a href="#configuration_fente">Configuration de l'autoguidage sur la 
+        fente.</a></p>
+    </blockquote>
+    <p><a href="#apprentissage">c) Apprentissage (facultatif).</a> </p>
+    <p><a href="#pre-traitement"> d) Pr&eacute;-traitement de l'image (facultatif).</a> 
+    </p>
+  </blockquote>
+  <p><a href="#demarrage">5) Lancer l'autoguidage.</a></p>
+</blockquote>
+<p><a href="#correction">Corrections pendant l'autoguidage.</a></p>
+<p><a href="#recommandation">Trucs &amp; astuces.</a></p>
+<p>&nbsp;</p>
+<h1></h1>
+<h1><a name="param_principal"></a>R&eacute;gler les param&egrave;tres d'acquisition 
+  des images</h1>
+<p>Les param&egrave;tres d'acquisition sont affich&eacute;s dans la fen&ecirc;tre 
+  principale de l'outil d'autoguidage.</p>
+<div align="center">
+  <p><img src="mainframe.png" width="636" height="449"> </p>
+  <p>Exemple de guidage sur Castor (&eacute;toile double).</p>
+</div>
+<p>&nbsp;</p>
+<p><b>Pose : Temps de pose en secondes.</b></p>
+<p><b> Binning</b> : <font color="#993300">Le binning n'est pas utilis&eacute; 
+  pour l'instant (toujours 1x1 quelque soit la valeur choisie).</font></p>
+<p><b>Intervalle</b> : Nombre de secondes d'attente entre 2 poses. Utiliser la 
+  valeur 0 pour commencer (voir Trucs &amp; astuces).</p>
+<p><b>Case &agrave; cocher &quot;Image&quot;</b> : Affiche l'image si la case 
+  est coch&eacute;e (si la case est d&eacute;coch&eacute;e l'image n'est pas 
+  affich&eacute;e, cela fait gagner 300 millisecondes par it&eacute;ration).</p>
+<p><b>Case &agrave; cocher &quot;Cible&quot;</b> : Affiche le rectangle rouge 
+  symbolisant l'&eacute;toile guide.</p>
+<p><b>Case &agrave; cocher &quot;Axes (AD, Déc.)&quot; </b>: Affiche les axes bleus dont 
+  l'intersection symbolise le point de consigne.</p>
+<p><b>Case &agrave; cocher &quot;Suivi actif&quot;</b> : Les impulsions de rattrapage 
+  ne sont pas envoy&eacute;es aux moteurs de la monture tant que la case est d&eacute;coch&eacute;e. 
+  <font color="#993300">Par s&eacute;curit&eacute;</font> <font color="#993300"> 
+  la case est d&eacute;coch&eacute;e &agrave; l'ouverture de l'outil d'autoguidage 
+  pour &eacute;viter des d&eacute;placements intempestifs</font>. Il est pr&eacute;f&eacute;rable 
+  de cocher cette case seulement apr&egrave;s avoir configur&eacute; l'autoguidage.</p>
+<p><b>Ecart </b>: Nombre de pixels d'&eacute;cart sur les axes X et Y entre l'&eacute;toile 
+  guide et le point de consigne.</p>
+<p><b>Impuls.</b> : Dur&eacute;es des impulsions envoy&eacute;es aux moteurs Alpha 
+  et Delta. La valeur est affich&eacute;e en millisecondes, suivie de l'initiale 
+  de la direction (n=nord, s=sud, e=est, w=ouest).</p>
+<p><b>Interv.</b> : Dur&eacute;e totale entre 2 corrections (en millisecondes).</p>
+<h2>&nbsp;</h2>
+<h1><a name="autoguidage_etoile"></a>Autoguidage sur une &eacute;toile</h1>
+<h2></h2>
+<h2><a name="principe_etoile"></a>Principe de l'autoguidage sur une &eacute;toile</h2>
+<p></p>
+<p></p>
+<p>... &agrave; compl&eacute;ter.</p>
+<p>&nbsp;</p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<h2></h2>
+<h2><a name="configuration_etoile"></a>Configuration de l'autoguidage sur une 
+  &eacute;toile</h2>
+<p>Les param&egrave;tres de configuration sont affich&eacute;s dans la fen&ecirc;tre 
+  que l'on ouvre avec le bouton &quot;Configuration...&quot; depuis la fen&ecirc;tre 
+  principale.</p>
+<p align="center"><img src="configframe-star.png" width="318" height="456"></p>
+<p><b>Taille de la zone (en pixels)</b><br>
+  Permet de choisir la taille totale du rectangle d&eacute;limitant la zone de 
+  recherche de l'&eacute;toile. Ce rectangle est re-dessin&eacute; apr&egrave;s 
+  l'affichage de chaque image :</p>
+<blockquote> 
+  <p><img src="star-target.png" width="93" height="90" border="3"></p>
+</blockquote>
+<p><b>Vitesse (en pixels/ms)</b><br>
+  Coefficient pour convertir le nombre de pixels en dur&eacute;e d'impulsion exprim&eacute;e 
+  en millisecondes.</p>
+<p><b>Seuil (en pixels)</b><br>
+  Nombre de pixels en dessous duquel l'impulsion n'est pas envoy&eacute;e au moteur.</p>
+<p><b>Angle (en degr&eacute;s)</b></p>
+<p>Angle d'inclinaison de la cam&eacute;ra par rapport &agrave; l'axe d'ascension droite.</p>
+<h1><a name="autoguidage_fente"></a>Autoguidage sur la fente d'un spectrographe</h1>
+<h2></h2>
+<h2><a name="principe_fente"></a>Principe de l'autoguidage sur la fente</h2>
+<blockquote>
+  <p><b>Algorithme d'analyse d'une image </b>: </p>
+  <p>- Mesure le flux re&ccedil;u dans deux rectangles plac&eacute;s au-dessus 
+    et au-dessous de la fente. <br>
+    - Calcule le pourcentage d'&eacute;cart entre les deux flux. <br>
+    - Multiplie le pourcentage d'&eacute;cart par le coefficient %/pixels pour 
+    transformer cette valeur en un nombre de pixels correspondant au d&eacute;calage 
+    sur l'image. <br>
+    - Divise le nombre de pixels de d&eacute;calage par un coefficient Vitesse(pixels/s) 
+    pour transformer cette valeur en un nombre de milli-secondes qui correspond 
+    &agrave; la dur&eacute;e de l'impulsion &agrave; envoyer au moteur de d&eacute;clinaison 
+    de la monture. </p>
+  <p>Si l'&eacute;toile s'&eacute;carte trop loin de la fente (&gt; largeur d'une 
+    l&egrave;vre), l'algo bascule en guidage &quot;classique&quot; sur une &eacute;toile 
+    (algorithme du centro&iuml;de).<br>
+    La largeur d'une l&egrave;vre correspond approximativement &agrave; la zone 
+    o&ugrave; l'image de l'&eacute;toile est compl&egrave;tement d&eacute;form&eacute;e. </p>
+</blockquote>
+<h2><br>
+  <a name="configuration_fente"></a>Configuration de l'autoguidage sur la fente</h2>
+<p>Les param&egrave;tres de configuration sont affich&eacute;s dans la fen&ecirc;tre 
+  que l'on ouvre avec le bouton &quot;Configuration...&quot; depuis la fen&ecirc;tre 
+  principale.</p>
+<p align="center"><img src="configframe-slit.png" width="318" height="456"></p>
+<p align="center">Les valeurs par d&eacute;faut sont donn&eacute;es pour un C8 
+  + Lhires3 + Webcam.</p>
+<p><b>Taille de la zone (en pixels)</b><br>
+  Permet de choisir la taille totale des rectangles d&eacute;limitant la mesure 
+  des flux. Ces rectangles sont re-dessin&eacute;s apr&egrave;s l'affichage de 
+  chaque image :</p>
+<blockquote>
+  <p><img src="slit-target.png" width="134" height="106" border="3"></p>
+</blockquote>
+<p><b>Largeur de la fente (en pixels)</b><br>
+  Espace entre les 2 rectangles qui correspond &agrave; la partie obscure de la 
+  fente. Le flux re&ccedil;u dans cet espace n'est pas pris en compte par l'algorithme 
+  d'analyse.</p>
+<p><b>Coefficient (%/pixel)</b><br>
+  Coefficient utilis&eacute; pour convertir le pourcentage d'&eacute;cart de flux 
+  en nombre de pixels.</p>
+<p><b>Largeur d'une l&egrave;vre (en pixels)</b><br>
+  Distance sur l'axe vertical par rapport &agrave; la fente au-del&agrave; de 
+  laquelle l'algorithme bascule en guidage sur une &eacute;toile. </p>
+<p><b>Vitesse (pixels/ms)</b><br>
+  Coefficient pour convertir le nombre de pixels en dur&eacute;e d'impulsion exprim&eacute;e 
+  en millisecondes.</p>
+<p><b>Seuil (en pixels)</b><br>
+  Nombre de pixels en dessous duquel l'impulsion n'est pas envoy&eacute;e au moteur.</p>
+<p><b>Angle (en degr&eacute;s)</b></p>
+<p><font color="#993300">Ce param&egrave;tre n'est pas utilis&eacute; par l'algorithme 
+  de guidage sur la fente. Il faut donc <b>aligner la fente parall&egrave;lement 
+  avec l'axe des X </b>de l'image. Quelques degr&eacute;s d'&eacute;cart sont 
+  tol&eacute;r&eacute;s.</font></p>
+<h1><a name="apprentissage"></a>Apprentissage </h1>
+<p>L'apprentissage permet de mesurer la <b>vitesse de rattrapage</b> sur les axes 
+  d'ascension droite et de d&eacute;clinaison et l'<b>angle</b> de la cam&eacute;ra.</p>
+<p><b>Mode op&eacute;ratoire </b></p>
+<blockquote>
+  <p>... &agrave; compl&eacute;ter.</p>
+</blockquote>
+<p>&nbsp;</p>
+<h1><a name="pre-traitement"></a>Pr&eacute;-traitement de l'image</h1>
+<p><b>Cumul des acquisitions </b></p>
+<blockquote> 
+  <p>Cette option permet d'additionner plusieurs images avant de calculer le rattrapage. 
+    Elle am&eacute;liore la d&eacute;tectivit&eacute; dans le cas d'&eacute;toile 
+    faible, en particulier quand on utilise une Webam qui n'a pas l'option longue 
+    pose.</p>
+  <p>... &agrave; compl&eacute;ter.</p>
+</blockquote>
+<p><b>Soustraction du dark </b></p>
+<blockquote> 
+  <p>Cette option permet de soustraire une image de noir avant de calculer le 
+    rattrapage. Elle am&eacute;liore la d&eacute;tectivit&eacute; de l'&eacute;toile 
+    et &eacute;limine les pixels chauds produits par le capteur (tr&egrave;s utile 
+    avec une Webcam longue pose).</p>
+  <p>... &agrave; compl&eacute;ter.</p>
+</blockquote>
+<p>&nbsp;</p>
+<h1><a name="demarrage"></a>Lancer l'autoguidage</h1>
+<p>- Lancer les acquisitions (bouton GO CCD).</p>
+<p>- <b>Cliquer avec le bouton DROIT </b>de la souris dans l'image pour d&eacute;signer 
+  le <b>point de consigne</b> sur la fente.</p>
+<p>- <b>DOUBLE CLIQUER avec le bouton GAUCHE</b> de la souris dans l'image pour 
+  d&eacute;signer l'<b>&eacute;toile guide</b> qui doit &ecirc;tre amen&eacute;e 
+  sur le point de r&eacute;f&eacute;rence par l'autoguidage.</p>
+<p>- <b>Cocher la case &quot;Suivi actif&quot;</b> pour activer l'envoi des commandes 
+  de rattrapage &agrave; la monture.</p>
+<p>- Surveiller le d&eacute;placement de l'&eacute;toile afin de s'assurer que 
+  la configuration est correcte.</p>
+<p>&nbsp;</p>
+<h1><a name="correction"></a>Corrections pendant l'autoguidage<br>
+</h1>
+<p>Tous les param&egrave;tres peuvent &ecirc;tre modifi&eacute;s sans arr&ecirc;ter 
+  l'autoguidage.</p>
+<blockquote>
+  <p><b>Changement du point de consigne pendant le guidage sur la fente</b> : 
+    Avec un peu d'habitude, cela permet de rapprocher la consigne pixel par pixel 
+    du centre de la fente en fonction de l'image de l'&eacute;toile. Le but est 
+    de faire dispara&icirc;tre l'&eacute;toile dans la fente.</p>
+  <p><b>Changement du sens des rattrapages</b> : Si les rattrapages ne vont plus 
+    dans le bon sens, cocher ou d&eacute;cocher les cases &quot;Inverser le sens&quot;. 
+    Cela peut &ecirc;tre n&eacute;cessaire en particulier dans le cas d'une 
+    monture allemande qui vient d'effectuer un renversement.</p>
+  <p>... &agrave; compl&eacute;ter.</p>
+</blockquote>
+<p></p>
+<h1>&nbsp;</h1>
+<h1><a name="recommandation"></a>Trucs &amp; astuces</h1>
+<p><br>
+  <b>=&gt; Ne pas faire d'autoguidage sur une &eacute;toile satur&eacute;e. </b></p>
+<blockquote> 
+  <p>Une &eacute;toile satur&eacute;e ne permet pas de faire un autoguidage pr&eacute;cis.</p>
+  <p>Exemple : Sur Regulus avec un C8 et une Webcam N&B (pixel satur&eacute; = 
+    255) , r&egrave;gler l'obturateur de la Webcam N&B sur 1/500 et le gain quasiment 
+    au minimum pour avoir une intensit&eacute; maximale &eacute;gale &agrave; 
+    200 environ.</p>
+</blockquote>
+<p><b>=&gt; Faire des poses longues pour int&eacute;grer la turbulence.</b></p>
+<blockquote>
+  <p>Id&eacute;alement 1s &agrave; 2s (avec une Webcam longue pose), mais il ne 
+    faut pas saturer. </p>
+  <p>Si les poses sont courtes, il vaut mieux cumuler les acquisitions pour &eacute;viter 
+    de &quot;suivre&quot; la turbulence de trop pr&egrave;s.</p>
+  </blockquote>
+<p>=&gt; <b>Si la monture suit bien, il vaut mieux espacer les corrections</b> 
+  en augmentant l'intervalle pour &eacute;viter des corrections factices engendr&eacute;es 
+  par la turbulence. </p>
+<p>=&gt; <b>Activer de pr&eacute;f&eacute;rence le PEC de la monture</b>. Apr&egrave;s 
+  exp&eacute;rimentation, j'ai d&eacute;sactiv&eacute; le terme d'int&eacute;gration 
+  de l'algorithme PID pour &eacute;viter d'entrer en conflit avec les corrections 
+  du PEC. Le r&eacute;sultat global me semble meilleur que sans PEC.</p>
+<p>=&gt; <b>Laisser un tr&egrave;s l&eacute;ger d&eacute;s&eacute;quilibrage</b> 
+  (ou un tr&egrave;s l&eacute;ger d&eacute;faut de mise en station) dans le 
+  cas de monture ayant du jeu, afin que les corrections soient toujours dans le 
+  m&ecirc;me sens, surtout en d&eacute;clinaison. Cela &eacute;vite de changer 
+  de sens de correction et donc de faire des corrections de type blacklash qui 
+  peuvent ajouter des erreurs d'impr&eacute;cision dans les rattrapages de la 
+  monture.</p>
+<p><b>=&gt; Particularit&eacute; du r&eacute;glage du guidage en d&eacute;clinaison 
+  sur la fente.</b></p>
+<blockquote>
+  <p>Le coefficient %/pixel peut valoir entre 0.5 et 50 ! Je n'ai pas encore 
+    trouv&eacute; de formule pour le calculer automatiquement. Il d&eacute;pend 
+    de la luminosit&eacute; de l'&eacute;toile, du fond de ciel, du rapport entre 
+    ces deux valeurs et un peu de la taille des rectangles.</p>
+  <p>Quand ce coefficient est trop petit, le rattrapage en d&eacute;clinaison 
+    devient tr&egrave;s lent ou m&ecirc;me nul.</p>
+  <p>Quand ce coefficient est trop grand, le rattrapage en d&eacute;clinaison 
+    devient trop important et il engendre des oscillations.<br>
+  </p>
+</blockquote>
+<p>&nbsp;</p>
+</body>
+
+</html>

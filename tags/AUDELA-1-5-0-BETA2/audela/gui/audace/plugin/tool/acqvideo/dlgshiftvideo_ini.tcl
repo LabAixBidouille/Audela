@@ -1,0 +1,11 @@
+global panneau
+set panneau(DlgShiftVideo,buttonShift) "0"
+set panneau(DlgShiftVideo,geometry) "278x182+650+247"
+set panneau(DlgShiftVideo,position) "+650+247"
+set panneau(DlgShiftVideo,shiftSpeed) "x5"
+set panneau(DlgShiftVideo,xShiftDirection) "O"
+set panneau(DlgShiftVideo,xShiftDirection1) "w"
+set panneau(DlgShiftVideo,xShiftTime) "2"
+set panneau(DlgShiftVideo,yShiftDirection) "N"
+set panneau(DlgShiftVideo,yShiftDirection1) "n"
+set panneau(DlgShiftVideo,yShiftTime) "2"

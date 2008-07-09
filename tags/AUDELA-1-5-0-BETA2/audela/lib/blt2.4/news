@@ -1,0 +1,318 @@
+Note: Stub support is still missing although patches have been
+      graciously provided for the 2.4q release.  This will be added as
+      soon as I can get some free time.
+
+Changes from 2.4t to 2.4u
+
+ o Fixed stupid bug (missing close brace) in ./configure file.  
+
+ o Makefile in src/shared doesn't define BLT_LIBRARY.  Thanks
+   to terri@ner.com (Terri L. Fischer) for the bug report and fix. 
+
+ o graph doesn't find vector in global namespace when inside of another 
+   namespace. Thanks to Julian H J Loaring <bigj@bigj.demon.co.uk> for 
+   the bug report.
+
+ o Scratch buffer to small for PostScript prolog.  Thanks again to
+   Julian H J Loaring <bigj@bigj.demon.co.uk> for the bug report 
+   and fix. 
+
+ o graph "bind" would fail on elements without traces (-linewidth 0).
+   Thanks again to terri@ner.com (Terri L. Fischer) for the bug report.
+
+ o Many changes to "dnd" command.  
+
+      +	-package option is treated as a command prefix (like the 
+        scrollbar), not a script.  Percent sign substitutions are
+        no longer allowed.  Information is passed via key-value 
+	parameters like the -onleave, -ondrop procedures. Procedure 
+        must return 1 if operation was Ok, and 0 if it failed.  
+  
+      +	The command arguments for both the "setdata" and "getdata"
+	operations have changed from an arbitrary Tcl script with
+	percent sign substitutions, to a command prefix with 
+	key-value arguments appended. The general form is
+
+		procName widget args...
+
+	where args is one of more key value pairs.
+
+		x		Relative X-coordinate of drop or pickup.
+		y		Relative Y-coordinate of drop or pickup.
+		timestamp	Timestamp of transaction.
+		format		Format desired.
+		value		Value transfered (setdata only).
+
+	You can use array set to parse "args".  For example:
+
+		proc GetColor { widget args } {
+		    array set info $args
+	
+		    puts "x-coordinate is $info(x)"
+		    puts "selected format is $info(format)"
+
+		    return [$widget cget -bg]	 	    
+		}
+	
+      + If an -onmotion procedure is specified for the target, it is
+	automatically invoked on drops before the -dropcmd is run. 
+	If it returns 0, the drop is canceled.
+	
+      + Added ./demos/dnd2.tcl to show more complicated example.
+	Just like dnd1.tcl, you need to run two of them at the same
+	time to see the drag-and-drop operations.
+
+      + Target property wasn't getting reset when changing -onmotion, 
+	-onleave, etc. procedures. 
+    
+      + Timestamps now displayed as unsigned. 
+	
+   Many thanks to Tom Lane <tgl@sss.pgh.pa.us> for all his help and
+   suggestions.
+
+Changes from 2.4s to 2.4t
+
+ o Tree command syntax changes.  Notify and trace operation now work
+   as advertised and a copy operation added.  Many thanks to Matt 
+   Newman <matt@sensus.org> for meticulously reviewing the command. 
+
+ o graph "snap" operation syntax change.  Added support for generating
+   Aldus metafiles and enhanced metafiles under Windows. 
+
+	# Normal syntax.
+         set image [image create photo]
+	.graph snap $image
+
+	# New additions.
+	.graph snap -format emf myFile.emf ;# Enhanced metafile
+	.graph snap -format wmf myFile.wmf ;# Aldus placable metafile
+	.graph snap -format emf CLIPBOARD  ;# Metafile written into clipboard.
+
+   Old width and height arguments are replaced with -width and -height 
+   switches.
+
+	.graph snap $image 500 500 			;# Old
+	.graph snap -width 500 -height 500 $image	;# New 
+
+   Thanks to Alain Zuur <a.zuur@marlab.ac.uk> for the enhancement.
+  
+ o Tabset/Tabnotebook -selectforeground option for tabs using wrong
+   configuration option type.  Both the bug report and fix are from
+   Mark E. Smith <mark@pearl.grand.gdats.com>.  Thanks.
+
+ o graph "bind" to use closest point instead of line segment when 
+   element contains only 1 point.  Thanks to Uwe Klein 
+   <uwe-klein@foni.net> for the bug report and script.  
+
+ o Hiertable tree view column has been internally renamed to 
+	
+	  "BLT Hiertable widgetName".  
+
+   It was formerly the name of the widget.  Fortunately, you can
+   refer to the column as "treeView" instead.  
+
+	 .ht column configure treeView -text "View Label"
+ 
+ o There's no ".tree" suffix anymore on the default tree created by 
+   the hiertable widget.  It's now just the widget name. 
+
+ o Many hiertable column bug fixes. Thanks to Julian H J Loaring 
+   <bigj@bigj.demon.co.uk> for all the tests and reports. 
+
+ o Rotated text displayed incorrectly under Windows 95/98 using 
+   non-TrueType fonts.  A test for typetype fonts has been restored.
+   Thanks to James Pakko <jpakko@ford.com> for the bug report and
+   script.
+
+   Under Windows, Non-TypeType fonts are drawn into a bitmap and 
+   the bitmap is rotated.  This provides the same quality as using 
+   rotated fonts for on-screen display.  Unfortunately it's much 
+   poorer for higher res devices such as printers. The best bet is 
+   to simply choose TrueType fonts if you can.
+
+ o Improved Hiertable folder images.  Many thanks to Tom Lane 
+   <tgl@sss.pgh.pa.us> for the new images. 
+
+ o Bgexec segfaults under Windows (NT/95) if file handler is 
+   deleted inside of callback.  Thanks to Chris Oliver 
+   <coliver@mminternet.com> for the bug report.
+
+ o graph segfaults if pen style range min/max are the same. 
+   Thanks to Thomas Wu <twu@gene.com> for the bug report and script.
+
+ o tabnotebook and tabset widgets would generate X11 errors if
+   embedded window was resize to zero width/height.  Thanks to
+   Ed Ohsone <eosn@rahul.net> for the report and the script to
+   demonstrate the error.
+ 
+Changes from 2.4r to 2.4s
+
+ o Fixed bug in stripchart (introduced in 2.4r) allowing uninitialized
+   data to be displayed.  Thanks to Dick Gooris <gooris@lucent.com> for
+   the bug report.
+
+ o AIX dynamic loading.  Actually made it work on a 4.3 AIX box.
+
+ o Fixed -tree option in hiertable.  Would segfault if tree was not
+   fully initialized first.
+
+ o Tree insert operation syntax changed from 
+
+ 	tree0 insert $node key1 value1 key2 value2
+   to
+	tree0 insert $node -data { key1 value1 key2 value2 }
+
+ o Fixed tree label operation.  Save uid instead of string.
+   
+ o Bug in TreeEventProc, should be node != NULL instead of node >= 0
+   Thanks to Julian H J Loaring <bigj@bigj.demon.co.uk> for the
+   bug report. 
+
+
+What's new in 2.4?
+
+ 1. "eps" canvas item.  
+
+    An encapsulated PostScript canvas item lets you embed an EPS file into 
+    the canvas.  The "eps" item displays either a EPS preview image found 
+    in the file, or a Tk image that you provide.  
+
+ 2. "hierbox" and "hiertable" widget.
+
+    Hierarchical listbox widget. Displays a general ordered tree which 
+    may be built on-the-fly or all at once.
+
+ 3. "tabset" and "tabnotebook" widget.
+
+    Can be used either as a tab notebook or simple tabset.  Tabs can 
+    be arranged in a variety of ways: multi-tiered, scrolled, and 
+    attached to any of the four sides.  Tab labels can contain both 
+    images and text (text can be arbitrarily rotated). Notebook pages 
+    can be torn-off into separate windows and replaced later. 
+    
+ 4. Changes to vectors.
+
+    New features:
+	
+     o	Vector expressions.  The vector now has an "expr" operation
+	that lets you perform math (including math library
+	functions) on vectors.  There are several new functions
+	(such as "max", "min", "mean" "median", "q1", "q3", "prod",
+	"sum", "adev", "sdev", "skew", ...)
+
+		vector expr { sin(x)^2 + cos(x)^2 }
+		y expr { log(x) * $value }
+
+     o	New syntax to create and destroy vectors:
+
+		vector create x 
+		vector destroy x
+ 
+	The old syntax for creating vectors still works.
+
+		vector x
+
+     o	Vectors are *not* automatically deleted when their Tcl
+	variable is unset anymore. This means that you can
+	temporarily map vectors to variables and use them as you
+	would an ordinary Tcl array (kind of like "upvar").
+
+	    proc AddValue { vecName value } {
+		 $vecName variable x
+	
+		 set x(++end) $value
+	    }	
+
+	There's an "-watchunset" flag to restore the old
+	behavior if you need it. 
+
+	    vector create x -watchunset yes
+
+     o  Vectors still automatically create Tcl variables by
+	default.  I'd like to change this, but it silently
+	breaks lots of code, so it will stay.
+
+    Bug fixes:
+
+     o  Vector reallocation failed when shrinking the vector.
+
+     o  Vector "destroy" callback made after vector was already freed.
+
+     o  Fixed vector/scalar operations.
+
+     o  Always store results in temporary, so not to overwrite accidently
+	current vector values.
+	
+ 5. Changes to Graph, Barchart, Stripchart widgets.
+
+    New features:
+
+     o 	Drop shadows for text (titles, markers, etc). Drop
+	shadows improve contrast when displaying text over a
+	background with similar color intensities.
+   
+     o  Postscript "-preview" option to generate a EPS
+	PostScript preview image that can be read and
+	displayed by the EPS canvas item.
+
+     o  New "-topvariable", "-bottomvariable",
+	"-leftvariable", and "-rightvariable" options.  They
+	specify variables to contain the current margin
+	sizes.  These variables are updated whenever the
+	graph is redrawn.
+
+     o  New "-aspect" option. Let's you maintain a particular aspect
+	ratio for the the graph.
+
+     o  Image markers can now be stretched and zoomed like
+        bitmap markers.
+
+     o  Bind operation for legend entries, markers, and elements.
+
+	Much thanks to Julian Loaring <bigj@bigj.demon.co.uk> 
+	for the idea.
+
+     o  New "-xor" option for line markers, lets you draw the line
+	by rubberbanded by XOR-ing without requiring the graph to
+	be redrawn.  This can be used, for example, to select regions
+	for zooming.  
+
+	Thanks to Johannes Zellner (joze@krisal.physik.uni-karlsruhe.de) 
+	for the idea.
+
+     o  Can attach a scrollbar to an axis.  
+
+  	    .sbar configure -command { .graph axis view y } 
+	    .graph axis configure y -scrollcommand { .sbar set } 
+
+    Bug fixes:
+
+     o	Closest line (point) broken when using pens styles.
+
+     o	Marker elastic coordinates were wrong.
+
+     o	PostScript bounding box included the border of the page.
+
+     o	Bad PostScript generated for barchart symbols with stipples.
+
+     o	Wrong dimensions computed with postscript " -maxpect" option.
+
+     o  Text markers fixed.
+
+	Thanks to De Clarke for the bug report and fix.
+
+
+     o  Renamed axis configuration from "-range" to "-autorange" to
+	match the documentation.  
+
+	Thanks to Brian Smith for the correction.
+
+     o  Fixed polygon marker pick routine.
+
+     o  Fixed active tab labels overlapping the selected tab.
+
+     o  PostScript graph footer turned off by default.  Use -footer option
+        to turn on.
+
+	    .graph postscript configure -footer yes
+

@@ -1,0 +1,128 @@
+#
+# Fichier : animate.cap
+# Mise a jour $Id: animate.cap,v 1.9 2008-04-19 08:56:54 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(animate,animation)            "Animate"
+set caption(animate,help_titre)           "Help For This Tool"
+set caption(animate,nom_generique)        "Generic Filename"
+set caption(animate,parcourir)            "..."
+set caption(animate,nb_images)            "Image\nNumber"
+set caption(animate,delai_ms)             "Delay (ms)"
+set caption(animate,nb_boucles)           "Loop\nNumber"
+set caption(animate,go_animation)         "Go Animate"
+set caption(animate,attention)            "Warning"
+set caption(animate,erreur_fichier1)      "Images have no generic"
+set caption(animate,erreur_fichier2)      "names or they are not"
+set caption(animate,erreur_fichier3)      "in the working folder."
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(animate,animation)         "Animation"
+   set caption(animate,help_titre)        "Aide pour cet outil"
+   set caption(animate,nom_generique)     "Nom générique"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Nombre\nd'images"
+   set caption(animate,delai_ms)          "Délai (ms)"
+   set caption(animate,nb_boucles)        "Nombre de\nboucles"
+   set caption(animate,go_animation)      "Go Animation"
+   set caption(animate,attention)         "Attention"
+   set caption(animate,erreur_fichier1)   "Le nom générique des images"
+   set caption(animate,erreur_fichier2)   "n'existe pas ou elles ne sont pas"
+   set caption(animate,erreur_fichier3)   "dans le répertoire de travail."
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(animate,animation)         "Animazione"
+   set caption(animate,help_titre)        "Aiuto per questo tool"
+   set caption(animate,nom_generique)     "Nome generico"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Numero\nimmagini"
+   set caption(animate,delai_ms)          "Intervallo (ms)"
+   set caption(animate,nb_boucles)        "Numero\nripetizioni"
+   set caption(animate,go_animation)      "Go Animazione"
+   set caption(animate,attention)         "Attenzione"
+   set caption(animate,erreur_fichier1)   "Il nome generico delle immagini"
+   set caption(animate,erreur_fichier2)   "non esiste o esse non sono"
+   set caption(animate,erreur_fichier3)   "nella directory di lavoro."
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(animate,animation)         "Animación"
+   set caption(animate,help_titre)        "Ayuda para esta herramienta"
+   set caption(animate,nom_generique)     "Nom. genérico"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Numero\nimagenes"
+   set caption(animate,delai_ms)          "Retraso (ms)"
+   set caption(animate,nb_boucles)        "Numero\nrepeticiones"
+   set caption(animate,go_animation)      "Animar"
+   set caption(animate,attention)         "!Cuidado¡"
+   set caption(animate,erreur_fichier1)   "El nombre genérico de las"
+   set caption(animate,erreur_fichier2)   "imagenes no existe o no se está"
+   set caption(animate,erreur_fichier3)   "en el directorio de trabajo."
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(animate,animation)         "Animation"
+   set caption(animate,help_titre)        "Hilfe für dieses Gerät"
+   set caption(animate,nom_generique)     "Gattungsnamen"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Bilder\nZahl"
+   set caption(animate,delai_ms)          "Zeitraum (ms)"
+   set caption(animate,nb_boucles)        "Schleifen\nZahl"
+   set caption(animate,go_animation)      "Go Animation"
+   set caption(animate,attention)         "Achtung"
+   set caption(animate,erreur_fichier1)   "Der Gattungsnamen der Bilder"
+   set caption(animate,erreur_fichier2)   "existiert nicht oder ist nicht"
+   set caption(animate,erreur_fichier3)   "in das laufendes Register."
+
+# *************** Version portugaise **************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(animate,animation)         "Animação"
+   set caption(animate,help_titre)        "Ajuda para esta ferramenta"
+   set caption(animate,nom_generique)     "Nome genérico"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Número\nde imagens"
+   set caption(animate,delai_ms)          "Atraso (ms)"
+   set caption(animate,nb_boucles)        "Número de\nciclos"
+   set caption(animate,go_animation)      "Iniciar Animação"
+   set caption(animate,attention)         "Atenção"
+   set caption(animate,erreur_fichier1)   "O nome genérico das imagens"
+   set caption(animate,erreur_fichier2)   "não existe ou elas não se encontram"
+   set caption(animate,erreur_fichier3)   "no directório de trabalho."
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(animate,animation)         "Animation"
+   set caption(animate,help_titre)        "Hjælp til dette værktøj"
+   set caption(animate,nom_generique)     "Fælles filnavn"
+   set caption(animate,parcourir)         "..."
+   set caption(animate,nb_images)         "Billedantal"
+   set caption(animate,delai_ms)          "Forsinkelse (ms)"
+   set caption(animate,nb_boucles)        "Antal\ngennemkørsler"
+   set caption(animate,go_animation)      "Start amination"
+   set caption(animate,attention)         "Advarsel"
+   set caption(animate,erreur_fichier1)   "Billederne har ikke noget"
+   set caption(animate,erreur_fichier2)   "fællesnavn eller de findes"
+   set caption(animate,erreur_fichier3)   "ikke den aktive folder."
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+

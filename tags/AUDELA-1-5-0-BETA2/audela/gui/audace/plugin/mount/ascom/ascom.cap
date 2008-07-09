@@ -1,0 +1,100 @@
+#
+# Fichier : ascom.cap
+# Mise a jour $Id: ascom.cap,v 1.2 2007-12-18 22:15:29 robertdelmas Exp $
+#
+
+#=========================================================================
+#   Début de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
+global caption langage
+
+# *************** Version anglaise ****************************
+
+set caption(ascom,monture)                       "ASCOM"
+set caption(ascom,driver)                        "ASCOM Driver"
+set caption(ascom,raquette_tel)                  "Hand controller on screen"
+
+set caption(ascom,2points)                       ":"
+
+set caption(ascom,titre_site_web)                "Reference Web Site:"
+set caption(ascom,site_web_ref)                  "http://ascom-standards.org/"
+
+# *************** Version française ***************************
+if { [ string compare $langage "french" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "Driver ASCOM"
+   set caption(ascom,raquette_tel)               "Raquette à l'écran"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Site Web de référence :"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
+# *************** Version italienne ***************************
+} elseif { [ string compare $langage "italian" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "Driver ASCOM"
+   set caption(ascom,raquette_tel)               "Pulsantiera a schermo"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Sito Web di riferimento:"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
+# *************** Version espagnole ***************************
+} elseif { [ string compare $langage "spanish" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "Driver ASCOM"
+   set caption(ascom,raquette_tel)               "Controlador virtual"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Sitio Web de referencia:"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
+# *************** Version allemande ***************************
+} elseif { [ string compare $langage "german" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "ASCOM Treiber"
+   set caption(ascom,raquette_tel)               "Hand Kontroller am Bildschirm"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Referenz Webseite:"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
+# *************** Version portugaise ***************************
+} elseif { [ string compare $langage "portuguese" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "Driver ASCOM"
+   set caption(ascom,raquette_tel)               "Controlador de mão no ecrã"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Site Web de referência:"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
+# *************** Version danoise *****************************
+} elseif { [ string compare $langage "danish" ] == "0" } {
+
+   set caption(ascom,monture)                    "ASCOM"
+   set caption(ascom,driver)                     "ASCOM Driver"
+   set caption(ascom,raquette_tel)               "Hand controller on screen"
+
+   set caption(ascom,2points)                    ":"
+
+   set caption(ascom,titre_site_web)             "Reference Web Site:"
+   set caption(ascom,site_web_ref)               "http://ascom-standards.org/"
+
+}
+
+#=========================================================================
+#   Fin de la déclaration des textes localisés (internationalisation)
+#=========================================================================
+
