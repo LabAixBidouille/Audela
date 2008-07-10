@@ -7,7 +7,102 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.2 2008-07-02 22:51:18 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.3 2008-07-10 20:31:54 bmauclaire Exp $
+
+
+
+####################################################################
+# Procedure d'élimination des bords dont les intensites sont nulles
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 2008-07-8
+# Date modification : 2008-07-8
+# Arguments : fichier .fit du profil de raies (calibré linéairement) ?fraction de continuum (0.85)?
+####################################################################
+
+proc spc_rmedges { args } {
+
+    global audace spcaudace
+    global conf caption
+
+    set nb_args [ llength $args ]
+    if { $nb_args <= 2 } {
+       if { $nb_args == 1 } {
+          set spectre [ file rootname [ lindex $args 0 ] ]
+          set frac_conti 0.85
+       } elseif { $nb_args == 2 } {
+          set spectre [ file rootname [ lindex $args 0 ] ]
+          set frac_conti [ lindex $args 1 ]
+       } else {
+          ::console::affiche_erreur "Usage : spc_rmedges nom_profil_de_raies (calibré linéairement) ?fraction de continuum (0.85)?\n\n"
+          return ""
+       }
+
+       #--- Chargement des paramètres du spectre :
+       set conti_min [ expr $frac_conti*[ spc_icontinuum $spectre ] ]
+       set contenu [ spc_fits2data $spectre ]
+       set lambdas [ lindex $contenu 0 ]
+       set intensites [ lindex $contenu 1 ]
+       buf$audace(bufNo) load "$audace(rep_images)/$spectre"
+       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+       set dnaxis1 [ expr int(0.5*$naxis1) ]
+       set xlistdeb 0
+       set xlistfin [ llength $intensites ]
+
+       #--- Détermine lambda_min et lambda_max :
+       set i 1
+       foreach lambda $lambdas intensite $intensites {
+           # if { $intensite!=0. && $i<=$dnaxis1 } 
+           if { $intensite>=$conti_min && $i<=$dnaxis1 } {
+              set ldeb $lambda
+              set xlistdeb [ expr $i-1 ]
+              break
+           }
+           incr i
+       }
+       set i 1
+       set lfin ""
+       foreach lambda $lambdas intensite $intensites {
+           # if { $intensite==0. && $i>=$dnaxis1 } 
+           if { $intensite<=$conti_min && $i>=$dnaxis1 } {
+              set lfin [ lindex $lambdas [ expr $i-2 ] ]
+              set xlistfin [ expr $i-2 ]
+              break
+           }
+           incr i
+       }
+       if { $lfin=="" } {
+          set lfin [ lindex $lambdas [ expr $i-2 ] ]
+          set xlistfin [ expr $i-2 ]
+       }
+       set lambdarange [ list $ldeb $lfin ]
+
+       #--- Decoupage des bords du profil de raies :
+       #set new_longueur [ expr $naxis1-($xlistdeb+$xlistfin+2) ]
+       set new_longueur [ expr $xlistfin-$xlistdeb+1 ]
+       #::console::affiche_resultat "$xlistdeb ; $ldeb ;; $xlistfin ; $lfin ;; $new_longueur\n"
+       buf1 load "$audace(rep_images)/$spectre"
+       buf$audace(bufNo) setpixels CLASS_GRAY $new_longueur 1 FORMAT_FLOAT COMPRESS_NONE 0
+       buf$audace(bufNo) copykwd 1
+       buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
+       buf$audace(bufNo) setkwd [ list "NAXIS1" $new_longueur int "" "" ]
+       set k 1
+       for { set i $xlistdeb } { $i <= $xlistfin } { incr i } {
+          buf$audace(bufNo) setpix [ list $k 1 ] [ lindex $intensites $i ]
+          incr k
+       }
+       set xdepart [ lindex $lambdas $xlistdeb ]
+       buf$audace(bufNo) setkwd [ list "CRVAL1" $xdepart double "" "" ]
+       buf$audace(bufNo) bitpix float
+       buf$audace(bufNo) save "$audace(rep_images)/${spectre}_sel"
+       buf$audace(bufNo) bitpix short
+       ::console::affiche_resultat "Spectre nettoyé des bords sauvé sous ${spectre}_sel\n"
+       return ${spectre}_sel
+    } else {
+	::console::affiche_erreur "Usage : spc_rmedges nom_profil_de_raies (calibré linéairement) ?fraction de continuum (0.85)?\n\n"
+    }
+}
+#*****************************************************************#
 
 
 
