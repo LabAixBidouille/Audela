@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.3 2008-07-10 20:31:54 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.4 2008-07-10 20:56:26 bmauclaire Exp $
 
 
 
