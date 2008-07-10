@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.2 2008-07-10 20:33:44 bmauclaire Exp $
 
 
 ####################################################################
@@ -1706,9 +1706,10 @@ proc model_H2O  { args } {
                 #set intensite 0
    }
         #--- Sauvegarde du fichier fits ainsi cré√é©é√é©
+   buf$audace(bufNo) setkwd [ list "BSS_TELL" "yes" string "Tellurics lines correction" "" ]
    buf$audace(bufNo) bitpix float
    buf$audace(bufNo) save "$audace(rep_images)/$nom_fich_output"
-   ::console::affiche_resultat " nom fichier sortie $nom_fich_output \n"
+   # ::console::affiche_resultat " nom fichier sortie $nom_fich_output \n"
    buf$audace(bufNo) bitpix short
    return $nom_fich_output
 }
@@ -1925,7 +1926,7 @@ proc spc_fwhmo { args } {
        
 	return $results
     } else {
-       ::console::affiche_erreur "Usage: spc_calibretelluric profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n\n"
+       ::console::affiche_erreur "Usage: spc_fwhmo profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n\n"
     }
 }
 
@@ -1991,8 +1992,8 @@ proc spc_dry { args } {
    set nom_fich_denom "profil_eau.fit"
    set nom_fich_denom [ model_H2O $nom_fich_input $results1_fwhmo $liste_mots_cles $nom_fich_denom ]
    set sortie_rmo [ spc_div $nom_fich_input $nom_fich_denom ]
-   file copy -force "$audace(rep_images)/$sortie_rmo$conf(extension,defaut)" "$audace(rep_images)/${nom_fich_input}_rmo$conf(extension,defaut)" 
+   file copy -force "$audace(rep_images)/$sortie_rmo$conf(extension,defaut)" "$audace(rep_images)/${nom_fich_input}-rmo$conf(extension,defaut)" 
    file delete -force "$audace(rep_images)/$sortie_rmo$conf(extension,defaut)"
-   ::console::affiche_resultat "Profil nettoye des raies de l'eau sauve sous ${nom_fich_input}_rmo \n"
-   return ${nom_fich_input}_rmo
+   ::console::affiche_resultat "Profil nettoye des raies de l'eau sauve sous ${nom_fich_input}-rmo \n"
+   return ${nom_fich_input}-rmo
 }
