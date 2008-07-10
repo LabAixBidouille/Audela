@@ -129,7 +129,8 @@ Description: Logiciel libre multiplateforme (Win32, Linux, Mac), permettant les 
 echo "#!/bin/sh
 set -e
 # Cree un lien symbolique pour la derniere version d'Audela instalee :
-if test -h /usr/bin/audela ; then rm -f /usr/bin/audela ; else ln -s $INST_DIR/bin/audela.sh /usr/bin/audela ; fi
+if test -h /usr/bin/audela ; then rm -f /usr/bin/audela ; fi
+ln -s $INST_DIR/bin/audela.sh /usr/bin/audela
 $liens
 # Automatically added by dh_installmenu
 if [ "$1" = "configure" ] && [ -x "`which update-menus 2>/dev/null`" ]; then
@@ -178,7 +179,7 @@ then
     ln -s libthread2.6.5.1.so_debian libthread2.6.5.1.so
 elif test "$ladistro" = "mandriva"
 then
-    ln -s libthread2.6.5.1.so_mandriva libthread2.6.5.1.so
+    ln -s Thread2.6.5.1.so_mandriva libthread2.6.5.1.so
 fi
 cd $dirlocal
 
