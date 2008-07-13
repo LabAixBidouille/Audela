@@ -2189,8 +2189,12 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
    double longmpc,rhocosphip,rhosinphip;
    double diamapp_equ,diamapp_pol,long1,long2,long3,lati,posangle_sun,posangle_north;
    double long1_sun=0.,lati_sun=0.;
-   double asd,dec,delta,mag,diamapp,elong,phase,rr;
+   double asd,dec,delta,mag,diamapp,elong,phase,rr,asd0,dec0;
    FILE *ftle;
+   char **argvv=NULL;
+	int argcc,k,kmin,code;
+	double distmin=-1;
+	double sep,posangle;
 
    if(argc<4) {
       /*
@@ -2199,7 +2203,7 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       foreach ligne $res { set res2 [mc_radec2altaz [lindex $ligne 1] [lindex $ligne 2] {gps 6.92389 e 43.75222 1270} $date] ; set gis [expr [lindex $res2 0]+180.] ; if {$gis>360} {set gis [expr $gis-360.]} ; append texte "[lindex $ligne 0] [lindex $ligne 1] [lindex $ligne 2] $gis [lindex $res2 1]\n" }
       set f [open d:/geostat/sat.txt w] ; puts -nonewline $f $texte ; close $f
       */
-      sprintf(s,"Usage: %s Date file_tle Home ?satname?", argv[0]);
+      sprintf(s,"Usage: %s Date file_tle Home ?-name satname? ?-coord {ra dec}?", argv[0]);
       Tcl_SetResult(interp,s,TCL_VOLATILE);
       result = TCL_ERROR;
 	  WriteDisk ("pas assez d'arg");
@@ -2211,12 +2215,26 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       longmpc=0.;
       rhocosphip=0.;
       rhosinphip=0.;
-      if (argc>=4) {
-         mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
-      }
+      mctcl_decode_topo(interp,argv[3],&longmpc,&rhocosphip,&rhosinphip);
       strcpy(name,"");
-      if (argc>=5) {
-         strcpy(name,argv[4]);
+      if (argc==5) {
+			strcpy(name,argv[4]);
+		} else if (argc>=6) {
+			for (k=4;k<argc-1;k++) {
+				if (strcmp(argv[k],"-name")==0) {
+		         strcpy(name,argv[k+1]);
+				} else if (strcmp(argv[k],"-coord")==0) {
+					code=Tcl_SplitList(interp,argv[k+1],&argcc,&argvv);
+					if (argcc>=2) {
+						mctcl_decode_angle(interp,argvv[0],&asd0);
+						asd0*=(DR);
+						mctcl_decode_angle(interp,argvv[1],&dec0);
+						dec0*=(DR);
+						distmin=1e11;
+					}
+		         Tcl_Free((char *) argvv);
+				}
+			}
       }
       /* --- decode le fichier TLE ---*/
       ftle=fopen(argv[2],"rt");
@@ -2315,16 +2333,49 @@ int Cmd_mctcl_tle2ephem(ClientData clientData, Tcl_Interp *interp, int argc, cha
       */
  	   result=TCL_OK;
 	   Tcl_DStringInit(&dsptr);
+		k=-1;
       while (feof(ftle)==0) {
+			k++;
          mc_tle_decnext1(ftle,&elem,name,&valid);
          if (valid==1) {
             /* --- on lance le calcul ---*/
             mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
-			sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
-			Tcl_DStringAppend(&dsptr,sss,-1);
+				if (distmin>0) {
+					mc_sepangle(asd0,asd,dec0,dec,&sep,&posangle);
+					if (sep<distmin) {
+						kmin=k;
+						distmin=sep;
+					}
+				} else {
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
+					Tcl_DStringAppend(&dsptr,sss,-1);
+				}
          }
       }
       fclose(ftle);
+		if (distmin>0) {
+			/* --- decode le fichier TLE ---*/
+			ftle=fopen(argv[2],"rt");
+			if (ftle==NULL) {
+				Tcl_SetResult(interp,"File not found",TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+ 			result=TCL_OK;
+			k=-1;
+			while (feof(ftle)==0) {
+				k++;
+				mc_tle_decnext1(ftle,&elem,name,&valid);
+				if ((valid==1)&&(k==kmin)) {
+					/* --- on lance le calcul ---*/
+					mc_adelemap(jj,elem,longmpc,rhocosphip,rhosinphip,0,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&rr,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+					sprintf(sss,"{{{%20s} {%15s} {%15s}} %.15f %.15f %.15g %.15f} ",elem.designation,elem.id_norad,elem.id_cospar,asd/(DR),dec/(DR),delta,elong/(DR));
+					Tcl_DStringAppend(&dsptr,sss,-1);
+				}
+			}
+			fclose(ftle);
+		} 
+		/* --- libere les pointeurs ---*/
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
    }
@@ -4840,7 +4891,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 */
 /* Sorties :																                */
 /****************************************************************************/
-   char s[1024];
+   char s[10240];
 	char action[50],InputType[50],OutputFile[1024],InputFile[1024],PointingModelFile[1024];
 	char home[60],ligne[1024];
 	double jddeb, jdfin,equinox,epoch;
@@ -4859,8 +4910,13 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 	FILE *f,*finp;
 	mc_modpoi_matx *matx=NULL; /* 2*nb_star */
 	mc_modpoi_vecy *vecy=NULL; /* nb_coef */
-	int nb_coef,nb_star;
-	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,dh,daz;
+	int nb_coef,nb_star,nstars,*kseps=NULL;
+	double tane,cosa,sina,cose,sine,sece,cos2a,sin2a,cos3a,sin3a,cos4a,sin4a,dh,daz;
+	double cos5a,sin5a,cos6a,sin6a;
+	double *seps=NULL,site,gise,sepmax;
+	char *flignes;
+	int longligne=255;
+   Tcl_DString dsptr;
 
    if(argc<2) {
       sprintf(s,"Usage: %s Action ?parameters?", argv[0]);
@@ -5054,8 +5110,15 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 						sin2a=sin(2.*az);
 						cos3a=cos(3.*az);
 						sin3a=sin(3.*az);
+						cos4a=cos(4.*az);
+						sin4a=sin(4.*az);
+						cos5a=cos(5.*az);
+						sin5a=sin(5.*az);
+						cos6a=cos(6.*az);
+						sin6a=sin(6.*az);
 						kk=0;
 						for (k=0;k<nb_coef;k++) {
+							matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
@@ -5065,17 +5128,29 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; } 
 							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
 							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; } 
 							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
-							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
-							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a*tane; }
 							if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a*tane; }
+							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
+							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
 							if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a*tane; }
 							if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a*tane; }
+							if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
+							if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
+							if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a*tane; }
+							if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a*tane; }
+							if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
+							if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
+							if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a*tane; }
+							if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a*tane; }
+							if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
+							if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
+							if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a*tane; }
+							if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a*tane; }
 							kk++;
 						}
 						daz=0.;
@@ -5083,6 +5158,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							daz+=(matx[k].coef*vecy[k].coef);
 						}
 						for (k=0;k<nb_coef;k++) {
+							matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
 							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
@@ -5092,17 +5168,29 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
 							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; } 
 							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sine; }
 							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
 							if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
+							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
 							if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
+							if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
+							if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
+							if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
+							if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
+							if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
+							if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
 							kk++;
 						}
 						dh=0.;
@@ -5287,8 +5375,15 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 						sin2a=sin(2.*az);
 						cos3a=cos(3.*az);
 						sin3a=sin(3.*az);
+						cos4a=cos(4.*az);
+						sin4a=sin(4.*az);
+						cos5a=cos(5.*az);
+						sin5a=sin(5.*az);
+						cos6a=cos(6.*az);
+						sin6a=sin(6.*az);
 						kk=0;
 						for (k=0;k<nb_coef;k++) {
+							matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
@@ -5298,17 +5393,29 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cosa; } 
 							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sina; }
-							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
 							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; } 
 							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=tane; } 
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
-							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
-							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a*tane; }
 							if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a*tane; }
+							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
+							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
 							if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a*tane; }
 							if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a*tane; }
+							if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
+							if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
+							if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a*tane; }
+							if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a*tane; }
+							if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
+							if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
+							if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a*tane; }
+							if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a*tane; }
+							if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
+							if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
+							if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a*tane; }
+							if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=0 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a*tane; }
 							kk++;
 						}
 						daz=0.;
@@ -5316,6 +5423,7 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							daz+=(matx[k].coef*vecy[k].coef);
 						}
 						for (k=0;k<nb_coef;k++) {
+							matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.;
 							if (strcmp(vecy[k].type,"IA")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"IE")==0)    { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=1.; }
 							if (strcmp(vecy[k].type,"NPAE")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
@@ -5325,17 +5433,29 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 							if (strcmp(vecy[k].type,"ACEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; } 
 							if (strcmp(vecy[k].type,"ECEC")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
 							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ACES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; } 
+							if (strcmp(vecy[k].type,"ECES")==0)  { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sine; } 
 							if (strcmp(vecy[k].type,"NRX")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=-sine; }
 							if (strcmp(vecy[k].type,"NRY")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cose; } 
 							if (strcmp(vecy[k].type,"ACEC2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"ACES2")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
-							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos2a; }
 							if (strcmp(vecy[k].type,"AW2")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin2a; }
+							if (strcmp(vecy[k].type,"ACEC3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES3")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
 							if (strcmp(vecy[k].type,"AN3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos3a; }
 							if (strcmp(vecy[k].type,"AW3")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin3a; }
+							if (strcmp(vecy[k].type,"ACEC4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES4")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"AN4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos4a; }
+							if (strcmp(vecy[k].type,"AW4")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin4a; }
+							if (strcmp(vecy[k].type,"ACEC5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES5")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"AN5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos5a; }
+							if (strcmp(vecy[k].type,"AW5")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin5a; }
+							if (strcmp(vecy[k].type,"ACEC6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"ACES6")==0) { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=0.; }
+							if (strcmp(vecy[k].type,"AN6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=cos6a; }
+							if (strcmp(vecy[k].type,"AW6")==0)   { matx[kk].kl=1 ; matx[kk].kc=vecy[k].k ; matx[kk].coef=sin6a; }
 							kk++;
 						}
 						dh=0.;
@@ -5376,8 +5496,177 @@ meo_corrected_positions "c:/d/meo/positions2.txt" [list 2008 05 30 12 34 50] [li
 				if (vecy!=NULL) { free(vecy); }
 				return(result);
 			}
+		} else if (strcmp(action,"amer_hip")==0) {
+			/* --- decode le home ---*/
+			sprintf(s,"global meo ; set ::meo(home)");
+			res=Tcl_Eval(interp,s);
+			if (res==TCL_OK) {
+				strcpy(home,interp->result);
+				result=mctcl_decode_home(interp,home,&longitude,sens,&latitude,&altitude,&longitude,&rhocosphip,&rhosinphip);
+				if (result==TCL_ERROR) {
+					Tcl_SetResult(interp,"Input string is not regonized amongst Home type",TCL_VOLATILE);
+					result = TCL_ERROR;
+					return(result);
+				}
+			}
+	      /* --- decode arg2 : fichier_in ---*/
+			strcpy(InputFile,"");
+			if (argc>2) {
+				strcpy(InputFile,argv[2]);
+			}
+			if (strcmp(InputFile,"")==0) {
+				sprintf(s,"global meo ; set fichier_in \"$meo(path)/$meo(cathipshort)\"");
+			   res=Tcl_Eval(interp,s);
+				if (res==TCL_OK) {
+					strcpy(InputFile,interp->result);
+				}
+			}
+	      /* --- decode arg3 : amers ---*/
+	      /* --- decode arg4 : kamers ---*/
+			if (argc>4) {
+				sprintf(s,"lindex {%s} %d",argv[3],atoi(argv[4]));
+			} else {
+				strcpy(s,"lindex {{45 180}} 0");
+			}
+			res=Tcl_Eval(interp,s);
+			if (res==TCL_OK) {
+				strcpy(ligne,interp->result);
+				sprintf(s,"lindex {%s} 0",ligne);
+				res=Tcl_Eval(interp,s);
+				site=atoi(interp->result);
+				sprintf(s,"lindex {%s} 1",ligne);
+				res=Tcl_Eval(interp,s);
+				gise=atoi(interp->result);
+			}
+	      /* --- decode arg5 : nstars ---*/
+			nstars=1;
+			if (argc>5) {
+				nstars=atoi(argv[5]);
+			}
+	      /* --- decode arg6 : sepmax ---*/
+			sepmax=180;
+			if (argc>6) {
+				sepmax=atoi(argv[6]);
+			}
+	      /* --- decode arg7 : date ---*/
+			mctcl_decode_date(interp,"now",&jd);
+			if (argc>7) {
+				mctcl_decode_date(interp,argv[7],&jd);
+			}
+			// --- on ramene le point d'amer en coordonnées RA,DEC J2000.0
+			gise*=(DR);
+			site*=(DR);
+			az=gise-PI;
+			h=site;
+			/* --- coordonnées horizontales---*/
+			mc_ah2hd(az,h,latitude,&ha,&dec);
+			mc_hd2ad(jd,longitude,ha,&ra);
+			/* --- calcul de la precession ---*/
+			mc_precad(J2000,ra,dec,jd,&asd2,&dec2);
+			ra0=asd2;
+			dec0=dec2;
+			/*****************************************/
+			nb_star=0;
+			finp=fopen(InputFile,"r");
+			if (finp==NULL) {
+				sprintf(s,"Error opening file %s",InputFile);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			while (feof(finp)==0) {
+				if (fgets(s,longligne,finp)==NULL) { continue; }
+				sscanf(s,"%d %lf %lf %lf",&k,&mag,&ra,&dec);
+				nb_star++;
+			}
+			fclose(finp);
+			/*****************************************/
+			seps=(double*)calloc(nb_star,sizeof(double));
+			if (seps==NULL) {
+				strcpy(s,"Error calloc seps");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			kseps=(int*)calloc(nb_star,sizeof(int));
+			if (kseps==NULL) {
+				free(seps);
+				strcpy(s,"Error calloc kseps");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			flignes=(char*)calloc(nb_star*longligne,sizeof(char));
+			if (flignes==NULL) {
+				free(seps);
+				free(kseps);
+				strcpy(s,"Error calloc flignes");
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			/*****************************************/
+			finp=fopen(InputFile,"r");
+			if (finp==NULL) {
+				free(seps);
+				free(kseps);
+				free(flignes);
+				sprintf(s,"Error opening file %s",InputFile);
+				Tcl_SetResult(interp,s,TCL_VOLATILE);
+				result = TCL_ERROR;
+				return(result);
+			}
+			nb_star=0;
+			while (feof(finp)==0) {
+				if (fgets(s,longligne,finp)==NULL) { continue; }
+				sscanf(s,"%d %lf %lf %lf",&k,&mag,&ra,&dec);
+				ra*=(DR);
+				dec*=(DR);
+				strcpy(flignes+nb_star*longligne,s);
+				/* --- coordonnées horizontales---*/
+				mc_ad2hd(jd,longitude,ra,&ha);
+				mc_hd2ah(ha,dec,latitude,&az,&h);
+				star_site=h;
+				star_gise=az-PI;
+				mc_sepangle(star_gise,gise,star_site,site,&sep,&posangle);
+				sep/=(DR);
+				seps[nb_star]=sep;
+				kseps[nb_star]=nb_star;
+				nb_star++;
+			}
+			fclose(finp);
+			mc_quicksort_double(seps,0,nb_star-1,kseps);
+			Tcl_DStringInit(&dsptr);
+			nlig=0;
+			for (k=0;k<nb_star;k++) {
+				if (seps[k]>sepmax) {
+					continue;
+				}
+				strcpy(s,flignes+kseps[k]*longligne);
+				sscanf(s,"%d %lf %lf %lf",&kk,&mag,&ra,&dec);
+				ra*=(DR);
+				dec*=(DR);
+				/* --- coordonnées horizontales---*/
+				mc_ad2hd(jd,longitude,ra,&ha);
+				mc_hd2ah(ha,dec,latitude,&az,&h);
+				h/=(DR);
+				if (h<10) {
+					continue;
+				}
+				sprintf(ligne,"{%s} ",s);
+		      Tcl_DStringAppend(&dsptr,ligne,-1);
+				nlig++;
+				if (nlig>=nstars) {
+					break;
+				}
+			}
+			Tcl_DStringResult(interp,&dsptr);
+			Tcl_DStringFree(&dsptr);
+			free(seps);
+			free(kseps);
+			free(flignes);
 		} else {
-			strcpy(s,"Action must be amongst corrected_positions");
+			strcpy(s,"Action must be amongst corrected_positions, amer_hip");
 			Tcl_SetResult(interp,s,TCL_VOLATILE);
 			result = TCL_ERROR;
 			if (matx!=NULL) { free(matx); }
