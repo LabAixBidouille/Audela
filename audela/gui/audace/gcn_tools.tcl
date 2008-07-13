@@ -4,8 +4,148 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.6 2008-06-04 10:01:34 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.7 2008-07-13 17:52:26 alainklotz Exp $
 #
+
+# ==========================================================================================
+# socket_client_send_gcn : to send a GCN-like packet to a server with a GCN connection
+# e.g. source audace/gcn_tools.tcl ; socket_client_send_gcn client_gcn 127.0.0.1 7001 {3 2008 07 07 23 45 21.123 123.4567 -46.4321 1.5 2 600}
+proc socket_client_send_gcn { name ipserver portserver {data {3 2008 07 07 23 45 21.123 123.4567 -46.4321 1.5 2 600}} } {
+   global audace
+   global gcn
+   
+   # --- init longs
+   set longs ""
+   for {set k 0 } {$k<40} {incr k} {
+   	lappend longs 0
+	}
+   # --- data
+	if {1==0} {
+		set data ""
+		lappend data 901 ; # packet type = 901
+		set date [mc_date2ymdhms now]
+		for {set k 0} {$k<6} {incr k} {
+			lappend $data [lindex $date $k] ; # date YMDHMS
+		}
+		lappend data 123.4567 ; # ra J2000.0 (deg)
+		lappend data -46.4321 ; # dec J2000.0 (deg)
+		lappend data 1.5 ; # boite d'erreur
+		lappend data 2 ; # nombre de neutrinos 1=unique mais intense
+		lappend data 600. ; # duree d'integration (seconds)
+	}
+	# --- decodage data -> longs
+	#
+	#TYPE=901 PACKET CONTENTS:
+	#
+	#The ANTARES_GRB_POSITION packet consists of 40 four-byte quantities.
+	#The order and contents are listed in the table below:
+	#
+	#Declaration  Index   Item         Units           Comments
+	#Type                 Name
+	#-----------  -----   ---------    ----------      ----------------
+	#long         0       pkt_type     integer         Packet type number (=61)
+	#long         1       pkt_sernum   integer         1 thru infinity
+	#long         2       pkt_hop_cnt  integer         Incremented by each node
+	#long         3       pkt_sod      [centi-sec]     (int)(sssss.sss *100) 
+	#long         4       trig_obs_num integers        Trigger num & Observation num
+	#long         5       burst_tjd    [days]          Truncated Julian Day
+	#long         6       burst_sod    [centi-sec]     (int)(sssss.sss *100)
+	#long         7       burst_ra     [0.0001-deg]    (int)(0.0 to 359.9999 *10000)
+	#long         8       burst_dec    [0.0001-deg]    (int)(-90.0 to +90.0 *10000)
+	#long         9       burst_flue   [counts]        Num events during trig window, 0 to inf
+	#long         10      burst_ipeak  [cnts*ff]       Counts in image-plane peak, 0 to infinity
+	#long         11      burst_error  [0.0001-deg]    (int)(0.0 to 180.0 *10000)
+	#long         12      phi          [centi-deg]     (int)(0.0 to 359.9999 *100)
+	#long         13      theta        [centi-deg]     (int)(0.0 to +70.0 *100)
+	#long         14      integ_time   [4mSec]         Duration of the trigger interval, 1 to inf
+	#long         15      spare        integer         4 bytes for the future
+	#long         16      lon_lat      2_shorts        (int)(Longitude,Lattitude *100)
+	#long         17      trig_index   integer         Rate_Trigger index
+	#long         18      soln_status  bits            Type of source/trigger found
+	#long         19      misc         bits            Misc stuff packed in here
+	#long         20      image_signif [centi-sigma]   (int)(sig2noise *100)
+	#long         21      rate_signif  [centi-sigma]   (int)(sig2noise *100)
+	#long         22      bkg_flue     [counts]        Num events during the bkg interval, 0 to inf
+	#long         23      bkg_start    [centi-sec]     (int)(sssss.sss *100)
+	#long         24      bkg_dur      [centi-sec]     (int)(0-80,000 *100)
+	#long         25      cat_num      integer         On-board cat match ID number
+	#long         26-35   spare[10]    integer         40 bytes for the future
+	#long         36      merit_0-3    integers        Merit params 0,1,2,3 (-127 to +127)
+	#long         37      merit_4-7    integers        Merit params 4,5,6,7 (-127 to +127)
+	#long         38      merit_8-9    integers        Merit params 8,9     (-127 to +127)
+	#long         39      pkt_term     integer         Pkt Termination (always = \n)
+	set burst_pkt_type [lindex $data 0]
+	set longs [lreplace $longs 0 0 $burst_pkt_type]
+	set burst_pkt_sernum 1
+	set longs [lreplace $longs 1 1 $burst_pkt_sernum]
+	set burst_pkt_hop_cnt 1
+	set longs [lreplace $longs 2 2 $burst_pkt_hop_cnt]
+	set date [mc_date2jd now]
+	set sod [expr ($date-floor($date-0.5))*86400.]
+	set burst_pkt_sod [expr int($sod*100)]
+	set longs [lreplace $longs 3 3 $burst_pkt_sod]
+	set burst_trig_obs_num 1
+	set longs [lreplace $longs 4 4 $burst_trig_obs_num]
+	set burst_date_year [lindex $data 1]
+	set burst_date_month [lindex $data 2]
+	set burst_date_day [lindex $data 3]
+	set burst_date_hour [lindex $data 4]
+	set burst_date_minute [lindex $data 5]
+	set burst_date_seconds [lindex $data 6]
+	set jd [mc_date2jd [lrange $data 1 6]]
+	set burst_tjd [expr int($jd+13370.+1.-[mc_date2jd {2005 1 1}])]
+	set longs [lreplace $longs 5 5 $burst_tjd]
+	set sod [expr ($jd-floor($jd-0.5))*86400.]
+	set burst_sod [expr int($sod*100)]
+	set longs [lreplace $longs 6 6 $burst_sod]
+	set burst_ra [expr int([lindex $data 7]/0.0001)]
+	set longs [lreplace $longs 7 7 $burst_ra]
+	set burst_dec [expr int([lindex $data 8]/0.0001)]
+	set longs [lreplace $longs 8 8 $burst_dec]
+	set burst_flue [lindex $data 10]
+	set longs [lreplace $longs 9 9 $burst_flue]
+	set burst_error [expr int([lindex $data 9]/60./0.0001)]
+	set longs [lreplace $longs 11 11 $burst_error]
+	set burst_integ_time [expr int([lindex $data 11]/4e-3)]
+	set longs [lreplace $longs 14 14 $burst_integ_time]
+	# --- convert longs into the binary stream
+	#::console::affiche_resultat "longs=<$longs>\n"
+	set line [binary format I* $longs]
+	#::console::affiche_resultat "line=<$line>\n"
+	# --- open socket connexion
+   if {[info exists audace(socket,client,$name)]==0} {
+		#::console::affiche_resultat "$ipserver $portserver\n"
+	   set errno [ catch {
+	      set fid [socket $ipserver $portserver ]
+	   } msg]
+	   if {$errno==1} {
+	      error $msg
+	   } else {
+			set audace(socket,client,$name) $fid
+	   }
+   }
+   set fid $audace(socket,client,$name)
+	#::console::affiche_resultat "fid=<$fid>\n"
+   fconfigure $fid -buffering full -translation binary -encoding binary -buffersize 160
+	# --- send packet
+   set errsoc [ catch {
+	   puts -nonewline $fid $line
+   } msgsoc ]
+   if {$errsoc==1} {
+      gcn_print "socket error : $msgsoc"
+   }
+	#close $fid
+}
+# ==========================================================================================
+
+proc socket_client_close_gcn { name } {
+   global audace
+   global gcn
+   if {[info exists audace(socket,client,$name)]==1} {
+		close $audace(socket,client,$name)
+		unset audace(socket,client,$name)
+   }
+}
 
 # ==========================================================================================
 # socket_server_open_gcn : to open a named socket server for a GCN connection
@@ -189,21 +329,28 @@ proc gcn_decode { longs } {
       set gcn(descr,satellite) [lindex $res 1]
       set gcn(descr,prompt) [lindex $res 2]
       gcn_print "$date_rec_notice type $pkt_type: $gcn(descr,type)"
+      #if {$gcn(descr,type)==""} {
+	   #   return
+      #}
       gcn_print "$longs"
       # --- common codes
       for {set k 0} {$k<40} {incr k} {
          set gcn(long,$k) [string toupper [lindex $longs $k] ]
       }
       set items [gcn_pkt_indices]
+gcn_print "----"
       foreach item $items {
          set k [lindex $item 0]
          set name [lindex $item 1]
          set gcn(long,$name) $gcn(long,$k)
+gcn_print "gcn(long,$name)=$gcn(long,$name)"
       }
       # --- date de l'envoi de la notice
+gcn_print "----"
       set res [mc_date2ymdhms $date_rec_notice]
       set res [lrange $res 0 2]
       set pkt_date [mc_date2jd $res]
+gcn_print "gcn(long,pkt_sod)=$gcn(long,pkt_sod)"
       set pkt_time [expr $gcn(long,pkt_sod)/100.]
       set gcn(descr,jd_pkt) [expr $pkt_date+$pkt_time/86400.] ; # jd de la notice
       if {[expr $gcn(descr,jd_pkt)-[mc_date2jd $date_rec_notice]]>0.5} {
@@ -306,6 +453,17 @@ proc gcn_decode { longs } {
          set gcn(descr,test_flag) [string index $trig_id 1]
          set gcn(descr,radec_undef) [string index $trig_id 2]
          set gcn(descr,retract) [string index $trig_id 5]
+      }
+      if {$gcn(descr,satellite)=="ANTARES"} {
+         set gcn(descr,burst_ra) [expr $gcn(long,burst_ra)*0.0001]
+         set gcn(descr,burst_dec) [expr $gcn(long,burst_dec)*0.0001]
+         set gcn(descr,trigger_num) [expr int($gcn(long,4))] ; # identificateur du trigger
+         set grb_date [expr $gcn(long,burst_tjd)-13370.-1.+[mc_date2jd {2005 1 1}]] ; # TJD=13370 is 01 Jan 2005
+         set grb_time [expr $gcn(long,burst_sod)/100.]
+         set gcn(descr,burst_jd) [expr $grb_date+$grb_time/86400.] ; # jd du trigger
+         set gcn(descr,grb_error) [expr 0.0001*$gcn(long,burst_error)*60.]; # boite d'erreur en arcmin
+         set gcn(descr,burst_flue) $gcn(long,9)
+         set gcn(descr,integ_time) [expr $gcn(long,14)*4e-3]
       }
       # --- update status
       set gcn(status,last,last,jd_send) "$gcn(descr,jd_pkt)"
@@ -515,6 +673,7 @@ proc gcn_pkt_type { pkt_type } {
      123      GLAST_LAT_TRANS                  NOT YET AVAILABLE
      125      GLAST_OBS_REQUEST                NOT YET AVAILABLE
      126      GLAST_SC_SLEW                    NOT YET AVAILABLE
+     901      ANTARES_GRB_POSITION
    }
    set lignes [split $lignes \n]
    set textes ""
@@ -580,6 +739,9 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type>=110)&&($pkt_type<=126)} {
       set satellite GLAST
    }
+   if {($pkt_type>=901)&&($pkt_type<=910)} {
+      set satellite ANTARES
+   }
    lappend textes $satellite
    # --- prompt identification
    # =-1 informations only, =0 pointdir, =1 prompt, =2 refined
@@ -587,7 +749,7 @@ proc gcn_pkt_type { pkt_type } {
    if {($pkt_type==126)||($pkt_type==83)||($pkt_type==51)} {
       set prompt 0
    }
-   if {($pkt_type==110)||($pkt_type==111)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)} {
+   if {($pkt_type==110)||($pkt_type==111)||($pkt_type==61)||($pkt_type==58)||($pkt_type==53)||($pkt_type==40)||($pkt_type==33)||($pkt_type==35)||($pkt_type==30)||($pkt_type==26)||($pkt_type==28)||($pkt_type==1)||($pkt_type==901)} {
       set prompt 1
    }
    if {($pkt_type==67)||($pkt_type==54)||($pkt_type==55)||($pkt_type==41)||($pkt_type==42)||($pkt_type==43)||($pkt_type==39)} {
