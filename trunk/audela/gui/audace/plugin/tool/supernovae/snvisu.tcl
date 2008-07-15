@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.28 2008-04-12 16:43:54 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.29 2008-07-15 17:09:15 robertdelmas Exp $
 #
 
 global audace
@@ -58,7 +58,6 @@ global audace
 source [ file join $audace(rep_plugin) tool supernovae snvisu.cap ]
 
 set snvisu(blink_go)       "0"
-set snvisu(auto_blink)     "1"
 set snvisu(exit_blink)     "1"
 set snvisu(ima_rep2_exist) "0"
 set snvisu(ima_rep3_exist) "0"
@@ -862,14 +861,14 @@ proc nextimage { } {
    #--- Variables shared
    global rep
    global zone
-   global snvisu
+   global snconfvisu
 
    #---
    set rep(blink,last) ""
    #---
    incr rep(xx1)
    affimages
-   if { $snvisu(auto_blink) == "1" } {
+   if { $snconfvisu(auto_blink) == "1" } {
       snblinkimage
    }
 }
@@ -878,12 +877,16 @@ proc previmage { } {
    #--- Variables shared
    global rep
    global zone
+   global snconfvisu
 
    #---
    set rep(blink,last) ""
    #---
    incr rep(xx1) -1
    affimages
+   if { $snconfvisu(auto_blink) == "1" } {
+      snblinkimage
+   }
 }
 
 proc affimages { } {
