@@ -2,7 +2,7 @@
 # Fichier : sntkutil.tcl
 # Description : Utilitaires pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: sntkutil.tcl,v 1.5 2006-09-01 22:42:01 robertdelmas Exp $
+# Mise a jour $Id: sntkutil.tcl,v 1.6 2008-07-16 16:37:51 robertdelmas Exp $
 #
 
 #
@@ -12,9 +12,10 @@
 #
 proc sn_Scrolled_Canvas { c yscroll args } {
    frame $c
-   set grille { 0 1 0 0 1 1 }
    if { $yscroll == "right" } {
       set grille { 0 0 0 1 1 0 }
+   } elseif { $yscroll == "left" } {
+      set grille { 0 1 0 0 1 1 }
    }
    eval { canvas $c.canvas \
       -xscrollcommand [ list $c.xscroll set ] \
@@ -24,7 +25,7 @@ proc sn_Scrolled_Canvas { c yscroll args } {
    scrollbar $c.yscroll -orient vertical -command [ list $c.canvas yview ]
    grid $c.canvas  -column [ lindex $grille 1 ] -row [ lindex $grille 0 ] -sticky news
    grid $c.yscroll -column [ lindex $grille 3 ] -row [ lindex $grille 2 ] -sticky news
-   grid $c.xscroll -column [ lindex $grille 5 ] -row [ lindex $grille 4 ] -sticky we
+   grid $c.xscroll -column [ lindex $grille 5 ] -row [ lindex $grille 4 ] -sticky ew
    grid rowconfigure $c 0 -weight 1
    grid columnconfigure $c 0 -weight 1
    return $c.canvas
@@ -32,7 +33,7 @@ proc sn_Scrolled_Canvas { c yscroll args } {
 
 #
 # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de
-# deux entiers, et retourne également une liste de deux entiers. Pour l'image de gauche
+# deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de gauche
 #
 proc sn_screen2Canvas_g { coord } {
    global zone
@@ -44,7 +45,7 @@ proc sn_screen2Canvas_g { coord } {
 
 #
 # Transforme des coordonnees ecran en coordonnees canvas. L'argument est une liste de
-# deux entiers, et retourne également une liste de deux entiers. Pour l'image de droite
+# deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de droite
 #
 proc sn_screen2Canvas_d { coord } {
    global zone
@@ -56,7 +57,7 @@ proc sn_screen2Canvas_d { coord } {
 
 #
 # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de
-# deux entiers, et retourne également une liste de deux entiers. Pour l'image de gauche
+# deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de gauche
 #
 proc sn_canvas2Picture_g { coord } {
    global zone
@@ -79,7 +80,7 @@ proc sn_canvas2Picture_g { coord } {
 
 #
 # Transforme des coordonnees canvas en coordonnees image. L'argument est une liste de
-# deux entiers, et retourne également une liste de deux entiers. Pour l'image de droite
+# deux entiers, et retourne egalement une liste de deux entiers. Pour l'image de droite
 #
 proc sn_canvas2Picture_d { coord } {
    global zone
@@ -103,13 +104,13 @@ proc sn_canvas2Picture_d { coord } {
 #
 # Lancement de la recherche du fichier image au format .cpa sur le DVD
 #
-proc Recherche_Fichier_DVD { filename3 } {
+proc recherche_fichier_DVD { filename } {
    global snconfvisu
 
-   if { ( $snconfvisu(rep_dss_dvd) != "" ) && ( $filename3 != "" ) } {
-      #--- Recherche du fichier image
-      set repertoire [ ::audace::fichier_partPresent "$filename3" "$snconfvisu(rep_dss_dvd)" ]
-      set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$filename3" ]
+   #--- Recherche du fichier image
+   if { ( $snconfvisu(rep_dss_dvd) != "" ) && ( $filename != "" ) } {
+      set repertoire [ ::audace::fichier_partPresent "$filename" "$snconfvisu(rep_dss_dvd)" ]
+      set repertoire [ glob -nocomplain -type f -dir "$repertoire" "$filename" ]
       set repertoire [ string trimleft $repertoire "{" ]
       set repertoire [ string trimright $repertoire "}" ]
       if { $repertoire != "." } {
@@ -122,27 +123,27 @@ proc Recherche_Fichier_DVD { filename3 } {
 }
 
 #
-# Affichage d'image au format .cpa du DVD
+# Convertion et affichage d'une image .cpa en .fit
 #
 proc snvisu_loadima_nofits { { fichier } { rep } } {
-   global audace
-   global caption
-   global conf
    global num
 
+   #--- Creation du repertoire temporaire
    set rep_tmp [cree_sousrep]
+   #--- Copie de l'image dans le repertoire temporaire
    file copy [ file join $rep $fichier ] [ file join $rep_tmp $fichier ]
+   #--- Conversion de l'image au format FITS
    bifsconv_full [ file join $rep_tmp $fichier ]
    set fichierfits [ file join $rep_tmp [ file rootname $fichier ].fit ]
-   #--- Chargement du fichier
+   #--- Chargement de l'image
    buf$num(buffer2) load $fichierfits
    #--- Visualisation automatique
    visu$num(visu_2) disp
-   #--- Suppression du fichier copié
+   #--- Suppression de l'image copiee
    file delete [ file join $rep_tmp $fichier ]
-   #--- Suppression du fichier FITS temporaire
+   #--- Suppression de l'image FITS temporaire
    file delete $fichierfits
-   #--- Suppression du répertoire temporaire
+   #--- Suppression du repertoire temporaire
    file delete $rep_tmp
 }
 

@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.29 2008-07-15 17:09:15 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.30 2008-07-16 16:38:23 robertdelmas Exp $
 #
 
 global audace
@@ -145,21 +145,21 @@ pack $audace(base).snvisu.lst1.scr1 \
 frame $audace(base).snvisu.frame0 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).snvisu.frame0 \
-   -in $audace(base).snvisu -anchor s -side bottom -expand 1 -fill both
+   -in $audace(base).snvisu -anchor s -side bottom -expand 0 -fill x
 
 #--- Create a frame to put buttons in it
 #--- Cree un frame pour y mettre des boutons
 frame $audace(base).snvisu.frame1 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).snvisu.frame1 \
-   -in $audace(base).snvisu.frame0 -anchor s -side left -expand 1 -fill both
+   -in $audace(base).snvisu.frame0 -anchor s -side left -expand 1 -fill x -padx 5 -pady 5
 
 #--- Create a frame to put buttons in it
 #--- Cree un frame pour y mettre des boutons
 frame $audace(base).snvisu.frame7 \
    -borderwidth 0 -cursor arrow
 pack $audace(base).snvisu.frame7 \
-   -in $audace(base).snvisu.frame1 -anchor s -side bottom -expand 1 -fill both
+   -in $audace(base).snvisu.frame1 -anchor s -side bottom -expand 1 -fill x -padx 5 -pady 5
 
 #--- Create the button 'Image Folder'
 #--- Cree le bouton 'Dossier nuit'
@@ -355,7 +355,7 @@ pack $audace(base).snvisu.frame2 \
        -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
        -relief raised -command changeHiCut1
     pack $audace(base).snvisu.frame2.sca1 \
-       -in $audace(base).snvisu.frame2 -anchor s -side left -expand 0 -padx 10
+       -in $audace(base).snvisu.frame2 -anchor s -side left -expand 1 -fill x -padx 10
     set zone(sh1) $audace(base).snvisu.frame2.sca1
 
     scale $audace(base).snvisu.frame2.sca2 -orient horizontal -to 32767 -from -10000 -length $gnaxis1scale \
@@ -363,7 +363,7 @@ pack $audace(base).snvisu.frame2 \
        -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
        -relief raised -command changeHiCut2
     pack $audace(base).snvisu.frame2.sca2 \
-       -in $audace(base).snvisu.frame2 -anchor e -side right -expand 0 -padx 10
+       -in $audace(base).snvisu.frame2 -anchor e -side right -expand 1 -fill x -padx 10
     set zone(sh2) $audace(base).snvisu.frame2.sca2
 
 #--- Create a frame to put time in it
@@ -394,7 +394,7 @@ pack $audace(base).snvisu.frame3 \
 #--- Create the canvas for the image
 #--- Cree le canevas pour l'image1
 if {$snconfvisu(scrollbars)=="on"} {
-   sn_Scrolled_Canvas $audace(base).snvisu.image1 left \
+   sn_Scrolled_Canvas $audace(base).snvisu.image1 right \
       -width $gnaxis1 -height $gnaxis2
    set zone(image1) $audace(base).snvisu.image1.canvas
 } else {
@@ -404,7 +404,7 @@ if {$snconfvisu(scrollbars)=="on"} {
 }
 $zone(image1) configure -cursor fleur
 pack $audace(base).snvisu.image1 \
-   -in $audace(base).snvisu -expand 0 -side left -anchor e -padx 10
+   -in $audace(base).snvisu -expand 1 -fill both -side left -anchor e -padx 10
 
 #--- Create the canvas for the image
 #--- Cree le canevas pour l'image2
@@ -419,7 +419,7 @@ if {$snconfvisu(scrollbars)=="on"} {
 }
 $zone(image2) configure -cursor fleur
 pack $audace(base).snvisu.image2 \
-   -in $audace(base).snvisu -expand 0 -side right -anchor e -padx 10
+   -in $audace(base).snvisu -expand 1 -fill both -side right -anchor e -padx 10
 
 #--- La fenetre est active
 focus $audace(base).snvisu
@@ -1057,7 +1057,7 @@ proc affimages { } {
       if { $snconfvisu(dss_dvd) == "1" } {
          set filename3 "[ string toupper [ file tail [ file rootname $filename3 ] ] ].cpa"
          if { [ string range $filename3 0 2 ] == "NGC" || [ string range $filename3 0 2 ] == "PGC" } {
-            ::Recherche_Fichier_DVD $filename3
+            ::recherche_fichier_DVD $filename3
          }
          if { $snconfvisu(binarypath) == "" } {
             #--- Restauration de l'ancienne valeur de filename3
@@ -1577,15 +1577,16 @@ proc snvisu_configuration { } {
 }
 
 proc changeHiCut1 { foo } {
-   global num
+   global num snvisu
 
    set sbh [visu$num(visu_1) cut]
    visu$num(visu_1) cut [list $foo [lindex $sbh 1]]
+   set snvisu(seuil_1_haut) "$foo"
+   set snvisu(seuil_1_bas)  [lindex $sbh 1]
 }
 
 proc changeHiCut2 { foo } {
-   global num
-   global snvisu
+   global num snvisu
 
    set sbh [visu$num(visu_2) cut]
    visu$num(visu_2) cut [list $foo [lindex $sbh 1]]
@@ -1594,7 +1595,7 @@ proc changeHiCut2 { foo } {
 }
 
 proc confirm_save { } {
-   global caption audace num
+   global audace caption num
 
    if { [ buf$num(buffer1) imageready ] == "1" } {
       set choix [ tk_messageBox -type yesno -icon warning -title "$caption(snvisu,save1)" \
@@ -2242,7 +2243,7 @@ proc snblinkimage { } {
 #  afficheCarte
 #  affiche la carte avec l'objet
 #
-#  Recupere les coordoonnées J2000 de l'objet dans le fichier fit ou sn.log
+#  Recupere les coordoonnees J2000 de l'objet dans le fichier fit ou sn.log
 #  et envoie la commande a carteduciel "moveTo  rah ram ras decd decm decs "
 #  Si les coordonnees ne sont pas trouvees, utilise le nom du fichier comme
 #  nom d'objet et envoie la commande " find objectname"
