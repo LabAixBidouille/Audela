@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.17 2008-05-24 10:49:09 robertdelmas Exp $
+# Mise a jour $Id: sbig.tcl,v 1.18 2008-07-21 17:25:36 michelpujol Exp $
 #
 
 namespace eval ::sbig {
@@ -540,11 +540,11 @@ proc ::sbig::setShutter { camItem shutterState ShutterOptionList } {
    if { [ info exists private(frm) ] } {
       #--- Gestion du mode de fonctionnement
       switch -exact -- $shutterState {
-         0  {
+         1  {
             set widget(foncobtu) $caption(sbig,obtu_ferme)
             cam$camNo shutter "closed"
          }
-         1  {
+         2  {
             set widget(foncobtu) $caption(sbig,obtu_synchro)
             cam$camNo shutter "synchro"
          }
