@@ -1363,6 +1363,7 @@ EXPORTS
 	imcomp_calc_max_elem
 	imcomp_compress_image
 	imcomp_compress_tile
+    fits_copy_pixlist2image
 	fits_write_compressed_img
 	fits_write_compressed_pixels
 	fits_write_compressed_img_plane
@@ -1387,3 +1388,6 @@ EXPORTS
 	ffgtcs
 	ffwldp
 	ffxypx
+    ffhist2
+    gParse
+
