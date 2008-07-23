@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.44 2008-06-16 21:18:50 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.45 2008-07-23 13:17:27 michelpujol Exp $
 #
 
 #
@@ -97,6 +97,7 @@ namespace eval confPosObs {
       if { ! [ info exists conf(posobs,lat) ] }             { set conf(posobs,lat)             "42d56m11s9" }
       if { ! [ info exists conf(posobs,altitude) ] }        { set conf(posobs,altitude)        "2890.5" }
       if { ! [ info exists conf(posobs,observateur,gps) ] } { set conf(posobs,observateur,gps) "GPS 0.142300 E 42.936639 2890.5" }
+      if { ! [ info exists conf(posobs,nom_observateur) ] } { set conf(posobs,nom_observateur) "" }
    }
 
    #
