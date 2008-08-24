@@ -1,6 +1,6 @@
 #
 # Fichier : webcam.cap
-# Mise a jour $Id: webcam.cap,v 1.5 2008-06-29 17:58:43 robertdelmas Exp $
+# Mise a jour $Id: webcam.cap,v 1.6 2008-08-24 21:11:43 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -150,7 +150,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(webcam,conf_source)              "Wahl der Videoquelle"
    set caption(webcam,format_video)             "Wahl des Videoformats"
    set caption(webcam,ccd_N_B)                  "Veränderte Schwartz/Weiss WebCam CCD"
-   set caption(webcam,switchedConnexion)        "# Utilisation en alternance des WebCams"
+   set caption(webcam,switchedConnexion)        "Zwischen WebCam wechseln"
 
    set caption(webcam,shutter)                  "Verschluss"
    set caption(webcam,gain)                     "Zunahme"
