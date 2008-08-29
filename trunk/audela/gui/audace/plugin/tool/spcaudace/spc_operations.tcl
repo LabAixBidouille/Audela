@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.4 2008-07-10 20:56:26 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.5 2008-08-29 20:21:44 bmauclaire Exp $
 
 
 
@@ -503,6 +503,7 @@ proc spc_somme { args } {
       if { $nb_args == 1 } {
          set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
          set methsomme "moy"
+         # faire une var globalle
       } elseif { $nb_args == 2 } {
          set nom_generique [ file tail [ file rootname [ lindex $args 0 ] ] ]
          set methsomme [ lindex $args 1 ]
@@ -531,6 +532,7 @@ proc spc_somme { args } {
        renumerote "$nom_generique"
       if { $methsomme == "add" } {
          sadd "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
+         # in out number first_index "bitpix=32"
       } elseif { $methsomme == "moy" } {
          smean "$nom_generique" "${nom_generique}-s$nb_file" $nb_file
       }
@@ -555,7 +557,9 @@ proc spc_somme { args } {
        set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
        # ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
        buf$audace(bufNo) setkwd [ list "MID-JD" $midhjd double "Heliocentric Julian Date at mid-exposure" "d" ]
-
+       if { [ lsearch $listemotsclef "DATE-END" ] !=-1 } {
+	   buf$audace(bufNo) delkwd "DATE-END"
+       }
        #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
        buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
        buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "s" ]

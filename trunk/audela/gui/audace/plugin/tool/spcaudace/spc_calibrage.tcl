@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.2 2008-08-29 20:21:44 bmauclaire Exp $
 
 
 
@@ -2966,11 +2966,16 @@ proc spc_rinstrum { args } {
            ::console::affiche_resultat "\nLa réponse intrumentale ne peut être calculée.\n"
            return 0
        } else {
-           #-- Résultat de la division :
-           ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
-           ::console::affiche_erreur "Réponse instrumentale sauvée sous reponse_instrumentale-3$conf(extension,defaut)\n"
-           #-- Le postfix sera soit 1, 2, 3 ou br :
-           return reponse_instrumentale-
+          if { $flag_br == 1 } {
+             ::console::affiche_erreur "Réponse instrumentale sauvée sous reponse_instrumentale-br$conf(extension,defaut)\n"
+             return reponse_instrumentale-br
+          } else {
+             #-- Résultat de la division :
+             ##file delete -force "$audace(rep_images)/$rinstrum0$conf(extension,defaut)"
+             ::console::affiche_erreur "Réponse instrumentale sauvée sous reponse_instrumentale-3$conf(extension,defaut)\n"
+             #-- Le postfix sera soit 1, 2, 3 :
+             return reponse_instrumentale-
+          }
        }
    } else {
        ::console::affiche_erreur "Usage: spc_rinstrum profil_de_raies_mesuré profil_de_raies_de_référence ?option basse résolution >800A (o/n)?\n\n"
