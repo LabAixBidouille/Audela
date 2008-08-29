@@ -277,7 +277,6 @@ int tt_ima_series_div_1(TT_IMA_SERIES *pseries)
    index=pseries->index;
    bitpix=pseries->bitpix;
    //attention a la valeur par défaut!
-   if (bitpix==0) {bitpix=16;}
    adu_tot=(int)pow(2,(double)bitpix)-1;
 
    /* --- charge l'image file dans p_tmp1---*/
@@ -302,15 +301,26 @@ int tt_ima_series_div_1(TT_IMA_SERIES *pseries)
    /* --- calcul de la fonction ---*/
    /*tt_imabuilder(p_out);*/
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
-   for (kkk=0;kkk<(int)(nelem);kkk++) {
-      if ((p_tmp1->p[kkk]==0)||(p_in->p[kkk]>=adu_tot)) {
-			value=p_in->p[kkk];
-      } else {
-			value=p_in->p[kkk]/p_tmp1->p[kkk]*constant;
-      }
-      p_out->p[kkk]=(TT_PTYPE)(value);
-   }
 
+   if (adu_tot>0) {
+	   for (kkk=0;kkk<(int)(nelem);kkk++) {
+		  if ((p_tmp1->p[kkk]==0)||(p_in->p[kkk]>=adu_tot)) {
+				value=p_in->p[kkk];
+		  } else {
+				value=p_in->p[kkk]/p_tmp1->p[kkk]*constant;
+		  }
+		  p_out->p[kkk]=(TT_PTYPE)(value);
+	   }
+   } else {
+	   for (kkk=0;kkk<(int)(nelem);kkk++) {
+		  if (p_tmp1->p[kkk]==0) {
+				value=p_in->p[kkk];
+		  } else {
+				value=p_in->p[kkk]/p_tmp1->p[kkk]*constant;
+		  }
+		  p_out->p[kkk]=(TT_PTYPE)(value);
+	   }
+   }
    /* --- calcul des temps ---*/
    pseries->jj_stack=pseries->jj[index-1];
    pseries->exptime_stack=pseries->exptime[index-1];
@@ -1403,11 +1413,11 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
    p_out=pseries->p_out;
    nelem=pseries->nelements;
    index=pseries->index;
-	bitpix=pseries->bitpix;
-   //attention a la valeur par défaut!
-   if (bitpix==0) {bitpix=16;}
-	adu_tot=(int)pow(2,(double)bitpix)-1;
-
+   bitpix=pseries->bitpix;
+   
+   //attention a la valeur de bitpix par défaut!
+   adu_tot=(int)pow(2,(double)bitpix)-1;
+	
    /* --- charge les images bias et dark dans p_tmp1 et p_tmp2 ---*/
    if (index==1) {
       /* --- charge le bias ---*/
@@ -1475,13 +1485,20 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
    } else {
       xb=pseries->val_exptime/pseries->val_dexptime;
    }
-   for (kkk=0;kkk<(int)(nelem);kkk++) {
-	   if (p_in->p[kkk]>=adu_tot) {
-		   	value=(p_in->p[kkk]);
-	   } else {
-			value=(p_in->p[kkk])- xb*(p_tmp2->p[kkk]) - (p_tmp1->p[kkk]) ;
+   if (adu_tot>0) {
+	   for (kkk=0;kkk<(int)(nelem);kkk++) {
+		   if (p_in->p[kkk]>=adu_tot) {
+		   		value=(p_in->p[kkk]);
+		   } else {
+				value=(p_in->p[kkk])- xb*(p_tmp2->p[kkk]) - (p_tmp1->p[kkk]) ;
+		   }
+		  p_out->p[kkk]=(TT_PTYPE)(value);
 	   }
-      p_out->p[kkk]=(TT_PTYPE)(value);
+   } else {
+	   for (kkk=0;kkk<(int)(nelem);kkk++) { 
+		  value=(p_in->p[kkk])- xb*(p_tmp2->p[kkk]) - (p_tmp1->p[kkk]) ;
+		  p_out->p[kkk]=(TT_PTYPE)(value);
+	   }
    }
 
    /* --- calcul du de-smearing (deconvflat) ---*/
