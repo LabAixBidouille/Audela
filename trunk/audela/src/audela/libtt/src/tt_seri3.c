@@ -266,6 +266,7 @@ int tt_ima_series_div_1(TT_IMA_SERIES *pseries)
    long nelem,firstelem,nelem_tmp;
    double value,constant;
    int msg,kkk,index;
+   int bitpix,adu_tot;
 
    /* --- initialisations ---*/
    p_in=pseries->p_in;
@@ -274,6 +275,10 @@ int tt_ima_series_div_1(TT_IMA_SERIES *pseries)
    nelem=pseries->nelements;
    constant=pseries->constant;
    index=pseries->index;
+   bitpix=pseries->bitpix;
+   //attention a la valeur par défaut!
+   if (bitpix==0) {bitpix=16;}
+   adu_tot=(int)pow(2,(double)bitpix)-1;
 
    /* --- charge l'image file dans p_tmp1---*/
    if (index==1) {
@@ -298,10 +303,10 @@ int tt_ima_series_div_1(TT_IMA_SERIES *pseries)
    /*tt_imabuilder(p_out);*/
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
    for (kkk=0;kkk<(int)(nelem);kkk++) {
-      if (p_tmp1->p[kkk]==0) {
-	 value=p_in->p[kkk];
+      if ((p_tmp1->p[kkk]==0)||(p_in->p[kkk]>=adu_tot)) {
+			value=p_in->p[kkk];
       } else {
-	 value=p_in->p[kkk]/p_tmp1->p[kkk]*constant;
+			value=p_in->p[kkk]/p_tmp1->p[kkk]*constant;
       }
       p_out->p[kkk]=(TT_PTYPE)(value);
    }
@@ -1389,6 +1394,7 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
    char comment[FLEN_COMMENT];
    char unit[FLEN_COMMENT];
    int datatype;
+   int bitpix,adu_tot;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -1397,6 +1403,10 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
    p_out=pseries->p_out;
    nelem=pseries->nelements;
    index=pseries->index;
+	bitpix=pseries->bitpix;
+   //attention a la valeur par défaut!
+   if (bitpix==0) {bitpix=16;}
+	adu_tot=(int)pow(2,(double)bitpix)-1;
 
    /* --- charge les images bias et dark dans p_tmp1 et p_tmp2 ---*/
    if (index==1) {
@@ -1466,7 +1476,11 @@ int tt_ima_series_subdark_1(TT_IMA_SERIES *pseries)
       xb=pseries->val_exptime/pseries->val_dexptime;
    }
    for (kkk=0;kkk<(int)(nelem);kkk++) {
-      value=(p_in->p[kkk])- xb*(p_tmp2->p[kkk]) - (p_tmp1->p[kkk]) ;
+	   if (p_in->p[kkk]>=adu_tot) {
+		   	value=(p_in->p[kkk]);
+	   } else {
+			value=(p_in->p[kkk])- xb*(p_tmp2->p[kkk]) - (p_tmp1->p[kkk]) ;
+	   }
       p_out->p[kkk]=(TT_PTYPE)(value);
    }
 
