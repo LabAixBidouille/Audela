@@ -1035,14 +1035,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	TT_IMA *p_in,*p_out,*p_tmp1,*p_tmp3,*p_tmp4;
 	int kkk,kk,x,y,k1,k2,k3,k5,n2,n1,nbnul,i,x0,y0;
 	double xfin,yfin,xdebut,ydebut,l;
-	int index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,ngto,rotation;
+	int index,naxis1,naxis2,x1,y1,nb_ss_image1,nb_ss_image2,k,rotation;
 	double dvalue,somme_value,somme_x,somme_y;
-	char filenamegto[FLEN_FILENAME],filenamegeo[FLEN_FILENAME];
+	char filenamegeo[FLEN_FILENAME];
 	FILE *fic;
 	double *eq;
 	double bary_x[2050], bary_y[2050], somme[2050];
 	double sommexy,sommex,sommey,sommexx;
-	double fwhmx,fwhmy, xcc,fwhmxy,ycc,r1,r2,r3,r11,r22,r33,dx,dy,dx2,dy2,d2,fmoy,fmed,f23,sigma,flux,ra,dec;
+	double fwhmx,fwhmy, xcc,fwhmxy,ycc,r1,r2,r3,r11,r22,r33,dx,dy,dx2,dy2,d2,fmoy,fmed,f23,sigma,flux,ra,dec,radebut,rafin,decdebut,decfin;
 	int taille,xx1,xx2,yy1,yy2,msg,n23,j,n23d,n23f,nsats,valid_ast;
 	double *vec;
 	//double **mat, 
@@ -1066,13 +1066,13 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	pseries->exposure=10;
 
 	if (strcmp(pseries->user5.filename,"")!=0) {
-		strcpy(filenamegto,pseries->user5.filename);
-		strcat(filenamegto,"gto.txt");
+		//strcpy(filenamegto,pseries->user5.filename);
+		//strcat(filenamegto,"gto.txt");
 		strcpy(filenamegeo,pseries->user5.filename);
-		strcat(filenamegeo,"geo.txt");
+		strcat(filenamegeo,"geostat.txt");
 	} else {
-		strcpy(filenamegto,"gto.txt");
-		strcpy(filenamegeo,"geo.txt");
+		//strcpy(filenamegto,"gto.txt");
+		strcpy(filenamegeo,"geostat.txt");
 	}
 
 	eq = (double*)calloc(3,sizeof(double));
@@ -1086,6 +1086,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
 	tt_imasaver(p_out,"D:/tophat.fit",16);	
+
+	/* --- lit les parametres astrometriques de l'image ---*/
+	valid_ast=1;
+	tt_util_getkey0_astrometry(p_in,&p_ast,&valid_ast);
 	
 //////////////////////////////////////////////
 /* ----------------------------------------- */
@@ -1098,14 +1102,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	n2=(int)naxis2/nb_ss_image2;
 	n1=(int)naxis1/nb_ss_image1;
 	pseries->threshold=1;
-	ngto=1;
+	nsats=1;
 	//definition de la zone de la sous_image
 	p_tmp3->naxis1=n1;
 	p_tmp3->naxis2=n2;
 	tt_imacreater(p_tmp3,n1,n2);
 
 	/* --- ouvre le fichier en ecriture ---*/
-	fic=fopen(filenamegto,"wt");
+	fic=fopen(filenamegeo,"wt");
 	for (kk=0;kk<2;kk++) {//kk=1 pour imagette décalée, c'est le deuxième passage
 		k=0;
 		k3=0;k5=0;
@@ -1586,6 +1590,83 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					
 					//longueur de la traînée des étoiles en fonction du temps d'exposition: 0.004180983*pseries->exposure/(9.1441235255136e-4)
 					if ((l>8)&&(nb>=l/3)&&(fwhmxy>=1.5)&&(l*1./largxx>=1.5)&&(dvalue>0)&&(j<(int)(0.65*0.004180983*pseries->exposure/(9.1441235255136e-4)))) {
+						/* --- parametres de mesure precise ---*/
+						xcc=somme_x;
+						ycc=somme_y;
+						fwhmxy=(fwhmx>fwhmy)?fwhmx:fwhmy;
+						if (fwhmxy<2.) fwhmxy=2;
+						r1=1.2*fwhmxy;
+						r2=2.0*fwhmxy;
+						r3=2.5*fwhmxy;
+						r11=r1*r1;
+						r22=r2*r2;
+						r33=r3*r3;
+						/* --- fond de ciel precis (fmoy,fmed,sigma) ---*/
+						if (xdebut<=xfin) {
+							xx1=(int)(xdebut-r3);
+							xx2=(int)(xfin+r3);
+						} else {
+							xx1=(int)(xfin-r3);
+							xx2=(int)(xdebut+r3);
+						}
+						if (ydebut<=yfin) {
+							yy1=(int)(ydebut-r3);
+							yy2=(int)(yfin+r3);
+						} else {
+							yy1=(int)(yfin-r3);
+							yy2=(int)(ydebut+r3);
+						}
+						if (xx1<0) xx1=0;
+						if (xx1>=naxis1) xx1=naxis1-1;
+						if (xx2<0) xx2=0;
+						if (xx2>=naxis1) xx2=naxis1-1;
+						if (yy1<0) yy1=0;
+						if (yy1>=naxis2) yy1=naxis2-1;
+						if (yy2<0) yy2=0;
+						if (yy2>=naxis2) yy2=naxis2-1;
+						nb=(xx2-xx1+1)*(yy2-yy1+1);
+						taille=sizeof(double);
+						vec=NULL;
+						if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&vec,&nb,&taille,"vf"))!=OK_DLL) {
+						   fclose(fic);
+						   tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_util_geostat (pointer vec)");
+						   fclose(fic);
+						   return(TT_ERR_PB_MALLOC);
+						}
+						n23=0;
+						f23=0.;
+						for (j=yy1;j<=yy2;j++) {
+						   dy=1.*j-ycc;
+						   dy2=dy*dy;
+						   for (i=xx1;i<=xx2;i++) {
+							  dx=1.*i-xcc;
+							  dx2=dx*dx;
+							  d2=dx2+dy2;
+							  if ((d2>=r22)&&(d2<=r33)) {
+								  vec[n23]=(double)p_in->p[naxis1*j+i];
+								 f23 += (double)p_in->p[naxis1*j+i];
+								 n23++;
+							  }
+						   }
+						}
+						tt_util_qsort_double(vec,0,n23,NULL);
+						fmoy=vec[0];
+						if (n23!=0) {fmoy=f23/n23;}
+						/* calcule la valeur du fond pour 50 pourcent de l'histogramme*/
+						fmed=(float)vec[(int)(0.5*n23)];
+						/*  calcul de l'ecart type du fond de ciel*/
+						/*  en excluant les extremes a +/- 10 %*/
+						sigma=0.;
+						n23d=(int)(0.1*(n23-1));
+						n23f=(int)(0.9*(n23-1));
+						for (i=n23d;i<=n23f;i++) {
+						   d2=(vec[i]-fmed);
+						   sigma+=(d2*d2);
+						}
+						if ((n23f-n23d)!=0) {
+						   sigma=sqrt(sigma/(n23f-n23d));
+						}
+						free(vec);
 	/* ------------------------------------------ */
 	/* --- ajustement par les moindres carrés --- */
 	/* ------------------------------------------ */
@@ -1595,7 +1676,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 								somme[nb]=0;
 						}
 						/* --- cas des droites faibles pentes ou horizontales --- */
-						i=0;j=0;
+						i=0;j=0; flux=0;
 						if ((((eq[0]<=0.8)&&(eq[0]>=-0.8))||(eq[0]==0))&&(eq[2]==0)) {
 							for (k1=(int)xdebut;k1<=(int)xfin;k1++) {										
 								for (k2=(int)(eq[0]*k1+eq[1]-largx-3);k2<=(int)(eq[0]*k1+eq[1]+largx+3);k2++) {
@@ -1605,7 +1686,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 									if (dvalue>0) {
 										somme[i]= somme[i]+dvalue;
 										bary_y[i]=bary_y[i]+k2*dvalue;
-									}							
+									}
+									/* --- photometrie (flux) ---*/	
+									dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
+									flux += dvalue;
 								}								
 								if (somme[i]!=0) {
 									j++;
@@ -1640,6 +1724,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 											somme[i]= somme[i]+dvalue;
 											bary_x[i]=bary_x[i]+k1*dvalue;
 										}
+										/* --- photometrie (flux) ---*/	
+										dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
+										flux += dvalue;
 									}								
 									if (somme[i]!=0) {
 										j++;
@@ -1656,6 +1743,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 											somme[i]= somme[i]+dvalue;
 											bary_x[i]=bary_x[i]+k1*dvalue;
 										}
+										/* --- photometrie (flux) ---*/	
+										dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
+										flux += dvalue;
 									}
 									if (somme[i]!=0) {
 										j++;
@@ -1672,6 +1762,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 											somme[i]= somme[i]+dvalue;
 											bary_x[i]=bary_x[i]+k1*dvalue;
 										}
+										/* --- photometrie (flux) ---*/	
+										dvalue=(double)p_in->p[naxis1*k2+k1]-fmed;
+										flux += dvalue;
 									}
 									if (somme[i]!=0) {
 										j++;
@@ -1745,7 +1838,21 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 						} else {
 							xdebut=eq[2];
 							xfin=eq[2];
-						}						
+						}
+
+						/* --- astrometrie (ra,dec) ---*/
+						radebut=0.;rafin=0.;
+						decdebut=0.;decfin=0.;
+						if (valid_ast==TT_YES) {
+						   tt_util_astrom_xy2radec(&p_ast,xdebut,ydebut,&radebut,&decdebut);
+						   tt_util_astrom_xy2radec(&p_ast,xfin,yfin,&rafin,&decfin);
+						}
+						radebut*=180./(TT_PI);
+						decdebut*=180./(TT_PI);
+						rafin*=180./(TT_PI);
+						decfin*=180./(TT_PI);
+
+
 						/* --- mise a zero pour la détection des geo --- */
 						if (eq[0]>0) {
 							for (k1=(int)xdebut-largx-2;k1<(int)xfin+largx+2;k1++) {
@@ -1781,8 +1888,10 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 	/* ---------------------------------------------------- */
 	/* --- enregistrer l'equation de la droite détectée --- */
 	/* ---------------------------------------------------- */					
-						fprintf(fic,"%d %f %f %f %f %f %f %f %f %f\n",ngto,eq[0],eq[1],eq[2],somme_x,somme_y,xdebut,ydebut,xfin,yfin);	
-						ngto++;
+						//fprintf(fic,"%d %f %f %f %f %f %f %f %f %f\n",nsats,eq[0],eq[1],eq[2],somme_x,somme_y,xdebut,ydebut,xfin,yfin);
+						// dernier parametre = 2 pour GTO
+						fprintf(fic,"%d %f %f %f %f %f %f %f %f %f %f %f %f 2\n",nsats,xdebut,ydebut,xfin,yfin,flux,fmed,radebut,decdebut,rafin,decfin,fwhmx,fwhmy);
+						nsats++;
 					}
 				}
 			}	
@@ -1791,8 +1900,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			k5=k-k3*(naxis1-2*kk*n1);	
 		}
 	}
-	fclose(fic);
-
+	
 /////////////////////////////////////
 /* ------------------------------- */
 /* --- sortir la liste des geo --- */
@@ -1800,11 +1908,6 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 /////////////////////////////////////
 	//il faut eliminer les bords pour une largeur de SE
 	//tt_imasaver(p_out,"D:/geo2.fit",16);
-	fic=fopen(filenamegeo,"wt");
-	/* --- lit les parametres astrometriques de l'image ---*/
-	valid_ast=1;
-	tt_util_getkey0_astrometry(p_in,&p_ast,&valid_ast);
-	nsats=1;
 	//boucle de recherche sur l'image
 	for (y=y1+1;y<naxis2-y1-1;y++) {
 		for (x=x1+1;x<naxis1-x1-1;x++) {
@@ -1884,6 +1987,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&vec,&nb,&taille,"vf"))!=OK_DLL) {
                fclose(fic);
                tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_util_geostat (pointer vec)");
+			   fclose(fic);
                return(TT_ERR_PB_MALLOC);
             }
             n23=0;
@@ -2149,7 +2253,9 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
             ra*=180./(TT_PI);
             dec*=180./(TT_PI);
             /* --- sortie du resultat ---*/
-			fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",nsats,xcc+1.,ycc+1.,flux,fmed,ra,dec,fwhmx,fwhmy);
+			//fprintf(fic,"%d %f %f %f %f %f %f %f %f\n",nsats,xcc+1.,ycc+1.,flux,fmed,ra,dec,fwhmx,fwhmy);
+			// 1 pour identifier geo par rapport à gto 2
+			fprintf(fic,"%d %f %f %f %f	%f %f %f %f %f %f %f %f 1\n",nsats,xcc+1.,ycc+1.,xcc+1.,ycc+1.,flux,fmed,ra,dec,ra,dec,fwhmx,fwhmy);
 			nsats++;
 		}
 	}
