@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.2 2008-06-15 09:48:41 robertdelmas Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.3 2008-08-29 20:21:44 bmauclaire Exp $
 
 
 
@@ -1124,6 +1124,7 @@ proc spc_traite2rinstrum { args } {
        #--- Calibration en longueur d'onde du spectre de l'objet :
        ::console::affiche_resultat "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
        set fcal [ spc_calibreloifile $lampecalibree $fprofil ]
+       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil_1a$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
 
 
@@ -1430,6 +1431,7 @@ proc spc_traite2srinstrum { args } {
        ::console::affiche_resultat "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
        #- Pour les spectre d'objets non-stellaire, la calibration est faite a partir de la zone decoupée de lampe.
        set fcal [ spc_calibreloifile "$lampe" "$fprofil" ]
+       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil_1a$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
        file copy -force "$audace(rep_images)/$fcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre_1b$conf(extension,defaut)"
 
@@ -1438,22 +1440,32 @@ proc spc_traite2srinstrum { args } {
        if { $rinstrum=="none" } {
 	   set fricorr "$fcal"
        } else {
-	   ::console::affiche_resultat "\n\n**** Correction de la réponse intrumentale ****\n\n"
+          ::console::affiche_resultat "\n\n**** Correction de la réponse intrumentale ****\n\n"
+          buf$audace(bufNo) load "$audace(rep_images)/$rinstrum"
+          set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+          set cdelt1 [  lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+          set largeur_spectrale [ expr $cdelt1*$naxis1 ]
+          if { $largeur_spectrale >= $spcaudace(bande_br) } {
+             set imaxtol $spcaudace(imax_tolerence)
+             set spcaudace(imax_tolerence) 1.10
+          }
 	   #-- Messge d'erreur en cas d'une sélection de plage de longueur d'onde :
 	   if { $flag_nonstellaire==1 } {
 	       set xdeb [ lindex $windowcoords 0 ]
 	       set xfin [ lindex $windowcoords 2 ]
-	       buf$audace(bufNo) load "$audace(rep_images)/$rinstrum"
-	       set naxis1 [  lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
 	       if { $xdeb>1 || $xfin<$naxis1 } {
 		   ::console::affiche_erreur "\nPAS DE CORRECTION DE LA RÉPONSE INSTRUMENTALE LORS D'UNE SÉLECTION DE LARGEUR SPÉCIFIQUE DU SPECTRE.\n"
 		   set fricorr "$fcal"
 	       } else {
-		   set fricorr [ spc_divri $fcal $rinstrum ]
+                  set fricorr [ spc_divri $fcal $rinstrum ]
 	       }
 	   } else {
-	       set fricorr [ spc_divri $fcal $rinstrum ]
+              set fricorr [ spc_divri $fcal $rinstrum ]
 	   }
+          if { $largeur_spectrale >= $spcaudace(bande_br) } {
+             set spcaudace(imax_tolerence) $imaxtol
+          }
+
 
 	   #-- Division du profil par la RI :
 	   ## set rinstrum_ech [ spc_echant $rinstrum $fcal ]

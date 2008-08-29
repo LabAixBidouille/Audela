@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.2 2008-06-15 09:47:51 robertdelmas Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.3 2008-08-29 20:21:44 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.4.0 - 14/06/2008"
+set spcaudace(version) "1.4.1 - 29/08/2008"
 #set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
@@ -93,6 +93,8 @@ set spcaudace(degpoly_cont) 5
 set spcaudace(pourcent_bord) 0.15
 #-- Tolérence sur l'écart à l'intensité maximale (spc_divri) : 5%
 set spcaudace(imax_tolerence) 1.05
+#-- Largeur spectrale considérée comme basse résolution :
+set spcaudace(bande_br) 1000.0
 #-- Fraction des bords ignorés dans la détermination de l'angle de TILT :
 set spcaudace(pourcent_bordt) 0.10
 #-- Fraction des bords mis à 0 du résultat de la division avant lissage pour la RI :
