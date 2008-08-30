@@ -5865,7 +5865,7 @@ fi
 
 AUDELA="audela libaudela libaudelatk libgzip libmc librgb libsext libtt"
 if test x"$GSL_FOUND" = x"1" ; then
-	AUDELA="$AUDELA libak libgsltcl libjm libyd"
+	AUDELA="$AUDELA libak libgsltcl libjm libml libyd"
 fi
 
 LIBCAMS="libaudinet libethernaude"
