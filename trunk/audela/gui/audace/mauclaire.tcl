@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.21 2008-05-27 17:52:56 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.22 2008-08-31 11:26:23 bmauclaire Exp $
 #
 
 #
@@ -75,7 +75,7 @@ proc bm_cleanfit { args } {
                set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
 
                #-- Remplace les caracteres :
-               regsub -all {[йик]} $lemot "e" lemot
+               regsub -all {[йикл]} $lemot "e" lemot
                regsub -all {[ав]} $lemot "a" lemot
                regsub -all "з" $lemot "c" lemot
                regsub -all "'" $lemot " " lemot
