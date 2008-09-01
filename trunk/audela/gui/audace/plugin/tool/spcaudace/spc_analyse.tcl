@@ -1,7 +1,7 @@
 
 # Procédures d'analyse spectrale
 # source $audace(rep_scripts)/spcaudace/spc_analyse.tcl
-# Mise a jour $Id: spc_analyse.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_analyse.tcl,v 1.2 2008-09-01 17:54:08 bmauclaire Exp $
 
 
 
@@ -1324,7 +1324,30 @@ proc spc_icontinuum { args } {
        set icontinuum [ lindex [ buf$audace(bufNo) stat $zone ] 4 ]
 
        #--- Affichage des résultats :
-       ::console::affiche_resultat "Le continuum vaut $icontinuum\n"
+       ::console::affiche_resultat "Le continuum à $lambda vaut $icontinuum\n"
+       return $icontinuum
+    } elseif { $nbargs == 3 } {
+       set fichier [ file rootname [ lindex $args 0 ] ]
+       set lambda_deb [ lindex $args 1 ]
+       set lambda_fin [ lindex $args 2 ]
+
+       #--- Determine le n° de pixel de la longueur d'onde demandee :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+       set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+       set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+       set xdeb [ expr round(($lambda_deb-$crval1)/$cdelt1) ]
+       set xfin [ expr round(($lambda_fin-$crval1)/$cdelt1) ]
+       if { $xdeb < 1 } { set xdeb 1 }
+       if { $xfin > $naxis1 } { set xfin $naxis1 }
+       set zone [ list $xdeb 1 $xfin 1 ]
+       #::console::affiche_resultat "$xdeb, $xfin\n"
+
+       #--- Détermine la valeur du continuum autour de la lobgueur d'onde demandee :
+       set icontinuum [ lindex [ buf$audace(bufNo) stat $zone ] 4 ]
+
+       #--- Affichage des résultats :
+       ::console::affiche_resultat "Le continuum entre $lambda_deb-$lambda_fin vaut $icontinuum\n"
        return $icontinuum
     } else {
         ::console::affiche_erreur "Usage: spc_icontinuum nom_profil_raies ?lambda?\n"

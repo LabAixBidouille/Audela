@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.5 2008-08-29 20:21:44 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.6 2008-09-01 17:54:08 bmauclaire Exp $
 
 
 
@@ -40,62 +40,78 @@ proc spc_rmedges { args } {
 
        #--- Chargement des paramètres du spectre :
        set conti_min [ expr $frac_conti*[ spc_icontinuum $spectre ] ]
-       set contenu [ spc_fits2data $spectre ]
-       set lambdas [ lindex $contenu 0 ]
-       set intensites [ lindex $contenu 1 ]
        buf$audace(bufNo) load "$audace(rep_images)/$spectre"
        set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
        set dnaxis1 [ expr int(0.5*$naxis1) ]
-       set xlistdeb 0
-       set xlistfin [ llength $intensites ]
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+          set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+          #-- Recupere la totalite des mots clef :
+          set keywords ""
+          foreach keywordName [ buf$audace(bufNo) getkwds ] {
+             lappend keywords [ buf$audace(bufNo) getkwd $keywordName ]
+          }
+       } else {
+          ::console::affiche_erreur "Le spectre doit être calibré et avec une loi linéaire.\n"
+          return ""
+       }
+       set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+
+       #--- Lecture des intensites :
+       for { set i 1 } { $i <= $naxis1 } { incr i } {
+          lappend intensites [ lindex [ buf$audace(bufNo) getpix [ list $i 1 ] ] 1 ]
+       }
 
        #--- Détermine lambda_min et lambda_max :
+       set xlistdeb 0
        set i 1
-       foreach lambda $lambdas intensite $intensites {
+       foreach intensite $intensites {
            # if { $intensite!=0. && $i<=$dnaxis1 } 
            if { $intensite>=$conti_min && $i<=$dnaxis1 } {
-              set ldeb $lambda
               set xlistdeb [ expr $i-1 ]
               break
            }
            incr i
        }
        set i 1
-       set lfin ""
-       foreach lambda $lambdas intensite $intensites {
+       set xlistfin $naxis1
+       foreach intensite $intensites {
            # if { $intensite==0. && $i>=$dnaxis1 } 
            if { $intensite<=$conti_min && $i>=$dnaxis1 } {
-              set lfin [ lindex $lambdas [ expr $i-2 ] ]
               set xlistfin [ expr $i-2 ]
               break
            }
            incr i
        }
-       if { $lfin=="" } {
-          set lfin [ lindex $lambdas [ expr $i-2 ] ]
-          set xlistfin [ expr $i-2 ]
-       }
-       set lambdarange [ list $ldeb $lfin ]
+       #if { $lfin=="" } {
+       #   set lfin [ lindex $lambdas [ expr $i-2 ] ]
+       #   set xlistfin [ expr $i-2 ]
+       #}
+
 
        #--- Decoupage des bords du profil de raies :
-       #set new_longueur [ expr $naxis1-($xlistdeb+$xlistfin+2) ]
        set new_longueur [ expr $xlistfin-$xlistdeb+1 ]
-       #::console::affiche_resultat "$xlistdeb ; $ldeb ;; $xlistfin ; $lfin ;; $new_longueur\n"
-       buf1 load "$audace(rep_images)/$spectre"
-       buf$audace(bufNo) setpixels CLASS_GRAY $new_longueur 1 FORMAT_FLOAT COMPRESS_NONE 0
-       buf$audace(bufNo) copykwd 1
-       buf$audace(bufNo) setkwd [ list "NAXIS" 1 int "" "" ]
-       buf$audace(bufNo) setkwd [ list "NAXIS1" $new_longueur int "" "" ]
+       #set lambda_deb [ expr $crval1+$cdelt1*($xlistdeb-1) ]
+       set lambda_deb [ expr $crval1+$cdelt1*$xlistdeb ]
+
+       #--- Creation du nouveau profil de raies :
+       set newBufNo [ buf::create ]
+       buf$newBufNo setpixels CLASS_GRAY $new_longueur 1 FORMAT_FLOAT COMPRESS_NONE 0
+       foreach keyword $keywords {
+          buf$newBufNo setkwd $keyword
+       }
+       buf$newBufNo setkwd [ list "NAXIS" 1 int "" "" ]
+       buf$newBufNo setkwd [ list "NAXIS1" $new_longueur int "" "" ]
+       #- k=compteur des pixels ; i=index des intensites a prendre dans la liste de selection. 
        set k 1
        for { set i $xlistdeb } { $i <= $xlistfin } { incr i } {
-          buf$audace(bufNo) setpix [ list $k 1 ] [ lindex $intensites $i ]
+          buf$newBufNo setpix [ list $k 1 ] [ lindex $intensites $i ]
           incr k
        }
-       set xdepart [ lindex $lambdas $xlistdeb ]
-       buf$audace(bufNo) setkwd [ list "CRVAL1" $xdepart double "" "" ]
-       buf$audace(bufNo) bitpix float
-       buf$audace(bufNo) save "$audace(rep_images)/${spectre}_sel"
-       buf$audace(bufNo) bitpix short
+       buf$newBufNo setkwd [ list "CRVAL1" $lambda_deb double "" "" ]
+       buf$newBufNo bitpix float
+       buf$newBufNo save "$audace(rep_images)/${spectre}_sel"
+       buf::delete $newBufNo
        ::console::affiche_resultat "Spectre nettoyé des bords sauvé sous ${spectre}_sel\n"
        return ${spectre}_sel
     } else {
@@ -103,6 +119,7 @@ proc spc_rmedges { args } {
     }
 }
 #*****************************************************************#
+
 
 
 

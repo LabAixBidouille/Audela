@@ -3,7 +3,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_astrophys.tcl ]
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.2 2008-06-15 09:49:48 robertdelmas Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.3 2008-09-01 17:54:08 bmauclaire Exp $
 
 
 
@@ -1248,17 +1248,32 @@ proc spc_ew3 { args } {
     global audace
 
     if { [llength $args] == 3 } {
-	set filename [ lindex $args 0 ]
-	set xdeb [ lindex $args 1 ]
-	set xfin [ lindex $args 2 ]
+       set filename [ lindex $args 0 ]
+       set xdeb [ lindex $args 1 ]
+       set xfin [ lindex $args 2 ]
+       
+       #--- Conversion des données en liste :
+       set listevals [ spc_fits2data $filename ]
+       set xvals [ lindex $listevals 0 ]
+       set yvals [ lindex $listevals 1 ]
+       set lmin [ lindex $xvals 0 ]
+       set lmax [ lindex $xvals [ expr [ llength $xvals ] -1 ] ]
 
-	#--- Déterminiation de la valeur du continuum :
-	set icont [ spc_icontinuum $filename ]
-
-	#--- Conversion des données en liste :
-	set listevals [ spc_fits2data $filename ]
-	set xvals [ lindex $listevals 0 ]
-	set yvals [ lindex $listevals 1 ]
+       #--- Déterminiation de la valeur du continuum :
+       #-- intervalles de calcul :  6655,  6640 6660, 6605 6671, 6645 6655, 6587 6661
+       #set icont [ spc_icontinuum $filename ]
+       set spectre_cont [ spc_extractcont $filename ]
+       if { 6605 >= $lmin && 6605 <= $lmax && 6671 >= $lmin && 6671 <= $lmax } {
+          set icont [ spc_icontinuum $spectre_cont 6605 6671 ]
+       } elseif { 6587 >= $lmin && 6587 <= $lmax && 6661 >= $lmin && 6661 <= $lmax } {
+          set icont [ spc_icontinuum $spectre_cont 6587 6661 ]
+       } elseif { 6555 >= $lmin && 6555 <= $lmax } {
+          set icont [ spc_icontinuum $spectre_cont 6555 ]
+       } else {
+          set icont [ spc_icontinuum $spectre_cont ]
+       }
+       file delete -force "$audace(rep_images)/$spectre_cont$conf(extension,defaut)"
+       
 
 	#--- Calcul de l'aire sous la raie :
 	set aire 0.
