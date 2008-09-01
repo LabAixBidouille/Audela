@@ -117,9 +117,15 @@ struct camini CAM_INI[] = {
 };
 
 static char *cam_extports[] = {
+#if defined(OS_LIN)
+    "/dev/parport0",
+    "/dev/parport1",
+    "/dev/parport2",
+#else
     "LPT1:",
     "LPT2:",
     "LPT3:",
+#endif
     "USB",
     "Ethernet",
     NULL
@@ -205,8 +211,6 @@ int cam_init(struct camprop *cam, int argc, char **argv)
    QueryCommandStatusParams qcsp;
    QueryCommandStatusResults qcsr;
    ReadoutLineParams rlp;
-
-
    ipAddress = 0;
 
    /* --- init variables --- */
@@ -235,10 +239,18 @@ int cam_init(struct camprop *cam, int argc, char **argv)
       }
       if (strcmp(argv[2], cam_extports[4]) == 0) {
          cam->deviceType = (unsigned short) DEV_ETH;
+         // set default address
+         strcpy(cam->ip, "192.168.0.2");
       }
    }
+
+   if ( cam->deviceType == 0 ) {
+      sprintf(cam->msg, "Error incorrect port name %s. Must be %s or %s or %s or %s or %s",
+         cam->portname, cam_extports[0], cam_extports[1], cam_extports[2], cam_extports[3], cam_extports[4] );
+       return 1;
+   }
+
    /* --- Decode options of cam::create in argv[>=3] --- */
-   strcpy(cam->ip, "192.168.0.2");
    if (argc >= 2) {
       for (kk = 3; kk < argc - 1; kk++) {
          if (strcmp(argv[kk], "-ip") == 0) {
@@ -315,9 +327,11 @@ int cam_init(struct camprop *cam, int argc, char **argv)
          odp.ipAddress = ipAddress;
          break;
       default:
-         sprintf(cam->msg, "Error incorrect port name %s. Must be LPT1 or LPT2 or USB", cam->portname);
+         sprintf(cam->msg, "Error incorrect port name %s. Must be %s or %s or %s or %s or %s",
+         cam->portname, cam_extports[0], cam_extports[1], cam_extports[2], cam_extports[3], cam_extports[4] );
          return 4;
    }
+
    cam->drv_status = pardrvcommand(CC_OPEN_DEVICE, &odp, NULL);
    if (cam->drv_status) {
       sprintf(cam->msg, "Error status=%d at line %d. sbig_status=%s deviceType=%d",
