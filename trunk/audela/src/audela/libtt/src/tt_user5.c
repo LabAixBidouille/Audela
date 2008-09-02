@@ -1085,7 +1085,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 
 	tt_morphomath_1(pseries);	
 	//pour visualiser le tophat 
-	tt_imasaver(p_out,"D:/tophat.fit",16);	
+	//tt_imasaver(p_out,"D:/tophat.fit",16);	
 
 	/* --- lit les parametres astrometriques de l'image ---*/
 	valid_ast=1;
@@ -1916,13 +1916,14 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			// recherche du maximun local
 			x0=x;
 			y0=y;
-			somme_value=p_out->p[y*naxis1+x];
+			somme_value=p_in->p[y*naxis1+x];
 			while ((x<naxis1)&&(y<naxis2)&&(x>0)&&(y>0)) { 
 				k=0;
 				for (k1=-1;k1<=2;k1++) {
 					for (k2=-1;k2<=2;k2++) {
-						if (p_out->p[(y+k1)*naxis1+x+k2]>somme_value) {
-							somme_value=p_out->p[(y+k1)*naxis1+x+k2];
+						if (p_in->p[(y+k1)*naxis1+x+k2]>somme_value) {
+							//somme_value=p_out->p[(y+k1)*naxis1+x+k2];
+							somme_value=p_in->p[(y+k1)*naxis1+x+k2];
 							x0=x+k2;
 							y0=y+k1;
 							k=1;
@@ -2192,8 +2193,8 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 			}
 				
 			// elimine les bouts d'étoiles  : xcc et ycc eloignés de x et y de plus de r1; 
-			if (((fabs(xcc-x)>1.2*fwhmxy)||(fabs(ycc-y)>1.2*fwhmxy))&&(fwhmxy>2.5)) break;
-			if (((fabs(xcc-x)>1.5*fwhmxy)||(fabs(ycc-y)>1.5*fwhmxy))&&(fwhmxy<=2.5)) break;
+			if (((fabs(xcc-x0)>1.2*fwhmxy)||(fabs(ycc-y0)>1.2*fwhmxy))&&(fwhmxy>2.5)) break;
+			if (((fabs(xcc-x0)>1.5*fwhmxy)||(fabs(ycc-y0)>1.5*fwhmxy))&&(fwhmxy<=2.5)) break;
 			// elimine les cosmiques
 			//if (((fwhmx<0.8)&&(fwhmy<0.8))||(fwhmx<0.3)||(fwhmy<0.3)) break;
 			/* --- elimine les bouts d'étoiles --- */
