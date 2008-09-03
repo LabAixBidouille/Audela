@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.7 2008-07-13 17:52:26 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.8 2008-09-03 03:51:10 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -835,18 +835,34 @@ proc grb_copy { {first 1} {date_trigger ""} } {
 	set fichiers [lsort [glob ${path}/*.fits.gz]]
 	
 	foreach method $methods {
-		if {$method=="window"} {
-			set naxis12 105
-			set fen 125
-			set xc [expr 129./2]
-			set yc [expr 129./2]
+		if {$method=="window"} {			
+			set first [expr $first-1]
+			set fichier "[lindex $fichiers $first]"
+			buf$bufno load "$fichier"
+			set naxis1 [lindex [buf$bufno getkwd NAXIS1] 1]
+			set naxis2 [lindex [buf$bufno getkwd NAXIS2] 1]
+			if {$naxis1>1000} {
+				set ra [lindex [buf$bufno getkwd RA] 1]
+				set dec [lindex [buf$bufno getkwd DEC] 1]
+				set xy [buf$bufno radec2xy [list $ra $dec]]				
+				#set xc [expr $naxis1/2]
+				#set yc [expr $naxis2/2]
+				set xc [lindex $xy 0]
+				set yc [lindex $xy 1]
+				set fen 100
+			} else {
+				set fen 125
+				set xc [expr 129./2]
+				set yc [expr 129./2]
+			}
+			#set naxis12 105
 			set box [list [expr int($xc-$fen)] [expr int($yc-$fen)] [expr int($xc+$fen)] [expr int($yc+$fen)]]
 			set n [llength $fichiers]
 			set kkc 0
 			set kkv 0
 			set kkr 0
 			set kki 0
-			set first [expr $first-1]
+			
 			for {set k $first} {$k<$n} {incr k} {
 				set fichier "[lindex $fichiers $k]"
 				buf$bufno load "$fichier"
