@@ -1167,7 +1167,7 @@ int tt_geo_defilant_1(TT_IMA_SERIES *pseries)
 					tt_ima_series_hough_myrtille(p_tmp3,p_tmp4,n1,n2,1,eq);
 					rotation=1;
 				}
-				somme_value=0;somme_x=0;somme_y=0;xdebut=0;ydebut=0;xfin=0;yfin=0;largx=0;nb=0;
+				somme_value=0;somme_x=0;somme_y=0;xdebut=0;ydebut=0;xfin=0;yfin=0;largx=0;nb=0;fwhmx=0;fwhmy=0;
 						
 				for (k1=0;k1<n1;k1++) {	
 					largxx=0;
