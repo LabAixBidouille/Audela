@@ -1474,8 +1474,8 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 					}
 				}
 				if (lignes2[n_in1].comment==0) {
-					if (strlen(ligne)>=296) {
-						k1=296 ; k2=306 ; 
+					if (strlen(ligne)>=300) {
+						k1=300 ; k2=310 ; 
 						for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					} else {
 						strcpy(s,"");
@@ -1489,13 +1489,13 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 						}
 					}
 					//vaut 2 si pas geo
-					k1=265 ; for (k=k1;k<k1+1;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=269 ; for (k=k1;k<k1+1;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					lignes[n_in].typesatellite=atoi(s);
 			    
 					if (((retour==0) || (result<=3)) && ((lignes[n_in].typesatellite!=2) )) {
 					//	WriteDisk("le satellite n'est pas identifie");
 						/* --- le satellite n'est pas identifiée --- */
-						k1=0; k2=293; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						k1=0; k2=297; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(lignes2[n_in1].texte,s); /* toute la ligne */
 						k1=38; k2=60; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(im,s); /* date_obs */
@@ -1682,7 +1682,7 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 							WriteDisk("Probleme avec les tle");
 							sprintf(ligne, "Probleme avec les tle");
 
-							k1=0; k2=294; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+							k1=0; k2=298; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 							strcpy(lignes2[n_in1].texte,s);
 							
 							Tcl_SetResult(interp, ligne, TCL_VOLATILE);
@@ -1693,14 +1693,14 @@ int Cmd_mltcl_geostatident2(ClientData clientData, Tcl_Interp *interp, int argc,
 					//	WriteDisk("le satellite est deja identifiée ou pas géo");
 					//	sprintf(chaine,"%s",ligne);
 					//	WriteDisk(chaine);
-						k1=0; k2=358; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+						k1=0; k2=362; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 						strcpy(lignes2[n_in1].texte,s);
 						lignes2[n_in1].kobject=0;
 						nsat++;
 					}
 					
 				} else {
-					k1=0; k2=358; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=0; k2=362; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes2[n_in1].texte,s);
 				}
 				n_in1++;
@@ -2187,7 +2187,7 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
          retour = Tcl_GetDouble(interp,argv[3],&sepmin);
          if(retour!=TCL_OK) return retour;
       }
-      sepmax=60./3600.; /* default value = 60 arcsec pour TAROT */
+      sepmax=120./3600.; /* default value = 120 arcsec pour TAROT */
       if (argc>=5) {
          retour = Tcl_GetDouble(interp,argv[4],&sepmax);
          if(retour!=TCL_OK) return retour;
@@ -2254,17 +2254,17 @@ ml_geostatreduc bdd00_20070607.txt bdd0_20070607.txt [expr 3.3*5/3600.] [expr 60
                }
             }
 			if (lignes[n_in].comment==0) {
-			   k1=265 ; for (k=k1;k<k1+1;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+			   k1=269 ; for (k=k1;k<k1+1;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 			   lignes[n_in].typesatellite=atoi(s);
 			   if (lignes[n_in].typesatellite==2) { 
 					lignes[n_in].matched=1;
 					lignes[n_in].kimage=0;
 					strcpy(lignes[n_in].texte,"");
-					k1=0 ; k2=266; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=0 ; k2=270; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					strcpy(lignes[n_in].texte,s);
-					k1=281 ; k2=286; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=285 ; k2=290; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					lignes[n_in].sep=atof(s);
-					k1=288 ; k2=293; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
+					k1=292 ; k2=297; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
 					lignes[n_in].pos=atof(s);
 			   } else {
 				   k1=138 ; k2=146; for (k=k1;k<=k2;k++) { s[k-k1]=ligne[k]; } ; s[k-k1]='\0';
