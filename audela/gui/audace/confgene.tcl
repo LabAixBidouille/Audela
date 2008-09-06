@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.45 2008-07-23 13:17:27 michelpujol Exp $
+# Mise a jour $Id: confgene.tcl,v 1.46 2008-09-06 10:12:01 robertdelmas Exp $
 #
 
 #
@@ -85,10 +85,13 @@ namespace eval confPosObs {
 
    #
    # confPosObs::initConf
-   # Initialisation de variables de position dans aud.tcl (::audace::Recup_Config) pour le lancement d'Aud'ACE
+   # Initialisation de variables dans aud.tcl (::audace::Recup_Config) pour le lancement d'Aud'ACE
    #
    proc initConf { } {
       global conf
+
+      #--- Nom de l'observateur
+      if { ! [ info exists conf(posobs,nom_observateur) ] }   { set conf(posobs,nom_observateur)   "" }
 
       #--- Observatoire du Pic du Midi
       if { ! [ info exists conf(posobs,estouest) ] }        { set conf(posobs,estouest)        "E" }
@@ -97,7 +100,6 @@ namespace eval confPosObs {
       if { ! [ info exists conf(posobs,lat) ] }             { set conf(posobs,lat)             "42d56m11s9" }
       if { ! [ info exists conf(posobs,altitude) ] }        { set conf(posobs,altitude)        "2890.5" }
       if { ! [ info exists conf(posobs,observateur,gps) ] } { set conf(posobs,observateur,gps) "GPS 0.142300 E 42.936639 2890.5" }
-      if { ! [ info exists conf(posobs,nom_observateur) ] } { set conf(posobs,nom_observateur) "" }
    }
 
    #
@@ -112,7 +114,6 @@ namespace eval confPosObs {
       set conf(posobs,nordsud_lat)   $conf(posobs,nordsud)$conf(posobs,lat)
 
       #--- Initialisation indispensable d'autres variables
-      if { ! [ info exists conf(posobs,nom_observateur) ] }        { set conf(posobs,nom_observateur)        "" }
       if { ! [ info exists conf(posobs,nom_observatoire) ] }       { set conf(posobs,nom_observatoire)       "Pic du Midi - France" }
       if { ! [ info exists conf(posobs,ref_geodesique) ] }         { set conf(posobs,ref_geodesique)         "WGS84" }
       if { ! [ info exists conf(posobs,station_uai) ] }            { set conf(posobs,station_uai)            "586" }
@@ -2318,8 +2319,13 @@ namespace eval confVersion {
       pack $This.lab1 -in $This.frame1 -padx 30 -pady 5
 
       #--- Version Tcl/Tk utilisee
-      label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ]" \
-         -font $audace(font,arial_10_n)
+      if { $::tcl_platform(threaded) == "1" } {
+         label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ] multithread" \
+            -font $audace(font,arial_10_n)
+      } else {
+         label $This.lab2 -text "$caption(en-tete,a_propos_de_version_Tcl/Tk)[ info patchlevel ]" \
+            -font $audace(font,arial_10_n)
+      }
       pack $This.lab2 -in $This.frame1 -padx 30 -pady 0
 
       #--- Date de la mise a jour
