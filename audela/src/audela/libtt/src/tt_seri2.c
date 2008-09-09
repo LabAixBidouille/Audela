@@ -182,7 +182,7 @@ int tt_ima_series_loader_0(TT_IMA_SERIES *pseries,char *fullname)
 	 pseries->bitpix=pseries->p_in->load_bitpix;
       }
    } else {
-      if (pseries->numfct!=0) {
+      if (pseries->numfct!=TT_IMASERIES_REGISTER) {
 	 if ((pseries->naxis1_1!=pseries->p_in->naxis1)||(pseries->naxis2_1!=pseries->p_in->naxis2)) {
 	    sprintf(message,"(%d,%d) of %s must be equal to (%d,%d) of %s",pseries->p_in->naxis1,pseries->p_in->naxis2,fullname,(int)pseries->naxis1_1,(int)pseries->naxis2_1,pseries->fullname0);
 	    tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);

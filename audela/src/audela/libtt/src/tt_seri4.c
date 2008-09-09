@@ -738,7 +738,8 @@ int tt_ima_series_register_1(TT_IMA_SERIES *pseries)
 
    /* --- calcul de la fonction ---*/
    /*tt_imabuilder(p_out);*/
-   tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
+   /*tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);*/
+   tt_imacreater(p_out,pseries->naxis1_1,pseries->naxis2_1);
    trans_ok=TT_YES;
    if (pseries->regitrans==TT_REGITRANS_NEVER) {
       trans_ok=TT_NO;
@@ -782,6 +783,7 @@ int tt_ima_series_register_1(TT_IMA_SERIES *pseries)
 
    return(OK_DLL);
 }
+
 
 int tt_ima_series_registerfine_1(TT_IMA_SERIES *pseries)
 /***************************************************************************/
