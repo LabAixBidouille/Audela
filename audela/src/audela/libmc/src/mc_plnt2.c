@@ -168,6 +168,9 @@ void mc_jd2lbr1b(double jj, int planete, double *l, double *m, double *u, double
    else if (planete==LUNE) {
 	  mc_jd2lbr1d(jj,&l0,&b0,&r0);
    }
+   else if (planete==LUNE_ELP) {
+	  mc_jd2lbr2d(jj,&l0,&b0,&r0);
+   }
    *ll=fmod(l0+4*PI,2*PI);
    *bb=fmod(b0+4*PI,2*PI);
    if (*bb>PI) { *bb-=2*PI; }

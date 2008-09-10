@@ -910,6 +910,7 @@ int mctcl_decode_planet(Tcl_Interp *interp, char *argv0,int *planetnum, char *pl
 	  name[3]='\0';
 	  *planetnum=OTHERPLANET;
 	  if (strcmp(name,"SUN")==0) { *planetnum=SOLEIL; strcpy(planetname,"Sun"); strcpy(orbitformat,"INTERNAL");}
+	  else if (strcmp(name,"ELP")==0) { *planetnum=LUNE_ELP; strcpy(planetname,"Moon"); strcpy(orbitformat,"INTERNAL");}
 	  else if (strcmp(name,"MOO")==0) { *planetnum=LUNE; strcpy(planetname,"Moon"); strcpy(orbitformat,"INTERNAL");}
 	  else if (strcmp(name,"MER")==0) { *planetnum=MERCURE; strcpy(planetname,"Mercury"); strcpy(orbitformat,"INTERNAL");}
 	  else if (strcmp(name,"VEN")==0) { *planetnum=VENUS; strcpy(planetname,"Venus"); strcpy(orbitformat,"INTERNAL");}
@@ -1443,7 +1444,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		   jj=jds[kd];
 		   /* --- position de la Lune si on veut l'elongation par rapport a la Lune ---*/
 		   if (ok4moonelong==YES) {
-            mc_adlunap(jj,longmpc,rhocosphip,rhosinphip,&asdmoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+            mc_adlunap(LUNE,jj,longmpc,rhocosphip,rhosinphip,&asdmoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
          }
  		   /* --- Temps sideral et latitude si on veut l'azimuth et la hauteur ---*/
 		   if (ok4azimcoord==YES) {
@@ -1484,6 +1485,7 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 			      mc_strupr(name,name);
 	            name[3]='\0';
  	            if (strcmp(name,"SUN")==0) { planetnum=SOLEIL; strcpy(objename,"Sun"); }
+	            else if (strcmp(name,"ELP")==0) { planetnum=LUNE_ELP; strcpy(objename,"Moon"); }
 	            else if (strcmp(name,"MOO")==0) { planetnum=LUNE; strcpy(objename,"Moon"); }
 	            else if (strcmp(name,"MER")==0) { planetnum=MERCURE; strcpy(objename,"Mercury"); }
 	            else if (strcmp(name,"VEN")==0) { planetnum=VENUS; strcpy(objename,"Venus"); }
@@ -1500,8 +1502,8 @@ int Cmd_mctcl_ephem(ClientData clientData, Tcl_Interp *interp, int argc, char *a
 		         } else if ((planetnum>=MERCURE)&&(planetnum<=PLUTON)) {
                   mc_adplaap(jj,longmpc,rhocosphip,rhosinphip,planetnum,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 			         ok4compute=OK;
-		         } else if (planetnum==LUNE) {
-          	      mc_adlunap(jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+		         } else if ((planetnum==LUNE)||(planetnum==LUNE_ELP)) {
+          	      mc_adlunap(planetnum,jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
 			         ok4compute=OK;
 		         }
                kp++;
@@ -2008,8 +2010,8 @@ int Cmd_mctcl_readcat(ClientData clientData, Tcl_Interp *interp, int argc, char 
               if (kp==URANUS) strcpy(objename,"Uranus");
               if (kp==NEPTUNE) strcpy(objename,"Neptune");
               if (kp==PLUTON) strcpy(objename,"Pluto");
-		     } else if (kp==LUNE) {
-              mc_adlunap(jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+		     } else if ((kp==LUNE)||(kp==LUNE_ELP)) {
+              mc_adlunap(kp,jj,longmpc,rhocosphip,rhosinphip,&asd,&dec,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
               strcpy(objename,"Moon");
   	        }
            mc_util_astrom_radec2xy(&p,asd,dec,&x,&y);
@@ -4731,7 +4733,7 @@ mc_lightmap 2005-09-23T00:00:44.280 0.6708 0.1333 J2000.0 "c:/d/gft/test.fit" 1 
          sinrsun=sin(rasun);
          cosdsun=cos(decsun);
          sindsun=sin(decsun);
-         mc_adlunap(jd,longitude,rhocosphip,rhosinphip,&ramoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
+         mc_adlunap(LUNE,jd,longitude,rhocosphip,rhosinphip,&ramoon,&decmoon,&delta,&mag,&diamapp,&elong,&phase,&r,&diamapp_equ,&diamapp_pol,&long1,&long2,&long3,&lati,&posangle_sun,&posangle_north,&long1_sun,&lati_sun);
          cosrmoon=cos(ramoon);
          sinrmoon=sin(ramoon);
          cosdmoon=cos(decmoon);
