@@ -560,7 +560,7 @@ void mc_adplaap(double jj,double longmpc,double rhocosphip,double rhosinphip, in
       long1,long2,long3,lati,posangle_north,posangle_sun,long1_sun,lati_sun);
 }
 
-void mc_adlunap(double jj,double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
+void mc_adlunap(int planete, double jj,double longmpc,double rhocosphip,double rhosinphip,double *asd, double *dec, double *delta,double *mag,double *diamapp,double *elong,double *phase,double *rr,double *diamapp_equ,double *diamapp_pol,double *long1,double *long2,double *long3,double *lati,double *posangle_sun,double *posangle_north,double *long1_sun,double *lati_sun)
 /***************************************************************************/
 /* Calcul de l'asd, dec et distance apparentes de la Lune a jj donne.      */
 /***************************************************************************/
@@ -570,11 +570,11 @@ void mc_adlunap(double jj,double longmpc,double rhocosphip,double rhosinphip,dou
    double l,b,r,x,y,z;
    double dxeq,dyeq,dzeq;
    double equinoxe=J2000;
-   int planete;
+   /*int planete;*/
    double jjds,asds,decs,limb;
    jjd=jj;
 
-   planete=LUNE;
+   /*planete=LUNE;*/
 
    /*--- soleil ---*/
    *delta=1.; /* correction de l'abberation a priori */
