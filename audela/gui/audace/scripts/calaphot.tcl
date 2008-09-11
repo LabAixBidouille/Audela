@@ -4,7 +4,7 @@
 # Description : Script pour la photométrie d'astéroïdes ou d'étoiles variables
 # Auteurs     : Olivier Thizy (thizy@free.fr)
 #               Jacques Michelet (jacques.michelet@laposte.net)
-# Mise a jour $Id: calaphot.tcl,v 1.7 2007-12-28 10:29:09 alainklotz Exp $
+# Mise a jour $Id: calaphot.tcl,v 1.8 2008-09-11 14:48:28 jacquesmichelet Exp $
 
 # Définition d'un espace réservé à ce script
 catch {namespace delete ::Calaphot}
@@ -22,7 +22,7 @@ namespace eval ::CalaPhot {
 # L'existence de test crée le ficher debug.log
 #    set test 0
 
-    set numero_version v3.4
+    set numero_version v3.5
 
     if {$tcl_platform(os)!="Linux"} {
         set police(gras) [font actual .audace]
@@ -74,7 +74,7 @@ namespace eval ::CalaPhot {
         Initialisations
 
         Message console "-------------- calaphot-%s--------\n" $::CalaPhot::numero_version
-        Message console "-- (c)2001-2004 O. Thizy & J. Michelet---\n"
+        Message console "-- (c)2001-2008 O. Thizy & J. Michelet---\n"
         Message console "-----------------------------------------\n"
 
         # Lecture du fichier de paramètres
@@ -101,7 +101,7 @@ namespace eval ::CalaPhot {
         #    return
         #}
         Message log "---------------calaphot-%s --------------\n" $::CalaPhot::numero_version
-        Message log "-- (c)2001-2004 O. Thizy & J. Michelet---\n"
+        Message log "-- (c)2001-2008 O. Thizy & J. Michelet---\n"
         Message log "-----------------------------------------\n"
         # Affiche l'heure du début de traitement
         Message consolog "%s %s\n\n" $texte_photo(heure_debut) [clock format [clock seconds]]
@@ -1643,9 +1643,20 @@ namespace eval ::CalaPhot {
     # (il faudra un jour analyser finement le code de jm_fitgauss2d
     # pour trouver pourquoi il ne converge pas sur des etoiles tres
     # etalées comme celles du T80 de l'OHP).
-    proc jm_fitgauss2db { bufno box } {
-      set temp [jm_fitgauss2d $bufno $box]
-      if {[lindex $temp 0] != 0} {
+    # Note de Jacques Michelet (11 septembre 2008)
+    # la fonction jm_fitgauss2d a été profondément remaniée. Son taux d'échec
+    # est devenu très faible.
+    proc jm_fitgauss2db { bufno box {moinssub ""} } {
+      if {$moinssub == "-sub"} {
+         set temp [jm_fitgauss2d $bufno $box -sub]
+      } else {
+         set temp [jm_fitgauss2d $bufno $box]
+      }
+      # test si le nombre d'itération est non nul, et si l'erreur de modélisation
+      # est acceptable (sur les images du T80, le seuil de 5 fait rejeter 3% des
+      # objets vus par sextractor, et ce sont le plus souvent des objets non
+      # stellaires)
+      if {([lindex $temp 1] > 0) && ([lindex $temp 0] < 5.0)} {
          # La modélisation est correcte
          return $temp
       }
@@ -2697,16 +2708,16 @@ namespace eval ::CalaPhot {
 # Fin du namespace Calaphot
 
 if {[catch {load libjm[info sharedlibextension]} erreur]} {
-    ::CalaPhot::Message console "%s\n" $erreur
+    ::console::affiche_erreur $erreur
     return 1
 }
 
 if {[catch {jm_versionlib} version_lib]} {
-    Message console "%s\n" ::CalaPhot::Message console "%s\n" $version_lib
+    ::console::affiche_erreur $version_lib
     return 1
 } else {
-    if {[expr double([string range $version_lib 0 2])] < 3.0} {
-        Message console "LibJM version must be greater than 3.0\n"
+    if {[expr double([string range $version_lib 0 2])] < 3.2} {
+        ::console::affiche_erreur "LibJM version must be greater than 3.2\n"
         return 1
     }
 }
@@ -2715,11 +2726,11 @@ catch {package require BLT} erreur
 if {$erreur != "2.4"} {
     catch {load blt24[info sharedlibextension]} erreur
     if {$erreur !=    ""} {
-        ::CalaPhot::Message console "%s\n" $erreur
+        ::console::affiche_erreur $erreur
         return 1
     } else {
         if {[catch {package require BLT} erreur]} {
-            ::CalaPhot::Message console "%s\n" $erreur
+            ::console::affiche_erreur $erreur
             return 1
         }
     }
