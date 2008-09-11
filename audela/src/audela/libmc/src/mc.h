@@ -808,11 +808,6 @@ void mc_jd2lbr1f(double jj, double *l, double *m, double *u, double *ll0, double
 void mc_jd2lbr1g(double jj, double *l, double *m, double *u, double *ll0, double *bb0, double *rr0);
 void mc_jd2lbr1h(double jj, double *l, double *m, double *u, double *ll0, double *bb0, double *rr0);
 
-void mc_elp10(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
-void mc_elp11(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
-void mc_elp12(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
-void mc_elp13(double *elp, double pla_me, double pla_ve, double tt, double pla_ma, double pla_ju, double pla_sa, double pla_ur, double pla_ne, double d, double l, double f);
-
 /***************************************************************************/
 /* Utilitaires de gestion de catalogues (Usno, MicroCat, ...)              */
 /***************************************************************************/
