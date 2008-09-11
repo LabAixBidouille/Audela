@@ -559,8 +559,8 @@ int CmdAjustementGaussien(ClientData clientData, Tcl_Interp *interp, int argc, c
 {
   char s[256];
   int carre[4], tampon;
-  double param[10], chi2;
-  int n_carre, iterations, n_param, convergence;
+  double fgauss[10], stat[10], chi2, erreur;
+  int n_carre, iterations, n_fgauss, n_stat;
   struct ajustement valeurs, incertitudes;
   int retour;
   descripteur_image image;
@@ -604,28 +604,35 @@ int CmdAjustementGaussien(ClientData clientData, Tcl_Interp *interp, int argc, c
       return TCL_ERROR;
     }
 
+    /* Appel a bufn fitgauss pour recuperer les valeurs caracteristiques du rectangle*/
+    /* Formation de la chaine et appel */
+    sprintf(s, "buf%d fitgauss {%s}", tampon, argv[2]);
+    Tcl_Eval(interp, s);
+    /* Lecture des resultats */
+    DecodeListeDouble(interp, interp->result, &fgauss[0], &n_fgauss);
+
     /* Appel a bufn stat pour recuperer les valeurs caracteristiques du rectangle*/
     /* Formation de la chaine et appel */
     sprintf(s, "buf%d stat {%s}", tampon, argv[2]);
     Tcl_Eval(interp, s);
     /* Lecture des resultats */
-    DecodeListeDouble(interp, interp->result, &param[0], &n_param);
+    DecodeListeDouble(interp, interp->result, &stat[0], &n_stat);
 
     /* A partir des valeurs approximatives donnees par bufn stat, calcul d'un profil gaussien plausible */
-    AjustementGaussien (&carre[0], &param[0], &valeurs, &incertitudes, &iterations, &chi2, &convergence);
+    AjustementGaussien (&carre[0], &fgauss[0], &stat[0], &valeurs, &incertitudes, &iterations, &chi2, &erreur);
 
-        if (convergence == 0) {
-                memset (&valeurs, 0, sizeof(valeurs));
-                memset (&incertitudes, 0, sizeof(incertitudes));
-        }
+    if (iterations == 0) {
+		memset (&valeurs, 0, sizeof(valeurs));
+		memset (&incertitudes, 0, sizeof(incertitudes));
+	}
 
     /* Soustraction du modele a l'image originale */
-    if ((argc == 4) && (convergence != 0)) {
+    if ((argc == 4) && (iterations != 0)) {
       SoustractionGaussienne (&carre[0], &valeurs);
     }
 
-    sprintf(s, "%d %d %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f",
-            convergence,
+    sprintf(s, "%10.4f %d %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f",
+            erreur,
             iterations,
             valeurs.X0,
             valeurs.Y0,

@@ -27,7 +27,7 @@
  * ============================================
 */
 
-#define NUMERO_VERSION "3.1"
+#define NUMERO_VERSION "3.2"
 
 
 #ifndef __LIBJMH__

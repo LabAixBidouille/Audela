@@ -64,6 +64,25 @@ typedef struct {
    char dateobs[30];     /* date du debut de pose au format Fits */
 } descripteur_image;
 
+struct data {
+	int nxy;
+	int x1;
+	int y1;
+	int x2;
+	int y2;
+	double * pixels;
+};
+
+struct rectangle {
+	int x1;
+	int x2;
+	int y1;
+	int y2;
+	int nx;
+	int ny;
+	size_t nxy;
+};
+
 
 /* --- Déclaration des fonctions --- */
 int dms2deg(int d,int m,double s,double *angle);
@@ -79,7 +98,7 @@ int InitTamponImage(long pointer, int largeur, int hauteur);
 int LecturePixel(int x, int y, int *pixel);
 int Incertitude(double flux_etoile, double flux_fond, double nb_pixel, double nb_pixel_fond, double gain, double sigma, double *signal_bruit, double *incertitude, double *bruit_flux);
 int Magnitude(double flux_etoile, double flux_ref, double mag_ref, double *mag_etoile);
-int AjustementGaussien(int *carre, double *param, struct ajustement *valeur, struct ajustement *incertitude, int *iter, double *chi2, int*convergence);
+int AjustementGaussien(int *carre, double *fgauss, double *stat, struct ajustement *valeur, struct ajustement *incertitude, int *iter, double *chi2, double*erreur);
 int SoustractionGaussienne(int *carre, struct ajustement *p);
 
 
