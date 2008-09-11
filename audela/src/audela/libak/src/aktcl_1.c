@@ -2636,6 +2636,7 @@ int Cmd_aktcl_rectification(ClientData clientData, Tcl_Interp *interp, int argc,
    }
    return TCL_OK;
 }
+
 int Cmd_aktcl_photometric_parallax_avmap(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 /****************************************************************************/
 /* Construit l'image de la carte d'extinction */
@@ -2679,5 +2680,137 @@ load libak; ak_photometric_parallax_avmap ./ htmav.txt htmav.fit htmdm.fit 300 3
    return result;
 }
 
+int Cmd_aktcl_splitcfht(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
+/****************************************************************************/
+/* Decoupe une image du CFHT avec binning */
+/****************************************************************************/
+/* Entrees :                                                                */
+/* nom de l'image
+*/
+/****************************************************************************/
+{
+   char stringresult[1024];
+   char s[10000],key[80],val[80];
+   char fitsfile_in[1024],fitsfile_out[1024],path[1024];
+   int naxis10,naxis20,hdu,bitpix0,khdu,end0;
+   int naxis1,naxis2,k,bitpix,bits,integ;
+   int x1,y1,x2,y2,bin,kx,ky,kk,kreste;
+   int result=TCL_ERROR;
+	float *fval,*mat;
+	unsigned char car[4];
+	double deg2rad;
+	FILE *fin;
+	ak_phot_par_wcs wcs;
+
+	deg2rad=(AK_PI)/180.;
+   if(argc<10) {
+      sprintf(s,"Usage: %s path fitsfile_in hdu fitsfile_out x1 y1 x2 y2 bin", argv[0]);
+      Tcl_SetResult(interp,s,TCL_VOLATILE);
+      return TCL_ERROR;
+   } else {
+      /* --- decodage des arguments ---*/
+      strcpy(path,argv[1]);
+      strcpy(fitsfile_in,argv[2]);
+      hdu=(int)atoi(argv[3]);
+      strcpy(fitsfile_out,argv[4]);
+      x1=(int)atoi(argv[5]);
+      y1=(int)atoi(argv[6]);
+      x2=(int)atoi(argv[7]);
+      y2=(int)atoi(argv[8]);
+      bin=(int)atoi(argv[9]);
+		strcpy(stringresult,"");
+		/* --- ---*/
+		sprintf(s,"%s%s",path,fitsfile_in);
+		fin=fopen(s,"rb");
+		if (fin==NULL) {
+			sprintf(stringresult,"Problem with the file %s",s);
+			Tcl_SetResult(interp,s,TCL_VOLATILE);
+			return TCL_ERROR;
+		}
+		/* --- ---*/
+		naxis10=0;
+		naxis20=0;
+		bitpix=8;
+		for (khdu=1;khdu<=hdu;khdu++) {
+			end0=0;
+			while (1==1) {
+				for (k=0;k<36;k++) {
+					result=fread(s,sizeof(char),80,fin);
+					s[80]='\0';
+					strncpy(key,s,8);
+					key[8]='\0';
+					strncpy(val,s+10,21);
+					val[21]='\0';
+					if (strcmp(key,"NAXIS1  ")==0) { naxis10=atoi(val); }
+					if (strcmp(key,"NAXIS2  ")==0) { naxis20=atoi(val); }
+					if (strcmp(key,"BITPIX  ")==0) { bitpix0=atoi(val); }
+					if (strcmp(key,"END     ")==0) { end0=1; }
+					if (strcmp(key,"CRVAL1  ")==0) { wcs.crval1=atof(val)*deg2rad; }
+					if (strcmp(key,"CRVAL2  ")==0) { wcs.crval2=atof(val)*deg2rad; }
+					if (strcmp(key,"CDELT1  ")==0) { wcs.cdelt1=atof(val)*deg2rad*bin; }
+					if (strcmp(key,"CDELT2  ")==0) { wcs.cdelt2=atof(val)*deg2rad*bin; }
+					if (strcmp(key,"CRPIX1  ")==0) { wcs.crpix1=atof(val); }
+					if (strcmp(key,"CRPIX2  ")==0) { wcs.crpix2=atof(val); }
+					if (strcmp(key,"CROTA2  ")==0) { wcs.crota2=atof(val)*deg2rad; }
+					if (strcmp(key,"CD1_1   ")==0) { wcs.cd11=atof(val)*deg2rad*bin; }
+					if (strcmp(key,"CD1_2   ")==0) { wcs.cd12=atof(val)*deg2rad*bin; }
+					if (strcmp(key,"CD2_1   ")==0) { wcs.cd21=atof(val)*deg2rad*bin; }
+					if (strcmp(key,"CD2_2   ")==0) { wcs.cd22=atof(val)*deg2rad*bin; }
+				}
+				if (end0==1) { break; }
+			}
+		}
+		wcs.cdelt1=wcs.cd11;
+		wcs.cdelt2=wcs.cd22;
+		wcs.crota2=0.;
+		if (x1>naxis10) {x1=naxis10;}
+		if (x2>naxis10) {x2=naxis10;}
+		if (x1>=x2) { k=x1 ; x1=x2 ; x2=k ; }
+		if (y1>naxis20) {y1=naxis20;}
+		if (y2>naxis20) {y2=naxis20;}
+		if (y1>=y2) { k=y1 ; y1=y2 ; y2=k ; }
+		wcs.crpix1-=(double)(x1-1);
+		wcs.crpix1/=(double)(bin);
+		wcs.crpix2-=(double)(y1-1);
+		wcs.crpix2/=(double)(bin);
+		naxis1=(int)((x2-x1)/bin);
+		naxis2=(int)((y2-y1)/bin);
+		wcs.naxis1=(double)naxis1;
+		wcs.naxis2=(double)naxis2;
+		mat=(float*)calloc(naxis1*naxis2,sizeof(float));
+		bitpix=bitpix0;
+		bits=(int)sizeof(float);
+		k=(y1-1)*naxis10*bits;
+		fseek(fin,k,SEEK_CUR);
+		kk=0;
+		for (ky=0;ky<naxis2;ky++) {
+			fseek(fin,(x1-1)*bits,SEEK_CUR);
+			kreste=naxis10-(x1-1);
+			for (kx=0;kx<naxis1;kx++) {
+				fread(&car[0],sizeof(unsigned char),1,fin);
+				fread(&car[1],sizeof(unsigned char),1,fin);
+				fread(&car[2],sizeof(unsigned char),1,fin);
+				fread(&car[3],sizeof(unsigned char),1,fin);
+				integ=(((int)car[0]*256+(int)car[1])*256+(int)car[2])*256+(int)car[3];
+				fval=(float*)&integ;
+				mat[kk++]=*fval;
+				fseek(fin,(bin-1)*bits,SEEK_CUR);
+				kreste-=bin;
+			}
+			fseek(fin,kreste*bits,SEEK_CUR);
+			for (k=0;k<bin-1;k++) {
+				fseek(fin,naxis10*bits,SEEK_CUR);
+			}
+		}
+		fclose(fin);
+		sprintf(s,"%s%s",path,fitsfile_out);
+		ak_photometric_parallax_savefits(mat,naxis1,naxis2,s,&wcs);
+		free(mat);
+		/* --- ---*/
+      Tcl_SetResult(interp,stringresult,TCL_VOLATILE);
+		result=TCL_OK;
+   }
+   return result;
+}
 
 
