@@ -1037,11 +1037,11 @@ char *ak_photometric_parallax_savefits(float *mat,int naxis1, int naxis2,char *f
    k0=7;
    if (wcs!=NULL) {
       deg2rad=(AK_PI)/180.;
-      strcpy(line,"EQUINOX  =               2000.0 / WCS keyword                                    ");
+      strcpy(line, "EQUINOX =               2000.0 / WCS keyword                                    ");
       fwrite(line,80,sizeof(char),f); k0++;
-      strcpy(line,"CTYPE1   =           'RA---TAN' / WCS keyword                                    ");
+      strcpy(line, "CTYPE1  = 'RA---TAN'           / WCS keyword                                    ");
       fwrite(line,80,sizeof(char),f); k0++;
-      strcpy(line,"CTYPE2   =           'DEC--TAN' / WCS keyword                                    ");
+      strcpy(line, "CTYPE2  = 'DEC--TAN'           / WCS keyword                                    ");
       fwrite(line,80,sizeof(char),f); k0++;
       sprintf(line,"CRPIX1  =           %10.5f / WCS keyword                                    ",wcs->crpix1);
       fwrite(line,80,sizeof(char),f); k0++;
