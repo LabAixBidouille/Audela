@@ -166,7 +166,7 @@ void mc_magplanet(double r,double delta,int planete,double phase,double l,double
    else if (planete==NEPTUNE) { *mag+=(-6.87); *diamapp=2.*atan(1.6243e-4/delta);}
    else if (planete==PLUTON) { *mag+=(-1.00); *diamapp=2.*atan(1.5608e-5/delta);}
    else if (planete==SOLEIL) { *mag+=(-26.86); *diamapp=2.*atan(4.6541e-3/delta); }
-   else if (planete==LUNE) { *mag+=(0.38+2.97*(i/100.)-0.78*(i/100.)*(i/100.)+.90*(i/100.)*(i/100.)*(i/100.)); *diamapp=2.*atan(1.1617e-5/delta); }
+   else if ((planete==LUNE)||(planete==LUNE_ELP)) { *mag+=(0.38+2.97*(i/100.)-0.78*(i/100.)*(i/100.)+.90*(i/100.)*(i/100.)*(i/100.)); *diamapp=2.*atan(1.1617e-5/delta); }
    else if (planete==SATURNE) {
       i=28.08*(DR);
 	  o=169.51*(DR);
@@ -444,7 +444,7 @@ void mc_physephem(double jj,int planete,double xg,double yg,double zg,double x,d
       f=0.;
       w1=w2=w3=(84.182+14.1844000*d);
       sense=-1.;
-   } else if (planete==LUNE) {
+   } else if ((planete==LUNE)||(planete==LUNE_ELP)) {
       longmpc=*long1;
       rhocosphip=*long2;
       rhosinphip=*long3;

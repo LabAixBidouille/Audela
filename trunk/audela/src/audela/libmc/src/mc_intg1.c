@@ -45,6 +45,7 @@ void mc_inimasse(double *mass)
    mass[NEPTUNE]=1./19314;
    mass[PLUTON] =1./3000000;
    mass[LUNE]   =mass[TERRE]/81.3;
+   mass[LUNE_ELP]=mass[TERRE]/81.3;
    mass[CERES]  =5.9e-10;
    mass[VESTA]  =1.2e-10;
    mass[PALLAS] =1.1e-10; /* 13 */

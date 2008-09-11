@@ -460,17 +460,15 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 /* Lunar Solution ELP 2000-82B Chapron & Chapron-Thouze                    */
 /***************************************************************************/
 {
-	double mat[3][3];
-	double x,y,z,xe,ye,ze,xq,yq,zq;
+	/*double mat[3][3];*/
+	/*double x,y,z,xe,ye,ze,xq,yq,zq,q;*/
 	double l,b,r,u,v;
-	double p,q,t,t2,t3,t4,t5;
+	double p,t,t2,t3,t4,t5;
 	double elp[37];
 	double w1,w2,w3,tt,pi,d,lp,f,dz;
 	double pla_me,pla_ve,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne;
 	double val;
 	int k,kk;
-
-	//jj=2469000.5;
 
 	/* --- t : barycentric time TDB in julian centuries from J2000.0 ---*/
 	t=(jj-J2000)/36525.;
@@ -591,10 +589,6 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	puts -nonewline $f "$textes"
 	close $f
 	*/
-   mc_elp10(&elp[10],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
-   mc_elp11(&elp[11],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
-   mc_elp12(&elp[12],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
-   mc_elp13(&elp[13],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
 
    // ---------------------- ELP1 ---------------------
    val=0.;
@@ -3252,7 +3246,19 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
    val+=-0.00007*cos(10*d-2*l);
    val+=-0.00003*cos(10*d-l);
    elp[3]=val;
-   
+
+	/* --- useful angles --- */
+	d =297*3600+51*60+ 0.73512+1602961601.4603 *t;
+	lp=357*3600+31*60+44.79306+ 129596581.0474 *t;
+	l =134*3600+57*60+48.28096+1717915923.4728 *t;
+	f = 93*3600+16*60+19.55755+1739527263.0983 *t;
+	dz=218*3600+18*60+59.95571+1732559343.73604*t+5029.0966*t;
+	 d*=(DR)/3600;
+	lp*=(DR)/3600;
+	 l*=(DR)/3600;
+	 f*=(DR)/3600;
+	dz*=(DR)/3600;
+
    // ---------------------- ELP4 ---------------------
    val=0.;
    val+=0.00003*sin(4.71238898037+f);
@@ -4209,6 +4215,15 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
    val+=0.00002*sin(1.57079632679+dz+2*d-l-f);
    val+=0.00004*sin(1.57079632679+dz+2*d-f);
    elp[9]=val;
+
+
+	/* --- useful angles --- */
+	tt=100*3600+27*60+59.22059+ 129597742.2758 *t;
+	tt*=(DR)/3600;
+   mc_elp10(&elp[10],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
+   mc_elp11(&elp[11],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
+   mc_elp12(&elp[12],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
+   mc_elp13(&elp[13],pla_me,pla_ve,tt,pla_ma,pla_ju,pla_sa,pla_ur,pla_ne,d,l,f);
 
    // ---------------------- ELP14 ---------------------
    val=0.;
@@ -7806,6 +7821,10 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
    val+=0.00003*sin(4.97092652233+tt+3*d-l-f);
    val+=0.00004*sin(1.82933386875+tt+3*d-f);
    elp[21]=val;
+
+	/* --- useful angles --- */
+	tt=100*3600+27*60+59.22059+ 129597742.2758 *t- 0.0202*t2+0.000009*t3+0.00000015*t4;
+	tt*=(DR)/3600;
    
    // ---------------------- ELP22 ---------------------
    val=0.;
@@ -8020,7 +8039,7 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
    val+=0.00003*sin(1.57079632679+4*d-lp-l);
    elp[36]=val;
 
-	/* --- Transform in radians ---*/
+	/* --- Transform in radians and AU ---*/
 	kk=0;
 	for (k=1;k<=36;k++) {
 		kk++;
@@ -8040,12 +8059,27 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	r=elp[3]+elp[6]+elp[12]+elp[18]+elp[24]+elp[30]+elp[33];
 	r=r+(elp[9]+elp[15]+elp[21]+elp[27])*t+elp[36]*t2;
 
-	/* --- conversion to rectangular mean intertial ecliptic --- */
+	/* --- precession ---*/
+	p=5029.0966*t+1.1120*t2+0.000077*t3-0.00002353*t4;
+	p*=(DR)/3600.;
+	v=v+p;
+
+	l=v;
+	b=u;
+
+	/*
+	// --- conversion to rectangular mean intertial ecliptic ---
 	x=r*cos(v)*cos(u);
 	y=r*sin(v)*cos(u);
 	z=r*sin(u);
+	x*=(UA);
+	y*=(UA);
+	z*=(UA);
+	x/=(UA);
+	y/=(UA);
+	z/=(UA);
 
-	/* --- conversion to the J2000 equinox --- */
+	// --- conversion to the J2000 equinox ---
 	p=0.10180391e-4*t+0.47020439e-6*t2-0.5417367e-9*t3-0.2507948e-11*t4+0.463486e-14*t5;
 	q=-0.113469002e-3*t+0.12372674e-6*t2+0.12654170e-8*t3-0.1371808e-11*t4-0.320334e-14*t5;
 	mat[0][0]=1-2*p*p;
@@ -8060,13 +8094,14 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	xe=mat[0][0]*x+mat[0][1]*y+mat[0][2]*z;
 	ye=mat[1][0]*x+mat[1][1]*y+mat[1][2]*z;
 	ze=mat[2][0]*x+mat[2][1]*y+mat[2][2]*z;
-	/*
 	xe*=(UA);
 	ye*=(UA);
 	ze*=(UA);
-	*/
+	xe/=(UA);
+	ye/=(UA);
+	ze/=(UA);
 
-	/* --- conversion to the FK5 --- */
+	// --- conversion to the FK5 --- 
 	mat[0][0]=1.;
 	mat[0][1]=0.000000437913;
 	mat[0][2]=-0.000000189859;
@@ -8080,8 +8115,11 @@ void mc_jd2lbr2d(double jj, double *ll0, double *bb0, double *rr0)
 	yq=mat[1][0]*xe+mat[1][1]*ye+mat[1][2]*ze;
 	zq=mat[2][0]*xe+mat[2][1]*ye+mat[2][2]*ze;
 
-	/* --- xyz -> lonlat ---*/
+	// --- xyz -> lonlat ---
 	mc_xyz2lbr(xq,yq,zq,&l,&b,&r);
+	mc_xyz2lbr(xe,ye,ze,&l,&b,&r);
+	*/
+
 	*ll0=l;
 	*bb0=b;
 	*rr0=r;
