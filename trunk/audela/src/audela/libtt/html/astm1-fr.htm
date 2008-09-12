@@ -16,7 +16,7 @@
       </center>
               
 <center>Alain KLOTZ <br>
-      Mise &agrave; jour 20031123</center>
+      Mise &agrave; jour 20080912</center>
               
 <p>Cette m&eacute;thode est implant&eacute;e dans la librairie TT. On expose 
    ici les liens entre des coordonn&eacute;es RA,DEC et les coordonn&eacute;es 
@@ -276,12 +276,12 @@ correspondant  sur l'image de d&eacute;part, on utilise la relation suivante:<br
 <p>transformer (ra,dec)i=(ra',dec')i en (x,y)i avec les equations 5 (i=1,
  2, 3)</p>
      
-<p>delta = (y1-y2)*(x3-x2) - (y2-y3)*(x1-x2)<br>
-  a0 = [ (x2-x3)*(x1'-x2') - (x1-x2)*(x2'-x3') ] / delta<br>
-  a1 = [ - (y2-y3)*(x1'-x2') + (y1-y2)*(x2'-x3') ] / delta<br>
+<p>delta = (y1-y2)*(x3-x2) - (y3-y2)*(x1-x2)<br>
+  a0 = [ (x3-x2)*(x1'-x2') - (x1-x2)*(x3'-x2') ] / delta<br>
+  a1 = [ - (y3-y2)*(x1'-x2') + (y1-y2)*(x3'-x2') ] / delta<br>
    a2 = x1' - a0*x1 - a1*y1<br>
-  a3 = [ (x2-x3)*(y1'-y2') - (x1-x2)*(y2'-y3') ] / delta<br>
-   a4 = [ - (y2-y3)*(y1'-y2') + (y1-y2)*(y2'-y3') ] / delta<br>
+  a3 = [ (x3-x2)*(y1'-y2') - (x1-x2)*(y3'-y2') ] / delta<br>
+   a4 = [ - (y3-y2)*(y1'-y2') + (y1-y2)*(y3'-y2') ] / delta<br>
    a5 = y1' - a3*x1 - a4*y1<br>
   </p>
    

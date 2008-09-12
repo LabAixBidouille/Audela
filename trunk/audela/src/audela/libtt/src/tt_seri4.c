@@ -720,12 +720,12 @@ int tt_ima_series_register_1(TT_IMA_SERIES *pseries)
       for (k=1;k<=3;k++) {
          tt_util_astrom_radec2xy(&p_ast,ra[k],dec[k],&x[k],&y[k]);
       }
-      delta = (y[1]-y[2])*(x[3]-x[2]) - (y[2]-y[3])*(x[1]-x[2]);
-      a[1] = ( (x[2]-x[3])*(xp[1]-xp[2]) - (x[1]-x[2])*(xp[2]-xp[3]) ) / delta;
-      a[0] = ( - (y[2]-y[3])*(xp[1]-xp[2]) + (y[1]-y[2])*(xp[2]-xp[3]) ) / delta;
+      delta = (y[1]-y[2])*(x[3]-x[2]) - (y[3]-y[2])*(x[1]-x[2]);
+      a[1] = ( (x[3]-x[2])*(xp[1]-xp[2]) - (x[1]-x[2])*(xp[3]-xp[2]) ) / delta;
+      a[0] = ( - (y[3]-y[2])*(xp[1]-xp[2]) + (y[1]-y[2])*(xp[3]-xp[2]) ) / delta;
       a[2] = xp[1] - a[0]*x[1] - a[1]*y[1];
-      a[4] = ( (x[2]-x[3])*(yp[1]-yp[2]) - (x[1]-x[2])*(yp[2]-yp[3]) ) / delta;
-      a[3] = ( - (y[2]-y[3])*(yp[1]-yp[2]) + (y[1]-y[2])*(yp[2]-yp[3]) ) / delta;
+      a[4] = ( (x[3]-x[2])*(yp[1]-yp[2]) - (x[1]-x[2])*(yp[3]-yp[2]) ) / delta;
+      a[3] = ( - (y[3]-y[2])*(yp[1]-yp[2]) + (y[1]-y[2])*(yp[3]-yp[2]) ) / delta;
       a[5] = yp[1] - a[3]*x[1] - a[4]*y[1];
       delta=a[1]*a[3]-a[0]*a[4];
       aa[0]=-a[4]/delta;
