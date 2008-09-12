@@ -2,7 +2,7 @@
 # Fichier : acqvideo.tcl
 # Description : Outil d'acquisition video
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: acqvideo.tcl,v 1.6 2008-07-07 19:29:18 michelpujol Exp $
+# Mise a jour $Id: acqvideo.tcl,v 1.7 2008-09-12 16:24:54 robertdelmas Exp $
 #
 
 #==============================================================
@@ -279,11 +279,16 @@ namespace eval ::acqvideo {
       }
 
       if { [::confCam::getPluginProperty $panneau(acqvideo,$visuNo,camItem) "hasVideo"] == 1 } {
-         set panneau(acqvideo,$visuNo,showvideopreview) 1
-         changerVideoPreview $visuNo
-         #--- Creation des fenetres auxiliaires
-         ::acqvideo::selectVideoMode $visuNo
+         if { [ ::confVisu::getTool $visuNo ] == "acqvideo" } {
+            set panneau(acqvideo,$visuNo,showvideopreview) 1
+            changerVideoPreview $visuNo
+            #--- Creation des fenetres auxiliaires
+            ::acqvideo::selectVideoMode $visuNo
+         }
+      } elseif { [ winfo exists $panneau(acqvideo,$visuNo,base).status_video ] } {
+         destroy $panneau(acqvideo,$visuNo,base).status_video
       }
+
 
    }
 #***** Fin de la procedure Adapt_Panneau_AcqVideo **************
@@ -358,7 +363,7 @@ namespace eval ::acqvideo {
       #--- J'active le preview
       if { [::confCam::isReady $panneau(acqvideo,$visuNo,camItem)] == 1 } {
 
-         #--- je met a jour les widgets du panneau
+         #--- je mets a jour les widgets de l'outil
          pack $panneau(acqvideo,$visuNo,This) -side left -fill y
          ::acqvideo::Adapt_Panneau_AcqVideo $visuNo
 
@@ -370,10 +375,13 @@ namespace eval ::acqvideo {
             #--- Creation des fenetres auxiliaires
             ::acqvideo::selectVideoMode $visuNo
          }
+
       } else {
-         #--- je met a jour les widgets du panneau
+
+         #--- je mets a jour les widgets de l'outil
          pack $panneau(acqvideo,$visuNo,This) -side left -fill y
          ::acqvideo::Adapt_Panneau_AcqVideo $visuNo
+
       }
    }
 
@@ -407,7 +415,9 @@ namespace eval ::acqvideo {
       pack forget $panneau(acqvideo,$visuNo,mode,$panneau(acqvideo,$visuNo,mode)) -anchor nw -fill x
 
       set panneau(acqvideo,$visuNo,mode) [ expr [ lsearch "$panneau(acqvideo,$visuNo,list_mode)" "$panneau(acqvideo,$visuNo,mode_en_cours)" ] + 1 ]
-      ::acqvideo::selectVideoMode $visuNo
+      if { [::confCam::getPluginProperty $panneau(acqvideo,$visuNo,camItem) "hasVideo"] == 1 } {
+         ::acqvideo::selectVideoMode $visuNo
+      }
       pack $panneau(acqvideo,$visuNo,mode,$panneau(acqvideo,$visuNo,mode)) -anchor nw -fill x
    }
 #***** Fin de la procedure de changement du mode d'acquisition *
@@ -1656,10 +1666,10 @@ proc acqvideoBuildIF { visuNo } {
       set base ".visu$visuNo"
    }
 
-   #--- Trame du panneau
+   #--- Trame de l'outil
    frame $panneau(acqvideo,$visuNo,This) -borderwidth 2 -relief groove
 
-   #--- Trame du titre du panneau
+   #--- Trame du titre de l'outil
    frame $panneau(acqvideo,$visuNo,This).titre -borderwidth 2 -relief groove
       Button $panneau(acqvideo,$visuNo,This).titre.but -borderwidth 1 -text $caption(acqvideo,titre) \
          -command "::audace::showHelpPlugin [ ::audace::getPluginTypeDirectory [ ::acqvideo::getPluginType ] ] \
