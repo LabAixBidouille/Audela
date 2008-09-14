@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.36 2008-07-07 22:10:35 michelpujol Exp $
+# Mise a jour $Id: visio2.tcl,v 1.37 2008-09-14 22:01:14 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -221,7 +221,7 @@ proc ::visio2::configure { visuNo } {
    variable private
 
    #--- j'affiche la fenetre de configuration
-   ::confGenerique::run $visuNo "$private($visuNo,This).confvisio2" "::visio2::config"
+   ::confGenerique::run $visuNo "$private($visuNo,This).confvisio2" "::visio2::config" -modal 0
 
    #--- je refraichis les tables pour prendre en compte la nouvelle config
    localTable::refresh $visuNo
