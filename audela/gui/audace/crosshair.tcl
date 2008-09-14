@@ -2,7 +2,7 @@
 # Fichier : crosshair.tcl
 # Description : Affiche un reticule sur l'image
 # Auteur : Michel PUJOL
-# Mise a jour $Id: crosshair.tcl,v 1.10 2007-12-07 22:43:55 robertdelmas Exp $
+# Mise a jour $Id: crosshair.tcl,v 1.11 2008-09-14 21:56:49 robertdelmas Exp $
 #
 
 namespace eval ::Crosshair {
@@ -38,7 +38,7 @@ namespace eval ::Crosshair {
    proc run  { visuNo } {
       global conf
 
-      ::confGenerique::run $visuNo [confVisu::getBase $visuNo].confCrossHair ::Crosshair  -modal 0
+      ::confGenerique::run $visuNo [confVisu::getBase $visuNo].confCrossHair ::Crosshair -modal 0
    }
 
    #------------------------------------------------------------
