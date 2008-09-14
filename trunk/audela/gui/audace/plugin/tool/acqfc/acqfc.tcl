@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.67 2008-06-30 18:22:18 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.68 2008-09-14 18:10:50 robertdelmas Exp $
 #
 
 #==============================================================
@@ -438,10 +438,10 @@ namespace eval ::acqfc {
       }
 
       #--- Creation des variables si elles n'existent pas
-      if { ! [ info exists parametres(acqfc,$visuNo,pose) ] }           { set parametres(acqfc,$visuNo,pose)        "5" }   ; #--- Temps de pose : 5s
-      if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }            { set parametres(acqfc,$visuNo,bin)         "2x2" } ; #--- Binning : 2x2
-      if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }            { set parametres(acqfc,$visuNo,obt)         "2" }   ; #--- Obturateur : Synchro
-      if { ! [ info exists parametres(acqfc,$visuNo,mode) ] }           { set parametres(acqfc,$visuNo,mode)        "1" }   ; #--- Mode : Une image
+      if { ! [ info exists parametres(acqfc,$visuNo,pose) ] } { set parametres(acqfc,$visuNo,pose) "5" }   ; #--- Temps de pose : 5s
+      if { ! [ info exists parametres(acqfc,$visuNo,bin) ] }  { set parametres(acqfc,$visuNo,bin)  "2x2" } ; #--- Binning : 2x2
+      if { ! [ info exists parametres(acqfc,$visuNo,obt) ] }  { set parametres(acqfc,$visuNo,obt)  "2" }   ; #--- Obturateur : Synchro
+      if { ! [ info exists parametres(acqfc,$visuNo,mode) ] } { set parametres(acqfc,$visuNo,mode) "1" }   ; #--- Mode : Une image
       if { ! [ info exists parametres(acqfc,$visuNo,avancement_acq) ] } {
          if { $visuNo == "1" } {
             set parametres(acqfc,$visuNo,avancement_acq) "1" ; #--- Barre de progression de la pose : Oui
