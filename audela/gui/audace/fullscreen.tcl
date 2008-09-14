@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.15 2007-06-11 21:47:19 michelpujol Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.16 2008-09-14 22:00:45 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -682,7 +682,7 @@ namespace eval ::FullScreen {
       global audace
 
       #--- j'affiche la fenetre de configuration
-      ::confGenerique::run $visuNo $audace(base).configfullscreen "::FullScreen::config"
+      ::confGenerique::run $visuNo $audace(base).configfullscreen "::FullScreen::config" -modal 0
       raise $private($visuNo,toplevel)
       focus $private($visuNo,toplevel)
    }

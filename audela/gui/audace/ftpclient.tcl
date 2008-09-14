@@ -2,7 +2,7 @@
 # Fichier : ftpclient.tcl
 # Description : Connexion a un serveur FTP
 # Auteur : Michel PUJOL
-# Mise a jour $Id: ftpclient.tcl,v 1.8 2007-05-27 18:39:58 michelpujol Exp $
+# Mise a jour $Id: ftpclient.tcl,v 1.9 2008-09-14 22:00:23 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -68,7 +68,7 @@ namespace eval ::ftpclient {
       set private(password)    ""
 
       #--- affiche la fenetre de connexion
-      set confResult [::confGenerique::run $visuNo "$audace(base).ftpclient" "::ftpclient"]
+      set confResult [::confGenerique::run $visuNo "$audace(base).ftpclient" "::ftpclient" -modal 0]
 
       if { $confResult == 1 } {
          if { $private(connection) != "" } {
