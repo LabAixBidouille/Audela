@@ -2,7 +2,7 @@
 # Fichier : methking.tcl
 # Description : Outil d'aide a la mise en station par la methode de King
 # Auteurs : Francois COCHARD et Jacques MICHELET
-# Mise a jour $Id: methking.tcl,v 1.19 2007-12-31 15:18:27 robertdelmas Exp $
+# Mise a jour $Id: methking.tcl,v 1.20 2008-09-15 09:10:44 jacquesmichelet Exp $
 #
 
 #============================================================
@@ -10,7 +10,7 @@
 #  initialise le namespace
 #============================================================
 namespace eval ::methking {
-   package provide methking 1.17
+   package provide methking 1.18
    package require audela 1.4.0
 
    # Chargement des captions pour recuperer le titre utilise par getPluginLabel
@@ -1123,17 +1123,25 @@ namespace eval ::methking {
    #--------------------------------------------------------------------------#
    proc startTool { visuNo } {
       variable This
+      variable methking_actif
 
       DemarrageKing This
       pack $This -anchor center -expand 0 -fill y -side left
+      set methking_actif 1
    }
 
    #--------------------------------------------------------------------------#
    proc stopTool { visuNo } {
       variable This
+      variable methking_actif
 
-      ArretKing
-      pack forget $This
+      # Visiblement, stopTool est appelé plusieurs fois lors de la sortie de Audace => plantage
+      # Mécanisme primaire pour empêcher les doubles appels à ArretKing
+      if {$methking_actif != 0} {
+          ArretKing
+          pack forget $This
+          set methking_actif 0
+      }
    }
 
    #--------------------------------------------------------------------------#
@@ -2169,6 +2177,7 @@ namespace eval ::methking {
       variable This
       global caption
       global audace
+      variable log_id
 
       switch -exact -- $niveau {
          console {
@@ -2178,8 +2187,8 @@ namespace eval ::methking {
          log {
             set temps $audace(tu,format,dmyhmsint)
             append temps " "
-            puts -nonewline $::methking::log_id $temps
-            puts -nonewline $::methking::log_id [eval [concat {format} $args]]
+            puts -nonewline $log_id $temps
+            puts -nonewline $log_id [eval [concat {format} $args]]
          }
          consolog {
             ::console::disp [eval [concat {format} $args]]
@@ -2235,6 +2244,7 @@ namespace eval ::methking {
             update idletasks
          }
       }
+      update
    }
 }
 #-----Fin du namespace methking--------------------------------------------#
