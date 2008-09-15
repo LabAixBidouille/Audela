@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.46 2008-09-06 10:12:01 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.47 2008-09-15 15:55:11 robertdelmas Exp $
 #
 
 #
@@ -206,6 +206,9 @@ namespace eval confPosObs {
       frame $This.frame2b -borderwidth 0 -relief raised
       pack $This.frame2b -in $This.frame1 -side top -fill both -expand 1
 
+      frame $This.frame2c -borderwidth 0 -relief raised
+      pack $This.frame2c -in $This.frame1 -side top -fill both -expand 1
+
       frame $This.frame3 -borderwidth 0 -relief raised
       pack $This.frame3 -in $This.frame1 -side top -fill both -expand 1
 
@@ -262,13 +265,13 @@ namespace eval confPosObs {
 
       #--- Nom de l'observateur
       label $This.lab0a -text "$caption(confgene,nom_observateur)"
-      pack $This.lab0a -in $This.frame2a -anchor w -side left -padx 10 -pady 5
+      pack $This.lab0a -in $This.frame2a -anchor w -side top -padx 10 -pady 5
 
-      entry $This.nom_observateur -textvariable confgene(posobs,nom_observateur) -width 35
-      pack $This.nom_observateur -in $This.frame2a -anchor w -side right -padx 10 -pady 5
+      entry $This.nom_observateur -textvariable confgene(posobs,nom_observateur) -width 70
+      pack $This.nom_observateur -in $This.frame2a -anchor w -side top -padx 10 -pady 5
 
       #--- Nom de l'observatoire
-      label $This.lab0b -text "$caption(confgene,nom_observatoire)"
+      label $This.lab0b -text "$caption(confgene,nom_observatoire:)"
       pack $This.lab0b -in $This.frame2b -anchor w -side left -padx 10 -pady 5
 
       ComboBox $This.nom_observatoire \
@@ -276,11 +279,22 @@ namespace eval confPosObs {
          -height 10        \
          -relief sunken    \
          -borderwidth 2    \
-         -editable 1       \
+         -editable 0       \
          -textvariable confgene(posobs,nom_observatoire) \
          -modifycmd "::confPosObs::cbCommand $This.nom_observatoire" \
          -values $confgene(posobs,nom_observatoire_liste)
       pack $This.nom_observatoire -in $This.frame2b -anchor w -side right -padx 10 -pady 5
+
+      #--- Gestion des noms d'observatoire
+      button $This.but_copy_obs -text "$caption(confgene,copier_observatoire)" -borderwidth 2 \
+         -command { ::confPosObs::copyObs }
+      pack $This.but_copy_obs -in $This.frame2c -anchor center -side right -padx 5 -pady 5 -ipadx 5
+      button $This.but_del_obs -text "$caption(confgene,supprimer_observatoire)" -borderwidth 2 \
+         -command { ::confPosObs::delObs }
+      pack $This.but_del_obs -in $This.frame2c -anchor center -side right -padx 5 -pady 5 -ipadx 5
+      button $This.but_add_obs -text "$caption(confgene,ajouter_observatoire)" -borderwidth 2 \
+         -command { ::confPosObs::addObs }
+      pack $This.but_add_obs -in $This.frame2c -anchor center -side right -padx 5 -pady 5 -ipadx 5
 
       #--- Longitude observateur
       label $This.lab1 -text "$caption(confgene,position_longitude)"
@@ -438,6 +452,231 @@ namespace eval confPosObs {
    }
 
    #
+   # confPosObs::addObs
+   # Ajout d'un observatoire dans la liste
+   #
+   proc addObs { } {
+      ::confPosObs::::config::run "add"
+   }
+
+   #
+   # confPosObs::delObs
+   # Suppression d'un observatoire dans la liste
+   #
+   proc delObs { } {
+      ::confPosObs::::config::run "del"
+   }
+
+   #
+   # confPosObs::copyObs
+   # Copie d'un observatoire de la liste
+   #
+   proc copyObs { } {
+      ::confPosObs::::config::run "copy"
+   }
+
+   #--- Namespace pour les boite de gestion des noms d'observatoire
+   namespace eval ::confPosObs::config {
+
+      #
+      # confPosObs::config::run
+      #--- Cree la fenetre de reglage de la vitesse en bauds du port serie
+      #
+      proc run { action } {
+         global audace confgene
+
+         set confgene(action) "$action"
+         ::confGenerique::run "1" "$audace(base).nameObsSetup" "::confPosObs::config" -modal 0
+         set posx_config [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 1 ]
+         set posy_config [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 2 ]
+         wm geometry $audace(base).nameObsSetup +[ expr $posx_config + 0 ]+[ expr $posy_config + 150 ]
+      }
+
+      #
+      # confPosObs::config::getLabel
+      #--- Retourne le nom de la fenetre de configuration
+      #
+      proc getLabel { } {
+         global caption
+
+         return "$caption(confgene,nom_observatoire)"
+      }
+
+      #
+      # confPosObs::config::apply
+      #--- Fonction 'Appliquer' pour memoriser et appliquer la configuration
+      #
+      proc apply { visuNo } {
+         global conf confgene
+
+         if { $confgene(action) == "add" } {
+            if { $confgene(posobs,new_nom_observatoire) != "" } {
+               set confgene(posobs,nom_observatoire) "$confgene(posobs,new_nom_observatoire)"
+            }
+         } elseif { $confgene(action) == "del" } {
+            if { $confgene(posobs,del_nom_observatoire) != "" } {
+               set index "$confgene(index_del)"
+               set conf(posobs,config_observatoire,$index) ""
+               if { $conf(posobs,config_observatoire,[ expr $index + 1 ]) != "" } {
+                  for {set i $index} {$i < 9 } {incr i } {
+                     set conf(posobs,config_observatoire,$i) $conf(posobs,config_observatoire,[ expr $i + 1 ])
+                  }
+               }
+               #--- Je recupere les attributs de la configuration
+               array set config_observatoire $conf(posobs,config_observatoire,0)
+               set confgene(posobs,del_nom_observatoire) $config_observatoire(nom_observatoire)
+               #--- Je prepare les valeurs de la combobox de configuration des noms d'observatoire
+               set confgene(posobs,nom_observatoire_liste) ""
+               foreach {key value} [ array get conf posobs,config_observatoire,* ] {
+                  if { "$value" == "" } continue
+                  #--- Je mets les valeurs dans un array (de-serialisation)
+                  array set config_observatoire $value
+                  #--- Je prepare la ligne a afficher dans la combobox
+                  set line "$config_observatoire(nom_observatoire) $config_observatoire(estouest) $config_observatoire(long) \
+                     $config_observatoire(nordsud) $config_observatoire(lat) $config_observatoire(altitude) \
+                     $config_observatoire(ref_geodesique) $config_observatoire(station_uai)"
+                  #--- J'ajoute la ligne
+                  lappend confgene(posobs,nom_observatoire_liste) "$line"
+               }
+               #--- Je mets a jour les combobox
+               $confgene(frm).config.nom_observatoire_a_supprimer configure -values $confgene(posobs,nom_observatoire_liste)
+               ::confPosObs::majListComboBox
+            }
+         } elseif { $confgene(action) == "copy" } {
+            if { $confgene(posobs,copy_nom_observatoire) != "" } {
+               set index "$confgene(index_copy)"
+               #--- Je recupere les attributs de la configuration
+               array set config_observatoire $conf(posobs,config_observatoire,$index)
+               #--- Je copie les valeurs dans les widgets de la configuration choisie
+               set confgene(posobs,nom_observatoire) "$confgene(posobs,nom_observatoire_copie)"
+               set confgene(posobs,estouest)         $config_observatoire(estouest)
+               set confgene(posobs,long)             $config_observatoire(long)
+               set confgene(posobs,nordsud)          $config_observatoire(nordsud)
+               set confgene(posobs,lat)              $config_observatoire(lat)
+               set confgene(posobs,altitude)         $config_observatoire(altitude)
+               set confgene(posobs,ref_geodesique)   $config_observatoire(ref_geodesique)
+               set confgene(posobs,station_uai)      ""
+               #--- Fonction pour la mise a la forme MPC et MPCSTATION
+               ::confPosObs::MPC
+               #--- Fonction pour la mise a la forme GPS
+               ::confPosObs::Position
+            }
+         }
+      }
+
+      #
+      # confPosObs::config::closeWindow
+      #--- Fonction appellee lors de l'appui sur le bouton 'Fermer'
+      #
+      proc closeWindow { visuNo } {
+      }
+
+      #
+      # confPosObs::config::cbCommand
+      # (appelee par la combobox a chaque changement de selection)
+      # Affiche les valeurs dans les widgets pour la configuration choisie
+      #
+      proc cbCommand { cb } {
+         global conf confgene
+
+         #--- Je recupere l'index de l'element selectionne
+         set index [ $cb getvalue ]
+         if { "$index" == "" } {
+            set index 0
+         }
+
+         #--- Je recupere les attributs de la configuration
+         array set configuration_observatoire $conf(posobs,config_observatoire,$index)
+
+         #--- Je copie les valeurs dans les widgets de la configuration choisie
+         if { $confgene(action) == "del" } {
+            set confgene(posobs,del_nom_observatoire) $configuration_observatoire(nom_observatoire)
+            set confgene(index_del) "$index"
+         } elseif { $confgene(action) == "copy" } {
+            set confgene(posobs,copy_nom_observatoire) $configuration_observatoire(nom_observatoire)
+            set confgene(index_copy) "$index"
+         }
+      }
+
+      #
+      # confPosObs::config::fillConfigPage
+      #--- Creation de l'interface graphique
+      #
+      proc fillConfigPage { frm visuNo } {
+         global audace caption confgene
+
+         #--- Initialisation
+         set confgene(frm)                           $frm
+         set confgene(posobs,new_nom_observatoire)   ""
+         set confgene(posobs,del_nom_observatoire)   "$confgene(posobs,nom_observatoire)"
+         set confgene(posobs,copy_nom_observatoire)  "$confgene(posobs,nom_observatoire)"
+         set confgene(posobs,nom_observatoire_copie) ""
+
+         #--- Frame du choix de la vitesse en bauds du port serie
+         frame $frm.config -borderwidth 0 -relief raised
+
+            if { $confgene(action) == "add" } {
+
+               label $frm.config.lab1 -text $caption(confgene,observatoire_a_ajouter)
+               pack $frm.config.lab1 -anchor nw -side left -padx 10 -pady 10
+
+               entry $frm.config.nom_observatoire_a_ajouter -textvariable confgene(posobs,new_nom_observatoire) -width 42
+               pack $frm.config.nom_observatoire_a_ajouter -anchor w -side left -padx 10 -pady 5
+
+            } elseif { $confgene(action) == "del" } {
+
+               label $frm.config.lab2 -text $caption(confgene,observatoire_a_supprimer)
+               pack $frm.config.lab2 -anchor nw -side left -padx 10 -pady 10
+
+               ComboBox $frm.config.nom_observatoire_a_supprimer \
+                  -width 42         \
+                  -height 10        \
+                  -relief sunken    \
+                  -borderwidth 2    \
+                  -editable 0       \
+                  -textvariable confgene(posobs,del_nom_observatoire) \
+                  -modifycmd "::confPosObs::config::cbCommand $frm.config.nom_observatoire_a_supprimer" \
+                  -values $confgene(posobs,nom_observatoire_liste)
+               pack $frm.config.nom_observatoire_a_supprimer -anchor w -side right -padx 10 -pady 5
+
+            } elseif { $confgene(action) == "copy" } {
+
+               frame $frm.config.frame1 -borderwidth 0 -relief raised
+
+                  label $frm.config.frame1.lab3 -text $caption(confgene,observatoire_a_copier)
+                  pack $frm.config.frame1.lab3 -anchor nw -side left -padx 10 -pady 10
+
+                  ComboBox $frm.config.frame1.nom_observatoire_a_copier \
+                     -width 42         \
+                     -height 10        \
+                     -relief sunken    \
+                     -borderwidth 2    \
+                    -editable 0       \
+                     -textvariable confgene(posobs,copy_nom_observatoire) \
+                     -modifycmd "::confPosObs::config::cbCommand $frm.config.frame1.nom_observatoire_a_copier" \
+                     -values $confgene(posobs,nom_observatoire_liste)
+                  pack $frm.config.frame1.nom_observatoire_a_copier -anchor w -side right -padx 10 -pady 5
+
+               pack $frm.config.frame1 -side top -fill both -expand 1
+
+               frame $frm.config.frame2 -borderwidth 0 -relief raised
+
+                  label $frm.config.frame2.lab4 -text $caption(confgene,nom_observatoire)
+                  pack $frm.config.frame2.lab4 -anchor nw -side left -padx 10 -pady 10
+
+                  entry $frm.config.frame2.nom_observatoire_copie -textvariable confgene(posobs,nom_observatoire_copie) -width 42
+                  pack $frm.config.frame2.nom_observatoire_copie -anchor w -side left -padx 10 -pady 5
+
+               pack $frm.config.frame2 -side top -fill both -expand 1
+
+            }
+
+         pack $frm.config -side top -fill both -expand 1
+      }
+
+   }
+
+   #
    # confPosObs::MaJ
    # Creation de l'interface pour la mise a jour du fichier des observatoires
    #
@@ -452,7 +691,7 @@ namespace eval confPosObs {
       wm title $audace(base).maj "$caption(confgene,position_miseajour)"
       set posx_maj [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 1 ]
       set posy_maj [ lindex [ split [ wm geometry $audace(base).confPosObs ] "+" ] 2 ]
-      wm geometry $audace(base).maj +[ expr $posx_maj + 10 ]+[ expr $posy_maj + 100 ]
+      wm geometry $audace(base).maj +[ expr $posx_maj + 10 ]+[ expr $posy_maj + 230 ]
       wm resizable $audace(base).maj 0 0
 
       #--- Cree l'affichage du message
@@ -812,6 +1051,17 @@ namespace eval confPosObs {
       #--- Concatenation de variables pour l'en-tete FITS
       set conf(posobs,estouest_long)          $conf(posobs,estouest)$conf(posobs,long)
       set conf(posobs,nordsud_lat)            $conf(posobs,nordsud)$conf(posobs,lat)
+   }
+
+   #
+   # confPosObs::majListComboBox
+   # Mise a jour de la liste de la combobox des observatoires
+   #
+   proc majListComboBox { } {
+      variable This
+      global confgene
+
+      $This.nom_observatoire configure -values $confgene(posobs,nom_observatoire_liste)
    }
 }
 
