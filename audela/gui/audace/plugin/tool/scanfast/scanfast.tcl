@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode scan rapide
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scanfast.tcl,v 1.41 2008-05-25 10:15:32 robertdelmas Exp $
+# Mise a jour $Id: scanfast.tcl,v 1.42 2008-09-15 15:49:24 robertdelmas Exp $
 #
 
 global panneau
@@ -326,6 +326,17 @@ proc ::scanfast::chargementVar { } {
    if { ! [ info exists parametres(scanfast,speed) ] }      { set parametres(scanfast,speed)      "8000" }
    if { ! [ info exists parametres(scanfast,obt) ] }        { set parametres(scanfast,obt)        "2" }
 
+   #--- Creation des variables si elles sont vides
+   if { $parametres(scanfast,col1) == "" }       { set parametres(scanfast,col1)       "1" }
+   if { $parametres(scanfast,col2) == "" }       { set parametres(scanfast,col2)       "768" }
+   if { $parametres(scanfast,lig1) == "" }       { set parametres(scanfast,lig1)       "1500" }
+   if { $parametres(scanfast,binningX) == "" }   { set parametres(scanfast,binningX)   "2" }
+   if { $parametres(scanfast,binningY) == "" }   { set parametres(scanfast,binningY)   "2" }
+   if { $parametres(scanfast,interligne) == "" } { set parametres(scanfast,interligne) "100" }
+   if { $parametres(scanfast,dt) == "" }         { set parametres(scanfast,dt)         "40" }
+   if { $parametres(scanfast,speed) == "" }      { set parametres(scanfast,speed)      "8000" }
+   if { $parametres(scanfast,obt) == "" }        { set parametres(scanfast,obt)        "2" }
+
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::scanfastSetup::initToConf
 }
@@ -567,6 +578,7 @@ proc ::scanfast::int { value } {
 #------------------------------------------------------------
 proc ::scanfast::cmdGo { { motor motoron } } {
    variable This
+   variable parametres
    global audace caption conf panneau
 
    if { [ ::cam::list ] != "" } {
@@ -575,9 +587,70 @@ proc ::scanfast::cmdGo { { motor motoron } } {
          set panneau(scanfast,acquisition) "1"
          set panneau(Scan,Stop)            "0"
 
-         #--- La premiere colonne (firstpix) ne peut pas etre inferieure a 1
+         #--- Les champs "Colonnes", "Lignes" et "Interligne" ne doivent pas être vides
+         if { $panneau(scanfast,col1) == "" } {
+            set panneau(scanfast,col1) $parametres(scanfast,col1)
+         }
+         if { $panneau(scanfast,col2) == "" } {
+            set panneau(scanfast,col2) $parametres(scanfast,col2)
+         }
+         if { $panneau(scanfast,lig1) == "" } {
+            set panneau(scanfast,lig1) $parametres(scanfast,lig1)
+         }
+         if { $panneau(scanfast,interligne) == "" } {
+            set panneau(scanfast,interligne) $parametres(scanfast,interligne)
+         }
+
+         #--- Les 2 champs de la "Calibration" ne doivent pas être vides
+         if { $panneau(scanfast,dt) == "" } {
+            cmdCalcul
+         }
+         if { $panneau(scanfast,speed) == "" } {
+            cmdCalcul
+         }
+
+         #--- Le nombre de ligne du scan doit etre superieur ou egal a 2
+         if { $panneau(scanfast,lig1) < "0" } {
+            set panneau(scanfast,lig1) [ expr abs($panneau(scanfast,lig1)) ]
+         }
+         if { $panneau(scanfast,lig1) < "2" } {
+            set panneau(scanfast,lig1) "2"
+         }
+
+         #--- La premiere colonne (firstpix) doit etre superieure ou egale a 1
+         if { $panneau(scanfast,col1) < "0" } {
+            set panneau(scanfast,col1) [ expr abs($panneau(scanfast,col1)) ]
+         }
          if { $panneau(scanfast,col1) < "1" } {
             set panneau(scanfast,col1) "1"
+         }
+
+         #--- La seconde colonne doit etre superieure ou egale a 2
+         if { $panneau(scanfast,col2) < "0" } {
+            set panneau(scanfast,col2) [ expr abs($panneau(scanfast,col2)) ]
+         }
+         if { $panneau(scanfast,col2) < "2" } {
+            set panneau(scanfast,col2) "2"
+         }
+
+         #--- La seconde colonne doit etre superieure a la premiere colonne
+         if { $panneau(scanfast,col2) < $panneau(scanfast,col1) } {
+            set colonne                "$panneau(scanfast,col2)"
+            set panneau(scanfast,col2) "$panneau(scanfast,col1)"
+            set panneau(scanfast,col1) "$colonne"
+         }
+
+         #--- Calcul de la colonne maxi du CCD
+         set colonneMaxi "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
+
+         #--- La premiere colonne doit etre inferieure a la largeur du CCD
+         if { $panneau(scanfast,col1) > "$colonneMaxi" } {
+            set panneau(scanfast,col1) "1"
+         }
+
+         #--- La seconde colonne doit etre inferieure a la largeur du CCD
+         if { $panneau(scanfast,col2) > "$colonneMaxi" } {
+            set panneau(scanfast,col2) "$colonneMaxi"
          }
 
          #--- Gestion graphique du bouton GO CCD
@@ -798,15 +871,69 @@ proc ::scanfast::cmdStop { } {
 #------------------------------------------------------------
 proc ::scanfast::cmdCalcul { } {
    variable This
+   variable parametres
    global audace conf panneau
 
    if { [ ::cam::list ] != "" } {
       $This.fra33.but1 configure -relief groove -state disabled
       update
 
-      #--- La premiere colonne (firstpix) ne peut pas etre inferieure a 1
+      #--- Les champs "Colonnes", "Lignes" et "Interligne" ne doivent pas être vides
+      if { $panneau(scanfast,col1) == "" } {
+         set panneau(scanfast,col1) $parametres(scanfast,col1)
+      }
+      if { $panneau(scanfast,col2) == "" } {
+         set panneau(scanfast,col2) $parametres(scanfast,col2)
+      }
+      if { $panneau(scanfast,lig1) == "" } {
+         set panneau(scanfast,lig1) $parametres(scanfast,lig1)
+      }
+      if { $panneau(scanfast,interligne) == "" } {
+         set panneau(scanfast,interligne) $parametres(scanfast,interligne)
+      }
+
+      #--- Le nombre de ligne du scan doit etre superieur ou egal a 2
+      if { $panneau(scanfast,lig1) < "0" } {
+         set panneau(scanfast,lig1) [ expr abs($panneau(scanfast,lig1)) ]
+      }
+      if { $panneau(scanfast,lig1) < "2" } {
+         set panneau(scanfast,lig1) "2"
+      }
+
+      #--- La premiere colonne (firstpix) doit etre superieure ou egale a 1
+      if { $panneau(scanfast,col1) < "0" } {
+         set panneau(scanfast,col1) [ expr abs($panneau(scanfast,col1)) ]
+      }
       if { $panneau(scanfast,col1) < "1" } {
          set panneau(scanfast,col1) "1"
+      }
+
+      #--- La seconde colonne doit etre superieure ou egale a 2
+      if { $panneau(scanfast,col2) < "0" } {
+         set panneau(scanfast,col2) [ expr abs($panneau(scanfast,col2)) ]
+      }
+      if { $panneau(scanfast,col2) < "2" } {
+         set panneau(scanfast,col2) "2"
+      }
+
+      #--- La seconde colonne doit etre superieure a la premiere colonne
+      if { $panneau(scanfast,col2) < $panneau(scanfast,col1) } {
+         set colonne                "$panneau(scanfast,col2)"
+         set panneau(scanfast,col2) "$panneau(scanfast,col1)"
+         set panneau(scanfast,col1) "$colonne"
+      }
+
+      #--- Calcul de la colonne maxi du CCD
+      set colonneMaxi "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
+
+      #--- La premiere colonne doit etre inferieure a la largeur du CCD
+      if { $panneau(scanfast,col1) > "$colonneMaxi" } {
+         set panneau(scanfast,col1) "1"
+      }
+
+      #--- La seconde colonne doit etre inferieure a la largeur du CCD
+      if { $panneau(scanfast,col2) > "$colonneMaxi" } {
+         set panneau(scanfast,col2) "$colonneMaxi"
       }
 
       #---
@@ -1194,7 +1321,7 @@ proc scanfastBuildIF { This } {
 
             #--- Entry pour DT
             entry $This.fra33.fra1.ent1 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,dt) \
-               -relief groove -width 6
+               -relief groove -width 8
             pack $This.fra33.fra1.ent1 -in $This.fra33.fra1 -side left -fill none -padx 2 -pady 2
 
             #--- Label pour les ms
@@ -1208,7 +1335,7 @@ proc scanfastBuildIF { This } {
 
             #--- Entry pour SPEED
             entry $This.fra33.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(scanfast,speed) \
-               -relief groove -width 6
+               -relief groove -width 8
             pack $This.fra33.fra2.ent1 -in $This.fra33.fra2 -side left -fill none -padx 2 -pady 2
 
             #--- Label pour les boucles

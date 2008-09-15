@@ -3,7 +3,7 @@
 # Description : Outil pour l'acquisition en mode drift scan
 # Compatibilite : Montures LX200, AudeCom et Ouranos avec camera Audine (liaisons parallele et EthernAude)
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: scan.tcl,v 1.41 2008-05-25 10:14:54 robertdelmas Exp $
+# Mise a jour $Id: scan.tcl,v 1.42 2008-09-15 15:50:46 robertdelmas Exp $
 #
 
 #============================================================
@@ -244,6 +244,17 @@ proc ::scan::chargementVar { } {
    if { ! [ info exists parametres(scan,foc) ] }      { set parametres(scan,foc)      ".85" }
    if { ! [ info exists parametres(scan,dec) ] }      { set parametres(scan,dec)      "0d" }
    if { ! [ info exists parametres(scan,obt) ] }      { set parametres(scan,obt)      "2" }
+
+   #--- Creation des variables si elles sont vides
+   if { $parametres(scan,col1) == "" }     { set parametres(scan,col1)     "1" }
+   if { $parametres(scan,col2) == "" }     { set parametres(scan,col2)     "768" }
+   if { $parametres(scan,lig1) == "" }     { set parametres(scan,lig1)     "1500" }
+   if { $parametres(scan,dimpix) == "" }   { set parametres(scan,dimpix)   "9.0" }
+   if { $parametres(scan,binningX) == "" } { set parametres(scan,binningX) "2" }
+   if { $parametres(scan,binningY) == "" } { set parametres(scan,binningY) "2" }
+   if { $parametres(scan,foc) == "" }      { set parametres(scan,foc)      ".85" }
+   if { $parametres(scan,dec) == "" }      { set parametres(scan,dec)      "0d" }
+   if { $parametres(scan,obt) == "" }      { set parametres(scan,obt)      "2" }
 
    #--- Creation des variables de la boite de configuration si elles n'existent pas
    ::scanSetup::initToConf
@@ -506,6 +517,7 @@ proc ::scan::int { value } {
 #------------------------------------------------------------
 proc ::scan::cmdGo { { motor motoron } } {
    variable This
+   variable parametres
    global audace conf panneau
 
    if { [ ::cam::list ] != "" } {
@@ -514,9 +526,59 @@ proc ::scan::cmdGo { { motor motoron } } {
          set panneau(scan,acquisition) "1"
          set panneau(Scan,Stop)        "0"
 
-         #--- La premiere colonne ne peut pas etre inferieure a 1
+         #--- Les champs "Colonnes" et "Lignes" ne doivent pas être vides
+         if { $panneau(scan,col1) == "" } {
+            set panneau(scan,col1) $parametres(scan,col1)
+         }
+         if { $panneau(scan,col2) == "" } {
+            set panneau(scan,col2) $parametres(scan,col2)
+         }
+         if { $panneau(scan,lig1) == "" } {
+            set panneau(scan,lig1) $parametres(scan,lig1)
+         }
+
+         #--- Le nombre de ligne du scan doit etre superieur ou egal a 2
+         if { $panneau(scan,lig1) < "0" } {
+            set panneau(scan,lig1) [ expr abs($panneau(scan,lig1)) ]
+         }
+         if { $panneau(scan,lig1) < "2" } {
+            set panneau(scan,lig1) "2"
+         }
+
+         #--- La premiere colonne (firstpix) doit etre superieure ou egale a 1
+         if { $panneau(scan,col1) < "0" } {
+            set panneau(scan,col1) [ expr abs($panneau(scan,col1)) ]
+         }
          if { $panneau(scan,col1) < "1" } {
             set panneau(scan,col1) "1"
+         }
+
+         #--- La seconde colonne doit etre superieure ou egale a 2
+         if { $panneau(scan,col2) < "0" } {
+            set panneau(scan,col2) [ expr abs($panneau(scan,col2)) ]
+         }
+         if { $panneau(scan,col2) < "2" } {
+            set panneau(scan,col2) "2"
+         }
+
+         #--- La seconde colonne doit etre superieure a la premiere colonne
+         if { $panneau(scan,col2) < $panneau(scan,col1) } {
+            set colonne            "$panneau(scan,col2)"
+            set panneau(scan,col2) "$panneau(scan,col1)"
+            set panneau(scan,col1) "$colonne"
+         }
+
+         #--- Calcul de la colonne maxi du CCD
+         set colonneMaxi "[ lindex [ cam$audace(camNo) nbcells ] 0 ]"
+
+         #--- La premiere colonne doit etre inferieure a la largeur du CCD
+         if { $panneau(scan,col1) > "$colonneMaxi" } {
+            set panneau(scan,col1) "1"
+         }
+
+         #--- La seconde colonne doit etre inferieure a la largeur du CCD
+         if { $panneau(scan,col2) > "$colonneMaxi" } {
+            set panneau(scan,col2) "$colonneMaxi"
          }
 
          #--- Gestion graphique du bouton GO CCD
@@ -720,11 +782,22 @@ proc ::scan::cmdStop { } {
 #------------------------------------------------------------
 proc ::scan::cmdCalcul { } {
    variable This
-   global conf panneau
+   variable parametres
+   global audace conf panneau
 
-   #--- La premiere colonne ne peut pas etre inferieure a 1
-   if { $panneau(scan,col1) < "1" } {
-      set panneau(scan,col1) "1"
+   #--- Le champ "Pixel" ne doit pas etre vide
+   if { $panneau(scan,pix) == "" } {
+      updateCellDim
+   }
+
+   #--- Le champ "Focale" ne doit pas etre vide
+   if { $panneau(scan,foc) == "" } {
+      set panneau(scan,foc) "$parametres(scan,foc)"
+   }
+
+   #--- Le champ "Dec." ne doit pas etre vide
+   if { $panneau(scan,dec) == "" } {
+      cmdDec
    }
 
    #--- Calcul de dt
