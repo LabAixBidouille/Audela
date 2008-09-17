@@ -560,7 +560,7 @@ int Cmd_gsltcltcl_mdet(ClientData clientData, Tcl_Interp *interp, int argc, char
 	  det=gsl_linalg_LU_det(mat,signum);
       gsl_permutation_free(p);
       Tcl_DStringInit(&dsptr);
-      sprintf(s,"%f",det);
+      sprintf(s,"%s",gsltcl_d2s(det));
       Tcl_DStringAppendElement(&dsptr,s);
       Tcl_DStringResult(interp,&dsptr);
       Tcl_DStringFree(&dsptr);
@@ -703,7 +703,7 @@ int Cmd_gsltcltcl_mfitmultilin(ClientData clientData, Tcl_Interp *interp, int ar
       gsltcltcl_setgslvector(interp,&dsptr,gslvecc,nxc);
       /*Tcl_DStringEndSublist(&dsptr);*/
       Tcl_DStringAppend(&dsptr," } ",3);
-      sprintf(s,"%f",chisq);
+      sprintf(s,"%s",gsltcl_d2s(chisq));
       Tcl_DStringAppendElement(&dsptr,s);
       /*Tcl_DStringStartSublist(&dsptr);*/
       Tcl_DStringAppend(&dsptr," { ",3);
@@ -928,7 +928,7 @@ int gsltcltcl_setvector(Tcl_Interp *interp, Tcl_DString *dsptr, double *vec, int
    int k;
    char s[200];
    for (k=0;k<n;k++) {
-      sprintf(s,"%f",vec[k]);
+      sprintf(s,"%s",gsltcl_d2s(vec[k]));
       Tcl_DStringAppendElement(dsptr,s);
    }
    return TCL_OK;
@@ -1007,7 +1007,7 @@ int gsltcltcl_setmatrix(Tcl_Interp *interp, Tcl_DString *dsptr, double *mat, int
       /*Tcl_DStringStartSublist(dsptr);*/
       Tcl_DStringAppend(dsptr," { ",3);
       for (kc=0;kc<nc;kc++) {
-         sprintf(s,"%f",mat[nc*kl+kc]);
+         sprintf(s,"%s",gsltcl_d2s(mat[nc*kl+kc]));
          Tcl_DStringAppendElement(dsptr,s);
       }
       /*Tcl_DStringEndSublist(dsptr);*/
@@ -1082,13 +1082,11 @@ int gsltcltcl_setgslmatrix(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_matrix *g
    int kl,kc;
    char s[200];
    for (kl=0;kl<nl;kl++) {
-/*      Tcl_DStringStartSublist(dsptr);*/
       Tcl_DStringAppend(dsptr," { ",3);
       for (kc=0;kc<nc;kc++) {
-         sprintf(s,"%f",gsl_matrix_get(gslmat,kl,kc));
+         sprintf(s,"%s",gsltcl_d2s(gsl_matrix_get(gslmat,kl,kc)));
          Tcl_DStringAppendElement(dsptr,s);
       }
-      /*Tcl_DStringEndSublist(dsptr);*/
       Tcl_DStringAppend(dsptr," } ",3);
    }
    return TCL_OK;
@@ -1133,10 +1131,8 @@ int gsltcltcl_setgslvector(Tcl_Interp *interp, Tcl_DString *dsptr, gsl_vector *v
 /****************************************************************************/
 {
    int k;
-   char s[200];
    for (k=0;k<n;k++) {
-      sprintf(s,"%f",gsl_vector_get(vec,k));
-      Tcl_DStringAppendElement(dsptr,s);
+      Tcl_DStringAppendElement(dsptr,gsltcl_d2s(gsl_vector_get(vec,k)));
    }
    return TCL_OK;
 }

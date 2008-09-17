@@ -82,6 +82,7 @@ typedef struct {
 
 int gsltcl_mcalloc(double **mat,int nlig,int ncol);
 int gsltcl_mfree(double **mat);
+char *gsltcl_d2s(double val);
 
 #endif
 
