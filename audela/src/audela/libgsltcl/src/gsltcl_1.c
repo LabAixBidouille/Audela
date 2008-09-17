@@ -60,3 +60,21 @@ int gsltcl_mfree(double **mat)
    }
    return 0;
 }
+
+char *gsltcl_d2s(double val)
+/***************************************************************************/
+/* Double to String conversion with many digits                            */
+/***************************************************************************/
+/***************************************************************************/
+{
+   int kk,nn;
+   static char s[200];
+   sprintf(s,"%13.12g",val);
+	nn=(int)strlen(s);
+	for (kk=0;kk<nn;kk++) {
+		if (s[kk]!=' ') {
+			break;
+		}
+	}		
+   return s+kk;
+}
