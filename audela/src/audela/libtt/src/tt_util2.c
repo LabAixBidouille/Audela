@@ -2916,69 +2916,81 @@ int tt_util_regima1(TT_IMA_SERIES *pseries)
 */
          xc1=p_dum->a[0]*x2+p_dum->a[1]*y2+p_dum->a[2];
          yc1=p_dum->a[3]*x2+p_dum->a[4]*y2+p_dum->a[5];
-         y1=(int)floor(yc1);
-         x1=(int)floor(xc1);
+			if (pseries->pixint==TT_YES) {
+				y1=(int)floor(yc1+.51);
+				x1=(int)floor(xc1+.51);
+			} else {
+				y1=(int)floor(yc1);
+				x1=(int)floor(xc1);
+			}
          k2=x2+y2*iimax;
          if ((x1>=-1)&&(x1<=(imax-1))&&(y1>=-1)&&(y1<=(jmax-1))) {
-            alpha=xc1-(double)x1;
-            beta=yc1-(double)y1;
-            coef_a=(1-alpha)*(1-beta);
-            coef_b=(1-alpha)*beta;
-            coef_c=alpha*(1-beta);
-            coef_d=alpha*beta;
-            ka=x1+y1*imax;
-            kb=x1+(y1+1)*imax;
-            kc=x1+1+y1*imax;
-            kd=x1+1+(y1+1)*imax;
-            if (x1==-1) {
-              if (y1==-1) {
-                vd=p_in->p[kd];
-                value=vd;
-              } else {
-                if (y1==(jmax-1)) {
-                  vc=p_in->p[kc];
-                  value=vc;
-                } else {
-                  vc=p_in->p[kc];
-                  vd=p_in->p[kd];
-                  value=((1-beta)*vc+beta*vd);
-                  }
-                }
-            } else  {
-              if (x1==(imax-1)) {
-                if (y1==-1) {
-                  vb=p_in->p[kb];
-                  value=vb;
-                } else {
-                  if (y1==(jmax-1)) {
-                    va=p_in->p[ka];
-                    value=va;
-                  } else {
-                    va=p_in->p[ka];
-                    vb=p_in->p[kb];
-                    value=((1-beta)*va+beta*vb);
-                    }
-                  }
-              } else {
-                if (y1==-1) {
-                  vb=p_in->p[kb];
-                  vd=p_in->p[kd];
-                  value=((1-alpha)*vb+alpha*vd);
-                } else {
-                  if (y1==(jmax-1)) {
-                    va=p_in->p[ka];
-                    vc=p_in->p[kc];
-                    value=((1-alpha)*va+alpha*vc);
-                  } else {
-                    va=p_in->p[ka];
-                    vb=p_in->p[kb];
-                    vc=p_in->p[kc];
-                    vd=p_in->p[kd];
-                    value=(coef_a*va+coef_b*vb+coef_c*vc+coef_d*vd);
-                    }
-                  }
-                }
-            }
+				if (pseries->pixint==TT_YES) {
+					if (x1==-1) { x1=0; }
+					if (y1==-1) { y1=0; }
+					ka=x1+y1*imax;
+					value=p_in->p[ka];
+				} else {
+					alpha=xc1-(double)x1;
+					beta=yc1-(double)y1;
+					coef_a=(1-alpha)*(1-beta);
+					coef_b=(1-alpha)*beta;
+					coef_c=alpha*(1-beta);
+					coef_d=alpha*beta;
+					ka=x1+y1*imax;
+					kb=x1+(y1+1)*imax;
+					kc=x1+1+y1*imax;
+					kd=x1+1+(y1+1)*imax;
+					if (x1==-1) {
+					  if (y1==-1) {
+						 vd=p_in->p[kd];
+						 value=vd;
+					  } else {
+						 if (y1==(jmax-1)) {
+							vc=p_in->p[kc];
+							value=vc;
+						 } else {
+							vc=p_in->p[kc];
+							vd=p_in->p[kd];
+							value=((1-beta)*vc+beta*vd);
+							}
+						 }
+					} else  {
+					  if (x1==(imax-1)) {
+						 if (y1==-1) {
+							vb=p_in->p[kb];
+							value=vb;
+						 } else {
+							if (y1==(jmax-1)) {
+							  va=p_in->p[ka];
+							  value=va;
+							} else {
+							  va=p_in->p[ka];
+							  vb=p_in->p[kb];
+							  value=((1-beta)*va+beta*vb);
+							  }
+							}
+					  } else {
+						 if (y1==-1) {
+							vb=p_in->p[kb];
+							vd=p_in->p[kd];
+							value=((1-alpha)*vb+alpha*vd);
+						 } else {
+							if (y1==(jmax-1)) {
+							  va=p_in->p[ka];
+							  vc=p_in->p[kc];
+							  value=((1-alpha)*va+alpha*vc);
+							} else {
+							  va=p_in->p[ka];
+							  vb=p_in->p[kb];
+							  vc=p_in->p[kc];
+							  vd=p_in->p[kd];
+							  value=(coef_a*va+coef_b*vb+coef_c*vc+coef_d*vd);
+							  }
+							}
+						 }
+					}
+				}
             p_out->p[k2]=(TT_PTYPE)(value*mult);
          } else {
             p_out->p[k2]=(TT_PTYPE)(nulval);
