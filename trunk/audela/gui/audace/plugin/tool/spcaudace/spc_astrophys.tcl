@@ -1,9 +1,7 @@
 
 # Procédures d'exploitation astrophysique des spectres
-# A130 : source $audace(rep_scripts)/spcaudace/spc_astrophys.tcl
-# A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_astrophys.tcl ]
 
-# Mise a jour $Id: spc_astrophys.tcl,v 1.3 2008-09-01 17:54:08 bmauclaire Exp $
+# Mise a jour $Id: spc_astrophys.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 

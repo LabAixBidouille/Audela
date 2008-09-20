@@ -20,7 +20,7 @@
 # et renommer ce fichier mauclaire.tcl ;-)
 
 
-# Mise a jour $Id: spc_profil.tcl,v 1.3 2008-07-02 22:49:08 bmauclaire Exp $
+# Mise a jour $Id: spc_profil.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 
@@ -716,6 +716,7 @@ proc spc_subsky { args } {
 	::console::affiche_resultat "Zone du spectre : $coords_zone_spectre\n"
 	#--- Découpage de la zone où se trouve le spectre
 	buf$audace(bufNo) window $coords_zone_spectre
+buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone"
 	set hauteurzone [ lindex [buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
 
@@ -725,6 +726,7 @@ proc spc_subsky { args } {
 	::console::affiche_resultat "Zone supérieure : $coords_zone_sup\n"
 	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	buf$audace(bufNo) window $coords_zone_sup
+        buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zonesup"
 
 	#--- Découpage de la zone inférieure pour le fond de ciel :
@@ -732,7 +734,9 @@ proc spc_subsky { args } {
 	::console::affiche_resultat "Zone inférieure : $coords_zone_inf\n"
 	buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	buf$audace(bufNo) window $coords_zone_inf
+        buf$audace(bufNo) bitpix float
 	buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zoneinf"
+        buf$audace(bufNo) bitpix short
 
 	#--- Calcul de la moyenne du fond de ciel et la soustrait :
 	if { $methodemoy == "moy" } {
@@ -746,7 +750,9 @@ proc spc_subsky { args } {
 	    uncosmic $spcaudace(uncosmic)
 	    #-- Soustraction :
 	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+            buf$audace(bufNo) bitpix short
 	} elseif { $methodemoy == "med" } {
 
 	    #--- Somme médiane des colonne pour chaque zone puis moyenne :
@@ -754,6 +760,7 @@ proc spc_subsky { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zonesup"
 	    set haut [ lindex [ buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
 	    buf$audace(bufNo) imaseries "MEDIANY y1=1 y2=$haut height=$hauteurzone"
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zonesupmed"
 	    buf$audace(bufNo) load "$audace(rep_images)/${spectre}_zoneinf"
 	    set haut [ lindex [ buf$audace(bufNo) getkwd "NAXIS2"] 1 ]
@@ -762,8 +769,10 @@ proc spc_subsky { args } {
 	    buf$audace(bufNo) mult -0.5
 	    #-- Soustraction :
 	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
 	    file delete -force "$audace(rep_images)/${spectre}_zonesupmed$conf(extension,defaut)"
+            buf$audace(bufNo) bitpix short
 	} elseif { $methodemoy == "moy2" } {
 
 	    #--- Moyenne de la valeur des fonds de ciel tirés des 2 zones :
@@ -783,7 +792,9 @@ proc spc_subsky { args } {
 	    buf$audace(bufNo) offset $moy
 	    #-- Soustraction :
 	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+            buf$audace(bufNo) bitpix short
 	} elseif { $methodemoy == "back" } {
 
 	    #--- Méthode du BACK :
@@ -791,7 +802,9 @@ proc spc_subsky { args } {
 	    buf$audace(bufNo) load "$audace(rep_images)/$spectre"
 	    buf$audace(bufNo) imaseries "BACK back_kernek=30 back_threshold=0.2 sub"
 	    buf$audace(bufNo) window $coords_zone_spectre
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+            buf$audace(bufNo) bitpix short
 	} elseif { $methodemoy == "sup" } {
 
 	    #--- Soustraction du fond de ciel d'une zone dessus le spectre :
@@ -807,7 +820,9 @@ proc spc_subsky { args } {
 	    buf$audace(bufNo) offset $moy
 	    #-- Soustraction :
 	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+            buf$audace(bufNo) bitpix short
 	} elseif { $methodemoy == "inf" } {
 
 	    #--- Soustraction du fond de ciel d'une zone dessus le spectre :
@@ -823,7 +838,9 @@ proc spc_subsky { args } {
 	    buf$audace(bufNo) offset $moy
 	    #-- Soustraction :
 	    buf$audace(bufNo) add "$audace(rep_images)/${spectre}_zone" 0
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/${spectre}_zone_fc"
+            buf$audace(bufNo) bitpix short
 	} elseif { $methodemoy == "none" } {
 
 	    #--- Aucune soustraction du fond de ciel
@@ -932,7 +949,7 @@ proc spc_profil { args } {
 	    #-- Bizarement, lopt ne peut prendre la dimension totale d'une image :
 	    set yepaisseur [ expr $ylargeur-3 ]
 	    if { $yepaisseur<=4. } {
-		::console::affiche_resultat "\nÉpaisseur de binning de Roberval trop faible.\nSélection large du spectre (9 pixels)\n"
+		::console::affiche_erreur "\nÉpaisseur de binning de Roberval trop faible.\nSélection large du spectre (9 pixels)\n"
 		set gauss_params [ spc_detect $spectre2d ]
 		set ycenter [ lindex $gauss_params 0 ]
 		set hauteur [ lindex $gauss_params 1 ]
@@ -946,15 +963,15 @@ proc spc_profil { args } {
 		#-- Bizarement, lopt ne peut prendre la dimension totale d'une image :
 		set yepaisseur [ expr $ylargeur-3. ]
 		if { $yepaisseur<=4. } {
-		    ::console::affiche_resultat "\nÉpaisseur de binning de Roberval trop faible. Fin de procédure\n.\n"
+		    ::console::affiche_erreur "\nÉpaisseur de binning de Roberval trop faible. Fin de procédure\n.\n"
 		    return ""
 		}
 	    }
-	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
-	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 float "" "" ]
-	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 float "" "" ]
-            buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
 	    buf$audace(bufNo) bitpix float
+	    buf$audace(bufNo) imaseries "LOPT y1=3 y2=$ylargeur height=1"
+	    buf$audace(bufNo) setkwd [ list "CRVAL1" 1.0 double "" "" ]
+	    buf$audace(bufNo) setkwd [ list "CDELT1" 1.0 double "" "" ]
+            buf$audace(bufNo) setkwd [ list "CREATOR" "SpcAudACE $spcaudace(version)" string "Software that create this FITS file" "" ]
 	    if { [regexp {1.3.0} $audela(version) match resu ] } {
 		buf$audace(bufNo) save "$audace(rep_images)/${spectre_zone_fc}_spc"
 	    } else {

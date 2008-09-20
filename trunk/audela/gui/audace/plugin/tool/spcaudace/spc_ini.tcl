@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_ini.tcl,v 1.4 2008-07-02 23:00:38 bmauclaire Exp $
+# Mise a jour $Id: spc_ini.tcl,v 1.5 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -37,10 +37,9 @@ proc spc_bessmodule {} {
    global audela
 
    if { [regexp {1.3.0} $audela(version) match resu ] } {
-      source [ file join $audace(rep_scripts) spcaudace plugins bess_module bess_module.tcl ]
+      source [ file join $spcaudace(rep_spc) plugins bess_module bess_module.tcl ]
    } else {
-      set repspc [ file join $audace(rep_plugin) tool spcaudace ]
-      source [ file join $spcaudace(repspc) plugins bess_module bess_module.tcl ]
+      source [ file join $spcaudace(rep_spc) plugins bess_module bess_module.tcl ]
       ::bess::Principal ""
    }
 }

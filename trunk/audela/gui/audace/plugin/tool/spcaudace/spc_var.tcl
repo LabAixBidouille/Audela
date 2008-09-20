@@ -3,7 +3,7 @@
 #
 ####################################################################
 
-# Mise a jour $Id: spc_var.tcl,v 1.3 2008-08-29 20:21:44 bmauclaire Exp $
+# Mise a jour $Id: spc_var.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 #----------------------------------------------------------------------------------#
@@ -12,7 +12,7 @@ global audela audace
 global spcaudace
 
 #--- Version d'SpcAudace :
-set spcaudace(version) "1.4.1 - 29/08/2008"
+set spcaudace(version) "1.4.5 - 20/09/2008"
 #set spcaudace(version) "1.2.0 - 10/10/2007"
 # ::audace::date_sys2ut ?Date?
 #set spcaudace(version) [ file mtime $spcaudace(repspc) ]
@@ -30,28 +30,28 @@ set spcaudace(extvspec) ".spc"
 
 #--- Répertoire d'SpcAudace :
 if { [regexp {1.3.0} $audela(version) match resu ] } {
-   set spcaudace(repspc) [ file join $audace(rep_scripts) spcaudace ]
+   set spcaudace(rep_spc) [ file join $audace(rep_scripts) spcaudace ]
 } else {
-   set spcaudace(repspc) [ file join $audace(rep_plugin) tool spcaudace ]
+   set spcaudace(rep_spc) [ file join $audace(rep_plugin) tool spcaudace ]
 }
 
 
 #--- Chemin des répertoires :
 #-- Répertoire des outils : Gnuplot, Spectrum... :
-set spcaudace(repgp) [ file join $spcaudace(repspc) gp ]
-set spcaudace(spectrum) [ file join $spcaudace(repspc) plugins spectrum ]
+set spcaudace(repgp) [ file join $spcaudace(rep_spc) gp ]
+set spcaudace(spectrum) [ file join $spcaudace(rep_spc) plugins spectrum ]
 
 #-- Répertoire des données chimiques :
-set spcaudace(repchimie) [ file join $spcaudace(repspc) data chimie ]
-set spcaudace(reptelluric) [ file join $spcaudace(repspc) data telluric ]
+set spcaudace(repchimie) [ file join $spcaudace(rep_spc) data chimie ]
+set spcaudace(reptelluric) [ file join $spcaudace(rep_spc) data telluric ]
 # set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage_temp.txt"
 set spcaudace(filetelluric) "$spcaudace(reptelluric)/h2o_calibrage.txt"
 
 #-- Répertoire de la bibliothèque spectrale :
-set spcaudace(rep_spcbib) [ file join $spcaudace(repspc) data bibliotheque_spectrale ]
+set spcaudace(rep_spcbib) [ file join $spcaudace(rep_spc) data bibliotheque_spectrale ]
 
 #-- Répertoire de la calibration-chimie :
-set spcaudace(rep_spccal) [ file join $spcaudace(repspc) data calibration_lambda ]
+set spcaudace(rep_spccal) [ file join $spcaudace(rep_spc) data calibration_lambda ]
 
 
 #--- Fichiers tulisés :
@@ -66,7 +66,7 @@ set spcaudace(motsheaderdef) [ list "Current name of the object" "Telescop" "Sys
 
 
 #--- Lieu de la documentation d'SpcAudACE :
-set spcaudace(spcdoc) [ file join $spcaudace(repspc) doc liste_fonctions.html ]
+set spcaudace(spcdoc) [ file join $spcaudace(rep_spc) doc liste_fonctions.html ]
 set spcaudace(sitedoc) "http://bmauclaire.free.fr/spcaudace/fonctions.html"
 
 
@@ -77,6 +77,7 @@ set spcaudace(siteuves) "http://www.sc.eso.org/santiago/uvespop/interface.html"
 set spcaudace(sitesimbad) "http://simbad.u-strasbg.fr/simbad/sim-fid"
 set spcaudace(sitesurveys) "http://bmauclaire.free.fr/astronomie/research/"
 set spcaudace(sitebebuil) "http://astrosurf.com/buil/us/becat.htm"
+set spcaudace(sitearasbeam) "http://arasbeam.free.fr/"
 
 
 #--- Option prédéfinies dans les pipelines :

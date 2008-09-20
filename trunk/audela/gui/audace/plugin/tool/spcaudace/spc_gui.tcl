@@ -1,7 +1,7 @@
 
 # Procédures liées à 'linterface graphique et au tracé des profils de raies.
 
-# Mise a jour $Id: spc_gui.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_gui.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 
@@ -66,6 +66,7 @@ proc spc_winini { } {
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_simbad) -command "spc_simbad" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_bess) -command "spc_bess" -underline 0
+      .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_arasbeam) -command "spc_arasbeam" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_uves) -command "spc_uves" -underline 0
       .spc.menuBar.file add command -label $caption(spcaudace,gui,spc_file_space)
       if {$nbprinters>0} {
@@ -148,6 +149,9 @@ proc spc_winini { } {
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_dry) -command "spc_dry" -underline 0
       .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_extractcont) -command "spc_extractcont" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_calibre_space)
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_norma_w) -command "spc_autonorma" -underline 0
+      .spc.menuBar.profil add command -label $caption(spcaudace,gui,spc_rescalecont_w) -command "spc_rescalecont" -underline 0
 
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :
@@ -190,8 +194,6 @@ proc spc_winini { } {
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrum_w) -command "spc_rinstrum" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_rinstrumcorr_w) -command "spc_rinstrumcorr" -underline 0 -accelerator "Ctrl-I"
-      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_calibre_space)
-      .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_norma_w) -command "spc_autonorma" -underline 0
       .spc.menuBar.calibration add command -label $caption(spcaudace,gui,spc_divri) -command "spc_divri" -underline 0
       .spc configure -menu .spc.menuBar
       #-- Raccourcis calviers :

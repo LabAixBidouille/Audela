@@ -1,7 +1,7 @@
 # Fonctions de calculs numeriques : interpolation, ajustement...
 # source $audace(rep_scripts)/spcaudace/spc_numeric.tcl
 
-# Mise a jour $Id: spc_numeric.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_numeric.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 ###################################################################
@@ -320,6 +320,205 @@ proc spc_ajustdeg1 { args } {
 #****************************************************************#
 
 
+####################################################################
+#  Procedure d'ajustement d'un nuage de points par un polynôme de degré 2
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 15-12-2005
+# Date modification : 26-05-2005/14-09-2008-Lailly
+# Arguments : liste abscisses, liste ordonnees, erreur
+####################################################################
+#spc_ajustdeg2 {218.67 127.32 16.67} {211 208 210.1} 1
+#{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
+
+proc spc_ajustdeg2 { args } {
+   global conf
+   global audace
+
+   if {[llength $args] == 3} {
+      set abscisses_orig [lindex $args 0]
+      set ordonnees [lindex $args 1]
+      set erreur [lindex $args 2]
+      set len [llength $ordonnees]
+      set n [llength $abscisses_orig]
+      set abscisses_rangees [ lsort -real -increasing $abscisses_orig ]
+      set abs_min [ lindex $abscisses_rangees 0 ]
+      set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
+      ::console::affiche_resultat "$abs_min $abs_max\n"
+
+      #--- Changement de variable (preconditionnement du systeme lineaire) :
+      set aa [ expr 2. / ($abs_max - $abs_min ) ]
+      #::console::affiche_resultat "aa= $aa\n"
+      set bb [ expr 1. - $aa * $abs_max ]
+      #::console::affiche_resultat "bb= $bb\n"
+      set abscisses [ list ]
+      for { set i 0 } { $i<$n } {incr i} {
+	 set xi [ expr $aa * [ lindex $abscisses_orig $i ] +$bb ]
+	 lappend abscisses $xi
+      }
+
+
+      #--- Calcul des coefficients du polynôme d'ajustement :
+      #-- Calcul de la matrice X :
+      set n [llength $abscisses]
+      set x ""
+      set X "" 
+      for {set i 0} {$i<$n} {incr i} { 
+	 set xi [lindex $abscisses $i] 
+	 set ligne_i 1
+	 lappend erreurs $erreur
+	 lappend ligne_i $xi 
+	 lappend ligne_i [expr $xi*$xi]
+	 #lappend ligne_i [expr $xi*$xi*$xi]
+	 lappend X $ligne_i 
+      } 
+      #-- Calcul de l'ajustement :
+      set result [ gsl_mfitmultilin $ordonnees $X $erreurs ] 
+      #-- Extrait le resultat :
+      set coeffs [lindex $result 0] 
+      set chi2 [lindex $result 1] 
+      set covar [lindex $result 2]
+      ::console::affiche_resultat "Chi2=$chi2, Covar=$covar\n"
+      set a0 [lindex $coeffs 0]
+      set b0 [lindex $coeffs 1]
+      set c0 [lindex $coeffs 2]
+
+      #--- Retour aux variables d'origine :
+      set a [ expr $a0 + $b0 * $bb + $c0 * $bb* $bb ]
+      set b [ expr $aa * ( $b0 + 2. * $c0 * $bb ) ]
+      set c [ expr $aa * $aa * $c0 ]
+      ::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2\n"
+      set coefs [ list $a $b $c ]
+	
+
+      #-----------------------------------------------------------------------#
+      #--- Crée les vecteur à tracer
+      set flag 0
+      if { $flag==1 } {
+	 blt::vector x($len) y($len) yn($len)
+	 for {set i $len} {$i > 0} {incr i -1} { 
+	    set x($i-1) [lindex $abscisses [expr $i-1]]
+	    set y($i-1) [lindex $ordonnees [expr $i-1]]
+	    set yn($i-1) [expr $a+$b*$x($i-1)+$c*$x($i-1)*$x($i-1)]
+	    #set yn($i-1) [expr $a+$b*$x($i-1)+$c*$x($i-1)*$x($i-1)+$d*$x($i-1)*$x($i-1)*$x($i-1)]
+	    #lappend yadj $yn($i-1)
+	    lappend listeyn $yn($i-1)
+	 }
+	 #set yadj $listeyn
+
+	 #--- Remet les valeurs calculees de listeyn dans l'ordre des abscisses (inverse)
+	 for {set j 0} {$j<$len} {incr j} {
+	    lappend yadj [ lindex $listeyn [expr $len-$j-1] ]
+	 }
+      }
+      #-----------------------------------------------------------------------#
+
+      #--- Remet les valeurs calculees de listeyn dans l'ordre des abscisses (inverse)
+      #set yadj ""
+      #for {set j 0} {$j<$len} {incr j} {
+      #    lappend yadj [ lindex $listeyn [expr $len-$j-1] ]
+      #}
+      ##for {set j $len} {$j>0} {incr j -1} {
+      ##    lappend yadj [ lindex $listeyn [expr $j-$len-1] ]
+      ##}
+
+      #--- Affichage du graphe
+      #  ::plotxy::plot $abscisses $yadj
+
+      set coefs [ list $a $b $c ]
+      # set adj_vals [list $coefs $abscisses $yadj]
+      set adj_vals [ list $coefs $chi2 $covar ]
+      #set adj_vals [ list $coefs ]
+      return $adj_vals
+   } else {
+      ::console::affiche_erreur "Usage: spc_ajustdeg2 liste_abscisses liste_ordonnees erreur (ex. 1)\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+####################################################################
+#  Procedure d'ajustement d'un nuage de points par un polynôme de degré 3
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 15-12-2005
+# Date modification : 26-05-2005/14-09-2008-Lailly
+# Arguments : liste abscisses, liste ordonnees, erreur
+# Condition : il faut 4 couples de points !
+####################################################################
+#spc_ajustdeg3 {218.67 127.32 16.67} {211 208 210.1} 1
+#{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
+
+proc spc_ajustdeg3 { args } {
+   global conf
+   global audace
+
+   if {[llength $args] == 3} {
+      set abscisses_orig [lindex $args 0]
+      set ordonnees [lindex $args 1]
+      set erreur [lindex $args 2]
+      set n [llength $abscisses_orig]
+      set len [llength $ordonnees]
+      set abscisses_rangees [ lsort -real -increasing $abscisses_orig ]
+      set abs_min [ lindex $abscisses_rangees 0 ]
+      set abs_max [ lindex $abscisses_rangees [ expr $n -1 ] ]
+      ::console::affiche_resultat "$abs_min $abs_max\n"
+
+      #--- Changement de variable (preconditionnement du systeme lineaire) :
+      set aa [ expr 2. / ($abs_max - $abs_min ) ]
+      #::console::affiche_resultat "aa= $aa\n"
+      set bb [ expr 1. - $aa * $abs_max ]
+      #::console::affiche_resultat "bb= $bb\n"
+      set abscisses [ list ]
+      for { set i 0 } { $i<$n } {incr i} {
+	 set xi [ expr $aa * [ lindex $abscisses_orig $i ] +$bb ]
+	 lappend abscisses $xi
+      }
+
+      #--- Calcul des coefficients du polynôme d'ajustement :
+      #-- Calcul de la matrice X : calcul les monônes correspondant aux différents degrés à l'abscisse xi
+      set x ""
+      set X "" 
+      for {set i 0} {$i<$n} {incr i} { 
+	 set xi [lindex $abscisses $i] 
+         set ligne_i 1
+	 lappend erreurs $erreur
+	 lappend ligne_i $xi 
+	 lappend ligne_i [expr $xi*$xi]
+	 lappend ligne_i [expr $xi*$xi*$xi]
+	 lappend X $ligne_i 
+      } 
+      #-- Calcul de l'ajustement :
+      set result [gsl_mfitmultilin $ordonnees $X $erreurs] 
+      #-- Extrait le resultat :
+      set coeffs [lindex $result 0] 
+      set chi2 [lindex $result 1] 
+      set covar [lindex $result 2]
+      set a0 [lindex $coeffs 0]
+      set b0 [lindex $coeffs 1]
+      set c0 [lindex $coeffs 2]
+      set d0 [lindex $coeffs 3]
+      ::console::affiche_resultat "Chi2=$chi2, Covar=$covar\n"
+
+      #--- Retour aux variables d'origine :
+      set a [ expr $a0 + $b0 * $bb + $c0 * $bb* $bb + $d0 * $bb* $bb * $bb ]
+      set b [ expr $aa * ( $b0 + 2. * $c0 * $bb + 3. * $d0 * $bb *$bb ) ]
+      set c [ expr $aa * $aa * ($c0 + 3. * $d0 * $bb) ]
+      set d [ expr $d0 * $aa * $aa *$aa ]
+	
+      ::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2+$d*x^3\n"
+      set coefs [ list $a $b $c $d ]
+      # set adj_vals [list $coefs $abscisses $yadj]
+      set adj_vals [ list $coefs $chi2 $covar ]
+      #set adj_vals [ list $coefs ]
+      return $adj_vals
+   } else {
+      ::console::affiche_erreur "Usage: spc_ajustdeg3 liste_abscisses liste_ordonnees erreur (ex. 1)\n\n"
+   }
+}
+#****************************************************************#
+
 
 
 ####################################################################
@@ -333,7 +532,7 @@ proc spc_ajustdeg1 { args } {
 #spc_ajustdeg2 {218.67 127.32 16.67} {211 208 210.1} 1
 #{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
 
-proc spc_ajustdeg2 { args } {
+proc spc_ajustdeg2v1 { args } {
     global conf
     global audace
 
@@ -430,7 +629,7 @@ proc spc_ajustdeg2 { args } {
 #spc_ajustdeg3 {218.67 127.32 16.67} {211 208 210.1} 1
 #{218.67 127.32 16.67} {211.022333817 208.007561837 210.100127057}
 
-proc spc_ajustdeg3 { args } {
+proc spc_ajustdeg3v1 { args } {
     global conf
     global audace
 
@@ -443,8 +642,9 @@ proc spc_ajustdeg3 { args } {
 	#--- Calcul des coefficients du polynôme d'ajustement :
 	# - calcul de la matrice X : calcul les monônes correspondant aux différents degrés à l'abscisse xi
 	set n [llength $abscisses]
-	set x ""
-	set X "" 
+       set lingne_i [ list ]
+	#set X ""
+       set X [ list ]
 	for {set i 0} {$i<$n} {incr i} { 
 	    set xi [lindex $abscisses $i] 
 	    set ligne_i 1
@@ -452,7 +652,7 @@ proc spc_ajustdeg3 { args } {
 	    lappend ligne_i $xi 
 	    lappend ligne_i [expr $xi*$xi]
 	    lappend ligne_i [expr $xi*$xi*$xi]
-	    lappend X $ligne_i 
+	    lappend X $ligne_i
 	} 
 	# - calcul de l'ajustement 
 	set result [gsl_mfitmultilin $ordonnees $X $erreurs] 
@@ -464,9 +664,9 @@ proc spc_ajustdeg3 { args } {
 	set a [lindex $coeffs 0]
 	set b [lindex $coeffs 1]
 	set c [lindex $coeffs 2]
-	set d [lindex $coeffs 3]
+       set d [expr {double([lindex $coeffs 3])} ]
 	::console::affiche_resultat "Coefficients : $a+$b*x+$c*x^2+$d*x^3\nChi2=$chi2, Covar=$covar\n"
-
+  ::console::affiche_resultat "[ expr $d*1000000000000000000000000.0 ]\n"
 	set coefs [ list $a $b $c $d ]
 	# set adj_vals [list $coefs $abscisses $yadj]
 	set adj_vals [ list $coefs $chi2 $covar ]
