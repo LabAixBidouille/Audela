@@ -5,7 +5,7 @@
 # Auteurs     : François Cochard (francois.cochard@wanadoo.fr)
 #               Sur la forme, je suis parti du script calaphot de Jacques Michelet (jacques.michelet@laposte.net)
 #               Par ailleurs, je m'appuie sur les routines spc_audace de Benjamin Mauclaire
-# Mise a jour $Id: bess_module.tcl,v 1.6 2008-06-15 09:50:18 robertdelmas Exp $
+# Mise a jour $Id: bess_module.tcl,v 1.7 2008-09-20 17:51:17 bmauclaire Exp $
 # Mise à jour FC mars 2007
 # Dernière mise à jour: 24 mars 2007 - 11h00
 #
@@ -645,9 +645,13 @@ namespace eval ::bess {
 	     if { [ lsearch $listemotsclef "BSS_COSM" ] ==-1 } {
 		 buf$audace(bufNo) setkwd [ list BSS_COSM "no" string "Yes or no if cosmics correction has been done" "" ]
 	     }
-	     if { [ lsearch $listemotsclef "BSS_TELL" ] ==-1 } {
-		 buf$audace(bufNo) setkwd [ list BSS_TELL "no" string "Yes or no if telluric lines has been removed" "" ]
-	     }
+            if { [ lsearch $listemotsclef "SPC_RESP" ] !=-1 } {
+               set spc_resp [ lindex [ buf$audace(bufNo) getkwd "SPC_RESP" ] 1 ]
+               set spc_resl [ lindex [ buf$audace(bufNo) getkwd "SPC_RESL" ] 1 ]
+               buf$audace(bufNo) setkwd [ list "BSS_RESP" $spc_resp float "Power of resolution at BSS_RESL wavelength" "" ]
+               buf$audace(bufNo) setkwd [ list "BSS_RESL" $spc_resl double "Wavelength where power of resolution was computed" "angstrom" ]
+            }
+
 
             #---   Et je sauve le fichier... si le nom de fichier n'est pas vide
             if { $fich_out != ""} {
