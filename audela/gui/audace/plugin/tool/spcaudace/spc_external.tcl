@@ -4,7 +4,7 @@
 #                                                                            #
 #****************************************************************************#
 
-# Mise a jour $Id: spc_external.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_external.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 
@@ -54,7 +54,27 @@ proc spc_webpage {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la base UVES
+# Procédure de lancement du navigateur internet pour consulter le site arasbeam
+# Auteur : Benjamin MAUCLAIRE
+# Date création :  20-09-2008
+# Date de mise à jour : 20-09-2008
+################################################################################
+
+proc spc_arasbeam {} {
+
+    global spcaudace conf
+
+    if { $conf(editsite_htm)!="" } {
+	set answer [ catch { exec $conf(editsite_htm) $spcaudace(sitearasbeam) & } ]
+    } else {
+	::console::affiche_resultat "Configurer \"Editeurs/Navigateur web\" pour permettre l'affichage de la documentation d'SpcAudACE\n"
+    }
+}
+#*********************************************************#
+
+
+###############################################################################
+# Procédure de lancement du navigateur internet pour consulter la base BeSS
 # Auteur : Benjamin MAUCLAIRE
 # Date création :  23-04-2007
 # Date de mise à jour : 23-04-2007
@@ -97,7 +117,7 @@ proc spc_uves {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la base UVES
+# Procédure de lancement du navigateur internet pour consulter la base Simbad
 # Auteur : Benjamin MAUCLAIRE
 # Date création :  24-04-2007
 # Date de mise à jour : 24-04-2007
@@ -118,7 +138,7 @@ proc spc_simbad {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la base UVES
+# Procédure de lancement du navigateur internet pour consulter la page des surveys
 # Auteur : Benjamin MAUCLAIRE
 # Date création :  24-04-2007
 # Date de mise à jour : 24-04-2007
@@ -139,7 +159,7 @@ proc spc_surveys {} {
 
 
 ###############################################################################
-# Procédure de lancement du navigateur internet pour consulter la base UVES
+# Procédure de lancement du navigateur internet pour consulter la page Be de C. Buil
 # Auteur : Benjamin MAUCLAIRE
 # Date création :  24-04-2007
 # Date de mise à jour : 24-04-2007

@@ -1,6 +1,6 @@
 
 
-# Mise a jour $Id: spc_filter2.tcl,v 1.3 2008-07-10 20:56:25 bmauclaire Exp $
+# Mise a jour $Id: spc_filter2.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 ####################################################################
@@ -1714,6 +1714,7 @@ proc model_H2O  { args } {
    return $nom_fich_output
 }
 
+
 # Procé√é©dure de caracté√é©risation de raies de l'eau pré√é©sentes sur un profil
 # Les raies sont supposé√é©es isolé√é©es (par opposition é√é† une superposition de raies voisines et
 # rendues non sé√é©parables par manque de ré√é©solution)
@@ -1971,11 +1972,17 @@ proc spc_dry { args } {
    if { $nbargs == 1 } {
       set nom_fich_input [ file rootname [ lindex $args 0 ] ]
       set coef_profondeur 1.0
+      set flag_rmo "o"
    } elseif { $nbargs == 2 } {
       set nom_fich_input [ file rootname [ lindex $args 0 ] ]
       set coef_profondeur [ lindex $args 1 ]
+      set flag_rmo "o"
+   } elseif { $nbargs == 3 } {
+      set nom_fich_input [ file rootname [ lindex $args 0 ] ]
+      set coef_profondeur [ lindex $args 1 ]
+      set flag_rmo [ lindex 2 ]
    } else {
-      ::console::affiche_erreur "Usage: spc_dry profil_de_raies_calibre_avec_eau ?coeff multiplicateur profondeur?\n\n"
+      ::console::affiche_erreur "Usage: spc_dry profil_de_raies_calibre_avec_eau ?coeff multiplicateur profondeur (1.0)? ?effacement_fichier_eau (o)?\n\n"
       return ""
    }
 
@@ -1989,11 +1996,14 @@ proc spc_dry { args } {
    set results1_fwhmo [ list $lambdabest $imax $fwhm ]
 
    set liste_mots_cles [ lindex $results_fwhmo 1 ]
-   set nom_fich_denom "profil_eau.fit"
+   set nom_fich_denom "profil_eau"
    set nom_fich_denom [ model_H2O $nom_fich_input $results1_fwhmo $liste_mots_cles $nom_fich_denom ]
    set sortie_rmo [ spc_div $nom_fich_input $nom_fich_denom ]
    file copy -force "$audace(rep_images)/$sortie_rmo$conf(extension,defaut)" "$audace(rep_images)/${nom_fich_input}-rmo$conf(extension,defaut)" 
    file delete -force "$audace(rep_images)/$sortie_rmo$conf(extension,defaut)"
+   if { $flag_rmo == "o" } {
+      file delete -force "$audace(rep_images)/$nom_fich_denom$conf(extension,defaut)"
+   }
    ::console::affiche_resultat "Profil nettoye des raies de l'eau sauve sous ${nom_fich_input}-rmo \n"
    return ${nom_fich_input}-rmo
 }

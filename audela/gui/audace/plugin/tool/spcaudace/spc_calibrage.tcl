@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.2 2008-08-29 20:21:44 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.3 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 
@@ -616,7 +616,10 @@ proc spc_calibren { args } {
         set nbraies [ llength $lambdas ]
 
         #--- Calcul des coéfficients du polynome de calibration :
-        if { $nbraies == 3 } {
+        if { $nbraies == 2 } {
+           set fileout [ spc_calibre2 $filename $coords ]
+           return "$fileout"
+        } elseif { $nbraies == 3 } {
            #-- Calcul du polynôme de calibration a+bx+cx^2 :
            set sortie [ spc_ajustdeg2 $xvals $lambdas $errors ]
            set coeffs [ lindex $sortie 0 ]
@@ -634,6 +637,8 @@ proc spc_calibren { args } {
            set c [ lindex $coeffs 2 ]
            set b [ lindex $coeffs 1 ]
            set a [ lindex $coeffs 0 ]
+        } else {
+           ::console::affiche_erreur "Il faut au moins deux raies pour calibrer.\n"
         }
 
         #-- Caclul crval1 :
@@ -966,7 +971,7 @@ proc spc_linearcal { args } {
             return "${filename}_linear"
         }
     } else {
-        ::console::affiche_erreur "Usage: spc_echantlin nom_profil_raies\n"
+        ::console::affiche_erreur "Usage: spc_linearcal nom_profil_raies\n"
     }
 }
 #***************************************************************************#
@@ -1067,7 +1072,7 @@ proc spc_calibre { args } {
 
    global audace
    global conf caption
-   #- spcalibre : nom de la variable retournee par la gui param_spc_audace_calibreprofil
+   #- spcalibre : nom de la variable retournee par la gui param_spc_audace_calibreprofil qui contient le nom du fichier de la lampe calibree
    global spcalibre
 
    if { [llength $args] <= 1 } {
@@ -1121,8 +1126,35 @@ proc spc_calibre { args } {
        ::confVisu::autovisu 1
 
        if { $spcalibre != "" } {
-           loadima $spcalibre
-           return $spcalibre
+          #-- Teste si la calibration est viable : pas de dispersion negative !
+          buf$audace(bufNo) load "$audace(rep_images)/$spcalibre"
+          set listemotsclef [ buf$audace(bufNo) getkwds ]
+          if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+             set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+          } else {
+             ::console::affiche_erreur "Le spectre n'est pas calibré\n"
+             return ""
+          }
+          if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+             set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+          } else {
+             ::console::affiche_erreur "Le spectre n'est pas calibré\n"
+             return ""
+          }
+          if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+             set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
+          } else {
+             ::console::affiche_erreur "Le spectre n'est pas calibré\n"
+             return ""
+          }
+          if { $cdelt1>0 && $crval1>=0 && $spc_b>0 } {
+             loadima $spcalibre
+             return $spcalibre
+          } else {
+             ::console::affiche_erreur "\nVous avez effectué une mauvaise calibration.\n"
+             ##-- Boîte de dialogue pour REsaisir les paramètres de calibration :
+             set fileout [ spc_calibre $profiletalon ]
+          }
        } else {
            ::console::affiche_erreur "La calibration a échouée.\n"
            return ""
@@ -1219,6 +1251,81 @@ proc spc_resolution { args } {
       return $spc_res
    } else {
        ::console::affiche_erreur "Usage: spc_resolution profil_de_raies longueur_d_onde_raie\n\n"
+   }
+}
+#****************************************************************#
+
+
+
+##########################################################
+# CAlcul la resolution d'un spectre de lampe de calibration en trouvant la raie la plus proche du centre 
+#
+# Auteur : Benjamin MAUCLAIRE
+# Date de création : 14-09-2008
+# Date de mise à jour : 14-09-2008
+# Arguments : profil_lampe_calibration
+##########################################################
+
+proc spc_autoresolution { args } {
+
+   global audace spcaudace
+   global conf caption
+
+   if { [ llength $args ] == 1 } {
+      set lampecalibree [ lindex $args 0 ]
+
+      #--- Calcul la resolution du spectre à partir de la raie la plus brillante trouvée et proche du centre du capteur :
+      ::console::affiche_resultat "\nCalcul la résolution du spectre...\n"
+      # set lambda_raiemax [ lindex [ lindex [ spc_findbiglines $lampecalibree e ] 0 ] 0 ]
+      set liste_raies [ spc_findbiglines $lampecalibree e ]
+
+      #-- Recherhe de la raie la plus proche du centre, sinon prend la plus brillante :
+      #- Reucpere les parametres du spectre :
+      buf$audace(bufNo) load "$audace(rep_images)/$lampecalibree"
+      set naxis1 [ lindex [buf$audace(bufNo) getkwd "NAXIS1"] 1 ]
+      set listemotsclef [ buf$audace(bufNo) getkwds ]
+      if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+         set cdelt1 [ lindex [buf$audace(bufNo) getkwd "CDELT1"] 1 ]
+      } else {
+         set cdelt1 1.
+      }
+      if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+         set crval1 [ lindex [buf$audace(bufNo) getkwd "CRVAL1"] 1 ]
+      } else {
+         set crval1 1.
+      }
+      set lambda_max [ expr $crval1+$naxis1*$cdelt1 ]
+      set lambda_cent [ expr ($lambda_max+$crval1)/2. ]
+      #- Recherche de la raie la plus proche du centre :
+      set liste_comp [ list ]
+      set i 0
+      foreach raie $liste_raies {
+         lappend liste_comp [ list [ expr abs($lambda_cent-[ lindex $raie 0 ]) ] $i ]
+         incr i
+      }
+      ##::console::affiche_resultat "Avant tri: $liste_comp\n"
+      ##::console::affiche_resultat "crval1=$crval1 ; cdelt1=$cdelt1 ; Lmax=$lambda_max ; Lc=$lambda_cent\n"
+      set liste_comp [ lsort -real -increasing -index 0 $liste_comp ]
+      set index_lproche [ lindex [ lindex $liste_comp 0 ] 1 ]
+      #::console::affiche_resultat "Index : $index_lproche ; Apres tri: $liste_comp\n"
+      #- Prend la longueur d'onde de la raie la plus proche du centre, sinon la plus brillante :
+      if { $index_lproche >= 4 } {
+         #- Compare les intensites des deux raies les plus proches du centre et choisis la plus brillante :
+         if { [ lindex [ lindex $liste_raies [ lindex [ lindex $liste_comp 1 ] 1 ] ] 1 ] >  [ lindex [ lindex $liste_raies $index_lproche ] 1 ] } {
+            set lambda_raiemax [ lindex [ lindex $liste_raies [ lindex [ lindex $liste_comp 1 ] 1 ] ] 0 ]
+         } else {
+            set lambda_raiemax [ lindex [ lindex $liste_raies 0 ] 0 ]
+         }
+      } else {
+         set lambda_raiemax [ lindex [ lindex $liste_raies $index_lproche ] 0 ]
+      }
+      ::console::affiche_resultat "Longueur d'onde la plus proche du centre du CCD est : $lambda_raiemax\n"
+
+      #-- Calcul de la resolution et l'ecrit dans le header :
+      set resolution [ spc_resolution $lampecalibree $lambda_raiemax ]
+      return "$lampecalibree"
+   } else {
+       ::console::affiche_erreur "Usage: spc_autoresolution profil_de_raies_lampe\n\n"
    }
 }
 #****************************************************************#
@@ -1871,7 +1978,7 @@ proc spc_calibretelluric { args } {
             set filename [ file rootname [ lindex $args 0 ] ]
             set largeur [ lindex $args 1 ]
         } else {
-            ::console::affiche_erreur "Usage: spc_calibretelluric profil_de_raies_a_calibrer ?largeur_raie (pixels)?\n"
+            ::console::affiche_erreur "Usage: spc_calibretelluric profil_de_raies_a_calibrer ?largeur_raie_pixels (28)?\n"
             return ""
         }
 
@@ -2188,7 +2295,8 @@ proc spc_calibretelluric { args } {
             buf$audace(bufNo) load "$audace(rep_images)/$spectre_ocallinbis"
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
-            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calobis double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 4)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2202,6 +2310,7 @@ proc spc_calibretelluric { args } {
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
             buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_calo double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 3)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2216,6 +2325,7 @@ proc spc_calibretelluric { args } {
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
             buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_lindec double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 2)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2229,6 +2339,7 @@ proc spc_calibretelluric { args } {
             set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
             set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
             buf$audace(bufNo) setkwd [ list "SPC_RMS" $rms_initial double "" "angstrom" ]
+            buf$audace(bufNo) setkwd [ list "SPC_CALO" "yes (method 1)" string "Yes if spectrum has been calibrated with telluric lines" "" ]
             buf$audace(bufNo) bitpix float
             buf$audace(bufNo) save "$audace(rep_images)/${filename}-ocal"
             buf$audace(bufNo) bitpix short
@@ -2342,6 +2453,7 @@ proc spc_loadmh2o { args } {
         buf$audace(bufNo) save "$audace(rep_images)/eau_conti"
 
         #--- Affichage des renseignements :
+        spc_gdeleteall
         if { [ llength $spcaudace(gloaded) ] == 0 } {
            spc_load "$filename"
         }

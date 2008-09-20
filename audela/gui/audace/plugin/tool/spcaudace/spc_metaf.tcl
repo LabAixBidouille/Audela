@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.3 2008-08-29 20:21:44 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 
@@ -748,7 +748,7 @@ proc spc_lampe2calibre { args } {
        } elseif { [ catch { glob -dir $audace(rep_images) ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) } ]==0 } {
 	   set img1 [ lindex [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${img}\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]$conf(extension,defaut) ${img}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ] 0 ]
        } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $img n'existe(nt) pas.\n"
+	   ::console::affiche_erreur "Le(s) fichier(s) $img n'existe(nt) pas.\n"
 	   return ""
        }
        if { [ file exists "$audace(rep_images)/$dark$conf(extension,defaut)" ] } {
@@ -757,7 +757,7 @@ proc spc_lampe2calibre { args } {
 	   renumerote $dark
 	   set darkmaster [ bm_smed $dark ]
        } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $dark n'existe(nt) pas.\n"
+	   ::console::affiche_erreur "Le(s) fichier(s) $dark n'existe(nt) pas.\n"
 	   return ""
        }
 
@@ -1000,7 +1000,7 @@ proc spc_traite2rinstrum { args } {
 	   set lampet "${lampe}-t"
 
 	   #-- Correction du smilex du spectre de lampe de calibration :
-	   set smilexcoefs [ spc_smilex $lampet $methraie ]
+	   set smilexcoefs [ spc_smilex "$lampet" $methraie ]
 	   file delete -force "$audace(rep_images)/$lampet$conf(extension,defaut)"
 	   set lampegeom [ lindex $smilexcoefs 0 ]
 	   #set ycenter [ lindex $smilexcoefs 1 ]
@@ -1008,7 +1008,7 @@ proc spc_traite2rinstrum { args } {
 
 	   #-- Inversion gauche-droite :
 	   if { $methinv == "o" } {
-	       set lampeflip [ spc_flip $lampegeom ]
+	       set lampeflip [ spc_flip "$lampegeom" ]
 	       file delete -force "$audace(rep_images)/$lampegeom$conf(extension,defaut)"
 	   } else {
 	       set lampeflip "$lampegeom"
@@ -1017,9 +1017,12 @@ proc spc_traite2rinstrum { args } {
 	   #--- Etalonnage en longueur d'onde du spectre de lampe de calibration :
 	   ::console::affiche_resultat "\n\n**** Etalonnage en longueur d'onde du spectre de lampe de calibration ****\n\n"
 	   #-- Création du profil de raie de la lampe :
-	   set profillampe [ spc_profillampe ${img}1 $lampeflip ]
+	   set profillampe [ spc_profillampe ${img}1 "$lampeflip" ]
 	   #file delete -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)"
-	   set lampecalibree [ spc_calibre $profillampe ]
+	   set lampecalibree [ spc_calibre "$profillampe" ]
+           #-- Calcul la resolution du spectre de la lampe :
+           set lampecalibree [ spc_autoresolution "$lampecalibree" ]
+           #-- Fin du traitement lampe :
 	   set nomimg [ string trim $img "-" ]
 	   file rename -force "$audace(rep_images)/$lampeflip$conf(extension,defaut)" "$audace(rep_images)/lampe_spectre2D-traite-$nomimg$conf(extension,defaut)"
 	   file delete -force "$audace(rep_images)/$profillampe$conf(extension,defaut)"
@@ -1124,7 +1127,7 @@ proc spc_traite2rinstrum { args } {
        #--- Calibration en longueur d'onde du spectre de l'objet :
        ::console::affiche_resultat "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
        set fcal [ spc_calibreloifile $lampecalibree $fprofil ]
-       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil_1a$conf(extension,defaut)"
+       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1a$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
 
 
@@ -1138,7 +1141,7 @@ proc spc_traite2rinstrum { args } {
 		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
 		   set fcalo [ spc_calibretelluric "$fcal" ]
 	       } else {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
 		   set fcalo "$fcal"
 	       }
 	   } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
@@ -1147,7 +1150,7 @@ proc spc_traite2rinstrum { args } {
 		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
 		   set fcalo [ spc_calibretelluric "$fcal" ]
 	       } else {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
 		   set fcalo "$fcal"
 	       }
 	   }
@@ -1191,21 +1194,61 @@ proc spc_traite2rinstrum { args } {
 	   set fricorr "$fcalo"
        }
 
+       #--- Calibration finale avec les raies telluriques :
+       if { $methcalo == "o" } {
+	   buf$audace(bufNo) load "$audace(rep_images)/$fricorr"
+	   set listemotsclef [ buf$audace(bufNo) getkwds ]
+	   if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
+	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "SPC_B" ] 1 ]
+	       if { $dispersion <= $spcaudace(dmax) } {
+		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
+		   set ffinal [ spc_calibretelluric "$fricorr" ]
+	       } else {
+		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   set ffinal "$fricorr"
+	       }
+	   } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+	       set dispersion [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+	       if { $dispersion <= $spcaudace(dmax) } {
+		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
+		   set ffinal [ spc_calibretelluric "$fricorr" ]
+	       } else {
+		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   set ffinal "$fricorr"
+	       }
+	   }
+       } else {
+	   set ffinal "$fricorr"
+       }
+
+
        #--- Nettoyage des fichiers :
-       file copy -force "$audace(rep_images)/$fcalo$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-traite_1b$conf(extension,defaut)"
+       file copy -force "$audace(rep_images)/$fcalo$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fcalo$conf(extension,defaut)"
-       file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-traite_1c$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/$fcal$conf(extension,defaut)"
+       if { $methcalo == "o" } {
+          file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
+          file copy -force "$audace(rep_images)/$ffinal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c-ocal$conf(extension,defaut)"
+       } else {
+          file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
+       }
        file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
+       file delete -force "$audace(rep_images)/$ffinal$conf(extension,defaut)"
        set etoile_cat [ file rootname $etoile_cat ]
        file delete -force "$audace(rep_images)/$etoile_cat$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/${etoile_cat}_ech$conf(extension,defaut)"
 
        #--- Message de fin du script :
-       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-traite_1c\n\n"
        # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
-       spc_loadfit "${img}-profil-traite_1c"
+       if { [ file exist ${img}-profil-1c-ocal$conf(extension,defaut) ] } {
+          spc_loadfit "${img}-profil-1c-ocal"
+          ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-1c-ocal\n\n"
+       } else {
+          spc_loadfit "${img}-profil-1c"
+          ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-1c\n\n"
+       }
        loadima "$audace(rep_images)/${img}-spectre2D-traite"
-       return "${img}-profil-traite_1c"
+       return "${img}-profil-1c"
    } else {
        ::console::affiche_erreur "Usage: spc_traite2rinstrum nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe profil_étoile_catalogue méthode_appariement (reg, spc, n) uncosmic (o/n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_bad_spectres (o/n) rejet_rotation_importante (o/n) sélection_manuelle_raie_géométrie (o/n) effacer_masters (o/n)\n\n"
    }
@@ -1431,9 +1474,9 @@ proc spc_traite2srinstrum { args } {
        ::console::affiche_resultat "\n\n**** Calibration en longueur d'onde du spectre de l'objet $img ****\n\n"
        #- Pour les spectre d'objets non-stellaire, la calibration est faite a partir de la zone decoupée de lampe.
        set fcal [ spc_calibreloifile "$lampe" "$fprofil" ]
-       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil_1a$conf(extension,defaut)"
+       file copy -force "$audace(rep_images)/$fprofil$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1a$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fprofil$conf(extension,defaut)"
-       file copy -force "$audace(rep_images)/$fcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre_1b$conf(extension,defaut)"
+       file copy -force "$audace(rep_images)/$fcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1b$conf(extension,defaut)"
 
 
        #--- Correction de la réponse intrumentale :
@@ -1457,10 +1500,10 @@ proc spc_traite2srinstrum { args } {
 		   ::console::affiche_erreur "\nPAS DE CORRECTION DE LA RÉPONSE INSTRUMENTALE LORS D'UNE SÉLECTION DE LARGEUR SPÉCIFIQUE DU SPECTRE.\n"
 		   set fricorr "$fcal"
 	       } else {
-                  set fricorr [ spc_divri $fcal $rinstrum ]
+                  set fricorr [ spc_divri "$fcal" "$rinstrum" ]
 	       }
 	   } else {
-              set fricorr [ spc_divri $fcal $rinstrum ]
+              set fricorr [ spc_divri "$fcal" "$rinstrum" ]
 	   }
           if { $largeur_spectrale >= $spcaudace(bande_br) } {
              set spcaudace(imax_tolerence) $imaxtol
@@ -1475,12 +1518,15 @@ proc spc_traite2srinstrum { args } {
 	   #- 040107 :
 	   ## set fricorr [ spc_div $fcal $rinstrum ]
 
-	   #-- Message d'erreur en cas d'échec de la division :
+	   #-- Message d'erreur en cas d'échec de la division et linéarisation de la calibration :
 	   if { $fricorr == 0 } {
-	       ::console::affiche_resultat "\nLa division par la réponse intrumentale n'a pas pu peut être calculée.\n"
+	       ::console::affiche_erreur "\nLa division par la réponse intrumentale n'a pas pu peut être calculée.\n"
 	       return 0
 	   } else {
-	       file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre_1c$conf(extension,defaut)"
+              set fricorrlin [ spc_linearcal "$fricorr" ]
+              file copy -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c$conf(extension,defaut)"
+              file copy -force "$audace(rep_images)/$fricorr$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-1c_nonlin$conf(extension,defaut)"
+              file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
 	   }
        }
 
@@ -1488,21 +1534,21 @@ proc spc_traite2srinstrum { args } {
        #--- Normalisation du profil de raies :
        if { $methnorma == "e" } {
 	   ::console::affiche_resultat "\n\n**** Normalisation du profil de raies ****\n\n"
-	   set fnorma [ spc_autonormaraie $fricorr e ]
-	   file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
-	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre-norma_2bb$conf(extension,defaut)"
+	   set fnorma [ spc_autonormaraie "$fricorrlin" e ]
+	   file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-2bb_norma$conf(extension,defaut)"
        } elseif { $methnorma == "a" } {
 	   ::console::affiche_resultat "\n\n**** Normalisation du profil de raies ****\n\n"
-	   set fnorma [ spc_autonormaraie $fricorr a ]
-	   file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
-	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre-norma_2bb$conf(extension,defaut)"
+	   set fnorma [ spc_autonormaraie "$fricorrlin" a ]
+	   file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-2bb_norma$conf(extension,defaut)"
        } elseif { $methnorma == "o" } {
 	   ::console::affiche_resultat "\n\n**** Normalisation du profil de raies ****\n\n"
-	   set fnorma [ spc_autonorma $fricorr ]
-	   file delete -force "$audace(rep_images)/$fricorr$conf(extension,defaut)"
-	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-calibre-norma_2bb$conf(extension,defaut)"
+	   set fnorma [ spc_autonorma "$fricorrlin" ]
+	   file delete -force "$audace(rep_images)/$fricorrlin$conf(extension,defaut)"
+	   file copy -force "$audace(rep_images)/$fnorma$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-2bb_norma$conf(extension,defaut)"
        } elseif { $methsmo == "n" } {
-	   set fnorma "$fricorr"
+	   set fnorma "$fricorrlin"
        }
 
 
@@ -1510,7 +1556,7 @@ proc spc_traite2srinstrum { args } {
        #--- Doucissage du profil de raies :
        if { $methsmo == "o" } {
 	   ::console::affiche_resultat "\n\n**** Adoucissement du profil de raies ****\n\n"
-	   set fsmooth [ spc_smooth $fnorma ]
+	   set fsmooth [ spc_smooth "$fnorma" ]
 	   file delete -force "$audace(rep_images)/$fnorma$conf(extension,defaut)"
        } elseif { $methsmo == "n" } {
 	   set fsmooth "$fnorma"
@@ -1532,11 +1578,11 @@ proc spc_traite2srinstrum { args } {
 
 
        #--- Message de fin du script :
-       file copy -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-traite-final$conf(extension,defaut)"
+       file copy -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)" "$audace(rep_images)/${img}-profil-final$conf(extension,defaut)"
        file delete -force "$audace(rep_images)/$fsmooth$conf(extension,defaut)"
-       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-traite-final\n\n"
+       ::console::affiche_resultat "\n\nSpectre traité, corrigé et calibré sauvé sous ${img}-profil-final\n\n"
        file delete -force "$audace(rep_images)/$fcal$conf(extension,defaut)"
-       if { "$flinearcal" != "${img}-profil-traite-final" } {
+       if { "$flinearcal" != "${img}-profil-final" } {
 	   file delete -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)"
        }
        # tk.message "Affichage du spectre traité, corrigé et calibré $fsmooth"
@@ -1544,10 +1590,10 @@ proc spc_traite2srinstrum { args } {
        #return $fsmooth
 
        #--- Traitement du résultat :
-       spc_loadfit "${img}-profil-traite-final"
+       spc_loadfit "${img}-profil-final"
        loadima "$audace(rep_images)/${img}-spectre2D-traite"
-       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-traite-final\n\n"
-       return "${img}-profil-traite-final"
+       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${img}-profil-final\n\n"
+       return "${img}-profil-final"
    } else {
        ::console::affiche_erreur "Usage: spc_traite2srinstrum nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_2D_lampe spectre_réponse_instrumentale méthode_appariement (reg, spc, n) uncosmic (o/n) méthode_détection_spectre (large, serre, moy) méthode_sub_sky (moy, moy2, med, inf, sup, back, none) mirrorx (o/n) méthode_binning (add, rober, horne) normalisation (o/n) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) effacer_masters (o/n)  export_PNG (o/n) 2_lampes_calibration (o/n) ?fenêtre_binning {x1 y1 x2 y2}?\n\n"
    }
@@ -1653,7 +1699,7 @@ proc spc_traitestellaire { args } {
 		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
 		   set spectre_calo [ spc_calibretelluric "$spectre_traite" ]
 	       } else {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
 		   set spectre_calo "$spectre_traite"
 	       }
 	   } elseif { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
@@ -1662,7 +1708,7 @@ proc spc_traitestellaire { args } {
 		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques ****\n\n"
 		   set spectre_calo [ spc_calibretelluric "$spectre_traite" ]
 	       } else {
-		   ::console::affiche_resultat "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
+		   ::console::affiche_erreur "\n\n**** Calibration avec les raies telluriques non réalisée car dispersion insuffisante ****\n\n"
 		   set spectre_calo "$spectre_traite"
 	       }
 	   }
@@ -1674,7 +1720,6 @@ proc spc_traitestellaire { args } {
        #--- Linéarisation de la calibration en longueur d'onde :
        if { $spcaudace(linear_cal)=="o" } {
 	   set flinearcal [ spc_linearcal "$spectre_calo" ]
-	   # file delete -force "$audace(rep_images)/$spectre_calo$conf(extension,defaut)"
        } else {
 	   set flinearcal "$spectre_calo"
        }
@@ -1691,10 +1736,10 @@ proc spc_traitestellaire { args } {
        #--- Export au format Bess :
        if { $export_bess=="o" } {
 	   #-- Recherche le spectre _1c :
-	   if { [ catch { glob -dir $audace(rep_images) $brut*_1c$conf(extension,defaut) } ]==0 } {
-	       set spectre_1c [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $brut*_1c$conf(extension,defaut) ] ]
+	   if { [ catch { glob -dir $audace(rep_images) $brut*-1c$conf(extension,defaut) } ]==0 } {
+	       set spectre_1c [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $brut*-1c$conf(extension,defaut) ] ]
 	   } else {
-	       ::console::affiche_resultat "Le spectre doit être corrigé de la réponse instrumentale pour être déposé dans la base BeSS\n"
+	       ::console::affiche_erreur "Le spectre doit être corrigé de la réponse instrumentale pour être déposé dans la base BeSS\n"
 	       return "$spectre_png"
 	   }
 	   #-- Calibrer avec l'eau si specifié :
@@ -1704,7 +1749,7 @@ proc spc_traitestellaire { args } {
 	       set spectre_linear [ spc_linearcal "$spectre_calo1c" ]
 	       #-- Création des mots clef BeSS :
 	       #set spectre_bess [ spc_bessmodule  "$spectre_linear" ]
-	       source [ file join $spcaudace(repspc)  plugins bess_module bess_module.tcl ]
+	       source [ file join $spcaudace(rep_spc)  plugins bess_module bess_module.tcl ]
 	       set spectre_bess [ ::bess::Principal  "$spectre_linear" ]
 	       #-- Ouverture du site Internet BeSS :
 	       #spc_bess
@@ -1717,16 +1762,18 @@ proc spc_traitestellaire { args } {
 
 
        #--- Traitements des résultats :
-       if { "$flinearcal" != "${brut}-profil-traite-final" } {
-          file copy -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)" "$audace(rep_images)/${brut}-profil-traite-final$conf(extension,defaut)"
+       if { "$flinearcal" != "${brut}-profil-final" } {
+          file delete -force "$audace(rep_images)/${brut}-profil-final$conf(extension,defaut)"
+          file copy -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)" "$audace(rep_images)/${brut}-profil-final$conf(extension,defaut)"
           file delete -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)"
        }
        if { $cal_eau=="o" } {
 	   ::console::affiche_resultat "\n\n**** Qualité de la calibration en longueur d'onde ****\n\n"
-	   spc_caloverif "${brut}-profil-traite-final"
+	   spc_caloverif "${brut}-profil-final"
        }
-       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-traite-final\n\n"
-       return "${brut}-profil-traite-final"
+       file delete -force "$audace(rep_images)/$spectre_calo$conf(extension,defaut)"
+       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-final\n\n"
+       return "${brut}-profil-final"
    } else {
        ::console::affiche_erreur "Usage: spc_traitestellaire nom_lampe nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_réponse_instrumentale sélection_manuelle_raies uncosmic (o/n) mirrorx (o/n) normalisation (o/n) calibration_raies_telluriques (o/n) export_png (o/n) export_bess (o/n) méthode_appariement (reg, spc, n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none)méthode_binning (add, rober, horne) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) efface_pretraitement (o/n) 2_lampes_calibration (o/n) lampe_calibrée (1/0)\n\n"
    }
@@ -1851,8 +1898,8 @@ proc spc_traitenebula { args } {
        #--- Résultat des traitements :
        # file copy -force "$audace(rep_images)/$spectre_traite$conf(extension,defaut)" "$audace(rep_images)/${brut}-profil-traite-final$conf(extension,defaut)"
        # file delete -force "$audace(rep_images)/$spectre_traite$conf(extension,defaut)"
-       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-traite-final\n\n"
-       return "${brut}-profil-traite-final"
+       ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-final\n\n"
+       return "${brut}-profil-final"
    } else {
        ::console::affiche_erreur "Usage: spc_traitenebula nom_lampe nom_générique_images_objet (sans extension) nom_dark nom_plu nom_dark_plu nom_offset spectre_réponse_instrumentale sélection_manuelle_raies uncosmic (o/n) mirrorx (o/n) normalisation (o/n) calibration_raies_telluriques (o/n) export_png (o/n) export_bess (o/n) méthode_appariement (reg, spc, n) méthode_détection_spectre (large, serre) méthode_sub_sky (moy, moy2, med, inf, sup, back, none)méthode_binning (add, rober, horne) adoucissement (o/n) rejet_mauvais_spectres (o/n) rejet_rotation_importante (o/n) efface_pretraitements (o/n) 2_lampes_calibration (o/n) lampe_calibrée (1/0)\n\n"
    }

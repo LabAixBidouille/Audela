@@ -3,7 +3,7 @@
 # Modification : 08/12/2005
 #
 
-# Mise a jour $Id: spc_cap.tcl,v 1.1 2008-06-14 16:36:20 bmauclaire Exp $
+# Mise a jour $Id: spc_cap.tcl,v 1.2 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 global caption langage
@@ -36,6 +36,7 @@ global caption langage
    set caption(spcaudace,gui,gdeleteall)                         "Erase all lines profile ploted"
    set caption(spcaudace,gui,spc_simbad)                         "Go to Simbad web data base"
    set caption(spcaudace,gui,spc_bess)                           "Go to BeSS web data base"
+   set caption(spcaudace,gui,spc_arasbeam)                       "Go to ArasBeam web data base"
    set caption(spcaudace,gui,spc_uves)                           "Go to UVES web data base"
    set caption(spcaudace,gui,print_on)                           "Print with "
    set caption(spcaudace,gui,quitspc)                            "Exit SpcAud'ACE's window"
@@ -80,6 +81,9 @@ global caption langage
    set caption(spcaudace,gui,spc_div)                            "Dividing two lines profile"
    set caption(spcaudace,gui,spc_extractcont)                    "Extract continuum"
    set caption(spcaudace,gui,spc_dry)                            "Remove telluric lines"
+   set caption(spcaudace,gui,spc_calibre_space)                  "---------------------------------------------------------------------------"
+   set caption(spcaudace,gui,spc_norma_w)                        "Normalisation by continuum extraction"
+   set caption(spcaudace,gui,spc_rescalecont_w)                  "Rescaling continuum to value 1"
 
 
    #--- Menu Mesures ---#
@@ -111,8 +115,6 @@ global caption langage
    set caption(spcaudace,gui,spc_rinstrum_w)                     "Compute instrumental response (RI)"
    set caption(spcaudace,gui,spc_rinstrumcorr_w)                 "Correction for instrumental response"
    set caption(spcaudace,gui,spc_divri)                          "Dividing by instrumental response"
-   set caption(spcaudace,gui,spc_calibre_space)                  "---------------------------------------------------------------------------"
-   set caption(spcaudace,gui,spc_norma_w)                        "Normalisation"
 
    #--- Menu Pipelines ---#
    set caption(spcaudace,gui,spc_pipelines)                      "Pipelines"
@@ -188,6 +190,7 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_repconf)                   "Configuration du répertoire de travail"
      set caption(spcaudace,gui,spc_simbad)                    "Accès au site de la base Simbad"
      set caption(spcaudace,gui,spc_bess)                      "Accès au site de la base BeSS"
+     set caption(spcaudace,gui,spc_arasbeam)                  "Accès au site ArasBeam"
      set caption(spcaudace,gui,spc_uves)                      "Accès au site de la base UVES"
      set caption(spcaudace,gui,print_on)                      "Imprimer avec "
      set caption(spcaudace,gui,quitspc)                       "Quitter la fenêtre SpcAud'ACE"
@@ -230,6 +233,9 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_div)                       "Division de deux profils de raies"
      set caption(spcaudace,gui,spc_extractcont)               "Extraction du continuum"
      set caption(spcaudace,gui,spc_dry)                       "Retrait des raies telluriques"
+     set caption(spcaudace,gui,spc_calibre_space)             "---------------------------------------------------------------------------"
+     set caption(spcaudace,gui,spc_norma_w)                   "Normalisation par extraction du continuum"
+     set caption(spcaudace,gui,spc_rescalecont_w)             "Mise à l'échelle à 1 du continuum"
 
 
      #--- Menu Mesures ---#
@@ -261,8 +267,6 @@ if { [string compare $langage "french"] == "0" } {
      set caption(spcaudace,gui,spc_rinstrum_w)                "Calcul de la réponse instrumentale"
      set caption(spcaudace,gui,spc_rinstrumcorr_w)            "Correction de la réponse instrumentale"
      set caption(spcaudace,gui,spc_divri)                     "Division par la réponse intrumentale"
-     set caption(spcaudace,gui,spc_calibre_space)             "---------------------------------------------------------------------------"
-     set caption(spcaudace,gui,spc_norma_w)                   "Normalisation"
 
 
      #--- Menu Pipelines ---#

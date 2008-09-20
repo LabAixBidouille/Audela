@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.6 2008-09-01 17:54:08 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.7 2008-09-20 17:20:05 bmauclaire Exp $
 
 
 
@@ -240,7 +240,7 @@ proc spc_pretrait { args } {
 	   set stellaire_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_stellaire}\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_stellaire}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_stellaire [ llength $stellaire_liste ]
        } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
+	   ::console::affiche_erreur "Le(s) fichier(s) $nom_stellaire n'existe(nt) pas.\n"
 	   return ""
        }
        if { [ file exists "$audace(rep_images)/$nom_dark$conf(extension,defaut)" ] } {
@@ -251,7 +251,7 @@ proc spc_pretrait { args } {
 	   set dark_liste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_dark}\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_dark}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_dark [ llength $dark_liste ]
        } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_dark n'existe(nt) pas.\n"
+	   ::console::affiche_erreur "Le(s) fichier(s) $nom_dark n'existe(nt) pas.\n"
 	   return ""
        }
        if { [ file exists "$audace(rep_images)/$nom_flat$conf(extension,defaut)" ] } {
@@ -262,7 +262,7 @@ proc spc_pretrait { args } {
 	   set flat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_flat}\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_flat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_flat [ llength $flat_list ]
        } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_flat n'existe(nt) pas.\n"
+	   ::console::affiche_erreur "Le(s) fichier(s) $nom_flat n'existe(nt) pas.\n"
 	   return ""
        }
        if { [ file exists "$audace(rep_images)/$nom_darkflat$conf(extension,defaut)" ] } {
@@ -273,7 +273,7 @@ proc spc_pretrait { args } {
 	   set darkflat_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_darkflat}\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_darkflat}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	   set nb_darkflat [ llength $darkflat_list ]
        } else {
-	   ::console::affiche_resultat "Le(s) fichier(s) $nom_darkflat n'existe(nt) pas.\n"
+	   ::console::affiche_erreur "Le(s) fichier(s) $nom_darkflat n'existe(nt) pas.\n"
 	   return ""
        }
        if { $nom_offset!="none" } {
@@ -285,7 +285,7 @@ proc spc_pretrait { args } {
 	       set offset_list [ lsort -dictionary [ glob -dir $audace(rep_images) -tails ${nom_offset}\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]$conf(extension,defaut) ${nom_offset}\[0-9\]\[0-9\]\[0-9\]$conf(extension,defaut) ] ]
 	       set nb_offset [ llength $offset_list ]
 	   } else {
-	       ::console::affiche_resultat "Le(s) fichier(s) $nom_offset n'existe(nt) pas.\n"
+	       ::console::affiche_erreur "Le(s) fichier(s) $nom_offset n'existe(nt) pas.\n"
 	       return ""
 	   }
        }
@@ -786,6 +786,7 @@ proc spc_normaraie { args } {
      set coeff [ expr 1./$continuum ]
      ::console::affiche_resultat "Coéfficient de normalisation : $coeff\n"
      buf$audace(bufNo) mult $coeff
+     buf$audace(bufNo) setkwd [ list "BSS_NORM" "Scaled on continuum closed to main line" string "Method used for normalisation" ""]
      buf$audace(bufNo) bitpix float
      buf$audace(bufNo) save "$audace(rep_images)/${fichier}_lnorm"
      buf$audace(bufNo) bitpix short
@@ -801,15 +802,15 @@ proc spc_normaraie { args } {
 
 
 ####################################################################
-# Procedure de normalisation automatique de profil de raies
+# Procedure de mise à l'échelle du conitnuum à 1
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 18-03-2007
-# Date modification : 18-03-2007
+# Date modification : 18-03-2007 ; 20-09-2008
 # Arguments : fichier .fit du profil de raies
 ####################################################################
 
-proc spc_autonorma1 { args } {
+proc spc_rescalecont { args } {
 
     global audace
     global conf caption
@@ -822,30 +823,29 @@ proc spc_autonorma1 { args } {
 	   if { [ file exists "$audace(rep_images)/$spctrouve$conf(extension,defaut)" ] == 1 } {
 	       set fichier $spctrouve
 	   } else {
-	       ::console::affiche_erreur "Usage : spc_autonorma nom_profil_de_raies\n\n"
+	       ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies\n\n"
 	       return 0
 	   }
        } else {
-	   ::console::affiche_erreur "Usage : spc_autonorma1 nom_profil_de_raies\n\n"
+	   ::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies\n\n"
+          return 0
        }
 	#--- Détermination de la valeur du continuum :
 	set icont [ spc_icontinuum $fichier ]
 	if { $icont == 0 } {
-	    ::console::affiche_resultat "Continuum trouvé égal à 0. Le spectre ne sera pas normalisé.\n"
+	    ::console::affiche_erreur "Continuum trouvé égal à 0. Le spectre ne sera pas normalisé.\n"
 	    return "$fichier"
 	} else {
-	    set fsortie [ spc_mult "$fichier" [ expr 1./$icont ] ]
-	    buf$audace(bufNo) load "$audace(rep_images)/$fsortie"
-	    buf$audace(bufNo) setkwd [ list "BSS_NORM" "Dividing by mean continuum value" string "Technic used for normalisation" "" ]
+	    buf$audace(bufNo) load "$audace(rep_images)/$fichier"
+            buf$audace(bufNo) mult [ expr 1./$icont ]
 	    buf$audace(bufNo) bitpix float
-	    buf$audace(bufNo) save "$audace(rep_images)/$fsortie"
+	    buf$audace(bufNo) save "$audace(rep_images)/${fichier}_norm"
 	    buf$audace(bufNo) bitpix short
-	    file rename -force "$audace(rep_images)/$fsortie$conf(extension,defaut)" "$audace(rep_images)/${fichier}_norm$conf(extension,defaut)"
 	    ::console::affiche_resultat "Profil normalisé sauvé sous ${fichier}_norm\n"
 	    return "${fichier}_norm"
 	}
     } else {
-	::console::affiche_erreur "Usage : spc_autonorma1 nom_profil_de_raies\n\n"
+	::console::affiche_erreur "Usage : spc_rescalecont nom_profil_de_raies\n\n"
     }
 }
 #*****************************************************************#
@@ -853,7 +853,7 @@ proc spc_autonorma1 { args } {
 
 
 ####################################################################
-# Procedure de normalisation automatique de profil de raies
+# Procedure de normalisation automatique de profil de raies par exctraction du continuum
 #
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 04-04-2008
@@ -2239,28 +2239,33 @@ proc spc_divri_21102006 { args } {
 	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
 		buf$audace(bufNo) setkwd [list "CRPIX1" 1.0 float "" ""]
 	    }
-	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 float "" "angstrom"]
+	    if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "CRVAL1" $lambda0 double "" "angstrom"]
 	    }
-	    if { [ lsearch $listemotsclef "SPC_DEC" ] !=-1 } {
+	    if { [ lsearch $listemotsclef "CDELT1" ] !=-1 } {
+		buf$audace(bufNo) setkwd [list "CDELT1" $dispersion double "" "angstrom"]
+	    }
+	    if { [ lsearch $listemotsclef "SPC_DESC" ] !=-1 } {
 		buf$audace(bufNo) setkwd [list "SPC_DESC" "D.x.x.x+A.x.x+B.x+C" string "" ""]		
 	    }
 	    if { [ lsearch $listemotsclef "SPC_A" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_A" $spc_a float "" "angstrom.angstrom/pixel.pixel"]
+		buf$audace(bufNo) setkwd [list "SPC_A" $spc_a double "" "angstrom.angstrom/pixel.pixel"]
 	    }
 	    if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_B" $spc_b float "" "angstrom/pixel"]
+		buf$audace(bufNo) setkwd [list "SPC_B" $spc_b double "" "angstrom/pixel"]
 	    }
 	    if { [ lsearch $listemotsclef "SPC_C" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_C" $spc_c float "" "angstrom"]
+		buf$audace(bufNo) setkwd [list "SPC_C" $spc_c double "" "angstrom"]
 	    }
 	    if { [ lsearch $listemotsclef "SPC_D" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_D" $spc_d float "" "angstrom.angstrom.a/pixel.pixel.p"]
+		buf$audace(bufNo) setkwd [list "SPC_D" $spc_d double "" "angstrom.angstrom.a/pixel.pixel.p"]
 	    }
 	    if { [ lsearch $listemotsclef "SPC_RMS" ] !=-1 } {
-		buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms float "" "angstrom"]		
+		buf$audace(bufNo) setkwd [list "SPC_RMS" $spc_rms double "" "angstrom"]		
 	    }
+            buf$audace(bufNo) bitpix float
 	    buf$audace(bufNo) save "$audace(rep_images)/$fichier_out"
+            buf$audace(bufNo) bitpix short
 
 	    #--- Fin du script :
 	    file delete -force "$audace(rep_images)/$denominateur_ech$conf(extension,defaut)"
