@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.25 2008-06-01 13:24:40 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.26 2008-09-21 11:50:45 michelpujol Exp $
 #
 
 namespace eval cataGoto {
@@ -24,6 +24,7 @@ namespace eval cataGoto {
       set catalogue(autre_catalogue)   "2"
       set catalogue($visuNo,nom_objet) ""
       set catalogue($visuNo,equinoxe)  ""
+      set catalogue($visuNo,magnitude) ""
       set catalogue(liste_cata)        "$caption(catagoto,coord) $caption(catagoto,planete) $caption(catagoto,asteroide) \
          $caption(catagoto,etoile) $caption(catagoto,messier) $caption(catagoto,ngc) $caption(catagoto,ic) \
          $caption(catagoto,utilisateur) $caption(catagoto,zenith)"
@@ -167,6 +168,7 @@ namespace eval cataGoto {
          ::cataGoto::Nettoyage
          set catalogue($visuNo,nom_objet) ""
          set catalogue($visuNo,equinoxe)  "J2000.0"
+         set catalogue($visuNo,magnitude)   ""
          set catalogue(validation) "0"
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,planete)" } {
          ::cataGoto::GotoPlanete
@@ -175,6 +177,7 @@ namespace eval cataGoto {
             set catalogue($visuNo,list_radec) "$catalogue(planete_ad) $catalogue(planete_dec)"
             set catalogue($visuNo,nom_objet)  "$catalogue(planete_choisie)"
             set catalogue($visuNo,equinoxe)   "now"
+            set catalogue($visuNo,magnitude)   ""
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,asteroide)" } {
          ::cataGoto::CataAsteroide
@@ -183,6 +186,7 @@ namespace eval cataGoto {
             set catalogue($visuNo,list_radec) "$catalogue(asteroide_ad) $catalogue(asteroide_dec)"
             set catalogue($visuNo,nom_objet)  "$catalogue(asteroide_choisie)"
             set catalogue($visuNo,equinoxe)   "now"
+            set catalogue($visuNo,magnitude)   ""
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,etoile)" } {
          ::cataGoto::CataEtoiles
@@ -191,6 +195,7 @@ namespace eval cataGoto {
             set catalogue($visuNo,list_radec) "$catalogue(etoile_ad) $catalogue(etoile_dec)"
             set catalogue($visuNo,nom_objet)  "$catalogue(etoile_choisie)"
             set catalogue($visuNo,equinoxe)   "J2000.0"
+            set catalogue($visuNo,magnitude)   ""
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,messier)" } {
          ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
@@ -199,6 +204,7 @@ namespace eval cataGoto {
             set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
             set catalogue($visuNo,nom_objet)  "$catalogue(M-NGC-IC_choisie)"
             set catalogue($visuNo,equinoxe)   "J2000.0"
+            set catalogue($visuNo,magnitude)   ""
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,ngc)" } {
          ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
@@ -207,7 +213,8 @@ namespace eval cataGoto {
             set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
             set catalogue($visuNo,nom_objet)  "$catalogue(M-NGC-IC_choisie)"
             set catalogue($visuNo,equinoxe)   "J2000.0"
-         }
+            set catalogue($visuNo,magnitude)   ""
+        }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,ic)" } {
          ::cataGoto::CataObjet $catalogue(choisi,$visuNo)
          vwait catalogue(validation)
@@ -215,6 +222,7 @@ namespace eval cataGoto {
             set catalogue($visuNo,list_radec) "$catalogue(objet_ad) $catalogue(objet_dec)"
             set catalogue($visuNo,nom_objet)  "$catalogue(M-NGC-IC_choisie)"
             set catalogue($visuNo,equinoxe)   "J2000.0"
+            set catalogue($visuNo,magnitude)  ""
          }
       } elseif { $catalogue(choisi,$visuNo) == "$caption(catagoto,utilisateur)" } {
          if { $catalogue(autre_catalogue) == "2" } {
@@ -228,6 +236,7 @@ namespace eval cataGoto {
                set catalogue($visuNo,list_radec) "$catalogue(objet_utilisateur_ad) $catalogue(objet_utilisateur_dec)"
                set catalogue($visuNo,nom_objet)  "$catalogue(utilisateur_choisie)"
                set catalogue($visuNo,equinoxe)   "J2000.0"
+               set catalogue($visuNo,magnitude)  $catalogue(utilisateur_mag)
             }
          } else {
             set catalogue(validation) "0"
@@ -239,14 +248,21 @@ namespace eval cataGoto {
          set catalogue($visuNo,list_radec) "$audace(tsl,format,zenith) $lat_zenith"
          set catalogue($visuNo,nom_objet)  "$caption(catagoto,zenith)"
          set catalogue($visuNo,equinoxe)   "now"
+         set catalogue($visuNo,magnitude)   ""
+      } else {
+         #---Raz des variables de sortie si aucun catalogue n'est sélectionne
+         set catalogue($visuNo,list_radec) [list "-" "-" ]
+         set catalogue($visuNo,nom_objet)  "-"
+         set catalogue($visuNo,equinoxe)   "-"
+         set catalogue($visuNo,magnitude)   "-"
       }
 
       #--- Mise a jour des coordonnees pour les outils Telescope et Controle a distance
-      $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet) $catalogue($visuNo,equinoxe)
+      $catalogue($visuNo,nameSpaceCaller)::setRaDec $visuNo $catalogue($visuNo,list_radec) $catalogue($visuNo,nom_objet) $catalogue($visuNo,equinoxe) $catalogue($visuNo,magnitude)
 
       #--- Bouclage pour laisser la boite ouverte et vider les champs
       if { $catalogue(validation) == "1" } {
-         ::cataGoto::Gestion_Cata $visuNo
+         after 10 ::cataGoto::Gestion_Cata $visuNo
       }
    }
 
@@ -1768,11 +1784,11 @@ namespace eval cataGoto {
                set thisuser [split $thisuser "\t"]
                #--- je recupere les valeurs
                set catalogue(utilisateur_choisie)  [lindex $thisuser 0]
-               set catalogue(utilisateur_mag)      [lindex $thisuser 3]
                set catalogue(objet_utilisateur_ad) [lindex $thisuser 1]
-               set catalogue(utilisateur_ad) $catalogue(objet_utilisateur_ad)
+               set catalogue(utilisateur_ad)       $catalogue(objet_utilisateur_ad)
                set catalogue(objet_utilisateur_dec) [lindex $thisuser 2]
-               set catalogue(utilisateur_dec) $catalogue(objet_utilisateur_dec)
+               set catalogue(utilisateur_dec)      $catalogue(objet_utilisateur_dec)
+               set catalogue(utilisateur_mag)      [lindex $thisuser 3]
             } else {
                #--- sinon le separateur est un espace ou une serie d'espaces
                set catalogue(utilisateur_choisie) "[lindex $thisuser 0]"
