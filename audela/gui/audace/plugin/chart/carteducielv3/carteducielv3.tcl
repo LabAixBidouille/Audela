@@ -4,7 +4,7 @@
 #    pour afficher la carte du champ des objets selectionnes dans AudeLA
 #    Fonctionne avec Windows et Linux
 # Auteur : Michel PUJOL
-# Mise a jour $Id: carteducielv3.tcl,v 1.20 2008-06-01 14:01:24 robertdelmas Exp $
+# Mise a jour $Id: carteducielv3.tcl,v 1.21 2008-09-21 11:53:32 michelpujol Exp $
 #
 
 namespace eval carteducielv3 {
@@ -437,6 +437,7 @@ namespace eval carteducielv3 {
    #  return [list $ra $dec $objName $magnitude]
    #     $ra : right ascension  (ex : "16h41m42")
    #     $dec : declinaison     (ex : "+36d28m00")
+   #     $equinox: equinoxe     (ex: "J2000.0"  ou "now" )
    #     $objName : object name (ex : "M 13")
    #     $magnitude: object magnitude  (ex: "5.6")
    #
@@ -811,7 +812,7 @@ namespace eval carteducielv3 {
      # console::disp "CDC result dec=$dec\n"
      # console::disp "CDC result objName=$objName\n"
 
-      return [list $ra $dec $objName $magnitude]
+      return [list $ra $dec "now" $objName $magnitude]
    }
 
    #------------------------------------------------------------
