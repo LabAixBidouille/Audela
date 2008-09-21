@@ -569,18 +569,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libsext"=".\audela\libsext\vc60\libsext.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "libstarlight"=".\libcam\libstarlight\vc60\libstarlight.dsp" - Package Owner=<4>
 
 Package=<5>

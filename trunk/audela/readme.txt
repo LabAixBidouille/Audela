@@ -117,7 +117,7 @@ librairies externes (TCL, FITSIO, GZIP, JPEG, et certains drivers de cameras).
 Par la suite on entend par "modules propres a AudeLA" ceux qui ont reellement
 ete ecrits par les auteurs ou contributeurs directs. Cela correspond aux
 repertoires audela, libak, libaudela, libcam, libgsl, libgzip, libjm, libmc, 
-librgb, libsext, libtel, libtt.
+librgb, libtel, libtt.
 
 "Aud'ACE" est une interface graphique qui exploite les possibilites de 
 "AudeLA". "Aud'ACE" a ete ecrit en TCL/TK par les auteurs, et utilise bon
@@ -395,7 +395,7 @@ pour rectifier l'injustice qu'ils subissent.
  - Vfs : Librairie pour l'outil "Mise à jour d'AudeLA".
  - Zlibtcl : Librairie pour l'outil "Mise à jour d'AudeLA".
  - CFITSIO (2.51).
- - Sextractor.
+ - Sextractor (2.5.0).
  - jpeg6b.
  - GZIP.
  - Porttalk.

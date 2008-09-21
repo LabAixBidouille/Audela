@@ -18,7 +18,6 @@ de ce que l'on peut y trouver :
 - libgzip : Module de compression.
 - libmc : Librairie de mecanique celeste.
 - librgb : Permet d'utiliser des images en couleur.
-- libsext : Interface vers sextractor.
 - libtel : Contient tous les drivers de montures de telescope.
 - libtt : Librairie de traitement d'images.
 
@@ -100,7 +99,7 @@ Effectuez les operations suivantes dans une console "Invite de commande",
     lancer make.bat puis install.bat
 
   - Ouvrir et compiler avec visual c++, en mode release :
-       src\external\sextractor\sextractor\vc60\sextractor.dsw
+       src\external\sextractor\sextractor\vc60-2.5.0\sextractor.dsw
           (sex.exe est mis directement dans audela/bin)
 
   - Repertoire src\external\tcl,
