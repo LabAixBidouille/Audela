@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.11 2008-06-15 16:46:33 michelpujol Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.12 2008-09-21 11:50:45 michelpujol Exp $
 #
 
 #============================================================
@@ -155,10 +155,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
    set private($visuNo,acquisitionResult) ""
 
    #--- Coordonnees J2000.0 de M104
-   set private($visuNo,nomObjet)     "M104"
-   set private($visuNo,raObjet)      "12h40m0s"
-   set private($visuNo,decObjet)     "-11d37m22"
-   set private($visuNo,equinoxObjet) "J2000.0"
+   setRaDec $visuNo [list "12h40m0s" "-11d37m22"]  "M104" "J2000.0" ""
 
    #--- Frame principal
    frame $private($visuNo,This) -borderwidth 2 -relief groove
@@ -208,7 +205,7 @@ proc ::tlscp::createPluginInstance { { in "" } { visuNo 1 } } {
 
          #--- LabelEntry pour l'equinoxe des coordonnees
          LabelEntry $private($visuNo,This).fra2.equinox -label "$caption(tlscp,equinoxe)" \
-            -labeljustify left -labelwidth 10 -width 5 -justify center \
+            -labeljustify left -labelwidth 10 -width 5 -justify center -editable 0 \
             -textvariable ::tlscp::private($visuNo,equinoxObjet)
          pack $private($visuNo,This).fra2.equinox -anchor w -side top -fill x -expand 0
 
@@ -757,37 +754,39 @@ proc ::tlscp::cmdSkyMap { visuNo } {
    variable private
 
    set result [::carte::getSelectedObject]
-::console::disp "result = $result \n"
-   if { [llength $result] == 4 } {
+   if { [llength $result] == 5 } {
       ###set now now
       ###set now [::audace::date_sys2ut now]
       ###set result [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
       set ra      [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
       set dec     [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
-      set name    "[ lindex $result 2 ]"
-      set equinox "now"
-      ::tlscp::setRaDec $visuNo [list $ra $dec] $name $equinox
+      set equinox [lindex $result 2]
+      set name    [lindex $result 3]
+      set magnitude ""
+      ::tlscp::setRaDec $visuNo [list $ra $dec] $name $equinox $magnitude
    }
 }
 
 #------------------------------------------------------------
-#  cmdSkyMap
-#     recupere les coordonnees et le nom de l'objet selectionne dans une carte
-#     le resultat est
+#  setRaDec
+#     memorise les coordonnes et le nom de l'objet cible
+#
 #  parametres :
-#    visuNo : numero de la visu courante
+#    visuNo    : numero de la visu courante
 #    listRaDec : RA et DEC de l'objet
 #    nomObjet  : nom de l'objet
+#    euinox    : equinoxe de RA et DEC ( exemple : J2000.0  , "now" )
 #  retour
 #    rien
 #------------------------------------------------------------
-proc ::tlscp::setRaDec { visuNo listRaDec nomObjet equinox } {
+proc ::tlscp::setRaDec { visuNo listRaDec nomObjet equinox magnitude } {
    variable private
 
    set private($visuNo,raObjet)      [lindex $listRaDec 0]
    set private($visuNo,decObjet)     [lindex $listRaDec 1]
    set private($visuNo,nomObjet)     $nomObjet
    set private($visuNo,equinoxObjet) $equinox
+
 }
 
 #------------------------------------------------------------
@@ -890,7 +889,7 @@ proc ::tlscp::startAcquisition { visuNo  } {
 
    #--- j'affiche le bouton STOP CCD
    $private($visuNo,This).camera.goccd configure -text "$::caption(tlscp,stopccd) (ESC)" -command "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.goccd "
-   #--- J'associe la commande d'arret a la touche ESCAPE
+   #--- J'associe la touche ESCAPE a la commande d'arret
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.goccd "
 
    #--- je lance l'acquisition
@@ -963,21 +962,30 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
 
    #--- j'affiche le bouton STOP CENTER
    $private($visuNo,This).camera.center configure -text "Stop center (ESC)" -command "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.center"
-   #--- J'associe la commande d'arret a la touche ESCAPE
+   #--- J'associe la touche ESCAPE a la commande d'arret
    bind all <Key-Escape> "::tlscp::stopAcquisition $visuNo $private($visuNo,This).camera.center"
 
    #--- j'efface les marques dans la visu
    ::tlscp::clearSearchStar $visuNo
 
-   #--- RAZ su resultat
+   #--- RAZ du resultat
    set private($visuNo,acquisitionResult) ""
 
-   set bufNo [::confVisu::getBufNo $visuNo]
-   set ra    [string trim [mc_angle2deg $private($visuNo,raObjet) ]]
-   set dec   [string trim [mc_angle2deg $private($visuNo,decObjet)]]
+   #--- je recupere les coordonnees J2000 pour le centrage aux coordonnees
+   if { $private($visuNo,equinoxObjet) == "J2000.0" ||  $private($visuNo,equinoxObjet) == "J2000" } {
+      set ra  $private($visuNo,raObjet)
+      set dec $private($visuNo,decObjet)
+      set ra    [string trim [mc_angle2deg $ra ]]
+      set dec   [string trim [mc_angle2deg $dec ]]
+   } else {
+      #--- je calcule les coordonnees J2000
+      set dateNow   [::audace::date_sys2ut now]
+      set listRaDec [::telescope::apparent2catalogmean $private($visuNo,raObjet) $private($visuNo,decObjet) $dateNow J2000.0 ]
+      set ra [lindex $listRaDec 0]
+      set dec [lindex $listRaDec 1]
+   }
 
    if { $methode == "BRIGHTEST" } {
-      ###console::disp "::tlscp::startCenter targetCoord=$private($visuNo,targetCoord) targetBoxSize=$::conf(tlscp,targetBoxSize)\n"
       ::camera::centerBrightestStar $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" $::conf(tlscp,expTime) $binning $::conf(tlscp,originCoord) $private($visuNo,targetCoord) $::conf(tlscp,angle) $::conf(tlscp,targetBoxSize) $::conf(tlscp,mountEnabled) $::conf(tlscp,alphaSpeed) $::conf(tlscp,deltaSpeed) $::conf(tlscp,alphaReverse) $::conf(tlscp,deltaReverse) $::conf(tlscp,seuilx) $::conf(tlscp,seuily)
    } else {
       ::camera::centerRadec $private($visuNo,camItem) "::tlscp::callbackAcquisition $visuNo" \
@@ -992,21 +1000,23 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
          $::conf(tlscp,maxMagnitude) $::conf(tlscp,delta) $::conf(tlscp,epsilon) \
          $::conf(tlscp,catalogueName) $::conf(tlscp,cataloguePath,$::conf(tlscp,catalogueName))
    }
+   #--- j'attends la fin du centrage
    vwait ::tlscp::private($visuNo,acquisitionState)
 
-   #--- Rajoute des mots clefs dans l'en-tete FITS
+   #--- j'ajoute les mots clefs dans l'en-tete FITS
+   set bufNo [::confVisu::getBufNo $visuNo]
    foreach keyword [ ::keyword::getKeywords $visuNo ] {
       buf$bufNo setkwd $keyword
    }
 
-   #--- j'affiche les etoiles
+   #--- j'affiche marques autour des etoiles
    if { $private($visuNo,acquisitionResult) != "" } {
       #--- j'ajoute les mots cles dans l'image
       set bufNo [::confVisu::getBufNo $visuNo]
       buf$bufNo setkwd [list "RA"  $ra  double "reference coordinate for naxis1" "degree" ]
       buf$bufNo setkwd [list "DEC" $dec double "reference coordinate for naxis2" "degree" ]
       buf$bufNo setkwd [list "OBJNAME" $private($visuNo,nomObjet) string "object name" "" ]
-      buf$bufNo setkwd [list "EQUINOX" $private($visuNo,equinoxObjet) string "Coordinates equinox" "" ]
+      buf$bufNo setkwd [list "EQUINOX" "J2000.0" string "Coordinates equinox" "" ]
 
       #--- je cree un cercle rouge autour de l'etoile centree
       set coord [::confVisu::picture2Canvas $visuNo $private($visuNo,acquisitionResult) ]
@@ -1020,6 +1030,7 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    #--- j'affiche le bouton CENTER
    $private($visuNo,This).camera.center configure -text "$::caption(tlscp,centrer)" \
       -command "::tlscp::startCenter $visuNo" -state normal
+   #--- je descative la touche ESC
    bind all <Key-Escape>
 
    return $private($visuNo,acquisitionResult)
@@ -1087,6 +1098,7 @@ proc ::tlscp::startSearchStar { visuNo } {
    #--- j'affiche le bouton SEARCH
    $private($visuNo,This).camera.search configure -text "$::caption(tlscp,rechercher)" \
       -command "::tlscp::startSearchStar $visuNo" -state normal
+   #--- je descative la touche ESC
    bind all <Key-Escape>
 
    return $brigthestStarCoord
