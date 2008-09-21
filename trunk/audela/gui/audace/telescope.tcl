@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.27 2008-05-10 12:39:28 michelpujol Exp $
+# Mise a jour $Id: telescope.tcl,v 1.28 2008-09-21 11:47:15 michelpujol Exp $
 #
 
 namespace eval ::telescope {
@@ -1111,6 +1111,114 @@ proc ::telescope::park { state } {
       #--- j'appelle la procedure du telescope
       $::conf(telescope)::park $state
    }
+}
+
+#------------------------------------------------------------
+# catalogmean2apparent
+#     converti ra,dec en coordonnees de l'equinoxe
+# Parametres :
+#       rae,dece : coordinates (degrees)
+#       equinox  : equinox  (example : J2000.0)
+# Return
+#       rav,decv : true coordinates (degrees)
+#         Hv : true hour angle (degrees)
+#         hv : true altitude altaz coordinate (degrees)
+#         azv : true azimut altaz coodinate (degrees)
+#------------------------------------------------------------
+proc ::telescope::catalogmean2apparent { rae dece equinox date } {
+   global audace modpoi
+
+   if {[info exists audace(posobs,observateur,gps)]==1} {
+      set gpsPosition $audace(posobs,observateur,gps)
+   } else {
+      set gpsPosition "GPS 1 E 43 0"
+   }
+   #--- aberration annuelle
+   set radec [mc_aberrationradec annual [list $rae $dece] $date ]
+   #--- correction de precession
+   set radec [mc_precessradec $radec $equinox $date]
+   #--- correction de nutation
+   set radec [mc_nutationradec $radec $date]
+   #--- aberration de l'aberration diurne
+   set radec [mc_aberrationradec diurnal $radec $date $gpsPosition]
+   #--- calcul de l'angle horaire et de la hauteur vraie
+   set rav [lindex $radec 0]
+   set decv [lindex $radec 1]
+   set dummy [mc_radec2altaz ${rav} ${decv} $gpsPosition $date]
+   set azv [lindex $dummy 0]
+   set hv [lindex $dummy 1]
+   set Hv [lindex $dummy 2]
+   #--- return
+   return [list $rav $decv $Hv $hv $azv]
+}
+
+
+#------------------------------------------------------------
+#  apparent2catalogmean
+#     converti ra et dec en coordonnees de l'equinoxe
+#  Parametres :
+#-   ra,dec : true coordinates (degrees)
+#    date
+#    equinox : J2000.0
+# Return
+#   rae,dece : coordinates J2000.0 (degrees)
+#------------------------------------------------------------
+proc ::telescope::apparent2catalogmean { ra dec date equinox } {
+
+   if {[info exists audace(posobs,observateur,gps)]==1} {
+      set gpsPosition $::audace(posobs,observateur,gps)
+   } else {
+      set gpsPosition "GPS 1 E 43 0"
+   }
+
+   #--- Aberration de l'aberration diurne
+   set radec [mc_aberrationradec diurnal [list $ra $dec] $date $gpsPosition -reverse]
+   #--- Correction de nutation
+   set radec [mc_nutationradec $radec $date -reverse]
+   #--- Correction de precession
+   set radec [mc_precessradec $radec $date $equinox]
+   #--- Aberration annuelle
+   set radec [mc_aberrationradec annual $radec $date -reverse]
+   #--- Return
+   return $radec
+}
+
+proc ::telescope::apparent2observed { listvdt { date now } { pressure 101325 } { temperature 290 } } {
+#--- Input
+#--- listvdt : true coodinates list from modpoi_catalogmean2apparent (degrees)
+#--- Output
+#--- raadt,decadt : observed coordinates (degrees)
+#--- Hadt : observed hour angle (degrees)
+#--- hadt : observed altitude altaz coordinate (degrees)
+#--- azadt : observed azimut altaz coordinate (degrees)
+   global modpoi
+
+   if {[info exists audace(posobs,observateur,gps)]==1} {
+      set gpsPosition $::audace(posobs,observateur,gps)
+   } else {
+      set gpsPosition "GPS 1 E 43 0"
+   }
+
+   #--- Extract angles from the listvd
+   set ravdt [lindex $listvdt 0]
+   set decvdt [lindex $listvdt 1]
+   set Hvdt [lindex $listvdt 2]
+   set hvdt [lindex $listvdt 3]
+   set azvdt [lindex $listvdt 4]
+   #--- Refraction correction
+   set azadt $azvdt
+   if {$hvdt>-1.} {
+      set refraction [mc_refraction $hvdt out2in $temperature $pressure]
+   } else {
+      set refraction 0.
+   }
+   set hadt [expr $hvdt+$refraction]
+   set res [mc_altaz2radec $azvdt $hadt $gpsPosition $date]
+   set raadt [lindex $res 0]
+   set decadt [lindex $res 1]
+   set res [mc_altaz2hadec $azvdt $hadt $gpsPosition $date]
+   set Hadt [lindex $res 0]
+   return [list $raadt $decadt $Hadt $hadt $azadt]
 }
 
 ::telescope::init
