@@ -2,10 +2,10 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.30 2008-07-16 16:38:23 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.31 2008-09-22 16:38:06 robertdelmas Exp $
 #
 
-global audace
+global audace snvisu snconfvisu
 
 source [ file join $audace(rep_plugin) tool supernovae snmacros.tcl ]
 source [ file join $audace(rep_plugin) tool supernovae snmacros.cap ]
@@ -16,7 +16,7 @@ source [ file join $audace(rep_plugin) tool supernovae sntkutil.tcl ]
 catch { snconfvisu_load }
 snconfvisu_verif
 
-set snvisu(afflog) 1 ; # pour affichage en log
+set snvisu(afflog) 1 ; #--- Pour un affichage des images en mode logarithme
 
 set rep(gz) "$snconfvisu(gzip)"
 
@@ -68,7 +68,7 @@ set rep(x1) [globgalsn $aa]
 set rep00 {}
 set aa "$rep(1)/*${extname}.gz"
 catch {set rep00 [globgalsn $aa]}
-#lappend rep(x1) $rep00
+# lappend rep(x1) $rep00
 set rep(x1) [concat $rep(x1) $rep00]
 set rep(xx1) -1
 set aa "$rep(2)/*$extname"
@@ -495,11 +495,11 @@ bind $audace(base).snvisu <Key-F7> {
 }
 
 if { [ string tolower "$snconfvisu(cuts_change)" ] == "motion" } {
-   bind $zone(sh1) <Motion> { catch { visu$num(visu_1) disp ; visu4 disp } }
-   bind $zone(sh2) <Motion> { catch { visu$num(visu_2) disp ; visu5 disp } }
+   bind $zone(sh1) <Motion> { visu$num(visu_1) disp }
+   bind $zone(sh2) <Motion> { visu$num(visu_2) disp }
 } else {
-   bind $zone(sh1) <ButtonRelease> { catch { visu$num(visu_1) disp ; visu4 disp } }
-   bind $zone(sh2) <ButtonRelease> { catch { visu$num(visu_2) disp ; visu5 disp } }
+   bind $zone(sh1) <ButtonRelease> { visu$num(visu_1) disp }
+   bind $zone(sh2) <ButtonRelease> { visu$num(visu_2) disp }
 }
 
 #--- Affiche le zoom de la zone pointee dans l'image de gauche
@@ -537,10 +537,10 @@ bind $zone(image2) <ButtonPress-1> {
 # ========================================
 
 #--- Declare a new buffer in memory to place images
-set num(buffer1) [buf::create]
-buf$num(buffer1) extension $conf(extension,defaut)
-set num(buffer2) [buf::create]
-buf$num(buffer2) extension $conf(extension,defaut)
+set num(buffer1)  [buf::create]
+buf$num(buffer1)  extension $conf(extension,defaut)
+set num(buffer2)  [buf::create]
+buf$num(buffer2)  extension $conf(extension,defaut)
 set num(buffer1b) [buf::create]
 buf$num(buffer1b) extension $conf(extension,defaut)
 set num(buffer2b) [buf::create]
@@ -549,6 +549,7 @@ if {[info exists audace]==1} {
    buf$num(buffer2) compress [buf$audace(bufNo) compress]
 }
 
+#--- Image 100 et 200
 set num(visu_1) [visu::create $num(buffer1) 100 ]
 set num(visu_2) [visu::create $num(buffer2) 200 ]
 
@@ -637,11 +638,12 @@ proc sn_buflog { numbuf bufno } {
    set fond [lindex $res 6]
    set sigma [lindex $res 7]
    set seuil [expr $fond-3.*$sigma]
-   #::console::affiche_resultat "fond=$fond sigma=$sigma seuil=$seuil\n"
+  # ::console::affiche_resultat "fond=$fond sigma=$sigma seuil=$seuil\n"
    buf$bufno log 1000 [expr -1.*$seuil]
    set res [buf$bufno stat]
    set fond [lindex $res 6]
    set sigma [lindex $res 7]
+  # ::console::affiche_resultat "fond=$fond sigma=$sigma\n"
    set sb [expr $fond-5.*$sigma]
    set n1 [buf$bufno getpixelswidth]
    set n2 [buf$bufno getpixelsheight]
@@ -657,12 +659,10 @@ proc sn_buflog { numbuf bufno } {
    if {$sh<=$sb} {
       set sh [expr $sb+10.*$sigma]
    }
-   buf$bufno setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
-   buf$bufno setkwd [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
+   buf$bufno setkwd  [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
+   buf$bufno setkwd  [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
    buf$numbuf setkwd [list MIPS-LO [expr int($sb)] int "seuil bas" ""]
    buf$numbuf setkwd [list MIPS-HI [expr int($sh)] int "seuil haut" ""]
-   #visu$visuno cut [list $sh $sb]
-   #visu$visuno disp
    return [list $sh $sb]
 }
 
@@ -906,19 +906,7 @@ proc affimages { } {
    set snvisu(ima_rep3_exist) "0"
    set snconfvisu(binarypath) ""
    set rep(DSS)               ""
-
-   set afflog $snvisu(afflog)
-   #--- Nettoyage des 2 canvas avant affichage
-   catch {
-      #--- Du canvas de l'image 1
-      visu$num(visu_1) clear
-      buf$num(buffer1) clear
-      buf$num(buffer1b) clear
-      #--- Du canvas de l'image 2
-      visu$num(visu_2) clear
-      buf$num(buffer2) clear
-      buf$num(buffer2b) clear
-   }
+   set afflog                 "$snvisu(afflog)"
 
    #--- Effacement des fenetres des zooms si elles existent
    if { [ winfo exists $audace(base).snvisuzoom_g ] } {
@@ -926,6 +914,18 @@ proc affimages { } {
    }
    if { [ winfo exists $audace(base).snvisuzoom_d ] } {
       destroy $audace(base).snvisuzoom_d
+   }
+
+   #--- Nettoyage des 2 canvas avant affichage
+   catch {
+      #--- Du canvas de l'image 1
+      visu$num(visu_1)  clear
+      buf$num(buffer1)  clear
+      buf$num(buffer1b) clear
+      #--- Du canvas de l'image 2
+      visu$num(visu_2)  clear
+      buf$num(buffer2)  clear
+      buf$num(buffer2b) clear
    }
 
    #---
@@ -953,14 +953,14 @@ proc affimages { } {
          return
       }
       #---
-      #set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
-      #set sb [expr $moyenne - $conf(seuils,irisautobas) ]
-      #set sh [expr $moyenne + $conf(seuils,irisautobas) ]
+     # set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
+     # set sb [expr $moyenne - $conf(seuils,irisautobas) ]
+     # set sh [expr $moyenne + $conf(seuils,irisautobas) ]
       set sbh [ buf$num(buffer1) stat ]
       set sh [lindex $sbh 0]
       set sb [lindex $sbh 1]
       visu$num(visu_1) cut [ list $sh $sb ]
-      #--- cas log
+      #--- Affichage en mode logarithme
       if {$afflog==1} {
          visu$num(visu_1) cut [sn_buflog $num(buffer1) $num(buffer1b)]
       }
@@ -986,9 +986,7 @@ proc affimages { } {
       }
       $zone(sh1) set $scalecut
       $zone(sh1) configure -to $scalemax -from $scalemin
-      #set ds1 [expr $scalemax-$scalecut]
-      #   set ds2 [expr $scalecut-$scalemin]
-      #::console::affiche_resultat "$scalemin <($ds2)< $scalecut <($ds1)< $scalemax\n"
+      update
       #---
       $zone(labelh1) configure -text [lindex [buf$num(buffer1) getkwd DATE-OBS] 1]
       set user [lindex [buf$num(buffer1) getkwd USER] 1]
@@ -1153,15 +1151,15 @@ proc affimages { } {
       }
       #---
       catch {
-         #set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
-         #set sb [expr $moyenne - $conf(seuils,irisautobas) ]
-         #set sh [expr $moyenne + $conf(seuils,irisautobas) ]
+        # set moyenne [ lindex [ buf$num(buffer2) stat ] 4 ]
+        # set sb [expr $moyenne - $conf(seuils,irisautobas) ]
+        # set sh [expr $moyenne + $conf(seuils,irisautobas) ]
          set sbh [ buf$num(buffer2) stat ]
          set sh [lindex $sbh 0]
          set sb [lindex $sbh 1]
          visu$num(visu_2) cut [ list $sh $sb ]
       }
-      #--- cas log
+      #--- Affichage en mode logarithme
       if {$afflog==1} {
          visu$num(visu_2) cut [sn_buflog $num(buffer2) $num(buffer2b)]
       }
@@ -1191,6 +1189,7 @@ proc affimages { } {
             $zone(sh2) configure -to $scalemax -from $scalemin
          }
          $zone(sh2) set $scalecut
+         update
          #---
          set zone(naxis1_2) [lindex [buf$num(buffer2) getkwd NAXIS1] 1]
          set zone(naxis2_2) [lindex [buf$num(buffer2) getkwd NAXIS2] 1]
@@ -1344,8 +1343,8 @@ proc snvisu_configuration { } {
          -font $audace(font,arial_8_b) -command {
             global num
             global zone
-            bind $zone(sh1) <Motion> { catch { visu$num(visu_1) disp ; visu4 disp } }
-            bind $zone(sh2) <Motion> { catch { visu$num(visu_2) disp ; visu5 disp } }
+            bind $zone(sh1) <Motion> { visu$num(visu_1) disp }
+            bind $zone(sh2) <Motion> { visu$num(visu_2) disp }
          }
       pack $audace(base).snvisu_3.frame1.but_rad0 \
          -in $audace(base).snvisu_3.frame1 -side left -anchor center \
@@ -1356,8 +1355,8 @@ proc snvisu_configuration { } {
          -font $audace(font,arial_8_b) -command {
             global num
             global zone
-            bind $zone(sh1) <ButtonRelease> { catch { visu$num(visu_1) disp ; visu4 disp } }
-            bind $zone(sh2) <ButtonRelease> { catch { visu$num(visu_2) disp ; visu5 disp } }
+            bind $zone(sh1) <ButtonRelease> { visu$num(visu_1) disp }
+            bind $zone(sh2) <ButtonRelease> { visu$num(visu_2) disp }
          }
       pack $audace(base).snvisu_3.frame1.but_rad1 \
          -in $audace(base).snvisu_3.frame1 -side left -anchor center \
@@ -1577,12 +1576,10 @@ proc snvisu_configuration { } {
 }
 
 proc changeHiCut1 { foo } {
-   global num snvisu
+   global num
 
    set sbh [visu$num(visu_1) cut]
    visu$num(visu_1) cut [list $foo [lindex $sbh 1]]
-   set snvisu(seuil_1_haut) "$foo"
-   set snvisu(seuil_1_bas)  [lindex $sbh 1]
 }
 
 proc changeHiCut2 { foo } {
@@ -1671,7 +1668,6 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
    set shortname [file rootname [file tail $filename]]
    set rep(gif_dss) "[string tolower $shortname].gif"
    #---
-   #set rep1 "[lindex $rep(1) 0]"
    set rep1 "$rep(1)"
    set filename "$rep1"
 
@@ -1734,21 +1730,21 @@ proc saveimages_jpeg { { invew 0 } { invns 0 } } {
       set rep(jpg_dss) "$shortname-DSS\.jpg"
       set extJPG ".jpg"
       #--- je converti l'image FIT en JPG
-      #ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
+     # ttscript2 "IMA/SERIES \"$repDSS\" \"$shortname\" . . \"$extname\" \"$rep1\" \"$shortname-DSS\" . \"$extname\" COPY \"jpegfile\""
 
       set num(bufDSS) [buf::create]
       buf$num(bufDSS) extension $conf(extension,defaut)
       visu::create $num(bufDSS) 300
-      #if {[info exists audace]==1} {
-         #buf$num(bufDSS) compress [buf$num(bufDSS)) compress]
-      #}
+     # if {[info exists audace]==1} {
+     #    buf$num(bufDSS) compress [buf$num(bufDSS)) compress]
+     # }
       set result [buf$num(bufDSS) load $filenameDSS]
       set hight [expr [lindex [buf$num(bufDSS) stat] 0] * 3]
       set low [lindex [buf$num(bufDSS) stat] 1]
 
-      #visu$num(bufDSS) cut "$hight $low"
-      #visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
-      #visu$num(bufDSS) disp
+     # visu$num(bufDSS) cut "$hight $low"
+     # visu$num(bufDSS) cut [lrange [buf$num(bufDSS) autocuts] 0 1]
+     # visu$num(bufDSS) disp
       if { [ file exist "$rep1/${shortname}\-DSS\.jpg" ] == "1" } {
          set result [buf$num(bufDSS) sauve_jpeg "$rep1/${shortname}\-DSS\.jpg" 80 $low $hight]
       }
@@ -2110,9 +2106,9 @@ proc snblinkimage { } {
 
    #--- Initialisation
    set rep(blink,last) ""
+   set afflog          "$snvisu(afflog)"
 
    #---
-   set afflog $snvisu(afflog)
    if {$afflog==0} {
       visu$num(visu_1) buf $num(buffer1)
       visu$num(visu_2) buf $num(buffer2)
@@ -2164,11 +2160,11 @@ proc snblinkimage { } {
          return
       }
       buf$b load "$audace(rep_images)/dummyb2"
-      #--- cas log
-      if {$afflog==0} {
-         set shsb [visu$num(visu_2) cut]
-      } else {
+      #--- Affichage en mode logarithme
+      if {$afflog==1} {
          set shsb [sn_buflog $b $b]
+      } else {
+         set shsb [visu$num(visu_2) cut]
       }
       #---
       set text0 "[buf$b getkwd MIPS-LO]"
