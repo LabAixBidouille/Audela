@@ -4,7 +4,7 @@
 #               For more details, see http://gcn.gsfc.nasa.gov
 #               The entry point is socket_server_open_gcn but you must contact GCN admin
 #               to obtain a port number for a GCN connection.
-# Mise a jour $Id: gcn_tools.tcl,v 1.8 2008-09-03 03:51:10 alainklotz Exp $
+# Mise a jour $Id: gcn_tools.tcl,v 1.9 2008-09-22 06:18:39 alainklotz Exp $
 #
 
 # ==========================================================================================
@@ -609,8 +609,8 @@ proc gcn_pkt_type { pkt_type } {
      28       RXTE-ASM_ALERT
      29       RXTE-ASM
      30       COMPTEL           NO LONGER AVAILABLE
-     31       IPN_RAW           NOT IMPLEMENTED
-     32       IPN_SEGMENT       NO LONGER AVAILABLE
+     31       IPN_RAW
+     32       IPN_SEGMENT       WILL BE RE-AVAILABLE
      33       SAX-WFC_ALERT     NOT AVAILABLE
      34       SAX-WFC           NO LONGER AVAILABLE
      35       SAX-NFI_ALERT     NOT AVAILABLE
@@ -618,10 +618,10 @@ proc gcn_pkt_type { pkt_type } {
      37       RXTE-ASM_XTRANS
      38       spare/unused
      39       IPN_POSITION
-     40       HETE_S/C_ALERT
-     41       HETE_S/C_UPDATE
-     42       HETE_S/C_LAST
-     43       HETE_GNDANA
+     40       HETE_S/C_ALERT    NO LONGER AVAILABLE
+     41       HETE_S/C_UPDATE   NO LONGER AVAILABLE
+     42       HETE_S/C_LAST     NO LONGER AVAILABLE
+     43       HETE_GNDANA       NO LONGER AVAILABLE
      44       HETE_Test
      45       GRB_COUNTERPART
      51       INTEGRAL_POINTDIR
@@ -629,14 +629,15 @@ proc gcn_pkt_type { pkt_type } {
      53       INTEGRAL_WAKEUP
      54       INTEGRAL_REFINED
      55       INTEGRAL_OFFLINE
+     57       OGLE                             NOT YET AVAILABLE
      57       SNEWS                            NOT YET AVAILABLE
-     58       MILAGRO
+     58       MILAGRO                          NO LONGER AVAILABLE
      59       KONUS_LIGHTCURVE
      60       SWIFT_BAT_GRB_ALERT
      61       SWIFT_BAT_GRB_POSITION
      62       SWIFT_BAT_GRB_NACK_POSITION
      63       SWIFT_BAT_GRB_LIGHTCURVE
-     64       SWIFT_BAT_SCALED_MAP             NOT AVAILABLE
+     64       SWIFT_BAT_SCALED_MAP             NOT AVAILABLE TO THE PUBLIC
      65       SWIFT_FOM_OBSERVE
      66       SWIFT_SC_SLEW
      67       SWIFT_XRT_POSITION
@@ -657,22 +658,36 @@ proc gcn_pkt_type { pkt_type } {
      82       SWIFT_BAT_GRB_POS_TEST
      83       SWIFT_POINTDIR
      84       SWIFT_BAT_TRANS
-     85       SWIFT_XRT_THRESHPIX              NOT AVAILABLE
-     86       SWIFT_XRT_THRESHPIX_PROC         NOT AVAILABLE
-     87       SWIFT_XRT_SPER                   NOT AVAILABLE
-     88       SWIFT_XRT_SPER_PROC              NOT AVAILABLE
+     85       SWIFT_XRT_THRESHPIX              NOT AVAILABLE TO THE PUBLIC
+     86       SWIFT_XRT_THRESHPIX_PROC         NOT AVAILABLE TO THE PUBLIC
+     87       SWIFT_XRT_SPER                   NOT AVAILABLE TO THE PUBLIC
+     88       SWIFT_XRT_SPER_PROC              NOT AVAILABLE TO THE PUBLIC
      89       SWIFT_UVOT_NACK_POSITION
-     110      GLAST_GBM_GRB_ALERT              NOT YET AVAILABLE
-     111      GLAST_GBM_GRB_POS_ACK            NOT YET AVAILABLE
-     112      GLAST_GBM_LC                     NOT YET AVAILABLE
-     118      GLAST_GBM_TRANS                  NOT YET AVAILABLE
-     119      GLAST_GBM_GRB_POS_TEST           NOT YET AVAILABLE
-     120      GLAST_LAT_GRB_POS_INI            NOT YET AVAILABLE
-     121      GLAST_LAT_GRB_POS_UPD            NOT YET AVAILABLE
-     122      GLAST_LAT_GRB_POS_FIN            NOT YET AVAILABLE
-     123      GLAST_LAT_TRANS                  NOT YET AVAILABLE
-     125      GLAST_OBS_REQUEST                NOT YET AVAILABLE
-     126      GLAST_SC_SLEW                    NOT YET AVAILABLE
+     98       SWIFT_BAT_SUBTHRESHOLD_POSITION  NOT YET AVAILABLE
+     99       SWIFT_BAT_SLEW_GRB_POSITION
+     100      SuperAGILE_GRB_POS_WAKEUP
+     101      SuperAGILE_GRB_POS_GROUND
+     102      SuperAGILE_GRB_POS_REFINED
+     108      AGILE_POINTDIR
+     108      SuperAGILE_TRANS                 NOT YET AVAILABLE
+     109      SuperAGILE_GRB_POS_TEST
+     110      FERMI_GBM_ALERT                  NOT YET AVAILABLE TO THE PUBLIC
+     111      FERMI_GBM_FLT_POS                NOT YET AVAILABLE TO THE PUBLIC
+     112      FERMI_GBM_GND_POSD               NOT YET AVAILABLE TO THE PUBLIC
+     113      FERMI_GBM_LC                     NOT YET AVAILABLE TO THE PUBLIC
+     118      FERMI_GBM_TRANS                  NOT YET AVAILABLE TO THE PUBLIC
+     119      FERMI_GBM_POS_TEST
+     120      FERMI_LAT_GRB_POS_INI            NOT YET AVAILABLE TO THE PUBLIC
+     121      FERMI_LAT_GRB_POS_UPD            NOT YET AVAILABLE TO THE PUBLIC
+     122      FERMI_LAT_GRB_POS_DIAG           NOT YET AVAILABLE TO THE PUBLIC
+     123      FERMI_LAT_TRANS                  NOT YET AVAILABLE TO THE PUBLIC
+     124      FERMI_LAT_GRB_POS_TEST
+     125      FERMI_OBS_REQUEST                NOT YET AVAILABLE
+     126      FERMI_SC_SLEW                    NOT YET AVAILABLE
+     127      FERMI_LAT_GND_REF                NOT YET AVAILABLE TO THE PUBLIC
+     128      FERMI_LAT_GND_TRIG               NOT YET AVAILABLE TO THE PUBLIC
+     129      FERMI_POINTDIR                   NOT YET AVAILABLE
+     130      SIMBAD/NED_SEARCH_RESULTS
      901      ANTARES_GRB_POSITION
    }
    set lignes [split $lignes \n]
