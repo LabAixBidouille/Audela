@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisuzoom.tcl,v 1.5 2007-04-06 16:10:31 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.tcl,v 1.6 2008-09-22 16:39:18 robertdelmas Exp $
 #
 
 #--- Chargement des captions
@@ -15,6 +15,7 @@ proc sn_visuzoom_g { { zoom 3 } } {
    global caption
    global conf
    global snvisu
+   global snconfvisu
    global zone
    global num
 
@@ -53,7 +54,11 @@ proc sn_visuzoom_g { { zoom 3 } } {
    #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
    #--- ::visu::create bufNo imageNo [ visuNo ]
    set num(loupeGaucheVisuNo) "2000"
-   ::visu::create $num(buffer1) $num(loupeGaucheVisuNo) $num(loupeGaucheVisuNo)
+   if {$snvisu(afflog)==0} {
+      ::visu::create $num(buffer1) $num(loupeGaucheVisuNo) $num(loupeGaucheVisuNo)
+   } else {
+      ::visu::create $num(buffer1b) $num(loupeGaucheVisuNo) $num(loupeGaucheVisuNo)
+   }
 
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
    $zone(image1_zoom) create image 0 0 -image image$num(loupeGaucheVisuNo) -anchor nw -tag img4
@@ -62,6 +67,28 @@ proc sn_visuzoom_g { { zoom 3 } } {
    set zone(naxis1_zoom) [expr int($zone(naxis1)*$zoom)]
    set zone(naxis2_zoom) [expr int($zone(naxis2)*$zoom)]
    $zone(image1_zoom) configure -scrollregion [list 0 0 $zone(naxis1_zoom) $zone(naxis2_zoom)]
+
+   #--- Cree un frame pour le reglage des niveaux de visualisation
+   frame $audace(base).snvisuzoom_g.frame1 -borderwidth 0 -cursor arrow
+
+       scale $audace(base).snvisuzoom_g.frame1.sca1 -orient horizontal -to 32767 -from -10000 \
+          -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
+          -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
+          -relief raised -command changeHiCut2000
+       pack $audace(base).snvisuzoom_g.frame1.sca1 \
+          -in $audace(base).snvisuzoom_g.frame1 -anchor s -side left -expand 1 -fill x -padx 0
+
+   pack $audace(base).snvisuzoom_g.frame1 -in $audace(base).snvisuzoom_g \
+      -anchor s -side bottom -expand 0 -fill x
+
+   set zone(sh2000) $audace(base).snvisuzoom_g.frame1.sca1
+
+   #--- Definition du binding
+   if { [ string tolower "$snconfvisu(cuts_change)" ] == "motion" } {
+      bind $zone(sh2000) <Motion> { visu$num(loupeGaucheVisuNo) disp }
+   } else {
+      bind $zone(sh2000) <ButtonRelease> { visu$num(loupeGaucheVisuNo) disp }
+   }
 
    #--- La nouvelle fenetre est active
    focus $audace(base).snvisuzoom_g
@@ -85,6 +112,7 @@ proc sn_visuzoom_disp_g { { x 1 } { y 1 } { zoom 3 } } {
    global audace
    global zone
    global num
+   global snvisu
 
    set disp "0"
    if {[string length [info commands $audace(base).snvisuzoom_g.*]]==0} {
@@ -98,10 +126,42 @@ proc sn_visuzoom_disp_g { { x 1 } { y 1 } { zoom 3 } } {
    $audace(base).snvisuzoom_g.image1.canvas xview moveto $fracx
    $audace(base).snvisuzoom_g.image1.canvas yview moveto $fracy
    if { $disp == "1" } {
+      #--- Affichage en mode normal
+      set sbh [ buf$num(buffer1) stat ]
+      set sh [lindex $sbh 0]
+      set sb [lindex $sbh 1]
+      visu$num(loupeGaucheVisuNo) cut [ list $sh $sb ]
+      #--- Affichage en mode logarithme
+      if {$snvisu(afflog)==1} {
+         visu$num(loupeGaucheVisuNo) cut [sn_buflog $num(buffer1) $num(buffer1b)]
+      }
+      #---
       visu$num(loupeGaucheVisuNo) disp
-      catch { destroy $audace(base).snvisuzoom_g.label }
+      destroy $audace(base).snvisuzoom_g.label
       pack $audace(base).snvisuzoom_g.image1 \
          -in $audace(base).snvisuzoom_g -expand 1 -side top -anchor center -fill both
+      #---
+      if {$snvisu(afflog)==0} {
+         set nume $num(buffer1)
+      } else {
+         set nume $num(buffer1b)
+      }
+      #---
+      set scalecut [lindex [get_seuils $nume] 0]
+      set s [ buf$nume stat ]
+      set scalemax [lindex $s 2]
+      set scalemin [lindex $s 3]
+      if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+         set ds1 [expr $scalemax-$scalecut]
+         set ds2 [expr $scalecut-$scalemin]
+         if {$ds1>$ds2} {
+            set scalemin [expr $scalecut-$ds1]
+         } else {
+            set scalemax [expr $scalecut+$ds2]
+         }
+      }
+      $zone(sh2000) set $scalecut
+      $zone(sh2000) configure -to $scalemax -from $scalemin
       update
    }
 }
@@ -111,6 +171,7 @@ proc sn_visuzoom_d { { zoom 3 } } {
    global caption
    global conf
    global snvisu
+   global snconfvisu
    global zone
    global num
 
@@ -149,8 +210,11 @@ proc sn_visuzoom_d { { zoom 3 } } {
    #--- Declare un nouvel objet de visualisation pour afficher le contenu du buffer
    #--- ::visu::create bufNo imageNo [ visuNo ]
    set num(loupeDroiteVisuNo) "2001"
-   ::visu::create $num(buffer2) $num(loupeDroiteVisuNo) $num(loupeDroiteVisuNo)
-
+   if {$snvisu(afflog)==0} {
+      ::visu::create $num(buffer2) $num(loupeDroiteVisuNo) $num(loupeDroiteVisuNo)
+   } else {
+      ::visu::create $num(buffer2b) $num(loupeDroiteVisuNo) $num(loupeDroiteVisuNo)
+   }
    #--- Cree un widget image dans un canvas pour afficher l'objet de visualisation
    $zone(image2_zoom) create image 0 0 -image image$num(loupeDroiteVisuNo) -anchor nw -tag img5
 
@@ -158,6 +222,28 @@ proc sn_visuzoom_d { { zoom 3 } } {
    set zone(naxis1_zoom_2) [expr int($zone(naxis1_2)*$zoom)]
    set zone(naxis2_zoom_2) [expr int($zone(naxis2_2)*$zoom)]
    $zone(image2_zoom) configure -scrollregion [list 0 0 $zone(naxis1_zoom_2) $zone(naxis2_zoom_2)]
+
+   #--- Cree un frame pour le reglage des niveaux de visualisation
+   frame $audace(base).snvisuzoom_d.frame1 -borderwidth 0 -cursor arrow
+
+       scale $audace(base).snvisuzoom_d.frame1.sca1 -orient horizontal -to 32767 -from -10000 \
+          -borderwidth 1 -showvalue 0 -width 10 -sliderlength 20 \
+          -background $audace(color,cursor_blue) -activebackground $audace(color,cursor_blue_actif) \
+          -relief raised -command changeHiCut2001
+       pack $audace(base).snvisuzoom_d.frame1.sca1 \
+          -in $audace(base).snvisuzoom_d.frame1 -anchor s -side left -expand 1 -fill x -padx 0
+
+   pack $audace(base).snvisuzoom_d.frame1 -in $audace(base).snvisuzoom_d \
+      -anchor s -side bottom -expand 0 -fill x
+
+   set zone(sh2001) $audace(base).snvisuzoom_d.frame1.sca1
+
+   #--- Definition du binding
+   if { [ string tolower "$snconfvisu(cuts_change)" ] == "motion" } {
+      bind $zone(sh2001) <Motion> { visu$num(loupeDroiteVisuNo) disp }
+   } else {
+      bind $zone(sh2001) <ButtonRelease> { visu$num(loupeDroiteVisuNo) disp }
+   }
 
    #--- La nouvelle fenetre est active
    focus $audace(base).snvisuzoom_d
@@ -181,6 +267,7 @@ proc sn_visuzoom_disp_d { { x 1 } { y 1 } { zoom 3 } } {
    global audace
    global zone
    global num
+   global snvisu
 
    set disp "0"
    if {[string length [info commands $audace(base).snvisuzoom_d.*]]==0} {
@@ -194,11 +281,57 @@ proc sn_visuzoom_disp_d { { x 1 } { y 1 } { zoom 3 } } {
    $audace(base).snvisuzoom_d.image2.canvas xview moveto $fracx
    $audace(base).snvisuzoom_d.image2.canvas yview moveto $fracy
    if { $disp == "1" } {
+      #--- Affichage en mode normal
+      set sbh [ buf$num(buffer2) stat ]
+      set sh [lindex $sbh 0]
+      set sb [lindex $sbh 1]
+      visu$num(loupeDroiteVisuNo) cut [ list $sh $sb ]
+      #--- Affichage en mode logarithme
+      if {$snvisu(afflog)==1} {
+         visu$num(loupeDroiteVisuNo) cut [sn_buflog $num(buffer2) $num(buffer2b)]
+      }
+      #---
       visu$num(loupeDroiteVisuNo) disp
-      catch { destroy $audace(base).snvisuzoom_d.label }
+      destroy $audace(base).snvisuzoom_d.label
       pack $audace(base).snvisuzoom_d.image2 \
          -in $audace(base).snvisuzoom_d -expand 1 -side top -anchor center -fill both
+      #---
+      if {$snvisu(afflog)==0} {
+         set nume $num(buffer2)
+      } else {
+         set nume $num(buffer2b)
+      }
+      #---
+      set scalecut [lindex [get_seuils $nume] 0]
+      set s [ buf$nume stat ]
+      set scalemax [lindex $s 2]
+      set scalemin [lindex $s 3]
+      if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
+         set ds1 [expr $scalemax-$scalecut]
+         set ds2 [expr $scalecut-$scalemin]
+         if {$ds1>$ds2} {
+            set scalemin [expr $scalecut-$ds1]
+         } else {
+            set scalemax [expr $scalecut+$ds2]
+         }
+      }
+      $zone(sh2001) set $scalecut
+      $zone(sh2001) configure -to $scalemax -from $scalemin
       update
    }
+}
+
+proc changeHiCut2000 { foo } {
+   global num
+
+   set sbh [visu$num(loupeGaucheVisuNo) cut]
+   visu$num(loupeGaucheVisuNo) cut [list $foo [lindex $sbh 1]]
+}
+
+proc changeHiCut2001 { foo } {
+   global num
+
+   set sbh [visu$num(loupeDroiteVisuNo) cut]
+   visu$num(loupeDroiteVisuNo) cut [list $foo [lindex $sbh 1]]
 }
 
