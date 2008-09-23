@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.24 2008-09-15 15:51:36 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.25 2008-09-23 20:40:35 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -416,15 +416,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_delai)                       "Sek. bis das Bildleuchtungsende"
 
    set caption(confgene,position)                           "Beobachter-Position"
-   set caption(confgene,nom_observateur)                    "# Nom des observateurs (maximum 70 caractères):"
+   set caption(confgene,nom_observateur)                    "Beobachters Namen (70 Zeichen max.):"
    set caption(confgene,nom_observatoire:)                  "Nahmen der Sternwarte:"
    set caption(confgene,nom_observatoire)                   "Nahmen der Sternwarte"
-   set caption(confgene,ajouter_observatoire)               "# Ajouter un observatoire"
-   set caption(confgene,supprimer_observatoire)             "# Abschaffen"
-   set caption(confgene,copier_observatoire)                "# Kopieren"
-   set caption(confgene,observatoire_a_ajouter)             "# Nom de l'observatoire à ajouter"
-   set caption(confgene,observatoire_a_supprimer)           "# Nom de l'observatoire à supprimer"
-   set caption(confgene,observatoire_a_copier)              "# Données de l'observatoire à copier"
+   set caption(confgene,ajouter_observatoire)               "Zu Sternwarte beitragen"
+   set caption(confgene,supprimer_observatoire)             "Löschen"
+   set caption(confgene,copier_observatoire)                "Nachbilden"
+   set caption(confgene,observatoire_a_ajouter)             "Namen der Sternwarte bei zu tragen"
+   set caption(confgene,observatoire_a_supprimer)           "Namen der Sternwarte zu löschen"
+   set caption(confgene,observatoire_a_copier)              "Daten der Sternwarte nach zu bilden"
    set caption(confgene,position_longitude)                 "Länge:"
    set caption(confgene,position_est)                       "O"
    set caption(confgene,position_ouest)                     "W"
