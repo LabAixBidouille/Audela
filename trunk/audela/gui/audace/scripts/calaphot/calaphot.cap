@@ -1,6 +1,6 @@
 #
 # Fichier : calaphot.cap
-# Mise a jour $Id: calaphot.cap,v 1.10 2007-05-12 15:01:46 robertdelmas Exp $
+# Mise a jour $Id: calaphot.cap,v 1.11 2008-09-23 20:39:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -478,7 +478,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set texte_photo(continuation)        "Skript Fortsetzung"
    set texte_photo(annulation)          "Skript halten"
    set texte_photo(etoile_reference)    "Bezugsstern"
-   set texte_photo(etoile_a_supprimer)  "Stern zu ENTZIEHEN"
+   set texte_photo(etoile_a_supprimer)  "Stern zu LOSCHEN"
    set texte_photo(magnitude)           "Größeklasse"
    set texte_photo(valider)             "Entwerten"
    set texte_photo(pas_etoile)          "Sie haben keinen Bezugssternen gewählt!!"
@@ -492,7 +492,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set texte_photo(calcul_ellipses)     "Von dem Stern Profil Ellipsen Rechnung"
    set texte_photo(banniere_CDR_1)      "Daten mit CalaPhot unter"
    set texte_photo(banniere_CDR_2)      "AudeLA behandelt"
-   set texte_photo(et_indesirables)     "Stern zu entziehen"
+   set texte_photo(et_indesirables)     "Stern zu löschen"
    set texte_photo(pose_minute)         "Beleuchtungs Zeit in"
    set texte_photo(pose_minute_0)       "Sekunden"
    set texte_photo(pose_minute_1)       "Minuten"
@@ -500,7 +500,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set texte_photo(mauvaise_version)    "Schlechte ligjm Handel Version"
    set texte_photo(jour_julien)         "Julian Tag"
    set texte_photo(gain_camera)         "Kamera Zunahme (e-/Kodierer Schritt)"
-   set texte_photo(pas_etoile_ind)      "Keinen Stern zu entziehen"
+   set texte_photo(pas_etoile_ind)      "Keinen Stern zu löschen"
    set texte_photo(bruit_lecture)       "Abtastung Rauschen (e-)"
    set texte_photo(arret)               "Halten"
    set texte_photo(fichier_cl)          "Nahmen des Erfolg Postscript Datei"

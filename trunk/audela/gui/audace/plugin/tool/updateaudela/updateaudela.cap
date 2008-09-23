@@ -1,6 +1,6 @@
 #
 # Fichier : updateaudela.cap
-# Mise a jour $Id: updateaudela.cap,v 1.15 2008-04-18 21:37:16 robertdelmas Exp $
+# Mise a jour $Id: updateaudela.cap,v 1.16 2008-09-23 20:39:37 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -208,7 +208,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,kitFrame)           "Kit Liste"
    set caption(updateaudela,rep_plugin)         "Verzeichnis"
    set caption(updateaudela,refresh)            "Aktualisieren"
-   set caption(updateaudela,delete)             "Abschaffen"
+   set caption(updateaudela,delete)             "Löschen"
    set caption(updateaudela,download)           "Herunterladen"
    set caption(updateaudela,downloadOk)         "%s ist heruntergeladet worden."
    set caption(updateaudela,show)               "Zeigen"
@@ -242,7 +242,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(updateaudela,addCvs)             "Diff CVS beitragen"
    set caption(updateaudela,addAllFiles)        "Alle Dateien beitragen"
    set caption(updateaudela,addFile)            "Ausgewählten Dateien beitragen"
-   set caption(updateaudela,removeFile)         "Vom Wahl entfernen"
+   set caption(updateaudela,removeFile)         "Vom Wahl löschen"
    set caption(updateaudela,createCoreUpdate)   "Eine Update Datei erschaffen"
    set caption(updateaudela,previousVersion)    "Vorausgehende Ausführung"
    set caption(updateaudela,currentVersion)     "Aktuelle Ausführung"
