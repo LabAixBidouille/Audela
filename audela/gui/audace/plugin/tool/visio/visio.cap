@@ -1,6 +1,6 @@
 #
 # Fichier : visio.cap
-# Mise a jour $Id: visio.cap,v 1.7 2007-01-27 14:59:51 robertdelmas Exp $
+# Mise a jour $Id: visio.cap,v 1.8 2008-09-23 20:39:54 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -246,7 +246,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio,serie)               "Reihe"
    set caption(visio,suppr_lacunes)       "Wiedernumerieren"
    set caption(visio,renommer)            "Wiedernennen"
-   set caption(visio,suppr_serie)         "Abschaffen"
+   set caption(visio,suppr_serie)         "Löschen"
    set caption(visio,save_toA)            "Zip Dateien in\nA: speichern"
    set caption(visio,copie_fromA)         "Zip Dateien von\nA: nachahmen"
    set caption(visio,annuler)             "Annullieren"

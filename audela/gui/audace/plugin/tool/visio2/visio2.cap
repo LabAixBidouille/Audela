@@ -1,6 +1,6 @@
 #
 # Fichier : visio2.cap
-# Mise a jour $Id: visio2.cap,v 1.12 2007-07-05 22:14:44 robertdelmas Exp $
+# Mise a jour $Id: visio2.cap,v 1.13 2008-09-23 20:40:13 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -309,7 +309,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(visio2,refresh)               "Aktualisieren"
    set caption(visio2,select_all)            "Alles auswählen"
    set caption(visio2,rename_file)           "Wiedernennen..."
-   set caption(visio2,delete_file)           "Abschaffen..."
+   set caption(visio2,delete_file)           "Löschen..."
    set caption(visio2,get_file)              "Bewegen"
    set caption(visio2,column_name)           "Namen"
    set caption(visio2,column_type)           "Typ"
