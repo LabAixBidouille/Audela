@@ -1,6 +1,6 @@
 #
 # Fichier : catagoto.cap
-# Mise a jour $Id: catagoto.cap,v 1.8 2008-06-13 16:43:41 robertdelmas Exp $
+# Mise a jour $Id: catagoto.cap,v 1.9 2008-09-24 21:18:49 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -54,6 +54,7 @@ set caption(catagoto,carte_champ)               "Field Map Creation"
 set caption(catagoto,carte_champ_devant)        "Display the field map in the forefront"
 set caption(catagoto,ok_toujours_visible)       "OK button always on screen"
 set caption(catagoto,ok)                        "OK"
+set caption(catagoto,appliquer)                 "Apply"
 set caption(catagoto,fermer)                    "Close"
 set caption(catagoto,rechercher)                "Search"
 set caption(catagoto,degre)                     "°"
@@ -106,6 +107,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,carte_champ_devant)     "Affichage de la carte de champ en avant plan"
    set caption(catagoto,ok_toujours_visible)    "Bouton OK toujours visible dans la fenêtre"
    set caption(catagoto,ok)                     "OK"
+   set caption(catagoto,appliquer)              "Appliquer"
    set caption(catagoto,fermer)                 "Fermer"
    set caption(catagoto,rechercher)             "Rechercher"
    set caption(catagoto,degre)                  "°"
@@ -158,6 +160,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,carte_champ_devant)     "Visualizzazione della cartina del campo in primo piano"
    set caption(catagoto,ok_toujours_visible)    "Bottone OK sempre visibile nella finestra"
    set caption(catagoto,ok)                     "OK"
+   set caption(catagoto,appliquer)              "Applica"
    set caption(catagoto,fermer)                 "Chiudi"
    set caption(catagoto,rechercher)             "Ricercare"
    set caption(catagoto,degre)                  "°"
@@ -210,6 +213,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,carte_champ_devant)     "Mostrar el mapa en primer plano"
    set caption(catagoto,ok_toujours_visible)    "Botón OK siempre visible en la ventana"
    set caption(catagoto,ok)                     "OK"
+   set caption(catagoto,appliquer)              "Aplicar"
    set caption(catagoto,fermer)                 "Cerrar"
    set caption(catagoto,rechercher)             "Buscar"
    set caption(catagoto,degre)                  "°"
@@ -262,6 +266,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,carte_champ_devant)     "Die Feldkarte im Vorgrund anzeigen"
    set caption(catagoto,ok_toujours_visible)    "OK Knopf immer im Fenster sichtbar"
    set caption(catagoto,ok)                     "OK"
+   set caption(catagoto,appliquer)              "Anwenden"
    set caption(catagoto,fermer)                 "Schließen"
    set caption(catagoto,rechercher)             "Suchen"
    set caption(catagoto,degre)                  "°"
@@ -314,6 +319,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,carte_champ_devant)     "Mostrar o mapa em primeiro plano"
    set caption(catagoto,ok_toujours_visible)    "Botão OK sempre visível na janela"
    set caption(catagoto,ok)                     "OK"
+   set caption(catagoto,appliquer)              "Aplicar"
    set caption(catagoto,fermer)                 "Fechar"
    set caption(catagoto,rechercher)             "Procurar"
    set caption(catagoto,degre)                  "°"
@@ -366,6 +372,7 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(catagoto,carte_champ_devant)     "Vis Feltkort i forgrunden"
    set caption(catagoto,ok_toujours_visible)    "OK-knappen vises altid på skærmen"
    set caption(catagoto,ok)                     "OK"
+   set caption(catagoto,appliquer)              "Anvend"
    set caption(catagoto,fermer)                 "Luk"
    set caption(catagoto,rechercher)             "Søg"
    set caption(catagoto,degre)                  "°"
