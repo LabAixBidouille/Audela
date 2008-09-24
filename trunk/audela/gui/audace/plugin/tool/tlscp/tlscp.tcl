@@ -3,7 +3,7 @@
 # Description : Outil pour le controle des montures
 # Compatibilite : Montures LX200, AudeCom, etc.
 # Auteurs : Alain KLOTZ, Robert DELMAS et Philippe KAUFFMANN
-# Mise a jour $Id: tlscp.tcl,v 1.12 2008-09-21 11:50:45 michelpujol Exp $
+# Mise a jour $Id: tlscp.tcl,v 1.13 2008-09-24 17:42:53 robertdelmas Exp $
 #
 
 #============================================================
@@ -709,8 +709,8 @@ proc ::tlscp::cmdGoto { visuNo } {
       ::console::disp "$caption(tlscp,coord_catalogue) \n"
       ::console::disp "$caption(tlscp,ad) $ad_objet_cata \n"
       ::console::disp "$caption(tlscp,dec) $dec_objet_cata \n"
-      set now [::audace::date_sys2ut "now"]
-      set ad_dec_vrai    [ ::tkutil::coord_eph_vrai $ad_objet_cata $dec_objet_cata J2000.0 $now ]
+      set now            [ ::audace::date_sys2ut "now" ]
+      set ad_dec_vrai    [ ::telescope::coord_eph_vrai $ad_objet_cata $dec_objet_cata J2000.0 $now ]
       set ad_objet_vrai  [ lindex $ad_dec_vrai 0 ]
       set dec_objet_vrai [ lindex $ad_dec_vrai 1 ]
       ::console::disp "$caption(tlscp,coord_corrigees) \n"
@@ -758,10 +758,10 @@ proc ::tlscp::cmdSkyMap { visuNo } {
       ###set now now
       ###set now [::audace::date_sys2ut now]
       ###set result [modpoi_catalogmean2apparent [lindex $result 0] [lindex $result 1] J2000.0 $now]
-      set ra      [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
-      set dec     [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
-      set equinox [lindex $result 2]
-      set name    [lindex $result 3]
+      set ra        [mc_angle2hms [lindex $result 0] 360 nozero 0 auto string]
+      set dec       [mc_angle2dms [lindex $result 1] 90 nozero 0 + string]
+      set equinox   [lindex $result 2]
+      set name      [lindex $result 3]
       set magnitude ""
       ::tlscp::setRaDec $visuNo [list $ra $dec] $name $equinox $magnitude
    }
@@ -775,7 +775,7 @@ proc ::tlscp::cmdSkyMap { visuNo } {
 #    visuNo    : numero de la visu courante
 #    listRaDec : RA et DEC de l'objet
 #    nomObjet  : nom de l'objet
-#    euinox    : equinoxe de RA et DEC ( exemple : J2000.0  , "now" )
+#    equinox   : equinoxe de RA et DEC ( exemple : J2000.0 , "now" )
 #  retour
 #    rien
 #------------------------------------------------------------
@@ -786,12 +786,11 @@ proc ::tlscp::setRaDec { visuNo listRaDec nomObjet equinox magnitude } {
    set private($visuNo,decObjet)     [lindex $listRaDec 1]
    set private($visuNo,nomObjet)     $nomObjet
    set private($visuNo,equinoxObjet) $equinox
-
 }
 
 #------------------------------------------------------------
 #  PlusLong
-#
+#    Goto par le chemin le plus long
 #
 #  parametres :
 #    visuNo : numero de la visu courante
@@ -907,7 +906,6 @@ proc ::tlscp::startAcquisition { visuNo  } {
    #--- j'affiche le bouton GO CCD
    $private($visuNo,This).camera.goccd configure -text $::caption(tlscp,goccd) -command "::tlscp::startAcquisition $visuNo" -state normal
    bind all <Key-Escape>
-
 }
 
 #------------------------------------------------------------
@@ -972,17 +970,17 @@ proc ::tlscp::startCenter { visuNo { methode "" } } {
    set private($visuNo,acquisitionResult) ""
 
    #--- je recupere les coordonnees J2000 pour le centrage aux coordonnees
-   if { $private($visuNo,equinoxObjet) == "J2000.0" ||  $private($visuNo,equinoxObjet) == "J2000" } {
+   if { $private($visuNo,equinoxObjet) == "J2000.0" || $private($visuNo,equinoxObjet) == "J2000" } {
       set ra  $private($visuNo,raObjet)
       set dec $private($visuNo,decObjet)
-      set ra    [string trim [mc_angle2deg $ra ]]
-      set dec   [string trim [mc_angle2deg $dec ]]
+      set ra  [string trim [mc_angle2deg $ra ]]
+      set dec [string trim [mc_angle2deg $dec ]]
    } else {
       #--- je calcule les coordonnees J2000
       set dateNow   [::audace::date_sys2ut now]
       set listRaDec [::telescope::apparent2catalogmean $private($visuNo,raObjet) $private($visuNo,decObjet) $dateNow J2000.0 ]
-      set ra [lindex $listRaDec 0]
-      set dec [lindex $listRaDec 1]
+      set ra        [lindex $listRaDec 0]
+      set dec       [lindex $listRaDec 1]
    }
 
    if { $methode == "BRIGHTEST" } {
@@ -1371,7 +1369,7 @@ proc ::tlscp::validateNumber { win event X oldX  min max} {
 #    cree et affiche la cible au coocrdonnees (1,1)(2,2) du canvas
 #
 # parametres :
-#    visuNo      : numero de la visu courante
+#    visuNo : numero de la visu courante
 #------------------------------------------------------------
 proc ::tlscp::createTarget { visuNo } {
    variable private
@@ -1677,7 +1675,6 @@ proc ::tlscp::config::run { visuNo } {
    #--- j'affiche la fenetre de configuration
    set private($visuNo,This) "[::confVisu::getBase $visuNo].tlscpconfig"
    ::confGenerique::run  $visuNo $private($visuNo,This) "::tlscp::config" -modal 0 -geometry $::conf(tlscp,configWindowPosition) -resizable 1
-
 }
 
 #------------------------------------------------------------
@@ -2013,8 +2010,7 @@ proc ::tlscp::config::fillConfigPage { frm visuNo } {
    }
 
    $notebook raise $private($visuNo,selectedNotebook)
-
- }
+}
 
 #------------------------------------------------------------
 # onSelectCatalogue
