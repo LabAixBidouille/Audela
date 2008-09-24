@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.8 2008-01-03 22:04:17 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.9 2008-09-24 17:28:54 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireEQ6 {
@@ -352,9 +352,9 @@ namespace eval viseurPolaireEQ6 {
       set dec_LP "89d15m50.9"
 
       #--- Calcul des coordonnees vraies de la Polaire
-      set ad_dec_v [ ::tkutil::coord_eph_vrai $ad_LP $dec_LP J2000.0 $now ]
-      set ad_LP_vrai [lindex $ad_dec_v 0]
-      set dec_LP_vrai [lindex $ad_dec_v 1]
+      set ad_dec_v    [ ::telescope::coord_eph_vrai $ad_LP $dec_LP J2000.0 $now ]
+      set ad_LP_vrai  [ lindex $ad_dec_v 0 ]
+      set dec_LP_vrai [ lindex $ad_dec_v 1 ]
 
       #--- Preparation du calcul de l'angle horaire
       set altaz_LP [ mc_radec2altaz $ad_LP_vrai $dec_LP_vrai $audace(posobs,observateur,gps) \
@@ -444,9 +444,9 @@ namespace eval viseurPolaireEQ6 {
 
       for {set i 1} {$i <= 5} {incr i} {
          #--- Calcul des coordonnees vraies des etoiles de Cassiopee
-         set ad_dec_v($i) [ ::tkutil::coord_eph_vrai $ad_cas($i) $dec_cas($i) J2000.0 $now ]
-         set ad_cas_vrai($i) [lindex $ad_dec_v($i) 0]
-         set dec_cas_vrai($i) [lindex $ad_dec_v($i) 1]
+         set ad_dec_v($i)     [ ::telescope::coord_eph_vrai $ad_cas($i) $dec_cas($i) J2000.0 $now ]
+         set ad_cas_vrai($i)  [ lindex $ad_dec_v($i) 0 ]
+         set dec_cas_vrai($i) [ lindex $ad_dec_v($i) 1 ]
 
          #--- Preparation du calcul de l'angle horaire
          set altaz_cas($i) [ mc_radec2altaz $ad_cas_vrai($i) $dec_cas_vrai($i) $audace(posobs,observateur,gps) \
@@ -510,9 +510,9 @@ namespace eval viseurPolaireEQ6 {
 
       for {set i 1} {$i <= 7} {incr i} {
          #--- Calcul des coordonnees vraies des etoiles de la Grande Ourse
-         set ad_dec_v($i) [ ::tkutil::coord_eph_vrai $ad_uma($i) $dec_uma($i) J2000.0 $now ]
-         set ad_uma_vrai($i) [lindex $ad_dec_v($i) 0]
-         set dec_uma_vrai($i) [lindex $ad_dec_v($i) 1]
+         set ad_dec_v($i)     [ ::telescope::coord_eph_vrai $ad_uma($i) $dec_uma($i) J2000.0 $now ]
+         set ad_uma_vrai($i)  [ lindex $ad_dec_v($i) 0 ]
+         set dec_uma_vrai($i) [ lindex $ad_dec_v($i) 1 ]
 
          #--- Preparation du calcul de l'angle horaire
          set altaz_uma($i) [ mc_radec2altaz $ad_uma_vrai($i) $dec_uma_vrai($i) $audace(posobs,observateur,gps) \
