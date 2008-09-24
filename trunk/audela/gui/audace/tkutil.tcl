@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.12 2008-03-28 16:58:55 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.13 2008-09-24 17:22:32 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -229,31 +229,6 @@ namespace eval tkutil {
          return
       }
       return $filename
-   }
-
-   #
-   # tkutil::coord_eph_vrai
-   # Transforme les coordonnees equatoriales des ephemerides pour une equinoxe donnee en coordonnees vraies
-   # en prenant en compte les corrections d'aberration, de precession et de nutation
-   #
-   proc coord_eph_vrai { ad_eph dec_eph equinox date } {
-      global audace
-
-      #--- Correction de l'aberration annuelle
-      set radec [ mc_aberrationradec annual [ list $ad_eph $dec_eph ] $date ]
-      #--- Correction de la precession
-      set radec [ mc_precessradec $radec $equinox $date ]
-      #--- Correction de la nutation
-      set radec [ mc_nutationradec $radec $date ]
-      #--- Correction de l'aberration diurne
-      set radec [ mc_aberrationradec diurnal $radec $date $audace(posobs,observateur,gps) ]
-      #--- Calcul de l'angle horaire vraie
-      set ad_vrai [ lindex $radec 0 ]
-      set ad_vrai [ mc_angle2hms $ad_vrai 360 nozero 1 auto string ]
-      set dec_vrai [ lindex $radec 1 ]
-      set dec_vrai [ mc_angle2dms $dec_vrai 90 nozero 0 + string ]
-
-      return [ list $ad_vrai $dec_vrai ]
    }
 
 }
