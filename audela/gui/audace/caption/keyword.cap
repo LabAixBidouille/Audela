@@ -1,6 +1,6 @@
 #
 # Fichier : keyword.cap
-# Mise a jour $Id: keyword.cap,v 1.5 2008-06-14 10:26:27 robertdelmas Exp $
+# Mise a jour $Id: keyword.cap,v 1.6 2008-09-24 21:18:08 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -165,13 +165,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(keyword,description,INSTRUME)           "Equipaggiamento"
    set caption(keyword,description,DETNAM)             "Camera"
    set caption(keyword,description,OBJNAME)            "Nome oggetto"
-   set caption(keyword,description,EXPTIME)            "Durata della posa"
+   set caption(keyword,description,EXPTIME)            "Tempo esposizione"
    set caption(keyword,description,RA)                 "Ascensione Retta"
    set caption(keyword,description,DEC)                "Declinazione"
    set caption(keyword,description,EQUINOX)            "Epoca delle coordinate"
    set caption(keyword,description,RADECSYS)           "Sistema di coordinate"
    set caption(keyword,description,IMAGETYP)           "Tipo di immagine"
-   set caption(keyword,description,SERIESID)           "ID di serie"
+   set caption(keyword,description,SERIESID)           "Identificativo della serie"
    set caption(keyword,description,SWCREATE)           "Software di acquisizione"
    set caption(keyword,description,SWMODIFY)           "Software del elaborazione"
    set caption(keyword,description,COMMENT)            "Commenti"
