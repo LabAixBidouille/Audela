@@ -2,7 +2,7 @@
 # A130 : source $audace(rep_scripts)/spcaudace/spc_metaf.tcl
 # A140 : source [ file join $audace(rep_plugin) tool spcaudace spc_metaf.tcl ]
 
-# Mise a jour $Id: spc_metaf.tcl,v 1.4 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_metaf.tcl,v 1.5 2008-09-29 18:05:36 bmauclaire Exp $
 
 
 
@@ -1747,6 +1747,7 @@ proc spc_traitestellaire { args } {
 	   if { "$spectre_calo1c" != "" } {
 	       #-- Lineariser le spectre :
 	       set spectre_linear [ spc_linearcal "$spectre_calo1c" ]
+               file delete -force "$audace(rep_images)/$spectre_calo1c$conf(extension,defaut)"
 	       #-- Création des mots clef BeSS :
 	       #set spectre_bess [ spc_bessmodule  "$spectre_linear" ]
 	       source [ file join $spcaudace(rep_spc)  plugins bess_module bess_module.tcl ]
@@ -1768,8 +1769,11 @@ proc spc_traitestellaire { args } {
           file delete -force "$audace(rep_images)/$flinearcal$conf(extension,defaut)"
        }
        if { $cal_eau=="o" } {
-	   ::console::affiche_resultat "\n\n**** Qualité de la calibration en longueur d'onde ****\n\n"
-	   spc_caloverif "${brut}-profil-final"
+          ::console::affiche_resultat "\n\n**** Qualité de la calibration en longueur d'onde ****\n\n"
+          spc_caloverif "${brut}-profil-final"
+       }
+       if { $export_bess=="o" } {
+          file delete -force "$audace(rep_images)/$spectre_linear$conf(extension,defaut)"
        }
        file delete -force "$audace(rep_images)/$spectre_calo$conf(extension,defaut)"
        ::console::affiche_resultat "\n\n**** Spectre traité, corrigé et calibré sauvé sous ****\n${brut}-profil-final\n\n"
