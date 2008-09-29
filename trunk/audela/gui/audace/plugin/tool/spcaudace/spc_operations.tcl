@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.7 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.8 2008-09-29 18:05:36 bmauclaire Exp $
 
 
 
@@ -1311,8 +1311,103 @@ proc spc_select0 { args } {
 # Bug : a la premiere execution "# x vector "x" must be monotonically increasing"
 ####################################################################
 
-#proc spc_echant { {fichier1} {fichier2} }
 proc spc_echant { args } {
+    global conf
+    global audace
+
+    if { [llength $args] == 2 } {
+       set fichier_a_echant [ file rootname [ lindex $args 0 ] ]
+       set fichier_modele [ file rootname [ lindex $args 1 ] ]
+
+       #--- Chargement des param<E8>tres du spectre a echantillonner :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_a_echant"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+          set flag_spccal 1
+          set crval1_orig [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+          set cdelt1_orig [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+          set naxis1_orig [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+          #-- Recupere la totalite des mots clef :
+          set keywords ""
+          foreach keywordName [ buf$audace(bufNo) getkwds ] {
+             lappend keywords [ buf$audace(bufNo) getkwd $keywordName ]
+          }
+          #-- Lecture des intensites :
+          for { set i 1 } { $i <= $naxis1_orig } { incr i } {
+             lappend intensites_a_echant [ lindex [ buf$audace(bufNo) getpix [ list $i 1 ] ] 1 ]
+          }
+::console::affiche_resultat "ICI1\n"
+          #-- Calcul des lambdas :
+          for { set i 0 } { $i < $naxis1_orig } { incr i } {
+             lappend lambdas_a_echant [ expr $crval1_orig+$cdelt1_orig*$i ]
+          }
+::console::affiche_resultat "ICI2\n"
+       } else {
+          ::console::affiche_erreur "Le spectre $fichier_a_echant doit <EA>tre calibr<E9> et avec une loi lin
+<E9>aire.\n"
+          return ""
+       }
+
+       #--- Recupere CDELT1, NAXIS1 et CRVAL1 de spectre modele :
+       buf$audace(bufNo) load "$audace(rep_images)/$fichier_modele"
+       set listemotsclef [ buf$audace(bufNo) getkwds ]
+       if { [ lsearch $listemotsclef "CRVAL1" ] !=-1 } {
+          set crval1 [ lindex [ buf$audace(bufNo) getkwd "CRVAL1" ] 1 ]
+          set cdelt1 [ lindex [ buf$audace(bufNo) getkwd "CDELT1" ] 1 ]
+          set naxis1 [ lindex [ buf$audace(bufNo) getkwd "NAXIS1" ] 1 ]
+          #-- Calcul des lambdas :
+          for { set i 0 } { $i < $naxis1 } { incr i } {
+             lappend lambdas_modele [ expr $crval1+$cdelt1*$i ]
+          }
+       } else {
+          ::console::affiche_erreur "Le spectre $fichier_modele doit <EA>tre calibr<E9> et avec une loi lin
+<E9>aire.\n"
+          return ""
+       }        
+
+       #-- Interpolation-extrapolation pour deteminer les intensites reechantillonnees :
+       set new_intensites [ lindex  [ spc_spline $lambdas_a_echant $intensites_a_echant $lambdas_modele n ] 1 ]
+
+
+       #--- Crée le fichier FITS :
+       set newBufNo [ buf::create ]
+       buf$newBufNo setpixels CLASS_GRAY $naxis1 1 FORMAT_FLOAT COMPRESS_NONE 0
+       foreach keyword $keywords {
+          buf$newBufNo setkwd $keyword
+       }
+       #-- Initalise les intensites :
+       if { $flag_spccal } {
+          #-- Profil calibré en longueur d'onde :
+          for {set k 1} {$k<=$naxis1} {incr k} {
+             buf$newBufNo setpix [list $k 1] [ lindex $new_intensites [ expr $k-1 ] ]
+          }
+       } else {
+          #-- Profil non calibré en longueur d'onde :
+          for {set k 1} {$k<=$naxis1} {incr k} {
+             buf$newBufNo setpix [list $k 1] [ lindex $good_intensites [ expr $k-1 ] ]
+          }
+       }
+       
+       #--- Sauve le fichier fits ainsi constitué :
+       set fichier_a_echant2 [ file rootname $fichier_a_echant ]
+       buf$newBufNo bitpix float
+       buf$newBufNo setkwd [ list "NAXIS1" $naxis1 int "" "" ]
+       buf$newBufNo setkwd [ list "CRVAL1" $crval1 double "" "Angstrom" ]
+       buf$newBufNo setkwd [ list "CDELT1" $cdelt1 double "" "Angstrom/pixel" ]
+       buf$newBufNo save "$audace(rep_images)/${fichier_a_echant2}_ech$conf(extension,defaut)"
+       buf$newBufNo bitpix short
+       ::console::affiche_resultat "Fichier fits sauvé sous $audace(rep_images)/${fichier_a_echant2}_ech$conf(extension,defaut)\n"
+       buf::delete $newBufNo
+       return ${fichier_a_echant2}_ech
+    } else {
+	::console::affiche_erreur "Usage: spc_echant profil_a_reechantillonner.fit profil_modele_echantillonnage.fit\n\n"
+    }
+}
+#****************************************************************#
+
+
+
+proc spc_echant0 { args } {
     global conf
     global audace
 
