@@ -3,7 +3,7 @@
 # spc_fits2dat lmachholz_centre.fit
 # buf1 load lmachholz_centre.fit
 
-# Mise a jour $Id: spc_calibrage.tcl,v 1.3 2008-09-20 17:20:05 bmauclaire Exp $
+# Mise a jour $Id: spc_calibrage.tcl,v 1.4 2008-09-29 17:49:18 bmauclaire Exp $
 
 
 
@@ -1144,10 +1144,10 @@ proc spc_calibre { args } {
           if { [ lsearch $listemotsclef "SPC_B" ] !=-1 } {
              set spc_b [ lindex [buf$audace(bufNo) getkwd "SPC_B"] 1 ]
           } else {
-             ::console::affiche_erreur "Le spectre n'est pas calibré\n"
-             return ""
+             set spc_b 0.0
           }
-          if { $cdelt1>0 && $crval1>=0 && $spc_b>0 } {
+
+          if { $cdelt1>0 && $crval1>=0 && $spc_b>=0.0 } {
              loadima $spcalibre
              return $spcalibre
           } else {
@@ -1156,8 +1156,8 @@ proc spc_calibre { args } {
              set fileout [ spc_calibre $profiletalon ]
           }
        } else {
-           ::console::affiche_erreur "La calibration a échouée.\n"
-           return ""
+          ::console::affiche_erreur "La calibration a échouée.\n"
+          return ""
        }
    } else {
        ::console::affiche_erreur "Usage: spc_calibre profil_de_raies_a_calibrer\n\n"
