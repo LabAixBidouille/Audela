@@ -1,6 +1,6 @@
 #
 # Fichier : confgene.cap
-# Mise a jour $Id: confgene.cap,v 1.25 2008-09-23 20:40:35 robertdelmas Exp $
+# Mise a jour $Id: confgene.cap,v 1.26 2008-10-02 18:32:41 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -226,15 +226,15 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(confgene,alarme_delai)                       "sec. alla fine della posa"
 
    set caption(confgene,position)                           "Posizione dell'osservatore"
-   set caption(confgene,nom_observateur)                    "# Nom des observateurs (maximum 70 caractères):"
+   set caption(confgene,nom_observateur)                    "Nome degli osservatori (max. 70 caratteri):"
    set caption(confgene,nom_observatoire:)                  "Nome dell'osservatorio:"
    set caption(confgene,nom_observatoire)                   "Nome dell'osservatorio"
-   set caption(confgene,ajouter_observatoire)               "# Ajouter un observatoire"
-   set caption(confgene,supprimer_observatoire)             "# Eliminare"
-   set caption(confgene,copier_observatoire)                "# Copiare"
-   set caption(confgene,observatoire_a_ajouter)             "# Nom de l'observatoire à ajouter"
-   set caption(confgene,observatoire_a_supprimer)           "# Nom de l'observatoire à supprimer"
-   set caption(confgene,observatoire_a_copier)              "# Données de l'observatoire à copier"
+   set caption(confgene,ajouter_observatoire)               "Aggiungi osservatorio"
+   set caption(confgene,supprimer_observatoire)             "Cancella"
+   set caption(confgene,copier_observatoire)                "Copia"
+   set caption(confgene,observatoire_a_ajouter)             "Nome dell'osservatorio da aggiungere"
+   set caption(confgene,observatoire_a_supprimer)           "Nome dell'osservatorio da cancellare"
+   set caption(confgene,observatoire_a_copier)              "Dati Osservatorio da copiare"
    set caption(confgene,position_longitude)                 "Longitudine:"
    set caption(confgene,position_est)                       "E"
    set caption(confgene,position_ouest)                     "O"
