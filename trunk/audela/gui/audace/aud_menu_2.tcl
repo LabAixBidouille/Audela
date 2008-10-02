@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_2.tcl
 # Description : Script regroupant les fonctionnalites du menu Affichage
-# Mise a jour $Id: aud_menu_2.tcl,v 1.8 2008-01-06 18:51:33 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_2.tcl,v 1.9 2008-10-02 18:21:28 jacquesmichelet Exp $
 #
 
 namespace eval ::audace {
@@ -182,12 +182,11 @@ namespace eval ::audace {
             }
          }
          4 {
-            #--- Fonction de transfert arctangente / sigmoïde
+            #--- Fonction de transfert arctangente / sigmoï¿½de
             if {$conf(fonction_transfert,param4)==0} {
                #--- On est ramene au cas lineaire
                visu$visuNo pal $fichier_palette
             } else {
-               set f [open $tmp(fichier_palette) w]
                set conf(fonction_transfert,param4) [expr abs($conf(fonction_transfert,param4))]
 
                #--- On determine quelle partie de la courbe exp on utilise (abcisses [a b])
@@ -244,20 +243,20 @@ namespace eval ::audace {
                         }
                         set entree_in [gets $palette_in]
                         incr k_in
+                     }
                   }
+
+                  if { ! [info exist entree-1_in] } {
+                     set entree-1_in $entree_in
+                  }
+                  puts $palette_ex [list [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 0]+(1-$valeur+int($valeur))*[lindex $entree_in 0]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 1]+(1-$valeur+int($valeur))*[lindex $entree_in 1]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 2]+(1-$valeur+int($valeur))*[lindex $entree_in 2]]]
                }
 
-               if { ! [info exist entree-1_in] } {
-                  set entree-1_in $entree_in
-               }
-               puts $palette_ex [list [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 0]+(1-$valeur+int($valeur))*[lindex $entree_in 0]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 1]+(1-$valeur+int($valeur))*[lindex $entree_in 1]] [expr ($valeur-int($valeur))*[lindex ${entree-1_in} 2]+(1-$valeur+int($valeur))*[lindex $entree_in 2]]]
-            }
+               close $palette_in
+               close $palette_ex
 
-            close $palette_in
-            close $palette_ex
-
-            visu$visuNo paldir [file dirname $tmp(fichier_palette)]
-            visu$visuNo pal [file tail $tmp(fichier_palette)]
+               visu$visuNo paldir [file dirname $tmp(fichier_palette)]
+               visu$visuNo pal [file tail $tmp(fichier_palette)]
             }
          }
       }
