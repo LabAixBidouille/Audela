@@ -2,7 +2,7 @@
 # Fichier : skybot_search.tcl
 # Description : Recherche d'objets dans le champ d'une image
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_search.tcl,v 1.20 2008-07-03 11:55:34 jberthier Exp $
+# Mise a jour $Id: skybot_search.tcl,v 1.21 2008-10-02 18:34:20 robertdelmas Exp $
 #
 
 namespace eval skybot_Search {
@@ -1508,13 +1508,9 @@ namespace eval skybot_Search {
             $audace(hCanvas) yview moveto $fracy
             #--- Active l'acces au mode Goto
             $popupTbl entryconfigure $caption(search,goto) -state normal \
-               -command { if { [ ::tel::list ] == "" } {
-                             ::confTel::run
-                             tkwait window $audace(base).confTel
-                          }
-                          ::skybot_Resolver::affiche_Outil_Tlscp
-                          set catalogue(asteroide_choisi) $voconf(name)
-                          ::cataGoto::Gestion_Cata "" "1" $caption(search,asteroide)
+               -command { set newVisu [ ::skybot_Resolver::afficheOutilTlscp ]
+                          ::cataGoto::gestionCata $newVisu $caption(search,asteroide)
+                          set ::catalogue(asteroide_choisi) $voconf(name)
                         }
          }
       }

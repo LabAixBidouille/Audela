@@ -2,7 +2,7 @@
 # Fichier : skybot_resolver.tcl
 # Description : Resolution du nom d'un objet du systeme solaire
 # Auteur : Jerome BERTHIER, Robert DELMAS, Alain KLOTZ et Michel PUJOL
-# Mise a jour $Id: skybot_resolver.tcl,v 1.20 2008-07-03 11:55:34 jberthier Exp $
+# Mise a jour $Id: skybot_resolver.tcl,v 1.21 2008-10-02 18:34:04 robertdelmas Exp $
 #
 
 namespace eval skybot_Resolver {
@@ -654,8 +654,6 @@ namespace eval skybot_Resolver {
    #
    proc cmdButton1Click { frame } {
       variable This
-      global audace
-      global catalogue
       global caption
       global voconf
       global ok
@@ -692,26 +690,34 @@ namespace eval skybot_Resolver {
          }
          #--- Activation de l'acces au mode Goto
          $popupTbl entryconfigure $caption(resolver,goto) -state normal \
-            -command { if { [ ::tel::list ] == "" } {
-                          ::confTel::run
-                          tkwait window $audace(base).confTel
-                       }
-                       ::skybot_Resolver::affiche_Outil_Tlscp
-                       set catalogue(asteroide_choisi) $voconf(name)
-                       ::cataGoto::Gestion_Cata "" "1" $caption(resolver,asteroide)
+            -command { set newVisu [ ::skybot_Resolver::afficheOutilTlscp ]
+                       ::cataGoto::gestionCata $newVisu $caption(resolver,asteroide)
+                       set ::catalogue(asteroide_choisi) $voconf(name)
                      }
       }
    }
 
    #
-   # skybot_Resolver::affiche_Outil_Tlscp
+   # skybot_Resolver::afficheOutilTlscp
    # Affiche l'outil Telescope
    #
-   proc affiche_Outil_Tlscp { { visuNo 1 } } {
-      global conf
-      global panneau
+   proc afficheOutilTlscp { } {
+      global audace panneau
 
-      #---
+      #--- Je verifie qu'il y a un telescope connecte
+      if { [ ::tel::list ] == "" } {
+         ::confTel::run
+         tkwait window $audace(base).confTel
+      }
+
+      #--- Je verifie si l'outil Telescope est deja actif dans une visu
+      foreach visuNo [ ::visu::list ] {
+         if { [ ::confVisu::getTool $visuNo ] == "tlscp" } {
+            return $visuNo
+         }
+      }
+
+      #--- Sinon j'affiche l'outil Telescope dans newVisu
       set liste ""
       foreach m [array names panneau menu_name,*] {
          lappend liste [list "$panneau($m) " $m]
@@ -720,11 +726,14 @@ namespace eval skybot_Resolver {
          set m [lindex $m 1]
          if { $m == "menu_name,tlscp" } {
             if { [scan "$m" "menu_name,%s" ns] == "1" } {
+               #--- Creation de la visu pour l'outil Telescope
+               set newVisu [ ::confVisu::create ]
                #--- Lancement automatique de l'outil Telescope
-               ::confVisu::selectTool $visuNo ::$ns
+               ::confVisu::selectTool $newVisu ::$ns
             }
          }
       }
+      return $newVisu
    }
 
    #
