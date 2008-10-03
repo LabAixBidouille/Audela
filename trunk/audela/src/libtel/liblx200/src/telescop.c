@@ -128,7 +128,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 	/* --- identify a LX200 GPS ---*/
    sprintf(s,"puts -nonewline %s \"#:GVP#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 800"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
 	strcpy(s,tel->interp->result);
 	k=(int)strlen(s);
 	if (k>=7) {
@@ -327,22 +327,22 @@ int mytel_radec_init(struct telprop *tel)
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
    /* Send Sr */
-   sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"puts -nonewline %s \"#:Sr%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
    /* Send Sd */
-   sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"puts -nonewline %s \"#:Sd%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
-   sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"puts -nonewline %s \"#:CM#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 200"); mytel_tcleval(tel,s);
    /*mytel_flush(tel);*/
@@ -373,14 +373,14 @@ int mytel_radec_init_additional(struct telprop *tel)
    sprintf(s,"puts -nonewline %s \"#:Sr%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
    /* Send Sd */
    sprintf(s,"puts -nonewline %s \"#:Sd%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
    sprintf(s,"puts -nonewline %s \"#:Cm#\"",tel->channel); mytel_tcleval(tel,s);
@@ -423,21 +423,21 @@ int mytel_radec_goto(struct telprop *tel)
    sprintf(s,"puts -nonewline %s \"#:Sr%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
    /* Send Sd */
    sprintf(s,"puts -nonewline %s \"#:Sd%s%s#\"",tel->channel,tel->autostar_char,tel->interp->result); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* Receive 1 if it is OK */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* tel->radec_goto_rate is not used for the LX200 protocol (always slew) */
    /* Send MS */
    sprintf(s,"puts -nonewline %s \"#:MS#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /* Receive 0 if the telescope can complete the slew */
-   sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    if ((strcmp(ss,"1")==0)||(strcmp(ss,"2")==0)) {
       /* The telescope can not complete the slew and tells something*/
@@ -571,12 +571,12 @@ int mytel_radec_coord(struct telprop *tel,char *result)
       nbcar_2=7;
    }
    /* Send GR */
-   sprintf(s,"read %s 100",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 100",tel->channel); mytel_tcleval(tel,s);
 	mytel_flush(tel);
    sprintf(s,"puts -nonewline %s \"#:GR#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* Receive a string terminated by # */
-   sprintf(s,"read %s %d",tel->channel,nbcar_1); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s %d",tel->channel,nbcar_1); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
@@ -601,11 +601,11 @@ int mytel_radec_coord(struct telprop *tel,char *result)
    sprintf(result,"%s ",s);
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    /* Send GD */
-   sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"puts -nonewline %s \"#:GD#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
    /* Receive a string terminated by # */
-   sprintf(s,"read %s %d",tel->channel,nbcar_2); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s %d",tel->channel,nbcar_2); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"string range \"%s\" 0 0",ss); mytel_tcleval(tel,s);
@@ -690,11 +690,11 @@ int mytel_date_get(struct telprop *tel,char *ligne)
    int sec;
    /* Get the time */
    mytel_flush(tel);
-   sprintf(s,"read %s 100",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 100",tel->channel); mytel_tcleval(tel,s);
 	mytel_flush(tel);
    sprintf(s,"puts -nonewline %s \"#:GL#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 9",tel->channel); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
@@ -709,7 +709,7 @@ int mytel_date_get(struct telprop *tel,char *ligne)
    /* Get the date */
    sprintf(s,"puts -nonewline %s \"#:GC#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 9",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 9",tel->channel); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
@@ -741,7 +741,7 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
    sprintf(ligne2,"%02d:%02d:%02d",h,min,sec);
    sprintf(ligne,"puts -nonewline %s \"#:SL%s%s#\"",tel->channel,tel->autostar_char,ligne2); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
+   sprintf(ligne,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
    /* Set the date */
    if (y<1992) {y=1992;}
@@ -754,11 +754,11 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
    sprintf(ligne2,"%02d/%02d/%02d",m,d,y);
    sprintf(ligne,"puts -nonewline %s \"#:SC%s%s#\"",tel->channel,tel->autostar_char,ligne2); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
+   sprintf(ligne,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,ligne);
    nbdiese=0;
    while (1==1) {
       sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
-      sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
+      sprintf(ligne,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,ligne);
       strcpy(ligne,tel->interp->result);
       if (strcmp(ligne,"#")==0) {
          nbdiese++;
@@ -778,11 +778,11 @@ int mytel_home_get(struct telprop *tel,char *ligne)
    double longitude,latitude;
    /* Get the longitude */
    mytel_flush(tel);
-   sprintf(s,"read %s 100",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 100",tel->channel); mytel_tcleval(tel,s);
 	mytel_flush(tel);
    sprintf(s,"puts -nonewline %s \"#:Gg#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 7",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 7",tel->channel); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"string range \"%s\" 0 2",ss); mytel_tcleval(tel,s);
@@ -799,10 +799,10 @@ int mytel_home_get(struct telprop *tel,char *ligne)
       strcpy(ew,"w");
    }
    /* Get the latitude */
-   sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"puts -nonewline %s \"#:Gt#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after 150"); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 7",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 7",tel->channel); mytel_tcleval(tel,s);
    strcpy(ss,tel->interp->result);
    sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"string range \"%s\" 1 2",ss); mytel_tcleval(tel,s);
@@ -838,7 +838,7 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    strcpy(ligne2,tel->interp->result);
    sprintf(ligne,"puts -nonewline %s \"#:Sg%s%s#\"",tel->channel,tel->autostar_char,ligne2); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
+   sprintf(ligne,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
    /* Set the latitude */
    sprintf(ligne,"mc_angle2dms %f 90 zero 0 + list",latitude); mytel_tcleval(tel,ligne);
@@ -847,7 +847,7 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    strcpy(ligne2,tel->interp->result);
    sprintf(ligne,"puts -nonewline %s \"#:St%s%s#\"",tel->channel,tel->autostar_char,ligne2); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 150"); mytel_tcleval(tel,ligne);
-   sprintf(ligne,"read %s 1",tel->channel); mytel_tcleval(tel,ligne);
+   sprintf(ligne,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,ligne);
    sprintf(ligne,"after 50"); mytel_tcleval(tel,ligne);
    return 0;
 }
@@ -865,11 +865,11 @@ int mytel_get_format(struct telprop *tel)
    int len,k;
    /*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    mytel_flush(tel);
-   sprintf(s,"read %s 100",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 100",tel->channel); mytel_tcleval(tel,s);
 	mytel_flush(tel);
    sprintf(s,"puts -nonewline %s \"#:GR#\"",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
-   sprintf(s,"read %s 8",tel->channel); mytel_tcleval(tel,s);
+   sprintf(s,"read -nonewline %s 8",tel->channel); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    len=(int)strlen(s);
    k=0;
@@ -881,7 +881,7 @@ int mytel_get_format(struct telprop *tel)
       } else if (s[5]==':') {
          tel->longformatindex=0;
          k=1;
-         sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+         sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
       }
    }
    return k;
@@ -909,7 +909,7 @@ int mytel_flush(struct telprop *tel)
    char s[1024];
    int k=0;
    while (1==1) {
-      sprintf(s,"read %s 1",tel->channel); mytel_tcleval(tel,s);
+      sprintf(s,"read -nonewline %s 1",tel->channel); mytel_tcleval(tel,s);
       strcpy(s,tel->interp->result);
       if (strcmp(s,"")==0) {
          return k;
@@ -971,7 +971,6 @@ int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *respo
    strcpy(response,"");
 
    // j'envoie la commande
-   sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
    sprintf(s,"puts -nonewline %s %s",tel->channel,command); mytel_tcleval(tel,s);
    sprintf(s,"after %d",tel->tempo); mytel_tcleval(tel,s);
 
