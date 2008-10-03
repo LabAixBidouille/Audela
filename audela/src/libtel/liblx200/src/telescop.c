@@ -131,9 +131,11 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    sprintf(s,"read %s",tel->channel); mytel_tcleval(tel,s);
 	strcpy(s,tel->interp->result);
 	k=(int)strlen(s);
-	if (strcmp(s+k-7,"LX2001#")==0) {
-		strcpy(tel->autostar_char,"");
-	   tel->tempo=800;
+	if (k>=7) {
+		if (strcmp(s+k-7,"LX2001#")==0) {
+			strcpy(tel->autostar_char,"");
+			tel->tempo=800;
+		}
 	}
    return 0;
 }
