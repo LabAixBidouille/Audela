@@ -36,6 +36,7 @@ struct telprop {
    /* Ajoutez ici les variables necessaires a votre telescope */
    int longformatindex;
    int tempo;
+	char autostar_char[3];
 };
 
 int tel_init(struct telprop *tel, int argc, char **argv);
