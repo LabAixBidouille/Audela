@@ -585,7 +585,7 @@ int Tcl_AppInit(Tcl_Interp *interp)
    load_library(interp,"libjm");      // Misc. from Jacques Michelet
    load_library(interp,"libbm");      // Misc. from Benjamin Mauclaire
    load_library(interp,"libmc");      // Celestial mechanics
-   load_library(interp,"libsext");    // Sextractor code from Bertin
+   //load_library(interp,"libsext");    // Sextractor code from Bertin
    load_library(interp,"libyd");      // Misc. from Yassine Damerdji
 #if !defined(OS_LIN)
    load_library(interp,"libml");      // Misc. from Myrtille Laas
