@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.22 2008-08-31 11:26:23 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.23 2008-10-05 05:08:34 bmauclaire Exp $
 #
 
 #
@@ -43,6 +43,51 @@
 # bm_cleanfit            : remet en conformite les caracteres des mots clefs du header
 #-----------------------------------------------------------------------------#
 
+
+
+###############################################################################
+# Description : renumertote eles fichier ayant une numertoation facon MaxIm DL
+# Auteur : Benjamin MAUCLAIRE
+# Date creation : 15-08-2008
+# Date de mise a jour : 15-08-2008
+# Arguments : nom genereique des fichiers
+###############################################################################
+
+proc bm_maximext { args } {
+   global conf audace
+
+   set nbargs [ llength $args ]
+   if { $nbargs <= 1 } {
+      if { $nbargs == 1 } {
+         set prefixe [ lindex $args 0 ]
+         set fliste [ lsort -dictionary [ glob -dir $audace(rep_images) -tails $prefixe*$conf(extension,defaut) ] ]
+      } else {
+         console::affiche_erreur "Usage: bm_maximext generic_filename\n"
+         return ""
+      }
+
+      #--- Traitement des fichiers :
+      set i 0
+      foreach fichier $fliste {
+	 # regexp {.+\-0+([0-9]+)} $fichier match numero_file
+	 if { [ regexp {.+00([0-9])} $fichier match numero_file ] } {
+            console::affiche_resultat "n° : $numero_file\n"
+            file rename "$audace(rep_images)/$fichier" "$audace(rep_images)/$prefixe$numero_file$conf(extension,defaut)"
+	 } elseif { [ regexp {.+0([0-9]{2})} $fichier match numero_file ] } {
+            console::affiche_resultat "n° : $numero_file\n"
+            file rename "$audace(rep_images)/$fichier" "$audace(rep_images)/$prefixe$numero_file$conf(extension,defaut)"
+         } elseif { [ regexp {.+([0-9]{3})} $fichier match numero_file ] } {
+            #-- Pas de renumerotation necessaire :
+            console::affiche_resultat "n° : $numero_file inchangé\n"
+         }
+	 incr i
+      }
+      console::affiche_resultat "$i fichier(s) traité(s).\n"
+   } else {
+      console::affiche_erreur "Usage: bm_maximext generic_filename\n"
+   }
+}
+#*****************************************************************************#
 
 
 ###############################################################################
@@ -310,25 +355,36 @@ proc bm_cp { args } {
    global conf audace
 
    if { [ llength $args ] == 2 } {
-      set path_et_fichier [ lindex $args 0 ]
-      set dest [ lindex $args 1 ]
+      set depart [ lindex $args 0 ]
+      set arrivee [ lindex $args 1 ]
 
       #--- Traitement des arguments :
-      set filename [ file tail $path_et_fichier ]
-      set depart [ file dir $path_et_fichier ]
-      if { $depart==".." } {
-         set depart "${audace(rep_images)}/.."
+      set depart_file [ file tail $depart ]
+      set depart_rep [ file dir $depart ]
+      set arrivee_file [ file tail $arrivee ]
+      set arrivee_rep [ file dir $arrivee ]
+      
+      #--- Gestion des cas de figures :
+      if { $depart_rep == "." } {
+         set depart_rep "$audace(rep_images)"
+      } elseif { $depart_rep == ".." } {
+         set depart_rep "${audace(rep_images)}/.."
       }
-      if { $dest == "." } {
-         set dest "$audace(rep_images)"
+      if { $arrivee_rep == "." } {
+         set arrivee_rep "$audace(rep_images)"
+      } elseif { $arrivee_rep == ".." } {
+         set arrivee_rep "${audace(rep_images)}/.."
+      }
+      if { $arrivee_file == "." } {
+         set arrivee_file "$depart_file"
       }
 
       #--- Copie :
-      #::console::affiche_resultat "${depart}/$filename ; ${dest}/$filename\n"
-      file copy -force "${depart}/$filename" "${dest}/$filename"
-      ::console::affiche_resultat "$filename copié.\n"
+      # ::console::affiche_resultat "${depart_rep}\n${arrivee_rep}\n\n"
+      file copy -force "${depart_rep}/$depart_file" "${arrivee_rep}/$arrivee_file"
+      ::console::affiche_resultat "$depart_file copié dans $arrivee_rep/$arrivee_file.\n"
    } else {
-      console::affiche_erreur "Usage: bm_cp chemin/fichier.extension chemin\n"
+      console::affiche_erreur "Usage: bm_cp chemin/fichier_dep.extension chemin/fichier_dest.extension\n"
    }
 }
 #*****************************************************************************#
