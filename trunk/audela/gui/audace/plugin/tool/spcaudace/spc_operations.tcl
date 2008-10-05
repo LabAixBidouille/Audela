@@ -7,7 +7,7 @@
 #
 #####################################################################################
 
-# Mise a jour $Id: spc_operations.tcl,v 1.8 2008-09-29 18:05:36 bmauclaire Exp $
+# Mise a jour $Id: spc_operations.tcl,v 1.9 2008-10-05 04:49:23 bmauclaire Exp $
 
 
 
@@ -534,6 +534,8 @@ proc spc_somme { args } {
 
        #--- Gestion de la durée totale d'exposition :
        buf$audace(bufNo) load [ lindex $liste_fichiers 0 ]
+       #-- Pour contrecarer l'influence de smean sur date-obs 20081004 :
+       set dateobs_img1 [ lindex [ buf$audace(bufNo) getkwd "DATE-OBS" ] 1 ]
        set listemotsclef [ buf$audace(bufNo) getkwds ]
        if { [ lsearch $listemotsclef "EXPOSURE" ] !=-1 } {
 	   set unit_exposure [ lindex [ buf$audace(bufNo) getkwd "EXPOSURE" ] 1 ]
@@ -573,13 +575,15 @@ proc spc_somme { args } {
        #- Calcul a revoir car il doit etre tenu compte de  date julienne heliocentrique qui tient compte de la position de la terre sur son orbite et la ramène au soleil.
        set midhjd [ expr 0.5*($mjdobsend+$mjdobsdeb) ]
        # ::console::affiche_resultat "end=$mjdobsend ; deb=$mjdobsdeb ; mid=$midhjd\n"
-       buf$audace(bufNo) setkwd [ list "MID-JD" $midhjd double "Heliocentric Julian Date at mid-exposure" "d" ]
+       buf$audace(bufNo) setkwd [ list "MID-JD" $midhjd double "Heliocentric Julian Date at mid-exposure" "day" ]
        if { [ lsearch $listemotsclef "DATE-END" ] !=-1 } {
 	   buf$audace(bufNo) delkwd "DATE-END"
        }
        #--- Mise a jour du motclef EXPTIME : calcul en fraction de jour
        buf$audace(bufNo) setkwd [ list "EXPTIME" $exptime float "Total duration: dobsN-dobs1+1 exposure" "second" ]
-       buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "s" ]
+       buf$audace(bufNo) setkwd [ list "EXPOSURE" $exposure float "Total time of exposure" "second" ]
+       #-- Corrige l'influence de smean sur dateobs 20081004 :
+       buf$audace(bufNo) setkwd [ list "DATE-OBS" $dateobs_img1 string "" "" ]
        buf$audace(bufNo) save "$audace(rep_images)/${nom_generique}-s$nb_file"
        
        #--- Traitement du resultat :
