@@ -3,50 +3,52 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.23 2008-10-05 05:08:34 bmauclaire Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.24 2008-10-06 16:13:19 robertdelmas Exp $
 #
 
 #
 ##--------------------- Liste des fonctions -----------------------------------#
 #
-# bm_sphot               : Extrait le contenu d'un mot clef d'une serie de fichiers
-# bm_ovakwd              : Ajoute et initialise un mot clef et sa valeur pour les spectres LHIRES
 # bm_addmotcleftxt       : Ajoute et initialise un mot clef et sa valeur
 # bm_autoflat            : Trouve le temps de pose optimal pour faire un flat d'une intensite moyenne donnee
-# bm_extractkwd          : Extrait le contenu d'un mot clef d'une serie de fichiers
-# bm_datefrac            : Calcule la fraction de jour et retourne une date JJ.jjj-mm-yyyy
-# bm_datefile            : Reconstitue la date jjmmyyyy de prise de vue d'un fichier fits
+# bm_cleanfit            : Remet en conformite les caracteres des mots clefs du header
 # bm_correctprism        : Met a la norme libfitsio les fichiers FITS issus de PRiSM
+# bm_cp                  : ?
+# bm_cutima              : Decoupage d'une zone selectionnee a la souris d'une image chargee
+# bm_datefile            : Reconstitue la date jjmmyyyy de prise de vue d'un fichier fits
+# bm_datefrac            : Calcule la fraction de jour et retourne une date JJ.jjj-mm-yyyy
+# bm_exptime             : Calcule la duree totale d'exposition d'une serie
 # bm_extract_radec       : Extrait le RA et DEC d'une image ou l'astrometrie est realisee
+# bm_extractkwd          : Extrait le contenu d'un mot clef d'une serie de fichiers
+# bm_fwhm                : Calcule la largeur equivalente d'une etoile en secondes d'arc
 # bm_goodrep             : Se met dans le repertoire de travail d'Aud'ACE pour eviter de
 #                          mettre le chemin des images devant chaque image
-# bm_renumfile           : Renome les fichiers de numerotation collee au nom
-# bm_renameext           : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
-# bm_registerplin        : Registration planetaire sur un point initial et final : translation lineaire
-# bm_sflat               : Cree un flat synthetique (image d'intensite uniforme) de nxp pixels
-# bm_pretraittot         : Effectue le pretraitement, l'appariement et les sommes d'une serie d'images brutes
+# bm_ls                  : Liste les fichiers FITS du répertoire de travail
+# bm_maximext            : Renumerote les fichiers ayant une numerotation facon MaxIm DL
+# bm_mv                  : Renome un fichier du repertoire courant
+# bm_ovakwd              : Ajoute et initialise un mot clef et sa valeur pour les spectres LHIRES
 # bm_pretrait            : Effectue le pretraitement d'une serie d'images brutes
+# bm_pretraittot         : Effectue le pretraitement, l'appariement et les sommes d'une serie d'images brutes
 # bm_register            : Effectue la registration d'une serie d'images brutes
-# bm_sadd0               : Effectue la somme d'une serie d'images
-# bm_sadd                : Effectue la somme d'une serie d'images
-# bm_smed                : Effectue la somme mediane d'une serie d'images
-# bm_smea                : Effectue la somme moyenne d'une serie d'images
+# bm_registerhplin       : Registration planetaire horizontale sur un point initial et final : translation horizontale lineaire
+# bm_registerplin        : Registration planetaire sur un point initial et final : translation lineaire
+# bm_renameext           : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
+# bm_renameext2          : Renome l'extension de fichiers en extension par defaut d'Aud'ACE
+# bm_renumfile           : Renome les fichiers de numerotation collee au nom
+# bm_rm                  : Efface des fichiers dans le repertoire courant
+# bm_sadd                : Effectue la somme d'une serie d'images appariees
+# bm_sflat               : Cree un flat synthetique (image d'intensite uniforme) de nxp pixels
+# bm_smean               : Effectue la somme moyenne d'une serie d'images appariees
+# bm_smed                : Effectue la somme mediane d'une serie d'images appariees
 # bm_somes               : Effectue la somme moyenne, mediane et ssk d'une serie d'images appariees
-# bm_fwhm                : Calcule la largeur equivalente d'une etoile en secondes d'arc
-# bm_cutima              : Decoupage d'une zone selectionnee a la souris d'une image chargee
-# bm_zoomima             : Zoom de l'image ou d'une partie selectionnee de l'image chargee
-# bm_exptime             : Calcule la duree totale d'exposition d'une serie
-# bm_registerhplin       : registration horizontale assistée d'une série d'image.
-# bm_ls                  : Liste les fichiers fits du répertoire de travail
-# bm_rm                  : efface des fichiers dans le repertoire courant
-# bm_mv                  : renome un fichier du repertoire courant
-# bm_cleanfit            : remet en conformite les caracteres des mots clefs du header
+# bm_sphot               : Extrait le contenu d'un mot clef d'une serie de fichiers
+# bm_zoomima             : Zoom de l'image ou d'une partie selectionnee a la souris de l'image chargee
 #-----------------------------------------------------------------------------#
 
 
 
 ###############################################################################
-# Description : renumertote eles fichier ayant une numertoation facon MaxIm DL
+# Description : renumerote les fichiers ayant une numerotation facon MaxIm DL
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 15-08-2008
 # Date de mise a jour : 15-08-2008
@@ -69,18 +71,18 @@ proc bm_maximext { args } {
       #--- Traitement des fichiers :
       set i 0
       foreach fichier $fliste {
-	 # regexp {.+\-0+([0-9]+)} $fichier match numero_file
-	 if { [ regexp {.+00([0-9])} $fichier match numero_file ] } {
+        # regexp {.+\-0+([0-9]+)} $fichier match numero_file
+         if { [ regexp {.+00([0-9])} $fichier match numero_file ] } {
             console::affiche_resultat "n° : $numero_file\n"
             file rename "$audace(rep_images)/$fichier" "$audace(rep_images)/$prefixe$numero_file$conf(extension,defaut)"
-	 } elseif { [ regexp {.+0([0-9]{2})} $fichier match numero_file ] } {
+         } elseif { [ regexp {.+0([0-9]{2})} $fichier match numero_file ] } {
             console::affiche_resultat "n° : $numero_file\n"
             file rename "$audace(rep_images)/$fichier" "$audace(rep_images)/$prefixe$numero_file$conf(extension,defaut)"
          } elseif { [ regexp {.+([0-9]{3})} $fichier match numero_file ] } {
             #-- Pas de renumerotation necessaire :
             console::affiche_resultat "n° : $numero_file inchangé\n"
          }
-	 incr i
+      incr i
       }
       console::affiche_resultat "$i fichier(s) traité(s).\n"
    } else {
@@ -91,7 +93,7 @@ proc bm_maximext { args } {
 
 
 ###############################################################################
-# Description : liste les fichiers du repertoire de travail
+# Description : remet en conformite les caracteres des mots clefs du header
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 03-05-2007
 # Date de mise a jour : 03-05-2007
@@ -110,7 +112,7 @@ proc bm_cleanfit { args } {
          buf$audace(bufNo) load "$audace(rep_images)/$filename"
          set listemotsclef [ buf$audace(bufNo) getkwds ]
 
-         #--- Corrige le contenu des mots clef : 
+         #--- Corrige le contenu des mots clef :
          foreach mot $listemotsclef {
             set type [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 2 ]
             if { $type == "string" } {
@@ -185,7 +187,7 @@ proc bm_cleanfit { args } {
             #--- Charge les mots clef :
             buf$audace(bufNo) load "$audace(rep_images)/$filename"
             set listemotsclef [ buf$audace(bufNo) getkwds ]
-            
+
             #--- Corrige chaque caractere non conforme au FITS :
             foreach mot $listemotsclef {
                set type [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 2 ]
@@ -194,7 +196,7 @@ proc bm_cleanfit { args } {
                   set lemot [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 1 ]
                   set desc [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 3 ]
                   set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
-                  
+
                   #-- Remplace les caracteres :
                   regsub -all {[éèê]} $lemot "e" lemot
                   regsub -all {[àâ]} $lemot "a" lemot
@@ -215,14 +217,14 @@ proc bm_cleanfit { args } {
                set type [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 2 ]
                set desc [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 3 ]
                set unit [ lindex [ buf$audace(bufNo) getkwd "$mot" ] 4 ]
-               
+
                #-- Gere les cas particuliers :
                #- Gere le cas des "comment=" du T120 OHP :
                if { $mot == "COMMENT=" && $lemot == 0 } {
                   buf$audace(bufNo) delkwd "$mot"
                   continue
                }
-               
+
                #-- Efface les mots clef dont le contenu est vide et corrige les autres :
                if { $lemot == "" } {
                   buf$audace(bufNo) delkwd "$mot"
@@ -261,7 +263,7 @@ proc bm_cleanfit { args } {
 #*****************************************************************************#
 
 ###############################################################################
-# Description : liste les fichiers du repertoire de travail
+# Description : liste les fichiers FITS du repertoire de travail
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 03-05-2007
 # Date de mise a jour : 03-05-2007
@@ -319,7 +321,7 @@ proc bm_rm { args } {
 #*****************************************************************************#
 
 ###############################################################################
-# Description : efface des fichiers du repertoire courant
+# Description : renome un fichier du repertoire courant
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 2008-03-23
 # Date de mise a jour : 2008-03-23
@@ -363,7 +365,7 @@ proc bm_cp { args } {
       set depart_rep [ file dir $depart ]
       set arrivee_file [ file tail $arrivee ]
       set arrivee_rep [ file dir $arrivee ]
-      
+
       #--- Gestion des cas de figures :
       if { $depart_rep == "." } {
          set depart_rep "$audace(rep_images)"
@@ -2049,7 +2051,7 @@ proc bm_fwhm { args } {
 #-----------------------------------------------------------------------------#
 
 #*****************************************************************************#
-# Description : Decoupage d'une zone selectionnee a la souris
+# Description : Decoupage d'une zone selectionnee a la souris d'une image chargee
 #*****************************************************************************#
 
 proc bm_cutima { } {
@@ -2074,7 +2076,7 @@ proc bm_cutima { } {
 #-----------------------------------------------------------------------------#
 
 #*****************************************************************************#
-# Description : Zoom d'une image ou d'une zone selectionnee a la souris
+# Description : Zoom de l'image ou d'une partie selectionnee a la souris de l'image chargee
 #*****************************************************************************#
 
 proc bm_zoomima { args } {
