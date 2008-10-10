@@ -44,6 +44,8 @@
 
 #if defined OS_WIN
 #include "VantagePro.h"
+#include "Bc637pci.h"
+
 #endif
 
 /***************************************************************************/
@@ -58,11 +60,14 @@
 /*--- Les prototypes sont tous les memes */
 
 int Cmd_rostcl_meteo(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_rostcl_gps(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
+int Cmd_rostcl_velleman(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]);
 
 /***************************************************************************/
 /*      Prototypes des fonctions utiles qui melangent C et Tcl             */
 /***************************************************************************/
 //int rostcl_getinfoimage(Tcl_Interp *interp,int numbuf, ak_image *image);
+
 
 #endif
 

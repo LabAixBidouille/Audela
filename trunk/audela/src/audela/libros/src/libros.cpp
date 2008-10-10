@@ -58,6 +58,8 @@
    Tcl_PkgProvide(interp,"Ros","1.0");
 
    Tcl_CreateCommand(interp,"ros_meteo",(Tcl_CmdProc *)Cmd_rostcl_meteo,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"ros_gps",(Tcl_CmdProc *)Cmd_rostcl_gps,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
+   Tcl_CreateCommand(interp,"ros_velleman",(Tcl_CmdProc *)Cmd_rostcl_velleman,(ClientData)NULL,(Tcl_CmdDeleteProc *)NULL);
 
 	return TCL_OK;
 }
