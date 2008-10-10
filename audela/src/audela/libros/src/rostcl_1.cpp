@@ -699,7 +699,7 @@ ros_velleman close
 				CardAddress=(long)atoi(argv[2]);
 			}
 			if (VELLEMAN_OpenDevice(CardAddress)==-1) {
-				sprintf(s,"Card K8055D not found  at address %d using library %s.",CardAddress,VELLEMAN_NAME);
+				sprintf(s,"Card K8055D not found at address %d using library %s.",CardAddress,VELLEMAN_NAME);
 				Tcl_SetResult(interp,s,TCL_VOLATILE);
 				FreeLibrary(velleman);
             return TCL_ERROR;
@@ -950,8 +950,11 @@ ros_velleman close
 		}
       /* --- close ---*/
       if ((mode==3)&&(modele==1)) {
-			VELLEMAN_CloseDevice();
-			FreeLibrary(velleman);
+			if (velleman!=NULL) {
+				VELLEMAN_CloseDevice();
+				FreeLibrary(velleman);
+				velleman=NULL;
+			}
          return TCL_OK;
 		}
       /* --- ---*/
