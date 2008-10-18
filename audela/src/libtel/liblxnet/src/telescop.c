@@ -4,17 +4,17 @@
  * Copyright (C) 1998-2004 The AudeLA Core Team
  *
  * Initial author : Michel PUJOL <michel-pujol@wanadoo.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -22,13 +22,13 @@
 
 /*
  * telescop.c
- * 
+ *
  * Ceci est le fichier contenant le driver de la camera
  *
  * La structure "telprop" peut etre adaptee
  * dans le fichier telescop.h
  *
- * $Id: telescop.c,v 1.4 2008-05-10 11:56:54 michelpujol Exp $
+ * $Id: telescop.c,v 1.5 2008-10-18 17:03:27 jacquesmichelet Exp $
  *
  */
 
@@ -113,16 +113,16 @@ int tel_init(struct telprop *tel, int argc, char **argv)
    char errorMessage[256];
 
    //initLog();
-   
+
    tel->tempo=300;  /* en millisecondes */
-   tel->httpPort =80;   
+   tel->httpPort =80;
    tel->autoflush = FALSE;
-	 
-         
+
+
    for (i=3;i<argc-1;i++) {
 	   if (strcmp(argv[i],"-host")==0) {
-			   strcpy(tel->host, argv[i+1]);         
-		 } 
+			   strcpy(tel->host, argv[i+1]);
+		 }
  	   if (strcmp(argv[i],"-autoflush")==0) {
          if( atoi(argv[i+1]) == 1 ) {
             tel->autoflush= TRUE;
@@ -130,7 +130,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
          else {
             tel->autoflush= FALSE;
          }
-		 } 
+		 }
 
        if (strcmp(argv[i],"-ipsetting")==0) {
          if ((i+1)<=(argc-1)) {
@@ -140,15 +140,15 @@ int tel_init(struct telprop *tel, int argc, char **argv)
                ipsetting= 0;
             }
          }
-         
-      }           
-      
+
+      }
+
       if (strcmp(argv[i],"-macaddress")==0) {
          if ((i+1)<=(argc-1)) {
             STRNCPY(macAddress,argv[i+1]);
          }
-      }           
-     
+      }
+
    }
 
 #ifndef SIMUL_AUDINET
@@ -156,7 +156,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
       // envoie l'adresse IP a Audinet
       setip(tel->host, macAddress, 0,0, errorMessage);
    }
-	// test de la connexion ethernet : essai 3 ping avec timout = 1000 ms 
+	// test de la connexion ethernet : essai 3 ping avec timout = 1000 ms
   if( ping(tel->host, 3, 1000) == TRUE ) {
      //mytel_flush(tel);
      cr = 0;
@@ -168,7 +168,7 @@ int tel_init(struct telprop *tel, int argc, char **argv)
 #else
   return 0;
 #endif
-  
+
 }
 
 int tel_testcom(struct telprop *tel)
@@ -352,19 +352,19 @@ int mytel_radec_init(struct telprop *tel)
    int nbcar_1,nbcar_2;
    /* get the short|long format */
    mytel_get_format(tel);
-   if (tel->longformatindex==0) { 
-      strcpy(ls,"-format long"); 
+   if (tel->longformatindex==0) {
+      strcpy(ls,"-format long");
       nbcar_1=9;
       nbcar_2=10;
-   } else { 
-      strcpy(ls,"-format short"); 
+   } else {
+      strcpy(ls,"-format short");
       nbcar_1=8;
       nbcar_2=7;
-   } 
+   }
 
    /* Send Sr */
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-   sprintf(s,":Sr %s#",tel->interp->result); 
+   sprintf(s,":Sr %s#",tel->interp->result);
    if( mytel_sendLX(tel, s , RETURN_OK, ls) <=0 ) {
 		/* Receive 1 if it is OK */
 		return -1;
@@ -376,7 +376,7 @@ int mytel_radec_init(struct telprop *tel)
    if( mytel_sendLX(tel, s ,  RETURN_OK, ls) <=0 ) {
 		return -1;
    }
-	
+
    sprintf(s,":CM#");
    if( mytel_sendLX(tel, s , RETURN_OK, ls) <=0 ) {
 		return -1;
@@ -403,33 +403,33 @@ int mytel_radec_goto(struct telprop *tel)
    int nbcar_1,nbcar_2,time_in=0,time_out=240;
    /* get the short|long format */
    mytel_get_format(tel);
-   if (tel->longformatindex==0) { 
-      strcpy(ls,"-format long"); 
+   if (tel->longformatindex==0) {
+      strcpy(ls,"-format long");
       nbcar_1=9;
       nbcar_2=10;
-   } else { 
-      strcpy(ls,"-format short"); 
+   } else {
+      strcpy(ls,"-format short");
       nbcar_1=8;
       nbcar_2=7;
-   } 
-   
+   }
+
 
 	/* Send Sr */
    sprintf(s,"mc_angle2lx200ra %f %s",tel->ra0,ls); mytel_tcleval(tel,s);
-   sprintf(s,":Sr %s#",tel->interp->result); 
+   sprintf(s,":Sr %s#",tel->interp->result);
    if( mytel_sendLX(tel, s , RETURN_OK, ls) <=0 ) {
       mytel_flush(tel);
 	  	return -1;
    }
-      
+
 	/* Send Sd */
    sprintf(s,"mc_angle2lx200dec %f %s",tel->dec0,ls); mytel_tcleval(tel,s);
-   sprintf(s,":Sd %s#",tel->interp->result); 
+   sprintf(s,":Sd %s#",tel->interp->result);
    if( mytel_sendLX(tel, s , RETURN_OK, ls) <=0 ) {
       mytel_flush(tel);
       return -1;
    }
-   
+
 	/* Send MS */
    if( mytel_sendLX(tel, ":MS#", RETURN_OK, ls) <=0 ) {
       logError("mytel_radec_goto response=%s  goto Error", ls);
@@ -439,33 +439,33 @@ int mytel_radec_goto(struct telprop *tel)
    }
 	else {
 		switch (ls[0]) {
-		case '0' :   
+		case '0' :
 			/* slew OK */
 		   //logInfo("mytel_radec_goto response=%s  goto OK", ls);
 			break;
-		case '1' :   
+		case '1' :
 			/* slew aborted, object is below the horizon or near the Sun */
       logError("mytel_radec_goto response=%s  object is below the horizon or near the Sun", ls);
       mytel_flush(tel);
 			return 0;
 			break;
-		case '2' :   
+		case '2' :
 			/* slew aborted, object is below the 'higher' limit */
 		  logError("mytel_radec_goto response=%s  object is below the horizon", ls);
 			mytel_flush(tel);
 			return 0;
 			break;
-		default : 
+		default :
 		  logError("mytel_radec_goto response=%s ", ls);
 		  mytel_flush(tel);
 			return 0;
 		}
 	}
-   
-   //logInfo( " mytel_radec_goto radec_goto_blocking=%d",tel->radec_goto_blocking); 
+
+   //logInfo( " mytel_radec_goto radec_goto_blocking=%d",tel->radec_goto_blocking);
    if (tel->radec_goto_blocking==1) {
-      //logInfo( " mytel_radec_goto radec_goto_blocking=%d blocking",tel->radec_goto_blocking); 
-      // A loop is actived until the telescope is stopped 
+      //logInfo( " mytel_radec_goto radec_goto_blocking=%d blocking",tel->radec_goto_blocking);
+      // A loop is actived until the telescope is stopped
       tel_radec_coord(tel,coord0);
       while (1) {
 	      time_in++;
@@ -516,27 +516,37 @@ int mytel_radec_move(struct telprop *tel,char *direction)
 
 int mytel_radec_stop(struct telprop *tel,char *direction)
 {
-   char s[1024],ls[1024],direc[10];
-   sprintf(s,"after 50"); mytel_tcleval(tel,s);
-   sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
-   strcpy(direc,tel->interp->result);
+    char s[1024],ls[1024],direc[10];
+    sprintf(s,"after 50");
+    mytel_tcleval(tel,s);
+    memset (direc, 0, sizeof (direc));
+    if (direction[0] != 0)
+    {
+        sprintf(s,"lindex [string toupper %s] 0",direction);
+        mytel_tcleval(tel,s);
+        strncpy (direc,tel->interp->result, sizeof (direc));
+    }
 
-   if (strcmp(direc,"N")==0) {
-      mytel_sendLX(tel, ":Qn#" , RETURN_NOTHING, ls);
-   } else if (strcmp(direc,"S")==0) {
-      mytel_sendLX(tel, ":Qs#" , RETURN_NOTHING, ls);
-   } else if (strcmp(direc,"E")==0) {
-      mytel_sendLX(tel, ":Qe#" , RETURN_NOTHING, ls);
-   } else if (strcmp(direc,"W")==0) {
-      mytel_sendLX(tel, ":Qw#" , RETURN_NOTHING, ls);
-   } else {
-      mytel_sendLX(tel, ":Q#" , RETURN_NOTHING, ls);
-      mytel_sendLX(tel, ":Qn#" , RETURN_NOTHING, ls);
-      mytel_sendLX(tel, ":Qs#" , RETURN_NOTHING, ls);
-      mytel_sendLX(tel, ":Qe#" , RETURN_NOTHING, ls);
-      mytel_sendLX(tel, ":Qw#" , RETURN_NOTHING, ls);
-   }
-   return 0;
+    logInfo ( "direction %s", direction );
+    logInfo ( "direc %s", direc );
+
+    if (strcmp (direc,"N") == 0)
+        mytel_sendLX (tel, ":Qn#" , RETURN_NOTHING, ls);
+    else if (strcmp (direc,"S") == 0)
+        mytel_sendLX (tel, ":Qs#" , RETURN_NOTHING, ls);
+    else if (strcmp (direc,"E") == 0)
+        mytel_sendLX (tel, ":Qe#" , RETURN_NOTHING, ls);
+    else if (strcmp (direc,"W") == 0)
+        mytel_sendLX (tel, ":Qw#" , RETURN_NOTHING, ls);
+    else
+    {
+        mytel_sendLX (tel, ":Q#" , RETURN_NOTHING, ls);
+        mytel_sendLX (tel, ":Qn#" , RETURN_NOTHING, ls);
+        mytel_sendLX (tel, ":Qs#" , RETURN_NOTHING, ls);
+        mytel_sendLX (tel, ":Qe#" , RETURN_NOTHING, ls);
+        mytel_sendLX (tel, ":Qw#" , RETURN_NOTHING, ls);
+    }
+    return 0;
 }
 
 int mytel_radec_motor(struct telprop *tel)
@@ -556,14 +566,14 @@ int mytel_radec_coord(struct telprop *tel,char *result)
 {
    char s[1024],ss[1024],signe[2];
    int h,d,m,sec;
-   
+
 	strcpy(result,"");
-   
+
 	/* Send GR */
    mytel_sendLX(tel, ":GR#" , RETURN_SHARP, ss);
-   
+
 	/* Receive a string terminated by # */
-   
+
 	/*sprintf(s,"flush %s",tel->channel); mytel_tcleval(tel,s);*/
    sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
@@ -571,7 +581,7 @@ int mytel_radec_coord(struct telprop *tel,char *result)
    sprintf(s,"string range \"%s\" 3 4",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    m=atoi(s);
-   if (tel->longformatindex==0) { 
+   if (tel->longformatindex==0) {
       sprintf(s,"string range \"%s\" 6 7",ss); mytel_tcleval(tel,s);
       strcpy(s,tel->interp->result);
       sec=atoi(s);
@@ -588,7 +598,7 @@ int mytel_radec_coord(struct telprop *tel,char *result)
 
    /* Send GD */
    mytel_sendLX(tel, ":GD#" , RETURN_SHARP, ss);
-   
+
 	/* Receive a string terminated by # */
    sprintf(s,"string range \"%s\" 0 0",ss); mytel_tcleval(tel,s);
    strcpy(signe,tel->interp->result);
@@ -601,7 +611,7 @@ int mytel_radec_coord(struct telprop *tel,char *result)
    sprintf(s,"string range \"%s\" 4 5",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    m=atoi(s);
-   if (tel->longformatindex==0) { 
+   if (tel->longformatindex==0) {
       sprintf(s,"string range \"%s\" 7 8",ss); mytel_tcleval(tel,s);
       strcpy(s,tel->interp->result);
       sec=atoi(s);
@@ -635,10 +645,10 @@ int mytel_focus_move(struct telprop *tel,char *direction)
       /* Fast */
       mytel_sendLX(tel, ":FF#" , RETURN_NOTHING, s);
    }
-   
+
 	sprintf(s,"lindex [string toupper %s] 0",direction); mytel_tcleval(tel,s);
    strcpy(direc,tel->interp->result);
-   
+
 	if (strcmp(direc,"+")==0) {
       mytel_sendLX(tel, ":F+#" , RETURN_NOTHING,  s);
    } else if (strcmp(direc,"-")==0) {
@@ -672,7 +682,7 @@ int mytel_date_get(struct telprop *tel,char *ligne)
    /* Get the time */
     mytel_flush(tel);
   mytel_sendLX(tel, ":GL#" , RETURN_SHARP, ss);
-   
+
 	sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    h=atoi(s);
@@ -682,7 +692,7 @@ int mytel_date_get(struct telprop *tel,char *ligne)
    sprintf(s,"string range \"%s\" 6 7",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
    sec=atoi(s);
-   
+
 	/* Get the date */
    mytel_sendLX(tel, ":GC#" , RETURN_SHARP, ss);
    sprintf(s,"string range \"%s\" 0 1",ss); mytel_tcleval(tel,s);
@@ -712,9 +722,9 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
    mytel_flush(tel);
    sec=(int)(s);
    sprintf(ligne2,"%02d:%02d:%02d",h,min,sec);
-   sprintf(ligne,":SL %s#",ligne2); 
+   sprintf(ligne,":SL %s#",ligne2);
    mytel_sendLX(tel, ligne , RETURN_OK, ss);
-   
+
 	/* Set the date */
    if (y<1992) {y=1992;}
    if (y>2091) {y=2091;}
@@ -723,11 +733,11 @@ int mytel_date_set(struct telprop *tel,int y,int m,int d,int h, int min,double s
    } else {
       y=y-2000;
    }
-   
+
    sprintf(ligne2,"%02d/%02d/%02d",m,d,y);
-   sprintf(ligne,":SC %s#",ligne2); 
+   sprintf(ligne,":SC %s#",ligne2);
    mytel_sendLX(tel, ligne , RETURN_OK, ss);
-   
+
    return 0;
 }
 
@@ -736,11 +746,11 @@ int mytel_home_get(struct telprop *tel,char *ligne)
    char s[1024],ss[1024],signe[3],ew[3];
    int d1,m1,d2,m2;
    double longitude,latitude;
-   
+
 	/* Get the longitude */
    mytel_flush(tel);
    mytel_sendLX(tel, ":Gg#" , RETURN_SHARP, ss);
-	
+
 	sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"string range \"%s\" 0 2",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
@@ -757,7 +767,7 @@ int mytel_home_get(struct telprop *tel,char *ligne)
    }
    /* Get the latitude */
    mytel_sendLX(tel, ":Gt#" , RETURN_SHARP, ss);
-	
+
 	sprintf(s,"after 50"); mytel_tcleval(tel,s);
    sprintf(s,"string range \"%s\" 1 2",ss); mytel_tcleval(tel,s);
    strcpy(s,tel->interp->result);
@@ -790,19 +800,19 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
    strcpy(ligne2,tel->interp->result);
    sprintf(ligne,"string range \"[string range [lindex {%s} 0] 1 3]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2); mytel_tcleval(tel,ligne);
    strcpy(ligne2,tel->interp->result);
-   
-	sprintf(ligne,":Sg %s#",ligne2); 
+
+	sprintf(ligne,":Sg %s#",ligne2);
    mytel_sendLX(tel, ligne , RETURN_OK, s);
-	
+
 	/* Set the latitude */
    sprintf(ligne,"mc_angle2dms %f 90 zero 0 + list",latitude); mytel_tcleval(tel,ligne);
    strcpy(ligne2,tel->interp->result);
    sprintf(ligne,"string range \"[string range [lindex {%s} 0] 0 0][string range [lindex {%s} 0] 1 2]\xDF[string range [lindex {%s} 1] 0 1]\" 0 6",ligne2,ligne2,ligne2); mytel_tcleval(tel,ligne);
    strcpy(ligne2,tel->interp->result);
-   
-	sprintf(ligne,":St %s#",ligne2); 
+
+	sprintf(ligne,":St %s#",ligne2);
    mytel_sendLX(tel, ligne , RETURN_OK, s);
-	
+
 	return 0;
 }
 /* ================================================================ */
@@ -816,11 +826,11 @@ int mytel_home_set(struct telprop *tel,double longitude,char *ew,double latitude
 int mytel_get_format(struct telprop *tel)
 {
    char s[1024];
-   int len,k;   
+   int len,k;
    mytel_flush(tel);
 
    mytel_sendLX(tel, ":GR#" , RETURN_SHARP, s);
-	
+
 	len=(int)strlen(s);
    k=0;
    /* 12:34:45# ou 12:34.7# */
@@ -832,7 +842,7 @@ int mytel_get_format(struct telprop *tel)
          tel->longformatindex=0;
          k=1;
       }
-   } 
+   }
 
    return k;
 }
@@ -842,13 +852,13 @@ int mytel_set_format(struct telprop *tel,int longformatindex)
    char s[1024];
    int k=0;
    if (mytel_get_format(tel)==1) {
-      if (longformatindex!=tel->longformatindex) {        
+      if (longformatindex!=tel->longformatindex) {
 		   mytel_sendLX(tel, ":U#" , RETURN_NOTHING, s);
 			tel->longformatindex=longformatindex;
          k=1;
       }
    }
-   
+
    //logInfo("mytel_set_format format=%d",tel->longformatindex);
    return k;
 }
@@ -856,17 +866,17 @@ int mytel_set_format(struct telprop *tel,int longformatindex)
 /**
  * mytel_flush
  * flush the input channel until nothing is received
- * return 0 if OK, 
+ * return 0 if OK,
  */
 int mytel_flush(struct telprop *tel)
 {
    char s[1024];
    int k=0;
 
-   
+
    if (tel->autoflush == TRUE ) {
       while (1) {
-      // send # and read one character 
+      // send # and read one character
       mytel_sendLX(tel, "#",FLUSH, s);
       if (strcmp(s,"")==0) {
           //logInfo("mytel_flush k=%",k );
@@ -911,41 +921,43 @@ int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *respo
 	int n;
 	int cr = FALSE;
 
-   
+
 	result[0] = 0;
 	response[0] = 0;
-   
+
+    logInfo ( "Commande %s", command );
+
 #ifdef SIMUL_AUDINET
    // SIMULATION
 	logInfo("sendHttpRequest SIMUL url=http://%s:%d/cgi-bin/sendLX.cgi?r=%d&c=%s",tel->host, tel->httpPort, returnType, command);
 
    switch( returnType ) {
-      case RETURN_NOTHING : 
+      case RETURN_NOTHING :
          strcpy(response,"");
          break;
-      case RETURN_OK : 
+      case RETURN_OK :
          if( strcmp(command,":MS#")==0) {
             strcpy(response,"0");  // repond toujours OK pour GOTO
-         } 
+         }
          else {
-            strcpy(response,"1"); // repond toujours OK pour les autres 
+            strcpy(response,"1"); // repond toujours OK pour les autres
             logInfo("mytel_sendLX non:MS#=%s=",command);
-         } 
+         }
          break;
 
       case RETURN_SHARP:
          if( strcmp(command,":GR#")==0) {
-            strcpy(response,"12:53:59#");  
+            strcpy(response,"12:53:59#");
          }
          else if( strcmp(command,":GD#")==0) {
-            strcpy(response,"+27ß29:33");  
+            strcpy(response,"+27ï¿½29:33");
          }
          else {
-            strcpy(response,"0"); 
+            strcpy(response,"0");
          }
          break;
       default:
-         strcpy(response,"");  
+         strcpy(response,"");
          break;
       }
    logInfo("mytel_sendLX n=%d response=%s", strlen(response)+17, response);
@@ -960,13 +972,13 @@ int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *respo
    }
    else {
 		/* je prepare l'URL */
-		sprintf(url,"/cgi-bin/sendLX.cgi?r=%d&c=%s", returnType, command); 
+		sprintf(url,"/cgi-bin/sendLX.cgi?r=%d&c=%s", returnType, command);
 		//logInfo("mytel_sendLX url=http://%s:%d%s", tel->host,tel->httpPort, url);
-   
-		/* j'envoi la requete */   
+
+		/* j'envoi la requete */
 		if ( ! socktcp_send(  tel->host, tel->httpPort, url )) {
 			logError("mytel_sendLX sendRequestSocket");
-			cr = FALSE;       
+			cr = FALSE;
 		}
 		else {
 			/* je lis la reponse */
@@ -975,21 +987,21 @@ int mytel_sendLX(struct telprop *tel, char *command, int returnType, char *respo
 			if( strcmp (result,"HTTP/1.0 200") !=0) {
 			   if( n>=14 ) {
 				   strcpy(response, &result[17]);
-			      //logInfo("mytel_sendLX n=%d response=%s", n, response);
-         	   cr = TRUE;
+			       logInfo("mytel_sendLX n=%d response=%s", n, response);
+         	       cr = TRUE;
 			   }
+               else {
+                   sprintf(response, "Error: mytel_sendLX n=%d result=%s", n, result);
+                   logError("mytel_sendLX n=%d result=%s", n, result);
+               }
+            }
             else {
                sprintf(response, "Error: mytel_sendLX n=%d result=%s", n, result);
                logError("mytel_sendLX n=%d result=%s", n, result);
-            }
-         }
-         else {
-           sprintf(response, "Error: mytel_sendLX n=%d result=%s", n, result);
-           logError("mytel_sendLX n=%d result=%s", n, result);
-         }
-		}
+           }
+	    }
       // je referme la socket tcp
-      socktcp_close();
+        socktcp_close();
 	}
 	return cr;
 }
