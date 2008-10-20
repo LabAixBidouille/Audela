@@ -67,6 +67,8 @@ CVisu::CVisu(Tcl_Interp *Interp, int buf, int img)
 
 CVisu::~CVisu()
 {
+    for ( int i =0; i < 3; i++ )
+        delete[] pal.pal[i];
 }
 
 int CVisu::ClearImage()
@@ -105,7 +107,7 @@ int CVisu::CreateBuffer(int num)
       ligne = new char[256];
       sprintf(ligne,"::buf::create %d",num);
       Tcl_Eval(interp,ligne);
-      delete ligne;
+      delete[] ligne;
       if(CBuffer::Chercher(num)==NULL) {
          return ELIBSTD_CANNOT_CREATE_BUFFER;
       }
@@ -586,11 +588,11 @@ double CVisu::SetZoom(double z)
  * CVisu::UpdateDisplay
  *
  * si mode=1 (photo)
- *   ré-affiche l'image en appliquant les changements de
+ *   re-affiche l'image en appliquant les changements de
  *
  * si mode=2 (video)
  *   applique les changements  palette, zoom , miroir et fenetrage
- *   sans réafficher 
+ *   sans reafficher
  *
  * Results:
  *	   0 si OK, 
@@ -641,7 +643,7 @@ int CVisu::UpdateDisplay()
 
    // calcul de largeur et de la hauteur d'affichage
    if( buffer->GetHeight()==1) {
-      // une image 1D est étalée sur plusieurs lignes
+      // une image 1D est etalee sur plusieurs lignes
       orgww = xx2 - xx1 + 1; // Largeur 
       orgwh = thickness_1d;
    } else {

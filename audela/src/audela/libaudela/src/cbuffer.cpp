@@ -72,9 +72,9 @@ CBuffer::~CBuffer()
    pthread_mutex_destroy(&mutex);
 
    if (fitsextension != NULL) {
-      delete fitsextension;
+      delete[] fitsextension;
    }
-   FreeBuffer(DONT_KEEP_KEYWORDS);
+   FreeBuffer(FREE_KEYWORDS);
 }
 
 CBuffer * CBuffer::Chercher(int bufNo) {
@@ -170,17 +170,26 @@ int CBuffer::IsPixelsReady(void) {
 
 void CBuffer::FreeBuffer(int keep_keywords)
 {
-	if (keep_keywords == DONT_KEEP_KEYWORDS) {
+    if (keep_keywords == FREE_KEYWORDS) {
+        if(keywords) 
+            delete keywords;
+        if(p_ast) {
+            free(p_ast);
+        }
+        return;
+    }
+    
+    if (keep_keywords == DONT_KEEP_KEYWORDS) {
 		if(keywords) {
 			delete keywords;
 		}
-      // je cree un objet CFitsKeywords vide
-   	keywords = new CFitsKeywords();
+        // je cree un objet CFitsKeywords vide
+   	    keywords = new CFitsKeywords();
 		if(p_ast) {
 			free(p_ast);
-	   }
-      // je cree un objet mc_ASTROM vide
-   	p_ast = (mc_ASTROM*)calloc(1,sizeof(mc_ASTROM));
+	    }
+        // je cree un objet mc_ASTROM vide
+   	    p_ast = (mc_ASTROM*)calloc(1,sizeof(mc_ASTROM));
 	}
 
    // j'efface le fichier temporaire de l'image RAW

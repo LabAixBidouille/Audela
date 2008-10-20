@@ -506,7 +506,7 @@ int cmdGetKwds(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 //==============================================================================
 /**
  * buf$i imageready --
- *    Fonction permettant de savoir si une image est chargée dans le buffer
+ *    Fonction permettant de savoir si une image est chargee dans le buffer
  *
  * Parameters:
  *    none
@@ -596,7 +596,7 @@ int cmdType(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 
 //==============================================================================
 // buf$i bitpix ?byte|short|long|float|double? --
-//   Fixe le format d'écriture du fichier FITS sur disque. En cas de valeur
+//   Fixe le format d'ecriture du fichier FITS sur disque. En cas de valeur
 //   incorrecte, utilise des types short.
 //
 int cmdBitpix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -676,7 +676,7 @@ int cmdBitpix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
          }
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -728,13 +728,13 @@ int cmdCompress(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          }
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
 //==============================================================================
 // buf$i extension ?file_extension?
-//   Fixe le nom de l'externsion par défaut des fichiers
+//   Fixe le nom de l'externsion par defaut des fichiers
 //   .fit par defaut
 //
 int cmdExtension(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
@@ -759,7 +759,7 @@ int cmdExtension(ClientData clientData, Tcl_Interp *interp, int argc, char *argv
           retour = TCL_OK;
       }
    }
-   delete ligne;
+   delete[] ligne;
    return retour;
 }
 
@@ -834,7 +834,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                int mirrory;
 
 
-               // je fabrique une palette par défaut
+               // je fabrique une palette par defaut
                palette[0] = pal0;
                palette[1] = pal1;
                palette[2] = pal2;
@@ -878,9 +878,9 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
                //--- FITS file (fit, fits, fts, fit.gz, fits.gz, fts.gz or default extension)
                //--- save FITS file
                if (Buffer->GetCompressType()==BUFCOMPRESS_GZIP) {
-                  // je supprime ".gz" à la fin du fichier si ".gz" est present
+                  // je supprime ".gz" a la fin du fichier si ".gz" est present
                   // parce que libtt ne supporte pas l'extension ".gz"
-                  // a cause de la deuxième passe pour l'enregistrement des nouveaux mots cles.
+                  // a cause de la deuxieme passe pour l'enregistrement des nouveaux mots cles.
                   char * strfound = strstr(nom_fichier,".gz");
                   if ( strfound != NULL && strfound==nom_fichier+strlen(nom_fichier)-3 ) {
                      nom_fichier[strlen(nom_fichier)-3] = 0;
@@ -923,7 +923,7 @@ int cmdLoadSave(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[
          sprintf(ligne,"%s %s \n%s ",argv[1],argv[2], e.gets());
          Tcl_SetResult(interp,ligne,TCL_VOLATILE);
 
-         // je libere les variables allouées dynamiquement
+         // je libere les variables allouees dynamiquement
          if (name)         free(name);
          if (extfits)      free(extfits);
          if (ext)          free(ext);
@@ -1562,8 +1562,8 @@ int cmdSetPix(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 //==============================================================================
 // buf$i getpixels pixelsPtr
 //
-// retourne une copie du tableau de pixels (format float, non compressé)
-// l'appelant doit avoir réservé l'espace mémoire dans lequel seront retournés les pixels
+// retourne une copie du tableau de pixels (format float, non compressï¿½)
+// l'appelant doit avoir reserve l'espace memoire dans lequel seront retournes les pixels
 //
 int cmdGetPixels(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -2989,8 +2989,8 @@ int cmdClipmax(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[]
 
 //==============================================================================
 // buf$i rot x0 y0 angle --
-//   Rotation de l'image, de centre (x0,y0) (commencent à 1) et d'un angle de
-//   'angle' degrés (dans le sens trigo).
+//   Rotation de l'image, de centre (x0,y0) (commencent a 1) et d'un angle de
+//   'angle' degres (dans le sens trigo).
 //
 int cmdTtRot(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -3081,7 +3081,7 @@ int cmdTtLog(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 // buf$i pointer --
 //   Retourne le pointeur de pixels sous la forme d'un entier.
 //   Pour usage dans les extensions de LAPIN.
-//   Fonction obsolète . Replacée par setPixels/getPixels/setPix/getPix
+//   Fonction obsolete . Replacee par setPixels/getPixels/setPix/getPix
 
 int cmdPointer(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
 {
@@ -3802,7 +3802,7 @@ int cmdBinX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    int retour;               // Code d'erreur de retour.
    int x1, x2;               // Coordonnees de la fenetre.
 
-   int width = 20;           // Largeur par défaut de l'image de sortie
+   int width = 20;           // Largeur par defaut de l'image de sortie
    ligne = new char[1000];
    int naxis1,temp;
 
@@ -3858,7 +3858,7 @@ int cmdBinY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    int y1, y2;               // Coordonnees de la fenetre.
    int naxis2,temp;
 
-   int height = 20;          // Hauteur par défaut de l'image de sortie
+   int height = 20;          // Hauteur par defaut de l'image de sortie
    ligne = new char[1000];
 
    if((argc!=4)&&(argc!=5)) {
@@ -3913,7 +3913,7 @@ int cmdMedX(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    int x1, x2;               // Coordonnees de la fenetre.
    int naxis1,temp;
 
-   int width = 20;           // Largeur par défaut de l'image de sortie
+   int width = 20;           // Largeur par defaut de l'image de sortie
    ligne = new char[1000];
 
    if((argc!=4)&&(argc!=5)) {
@@ -3968,7 +3968,7 @@ int cmdMedY(ClientData clientData, Tcl_Interp *interp, int argc, char *argv[])
    int y1, y2;               // Coordonnees de la fenetre.
    int naxis2,temp;
 
-   int height = 20;          // Hauteur par défaut de l'image de sortie
+   int height = 20;          // Hauteur par defaut de l'image de sortie
    ligne = new char[1000];
 
    if((argc!=4)&&(argc!=5)) {

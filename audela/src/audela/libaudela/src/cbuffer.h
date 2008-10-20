@@ -42,6 +42,7 @@
 
 #define KEEP_KEYWORDS         0
 #define DONT_KEEP_KEYWORDS    1
+#define FREE_KEYWORDS         2
 
 #define CHAREXTENSION 128
 
@@ -87,7 +88,7 @@ class LIBAUDELA_API CBuffer : public CDevice {
 protected:
    mc_ASTROM *p_ast;
    int saving_type;
-   /* utilise les définitions suivantes :
+   /* utilise les dï¿½finitions suivantes :
    #define BYTE_IMG      8
    #define SHORT_IMG    16
    #define LONG_IMG     32
@@ -95,7 +96,7 @@ protected:
    #define DOUBLE_IMG  -64
    */
    int compress_type;
-   /* utilise les définitions suivantes :
+   /* utilise les dï¿½finitions suivantes :
    #define BUFCOMPRESS_NONE      0
    #define BUFCOMPRESS_GZIP      1
    */
