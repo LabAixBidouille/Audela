@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.119 2008-06-16 20:09:30 michelpujol Exp $
+# Mise a jour $Id: confcam.tcl,v 1.120 2008-10-21 18:02:37 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -419,6 +419,7 @@ proc ::confCam::createThread { camItem bufNo } {
       ::thread::copycommand $threadNo "buf$bufNo"
       ::thread::copycommand $threadNo "ttscript2"
       ::thread::copycommand $threadNo "mc_date2jd"
+      ::thread::copycommand $threadNo "mc_date2iso8601"
       #--- J'ajoute la commande de liaison longue pose
       if { [getPluginProperty $camItem "hasLongExposure"] == 1 } {
          if { [cam$camNo longueposelinkno] != 0} {
