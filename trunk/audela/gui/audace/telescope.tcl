@@ -2,7 +2,7 @@
 # Fichier : telescope.tcl
 # Description : Centralise les commandes de mouvement des montures
 # Auteur : Michel PUJOL
-# Mise a jour $Id: telescope.tcl,v 1.30 2008-10-19 15:07:10 jacquesmichelet Exp $
+# Mise a jour $Id: telescope.tcl,v 1.31 2008-10-21 18:03:52 robertdelmas Exp $
 #
 
 namespace eval ::telescope {
@@ -633,7 +633,7 @@ proc ::telescope::setSpeed { { value "2" } } {
 #------------------------------------------------------------
 # controleSuivi
 #    Arrete ou met en marche la monture
-#    Met � jour la variable audace(telescope,controle)
+#    Met a jour la variable audace(telescope,controle)
 #
 # Parametres :
 #    value : Marche (Suivi on) ou arret (Suivi off) du suivi (optionnel)
@@ -695,23 +695,23 @@ proc ::telescope::controleSuivi { { value " " } } {
 #    Rien
 #------------------------------------------------------------
 proc ::telescope::move { direction } {
-    variable AfterId
-    variable AfterState
-    global audace conf
+   variable AfterId
+   variable AfterState
+   global audace conf
 
-    if { $audace(telNo) != "0" } {
-        if { $conf(telescope) == "temma" } {
-            set AfterState "1"
-            set AfterId [ after 10 ::telescope::nextPulseTemma $direction ]
-        } elseif { $conf(telescope) == "lx200" } {
-            $::conf(telescope)::move $direction $audace(telescope,rate)
-        } else {
-            tel$audace(telNo) radec move $direction $audace(telescope,rate)
-        }
-    } else {
-        ::confTel::run
-        # tkwait window $audace(base).confTel
-    }
+   if { $audace(telNo) != "0" } {
+      if { $conf(telescope) == "temma" } {
+         set AfterState "1"
+         set AfterId [ after 10 ::telescope::nextPulseTemma $direction ]
+      } elseif { $conf(telescope) == "lx200" } {
+         $::conf(telescope)::move $direction $audace(telescope,rate)
+      } else {
+         tel$audace(telNo) radec move $direction $audace(telescope,rate)
+      }
+   } else {
+      ::confTel::run
+      # tkwait window $audace(base).confTel
+   }
 }
 
 #------------------------------------------------------------

@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.15 2008-10-19 15:07:10 jacquesmichelet Exp $
+# Mise a jour $Id: lx200.tcl,v 1.16 2008-10-21 18:03:27 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -429,7 +429,7 @@ proc ::lx200::stop { } {
 
 #
 # confLX200
-# Permet d'activer ou de d�sactiver le bouton
+# Permet d'activer ou de desactiver le bouton
 #
 proc ::lx200::confLX200 { } {
    variable private
@@ -487,7 +487,7 @@ proc ::lx200::confLX200Inactif { } {
 
 #
 # confModele
-# Permet d'activer ou de d�sactiver les champs lies au modele
+# Permet d'activer ou de desactiver les champs lies au modele
 #
 proc ::lx200::confModele { } {
    variable private
@@ -651,42 +651,43 @@ proc ::lx200::park { state } {
 }
 
 proc ::lx200::move { direction rate } {
-    global conf caption
-    variable private
+   global conf caption
+   variable private
 
-    if {$conf(lx200,modele) != $caption(lx200,modele_astro_physics)} {
-        # Cas normal, le driver va faire le nécessaire */
-        tel$private(telNo) radec move $direction $rate
-    } else {
-        # Cas Astrophysics (à base de GTOCP3)
-        # Commande de vitesse
-        if {$rate < 0.33} {
-            # x1
-            tel$private(telNo) command ":RG2#" none
-        } elseif {$rate < 0.66} {
-            # x12
-            tel$private(telNo) command ":RC0#" none
-        } elseif {$rate < 1} {
-            # x64
-            tel$private(telNo) command ":RC1#" none
-        } else {
-            # x600
-            tel$private(telNo) command ":RC2#" none
-        }
+   if {$conf(lx200,modele) != $caption(lx200,modele_astro_physics)} {
+      # Cas normal, le driver va faire le necessaire */
+      tel$private(telNo) radec move $direction $rate
+   } else {
+      # Cas Astrophysics (a base de GTOCP3)
+      # Commande de vitesse
+      if {$rate < 0.33} {
+         # x1
+         tel$private(telNo) command ":RG2#" none
+      } elseif {$rate < 0.66} {
+         # x12
+         tel$private(telNo) command ":RC0#" none
+      } elseif {$rate < 1} {
+         # x64
+         tel$private(telNo) command ":RC1#" none
+      } else {
+         # x600
+         tel$private(telNo) command ":RC2#" none
+      }
 
-        # Commande de mouvement NEWS
-        set d [lindex [string toupper $direction] 0]
-        if { $d == "N" } {
-            tel$private(telNo) command ":Mn#" none
-        } elseif { $d == "S" } {
-            tel$private(telNo) command ":Ms#" none
-        } elseif { $d == "E" } {
-            tel$private(telNo) command ":Me#" none
-        } elseif { $d == "W" } {
-            tel$private(telNo) command ":Mw#" none
-        } else {
-            ::console::affiche_erreur "AP command set : unknow direction"
-        }
-    }
+      # Commande de mouvement NEWS
+      set d [lindex [string toupper $direction] 0]
+      if { $d == "N" } {
+         tel$private(telNo) command ":Mn#" none
+      } elseif { $d == "S" } {
+         tel$private(telNo) command ":Ms#" none
+      } elseif { $d == "E" } {
+         tel$private(telNo) command ":Me#" none
+      } elseif { $d == "W" } {
+         tel$private(telNo) command ":Mw#" none
+      } else {
+         ::console::affiche_erreur "AP command set : unknow direction"
+      }
+   }
 
 }
+
