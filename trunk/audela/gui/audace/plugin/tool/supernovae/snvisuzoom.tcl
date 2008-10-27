@@ -2,7 +2,7 @@
 # Fichier : snvisuzoom.tcl
 # Description : Creation d'une loupe de visualisation en association avec Sn Visu
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisuzoom.tcl,v 1.6 2008-09-22 16:39:18 robertdelmas Exp $
+# Mise a jour $Id: snvisuzoom.tcl,v 1.7 2008-10-27 21:50:07 robertdelmas Exp $
 #
 
 #--- Chargement des captions
@@ -127,9 +127,8 @@ proc sn_visuzoom_disp_g { { x 1 } { y 1 } { zoom 3 } } {
    $audace(base).snvisuzoom_g.image1.canvas yview moveto $fracy
    if { $disp == "1" } {
       #--- Affichage en mode normal
-      set sbh [ buf$num(buffer1) stat ]
-      set sh [lindex $sbh 0]
-      set sb [lindex $sbh 1]
+      set sh $snvisu(seuil_1_haut)
+      set sb $snvisu(seuil_1_bas)
       visu$num(loupeGaucheVisuNo) cut [ list $sh $sb ]
       #--- Affichage en mode logarithme
       if {$snvisu(afflog)==1} {
@@ -148,7 +147,7 @@ proc sn_visuzoom_disp_g { { x 1 } { y 1 } { zoom 3 } } {
       }
       #---
       set scalecut [lindex [get_seuils $nume] 0]
-      set s [ buf$nume stat ]
+      set s        [ buf$nume stat ]
       set scalemax [lindex $s 2]
       set scalemin [lindex $s 3]
       if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
@@ -282,9 +281,8 @@ proc sn_visuzoom_disp_d { { x 1 } { y 1 } { zoom 3 } } {
    $audace(base).snvisuzoom_d.image2.canvas yview moveto $fracy
    if { $disp == "1" } {
       #--- Affichage en mode normal
-      set sbh [ buf$num(buffer2) stat ]
-      set sh [lindex $sbh 0]
-      set sb [lindex $sbh 1]
+      set sh $snvisu(seuil_2_haut)
+      set sb $snvisu(seuil_2_bas)
       visu$num(loupeDroiteVisuNo) cut [ list $sh $sb ]
       #--- Affichage en mode logarithme
       if {$snvisu(afflog)==1} {
@@ -303,7 +301,7 @@ proc sn_visuzoom_disp_d { { x 1 } { y 1 } { zoom 3 } } {
       }
       #---
       set scalecut [lindex [get_seuils $nume] 0]
-      set s [ buf$nume stat ]
+      set s        [ buf$nume stat ]
       set scalemax [lindex $s 2]
       set scalemin [lindex $s 3]
       if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
