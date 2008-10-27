@@ -7,16 +7,22 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 28 septembre 2007</p>
+<p class="date">Date de mise &agrave; jour : 27 octobre 2008</p>
 <h1>Fonctions utilitaires </h1>
 <p>Les fonctions qui suivent sont dans le namespace ::</p>
 <p>Elles peuvent &ecirc;tre ex&eacute;cut&eacute;es directement dans la console Aud'ACE.</p>
-<h2><a name="loadima" id="loadima"></a> loadima ?nom? ?affichage?</h2>
-<p>Charge une image en m&eacute;moire. Les deux arguments sont optionnels : le premier est le nom du fichier &agrave; charger. S'il n'est pas pr&eacute;cis&eacute; alors il prend la valeur "?" par d&eacute;faut, ce qui a pour effet d'ouvrir un explorateur pour aller chercher l'image &agrave; la main. Le second argument doit prendre la valeur "-novisu" pour ne pas afficher l'image, ce qui peut &ecirc;tre pratique pour aller plus vite lors de traitements.</p>
-<p>Remarque : faire attention aux caract&egrave;res \ sous Windows car ce sont des caract&egrave;res de substitution pour le TCL. Il faut en mettre deux au lieu de un, ou alors il vaut mieux les remplacer par le caract&egrave;re /, qui lui est compatible. Par exemple, les deux expressions suivantes sont &eacute;quivalentes :</p>
-<code> loadima c:\\images\\m57.fit</code> <code> loadima c:/images/m57.fit</code>
+<h2><a name="loadima" id="loadima"></a> loadima ?nom? ?visuNo? ?affichage?</h2>
+<p>Charge une image en m&eacute;moire. Les trois arguments sont optionnels : Le premier est le nom du fichier &agrave; charger. S'il n'est pas pr&eacute;cis&eacute; alors il prend la valeur "?" par d&eacute;faut, ce qui a pour effet d'ouvrir un explorateur pour aller chercher l'image &agrave; la main. Le second argument est le num&eacute;ro de visu (visuNo). S'il n'est pas pr&eacute;cis&eacute; alors il prend la valeur "1" par d&eacute;faut, c'est le num&eacute;ro de visu de la fen&ecirc;tre principale. Le troisi&egrave;me argument doit prendre la valeur "-novisu" pour ne pas afficher l'image, ce qui peut &ecirc;tre pratique pour aller plus vite lors de traitements.</p>
+<p>Remarque : Faire attention aux caract&egrave;res \ sous Windows car ce sont des caract&egrave;res de substitution pour le TCL. Il faut en mettre deux au lieu de un, ou alors il vaut mieux les remplacer par le caract&egrave;re /, qui lui est compatible. Par exemple, les deux expressions suivantes sont &eacute;quivalentes :</p>
+<ul>
+  <li><code> loadima c:\\images\\m57.fit</code></li>
+  <li><code> loadima c:/images/m57.fit</code></li>
+</ul>
 <p>Il faut &eacute;galement faire attention aux espaces dans les noms de r&eacute;pertoires, car les espaces servent &agrave; d&eacute;limiter les arguments d'une commande en TCL. Il faut soit mettre des guillemets, soit des accolades :</p>
-<code> loadima "c:/mes documents/images/m57.fit"</code> <code> loadima {c:/mes documents/images/m57.fit}</code>
+<ul>
+  <li><code> loadima "c:/mes documents/images/m57.fit"</code></li>
+  <li><code> loadima {c:/mes documents/images/m57.fit}</code></li>
+</ul>
 <h2><a name="saveima" id="saveima"></a> saveima ?nom?</h2>
 <p>Enregistre l'image actuellement en m&eacute;moire. L'argument optionnel est le nom de l'image : s'il n'est pas pr&eacute;cis&eacute; alors un explorateur permet de naviguer sur le disque pour indiquer le nom du fichier. Sinon, l'image est enregistr&eacute;e avec le nom donn&eacute;, dans le r&eacute;pertoire images d'Aud'ACE.</p>
 <p>Les r&egrave;gles li&eacute;es aux \ et aux espaces sont identiques &agrave; loadima.</p>
