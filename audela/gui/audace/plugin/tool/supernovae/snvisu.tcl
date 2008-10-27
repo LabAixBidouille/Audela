@@ -2,7 +2,7 @@
 # Fichier : snvisu.tcl
 # Description : Visualisation des images de la nuit et comparaison avec des images de reference
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snvisu.tcl,v 1.31 2008-09-22 16:38:06 robertdelmas Exp $
+# Mise a jour $Id: snvisu.tcl,v 1.32 2008-10-27 21:53:10 robertdelmas Exp $
 #
 
 global audace snvisu snconfvisu
@@ -634,28 +634,28 @@ proc sn_buflog { numbuf bufno } {
    if {$numbuf!=$bufno} {
       buf$numbuf copyto $bufno
    }
-   set res [buf$bufno stat]
-   set fond [lindex $res 6]
+   set res   [buf$bufno stat]
+   set fond  [lindex $res 6]
    set sigma [lindex $res 7]
    set seuil [expr $fond-3.*$sigma]
   # ::console::affiche_resultat "fond=$fond sigma=$sigma seuil=$seuil\n"
    buf$bufno log 1000 [expr -1.*$seuil]
-   set res [buf$bufno stat]
-   set fond [lindex $res 6]
+   set res   [buf$bufno stat]
+   set fond  [lindex $res 6]
    set sigma [lindex $res 7]
   # ::console::affiche_resultat "fond=$fond sigma=$sigma\n"
-   set sb [expr $fond-5.*$sigma]
-   set n1 [buf$bufno getpixelswidth]
-   set n2 [buf$bufno getpixelsheight]
-   set d 4
-   set x1 [expr $n1/2-$d]
-   set x2 [expr $n1/2+$d]
-   set y1 [expr $n2/2-$d]
-   set y2 [expr $n2/2+$d]
-   set box [list $x1 $y1 $x2 $y2]
-   set res [buf$bufno stat $box]
+   set sb   [expr $fond-5.*$sigma]
+   set n1   [buf$bufno getpixelswidth]
+   set n2   [buf$bufno getpixelsheight]
+   set d    4
+   set x1   [expr $n1/2-$d]
+   set x2   [expr $n1/2+$d]
+   set y1   [expr $n2/2-$d]
+   set y2   [expr $n2/2+$d]
+   set box  [list $x1 $y1 $x2 $y2]
+   set res  [buf$bufno stat $box]
    set maxi [lindex $res 2]
-   set sh [expr 1.*$maxi]
+   set sh   [expr 1.*$maxi]
    if {$sh<=$sb} {
       set sh [expr $sb+10.*$sigma]
    }
@@ -700,7 +700,6 @@ proc set_seuils { numbuf } {
       set lo "nf"
    }
    if { $hi=="nf" || $lo=="nf" } {
-      buf$numbuf stat
       set hi [lindex [buf$numbuf getkwd MIPS-HI] 1]
       set lo [lindex [buf$numbuf getkwd MIPS-LO] 1]
    }
@@ -956,9 +955,11 @@ proc affimages { } {
      # set moyenne [ lindex [ buf$num(buffer1) stat ] 4 ]
      # set sb [expr $moyenne - $conf(seuils,irisautobas) ]
      # set sh [expr $moyenne + $conf(seuils,irisautobas) ]
-      set sbh [ buf$num(buffer1) stat ]
-      set sh [lindex $sbh 0]
-      set sb [lindex $sbh 1]
+      set sbh      [ buf$num(buffer1) stat ]
+      set sh       [ lindex $sbh 0 ]
+      set sb       [ lindex $sbh 1 ]
+      set scalemax [ lindex $sbh 2 ]
+      set scalemin [ lindex $sbh 3 ]
       visu$num(visu_1) cut [ list $sh $sb ]
       #--- Affichage en mode logarithme
       if {$afflog==1} {
@@ -969,12 +970,12 @@ proc affimages { } {
       if {$afflog==0} {
          set nume $num(buffer1)
       } else {
-         set nume $num(buffer1b)
+         set nume     $num(buffer1b)
+         set s        [ buf$nume stat ]
+         set scalemax [ lindex $s 2 ]
+         set scalemin [ lindex $s 3 ]
       }
-      set scalecut [lindex [get_seuils $nume] 0]
-      set s [ buf$nume stat ]
-      set scalemax [lindex $s 2]
-      set scalemin [lindex $s 3]
+      set scalecut [ lindex [ get_seuils $nume ] 0 ]
       if {($scalecut>=$scalemin)&&($scalecut<=$scalemax)} {
          set ds1 [expr $scalemax-$scalecut]
          set ds2 [expr $scalecut-$scalemin]
@@ -1576,10 +1577,12 @@ proc snvisu_configuration { } {
 }
 
 proc changeHiCut1 { foo } {
-   global num
+   global num snvisu
 
    set sbh [visu$num(visu_1) cut]
    visu$num(visu_1) cut [list $foo [lindex $sbh 1]]
+   set snvisu(seuil_1_haut) [lindex $sbh 0]
+   set snvisu(seuil_1_bas)  [lindex $sbh 1]
 }
 
 proc changeHiCut2 { foo } {
@@ -1587,7 +1590,7 @@ proc changeHiCut2 { foo } {
 
    set sbh [visu$num(visu_2) cut]
    visu$num(visu_2) cut [list $foo [lindex $sbh 1]]
-   set snvisu(seuil_2_haut) "$foo"
+   set snvisu(seuil_2_haut) [lindex $sbh 0]
    set snvisu(seuil_2_bas)  [lindex $sbh 1]
 }
 
