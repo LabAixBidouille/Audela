@@ -2,7 +2,7 @@
 # Fichier : bifsconv.tcl
 # Description : Ce script permet de convertir de multiples formats d'images vers du fits
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: bifsconv.tcl,v 1.8 2008-07-15 16:22:55 robertdelmas Exp $
+# Mise a jour $Id: bifsconv.tcl,v 1.9 2008-10-30 19:08:14 robertdelmas Exp $
 #
 
 # Documentation : voir le fichier bifsconv.htm dans le dossier doc_html.
@@ -54,7 +54,7 @@ proc convert_fits {{nom_generique} {ext} {rep "audace(rep_images)"}} {
    global audace
 
    if {$rep=="audace(rep_images)"} {set rep $audace(rep_images)}
-   set liste_index [visio::liste_index $nom_generique $rep $ext]
+   set liste_index [liste_index $nom_generique $rep $ext]
    foreach index $liste_index {
       bifsconv_full [file join $rep $nom_generique$index$ext]
    }
