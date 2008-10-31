@@ -1,7 +1,7 @@
 #
 # Fichier : aud_proc.tcl
 # Description : Fonctions de chargement, sauvegarde et traitement d'images
-# Mise a jour $Id: aud_proc.tcl,v 1.7 2008-05-31 16:00:16 robertdelmas Exp $
+# Mise a jour $Id: aud_proc.tcl,v 1.8 2008-10-31 16:42:21 robertdelmas Exp $
 #
 
 #
@@ -680,14 +680,15 @@ proc dir { { rgxp "*" } } {
 }
 
 #
-# animate filename nb [millisecondes] [nbtours]
+# animate filename nb [millisecondes] [nbtours] [liste_index]
 # Creation d'animation d'images
-# filename : Nom generique des fichiers image filename*.fit a animer
-# nb : Nombre d'images (1 a nb)
+# filename      : Nom generique des fichiers image filename*.fit a animer
+# nb            : Nombre d'images (1 a nb)
 # millisecondes : Temps entre chaque image affichee
-# nbtours : Nombre de boucles sur les nb images
+# nbtours       : Nombre de boucles sur les nb images
+# liste_index   : Liste des index des nb images
 #
-proc animate { filename nb {millisecondes 200} {nbtours 10} } {
+proc animate { filename nb {millisecondes 200} {nbtours 10} {liste_index ""} } {
    global audace conf
 
    #--- Repertoire des images
@@ -711,11 +712,12 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} } {
 
    #--- Creation de nb visu a partir de la visu numero 101 (100 + 1) et des Tk_photoimage
    for {set k 1} {$k<=$nb} {incr k} {
+      set index [ lindex $liste_index [ expr $k - 1 ] ]
       set kk [expr $k+$off]
       #--- Creation de l'image et association a la visu
       visu$audace(visuNo) image $kk
       #--- Affichage de l'image avec gestion des erreurs
-      set error [ catch { buf$audace(bufNo) load "$folder$filename$k" } msg ]
+      set error [ catch { buf$audace(bufNo) load "$folder$filename$index" } msg ]
       ::audace::autovisu $audace(visuNo)
    }
 
@@ -748,12 +750,12 @@ proc animate { filename nb {millisecondes 200} {nbtours 10} } {
 
    #--- Affichage de la premiere image de l'animation si elle existe
    if { $error == "0" } {
-      buf$audace(bufNo) load "$folder${filename}1"
+      set index1 [ lindex $liste_index 0 ]
+      buf$audace(bufNo) load "$folder${filename}$index1"
       ::audace::autovisu $audace(visuNo)
    }
 
    #--- Variable error pour la gestion des erreurs
    return $error
-
 }
 
