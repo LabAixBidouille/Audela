@@ -1,6 +1,6 @@
 #
 # Fichier : animate.cap
-# Mise a jour $Id: animate.cap,v 1.9 2008-04-19 08:56:54 robertdelmas Exp $
+# Mise a jour $Id: animate.cap,v 1.10 2008-10-31 16:44:17 robertdelmas Exp $
 #
 
 #=========================================================================
@@ -20,9 +20,13 @@ set caption(animate,delai_ms)             "Delay (ms)"
 set caption(animate,nb_boucles)           "Loop\nNumber"
 set caption(animate,go_animation)         "Go Animate"
 set caption(animate,attention)            "Warning"
-set caption(animate,erreur_fichier1)      "Images have no generic"
-set caption(animate,erreur_fichier2)      "names or they are not"
-set caption(animate,erreur_fichier3)      "in the working folder."
+set caption(animate,erreur1)              "# Le nombre d'images demandées est supérieur"
+set caption(animate,erreur2)              "# au nombre d'images disponibles."
+set caption(animate,rep-images)           "Images must come from the image folder\n(Setup --> Folders)."
+set caption(animate,nb_images1)           "Image Number:"
+set caption(animate,delai)                "Delay:"
+set caption(animate,nb_boucles1)          "Loop Number:"
+set caption(animate,nbre_entier)          "Must be an integer (>0)."
 
 # *************** Version française ***************************
 if { [ string compare $langage "french" ] == "0" } {
@@ -36,9 +40,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_boucles)        "Nombre de\nboucles"
    set caption(animate,go_animation)      "Go Animation"
    set caption(animate,attention)         "Attention"
-   set caption(animate,erreur_fichier1)   "Le nom générique des images"
-   set caption(animate,erreur_fichier2)   "n'existe pas ou elles ne sont pas"
-   set caption(animate,erreur_fichier3)   "dans le répertoire de travail."
+   set caption(animate,erreur1)           "Le nombre d'images demandées est supérieur"
+   set caption(animate,erreur2)           "au nombre d'images disponibles."
+   set caption(animate,rep-images)        "Les images doivent impérativement être issues du répertoire des images\n(Configuration --> Répertoires)."
+   set caption(animate,nb_images1)        "Nombre d'images :"
+   set caption(animate,delai)             "Délai :"
+   set caption(animate,nb_boucles1)       "Nombre de boucles :"
+   set caption(animate,nbre_entier)       "Doit être un entier (>0)."
 
 # *************** Version italienne ***************************
 } elseif { [ string compare $langage "italian" ] == "0" } {
@@ -52,9 +60,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_boucles)        "Numero\nripetizioni"
    set caption(animate,go_animation)      "Go Animazione"
    set caption(animate,attention)         "Attenzione"
-   set caption(animate,erreur_fichier1)   "Il nome generico delle immagini"
-   set caption(animate,erreur_fichier2)   "non esiste o esse non sono"
-   set caption(animate,erreur_fichier3)   "nella directory di lavoro."
+   set caption(animate,erreur1)           "# Le nombre d'images demandées est supérieur"
+   set caption(animate,erreur2)           "# au nombre d'images disponibles."
+   set caption(animate,rep-images)        "Le immagini devono provenire dalla cartella immagini\n(Configurazione --> Directories)."
+   set caption(animate,nb_images1)        "Numero immagini:"
+   set caption(animate,delai)             "Intervallo:"
+   set caption(animate,nb_boucles1)       "Numero ripetizioni:"
+   set caption(animate,nbre_entier)       "Deve essere un intero (>0)."
 
 # *************** Version espagnole ***************************
 } elseif { [ string compare $langage "spanish" ] == "0" } {
@@ -68,9 +80,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_boucles)        "Numero\nrepeticiones"
    set caption(animate,go_animation)      "Animar"
    set caption(animate,attention)         "!Cuidado¡"
-   set caption(animate,erreur_fichier1)   "El nombre genérico de las"
-   set caption(animate,erreur_fichier2)   "imagenes no existe o no se está"
-   set caption(animate,erreur_fichier3)   "en el directorio de trabajo."
+   set caption(animate,erreur1)           "# Le nombre d'images demandées est supérieur"
+   set caption(animate,erreur2)           "# au nombre d'images disponibles."
+   set caption(animate,rep-images)        "Las imágenes deben provenir de la carpeta de imágenes\n(Configuración --> Directorios)."
+   set caption(animate,nb_images1)        "Numero imagenes:"
+   set caption(animate,delai)             "Retraso:"
+   set caption(animate,nb_boucles1)       "Numero repeticiones:"
+   set caption(animate,nbre_entier)       "Debe ser un entero (>0)."
 
 # *************** Version allemande ***************************
 } elseif { [ string compare $langage "german" ] == "0" } {
@@ -84,9 +100,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_boucles)        "Schleifen\nZahl"
    set caption(animate,go_animation)      "Go Animation"
    set caption(animate,attention)         "Achtung"
-   set caption(animate,erreur_fichier1)   "Der Gattungsnamen der Bilder"
-   set caption(animate,erreur_fichier2)   "existiert nicht oder ist nicht"
-   set caption(animate,erreur_fichier3)   "in das laufendes Register."
+   set caption(animate,erreur1)           "# Le nombre d'images demandées est supérieur"
+   set caption(animate,erreur2)           "# au nombre d'images disponibles."
+   set caption(animate,rep-images)        "Die Bilder müssen vom Bilder Verzeichnis kommen\n(Konfiguration --> Verzeichnis)."
+   set caption(animate,nb_images1)        "Bilder Zahl:"
+   set caption(animate,delai)             "Zeitraum:"
+   set caption(animate,nb_boucles1)       "Schleifen Zahl:"
+   set caption(animate,nbre_entier)       "Muss ein Ganz sein (>0)."
 
 # *************** Version portugaise **************************
 } elseif { [ string compare $langage "portuguese" ] == "0" } {
@@ -100,9 +120,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_boucles)        "Número de\nciclos"
    set caption(animate,go_animation)      "Iniciar Animação"
    set caption(animate,attention)         "Atenção"
-   set caption(animate,erreur_fichier1)   "O nome genérico das imagens"
-   set caption(animate,erreur_fichier2)   "não existe ou elas não se encontram"
-   set caption(animate,erreur_fichier3)   "no directório de trabalho."
+   set caption(animate,erreur1)           "# Le nombre d'images demandées est supérieur"
+   set caption(animate,erreur2)           "# au nombre d'images disponibles."
+   set caption(animate,rep-images)        "As imagens têm que estar contidas na pasta de imagens\n(Configuração --> Pastas)."
+   set caption(animate,nb_images1)        "Número de imagens:"
+   set caption(animate,delai)             "Atraso:"
+   set caption(animate,nb_boucles1)       "Número de ciclos:"
+   set caption(animate,nbre_entier)       "Deve ser um inteiro (>0)."
 
 # *************** Version danoise *****************************
 } elseif { [ string compare $langage "danish" ] == "0" } {
@@ -116,9 +140,13 @@ if { [ string compare $langage "french" ] == "0" } {
    set caption(animate,nb_boucles)        "Antal\ngennemkørsler"
    set caption(animate,go_animation)      "Start amination"
    set caption(animate,attention)         "Advarsel"
-   set caption(animate,erreur_fichier1)   "Billederne har ikke noget"
-   set caption(animate,erreur_fichier2)   "fællesnavn eller de findes"
-   set caption(animate,erreur_fichier3)   "ikke den aktive folder."
+   set caption(animate,erreur1)           "# Le nombre d'images demandées est supérieur"
+   set caption(animate,erreur2)           "# au nombre d'images disponibles."
+   set caption(animate,rep-images)        "Billederne skal ligge i billed-folderen\n(Konfiguration --> Mappe)."
+   set caption(animate,nb_images1)        "Billedantal:"
+   set caption(animate,delai)             "Forsinkelse:"
+   set caption(animate,nb_boucles1)       "Antal gennemkørsler:"
+   set caption(animate,nbre_entier)       "Skal være et helt tal (>0)."
 
 }
 
