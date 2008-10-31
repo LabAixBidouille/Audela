@@ -3,7 +3,7 @@
 # Description : Scripts pour un usage aise des fonctions d'Aud'ACE
 # Auteur : Benjamin MAUCLAIRE (bmauclaire@underlands.org)
 #
-# Mise a jour $Id: mauclaire.tcl,v 1.24 2008-10-06 16:13:19 robertdelmas Exp $
+# Mise a jour $Id: mauclaire.tcl,v 1.25 2008-10-31 15:11:29 bmauclaire Exp $
 #
 
 #
@@ -13,7 +13,7 @@
 # bm_autoflat            : Trouve le temps de pose optimal pour faire un flat d'une intensite moyenne donnee
 # bm_cleanfit            : Remet en conformite les caracteres des mots clefs du header
 # bm_correctprism        : Met a la norme libfitsio les fichiers FITS issus de PRiSM
-# bm_cp                  : ?
+# bm_cp                  : Copie d'un fichier d'un repertoire a un autre avec possibilite de renomage dans la foulee.
 # bm_cutima              : Decoupage d'une zone selectionnee a la souris d'une image chargee
 # bm_datefile            : Reconstitue la date jjmmyyyy de prise de vue d'un fichier fits
 # bm_datefrac            : Calcule la fraction de jour et retourne une date JJ.jjj-mm-yyyy
@@ -346,11 +346,11 @@ proc bm_mv { args } {
 #*****************************************************************************#
 
 ###############################################################################
-# Description : efface des fichiers du repertoire courant
+# Description : copie d'un fichier d'un repertoire a un autre avec possibilite de renomage dans la foulee.
 # Auteur : Benjamin MAUCLAIRE
 # Date creation : 2008-03-23
-# Date de mise a jour : 2008-03-23
-# Arguments : nom_fichiers
+# Date de mise a jour : 2008-09-02
+# Arguments : chemin/fichier_depart.extension chemin/fichier_destantion.extension
 ###############################################################################
 
 proc bm_cp { args } {
