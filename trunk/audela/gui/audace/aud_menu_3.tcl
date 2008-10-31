@@ -1,7 +1,7 @@
 #
 # Fichier : aud_menu_3.tcl
 # Description : Script regroupant les fonctionnalites du menu Pretraitement
-# Mise a jour $Id: aud_menu_3.tcl,v 1.42 2008-05-31 15:56:22 robertdelmas Exp $
+# Mise a jour $Id: aud_menu_3.tcl,v 1.43 2008-10-31 16:43:47 robertdelmas Exp $
 #
 
 namespace eval ::pretraitement {
@@ -2238,7 +2238,7 @@ namespace eval ::pretraitement {
    # d'elements de la serie et le premier indice de la serie s'il est different de 1
    # Renumerote la serie s'il y a des trous ou si elle debute par un 0
    #
-   proc afficherNomGenerique { filename } {
+   proc afficherNomGenerique { filename { animation 0 } } {
       global audace caption conf
 
       #--- Est-ce un nom generique de fichiers ?
@@ -2324,14 +2324,34 @@ namespace eval ::pretraitement {
             set indice_min [ lindex $liste_serie 0 ]
             set indice_max [ lindex $liste_serie [ expr $longueur_serie - 1 ] ]
             #--- Je signale l'absence d'index autre que 1
-            if { [ expr $indice_max - $indice_min + 1 ] != $longueur_serie } {
-               tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
-                  -message "$caption(pretraitement,renumerote_manuel)"
-               #--- Sortie anticipee
-               set nom_generique  ""
-               set longueur_serie ""
-               set indice_min     "1"
-               return [ list $nom_generique $longueur_serie $indice_min ]
+            if { $animation == "0" } {
+               if { [ expr $indice_max - $indice_min + 1 ] != $longueur_serie } {
+                  tk_messageBox -title "$caption(pretraitement,attention)" -type ok \
+                     -message "$caption(pretraitement,renumerote_manuel)"
+                  #--- Sortie anticipee
+                  set nom_generique  ""
+                  set longueur_serie ""
+                  set indice_min     "1"
+                  return [ list $nom_generique $longueur_serie $indice_min ]
+               }
+            } elseif { $animation == "1" } {
+               #--- J'extrais la liste des index de la serie
+               set error [ catch { lsort -integer [ liste_index $nom_generique ] } msg ]
+               if { $error == "0" } {
+                  #--- Pour une serie du type 1 - 2 - 3 - etc.
+                  set liste_serie [ lsort -integer [ liste_index $nom_generique ] ]
+               } else {
+                  #--- Pour une serie du type 01 - 02 - 03 - etc.
+                  set liste_serie [ lsort -ascii [ liste_index $nom_generique ] ]
+               }
+               #--- J'extrais la longueur et le premier indice de la serie
+               set longueur_serie [ llength $liste_serie ]
+               set indice_min [ lindex $liste_serie 0 ]
+               ::console::disp "$caption(pretraitement,liste_serie) $liste_serie \n\n"
+               ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
+               ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
+               ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
+               return [ list $nom_generique $longueur_serie $indice_min $liste_serie ]
             }
          }
       #--- La serie commence par 0
@@ -2385,7 +2405,7 @@ namespace eval ::pretraitement {
       ::console::disp "$caption(pretraitement,nom_generique) $nom_generique \n"
       ::console::disp "$caption(pretraitement,image_nombre) $longueur_serie \n"
       ::console::disp "$caption(pretraitement,image_premier_indice) $indice_min \n\n"
-      return [ list $nom_generique $longueur_serie $indice_min ]
+      return [ list $nom_generique $longueur_serie $indice_min $liste_serie ]
    }
 
 }
