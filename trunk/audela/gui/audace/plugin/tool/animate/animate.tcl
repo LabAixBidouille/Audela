@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.14 2007-10-05 15:33:34 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.15 2008-10-31 16:45:13 robertdelmas Exp $
 #
 
 #============================================================
@@ -143,12 +143,8 @@ proc ::animate::startTool { visuNo } {
 #------------------------------------------------------------
 proc ::animate::stopTool { visuNo } {
    variable This
-   global audace
 
    pack forget $This
-   if { [ winfo exists $audace(base).erreurfichier ] } {
-      destroy $audace(base).erreurfichier
-   }
 }
 
 #------------------------------------------------------------
@@ -157,23 +153,41 @@ proc ::animate::stopTool { visuNo } {
 #------------------------------------------------------------
 proc ::animate::cmdGo { } {
    variable This
-   global audace panneau
+   global audace caption panneau
 
-   #--- Destruction de la fenetre d'erreur si elle existe
-   if { [ winfo exists $audace(base).erreurfichier ] } {
-      destroy $audace(base).erreurfichier
-   }
    #--- Nettoyage de la visualisation
    visu$audace(visuNo) clear
    #--- Lancement de l'animation
    if { $panneau(animate,filename) != "" } {
+      #--- Verifie que le nombre d'images est un entier
+      if { ( [ TestEntier $panneau(animate,nbi) ] == "0" ) || ( $panneau(animate,nbi) == "0" ) } {
+         tk_messageBox -title "$caption(animate,attention)" -icon error \
+            -message "$caption(animate,nb_images1) $caption(animate,nbre_entier)"
+         set panneau(animate,nbi) ""
+         return
+      }
+      #--- Verifie que le nombre de ms est un entier
+      if { ( [ TestEntier $panneau(animate,ms) ] == "0" ) || ( $panneau(animate,ms) == "0" ) } {
+         tk_messageBox -title "$caption(animate,attention)" -icon error \
+            -message "$caption(animate,delai) $caption(animate,nbre_entier)"
+         set panneau(animate,ms) "300"
+         return
+      }
+      #--- Verifie que le nombre de boucles est un entier
+      if { ( [ TestEntier $panneau(animate,nbl) ] == "0" ) || ( $panneau(animate,nbl) == "0" ) } {
+         tk_messageBox -title "$caption(animate,attention)" -icon error \
+            -message "$caption(animate,nb_boucles1) $caption(animate,nbre_entier)"
+         set panneau(animate,nbl) "5"
+         return
+      }
       #--- Gestion du bouton Go Animation
       $This.fra6.but1 configure -relief groove -state disabled
       #--- Animation avec gestion des erreurs (absence d'images, images dans un autre repertoire, etc.)
       #--- supportee par la variable error retournee par la procedure animate du script aud1.tcl
-      set error [ animate $panneau(animate,filename) $panneau(animate,nbi) $panneau(animate,ms) $panneau(animate,nbl) ]
+      set error [ animate $panneau(animate,filename) $panneau(animate,nbi) $panneau(animate,ms) \
+         $panneau(animate,nbl) $panneau(animate,liste_index) ]
       if { $error == "1" } {
-         ::animate::erreurFichier
+         ::animate::erreurAnimate
          }
       #--- Gestion du bouton Go Animation
       $This.fra6.but1 configure -relief raised -state normal
@@ -181,36 +195,16 @@ proc ::animate::cmdGo { } {
 }
 
 #------------------------------------------------------------
-# ::animate::erreurFichier
+# ::animate::erreurAnimate
 #    affiche un message d'erreur
 #------------------------------------------------------------
-proc ::animate::erreurFichier { } {
-   global audace caption
+proc ::animate::erreurAnimate { } {
+   global caption panneau
 
-   if { [ winfo exists $audace(base).erreurfichier ] } {
-      destroy $audace(base).erreurfichier
-   }
-   toplevel $audace(base).erreurfichier
-   wm transient $audace(base).erreurfichier $audace(base)
-   wm title $audace(base).erreurfichier "$caption(animate,attention)"
-   set posx_erreurfichier [ lindex [ split [ wm geometry $audace(base) ] "+" ] 1 ]
-   set posy_erreurfichier [ lindex [ split [ wm geometry $audace(base) ] "+" ] 2 ]
-   wm geometry $audace(base).erreurfichier +[ expr $posx_erreurfichier + 140 ]+[ expr $posy_erreurfichier + 75 ]
-   wm resizable $audace(base).erreurfichier 0 0
-
-   #--- Cree l'affichage du message d'erreur
-   label $audace(base).erreurfichier.lab1 -text "$caption(animate,erreur_fichier1)"
-   pack $audace(base).erreurfichier.lab1 -padx 10 -pady 2
-   label $audace(base).erreurfichier.lab2 -text "$caption(animate,erreur_fichier2)"
-   pack $audace(base).erreurfichier.lab2 -padx 10 -pady 2
-   label $audace(base).erreurfichier.lab3 -text "$caption(animate,erreur_fichier3)"
-   pack $audace(base).erreurfichier.lab3 -padx 10 -pady 2
-
-   #--- La nouvelle fenetre est active
-   focus $audace(base).erreurfichier
-
-   #--- Mise a jour dynamique des couleurs
-   ::confColor::applyColor $audace(base).erreurfichier
+   tk_messageBox -title "$caption(animate,attention)" -icon error \
+      -message "$caption(animate,erreur1)\n$caption(animate,erreur2)"
+   set panneau(animate,nbi) ""
+   return
 }
 
 #------------------------------------------------------------
@@ -218,16 +212,25 @@ proc ::animate::erreurFichier { } {
 #    edite le nom generique du fichier
 #------------------------------------------------------------
 proc ::animate::editNomGenerique { } {
-   global audace panneau
+   global audace caption panneau
 
    #--- Fenetre parent
    set fenetre "$audace(base)"
    #--- Ouvre la fenetre de choix des images
    set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+   #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
+   if { [ file dirname $filename ] != $audace(rep_images) } {
+      tk_messageBox -title "$caption(animate,attention)" -type ok \
+         -message "$caption(animate,rep-images)"
+      set panneau(animate,filename) ""
+      set panneau(animate,nbi)      ""
+      return
+   }
    #--- Extraction du nom generique
-   set filenameAnimation         [ ::pretraitement::afficherNomGenerique [ file tail $filename ] ]
-   set panneau(animate,filename) [ lindex $filenameAnimation 0 ]
-   set panneau(animate,nbi)      [ lindex $filenameAnimation 1 ]
+   set filenameAnimation            [ ::pretraitement::afficherNomGenerique [ file tail $filename ] 1 ]
+   set panneau(animate,filename)    [ lindex $filenameAnimation 0 ]
+   set panneau(animate,nbi)         [ lindex $filenameAnimation 1 ]
+   set panneau(animate,liste_index) [ lindex $filenameAnimation 3 ]
 }
 
 #------------------------------------------------------------
@@ -261,7 +264,7 @@ proc ::animate::animBuildIF { This } {
 
          #--- Entry pour le nom generique
          entry $This.fra2.ent1 -font $audace(font,arial_8_b) -textvariable panneau(animate,filename) \
-            -width 14 -relief groove
+            -width 14 -relief groove -state disabled
          pack $This.fra2.ent1 -in $This.fra2 -anchor center -fill none -padx 2 -pady 1 -side left
 
          #--- Bouton parcourir
