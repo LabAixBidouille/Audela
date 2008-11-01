@@ -1,7 +1,7 @@
 #
 # Fichier : confcam.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'camera'
-# Mise a jour $Id: confcam.tcl,v 1.120 2008-10-21 18:02:37 robertdelmas Exp $
+# Mise a jour $Id: confcam.tcl,v 1.121 2008-11-01 09:00:23 robertdelmas Exp $
 #
 
 namespace eval ::confCam {
@@ -558,9 +558,9 @@ proc ::confCam::onRaiseNotebook { camName } {
    variable private
 
    if { [winfo exists $private(frm).usr.onglet.c ] } {
-   set font [$private(frm).usr.onglet.c itemcget "$camName:text" -font]
-   lappend font "bold"
-   #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
+      set font [$private(frm).usr.onglet.c itemcget "$camName:text" -font]
+      lappend font "bold"
+      #--- remarque : il faut attendre que l'onglet soit redessine avant de changer la police
       after 100 $private(frm).usr.onglet.c itemconfigure "$camName:text" -font [list $font]
    }
 }
