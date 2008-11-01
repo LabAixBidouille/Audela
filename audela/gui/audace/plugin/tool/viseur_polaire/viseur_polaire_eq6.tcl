@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_eq6.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type EQ6 ou a constellations
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.9 2008-09-24 17:28:54 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_eq6.tcl,v 1.10 2008-11-01 19:11:50 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireEQ6 {
@@ -221,8 +221,8 @@ namespace eval viseurPolaireEQ6 {
       #--- Definition de la taille de la raquette
       set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $This.taille \
-         -width 7           \
-         -height [llength $list_combobox ]  \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+         -height [llength $list_combobox ] \
          -relief sunken     \
          -borderwidth 1     \
          -editable 0        \

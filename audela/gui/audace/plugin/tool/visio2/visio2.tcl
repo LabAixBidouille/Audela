@@ -2,7 +2,7 @@
 # Fichier : visio2.tcl
 # Description : Outil de visialisation des images et des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: visio2.tcl,v 1.37 2008-09-14 22:01:14 robertdelmas Exp $
+# Mise a jour $Id: visio2.tcl,v 1.38 2008-11-01 19:13:27 robertdelmas Exp $
 #
 
 namespace eval ::visio2 {
@@ -589,7 +589,7 @@ proc ::visio2::createPanel { visuNo } {
 
    set list_combobox [ list "0.5" "1" "2" "3" "5" "10" ]
    ComboBox $This.slideShow.delay \
-      -width 3          \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [llength $list_combobox] \
       -relief sunken    \
       -borderwidth 1    \

@@ -2,7 +2,7 @@
 # Fichier : modpoi.tcl
 # Description : Wizard pour calculer un modele de pointage pour telescope
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: modpoi.tcl,v 1.17 2008-07-08 18:11:53 robertdelmas Exp $
+# Mise a jour $Id: modpoi.tcl,v 1.18 2008-11-01 19:10:52 robertdelmas Exp $
 #
 # 1) Pour initialiser le script :
 #    source modpoi.tcl
@@ -383,7 +383,7 @@ proc modpoi_wiz1b { } {
       #--- Combobox star catalog
       set list_combobox "$list_catamodpoi"
       ComboBox $modpoi(g,base).fra_star_catalog.combobox_star_catalog \
-         -width 16         \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -font $modpoi(font,normal) \
          -relief sunken    \
