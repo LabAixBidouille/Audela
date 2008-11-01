@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.13 2008-09-24 17:22:32 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.14 2008-11-01 08:58:53 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -229,6 +229,25 @@ namespace eval tkutil {
          return
       }
       return $filename
+   }
+
+   #
+   # tkutil::lgEntryComboBox liste
+   # Fourni la largeur de l'entry d'une combobox adaptee au plus long element de la liste
+   #
+   proc lgEntryComboBox {liste } {
+      set a "0"
+      set lgListe [ llength $liste ]
+      for { set k 1 } { $k <= $lgListe} { incr k } {
+         set index [ expr $k - 1 ]
+         set lgElement [ string length [ lindex $liste $index ] ]
+         set b $lgElement
+         if { $b > $a } {
+            set a $b
+         }
+      }
+      set longEntryComboBox [ expr $a + 1 ]
+      return $longEntryComboBox
    }
 
 }
