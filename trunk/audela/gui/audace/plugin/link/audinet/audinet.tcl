@@ -2,7 +2,7 @@
 # Fichier : audinet.tcl
 # Description : Interface de liaison AudiNet
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: audinet.tcl,v 1.14 2007-12-04 22:36:08 robertdelmas Exp $
+# Mise a jour $Id: audinet.tcl,v 1.15 2008-11-01 17:27:42 robertdelmas Exp $
 #
 
 namespace eval audinet {
@@ -182,7 +182,7 @@ proc ::audinet::fillConfigPage { frm } {
          #--- J'execute la commande ping
          ::audinet::testping $::audinet::widget(audinet,host)
       }
-   pack $frm.ping -in $frm.frame1 -anchor center -side top -pady 7 -ipadx 10 -ipady 5 -expand true
+   pack $frm.ping -in $frm.frame1 -anchor center -side top -padx 70 -pady 7 -ipadx 10 -ipady 5 -expand true
 
    #--- Envoi ou non de l'adresse IP a Audinet
    checkbutton $frm.ipsetting -text "$caption(audinet,envoyer_adresse_aud)" -highlightthickness 0 \
@@ -202,7 +202,7 @@ proc ::audinet::fillConfigPage { frm } {
 
    set list_combobox [ list $caption(audinet,protocole_udp) $caption(audinet,protocole_tcp) ]
    ComboBox $frm.protocole \
-      -width 4          \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -234,7 +234,7 @@ proc ::audinet::fillConfigPage { frm } {
 
    set list_combobox [ list lx200 i2c ]
    ComboBox $frm.combo_focuser_type \
-      -width 6          \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
