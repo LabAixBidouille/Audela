@@ -2,22 +2,22 @@
 # Fichier : bifsconv.tcl
 # Description : Ce script permet de convertir de multiples formats d'images vers du fits
 # Auteur : Benoit MAUGIS
-# Mise a jour $Id: bifsconv.tcl,v 1.9 2008-10-30 19:08:14 robertdelmas Exp $
+# Mise a jour $Id: bifsconv.tcl,v 1.10 2008-11-01 11:48:58 robertdelmas Exp $
 #
 
-# Documentation : voir le fichier bifsconv.htm dans le dossier doc_html.
+#--- Documentation : Voir le fichier bifsconv.htm dans le dossier doc_html
 
-proc bifsconv {{fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 ""} {arg7 ""} {arg8 ""} {arg9 ""} {arg10 ""} {arg11 ""} {arg12 ""} {arg13 ""} {arg14 ""} {arg15 ""}} {
+proc bifsconv { {fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 ""} {arg7 ""} {arg8 ""} {arg9 ""} {arg10 ""} {arg11 ""} {arg12 ""} {arg13 ""} {arg14 ""} {arg15 ""} } {
    global audace
 
    bifsconv_full [file join $audace(rep_images) $fichier] $arg1 $arg2 $arg3 $arg4 $arg5 $arg6 $arg7 $arg8 $arg9 $arg10 $arg11 $arg12 $arg13 $arg14 $arg15
 }
 
-proc bifsconv_full {{fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 ""} {arg7 ""} {arg8 ""} {arg9 ""} {arg10 ""} {arg11 ""} {arg12 ""} {arg13 ""} {arg14 ""} {arg15 ""}} {
+proc bifsconv_full { {fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} {arg6 ""} {arg7 ""} {arg8 ""} {arg9 ""} {arg10 ""} {arg11 ""} {arg12 ""} {arg13 ""} {arg14 ""} {arg15 ""} } {
    global audace caption conf
 
    if {[file exist $fichier]=="1"} {
-      # Choix de la version BifsConv selon le système d'exploitation
+      #--- Choix de la version BifsConv selon le systeme d'exploitation
       set subdir_bifs "bin"
       if {$::tcl_platform(os)=="Linux"} {
          set bifs_version "bifsconv"
@@ -25,21 +25,21 @@ proc bifsconv_full {{fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} 
          set bifs_version "bifsconv.exe"
       }
 
-      # Petit message
+      #--- Petit message
       console::affiche_resultat "$caption(bifsconv,imaencours) $fichier\n"
       console::affiche_saut "\n"
 
-      # Exécution de BifsConv
+      #--- Execution de BifsConv
       exec [file join $audace(rep_install) $subdir_bifs $bifs_version] $fichier $arg1 $arg2 $arg3 $arg4 $arg5 $arg6 $arg7 $arg8 $arg9 $arg10 $arg11 $arg12 $arg13 $arg14 $arg15
 
       set racine [file rootname $fichier]
 
-      # Correction du l'extension si elle n'est pas ".fit"
+      #--- Correction de l'extension si elle n'est pas ".fit"
       if {$conf(extension,defaut)!=".fit"} {
          file rename $racine.fit $racine$conf(extension,defaut)
       }
 
-      # Compression si les fichiers sont compressés par défaut
+      #--- Compression si les fichiers sont compresses par defaut
       if {$conf(fichier,compres)==1} {
          gzip $racine$conf(extension,defaut)
       }
@@ -50,17 +50,17 @@ proc bifsconv_full {{fichier} {arg1 ""} {arg2 ""} {arg3 ""} {arg4 ""} {arg5 ""} 
    }
 }
 
-proc convert_fits {{nom_generique} {ext} {rep "audace(rep_images)"}} {
+proc convert_fits { {nom_generique} {ext} {rep "audace(rep_images)"} } {
    global audace
 
    if {$rep=="audace(rep_images)"} {set rep $audace(rep_images)}
-   set liste_index [liste_index $nom_generique $rep $ext]
+   set liste_index [liste_index $nom_generique -rep $rep -ext $ext]
    foreach index $liste_index {
       bifsconv_full [file join $rep $nom_generique$index$ext]
    }
 }
 
-proc convert_fits_all {{extension} {rep "audace(rep_images)"}} {
+proc convert_fits_all { {extension} {rep "audace(rep_images)"} } {
    global audace caption
 
    if {$rep=="audace(rep_images)"} {set rep $audace(rep_images)}
@@ -72,7 +72,7 @@ proc convert_fits_all {{extension} {rep "audace(rep_images)"}} {
    }
 }
 
-proc convert_fits_subdir {{extension} {rep "audace(rep_images)"}} {
+proc convert_fits_subdir { {extension} {rep "audace(rep_images)"} } {
   global audace
 
    if {$rep=="audace(rep_images)"} {set rep $audace(rep_images)}
@@ -85,24 +85,28 @@ proc convert_fits_subdir {{extension} {rep "audace(rep_images)"}} {
    }
 }
 
-proc loadima_nofits {{fichier} {rep "rep_images"}} {
-   global audace caption conf
+proc loadima_nofits { {fichier} {rep "audace(rep_images)"} } {
+   global audace caption
 
-   if {$rep=="rep_images"} {set rep $audace(rep_images)}
+   if {$rep=="audace(rep_images)"} {set rep $audace(rep_images)}
+   #--- Creation du repertoire temporaire
    set rep_tmp [cree_sousrep]
+   #--- Copie de l'image dans le repertoire temporaire
    file copy [file join $rep $fichier] [file join $rep_tmp $fichier]
+   #--- Conversion de l'image au format FITS
    bifsconv_full [file join $rep_tmp $fichier]
    set fichierfits [file join $rep_tmp [file rootname $fichier].fit]
+   #--- Chargement de l'image
    buf$audace(bufNo) load $fichierfits
-   # Visualisation automatique
+   #--- Visualisation automatique
    audace::autovisu $audace(visuNo)
-   # MAJ en-tête audace
+   #--- Mise a jour de l'en-tete audace
    wm title $audace(base) "$caption(bifsconv,audace) - [file join $rep $fichier]"
-   # Suppression du fichier copié
+   #--- Suppression de l'image copiee
    file delete [file join $rep_tmp $fichier]
-   # Suppression du fichier FITS temporaire
+   #--- Suppression de l'image FITS temporaire
    file delete $fichierfits
-   # Suppression du répertoire temporaire
+   #--- Suppression du repertoire temporaire
    file delete $rep_tmp
 }
 
