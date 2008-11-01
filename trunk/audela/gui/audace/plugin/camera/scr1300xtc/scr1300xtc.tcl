@@ -2,7 +2,7 @@
 # Fichier : scr1300xtc.tcl
 # Description : Configuration de la camera SCR1300XTC
 # Auteur : Robert DELMAS
-# Mise a jour $Id: scr1300xtc.tcl,v 1.22 2008-05-24 10:29:11 robertdelmas Exp $
+# Mise a jour $Id: scr1300xtc.tcl,v 1.23 2008-11-01 15:44:46 robertdelmas Exp $
 #
 
 namespace eval ::scr1300xtc {
@@ -173,7 +173,7 @@ proc ::scr1300xtc::fillConfigPage { frm camItem } {
 
          #--- Choix du port ou de la liaison
          ComboBox $frm.frame1.frame3.port \
-            -width 7                      \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
             -relief sunken                \
             -borderwidth 1                \

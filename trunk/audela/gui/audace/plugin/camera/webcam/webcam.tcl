@@ -2,7 +2,7 @@
 # Fichier : webcam.tcl
 # Description : Configuration des cameras WebCam
 # Auteurs : Michel PUJOL et Robert DELMAS
-# Mise a jour $Id: webcam.tcl,v 1.42 2008-07-08 22:00:10 michelpujol Exp $
+# Mise a jour $Id: webcam.tcl,v 1.43 2008-11-01 15:45:26 robertdelmas Exp $
 #
 
 namespace eval ::webcam {
@@ -297,7 +297,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    #--- Choix du canal USB
    ComboBox $frm.port \
-      -width 5        \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken  \
       -borderwidth 1  \
@@ -311,7 +311,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
       set list_combobox [ list "vfw" "directx" ]
       #--- video mode
       ComboBox $frm.videomode \
-         -width 6        \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken  \
          -borderwidth 1  \
@@ -351,7 +351,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
       label $frm.frame6.videoFormatLabel -text "$caption(webcam,format_video)"
       pack $frm.frame6.videoFormatLabel -anchor nw -side top -padx 10
       ComboBox $frm.frame6.videoFormatList \
-         -width 20         \
+         -width [ ::tkutil::lgEntryComboBox $private(videoFormatLabels) ] \
          -height [ llength $private(videoFormatLabels) ] \
          -relief sunken    \
          -borderwidth 1    \
@@ -405,7 +405,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.lpport \
-      -width 13         \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -420,7 +420,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    set list_combobox [ list 0 1 2 3 4 5 6 7 ]
    ComboBox $frm.longueposelinkbit \
-      -width 5                     \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken               \
       -borderwidth 1               \
@@ -435,7 +435,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
    #entry $frm.longueposestartvalue -width 4 -textvariable ::webcam::private($camItem,longueposestartvalue) -justify center
    set longuePoseStartList [list "0" "1"]
    ComboBox $frm.longueposestartvalue \
-      -width 4         \
+      -width [ ::tkutil::lgEntryComboBox $longuePoseStartList ] \
       -height [ llength $longuePoseStartList ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -451,7 +451,7 @@ proc ::webcam::fillConfigPage { frm camItem } {
 
    set list_combobox [ list 1/4'' 1/3'' 1/2'' ]
    ComboBox $frm.dim_ccd_N_B \
-      -width 5               \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken         \
       -borderwidth 1         \

@@ -2,7 +2,7 @@
 # Fichier : cookbook.tcl
 # Description : Configuration de la camera Cookbook
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cookbook.tcl,v 1.23 2008-05-24 10:28:07 robertdelmas Exp $
+# Mise a jour $Id: cookbook.tcl,v 1.24 2008-11-01 15:42:46 robertdelmas Exp $
 #
 
 namespace eval ::cookbook {
@@ -176,7 +176,7 @@ proc ::cookbook::fillConfigPage { frm camItem } {
 
          #--- Choix du port ou de la liaison
          ComboBox $frm.frame1.frame3.port \
-            -width 7                      \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
             -relief sunken                \
             -borderwidth 1                \
