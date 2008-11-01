@@ -2,7 +2,7 @@
 # Fichier : focuserjmi.tcl
 # Description : Gere un focuser sur port parallele ou quickremote
 # Auteur : Michel PUJOL
-# Mise a jour $Id: focuserjmi.tcl,v 1.12 2007-12-04 22:47:30 robertdelmas Exp $
+# Mise a jour $Id: focuserjmi.tcl,v 1.13 2008-11-01 15:58:31 robertdelmas Exp $
 #
 
 #
@@ -158,7 +158,7 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
       #--- Choix de la liaison
       ComboBox $frm.frame1.link \
-         -width 13              \
+         -width [ ::tkutil::lgEntryComboBox $linkList ] \
          -height [ llength $linkList ] \
          -relief sunken         \
          -borderwidth 1         \
@@ -180,7 +180,7 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
      set bitList [ list 0 1 2 3 4 5 6 7 ]
       ComboBox $frm.frame1.bitStart \
-         -width 7                   \
+         -width [ ::tkutil::lgEntryComboBox $bitList ] \
          -height [ llength $bitList ] \
          -relief sunken             \
          -borderwidth 1             \
@@ -195,7 +195,7 @@ proc ::focuserjmi::fillConfigPage { frm } {
 
       set bitList [ list 0 1 2 3 4 5 6 7 ]
       ComboBox $frm.frame1.bitDirection \
-         -width 7                       \
+         -width [ ::tkutil::lgEntryComboBox $bitList ] \
          -height [ llength $bitList ]   \
          -relief sunken                 \
          -borderwidth 1                 \

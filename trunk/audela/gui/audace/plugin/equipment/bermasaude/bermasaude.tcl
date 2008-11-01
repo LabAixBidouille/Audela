@@ -2,7 +2,7 @@
 # Fichier : bermasaude.tcl
 # Description : Gere la roue a filtres de Laurent BERNASCONI et Robert DELMAS
 # Auteur : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: bermasaude.tcl,v 1.23 2007-12-07 22:47:51 robertdelmas Exp $
+# Mise a jour $Id: bermasaude.tcl,v 1.24 2008-11-01 15:58:05 robertdelmas Exp $
 #
 
 #
@@ -174,7 +174,7 @@ namespace eval bermasaude {
 
          #--- Choix du port ou de la liaison
          ComboBox $frm.frame1.port \
-            -width 7               \
+            -width [ ::tkutil::lgEntryComboBox $widget(list_connexion) ] \
             -height [ llength $widget(list_connexion) ] \
             -relief sunken         \
             -borderwidth 1         \
@@ -186,7 +186,7 @@ namespace eval bermasaude {
          #--- Definition de la combinaison des filtres
          set list_combobox [ list $caption(bermasaude,bermasaude_bvri) $caption(bermasaude,bermasaude_cmj) ]
          ComboBox $frm.frame1.combi \
-            -width 5                \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
             -relief sunken          \
             -borderwidth 1          \
