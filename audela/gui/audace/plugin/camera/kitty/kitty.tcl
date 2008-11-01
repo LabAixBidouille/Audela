@@ -2,7 +2,7 @@
 # Fichier : kitty.tcl
 # Description : Configuration de la camera Kitty
 # Auteur : Robert DELMAS
-# Mise a jour $Id: kitty.tcl,v 1.19 2008-05-24 10:46:01 robertdelmas Exp $
+# Mise a jour $Id: kitty.tcl,v 1.20 2008-11-01 15:44:12 robertdelmas Exp $
 #
 
 namespace eval ::kitty {
@@ -192,7 +192,7 @@ proc ::kitty::fillConfigPage { frm camItem } {
 
             #--- Choix du port ou de la liaison
             ComboBox $frm.frame2.frame5.frame7.port \
-              -width 7        \
+              -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \

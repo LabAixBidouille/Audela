@@ -2,7 +2,7 @@
 # Fichier : audine.tcl
 # Description : Configuration de la camera Audine
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audine.tcl,v 1.17 2008-05-25 15:32:08 robertdelmas Exp $
+# Mise a jour $Id: audine.tcl,v 1.18 2008-11-01 15:42:03 robertdelmas Exp $
 #
 
 namespace eval ::audine {
@@ -190,7 +190,7 @@ proc ::audine::fillConfigPage { frm camItem } {
 
             #--- Choix du port ou de la liaison
             ComboBox $frm.frame1.frame5.frame10.port \
-               -width 11      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \
@@ -219,7 +219,7 @@ proc ::audine::fillConfigPage { frm camItem } {
 
             set list_combobox [ list $caption(audine,kaf400) $caption(audine,kaf1600) $caption(audine,kaf3200) ]
             ComboBox $frm.frame1.frame5.frame11.ccd \
-               -width 7       \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \
@@ -267,7 +267,7 @@ proc ::audine::fillConfigPage { frm camItem } {
 
             set list_combobox [ list $caption(audine,ampli_synchro) $caption(audine,ampli_toujours) ]
             ComboBox $frm.frame1.frame7.frame14.ampli_ccd \
-               -width 10      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \
@@ -287,7 +287,7 @@ proc ::audine::fillConfigPage { frm camItem } {
 
             set list_combobox [ list $caption(audine,can_ad976a) $caption(audine,can_ltc1605) ]
             ComboBox $frm.frame1.frame7.frame15.can \
-               -width 10      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \
@@ -318,7 +318,7 @@ proc ::audine::fillConfigPage { frm camItem } {
             set list_combobox [ list $caption(audine,obtu_audine) $caption(audine,obtu_audine-) \
                $caption(audine,obtu_i2c) $caption(audine,obtu_thierry) ]
             ComboBox $frm.frame2.frame8.frame16.typeobtu \
-               -width 11      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \
@@ -339,7 +339,7 @@ proc ::audine::fillConfigPage { frm camItem } {
             set list_combobox [ list $caption(audine,obtu_ouvert) $caption(audine,obtu_ferme) $caption(audine,obtu_synchro) ]
             set ::audine::private(list_foncobtu) $list_combobox
             ComboBox $frm.frame2.frame8.frame17.foncobtu \
-               -width 11      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \
@@ -452,31 +452,13 @@ proc ::audine::configureCamera { camItem bufNo } {
             }
             #--- Je gere le mode debug ou non de l'EthernAude
             if { $conf(ethernaude,debug) == "0" } {
-               if { $conf(ethernaude,ipsetting) == "1" } {
-                  #--- Je mets le nom du fichier entre guillemets pour le cas ou le nom du
-                  #--- repertoire contient des espaces
-                  #--- Je cree la camera
-                  set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
-                     -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
-                     -ipsetting \"[ file join $audace(rep_install) bin IPSetting.exe ]\" ]
-               } else {
-                  #--- Je cree la camera
-                  set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
-                     -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert ]
-               }
+               #--- Je cree la camera
+               set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
+                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert ]
             } else {
-               if { $conf(ethernaude,ipsetting) == "1" } {
-                  #--- Je mets le nom du fichier entre guillemets pour le cas ou le nom du
-                  #--- repertoire contient des espaces
-                  #--- Je cree la camera
-                  set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
-                     -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert \
-                     -ipsetting \"[ file join $audace(rep_install) bin IPSetting.exe ]\" -debug_eth ]
-               } else {
-                  #--- Je cree la camera
-                  set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
-                     -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth ]
-               }
+               #--- Je cree la camera
+               set camNo [ cam::create ethernaude $conf(audine,port) -ip $conf(ethernaude,host) \
+                  -canspeed $eth_canspeed -name Audine -shutterinvert $shutterinvert -debug_eth ]
             }
             #--- Je cree la liaison utilisee par la camera pour l'acquisition
             set linkNo [ ::confLink::create $conf(audine,port) "cam$camNo" "acquisition" "" ]

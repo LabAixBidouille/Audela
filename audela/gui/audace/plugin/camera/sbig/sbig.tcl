@@ -2,7 +2,7 @@
 # Fichier : sbig.tcl
 # Description : Configuration de la camera SBIG
 # Auteur : Robert DELMAS
-# Mise a jour $Id: sbig.tcl,v 1.18 2008-07-21 17:25:36 michelpujol Exp $
+# Mise a jour $Id: sbig.tcl,v 1.19 2008-11-01 15:44:31 robertdelmas Exp $
 #
 
 namespace eval ::sbig {
@@ -199,7 +199,7 @@ proc ::sbig::fillConfigPage { frm camItem } {
 
       #--- Choix du port ou de la liaison
       ComboBox $frm.frame1.port \
-         -width 7               \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken         \
          -borderwidth 1         \
@@ -307,7 +307,7 @@ proc ::sbig::fillConfigPage { frm camItem } {
 
       set list_combobox [ list $caption(sbig,obtu_ferme) $caption(sbig,obtu_synchro) ]
       ComboBox $frm.frame3.foncobtu \
-         -width 11                  \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken             \
          -borderwidth 1             \

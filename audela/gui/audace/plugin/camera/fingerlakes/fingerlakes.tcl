@@ -2,7 +2,7 @@
 # Fichier : fingerlakes.tcl
 # Description : Configuration de la camera FLI (Finger Lakes Instrumentation)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: fingerlakes.tcl,v 1.26 2008-05-24 10:45:44 robertdelmas Exp $
+# Mise a jour $Id: fingerlakes.tcl,v 1.27 2008-11-01 15:43:28 robertdelmas Exp $
 #
 
 namespace eval ::fingerlakes {
@@ -212,7 +212,7 @@ proc ::fingerlakes::fillConfigPage { frm camItem } {
          set list_combobox [ list $caption(fingerlakes,obtu_ouvert) $caption(fingerlakes,obtu_ferme) \
             $caption(fingerlakes,obtu_synchro) ]
          ComboBox $frm.frame1.frame8.foncobtu \
-            -width 11           \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
             -relief sunken      \
             -borderwidth 1      \

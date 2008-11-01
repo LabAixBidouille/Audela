@@ -2,7 +2,7 @@
 # Fichier : dslr.tcl
 # Description : Gestion du telechargement des images d'un APN (DSLR)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: dslr.tcl,v 1.29 2008-05-24 10:28:31 robertdelmas Exp $
+# Mise a jour $Id: dslr.tcl,v 1.30 2008-11-01 15:43:03 robertdelmas Exp $
 #
 
 namespace eval ::dslr {
@@ -213,7 +213,7 @@ proc ::dslr::fillConfigPage { frm camItem } {
 
             #--- Choix de la liaison
             ComboBox $frm.frame1.frame6.frame13.port \
-               -width 11      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox1 ] \
                -height [ llength $list_combobox1 ] \
                -relief sunken \
                -borderwidth 1 \
@@ -264,7 +264,7 @@ proc ::dslr::fillConfigPage { frm camItem } {
 
             #--- Choix du port ou de la liaison
             ComboBox $frm.frame1.frame7.frame8.moyen_longuepose \
-               -width 13      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox2 ] \
                -height [ llength $list_combobox2 ] \
                -relief sunken \
                -borderwidth 1 \
@@ -287,7 +287,7 @@ proc ::dslr::fillConfigPage { frm camItem } {
 
             set list_combobox [ list 0 1 2 3 4 5 6 7 ]
             ComboBox $frm.frame1.frame7.frame9.longueposelinkbit \
-               -width 7       \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \

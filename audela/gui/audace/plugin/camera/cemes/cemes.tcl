@@ -2,7 +2,7 @@
 # Fichier : cemes.tcl
 # Description : Configuration de la camera Cemes
 # Auteur : Robert DELMAS
-# Mise a jour $Id: cemes.tcl,v 1.32 2008-05-24 10:45:26 robertdelmas Exp $
+# Mise a jour $Id: cemes.tcl,v 1.33 2008-11-01 15:42:24 robertdelmas Exp $
 #
 
 namespace eval ::cemes {
@@ -210,7 +210,7 @@ proc ::cemes::fillConfigPage { frm camItem } {
 
          set list_combobox [ list $caption(cemes,obtu_ouvert) $caption(cemes,obtu_ferme) $caption(cemes,obtu_synchro) ]
          ComboBox $frm.frame1.frame8.foncobtu \
-            -width 11           \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
             -relief sunken      \
             -borderwidth 1      \

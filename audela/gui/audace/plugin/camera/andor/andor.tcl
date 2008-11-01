@@ -2,7 +2,7 @@
 # Fichier : andor.tcl
 # Description : Configuration de la camera Andor
 # Auteur : Robert DELMAS
-# Mise a jour $Id: andor.tcl,v 1.16 2008-05-24 10:45:11 robertdelmas Exp $
+# Mise a jour $Id: andor.tcl,v 1.17 2008-11-01 15:41:40 robertdelmas Exp $
 #
 
 namespace eval ::andor {
@@ -190,7 +190,7 @@ proc ::andor::fillConfigPage { frm camItem } {
 
             set list_combobox [ list $caption(andor,obtu_ouvert) $caption(andor,obtu_ferme) $caption(andor,obtu_synchro) ]
             ComboBox $frm.frame2.frame4.frame7.foncobtu \
-               -width 11           \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
               -relief sunken       \
                -borderwidth 1      \

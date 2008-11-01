@@ -2,7 +2,7 @@
 # Fichier : starlight.tcl
 # Description : Configuration de la camera Starlight
 # Auteur : Robert DELMAS
-# Mise a jour $Id: starlight.tcl,v 1.13 2008-05-24 10:29:28 robertdelmas Exp $
+# Mise a jour $Id: starlight.tcl,v 1.14 2008-11-01 15:45:01 robertdelmas Exp $
 #
 
 namespace eval ::starlight {
@@ -199,7 +199,7 @@ proc ::starlight::fillConfigPage { frm camItem } {
 
          #--- Choix du port ou de la liaison
          ComboBox $frm.frame2.frame5.port \
-            -width 7        \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [ llength $list_combobox ] \
             -relief sunken  \
             -borderwidth 1  \
@@ -235,7 +235,7 @@ proc ::starlight::fillConfigPage { frm camItem } {
 
       set list_combobox [ list $caption(starlight,sans_accelerateur) $caption(starlight,avec_accelerateur) ]
       ComboBox $frm.frame3.acc \
-         -width 7       \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken \
          -borderwidth 1 \

@@ -2,7 +2,7 @@
 # Fichier : hisis.tcl
 # Description : Configuration de la camera Hi-SIS
 # Auteur : Robert DELMAS
-# Mise a jour $Id: hisis.tcl,v 1.13 2008-05-24 10:28:49 robertdelmas Exp $
+# Mise a jour $Id: hisis.tcl,v 1.14 2008-11-01 15:43:47 robertdelmas Exp $
 #
 
 namespace eval ::hisis {
@@ -275,7 +275,7 @@ proc ::hisis::fillConfigPage { frm camItem } {
 
                   #--- Choix du port ou de la liaison
                   ComboBox $frm.frame3.frame5.frame7.frame9.frame11.port \
-                     -width 7       \
+                     -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                      -height [ llength $list_combobox ] \
                      -relief sunken \
                      -borderwidth 1 \
@@ -295,7 +295,7 @@ proc ::hisis::fillConfigPage { frm camItem } {
 
                   set list_combobox [ list $caption(hisis,can_12bits) $caption(hisis,can_14bits) ]
                   ComboBox $frm.frame3.frame5.frame7.frame9.frame12.res \
-                     -width 7       \
+                     -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                      -height [ llength $list_combobox ] \
                      -relief sunken \
                      -borderwidth 1 \
@@ -333,7 +333,7 @@ proc ::hisis::fillConfigPage { frm camItem } {
 
             set list_combobox [ list $caption(hisis,obtu_ouvert) $caption(hisis,obtu_ferme) $caption(hisis,obtu_synchro) ]
             ComboBox $frm.frame3.frame5.frame8.foncobtu \
-               -width 11      \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken \
                -borderwidth 1 \
