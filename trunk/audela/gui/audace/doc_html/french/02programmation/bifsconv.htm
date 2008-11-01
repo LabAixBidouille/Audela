@@ -7,22 +7,32 @@
 </head>
 
 <body>
-<p class="date">Date de mise &agrave; jour : 03 avril 2005</p>
+<p class="date">Date de mise &agrave; jour : 01 novembre 2008</p>
 <h1>Conversion de fichiers images au format FITS </h1>
-<p>Cette page d&eacute;crit comment convertir au format FITS divers autres formats d'image. Pour cela, Aud'ACE utilise le programme "BifsConv" de Raoul Behrend. La liste des formats d'image pris en charge (notamment bmp, pic, tif, raw, ...) figure sur <a href="http://obswww.unige.ch/~behrend/page_bif.html">cette page</a>. Ce programme est fr&eacute;quemment mis &agrave; jour par Raoul Behrend, le fichier bifsconw.exe (pour Windows) ou bifsconx.exe (pour Linux) peut &ecirc;tre t&eacute;l&eacute;charg&eacute; &agrave; l'adresse&nbsp;: <a href="ftp://obsftp.unige.ch/pub/behrend/"> ftp://obsftp.unige.ch/pub/behrend/</a>, fichier dont la version &agrave; mettre &agrave; jour se trouve dans le sous-r&eacute;pertoire programme bin du r&eacute;pertoire d'installation d'Aude'ACE.</p>
+<p>Cette page d&eacute;crit comment convertir au format FITS divers autres formats d'image. Pour cela, Aud'ACE utilise le programme "BifsConv" de Raoul Behrend. La liste des formats d'image pris en charge (notamment bmp, pic, tif, raw, etc.) figure sur <a href="http://obswww.unige.ch/~behrend/page_bif.html">cette page</a>. Ce programme est fr&eacute;quemment mis &agrave; jour par Raoul Behrend, le fichier bifsconv.exe (commun pour Windows et pour Linux) peut &ecirc;tre t&eacute;l&eacute;charg&eacute; &agrave; l'adresse&nbsp;: <a href="http://obswww.unige.ch/~behrend/page_bif.html"> http://obswww.unige.ch/~behrend/page_bif.html</a>, fichier dont la version &agrave; mettre &agrave; jour se trouve dans le sous-r&eacute;pertoire bin du r&eacute;pertoire d'installation d'Aude'ACE.</p>
 <h2>Liste des fonctions utilisables&nbsp;:</h2>
 <h3> <a name="bifsconv" id="bifsconv"></a>bifsconv <em>fichier options</em></h3>
 <p>Lance bifsconv pour un fichier plac&eacute; dans le r&eacute;pertoire images (le nom de fichier doit comporter l'extension). Il est possible (voire n&eacute;cessaire) de pr&eacute;ciser certaines options selon le format source (consulter &agrave; ce propos la page web de bifsconv).</p>
+<p>Exemple : bifsconv mire_1.tif </p>
 <h3> <a name="bifsconv_full" id="bifsconv_full"></a>bifsconv_full <em>chemin_fichier options</em></h3>
-<p>Idem que bifsconv sauf qu'il faut pr&eacute;ciser le nom complet du fichier (permet de convertir un fichier qui ne serait pas dans le r&eacute;pertoire images Aud'ACE par d&eacute;faut).</p>
+<p>Idem que bifsconv (voir ci-dessus) sauf qu'il faut pr&eacute;ciser le nom complet du fichier (permet de convertir un fichier qui ne serait pas dans le r&eacute;pertoire images Aud'ACE par d&eacute;faut).</p>
+<p>Exemple : bifsconv_full "C:/Astronomie/AudeLA SourceForge/audela/images/test2/test3/centre kac1310.gif" </p>
 <h3> <a name="convert_fits" id="convert_fits"></a>convert_fits <em>nom_generique extension ?r&eacute;pertoire?</em></h3>
 <p>Permet de convertir au format FITS une s&eacute;rie d'images dont le format figure parmi ceux pris en charge par bifsconv.</p>
+<p>Exemple : convert_fits mire_ .tif </p>
+<p>Exemple : convert_fits mire_ .tif "C:/Astronomie/AudeLA SourceForge/audela/images/test2/test3" </p>
 <h3> <a name="convert_fits_all" id="convert_fits_all"></a>convert_fits_all <em>extension ?r&eacute;pertoire?</em></h3>
 <p>Permet de convertir au format FITS toutes les images du r&eacute;pertoire courant (parmi les formats pris en charge par bifsconv).</p>
+<p>Exemple : convert_fits_all .tif </p>
+<p>Exemple : convert_fits_all .tif "C:/Astronomie/AudeLA SourceForge/audela/images/test2/test3" </p>
 <h3> <a name="convert_fits_subdir" id="convert_fits_subdir"></a>convert_fits_subdir <em>extension ?r&eacute;pertoire?</em></h3>
 <p>Idem "convert_fits_all" avec de plus recherche de fichiers dans les sous-r&eacute;pertoires.</p>
+<p>Exemple : convert_fits_subdir .tif </p>
+<p>Exemple : convert_fits_subdir .cpa "C:/Astronomie/AudeLA SourceForge/audela/images/test2/test3" </p>
 <h3> <a name="loadima_nofits" id="loadima_nofits"></a>loadima_nofits <em>fichier ?repertoire?</em></h3>
-<p>Chargement d'une image qui ne serait pas au format FITS (parmi ceux pris en charge par bifsconv). Le nom de fichier doit comporter l'extension. Par d&eacute;faut l'image est suppos&eacute;e situ&eacute;e dans le r&eacute;pertoire images par d&eacute;faut.</p>
+<p>Chargement et affichage d'une image qui ne serait pas au format FITS (parmi ceux pris en charge par bifsconv). Le nom de fichier doit comporter l'extension. Par d&eacute;faut l'image est suppos&eacute;e situ&eacute;e dans le r&eacute;pertoire images par d&eacute;faut.</p>
+<p>Exemple : loadima_nofits NGC1.cpa </p>
+<p>Exemple : loadima_nofits NGC104.cpa "C:/Astronomie/AudeLA SourceForge/audela/images/test2/test3" </p>
 </body>
 
 </html>
