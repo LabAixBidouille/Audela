@@ -2,7 +2,7 @@
 # Fichier : superpad.tcl
 # Description : Super raquette virtuelle
 # Auteur : Michel PUJOL
-# Mise a jour $Id: superpad.tcl,v 1.24 2008-06-01 14:01:53 robertdelmas Exp $
+# Mise a jour $Id: superpad.tcl,v 1.25 2008-11-01 17:50:35 robertdelmas Exp $
 #
 
 namespace eval ::superpad {
@@ -140,7 +140,7 @@ namespace eval ::superpad {
          #--- Definition de la taille de la raquette
          set list_combobox [ list 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ]
          ComboBox $frm.frame1.taille \
-            -width 7                 \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [llength $list_combobox ] \
             -relief sunken           \
             -borderwidth 1           \

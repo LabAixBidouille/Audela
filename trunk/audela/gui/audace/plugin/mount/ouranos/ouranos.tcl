@@ -2,7 +2,7 @@
 # Fichier : ouranos.tcl
 # Description : Configuration de la monture Ouranos
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ouranos.tcl,v 1.11 2008-02-15 17:22:34 robertdelmas Exp $
+# Mise a jour $Id: ouranos.tcl,v 1.12 2008-11-01 17:45:13 robertdelmas Exp $
 #
 
 namespace eval ::ouranos {
@@ -235,7 +235,7 @@ proc ::ouranos::fillConfigPage { frm } {
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.port \
-      -width 7        \
+      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
       -height [ llength $list_connexion ] \
       -relief sunken  \
       -borderwidth 1  \
