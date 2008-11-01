@@ -2,7 +2,7 @@
 # Fichier : catagoto.tcl
 # Description : Assure la gestion des catalogues pour l'outil Telescope
 # Auteur : Robert DELMAS
-# Mise a jour $Id: catagoto.tcl,v 1.27 2008-10-02 18:33:16 robertdelmas Exp $
+# Mise a jour $Id: catagoto.tcl,v 1.28 2008-11-01 18:41:07 robertdelmas Exp $
 #
 
 namespace eval cataGoto {
@@ -132,7 +132,7 @@ namespace eval cataGoto {
       }
 
       ComboBox $frm.list \
-         -width 12         \
+         -width [ ::tkutil::lgEntryComboBox $catalogue(liste_cata) ] \
          -height [ llength $catalogue(liste_cata) ] \
          -relief sunken    \
          -borderwidth 1    \

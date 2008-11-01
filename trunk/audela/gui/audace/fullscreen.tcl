@@ -2,7 +2,7 @@
 # Fichier : fullscreen.tcl
 # Description : Fenetre plein ecran pour afficher des images ou des films
 # Auteur : Michel PUJOL
-# Mise a jour $Id: fullscreen.tcl,v 1.16 2008-09-14 22:00:45 robertdelmas Exp $
+# Mise a jour $Id: fullscreen.tcl,v 1.17 2008-11-01 18:43:10 robertdelmas Exp $
 #
 
 ##############################################################################
@@ -783,7 +783,7 @@ namespace eval ::FullScreen::config {
 
       set list_combobox [ list "0.5" "1" "2" "3" "5" "10" ]
       ComboBox $frm.slideShow.delay \
-         -width 3          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [llength $list_combobox] \
          -relief sunken    \
          -borderwidth 1    \

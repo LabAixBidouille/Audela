@@ -5,7 +5,7 @@
 #               pose, choix des panneaux, type de fenetre, la fenetre A propos de ... et une fenetre de
 #               configuration generique)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confgene.tcl,v 1.47 2008-09-15 15:55:11 robertdelmas Exp $
+# Mise a jour $Id: confgene.tcl,v 1.48 2008-11-01 18:41:52 robertdelmas Exp $
 #
 
 #
@@ -302,7 +302,7 @@ namespace eval confPosObs {
 
       set list_combobox [ list $caption(confgene,position_est) $caption(confgene,position_ouest) ]
       ComboBox $This.estouest \
-         -width 2          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
@@ -320,7 +320,7 @@ namespace eval confPosObs {
 
       set list_combobox [ list $caption(confgene,position_nord) $caption(confgene,position_sud) ]
       ComboBox $This.nordsud \
-         -width 2          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
@@ -349,7 +349,7 @@ namespace eval confPosObs {
       set list_combobox [ list $caption(confgene,position_ref_geodesique_ed50) \
          $caption(confgene,position_ref_geodesique,wgs84) ]
       ComboBox $This.ref_geodesique \
-         -width 7          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
@@ -651,7 +651,7 @@ namespace eval confPosObs {
                      -height 10        \
                      -relief sunken    \
                      -borderwidth 2    \
-                    -editable 0       \
+                     -editable 0       \
                      -textvariable confgene(posobs,copy_nom_observatoire) \
                      -modifycmd "::confPosObs::config::cbCommand $frm.config.frame1.nom_observatoire_a_copier" \
                      -values $confgene(posobs,nom_observatoire_liste)
@@ -1203,8 +1203,8 @@ namespace eval confTemps {
 
       set list_combobox [ list $caption(confgene,temps_heurelegale) $caption(confgene,temps_universel) ]
       ComboBox $This.hsysteme \
-         -width 3         \
-         -height [ llength $list_combobox ]  \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1220,7 +1220,7 @@ namespace eval confTemps {
       set list_combobox [ list -12 -11 -10 -9 -8 -7 -6 -5 -4 -3:30 -3 -2 -1 0 1 2 3 3:30\
          4 4:30 5 5:30 6 7 8 9 9:30 10 11 12 ]
       ComboBox $This.fushoraire \
-         -width 6          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
@@ -1237,8 +1237,8 @@ namespace eval confTemps {
       set list_combobox [ list $caption(confgene,temps_aucune) $caption(confgene,temps_hiver) \
          $caption(confgene,temps_ete) ]
       ComboBox $This.hhiverete \
-         -width 8         \
-         -height [ llength $list_combobox ]  \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+         -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 1    \
          -editable 0       \
@@ -1310,7 +1310,7 @@ namespace eval confTemps {
             set list_combobox [ list -12 -11 -10 -9 -8 -7 -6 -5 -4 -3:30 -3 -2 -1 0 1 2 3 3:30\
                4 4:30 5 5:30 6 7 8 9 9:30 10 11 12 ]
             ComboBox $This.fushoraire \
-               -width 6          \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken    \
                -borderwidth 1    \
@@ -1325,8 +1325,8 @@ namespace eval confTemps {
             set list_combobox [ list $caption(confgene,temps_aucune) $caption(confgene,temps_hiver) \
                $caption(confgene,temps_ete) ]
             ComboBox $This.hhiverete \
-               -width 8         \
-               -height [ llength $list_combobox ]  \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+               -height [ llength $list_combobox ] \
                -relief sunken    \
                -borderwidth 1    \
                -editable 0       \
@@ -2030,8 +2030,8 @@ namespace eval confChoixOutil {
                   set hauteur "5"
                }
                ComboBox $This.raccourci$num \
-                  -width 8          \
-                  -height $hauteur \
+                  -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+                  -height $hauteur  \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \
@@ -2048,8 +2048,8 @@ namespace eval confChoixOutil {
                pack $This.panneau$num -in $This.frameb$num -side left -padx 5 -pady 0
                #--- Selection d'un raccourci
                ComboBox $This.raccourci$num \
-                  -width 8          \
-                  -height $hauteur \
+                  -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+                  -height $hauteur  \
                   -relief sunken    \
                   -borderwidth 1    \
                   -editable 0       \

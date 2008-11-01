@@ -2,7 +2,7 @@
 # Fichier : confpad.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'pad'
 # Auteur : Michel PUJOL
-# Mise a jour $Id: confpad.tcl,v 1.30 2008-06-14 09:03:33 robertdelmas Exp $
+# Mise a jour $Id: confpad.tcl,v 1.31 2008-11-01 18:42:33 robertdelmas Exp $
 #
 
 namespace eval ::confPad {
@@ -291,7 +291,7 @@ proc ::confPad::createFramePad { frm variablePluginName} {
    }
 
    ComboBox $frm.list \
-      -width 15       \
+      -width [ ::tkutil::lgEntryComboBox $private(pluginNamespaceList) ] \
       -height [llength $private(pluginNamespaceList)] \
       -relief sunken  \
       -borderwidth 1  \
