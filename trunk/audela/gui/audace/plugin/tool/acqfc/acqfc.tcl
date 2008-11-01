@@ -2,7 +2,7 @@
 # Fichier : acqfc.tcl
 # Description : Outil d'acquisition
 # Auteur : Francois Cochard
-# Mise a jour $Id: acqfc.tcl,v 1.68 2008-09-14 18:10:50 robertdelmas Exp $
+# Mise a jour $Id: acqfc.tcl,v 1.69 2008-11-01 08:55:31 robertdelmas Exp $
 #
 
 #==============================================================
@@ -414,14 +414,6 @@ namespace eval ::acqfc {
             -value "$valbin" \
             -variable panneau(acqfc,$visuNo,bin) \
             -command " "
-      }
-      #---
-      if { [ lsearch $list_binning $panneau(acqfc,$visuNo,bin) ] == "-1" } {
-         if { [ llength $list_binning ] >= "2" } {
-            set panneau(acqfc,$visuNo,bin) [ lindex $list_binning 1 ]
-         } else {
-            set panneau(acqfc,$visuNo,bin) [ lindex $list_binning 0 ]
-         }
       }
    }
 #***** Fin de la procedure Adapt_Panneau_AcqFC *****************
