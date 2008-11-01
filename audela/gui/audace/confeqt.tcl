@@ -2,7 +2,7 @@
 # Fichier : confeqt.tcl
 # Description : Affiche la fenetre de configuration des plugins du type 'equipment'
 # Auteurs : Robert DELMAS et Michel PUJOL
-# Mise a jour $Id: confeqt.tcl,v 1.34 2008-06-14 09:02:33 robertdelmas Exp $
+# Mise a jour $Id: confeqt.tcl,v 1.35 2008-11-01 18:41:28 robertdelmas Exp $
 #
 
 namespace eval ::confEqt {
@@ -510,7 +510,7 @@ proc ::confEqt::createFrameFocuser { frm variablePluginName } {
    }
 
    ComboBox $frm.list \
-      -width 15       \
+      -width [ ::tkutil::lgEntryComboBox $pluginList ] \
       -height [llength $pluginList] \
       -relief sunken  \
       -borderwidth 1  \
@@ -563,7 +563,7 @@ proc ::confEqt::createFrameFocuserTool { frm variablePluginName } {
    }
 
    ComboBox $frm.list \
-      -width 15       \
+      -width [ ::tkutil::lgEntryComboBox $pluginList ] \
       -height [llength $pluginList] \
       -relief sunken  \
       -borderwidth 1  \

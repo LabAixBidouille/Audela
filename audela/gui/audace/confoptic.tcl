@@ -2,7 +2,7 @@
 # Fichier : confoptic.tcl
 # Description : Affiche la fenetre de configuration des systemes optiques associes aux cameras A, B et C
 # Auteur : Robert DELMAS
-# Mise a jour $Id: confoptic.tcl,v 1.29 2008-06-14 09:03:11 robertdelmas Exp $
+# Mise a jour $Id: confoptic.tcl,v 1.30 2008-11-01 18:42:10 robertdelmas Exp $
 #
 
 namespace eval ::confOptic {
@@ -876,7 +876,7 @@ namespace eval ::confOptic {
 
       set list_combobox [ list 0.33 0.5 0.66 1.0 1.5 2.0 2.5 3.0 3.5 4.0 5.0 ]
       ComboBox $widget(frm).comboboxBarlow_Reduc \
-         -width 5          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 2    \
@@ -952,7 +952,7 @@ namespace eval ::confOptic {
          set widget(list_combobox) $widget(A,binning)
       }
       ComboBox $widget(frm).labURL_Binning \
-         -width 5          \
+         -width [ ::tkutil::lgEntryComboBox $widget(list_combobox) ] \
          -height [ llength $widget(list_combobox) ] \
          -relief sunken    \
          -borderwidth 2    \
@@ -1092,7 +1092,7 @@ namespace eval ::confOptic {
 
       set list_combobox [ list 0.33 0.5 0.66 1.0 1.5 2.0 2.5 3.0 3.5 4.0 5.0 ]
       ComboBox $widget(frm).comboboxBarlow_Reduc \
-         -width 5          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 2    \
@@ -1168,7 +1168,7 @@ namespace eval ::confOptic {
          set widget(list_combobox) $widget(B,binning)
       }
       ComboBox $widget(frm).labURL_Binning \
-         -width 5          \
+         -width [ ::tkutil::lgEntryComboBox $widget(list_combobox) ] \
          -height [ llength $widget(list_combobox) ] \
          -relief sunken    \
          -borderwidth 2    \
@@ -1308,7 +1308,7 @@ namespace eval ::confOptic {
 
       set list_combobox [ list 0.33 0.5 0.66 1.0 1.5 2.0 2.5 3.0 3.5 4.0 5.0 ]
       ComboBox $widget(frm).comboboxBarlow_Reduc \
-         -width 5          \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
          -height [ llength $list_combobox ] \
          -relief sunken    \
          -borderwidth 2    \
@@ -1384,7 +1384,7 @@ namespace eval ::confOptic {
          set widget(list_combobox) $widget(C,binning)
       }
       ComboBox $widget(frm).labURL_Binning \
-         -width 5          \
+         -width [ ::tkutil::lgEntryComboBox $widget(list_combobox) ] \
          -height [ llength $widget(list_combobox) ] \
          -relief sunken    \
          -borderwidth 2    \

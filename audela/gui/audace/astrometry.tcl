@@ -2,7 +2,7 @@
 # Fichier : astrometry.tcl
 # Description : Functions to calibrate astrometry on images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: astrometry.tcl,v 1.22 2008-05-26 16:21:43 robertdelmas Exp $
+# Mise a jour $Id: astrometry.tcl,v 1.23 2008-11-01 18:40:23 robertdelmas Exp $
 #
 
 namespace eval ::astrometry {
@@ -136,7 +136,7 @@ namespace eval ::astrometry {
          pack $astrom(This).cal.${cal}.fra_0.lab -side left
          set list_combobox $astrom(list_combobox)
          ComboBox $astrom(This).cal.${cal}.fra_0.cat \
-            -width 10         \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [llength $list_combobox ] \
             -relief sunken    \
             -borderwidth 1    \

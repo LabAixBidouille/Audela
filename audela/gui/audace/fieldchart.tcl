@@ -2,7 +2,7 @@
 # Fichier : fieldchart.tcl
 # Description : Interfaces graphiques pour les fonctions carte de champ
 # Auteur : Denis MARCHAIS
-# Mise a jour $Id: fieldchart.tcl,v 1.6 2008-01-03 22:03:53 robertdelmas Exp $
+# Mise a jour $Id: fieldchart.tcl,v 1.7 2008-11-01 18:42:51 robertdelmas Exp $
 #
 
 namespace eval ::mapWindow {
@@ -129,7 +129,7 @@ namespace eval ::mapWindow {
 
             set list_combobox [ list $caption(fieldchart,microcat) $caption(fieldchart,tycho) $caption(fieldchart,loneos) ]
             ComboBox $This.usr.1.cata \
-               -width 17         \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken    \
                -borderwidth 1    \
@@ -153,7 +153,7 @@ namespace eval ::mapWindow {
 
             set list_combobox [ list "10" "12" "14" "16" ]
             ComboBox $This.usr.1.magmax \
-               -width 6          \
+               -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
                -height [ llength $list_combobox ] \
                -relief sunken    \
                -borderwidth 1    \
