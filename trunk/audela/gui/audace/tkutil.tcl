@@ -2,7 +2,7 @@
 # Fichier : tkutil.tcl
 # Description : Regroupement d'utilitaires
 # Auteur : Robert DELMAS
-# Mise a jour $Id: tkutil.tcl,v 1.14 2008-11-01 08:58:53 robertdelmas Exp $
+# Mise a jour $Id: tkutil.tcl,v 1.15 2008-11-01 19:14:55 robertdelmas Exp $
 #
 
 namespace eval tkutil {
@@ -246,7 +246,10 @@ namespace eval tkutil {
             set a $b
          }
       }
-      set longEntryComboBox [ expr $a + 1 ]
+      if { $a == "0" } {
+         set a "5"
+      }
+      set longEntryComboBox [ expr $a + 2 ]
       return $longEntryComboBox
    }
 

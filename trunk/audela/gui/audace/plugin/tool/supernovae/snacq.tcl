@@ -2,7 +2,7 @@
 # Fichier : snacq.tcl
 # Description : Outil d'acqusition d'images pour la recherche de supernovae
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: snacq.tcl,v 1.11 2008-04-27 15:49:36 robertdelmas Exp $
+# Mise a jour $Id: snacq.tcl,v 1.12 2008-11-01 19:11:22 robertdelmas Exp $
 #
 
 # ===================================================================
@@ -359,7 +359,7 @@ pack $audace(base).snacq.frame14 \
    #--- Combobox catalogues de galaxies
    set list_combobox "$list_catasupernovae"
    ComboBox $audace(base).snacq.frame14.combobox_fichier_sn \
-      -width 10         \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -font $audace(font,arial_8_b) \
       -relief sunken    \

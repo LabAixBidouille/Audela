@@ -2,7 +2,7 @@
 # Fichier : viseur_polaire_taka.tcl
 # Description : Positionne l'etoile polaire dans un viseau polaire de type Takahashi ou à niveau
 # Auteur : Robert DELMAS
-# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.10 2008-09-24 17:28:38 robertdelmas Exp $
+# Mise a jour $Id: viseur_polaire_taka.tcl,v 1.11 2008-11-01 19:13:03 robertdelmas Exp $
 #
 
 namespace eval viseurPolaireTaka {
@@ -221,8 +221,8 @@ namespace eval viseurPolaireTaka {
       #--- Definition de la taille de la raquette
       set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
       ComboBox $This.taille \
-         -width 7           \
-         -height [llength $list_combobox ]  \
+         -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
+         -height [llength $list_combobox ] \
          -relief sunken     \
          -borderwidth 1     \
          -textvariable viseurPolaireTaka::widget(viseur_polaire_taka,taille) \
