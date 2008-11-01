@@ -2,7 +2,7 @@
 # Fichier : temma.tcl
 # Description : Fenetre de configuration pour le parametrage du suivi d'objets mobiles pour la monture Temma
 # Auteur : Robert DELMAS
-# Mise a jour $Id: temma.tcl,v 1.18 2008-02-10 17:33:08 robertdelmas Exp $
+# Mise a jour $Id: temma.tcl,v 1.19 2008-11-01 17:45:39 robertdelmas Exp $
 #
 
 namespace eval ::temma {
@@ -211,7 +211,7 @@ proc ::temma::fillConfigPage { frm } {
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.port \
-      -width 7          \
+      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -224,7 +224,7 @@ proc ::temma::fillConfigPage { frm } {
    set list_combobox [ list $caption(temma,modele_1) $caption(temma,modele_2) \
       $caption(temma,modele_3) ]
    ComboBox $frm.modele \
-      -width 25         \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \

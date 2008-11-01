@@ -2,7 +2,7 @@
 # Fichier : lx200.tcl
 # Description : Configuration de la monture LX200
 # Auteur : Robert DELMAS
-# Mise a jour $Id: lx200.tcl,v 1.16 2008-10-21 18:03:27 robertdelmas Exp $
+# Mise a jour $Id: lx200.tcl,v 1.17 2008-11-01 17:44:51 robertdelmas Exp $
 #
 
 namespace eval ::lx200 {
@@ -220,7 +220,7 @@ proc ::lx200::fillConfigPage { frm } {
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.port \
-      -width 9          \
+      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -250,7 +250,7 @@ proc ::lx200::fillConfigPage { frm } {
       $caption(lx200,modele_gemini) $caption(lx200,modele_ite-lente) \
       $caption(lx200,modele_mel_bartels) ]
    ComboBox $frm.modele \
-      -width 17         \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -266,7 +266,7 @@ proc ::lx200::fillConfigPage { frm } {
 
    set list_combobox "$caption(lx200,format_court_long)"
    ComboBox $frm.formatradec \
-      -width 7          \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \

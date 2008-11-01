@@ -2,7 +2,7 @@
 # Fichier : celestron.tcl
 # Description : Configuration de la monture Celestron
 # Auteur : Robert DELMAS
-# Mise a jour $Id: celestron.tcl,v 1.10 2008-02-10 17:31:41 robertdelmas Exp $
+# Mise a jour $Id: celestron.tcl,v 1.11 2008-11-01 17:43:52 robertdelmas Exp $
 #
 
 namespace eval ::celestron {
@@ -191,7 +191,7 @@ proc ::celestron::fillConfigPage { frm } {
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.port \
-      -width 7          \
+      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -206,7 +206,7 @@ proc ::celestron::fillConfigPage { frm } {
 
    set list_combobox "$caption(celestron,format_court_long)"
    ComboBox $frm.formatradec \
-      -width 7          \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \

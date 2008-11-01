@@ -2,7 +2,7 @@
 # Fichier : deltatau.tcl
 # Description : Configuration de la monture Delta Tau
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: deltatau.tcl,v 1.6 2008-02-10 17:32:03 robertdelmas Exp $
+# Mise a jour $Id: deltatau.tcl,v 1.7 2008-11-01 17:44:06 robertdelmas Exp $
 #
 
 namespace eval ::deltatau {
@@ -190,7 +190,7 @@ proc ::deltatau::fillConfigPage { frm } {
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.port \
-      -width 7          \
+      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \
@@ -205,7 +205,7 @@ proc ::deltatau::fillConfigPage { frm } {
 
    set list_combobox "$caption(deltatau,format_court_long)"
    ComboBox $frm.formatradec \
-      -width 7          \
+      -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
       -height [ llength $list_combobox ] \
       -relief sunken    \
       -borderwidth 1    \

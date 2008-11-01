@@ -2,7 +2,7 @@
 # Fichier : audecom.tcl
 # Description : Parametrage et pilotage de la carte AudeCom (Ex-Kauffmann)
 # Auteur : Robert DELMAS
-# Mise a jour $Id: audecom.tcl,v 1.20 2008-02-12 15:12:18 robertdelmas Exp $
+# Mise a jour $Id: audecom.tcl,v 1.21 2008-11-01 17:43:35 robertdelmas Exp $
 #
 
 namespace eval ::audecom {
@@ -443,7 +443,7 @@ proc ::audecom::fillConfigPage { frm } {
 
    #--- Choix du port ou de la liaison
    ComboBox $frm.port \
-      -width 7          \
+      -width [ ::tkutil::lgEntryComboBox $list_connexion ] \
       -height [ llength $list_connexion ] \
       -relief sunken    \
       -borderwidth 1    \

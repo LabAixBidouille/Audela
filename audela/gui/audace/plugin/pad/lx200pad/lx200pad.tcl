@@ -2,7 +2,7 @@
 # Fichier : lx200pad.tcl
 # Description : Raquette virtuelle du LX200
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: lx200pad.tcl,v 1.15 2007-12-07 22:46:32 robertdelmas Exp $
+# Mise a jour $Id: lx200pad.tcl,v 1.16 2008-11-01 17:50:09 robertdelmas Exp $
 #
 
 namespace eval ::lx200pad {
@@ -136,7 +136,7 @@ namespace eval ::lx200pad {
          #--- Definition de la taille de la raquette
          set list_combobox [ list 0.5 0.6 0.7 0.8 0.9 1.0 ]
          ComboBox $frm.frame1.taille \
-            -width 7                 \
+            -width [ ::tkutil::lgEntryComboBox $list_combobox ] \
             -height [llength $list_combobox ] \
             -relief sunken           \
             -borderwidth 1           \

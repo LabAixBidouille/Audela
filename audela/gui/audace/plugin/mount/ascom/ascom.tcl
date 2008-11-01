@@ -2,7 +2,7 @@
 # Fichier : ascom.tcl
 # Description : Configuration de la monture ASCOM
 # Auteur : Robert DELMAS
-# Mise a jour $Id: ascom.tcl,v 1.11 2008-02-10 17:31:15 robertdelmas Exp $
+# Mise a jour $Id: ascom.tcl,v 1.12 2008-11-01 17:43:11 robertdelmas Exp $
 #
 
 namespace eval ::ascom {
@@ -166,7 +166,7 @@ proc ::ascom::fillConfigPage { frm } {
    pack $frm.lab1 -in $frm.frame1 -anchor center -side left -padx 10 -pady 10
 
    ComboBox $frm.driver \
-      -width 50         \
+      -width [ ::tkutil::lgEntryComboBox $private(ascom_drivers) ] \
       -height [ llength $private(ascom_drivers) ] \
       -relief sunken    \
       -borderwidth 1    \
