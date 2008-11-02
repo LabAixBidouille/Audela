@@ -797,8 +797,8 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
    	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
 	    vf/=4;
 	    v-=vf;
-	    if (v!=0) {
-	       esperance+=v2/v;
+	    if (v2!=0) {
+	       esperance+=v/v2;
   	       n++;
 	    }
 	 }
