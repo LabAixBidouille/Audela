@@ -683,6 +683,8 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
    double v,v2,ma,mb,ecart,esperance,xb,somme,*pp,coef,vf;
    int n,ii,jj,imax,jmax,adr,k,nombre,taille;
    double valeur,i=0.,mu_i=0.,mu_ii=0.,sx_i,sx_ii=0.,delta,therm_mean,therm_sigma;
+   double *valtri;
+   int bordi=0,bordj=0,kkkk;
 
    /* --- intialisations ---*/
    p_in=pseries->p_in;
@@ -696,6 +698,9 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
    therm_sigma=pseries->therm_sigma;
    imax=p_in->naxis1;
    jmax=p_in->naxis2;
+   /* ---- on ne selectionne qu'un cadre centré pour éliminer les pixels de bords ---*/
+   bordi=(int)floor(imax*0.1);
+   bordj=(int)floor(jmax*0.1);
 
    /* --- charge les images bias et dark dans p_tmp1 et p_tmp2 ---*/
    if (index==1) {
@@ -729,19 +734,27 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
 	 tt_errlog(TT_ERR_IMAGES_NOT_SAME_SIZE,message);
 	 return(TT_ERR_IMAGES_NOT_SAME_SIZE);
       }
-      /* --- transforme le dark en therm et calcule les stat ---*/
-      sx_i=0;
+      /* --- transforme le dark en therm ---*/
       for (kkk=0;kkk<(int)(nelem);kkk++) {
 	 p_tmp2->p[kkk]-=p_tmp1->p[kkk];
-	 /* --- algo de la valeur moy et ecart type de Miller ---*/
-	 valeur=p_tmp2->p[kkk];
-	 if (kkk==0) {mu_i=valeur;}
-	 i=(double) (kkk+1);
-	 delta=valeur-mu_i;
-	 mu_ii=mu_i+delta/(i);
-	 sx_ii=sx_i+delta*(valeur-mu_ii);
-	 mu_i=mu_ii;
-	 sx_i=sx_ii;
+      }
+      /* --- calcule les stat ---*/
+      sx_i=0;
+      kkkk=0;
+      for(ii=bordi;ii<imax-1-bordi;ii++) {
+         for(jj=bordj;jj<jmax-1-bordj;jj++) {
+            kkk=jj*imax+ii;
+	    /* --- algo de la valeur moy et ecart type de Miller ---*/
+	    valeur=p_tmp2->p[kkk];
+	    if (kkkk==0) {mu_i=valeur;}
+	    i=(double) (kkkk+1);
+	    delta=valeur-mu_i;
+	    mu_ii=mu_i+delta/(i);
+	    sx_ii=sx_i+delta*(valeur-mu_ii);
+	    mu_i=mu_ii;
+	    sx_i=sx_ii;
+	    kkkk++;
+	 }
       }
       therm_mean=mu_ii;
       therm_sigma=0.;
@@ -779,23 +792,39 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
          xb=esperance/ecart;
       }
    }
+   n=0; esperance=0;
    */
-   for(ii=2;ii<imax-2;ii++) {
-      for(jj=2;jj<jmax-2;jj++) {
+   for(ii=bordi;ii<imax-1-bordi;ii++) {
+      for(jj=bordj;jj<jmax-1-bordj;jj++) {
          kkk=jj*imax+ii;
          if ((double)(p_tmp2->p[kkk])>=(therm_mean+therm_sigma*therm_kappa)) {
    	    v=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
    	    v2=(double)(p_tmp2->p[kkk]);
 	    vf=0.;
-	    kkk=(jj-2)*imax+ii;
-   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
-	    kkk=(jj+2)*imax+ii;
-   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
-	    kkk=jj*imax+ii-2;
-   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
-	    kkk=jj*imax+ii+2;
-   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
-	    vf/=4;
+	    kkkk=0;
+	    if ((jj-2)>=0) {
+	       kkk=(jj-2)*imax+ii;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       kkkk++;
+	    }
+	    if ((jj+2)<jmax) {
+	       kkk=(jj+2)*imax+ii;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       kkkk++;
+	    }
+	    if ((ii-2)>=0) {
+	       kkk=jj*imax+ii-2;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       kkkk++;
+	    }
+	    if ((ii+2)<imax) {
+	       kkk=jj*imax+ii+2;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       kkkk++;
+	    }
+	    if (kkkk>0) {
+               vf/=kkkk;
+	    }
 	    v-=vf;
 	    if (v2!=0) {
 	       esperance+=v/v2;
@@ -804,10 +833,46 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
 	 }
       }
    }
-   if (n==0) {
-      xb=0;
+   if (n>0) {
+      valtri=NULL;
+      nombre=n+1;
+      taille=sizeof(double);
+      if ((msg=libtt_main0(TT_UTIL_CALLOC_PTR,4,&valtri,&nombre,&taille,"valtri"))!=0) {
+         tt_errlog(TT_ERR_PB_MALLOC,"Pb alloc in tt_ima_series_opt_1 (pointer valtri)");
+         return(TT_ERR_PB_MALLOC);
+      }
+      n=0; esperance=0;
+      for(ii=bordi;ii<imax-1-bordi;ii++) {
+         for(jj=bordj;jj<jmax-1-bordj;jj++) {
+            kkk=jj*imax+ii;
+            if ((double)(p_tmp2->p[kkk])>=(therm_mean+therm_sigma*therm_kappa)) {
+   	       v=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+   	       v2=(double)(p_tmp2->p[kkk]);
+	       vf=0.;
+	       kkk=(jj-2)*imax+ii;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       kkk=(jj+2)*imax+ii;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       kkk=jj*imax+ii-2;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       kkk=jj*imax+ii+2;
+   	       vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	       vf/=4;
+	       v-=vf;
+	       if (v2!=0) {
+   	          valtri[n]=v/v2;
+  	          n++;
+	       }
+	    }
+	 }
+      }
+      /* - il faut trier les valeurs -*/
+      tt_util_qsort_double(valtri,0,n-1,NULL);
+      /* - on prend la mediane -*/
+      xb=valtri[(int)floor(n/2)];
+      tt_free(valtri,"valtri");
    } else {
-      xb=esperance/n;
+      xb=0;
    }
    pseries->coef_therm=xb;
    pseries->nbpix_therm=n;
