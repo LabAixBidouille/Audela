@@ -680,7 +680,7 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
    long nelem,firstelem,nelem_tmp;
    double value,therm_kappa;
    int msg,kkk,index;
-   double v,v2,ma,mb,ecart,esperance,xb,somme,*pp,coef;
+   double v,v2,ma,mb,ecart,esperance,xb,somme,*pp,coef,vf;
    int n,ii,jj,imax,jmax,adr,k,nombre,taille;
    double valeur,i=0.,mu_i=0.,mu_ii=0.,sx_i,sx_ii=0.,delta,therm_mean,therm_sigma;
 
@@ -694,6 +694,8 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
    index=pseries->index;
    therm_mean=pseries->therm_mean;
    therm_sigma=pseries->therm_sigma;
+   imax=p_in->naxis1;
+   jmax=p_in->naxis2;
 
    /* --- charge les images bias et dark dans p_tmp1 et p_tmp2 ---*/
    if (index==1) {
@@ -753,6 +755,7 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
    /* --- calcul de la fonction ---*/
    tt_imacreater(p_out,p_in->naxis1,p_in->naxis2);
    ma=0;mb=0;ecart=0;esperance=0;n=0;
+   /*
    for (kkk=0;kkk<(int)(nelem);kkk++) {
       if ((double)(p_tmp2->p[kkk])>=(therm_mean+therm_sigma*therm_kappa)) {
 	 v=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
@@ -776,6 +779,36 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
          xb=esperance/ecart;
       }
    }
+   */
+   for(ii=2;ii<imax-2;ii++) {
+      for(jj=2;jj<jmax-2;jj++) {
+         kkk=jj*imax+ii;
+         if ((double)(p_tmp2->p[kkk])>=(therm_mean+therm_sigma*therm_kappa)) {
+   	    v=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+   	    v2=(double)(p_tmp2->p[kkk]);
+	    vf=0.;
+	    kkk=(jj-2)*imax+ii;
+   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	    kkk=(jj+2)*imax+ii;
+   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	    kkk=jj*imax+ii-2;
+   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	    kkk=jj*imax+ii+2;
+   	    vf+=(double)(p_in->p[kkk]-p_tmp1->p[kkk]);
+	    vf/=4;
+	    v-=vf;
+	    if (v!=0) {
+	       esperance+=v2/v;
+  	       n++;
+	    }
+	 }
+      }
+   }
+   if (n==0) {
+      xb=0;
+   } else {
+      xb=esperance/n;
+   }
    pseries->coef_therm=xb;
    pseries->nbpix_therm=n;
    for (kkk=0;kkk<(int)(nelem);kkk++) {
@@ -786,8 +819,6 @@ int tt_ima_series_opt_1(TT_IMA_SERIES *pseries)
    /* --- calcul du de-smearing (deconvflat) ---*/
    if (pseries->coef_unsmearing>0.) {
       coef=pseries->coef_unsmearing;
-      imax=p_in->naxis1;
-      jmax=p_in->naxis2;
       pp=NULL;
       nombre=jmax;
       taille=sizeof(double);
