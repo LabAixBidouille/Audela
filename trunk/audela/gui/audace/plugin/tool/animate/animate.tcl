@@ -2,7 +2,7 @@
 # Fichier : animate.tcl
 # Description : Outil pour le controle des animations d'images
 # Auteur : Alain KLOTZ
-# Mise a jour $Id: animate.tcl,v 1.15 2008-10-31 16:45:13 robertdelmas Exp $
+# Mise a jour $Id: animate.tcl,v 1.16 2008-11-03 22:06:57 robertdelmas Exp $
 #
 
 #============================================================
@@ -159,21 +159,21 @@ proc ::animate::cmdGo { } {
    visu$audace(visuNo) clear
    #--- Lancement de l'animation
    if { $panneau(animate,filename) != "" } {
-      #--- Verifie que le nombre d'images est un entier
+      #--- Verifie que le nombre d'images est un entier non nul
       if { ( [ TestEntier $panneau(animate,nbi) ] == "0" ) || ( $panneau(animate,nbi) == "0" ) } {
          tk_messageBox -title "$caption(animate,attention)" -icon error \
             -message "$caption(animate,nb_images1) $caption(animate,nbre_entier)"
          set panneau(animate,nbi) ""
          return
       }
-      #--- Verifie que le nombre de ms est un entier
+      #--- Verifie que le nombre de ms est un entier non nul
       if { ( [ TestEntier $panneau(animate,ms) ] == "0" ) || ( $panneau(animate,ms) == "0" ) } {
          tk_messageBox -title "$caption(animate,attention)" -icon error \
             -message "$caption(animate,delai) $caption(animate,nbre_entier)"
          set panneau(animate,ms) "300"
          return
       }
-      #--- Verifie que le nombre de boucles est un entier
+      #--- Verifie que le nombre de boucles est un entier non nul
       if { ( [ TestEntier $panneau(animate,nbl) ] == "0" ) || ( $panneau(animate,nbl) == "0" ) } {
          tk_messageBox -title "$caption(animate,attention)" -icon error \
             -message "$caption(animate,nb_boucles1) $caption(animate,nbre_entier)"
@@ -218,6 +218,10 @@ proc ::animate::editNomGenerique { } {
    set fenetre "$audace(base)"
    #--- Ouvre la fenetre de choix des images
    set filename [ ::tkutil::box_load $fenetre $audace(rep_images) $audace(bufNo) "1" ]
+   #--- Il faut un fichier
+   if { $filename == "" } {
+      return
+   }
    #--- Le fichier selectionne doit imperativement etre dans le repertoire des images
    if { [ file dirname $filename ] != $audace(rep_images) } {
       tk_messageBox -title "$caption(animate,attention)" -type ok \
